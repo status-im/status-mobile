@@ -31,6 +31,7 @@
     "wallet-invalid-address": "Ungültige Adresse: \n {{data}}",
     "remove": "Entfernen",
     "add-members": "Mitglieder hinzufügen",
+    "status-sent": "Gesendet",
     "yes": "Ja",
     "dapps": "ÐApps",
     "network-settings": "Netzwerkeinstellungen",

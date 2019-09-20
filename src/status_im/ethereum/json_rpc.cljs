@@ -52,12 +52,10 @@
    "shhext_saveChat" {}
    "shhext_contacts" {}
    "shhext_blockContact" {}
+   ;;TODO not used anywhere?
    "shhext_deleteChat" {}
    "shhext_saveContact" {}
-   "status_joinPublicChat" {}
    "status_chats" {}
-   "status_startOneOnOneChat" {}
-   "status_removeChat" {}
    "wallet_getTransfers" {}
    "wallet_getTokensBalances" {}
    "browsers_getBrowsers" {}

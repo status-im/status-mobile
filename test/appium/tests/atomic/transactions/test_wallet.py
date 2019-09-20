@@ -452,8 +452,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.get_account_by_name(account_name).click()
         wallet_view.send_transaction_button.click()
         wallet_view.back_button.click()
-        balance_after_receiving_tx = wallet_view.eth_asset_value.text
-        if balance_after_receiving_tx != transaction_amount:
+        balance_after_receiving_tx = float(wallet_view.eth_asset_value.text)
+        if balance_after_receiving_tx != float(transaction_amount):
             self.driver.fail('New account balance %s does not match expected %s after receiving a transaction' % (
                 balance_after_receiving_tx, transaction_amount))
         updated_balance = self.network_api.get_balance(address)
@@ -469,7 +469,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_transaction_button.click()
         total_fee = send_transaction.get_transaction_fee_total()
         send_transaction.sign_transaction()
-        if not wallet_view.element_by_text('Transaction sent').is_element_displayed():
+        if not wallet_view.wait_for_element_starts_with_text('Transaction sent').is_element_displayed():
             self.driver.fail('Transaction was not sent from the new account')
         self.network_api.wait_for_confirmation_of_transaction(address, transaction_amount)
         self.network_api.verify_balance_is_updated(updated_balance, address)

@@ -20,6 +20,7 @@ let
     bash
     curl
     file
+    flock
     git
     gnumake
     jq

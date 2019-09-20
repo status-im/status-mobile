@@ -2,15 +2,16 @@
   (:require-macros status-im.utils.fx)
   (:require [clojure.set :as set]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [taoensso.timbre :as log])
-  (:refer-clojure :exclude [merge]))
+            [taoensso.timbre :as log]
+            status-im.utils.handlers)
+  (:refer-clojure :exclude [merge reduce]))
 
 (defn- update-db [cofx fx]
   (if-let [db (:db fx)]
     (assoc cofx :db db)
     cofx))
 
-(def ^:private mergable-keys
+(def ^:private mergeable-keys
   #{:chat-received-message/add-fx
     :filters/load-filters
     :pairing/set-installation-metadata
@@ -26,16 +27,17 @@
 (defn- safe-merge [fx new-fx]
   (if (:merging-fx-with-common-keys fx)
     fx
-    (let [common-keys (set/intersection (into #{} (keys fx))
-                                        (into #{} (keys new-fx)))]
-      (if (empty? (set/difference common-keys (conj mergable-keys :db)))
-        (clojure.core/merge (apply dissoc fx mergable-keys)
-                            (apply dissoc new-fx mergable-keys)
-                            (merge-with into
-                                        (select-keys fx mergable-keys)
-                                        (select-keys new-fx mergable-keys)))
-        (do (log/error "Merging fx with common-keys: " common-keys)
-            {:merging-fx-with-common-keys common-keys})))))
+    (clojure.core/reduce (fn [merged-fx [k v]]
+                           (if (= :db k)
+                             (assoc merged-fx :db v)
+                             (if (get merged-fx k)
+                               (if (mergeable-keys k)
+                                 (update merged-fx k into v)
+                                 (do (log/error "Merging fx with common-key: " k v)
+                                     (reduced {:merging-fx-with-common-keys k})))
+                               (assoc merged-fx k v))))
+                         fx
+                         new-fx)))
 
 (defn merge
   "Takes a map of co-effects and forms as argument.
@@ -50,10 +52,10 @@
   (let [[first-arg & rest-args] args
         initial-fxs? (map? first-arg)
         fx-fns (if initial-fxs? rest-args args)]
-    (reduce (fn [fxs fx-fn]
-              (let [updated-cofx (update-db cofx fxs)]
-                (if fx-fn
-                  (safe-merge fxs (fx-fn updated-cofx))
-                  fxs)))
-            (if initial-fxs? first-arg {:db db})
-            fx-fns)))
+    (clojure.core/reduce (fn [fxs fx-fn]
+                           (let [updated-cofx (update-db cofx fxs)]
+                             (if fx-fn
+                               (safe-merge fxs (fx-fn updated-cofx))
+                               fxs)))
+                         (if initial-fxs? first-arg {:db db})
+                         fx-fns)))

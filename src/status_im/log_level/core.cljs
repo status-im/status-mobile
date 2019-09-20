@@ -12,10 +12,11 @@
         new-settings  (if log-level
                         (assoc settings :log-level log-level)
                         (dissoc settings :log-level))]
-    (multiaccounts.update/update-settings cofx
-                                          new-settings
-                                          (when (not= (node/get-log-level settings) (node/get-log-level new-settings))
-                                            {:success-event [:multiaccounts.update.callback/save-settings-success]}))))
+    (fx/merge cofx
+              (multiaccounts.update/update-settings new-settings
+                                                    {})
+              (node/prepare-new-config {:on-success #(when (not= (node/get-log-level settings) (node/get-log-level new-settings))
+                                                       (re-frame/dispatch [:logout]))}))))
 
 (fx/defn show-change-log-level-confirmation
   [{:keys [db]} {:keys [name value] :as log-level}]

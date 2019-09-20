@@ -9,7 +9,8 @@
             [status-im.ui.screens.db :refer [app-db]]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [clojure.string :as string]))
 
 (defn restore-native-settings! []
   (when platform/desktop?
@@ -65,8 +66,12 @@
 (fx/defn initialize-multiaccounts
   {:events [::initialize-multiaccounts]}
   [{:keys [db] :as cofx} all-multiaccounts]
-  (let [multiaccounts (reduce (fn [acc {:keys [address] :as multiaccount}]
-                                (assoc acc address multiaccount))
+  (let [multiaccounts (reduce (fn [acc {:keys [address keycard-key-uid keycard-pairing] :as multiaccount}]
+                                (-> (assoc acc address multiaccount)
+                                    (assoc-in [address :keycard-key-uid] (when-not (string/blank? keycard-key-uid)
+                                                                           keycard-key-uid))
+                                    (assoc-in [address :keycard-pairing] (when-not (string/blank? keycard-pairing)
+                                                                           keycard-pairing))))
                               {}
                               all-multiaccounts)]
     (fx/merge cofx
@@ -75,17 +80,18 @@
 
 (fx/defn start-app [cofx]
   (fx/merge cofx
-            {::get-device-UUID nil
-             ::get-supported-biometric-auth nil
-             ::init-keystore nil
-             ::restore-native-settings nil
-             ::open-multiaccounts #(re-frame/dispatch [::initialize-multiaccounts %])
+            {::get-device-UUID                      nil
+             ::get-supported-biometric-auth         nil
+             ::init-keystore                        nil
+             ::restore-native-settings              nil
+             ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts %])
              :ui/listen-to-window-dimensions-change nil
              :notifications/init                    nil
              ::network/listen-to-network-info       nil
              :hardwallet/register-card-events       nil
-             :hardwallet/check-nfc-support nil
-             :hardwallet/check-nfc-enabled nil}
+             :hardwallet/check-nfc-support          nil
+             :hardwallet/check-nfc-enabled          nil
+             :hardwallet/retrieve-pairings          nil}
             (initialize-app-db)))
 
 (re-frame/reg-fx

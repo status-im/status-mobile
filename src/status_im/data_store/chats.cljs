@@ -124,7 +124,7 @@
       (dissoc :referenced-messages :message-groups :gaps-loaded? :pagination-info
               :public? :group-chat :messages
               :might-have-join-time-messages?
-              :group-chat-local-version :loaded-unviewed-messages-ids
+              :loaded-unviewed-messages-ids
               :messages-initialized? :contacts :admins :members-joined)))
 
 (defn <-rpc [chat]
@@ -143,7 +143,6 @@
       (update :membership-updates (partial unmarshal-membership-updates (:id chat)))
       (update :last-message-content utils/safe-read-message-content)
       (update :last-clock-value utils.clocks/safe-timestamp)
-      (assoc :group-chat-local-version 1) ;; TODO(cammellos): this can be removed
       (dissoc :chatType :members)))
 
 (fx/defn save-chat [cofx {:keys [chat-id] :as chat}]
@@ -157,17 +156,3 @@
                      :params []
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch chats" 0 -1 %)}]})
-
-(defn delete-chat-rpc [chat-id chat-type]
-  (json-rpc/call {:method "shhext_deleteChat"
-                  :params [chat-id chat-type]
-                  :on-success #(log/debug "deleteed chat" chat-id chat-type)
-                  :on-failure #(log/error "failed to delete chat" chat-id chat-type %)}))
-
-(re-frame/reg-fx
- ::delete-chat
- (fn [[chat-id chat-type]]
-   (delete-chat-rpc chat-id chat-type)))
-
-(fx/defn delete-chat [cofx chat-id chat-type]
-  {::delete-chat [chat-id chat-type]})

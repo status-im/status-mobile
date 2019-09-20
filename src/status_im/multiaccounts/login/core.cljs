@@ -271,7 +271,7 @@
 
 (fx/defn open-login
   [{:keys [db] :as cofx} address photo-path name public-key]
-  (let [keycard-multiaccount? (get-in db [:multiaccounts/multiaccounts address :keycard-instance-uid])]
+  (let [keycard-multiaccount? (get-in db [:multiaccounts/multiaccounts address :keycard-key-uid])]
     (fx/merge cofx
               {:db (-> db
                        (update :multiaccounts/login assoc

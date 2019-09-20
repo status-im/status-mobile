@@ -65,6 +65,7 @@
     "image-source-gallery": "Seleccionar de la galería",
     "sync-synced": "Sincronizado",
     "status-pending": "Pendiente",
+    "status-sent": "Enviado",
     "datetime-day": {
         "one": "día",
         "other": "días"

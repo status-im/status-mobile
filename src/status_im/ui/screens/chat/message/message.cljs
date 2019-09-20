@@ -137,11 +137,6 @@
    [message-view message
     [react/text (str "Unhandled content-type " content-type)]]])
 
-(defn- text-status [status]
-  [react/view style/delivery-view
-   [react/text {:style style/delivery-text}
-    (i18n/message-status-label status)]])
-
 (defn message-activity-indicator
   []
   [react/view style/message-activity-indicator
@@ -171,9 +166,9 @@
                                                         :message-id message-id}])))}
    [react/view style/not-sent-view
     [react/text {:style style/not-sent-text}
-     (i18n/message-status-label (if platform/desktop?
-                                  :not-sent-click
-                                  :not-sent-tap))]
+     (i18n/label (if platform/desktop?
+                   :t/status-not-sent-click
+                   :t/status-not-sent-tap))]
     [react/view style/not-sent-icon
      [vector-icons/icon :main-icons/warning {:color colors/red}]]]])
 
@@ -193,12 +188,13 @@
     (case outgoing-status
       :sending  [message-activity-indicator]
       :not-sent [message-not-sent-text chat-id message-id]
-      (if (and (not outgoing-status)
-               (:command content))
-        [command-status content]
-        (when last-outgoing?
-          (if outgoing-status
-            [text-status outgoing-status]))))))
+      :sent     (when last-outgoing?
+                  [react/view style/delivery-view
+                   [react/text {:style style/delivery-text}
+                    (i18n/label :t/status-sent)]])
+      (when (and (not outgoing-status)
+                 (:command content))
+        [command-status content]))))
 
 (defview message-author-name [from name]
   (letsubs [username [:contacts/contact-name-by-identity from]]

@@ -1,5 +1,5 @@
 { config, stdenv, stdenvNoCC, target-os ? "android", callPackage, mkShell,
-  mkFilter, androidenv, fetchurl, openjdk, nodejs, bash, maven, zlib,
+  mkFilter, androidenv, fetchurl, flock, openjdk, nodejs, bash, maven, zlib,
   status-go, localMavenRepoBuilder, projectNodePackage, jsbundle }:
 
 let
@@ -25,7 +25,12 @@ let
 in {
   inherit (androidEnv) androidComposition;
 
-  buildInputs = assert platform.targetAndroid; [ mavenAndNpmDeps.deriv openjdk gradle ];
+  buildInputs = assert platform.targetAndroid; [
+    mavenAndNpmDeps.deriv
+    flock # used in reset-node_modules.sh
+    openjdk
+    gradle
+  ];
   shellHook =
     let
       inherit (stdenv.lib) catAttrs concatStrings;

@@ -35,3 +35,5 @@
 (def react-native-shake     #js {})
 (def net-info               #js {:default #js {}})
 (def react-native-mail      #js {:mail (fn [])})
+(def async-storage          #js {})
+(def back-handler           #js {})

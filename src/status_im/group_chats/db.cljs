@@ -10,15 +10,9 @@
      (map #(assoc % :from from) events))
    all-updates))
 
-(defn joined-event?
+(defn joined?
   [public-key {:keys [members-joined] :as chat}]
   (contains? members-joined public-key))
-
-(defn joined?
-  [public-key {:keys [group-chat-local-version] :as chat}]
-  ;; We consider group chats with local version of 0 as joined for local events
-  (or (zero? group-chat-local-version)
-      (joined-event? public-key chat)))
 
 (defn invited?
   [my-public-key {:keys [contacts]}]

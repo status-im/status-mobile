@@ -3,7 +3,6 @@
     "transaction-details": "Dettagli della transazione",
     "confirm": "Conferma",
     "description": "Descrizione",
-    
     "amount": "Quantità",
     "open": "Apri",
     "close-app-title": "Attenzione!",
@@ -15,12 +14,9 @@
     "chat-name": "Nome della chat",
     "phew-here-is-your-passphrase": "Fiù, è stato difficile. Ecco la tua passphrase, *scrivila e conservala al sicuro!* Ne avrai bisogno per recuperare il tuo account.",
     "public-group-topic": "Argomento",
-    
     "chat-settings": "Impostazioni della chat",
     "offline": "Offline",
-    
     "invited": "invitato",
-    
     "address": "Indirizzo",
     "new-public-group-chat": "Entra nella chat pubblica",
     "datetime-hour": {
@@ -33,77 +29,43 @@
     "block": "Blocco",
     "camera-access-error": "Per concedere i permessi necessari per la fotocamera, per favore vai nelle impostazioni di sistema e assicurati che la voce Status > Fotocamera sia selezionata.",
     "wallet-invalid-address": "Indirizzo non valido: \n {{data}}",
-    
     "remove": "Rimuovi",
-    
-    
-    
     "add-members": "Aggiungi membri",
-    
     "yes": "Sì",
     "dapps": "ÐApps",
-    
     "network-settings": "Impostazioni di rete",
-    
-    
-    
     "photos-access-error": "Per concedere i permessi necessari per le foto, per favore vai nelle impostazioni di sistema e assicurati che la voce Status > Foto sia selezionata.",
     "hash": "Hash",
-    
     "done": "Fatto",
-    
     "delete-chat": "Cancella chat",
     "new-group-chat": "Nuova chat di gruppo",
-    
     "wallet": "Portafoglio",
-    
     "wallet-request": "Richiedi",
     "sign-in": "Accedi",
     "datetime-yesterday": "ieri",
     "create-new-account": "Crea un nuovo account",
     "sign-in-to-status": "Accedi a Status",
-    
-    
     "datetime-ago": "fa",
-    
     "contacts": "Contatti",
-    
     "got-it": "Ho capito",
-    
     "public-chats": "Chat pubbliche",
     "not-applicable": "Non applicabile alle transazioni non firmate",
-    
     "active-online": "Online",
     "password": "Password",
-    
-    
-    
-    
     "send-request": "Invia richiesta",
     "paste-json": "Incolla JSON",
     "browsing-title": "Naviga",
-    
-    
     "transactions-history-empty": "Non hai ancora nessuna transazione nella cronologia",
     "discover": "Scopri",
-    
     "browsing-cancel": "Annulla",
-    
     "intro-status": "Chatta con me per inizializzare il tuo account e cambiare le tue impostazioni.",
     "name": "Nome",
     "gas-price": "Gas price",
-    
-    
     "validation-amount-is-too-precise": "L'ammontare è troppo preciso. La più piccola unità che puoi inviare è 1 Wei (1x10^-18 ETH)",
     "copy-transaction-hash": "Copia l'hash della transazione",
-    
-    
     "show-qr": "Mostra QR",
-    
     "connect": "Connetti",
-    
     "edit": "Modifica",
-    
     "account-generation-message": "Dammi un secondo, devo fare dei calcoli complicati per generare il tuo account!",
     "remove-network": "Rimuovi rete",
     "no-messages": "Nessun messaggio",
@@ -112,50 +74,28 @@
     "members-title": "Membri",
     "new-group": "Nuovo gruppo",
     "phone-e164": "Internazionale 1",
-    
     "connected": "Connesso",
     "rpc-url": "URL RPC",
     "settings": "Impostazioni",
-    
     "specify-rpc-url": "Specifica un URL RPC",
-
-    
     "gas-limit": "Gas limit",
-    
-    
-    
-    
     "delete": "Cancella",
-    
     "chats": "Chat",
     "transaction-sent": "Transazione inviata",
     "transaction": "Transazione",
     "public-group-status": "Pubblico",
-    
-    
     "mainnet-text": "Sei nella Mainnet. Verranno inviati ETH reali",
     "image-source-make-photo": "Cattura",
     "chat": "Chat",
     "start-conversation": "Inizia la conversazione",
-    
-    
     "save": "Salva",
-    
-    
-    
     "all": "Tutte",
     "confirmations-helper-text": "Per favore aspetta almeno 12 conferme per essere sicuro che la tua transazione sia stata processata in sicurezza",
-    
     "sharing-copy-to-clipboard": "Copia negli appunti",
-    
-    
     "sync-in-progress": "Sincronizzazione in corso...",
     "enter-password": "Inserisci la password",
-    
-    
     "send-transaction": "Invia una transazione",
     "confirmations": "Conferme",
-    
     "incorrect-code": [
         "str",
         "Il codice era errato, riprova"
@@ -164,7 +104,6 @@
     "sync-synced": "Sincronizzato",
     "currency": "Valuta",
     "status-pending": "In attesa",
-    
     "connecting-requires-login": "La connessione ad un'altra rete richiede il login",
     "datetime-day": {
         "one": "giorno",
@@ -172,14 +111,11 @@
     },
     "request-transaction": "Richiesta di transazione",
     "wallet-send": "Invia",
-    
-    
     "scan-qr": "Scansiona QR",
     "contact-s": {
         "one": "contatto",
         "other": "contatti"
     },
-    
     "gas-used": "Gas usato",
     "transactions-filter-type": "Tipo",
     "next": "Avanti",
@@ -189,99 +125,66 @@
     "status": "Stato",
     "from": "Da",
     "wrong-password": "Password sbagliata",
-    
-    
     "in-contacts": "Nei contatti",
     "transactions-sign": "Firma",
     "sharing-share": "Condividi...",
     "type-a-message": "Scrivi un messaggio...",
-    
     "usd-currency": "USD",
-    
     "node-unavailable": "Nessun nodo ethereum disponibile",
     "url": "URL",
-    
     "add-network": "Aggiungi rete",
     "unknown-status-go-error": "Errore status-go sconosciuto",
-    
-    
     "clear-history": "Cancella cronologia",
-    
     "signing-phrase-description": "Firma la transazione inserendo la tua password. Assicurati che le parole sopra corrispondano alla tua signing phrase segreta",
     "no-contacts": "Ancora nessun contatto",
-    
     "soon": "Presto",
     "close-app-content": "L'app si fermerà e si chiuderà. Quando la riaprirai, verrà utilizzata la rete selezionata",
-    
-    
-    
     "datetime-today": "oggi",
-    
     "web-view-error": "oops, errore",
-    
     "error": "Errore",
     "transactions-sign-transaction": "Firma transazione",
-    
     "more": "ancora",
     "cancel": "Annulla",
-    
     "can-not-add-yourself": "Non puoi aggiungere te stesso",
     "transaction-description": "Per favore aspetta almeno 12 conferme per essere sicuro che la tua transazione sia stata processata in sicurezza",
     "add-to-contacts": "Aggiungi ai contatti",
     "available": "Disponibile",
-    
     "You": "Tu",
     "main-wallet": "Portafoglio principale",
-    
     "testnet-text": "Sei in {{testnet}} Testnet. Non mandare ETH o SNT reali al tuo indirizzo",
     "transactions": "Transazioni",
-    
     "members": {
         "one": "1 membro",
         "other": "{{count}} membri",
         "zero": "nessun membro"
     },
     "intro-message1": "Benvenuto in Status!\nTocca questo messaggio per impostare la tua password e cominciare.",
-    
     "eth": "ETH",
     "transactions-history": "Cronologia",
-    
     "new-contact": "Nuovo contatto",
     "datetime-second": {
         "one": "secondo",
         "other": "secondi"
     },
-    
-    
     "recover": "Recupera",
     "wallet-total-value": "Valore totale",
-    
     "nonce": "Nonce",
     "new-network": "Nuova rete",
-    
     "datetime-minute": {
         "one": "minuto",
         "other": "minuti"
     },
     "browsing-open-in-android-web-browser": "Apri nel web browser",
     "browsing-open-in-ios-web-browser": "Apri nel web browser",
-    
     "wallet-insufficient-funds": "Fondi insufficienti",
     "edit-profile": "Modifica profilo",
     "active-unknown": "Sconosciuto",
-    
     "transaction-failed": "Transazione fallita",
     "public-key": "Chiave pubblica",
-    
-    
-    
-    
     "profile": "Profilo",
     "wallet-choose-recipient": "Scegli destinatario",
-    
     "none": "Nessuno",
     "removed": "rimosso",
-    
     "no": "No",
     "transactions-filter-select-all": "Seleziona tutte",
     "transactions-filter-title": "Filtra cronologia",
@@ -291,8 +194,8 @@
     "image-source-title": "Immagine del profilo",
     "current-network": "Rete corrente",
     "left": "lasciato",
-    
     "to": "A",
     "data": "Dati",
+    "status-sent": "Inviato",
     "cost-fee": "Costo/Fee"
 }

@@ -2780,6 +2780,11 @@ hasha@^3.0.0:
   dependencies:
     is-stream "^1.0.1"
 
+hermes-engine@0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.2.1.tgz#25c0f1ff852512a92cb5c5cc47cf967e1e722ea2"
+  integrity sha512-eNHUQHuadDMJARpaqvlCZoK/Nitpj6oywq3vQ3wCwEsww5morX34mW5PmKWQTO7aU0ck0hgulxR+EVDlXygGxQ==
+
 hermesvm@^0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/hermesvm/-/hermesvm-0.1.1.tgz#bd1df92b4dc504e261c23df34864daf24b844d03"
@@ -4898,7 +4903,7 @@ react-native-splash-screen@^3.2.0:
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.2.0.tgz#d47ec8557b1ba988ee3ea98d01463081b60fff45"
   integrity sha512-Ls9qiNZzW/OLFoI25wfjjAcrf2DZ975hn2vr6U9gyuxi2nooVbzQeFoQS5vQcbCt9QX5NY8ASEEAtlLdIa6KVg==
 
-react-native-status-keycard@^2.5.7:
+react-native-status-keycard@^2.5.11:
   version "2.5.11"
   resolved "https://registry.yarnpkg.com/react-native-status-keycard/-/react-native-status-keycard-2.5.11.tgz#ba7d6b417ca3de345b7da27997d799ece6de6b68"
   integrity sha512-yc1Jkr+mKJpyd8QRJuYFchzkZ8ANDSC2CPYVKJJN2i93RReft3o2cHAi+Sn5LxI5Ex5ZpLaEzdL5ezG2EWbrjA==

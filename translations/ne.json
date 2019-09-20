@@ -470,6 +470,7 @@
     "status-confirmed": "पुष्टि भयो",
     "status-hardwallet": "Dompet fizikal Status",
     "status-pending": "बाँकी छ",
+    "status-sent": "पठाइसकेको",
     "status-tx-not-found": "TX फेला परेन",
     "step-i-of-n": "Langkah {{step}} daripada {{number}}",
     "submit-bug": "Hantar laporan kerentanan",

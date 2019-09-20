@@ -293,6 +293,20 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void saveAccountAndLoginWithKeycard(final String accountData, final String password , final String config, final String chatKey) {
+        Log.d(TAG, "saveAccountAndLoginWithKeycard");
+        String finalConfig = prepareDirAndUpdateConfig(config);
+        String result = Statusgo.saveAccountAndLoginWithKeycard(accountData, password, finalConfig, chatKey);
+        if (result.startsWith("{\"error\":\"\"")) {
+            Log.d(TAG, "StartNode result: " + result);
+            Log.d(TAG, "Geth node started");
+        }
+        else {
+            Log.e(TAG, "StartNode failed: " + result);
+        }
+    }
+
+    @ReactMethod
     public void login(final String accountData, final String password) {
         Log.d(TAG, "login");
         String result = Statusgo.login(accountData, password);
@@ -432,22 +446,15 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void loginWithKeycard(final String whisperPrivateKey, final String encryptionPublicKey, final String configJSON, final Callback callback) {
+    public void loginWithKeycard(final String accountData, final String password, final String chatKey) {
         Log.d(TAG, "loginWithKeycard");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
+        String result = Statusgo.loginWithKeycard(accountData, password, chatKey);
+        if (result.startsWith("{\"error\":\"\"")) {
+            Log.d(TAG, "LoginWithKeycard result: " + result);
         }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                  String result = Statusgo.loginWithKeycard(whisperPrivateKey, encryptionPublicKey, configJSON);
-                  callback.invoke(result);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
+        else {
+            Log.e(TAG, "LoginWithKeycard failed: " + result);
+        }
     }
 
     @ReactMethod

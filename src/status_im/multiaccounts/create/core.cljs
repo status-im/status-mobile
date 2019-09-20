@@ -161,27 +161,46 @@
       :path       constants/path-whisper
       :chat       true})])
 
+(fx/defn save-account-and-login-with-keycard
+  [_ multiaccount-data password node-config chat-key]
+  {::save-account-and-login-with-keycard [(types/clj->json multiaccount-data)
+                                          password
+                                          node-config
+                                          chat-key]})
+
+(fx/defn save-account-and-login
+  [_ multiaccount-data password node-config accounts-data]
+  {::save-account-and-login [(types/clj->json multiaccount-data)
+                             password
+                             node-config
+                             (types/clj->json accounts-data)]})
+
 (fx/defn on-multiaccount-created
   [{:keys [signing-phrase random-guid-generator db] :as cofx}
-   {:keys [address publicKey keycard-instance-uid keycard-key-uid keycard-pairing keycard-paired-on mnemonic] :as multiaccount}
+   {:keys [address chat-key keycard-instance-uid keycard-key-uid keycard-pairing keycard-paired-on mnemonic] :as multiaccount}
    password
    {:keys [seed-backed-up? login?] :or {login? true}}]
   (let [[wallet-account {:keys [publicKey]} :as accounts-data] (prepare-accounts-data multiaccount)
         name (gfycat/generate-gfy publicKey)
         photo-path (identicon/identicon publicKey)
         multiaccount-data {:name name :address address :photo-path photo-path}
-        new-multiaccount       {:address         address
-                                :name            name
-                                :photo-path      photo-path
-                                :public-key      publicKey
+        new-multiaccount (cond-> {:address             address
+                                  :name                name
+                                  :photo-path          photo-path
+                                  :public-key          publicKey
 
-                                :latest-derived-path 0
-                                :accounts [wallet-account]
-                                :signing-phrase  signing-phrase
+                                  :latest-derived-path 0
+                                  :accounts            [wallet-account]
+                                  :signing-phrase      signing-phrase
 
-                                :installation-id (random-guid-generator)
-                                :mnemonic        mnemonic
-                                :settings        constants/default-multiaccount-settings}
+                                  :installation-id     (random-guid-generator)
+                                  :mnemonic            mnemonic
+                                  :settings            constants/default-multiaccount-settings}
+
+                           keycard-key-uid (assoc :keycard-instance-uid keycard-instance-uid
+                                                  :keycard-key-uid keycard-key-uid
+                                                  :keycard-pairing keycard-pairing
+                                                  :keycard-paired-on keycard-paired-on))
         db (assoc db
                   :multiaccounts/login {:address      address
                                         :name         name
@@ -195,11 +214,16 @@
     (fx/merge cofx
               {:db (cond-> db
                      seed-backed-up?
-                     (assoc-in [:multiaccount :seed-backed-up?] true))
-               ::save-account-and-login [(types/clj->json multiaccount-data)
-                                         (ethereum/sha3 (security/safe-unmask-data password))
-                                         (node/get-new-config db)
-                                         (types/clj->json accounts-data)]}
+                     (assoc-in [:multiaccount :seed-backed-up?] true))}
+              (if keycard-key-uid
+                (save-account-and-login-with-keycard new-multiaccount
+                                                     password
+                                                     (node/get-new-config db)
+                                                     chat-key)
+                (save-account-and-login multiaccount-data
+                                        (ethereum/sha3 (security/safe-unmask-data password))
+                                        (node/get-new-config db)
+                                        accounts-data))
               (when (:intro-wizard db)
                 (intro-step-forward {})))))
 
@@ -300,3 +324,10 @@
                                   hashed-password
                                   config
                                   accounts-data)))
+(re-frame/reg-fx
+ ::save-account-and-login-with-keycard
+ (fn [[multiaccount-data password config chat-key]]
+   (status/save-account-and-login-with-keycard multiaccount-data
+                                               (security/safe-unmask-data password)
+                                               config
+                                               chat-key)))

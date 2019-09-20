@@ -28,7 +28,7 @@ let
       reactNativeDepsDir = "$NIX_BUILD_TOP/deps"; # Use local writable deps, otherwise (probably due to some interaction between Nix sandboxing and Java) gradle will fail copying directly from the nix store
     in 
       stdenv.mkDerivation {
-        name = "patched-android-gradle-and-npm-modules";
+        name = "status-react-patched-npm-gradle-modules";
         src =
           let path = ./../../../..; # Import the root /android and /mobile/js_files folders clean of any build artifacts
           in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
@@ -149,13 +149,9 @@ let
               'nodeExecutableAndArgs: ["${nodejs}/bin/node"'
 
           # Fix bugs in Hermes usage (https://github.com/facebook/react-native/issues/25601#issuecomment-510856047)
-          # - Make script always include release Hermes VM, as the debug version is currently way too slow in npm package <= 0.1.1 (https://github.com/facebook/hermes/issues/73)
           # - Make PR builds also count as release builds
           # - Fix issue where hermes command is being called with same input/output file
           substituteInPlace ${projectBuildDir}/node_modules/react-native/react.gradle \
-            --replace \
-              'def isRelease = targetName.toLowerCase().contains("release")' \
-              'def isRelease = true' \
             --replace \
               'targetName.toLowerCase().contains("release")' \
               '!targetName.toLowerCase().contains("debug")' \
@@ -170,6 +166,9 @@ let
               commandLine(getHermesCommand(), "-emit-binary", "-out", jsBundleFile, jsBundleFileIn, *hermesFlags)
               ' \
             || exit
+
+          # Remove legacy hermesvm folder (can be removed once we upgrade RN to a version which depends on newer hermes-engine package instead of hermesvm)
+          rm -r ${projectBuildDir}/node_modules/hermesvm
 
           # Patch dependencies which are not yet ported to AndroidX
           npx jetify

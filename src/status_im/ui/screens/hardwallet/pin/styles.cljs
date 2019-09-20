@@ -10,22 +10,21 @@
   {:flex            1
    :flex-direction  :column
    :justify-content :space-between
-   :padding-bottom  10
-   :android         {:margin-top 40}
-   :ios             {:margin-top 30}})
+   :android         {:margin-top 10}
+   :ios             {:margin-top 10}})
 
 (defstyle error-container
-  {:android {:margin-top 25}
-   :ios     {:margin-top 28}})
+  {:height  22})
 
 (def error-text
   {:color      colors/red
+   :font-size  15
    :text-align :center})
 
 (defn center-container [title]
   {:flex-direction :column
    :align-items    :center
-   :margin-top     (if title 28 5)})
+   :margin-top     (if title 20 5)})
 
 (def center-title-text
   {:typography :header})
@@ -39,18 +38,20 @@
 (def pin-indicator-container
   {:flex-direction  :row
    :justify-content :space-between
-   :margin-top      30})
+   :margin-top      16})
 
 (def pin-indicator-group-container
   {:flex-direction  :row
    :justify-content :space-between})
 
-(defn pin-indicator [pressed?]
+(defn pin-indicator [pressed? status]
   {:width             8
    :height            8
-   :background-color  (if pressed?
-                        colors/blue
-                        colors/black-transparent)
+   :background-color  (if (= status :error)
+                        colors/red
+                        (if pressed?
+                          colors/blue
+                          colors/black-transparent))
    :border-radius     50
    :margin-horizontal 5})
 

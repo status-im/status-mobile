@@ -1,5 +1,5 @@
 { config, stdenv, stdenvNoCC, callPackage, mkShell,
-  xcodeWrapper, mkFilter, fetchurl, nodejs, bash, zlib, procps,
+  xcodeWrapper, mkFilter, fetchurl, flock, nodejs, bash, zlib, procps,
   status-go, projectNodePackage }:
 
 let
@@ -37,7 +37,11 @@ let
 in {
   inherit xcodeWrapper;
 
-  buildInputs = unique ([ xcodeWrapper procps ] ++ catAttrs "buildInputs" selectedSources);
+  buildInputs = unique ([
+    xcodeWrapper
+    flock # used in reset-node_modules.sh
+    procps
+  ] ++ catAttrs "buildInputs" selectedSources);
   shellHook = ''
     ${status-go.shellHook}
 

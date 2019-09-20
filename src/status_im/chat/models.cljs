@@ -108,24 +108,16 @@
 (fx/defn add-public-chat
   "Adds new public group chat to db"
   [cofx topic]
-  (if config/use-status-go-protocol?
-    {::json-rpc/call [{:method "status_joinPublicChat"
-                       :params [topic]
-                       :on-success
-                       #(log/debug "successfully joined a public chat:" topic)
-                       :on-error
-                       (fn [error]
-                         (log/error "can't join a public chat:" error))}]}
-    (upsert-chat cofx
-                 {:chat-id                        topic
-                  :is-active                      true
-                  :name                           topic
-                  :group-chat                     true
-                  :contacts                       #{}
-                  :public?                        true
-                  :might-have-join-time-messages? true
-                  :unviewed-messages-count        0
-                  :loaded-unviewed-messages-ids   #{}})))
+  (upsert-chat cofx
+               {:chat-id                        topic
+                :is-active                      true
+                :name                           topic
+                :group-chat                     true
+                :contacts                       #{}
+                :public?                        true
+                :might-have-join-time-messages? true
+                :unviewed-messages-count        0
+                :loaded-unviewed-messages-ids   #{}}))
 
 (fx/defn clear-history
   "Clears history of the particular chat"
@@ -163,25 +155,14 @@
 (fx/defn remove-chat
   "Removes chat completely from app, producing all necessary effects for that"
   [{:keys [db now] :as cofx} chat-id]
-  (if config/use-status-go-protocol?
-    (fx/merge cofx
-              {::json-rpc/call [{:method "status_removeChat"
-                                 :params [chat-id]
-                                 :on-success
-                                 #(log/debug "successfully removed a chat:" chat-id)
-                                 :on-error
-                                 (fn [error]
-                                   (log/error "can't remove a chat:" error))}]}
-              (when (not (= (:view-id db) :home))
-                (navigation/navigate-to-cofx :home {})))
-    (fx/merge cofx
-              (mailserver/remove-gaps chat-id)
-              (mailserver/remove-range chat-id)
-              (deactivate-chat chat-id)
-              (clear-history chat-id)
-              (transport.filters/stop-listening chat-id)
-              (when (not (= (:view-id db) :home))
-                (navigation/navigate-to-cofx :home {})))))
+  (fx/merge cofx
+            (mailserver/remove-gaps chat-id)
+            (mailserver/remove-range chat-id)
+            (deactivate-chat chat-id)
+            (clear-history chat-id)
+            (transport.filters/stop-listening chat-id)
+            (when (not (= (:view-id db) :home))
+              (navigation/navigate-to-cofx :home {}))))
 
 (defn- unread-messages-number [chats]
   (apply + (map :unviewed-messages-count chats)))
@@ -266,21 +247,11 @@
   [{:keys [db] :as cofx} chat-id opts]
   ;; don't allow to open chat with yourself
   (when (not= (multiaccounts.model/current-public-key cofx) chat-id)
-    (if config/use-status-go-protocol?
-      (fx/merge cofx
-                {::json-rpc/call [{:method "status_startOneOnOneChat"
-                                   :params [chat-id]
-                                   :on-success
-                                   #(log/debug "successfully started a 1-1 chat with:" chat-id)
-                                   :on-error
-                                   (fn [error]
-                                     (log/error "can't start a 1-1 chat:" error))}]}
-                (navigate-to-chat chat-id opts))
-      (fx/merge cofx
-                (upsert-chat {:chat-id   chat-id
-                              :is-active true})
-                (transport.filters/load-chat chat-id)
-                (navigate-to-chat chat-id opts)))))
+    (fx/merge cofx
+              (upsert-chat {:chat-id   chat-id
+                            :is-active true})
+              (transport.filters/load-chat chat-id)
+              (navigate-to-chat chat-id opts))))
 
 (fx/defn start-public-chat
   "Starts a new public chat"

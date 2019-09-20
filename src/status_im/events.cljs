@@ -759,11 +759,6 @@
    (hardwallet/on-init-card-error cofx error)))
 
 (handlers/register-handler-fx
- :hardwallet.callback/on-install-applet-and-init-card-success
- (fn [cofx [_ secrets]]
-   (hardwallet/on-install-applet-and-init-card-success cofx secrets)))
-
-(handlers/register-handler-fx
  :hardwallet.callback/on-install-applet-and-init-card-error
  (fn [cofx [_ error]]
    (hardwallet/on-install-applet-and-init-card-error cofx error)))
@@ -1024,11 +1019,6 @@
  :hardwallet/generate-mnemonic
  (fn [cofx _]
    (hardwallet/generate-mnemonic cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/generate-and-load-key
- (fn [cofx _]
-   (hardwallet/generate-and-load-key cofx)))
 
 (handlers/register-handler-fx
  :hardwallet.ui/create-pin-button-pressed

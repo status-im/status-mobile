@@ -403,6 +403,18 @@ RCT_EXPORT_METHOD(saveAccountAndLogin:(NSString *)accountData
     NSLog(@"%@", result);
 }
 
+//////////////////////////////////////////////////////////////////// saveAccountAndLoginWithKeycard
+RCT_EXPORT_METHOD(saveAccountAndLoginWithKeycard:(NSString *)accountData
+                  password:(NSString *)password
+                  config:(NSString *)config
+                  chatKey:(NSString *)chatKey) {
+#if DEBUG
+    NSLog(@"SaveAccountAndLoginWithKeycard() method called");
+#endif
+    NSString *finalConfig = [self prepareDirAndUpdateConfig:config];
+    NSString *result = StatusgoSaveAccountAndLoginWithKeycard(accountData, password, finalConfig, chatKey);
+    NSLog(@"%@", result);
+}
 
 //////////////////////////////////////////////////////////////////// login
 RCT_EXPORT_METHOD(login:(NSString *)accountData
@@ -411,7 +423,18 @@ RCT_EXPORT_METHOD(login:(NSString *)accountData
     NSLog(@"Login() method called");
 #endif
     NSString *result = StatusgoLogin(accountData, password);
-    
+    NSLog(@"%@", result);
+}
+
+//////////////////////////////////////////////////////////////////// loginWithKeycard
+RCT_EXPORT_METHOD(loginWithKeycard:(NSString *)accountData
+                  password:(NSString *)password
+                  chatKey:(NSString *)chatKey) {
+#if DEBUG
+    NSLog(@"LoginWithKeycard() method called");
+#endif
+    NSString *result = StatusgoLoginWithKeycard(accountData, password, chatKey);
+
     NSLog(@"%@", result);
 }
 
