@@ -235,14 +235,14 @@
           [token-item token display-symbol]
           (when-not approve?
             [react/view
-             [list-item/list-item
+             [list-item/list-item-with-red-text
               {:type  :small
                :title :t/send-request-amount
                :error amount-error
                :accessories [[acc-text (if amount (str amount) "0")
                               (or display-symbol fee-display-symbol)]]}]
              [separator]])
-          [list-item/list-item
+          [list-item/list-item-with-red-text
            {:type        :small
             :title       :t/network-fee
             :error       gas-error

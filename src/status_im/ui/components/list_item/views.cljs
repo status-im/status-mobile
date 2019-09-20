@@ -405,3 +405,74 @@
                  [accessories-column accessories width])]]
              (when error
                [tooltip/tooltip error styles/error])])))})))
+
+
+(defn list-item-with-red-text
+
+[_]
+(let [width (reagent/atom 0)
+      r-key (name (gensym "list-item"))]
+  (reagent/create-class
+    {:reagent-render
+    (fn
+      [{:keys
+        [react-key type theme container-margin-top container-margin-bottom
+          icon title-prefix title-prefix-width title-prefix-height
+          title title-color-override title-row-accessory
+          title-accessibility-label subtitle subtitle-max-lines
+          subtitle-row-accessory content accessories on-press
+          on-long-press error accessibility-label disabled? selected?]
+        :or {react-key               r-key
+              type                    :default
+              theme                   :default
+              disabled?               false
+              container-margin-top    0
+              container-margin-bottom 0
+              subtitle-max-lines      1}}]
+      (let [title-row-elements
+            {:title                     title
+              :title-color-override      title-color-override
+              :title-accessibility-label title-accessibility-label
+              :title-prefix              title-prefix
+              :title-prefix-width        title-prefix-width
+              :title-prefix-height       title-prefix-height
+              :title-row-accessory       title-row-accessory}
+            subtitle-row-elements
+            {:subtitle               subtitle
+              :subtitle-max-lines     subtitle-max-lines
+              :subtitle-row-accessory subtitle-row-accessory}
+            radio-selected? (and (= theme :selectable) selected?)]
+        ^{:key react-key}
+        (if (= type :divider)
+          divider
+          [react/view {:style     {:margin-top    container-margin-top
+                                    :margin-bottom container-margin-bottom}
+                        :on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}
+            [react/touchable-highlight
+            (cond-> {:on-press       (when (not= theme :selectable) on-press)
+                      :on-press-in    (when (= theme :selectable) on-press)
+                      :on-long-press  on-long-press
+                      :underlay-color colors/gray-transparent-40
+                      :active-opacity (if (= theme :selectable) 1 0.85)
+                      :disabled       (or (not on-press) selected?  disabled?)}
+              accessibility-label
+              (assoc :accessibility-label accessibility-label))
+            [react/view {:style (styles/container type radio-selected?)}
+              (when icon
+                [icon-column icon theme disabled?])
+
+              (when (or title subtitle content)
+                [title-column
+                title-row-elements subtitle-row-elements
+                type icon disabled? theme content accessories])
+
+              (when accessories
+                [accessories-column accessories width])]]
+            (when error
+              
+              [react/view {:align-items :center}
+              [react/text {:style {:color colors/red}}
+                error]]
+              
+
+          )])))})))
