@@ -19,4 +19,11 @@ github-team:
 prchecklist:
   title: Pull Request Checklist
   checklist:
-    - 'Have you updated the documentation, if impacted (e.g. [docs.status.im](https://docs.status.im/docs/build_status.html))?'
+    - '**Docs**: Updated the [documentation](https://status.im/build_status/), if affected'
+    - '**Docs**: Added or updated inline comments explaining intention of the code'
+    - '**Tests**: Ensured that all new UI elements have been assigned accessibility IDs'
+    - '**Tests**: Signaled need for E2E tests with label, if applicable'
+    - '**Tests**: Briefly described what was tested and what platforms were used'
+    - '**UI**: In case of UI changes, ensured that UI matches [Figma](https://www.figma.com/)'
+    - '**UI**: In case of UI changes, requested review from a Core UI designer'
+    - '**UI**: In case of UI changes, included screenshots of implementation'
