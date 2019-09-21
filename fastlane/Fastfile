@@ -11,77 +11,75 @@
 # There are a few env variables defined in the .env file in
 # this directory (fastlane/.env)
 
-
 # unlocks keychain if KEYCHAIN_PASSWORD variable is present
 # (to be used on CI machines)
 def unlock_keychain_if_needed
-    if ENV["KEYCHAIN_PASSWORD"]
-        unlock_keychain(
-            path:"login.keychain",
-            password:ENV["KEYCHAIN_PASSWORD"],
-            set_default: true)
-    end
+  return unless ENV['KEYCHAIN_PASSWORD']
+
+  unlock_keychain(
+    path: 'login.keychain',
+    password: ENV['KEYCHAIN_PASSWORD'],
+    set_default: true
+  )
 end
 
-def curl_upload(url, file, auth, conn_timeout=5, timeout=60, retries=3)
-    rval = sh(
-        "curl",
-        "--silent",
-        "--user", auth,
-        "--write-out", "\nHTTP_CODE:%{http_code}",
-        "--request", "POST",
-        "--header", "Content-Type: application/octet-stream",
-        "--data-binary", "@../#{file}",         # `fastlane` is the cwd so we go one folder up
-        # we retry few times if upload doesn't succeed in sensible time
-        "--retry-connrefused",                  # consider ECONNREFUSED as error too retry
-        "--connect-timeout", conn_timeout.to_s, # max time in sec. for establishing connection 
-        "--max-time", timeout.to_s,             # max time in sec. for whole transfer to take
-        "--retry", retries.to_s,                # number of retries to attempt
-        "--retry-max-time", timeout.to_s,       # same as --max-time but for retries
-        "--retry-delay", "0",                   # an exponential backoff algorithm in sec.
-        url
-    )
-    # We're not using --fail because it suppresses server response
-    if not rval.include? "HTTP_CODE:200"
-        raise "Error:\n#{rval}"
-    end
-    return rval
+def curl_upload(url, file, auth, conn_timeout = 5, timeout = 60, retries = 3)
+  rval = sh(
+    'curl',
+    '--silent',
+    '--user', auth,
+    '--write-out', "\nHTTP_CODE:%{http_code}",
+    '--request', 'POST',
+    '--header', 'Content-Type: application/octet-stream',
+    # we retry few times if upload doesn't succeed in sensible time
+    '--retry-connrefused',                  # consider ECONNREFUSED as error too retry
+    '--data-binary', "@../#{file}",         # `fastlane` is the cwd so we go one folder up
+    '--connect-timeout', conn_timeout.to_s, # max time in sec. for establishing connection
+    '--max-time', timeout.to_s,             # max time in sec. for whole transfer to take
+    '--retry', retries.to_s,                # number of retries to attempt
+    '--retry-max-time', timeout.to_s,       # same as --max-time but for retries
+    '--retry-delay', '0',                   # an exponential backoff algorithm in sec.
+    url
+  )
+  # We're not using --fail because it suppresses server response
+  raise "Error:\n#{rval}" unless rval.include? 'HTTP_CODE:200'
+
+  rval
 end
 
-def retry_curl_upload(url, file, auth, conn_timeout=5, timeout=60, retries=3)
-    # since curl doesn't retry on connection and operation timeouts we roll our own
-    try = 0
+def retry_curl_upload(url, file, auth, conn_timeout = 5, timeout = 60, retries = 3)
+  # since curl doesn't retry on connection and operation timeouts we roll our own
+  (1..retries).each do |try|
     begin
-        return curl_upload(url, file, auth, conn_timeout, timeout, retries)
-    rescue => error
-        try += 1
-        if try <= retries
-            UI.important "Warning: Retrying cURL upload! (attempt #{try}/#{retries})"
-            retry
-        else
-            UI.error "Error:\n#{error}"
-            raise
-        end
+      return curl_upload(url, file, auth, conn_timeout, timeout, retries)
+    rescue StandardError => e
+      if try == retries
+        UI.error "Error:\n#{e}"
+        raise
+      end
+      UI.important "Warning: Retrying cURL upload! (attempt #{try}/#{retries})"
     end
+  end
 end
 
 # uploads `file` to sauce labs (overwrites if there is anoter file from the
 # same commit)
 def upload_to_saucelabs(file)
-    key = ENV["SAUCE_ACCESS_KEY"]
-    username = ENV["SAUCE_USERNAME"]
-    unique_name = ENV["SAUCE_LABS_NAME"]
+  key = ENV['SAUCE_ACCESS_KEY']
+  username = ENV['SAUCE_USERNAME']
+  unique_name = ENV['SAUCE_LABS_NAME']
 
-    url = "https://saucelabs.com/rest/v1/storage/#{username}/#{unique_name}?overwrite=true"
+  url = "https://saucelabs.com/rest/v1/storage/#{username}/#{unique_name}?overwrite=true"
 
-    upload_result = retry_curl_upload(url, file, "#{username}:#{key}")
+  upload_result = retry_curl_upload(url, file, "#{username}:#{key}")
 
-    # fail the lane if upload fails
+  # fail the lane if upload fails
+  unless upload_result.include? 'filename'
     UI.user_error!(
-        "failed to upload file to saucelabs despite retries: #{upload_result}"
-    ) unless upload_result.include? "filename"
+      "failed to upload file to saucelabs despite retries: #{upload_result}"
+    )
+  end
 end
-
 
 # builds an ios app with ad-hoc configuration and put it
 # to "status-adhoc" output folder
@@ -89,243 +87,226 @@ end
 #    if true  - only fetch existing certificates and profiles, don't upgrade from AppStoreConnect
 #    if false - read list of devices from AppStoreConnect, and upgrade the provisioning profiles from it
 def build_ios_adhoc(readonly)
-    match(
-        type: "adhoc",
-        force_for_new_devices: true,
-        readonly: readonly,
-        keychain_name: "login.keychain"
-    )
+  match(
+    type: 'adhoc',
+    force_for_new_devices: true,
+    readonly: readonly,
+    keychain_name: 'login.keychain'
+  )
 
-    build_ios_app(
-        scheme: "StatusIm",
-        workspace: "ios/StatusIm.xcworkspace",
-        configuration: "Release",
-        clean: true,
-        export_method: "ad-hoc",
-        # Temporary fix for Xcode 10.1
-        xcargs: "-UseModernBuildSystem=N",
-        output_directory: "status-adhoc",
-        export_options: {
-            "UseModernBuildSystem": "N"
-        }
-    )
+  build_ios_app(
+    scheme: 'StatusIm',
+    workspace: 'ios/StatusIm.xcworkspace',
+    configuration: 'Release',
+    clean: true,
+    export_method: 'ad-hoc',
+    output_directory: 'status-adhoc'
+  )
 end
 
 # builds an ios app with e2e configuration and put it
 # to "status-e2e" output folder
 def build_ios_e2e
+  # determine a simulator SDK installed
+  showsdks_output = sh('xcodebuild', '-showsdks')
+  simulator_sdk = showsdks_output.scan(/iphonesimulator\d\d?\.\d\d?/).first
 
-    # determine a simulator SDK installed
-    showsdks_output = sh('xcodebuild', '-showsdks')
-    simulator_sdk = showsdks_output.scan(/iphonesimulator\d\d?\.\d\d?/).first
+  match(
+    type: 'adhoc',
+    force_for_new_devices: true,
+    readonly: true,
+    keychain_name: 'login.keychain'
+  )
 
-    match(
-        type: "adhoc",
-        force_for_new_devices: true,
-        readonly: true,
-        keychain_name: "login.keychain"
-    )
+  build_ios_app(
+    # Creating a build for the iOS Simulator
+    # 1. https://medium.com/rocket-fuel/fastlane-to-the-simulator-87549b2601b9
+    sdk: simulator_sdk,
+    destination: 'generic/platform=iOS Simulator',
+    # 2. fixing compilations issues as stated in https://stackoverflow.com/a/20505258
+    #    it looks like i386 isn't supported by React Native
+    xcargs: 'ARCHS="x86_64" ONLY_ACTIVE_ARCH=NO',
+    # 3. directory where to up StatusIm.app
+    derived_data_path: 'status-e2e',
+    output_name: 'StatusIm.app',
+    # -------------------------------------
+    # Normal stuff
+    scheme: 'StatusIm',
+    workspace: 'ios/StatusIm.xcworkspace',
+    configuration: 'Release',
+    # Simulator apps can't be archived...
+    skip_archive: true,
+    # ...and we don't need an .ipa file for them, because we use .app directly
+    skip_package_ipa: true
+  )
 
-
-    build_ios_app(
-        # Creating a build for the iOS Simulator
-        # 1. https://medium.com/rocket-fuel/fastlane-to-the-simulator-87549b2601b9
-        sdk: simulator_sdk,
-        destination: "generic/platform=iOS Simulator",
-        # 2. fixing compilations issues as stated in https://stackoverflow.com/a/20505258
-        #    it looks like i386 isn't supported by React Native
-        # UseModernBuildSystem: Temporary fix for Xcode 10.1
-        xcargs: "ARCHS=\"x86_64\" ONLY_ACTIVE_ARCH=NO -UseModernBuildSystem=N",
-        # 3. directory where to up StatusIm.app
-        derived_data_path: "status-e2e",
-        output_name: "StatusIm.app",
-        # -------------------------------------
-        # Normal stuff
-        scheme: "StatusIm",
-        workspace: "ios/StatusIm.xcworkspace",
-        configuration: "Release",
-        # Simulator apps can't be archived...
-        skip_archive: true,
-        # ...and we don't need an .ipa file for them, because we use .app directly
-        skip_package_ipa: true,
-        export_options: {
-            "UseModernBuildSystem": "N"
-        }
-    )
-
-    zip(
-        path: "status-e2e/Build/Products/Release-iphonesimulator/StatusIm.app",
-        output_path: "status-e2e/StatusIm.app.zip",
-        verbose: false,
-    )
+  zip(
+    path: 'status-e2e/Build/Products/Release-iphonesimulator/StatusIm.app',
+    output_path: 'status-e2e/StatusIm.app.zip',
+    verbose: false
+  )
 end
 
 def upload_to_diawi(source)
-    diawi(
-        file: source,
-        last_hope_attempts_count: 3,
-        token: ENV["DIAWI_TOKEN"]
-    )
-    # save the URL to a file for use in CI
-    File.write("diawi.out", lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI])
+  diawi(
+    file: source,
+    last_hope_attempts_count: 3,
+    token: ENV['DIAWI_TOKEN']
+  )
+  # save the URL to a file for use in CI
+  File.write('diawi.out', lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI])
 end
 
-
 platform :ios do
-  desc "`fastlane ios adhoc` - ad-hoc lane for iOS."
-  desc "This lane is used for PRs, Releases, etc."
-  desc "It creates an .ipa that can be used by a list of devices, registeded in the App Store Connect."
-  desc "This .ipa is ready to be distibuted through diawi.com"
+  desc '`fastlane ios adhoc` - ad-hoc lane for iOS.'
+  desc 'This lane is used for PRs, Releases, etc.'
+  desc 'It creates an .ipa that can be used by a list of devices, registeded in the App Store Connect.'
+  desc 'This .ipa is ready to be distibuted through diawi.com'
   lane :adhoc do
     unlock_keychain_if_needed
     build_ios_adhoc(true)
   end
 
-  desc "`fastlane ios e2e` - e2e lane for iOS."
-  desc "This lane is used for SauceLabs end-to-end testing."
-  desc "It creates an .app that can be used inside of a iPhone simulator."
+  desc '`fastlane ios e2e` - e2e lane for iOS.'
+  desc 'This lane is used for SauceLabs end-to-end testing.'
+  desc 'It creates an .app that can be used inside of a iPhone simulator.'
   lane :e2e do
     unlock_keychain_if_needed
     build_ios_e2e
   end
 
-  desc "`fastlane ios pr` - makes a new pr build"
-  desc "This lane builds a new adhoc build and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
+  desc '`fastlane ios pr` - makes a new pr build'
+  desc 'This lane builds a new adhoc build and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)'
   lane :pr do
     unlock_keychain_if_needed
     build_ios_adhoc(false)
   end
 
-  desc "`fastlane ios nightly` - makes a new nightly"
-  desc "This lane builds a new nightly and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)"
+  desc '`fastlane ios nightly` - makes a new nightly'
+  desc 'This lane builds a new nightly and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)'
   lane :nightly do
     unlock_keychain_if_needed
     build_ios_adhoc(false)
   end
 
-  desc "`fastlane ios release` builds a release & uploads it to TestFlight"
+  desc '`fastlane ios release` builds a release & uploads it to TestFlight'
   lane :release do
     match(
-        type: "appstore",
-        readonly: true,
-        keychain_name: "login.keychain"
+      type: 'appstore',
+      readonly: true,
+      keychain_name: 'login.keychain'
     )
 
     build_ios_app(
-        scheme: "StatusIm",
-        workspace: "ios/StatusIm.xcworkspace",
-        configuration: "Release",
-        clean: true,
-        export_method: "app-store",
-        output_directory: "status_appstore",
-        include_symbols: false,
-        # Temporary fix for Xcode 10.1
-        xcargs: "-UseModernBuildSystem=N",
-        export_options: {
-            "UseModernBuildSystem": "N",
-            "combileBitcode": true,
-            "uploadBitcode": false,
-            "ITSAppUsesNonExemptEncryption": false
-        }
+      scheme: 'StatusIm',
+      workspace: 'ios/StatusIm.xcworkspace',
+      configuration: 'Release',
+      clean: true,
+      export_method: 'app-store',
+      output_directory: 'status_appstore',
+      include_symbols: false,
+      export_options: {
+        "combileBitcode": true,
+        "uploadBitcode": false,
+        "ITSAppUsesNonExemptEncryption": false
+      }
     )
     upload_to_testflight(
-        ipa: "status_appstore/StatusIm.ipa"
+      ipa: 'status_appstore/StatusIm.ipa'
     )
   end
 
-  desc "`fastlane ios clean` - remove inactive TestFlight users"
+  desc '`fastlane ios clean` - remove inactive TestFlight users'
   lane :clean do
     clean_testflight_testers(
-      username: ENV["FASTLANE_APPLE_ID"],
+      username: ENV['FASTLANE_APPLE_ID'],
       days_of_inactivity: 30,
-      oldest_build_allowed: 2019032709
+      oldest_build_allowed: 2_019_032_709
     )
   end
 
-  desc "`fastlane ios upload-diawi` - upload .ipa to diawi"
-  desc "expects to have an .ipa prepared: `status-adhoc/StatusIm.ipa`"
-  desc "expects to have a diawi token as DIAWI_TOKEN env variable"
-  desc "expects to have a github token as GITHUB_TOKEN env variable"
+  desc '`fastlane ios upload-diawi` - upload .ipa to diawi'
+  desc 'expects to have an .ipa prepared: `status-adhoc/StatusIm.ipa`'
+  desc 'expects to have a diawi token as DIAWI_TOKEN env variable'
+  desc 'expects to have a github token as GITHUB_TOKEN env variable'
   desc "will fails if file isn't there"
-  desc "---"
-  desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
+  desc '---'
+  desc 'Output: writes `fastlane/diawi.out` file url of the uploded file'
   lane :upload_diawi do
-    ipa = ENV["DIAWI_IPA"] || "status-adhoc/StatusIm.ipa"
+    ipa = ENV['DIAWI_IPA'] || 'status-adhoc/StatusIm.ipa'
     upload_to_diawi(ipa)
   end
 
-  desc "`fastlane ios saucelabs` - upload .app to sauce labs"
-  desc "also notifies in a GitHub comments"
-  desc "expects to have an .apk prepared: `result/app.apk`"
-  desc "expects to have a saucelabs access key as SAUCE_ACCESS_KEY env variable"
-  desc "expects to have a saucelabs username token as SAUCE_USERNAME env variable"
-  desc "expects to have a saucelabs destination name as SAUCE_LABS_NAME env variable"
+  desc '`fastlane ios saucelabs` - upload .app to sauce labs'
+  desc 'also notifies in a GitHub comments'
+  desc 'expects to have an .apk prepared: `result/app.apk`'
+  desc 'expects to have a saucelabs access key as SAUCE_ACCESS_KEY env variable'
+  desc 'expects to have a saucelabs username token as SAUCE_USERNAME env variable'
+  desc 'expects to have a saucelabs destination name as SAUCE_LABS_NAME env variable'
   desc "will fails if file isn't there"
   lane :saucelabs do
     upload_to_saucelabs(
-        "status-e2e/StatusIm.app.zip"
+      'status-e2e/StatusIm.app.zip'
     )
   end
 
-  desc "This fastlane step cleans up XCode DerivedData folder"
+  desc 'This fastlane step cleans up XCode DerivedData folder'
   lane :cleanup do
     clear_derived_data
   end
 end
 
-
 platform :android do
   # Optional env variables
-  APK_PATH = ENV["APK_PATH"] || "result/app.apk"
+  APK_PATH = ENV['APK_PATH'] || 'result/app.apk'
 
-  desc "Deploy a new internal build to Google Play"
-  desc "expects GOOGLE_PLAY_JSON_KEY environment variable"
+  desc 'Deploy a new internal build to Google Play'
+  desc 'expects GOOGLE_PLAY_JSON_KEY environment variable'
   lane :nightly do
     upload_to_play_store(
-      track: "internal",
+      track: 'internal',
       apk: APK_PATH,
-      json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"]
+      json_key_data: ENV['GOOGLE_PLAY_JSON_KEY']
     )
-
   end
 
-  desc "Deploy a new alpha (public) build to Google Play"
-  desc "expects GOOGLE_PLAY_JSON_KEY environment variable"
+  desc 'Deploy a new alpha (public) build to Google Play'
+  desc 'expects GOOGLE_PLAY_JSON_KEY environment variable'
   lane :release do
     upload_to_play_store(
-      track: "alpha",
+      track: 'alpha',
       apk: APK_PATH,
-      json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"]
+      json_key_data: ENV['GOOGLE_PLAY_JSON_KEY']
     )
   end
 
-  desc "Upload metadata to Google Play."
-  desc "Metadata is always updated when builds are uploaded,"
-  desc "but this action can update metadata without uploading a build."
-  desc "expects GOOGLE_PLAY_JSON_KEY environment variable"
+  desc 'Upload metadata to Google Play.'
+  desc 'Metadata is always updated when builds are uploaded,'
+  desc 'but this action can update metadata without uploading a build.'
+  desc 'expects GOOGLE_PLAY_JSON_KEY environment variable'
   lane :upload_metadata do
     upload_to_play_store(
       skip_upload_apk: true,
-      json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"]
+      json_key_data: ENV['GOOGLE_PLAY_JSON_KEY']
     )
   end
 
-  desc "`fastlane android upload_diawi` - upload .apk to diawi"
-  desc "expects to have an .apk prepared: `result/app.apk`"
-  desc "expects to have a diawi token as DIAWI_TOKEN env variable"
-  desc "expects to have a github token as GITHUB_TOKEN env variable"
+  desc '`fastlane android upload_diawi` - upload .apk to diawi'
+  desc 'expects to have an .apk prepared: `result/app.apk`'
+  desc 'expects to have a diawi token as DIAWI_TOKEN env variable'
+  desc 'expects to have a github token as GITHUB_TOKEN env variable'
   desc "will fails if file isn't there"
-  desc "---"
-  desc "Output: writes `fastlane/diawi.out` file url of the uploded file"
+  desc '---'
+  desc 'Output: writes `fastlane/diawi.out` file url of the uploded file'
   lane :upload_diawi do
     upload_to_diawi(APK_PATH)
   end
 
-  desc "`fastlane android saucelabs` - upload .apk to sauce labs"
-  desc "expects to have an .apk prepared: `result/app.apk`"
-  desc "expects to have a saucelabs access key as SAUCE_ACCESS_KEY env variable"
-  desc "expects to have a saucelabs username token as SAUCE_USERNAME env variable"
-  desc "expects to have a saucelabs destination name as SAUCE_LABS_NAME env variable"
+  desc '`fastlane android saucelabs` - upload .apk to sauce labs'
+  desc 'expects to have an .apk prepared: `result/app.apk`'
+  desc 'expects to have a saucelabs access key as SAUCE_ACCESS_KEY env variable'
+  desc 'expects to have a saucelabs username token as SAUCE_USERNAME env variable'
+  desc 'expects to have a saucelabs destination name as SAUCE_LABS_NAME env variable'
   desc "will fails if file isn't there"
   lane :saucelabs do
     upload_to_saucelabs(APK_PATH)

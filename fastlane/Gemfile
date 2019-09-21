@@ -1,9 +1,9 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-gem "fastlane", ">= 2.127.2"
+gem 'fastlane', '>= 2.127.2'
 
-plugins_path = File.join(File.dirname(__FILE__), 'Pluginfile')
+plugins_path = File.join(__dir__, 'Pluginfile')
 eval_gemfile(plugins_path) if File.exist?(plugins_path)
 
-plugins_path = ENV["FASTLANE_PLUGINFILE_PATH"]
+plugins_path = ENV['FASTLANE_PLUGINFILE_PATH']
 eval_gemfile(plugins_path) if plugins_path
