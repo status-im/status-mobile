@@ -159,6 +159,14 @@
                                                             :pack    pack
                                                             :text    "Update to latest version to see a nice sticker here!"})})))
 
+(fx/defn send-image
+  [{:keys [db] :as cofx} hash current-chat-id]
+  (when-not (string/blank? hash)
+    (chat.message/send-message cofx {:chat-id      current-chat-id
+                                     :content-type constants/content-type-image
+                                     :content      {:chat-id current-chat-id
+                                                    :hash    hash}})))
+
 (fx/defn send-current-message
   "Sends message from current chat input"
   [{{:keys [current-chat-id id->command access-scope->command-id] :as db} :db :as cofx}]

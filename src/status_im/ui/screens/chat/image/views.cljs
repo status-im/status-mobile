@@ -7,7 +7,9 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.screens.chat.image.styles :as styles]
-            [status-im.ui.components.button :as button]))
+            [status-im.ui.components.button :as button]
+            [status-im.utils.utils :as utils]
+            [status-im.i18n :as i18n]))
 
 (defn button [show-image?]
   [react/touchable-highlight
@@ -40,10 +42,18 @@
      [react/view {:align-items :center :justify-content :center}
       (if send-image
         [react/view {:align-items :center}
-         [react/image {:source {:uri send-image} :style {:width 150 :height 150}}]
+         [react/image {:source {:uri (str "data:image/jpeg;base64," send-image)} :style {:width 150 :height 150}}]
          [react/view {:flex-direction :row}
           [button/button {:label :t/cancel :on-press #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:send-image nil}])}]
-          [button/button {:label "Send" :on-press #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:send-image nil}])}]]]
+          [button/button {:label "Send" :on-press #(re-frame/dispatch [:chat.ui/send-image (str "data:image/jpeg;base64," send-image)])}]]]
         [react/view {:flex-direction :row}
-         [button/button {:label "Camera"}]
+         [button/button {:label "Camera" :on-press (fn []
+                                                     (re-frame/dispatch [:request-permissions
+                                                                         {:permissions [:camera]
+                                                                          :on-allowed  #(re-frame/dispatch [:navigate-to :profile-photo-capture])
+                                                                          :on-denied (fn []
+                                                                                       (utils/set-timeout
+                                                                                        #(utils/show-popup (i18n/label :t/error)
+                                                                                                           (i18n/label :t/camera-access-error))
+                                                                                        50))}]))}]
          [button/button {:label "Galery" :on-press #(re-frame/dispatch [:chat.ui/open-image-picker])}]])]]))

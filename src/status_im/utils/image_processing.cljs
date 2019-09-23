@@ -3,7 +3,7 @@
             [status-im.utils.fs :as fs]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
-(defn- resize [path max-width max-height on-resize on-error]
+(defn resize [path max-width max-height on-resize on-error]
   (let [resize-fn (-> rn-dependencies/image-resizer
                       (object/get "default")
                       (object/get "createResizedImage"))]

@@ -37,7 +37,8 @@
                    (.append "file" value))]
     {:http-raw-post (cond-> {:url  ipfs-add-url
                              :body formdata
-                             :timeout-ms 5000
+                             :opts {:headers {"Content-Type" "multipart/form-data"}}
+                             :timeout-ms 15000
                              :success-event-creator
                              (fn [{:keys [status body]}]
                                (if (= 200 status)

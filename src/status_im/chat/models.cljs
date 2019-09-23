@@ -22,7 +22,8 @@
             [status-im.utils.priority-map :refer [empty-message-map]]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]
-            [status-im.utils.image-processing :as image-processing]))
+            [status-im.utils.image-processing :as image-processing]
+            [status-im.ipfs.core :as ipfs]))
 
 (defn- get-chat [cofx chat-id]
   (get-in cofx [:db :chats chat-id]))
@@ -335,7 +336,7 @@
       (let [path (get (js->clj image) "path")
             _ (log/debug path)
             on-success (fn [base64]
-                         (re-frame/dispatch [:chat.ui/set-chat-ui-props {:send-image (str "data:image/jpeg;base64," base64)}]))
+                         (re-frame/dispatch [:chat.ui/set-chat-ui-props {:send-image base64}]))
             on-error (fn [type error]
                        (.log js/console type error))]
         (image-processing/img->base64 path on-success on-error 150 150)))
@@ -345,3 +346,13 @@
   {:events [:chat.ui/open-image-picker]}
   [cofx]
   {:chat-open-image-picker nil})
+
+(fx/defn chat-image-added-to-ipfs
+  {:events [:chat-image-added-to-ipfs]}
+  [cofx ipfs]
+  nil)
+
+(fx/defn send-image
+  {:events [:chat.ui/send-image]}
+  [cofx send-image]
+  (ipfs/add cofx {:value send-image :on-success #(re-frame/dispatch [:chat-image-added-to-ipfs %])}))

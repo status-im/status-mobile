@@ -9,6 +9,7 @@
 
 (def content-type-text "text/plain")
 (def content-type-sticker "sticker")
+(def content-type-image "image")
 (def content-type-status "status")
 (def content-type-command "command")
 (def content-type-command-request "command-request")
