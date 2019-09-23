@@ -52,6 +52,15 @@
                      :params [browser-id]
                      :on-success #()}]})
 
+(fx/defn clear-all-browsers
+  {:events [:browser.ui/clear-all-browsers-pressed]}
+  [{:keys [db]}]
+  {:db             (dissoc db :browser/browsers)
+   ::json-rpc/call (for [browser-id (keys (get db :browser/browsers))]
+                     {:method     "browsers_deleteBrowser"
+                      :params     [browser-id]
+                      :on-success #()})})
+
 (defn update-dapp-name [{:keys [name] :as browser}]
   (assoc browser :dapp? false :name (or name (i18n/label :t/browser))))
 
