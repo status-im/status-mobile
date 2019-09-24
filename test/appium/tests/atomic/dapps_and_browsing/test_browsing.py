@@ -2,6 +2,7 @@ import pytest
 from tests import marks, connection_not_secure_text, connection_is_secure_text
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
+from views.dapps_view import DappsView
 
 
 @pytest.mark.all
@@ -64,18 +65,26 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(5390)
     @marks.high
-    def test_swipe_to_delete_browser_entry(self):
+    def test_long_press_delete_clear_all_dapps(self):
         sign_in = SignInView(self.driver)
         home_view = sign_in.create_user()
-        daap_view = home_view.dapp_tab_button.click()
-        browsing_view = daap_view.open_url('google.com')
+        dapp_view = home_view.dapp_tab_button.click()
+        browsing_view = dapp_view.open_url('google.com')
         browsing_view.cross_icon.click()
-        browser_entry = daap_view.get_browser_entry('Google')
-        browser_entry.scroll_to_element()
-        browser_entry.swipe_and_delete()
+        dapp_view = DappsView(self.driver)
+        browser_entry = dapp_view.remove_browser_entry_long_press('Google')
         home_view.relogin()
+        home_view.dapp_tab_button.click()
         if browser_entry.is_element_present(20):
-            self.driver.fail('The browser entry is present after re-login')
+            self.errors.append('The browser entry is present after re-login')
+        for entry in ('google.com', 'status.im'):
+            browsing_view = dapp_view.open_url(entry)
+            browsing_view.cross_icon.click()
+        dapp_view.remove_browser_entry_long_press('Google', clear_all=True)
+        home_view.relogin()
+        home_view.dapp_tab_button.click()
+        if not dapp_view.element_by_text('Browsed websites will appear here.').is_element_displayed():
+            self.errors.append('Browser history is not empty')
 
     @marks.testrail_id(5320)
     @marks.critical

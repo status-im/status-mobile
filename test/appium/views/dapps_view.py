@@ -40,6 +40,16 @@ class EnsCheckName(BaseButton):
             super(EnsCheckName, self).__init__(driver)
             self.locator = self.Locator.xpath_selector('//android.widget.EditText//following-sibling::android.view.ViewGroup[1]')
 
+class RemoveDappButton(BaseButton):
+    def __init__(self, driver):
+        super(RemoveDappButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('remove-dapp-from-list')
+
+class ClearAllDappButton(BaseButton):
+    def __init__(self, driver):
+        super(ClearAllDappButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('clear-all-dapps')
+
 class DappsView(BaseView):
 
     def __init__(self, driver):
@@ -53,6 +63,11 @@ class DappsView(BaseView):
         self.ens_name = EnsName(self.driver)
         self.check_ens_name = EnsCheckName(self.driver)
 
+        #options on long press
+        self.remove_d_app_button = RemoveDappButton(self.driver)
+        self.clear_all_d_app_button = ClearAllDappButton(self.driver)
+
+
     def open_url(self, url):
         self.enter_url_editbox.click()
         self.enter_url_editbox.send_keys(url)
@@ -61,3 +76,10 @@ class DappsView(BaseView):
 
     def get_browser_entry(self, name):
         return BrowserEntry(self.driver, name)
+
+    def remove_browser_entry_long_press(self, name, clear_all=False):
+        entry = self.get_browser_entry(name)
+        entry.scroll_to_element()
+        entry.long_press_element()
+        self.clear_all_d_app_button if clear_all else self.remove_d_app_button.click()
+        return entry

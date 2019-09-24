@@ -98,18 +98,6 @@ class ChatElement(BaseButton):
 
         return DeleteButton(self.driver, self.locator.value)
 
-    def swipe_and_delete(self):
-        counter = 0
-        while counter < 3:
-            self.swipe_left_on_element()
-            if self.swipe_delete_button.is_element_present():
-                break
-            time.sleep(3)
-            counter += 1
-        else:
-            raise NoSuchElementException('Unable to swipe and delete - Delete button is not found') from None
-        self.swipe_delete_button.click()
-
     @property
     def new_messages_counter(self):
         class UnreadMessagesCountText(BaseText):
