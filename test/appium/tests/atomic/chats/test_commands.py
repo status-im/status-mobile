@@ -378,7 +378,9 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         chat = home.add_contact(basic_user['public_key'])
         amount = chat.get_unique_amount()
         chat.send_transaction_in_1_1_chat('ETHro', amount, unique_password)
-        chat.check_no_values_in_logcat(password=unique_password)
+        values_in_logcat = chat.find_values_in_logcat(password=unique_password)
+        if values_in_logcat:
+            self.driver.fail(values_in_logcat)
 
     @marks.testrail_id(5347)
     @marks.high

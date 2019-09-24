@@ -122,6 +122,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             self.driver.fail('Transaction was sent with a wrong password')
 
     @marks.testrail_id(1452)
+
     def test_transaction_appears_in_history(self):
         recipient = basic_user
         sign_in_view = SignInView(self.driver)
@@ -169,7 +170,9 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['public_key'])
         send_transaction.done_button.click()
-        send_transaction.find_text_part('Invalid address:', 20)
+        if not send_transaction.find_text_part('Invalid address'):
+            self.driver.fail("Invalid address accepted for input as recipient!")
+        send_transaction.ok_button.click()
 
     @marks.logcat
     @marks.testrail_id(5416)
@@ -194,7 +197,9 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.done_button.click()
         send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction(unique_password)
-        send_transaction.check_no_values_in_logcat(password=unique_password)
+        values_in_logcat = send_transaction.find_values_in_logcat(password=unique_password)
+        if values_in_logcat:
+            self.driver.fail(values_in_logcat)
 
     @marks.testrail_id(5350)
     @marks.critical

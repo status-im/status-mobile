@@ -132,7 +132,10 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
         send_transaction_view.sign_transaction(unique_password)
-        send_transaction_view.check_no_values_in_logcat(password=unique_password)
+        values_in_logcat = send_transaction_view.find_values_in_logcat(password=unique_password)
+        if values_in_logcat:
+            self.driver.fail(values_in_logcat)
+
 
     @marks.logcat
     @marks.testrail_id(5420)
@@ -148,7 +151,9 @@ class TestTransactionDApp(SingleDeviceTestCase):
             send_transaction_view.enter_password_input)
         send_transaction_view.enter_password_input.send_keys(unique_password)
         send_transaction_view.sign_button.click()
-        send_transaction_view.check_no_values_in_logcat(password=unique_password)
+        values_in_logcat = send_transaction_view.find_values_in_logcat(password=unique_password)
+        if values_in_logcat:
+            self.driver.fail(values_in_logcat)
 
     @marks.testrail_id(5372)
     @marks.high

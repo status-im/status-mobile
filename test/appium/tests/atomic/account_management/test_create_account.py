@@ -113,7 +113,9 @@ class TestCreateAccount(SingleDeviceTestCase):
     def test_password_in_logcat_creating_account(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user(password=unique_password)
-        sign_in.check_no_values_in_logcat(password=unique_password)
+        values_in_logcat = sign_in.find_values_in_logcat(password=unique_password)
+        if values_in_logcat:
+            self.driver.fail(values_in_logcat)
 
     @marks.testrail_id(5718)
     @marks.medium

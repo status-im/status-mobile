@@ -592,11 +592,13 @@ class BaseView(object):
                             e.msg = "Device %s: Can't reconnect to mail server after 3 attempts" % self.driver.number
                             raise e
 
-    def check_no_values_in_logcat(self, **kwargs):
+    def find_values_in_logcat(self, **kwargs):
         logcat = self.logcat
+        items_in_logcat = list()
         for key, value in kwargs.items():
             if re.findall('\W%s$|\W%s\W' % (value, value), logcat):
-                pytest.fail('%s in logcat!!!' % key.capitalize(), pytrace=False)
+                items_in_logcat.append('%s in logcat!!!' % key.capitalize())
+        return items_in_logcat
 
     def asset_by_name(self, asset_name):
         return AssetButton(self.driver, asset_name)

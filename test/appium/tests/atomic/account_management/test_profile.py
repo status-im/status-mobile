@@ -194,6 +194,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.find_text_part('custom_ropsten')
 
     @marks.logcat
+    @marks.critical
     @marks.testrail_id(5419)
     def test_logcat_backup_recovery_phrase(self):
         sign_in_view = SignInView(self.driver)
@@ -211,8 +212,10 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.recovery_phrase_word_input.set_value(recovery_phrase[word_number_1])
         profile_view.done_button.click()
         profile_view.yes_button.click()
-        profile_view.check_no_values_in_logcat(passphrase1=recovery_phrase[word_number],
+        values_in_logcat = profile_view.find_values_in_logcat(passphrase1=recovery_phrase[word_number],
                                                passphrase2=recovery_phrase[word_number_1])
+        if len(values_in_logcat) == 2:
+            self.driver.fail(values_in_logcat)
 
     @marks.testrail_id(5391)
     @marks.high

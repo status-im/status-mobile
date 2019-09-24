@@ -47,7 +47,9 @@ class TestSignIn(SingleDeviceTestCase):
         profile = sign_in.profile_button.click()
         profile.logout()
         sign_in.sign_in()
-        sign_in.check_no_values_in_logcat(password=unique_password)
+        values_in_logcat = sign_in.find_values_in_logcat(password=unique_password)
+        if values_in_logcat:
+            self.driver.fail(values_in_logcat)
 
 
 @marks.all
