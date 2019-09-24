@@ -33,7 +33,7 @@
                              (if (get merged-fx k)
                                (if (mergeable-keys k)
                                  (update merged-fx k into v)
-                                 (do (log/error "Merging fx with common-key: " k v)
+                                 (do (log/error "Merging fx with common-key: " k v (get merged-fx k))
                                      (reduced {:merging-fx-with-common-keys k})))
                                (assoc merged-fx k v))))
                          fx

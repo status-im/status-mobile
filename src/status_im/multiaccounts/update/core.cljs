@@ -5,7 +5,8 @@
             [status-im.transport.message.contact :as message.contact]
             [status-im.transport.message.protocol :as protocol]
             [status-im.utils.fx :as fx]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log]))
 
 (fx/defn multiaccount-update-message [{:keys [db] :as cofx}]
   (let [multiaccount (:multiaccount db)
@@ -53,11 +54,15 @@
                            :params ["multiaccount" (types/serialize new-multiaccount)]
                            :on-success on-success}]}
         {:keys [name photo-path prefered-name]} new-multiaccount-fields]
-    (if (or name photo-path prefered-name)
-      (fx/merge cofx
-                fx
-                (send-multiaccount-update))
-      fx)))
+    (if (empty? current-multiaccount)
+      ;; NOTE: this should never happen, but if it does this is a critical error
+      ;; and it is better to crash than risk having an unstable state
+      (throw (js/Error. "Please shake the phone to report this error and restart the app. multiaccount is currently empty, which means something went wrong when trying to update it with"))
+      (if (or name photo-path prefered-name)
+        (fx/merge cofx
+                  fx
+                  (send-multiaccount-update))
+        fx))))
 
 (fx/defn clean-seed-phrase
   "A helper function that removes seed phrase from storage."
@@ -72,8 +77,12 @@
    settings
    {:keys [on-success] :or {on-success #()}}]
   (let [new-multiaccount (assoc multiaccount :settings settings)]
-    {:db (assoc db :multiaccount new-multiaccount)
-     ::json-rpc/call
-     [{:method "settings_saveConfig"
-       :params ["multiaccount" (types/serialize new-multiaccount)]
-       :on-success on-success}]}))
+    (if (empty? multiaccount)
+      ;; NOTE: this should never happen, but if it does this is a critical error
+      ;; and it is better to crash than risk having an unstable state
+      (throw (js/Error. "Please shake the phone to report this error and restart the app. multiaccount is currently empty, which means something went wrong when trying to update settings"))
+      {:db (assoc db :multiaccount new-multiaccount)
+       ::json-rpc/call
+       [{:method "settings_saveConfig"
+         :params ["multiaccount" (types/serialize new-multiaccount)]
+         :on-success on-success}]})))

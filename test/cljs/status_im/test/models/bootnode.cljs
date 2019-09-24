@@ -19,7 +19,7 @@
                         {:random-id-generator   (constantly "some-id")
                          :db {:bootnodes/manage new-bootnode
                               :network          "mainnet_rpc"
-                              :multiaccount  {}}})]
+                              :multiaccount {:not-empty "would throw an error if was empty"}}})]
       (is (= expected (get-in actual [:db :multiaccount :bootnodes])))))
   (testing "adding an existing bootnode"
     (let [new-bootnode {:id   {:value "a"}
