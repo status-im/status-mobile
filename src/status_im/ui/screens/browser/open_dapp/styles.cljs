@@ -1,10 +1,10 @@
 (ns status-im.ui.screens.browser.open-dapp.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as styles]))
+            [status-im.ui.components.styles :as components.styles]
+            [status-im.utils.styles :as styles]))
 
-(defstyle input
-  {:border-radius      styles/border-radius
+(styles/def input
+  {:border-radius      components.styles/border-radius
    :background-color   colors/gray-lighter
    :margin-horizontal  16
    :margin-bottom      9

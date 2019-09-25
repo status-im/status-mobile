@@ -1,6 +1,6 @@
 (ns status-im.ui.components.list.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.styles :as styles]))
 
 (def item
   {:flex-direction     :row
@@ -146,11 +146,11 @@
    base-separator
    {:margin-left 64}))
 
-(defstyle list-header-footer-spacing
+(styles/def list-header-footer-spacing
   {:android {:background-color colors/white
              :height           8}})
 
-(defstyle section-header
+(styles/def section-header
   {:font-size       14
    :color           colors/gray
    :margin-left     16

@@ -1,9 +1,8 @@
 (ns status-im.ui.components.connectivity.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyle]])
   (:require [status-im.ui.components.colors :as colors]
             [status-im.utils.platform :as platform]))
 
-(defnstyle text-wrapper
+(defn text-wrapper
   [{:keys [window-width height background-color opacity transform]}]
   (cond-> {:flex-direction   :row
            :justify-content  :center

@@ -1,17 +1,17 @@
 (ns status-im.ui.screens.bootnodes-settings.edit-bootnode.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.ui.components.styles :as styles]
-            [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :as components.styles]
+            [status-im.utils.styles :as styles]))
 
 (def input-container
   {:flex-direction    :row
    :align-items       :center
    :justify-content   :space-between
-   :border-radius     styles/border-radius
+   :border-radius     components.styles/border-radius
    :height            52
    :margin-top        15})
 
-(defstyle input
+(styles/def input
   {:flex    1
    :android {:padding 0}})
 
@@ -33,7 +33,7 @@
    :margin-bottom     16
    :margin-horizontal 16})
 
-(def button
+(styles/def button
   {:height           52
    :align-items      :center
    :justify-content  :center
@@ -44,11 +44,11 @@
   {:color     colors/white
    :font-size 17})
 
-(defstyle delete-button
+(def delete-button
   (assoc button
          :background-color colors/red))
 
 (def container
   (merge
-   styles/flex
+   components.styles/flex
    {:background-color colors/white}))

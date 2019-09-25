@@ -1,5 +1,4 @@
 (ns status-im.ui.screens.chat.styles.input.suggestions
-  (:require-macros [status-im.utils.styles :refer [defnstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
 (def item-height 52)

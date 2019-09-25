@@ -1,15 +1,15 @@
 (ns status-im.ui.screens.home.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.styles :as styles]))
 
 (defn toolbar []
   {:background-color colors/white})
 
-(defstyle sync-wrapper
+(def sync-wrapper
   {:flex-direction :row})
 
-(defstyle sync-info {:margin-horizontal 15})
+(def sync-info
+  {:margin-horizontal 15})
 
 (def last-message-container
   {:flex-shrink 1})
@@ -39,11 +39,10 @@
    :justify-content  :center
    :border-radius    8})
 
-(def search-input
-  (merge {:flex 1}
-         (when platform/android?
-           {:margin      0
-            :padding     0})))
+(styles/def search-input
+  {:flex 1
+   :android {:margin  0
+             :padding 0}})
 
 (def filter-section-title
   {:margin-left   16
@@ -62,7 +61,7 @@
    :width        16
    :height       16})
 
-(defstyle datetime-text
+(def datetime-text
   {:color          colors/text-gray
    :font-size      10
    :text-align     :right
@@ -70,7 +69,7 @@
    :align-items    :center
    :line-height    12})
 
-(defstyle new-messages-text
+(styles/def new-messages-text
   {:left       0
    :font-size  12
    :color      colors/blue

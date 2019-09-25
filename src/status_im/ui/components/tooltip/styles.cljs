@@ -1,7 +1,6 @@
 (ns status-im.ui.components.tooltip.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as styles]
-            [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.styles :as styles]))
 
 (def tooltip-container
   {:position    :absolute
@@ -10,7 +9,7 @@
    :right       0
    :top         0})
 
-(defstyle bottom-tooltip-container
+(styles/def bottom-tooltip-container
   {:position    :absolute
    :align-items :center
    :left        12

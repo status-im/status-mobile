@@ -1,5 +1,4 @@
 (ns status-im.ui.screens.add-new.new-public-chat.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
 (def group-chat-name-input

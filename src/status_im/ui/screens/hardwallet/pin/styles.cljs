@@ -1,19 +1,19 @@
 (ns status-im.ui.screens.hardwallet.pin.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.styles :as styles]))
 
 (def container
   {:flex             1
    :background-color colors/white})
 
-(defstyle pin-container
+(styles/def pin-container
   {:flex            1
    :flex-direction  :column
    :justify-content :space-between
    :android         {:margin-top 10}
    :ios             {:margin-top 10}})
 
-(defstyle error-container
+(styles/def error-container
   {:height  22})
 
 (def error-text

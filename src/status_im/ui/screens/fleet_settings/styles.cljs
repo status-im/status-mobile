@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.fleet-settings.styles
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform])
-  (:require-macros [status-im.utils.styles :refer [defstyle]]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.styles :as styles]))
 
 (def wrapper
   {:flex             1
@@ -10,7 +10,7 @@
 (def fleet-item-inner
   {:padding-horizontal 16})
 
-(defstyle fleet-item
+(styles/def fleet-item
   {:flex-direction     :row
    :background-color   :white
    :align-items        :center
@@ -21,7 +21,7 @@
 (def fleet-item-name-text
   {:font-size 17})
 
-(defstyle fleet-item-connected-text
+(def fleet-item-connected-text
   {:color      colors/gray
    :font-size  14
    :margin-top 6})

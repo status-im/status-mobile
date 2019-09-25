@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.bootnodes-settings.styles
-  (:require [status-im.ui.components.colors :as colors])
-  (:require-macros [status-im.utils.styles :refer [defstyle]]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.styles :as styles]))
 
 (def wrapper
   {:flex             1
@@ -9,7 +9,7 @@
 (def bootnode-item-inner
   {:padding-horizontal 16})
 
-(defstyle bootnode-item
+(styles/def bootnode-item
   {:flex-direction     :row
    :background-color   :white
    :align-items        :center
@@ -20,7 +20,7 @@
 (def bootnode-item-name-text
   {:font-size   17})
 
-(defstyle switch-container
+(def switch-container
   {:height           50
    :background-color colors/white
    :padding-left     15})

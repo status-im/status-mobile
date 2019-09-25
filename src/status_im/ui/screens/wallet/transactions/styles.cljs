@@ -1,9 +1,9 @@
 (ns status-im.ui.screens.wallet.transactions.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.tabbar.styles :as tabs.styles]))
+            [status-im.ui.components.tabbar.styles :as tabs.styles]
+            [status-im.utils.styles :as styles]))
 
-(defnstyle tab [active?]
+(defn tab [active?]
   {:flex                1
    :height              tabs.styles/tab-height
    :justify-content     :center
@@ -38,7 +38,7 @@
    :margin-top        22
    :margin-horizontal 92})
 
-(defstyle amount-time
+(styles/def amount-time
   {:flex-direction  :row
    :justify-content :space-between
    :padding-right   22

@@ -1,5 +1,4 @@
 (ns status-im.ui.screens.multiaccounts.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
   (:require [status-im.ui.components.styles :as common]
             [status-im.ui.components.colors :as colors]))
 
@@ -21,11 +20,11 @@
   {:color     :black
    :font-size 17})
 
-(defstyle multiaccounts-list-container
+(def multiaccounts-list-container
   {:flex             1
    :padding-bottom 8})
 
-(defstyle multiaccount-view
+(def multiaccount-view
   {:background-color   :white
    :flex-direction     :row
    :align-items        :center

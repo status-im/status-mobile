@@ -1,12 +1,12 @@
 (ns status-im.ui.screens.currency-settings.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.styles :as styles]))
 
 (def wrapper
   {:flex             1
    :background-color :white})
 
-(defstyle currency-item
+(styles/def currency-item
   {:flex-direction     :row
    :justify-content    :space-between
    :background-color   :white

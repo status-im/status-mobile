@@ -7,7 +7,7 @@
   {:flex             1
    :background-color :white})
 
-(styles/defstyle barcode-scanner
+(styles/def barcode-scanner
   {:flex      1
    :elevation -10
    :android {:marginTop 10}})

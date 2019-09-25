@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.add-new.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as styles]))
+            [status-im.ui.components.styles :as components.styles]
+            [status-im.utils.styles :as styles]))
 
 (def new-chat-container
   {:flex-direction :row
@@ -10,7 +10,7 @@
 (def input-container
   {:flex-direction    :row
    :align-items       :center
-   :border-radius     styles/border-radius
+   :border-radius     components.styles/border-radius
    :height            52
    :background-color  colors/gray-lighter
    :margin-horizontal 14
@@ -25,7 +25,7 @@
 
 (def button-container
   {:justify-content    :center
-   :border-radius      styles/border-radius
+   :border-radius      components.styles/border-radius
    :height             52
    :background-color   colors/gray-lighter
    :padding-horizontal 15
@@ -33,7 +33,7 @@
    :margin-left        3
    :margin-top         24})
 
-(defnstyle input [w]
+(styles/defn input [w]
   {:padding-horizontal 14
    :width              w
    :desktop            {:height 30

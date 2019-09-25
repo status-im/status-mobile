@@ -12,6 +12,8 @@ The general fix for that type of issue is to have two files for the namespace wh
 
 That way you don't need to use any magical call like `find-ns` or inline `require` with some kind of call only once switch (which was the root cause of another bug in ``defstyle`` macro because the compilation phase at which the evaluation of the switch is done was not properly considered).
 
+You also want to make sure users are using the macro by using a aliased namespace defined in require statement rather than require-macro and refer to the macro directly. Otherwise it won't require the cljs file and the require statement of the namespace in the macroexpension might not be there.
+
 ## Stacktrace
 
 ```

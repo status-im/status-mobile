@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.profile.components.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.ui.components.styles :as styles]
-            [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.styles :as styles]))
 
 ;; profile header elements
 
@@ -14,21 +13,21 @@
   {:flex-direction  :column
    :justify-content :center})
 
-(defstyle profile-name-text
+(def profile-name-text
   {:typography      :header
    :line-height     28
    :text-align      :left})
 
-(defstyle profile-name-text-with-subtitle
+(def profile-name-text-with-subtitle
   {:margin-vertical 5
    :typography      :header
    :line-height     28
    :text-align      :left})
 
-(defstyle profile-three-words
+(def profile-three-words
   {:color       colors/gray})
 
-(defstyle profile-name-input-text
+(styles/def profile-name-input-text
   {:text-align :center
    :flex       1
    :desktop    {:height 20

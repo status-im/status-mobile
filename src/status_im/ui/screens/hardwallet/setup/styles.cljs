@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.hardwallet.setup.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.styles :as styles]))
 
 (def container
   {:flex             1
@@ -249,7 +249,7 @@
    :text-align          :center
    :border-color        colors/gray-lighter})
 
-(defstyle puk-code-numbers-inner-container
+(styles/def puk-code-numbers-inner-container
   {:width           "85%"
    :android         {:margin-horizontal 16}
    :height          94

@@ -1,7 +1,7 @@
 (ns status-im.ui.components.text-input.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as p]))
+            [status-im.utils.platform :as p]
+            [status-im.utils.styles :as styles]))
 
 (defn label [editable]
   (merge
@@ -19,7 +19,7 @@
      {:border-color colors/gray-lighter
       :border-width 1})))
 
-(defstyle input
+(styles/def input
   {:padding             0
    :text-align-vertical :top
    :desktop             {:height 52}})

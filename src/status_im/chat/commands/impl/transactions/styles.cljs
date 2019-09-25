@@ -1,5 +1,4 @@
 (ns status-im.chat.commands.impl.transactions.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
 (def asset-container

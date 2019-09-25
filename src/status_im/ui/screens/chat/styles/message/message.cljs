@@ -1,9 +1,9 @@
 (ns status-im.ui.screens.chat.styles.message.message
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.colors :as colors]
+  (:require [status-im.constants :as constants]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.chat.styles.photos :as photos]
             [status-im.utils.platform :as platform]
-            [status-im.constants :as constants]))
+            [status-im.utils.styles :as styles]))
 
 (defn style-message-text
   [outgoing]
@@ -132,7 +132,7 @@
          :line-height 22
          :margin-bottom (if collapsed? 2 0)))
 
-(defnstyle emoji-message
+(styles/defn emoji-message
   [{:keys [incoming-group]}]
   {:font-size 40
    :desktop   {:line-height 46}

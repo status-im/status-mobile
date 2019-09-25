@@ -1,5 +1,4 @@
 (ns status-im.ui.screens.browser.site-blocked.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
 (def container

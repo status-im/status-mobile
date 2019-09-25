@@ -1,11 +1,11 @@
 (ns status-im.ui.screens.multiaccounts.recover.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.styles :as styles]))
 
 (def screen-container
   {:flex 1})
 
-(defstyle inputs-container
+(styles/def inputs-container
   {:margin  16
    :desktop {:padding-top 15}})
 

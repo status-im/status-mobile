@@ -1,8 +1,8 @@
 (ns status-im.ui.components.tabbar.styles
-  (:require [status-im.ui.components.colors :as colors]
+  (:require [status-im.ui.components.animation :as animation]
+            [status-im.ui.components.colors :as colors]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.animation :as animation])
-  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]]))
+            [status-im.utils.styles :as styles]))
 
 (def tabs-height
   (cond
@@ -31,7 +31,7 @@
    :justify-content :center
    :align-items     :center})
 
-(defnstyle tab-title [active?]
+(styles/defn tab-title [active?]
   {:ios        {:font-size 11}
    :android    {:font-size 11}
    :desktop    {:font-size   12
@@ -79,7 +79,7 @@
   {:color     (if active? colors/blue colors/gray)
    :font-size 11})
 
-(defstyle new-tabs-container
+(styles/def new-tabs-container
   {:height     tabs-height
    :align-self :stretch
    :ios        {:background-color :white

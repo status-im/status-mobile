@@ -1,13 +1,11 @@
 (ns status-im.ui.screens.multiaccounts.login.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.ui.components.styles :as st]
-            [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]))
 
-(defstyle login-view
+(def login-view
   {:flex              1
    :margin-horizontal 16})
 
-(defstyle login-badge-container
+(def login-badge-container
   {:margin-top 24})
 
 (def processing-view

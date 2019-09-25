@@ -1,6 +1,7 @@
-(ns status-im.utils.styles)
+(ns status-im.utils.styles
+  (:refer-clojure :exclude [defn def]))
 
-(defn body [style]
+(defn- body [style]
   `(let [style#            ~style
          common#            (dissoc style# :android :ios :desktop)
          platform#          (keyword status-im.utils.platform/os)
@@ -9,7 +10,7 @@
        (merge common# platform-specific#)
        common#)))
 
-(defmacro defstyle
+(defmacro def
   "Defines style symbol.
    Style parameter may contain platform specific style:
    {:width   100
@@ -29,7 +30,7 @@
   `(def ~style-name
      ~(body style)))
 
-(defmacro defnstyle
+(defmacro defn
   "Defines style function.
    Style parameter may contain platform specific style:
    {:width   100
@@ -46,6 +47,6 @@
     {:width  100
      :height 5}"
   [style-name params style]
-  `(defn ~style-name
+  `(clojure.core/defn ~style-name
      [~@params]
      ~(body style)))

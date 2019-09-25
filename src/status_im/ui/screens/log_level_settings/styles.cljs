@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.log-level-settings.styles
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform])
-  (:require-macros [status-im.utils.styles :refer [defstyle]]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.styles :as styles]))
 
 (def wrapper
   {:flex             1
@@ -10,7 +10,7 @@
 (def log-level-item-inner
   {:padding-horizontal 16})
 
-(defstyle log-level-item
+(styles/def log-level-item
   {:flex-direction     :row
    :background-color   :white
    :align-items        :center

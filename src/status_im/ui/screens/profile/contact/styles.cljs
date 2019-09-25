@@ -1,5 +1,4 @@
 (ns status-im.ui.screens.profile.contact.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
 (def action-container

@@ -1,8 +1,7 @@
 (ns status-im.ui.screens.pairing.styles
-  (:require
-   [status-im.ui.components.styles :as styles]
-   [status-im.ui.components.colors :as colors])
-  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.styles :as components.styles]
+            [status-im.utils.styles :as styles]))
 
 (def wrapper
   {:flex             1
@@ -12,7 +11,7 @@
   {:flex           1
    :flex-direction :row})
 
-(defstyle installation-item
+(styles/def installation-item
   {:flex-direction   :row
    :background-color :white
    :align-items      :center
@@ -73,7 +72,7 @@
   {:color         colors/blue
    :margin-bottom 6})
 
-(defnstyle pairing-button-icon [enabled?]
+(styles/defn pairing-button-icon [enabled?]
   (let [color (if enabled?
                 colors/blue
                 colors/gray)]
@@ -94,10 +93,10 @@
   {:flex-direction    :row
    :align-items       :center
    :justify-content   :space-between
-   :border-radius     styles/border-radius
+   :border-radius     components.styles/border-radius
    :height            52
    :margin-top        15})
 
-(defstyle input
+(styles/def input
   {:flex    1
    :android {:padding 0}})

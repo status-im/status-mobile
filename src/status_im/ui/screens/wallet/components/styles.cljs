@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.components.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as styles]))
+            [status-im.ui.components.styles :as components.styles]))
 
 (def cartouche-container
   {:flex              1
@@ -12,7 +11,7 @@
   (merge
    {:flex-direction :row
     :margin-top     8
-    :border-radius  styles/border-radius
+    :border-radius  components.styles/border-radius
     :padding-left   14
     :padding-right  8}
    (if disabled?
@@ -101,7 +100,7 @@
 (def asset-text
   {:color colors/white})
 
-(defstyle container-disabled
+(def container-disabled
   {:border-width     1
    :border-color     colors/white-transparent-10
    :border-radius    8})

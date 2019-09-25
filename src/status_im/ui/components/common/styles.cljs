@@ -1,11 +1,11 @@
 (ns status-im.ui.components.common.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.styles :as styles]))
 
 (def separator-wrapper
   {:background-color colors/white})
 
-(defstyle separator
+(styles/def separator
   {:android {:height 0}
    :ios     {:height           1
              :background-color colors/black-transparent

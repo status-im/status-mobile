@@ -1,9 +1,8 @@
 (ns status-im.ui.screens.chat.styles.message.options
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as styles]
-            [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.styles :as styles]))
 
-(defstyle row
+(styles/def row
   {:flex-direction     :row
    :background-color   :white
    :align-items        :center

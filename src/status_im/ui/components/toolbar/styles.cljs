@@ -1,5 +1,4 @@
 (ns status-im.ui.components.toolbar.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
 (def toolbar-height 56)
@@ -40,7 +39,7 @@
 (def item-text
   {:color colors/blue})
 
-(defstyle item-text-action
+(def item-text-action
   {:color colors/blue})
 
 (def toolbar-text-action-disabled

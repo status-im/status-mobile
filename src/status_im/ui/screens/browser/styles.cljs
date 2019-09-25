@@ -1,10 +1,10 @@
 (ns status-im.ui.screens.browser.styles
-  (:require [status-im.ui.components.colors :as colors])
-  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.styles :as styles]))
 
 (def browser {:flex 1})
 
-(defstyle dapp-name
+(styles/def dapp-name
   {:flex            1
    :justify-content :center
    :margin-left     12
@@ -13,7 +13,7 @@
 (def dapp-name-text
   {:font-size 16})
 
-(defstyle dapp-text
+(styles/def dapp-text
   {:color   colors/gray
    :ios     {:margin-top 4}
    :android {:font-size 13}})
@@ -63,7 +63,7 @@
    :margin-top         10
    :margin-left        56})
 
-(defstyle url-input
+(def url-input
   {:flex                1
    :text-align-vertical :center
    :margin              0

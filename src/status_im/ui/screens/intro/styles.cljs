@@ -1,5 +1,4 @@
 (ns status-im.ui.screens.intro.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
   (:require [status-im.ui.components.colors :as colors]))
 
 (def intro-view

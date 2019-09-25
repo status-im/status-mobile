@@ -1,8 +1,7 @@
 (ns status-im.ui.components.status-bar.styles
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as styles]
-            [status-im.utils.platform :as platform])
-  (:require-macros [status-im.utils.styles :refer [defstyle]]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.styles :as styles]))
 
 (defn- create-status-bar-style [{:keys [background-color bar-style translucent?]
                                  :or   {bar-style "light-content"}}]
@@ -17,13 +16,13 @@
    :height           height})
 
 ;; :main
-(defstyle status-bar-main
+(styles/def status-bar-main
   {:ios     (create-status-bar-style {:background-color colors/white
                                       :bar-style        "default"})
    :android (create-status-bar-style {:translucent?     true
                                       :bar-style        "dark-content"})})
 
-(defstyle status-bar-main-main
+(styles/def status-bar-main-main
   {:ios     (create-status-bar-style {:background-color colors/white
                                       :bar-style        "default"})
    :android (create-status-bar-style {:background-color colors/black
@@ -32,13 +31,13 @@
 (def view-main
   (create-view-style {:background-color colors/white}))
 
-(defstyle view-modal-main
+(styles/def view-modal-main
   {:ios     (create-view-style {:background-color colors/white})
    :android (create-view-style {:background-color colors/black
                                 :height           0})})
 
 ;; :transparent
-(defstyle status-bar-transparent
+(styles/def status-bar-transparent
   {:ios     (create-status-bar-style {:background-color colors/transparent})
    :android (create-status-bar-style {:translucent?     true})})
 
@@ -46,23 +45,23 @@
   (create-view-style {:background-color colors/transparent}))
 
 ;; :modal
-(defstyle status-bar-modal
+(styles/def status-bar-modal
   {:ios     (create-status-bar-style {:background-color "#2f3031"})
    :android (create-status-bar-style {:background-color colors/black})})
 
-(defstyle view-modal
+(styles/def view-modal
   {:ios     (create-view-style {:background-color "#2f3031"})
    :android (create-view-style {:background-color colors/black
                                 :height           0})})
 
 ;; :modal-white
-(defstyle status-bar-modal-white
+(styles/def status-bar-modal-white
   {:ios     (create-status-bar-style {:background-color colors/white
                                       :bar-style        "default"})
    :android (create-status-bar-style {:background-color colors/black
                                       :bar-style        "light-content"})})
 
-(defstyle view-modal-white
+(styles/def view-modal-white
   {:ios     (create-view-style {:background-color colors/white})
    :android (create-view-style {:background-color colors/black
                                 :height           0})})
@@ -71,17 +70,17 @@
 (def status-bar-modal-wallet
   (create-status-bar-style {:background-color colors/blue}))
 
-(defstyle view-modal-wallet
+(styles/def view-modal-wallet
   {:ios     (create-view-style {:background-color colors/blue})
    :android (create-view-style {:background-color colors/blue
                                 :height           0})})
 
 ;; :transaction
-(defstyle status-bar-transaction
+(styles/def status-bar-transaction
   {:ios     (create-status-bar-style {:background-color colors/transparent})
    :android (create-status-bar-style {:background-color colors/black})})
 
-(defstyle view-transaction
+(styles/def view-transaction
   {:ios     (create-view-style {:background-color colors/transparent})
    :android (create-view-style {:background-color colors/black
                                 :height           0})})
@@ -89,7 +88,7 @@
 ;; TODO(jeluard) Fix status-bar mess by removing useless view and introducing 2dn level tab-bar
 
 ;; :wallet HOME
-(defstyle status-bar-wallet-tab
+(styles/def status-bar-wallet-tab
   {:ios     (create-status-bar-style {:background-color colors/blue})
    :android (create-status-bar-style {:translucent?     true})})
 
@@ -97,7 +96,7 @@
   (create-view-style {:background-color colors/blue}))
 
 ;; :wallet
-(defstyle status-bar-wallet
+(styles/def status-bar-wallet
   {:ios     (create-status-bar-style {:background-color colors/blue})
    :android (create-status-bar-style {:translucent?     true})})
 
@@ -105,11 +104,11 @@
   (create-view-style {:background-color colors/blue}))
 
 ;; :default
-(defstyle status-bar-default
+(styles/def status-bar-default
   {:ios     (create-status-bar-style {:background-color colors/white
                                       :bar-style        "default"})
    :android (create-status-bar-style {:translucent?     true
                                       :bar-style        "dark-content"})})
 
-(defstyle view-default
+(def view-default
   (create-view-style {}))

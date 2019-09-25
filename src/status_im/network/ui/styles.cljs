@@ -1,7 +1,7 @@
 (ns status-im.network.ui.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as components.styles]))
+            [status-im.ui.components.styles :as components.styles]
+            [status-im.utils.styles :as styles]))
 
 (def wrapper
   {:flex             1
@@ -10,7 +10,7 @@
 (def badge-name-text
   {:font-size 17})
 
-(defstyle badge-connected-text
+(styles/def badge-connected-text
   {:color   colors/gray
    :ios     {:margin-top 5}})
 
@@ -39,7 +39,7 @@
    :margin-top 8
    :height     20})
 
-(defstyle network-config-container
+(styles/def network-config-container
   {:height            160
    :margin-top        8
    :padding-top       16
@@ -50,7 +50,7 @@
                        :opacity       0.9}
    :android           {:border-radius 4}})
 
-(defstyle network-config-text
+(styles/def network-config-text
   {:font-size   17
    :ios         {:opacity 0.8}
    :android     {:opacity 0.4}})
@@ -60,7 +60,7 @@
    :margin-vertical   16
    :margin-horizontal 16})
 
-(defstyle edit-button
+(styles/def edit-button
   {:height           52
    :align-items      :center
    :justify-content  :center
@@ -93,7 +93,7 @@
    :flex-direction :row
    :align-items    :center})
 
-(defstyle network-item
+(styles/def network-item
   {:flex-direction     :row
    :background-color   :white
    :align-items        :center

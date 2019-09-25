@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.ui.components.styles :as styles]
-            [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.components.colors :as colors]
+            [status-im.utils.styles :as styles]))
 
 (def edit-mailserver-view
   {:flex              1
@@ -12,11 +12,11 @@
   {:flex-direction    :row
    :align-items       :center
    :justify-content   :space-between
-   :border-radius     styles/border-radius
+   :border-radius     components.styles/border-radius
    :height            52
    :margin-top        15})
 
-(defstyle input
+(styles/def input
   {:flex    1
    :android {:padding 0}})
 
@@ -40,11 +40,11 @@
    :border-radius    8
    :ios              {:opacity 0.9}})
 
-(defstyle connect-button
+(styles/def connect-button
   (assoc button
          :background-color colors/blue))
 
-(defstyle delete-button
+(styles/def delete-button
   (assoc button
          :background-color colors/red))
 

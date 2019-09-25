@@ -1,5 +1,4 @@
 (ns status-im.network.ui.edit-network.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.styles :as styles]))
 
