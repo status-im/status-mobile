@@ -143,7 +143,7 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
 
             # check behavior for popup "Custom seed phrase"
             if popup:
-                text = 'some words are misspelled.'
+                text = 'Custom seed phrase'
                 common_password = 'qwerty'
                 if not recover_access_view.find_full_text(text):
                     self.errors.append('"%s" text is not shown' % text)
