@@ -70,8 +70,9 @@
      :title     :t/account-settings
      :icon      :main-icons/info
      :disabled? true}]
-   [list-item/list-item
-    {:theme     :action
-     :title     :t/export-account
-     :icon      :main-icons/copy
-     :disabled? true}]])
+   ;; Commented out for v1
+   #_[list-item/list-item
+      {:theme     :action
+       :title     :t/export-account
+       :icon      :main-icons/copy
+       :disabled? true}]])

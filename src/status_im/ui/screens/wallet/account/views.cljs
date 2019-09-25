@@ -29,7 +29,7 @@
        :icon-opts {:color :black}
        :handler   #(re-frame/dispatch [:bottom-sheet/show-sheet
                                        {:content        sheets/account-settings
-                                        :content-height 130}])}]]]])
+                                        :content-height 60}])}]]]])
 
 (defn button [label icon handler]
   [react/touchable-highlight {:on-press handler :style {:flex 1}}
