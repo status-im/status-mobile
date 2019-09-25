@@ -26,6 +26,16 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if not profile_view.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
             self.driver.fail('Profile picture was not updated')
 
+    @marks.testrail_id(5741)
+    @marks.high
+    def test_mobile_data_usage_popup(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        sign_in_view.toggle_mobile_data()
+        if not sign_in_view.find_text_part("Sync using Mobile data"):
+            self.driver.fail('No popup about Mobile data is shown')
+        # TODO: add steps after 8973 fix
+
     @marks.testrail_id(5454)
     @marks.critical
     def test_user_can_remove_profile_picture(self):
