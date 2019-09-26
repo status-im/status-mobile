@@ -9,16 +9,16 @@
 (styles/def pin-container
   {:flex            1
    :flex-direction  :column
-   :justify-content :space-between
-   :android         {:margin-top 10}
-   :ios             {:margin-top 10}})
+   :justify-content :space-between})
 
-(styles/def error-container
-  {:height  22})
+(styles/defn error-container [small-screen?]
+  {:height        (if small-screen? 18 22)
+   :margin-top    (if small-screen? 14 10)
+   :margin-bottom (if small-screen? 10 0)})
 
-(def error-text
+(defn error-text [small-screen?]
   {:color      colors/red
-   :font-size  15
+   :font-size  (if small-screen? 12 15)
    :text-align :center})
 
 (defn center-container [title]
@@ -59,29 +59,29 @@
   {:margin-top 26})
 
 (def numpad-container
-  {:margin-top 20})
+  {:margin-top 18})
 
-(def numpad-row-container
+(defn numpad-row-container [small-screen?]
   {:flex-direction  :row
    :justify-content :center
    :align-items     :center
-   :margin-vertical 12})
+   :margin-vertical (if small-screen? 4 10)})
 
-(def numpad-button
-  {:width             64
-   :margin-horizontal 16
-   :height            64
+(defn numpad-button [small-screen?]
+  {:width             (if small-screen? 50 64)
+   :margin-horizontal (if small-screen? 10 14)
+   :height            (if small-screen? 50 64)
    :align-items       :center
    :justify-content   :center
    :flex-direction    :row
    :border-radius     50
    :background-color  colors/blue-light})
 
-(def numpad-delete-button
-  (assoc numpad-button :background-color colors/white))
+(defn numpad-delete-button [small-screen?]
+  (assoc (numpad-button small-screen?) :background-color colors/white))
 
-(def numpad-empty-button
-  (assoc numpad-button :background-color colors/white
+(defn numpad-empty-button [small-screen?]
+  (assoc (numpad-button small-screen?) :background-color colors/white
          :border-color colors/white))
 
 (def numpad-button-text

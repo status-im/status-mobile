@@ -111,14 +111,20 @@
      [react/text {:style {:color colors/blue}} (i18n/label :t/cancel)]]]])
 
 (views/defview keycard-pin-view []
-  (views/letsubs [pin [:hardwallet/pin]]
+  (views/letsubs [pin [:hardwallet/pin]
+                  small-screen? [:dimensions/small-screen?]
+                  error-label [:hardwallet/pin-error-label]
+                  enter-step [:hardwallet/pin-enter-step]
+                  status [:hardwallet/pin-status]
+                  retry-counter [:hardwallet/retry-counter]]
     [react/view
      [pin.views/pin-view
       {:pin           pin
-       :retry-counter nil
-       :step          :sign
-       :status        nil
-       :error-label   nil}]]))
+       :retry-counter retry-counter
+       :step          enter-step
+       :small-screen? small-screen?
+       :status        status
+       :error-label   error-label}]]))
 
 (defn- keycard-connect-view []
   [react/view {:padding-vertical 20
@@ -145,11 +151,19 @@
                         :color      colors/gray}}
     (i18n/label :t/processing)]])
 
-(defn- sign-with-keycard-button
+(defn sign-with-keycard-button
   [amount-error gas-error]
-  [button/button {:on-press  #(re-frame/dispatch [:signing.ui/sign-with-keycard-pressed])
-                  :disabled? (or amount-error gas-error)
-                  :label     :t/sign-with-keycard}])
+  (let [disabled? (or amount-error gas-error)]
+    [react/touchable-highlight {:on-press #(when-not disabled?
+                                             (re-frame/dispatch [:signing.ui/sign-with-keycard-pressed]))}
+     [react/view (styles/sign-with-keycard-button disabled?)
+      [react/text {:style (styles/sign-with-keycard-button-text disabled?)}
+       (i18n/label :t/sign-with)]
+      [react/view {:padding-right 16}
+       [react/image {:source (resources/get-image :keycard-logo)
+                     :style  {:width         64
+                              :margin-bottom 7
+                              :height        26}}]]]]))
 
 (defn- signing-phrase-view [phrase]
   [react/view {:align-items :center}
@@ -158,7 +172,7 @@
 
 (defn- keycard-view
   [{:keys [keycard-step]} phrase]
-  [react/view {:height 500}
+  [react/view {:height 520}
    [signing-phrase-view phrase]
    (case keycard-step
      :pin [keycard-pin-view]

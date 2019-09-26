@@ -365,7 +365,9 @@
             status [:hardwallet/pin-status]
             error-label [:hardwallet/pin-error-label]
             multiple-multiaccounts? [:multiple-multiaccounts?]
-            {:keys [address name] :as account} [:multiaccounts/login]]
+            {:keys [address name] :as account} [:multiaccounts/login]
+            small-screen? [:dimensions/small-screen?]
+            retry-counter [:hardwallet/retry-counter]]
     [react/view styles/container
      [toolbar/toolbar
       {:transparent? true
@@ -386,7 +388,7 @@
                   :flex-direction  :column
                   :justify-content :space-between
                   :align-items     :center
-                  :margin-top      60}
+                  :margin-top      (if small-screen? 28 46)}
       [react/view {:flex-direction  :column
                    :flex            1
                    :justify-content :center
@@ -396,17 +398,17 @@
         [react/view {:justify-content :center
                      :align-items     :center
                      :flex-direction  :row}
-         [react/view {:width           69
-                      :height          69
+         [react/view {:width           (if small-screen? 50 69)
+                      :height          (if small-screen? 50 69)
                       :justify-content :center
                       :align-items     :center}
           ;;TODO this should be done in a subscription
-          [photos/photo (multiaccounts/displayed-photo account) {:size 61}]
+          [photos/photo (multiaccounts/displayed-photo account) {:size (if small-screen? 45 61)}]
           [react/view {:justify-content  :center
                        :align-items      :center
-                       :width            24
-                       :height           24
-                       :border-radius    24
+                       :width            (if small-screen? 18 24)
+                       :height           (if small-screen? 18 24)
+                       :border-radius    (if small-screen? 18 24)
                        :position         :absolute
                        :right            0
                        :bottom           0
@@ -414,10 +416,10 @@
                        :border-width     1
                        :border-color     colors/black-transparent}
            [react/image {:source (resources/get-image :keycard-key)
-                         :style  {:width  8
-                                  :height 14}}]]]]
+                         :style  {:width  (if small-screen? 6 8)
+                                  :height (if small-screen? 11 14)}}]]]]
         [react/text {:style           {:text-align  :center
-                                       :margin-top  12
+                                       :margin-top  (if small-screen? 8 12)
                                        :color       colors/black
                                        :font-weight "500"}
                      :number-of-lines 1
@@ -431,11 +433,13 @@
                      :ellipsize-mode  :middle}
          (utils.core/truncate-str address 14 true)]]]
       [pin.views/pin-view
-       {:pin         pin
-        :status      status
-        :error-label error-label
-        :step        enter-step}]
-      [react/view {:margin-bottom 32}
+       {:pin           pin
+        :retry-counter retry-counter
+        :small-screen? small-screen?
+        :status        status
+        :error-label   error-label
+        :step          enter-step}]
+      [react/view {:margin-bottom (if small-screen? 25 32)}
        [react/touchable-highlight
         {:on-press #(re-frame/dispatch [:keycard.login.ui/recover-key-pressed])}
         [react/text {:style {:color colors/blue}}

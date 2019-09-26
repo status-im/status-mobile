@@ -12,32 +12,32 @@
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]))
 
-(defn numpad-button [n step enabled?]
+(defn numpad-button [n step enabled? small-screen?]
   [react/touchable-highlight
    {:on-press #(when enabled?
                  (re-frame/dispatch [:hardwallet.ui/pin-numpad-button-pressed n step]))}
-   [react/view styles/numpad-button
+   [react/view (styles/numpad-button small-screen?)
     [react/text {:style styles/numpad-button-text}
      n]]])
 
-(defn numpad-row [[a b c] step enabled?]
-  [react/view styles/numpad-row-container
-   [numpad-button a step enabled?]
-   [numpad-button b step enabled?]
-   [numpad-button c step enabled?]])
+(defn numpad-row [[a b c] step enabled? small-screen?]
+  [react/view (styles/numpad-row-container small-screen?)
+   [numpad-button a step enabled? small-screen?]
+   [numpad-button b step enabled? small-screen?]
+   [numpad-button c step enabled? small-screen?]])
 
-(defn numpad [step enabled?]
+(defn numpad [step enabled? small-screen?]
   [react/view styles/numpad-container
-   [numpad-row [1 2 3] step enabled?]
-   [numpad-row [4 5 6] step enabled?]
-   [numpad-row [7 8 9] step enabled?]
-   [react/view styles/numpad-row-container
-    [react/view styles/numpad-empty-button]
-    [numpad-button 0 step enabled?]
+   [numpad-row [1 2 3] step enabled? small-screen?]
+   [numpad-row [4 5 6] step enabled? small-screen?]
+   [numpad-row [7 8 9] step enabled? small-screen?]
+   [react/view (styles/numpad-row-container small-screen?)
+    [react/view (styles/numpad-empty-button small-screen?)]
+    [numpad-button 0 step enabled? small-screen?]
     [react/touchable-highlight
      {:on-press #(when enabled?
                    (re-frame/dispatch [:hardwallet.ui/pin-numpad-delete-button-pressed step]))}
-     [react/view styles/numpad-delete-button
+     [react/view (styles/numpad-delete-button small-screen?)
       [vector-icons/icon :main-icons/backspace {:color colors/blue}]]]]])
 
 (defn pin-indicator [pressed? status]
@@ -60,18 +60,18 @@
                                 nil)))))])
 
 (defn puk-indicators [puk status]
-  [react/view
+  [react/view {:margin-top 28}
    (map-indexed
     (fn [i puk-group]
       ^{:key i}
-      [pin-indicators puk-group status {:margin-top 15}])
+      [pin-indicators puk-group status {:margin-top 8}])
     (partition 6
                (concat puk
                        (repeat (- 12 (count puk))
                                nil))))])
 
 (defn pin-view [{:keys [pin title-label description-label step status error-label
-                        retry-counter]}]
+                        retry-counter small-screen?]}]
   (let [enabled? (not= status :verifying)]
     [react/scroll-view
      [react/view styles/pin-container
@@ -83,24 +83,23 @@
          [react/text {:style           styles/create-pin-text
                       :number-of-lines 2}
           (i18n/label description-label)])
-       [react/view {:height 10}
-        (when retry-counter
-          [react/text {:style {:font-weight "700"
-                               :color       colors/red}}
-           (i18n/label :t/pin-retries-left {:number retry-counter})])]
-       [react/view {:height 22}
+       [react/view {:margin-top 40
+                    :height     (if small-screen? 18 22)}
         (case status
           :verifying [react/view styles/waiting-indicator-container
                       [react/activity-indicator {:animating true
                                                  :size      :small}]]
-          :error [react/view styles/error-container
-                  [react/text {:style styles/error-text}
+          :error [react/view (styles/error-container small-screen?)
+                  [react/text {:style (styles/error-text small-screen?)}
                    (i18n/label error-label)]]
-          nil)]
+          (when retry-counter
+            [react/view {:margin-top (if (= step :puk) 24 8)}
+             [react/text {:style {:text-align :center}}
+              (i18n/label :t/pin-retries-left {:number retry-counter})]]))]
        (if (= step :puk)
          [puk-indicators pin status]
          [pin-indicators pin status nil])
-       [numpad step enabled?]]]]))
+       [numpad step enabled? small-screen?]]]]))
 
 (def pin-retries 3)
 (def puk-retries 5)

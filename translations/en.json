@@ -1114,9 +1114,10 @@
 	"lock-app-with": "Lock app with",
 	"grant-face-id-permissions": "To grant the required Face ID permission, please go to your system settings and make sure that Status > Face ID is selected",
 	"request-feature": "Request a feature",
-    "select-account-dapp": "Select the account you wish to use with Dapps",
-    "apply": "Apply",
-    "on-status-tree": "On Status tree",
-    "derivation-path": "Derivation path",
-    "storage": "Storage"
+	"select-account-dapp": "Select the account you wish to use with Dapps",
+	"apply": "Apply",
+	"on-status-tree": "On Status tree",
+	"derivation-path": "Derivation path",
+	"storage": "Storage",
+	"keycard-free-pairing-slots": "Keycard has {{n}} free pairing slots"
 }

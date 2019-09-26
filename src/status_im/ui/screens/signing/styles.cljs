@@ -40,3 +40,22 @@
    :border-top-right-radius 16
    :border-top-left-radius  16
    :padding-bottom          40})
+
+(defn sign-with-keycard-button [disabled?]
+  {:background-color   colors/black-light
+   :padding-top        2
+   :border-radius      8
+   :width              182
+   :height             44
+   :flex-direction     :row
+   :justify-content    :center
+   :align-items        :center
+   :opacity            (if disabled? 0.1 1)
+   :padding-horizontal 12})
+
+(defn sign-with-keycard-button-text [disabled?]
+  {:padding-right      2
+   :padding-left       16
+   :color              (if disabled? colors/black colors/white)
+   :padding-horizontal 16
+   :padding-vertical   10})

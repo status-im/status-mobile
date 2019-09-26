@@ -238,7 +238,8 @@
             enter-step [:hardwallet/pin-enter-step]
             status [:hardwallet/pin-status]
             error-label [:hardwallet/pin-error-label]
-            steps [:hardwallet-flow-steps]]
+            steps [:hardwallet-flow-steps]
+            small-screen? [:dimensions/small-screen?]]
     [react/view styles/container
      [toolbar/toolbar
       {:transparent? true
@@ -256,22 +257,23 @@
                   :align-items     :center}
       [react/view {:flex-direction :column
                    :align-items    :center}
-       [react/view {:margin-top 16}
+       [react/view {:margin-top (if small-screen? 4 16)}
         [react/text {:style {:typography :header
                              :text-align :center}}
          (i18n/label (if (= :original enter-step)
                        :t/intro-wizard-title4
                        :t/intro-wizard-title5))]]
-       [react/view {:margin-top 16
-                    :height     22}
+       [react/view {:margin-top (if small-screen? 8 16)
+                    :height     (if small-screen? 16 22)}
         (when (= :original enter-step)
           [react/text {:style {:color colors/gray}}
            (i18n/label :t/intro-wizard-text4)])]]
       [pin.views/pin-view
-       {:pin         pin
-        :status      status
-        :error-label error-label
-        :step        enter-step}]
+       {:pin           pin
+        :status        status
+        :small-screen? small-screen?
+        :error-label   error-label
+        :step          enter-step}]
       [react/view {:align-items     :center
                    :flex-direction  :column
                    :justify-content :center

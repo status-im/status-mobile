@@ -114,7 +114,9 @@
 (defview pin []
   (letsubs [pin [:hardwallet/pin]
             status [:hardwallet/pin-status]
-            error-label [:hardwallet/pin-error-label]]
+            error-label [:hardwallet/pin-error-label]
+            small-screen? [:dimensions/small-screen?]
+            retry-counter [:hardwallet/retry-counter]]
     [react/view styles/container
      [toolbar/toolbar
       {:transparent? true
@@ -137,14 +139,17 @@
                              :text-align :center}}
          (i18n/label :t/enter-your-code)]]]
       [pin.views/pin-view
-       {:pin         pin
-        :status      status
-        :error-label error-label
-        :step        :import-multiaccount}]]]))
+       {:pin           pin
+        :retry-counter retry-counter
+        :small-screen? small-screen?
+        :status        status
+        :error-label   error-label
+        :step          :import-multiaccount}]]]))
 
 (defview pair []
   (letsubs [pair-code [:hardwallet-pair-code]
             error [:hardwallet-setup-error]
+            {:keys [free-pairing-slots]} [:hardwallet-application-info]
             width [:dimensions/window-width]
             ref (atom nil)]
     [react/view styles/container
@@ -173,7 +178,13 @@
                     :align-items :center}
         [react/text {:style {:color      colors/gray
                              :text-align :center}}
-         (i18n/label :t/enter-pair-code-description)]]]
+         (i18n/label :t/enter-pair-code-description)]]
+       (when free-pairing-slots
+         [react/view {:align-items :center
+                      :margin-top  20}
+          [react/text {:style {:text-align :center
+                               :color      (if (> 3 free-pairing-slots) colors/red colors/gray)}}
+           (i18n/label :t/keycard-free-pairing-slots {:n free-pairing-slots})]])]
       [react/view
        [text-input/text-input-with-label
         {:on-change-text    #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-changed %])
