@@ -249,8 +249,9 @@
   (fx/merge cofx
             (remove-listener-to-hardware-back-button)
             (navigation/navigate-reset {:index   0
-                                        :actions [{:routeName (if (:multiaccounts/multiaccounts db)
-                                                                :multiaccounts :intro)}]})))
+                                        :actions [{:routeName (if (seq (:multiaccounts/multiaccounts db))
+                                                                :multiaccounts
+                                                                :intro)}]})))
 
 (fx/defn load-finishing-screen
   {:events [:keycard.onboarding.recovery-phrase-confirm-word2.ui/next-pressed
@@ -675,6 +676,10 @@
         flow (get-in db [:hardwallet :flow])]
     (fx/merge cofx
               {:db (-> db
+                       (update :hardwallet
+                               dissoc :secrets :card-state :multiaccount-wallet-address
+                               :multiaccount-whisper-public-key
+                               :application-info)
                        (assoc-in [:hardwallet :setup-step] :begin)
                        (assoc-in [:hardwallet :on-card-connected] :hardwallet/get-application-info)
                        (assoc-in [:hardwallet :on-card-read] :hardwallet/check-card-state)

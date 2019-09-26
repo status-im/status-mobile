@@ -27,7 +27,7 @@
               :initial-props initial-props
               :desktop/desktop (merge desktop (:desktop/desktop app-db))
               :network/type type
-              :hardwallet hardwallet
+              :hardwallet (dissoc hardwallet :secrets)
               :supported-biometric-auth supported-biometric-auth
               :view-id view-id
               :push-notifications/stored stored)})

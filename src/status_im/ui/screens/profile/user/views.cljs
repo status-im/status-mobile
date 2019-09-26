@@ -108,7 +108,8 @@
           opts)])
 
 (defn- flat-list-content [preferred-name registrar tribute-to-talk
-                          active-contacts-count show-backup-seed?]
+                          active-contacts-count show-backup-seed?
+                          keycard-account?]
   [(cond-> {:title                (or preferred-name :t/ens-usernames)
             :subtitle             (if (boolean registrar)
                                     (if preferred-name
@@ -163,7 +164,8 @@
     :accessories         [:chevron]
     :on-press            #(re-frame/dispatch [:navigate-to :sync-settings])}
    (when (and platform/android?
-              config/hardwallet-enabled?)
+              config/hardwallet-enabled?
+              keycard-account?)
      {:icon                :main-icons/keycard
       :title               :t/keycard
       :accessibility-label :keycard-button
@@ -198,7 +200,9 @@
                   {:keys [public-key
                           preferred-name
                           seed-backed-up?
-                          mnemonic]
+                          mnemonic
+                          keycard-key-uid
+                          address]
                    :as   multiaccount}         [:multiaccount]
                   active-contacts-count        [:contacts/active-count]
                   tribute-to-talk              [:tribute-to-talk/profile]
@@ -214,7 +218,8 @@
           header               (header multiaccount)
           content           (flat-list-content
                              preferred-name registrar tribute-to-talk
-                             active-contacts-count show-backup-seed?)
+                             active-contacts-count show-backup-seed?
+                             keycard-key-uid)
 
           ;; generated toolbar and content with header
           generated-view (large-toolbar/generate-view

@@ -149,13 +149,15 @@
        [icons/icon :main-icons/more {:accessibility-label :accounts-more-options}]]]]))
 
 (views/defview accounts []
-  (views/letsubs [{:keys [accounts]} [:multiaccount]]
+  (views/letsubs [{:keys [accounts address keycard-key-uid]} [:multiaccount]]
     [react/scroll-view {:horizontal true}
      [react/view {:flex-direction :row :padding-top 11 :padding-bottom 12}
       (for [account accounts]
         ^{:key account}
         [account-card account])
-      [add-card]]]))
+      ; TODO: enable keycard support for adding new accounts
+      (when-not keycard-key-uid
+        [add-card])]]))
 
 (defn accounts-overview []
   [react/view {:flex 1}
