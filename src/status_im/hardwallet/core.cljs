@@ -389,7 +389,7 @@
   [{:keys [db] :as cofx} flow instance-uid]
   (if (= flow :import)
     (navigation/navigate-to-cofx cofx :keycard-recovery-no-key nil)
-    (let [pairing-data (get-in db [:hardwallet :pairings (keyword instance-uid)])]
+    (let [pairing-data (get-in db [:hardwallet :pairings instance-uid])]
       (if pairing-data
         (fx/merge cofx
                   {:db (update-in db [:hardwallet :secrets] merge pairing-data)}
@@ -1499,21 +1499,27 @@
   {:db (assoc-in db [:hardwallet :pairings] pairings)})
 
 (fx/defn on-pair-success
+  "When pairing to device has completed, we need to persist pairing data to
+  local storage. That's needed to ensure that during keycard setup
+  keycard won't run out of pairings slots, ie. we don't pair the same
+  card to the same device more than one time. Also, this allows the user to proceed
+  with setup and skip the pairing step if the pairing was already done during a previous
+  unfinished setup."
   [{:keys [db] :as cofx} pairing]
   (let [setup-step (get-in db [:hardwallet :setup-step])
         flow (get-in db [:hardwallet :flow])
         instance-uid (get-in db [:hardwallet :application-info :instance-uid])
         multiaccount (find-multiaccount-by-keycard-instance-uid db instance-uid)
         paired-on (utils.datetime/timestamp)
-        pairings (get-in db [:hardwallet :pairings])
-        instance-uid (get-in db [:hardwallet :application-info :instance-uid])
+        pairings (assoc (get-in db [:hardwallet :pairings]) instance-uid {:pairing   pairing
+                                                                          :paired-on paired-on})
         next-step (if (= setup-step :pair)
                     :begin
                     :card-ready)]
     (fx/merge cofx
-              {:hardwallet/persist-pairings (assoc pairings instance-uid {:pairing   pairing
-                                                                          :paired-on paired-on})
+              {:hardwallet/persist-pairings pairings
                :db                          (-> db
+                                                (assoc-in [:hardwallet :pairings] pairings)
                                                 (assoc-in [:hardwallet :application-info :paired?] true)
                                                 (assoc-in [:hardwallet :on-card-connected] nil)
                                                 (assoc-in [:hardwallet :setup-step] next-step)
