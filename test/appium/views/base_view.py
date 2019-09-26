@@ -385,6 +385,9 @@ class BaseView(object):
             except TimeoutException:
                 counter += 1
 
+    def just_fyi(self, string):
+        self.driver.info(string)
+
     def click_system_back_button(self):
         self.driver.info('Click system back button')
         self.driver.press_keycode(4)

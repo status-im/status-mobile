@@ -74,7 +74,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.transactions_button.click()
         send_transaction_view = status_test_dapp.sign_typed_message_button.click()
         send_transaction_view.enter_password_input.send_keys(common_password)
-        send_transaction_view.sign_button.click()
+        send_transaction_view.sign_button.click_until_presence_of_element(send_transaction_view.ok_button)
         status_test_dapp.find_text_part('0xde3048417e5881acc9ca8466ab0b3e2f9f965a70acabbda2d140e95a28b13d2d'
                                         '2d38eba6c0a5bfdc50e5d59e0ed3226c749732fd4a9374b57f34121eaff2a5081c')
 

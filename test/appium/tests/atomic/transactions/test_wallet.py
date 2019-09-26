@@ -434,12 +434,13 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view.create_user()
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
-        address = wallet_view.get_wallet_address()[2:]
+        status_account_address = wallet_view.get_wallet_address()[2:]
         wallet_view.back_button.click()
-        self.network_api.get_donate(address)
-
-        account_name = 'test account'
+        self.network_api.get_donate(status_account_address)
+        account_name = 'subaccount'
         wallet_view.add_account(account_name)
+
+        wallet_view.just_fyi("Send transaction to new account")
         wallet_view.accounts_status_account.click()
         send_transaction = wallet_view.send_transaction_button.click()
         send_transaction.amount_edit_box.click()
@@ -451,8 +452,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.element_by_text(account_name).click()
         send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction()
-        self.network_api.wait_for_confirmation_of_transaction(address, transaction_amount)
-        self.network_api.verify_balance_is_updated('0.1', address)
+        self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
+        self.network_api.verify_balance_is_updated('0.1', status_account_address)
+
+        wallet_view.just_fyi("Verifying previously sent transaction in new account")
         wallet_view.back_button.click()
         wallet_view.get_account_by_name(account_name).click()
         wallet_view.send_transaction_button.click()
@@ -461,11 +464,12 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         if balance_after_receiving_tx != float(transaction_amount):
             self.driver.fail('New account balance %s does not match expected %s after receiving a transaction' % (
                 balance_after_receiving_tx, transaction_amount))
-        updated_balance = self.network_api.get_balance(address)
 
+        wallet_view.just_fyi("Sending eth from new account to main account")
+        updated_balance = self.network_api.get_balance(status_account_address)
         wallet_view.send_transaction_button.click()
         send_transaction.amount_edit_box.click()
-        transaction_amount_1 = round(float(transaction_amount) * 0.7, 11)
+        transaction_amount_1 = round(float(transaction_amount) * 0.05, 11)
         send_transaction.amount_edit_box.set_value(str(transaction_amount_1))
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
@@ -474,15 +478,20 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_transaction_button.click()
         total_fee = send_transaction.get_transaction_fee_total()
         send_transaction.sign_transaction()
-        if not wallet_view.wait_for_element_starts_with_text('Transaction sent').is_element_displayed():
-            self.driver.fail('Transaction was not sent from the new account')
-        self.network_api.wait_for_confirmation_of_transaction(address, transaction_amount)
-        self.network_api.verify_balance_is_updated(updated_balance, address)
-        balance_after_sending_tx = wallet_view.eth_asset_value.text
+        send_transaction.back_button.click()
+        sub_account_address = wallet_view.get_wallet_address(account_name)[2:]
+        self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
+        self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
+
+        wallet_view.just_fyi("Verify total ETH on main wallet view")
+        send_transaction.back_button.click()
+        balance_of_sub_account = float(self.network_api.get_balance(sub_account_address)) / 1000000000000000000
+        balance_of_status_account = float(self.network_api.get_balance(status_account_address)) / 1000000000000000000
         expected_balance = str(float(balance_after_receiving_tx) - transaction_amount_1 - float(total_fee))
-        if balance_after_sending_tx != expected_balance:
-            self.driver.fail('New account balance %s does not match expected %s after sending a transaction' % (
-                balance_after_sending_tx, transaction_amount))
+        total_eth_from_two_accounts = float(wallet_view.eth_asset_value.text)
+        if total_eth_from_two_accounts != (balance_of_status_account + balance_of_sub_account):
+            self.driver.fail('Total wallet balance %s != of Status account (%s) + SubAccount (%s)' % (
+                total_eth_from_two_accounts, balance_of_status_account, balance_of_sub_account))
 
 
 @marks.transaction

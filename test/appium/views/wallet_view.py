@@ -328,7 +328,7 @@ class WalletView(BaseView):
 
         # elements for multiaccount
         self.multiaccount_more_options = MultiaccountMoreOptions(self.driver)
-        self.accounts_status_account = AccountElementButton(self.driver, 'Status account')
+        self.accounts_status_account = AccountElementButton(self.driver, account_name="Status account")
         self.collectibles_button = CollectiblesButton(self.driver)
         self.set_currency_button = SetCurrencyButton(self.driver)
         self.add_account_button = AddAccountButton(self.driver)
@@ -385,12 +385,15 @@ class WalletView(BaseView):
         self.ok_got_it_button.click()
         return phrase
 
-    def get_wallet_address(self):
-        self.accounts_status_account.click()
+    def get_wallet_address(self, account_name="Status account"):
+        self.wallet_account_by_name(account_name).click()
         self.receive_transaction_button.click()
         address = self.address_text.text
         self.back_button.click()
         return address
+
+    def wallet_account_by_name(self, account_name):
+        return AccountElementButton(self.driver, account_name)
 
     def asset_by_name(self, asset_name):
         return AssetTextElement(self.driver, asset_name)

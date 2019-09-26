@@ -252,7 +252,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         chat_view = home_view.get_chat_view()
         chat_view.chat_options.click_until_presence_of_element(chat_view.view_profile_button)
         chat_view.view_profile_button.click()
-        for text in basic_user['username'], 'In contacts', 'Send message', 'Chat key':
+        for text in basic_user['username'], 'Remove from contacts', 'Send message', 'Block this user':
             if not chat_view.element_by_text(text).scroll_to_element():
                 self.errors.append('%s is not visible' % text)
         self.verify_no_errors()

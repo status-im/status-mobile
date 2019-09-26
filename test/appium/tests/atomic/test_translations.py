@@ -13,6 +13,7 @@ from tests.base_test_case import NoDeviceTestCase
 class TestTranslations(NoDeviceTestCase):
 
     @marks.testrail_id(6223)
+    @marks.skip
     def test_find_unused_translations(self):
         directory = os.sep.join(__file__.split(os.sep)[:-5])
         with open(os.path.join(directory, 'translations/en.json'), 'r') as f:
