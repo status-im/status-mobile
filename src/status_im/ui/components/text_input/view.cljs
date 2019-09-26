@@ -14,7 +14,10 @@
       (dissoc merged-styles :background-color)
       merged-styles)))
 
-(defn text-input-with-label [{:keys [label content error style height container text editable] :as props :or {editable true}}]
+(defn text-input-with-label
+  [{:keys [label content error style height container text editable keyboard-type]
+    :as props
+    :or {editable true}}]
   [react/view
    (when label
      [react/text {:style (styles/label editable)}
@@ -26,7 +29,10 @@
        :placeholder-text-color colors/gray
        :auto-focus             true
        :auto-capitalize        :none}
-      (dissoc props :style :height)
+      (cond-> (dissoc props :style :height)
+        ;; error on ios
+        (and platform/ios? (= keyboard-type "visible-password"))
+        (dissoc :keyboard-type))
       ;; Workaround until `value` TextInput field is available on desktop:
       ;; https://github.com/status-im/react-native-desktop/issues/320
       (when-not platform/desktop?

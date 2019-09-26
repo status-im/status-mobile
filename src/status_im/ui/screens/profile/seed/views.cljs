@@ -89,6 +89,8 @@
      {:placeholder       (i18n/label :t/enter-word)
       :ref               (partial reset! ref)
       :auto-focus        true
+      :auto-correct      false
+      :keyboard-type     "visible-password"
       :on-change-text    #(re-frame/dispatch [:set-in [:my-profile/seed :word] %])
       :on-submit-editing next-handler
       :error             error}]))
