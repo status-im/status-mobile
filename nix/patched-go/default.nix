@@ -15,8 +15,6 @@ let
 		if tmp == "" {
 			tmp, err = ioutil.TempDir(os.Getenv("GOTMPDIR"), "go-build")
 		}'
-      # Disable chown tests, they fail with 'invalid argument'
-      rm src/os/os_unix_test.go
     '';
   });
 

@@ -17,7 +17,7 @@ let
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
   stdenv = pkgs.stdenvNoCC;
   maven = pkgs.maven;
-  baseGo = pkgs.go_1_11;
+  baseGo = pkgs.go_1_12;
   go = pkgs.callPackage ./patched-go { inherit baseGo; };
   buildGoPackage = pkgs.buildGoPackage.override { inherit go; };
   desktop = pkgs.callPackage ./desktop { inherit target-os stdenv status-go pkgs go nodejs; inherit (pkgs) darwin; };
