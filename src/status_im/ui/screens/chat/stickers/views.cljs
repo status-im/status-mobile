@@ -64,12 +64,16 @@
 
 (defn update-scroll-position [ref installed-packs selected-pack window-width]
   (when ref
-    (let [x (if (= selected-pack :recent)
-              0
-              (* (inc (some #(when (= selected-pack (:id (second %))) (first %))
-                            (map-indexed vector installed-packs)))
-                 window-width))]
-      (.scrollTo ref (clj->js {:x x :animated true})))))
+    ;; bug on Android https://github.com/facebook/react-native/issues/24531
+    (js/setTimeout
+     (fn []
+       (let [x (if (= selected-pack :recent)
+                 0
+                 (* (inc (some #(when (= selected-pack (:id (second %))) (first %))
+                               (map-indexed vector installed-packs)))
+                    window-width))]
+         (.scrollTo ref #js {:x x :animated true})))
+     200)))
 
 (defn on-scroll [e installed-packs window-width]
   (let [num     (/ (.-nativeEvent.contentOffset.x e) window-width)
