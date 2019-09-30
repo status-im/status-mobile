@@ -23,20 +23,15 @@
 (fx/defn initialize-app-db
   "Initialize db to initial state"
   [{{:keys [view-id hardwallet initial-props desktop/desktop
-            device-UUID supported-biometric-auth push-notifications/stored network/type]} :db}]
+            supported-biometric-auth push-notifications/stored network/type]} :db}]
   {:db (assoc app-db
               :initial-props initial-props
               :desktop/desktop (merge desktop (:desktop/desktop app-db))
               :network/type type
               :hardwallet hardwallet
-              :device-UUID device-UUID
               :supported-biometric-auth supported-biometric-auth
               :view-id view-id
               :push-notifications/stored stored)})
-
-(fx/defn set-device-uuid
-  [{:keys [db]} device-uuid]
-  {:db (assoc db :device-UUID device-uuid)})
 
 (fx/defn set-supported-biometric-auth
   {:events [:init.callback/get-supported-biometric-auth-success]}
@@ -80,8 +75,7 @@
 
 (fx/defn start-app [cofx]
   (fx/merge cofx
-            {::get-device-UUID                      nil
-             ::get-supported-biometric-auth         nil
+            {::get-supported-biometric-auth         nil
              ::init-keystore                        nil
              ::restore-native-settings              nil
              ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts %])
@@ -107,11 +101,6 @@
  ::init-keystore
  (fn []
    (status/init-keystore)))
-
-(re-frame/reg-fx
- ::get-device-UUID
- (fn []
-   (status/get-device-UUID #(re-frame/dispatch [:init.callback/get-device-UUID-success %]))))
 
 (re-frame/reg-fx
  ::get-supported-biometric-auth

@@ -46,7 +46,6 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -758,10 +757,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
-    private String createIdentifier() {
-        return UUID.randomUUID().toString();
-    }
-
     @ReactMethod
     public void hashTransaction(final String txArgsJSON, final Callback callback) {
         Log.d(TAG, "hashTransaction");
@@ -1022,25 +1017,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     public void appStateChange(final String type) {
         Log.d(TAG, "AppStateChange: " + type);
         Statusgo.appStateChange(type);
-    }
-
-    private static String uniqueID = null;
-    private static final String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
-
-    @ReactMethod
-    public void getDeviceUUID(final Callback callback) {
-        if (uniqueID == null) {
-            SharedPreferences sharedPrefs = this.getReactApplicationContext().getSharedPreferences(
-                    PREF_UNIQUE_ID, Context.MODE_PRIVATE);
-            uniqueID = sharedPrefs.getString(PREF_UNIQUE_ID, null);
-            if (uniqueID == null) {
-                uniqueID = UUID.randomUUID().toString();
-                SharedPreferences.Editor editor = sharedPrefs.edit();
-                editor.putString(PREF_UNIQUE_ID, uniqueID);
-                editor.commit();
-            }
-        }
-        callback.invoke(uniqueID);
     }
 
     @ReactMethod

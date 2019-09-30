@@ -75,11 +75,6 @@
  (fn [cofx _]
    (init/start-app cofx)))
 
-(handlers/register-handler-fx
- :init.callback/get-device-UUID-success
- (fn [cofx [_ device-uuid]]
-   (init/set-device-uuid cofx device-uuid)))
-
 ;; home screen
 
 (handlers/register-handler-fx

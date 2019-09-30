@@ -147,7 +147,6 @@ var TopLevel = {
     "getBlock" : function () {},
     "getBlockNumber" : function () {},
     "getConnectionInfo" : function () {},
-    "getDeviceUUID" : function () {},
     "getDomain" : function () {},
     "getGasPrice" : function () {},
     "getGenericPassword" : function () {},

@@ -75,7 +75,6 @@
 (reg-root-key-sub :tab-bar-visible? :tab-bar-visible?)
 (reg-root-key-sub :dimensions/window :dimensions/window)
 (reg-root-key-sub :initial-props :initial-props)
-(reg-root-key-sub :get-device-UUID :device-UUID)
 (reg-root-key-sub :fleets/custom-fleets :custom-fleets)
 (reg-root-key-sub :chain-sync-state :node/chain-sync-state)
 (reg-root-key-sub :desktop/desktop :desktop/desktop)

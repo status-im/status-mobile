@@ -155,10 +155,6 @@
 
 (spec/def ::message-envelopes (spec/nilable map?))
 
-;;;;UUID
-
-(spec/def ::device-UUID (spec/nilable string?))
-
 ;;;; Supported Biometric authentication types
 
 (spec/def ::supported-biometric-auth (spec/nilable #{:FaceID :TouchID :fingerprint}))
@@ -320,7 +316,6 @@
                                    :prices/prices
                                    :prices/prices-loading?
                                    :notifications/notifications
-                                   ::device-UUID
                                    ::supported-biometric-auth
                                    ::collectible
                                    ::collectibles

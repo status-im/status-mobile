@@ -66,7 +66,6 @@ public:
     Q_INVOKABLE void callRPC(QString payload, double callbackId);
     Q_INVOKABLE void callPrivateRPC(QString payload, double callbackId);
     Q_INVOKABLE void closeApplication();
-    Q_INVOKABLE void getDeviceUUID(double callbackId);
 
     Q_INVOKABLE static bool JSCEnabled();
     Q_INVOKABLE static void statusGoEventCallback(const char* event);

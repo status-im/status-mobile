@@ -206,12 +206,6 @@
 (defn app-state-change [state]
   (.appStateChange (status) state))
 
-(defn get-device-UUID [callback]
-  (.getDeviceUUID
-   (status)
-   (fn [UUID]
-     (callback (string/upper-case UUID)))))
-
 (defn set-blank-preview-flag [flag]
   (.setBlankPreviewFlag (status) flag))
 

@@ -632,15 +632,6 @@ RCT_EXPORT_METHOD(appStateChange:(NSString *)type) {
     StatusgoAppStateChange(type);
 }
 
-RCT_EXPORT_METHOD(getDeviceUUID:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"getDeviceUUID() method called");
-#endif
-    NSString* Identifier = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
-
-    callback(@[Identifier]);
-}
-
 RCT_EXPORT_METHOD(setBlankPreviewFlag:(BOOL *)newValue)
 {
   NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];

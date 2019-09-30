@@ -71,13 +71,6 @@ QVariantMap RCTStatus::constantsToExport() {
     return QVariantMap();
 }
 
-void RCTStatus::getDeviceUUID(double callbackId) {
-  Q_D(RCTStatus);
-  qCDebug(RCTSTATUS) << "::getDeviceUUID call";
-
-  d->bridge->invokePromiseCallback(callbackId, QVariantList{"com.status.StatusIm"});
-}
-
 QString RCTStatus::prepareDirAndUpdateConfig(QString configString) {
     Q_D(RCTStatus);
     qCDebug(RCTSTATUS) << "::prepareDirAndUpdateConfig call - configString:" << configString;
