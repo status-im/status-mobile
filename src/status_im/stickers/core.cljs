@@ -120,8 +120,8 @@
                  (navigation/navigate-to-cofx % :stickers-pack-modal pack)))))
 
 (fx/defn open-sticker-pack
-  [{{:stickers/keys [packs packs-installed] :keys [network] :as db} :db :as cofx} id]
-  (when (and id (string/starts-with? network "mainnet"))
+  [{{:stickers/keys [packs packs-installed] :networks/keys [current-network] :as db} :db :as cofx} id]
+  (when (and id (string/starts-with? current-network "mainnet"))
     (let [pack    (or (get packs-installed id)
                       (get packs id))
           contract-address (contracts/get-address db :status/stickers)]
