@@ -2858,10 +2858,6 @@ iconv-lite@^0.4.17, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
-"identicon.js@git+https://github.com/status-im/identicon.js.git#v1.2.1-status":
-  version "1.2.1"
-  resolved "git+https://github.com/status-im/identicon.js.git#4cd179daaf6f01384502b4b2c1876f982db0f57e"
-
 ieee754@^1.1.4:
   version "1.1.13"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.13.tgz#ec168558e95aa181fd87d37f55c32bbcb6708b84"
@@ -4892,9 +4888,9 @@ react-native-screens@1.0.0-alpha.22:
     debounce "^1.2.0"
 
 react-native-shake@^3.3.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/react-native-shake/-/react-native-shake-3.3.1.tgz#e168827015db0cfb316f2bd428afe95f225fda6a"
-  integrity sha512-Z5W/tC3rsOcQmAOxe/uHsGNrXyZx3xwd1bFaRw0pbO0lhG4Z1g2MOcrO/Pa+ZA59ap/1tmwVP6/+IPtt6DPT1w==
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-shake/-/react-native-shake-3.4.0.tgz#3fa8f682651104b39c0b6c199bfa2ab10b36ce28"
+  integrity sha512-jOPrCC3VW/f8xYL6Yrv4XlSklVepMNF/ZdZ/5e0RzRPY+fexuNr0/Z1bQsPpaGjBd75Tk4WKpS/I/+Bj9oVXxg==
   dependencies:
     invariant "^2.2.x"
 
