@@ -652,7 +652,7 @@
    (fx/merge
     cofx
     (multiaccounts.update/multiaccount-update
-     {:stickers/recent-stickers (conj (remove #(= hash %) (:recent-stickers multiaccount)) hash)}
+     {:stickers/recent-stickers (conj (remove #(= hash %) (:stickers/recent-stickers multiaccount)) hash)}
      {})
     (chat.input/send-sticker-fx sticker current-chat-id))))
 
