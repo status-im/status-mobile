@@ -386,6 +386,8 @@
            :auto-focus        true
            :on-submit-editing #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/input-submitted])
            :placeholder       nil
+           :auto-correct      false
+           :keyboard-type     "visible-password"
            :container         {:background-color :white}
            :style             {:background-color :white
                                :text-align       :center
