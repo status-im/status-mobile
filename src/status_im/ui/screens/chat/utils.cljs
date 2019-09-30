@@ -11,23 +11,18 @@
             [status-im.ui.components.colors :as colors]
             [status-im.utils.http :as http]))
 
-(defn format-author [from style name]
-  (cond
-    (ens/is-valid-eth-name? name)
+(defn format-author [alias style name]
+  (if (ens/is-valid-eth-name? name)
     [react/text {:style {:color colors/blue :font-size 13 :font-weight "500"}}
      (str "@" (or (stateofus/username name) name))]
-    name
-    [react/text {:style {:color colors/blue :font-size 13 :font-weight "500"}}
-     name]
-    :else
     [react/text {:style {:color colors/gray :font-size 12 :font-weight "400"}}
-     from]))
+     alias]))
 
-(defn format-reply-author [from username current-public-key style]
+(defn format-reply-author [from alias username current-public-key style]
   (or (and (= from current-public-key)
            [react/text {:style (style true)}
             (i18n/label :t/You)])
-      (format-author from style nil)))
+      (format-author alias style username)))
 
 (def ^:private styling->prop
   {:bold      {:style {:font-weight "700"}}

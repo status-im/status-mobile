@@ -45,11 +45,11 @@
     content content-type]])
 
 (defview quoted-message [{:keys [from text]} outgoing current-public-key]
-  (letsubs [username [:contacts/contact-name-by-identity from]]
+  (letsubs [{:keys [username alias]} [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
       [vector-icons/tiny-icon :tiny-icons/tiny-reply {:color (if outgoing colors/white-transparent colors/gray)}]
-      (chat.utils/format-reply-author from username current-public-key (partial style/quoted-message-author outgoing))]
+      (chat.utils/format-reply-author from alias username current-public-key (partial style/quoted-message-author outgoing))]
 
      [react/text {:style           (style/quoted-message-text outgoing)
                   :number-of-lines 5}
@@ -92,11 +92,11 @@
    {:justify-timestamp? true}])
 
 (defn emoji-message
-  [{:keys [content current-public-key] :as message}]
+  [{:keys [content current-public-key alias] :as message}]
   [message-view message
    [react/view {:style (style/style-message-text false)}
     (when (:response-to content)
-      [quoted-message (:response-to content) false current-public-key])
+      [quoted-message (:response-to content) alias false current-public-key])
     [react/text {:style (style/emoji-message message)}
      (:text content)]]])
 
@@ -197,8 +197,7 @@
         [command-status content]))))
 
 (defview message-author-name [alias name]
-  (letsubs [username [:contacts/contact-name-by-identity alias]]
-    (chat.utils/format-author alias style/message-author-name name)))
+  (chat.utils/format-author alias style/message-author-name name))
 
 (defn message-body
   [{:keys [last-in-group?

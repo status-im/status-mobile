@@ -154,20 +154,20 @@
         [vector-icons/icon :main-icons/commands {:container-style style/input-commands-icon
                                                  :color           colors/gray}]]])))
 
-(defview reply-message [from message-text]
-  (letsubs [username           [:contacts/contact-name-by-identity from]
+(defview reply-message [from alias message-text]
+  (letsubs [{:keys [username]} [:contacts/contact-name-by-identity from]
             current-public-key [:multiaccount/public-key]]
     [react/scroll-view {:style style/reply-message-content}
-     (chat-utils/format-reply-author from username current-public-key style/reply-message-author)
+     (chat-utils/format-reply-author from alias username current-public-key style/reply-message-author)
      [react/text {:style (message-style/style-message-text false)} message-text]]))
 
 (defview reply-message-view []
-  (letsubs [{:keys [content from] :as message} [:chats/reply-message]]
+  (letsubs [{:keys [content from alias] :as message} [:chats/reply-message]]
     (when message
       [react/view {:style style/reply-message-container}
        [react/view {:style style/reply-message}
         [photos/member-photo from]
-        [reply-message from (:text content)]]
+        [reply-message from alias (:text content)]]
        [react/touchable-highlight
         {:style               style/cancel-reply-highlight
          :on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])

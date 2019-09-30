@@ -45,6 +45,7 @@
             [status-im.wallet.core :as wallet]
             [status-im.wallet.db :as wallet.db]
             [status-im.signing.gas :as signing.gas]
+            [status-im.utils.gfycat.core :as gfycat]
             status-im.ui.screens.hardwallet.connect.subs
             status-im.ui.screens.hardwallet.settings.subs
             status-im.ui.screens.hardwallet.pin.subs
@@ -1479,8 +1480,13 @@
  (fn [[contacts current-multiaccount] [_ identity]]
    (let [me? (= (:public-key current-multiaccount) identity)]
      (if me?
-       (:name current-multiaccount)
-       (:name (contacts identity))))))
+       {:username (:name current-multiaccount)
+        :alias (gfycat/generate-gfy identity)}
+       (let [contact (or (contacts identity)
+                         (contact.db/public-key->new-contact identity))]
+         {:username (:name contact)
+          :alias (or (:alias contact)
+                     (gfycat/generate-gfy identity))})))))
 
 (re-frame/reg-sub
  :contacts/all-contacts-not-in-current-chat

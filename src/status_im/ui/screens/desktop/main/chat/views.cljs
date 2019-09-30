@@ -64,7 +64,7 @@
                 :height     24}}]]]))
 
 (views/defview message-author-name [{:keys [from]}]
-  (views/letsubs [incoming-name [:contacts/contact-name-by-identity from]]
+  (views/letsubs [{:keys [username]} [:contacts/contact-name-by-identity from]]
     [react/view {:flex-direction :row}
      (when incoming-name
        [react/text {:style styles/author} incoming-name])
@@ -85,14 +85,14 @@
                       :style  styles/photo-style}]]]]]))
 
 (views/defview quoted-message [{:keys [from text]} outgoing current-public-key]
-  (views/letsubs [username [:contacts/contact-name-by-identity from]]
+  (views/letsubs [{:keys [username alias]} [:contacts/contact-name-by-identity from]]
     [react/view {:style styles/quoted-message-container}
      [react/view {:style styles/quoted-message-author-container}
       [vector-icons/tiny-icon :tiny-icons/tiny-reply {:style           (styles/reply-icon outgoing)
                                                       :width           16
                                                       :height          16
                                                       :container-style (when outgoing {:opacity 0.4})}]
-      (chat-utils/format-reply-author from username current-public-key (partial message.style/quoted-message-author outgoing))]
+      (chat-utils/format-reply-author from alias username current-public-key (partial message.style/quoted-message-author outgoing))]
      [react/text {:style           (message.style/quoted-message-text outgoing)
                   :number-of-lines 5}
       (core-utils/truncate-str text constants/chars-collapse-threshold)]]))
@@ -101,7 +101,7 @@
   (not (#{:not-sent :sending} outgoing-status)))
 
 (views/defview message-without-timestamp
-  [text {:keys [chat-id message-id content group-chat expanded? current-public-key outgoing-status] :as message} style]
+  [text {:keys [chat-id message-id content group-chat alias expanded? current-public-key outgoing-status] :as message} style]
   [react/view {:flex 1 :margin-vertical 5}
    [react/touchable-highlight {:on-press (fn [arg]
                                            (when (= "right" (.-button (.-nativeEvent arg)))
@@ -270,11 +270,11 @@
        [react/view {:style (styles/send-icon inactive?)}
         [vector-icons/icon :main-icons/arrow-left {:style (styles/send-icon-arrow inactive?)}]]])))
 
-(views/defview reply-message [from message-text]
-  (views/letsubs [username           [:contacts/contact-name-by-identity from]
+(views/defview reply-message [from alias message-text]
+  (views/letsubs [{:keys [username]}           [:contacts/contact-name-by-identity from]
                   current-public-key [:multiaccount/public-key]]
     [react/view {:style styles/reply-content-container}
-     (chat-utils/format-reply-author from username current-public-key styles/reply-content-author)
+     (chat-utils/format-reply-author from alias username current-public-key styles/reply-content-author)
      [react/text {:style styles/reply-content-message} message-text]]))
 
 (views/defview reply-member-photo [from]
@@ -285,12 +285,12 @@
                   :style  styles/reply-photo-style}]))
 
 (views/defview reply-message-view []
-  (views/letsubs [{:keys [content from] :as message} [:chats/reply-message]]
+  (views/letsubs [{:keys [alias content from] :as message} [:chats/reply-message]]
     (when message
       [react/view {:style styles/reply-wrapper}
        [react/view {:style styles/reply-container}
         [reply-member-photo from]
-        [reply-message from (:text content)]]
+        [reply-message from alias (:text content)]]
        [react/touchable-highlight
         {:style               styles/reply-close-highlight
          :on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])
