@@ -55,9 +55,10 @@
      (str " " (i18n/label :mobile-network-sheet-settings))]]])
 
 (views/defview settings-sheet []
-  [react/view {:style styles/container}
-   [title :mobile-syncing-sheet-title]
-   [details :mobile-syncing-sheet-details]
+  [react/view {:flex 1}
+   [react/view {:align-items :center}
+    [title :mobile-syncing-sheet-title]
+    [details :mobile-syncing-sheet-details]]
    [list-item/list-item
     {:theme    :action
      :title    :t/mobile-network-continue-syncing
@@ -77,9 +78,10 @@
     [settings]]])
 
 (views/defview offline-sheet []
-  [react/view {:style styles/container}
-   [title :t/mobile-network-sheet-offline]
-   [details :t/mobile-network-sheet-offline-details]
+  [react/view {:flex 1}
+   [react/view {:align-items :center}
+    [title :t/mobile-network-sheet-offline]
+    [details :t/mobile-network-sheet-offline-details]]
    [list-item/list-item
     {:theme    :action
      :title    :t/mobile-network-start-syncing

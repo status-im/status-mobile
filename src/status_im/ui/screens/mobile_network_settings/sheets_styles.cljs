@@ -1,10 +1,5 @@
 (ns status-im.ui.screens.mobile-network-settings.sheets-styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as common-styles]))
-
-(def container
-  {:flex        1
-   :align-items :center})
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def title
   {:height     21
