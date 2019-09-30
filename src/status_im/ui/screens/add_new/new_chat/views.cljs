@@ -37,9 +37,10 @@
                                                   (re-frame/dispatch [:contact.ui/contact-code-submitted]))
                           :placeholder         (i18n/label :t/enter-contact-code)
                           :style               (add-new.styles/input @tw)
-                          ;; Set default-value as otherwise it will
-                          ;; be erased in global `onWillBlur` handler
-                          :default-value       new-identity
+                          ;; This input is fine to preserve inputs
+                          ;; so its contents will not be erased 
+                          ;; in onWillBlur navigation event handler
+                          :preserve-input?     true
                           :accessibility-label :enter-contact-code-input
                           :return-key-type     :go}]]
       (when-not platform/desktop?

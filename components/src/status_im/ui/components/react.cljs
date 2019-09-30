@@ -137,31 +137,35 @@
 
 (defn text-input
   [options text]
-  (let [input-ref (atom nil)]
-    (reagent/create-class
-      {:component-will-unmount #(when @input-ref
-                                  (swap! text-input-refs dissoc @input-ref))
-       :reagent-render
-       (fn [options text]
-         [text-input-class
-          (merge
-            {:underline-color-android  :transparent
-             :max-font-size-multiplier max-font-size-multiplier
-             :placeholder-text-color   colors/text-gray
-             :placeholder              (i18n/label :t/type-a-message)
-             :ref                      (fn [r]
-                                         ;; Store input and its defaultValue
-                                         ;; one we receive a non-nil ref
-                                         (when (and r (nil? @input-ref))
-                                           (swap! text-input-refs assoc r (:default-value options)))
-                                         (reset! input-ref r)
-                                         (when (:ref options)
-                                           ((:ref options) r)))
-             :value                    text}
-            (-> options
-                (dissoc :ref)
-                (update :style typography/get-style)
-                (update :style dissoc :line-height)))])})))
+  (let [render-fn (fn [options text]
+                    [text-input-class
+                     (merge
+                       {:underline-color-android  :transparent
+                        :max-font-size-multiplier max-font-size-multiplier
+                        :placeholder-text-color   colors/text-gray
+                        :placeholder              (i18n/label :t/type-a-message)
+                        :value                    text}
+                       (-> options
+                           (dissoc :preserve-input?)
+                           (update :style typography/get-style)
+                           (update :style dissoc :line-height)))])]
+    (if (:preserve-input? options)
+      render-fn
+      (let [input-ref (atom nil)]
+        (reagent/create-class
+          {:component-will-unmount #(when @input-ref
+                                      (swap! text-input-refs dissoc @input-ref))
+           :reagent-render
+           (fn [options text]
+             (render-fn (assoc options :ref                      
+                               (fn [r]
+                                 ;; Store input and its defaultValue
+                                 ;; one we receive a non-nil ref
+                                 (when (and r (nil? @input-ref))
+                                   (swap! text-input-refs assoc r (:default-value options)))
+                                 (reset! input-ref r)
+                                 (when (:ref options)
+                                   ((:ref options) r)))) text))})))))
 
 (defn i18n-text
   [{:keys [style key]}]
