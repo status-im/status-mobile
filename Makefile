@@ -101,6 +101,10 @@ disable-githooks: ##@prepare Disables lein githooks
 		-e 's|:pre-commit|;; :pre-commit|' project.clj; \
 	rm project.clj~
 
+pod-install: export TARGET_OS := ios
+pod-install: ##@prepare Run 'pod install' to install podfiles and update Podfile.lock
+	cd ios && pod install; cd --
+
 #----------------
 # Release builds
 #----------------
