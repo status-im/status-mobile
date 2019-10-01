@@ -106,7 +106,11 @@ pipeline {
         script {
           def urls = apks.collect { cmn.utils.uploadArtifact(it) }
           /* return only the universal APK */
-          env.PKG_URL = urls.find { it.contains('universal') }
+          if (urls.size() > 1) { 
+            env.PKG_URL = urls.find { it.contains('universal') }
+          } else { /* if no universal is available pick first */
+            env.PKG_URL = urls.first()
+          }
           /* build type specific */
           switch (btype) {
             case 'release':
@@ -114,7 +118,7 @@ pipeline {
             case 'nightly':
               env.DIAWI_URL = android.uploadToDiawi(); break;
             case 'e2e':
-              env.SAUCE_URL = android.uploadToSauceLabs()
+              env.SAUCE_URL = android.uploadToSauceLabs(); break;
           }
         }
       }

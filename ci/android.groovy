@@ -14,9 +14,11 @@ def bundle() {
   switch (btype) {
     case 'e2e':
       env.ANDROID_ABI_INCLUDE="x86" /* e2e builds are used with simulators */
+      break
     case 'release':
       env.ANDROID_ABI_SPLIT="true"
       gradleOpt += "-PreleaseVersion='${utils.getVersion()}'"
+      break
   }
 
   /* credentials necessary to open the keystore and sign the APK */
@@ -69,6 +71,9 @@ def extractArchFromAPK(name) {
   if (matches.size() > 0) {
     return matches[0][1]
   }
+  if (utils.getBuildType() == 'e2e') {
+    return 'x86'
+  }
   /* non-release builds make universal APKs */
   return 'universal'
 }
@@ -82,7 +87,7 @@ def renameAPKs() {
   def apkGlob = 'result/*.apk'
   def found = findFiles(glob: apkGlob)
   if (found.size() == 0) {
-    error("APKs not found via glob: ${apkGlob}")
+    throw "APKs not found via glob: ${apkGlob}"
   }
   def renamed = []
   /* rename each for upload & archiving */
@@ -113,7 +118,7 @@ def uploadToSauceLabs() {
   if (changeId != null) {
     env.SAUCE_LABS_NAME = "${changeId}.apk"
   } else {
-    def pkg = utils.pkgFilename(utils.getBuildType(), 'apk')
+    def pkg = utils.pkgFilename(utils.getBuildType(), 'apk', 'x86')
     env.SAUCE_LABS_NAME = "${pkg}"
   }
   withCredentials([
