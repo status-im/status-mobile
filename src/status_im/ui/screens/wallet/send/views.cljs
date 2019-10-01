@@ -27,7 +27,8 @@
      [topbar/simple-toolbar (i18n/label :t/send-transaction)]
      [react/view components.styles/flex
       [wallet.components/network-info]
-      [react/scroll-view {:keyboard-should-persist-taps :always
+      [react/scroll-view {:keyboard-should-persist-taps :never
+                          :keyboard-dismiss-mode        :on-drag
                           :ref                          #(reset! scroll %)
                           :on-content-size-change       #(when (and scroll @scroll)
                                                            (.scrollToEnd @scroll))}
