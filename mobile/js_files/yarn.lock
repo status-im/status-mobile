@@ -4900,9 +4900,9 @@ react-native-splash-screen@^3.2.0:
   integrity sha512-Ls9qiNZzW/OLFoI25wfjjAcrf2DZ975hn2vr6U9gyuxi2nooVbzQeFoQS5vQcbCt9QX5NY8ASEEAtlLdIa6KVg==
 
 react-native-status-keycard@^2.5.11:
-  version "2.5.11"
-  resolved "https://registry.yarnpkg.com/react-native-status-keycard/-/react-native-status-keycard-2.5.11.tgz#ba7d6b417ca3de345b7da27997d799ece6de6b68"
-  integrity sha512-yc1Jkr+mKJpyd8QRJuYFchzkZ8ANDSC2CPYVKJJN2i93RReft3o2cHAi+Sn5LxI5Ex5ZpLaEzdL5ezG2EWbrjA==
+  version "2.5.12"
+  resolved "https://registry.yarnpkg.com/react-native-status-keycard/-/react-native-status-keycard-2.5.12.tgz#96cf98f955d3a354d0c4e9324e25fd359b99206c"
+  integrity sha512-QCGiL5Sir8Gm53dG+PXB7fFGWLozej3GPt12dj9aU5EdNUPL7qG5gYCKFRlKMV/nPlpvKBikY4h1dDxwoCEcBg==
 
 react-native-svg@9.8.4:
   version "9.8.4"
