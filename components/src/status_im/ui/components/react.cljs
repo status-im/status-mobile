@@ -224,8 +224,9 @@
          (.catch show-access-error)))))
 
 ;; Net info
-
-(def net-info (.-default js-dependencies/net-info))
+(def net-info (if platform/desktop?
+                (get-react-property "NetInfo")
+                (.-default js-dependencies/net-info)))
 
 ;; Clipboard
 

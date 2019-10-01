@@ -43,7 +43,7 @@ let
                 ];
                 dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".gradle" "build" "intermediates" "libs" "obj" ];
                 filesToInclude = [ ".babelrc" ];
-                filesToExclude = [ "android/gradlew" ];
+                filesToExclude = [ "VERSION" "android/gradlew" ];
                 root = path;
               };
           };

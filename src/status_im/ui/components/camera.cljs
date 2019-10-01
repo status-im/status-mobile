@@ -2,18 +2,21 @@
   (:require [goog.object :as object]
             [reagent.core :as reagent]
             [clojure.walk :as walk]
-            [status-im.react-native.js-dependencies :as js-dependencies]))
+            [status-im.react-native.js-dependencies :as js-dependencies]
+            [status-im.utils.platform :as platform]))
 
 (def default-camera
   (-> js-dependencies/camera
       (object/get "RNCamera")))
 
 (defn- constants [t]
-  (-> default-camera
-      (object/get "Constants")
-      (object/get t)
-      (js->clj)
-      (walk/keywordize-keys)))
+  (if platform/desktop?
+    nil
+    (-> default-camera
+        (object/get "Constants")
+        (object/get t)
+        (js->clj)
+        (walk/keywordize-keys))))
 
 (def aspects (constants "Orientation"))
 (def capture-targets (constants "CaptureTarget"))

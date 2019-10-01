@@ -122,6 +122,7 @@ function compile() {
 
   local EXTERNAL_MODULES_DIR="$(jq -r '.desktopExternalModules | @tsv | @text' "$jsPackagePath" | tr '\t' ';')"
   local DESKTOP_FONTS="$(jq -r '.desktopFonts | @tsv | @text' "$jsPackagePath" | tr '\t' ';')"
+  local DESKTOP_IMAGES="$(jq -r '.desktopImages | @tsv | @text' "$jsPackagePath" | tr '\t' ';')"
   pushd desktop
     rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake Makefile modules reportApp/CMakeFiles desktop/node_modules/google-breakpad/CMakeFiles desktop/node_modules/react-native-keychain/desktop/qtkeychain-prefix/src/qtkeychain-build/CMakeFiles desktop/node_modules/react-native-keychain/desktop/qtkeychain
     if is_windows_target; then
@@ -142,6 +143,7 @@ function compile() {
           -DCMAKE_BUILD_TYPE=Release \
           -DEXTERNAL_MODULES_DIR="$EXTERNAL_MODULES_DIR" \
           -DDESKTOP_FONTS="$DESKTOP_FONTS" \
+          -DDESKTOP_IMAGES="$DESKTOP_IMAGES" \
           -DJS_BUNDLE_PATH="$JS_BUNDLE_PATH" || exit 1
     make -S -j5 || exit 1
   popd
@@ -322,7 +324,7 @@ if is_macos; then
     local exeDir="$contentsDir/MacOS"
 
     [ $VERBOSE_LEVEL -ge 1 ] && echo "Checking rpaths in ${dylib}"
-  
+
     # Walk through the dependencies of $dylib
     local dependencies=$(otool -L "$dylib" | grep -E "\s+/nix/" | sed "s|@executable_path|$exeDir|" | awk -F "(" '{print $1}' | xargs)
     local moduleDirPath=$(dirname $dylib)
@@ -399,7 +401,7 @@ function bundleMacOS() {
     local usrBinPath=$(joinExistingPath "$WORKFOLDER" "$contentsPath/MacOS")
 
     cp -r assets/share/assets $contentsPath/Resources
-    ln -sf ../Resources/assets ../Resources/ubuntu-server ../Resources/node_modules $usrBinPath
+    ln -sf ../Resources/assets ../Resources/ubuntu-server $usrBinPath
     chmod +x $contentsPath/Resources/ubuntu-server
     cp ../desktop/bin/Status $usrBinPath/Status
     cp ../desktop/bin/reportApp $usrBinPath

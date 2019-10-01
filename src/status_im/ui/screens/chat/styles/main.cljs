@@ -273,6 +273,9 @@
   {:color colors/blue
    :margin-bottom 40})
 
+(def select-chat
+  {:color colors/gray})
+
 (def messages-list-vertical-padding 46)
 
 (def are-you-friends-bubble

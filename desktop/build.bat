@@ -25,6 +25,7 @@ SET option
 echo "build.bat external modules paths: "%option-e%
 echo "build.bat JS bundle path: "%option-j%
 echo "build.bat desktop fonts: "%option-f%
+echo "build.bat desktop images: "%option-i%
 echo "build.bat cmake generator: "%option-g%
 
 @rem Workaround
@@ -32,4 +33,4 @@ echo "build.bat cmake generator: "%option-g%
 
 @rem Build project
 echo %CD%
-cmake -DCMAKE_BUILD_TYPE=Debug -G %option-g% -DEXTERNAL_MODULES_DIR=%option-e% -DJS_BUNDLE_PATH=%option-j% -DDESKTOP_FONTS=%option-f% . && cmake --build .
+cmake -DCMAKE_BUILD_TYPE=Debug -G %option-g% -DEXTERNAL_MODULES_DIR=%option-e% -DJS_BUNDLE_PATH=%option-j% -DDESKTOP_FONTS=%option-f% -DDESKTOP_IMAGES=%option-i% . && cmake --build .

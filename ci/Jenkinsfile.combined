@@ -22,7 +22,7 @@ pipeline {
         cmn = load('ci/common.groovy')
         gh  = load('ci/github.groovy')
         /* just for a shorter access */
-        btype = cmn.utils.getBuildType() 
+        btype = cmn.utils.getBuildType()
       } }
     }
     stage('Build') {

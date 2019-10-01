@@ -6,9 +6,10 @@ let
   inherit (stdenv.lib) catAttrs concatStrings optional unique;
 
   platform = callPackage ../platform.nix { inherit target-os; };
-  linuxPlatform = callPackage ./linux { inherit status-go; };
-  darwinPlatform = callPackage ./macos { inherit status-go darwin; };
-  windowsPlatform = callPackage ./windows { inherit go; };
+  baseImageFactory = callPackage ./base-image { inherit stdenv; };
+  linuxPlatform = callPackage ./linux { inherit stdenv status-go baseImageFactory; };
+  darwinPlatform = callPackage ./macos { inherit stdenv status-go darwin baseImageFactory; };
+  windowsPlatform = callPackage ./windows { inherit stdenv go baseImageFactory; };
   snoreNotifySources = callPackage ./cmake/snorenotify { };
   qtkeychainSources = callPackage ./cmake/qtkeychain { };
   selectedSources =

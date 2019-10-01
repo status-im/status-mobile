@@ -14,11 +14,12 @@
 (def last-message-container
   {:flex-shrink 1})
 
-(def last-message-text
+(styles/def last-message-text
   {:flex        1
    :align-self  :stretch
    :line-height 22
-   :color       colors/gray})
+   :color       colors/gray
+   :desktop     {:max-height 20}})
 
 (def search-input-height 56)
 

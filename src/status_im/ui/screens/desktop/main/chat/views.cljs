@@ -66,10 +66,10 @@
 (views/defview message-author-name [{:keys [from]}]
   (views/letsubs [{:keys [username]} [:contacts/contact-name-by-identity from]]
     [react/view {:flex-direction :row}
-     (when incoming-name
-       [react/text {:style styles/author} incoming-name])
+     (when username
+       [react/text {:style styles/author} username])
      [react/text {:style styles/author-generated}
-      (str (when incoming-name " • ") (gfycat/generate-gfy from))]]))
+      (str (when username " • ") (gfycat/generate-gfy from))]]))
 
 (views/defview member-photo [from]
   (views/letsubs [current-public-key [:multiaccount/public-key]

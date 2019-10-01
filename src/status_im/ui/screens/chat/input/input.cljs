@@ -89,7 +89,6 @@
        :auto-capitalize        :sentences}
       (when cooldown-enabled?
         {:placeholder (i18n/label :cooldown/text-input-disabled)}))]))
-;)
 
 (defview invisible-input [{:keys [set-layout-width-fn value]}]
   (letsubs [{:keys [input-text]} [:chats/current-chat]]

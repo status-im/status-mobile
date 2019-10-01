@@ -1,10 +1,10 @@
 { stdenv, callPackage,
-  conan, nsis, go }:
+  conan, nsis, go, baseImageFactory }:
 
 assert stdenv.isLinux;
 
 let
-  baseImage = callPackage ./base-image { };
+  baseImage = baseImageFactory "windows";
 
 in {
   buildInputs = stdenv.lib.optionals stdenv.isLinux [

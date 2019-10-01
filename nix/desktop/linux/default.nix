@@ -1,5 +1,5 @@
 { stdenv, callPackage,
-  appimagekit, patchelf, qt5, status-go }:
+  appimagekit, patchelf, qt5, status-go, baseImageFactory }:
 
 with stdenv;
 
@@ -7,7 +7,7 @@ assert isLinux;
 
 let
   inherit (lib) concatStrings catAttrs;
-  baseImage = callPackage ./base-image { };
+  baseImage = baseImageFactory "linux";
   appimagekit = callPackage ./appimagekit { };
   linuxdeployqt = callPackage ./linuxdeployqt { inherit appimagekit; };
 
@@ -16,7 +16,6 @@ in {
     appimagekit
     linuxdeployqt
     patchelf
-    baseImage
     qt5.full
   ] ++ status-go.buildInputs;
 

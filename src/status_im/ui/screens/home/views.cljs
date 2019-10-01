@@ -133,7 +133,7 @@
                          (when platform/ios?
                            {:margin-bottom tabs.styles/tabs-diff})
                          (when two-pane-ui-enabled?
-                           {:border-right-width 1 :border-right-color colors/black-transparent}))
+                           {:border-right-width 1 :border-right-color colors/gray-lighter}))
        [status-bar/status-bar {:type :main}]
        [react/keyboard-avoiding-view {:style     {:flex 1}
                                       :on-layout (fn [e]

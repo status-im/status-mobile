@@ -69,9 +69,10 @@
        (when (pos? (if count @count 0))
          [react/view tabs.styles/counter
           [components.common/counter @count]])]
-      [react/view {:style tabs.styles/tab-title-container}
-       [react/text {:style (tabs.styles/new-tab-title active?)}
-        label]]]]))
+      (when-not platform/desktop?
+        [react/view {:style tabs.styles/tab-title-container}
+         [react/text {:style (tabs.styles/new-tab-title active?)}
+          label]])]]))
 
 (defn tabs [current-view-id]
   [react/view
@@ -132,11 +133,18 @@
       (when-not (contains? #{:enter-pin-login
                              :enter-pin-sign
                              :enter-pin-settings} view-id)
-        (if platform/ios?
-          [tabs-animation-wrapper-ios
-           [react/animated-view
-            {:style (tabs.styles/animated-container visible? keyboard-shown?)}
-            [tabs tab]]]
+        (case platform/os
+          "ios" [tabs-animation-wrapper-ios
+                 [react/animated-view
+                  {:style (tabs.styles/animated-container visible? keyboard-shown?)}
+                  [tabs tab]]]
+          "android" [tabs-animation-wrapper-android
+                     keyboard-shown?
+                     view-id
+                     [react/animated-view
+                      {:style (tabs.styles/animated-container visible? keyboard-shown?)}
+                      [tabs tab]]]
+          "desktop"
           [tabs-animation-wrapper-android
            keyboard-shown?
            view-id

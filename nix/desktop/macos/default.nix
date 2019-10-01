@@ -1,5 +1,5 @@
 { stdenv, callPackage,
-  darwin, qt5, status-go }:
+  darwin, qt5, status-go, baseImageFactory }:
 
 with darwin.apple_sdk.frameworks;
 
@@ -7,7 +7,7 @@ assert stdenv.isDarwin;
 
 let
   inherit (stdenv.lib) concatStrings catAttrs;
-  baseImage = callPackage ./base-image { };
+  baseImage = baseImageFactory "macos";
 
 in {
   buildInputs = [

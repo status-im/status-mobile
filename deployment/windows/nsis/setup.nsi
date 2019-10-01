@@ -1,7 +1,7 @@
 ;--------------------------------
 ; Build environment
 ;--------------------------------
- 
+
   ;Unicode true
   ;!define top_srcdir @top_srcdir@
   ;!define base_image_dir ""
@@ -23,15 +23,15 @@
   !define               UninstallRegKeyPath         "Software\Microsoft\Windows\CurrentVersion\Uninstall\Status Desktop"
 
   !addplugindir         plugins/x86-ansi
- 
+
 ;--------------------------------
 ;General
 ;--------------------------------
- 
+
   ;Name and file
   Name    "Status Desktop ${VERSION}"
   OutFile "${top_srcdir}/${SetupExeFileName}"
-  
+
   SetCompressor /FINAL ${COMPRESSION_TYPE} ${COMPRESSION_ALGO}
 
   ; Default installation folder
@@ -86,7 +86,7 @@
 ;--------------------------------
 ;Variables
 ;--------------------------------
- 
+
   Var MUI_TEMP
   Var STARTMENU_FOLDER
   Var PREVIOUS_INSTALLDIR
@@ -108,16 +108,16 @@
 ;--------------------------------
 ;Interface Settings
 ;--------------------------------
- 
+
   !define MUI_ICON "${top_srcdir}/deployment/windows/status.ico"
   ;!define MUI_UNICON "${srcdir}/uninstall.ico"
- 
+
   !define MUI_ABORTWARNING
 
 ;--------------------------------
 ;Memento settings
 ;--------------------------------
- 
+
 ;!define MEMENTO_REGISTRY_ROOT SHELL_CONTEXT
 ;!define MEMENTO_REGISTRY_KEY "${AppRegistryKeyPath}"
 
@@ -159,11 +159,11 @@ Function GetUserInfo
   ${Else}
     StrCpy $IS_ADMIN 0
   ${EndIf}
- 
+
 FunctionEnd
 
 Function UpdateShellVarContext
- 
+
   ${If} $ALL_USERS == 1
     SetShellVarContext all
     DetailPrint "Installing for all users"
@@ -262,31 +262,31 @@ Function ReadPreviousVersion
 FunctionEnd
 
 Function LoadPreviousSettings
- 
+
   ; Component selection
   ;${MementoSectionRestore}
- 
+
   ; Startmenu
   !define ID "Application"
- 
+
   !ifdef MUI_STARTMENUPAGE_${ID}_REGISTRY_ROOT & MUI_STARTMENUPAGE_${ID}_REGISTRY_KEY & MUI_STARTMENUPAGE_${ID}_REGISTRY_VALUENAME
- 
+
     ReadRegStr $mui.StartMenuPage.RegistryLocation "${MUI_STARTMENUPAGE_${ID}_REGISTRY_ROOT}" "${MUI_STARTMENUPAGE_${ID}_REGISTRY_KEY}" "${MUI_STARTMENUPAGE_${ID}_REGISTRY_VALUENAME}"
- 
+
     ${if} $mui.StartMenuPage.RegistryLocation != ""
       StrCpy "$STARTMENU_FOLDER" $mui.StartMenuPage.RegistryLocation
     ${else}
       StrCpy "$STARTMENU_FOLDER" ""
     ${endif}
- 
+
     !undef ID
- 
+
   !endif
- 
+
   ${If} $PREVIOUS_INSTALLDIR != ""
     StrCpy $INSTDIR $PREVIOUS_INSTALLDIR
   ${EndIf}
- 
+
 FunctionEnd
 
 Function ReadUpdateCommandline
@@ -339,7 +339,7 @@ Function ReadQuiet
 FunctionEnd
 
 Function .onInit
- 
+
   Pop $OldRunDir
 
   ; Store command line
@@ -382,14 +382,14 @@ uac_tryagain:
     ; The UAC plugin changes the error level even in the inner process, reset it.
     SetErrorLevel -1
   ${EndIf}
- 
+
  ; /update argument
   Call ReadUpdateCommandline
 
   Call ReadSkipLicense
 
   Call GetUserInfo
- 
+
   ; Initialize $ALL_USERS with default value
   ${If} $IS_ADMIN == 1
     StrCpy $ALL_USERS 1
@@ -397,11 +397,11 @@ uac_tryagain:
     StrCpy $ALL_USERS 0
   ${EndIf}
   Call UpdateShellVarContext
- 
+
   ; See if previous version exists
   ; This can change ALL_USERS
   Call ReadPreviousVersion
- 
+
   ${If} $PREVIOUS_VERSION != ""
     StrCpy $REINSTALL_UNINSTALL 1
   ${EndIf}
@@ -444,29 +444,29 @@ uac_tryagain:
   ${EndIf}
 
   StrCpy $ALL_USERS_DEFAULT $ALL_USERS
- 
+
 FunctionEnd
 
 Function StatusVersionCompare
- 
+
   Exch $1
   Exch
   Exch $0
- 
+
   Push $2
   Push $3
   Push $4
- 
+
 versioncomparebegin:
   ${If} $0 == ""
   ${AndIf} $1 == ""
     StrCpy $PREVIOUS_VERSION_STATE "same"
     goto versioncomparedone
   ${EndIf}
- 
+
   StrCpy $2 0
   StrCpy $3 0
- 
+
   ; Parse rc / beta suffixes for segments
   StrCpy $4 $0 2
   ${If} $4 == "rc"
@@ -480,7 +480,7 @@ versioncomparebegin:
       StrCpy $2 10000
     ${EndIf}
   ${EndIf}
- 
+
   StrCpy $4 $1 2
   ${If} $4 == "rc"
     StrCpy $3 100
@@ -493,9 +493,9 @@ versioncomparebegin:
       StrCpy $3 10000
     ${EndIf}
   ${EndIf}
- 
+
 split1loop:
- 
+
   StrCmp $0 "" split1loopdone
   StrCpy $4 $0 1
   StrCpy $0 $0 "" 1
@@ -504,9 +504,9 @@ split1loop:
   StrCpy $2 $2$4
   goto split1loop
 split1loopdone:
- 
+
 split2loop:
- 
+
   StrCmp $1 "" split2loopdone
   StrCpy $4 $1 1
   StrCpy $1 $1 "" 1
@@ -515,7 +515,7 @@ split2loop:
   StrCpy $3 $3$4
   goto split2loop
 split2loopdone:
- 
+
   ${If} $2 > $3
     StrCpy $PREVIOUS_VERSION_STATE "newer"
   ${ElseIf} $3 > $2
@@ -523,16 +523,16 @@ split2loopdone:
   ${Else}
     goto versioncomparebegin
   ${EndIf}
- 
- 
+
+
 versioncomparedone:
- 
+
   Pop $4
   Pop $3
   Pop $2
   Pop $1
   Pop $0
- 
+
 FunctionEnd
 
 Function PageDirectoryPre
@@ -573,11 +573,11 @@ FunctionEnd
 
 Function .OnInstFailed
 FunctionEnd
- 
+
 Function .onInstSuccess
- 
+
   ;${MementoSectionSave}
- 
+
 
   ; Detect multiple install directories
   ${If} $OldRunDir != ''
@@ -615,10 +615,10 @@ Section "Status Desktop" SecMain
     DetailPrint "${NodeJsServerExeName} is running. Closing it down"
     ${nsProcess::CloseProcess} "${NodeJsServerExeName}" $R0
     DetailPrint "Waiting for ${NodeJsServerExeName} to close"
-    Sleep 2000  
+    Sleep 2000
   ${Else}
-    DetailPrint "${NodeJsServerExeName} was not found to be running"        
-  ${EndIf}    
+    DetailPrint "${NodeJsServerExeName} was not found to be running"
+  ${EndIf}
 
   ${nsProcess::Unload}
 
@@ -634,6 +634,9 @@ Section "Status Desktop" SecMain
 
   SetOutPath "$INSTDIR\assets\resources\fonts"
   File /r "${top_srcdir}\resources\fonts\"
+
+  SetOutPath "$INSTDIR\assets\desktop\resources"
+  File /r "${top_srcdir}\desktop\resources\"
 
   SetOutPath "$INSTDIR\assets\resources\images"
   File /r "${top_srcdir}\resources\images\"
@@ -713,7 +716,7 @@ Section "Status Desktop" SecMain
   WriteRegStr SHCTX "Software\Microsoft\Windows\CurrentVersion\App Paths\${AppExeName}" "Path" "$INSTDIR"
 
 SectionEnd
- 
+
 ;--------------------------------
 ; Functions
 ;--------------------------------
@@ -765,14 +768,14 @@ FunctionEnd
 ;--------------------------------
 ; Uninstaller Variables
 ;--------------------------------
- 
+
 Var un.REMOVE_ALL_USERS
 Var un.REMOVE_CURRENT_USER
- 
+
 ;--------------------------------
 ;Uninstaller Functions
 ;--------------------------------
- 
+
 Function un.GetUserInfo
   ClearErrors
   UserInfo::GetName
@@ -787,13 +790,13 @@ Function un.GetUserInfo
   ${Else}
     StrCpy $IS_ADMIN 0
   ${EndIf}
- 
+
 FunctionEnd
- 
+
 Function un.ReadPreviousVersion
- 
+
   ReadRegStr $R0 HKLM "${AppRegistryKeyPath}" ""
- 
+
   ${If} $R0 != ""
     ;Detect version
     ReadRegStr $R2 HKLM "${AppRegistryKeyPath}" "Version"
@@ -801,9 +804,9 @@ Function un.ReadPreviousVersion
       StrCpy $R0 ""
     ${EndIf}
   ${EndIf}
- 
+
   ReadRegStr $R1 HKCU "${AppRegistryKeyPath}" ""
- 
+
   ${If} $R1 != ""
     ;Detect version
     ReadRegStr $R2 HKCU "${AppRegistryKeyPath}" "Version"
@@ -811,7 +814,7 @@ Function un.ReadPreviousVersion
       StrCpy $R1 ""
     ${EndIf}
   ${EndIf}
- 
+
   ${If} $R1 == $INSTDIR
     Strcpy $un.REMOVE_CURRENT_USER 1
   ${EndIf}
@@ -829,11 +832,11 @@ Function un.ReadPreviousVersion
       StrCpy $un.REMOVE_ALL_USERS = 1
     ${EndIf}
   ${EndIf}
- 
+
 FunctionEnd
- 
+
 Function un.onInit
- 
+
   ${un.GetParameters} $CommandLine
 
   ${un.GetOptions} $CommandLine "/quiet" $R1
@@ -846,7 +849,7 @@ Function un.onInit
 
   Call un.GetUserInfo
   Call un.ReadPreviousVersion
- 
+
   ${If} $un.REMOVE_ALL_USERS == 1
   ${AndIf} $IS_ADMIN == 0
 uac_tryagain:
@@ -869,16 +872,16 @@ uac_tryagain:
     ; The UAC plugin changes the error level even in the inner process, reset it.
     SetErrorLevel -1
   ${EndIf}
- 
+
 FunctionEnd
- 
+
 Function un.RemoveStartmenu
- 
+
   !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
- 
+
   Delete "$SMPROGRAMS\$MUI_TEMP\${UninstallLinkName}"
   Delete "$SMPROGRAMS\$MUI_TEMP\${AppLinkFileName}"
- 
+
   ${un.GetOptions} $CommandLine "/keepstartmenudir" $R1
   ${If} ${Errors}
 
@@ -922,7 +925,7 @@ FunctionEnd
 ;--------------------------------
 
 Section "Uninstall"
-  
+
   SetShellVarContext all
 
   SetDetailsPrint lastused
@@ -933,10 +936,10 @@ Section "Uninstall"
     DetailPrint "${AppExeName} is running. Closing it down"
     ${nsProcess::CloseProcess} "${AppExeName}" $R0
     DetailPrint "Waiting for ${AppExeName} to close"
-    Sleep 2000  
+    Sleep 2000
   ${Else}
-    DetailPrint "${AppExeName} was not found to be running"        
-  ${EndIf}    
+    DetailPrint "${AppExeName} was not found to be running"
+  ${EndIf}
 
   ${nsProcess::FindProcess} "${NodeJsServerExeName}" $R0
 
@@ -944,10 +947,10 @@ Section "Uninstall"
     DetailPrint "${NodeJsServerExeName} is running. Closing it down"
     ${nsProcess::CloseProcess} "${NodeJsServerExeName}" $R0
     DetailPrint "Waiting for ${NodeJsServerExeName} to close"
-    Sleep 2000  
+    Sleep 2000
   ${Else}
-    DetailPrint "${NodeJsServerExeName} was not found to be running"        
-  ${EndIf}    
+    DetailPrint "${NodeJsServerExeName} was not found to be running"
+  ${EndIf}
 
   ${nsProcess::Unload}
 
@@ -984,7 +987,7 @@ Section "Uninstall"
   RMDir "$INSTDIR\translations"
 
   Delete "$INSTDIR"
-  
+
   ${un.GetOptions} $CommandLine "/frominstall" $R1
   ${If} ${Errors}
     RMDir /r /REBOOTOK "$INSTDIR"
@@ -997,11 +1000,11 @@ Section "Uninstall"
   ${If} $un.REMOVE_ALL_USERS == 1
     SetShellVarContext all
     Call un.RemoveStartmenu
-  
+
     DeleteRegKey /ifempty HKLM "${AppRegistryKeyPath}"
     DeleteRegKey /ifempty HKLM "${OrgRegistryKeyPath}"
     DeleteRegKey HKLM "${UninstallRegKeyPath}"
-  
+
     Delete "$DESKTOP\${AppLinkFileName}"
 
     ; Remove dump key
@@ -1025,7 +1028,7 @@ Section "Uninstall"
 
     Delete "$DESKTOP\${AppLinkFileName}"
   ${EndIf}
-  
+
   DeleteRegKey SHCTX "Software\Microsoft\Windows\CurrentVersion\App Paths\${AppExeName}"
 
 SectionEnd

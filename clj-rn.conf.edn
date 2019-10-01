@@ -72,6 +72,7 @@
                    "react-native-desktop-config"
                    "react-native-desktop-shortcuts"
                    "react-native-desktop-notification"
+                   "react-native-desktop-gesture-handler"
                    "web3-utils"
                    "react-navigation"
                    "react-native-navigation-twopane"
@@ -79,7 +80,7 @@
 
  ;; Resoures
  :resource-dirs ["resources/images"
-                 "resources/icons"]
+                 "desktop/resources"]
 
  :figwheel-options {:nrepl-port 7888
                     :nrepl-middleware ["cider.nrepl/cider-middleware"

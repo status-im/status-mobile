@@ -1,6 +1,8 @@
 (ns status-im.ui.components.icons.vector-icons
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors])
+            [status-im.ui.components.colors :as colors]
+            [status-im.utils.platform :as platform]
+            [clojure.string :as string])
   (:refer-clojure :exclude [use]))
 
 (defn- match-color [color]
@@ -19,6 +21,11 @@
     :else
     colors/black))
 
+(defn icon-source [name]
+  (if platform/desktop?
+    {:uri (keyword (string/replace (clojure.core/name name) "-" "_"))}
+    {:uri (keyword (clojure.core/name name))}))
+
 (defn icon
   ([name] (icon name nil))
   ([name {:keys [color resize-mode container-style
@@ -31,15 +38,15 @@
                            {:width  (or width 24)
                             :height (or height 24)})
      :accessibility-label accessibility-label}
-    [react/image {:source {:uri (keyword (clojure.core/name name))}
-                  :style  (cond-> {:width  (or width 24)
+    [react/image {:style  (cond-> {:width  (or width 24)
                                    :height (or height 24)}
 
                             resize-mode
                             (assoc :resize-mode resize-mode)
 
                             color
-                            (assoc :tint-color (match-color color)))}]]))
+                            (assoc :tint-color (match-color color)))
+                  :source (icon-source name)}]]))
 
 (defn tiny-icon
   ([name] (tiny-icon name {}))
