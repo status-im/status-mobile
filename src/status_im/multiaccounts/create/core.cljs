@@ -52,7 +52,7 @@
   (let [{:keys [selected-id address key-code]} (:intro-wizard db)
         {:keys [address]} (get-selected-multiaccount cofx)
         hashed-password (ethereum/sha3 (security/safe-unmask-data key-code))
-        callback #(re-frame/dispatch [::store-multiaccount-success key-code])]
+        callback #(re-frame/dispatch [::store-multiaccount-success key-code %])]
     {::store-multiaccount [selected-id address hashed-password callback]}))
 
 (fx/defn intro-wizard
@@ -184,11 +184,16 @@
         name (gfycat/generate-gfy publicKey)
         photo-path (identicon/identicon publicKey)
         multiaccount-data {:name name :address address :photo-path photo-path}
-        new-multiaccount (cond-> {:address             address
+        new-multiaccount (cond-> {; address of the master key
+                                  :address             address
+                                  ;; The address from which we derive any wallet
+                                  :wallet-root-address (get-in multiaccount [:derived constants/path-wallet-root-keyword :address])
+                                  ;; The address from which we derive any chat account/encryption keys
+                                  :eip1581-address     (get-in multiaccount [:derived constants/path-eip1581-keyword :address])
                                   :name                name
                                   :photo-path          photo-path
+                                  ; public key of the chat account
                                   :public-key          publicKey
-
                                   :latest-derived-path 0
                                   :accounts            [wallet-account]
                                   :signing-phrase      signing-phrase
@@ -296,26 +301,26 @@
   {:events [::store-multiaccount-success]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)
                   (re-frame/inject-cofx ::get-signing-phrase)]}
-  [cofx password]
-  (on-multiaccount-created cofx (get-selected-multiaccount cofx) password {:seed-backed-up? false}))
+  [cofx password derived]
+  (on-multiaccount-created cofx
+                           (assoc
+                            (get-selected-multiaccount cofx)
+                            :derived
+                            (types/json->clj derived))
+                           password
+                           {:seed-backed-up? false}))
 
 (re-frame/reg-fx
  ::store-multiaccount
  (fn [[id address hashed-password callback]]
-   (status/multiaccount-store-account
+   (status/multiaccount-store-derived
     id
+    [constants/path-wallet-root
+     constants/path-eip1581
+     constants/path-whisper
+     constants/path-default-wallet]
     hashed-password
-    (fn []
-      (status/multiaccount-load-account
-       address
-       hashed-password
-       (fn [value]
-         (let [{:keys [id]} (types/json->clj value)]
-           (status/multiaccount-store-derived
-            id
-            [constants/path-whisper constants/path-default-wallet]
-            hashed-password
-            callback))))))))
+    callback)))
 
 (re-frame/reg-fx
  ::save-account-and-login

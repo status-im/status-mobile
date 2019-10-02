@@ -237,12 +237,19 @@
 
 (def ^:const status-create-address "status_createaddress")
 
-(def ^:const path-root "m/44'/60'/0'/0")
-(def ^:const path-default-wallet "m/44'/60'/0'/0/0")
-(def ^:const path-whisper "m/43'/60'/1581'/0'/0")
+; BIP44 Wallet Root Key, the extended key from which any wallet can be derived
+(def ^:const path-wallet-root "m/44'/60'/0'/0")
+; EIP1581 Root Key, the extended key from which any whisper key/encryption key can be derived
+(def ^:const path-eip1581 "m/43'/60'/1581'")
+; BIP44-0 Wallet key, the default wallet key
+(def ^:const path-default-wallet (str path-wallet-root "/0"))
+; EIP1581 Chat Key 0, the default whisper key
+(def ^:const path-whisper (str path-eip1581 "/0'/0"))
 
 (def ^:const path-default-wallet-keyword (keyword path-default-wallet))
 (def ^:const path-whisper-keyword (keyword path-whisper))
+(def ^:const path-wallet-root-keyword (keyword path-wallet-root))
+(def ^:const path-eip1581-keyword (keyword path-eip1581))
 
 ;; (ethereum/sha3 "Transfer(address,address,uint256)")
 (def ^:const event-transfer-hash "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef")

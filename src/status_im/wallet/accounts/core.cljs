@@ -21,15 +21,15 @@
 
 (re-frame/reg-fx
  ::generate-account
- (fn [{:keys [address hashed-password path-num]}]
-   (status/multiaccount-load-account
-    address
-    hashed-password
-    (fn [value]
-      (let [{:keys [id error]} (types/json->clj value)]
-        (if error
-          (re-frame/dispatch [::generate-new-account-error])
-          (let [path (str constants/path-root "/" path-num)]
+ (fn [{:keys [derivation-info hashed-password path-num]}]
+   (let [{:keys [address path]} derivation-info]
+     (status/multiaccount-load-account
+      address
+      hashed-password
+      (fn [value]
+        (let [{:keys [id error]} (types/json->clj value)]
+          (if error
+            (re-frame/dispatch [::generate-new-account-error])
             (status/multiaccount-derive-addresses
              id
              [path]
@@ -45,7 +45,7 @@
                                         {:name (str "Account " path-num)
                                          :address address
                                          :public-key public-key
-                                         :path path
+                                         :path (str constants/path-wallet-root "/" path-num)
                                          :color (rand-nth colors/account-colors)}])))))))))))))
 
 (fx/defn set-symbol-request
@@ -56,11 +56,20 @@
 (fx/defn generate-new-account
   {:events [:wallet.accounts/generate-new-account]}
   [{:keys [db]} password]
-  (when-not (get-in db [:generate-account :step])
-    {:db (assoc-in db [:generate-account :step] :generating)
-     ::generate-account {:address  (get-in db [:multiaccount :address])
-                         :path-num (inc (get-in db [:multiaccount :latest-derived-path]))
-                         :hashed-password (ethereum/sha3 password)}}))
+  (let [wallet-root-address (get-in db [:multiaccount :wallet-root-address])
+        path-num (inc (get-in db [:multiaccount :latest-derived-path]))]
+    (when-not (get-in db [:generate-account :step])
+      {:db (assoc-in db [:generate-account :step] :generating)
+       ::generate-account {:derivation-info  (if wallet-root-address
+                                               ;; Use the walllet-root-address for stored on disk keys
+                                               ;; This needs to be the RELATIVE path to the key used to derive
+                                               {:path (str "m/" path-num)
+                                                :address wallet-root-address}
+                                               ;; Fallback on the master account for keycards, use the absolute path
+                                               {:path (str constants/path-wallet-root "/" path-num)
+                                                :address  (get-in db [:multiaccount :address])})
+                           :path-num          path-num
+                           :hashed-password   (ethereum/sha3 password)}})))
 
 (fx/defn generate-new-account-error
   {:events [::generate-new-account-error]}

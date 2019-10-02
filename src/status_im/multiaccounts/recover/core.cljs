@@ -127,7 +127,10 @@
       (let [{:keys [id] :as root-data} (types/json->clj result)]
         (status-im.native-module.core/multiaccount-derive-addresses
          id
-         [constants/path-default-wallet constants/path-whisper]
+         [constants/path-wallet-root
+          constants/path-eip1581
+          constants/path-whisper
+          constants/path-default-wallet]
          (fn [result]
            (let [derived-data (types/json->clj result)]
              (re-frame/dispatch [::import-multiaccount-success
