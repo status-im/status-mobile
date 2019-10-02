@@ -2,19 +2,19 @@
 
 let
   defaultPackageSource = {
-    version = "20190923";
+    version = "20191002";
     hostSystem = "x86_64-linux";
   };
   packageSources = {
     "linux" = defaultPackageSource // {
-      sha256 = "1l2rmqc2mxlz4qp5pnl1763pzqh6y3aawxrd9336q5w35xgrgmcm";
+      sha256 = "1xqa8k00kgld82d3knfbwn90nsw2f7s8h8r8188q966fk99m4g0h";
     };
     "macos" = defaultPackageSource // {
-      sha256 = "1j73l7xry0xw922zxhbsai1391a4i15rni1pfszr3cis8v95n21v";
+      sha256 = "0nmv3agaipdlhl38wh58bgyb8pdc454gxxzig9x0sw5zp9jsaziq";
       hostSystem = "x86_64-darwin";
     };
     "windows" = defaultPackageSource // {
-      sha256 = "0sb1nqwy2ap7lr1vrk497fqrjhv7c470pm0kmrvwn4nas4gm40g5";
+      sha256 = "0p6amqz5942100zm3szwbksp2rp08ybfmgiz4bmviggg8391i0zr";
     };
   };
   packageFactory = target-os:
