@@ -67,7 +67,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.testrail_id(5325)
     @marks.critical
     def test_send_stt_from_wallet(self):
-        recipient = basic_user
+        recipient = transaction_recipients['F']
         sender = transaction_senders['Q']
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'])
@@ -369,7 +369,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_with_password.click_until_presence_of_element(send_transaction.enter_password_input)
         send_transaction.enter_password_input.send_keys(common_password)
         send_transaction.sign_button.click()
-        send_transaction.element_by_text('intrinsic gas too low', 'text').wait_for_visibility_of_element()
+        send_transaction.element_by_text('intrinsic gas too low', 'text').wait_for_visibility_of_element(20)
         send_transaction.ok_button.click()
 
         send_transaction.sign_transaction_button.click()

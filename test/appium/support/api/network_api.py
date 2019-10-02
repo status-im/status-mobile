@@ -13,25 +13,28 @@ class NetworkApi(object):
         self.network_url = 'http://api-%s.etherscan.io/api?' % pytest.config.getoption('network')
         self.faucet_url = 'https://faucet-ropsten.status.im/donate'
         self.faucet_backup_url = 'https://faucet.ropsten.be/donate'
+        self.headers = {
+        'User-Agent':"Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit\
+        /537.36 (KHTML, like Gecko) Chrome\/77.0.3865.90 Safari\/537.36", }
         self.chat_bot_url = 'http://offsite.chat:8099'
 
     def get_transactions(self, address: str) -> List[dict]:
         method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc' % address
-        return requests.request('GET', url=method).json()['result']
+        return requests.request('GET', url=method, headers=self.headers).json()['result']
 
     def get_token_transactions(self, address: str) -> List[dict]:
         method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc' % address
-        return requests.request('GET', url=method).json()['result']
+        return requests.request('GET', url=method, headers=self.headers).json()['result']
 
     def is_transaction_successful(self, transaction_hash: str) -> int:
         method = self.network_url + 'module=transaction&action=getstatus&txhash=%s' % transaction_hash
-        return not int(requests.request('GET', url=method).json()['result']['isError'])
+        return not int(requests.request('GET', url=method, headers=self.headers).json()['result']['isError'])
 
     def get_balance(self, address):
         method = self.network_url + 'module=account&action=balance&address=0x%s&tag=latest' % address
         for i in range(5):
             try:
-                return int(requests.request('GET', method).json()["result"])
+                return int(requests.request('GET', method, headers=self.headers).json()["result"])
             except ValueError:
                 pass
 
