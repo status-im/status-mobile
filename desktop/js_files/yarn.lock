@@ -1624,7 +1624,7 @@ assert-plus@1.0.0, assert-plus@^1.0.0:
   resolved "https://registry.yarnpkg.com/assert-plus/-/assert-plus-1.0.0.tgz#f12e0f3c5d77b0b1cdd9146942e4e96c1e4dd525"
   integrity sha1-8S4PPF13sLHN2RRpQuTpbB5N1SU=
 
-assert@1.4.1:
+assert@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/assert/-/assert-1.4.1.tgz#99912d591836b5a6f5b345c0f07eefc08fc65d91"
   integrity sha1-mZEtWRg2tab1s0XA8H7vwI/GXZE=
@@ -1730,7 +1730,7 @@ babel-preset-fbjs@^3.0.1, babel-preset-fbjs@^3.2.0:
     "@babel/plugin-transform-template-literals" "^7.0.0"
     babel-plugin-syntax-trailing-function-commas "^7.0.0-beta.0"
 
-babel-preset-react-native@5.0.2:
+babel-preset-react-native@^5.0.2:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/babel-preset-react-native/-/babel-preset-react-native-5.0.2.tgz#dfed62379712a9c017ff99ce4fbeac1e11d42285"
   integrity sha512-Ua5JeQ1yGK8UoydMPzE2Ghq5raOKxXzpyApYDuHi4etIbXi5+GnCin19Nu+1obLQCf2Dxy9Y/GZwI0rnNOjggA==
@@ -1994,7 +1994,7 @@ buffer-to-arraybuffer@^0.0.5:
   resolved "https://registry.yarnpkg.com/buffer-to-arraybuffer/-/buffer-to-arraybuffer-0.0.5.tgz#6064a40fa76eb43c723aba9ef8f6e1216d10511a"
   integrity sha1-YGSkD6dutDxyOrqe+PbhIW0QURo=
 
-buffer@3.6.0:
+buffer@^3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-3.6.0.tgz#a72c936f77b96bf52f5f7e7b467180628551defb"
   integrity sha1-pyyTb3e5a/UvX357RnGAYoVR3vs=
@@ -2114,7 +2114,7 @@ chalk@^2.0.0, chalk@^2.0.1, chalk@^2.3.0, chalk@^2.4.1, chalk@^2.4.2:
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
 
-chance@1.0.12:
+chance@^1.0.12:
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/chance/-/chance-1.0.12.tgz#6764c9cb7b4f34856fb780d07f0e17a6601c6c08"
   integrity sha512-W99uMuboG5CT1iToDmizEH6yQYqICzZnrSRbbXPuJErzFWLPaoiEDvwnKbESjDo/8st1n3pyh70VBMmfqPmf+Q==
@@ -2464,7 +2464,7 @@ create-error-class@^3.0.0:
   dependencies:
     capture-stack-trace "^1.0.0"
 
-create-react-class@15.6.2:
+create-react-class@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.2.tgz#cf1ed15f12aad7f14ef5f2dfe05e6c42f91ef02a"
   integrity sha1-zx7RXxKq1/FO9fLf4F5sQvke8Co=
@@ -2767,7 +2767,7 @@ emoji-regex@^7.0.1:
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-7.0.3.tgz#933a04052860c85e83c122479c4748a8e4c72156"
   integrity sha512-CwBLREIQ7LvYFB0WyRvwhq5N5qPhc6PMjD6bYggFlI5YyDgl+0vxq5VHbMOFqLg7hfWzmu8T5Z1QofhmTIhItA==
 
-emojilib@2.2.9:
+emojilib@^2.2.9:
   version "2.2.9"
   resolved "https://registry.yarnpkg.com/emojilib/-/emojilib-2.2.9.tgz#ec5722689fc148f56422c14b0dc16a901d446b75"
   integrity sha512-RbYMz3G8OFBZYsqHQp8kiM/Hsg/0bSRWG1iRPqvQ04s4RUQH+iBLFjybSM6fv2rV/vQrywOEL5m31BjnfyDUlw==
@@ -2899,7 +2899,7 @@ eth-lib@0.1.27:
     ws "^3.0.0"
     xhr-request-promise "^0.1.2"
 
-eth-phishing-detect@1.1.13:
+eth-phishing-detect@^1.1.13:
   version "1.1.13"
   resolved "https://registry.yarnpkg.com/eth-phishing-detect/-/eth-phishing-detect-1.1.13.tgz#ed718b933c8a69fef0cefa6604538824b472dbea"
   integrity sha512-1KQcKvAQIjJgFMVwxaw2+BlzM9Momzl0e+/torPdMjg7WGq6LmCIS7ddg84diH5zIQp9quGyRVIEawCCuErgVQ==
@@ -2924,7 +2924,7 @@ eventemitter3@^3.0.0:
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-3.1.2.tgz#2d3d48f9c346698fce83a85d7d664e98535df6e7"
   integrity sha512-tvtQIeLVHjDkJYnzf2dgVMxfuSGJeM/7UCG17TT4EumTfNtF+0nebF/4zWOIkCreAbtNqhGEboB6BWrwqNaw4Q==
 
-events@1.1.1:
+events@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
   integrity sha1-nr23Y1rQmccNzEwqH1AEKI6L2SQ=
@@ -3741,7 +3741,7 @@ hasha@^3.0.0:
   dependencies:
     is-stream "^1.0.1"
 
-hi-base32@0.5.0:
+hi-base32@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/hi-base32/-/hi-base32-0.5.0.tgz#61329f76a31f31008533f1c36f2473e259d64571"
   integrity sha512-DDRmxSyoYuvjUb9EnXdoiMChBZ7ZcUVJsK5Frd3kqMhuBxvmZdnBeynAVfj7/ECbn++CekcoprvC/rprHPAtow==
@@ -4925,7 +4925,7 @@ metro-minify-uglify@0.48.5:
   dependencies:
     uglify-es "^3.1.9"
 
-metro-react-native-babel-preset@0.45.6:
+metro-react-native-babel-preset@^0.45.6:
   version "0.45.6"
   resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.45.6.tgz#077ce4039d6461a1b699b215612985415f9816a9"
   integrity sha512-qh+iXlV2tDfvHYbhh1meihxnzXXXB8nF1fi8z2HFxqYDkFBM48XewXO6mLz97PL8lmuTGvX/2dYVuFtriENw1w==
@@ -6151,7 +6151,7 @@ react-devtools-core@^3.4.2:
     shell-quote "^1.6.1"
     ws "^3.3.1"
 
-react-dom@16.4.2:
+react-dom@^16.4.2:
   version "16.4.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.4.2.tgz#4afed569689f2c561d2b8da0b819669c38a0bda4"
   integrity sha512-Usl73nQqzvmJN+89r97zmeUpQDKDlh58eX6Hbs/ERdDHzeBzWy+ENk7fsGQ+5KxArV1iOFPT46/VneklK9zoWw==
@@ -6171,12 +6171,12 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-native-background-timer@2.0.0:
+react-native-background-timer@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-native-background-timer/-/react-native-background-timer-2.0.0.tgz#afdac10b7441952d570acea4a8dbb065107b5461"
   integrity sha512-vLNJIedXQZN4p3ChFsAgVHacnJqQMnLl+wBsnZuliRkmsjEHo8kQOA9fnLih/OoiDi1O3eHQvXC5L8f+RYiKgw==
 
-react-native-camera@0.10.0:
+react-native-camera@^0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-0.10.0.tgz#5d973c9a8aab95f68aede395ba310eae0c3cecdd"
   integrity sha512-qum5zdJ3GQZ/mB+SYdT8EhQVnIfmyLzwyIK9Ss4vsTGLKxKmt9tf7oGigT2t52aOy6tNglKcgYuU0cZREKGDDA==
@@ -6187,12 +6187,12 @@ react-native-camera@0.10.0:
   version "0.11.2"
   resolved "git+https://github.com/status-im/react-native-config.git#e705dac8ab459614906c060dcf699e5fe5c05d9d"
 
-react-native-dialogs@0.0.20:
+react-native-dialogs@^0.0.20:
   version "0.0.20"
   resolved "https://registry.yarnpkg.com/react-native-dialogs/-/react-native-dialogs-0.0.20.tgz#f3fb48eadba9d83fb9d4e6d7eca573494a8cefaa"
   integrity sha512-HeoU9d7wWUUAtxjcIJLaeIs/eYS2ZHTNh3kboeCKngLvfvgptd/7vZXwXdQ+xeOEek+cm95kDfMJQd2xnb+4wA==
 
-react-native-fetch-polyfill@1.1.2:
+react-native-fetch-polyfill@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/react-native-fetch-polyfill/-/react-native-fetch-polyfill-1.1.2.tgz#256b5a0abd78cc4992f7a7cf82543da2f2124a73"
   integrity sha1-JWtaCr14zEmS96fPglQ9ovISSnM=
@@ -6214,12 +6214,12 @@ react-native-gesture-handler@^1.3.0:
     invariant "^2.2.4"
     prop-types "^15.7.2"
 
-react-native-image-crop-picker@0.18.1:
+react-native-image-crop-picker@^0.18.1:
   version "0.18.1"
   resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.18.1.tgz#ebdbe72def5afb6c69aa6e2ad72fd3a7de8ee408"
   integrity sha512-63Yr+Mzl/CzDze1eqMg/GGFOODgGrixSMO+28TVGCX3982f76w/op0JKoL7zuSKz/P/mVsbi9RnHA0z6Ih/RHQ==
 
-react-native-image-resizer@1.0.0:
+react-native-image-resizer@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/react-native-image-resizer/-/react-native-image-resizer-1.0.0.tgz#d47e14943c37938e287fbd639e4db7ceb7fd8917"
   integrity sha1-1H4UlDw3k44of71jnk23zrf9iRc=
@@ -6236,7 +6236,7 @@ react-native-image-resizer@1.0.0:
   version "0.0.2"
   resolved "git+https://github.com/status-im/react-native-navigation-twopane.git#04ed5fddfb46a6a3ee30776987acb4d3b11c27d4"
 
-react-native-os@1.1.0:
+react-native-os@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/react-native-os/-/react-native-os-1.1.0.tgz#bfbe1c44d8a5b14a6f3a3a405d8ada6f547a516e"
   integrity sha1-v74cRNilsUpvOjpAXYrab1R6UW4=
@@ -6255,7 +6255,7 @@ react-native-safe-area-view@^0.14.1:
   dependencies:
     debounce "^1.2.0"
 
-react-native-splash-screen@3.0.6:
+react-native-splash-screen@^3.0.6:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.0.6.tgz#c0bbf2c8ae40a313c4c7044f55e569414ff68332"
   integrity sha512-yaTnGAHRyhduLSfD85gP3Vsf0BRePHW3aNNtDXbkbUhwIIeafu2cJH86U/qKFuKLMYLnFOXteOkP80gaYVGAYg==
@@ -6387,7 +6387,7 @@ react-transform-hmr@^1.0.4:
     global "^4.3.0"
     react-proxy "^1.1.7"
 
-react@16.6.1:
+react@^16.6.1:
   version "16.6.1"
   resolved "https://registry.yarnpkg.com/react/-/react-16.6.1.tgz#ee2aef4f0a09e494594882029821049772f915fe"
   integrity sha512-OtawJThYlvRgm9BXK+xTL7BIlDx8vv21j+fbQDjRRUyok6y7NyjlweGorielTahLZHYIdKUoK2Dp9ByVWuMqxw==
@@ -7736,7 +7736,7 @@ watch@~0.18.0:
     exec-sh "^0.2.0"
     minimist "^1.2.0"
 
-web3-utils@1.0.0-beta.36:
+web3-utils@^1.0.0-beta.36:
   version "1.0.0-beta.36"
   resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.0.0-beta.36.tgz#dc19c9aeec009b1816cc91ef64d7fe9f8ee344c9"
   integrity sha512-7ri74lG5fS2Th0fhYvTtiEHMB1Pmf2p7dQx1COQ3OHNI/CHNEMjzoNMEbBU6FAENrywfoFur40K4m0AOmEUq5A==
