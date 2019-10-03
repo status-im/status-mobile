@@ -157,6 +157,9 @@ class BaseElement(object):
     def image(self):
         return Image.open(BytesIO(base64.b64decode(self.find_element().screenshot_as_base64)))
 
+    def attribute_value(self, value):
+        return self.find_element().get_attribute(value)
+
     def is_element_image_equals_template(self, file_name: str = ''):
         if file_name:
             self.template = file_name

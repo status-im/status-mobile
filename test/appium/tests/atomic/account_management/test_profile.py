@@ -28,15 +28,88 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5741)
     @marks.high
-    def test_mobile_data_usage_popup(self):
+    def test_mobile_data_usage_popup_continue_syncing(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
+        sign_in_view.just_fyi("Enable mobile network to see popup and enable syncing")
         sign_in_view.toggle_mobile_data()
-        if not sign_in_view.find_text_part("Sync using Mobile data"):
+        if not sign_in_view.element_by_text_part("Sync using Mobile data").is_element_displayed():
             self.driver.fail('No popup about Mobile data is shown')
-        # TODO: add steps after 8973 fix
+        sign_in_view.wait_for_element_starts_with_text('Continue syncing').click()
 
-    @marks.testrail_id(5454)
+        sign_in_view.just_fyi("Check that selected option is stored in Profile")
+        profile_view = sign_in_view.profile_button.click()
+        profile_view.sync_settings_button.click()
+        profile_view.element_by_text('Mobile data').click()
+        for toggle in profile_view.use_mobile_data, profile_view.ask_me_when_on_mobile_network:
+            if not toggle.attribute_value('checked'):
+                self.errors.append("Toggles in Mobile settings are not enabled")
+
+        sign_in_view.just_fyi("Check that can join public chat and send message")
+        chat_name = sign_in_view.get_public_chat_name()
+        home = profile_view.get_back_to_home_view()
+        chat = home.join_public_chat(chat_name)
+        message = 'test message'
+        chat.chat_message_input.send_keys(message)
+        chat.send_message_button.click()
+        if not chat.chat_element_by_text(message).is_element_displayed():
+            self.errors.append("Message was not sent!")
+        self.verify_no_errors()
+
+    @marks.testrail_id(5741)
+    @marks.high
+    def test_mobile_data_usage_popup_stop_syncing(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        offline_banner_text = "History syncing offline"
+
+        sign_in_view.just_fyi("Enable mobile network to see popup and stop syncing")
+        sign_in_view.toggle_mobile_data()
+        sign_in_view.wait_for_element_starts_with_text('Stop syncing').click()
+        if not sign_in_view.wait_for_element_starts_with_text(offline_banner_text, 60):
+            self.driver.fail('No popup about offline history is shown')
+        sign_in_view.element_by_text_part(offline_banner_text).click()
+        for item in "Offline, waiting for Wi-Fi", "Start syncing", "Go to settings":
+            if not sign_in_view.element_by_text(item).is_element_displayed():
+                self.driver.fail("%s is not shown" % item)
+
+        sign_in_view.just_fyi("Start syncing in offline popup")
+        sign_in_view.element_by_text("Start syncing").click()
+        if sign_in_view.element_by_text_part(offline_banner_text).is_element_displayed():
+            self.driver.fail("Popup about offline history is shown")
+
+    @marks.testrail_id(6228)
+    @marks.high
+    def test_mobile_data_usage_settings(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        profile_view = sign_in_view.profile_button.click()
+
+        sign_in_view.just_fyi("Check default preferences")
+        profile_view.sync_settings_button.click()
+        profile_view.element_by_text('Mobile data').click()
+
+        if profile_view.use_mobile_data.attribute_value("checked"):
+            self.errors.append("Mobile data is enabled by default")
+        if not profile_view.ask_me_when_on_mobile_network.attribute_value("checked"):
+            self.errors.append("'Ask me when on mobile network' is not enabled by default")
+
+        sign_in_view.just_fyi("Disable 'ask me when on mobile network' and check that it is not shown")
+        profile_view.ask_me_when_on_mobile_network.click()
+        sign_in_view.toggle_mobile_data()
+        if sign_in_view.element_by_text("Start syncing").is_element_displayed(20):
+            self.errors.append("Popup is shown, but 'ask me when on mobile network' is disabled")
+
+        sign_in_view.just_fyi("Check 'Restore default' setting")
+        profile_view.element_by_text('Restore Defaults').click()
+        if profile_view.use_mobile_data.attribute_value("checked"):
+            self.errors.append("Mobile data is enabled by default")
+        if not profile_view.ask_me_when_on_mobile_network.attribute_value("checked"):
+            self.errors.append("'Ask me when on mobile network' is not enabled by default")
+        self.verify_no_errors()
+
+
+    @marks.testrail_id(6229)
     @marks.critical
     def test_user_can_remove_profile_picture(self):
         signin_view = SignInView(self.driver)

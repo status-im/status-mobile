@@ -503,6 +503,19 @@ class ShowENSNameInChatsToggle(BaseButton):
         self.locator = self.Locator.xpath_selector(
             "//*[@text='Show my ENS username in chats']/following-sibling::*[1][name()='android.widget.Switch'] ")
 
+class UseMobileDataToggle(BaseButton):
+    def __init__(self, driver):
+        super(UseMobileDataToggle, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@text='Use mobile data']/../*[name()='android.widget.Switch']")
+
+class AskMeWhenOnMobileNetworkToggle(BaseButton):
+    def __init__(self, driver):
+        super(AskMeWhenOnMobileNetworkToggle, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@text='Ask me when on mobile network']/../*[name()='android.widget.Switch']")
+
+
 
 class ProfileView(BaseView):
 
@@ -585,7 +598,12 @@ class ProfileView(BaseView):
         self.advertise_device_button = AdvertiseDeviceButton(self.driver)
         self.sync_all_button = SyncAllButton(self.driver)
 
+        # ENS
         self.show_ens_name_in_chats = ShowENSNameInChatsToggle(self.driver)
+
+        # Mobile Data
+        self.use_mobile_data = UseMobileDataToggle(self.driver)
+        self.ask_me_when_on_mobile_network = AskMeWhenOnMobileNetworkToggle(self.driver)
 
     def switch_network(self, network):
         self.advanced_button.click()
