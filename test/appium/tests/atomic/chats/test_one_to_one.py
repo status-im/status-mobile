@@ -69,7 +69,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         home_1.airplane_mode_button.click()  # airplane mode on primary device
 
         chat_2.element_by_text('Connecting to peers...').wait_for_invisibility_of_element(60)
-        chat_2.connection_status.wait_for_invisibility_of_element(30)
+        chat_2.connection_status.wait_for_invisibility_of_element(60)
         message_2 = 'one more message'
         chat_2.chat_message_input.send_keys(message_2)
         chat_2.send_message_button.click()

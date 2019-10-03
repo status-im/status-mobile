@@ -171,6 +171,27 @@ class CollectiblesButton(BaseButton):
         self.locator = self.Locator.text_selector('Collectibles')
 
 
+class CryptoKittiesInCollectiblesButton(BaseButton):
+    def __init__(self, driver):
+        super(CryptoKittiesInCollectiblesButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('CryptoKitties')
+
+
+class ViewInCryptoKittiesButton(BaseButton):
+    def __init__(self, driver):
+        super(ViewInCryptoKittiesButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('open-collectible-button')
+
+    def navigate(self):
+        from views.web_views.base_web_view import BaseWebView
+        return BaseWebView(self.driver)
+
+    def click(self):
+        self.wait_for_element(30).click()
+        self.driver.info('Tap on View in CryptoKitties')
+        return self.navigate()
+
+
 class BackupRecoveryPhrase(BaseButton):
     def __init__(self, driver):
         super(BackupRecoveryPhrase, self).__init__(driver)
@@ -330,6 +351,8 @@ class WalletView(BaseView):
         self.multiaccount_more_options = MultiaccountMoreOptions(self.driver)
         self.accounts_status_account = AccountElementButton(self.driver, account_name="Status account")
         self.collectibles_button = CollectiblesButton(self.driver)
+        self.cryptokitties_in_collectibles_button = CryptoKittiesInCollectiblesButton(self.driver)
+        self.view_in_cryptokitties_button = ViewInCryptoKittiesButton(self.driver)
         self.set_currency_button = SetCurrencyButton(self.driver)
         self.add_account_button = AddAccountButton(self.driver)
         self.add_an_account_button = AddAnAccountButton(self.driver)

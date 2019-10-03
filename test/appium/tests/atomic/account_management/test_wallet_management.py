@@ -226,6 +226,24 @@ class TestWalletManagement(SingleDeviceTestCase):
         if not wallet_view.element_by_text('1').is_element_displayed():
             self.driver.fail('User collectibles amount does not match')
 
+    @marks.testrail_id(5346)
+    @marks.high
+    def test_collectible_from_wallet_opens_in_browser_view(self):
+        passphrase = wallet_users['F']['passphrase']
+        signin_view = SignInView(self.driver)
+        home_view = signin_view.recover_access(passphrase=passphrase)
+        profile = home_view.profile_button.click()
+        profile.switch_network('Mainnet with upstream RPC')
+        wallet_view = profile.wallet_button.click()
+        wallet_view.set_up_wallet()
+        wallet_view.collectibles_button.click()
+        wallet_view.cryptokitties_in_collectibles_button.click()
+        web_view = wallet_view.view_in_cryptokitties_button.click()
+        web_view.element_by_text('cryptokitties.co').click()
+        cryptokitty_link = 'https://www.cryptokitties.co/kitty/1338226'
+        if not web_view.element_by_text(cryptokitty_link).is_element_displayed():
+            self.driver.fail('Cryptokitty detail page not opened')
+
     @marks.testrail_id(6208)
     @marks.high
     def test_add_custom_token(self):

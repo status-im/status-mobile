@@ -3,6 +3,7 @@ from views.base_view import BaseView
 from views.home_view import ChatElement
 
 
+
 class OpenDAppButton(BaseButton):
     def __init__(self, driver):
         super(OpenDAppButton, self).__init__(driver)
@@ -30,25 +31,30 @@ class BrowserEntry(ChatElement):
         super(BrowserEntry, self).__init__(driver, name)
         self.locator = self.Locator.xpath_selector('//*[@text="%s"]/..' % name)
 
+
 class EnsName(BaseEditBox):
     def __init__(self, driver):
         super(EnsName, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//android.widget.EditText')
+
 
 class EnsCheckName(BaseButton):
         def __init__(self, driver):
             super(EnsCheckName, self).__init__(driver)
             self.locator = self.Locator.xpath_selector('//android.widget.EditText//following-sibling::android.view.ViewGroup[1]')
 
+
 class RemoveDappButton(BaseButton):
     def __init__(self, driver):
         super(RemoveDappButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('remove-dapp-from-list')
 
+
 class ClearAllDappButton(BaseButton):
     def __init__(self, driver):
         super(ClearAllDappButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('clear-all-dapps')
+
 
 class DappsView(BaseView):
 

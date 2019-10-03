@@ -49,6 +49,14 @@ wallet_users['E']['address'] = "0x3e2e4077753d3c229a9ae332b9ca46958945e2f6"
 wallet_users['E']['public_key'] = "0x044cf0620ec3ea0aba9fb0e19cb42a6fbd6b4e74f234f0da82580564817b238cc6434745d31" \
                                   "fa1649927ba48adfa7c95991fd51940bc00a71e80b095db5b107f1b"
 
+wallet_users['F'] = dict()
+wallet_users['F']['passphrase'] = "jazz human replace save wreck merry evolve oval black expose clutch sword"
+wallet_users['F']['username'] = "Dual Sour Galapagostortoise"
+wallet_users['F']['address'] = "0x8A4339aE98df2B2e51E37631C8B4F853048D4556"
+wallet_users['F']['public_key'] = "0x049d0b39d95b20114fac79c3173a36c60a126c060dce52bba4128ab9a3885f0f058f2af9c92099" \
+                                  "315eb564412b718d8bfe697a4425e4bc603063abd4f5c45f8e57"
+
+
 # Users used in chats. E.g. as members of a group chat
 chat_users = dict()
 
