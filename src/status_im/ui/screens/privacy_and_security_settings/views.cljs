@@ -19,14 +19,15 @@
    {:type                    :small
     :title                   :t/back-up-seed-phrase
     :accessibility-label     :back-up-recovery-phrase-button
+    :disabled?               (not show-backup-seed?)
     ;; TODO - remove container bottom margin
     ;; when items below are implemented
     :container-margin-bottom 8
     :on-press
     #(re-frame/dispatch [:navigate-to :backup-seed])
     :accessories
-    [(when show-backup-seed? [components.common/counter {:size 22} 1])
-     :chevron]}
+    (when show-backup-seed? [[components.common/counter {:size 22} 1]
+                             :chevron])}
    {:type                    :small
     :title                   (str (i18n/label :t/lock-app-with) " " (biometric/get-label supported-biometric-auth))
     :container-margin-bottom 8
