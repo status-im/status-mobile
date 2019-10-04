@@ -1,5 +1,4 @@
 import random
-
 import pytest
 
 from support.utilities import get_merged_txs_list
@@ -461,7 +460,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.send_transaction_button.click()
         wallet_view.back_button.click()
         balance_after_receiving_tx = float(wallet_view.eth_asset_value.text)
-        if balance_after_receiving_tx != float(transaction_amount):
+        expected_balance = self.network_api.get_rounded_balance(balance_after_receiving_tx, transaction_amount)
+        if balance_after_receiving_tx != expected_balance:
             self.driver.fail('New account balance %s does not match expected %s after receiving a transaction' % (
                 balance_after_receiving_tx, transaction_amount))
 
@@ -484,12 +484,16 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
 
         wallet_view.just_fyi("Verify total ETH on main wallet view")
+        self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount_1)
+        self.network_api.verify_balance_is_updated((updated_balance + transaction_amount_1), status_account_address)
         send_transaction.back_button.click()
         balance_of_sub_account = float(self.network_api.get_balance(sub_account_address)) / 1000000000000000000
         balance_of_status_account = float(self.network_api.get_balance(status_account_address)) / 1000000000000000000
-        expected_balance = str(float(balance_after_receiving_tx) - transaction_amount_1 - float(total_fee))
         total_eth_from_two_accounts = float(wallet_view.eth_asset_value.text)
-        if total_eth_from_two_accounts != (balance_of_status_account + balance_of_sub_account):
+        expected_balance = self.network_api.get_rounded_balance(total_eth_from_two_accounts,
+                                                                (balance_of_status_account + balance_of_sub_account))
+
+        if total_eth_from_two_accounts != expected_balance:
             self.driver.fail('Total wallet balance %s != of Status account (%s) + SubAccount (%s)' % (
                 total_eth_from_two_accounts, balance_of_status_account, balance_of_sub_account))
 

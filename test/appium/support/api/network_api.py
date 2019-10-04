@@ -5,6 +5,7 @@ import pytest
 import requests
 import time
 from json import JSONDecodeError
+from decimal import Decimal
 
 
 class NetworkApi(object):
@@ -130,3 +131,10 @@ class NetworkApi(object):
         url = '%s/ping/%s?count=%s&interval=%s' % (self.chat_bot_url, chat_name, messages_number, interval)
         text = requests.request('GET', url).text
         return [i.split(maxsplit=5)[-1].strip('*') for i in text.splitlines()]
+
+    def get_rounded_balance(self, fetched_balance, actual_balance):
+        fetched_balance, actual_balance = str(fetched_balance), str(actual_balance)
+        # get actual number of decimals on account balance
+        decimals = abs(Decimal(fetched_balance).as_tuple().exponent)
+        rounded_balance = round(float(actual_balance), decimals)
+        return rounded_balance

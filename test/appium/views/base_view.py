@@ -386,6 +386,7 @@ class BaseView(object):
                 counter += 1
 
     def just_fyi(self, string):
+        self.driver.info('=========================================================================')
         self.driver.info(string)
 
     def click_system_back_button(self):

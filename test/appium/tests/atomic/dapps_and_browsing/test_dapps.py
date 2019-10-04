@@ -28,12 +28,12 @@ class TestDApps(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(passphrase=user['passphrase'])
         status_test_dapp = home_view.open_status_test_dapp(allow_all=False)
-        status_test_dapp.status_api_button.click()
-        status_test_dapp.request_contact_code_button.click()
+        status_test_dapp.status_api_button.click_until_presence_of_element(status_test_dapp.request_contact_code_button)
+        status_test_dapp.request_contact_code_button.click_until_presence_of_element(status_test_dapp.deny_button)
         status_test_dapp.deny_button.click()
         if status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
             pytest.fail('Public key is returned but access was not allowed')
-        status_test_dapp.request_contact_code_button.click()
+        status_test_dapp.request_contact_code_button.click_until_presence_of_element(status_test_dapp.deny_button)
         status_test_dapp.allow_button.click()
         if not status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
             pytest.fail('Public key is not returned')
