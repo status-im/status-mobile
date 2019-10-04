@@ -993,9 +993,9 @@
     ws "^1.1.0"
 
 "@react-native-community/netinfo@^4.1.5":
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-4.2.2.tgz#15035730a230e743b2e5429f2bbd75b0851a4b98"
-  integrity sha512-ktMlUCYn+vKL8PQH/e6Vpoygvn3gU+Ibc1uD7m+pYhQwiKHD7eqCRAkR1Xt5vc2L3Xy3N1z0tMXlxzK4IKbYyQ==
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-4.3.1.tgz#0601954eae93c1e06647b74600c0b82c65689d22"
+  integrity sha512-djUdmm/RCnKKCNR6w6APDLH1oRhS7EgMHcgghU4cxlgEGJMQ4yVO6jl+99DpI3pY4WElahgU9D8IK1PKTz6rig==
 
 "@react-navigation/core@~3.4.1":
   version "3.4.2"
