@@ -457,6 +457,19 @@
    (or (get sett :log-level)
        config/log-level-status-go)))
 
+(re-frame/reg-sub
+ :dapps-address
+ :<- [:multiaccount]
+ (fn [acc]
+   (get acc :dapps-address)))
+
+(re-frame/reg-sub
+ :dapps-account
+ :<- [:multiaccount]
+ :<- [:dapps-address]
+ (fn [[acc address]]
+   (some #(when (= (:address %) address) %) (:accounts acc))))
+
 ;;CHAT ==============================================================================================================
 
 (re-frame/reg-sub

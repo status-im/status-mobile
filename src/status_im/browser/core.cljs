@@ -21,7 +21,9 @@
             [status-im.utils.types :as types]
             [status-im.utils.universal-links.core :as universal-links]
             [taoensso.timbre :as log]
-            [status-im.signing.core :as signing]))
+            [status-im.signing.core :as signing]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
 
 (fx/defn update-browser-option
   [{:keys [db]} option-key option-value]
@@ -311,29 +313,37 @@
         (ethereum/address? second-param)
         [second-param first-param]))))
 
+(fx/defn send-to-bridge
+  [cofx message]
+  {:browser/send-to-bridge {:message message
+                            :webview (get-in cofx [:db :webview-bridge])}})
+
 (fx/defn web3-send-async
   [cofx {:keys [method params id] :as payload} message-id]
-  (let [message? (constants/web3-sign-message? method)]
+  (let [message? (constants/web3-sign-message? method)
+        dapps-address (get-in cofx [:db :multiaccount :dapps-address])]
     (if (or message? (= constants/web3-send-transaction method))
       (let [[address data] (when message? (normalize-sign-message-params params))]
         (when (or (not message?) (and address data))
           (signing/sign cofx (merge
                               (if message?
-                                {:message {:address address :data data :typed? (not= constants/web3-personal-sign method)}}
-                                {:tx-obj  (first params)})
+                                {:message {:address address :data data :typed? (not= constants/web3-personal-sign method)
+                                           :from dapps-address}}
+                                {:tx-obj  (update (first params) :from #(or % dapps-address))})
                               {:on-result [:browser.dapp/transaction-on-result message-id id]
                                :on-error  [:browser.dapp/transaction-on-error message-id]}))))
-      {:browser/call-rpc [payload
-                          #(re-frame/dispatch [:browser.callback/call-rpc
-                                               {:type      constants/web3-send-async-callback
-                                                :messageId message-id
-                                                :error     %1
-                                                :result    %2}])]})))
-
-(fx/defn send-to-bridge
-  [cofx message]
-  {:browser/send-to-bridge {:message message
-                            :webview (get-in cofx [:db :webview-bridge])}})
+      (if (#{"eth_accounts" "eth_coinbase"} method)
+        (send-to-bridge cofx {:type      constants/web3-send-async-callback
+                              :messageId message-id
+                              :result    {:jsonrpc "2.0"
+                                          :id      (int id)
+                                          :result (if (= method "eth_coinbase") dapps-address [dapps-address])}})
+        {:browser/call-rpc [payload
+                            #(re-frame/dispatch [:browser.callback/call-rpc
+                                                 {:type      constants/web3-send-async-callback
+                                                  :messageId message-id
+                                                  :error     %1
+                                                  :result    %2}])]}))))
 
 (fx/defn web3-send-async-read-only
   [{:keys [db] :as cofx} dapp-name {:keys [method] :as payload} message-id]
@@ -437,7 +447,24 @@
  (fn [link]
    (list-selection/browse-in-web-browser link)))
 
+(re-frame/reg-fx
+ :browser/clear-web-data
+ (fn []
+   (status/clear-web-data)))
+
 (defn share-link [url]
   (let [link    (universal-links/generate-link :browse :external url)
         message (i18n/label :t/share-dapp-text {:link link})]
     (list-selection/open-share {:message message})))
+
+(fx/defn dapps-account-selected
+  {:events [:dapps-account-selected]}
+  [{:keys [db] :as cofx} address]
+  (fx/merge cofx
+            {:browser/clear-web-data nil}
+            (bottom-sheet/hide-bottom-sheet)
+            (browser.permissions/clear-dapps-permissions)
+            (multiaccounts.update/multiaccount-update {:dapps-address address} {})
+            #(when (= (:view-id db) :browser)
+               (merge (navigation/navigate-back %)
+                      {:dispatch [:browser.ui/browser-item-selected (get-in db [:browser/options :browser-id])]}))))

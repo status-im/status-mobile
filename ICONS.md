@@ -1,5 +1,9 @@
 # new icons
 
+## Export icons
+
+![](./export-icons.gif)
+
 ## android
 1. copy files to corresponding directories at `/Users/romanvolosovskyi/clj/status-react/android/app/src/main/res` (one of `drawable-hdpi`, `drawable-mdpi`, `drawable-xhdpi`, `drawable-xxhdpi`, `drawable-xxxhdpi` for corresponding resolution)
 If you only have 3 pngs 1x, 2x and 3x put them in mdpi, xhdpi and xxhdpi 

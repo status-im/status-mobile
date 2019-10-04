@@ -47,7 +47,7 @@
     :padding-bottom     (if (= type :section-header) 4 10)
     :align-items        :center}
    (when selected?
-     {:background-color colors/gray-transparent-40})))
+     {:background-color colors/blue-light})))
 
 (def icon-column-container
   {:margin-right     14

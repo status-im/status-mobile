@@ -15,7 +15,8 @@
    [status-im.ui.components.icons.vector-icons :as vector-icons]
    [status-im.ui.components.radio :as radio]
    [status-im.ui.components.icons.vector-icons :as icons]
-   [reagent.core :as reagent])
+   [reagent.core :as reagent]
+   [status-im.ui.screens.browser.accounts :as accounts])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn hide-sheet-and-dispatch [event]
@@ -96,6 +97,30 @@
       [react/text {:style {:line-height 22 :font-size 15 :color colors/gray}}
        (i18n/label :t/recent)]])])
 
+(views/defview select-account []
+  (views/letsubs [height [:dimensions/window-height]
+                  {:keys [accounts]} [:multiaccount]
+                  {:keys [name color] :as dapps-account} [:dapps-account]]
+    [react/view {:position           :absolute
+                 :z-index            2
+                 :align-items        :center
+                 :bottom             (+ 16 tabs.styles/tabs-diff)
+                 :left               0
+                 :right              0
+                 :padding-horizontal 32}
+     [react/touchable-highlight
+      {:accessibility-label :select-account
+       :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                 {:content        (accounts/accounts-list accounts dapps-account)
+                                                  :content-height (/ height 2)}])}
+      [react/view (styles/dapps-account color)
+       [icons/icon :main-icons/account {:color colors/white}]
+       [react/view {:flex-shrink 1}
+        [react/text {:numberOfLines 1
+                     :style         {:margin-horizontal 6 :color :white :typography :main-medium}}
+         name]]
+       [icons/icon :main-icons/dropdown {:color colors/white-transparent}]]]]))
+
 (views/defview open-dapp []
   (views/letsubs [browsers [:browser/browsers-vals]
                   url-text (atom nil)]
@@ -116,8 +141,9 @@
         [list-header false]
         [list/flat-list {:data           browsers
                          :footer         [react/view
-                                          {:style {:height     tabs.styles/tabs-diff
+                                          {:style {:height     (+ tabs.styles/tabs-diff 64)
                                                    :align-self :stretch}}]
                          :key-fn         :browser-id
                          :end-fill-color colors/white
-                         :render-fn      list-item}]])]))
+                         :render-fn      list-item}]])
+     [select-account]]))

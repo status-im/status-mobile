@@ -7,7 +7,8 @@
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.profile.db :as profile.db]
-            [status-im.utils.label :as utils.label]))
+            [status-im.utils.label :as utils.label]
+            [status-im.ui.components.radio :as radio]))
 
 (def divider
   [react/view {:height 1 :background-color colors/gray-lighter}])
@@ -350,13 +351,12 @@
     (reagent/create-class
      {:reagent-render
       (fn
-        [{:keys
-          [react-key type theme container-margin-top container-margin-bottom
-           icon title-prefix title-prefix-width title-prefix-height
-           title title-color-override title-row-accessory
-           title-accessibility-label subtitle subtitle-max-lines
-           subtitle-row-accessory content accessories on-press
-           on-long-press error accessibility-label disabled? selected?]
+        [{:keys [react-key type theme container-margin-top container-margin-bottom
+                 icon title-prefix title-prefix-width title-prefix-height
+                 title title-color-override title-row-accessory
+                 title-accessibility-label subtitle subtitle-max-lines
+                 subtitle-row-accessory content accessories on-press
+                 on-long-press error accessibility-label disabled? selected?]
           :or {react-key               r-key
                type                    :default
                theme                   :default
@@ -364,19 +364,18 @@
                container-margin-top    0
                container-margin-bottom 0
                subtitle-max-lines      1}}]
-        (let [title-row-elements
-              {:title                     title
-               :title-color-override      title-color-override
-               :title-accessibility-label title-accessibility-label
-               :title-prefix              title-prefix
-               :title-prefix-width        title-prefix-width
-               :title-prefix-height       title-prefix-height
-               :title-row-accessory       title-row-accessory}
-              subtitle-row-elements
-              {:subtitle               subtitle
-               :subtitle-max-lines     subtitle-max-lines
-               :subtitle-row-accessory subtitle-row-accessory}
-              radio-selected? (and (= theme :selectable) selected?)]
+        (let [title-row-elements {:title                     title
+                                  :title-color-override      title-color-override
+                                  :title-accessibility-label title-accessibility-label
+                                  :title-prefix              title-prefix
+                                  :title-prefix-width        title-prefix-width
+                                  :title-prefix-height       title-prefix-height
+                                  :title-row-accessory       title-row-accessory}
+              subtitle-row-elements {:subtitle               subtitle
+                                     :subtitle-max-lines     subtitle-max-lines
+                                     :subtitle-row-accessory subtitle-row-accessory}
+              theme-select?   (= theme :selectable)
+              radio-selected? (and theme-select? selected?)]
           ^{:key react-key}
           (if (= type :divider)
             divider
@@ -384,12 +383,12 @@
                                      :margin-bottom container-margin-bottom}
                          :on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}
              [react/touchable-highlight
-              (cond-> {:on-press       (when (not= theme :selectable) on-press)
-                       :on-press-in    (when (= theme :selectable) on-press)
+              (cond-> {:on-press       (when (not theme-select?) on-press)
+                       :on-press-in    (when theme-select? on-press)
                        :on-long-press  on-long-press
                        :underlay-color colors/gray-transparent-40
-                       :active-opacity (if (= theme :selectable) 1 0.85)
-                       :disabled       (or (not on-press) selected?  disabled?)}
+                       :active-opacity (if theme-select? 1 0.85)
+                       :disabled       (or (not on-press) selected? disabled?)}
                 accessibility-label
                 (assoc :accessibility-label accessibility-label))
               [react/view {:style (styles/container type radio-selected?)}
@@ -401,7 +400,10 @@
                   title-row-elements subtitle-row-elements
                   type icon disabled? theme content accessories])
 
-               (when accessories
-                 [accessories-column accessories width])]]
+               (if theme-select?
+                 [react/view styles/accessories-container
+                  [radio/radio radio-selected?]]
+                 (when accessories
+                   [accessories-column accessories width]))]]
              (when error
                [tooltip/tooltip error styles/error])])))})))

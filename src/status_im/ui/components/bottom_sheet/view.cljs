@@ -102,10 +102,7 @@
                  height content on-cancel]
           :or   {on-cancel #(re-frame/dispatch [:bottom-sheet/hide])}
           :as   opts}]
-      [react/keyboard-avoiding-view
-       (merge
-        (pan-handlers (swipe-pan-responder opts))
-        {:style styles/container})
+      [react/keyboard-avoiding-view {:style styles/container}
        [react/touchable-highlight
         {:on-press #(cancel opts on-cancel)
          :style    styles/container}
@@ -113,7 +110,10 @@
         [react/animated-view (styles/shadow opacity-value)]]
        [react/animated-view
         {:style (styles/content-container height bottom-value)}
-        [react/view styles/content-header
+        [react/view
+         (merge
+          (pan-handlers (swipe-pan-responder opts))
+          {:style  styles/content-header})
          [react/view styles/handle]]
         [react/view {:style {:flex   1
                              :height height}}

@@ -4,7 +4,7 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.utils.label :as utils.label]))
 
-(defn style-container [type disabled?]
+(defn style-container [type disabled? theme]
   (merge
    (when (= type :main)
      {:margin-vertical 8 :margin-horizontal 16})
@@ -24,7 +24,10 @@
                         disabled?
                         colors/gray-transparent-10
                         (= type :main)
-                        colors/blue-transparent-10
+                        (case theme
+                          :red colors/red-transparent-10
+                          :green colors/green-transparent-10
+                          colors/blue-transparent-10)
                         :else
                         "")}))
 
@@ -33,6 +36,9 @@
   "A general purpose status-react specfic button component
   'type'
   :main (default), :secondary, :next, :previous
+
+  `theme`
+  :blue (default), :green, :red
 
   `label`
    Any one of string, keyword representing translated string in the form of :t/{translation-key-in-translation-files}
@@ -45,12 +51,12 @@
 
   Spec: https://www.figma.com/file/cb4p8AxLtTF3q1L6JYDnKN15/Index?node-id=858%3A0"
 
-  [{:keys [label type disabled? on-press accessibility-label style] :or {type :main}}]
+  [{:keys [label type theme disabled? on-press accessibility-label style] :or {type :main theme :blue}}]
   (let [label (utils.label/stringify label)]
     [react/touchable-opacity (merge {:on-press on-press :disabled disabled? :active-pacity 0.5 :style style}
                                     (when accessibility-label
                                       {:accessibility-label accessibility-label}))
-     [react/view {:style (style-container type disabled?)}
+     [react/view {:style (style-container type disabled? theme)}
       [react/view {:flex-direction :row :align-items :center}
        (when (= type :previous)
          [vector-icons/icon :main-icons/back {:container-style {:width 24 :height 24 :margin-right 4}
@@ -59,7 +65,10 @@
                                      disabled?
                                      colors/gray
                                      (#{:main :secondary :next :previous} type)
-                                     colors/blue
+                                     (case theme
+                                       :green colors/green
+                                       :red colors/red
+                                       colors/blue)
                                      :else
                                      "")}}
         label]

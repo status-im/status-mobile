@@ -19,7 +19,9 @@
             [status-im.ui.screens.browser.site-blocked.views :as site-blocked.views]
             [status-im.ui.screens.browser.styles :as styles]
             [status-im.utils.http :as http]
-            [status-im.utils.js-resources :as js-res])
+            [status-im.utils.js-resources :as js-res]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.screens.browser.accounts :as accounts])
   (:require-macros
    [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :as views]))
@@ -38,7 +40,7 @@
    (fn []
      (edn/read-string (browser-config-edn)))))
 
-(defn toolbar-content [url url-original {:keys [secure?]} url-editing?]
+(defn toolbar-content [url url-original {:keys [secure?]} url-editing? webview]
   (let [url-text (atom url)]
     [react/view styles/toolbar-content
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/lock-pressed secure?])}
@@ -58,9 +60,12 @@
                           :style             styles/url-input}]
        [react/touchable-highlight {:style    styles/url-text-container
                                    :on-press #(re-frame/dispatch [:browser.ui/url-input-pressed])}
-        [react/text (http/url-host url-original)]])]))
+        [react/text (http/url-host url-original)]])
+     [react/touchable-highlight {:on-press #(.reload @webview)
+                                 :accessibility-label :refresh-page-button}
+      [icons/icon :main-icons/refresh]]]))
 
-(defn toolbar [error? url url-original browser browser-id url-editing?]
+(defn toolbar [error? url url-original browser browser-id url-editing? webview]
   [toolbar.view/toolbar
    {:browser? true}
    [toolbar.view/nav-button
@@ -69,7 +74,7 @@
                      (re-frame/dispatch [:navigate-back])
                      (when error?
                        (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
-   [toolbar-content url url-original browser url-editing?]])
+   [toolbar-content url url-original browser url-editing? webview]])
 
 (defn- web-view-error [_ code desc]
   (reagent/as-element
@@ -85,38 +90,43 @@
     (let [domain-name (nth (re-find #"^\w+://(www\.)?([^/:]+)" url) 2)]
       (get (:inject-js (browser-config)) domain-name))))
 
-(defn navigation [browser-id url webview can-go-back? can-go-forward?]
-  [react/view styles/navbar
-   [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser.ui/previous-page-button-pressed])
-                               :disabled            (not can-go-back?)
-                               :style               (when-not can-go-back? styles/disabled-button)
-                               :accessibility-label :previous-page-button}
-    [react/view
-     [icons/icon :main-icons/arrow-left]]]
-   [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser.ui/next-page-button-pressed])
-                               :disabled            (not can-go-forward?)
-                               :style               (when-not can-go-forward? styles/disabled-button)
-                               :accessibility-label :next-page-button}
-    [react/view
-     [icons/icon :main-icons/arrow-right]]]
-   [react/touchable-highlight
-    {:on-press #(re-frame/dispatch [:browser.ui/open-modal-chat-button-pressed (http/url-host url)])
-     :accessibility-label :modal-chat-button}
-    [icons/icon :main-icons/message]]
-   [react/touchable-highlight
-    {:on-press #(browser/share-link url)
-     :accessibility-label :modal-share-link-button}
-    [icons/icon :main-icons/share]]
-   [react/touchable-highlight {:on-press #(.reload @webview)
-                               :accessibility-label :refresh-page-button}
-    [icons/icon :main-icons/refresh]]])
+(views/defview navigation [url can-go-back? can-go-forward? dapps-account]
+  (views/letsubs [height [:dimensions/window-height]
+                  {:keys [accounts]} [:multiaccount]]
+    [react/view styles/navbar
+     [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser.ui/previous-page-button-pressed])
+                                 :disabled            (not can-go-back?)
+                                 :style               (when-not can-go-back? styles/disabled-button)
+                                 :accessibility-label :previous-page-button}
+      [react/view
+       [icons/icon :main-icons/arrow-left]]]
+     [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser.ui/next-page-button-pressed])
+                                 :disabled            (not can-go-forward?)
+                                 :style               (when-not can-go-forward? styles/disabled-button)
+                                 :accessibility-label :next-page-button}
+      [react/view
+       [icons/icon :main-icons/arrow-right]]]
+     [react/touchable-highlight
+      {:on-press #(browser/share-link url)
+       :accessibility-label :modal-share-link-button}
+      [icons/icon :main-icons/share]]
+     [react/touchable-highlight
+      {:accessibility-label :select-account
+       :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                 {:content        (accounts/accounts-list accounts dapps-account)
+                                                  :content-height (/ height 2)}])}
+      [chat-icon/custom-icon-view-list (:name dapps-account) (:color dapps-account) 32]]
+     [react/touchable-highlight
+      {:on-press #(re-frame/dispatch [:browser.ui/open-modal-chat-button-pressed (http/url-host url)])
+       :accessibility-label :modal-chat-button}
+      [icons/icon :main-icons/message]]]))
 
 ;; should-component-update is called only when component's props are changed,
 ;; that's why it can't be used in `browser`, because `url` comes from subs
 (views/defview browser-component
   [{:keys [webview error? url browser browser-id unsafe? can-go-back?
-           can-go-forward? resolving? network-id address url-original
-           show-permission show-tooltip opt-in? dapp? name]}]
+           can-go-forward? resolving? network-id url-original
+           show-permission show-tooltip opt-in? dapp? name dapps-account]}]
   {:should-component-update (fn [_ _ args]
                               (let [[_ props] args]
                                 (not (nil? (:url props)))))}
@@ -144,11 +154,11 @@
         :injected-on-start-loading-java-script (str (when-not opt-in? (js-res/web3))
                                                     (if opt-in?
                                                       (js-res/web3-opt-in-init (str network-id))
-                                                      (js-res/web3-init address (str network-id)))
+                                                      (js-res/web3-init (:address dapps-account) (str network-id)))
                                                     (get-inject-js url))
         :injected-java-script                  (js-res/webview-js)}])]
-   [navigation browser-id url-original webview can-go-back? can-go-forward?]
-   [permissions.views/permissions-panel [(:dapp? browser) (:dapp browser)] show-permission]
+   [navigation url-original can-go-back? can-go-forward? dapps-account]
+   [permissions.views/permissions-panel [(:dapp? browser) (:dapp browser) dapps-account] show-permission]
    (when show-tooltip
      [tooltip/bottom-tooltip-info
       (if (= show-tooltip :secure)
@@ -159,9 +169,10 @@
 (views/defview browser []
   (views/letsubs [webview (atom nil)
                   window-width [:dimensions/window-width]
-                  {:keys [accounts settings]} [:multiaccount]
+                  {:keys [settings]} [:multiaccount]
                   {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
                   {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:browser/options]
+                  dapps-account [:dapps-account]
                   network-id [:chain-id]]
     (let [can-go-back?    (browser/can-go-back? browser)
           can-go-forward? (browser/can-go-forward? browser)
@@ -169,7 +180,7 @@
           opt-in?         (or (nil? (:web3-opt-in? settings)) (:web3-opt-in? settings))]
       [react/view {:style styles/browser}
        [status-bar/status-bar]
-       [toolbar error? url url-original browser browser-id url-editing?]
+       [toolbar error? url url-original browser browser-id url-editing? webview]
        [react/view
         (when loading?
           [connectivity/loading-indicator window-width])]
@@ -185,8 +196,8 @@
                            :can-go-forward? can-go-forward?
                            :resolving?      resolving?
                            :network-id      network-id
-                           :address         (:address (ethereum/get-default-account accounts))
                            :show-permission show-permission
                            :show-tooltip    show-tooltip
                            :opt-in?         opt-in?
-                           :name            name}]])))
+                           :name            name
+                           :dapps-account   dapps-account}]])))

@@ -1,12 +1,10 @@
 (ns status-im.browser.permissions
   (:require [status-im.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.fx :as fx]
-            [status-im.ethereum.core :as ethereum]))
+            [status-im.utils.fx :as fx]))
 
 (declare process-next-permission)
 (declare send-response-to-bridge)
@@ -14,10 +12,12 @@
 (def supported-permissions
   {constants/dapp-permission-qr-code           {:yield-control? true
                                                 :allowed?       true}
-   constants/dapp-permission-contact-code      {:title       (i18n/label :t/wants-to-access-profile)
+   constants/dapp-permission-contact-code      {:type        :profile
+                                                :title       (i18n/label :t/wants-to-access-profile)
                                                 :description (i18n/label :t/your-contact-code)
                                                 :icon        :main-icons/profile}
-   constants/dapp-permission-web3              {:title       (i18n/label :t/dapp-would-like-to-connect-wallet)
+   constants/dapp-permission-web3              {:type        :wallet
+                                                :title       (i18n/label :t/dapp-would-like-to-connect-wallet)
                                                 :description (i18n/label :t/allowing-authorizes-this-dapp)
                                                 :icon        :main-icons/wallet}})
 
@@ -44,7 +44,7 @@
 (defn get-permission-data [cofx allowed-permission]
   (let [multiaccount (get-in cofx [:db :multiaccount])]
     (get {constants/dapp-permission-contact-code (:public-key multiaccount)
-          constants/dapp-permission-web3         [(:address (ethereum/get-default-account (:accounts multiaccount)))]}
+          constants/dapp-permission-web3         [(:dapps-address multiaccount)]}
          allowed-permission)))
 
 (fx/defn send-response-to-bridge
@@ -80,6 +80,15 @@
                                :params [dapp]
                                :on-success #()}]}
             (navigation/navigate-back)))
+
+(fx/defn clear-dapps-permissions
+  [{:keys [db]}]
+  (let [dapp-permissions (keys (:dapps/permissions db))]
+    {:db             (dissoc db :dapps/permissions)
+     ::json-rpc/call (for [dapp dapp-permissions]
+                       {:method     "permissions_deleteDappPermissions"
+                        :params     [dapp]
+                        :on-success #()})}))
 
 (fx/defn process-next-permission
   "Process next permission by removing it from pending permissions and prompting user

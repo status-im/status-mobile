@@ -268,7 +268,7 @@
 	"custom": "Custom",
 	"custom-networks": "Custom networks",
 	"dapp": "ÐApp",
-	"dapp-would-like-to-connect-wallet": "would like\n to connect to your wallet",
+	"dapp-would-like-to-connect-wallet": "would like to connect to",
 	"dapps": "ÐApps",
 	"dapps-can-access": "ÐApps can access my wallet and chat key",
 	"dapps-permissions": "DApp permissions",
@@ -1107,5 +1107,6 @@
 	"ok-save-pass": "OK, save password",
 	"lock-app-with": "Lock app with",
 	"grant-face-id-permissions": "To grant the required Face ID permission, please go to your system settings and make sure that Status > Face ID is selected",
-	"request-feature": "Request a feature"
+	"request-feature": "Request a feature",
+    "select-account-dapp": "Select the account you wish to use with Dapps"
 }

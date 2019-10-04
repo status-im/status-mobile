@@ -95,7 +95,7 @@
          [list/flat-list {:data           all-home-items
                           :key-fn         first
                           :header         [react/view {:height 4 :flex 1}]
-                          :footer         [react/view {:height 4 :flex 1}]
+                          :footer         [react/view {:height 68 :flex 1}]
                           :on-scroll-begin-drag
                           (fn [e]
                             (reset! scrolling-from-top?

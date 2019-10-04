@@ -63,3 +63,18 @@
    :color       colors/gray
    :line-height 18
    :margin-top  2})
+
+(defn dapps-account [color]
+  {:flex-direction     :row
+   :background-color   color
+   :border-radius      36
+   :padding-horizontal 8
+   :padding-vertical   6
+   :flex               1
+   :align-items        :center
+   :justify-content    :center
+   :shadow-offset      {:width 0 :height 1}
+   :shadow-radius      6
+   :shadow-opacity     1
+   :shadow-color       "rgba(0, 12, 63, 0.2)"
+   :elevation          2})

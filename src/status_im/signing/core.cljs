@@ -60,9 +60,9 @@
 
 (fx/defn sign-message
   [{{:signing/keys [sign tx] :as db} :db}]
-  (let [{{:keys [data typed?]} :message} tx
+  (let [{{:keys [data typed? from]} :message} tx
         {:keys [in-progress? password]} sign
-        from (ethereum/default-address db)
+        from (or from (ethereum/default-address db))
         hashed-password (ethereum/sha3 (security/safe-unmask-data password))]
     (when-not in-progress?
       (merge

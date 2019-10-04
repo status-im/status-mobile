@@ -228,6 +228,8 @@
                                   :photo-path          photo-path
                                   ; public key of the chat account
                                   :public-key          publicKey
+                                  ; default address for Dapps
+                                  :dapps-address       (:address wallet-account)
                                   :latest-derived-path 0
                                   :accounts            [wallet-account]
                                   :signing-phrase      signing-phrase

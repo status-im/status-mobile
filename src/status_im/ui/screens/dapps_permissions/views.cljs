@@ -22,12 +22,13 @@
    :on-press    #(re-frame/dispatch [:navigate-to :manage-dapps-permissions {:dapp dapp :permissions permissions}])
    :icon        d-icon})
 
-(defn prepare-items-manage [permission]
-  {:title       (case permission
-                  constants/dapp-permission-web3         :t/wallet
-                  constants/dapp-permission-contact-code :t/contact-code)
-   :type        :small
-   :accessories [:main-icons/check]})
+(defn prepare-items-manage [name]
+  (fn [permission]
+    {:title       (case permission
+                    constants/dapp-permission-web3         name
+                    constants/dapp-permission-contact-code :t/contact-code)
+     :type        :small
+     :accessories [:main-icons/check]}))
 
 (views/defview dapps-permissions []
   (views/letsubs [permissions [:dapps/permissions]]
@@ -41,12 +42,13 @@
        :render-fn list/flat-list-generic-render-fn}]]))
 
 (views/defview manage []
-  (views/letsubs [{:keys [dapp permissions]} [:get-screen-params]]
+  (views/letsubs [{:keys [dapp permissions]} [:get-screen-params]
+                  {:keys [name]} [:dapps-account]]
     [react/view {:flex 1 :background-color colors/white}
      [status-bar/status-bar]
      [toolbar/simple-toolbar dapp]
      [list/flat-list
-      {:data      (vec (map prepare-items-manage permissions))
+      {:data      (vec (map (prepare-items-manage name) permissions))
        :key-fn    (fn [_ i] (str i))
        :render-fn list/flat-list-generic-render-fn}]
      [react/view {:padding-vertical 16}

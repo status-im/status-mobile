@@ -2,7 +2,9 @@
   (:require [status-im.i18n :as i18n]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [re-frame.core :as re-frame]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ethereum.eip55 :as eip55]
+            [status-im.ethereum.core :as ethereum]))
 
 (defn show-popup
   ([title content]
@@ -78,6 +80,10 @@
   [address]
   (when address
     (str (subs address 0 6) "\u2026" (subs address (- (count address) 4) (count address)))))
+
+(defn get-shortened-checksum-address [address]
+  (when address
+    (get-shortened-address (eip55/address->checksum (ethereum/normalized-address address)))))
 
 ;; background-timer
 
