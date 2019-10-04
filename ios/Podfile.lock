@@ -181,7 +181,7 @@ PODS:
     - React
   - RNFS (2.14.1):
     - React
-  - RNGestureHandler (1.3.0):
+  - RNGestureHandler (1.4.1):
     - React
   - RNImageCropPicker (0.25.0):
     - QBImagePickerController
@@ -398,7 +398,7 @@ SPEC CHECKSUMS:
   React-RCTWebSocket: 2e7f6e98fd6d2bf447d145e499c3a235cc13e350
   RNFirebase: ca408d6bee0ca9383bd0cfe84f40b01370b8ad4d
   RNFS: 6a2bfb5d0b14cf0ad72667f76202358abba4aacf
-  RNGestureHandler: 7ccf2f3f60458e084f9ada01fbaf610f6fef073c
+  RNGestureHandler: 311e3b1cef021a7c9ef31e97e7dc31970cc6288d
   RNImageCropPicker: c406db73f02f11bf3a887f856ff04ee50af173f4
   RNKeychain: 627c6095cef215dd3d9804a9a9cf45ab96aa3997
   RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
