@@ -993,9 +993,9 @@
     ws "^1.1.0"
 
 "@react-native-community/netinfo@^4.1.5":
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-4.2.2.tgz#15035730a230e743b2e5429f2bbd75b0851a4b98"
-  integrity sha512-ktMlUCYn+vKL8PQH/e6Vpoygvn3gU+Ibc1uD7m+pYhQwiKHD7eqCRAkR1Xt5vc2L3Xy3N1z0tMXlxzK4IKbYyQ==
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-4.4.0.tgz#a18eb9ba082b6aca6add004b4a918250ad7d13bc"
+  integrity sha512-qqNWMOsrDjj/daqV21ID2T8mNUjZD4pdx3PuWyE65gzKh2w+oMnzKb+J0NbLyZPn3wwLwU1+Cpf58A0ff5szjQ==
 
 "@react-navigation/core@~3.4.1":
   version "3.4.2"
@@ -4877,17 +4877,17 @@ react-native-safe-area-view@^0.14.1:
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
-react-native-screens@^1.0.0-alpha.22:
-  version "1.0.0-alpha.22"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.22.tgz#7a120377b52aa9bbb94d0b8541a014026be9289b"
-  integrity sha512-kSyAt0AeVU6N7ZonfV6dP6iZF8B7Bce+tk3eujXhzBGsLg0VSLnU7uE9VqJF0xdQrHR91ZjGgVMieo/8df9KTA==
-
 "react-native-screens@^1.0.0 || ^1.0.0-alpha":
   version "1.0.0-alpha.23"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.23.tgz#25d7ea4d11bda4fcde2d1da7ae50271c6aa636e0"
   integrity sha512-tOxHGQUN83MTmQB4ghoQkibqOdGiX4JQEmeyEv96MKWO/x8T2PJv84ECUos9hD3blPRQwVwSpAid1PPPhrVEaw==
   dependencies:
     debounce "^1.2.0"
+
+react-native-screens@^1.0.0-alpha.22:
+  version "1.0.0-alpha.22"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.22.tgz#7a120377b52aa9bbb94d0b8541a014026be9289b"
+  integrity sha512-kSyAt0AeVU6N7ZonfV6dP6iZF8B7Bce+tk3eujXhzBGsLg0VSLnU7uE9VqJF0xdQrHR91ZjGgVMieo/8df9KTA==
 
 react-native-shake@^3.3.1:
   version "3.4.0"
