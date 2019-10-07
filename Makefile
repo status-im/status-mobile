@@ -76,6 +76,10 @@ nix-update-gems: export _NIX_ATTR := targets.leiningen.shell
 nix-update-gems: ##@nix Update Ruby gems in fastlane/Gemfile.lock and fastlane/gemset.nix
 	fastlane/update.sh
 
+nix-update-pods: export TARGET_OS := ios
+nix-update-pods: ##@nix Update CocoaPods in ios/Podfile.lock
+	cd ios && pod update
+
 #----------------
 # General targets
 #----------------
