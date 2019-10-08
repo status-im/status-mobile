@@ -158,7 +158,13 @@ class BaseElement(object):
         return Image.open(BytesIO(base64.b64decode(self.find_element().screenshot_as_base64)))
 
     def attribute_value(self, value):
-        return self.find_element().get_attribute(value)
+        attribute_value = self.find_element().get_attribute(value)
+        if attribute_value == 'true' or 'True':
+            return True
+        elif attribute_value == 'false' or 'False':
+            return False
+        else:
+            return attribute_value
 
     def is_element_image_equals_template(self, file_name: str = ''):
         if file_name:

@@ -109,7 +109,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         self.verify_no_errors()
 
 
-    @marks.testrail_id(6229)
+    @marks.testrail_id(5454)
     @marks.critical
     def test_user_can_remove_profile_picture(self):
         signin_view = SignInView(self.driver)
@@ -535,7 +535,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 @marks.account
 class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
-    @marks.testrail_id(6835)
+    @marks.testrail_id(5762)
     @marks.high
     def test_pair_devices_sync_one_to_one_contacts(self):
         self.create_drivers(2)
