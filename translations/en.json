@@ -1105,5 +1105,6 @@
 	"to-enable-biometric": "To enable {{bio-type-label}}, your must save your password on the unlock screen",
 	"ok-save-pass": "OK, save password",
 	"lock-app-with": "Lock app with",
-	"grant-face-id-permissions": "To grant the required Face ID permission, please go to your system settings and make sure that Status > Face ID is selected"
+	"grant-face-id-permissions": "To grant the required Face ID permission, please go to your system settings and make sure that Status > Face ID is selected",
+	"request-feature": "Request a feature"
 }
