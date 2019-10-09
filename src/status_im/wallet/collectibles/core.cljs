@@ -17,10 +17,10 @@
 
 (defmethod load-collectible-fx :default [_ _ _] nil)
 
-(defmulti load-collectibles-fx (fn [_ symbol _ _] symbol))
+(defmulti load-collectibles-fx (fn [_ symbol _ _ _] symbol))
 
-(defmethod load-collectibles-fx :default [all-tokens symbol items-number address chain-id]
-  {:load-collectibles-fx [all-tokens symbol items-number address chain-id]})
+(defmethod load-collectibles-fx :default [all-tokens symbol items-number address chain]
+  {:load-collectibles-fx [all-tokens symbol items-number address chain]})
 
 (defn load-token [i items-number contract address symbol]
   (when (< i items-number)
@@ -31,20 +31,20 @@
 
 (re-frame/reg-fx
  :load-collectibles-fx
- (fn [[all-tokens symbol items-number address chain-id]]
-   (let [chain (ethereum/chain-id->chain-keyword chain-id)
-         contract (:address (tokens/symbol->token all-tokens chain symbol))]
+ (fn [[all-tokens symbol items-number address chain]]
+   (let [contract (:address (tokens/symbol->token all-tokens chain symbol))]
      (load-token 0 items-number contract address symbol))))
 
 (handlers/register-handler-fx
  :show-collectibles-list
- (fn [{:keys [db]} [_ {:keys [symbol amount] :as collectible}]]
-   (let [chain-id            (get-in constants/default-networks [(:network db) :config :NetworkId])
+ (fn [{:keys [db]} [_ {:keys [symbol amount] :as collectible} address]]
+   (let [chain               (ethereum/chain-id->chain-keyword
+                              (get-in constants/default-networks [(:networks/current-network db) :config :NetworkId]))
          all-tokens          (:wallet/all-tokens db)
          items-number        (money/to-number amount)
          loaded-items-number (count (get-in db [:collectibles symbol]))]
      (merge (when (not= items-number loaded-items-number)
-              (load-collectibles-fx all-tokens symbol items-number (ethereum/default-address db) chain-id))
+              (load-collectibles-fx all-tokens symbol items-number address chain))
             {:dispatch [:navigate-to :collectibles-list collectible]}))))
 
 ;; Crypto Kitties
@@ -167,9 +167,6 @@
                :failure-event-creator
                (fn [o]
                  [:load-collectible-failure kudos {tokenId (http/parse-payload o)}])}}))
-
-;;
-
 
 (handlers/register-handler-fx
  :load-collectible

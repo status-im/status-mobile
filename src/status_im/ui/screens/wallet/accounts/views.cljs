@@ -12,10 +12,8 @@
             [status-im.wallet.utils :as wallet.utils]
             [status-im.ui.components.tabbar.styles :as tabs.styles]
             [reagent.core :as reagent]
-            [status-im.utils.money :as money]
             [re-frame.core :as re-frame]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
-            [status-im.ethereum.core :as ethereum]
             [status-im.ui.screens.wallet.accounts.styles :as styles]))
 
 (def state (reagent/atom {:tab :assets}))
@@ -79,45 +77,16 @@
                               [list/item-image icon]
                               [chat-icon/custom-icon-view-list (:name token) color])}]))
 
-(defn render-collectible [{:keys [name icon amount] :as collectible}]
-  (let [items-number (money/to-fixed amount)
-        details?     (pos? items-number)]
-    [list-item/list-item
-     {:title       (wallet.utils/display-symbol collectible)
-      :subtitle    name
-      :icon        [list/item-image icon]
-      :on-press    (when details?
-                     #(re-frame/dispatch
-                       [:show-collectibles-list collectible]))
-      :accessories [items-number :chevron]}]))
-
-(views/defview assets-and-collections []
+(views/defview assets []
   (views/letsubs [{:keys [tokens nfts]} [:wallet/all-visible-assets-with-values]
                   currency [:wallet/currency]]
-    (let [{:keys [tab]} @state]
-      [react/view {:flex 1}
-       [react/view {:flex-direction :row :margin-bottom 8 :margin-horizontal 4}
-        [tab-title state :assets (i18n/label :t/wallet-assets) (= tab :assets)]
-        [tab-title state :nft (i18n/label :t/wallet-collectibles) (= tab :nft)]]
-       (if (= tab :assets)
-         [list/flat-list {:data               tokens
-                          :default-separator? false
-                          :key-fn             :name
-                          :footer             [react/view
-                                               {:style {:height     tabs.styles/tabs-diff
-                                                        :align-self :stretch}}]
-                          :render-fn          (render-asset (:code currency))}]
-         (if (seq nfts)
-           [list/flat-list {:data               nfts
-                            :default-separator? false
-                            :key-fn             :name
-                            :footer             [react/view
-                                                 {:style {:height     tabs.styles/tabs-diff
-                                                          :align-self :stretch}}]
-                            :render-fn          render-collectible}]
-           [react/view {:align-items :center :margin-top 32}
-            [react/text {:style {:color colors/gray}}
-             (i18n/label :t/no-collectibles)]]))])))
+    [list/flat-list {:data               tokens
+                     :default-separator? false
+                     :key-fn             :name
+                     :footer             [react/view
+                                          {:style {:height     tabs.styles/tabs-diff
+                                                   :align-self :stretch}}]
+                     :render-fn          (render-asset (:code currency))}]))
 
 (views/defview total-value []
   (views/letsubs [currency        [:wallet/currency]
@@ -149,7 +118,7 @@
        [icons/icon :main-icons/more {:accessibility-label :accounts-more-options}]]]]))
 
 (views/defview accounts []
-  (views/letsubs [{:keys [accounts address keycard-key-uid]} [:multiaccount]]
+  (views/letsubs [{:keys [accounts keycard-key-uid]} [:multiaccount]]
     [react/scroll-view {:horizontal true}
      [react/view {:flex-direction :row :padding-top 11 :padding-bottom 12}
       (for [account accounts]
@@ -167,4 +136,4 @@
     [react/view {:margin-top 8 :padding-horizontal 16}
      [total-value]
      [accounts]]
-    [assets-and-collections]]])
+    [assets]]])

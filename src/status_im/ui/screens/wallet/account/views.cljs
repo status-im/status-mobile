@@ -14,7 +14,10 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.screens.wallet.account.styles :as styles]
             [status-im.ui.screens.wallet.transactions.views :as history]
-            [status-im.ethereum.core :as ethereum]))
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ui.components.list-item.views :as list-item]
+            [status-im.utils.money :as money]
+            [status-im.wallet.utils :as wallet.utils]))
 
 (def state (reagent/atom {:tab :assets}))
 
@@ -66,6 +69,19 @@
       [react/view {:style styles/divider}]
       [button (i18n/label :t/receive) :main-icons/receive  #(re-frame/dispatch [:show-popover {:view :share-account :address address}])]]]))
 
+(defn render-collectible [address]
+  (fn [{:keys [name icon amount] :as collectible}]
+    (let [items-number (money/to-fixed amount)
+          details?     (pos? items-number)]
+      [list-item/list-item
+       {:title       (wallet.utils/display-symbol collectible)
+        :subtitle    name
+        :icon        [list/item-image icon]
+        :on-press    (when details?
+                       #(re-frame/dispatch
+                         [:show-collectibles-list collectible address]))
+        :accessories [items-number :chevron]}])))
+
 (views/defview transactions [address]
   (views/letsubs [{:keys [transaction-history-sections]}
                   [:wallet.transactions.history/screen address]]
@@ -97,7 +113,7 @@
                             :footer             [react/view
                                                  {:style {:height     tabs.styles/tabs-diff
                                                           :align-self :stretch}}]
-                            :render-fn          accounts/render-collectible}]
+                            :render-fn          (render-collectible address)}]
            [react/view {:align-items :center :margin-top 32}
             [react/text {:style {:color colors/gray}}
              (i18n/label :t/no-collectibles)]])
