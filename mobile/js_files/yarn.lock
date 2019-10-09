@@ -4798,9 +4798,9 @@ react-native-background-timer@^2.1.1:
   integrity sha512-cuXIIv+dcG8a8qkTD8pMzeqOEZCO+UGKglZWIe1osve+yJslmCowYQff+bI9xa7NOt2w+Vtd4L3d9JonlSqODg==
 
 react-native-camera@^3.3.3:
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-3.3.3.tgz#57b56947f067b749e15baecfe8764d122bef1251"
-  integrity sha512-eP4TdOqva/NxLC/LFiMSFs75nclic+7ZVO9lTASQWvyCz/WFkTZYr3ai/ftuQ7QmVC7svR4QRA0zdZ0zKWlExA==
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-3.7.0.tgz#777150f8e15ee3ca2f650b47d78a5e25154dc2ce"
+  integrity sha512-2DjZ/gtY6RQbhTgKv9bnmPDPDHCD2bgWKt41g99DkTE+DXz1OhGOk6I+2x0rR4NFAYj0J278WAxMIjXNZp6Zyg==
   dependencies:
     prop-types "^15.6.2"
 
@@ -4877,17 +4877,17 @@ react-native-safe-area-view@^0.14.1:
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
-react-native-screens@^1.0.0-alpha.22:
-  version "1.0.0-alpha.22"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.22.tgz#7a120377b52aa9bbb94d0b8541a014026be9289b"
-  integrity sha512-kSyAt0AeVU6N7ZonfV6dP6iZF8B7Bce+tk3eujXhzBGsLg0VSLnU7uE9VqJF0xdQrHR91ZjGgVMieo/8df9KTA==
-
 "react-native-screens@^1.0.0 || ^1.0.0-alpha":
   version "1.0.0-alpha.23"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.23.tgz#25d7ea4d11bda4fcde2d1da7ae50271c6aa636e0"
   integrity sha512-tOxHGQUN83MTmQB4ghoQkibqOdGiX4JQEmeyEv96MKWO/x8T2PJv84ECUos9hD3blPRQwVwSpAid1PPPhrVEaw==
   dependencies:
     debounce "^1.2.0"
+
+react-native-screens@^1.0.0-alpha.22:
+  version "1.0.0-alpha.22"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.22.tgz#7a120377b52aa9bbb94d0b8541a014026be9289b"
+  integrity sha512-kSyAt0AeVU6N7ZonfV6dP6iZF8B7Bce+tk3eujXhzBGsLg0VSLnU7uE9VqJF0xdQrHR91ZjGgVMieo/8df9KTA==
 
 react-native-shake@^3.3.1:
   version "3.4.0"
