@@ -159,12 +159,13 @@ class BaseElement(object):
 
     def attribute_value(self, value):
         attribute_value = self.find_element().get_attribute(value)
-        if attribute_value == 'true' or 'True':
-            return True
-        elif attribute_value == 'false' or 'False':
-            return False
+        if attribute_value.lower() == 'true':
+            attribute_state = True
+        elif attribute_value.lower() == 'false':
+            attribute_state = False
         else:
-            return attribute_value
+            attribute_state = attribute_value
+        return attribute_state
 
     def is_element_image_equals_template(self, file_name: str = ''):
         if file_name:
