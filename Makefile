@@ -1,4 +1,4 @@
-.PHONY: nix-add-gcroots clean nix-clean disable-githooks react-native-android react-native-ios react-native-desktop test release _list _fix-node-perms
+.PHONY: nix-add-gcroots clean nix-clean disable-githooks react-native-android react-native-ios react-native-desktop test release _list _fix-node-perms _tmpdir-mk _tmpdir-rm
 
 help: SHELL := /bin/sh
 help: ##@other Show this help
@@ -27,13 +27,18 @@ HELP_FUN = \
 		   }
 HOST_OS := $(shell uname | tr '[:upper:]' '[:lower:]')
 
+# This can come from Jenkins
+ifndef BUILD_TAG
+export BUILD_TAG = $(shell git rev-parse --short HEAD)
+endif
+
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
-export _NIX_KEEP ?= BUILD_ENV
+export _NIX_KEEP ?= TMPDIR,BUILD_ENV
 export NIX_CONF_DIR = $(PWD)/nix
 # We don't want to use /run/user/$UID because it runs out of space too easilly
-export TMPDIR = /tmp
-
-export REACT_SERVER_PORT ?= 5001 # any value different from default 5000 will work; this has to be specified for both the Node.JS server process and the Qt process
+export TMPDIR = /tmp/tmp-status-react-$(BUILD_TAG)
+# this has to be specified for both the Node.JS server process and the Qt process
+export REACT_SERVER_PORT ?= 5001
 
 #----------------
 # Nix targets
@@ -89,9 +94,19 @@ _fix-node-perms: ##@prepare Fix permissions so that directory can be cleaned
 	$(shell test -d node_modules && chmod -R 744 node_modules)
 	$(shell test -d node_modules.tmp && chmod -R 744 node_modules.tmp)
 
+_tmpdir-mk: SHELL := /bin/sh
+_tmpdir-mk: ##@prepare Create a TMPDIR for temporary files
+	@mkdir -p "$(TMPDIR)"
+# Make sure TMPDIR exists every time make is called
+-include _tmpdir-mk
+
+_tmpdir-rm: SHELL := /bin/sh
+_tmpdir-rm: ##@prepare Remove TMPDIR
+	rm -fr "$(TMPDIR)"
+
 clean: SHELL := /bin/sh
-clean: _fix-node-perms ##@prepare Remove all output folders
-	git clean -dxf -f
+clean: _fix-node-perms _tmpdir-rm ##@prepare Remove all output folders
+	git clean -dxf
 
 watchman-clean: export _NIX_ATTR := targets.watchman.shell
 watchman-clean: ##@prepare Delete repo directory from watchman 

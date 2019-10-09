@@ -55,6 +55,12 @@ nixOpts=(
   "default.nix"
 )
 
+# This variable allows specifying which env vars to keep for Nix pure shell
+# The separator is a semicolon
+if [[ -n "${_NIX_KEEP}" ]]; then
+  nixOpts+=("--keep ${_NIX_KEEP//;/ --keep }")
+fi
+
 # Run the actual build
 echo "Running: nix-build ${nixOpts[@]}"
 nixResultPath=$(nix-build ${nixOpts[@]})
