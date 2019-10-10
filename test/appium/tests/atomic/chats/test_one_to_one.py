@@ -661,19 +661,25 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(5782)
-    @marks.high
+    @marks.critical
     def test_install_pack_and_send_sticker(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
+
+        sign_in.just_fyi('join public chat and check that stickers are not available on Ropsten')
         chat_name = home.get_public_chat_name()
         home.join_public_chat(chat_name)
         chat = sign_in.get_chat_view()
         if chat.show_stickers_button.is_element_displayed():
             self.errors.append('Sticker button is shown while on Ropsten')
+
+        sign_in.just_fyi('switch to mainnet')
         chat.get_back_to_home_view()
         profile = home.profile_button.click()
         profile.switch_network('Mainnet with upstream RPC')
         home.get_chat_with_user('#' + chat_name).click()
+
+        sign_in.just_fyi('install free sticker pack and use it in public chat')
         chat.show_stickers_button.click()
         chat.get_stickers.click()
         chat.install_sticker_pack_by_name('Status Cat')
@@ -689,23 +695,23 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(5783)
-    @marks.high
-    def test_purchase_pack_and_send_sticker(self):
+    @marks.critical
+    def test_can_use_purchased_stickers_on_recovered_account(self):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(ens_user['passphrase'])
 
-        # switch to Mainnet
+        sign_in_view.just_fyi('switch to Mainnet')
         profile_view = home_view.profile_button.click()
         profile_view.switch_network('Mainnet with upstream RPC')
 
-        # join to public chat, buy and install stickers
+        sign_in_view.just_fyi('join to public chat, buy and install stickers')
         chat = home_view.join_public_chat(home_view.get_public_chat_name())
         chat.show_stickers_button.click()
         chat.get_stickers.click()
         chat.install_sticker_pack_by_name('Tozemoon')
         chat.back_button.click()
 
-        # check that can use installed pack
+        sign_in_view.just_fyi('check that can use installed pack')
         time.sleep(2)
         chat.swipe_left()
         chat.sticker_icon.click()
