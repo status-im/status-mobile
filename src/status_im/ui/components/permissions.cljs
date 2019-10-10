@@ -1,7 +1,5 @@
 (ns status-im.ui.components.permissions
   (:require [status-im.utils.platform :as platform]
-            [taoensso.timbre :as log]
-            [status-im.ui.components.camera :as camera]
             [status-im.react-native.js-dependencies :as js-dependencies]))
 
 (def permissions-class (.-PermissionsAndroid js-dependencies/react-native))
@@ -27,7 +25,4 @@
                     (on-allowed)
                     (on-denied)))
           (.catch on-denied)))
-
-    (if ((set permissions) :camera)
-      (camera/request-access-ios on-allowed on-denied)
-      (on-allowed))))
+    (on-allowed)))
