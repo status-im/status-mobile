@@ -55,7 +55,7 @@
     "metro-react-native-babel-preset": "^0.45.6",
     "coveralls": "^3.0.4",
     "nyc": "^14.1.1",
-    "patch-package": "^5.1.1",
+    "patch-package": "^6.2.0",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status"
   },
   "optionalDependencies": {
