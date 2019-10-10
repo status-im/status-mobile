@@ -42,7 +42,7 @@
     "react-native-touch-id": "^4.4.1",
     "react-native-webview": "^6.11.1",
     "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#fix/community-webview",
-    "react-navigation": "^3.11.0",
+    "react-navigation": "^4.0.10",
     "web3-utils": "^1.2.1"
   },
   "devDependencies": {
