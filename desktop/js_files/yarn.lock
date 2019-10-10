@@ -4925,46 +4925,6 @@ metro-minify-uglify@0.48.5:
   dependencies:
     uglify-es "^3.1.9"
 
-metro-react-native-babel-preset@^0.45.6:
-  version "0.45.6"
-  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.45.6.tgz#077ce4039d6461a1b699b215612985415f9816a9"
-  integrity sha512-qh+iXlV2tDfvHYbhh1meihxnzXXXB8nF1fi8z2HFxqYDkFBM48XewXO6mLz97PL8lmuTGvX/2dYVuFtriENw1w==
-  dependencies:
-    "@babel/plugin-proposal-class-properties" "^7.0.0"
-    "@babel/plugin-proposal-export-default-from" "^7.0.0"
-    "@babel/plugin-proposal-nullish-coalescing-operator" "^7.0.0"
-    "@babel/plugin-proposal-object-rest-spread" "^7.0.0"
-    "@babel/plugin-proposal-optional-catch-binding" "^7.0.0"
-    "@babel/plugin-proposal-optional-chaining" "^7.0.0"
-    "@babel/plugin-syntax-dynamic-import" "^7.0.0"
-    "@babel/plugin-syntax-export-default-from" "^7.0.0"
-    "@babel/plugin-transform-arrow-functions" "^7.0.0"
-    "@babel/plugin-transform-block-scoping" "^7.0.0"
-    "@babel/plugin-transform-classes" "^7.0.0"
-    "@babel/plugin-transform-computed-properties" "^7.0.0"
-    "@babel/plugin-transform-destructuring" "^7.0.0"
-    "@babel/plugin-transform-exponentiation-operator" "^7.0.0"
-    "@babel/plugin-transform-flow-strip-types" "^7.0.0"
-    "@babel/plugin-transform-for-of" "^7.0.0"
-    "@babel/plugin-transform-function-name" "^7.0.0"
-    "@babel/plugin-transform-literals" "^7.0.0"
-    "@babel/plugin-transform-modules-commonjs" "^7.0.0"
-    "@babel/plugin-transform-object-assign" "^7.0.0"
-    "@babel/plugin-transform-parameters" "^7.0.0"
-    "@babel/plugin-transform-react-display-name" "^7.0.0"
-    "@babel/plugin-transform-react-jsx" "^7.0.0"
-    "@babel/plugin-transform-react-jsx-source" "^7.0.0"
-    "@babel/plugin-transform-regenerator" "^7.0.0"
-    "@babel/plugin-transform-shorthand-properties" "^7.0.0"
-    "@babel/plugin-transform-spread" "^7.0.0"
-    "@babel/plugin-transform-sticky-regex" "^7.0.0"
-    "@babel/plugin-transform-template-literals" "^7.0.0"
-    "@babel/plugin-transform-typescript" "^7.0.0"
-    "@babel/plugin-transform-unicode-regex" "^7.0.0"
-    "@babel/template" "^7.0.0"
-    metro-babel7-plugin-react-transform "0.45.6"
-    react-transform-hmr "^1.0.4"
-
 metro-react-native-babel-preset@0.48.5:
   version "0.48.5"
   resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.48.5.tgz#cafa1c3ea326a447a89031928b0932f38a65815c"
@@ -5004,6 +4964,46 @@ metro-react-native-babel-preset@0.48.5:
     "@babel/plugin-transform-unicode-regex" "^7.0.0"
     "@babel/template" "^7.0.0"
     metro-babel7-plugin-react-transform "0.48.5"
+    react-transform-hmr "^1.0.4"
+
+metro-react-native-babel-preset@^0.45.6:
+  version "0.45.6"
+  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.45.6.tgz#077ce4039d6461a1b699b215612985415f9816a9"
+  integrity sha512-qh+iXlV2tDfvHYbhh1meihxnzXXXB8nF1fi8z2HFxqYDkFBM48XewXO6mLz97PL8lmuTGvX/2dYVuFtriENw1w==
+  dependencies:
+    "@babel/plugin-proposal-class-properties" "^7.0.0"
+    "@babel/plugin-proposal-export-default-from" "^7.0.0"
+    "@babel/plugin-proposal-nullish-coalescing-operator" "^7.0.0"
+    "@babel/plugin-proposal-object-rest-spread" "^7.0.0"
+    "@babel/plugin-proposal-optional-catch-binding" "^7.0.0"
+    "@babel/plugin-proposal-optional-chaining" "^7.0.0"
+    "@babel/plugin-syntax-dynamic-import" "^7.0.0"
+    "@babel/plugin-syntax-export-default-from" "^7.0.0"
+    "@babel/plugin-transform-arrow-functions" "^7.0.0"
+    "@babel/plugin-transform-block-scoping" "^7.0.0"
+    "@babel/plugin-transform-classes" "^7.0.0"
+    "@babel/plugin-transform-computed-properties" "^7.0.0"
+    "@babel/plugin-transform-destructuring" "^7.0.0"
+    "@babel/plugin-transform-exponentiation-operator" "^7.0.0"
+    "@babel/plugin-transform-flow-strip-types" "^7.0.0"
+    "@babel/plugin-transform-for-of" "^7.0.0"
+    "@babel/plugin-transform-function-name" "^7.0.0"
+    "@babel/plugin-transform-literals" "^7.0.0"
+    "@babel/plugin-transform-modules-commonjs" "^7.0.0"
+    "@babel/plugin-transform-object-assign" "^7.0.0"
+    "@babel/plugin-transform-parameters" "^7.0.0"
+    "@babel/plugin-transform-react-display-name" "^7.0.0"
+    "@babel/plugin-transform-react-jsx" "^7.0.0"
+    "@babel/plugin-transform-react-jsx-source" "^7.0.0"
+    "@babel/plugin-transform-regenerator" "^7.0.0"
+    "@babel/plugin-transform-shorthand-properties" "^7.0.0"
+    "@babel/plugin-transform-spread" "^7.0.0"
+    "@babel/plugin-transform-sticky-regex" "^7.0.0"
+    "@babel/plugin-transform-template-literals" "^7.0.0"
+    "@babel/plugin-transform-typescript" "^7.0.0"
+    "@babel/plugin-transform-unicode-regex" "^7.0.0"
+    "@babel/template" "^7.0.0"
+    metro-babel7-plugin-react-transform "0.45.6"
     react-transform-hmr "^1.0.4"
 
 metro-resolver@0.48.5:
@@ -6187,10 +6187,10 @@ react-native-camera@^0.10.0:
   version "0.11.2"
   resolved "git+https://github.com/status-im/react-native-config.git#e705dac8ab459614906c060dcf699e5fe5c05d9d"
 
-react-native-dialogs@^0.0.20:
-  version "0.0.20"
-  resolved "https://registry.yarnpkg.com/react-native-dialogs/-/react-native-dialogs-0.0.20.tgz#f3fb48eadba9d83fb9d4e6d7eca573494a8cefaa"
-  integrity sha512-HeoU9d7wWUUAtxjcIJLaeIs/eYS2ZHTNh3kboeCKngLvfvgptd/7vZXwXdQ+xeOEek+cm95kDfMJQd2xnb+4wA==
+react-native-dialogs@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-dialogs/-/react-native-dialogs-1.1.0.tgz#8f7ee7f9d96574fc878fb7c1be101611fb4af517"
+  integrity sha512-clnxO0nMyML/6+G5dja3Yt34gPxegLY2OHTwb8BwYTEvQ2UhRKR49Uq91XqU0q6g7Ur9DiYxC0tqV3rcZWUrjQ==
 
 react-native-fetch-polyfill@^1.1.2:
   version "1.1.2"
