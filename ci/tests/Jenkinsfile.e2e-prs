@@ -1,0 +1,72 @@
+pipeline {
+
+  agent { label 'linux1' }
+
+  parameters {
+    string(
+      name: 'BRANCH_NAME',
+      description: 'Name of the branch to checkout and build.',
+      defaultValue: 'develop',
+    )
+    string(
+      name: 'NETWORK',
+      description: 'Name of test network to use.',
+      defaultValue: 'ropsten',
+    )
+    string(
+      name: 'TEST_MARKERS',
+      description: 'Marker expression for matching tests to run.',
+      defaultValue: 'critical or high',
+    )
+    string(
+      name: 'APK_NAME',
+      description: 'Filename of APK uploaded to SauceLabs, path, or URL.',
+    )
+    string(
+      name: 'PR_ID',
+      description: 'ID of the Pull Request triggering this build.',
+    )
+  }
+
+  options {
+    disableConcurrentBuilds()
+  }
+
+  stages {
+    stage('Test') {
+      steps { script {
+        currentBuild.displayName = "PR-${params.PR_ID}"
+
+        withCredentials([
+          string(
+            credentialsId: 'GIT_HUB_TOKEN',
+            variable: 'GIT_HUB_TOKEN'
+          ),
+          usernamePassword(
+            credentialsId:  'test-rail-api',
+            usernameVariable: 'TESTRAIL_USER',
+            passwordVariable: 'TESTRAIL_PASS'
+          ),
+          usernamePassword(
+            credentialsId:  'sauce-labs-api',
+            usernameVariable: 'SAUCE_USERNAME',
+            passwordVariable: 'SAUCE_ACCESS_KEY'
+          ),
+        ]) {
+          dir('test/appium/tests') {
+            sh """
+              python3 -m pytest -n24 \
+                --rerun_count=2 \
+                --testrail_report=True \
+                -m "${params.TEST_MARKERS}" \
+                --network=${params.NETWORK} \
+                --apk=${params.APK_NAME} \
+                --build=PR-${params.PR_ID} \
+                --pr_number=${params.PR_ID}
+            """
+          }
+        }
+      } }
+    }
+  }
+}

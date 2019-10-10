@@ -608,16 +608,10 @@ class BaseView(object):
         return AssetButton(self.driver, asset_name)
 
     def toggle_airplane_mode(self):
-        # opening android settings
-        self.driver.start_activity(app_package='com.android.settings', app_activity='.Settings')
-        network_and_internet = self.element_by_text('Network & Internet')
-        network_and_internet.wait_for_visibility_of_element()
-        network_and_internet.click()
-        airplane_mode = self.element_by_xpath('//*[@resource-id="android:id/switch_widget"]')
-        airplane_mode.wait_for_visibility_of_element()
-        airplane_mode.click()
-        # opening Status app
-        self.driver.launch_app()
+        self.airplane_mode_button.click()
+        mms_service = self.element_by_text_part("MmsService")
+        if mms_service.is_element_displayed():
+            self.driver.switch_to.alert().dismiss()
 
     def toggle_mobile_data(self):
         self.driver.start_activity(app_package='com.android.settings', app_activity='.Settings')

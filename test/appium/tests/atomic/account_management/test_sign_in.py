@@ -51,18 +51,14 @@ class TestSignIn(SingleDeviceTestCase):
         if values_in_logcat:
             self.driver.fail(values_in_logcat)
 
-
-@marks.all
-@marks.sign_in
-class TestSignInOffline(MultipleDeviceTestCase):
-
     @marks.testrail_id(5327)
     @marks.medium
     def test_offline_login(self):
-        self.create_drivers(1)
-        sign_in = SignInView(self.drivers[0])
+        sign_in = SignInView(self.driver)
         sign_in.create_user()
+        self.driver.close_app()
         sign_in.toggle_airplane_mode()
+        self.driver.launch_app()
         sign_in.accept_agreements()
         home = sign_in.sign_in()
         home.home_button.wait_for_visibility_of_element()
