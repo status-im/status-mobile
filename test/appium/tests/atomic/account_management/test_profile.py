@@ -249,8 +249,11 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.privacy_and_security_button.click()
         profile_view.backup_recovery_phrase_button.click()
         profile_view.backup_recovery_phrase()
-        if sign_in_view.profile_button.counter.is_element_displayed(60):
+        if sign_in_view.profile_button.counter.is_element_displayed():
             self.errors.append('Profile button counter is shown after recovery phrase backup')
+        profile_view.backup_recovery_phrase_button.click()
+        if not profile_view.backup_recovery_phrase_button.is_element_displayed():
+            self.errors.append('Back up seed phrase option is available after seed phrase backed up!')
         self.verify_no_errors()
 
     @marks.testrail_id(5433)

@@ -12,33 +12,19 @@ from views.recover_access_view import RecoverAccessView
 @marks.account
 class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
 
-    @marks.testrail_id(5301)
-    @marks.critical
-    @marks.battery_consumption
-    @marks.skip
-    def test_recover_account(self):
+    @marks.testrail_id(6231)
+    @marks.medium
+    def test_no_backup_seedphrase_option_for_recovered_account(self):
         sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        public_key = home.get_public_key()
-        profile = home.get_profile_view()
-        profile.backup_recovery_phrase_button.click()
-        profile.ok_continue_button.click()
-        recovery_phrase = profile.get_recovery_phrase()
-        profile.back_button.click()
-        wallet = profile.wallet_button.click()
-        wallet.set_up_wallet()
-        address = wallet.get_wallet_address()
-        self.driver.reset()
-        sign_in.accept_agreements()
-        sign_in.recover_access(passphrase=' '.join(recovery_phrase.values()))
-        home.wallet_button.click()
-        wallet.set_up_wallet()
-        address2 = wallet.get_wallet_address()
-        if address2 != address:
-            self.errors.append('Wallet address is %s after recovery, but %s is expected' % (address2, address))
-        public_key2 = wallet.get_public_key()
-        if public_key2 != public_key:
-            self.errors.append('Public key is %s after recovery, but %s is expected' % (public_key2, public_key))
+        sign_in.recover_access(passphrase=basic_user['passphrase'], password=unique_password)
+        profile_view = sign_in.profile_button.click()
+        profile_view.privacy_and_security_button.click()
+        profile_view.backup_recovery_phrase_button.click()
+        if profile_view.profile_button.counter.is_element_displayed():
+            self.errors.append('Profile button counter is shown on recovered account')
+        profile_view.backup_recovery_phrase_button.click()
+        if not profile_view.backup_recovery_phrase_button.is_element_displayed():
+            self.errors.append('Back up seed phrase option is active for recovered account!')
         self.verify_no_errors()
 
     @marks.skip
