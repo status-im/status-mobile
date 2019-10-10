@@ -117,7 +117,7 @@
         "other": "聯絡人"
     },
     "gas-used": "使用的 Gas",
-    "transactions-filter-type": "型別",
+    "type": "型別",
     "next": "下一個",
     "recent": "最近",
     "open-on-etherscan": "開啟 Etherscan.io",

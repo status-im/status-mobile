@@ -68,7 +68,8 @@
             [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
             [status-im.ui.screens.wallet.account.views :as wallet.account]
-            [status-im.ui.screens.wallet.add-new.views :as add-account]))
+            [status-im.ui.screens.wallet.add-new.views :as add-account]
+            [status-im.ui.screens.wallet.account-settings.views :as account-settings]))
 
 (def all-screens
   {:login                                            login/login
@@ -197,7 +198,8 @@
    :keycard-welcome                                  keycard/welcome
    :add-new-account                                  add-account/add-account
    :add-new-account-password                         add-account/password
-   :account-added                                    add-account/account-added})
+   :account-added                                    account-settings/account-added
+   :account-settings                                 account-settings/account-settings})
 
 (defn get-screen [screen]
   (get all-screens screen #(throw (str "Screen " screen " is not defined."))))

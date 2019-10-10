@@ -82,7 +82,7 @@
         "one": "kontakt",
         "other": "kontaker"
     },
-    "transactions-filter-type": "Type",
+    "type": "Type",
     "next": "Neste",
     "recent": "Nylig",
     "status": "Status",

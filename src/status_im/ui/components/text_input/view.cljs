@@ -15,13 +15,13 @@
       merged-styles)))
 
 (defn text-input-with-label
-  [{:keys [label content error style height container
+  [{:keys [label content error style height container label-style
            parent-container bottom-value text editable keyboard-type]
     :as props
     :or {editable true}}]
   [react/view {:style parent-container}
    (when label
-     [react/text {:style (styles/label editable)}
+     [react/text {:style (styles/label editable label-style)}
       label])
    [react/view {:style (merge-container-styles height container editable)}
     [react/text-input

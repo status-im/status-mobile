@@ -472,6 +472,13 @@
  (fn [[acc address]]
    (some #(when (= (:address %) address) %) (:accounts acc))))
 
+(re-frame/reg-sub
+ :current-account
+ :<- [:multiaccount]
+ :<- [:get-screen-params :wallet-account]
+ (fn [[macc acc]]
+   (some #(when (= (:address %) (:address acc)) %) (:accounts macc))))
+
 ;;CHAT ==============================================================================================================
 
 (re-frame/reg-sub

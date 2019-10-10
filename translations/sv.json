@@ -118,7 +118,7 @@
         "other": "kontakter"
     },
     "gas-used": "Gas använt",
-    "transactions-filter-type": "Typ",
+    "type": "Typ",
     "next": "Nästa",
     "recent": "Senaste",
     "open-on-etherscan": "Öppna på Etherscan.io",

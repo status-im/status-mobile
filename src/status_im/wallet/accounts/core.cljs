@@ -87,6 +87,16 @@
             (navigation/navigate-to-cofx :account-added nil)))
 
 (fx/defn save-account
+  {:events [:wallet.accounts/save-account]}
+  [{:keys [db] :as cofx} account {:keys [name color]}]
+  (let [{:keys [accounts]} (:multiaccount db)
+        new-account (cond-> account
+                      name (assoc :name name)
+                      color (assoc :color color))
+        new-accounts (replace {account new-account} accounts)]
+    (multiaccounts.update/multiaccount-update cofx {:accounts new-accounts} nil)))
+
+(fx/defn save-generated-account
   {:events [:wallet.accounts/save-generated-account]}
   [{:keys [db] :as cofx}]
   (let [{:keys [accounts latest-derived-path]} (:multiaccount db)

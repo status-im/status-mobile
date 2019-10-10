@@ -416,7 +416,7 @@
     :ens-username-taken
     :ens-usernames
     :ens-usernames-details
-    :ens-wallet-address
+    :wallet-address
     :ens-want-custom-domain
     :ens-want-domain
     :ens-welcome-hints
@@ -979,7 +979,7 @@
     :transactions
     :transactions-filter-select-all
     :transactions-filter-title
-    :transactions-filter-type
+    :type
     :transactions-history
     :transactions-history-empty
     :transactions-sign

@@ -7,6 +7,7 @@
              :add-new-account
              :add-new-account-password
              :account-added
+             :account-settings
              :collectibles-list
              :wallet-onboarding-setup
              :contact-code

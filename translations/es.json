@@ -117,7 +117,7 @@
         "other": "contactos"
     },
     "gas-used": "Gas usado",
-    "transactions-filter-type": "Tipo",
+    "type": "Tipo",
     "next": "Siguiente",
     "recent": "Estados recientes",
     "open-on-etherscan": "Abrir en Etherscan.io",

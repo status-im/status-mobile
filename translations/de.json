@@ -118,7 +118,7 @@
         "other": "Kontakte"
     },
     "gas-used": "Gas verbraucht",
-    "transactions-filter-type": "Typ",
+    "type": "Typ",
     "next": "Weiter",
     "recent": "Kürzliche Status",
     "open-on-etherscan": "Auf Etherscan.io öffnen",

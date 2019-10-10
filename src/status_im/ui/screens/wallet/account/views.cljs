@@ -121,7 +121,7 @@
          [transactions address])])))
 
 (views/defview account []
-  (views/letsubs [{:keys [name address] :as account} [:get-screen-params]]
+  (views/letsubs [{:keys [name address] :as account} [:current-account]]
     [react/view {:flex 1 :background-color colors/white}
      [toolbar-view name]
      [react/scroll-view

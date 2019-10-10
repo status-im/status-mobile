@@ -114,7 +114,7 @@
         "other": "kontakata"
     },
     "gas-used": "Iskorišćeni gas",
-    "transactions-filter-type": "Tip",
+    "type": "Tip",
     "next": "Sledeći",
     "recent": "Novi statusi",
     "open-on-etherscan": "Otvori Etherscan.io",

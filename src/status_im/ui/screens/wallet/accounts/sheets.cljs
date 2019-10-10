@@ -69,7 +69,7 @@
     {:theme     :action
      :title     :t/account-settings
      :icon      :main-icons/info
-     :disabled? true}]
+     :on-press #(hide-sheet-and-dispatch [:navigate-to :account-settings])}]
    ;; Commented out for v1
    #_[list-item/list-item
       {:theme     :action

@@ -450,7 +450,7 @@
     "transactions": "Transakcje",
     "transactions-filter-select-all": "Zaznacz wszystko",
     "transactions-filter-title": "Filtruj",
-    "transactions-filter-type": "Rodzaj",
+    "type": "Rodzaj",
     "transactions-history": "Historia transakcji",
     "transactions-history-empty": "Brak transakcji w Twojej historii",
     "transactions-sign": "Podpisz",

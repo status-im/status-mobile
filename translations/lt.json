@@ -117,7 +117,7 @@
         "other": "kontaktai"
     },
     "gas-used": "Gas sunaudota",
-    "transactions-filter-type": "Tipas",
+    "type": "Tipas",
     "next": "Sekantis",
     "recent": "Paskiausios būsenos",
     "open-on-etherscan": "Atidaryti Etherscan",
