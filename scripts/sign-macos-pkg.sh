@@ -101,9 +101,9 @@ echo -e "\n### Signing object..."
 # If `OBJECT` is a directory, we assume it's an app
 # bundle, otherwise we consider it to be a dmg.
 if [ -d "$OBJECT" ]; then
-  codesign --sign "$DEV_ID" --keychain "$KEYCHAIN" --deep --force --verbose=4 "$OBJECT"
+  codesign --sign "$DEV_ID" --keychain "$KEYCHAIN" --options runtime --deep --force --verbose=4 "$OBJECT"
 else
-  codesign --sign "$DEV_ID" --keychain "$KEYCHAIN" --force --verbose=4 "$OBJECT"
+  codesign --sign "$DEV_ID" --keychain "$KEYCHAIN" --options runtime --force --verbose=4 "$OBJECT"
 fi
 
 echo -e "\n### Verifying signature..."
@@ -113,5 +113,8 @@ echo -e "\n### Assessing Gatekeeper validation..."
 if [ -d "$OBJECT" ]; then
   spctl --assess --type execute --verbose=2 "$OBJECT"
 else
-  spctl --assess --type open --context context:primary-signature --verbose=2 "$OBJECT"
+  echo "WARNING: The 'open' type security assesment is disabled due to lack of 'Notarization'"
+  # Issue: https://github.com/status-im/status-react/pull/9172
+  # Details: https://developer.apple.com/documentation/security/notarizing_your_app_before_distribution
+  #spctl --assess --type open --context context:primary-signature --verbose=2 "$OBJECT"
 fi

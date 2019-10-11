@@ -2,19 +2,22 @@
 
 version: 1
 update_configs:
+  # Keep build.gradle files up to date, batching pull requests weekly
   - package_manager: "java:gradle"
     directory: "/android"
     update_schedule: "weekly"
     default_reviewers:
-    - jakubgs
+    - "jakubgs"
     allowed_updates:
       - match:
           update_type: "security"
+  # Keep /mobile/js_files/yarn.lock up to date, batching pull requests weekly
   - package_manager: "javascript"
     directory: "/mobile/js_files"
     update_schedule: "weekly"
     default_reviewers:
     - "jakubgs"
+  # Keep /desktop/js_files/yarn.lock up to date, batching pull requests weekly
   - package_manager: "javascript"
     directory: "/desktop/js_files"
     update_schedule: "weekly"

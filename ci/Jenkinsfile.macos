@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'macos' }
+  agent { label 'macos-xcode-11.1' }
 
   parameters {
     string(
@@ -27,6 +27,7 @@ pipeline {
     LANGUAGE = "en_US.UTF-8"
     TARGET_OS = 'macos'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
+    NIX_IGNORE_SYMLINK_STORE = 1 // https://github.com/NixOS/nix/issues/2925#issuecomment-499544039
     VERBOSE_LEVEL = '3'
     /* We use EXECUTOR_NUMBER to avoid multiple instances clashing */
     LEIN_HOME         = "/var/tmp/lein-${EXECUTOR_NUMBER}"
