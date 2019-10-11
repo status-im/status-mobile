@@ -64,7 +64,7 @@
   (let [previous-touch      (reagent/atom nil)
         scrolling-from-top? (reagent/atom true)]
     (fn [search-filter chats all-home-items]
-      (if (not-empty search-filter)
+      (if search-filter
         [filter.views/home-filtered-items-list chats]
         [react/animated-view
          (merge {:style {:flex             1
