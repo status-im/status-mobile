@@ -1,6 +1,7 @@
 (ns status-im.test.transport.core
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.fx :as fx]
+            status-im.transport.impl.receive
             [status-im.protocol.core :as protocol]
             [status-im.transport.core :as transport]
             [status-im.transport.message.core :as message]))

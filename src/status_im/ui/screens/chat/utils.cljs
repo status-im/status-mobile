@@ -13,7 +13,7 @@
 
 (defn format-author [alias style name]
   (let [additional-styles (style false)]
-    (if (ens/is-valid-eth-name? name)
+    (if name
       [react/text {:style (merge {:color colors/blue :font-size 13 :font-weight "500"} additional-styles)}
        (str "@" (or (stateofus/username name) name))]
       [react/text {:style (merge {:color colors/gray :font-size 12 :font-weight "400"} additional-styles)}

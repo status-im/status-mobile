@@ -1583,11 +1583,12 @@
  (fn [[contacts current-multiaccount] [_ identity]]
    (let [me? (= (:public-key current-multiaccount) identity)]
      (if me?
-       {:username (:name current-multiaccount)
+       {:ens-name (:name current-multiaccount)
         :alias (gfycat/generate-gfy identity)}
        (let [contact (or (contacts identity)
                          (contact.db/public-key->new-contact identity))]
-         {:username (:name contact)
+         {:ens-name  (when (:ens-verified contact)
+                       (:name contact))
           :alias (or (:alias contact)
                      (gfycat/generate-gfy identity))})))))
 

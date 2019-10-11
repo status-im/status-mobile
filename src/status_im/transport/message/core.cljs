@@ -10,6 +10,7 @@
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.transit :as transit]
             [status-im.transport.utils :as transport.utils]
+            [status-im.tribute-to-talk.whitelist :as whitelist]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
@@ -180,3 +181,21 @@
                      :params [confirmations]
                      :on-success #(log/debug "successfully confirmed messages")
                      :on-failure #(log/error "failed to confirm messages" %)}))))
+
+(fx/defn receive-transit-message [cofx message chat-id signature timestamp]
+  (let [received-message-fx {:chat-received-message/add-fx
+                             [(assoc (into {} message)
+                                     :message-id
+                                     (get-in cofx [:metadata :messageId])
+                                     :chat-id chat-id
+                                     :whisper-timestamp timestamp
+                                     :alias (get-in cofx [:metadata :author :alias])
+                                     :identicon (get-in cofx [:metadata :author :identicon])
+                                     :from signature
+                                     :metadata (:metadata cofx)
+                                     :js-obj (:js-obj cofx))]}]
+    (whitelist/filter-message cofx
+                              received-message-fx
+                              (:message-type message)
+                              (get-in message [:content :tribute-transaction])
+                              signature)))

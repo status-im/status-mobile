@@ -711,6 +711,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6226)
     @marks.critical
+    @marks.skip
+    # TODO: skipped in PR 9178 - should be re-enabled once  geth 1.9 upgrade will be merged
     def test_ens_in_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = self.drivers[0], self.drivers[1]

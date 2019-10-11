@@ -101,11 +101,11 @@
                 {:db (assoc-in db [:contacts/new-identity] "")}
                 (upsert-contact contact)))))
 
-(defn handle-contact-update
-  [public-key
+(fx/defn handle-contact-update
+  [{{:contacts/keys [contacts] :as db} :db :as cofx}
+   public-key
    timestamp
-   {:keys [name profile-image address fcm-token device-info] :as m}
-   {{:contacts/keys [contacts] :as db} :db :as cofx}]
+   {:keys [name profile-image address fcm-token device-info] :as m}]
   ;; We need to convert to timestamp ms as before we were using now in ms to
   ;; set last updated
   ;; Using whisper timestamp mostly works but breaks in a few scenarios:
@@ -139,10 +139,6 @@
               fcm-token (assoc :fcm-token fcm-token))]
         (upsert-contact cofx contact-props)))))
 
-(def receive-contact-request handle-contact-update)
-(def receive-contact-request-confirmation handle-contact-update)
-(def receive-contact-update handle-contact-update)
-
 (fx/defn initialize-contacts [cofx]
   (contacts-store/fetch-contacts-rpc cofx #(re-frame/dispatch [::contacts-loaded %])))
 
@@ -161,3 +157,29 @@
                     (assoc :tribute-to-talk (or tribute-to-talk
                                                 {:disabled? true})))]
     {:db (assoc-in db [:contacts/contacts public-key] contact)}))
+
+(defn add-ens-names [contacts names]
+  (reduce-kv (fn [acc public-key-keyword result]
+               (let [verified   (:verified result)
+                     error      (:error result)
+                     ens-name   (:name result)
+                     ens-verified-at (:verifiedAt result)
+                     public-key (str "0x" (name public-key-keyword))
+                     contact    (contact.db/public-key->contact contacts public-key)]
+
+                 (if error
+                   (assoc acc public-key contact)
+                   (assoc acc public-key
+                          (assoc contact
+                                 ;; setting the name for now as ens-verification is not enabled because of geth 1.9 upgrade
+                                 :name ens-name
+                                 :ens-verified-at ens-verified-at
+                                 :ens-verified verified)))))
+             (or contacts {})
+             names))
+
+(fx/defn names-verified
+  {:events [:contacts/ens-names-verified]}
+  [{:keys [db]} names]
+  {:db (update db :contacts/contacts add-ens-names names)})
+

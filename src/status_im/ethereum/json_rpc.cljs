@@ -55,6 +55,7 @@
    ;;TODO not used anywhere?
    "shhext_deleteChat" {}
    "shhext_saveContact" {}
+   "shhext_verifyENSNames" {}
    "status_chats" {}
    "wallet_getTransfers" {}
    "wallet_getTokensBalances" {}

@@ -154,14 +154,14 @@
                                                  :color           colors/gray}]]])))
 
 (defview reply-message [from alias message-text]
-  (letsubs [{:keys [username]} [:contacts/contact-name-by-identity from]
+  (letsubs [{:keys [ens-name]} [:contacts/contact-name-by-identity from]
             current-public-key [:multiaccount/public-key]]
     [react/scroll-view {:style style/reply-message-content}
      [react/view {:style style/reply-message-to-container}
       [vector-icons/tiny-icon :tiny-icons/tiny-reply {:container-style style/reply-icon
                                                       :width 20
                                                       :color colors/gray}]
-      (chat-utils/format-reply-author from alias username current-public-key style/reply-message-author)]
+      (chat-utils/format-reply-author from alias ens-name current-public-key style/reply-message-author)]
      [react/text {:style (assoc (message-style/style-message-text false) :font-size 14) :number-of-lines 3} message-text]]))
 
 (defview reply-message-view []

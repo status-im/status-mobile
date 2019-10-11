@@ -15,6 +15,8 @@
 (spec/def :contact/last-online (spec/nilable int?))
 (spec/def :contact/last-updated (spec/nilable int?))
 (spec/def :contact/name (spec/nilable string?))
+(spec/def :contact/ens-verified (spec/nilable boolean?))
+(spec/def :contact/ens-verified-at (spec/nilable int?))
 (spec/def :contact/public-key :global/not-empty-string)
 (spec/def :contact/photo-path (spec/nilable string?))
 
@@ -63,11 +65,13 @@
 (spec/def :ui/contact (spec/keys :opt [:contact/new-tag]))
 
 (defn public-key->new-contact [public-key]
-  {:name        (gfycat/generate-gfy public-key)
-   :address     (ethereum/public-key->address public-key)
-   :identicon   (identicon/identicon public-key)
-   :public-key  public-key
-   :system-tags #{}})
+  (let [alias (gfycat/generate-gfy public-key)]
+    {:alias       alias
+     :name        alias
+     :address     (ethereum/public-key->address public-key)
+     :identicon   (identicon/identicon public-key)
+     :public-key  public-key
+     :system-tags #{}}))
 
 (defn public-key->contact
   [contacts public-key]
