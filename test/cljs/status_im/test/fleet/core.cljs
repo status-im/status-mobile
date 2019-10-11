@@ -10,8 +10,7 @@
            #{:eth.beta
              :eth.staging
              :eth.test
-             :eth.contract
-             :les.dev.ropsten}
+             :eth.contract}
            (into #{}
                  (keys (fleet/fleets {})))))))
   (testing "passing a custom fleet"
