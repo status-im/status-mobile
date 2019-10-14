@@ -80,7 +80,7 @@ class TestBrowsing(SingleDeviceTestCase):
         for entry in ('google.com', 'status.im'):
             browsing_view = dapp_view.open_url(entry)
             browsing_view.cross_icon.click()
-        dapp_view.remove_browser_entry_long_press('Google', clear_all=True)
+        dapp_view.remove_browser_entry_long_press('Status - Private', clear_all=True)
         home_view.relogin()
         home_view.dapp_tab_button.click()
         if not dapp_view.element_by_text('Browsed websites will appear here.').is_element_displayed():

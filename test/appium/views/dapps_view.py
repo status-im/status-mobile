@@ -29,7 +29,7 @@ class EnterUrlEditbox(BaseEditBox):
 class BrowserEntry(ChatElement):
     def __init__(self, driver, name):
         super(BrowserEntry, self).__init__(driver, name)
-        self.locator = self.Locator.xpath_selector('//*[@text="%s"]/..' % name)
+        self.locator = self.locator.text_part_selector(name)
 
 
 class EnsName(BaseEditBox):
