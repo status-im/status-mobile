@@ -81,7 +81,7 @@
         "one": "kontakt",
         "other": "kontakty(ů)"
     },
-    "transactions-filter-type": "Typ",
+    "type": "Typ",
     "next": "Další",
     "recent": "Poslední",
     "status": "Status",

@@ -16,7 +16,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(5334)
     @marks.critical
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_network_mismatch_for_send_request_commands(self):
         sender = transaction_senders['D']
         self.create_drivers(2)
@@ -78,7 +78,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(5306)
     @marks.critical
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_send_eth_in_1_1_chat(self):
         recipient = transaction_recipients['A']
         sender = transaction_senders['A']
@@ -132,7 +132,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(5318)
     @marks.critical
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_request_and_receive_eth_in_1_1_chat(self):
         recipient = transaction_recipients['B']
         sender = transaction_senders['J']
@@ -171,7 +171,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(5324)
     @marks.critical
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_request_eth_in_wallet(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -217,7 +217,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(5383)
     @marks.high
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_contact_profile_send_transaction(self):
         self.create_drivers(1)
         recipient = basic_user
@@ -248,7 +248,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(5348)
     @marks.critical
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_send_tokens_in_1_1_chat(self):
         recipient = transaction_recipients['C']
         sender = transaction_senders['C']
@@ -281,7 +281,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(5352)
     @marks.critical
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_request_and_receive_tokens_in_1_1_chat(self):
         recipient = transaction_recipients['D']
         sender = transaction_senders['B']
@@ -318,7 +318,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(5376)
     @marks.high
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_transaction_confirmed_on_recipient_side(self):
         recipient = transaction_recipients['E']
         sender = transaction_senders['E']
@@ -347,7 +347,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
     @marks.testrail_id(5349)
     @marks.high
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_send_request_not_enabled_tokens(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -367,7 +367,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
     @marks.testrail_id(5417)
     @marks.critical
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_logcat_send_transaction_in_1_1_chat(self):
         sender = transaction_senders['F']
         sign_in = SignInView(self.driver)
@@ -385,7 +385,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
     @marks.testrail_id(5347)
     @marks.high
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_send_transaction_details_in_1_1_chat(self):
         recipient = basic_user
         sender = transaction_senders['G']
@@ -415,7 +415,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
     @marks.testrail_id(5377)
     @marks.high
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_transaction_confirmed_on_sender_side(self):
         sender = transaction_senders['H']
         sign_in = SignInView(self.driver)
@@ -428,12 +428,12 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         chat.send_transaction_in_1_1_chat('ETHro', amount)
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
         if not chat.chat_element_by_text(amount).contains_text('Confirmed', wait_time=90):
-            pytest.fail('Status "Confirmed" is not shown under transaction for the sender')
+            self.driver.fail('Status "Confirmed" is not shown under transaction for the sender')
 
     @marks.testrail_id(5410)
     @marks.high
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_insufficient_funds_1_1_chat_0_balance(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -469,7 +469,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
     @marks.testrail_id(5473)
     @marks.medium
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_insufficient_funds_1_1_chat_positive_balance(self):
         sender = transaction_senders['I']
         sign_in_view = SignInView(self.driver)
@@ -480,7 +480,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         eth_value = wallet_view.get_eth_value()
         stt_value = wallet_view.get_stt_value()
         if eth_value == 0 or stt_value == 0:
-            pytest.fail('No funds!')
+            self.driver.fail('No funds!')
         home_view = wallet_view.home_button.click()
         chat_view = home_view.add_contact(basic_user['public_key'])
         chat_view.commands_button.click()

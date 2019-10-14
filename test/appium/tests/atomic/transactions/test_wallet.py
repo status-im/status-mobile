@@ -1,5 +1,4 @@
 import random
-import pytest
 
 from support.utilities import get_merged_txs_list
 from tests import marks, unique_password, common_password
@@ -14,7 +13,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.testrail_id(5307)
     @marks.critical
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_send_eth_from_wallet_to_contact(self):
         recipient = basic_user
         sender = transaction_senders['N']
@@ -229,7 +228,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True, decimals=7)
 
-    @marks.testrail_id(5351)
+    @marks.testrail_id(5350)
     @marks.high
     def test_token_with_more_than_allowed_decimals(self):
         sender = wallet_users['C']
@@ -320,7 +319,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         eth_value = wallet_view.get_eth_value()
         stt_value = wallet_view.get_stt_value()
         if eth_value == 0 or stt_value == 0:
-            pytest.fail('No funds!')
+            self.driver.fail('No funds!')
         wallet_view.accounts_status_account.click()
         send_transaction = wallet_view.send_transaction_button.click()
         send_transaction.amount_edit_box.set_value(round(eth_value + 1))
@@ -363,12 +362,12 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.gas_limit_input.clear()
         send_transaction.gas_limit_input.set_value('1')
         send_transaction.gas_price_input.clear()
-        send_transaction.gas_price_input.set_value('1')
+        send_transaction.gas_price_input.send_keys('1')
         send_transaction.update_fee_button.click()
         send_transaction.sign_with_password.click_until_presence_of_element(send_transaction.enter_password_input)
         send_transaction.enter_password_input.send_keys(common_password)
         send_transaction.sign_button.click()
-        send_transaction.element_by_text('intrinsic gas too low', 'text').wait_for_visibility_of_element(20)
+        send_transaction.element_by_text('intrinsic gas too low', 'text').wait_for_visibility_of_element(40)
         send_transaction.ok_button.click()
 
         send_transaction.sign_transaction_button.click()
@@ -378,7 +377,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.gas_limit_input.set_value(gas_limit)
         send_transaction.gas_price_input.clear()
         gas_price = str(round(float(send_transaction.gas_price_input.text)) + 10)
-        send_transaction.gas_price_input.set_value(gas_price)
+        send_transaction.gas_price_input.send_keys(gas_price)
         send_transaction.update_fee_button.click()
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(sender['address'], amount)
@@ -425,6 +424,28 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.set_currency(user_currency)
         if not wallet_view.find_text_part('EUR'):
             self.driver.fail('EUR currency is not displayed')
+
+    @marks.testrail_id(5407)
+    @marks.medium
+    def test_cant_send_transaction_in_offline_mode(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        wallet_view.accounts_status_account.click()
+        send_transaction = wallet_view.send_transaction_button.click()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.accounts_button.click()
+        send_transaction.element_by_text("Status account").click()
+        send_transaction.amount_edit_box.click()
+        send_transaction.amount_edit_box.set_value("0")
+        send_transaction.confirm()
+        send_transaction.sign_transaction_button.click()
+        send_transaction.cancel_button.click()
+        send_transaction.toggle_airplane_mode()
+        send_transaction.sign_transaction_button.click()
+        if send_transaction.sign_with_password.is_element_displayed():
+            self.driver.fail("Sign transaction button is active in offline mode")
 
     @marks.testrail_id(6225)
     @marks.high
@@ -504,6 +525,7 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
     @marks.testrail_id(5378)
     @marks.skip
     @marks.high
+    # TODO: temporary skipped due to 8601
     def test_transaction_message_sending_from_wallet(self):
         recipient = transaction_recipients['E']
         sender = transaction_senders['V']

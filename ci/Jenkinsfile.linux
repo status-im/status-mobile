@@ -53,7 +53,7 @@ pipeline {
         }
       }
     }
-    stage('Parallel') {
+    stage('Parallel Assemble') {
       parallel {
         stage('Checks') { stages {
           stage('Lint') {
@@ -86,14 +86,18 @@ pipeline {
         } }
       }
     }
-    stage('Archive') {
-      steps {
-        archiveArtifacts app
-      }
-    }
-    stage('Upload') {
-      steps {
-        script { env.PKG_URL = cmn.uploadArtifact(app) }
+    stage('Parallel Upload') {
+      parallel {
+        stage('Archive') {
+          steps {
+            archiveArtifacts app
+          }
+        }
+        stage('Upload') {
+          steps {
+            script { env.PKG_URL = cmn.uploadArtifact(app) }
+          }
+        }
       }
     }
     stage('Cleanup') {

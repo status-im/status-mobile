@@ -2,6 +2,7 @@ import time
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from views.base_element import BaseButton, BaseText, BaseElement, BaseEditBox
 from views.base_view import BaseView
+from tests import test_dapp_url
 
 
 class WelcomeImageElement(BaseElement):
@@ -154,14 +155,15 @@ class HomeView(BaseView):
     def get_chat_with_user(self, username):
         return ChatElement(self.driver, username[:25])
 
-    def add_contact(self, public_key):
+    def add_contact(self, public_key, add_in_contacts=True):
         self.plus_button.click_until_presence_of_element(self.start_new_chat_button)
         contacts_view = self.start_new_chat_button.click()
         contacts_view.public_key_edit_box.click()
         contacts_view.public_key_edit_box.send_keys(public_key)
         one_to_one_chat = self.get_chat_view()
         contacts_view.confirm_until_presence_of_element(one_to_one_chat.chat_message_input)
-        one_to_one_chat.add_to_contacts.click()
+        if add_in_contacts:
+            one_to_one_chat.add_to_contacts.click()
         return one_to_one_chat
 
     def start_1_1_chat(self, username):
@@ -197,7 +199,7 @@ class HomeView(BaseView):
 
     def open_status_test_dapp(self, allow_all=True):
         dapp_view = self.dapp_tab_button.click()
-        dapp_view.open_url('status-im.github.io/dapp')
+        dapp_view.open_url(test_dapp_url)
         status_test_dapp = dapp_view.get_status_test_dapp_view()
         for _ in range(2):
             if allow_all:

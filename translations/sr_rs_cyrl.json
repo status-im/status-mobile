@@ -117,7 +117,7 @@
         "other": "контаката"
     },
     "gas-used": "Искоришћени гас",
-    "transactions-filter-type": "Тип",
+    "type": "Тип",
     "next": "Следећи",
     "recent": "Нови статуси",
     "open-on-etherscan": "Отвори Etherscan.io",

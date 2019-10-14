@@ -59,7 +59,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         for text in 'Contract deployed at: ', 'Call contract get function', \
                     'Call contract set function', 'Call function 2 times in a row':
             if not status_test_dapp.element_by_text(text).is_element_displayed(120):
-                pytest.fail('Contract was not created')
+                self.driver.fail('Contract was not created')
 
     @marks.testrail_id(5784)
     @marks.critical
@@ -94,7 +94,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
         # Check that second 'Send transaction' screen appears
         if not send_transaction_view.element_by_text('Sign with password').is_element_displayed(10):
-            pytest.fail('Second send transaction screen did not appear!')
+            self.driver.fail('Second send transaction screen did not appear!')
 
         send_transaction_view.sign_transaction()
 
@@ -114,7 +114,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
         # Check that second 'Send transaction' screen appears
         if not send_transaction_view.element_by_text('Sign with password').is_element_displayed(20):
-            pytest.fail('Second send transaction screen did not appear!')
+            self.driver.fail('Second send transaction screen did not appear!')
 
         send_transaction_view.sign_transaction()
 
@@ -295,6 +295,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(5686)
     @marks.medium
+    @marks.skip
+    # TODO: e2e blocker: 8567 (should be enabled after fix)
     def test_not_enough_eth_for_gas_validation_from_wallet(self):
         singin_view = SignInView(self.driver)
         home_view = singin_view.create_user()
@@ -393,6 +395,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
     @marks.testrail_id(5687)
     @marks.medium
     @marks.skip
+    # TODO: e2e blocker: 8601 (should be enabled after fix)
     def test_not_enough_eth_for_gas_validation_from_chat(self):
         signin_view = SignInView(self.driver)
         home_view = signin_view.create_user()

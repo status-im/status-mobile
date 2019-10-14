@@ -61,7 +61,7 @@ pipeline {
         script { cmn.nix.shell('lein deps :tree', attr: 'targets.leiningen.shell') }
       }
     }
-    stage('Parallel') {
+    stage('Parallel Assemble') {
       parallel {
         stage('Checks') { stages {
           stage('Lint') {
@@ -74,11 +74,6 @@ pipeline {
               script { cmn.nix.shell('lein test-cljs', attr: 'targets.leiningen.shell') }
             }
           }
-          /* stage('Coverage') {
-            steps {
-              script { android.coverage() }
-            }
-          } */
         } }
         stage('Build') { stages {
           stage('JSBundle') {
@@ -96,35 +91,41 @@ pipeline {
         } }
       }
     }
-    stage('Archive') {
-      steps { script {
-        apks.each { archiveArtifacts it }
-      } }
-    }
-    stage('Upload') {
-      steps {
-        script {
-          def urls = apks.collect { cmn.uploadArtifact(it) }
-          /* return only the universal APK */
-          if (urls.size() > 1) { 
-            env.PKG_URL = urls.find { it.contains('universal') }
-          } else { /* if no universal is available pick first */
-            env.PKG_URL = urls.first()
-          }
-          /* build type specific */
-          switch (btype) {
-            case 'release':
-              android.uploadToPlayStore(); break;
-            case 'nightly':
-              env.DIAWI_URL = android.uploadToDiawi(); break;
-            case 'e2e':
-              env.SAUCE_URL = android.uploadToSauceLabs(); break;
+    stage('Parallel Upload') {
+      parallel {
+        stage('Archive') {
+          steps { script {
+            apks.each { archiveArtifacts it }
+          } }
+        }
+        stage('Upload') {
+          steps {
+            script {
+              def urls = apks.collect { cmn.uploadArtifact(it) }
+              /* return only the universal APK */
+              if (urls.size() > 1) { 
+                env.PKG_URL = urls.find { it.contains('universal') }
+              } else { /* if no universal is available pick first */
+                env.PKG_URL = urls.first()
+              }
+              /* build type specific */
+              switch (btype) {
+                case 'release':
+                  android.uploadToPlayStore(); break;
+                case 'nightly':
+                  env.DIAWI_URL = android.uploadToDiawi(); break;
+                case 'e2e':
+                  env.SAUCE_URL = android.uploadToSauceLabs(); break;
+              }
+            }
           }
         }
       }
     }
     stage('Cleanup') {
-      steps { sh 'make clean' }
+      steps {
+        sh 'make clean'
+      }
     }
   }
   post {

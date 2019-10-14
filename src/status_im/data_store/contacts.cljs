@@ -33,6 +33,8 @@
                                                      :photoPath :photo-path
                                                      :deviceInfo :device-info
                                                      :tributeToTalk :tribute-to-talk
+                                                     :ensVerifiedAt :ens-verified-at
+                                                     :ensVerified :ens-verified
                                                      :systemTags :system-tags
                                                      :lastUpdated :last-updated})))
 
@@ -42,6 +44,8 @@
       (update :tribute-to-talk types/serialize)
       (update :system-tags #(mapv str %))
       (clojure.set/rename-keys {:public-key :id
+                                :ens-verified :ensVerified
+                                :ens-verified-at :ensVerifiedAt
                                 :photo-path :photoPath
                                 :device-info :deviceInfo
                                 :tribute-to-talk :tributeToTalk

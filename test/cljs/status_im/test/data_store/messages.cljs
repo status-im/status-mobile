@@ -27,7 +27,7 @@
                     :from from
                     :chatId chat-id
                     :replyTo "id-2"
-                    :content "{:chat-id \"chat-id\", :response-to-v2 \"id-2\", :text \"hta\"}"
+                    :content "{\"chat-id\":\"chat-id\",\"response-to-v2\":\"id-2\",\"text\":\"hta\"}"
                     :contentType "text/plain"
                     :messageType "public-group-user-message"
                     :clockValue 2
@@ -55,12 +55,12 @@
                    :whisperTimestamp 1
                    :from from
                    :chatId chat-id
-                   :content "{:chat-id \"chat-id\", :text \"hta\"}"
+                   :content "{\"chat-id\":\"chat-id\",\"text\":\"hta\"}"
                    :contentType "text/plain"
                    :messageType "public-group-user-message"
                    :clockValue 2
                    :quotedMessage {:from "from"
-                                   :content "{:chat-id \"chat-id\", :text \"reply\"}"}
+                                   :content "{\"chat-id\":\"chat-id\",\"text\":\"reply\"}"}
                    :timestamp 3
                    :outgoingStatus "sending"}]
       (is (= expected (m/<-rpc message))))))

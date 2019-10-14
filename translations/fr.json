@@ -382,7 +382,7 @@
     "ens-username-taken": "Nom d'utilisateur déjà pris :(",
     "ens-usernames": "Noms d'utilisateurs ENS",
     "ens-usernames-details": "Enregistrer un nom d'utilisateur universel pour être facilement reconnu par les autres utilisateurs",
-    "ens-wallet-address": "Adresse portefeuille",
+    "wallet-address": "Adresse portefeuille",
     "ens-want-custom-domain": "Je possède un nom sur un autre domaine",
     "ens-want-domain": "Je veux un domaine stateofus.eth",
     "ens-welcome-hints": "Les noms ENS transforment ces adresses d'une longueur insensée en noms d'utilisateur uniques.",
@@ -937,7 +937,7 @@
     "transactions": "Transactions",
     "transactions-filter-select-all": "Tout sélectionner",
     "transactions-filter-title": "Filtrer l'historique",
-    "transactions-filter-type": "Type",
+    "type": "Type",
     "transactions-history": "Historique des transactions",
     "transactions-history-empty": "Aucune transaction dans votre historique pour le moment",
     "transactions-sign": "Connecter",
@@ -1053,5 +1053,5 @@
     "your-data-belongs-to-you": "Si vous perdez votre phrase de récupération, vous perdez vos données et vos fonds",
     "your-data-belongs-to-you-description": "Status ne peut pas vous aider à récupérer votre multi-compte si vous perdez votre phrase de récupération. Vous êtes responsable de la sécurité de vos données et la sauvegarde de votre phrase de récupération constitue la meilleure protection.",
     "your-recovery-phrase": "Votre phrase de récupération",
-    "your-recovery-phrase-description": "Ceci est votre phrase de récupération. Vous l'utilisez pour prouver qu'il s'agit de votre portefeuille. Vous ne le voyez qu'une fois! Ecrivez-le sur du papier et conservez-le dans un endroit sûr. Vous en aurez besoin si vous perdez ou réinstallez votre portefeuille.",
+    "your-recovery-phrase-description": "Ceci est votre phrase de récupération. Vous l'utilisez pour prouver qu'il s'agit de votre portefeuille. Vous ne le voyez qu'une fois! Ecrivez-le sur du papier et conservez-le dans un endroit sûr. Vous en aurez besoin si vous perdez ou réinstallez votre portefeuille."
 }

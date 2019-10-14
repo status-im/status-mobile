@@ -21,11 +21,11 @@ class TestChatManagement(SingleDeviceTestCase):
             chat_view.send_message_button.click()
         chat_view.clear_history()
         if not chat_view.no_messages_in_chat.is_element_present():
-            pytest.fail('Message history is shown')
+            self.driver.fail('Message history is shown')
         home_view.relogin()
         home_view.get_chat_with_user(basic_user['username']).click()
         if not chat_view.no_messages_in_chat.is_element_present():
-            pytest.fail('Message history is shown after re-login')
+            self.driver.fail('Message history is shown after re-login')
 
     @marks.testrail_id(5319)
     @marks.critical
@@ -42,7 +42,7 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in.accept_agreements()
         sign_in.sign_in()
         if home.get_chat_with_user(basic_user['username']).is_element_displayed():
-            pytest.fail('Deleted 1-1 chat is present after relaunch app')
+            self.driver.fail('Deleted 1-1 chat is present after relaunch app')
 
     @marks.testrail_id(5343)
     @marks.critical
@@ -84,11 +84,11 @@ class TestChatManagement(SingleDeviceTestCase):
         contacts_view = home.start_new_chat_button.click()
         contacts_view.public_key_edit_box.paste_text_from_clipboard()
         if contacts_view.public_key_edit_box.text != public_key:
-            pytest.fail('Public key is not pasted from clipboard')
+            self.driver.fail('Public key is not pasted from clipboard')
         contacts_view.confirm()
         contacts_view.get_back_to_home_view()
         if not home.get_chat_with_user(basic_user['username']).is_element_present():
-            pytest.fail("No chat open in home view")
+            self.driver.fail("No chat open in home view")
 
     @marks.testrail_id(5387)
     @marks.high
@@ -135,7 +135,7 @@ class TestChatManagement(SingleDeviceTestCase):
         contacts_view.confirm()
         warning_text = contacts_view.element_by_text('Please enter or scan a valid chat key or username')
         if not warning_text.is_element_displayed():
-            pytest.fail('Error is not shown for invalid public key')
+            self.driver.fail('Error is not shown for invalid public key')
 
     @marks.testrail_id(5466)
     @marks.medium
@@ -191,6 +191,26 @@ class TestChatManagement(SingleDeviceTestCase):
         if not home.plus_button.is_element_displayed():
             self.driver.fail('Chats view was not opened')
 
+    @marks.testrail_id(6213)
+    @marks.medium
+    def test_unblocked_user_is_not_added_in_contacts(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        chat_view = home.add_contact(basic_user["public_key"], add_in_contacts=False)
+        chat_view.chat_options.click()
+        chat_view.view_profile_button.click()
+        chat_view.block_contact()
+        profile = sign_in.profile_button.click()
+        profile.contacts_button.click()
+        profile.blocked_users_button.click()
+        profile.element_by_text(basic_user["username"]).click()
+        chat_view.unblock_contact_button.click()
+        chat_view.back_button.click()
+        home.plus_button.click()
+        home.start_new_chat_button.click()
+        if home.element_by_text(basic_user["username"]).is_element_displayed():
+            self.driver.fail("Unblocked user not added previously in contact list added in contacts!")
+
 
 @marks.chat
 class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
@@ -217,7 +237,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
                         chat_1.element_by_text(username, 'text'),
                         chat_1.add_to_contacts,
                         chat_1.profile_send_message,
-                        # temporary skipped due to 8601
+                        # TODO: temporary skipped due to 8601
                         # chat_1.profile_send_transaction,
                         chat_1.profile_address_text]:
             if not element.scroll_to_element():
@@ -257,8 +277,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_element = chat_public_1.chat_element_by_text(message_before_block_2)
         chat_element.find_element()
         chat_element.member_photo.click()
-        chat_public_1.profile_block_contact.click()
-        chat_public_1.block_button.click()
+        chat_public_1.block_contact()
 
         device_1.just_fyi('messages from blocked user are hidden in public chat and close app')
         if chat_public_1.chat_element_by_text(message_before_block_2).is_element_displayed():
@@ -323,8 +342,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.just_fyi('block user')
         chat_1.chat_options.click()
         chat_1.view_profile_button.click()
-        chat_1.profile_block_contact.click()
-        chat_1.block_button.click()
+        chat_1.block_contact()
 
         device_1.just_fyi('no 1-1, messages from blocked user are hidden in public chat')
         if home_1.get_chat_with_user(basic_user['username']).is_element_displayed():

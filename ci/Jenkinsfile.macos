@@ -27,7 +27,8 @@ pipeline {
     LANGUAGE = "en_US.UTF-8"
     TARGET_OS = 'macos'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
-    NIX_IGNORE_SYMLINK_STORE = 1 // https://github.com/NixOS/nix/issues/2925#issuecomment-499544039
+    /* See nix/README.md */
+    NIX_IGNORE_SYMLINK_STORE = 1
     VERBOSE_LEVEL = '3'
     /* We use EXECUTOR_NUMBER to avoid multiple instances clashing */
     LEIN_HOME         = "/var/tmp/lein-${EXECUTOR_NUMBER}"
@@ -50,7 +51,7 @@ pipeline {
         }
       }
     }
-    stage('Parallel') {
+    stage('Parallel Assemble') {
       parallel {
         stage('Checks') { stages {
           stage('Lint') {
@@ -83,14 +84,18 @@ pipeline {
         } }
       }
     }
-    stage('Archive') {
-      steps {
-        archiveArtifacts dmg
-      }
-    }
-    stage('Upload') {
-      steps {
-        script { env.PKG_URL = cmn.uploadArtifact(dmg) }
+    stage('Parallel Upload') {
+      parallel {
+        stage('Archive') {
+          steps {
+            archiveArtifacts dmg
+          }
+        }
+        stage('Upload') {
+          steps {
+            script { env.PKG_URL = cmn.uploadArtifact(dmg) }
+          }
+        }
       }
     }
     stage('Cleanup') {

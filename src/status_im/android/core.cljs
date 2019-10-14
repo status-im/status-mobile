@@ -11,7 +11,8 @@
             [status-im.core :as core]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.utils.snoopy :as snoopy]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.ui.screens.routing.core :as routing]))
 
 (defn app-state-change-handler [state]
   (dispatch [:app-state-change state]))

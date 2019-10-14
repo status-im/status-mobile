@@ -129,7 +129,6 @@
                                              :first-time-setup? false
                                              :back-action :intro-wizard/navigate-back
                                              :forward-action :multiaccounts.recover/enter-phrase-next-pressed})
-             ::navigation/add-wizard-back-event [:multiaccounts.recover/cancel-pressed]
              :dispatch [:bottom-sheet/hide-sheet]}
             (navigation/navigate-to-cofx :recover-multiaccount-enter-phrase nil)))
 
@@ -157,8 +156,7 @@
   [{:keys [db] :as cofx}]
   (let [step (get-in db [:intro-wizard :step])]
     (if (= step :enter-phrase)
-      {:db (dissoc db :intro-wizard)
-       ::navigation/remove-wizard-back-event nil}
+      {:db (dissoc db :intro-wizard)}
       {:db (update db :intro-wizard assoc :step
                    (case step
                      :recovery-success :enter-phrase
@@ -180,8 +178,7 @@
         (utils/show-question
          (i18n/label :t/are-you-sure-to-cancel)
          (i18n/label :t/you-will-start-from-scratch)
-         #(re-frame/dispatch [:multiaccounts.recover/cancel-pressed true])
-         #(re-frame/dispatch [:navigation/reset-processing-flag]))
+         #(re-frame/dispatch [:multiaccounts.recover/cancel-pressed true]))
         (fx/merge cofx
                   dec-step
                   navigation/navigate-back)))))

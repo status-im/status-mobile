@@ -3,9 +3,10 @@
             [status-im.utils.platform :as p]
             [status-im.utils.styles :as styles]))
 
-(defn label [editable]
+(defn label [editable label-style]
   (merge
    {:margin-vertical 10}
+   label-style
    (when-not editable {:color colors/gray})))
 
 (defn input-container [height editable]

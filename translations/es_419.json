@@ -466,7 +466,7 @@
     "transactions": "Transacciones",
     "transactions-filter-select-all": "Seleccionar todo",
     "transactions-filter-title": "Filtrar historial",
-    "transactions-filter-type": "Tipo",
+    "type": "Tipo",
     "transactions-history": "Historial de transacciones",
     "transactions-history-empty": "Aún no hay transacciones en tu historial",
     "transactions-sign": "Firmar",

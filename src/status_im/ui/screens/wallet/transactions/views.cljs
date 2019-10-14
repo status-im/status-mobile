@@ -129,7 +129,7 @@
      [react/view
       {:style (merge {:background-color :white} components.styles/flex)}
       [list/section-list {:sections [{:title
-                                      (i18n/label :t/transactions-filter-type)
+                                      (i18n/label :t/type)
                                       :key       :type
                                       :render-fn render-item-filter
                                       :data filters}]

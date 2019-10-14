@@ -156,6 +156,7 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
     @marks.skip
     @marks.testrail_id(5392)
     @marks.high
+    # TODO: update to use korean keyboard
     def test_send_korean_characters(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -173,6 +174,7 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
     @marks.skip
     @marks.testrail_id(5336)
     @marks.medium
+    # skipped as it is a part of other tests
     def test_user_can_interact_with_public_chat(self):
         signin = SignInView(self.driver)
         home_view = signin.create_user()

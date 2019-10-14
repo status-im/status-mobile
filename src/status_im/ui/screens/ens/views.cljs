@@ -300,7 +300,7 @@
 (defn- registration
   [checked contract address public-key]
   [react/view {:style {:flex 1 :margin-top 24}}
-   [section {:title   (i18n/label :t/ens-wallet-address)
+   [section {:title   (i18n/label :t/wallet-address)
              :content address}]
    [react/view {:style {:margin-top 14}}
     [section {:title   (i18n/label :t/key)
@@ -498,7 +498,7 @@
              (str (i18n/label :t/ens-10-SNT) ", deposit unlocked"))]]])
       [react/view {:style {:margin-top 22}}
        (when-not pending?
-         [section {:title   (i18n/label :t/ens-wallet-address)
+         [section {:title   (i18n/label :t/wallet-address)
                    :content (ethereum/normalized-address address)}])
        (when-not pending?
          [react/view {:style {:margin-top 14}}

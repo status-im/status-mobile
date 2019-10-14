@@ -31,7 +31,7 @@ pipeline {
           osx    = cmn.ci.Build('status-react/combined/desktop-macos')
         } } }
         stage('Linux') { steps { script {
-          nix    = cmn.ci.Build('status-react/combined/desktop-linux')
+          tux    = cmn.ci.Build('status-react/combined/desktop-linux')
         } } }
         stage('Windows') { steps { script {
           win    = cmn.ci.Build('status-react/combined/desktop-windows')
@@ -55,7 +55,7 @@ pipeline {
         sh('rm -f pkg/*')
         if (btype != 'release') {
           cmn.ci.copyArts(osx)
-          cmn.ci.copyArts(nix)
+          cmn.ci.copyArts(tux)
           cmn.ci.copyArts(win)
         }
         cmn.ci.copyArts(ios)
@@ -78,7 +78,7 @@ pipeline {
           iOS: cmn.pkgUrl(ios), /*iOSe2e: cmn.pkgUrl(iose2e),*/
           Diawi: cmn.utils.getEnv(ios, 'DIAWI_URL'),
           /* desktop */
-          App: cmn.pkgUrl(nix), Mac: cmn.pkgUrl(osx), Win: cmn.pkgUrl(win),
+          App: cmn.pkgUrl(tux), Mac: cmn.pkgUrl(osx), Win: cmn.pkgUrl(win),
           /* upload the sha256 checksums file too */
           SHA: cmn.uploadArtifact(cmn.utils.pkgFind('sha256')),
         ]
@@ -95,7 +95,7 @@ pipeline {
     stage('Publish') {
       steps { script {
         switch (btype) {
-          case 'nightly': build('misc/status.im'); break
+          //case 'nightly': build('misc/status.im'); break
           case 'release': gh.publishReleaseMobile(); break
         }
       } }

@@ -70,28 +70,6 @@
                   (when (pairing.utils/has-paired-installations? cofx)
                     (send-direct-message current-public-key nil this))
                   (send-with-pubkey params)))))
-  (receive [this chat-id signature timestamp cofx]
-    (let [received-message-fx {:chat-received-message/add-fx
-                               [(assoc (into {} this)
-                                       :message-id
-                                       (or (get-in cofx [:metadata :messageId])
-                                           (transport.utils/message-id
-                                            signature
-                                            (.-payload (:js-obj cofx))))
-                                       :chat-id chat-id
-                                       :whisper-timestamp timestamp
-                                       :raw-payload-hash (ethereum/sha3
-                                                          (.-payload (:js-obj cofx)))
-                                       :alias (get-in cofx [:metadata :author :alias])
-                                       :identicon (get-in cofx [:metadata :author :identicon])
-                                       :from signature
-                                       :metadata (:metadata cofx)
-                                       :js-obj (:js-obj cofx))]}]
-      (whitelist/filter-message cofx
-                                received-message-fx
-                                message-type
-                                (get-in this [:content :tribute-transaction])
-                                signature)))
   (validate [this]
     (if (spec/valid? :message/message this)
       this

@@ -64,12 +64,12 @@
                 :height     24}}]]]))
 
 (views/defview message-author-name [{:keys [from]}]
-  (views/letsubs [{:keys [username]} [:contacts/contact-name-by-identity from]]
+  (views/letsubs [{:keys [ens-name alias]} [:contacts/contact-name-by-identity from]]
     [react/view {:flex-direction :row}
-     (when username
-       [react/text {:style styles/author} username])
+     (when ens-name
+       [react/text {:style styles/author} ens-name])
      [react/text {:style styles/author-generated}
-      (str (when username " • ") (gfycat/generate-gfy from))]]))
+      (str (when ens-name " • ") alias)]]))
 
 (views/defview member-photo [from]
   (views/letsubs [current-public-key [:multiaccount/public-key]
@@ -85,14 +85,14 @@
                       :style  styles/photo-style}]]]]]))
 
 (views/defview quoted-message [{:keys [from text]} outgoing current-public-key]
-  (views/letsubs [{:keys [username alias]} [:contacts/contact-name-by-identity from]]
+  (views/letsubs [{:keys [ens-name alias]} [:contacts/contact-name-by-identity from]]
     [react/view {:style styles/quoted-message-container}
      [react/view {:style styles/quoted-message-author-container}
       [vector-icons/tiny-icon :tiny-icons/tiny-reply {:style           (styles/reply-icon outgoing)
                                                       :width           16
                                                       :height          16
                                                       :container-style (when outgoing {:opacity 0.4})}]
-      (chat-utils/format-reply-author from alias username current-public-key (partial message.style/quoted-message-author outgoing))]
+      (chat-utils/format-reply-author from alias ens-name current-public-key (partial message.style/quoted-message-author outgoing))]
      [react/text {:style           (message.style/quoted-message-text outgoing)
                   :number-of-lines 5}
       (core-utils/truncate-str text constants/chars-collapse-threshold)]]))
@@ -271,10 +271,10 @@
         [vector-icons/icon :main-icons/arrow-left {:style (styles/send-icon-arrow inactive?)}]]])))
 
 (views/defview reply-message [from alias message-text]
-  (views/letsubs [{:keys [username]}           [:contacts/contact-name-by-identity from]
+  (views/letsubs [{:keys [ens-name]}           [:contacts/contact-name-by-identity from]
                   current-public-key [:multiaccount/public-key]]
     [react/view {:style styles/reply-content-container}
-     (chat-utils/format-reply-author from alias username current-public-key styles/reply-content-author)
+     (chat-utils/format-reply-author from alias ens-name current-public-key styles/reply-content-author)
      [react/text {:style styles/reply-content-message} message-text]]))
 
 (views/defview reply-member-photo [from]

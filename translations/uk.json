@@ -118,7 +118,7 @@
         "other": "контакти"
     },
     "gas-used": "Використаний Газ",
-    "transactions-filter-type": "Тип",
+    "type": "Тип",
     "next": "Далі",
     "recent": "Останні статуси",
     "open-on-etherscan": "Відкрити посилання на Etherscan.io",

@@ -3,21 +3,19 @@ from views.base_view import BaseView
 from views.home_view import ChatElement
 
 
-
-class OpenDAppButton(BaseButton):
+class DiscoverDappsButton(BaseButton):
     def __init__(self, driver):
-        super(OpenDAppButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('open-dapp-button')
-
-
-class OpenButton(BaseButton):
-    def __init__(self, driver):
-        super(OpenButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('open-dapp-button')
+        super(DiscoverDappsButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Discover ÐApps')
 
     def navigate(self):
         from views.web_views.base_web_view import BaseWebView
         return BaseWebView(self.driver)
+
+    def click(self):
+        from views.web_views.base_web_view import BrowserRefreshPageButton
+        self.click_until_presence_of_element(BrowserRefreshPageButton(self.driver))
+        return self.navigate()
 
 
 class EnterUrlEditbox(BaseEditBox):
@@ -55,15 +53,36 @@ class ClearAllDappButton(BaseButton):
         super(ClearAllDappButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('clear-all-dapps')
 
+class SelectAccountButton(BaseButton):
+    def __init__(self, driver):
+        super(SelectAccountButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('select-account')
+
+class SelectAccountRadioButton(BaseButton):
+    def __init__(self, driver, account_name):
+        super(SelectAccountRadioButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']/../../android.view.ViewGroup/android.view.ViewGroup[2]" % account_name)
+
+
+class AlwaysAllowRadioButton(BaseButton):
+    def __init__(self, driver):
+        super(AlwaysAllowRadioButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Always allow']/../android.view.ViewGroup")
+
+
+class CrossCloseWeb3PermissionButton(BaseButton):
+    def __init__(self, driver):
+        super(CrossCloseWeb3PermissionButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            '//*[contains(@text,"ÐApps can access")]/../android.view.ViewGroup[1]/android.view.ViewGroup')
 
 class DappsView(BaseView):
 
     def __init__(self, driver):
         super(DappsView, self).__init__(driver)
 
-        self.open_d_app_button = OpenDAppButton(self.driver)
-        self.open_button = OpenButton(self.driver)
         self.enter_url_editbox = EnterUrlEditbox(self.driver)
+        self.discover_dapps_button = DiscoverDappsButton(self.driver)
 
         #ens dapp
         self.ens_name = EnsName(self.driver)
@@ -72,6 +91,14 @@ class DappsView(BaseView):
         #options on long press
         self.remove_d_app_button = RemoveDappButton(self.driver)
         self.clear_all_d_app_button = ClearAllDappButton(self.driver)
+
+        #select account
+        self.select_account_button = SelectAccountButton(self.driver)
+        self.select_account_radio_button = SelectAccountRadioButton(self.driver,
+                                                                    account_name='Status account')
+        #permissions window
+        self.always_allow_radio_button = AlwaysAllowRadioButton(self.driver)
+        self.close_web3_permissions_window_button = CrossCloseWeb3PermissionButton(self.driver)
 
 
     def open_url(self, url):
@@ -89,3 +116,6 @@ class DappsView(BaseView):
         entry.long_press_element()
         self.clear_all_d_app_button if clear_all else self.remove_d_app_button.click()
         return entry
+
+    def select_account_by_name(self, account_name='Status account'):
+        return SelectAccountRadioButton(self.driver, account_name)

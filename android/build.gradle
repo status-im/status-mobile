@@ -68,6 +68,6 @@ allprojects {
 
         // for geth, function, and status-go
         flatDir { dirs "libs", System.env.STATUS_GO_ANDROID_LIBDIR }
-        maven { url "https://jitpack.io" }
+        maven { url "https://www.jitpack.io" }
     }
 }

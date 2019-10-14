@@ -25,7 +25,6 @@ let
     gnumake
     jq
     wget
-    s3cmd
   ];
 
 in mkShell {

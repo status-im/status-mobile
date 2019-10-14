@@ -17,7 +17,6 @@ from support.github_report import GithubHtmlReport
 from support.message_reliability_report import create_one_to_one_chat_report, create_public_chat_report
 from tests import test_suite_data, start_threads, appium_container
 
-
 class AbstractTestCase:
     __metaclass__ = ABCMeta
 
@@ -247,11 +246,10 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
         cls.loop.close()
 
 
-environment = LocalMultipleDeviceTestCase if pytest.config.getoption('env') == 'local' else SauceMultipleDeviceTestCase
-
-
-class MultipleDeviceTestCase(environment):
-    pass
+if pytest.config.getoption('env') == 'local':
+    MultipleDeviceTestCase = LocalMultipleDeviceTestCase
+else:
+    MultipleDeviceTestCase = SauceMultipleDeviceTestCase
 
 
 class NoDeviceTestCase(AbstractTestCase):

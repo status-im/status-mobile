@@ -512,7 +512,7 @@
     "transactions": "Transaksi",
     "transactions-filter-select-all": "Pilih semua",
     "transactions-filter-title": "Tapis sejarah",
-    "transactions-filter-type": "Jenis",
+    "type": "Jenis",
     "transactions-history": "Sejarah transaksi",
     "transactions-history-empty": "Tiada transaksi dalam sejarah anda lagi",
     "transactions-sign": "Ditandatangan",

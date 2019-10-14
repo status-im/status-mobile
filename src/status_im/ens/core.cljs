@@ -2,6 +2,9 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ens.db :as ens.db]
+            [taoensso.timbre :as log]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
@@ -11,6 +14,7 @@
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.money :as money]
             [status-im.signing.core :as signing]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
@@ -252,3 +256,31 @@
   (fx/merge cofx
             (set-username-candidate (get-in db [:ens/registration :username] ""))
             (navigation/navigate-to-cofx :ens-search {})))
+
+(defn verify-names [names]
+  (json-rpc/call {:method "shhext_verifyENSNames"
+                  :params [names]
+                  :on-success #(re-frame/dispatch [:contacts/ens-names-verified %])
+                  :on-failure #(log/error "failed to resolve ens names" % names)}))
+
+(re-frame/reg-fx
+ ::verify-names
+ (fn [names]
+   (verify-names (distinct names))))
+
+(defn should-be-verified? [cofx ens-name signature]
+  (and ens-name
+       (not (get-in cofx [:contacts/contacts signature :ens-verified]))
+       (not= signature (multiaccounts.model/current-public-key cofx))
+       (or (valid-custom-domain? ens-name)
+           (stateofus/valid-username? ens-name))))
+
+(fx/defn verify-names-from-message [cofx {:keys [content]} signature]
+  (when (should-be-verified? cofx (:name content) signature)
+    {::verify-names [{:name (:name content)
+                      :publicKey (subs signature 2)}]}))
+
+(fx/defn verify-names-from-contact-request [cofx {:keys [name]} signature]
+  (when (should-be-verified? cofx name signature)
+    {::verify-names [{:name name
+                      :publicKey (subs signature 2)}]}))

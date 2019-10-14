@@ -59,11 +59,11 @@ def prep(type = 'nightly') {
 
   if (env.TARGET_OS == 'macos' || env.TARGET_OS == 'linux' || env.TARGET_OS == 'windows') {
     /* node deps, pods, and status-go download */
-    utils.nix.shell('scripts/prepare-for-desktop-platform.sh', pure: false)
+    nix.shell('scripts/prepare-for-desktop-platform.sh', pure: false)
     sh('scripts/copy-translations.sh')
   } else if (env.TARGET_OS != 'android') {
     // run script in the nix shell so that node_modules gets instantiated before attempting the copies
-    utils.nix.shell('scripts/copy-translations.sh chmod')
+    nix.shell('scripts/copy-translations.sh chmod')
   }
 }
 
@@ -86,15 +86,15 @@ def uploadArtifact(path) {
     usernameVariable: 'DO_ACCESS_KEY',
     passwordVariable: 'DO_SECRET_KEY'
   )]) {
-    nix.shell("""
-      s3cmd \\
-        --acl-public ${customOpts} \\
+    sh("""
+      s3cmd ${customOpts} \\
+        --acl-public \\
         --host="${domain}" \\
         --host-bucket="%(bucket)s.${domain}" \\
         --access_key=${DO_ACCESS_KEY} \\
         --secret_key=${DO_SECRET_KEY} \\
         put ${path} s3://${bucket}/
-    """, pure: false)
+    """)
   }
   return "https://${bucket}.${domain}/${utils.getFilename(path)}"
 }

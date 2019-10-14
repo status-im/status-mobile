@@ -16,6 +16,7 @@
     :filters/load-filters
     :pairing/set-installation-metadata
     :status-im.data-store.messages/save-message
+    :status-im.ens.core/verify-names
     :shh/send-direct-message
     :shh/remove-filter
     :shh/generate-sym-key-from-password

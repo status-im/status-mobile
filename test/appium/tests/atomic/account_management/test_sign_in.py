@@ -27,6 +27,8 @@ class TestSignIn(SingleDeviceTestCase):
 
     @marks.testrail_id(5463)
     @marks.medium
+    @marks.skip
+    # TODO: e2e blocker: 8567 (should be enabled after fix)
     def test_login_with_incorrect_password(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
@@ -64,4 +66,4 @@ class TestSignIn(SingleDeviceTestCase):
         home.home_button.wait_for_visibility_of_element()
         connection_text = sign_in.connection_status.text
         if connection_text != 'Offline':
-            pytest.fail("Connection status text '%s' doesn't match expected 'Offline'" % connection_text)
+            self.driver.fail("Connection status text '%s' doesn't match expected 'Offline'" % connection_text)

@@ -124,7 +124,7 @@
         "other": "επαφές"
     },
     "gas-used": "χρησιμοποιημένο Gas",
-    "transactions-filter-type": "Τύπος",
+    "type": "Τύπος",
     "next": "Επόμενο",
     "recent": "Πρόσφατες καταστάσεις",
     "open-on-etherscan": "Άνοιγμα στο Etherscan.io",

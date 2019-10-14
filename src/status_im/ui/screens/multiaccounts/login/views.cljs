@@ -31,7 +31,7 @@
   (.blur password-text-input)
   (re-frame/dispatch [:multiaccounts.login.ui/password-input-submitted]))
 
-(defn multiaccount-login-badge [{:keys [public-key] :as multiaccount}]
+(defn multiaccount-login-badge [{:keys [public-key name] :as multiaccount}]
   [react/view styles/login-badge
    [photos/photo
     ;;TODO this should be done in a subscription
@@ -42,7 +42,7 @@
                  :ellipsize-mode :middle
                  :numberOfLines  1}
      ;;TODO this should be done in a subscription
-     (multiaccounts/displayed-name multiaccount)]
+     name]
     [react/text {:style styles/login-badge-pubkey}
      (utils/get-shortened-address public-key)]]])
 

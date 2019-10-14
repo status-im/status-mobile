@@ -1,24 +1,9 @@
 (ns status-im.ui.screens.navigation
   (:require [re-frame.core :as re-frame]
-            [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.navigation :as navigation]
-            [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]
             [status-im.utils.fx :as fx]))
-
-;; private helper fns
-
-(defn- push-view [db view-id]
-  (-> db
-      (update :navigation-stack conj view-id)
-      (assoc :view-id view-id)))
-
-;; public fns
-
-(fx/defn navigate-forget
-  [{:keys [db]} view-id]
-  {:db (assoc db :view-id view-id)})
 
 (defmulti unload-data!
   (fn [db] (:view-id db)))
@@ -32,7 +17,7 @@
 
 (defn- -preload-data! [{:keys [was-modal?] :as db} & args]
   (if was-modal?
-    (dissoc db :was-modal?) ;;TODO check how it worked with this bug
+    (dissoc db :was-modal?)
     (apply preload-data! db args)))
 
 (fx/defn navigate-to-cofx
@@ -44,7 +29,9 @@
                             screen-params))]
     {:db           (if (= view-id go-to-view-id)
                      db
-                     (push-view db go-to-view-id))
+                     (-> db
+                         (update :navigation-stack conj go-to-view-id)
+                         (assoc :view-id go-to-view-id)))
      ::navigate-to [go-to-view-id screen-params]}))
 
 (fx/defn navigate-reset
@@ -69,8 +56,6 @@
 (def navigation-interceptors
   [unload-data-interceptor (re-frame/enrich preload-data!)])
 
-;; effects
-
 (re-frame/reg-fx
  ::navigate-to
  (fn [[view-id params]]
@@ -89,8 +74,6 @@
    (log/debug :navigate-reset config)
    (navigation/navigate-reset config)))
 
-;; event handlers
-
 (handlers/register-handler-fx
  :navigate-to
  navigation-interceptors
@@ -105,15 +88,14 @@
 
 (fx/defn navigate-back
   [{{:keys [navigation-stack view-id] :as db} :db}]
-  (assoc
-   {::navigate-back nil}
+  {::navigate-back nil
    :db (let [[previous-view-id :as navigation-stack'] (pop navigation-stack)
              first-in-stack (first navigation-stack)]
          (if (= view-id first-in-stack)
            (-> db
                (assoc :view-id previous-view-id)
                (assoc :navigation-stack navigation-stack'))
-           (assoc db :view-id first-in-stack)))))
+           (assoc db :view-id first-in-stack)))})
 
 (handlers/register-handler-fx
  :navigate-back
@@ -141,37 +123,3 @@
                       (assoc :prev-tab-view-id (:view-id db))
                       (assoc :prev-view-id (:view-id db)))}
              (navigate-to-cofx view-id {}))))
-
-;; This atom stores event vector
-;; to be dispatched when a react-navigation's BACK
-;; actions is invoked
-(def wizard-back-event (atom nil))
-
-;; This atom exists in order to avoid
-;; endless loop when processing NavigationActions/BACK
-;; in react-navigation's getStateForAction fn
-(def processing-back-event? (atom false))
-
-(fx/defn reset-processing-flag
-  {:events [:navigation/reset-processing-flag]}
-  [{:keys [db] :as cofx}]
-  {::reset-processing-flag nil})
-
-(re-frame/reg-fx
- ::reset-processing-flag
- (fn []
-   (reset! processing-back-event? false)))
-
-;; Below two effects are added when we need
-;; to override default react-navigation's BACK action
-;; processing
-(re-frame/reg-fx
- ::add-wizard-back-event
- (fn [event]
-   (reset! wizard-back-event event)))
-
-(re-frame/reg-fx
- ::remove-wizard-back-event
- (fn [event]
-   (reset! processing-back-event? false)
-   (reset! wizard-back-event nil)))

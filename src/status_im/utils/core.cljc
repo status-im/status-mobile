@@ -1,7 +1,5 @@
 (ns status-im.utils.core
   (:require [clojure.string :as str]
-            #?(:cljs [cljs.tools.reader.edn :as edn]
-               :clj [clojure.tools.reader.edn :as edn])
             [taoensso.timbre :as log]))
 
 (defn truncate-str
@@ -70,6 +68,6 @@
 #?(:cljs
    (defn safe-read-message-content [content]
      (try
-       (edn/read-string content)
+        (js->clj (.parse js/JSON content) :keywordize-keys true)
        (catch :default e
          (log/warn "failed to transform message with " e)))))

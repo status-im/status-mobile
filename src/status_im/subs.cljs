@@ -472,6 +472,13 @@
  (fn [[acc address]]
    (some #(when (= (:address %) address) %) (:accounts acc))))
 
+(re-frame/reg-sub
+ :current-account
+ :<- [:multiaccount]
+ :<- [:get-screen-params :wallet-account]
+ (fn [[macc acc]]
+   (some #(when (= (:address %) (:address acc)) %) (:accounts macc))))
+
 ;;CHAT ==============================================================================================================
 
 (re-frame/reg-sub
@@ -1043,6 +1050,18 @@
    (map :balance (vals (:accounts wallet)))))
 
 (re-frame/reg-sub
+ :empty-balances?
+ :<- [:balances]
+ (fn [balances]
+   (every?
+    (fn [balance]
+      (every?
+       (fn [asset]
+         (or (nil? asset) (.isZero asset)))
+       (vals balance)))
+    balances)))
+
+(re-frame/reg-sub
  :price
  :<- [:prices]
  (fn [prices [_ fsym tsym]]
@@ -1564,11 +1583,12 @@
  (fn [[contacts current-multiaccount] [_ identity]]
    (let [me? (= (:public-key current-multiaccount) identity)]
      (if me?
-       {:username (:name current-multiaccount)
+       {:ens-name (:name current-multiaccount)
         :alias (gfycat/generate-gfy identity)}
        (let [contact (or (contacts identity)
                          (contact.db/public-key->new-contact identity))]
-         {:username (:name contact)
+         {:ens-name  (when (:ens-verified contact)
+                       (:name contact))
           :alias (or (:alias contact)
                      (gfycat/generate-gfy identity))})))))
 

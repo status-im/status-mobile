@@ -394,7 +394,7 @@
   "ens-username-you-can-follow-progress": "You can follow the progress in the Transaction History section of your wallet.",
 	"ens-usernames": "ENS usernames",
 	"ens-usernames-details": "Register a universal username to be easily recognized by other users",
-	"ens-wallet-address": "Wallet address",
+	"wallet-address": "Wallet address",
 	"ens-want-custom-domain": "I own a name on another domain",
 	"ens-want-domain": "I want a stateofus.eth domain",
 	"ens-welcome-hints": "ENS names transform those crazy-long addresses into unique usernames.",
@@ -979,7 +979,7 @@
 	"transactions": "Transactions",
 	"transactions-filter-select-all": "Select all",
 	"transactions-filter-title": "Filter history",
-	"transactions-filter-type": "Type",
+	"type": "Type",
 	"transactions-history": "Transaction history",
 	"transactions-history-empty": "No transactions in your history yet",
 	"transactions-sign": "Sign",
@@ -1113,5 +1113,9 @@
 	"lock-app-with": "Lock app with",
 	"grant-face-id-permissions": "To grant the required Face ID permission, please go to your system settings and make sure that Status > Face ID is selected",
 	"request-feature": "Request a feature",
-    "select-account-dapp": "Select the account you wish to use with Dapps"
+    "select-account-dapp": "Select the account you wish to use with Dapps",
+    "apply": "Apply",
+    "on-status-tree": "On Status tree",
+    "derivation-path": "Derivation path",
+    "storage": "Storage"
 }

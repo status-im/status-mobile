@@ -45,11 +45,11 @@
     content content-type]])
 
 (defview quoted-message [{:keys [from text]} outgoing current-public-key]
-  (letsubs [{:keys [username alias]} [:contacts/contact-name-by-identity from]]
+  (letsubs [{:keys [ens-name alias]} [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
       [vector-icons/tiny-icon :tiny-icons/tiny-reply {:color (if outgoing colors/white-transparent colors/gray)}]
-      (chat.utils/format-reply-author from alias username current-public-key (partial style/quoted-message-author outgoing))]
+      (chat.utils/format-reply-author from alias ens-name current-public-key (partial style/quoted-message-author outgoing))]
 
      [react/text {:style           (style/quoted-message-text outgoing)
                   :number-of-lines 5}
@@ -196,8 +196,9 @@
                  (:command content))
         [command-status content]))))
 
-(defview message-author-name [alias name]
-  (chat.utils/format-author alias style/message-author-name name))
+(defview message-author-name [from alias]
+  (letsubs [{:keys [ens-name]} [:contacts/contact-name-by-identity from]]
+    (chat.utils/format-author alias style/message-author-name ens-name)))
 
 (defn message-body
   [{:keys [last-in-group?
@@ -219,7 +220,7 @@
     [react/view (style/group-message-view outgoing display-photo?)
      (when display-username?
        [react/touchable-opacity {:on-press #(re-frame/dispatch [:chat.ui/show-profile from])}
-        [message-author-name alias (:name content)]])
+        [message-author-name from alias]])
      [react/view {:style (style/timestamp-content-wrapper outgoing)}
       child]]]
    [react/view (style/delivery-status outgoing)

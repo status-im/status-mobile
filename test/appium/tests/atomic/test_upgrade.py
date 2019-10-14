@@ -13,6 +13,7 @@ class TestUpgradeApplication(SingleDeviceTestCase):
     @marks.testrail_id(5713)
     @marks.upgrade
     @marks.skip
+    # skipped as no support for upgrade now
     def test_apk_upgrade(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()

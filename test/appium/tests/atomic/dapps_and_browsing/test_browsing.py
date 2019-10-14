@@ -29,7 +29,7 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view.find_text_part('Unable to load page')
         browsing_view.cross_icon.click()
         if home_view.element_by_text('Browser').is_element_displayed():
-            pytest.fail('Browser entity is shown for an invalid link')
+            self.driver.fail('Browser entity is shown for an invalid link')
 
     @marks.testrail_id(6210)
     @marks.high
@@ -99,6 +99,7 @@ class TestBrowsing(SingleDeviceTestCase):
     @marks.testrail_id(5321)
     @marks.skip
     @marks.critical
+    # TODO: update to use some static website
     def test_back_forward_buttons_browsing_website(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -123,3 +124,14 @@ class TestBrowsing(SingleDeviceTestCase):
         status_test_dapp.find_full_text('Sign message')
         status_test_dapp.browser_refresh_page_button.click()
         status_test_dapp.find_full_text('defaultAccount')
+
+    @marks.testrail_id(5785)
+    @marks.critical
+    def test_can_open_dapp_from_dapp_store(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        daap_view = home.dapp_tab_button.click()
+        dapp_store_view = daap_view.discover_dapps_button.click()
+        dapp_store_view.element_by_text_part("CryptoKitties").click()
+        if not dapp_store_view.element_by_text_part("Start", "text").is_element_displayed(20):
+            self.driver.fail("Failed to access CryptoKitties Dapp from Discover Dapp store")
