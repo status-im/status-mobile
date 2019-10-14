@@ -49,9 +49,13 @@
 
 (fx/defn navigate-reset
   [{:keys [db]} {:keys [index actions] :as config}]
-  (let [view-id (:routeName (get actions index))]
-    {:db              (assoc db :view-id view-id
-                             :navigation-stack (list view-id))
+  (let [stack (into '() (map :routeName actions))
+        view-id (get stack index)]
+    {:db              (assoc db
+                             :view-id view-id
+                             ;;NOTE: stricly needs to be a list
+                             ;;because navigate-back pops it
+                             :navigation-stack stack)
      ::navigate-reset config}))
 
 (def unload-data-interceptor
@@ -158,7 +162,7 @@
  (fn []
    (reset! processing-back-event? false)))
 
-;; Below two effects are added when we need 
+;; Below two effects are added when we need
 ;; to override default react-navigation's BACK action
 ;; processing
 (re-frame/reg-fx
