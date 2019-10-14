@@ -34,7 +34,7 @@
     "react-native-languages": "^3.0.2",
     "react-native-mail": "git+https://github.com/status-im/react-native-mail.git#v4.0.0-status",
     "react-native-navigation-twopane": "git+https://github.com/status-im/react-native-navigation-twopane.git#v0.0.2-status",
-    "react-native-screens": "^1.0.0-alpha.22",
+    "react-native-screens": "^2.0.0-alpha.4",
     "react-native-shake": "^3.3.1",
     "react-native-splash-screen": "^3.2.0",
     "react-native-status-keycard": "^2.5.12",
