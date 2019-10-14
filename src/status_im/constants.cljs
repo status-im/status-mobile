@@ -18,9 +18,7 @@
   #{content-type-text content-type-emoji content-type-status})
 
 (def min-password-length 6)
-(def max-chat-name-length 20)
 (def max-group-chat-participants 10)
-(def response-suggesstion-resize-duration 100)
 (def default-number-of-messages 20)
 (def blocks-per-hour 120)
 (def one-earth-day 86400)
@@ -34,12 +32,7 @@
 (def system "system")
 
 (def mainnet-networks
-  {"mainnet"     {:id     "mainnet",
-                  :name   "Mainnet",
-                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
-                           :DataDir        "/ethereum/mainnet"
-                           :LightEthConfig {:Enabled true}}}
-   "mainnet_rpc" {:id     "mainnet_rpc",
+  {"mainnet_rpc" {:id     "mainnet_rpc",
                   :name   "Mainnet with upstream RPC",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
                            :DataDir        "/ethereum/mainnet_rpc"
@@ -61,38 +54,18 @@
                                          :URL     "https://core.poa.network"}}}})
 
 (def testnet-networks
-  {"testnet"     {:id     "testnet",
-                  :name   "Ropsten",
-                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
-                           :DataDir        "/ethereum/testnet"
-                           :LightEthConfig {:Enabled true}}}
-   "testnet_ulc" {:id     "testnet_ulc",
-                  :name   "Ropsten ULC",
-                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
-                           :DataDir        "/ethereum/testnet_ulc"
-                           :LightEthConfig {:Enabled true :ULC true}}}
-   "testnet_rpc" {:id     "testnet_rpc",
+  {"testnet_rpc" {:id     "testnet_rpc",
                   :name   "Ropsten with upstream RPC",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
                            :DataDir        "/ethereum/testnet_rpc"
                            :UpstreamConfig {:Enabled true
                                             :URL     "https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a"}}}
-   "rinkeby"     {:id     "rinkeby",
-                  :name   "Rinkeby",
-                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
-                           :DataDir        "/ethereum/rinkeby"
-                           :LightEthConfig {:Enabled true}}}
    "rinkeby_rpc" {:id     "rinkeby_rpc",
                   :name   "Rinkeby with upstream RPC",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
                            :DataDir        "/ethereum/rinkeby_rpc"
                            :UpstreamConfig {:Enabled true
                                             :URL     "https://rinkeby.infura.io/v3/f315575765b14720b32382a61a89341a"}}}
-   "goerli"      {:id     "goerli",
-                  :name   "Goerli",
-                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
-                           :DataDir        "/ethereum/goerli"
-                           :LightEthConfig {:Enabled true}}}
    "goerli_rpc"  {:id     "goerli_rpc",
                   :name   "Goerli with upstream RPC",
                   :config {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
@@ -100,24 +73,13 @@
                            :UpstreamConfig {:Enabled true
                                             :URL     "https://goerli.blockscout.com/"}}}})
 
-(defn network-enabled? [network]
-  (let [rpc-network? (get-in (val network) [:config :UpstreamConfig :Enabled])
-        ropsten?     (= (ethereum/chain-keyword->chain-id :testnet)
-                        (get-in (val network) [:config :NetworkId]))]
-    (if rpc-network?
-      true
-      (if config/rpc-networks-only?
-        false
-        ropsten?)))) ;; limit LES networks to Ropsten for now.
-
 (def default-networks
-  (into {} (filter network-enabled?
-                   (merge testnet-networks mainnet-networks sidechain-networks))))
+  (merge testnet-networks mainnet-networks sidechain-networks))
 
 (def default-multiaccount-settings
-  {:web3-opt-in? true
+  {:web3-opt-in?     true
    :preview-privacy? false
-   :wallet       {:visible-tokens {}}})
+   :wallet           {:visible-tokens {}}})
 
 (def currencies
   {:aed {:id :aed :code "AED" :display-name (i18n/label :t/currency-display-name-aed) :symbol "د.إ"}

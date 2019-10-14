@@ -7,8 +7,7 @@
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as utils.platform]
-            [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.types :as types]))
 
 (defn- add-custom-bootnodes [config network all-bootnodes]
   (let [bootnodes (as-> all-bootnodes $
@@ -75,16 +74,6 @@
       (if utils.platform/desktop? ""
           config/log-level-status-go)))
 
-(defn- ulc-network? [config]
-  (get-in config [:LightEthConfig :ULC] false))
-
-(defn- add-ulc-trusted-nodes [config trusted-nodes]
-  (if (ulc-network? config)
-    (-> config
-        (assoc-in [:LightEthConfig :TrustedNodes] trusted-nodes)
-        (assoc-in [:LightEthConfig :MinTrustedFraction] 50))
-    config))
-
 (defn- get-multiaccount-node-config
   [{:keys [multiaccount :networks/networks :networks/current-network]
     :or {current-network config/default-network
@@ -140,29 +129,7 @@
       (add-custom-bootnodes current-network bootnodes)
 
       :always
-      (add-ulc-trusted-nodes (vals (:static current-fleet)))
-
-      :always
       (add-log-level log-level))))
-
-(defn get-verify-multiaccount-config
-  "Is used when the node has to be started before
-  `VerifyAccountPassword` call."
-  [db network]
-  (-> (get-in (:networks/networks db) [network :config])
-      (get-base-node-config)
-
-      (assoc :ShhextConfig {:BackupDisabledDataDir (utils.platform/no-backup-directory)})
-      (assoc :PFSEnabled false
-             :NoDiscovery true)
-      (add-log-level config/log-level-status-go)))
-
-(fx/defn update-sync-state
-  [{:keys [db]} error sync-state]
-  {:db (assoc db :node/chain-sync-state
-              (if error
-                {:error error}
-                (when sync-state (js->clj sync-state :keywordize-keys true))))})
 
 (defn get-new-config
   [db]
@@ -189,26 +156,3 @@
  ::prepare-new-config
  (fn [[config callback]]
    (status/prepare-dir-and-update-config config callback)))
-
-(re-frame/reg-fx
- :node/les-show-debug-info
- (fn [[multiaccount]]
-   #_(.getBalance
-      (.-eth eb3)
-      (:address multiaccount)
-      (fn [error-balance balance]
-        (.getBlockNumber
-         (.-eth eb3)
-         (fn
-           [error-block block]
-           (utils/show-popup
-            "LES sync status"
-            (str
-             "* multiaccount="   (:address multiaccount) "\n"
-             "* latest block="   (or error-block block) "\n"
-             "* balance="        (or error-balance balance) "\n"
-             "* eth_getSyncing=" (or chain-sync-state "false")))))))))
-
-(defn display-les-debug-info
-  [{{:keys [multiaccount]} :db}]
-  {:node/les-show-debug-info [multiaccount]})

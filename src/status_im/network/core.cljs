@@ -3,7 +3,6 @@
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.fleet.core :as fleet-core]
             [status-im.i18n :as i18n]
             [status-im.node.core :as node]
             [status-im.ui.screens.navigation :as navigation]
@@ -190,28 +189,7 @@
         {:ui/show-error "chain-id already defined"}))
     {:ui/show-error "invalid network parameters"}))
 
-(defn- navigate-to-network-details
-  [cofx network show-warning?]
-  (fx/merge cofx
-            (when show-warning?
-              {:utils/show-popup {:title   "LES support is experimental!"
-                                  :content "Use at your own risk!"}})
-            (navigation/navigate-to-cofx :network-details {:networks/selected-network network})))
-
-(defn- not-supported-warning [fleet]
-  (str (name fleet) " does not support LES!\n"
-       "Please, select one of the supported fleets:"
-       (map name fleet-core/fleets-with-les)))
-
 (fx/defn open-network-details
   {:events [::network-entry-pressed]}
   [cofx network]
-  (let [db                  (:db cofx)
-        rpc-network?        (get-in network [:config :UpstreamConfig :Enabled] false)
-        fleet               (fleet-core/current-fleet db)
-        fleet-supports-les? (fleet-core/fleet-supports-les? fleet)]
-    (if (or rpc-network? fleet-supports-les?)
-      (navigate-to-network-details cofx network (not rpc-network?))
-      ;; Otherwise, we show an explanation dialog to a user if the current fleet does not suport LES
-      {:utils/show-popup {:title   "LES not supported"
-                          :content (not-supported-warning fleet)}})))
+  (navigation/navigate-to-cofx cofx :network-details {:networks/selected-network network}))

@@ -75,13 +75,6 @@
  (fn [cofx _]
    (init/start-app cofx)))
 
-;; home screen
-
-(handlers/register-handler-fx
- :home.ui/sync-info-pressed
- (fn [cofx _]
-   (node/display-les-debug-info cofx)))
-
 ;; multiaccounts module
 (handlers/register-handler-fx
  :multiaccounts.update.callback/published

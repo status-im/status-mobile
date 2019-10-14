@@ -78,7 +78,6 @@
 (reg-root-key-sub :dimensions/window :dimensions/window)
 (reg-root-key-sub :initial-props :initial-props)
 (reg-root-key-sub :fleets/custom-fleets :custom-fleets)
-(reg-root-key-sub :chain-sync-state :node/chain-sync-state)
 (reg-root-key-sub :desktop/desktop :desktop/desktop)
 (reg-root-key-sub :desktop :desktop)
 (reg-root-key-sub :animations :animations)
@@ -444,11 +443,6 @@
  :<- [:multiaccount]
  (fn [acc]
    (get acc :settings)))
-
-(re-frame/reg-sub
- :latest-block-number
- (fn [{:node/keys [latest-block-number]} _]
-   (if latest-block-number latest-block-number 0)))
 
 (re-frame/reg-sub
  :settings/current-log-level

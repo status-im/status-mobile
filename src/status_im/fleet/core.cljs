@@ -16,18 +16,10 @@
   (keyword (or (get settings :fleet)
                config/fleet)))
 
-(def fleets-with-les
-  [:les.dev.ropsten :les.dev.mainnet])
-
-(defn fleet-supports-les? [fleet]
-  (not (nil? (some #(= fleet %) fleets-with-les))))
-
 (def default-fleets (slurp "resources/config/fleets.json"))
-(def default-les-fleets (slurp "resources/config/fleets-les.json"))
 
 (defn fleets [{:keys [custom-fleets]}]
-  (as-> [(default-fleets)
-         (default-les-fleets)] $
+  (as-> [(default-fleets)] $
     (mapv #(:fleets (types/json->clj %)) $)
     (conj $ custom-fleets)
     (reduce merge $)))

@@ -12,7 +12,6 @@
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.screens.home.filter.views :as filter.views]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]
             [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.ui.components.common.common :as components.common]
@@ -21,19 +20,6 @@
             [status-im.constants :as constants]
             [status-im.ui.components.colors :as colors])
   (:require-macros [status-im.utils.views :as views]))
-
-(views/defview les-debug-info []
-  (views/letsubs [sync-state           [:chain-sync-state]
-                  latest-block-number  [:latest-block-number]
-                  {:keys [rpc-network?] :as network} [:current-network]]
-    (when (and network (not rpc-network?))
-      [react/view {:style styles/sync-wrapper}
-       [react/touchable-highlight {:on-press #(re-frame/dispatch [:home.ui/sync-info-pressed])}
-        [react/text {:style styles/sync-info}
-         (str "LES: 'latest' #" latest-block-number "\n"
-              (if sync-state
-                (str "syncing " (:currentBlock sync-state) " of " (:highestBlock sync-state) " blocks...")
-                (str "not syncing")))]]])))
 
 (defn welcome []
   [react/view {:style styles/welcome-view}

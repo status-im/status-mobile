@@ -29,19 +29,14 @@
 (def mainnet?
   #{"mainnet" "mainnet_rpc"})
 
-(defn navigate-to-network [network]
-  (re-frame/dispatch [::network/network-entry-pressed network]))
-
 (defn render-network [current-network]
   (fn [{:keys [id name] :as network}]
-    (let [connected? (= id current-network)
-          rpc?       (get-in network [:config :UpstreamConfig :Enabled] false)]
-      [list/touchable-item #(navigate-to-network network)
+    (let [connected? (= id current-network)]
+      [list/touchable-item #(re-frame/dispatch [::network/network-entry-pressed network])
        [react/view styles/network-item
         [network-icon connected? 40]
         [react/view {:padding-horizontal 16}
-         [react/text {:style styles/network-item-name-text}
-          (if rpc? name (str name " " "(LES)"))]
+         [react/text {:style styles/network-item-name-text} name]
          (when connected?
            [react/text {:style               styles/network-item-connected-text
                         :accessibility-label :connected-text}
