@@ -14,7 +14,7 @@
     "create-react-class": "^15.6.2",
     "emojilib": "^2.2.9",
     "eth-phishing-detect": "^1.1.13",
-    "events": "^1.1.1",
+    "events": "^3.0.0",
     "google-breakpad": "git+https://github.com/status-im/google-breakpad.git#v0.9.0",
     "hi-base32": "^0.5.0",
     "i18n-js": "^3.1.0",
