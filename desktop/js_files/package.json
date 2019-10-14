@@ -41,7 +41,7 @@
     "react-native-splash-screen": "^3.0.6",
     "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#0.33.16-status-rn049-desktop",
     "react-navigation": "^3.11.0",
-    "status-conan": "git+https://github.com/status-im/status-conan.git#v1.0.0",
+    "status-conan": "git+https://github.com/status-im/status-conan.git#v1.0.1",
     "web3-utils": "^1.0.0-beta.36"
   },
   "devDependencies": {
