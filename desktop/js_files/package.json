@@ -42,7 +42,7 @@
     "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#0.33.16-status-rn049-desktop",
     "react-navigation": "^3.11.0",
     "status-conan": "git+https://github.com/status-im/status-conan.git#v1.0.0",
-    "web3-utils": "^1.0.0-beta.36"
+    "web3-utils": "^1.2.1"
   },
   "devDependencies": {
     "@babel/core": "7.0.1",
