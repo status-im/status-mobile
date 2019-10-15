@@ -22,3 +22,30 @@ make shell TARGET_OS=android
 This way your shell and all other nix commands should run in a setup that is tailored towards Android development.
 
 For valid values you can check the [`nix/platform.nix`](/nix/platform.nix) file.
+
+# Known Issues
+
+## MacOS 10.15 "Catalina"
+
+There is an unsolved issue with the root(`/`) file system in `10.15` being read-only:
+https://github.com/NixOS/nix/issues/2925
+
+Our current recommended workaround is putting `/nix` under `/opt/nix` and symlinking it via `/etc/synthetic.conf`:
+```bash
+sudo mkdir /opt/nix
+sudo chown ${USER} /opt/nix
+sudo sh -c "echo 'nix\t/opt/nix' >> /etc/synthetic.conf"
+reboot
+```
+After the system reboots you should see the `/nix` symlink in place:
+```
+ % ls -l /nix
+lrwxr-xr-x  1 root  wheel  8 Oct 11 13:53 /nix -> /opt/nix
+```
+In order to be able to use Nix with a symlinked `/nix` you need to include this in your shell:
+```bash
+export NIX_IGNORE_SYMLINK_STORE=1
+```
+Add it to your `.bashrc` or any other shell config file.
+
+__NOTE__: Your old `/nix` directory will end up in `/Users/Shared/Relocated Items/Security/nix` after OS upgrade.
