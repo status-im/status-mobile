@@ -90,8 +90,8 @@
 
 (fx/defn fill-request-from-url
   {:events [:wallet/fill-request-from-url]}
-  [{{:keys [network] :wallet/keys [all-tokens] :as db} :db} data origin]
-  (let [current-chain-id                       (get-in constants/default-networks [network :config :NetworkId])
+  [{{:networks/keys [current-network] :wallet/keys [all-tokens] :as db} :db} data origin]
+  (let [current-chain-id                       (get-in constants/default-networks [current-network :config :NetworkId])
         {:keys [address chain-id] :as details} (extract-details data current-chain-id all-tokens)
         valid-network?                         (boolean (= current-chain-id chain-id))
         previous-state                         (get-in db [:wallet :send-transaction])
