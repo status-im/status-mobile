@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.routing.core
   (:require
    [status-im.ui.components.react :as react]
-   [status-im.ui.screens.navigation :as screens.navigation]
+   [status-im.ui.screens.routing.back-actions :as back-actions]
    [status-im.ui.components.styles :as common-styles]
    [status-im.utils.navigation :as navigation]
    [cljs-react-navigation.reagent :as nav-reagent]
@@ -22,6 +22,7 @@
    [status-im.react-native.js-dependencies :as js-dependencies]))
 
 (defonce view-id (reagent.core/atom nil))
+(defonce back-button-listener (atom nil))
 
 (defn navigation-events [current-view-id modal? screen-focused?]
   [:> navigation/navigation-events
@@ -36,12 +37,22 @@
       (re-frame/dispatch [:screens/on-will-focus current-view-id]))
     :on-did-focus
     (fn []
+      (reset!
+       back-button-listener
+       (.addEventListener
+        js-dependencies/back-handler
+        "hardwareBackPress"
+        (fn []
+          (not (get back-actions/back-actions current-view-id)))))
       (when-not modal?
         (status-bar/set-status-bar current-view-id)))
     :on-will-blur
     (fn [payload]
       (reset! screen-focused? false)
       (log/debug :on-will-blur current-view-id)
+      (when @back-button-listener
+        (.remove @back-button-listener)
+        (reset! back-button-listener nil))
       ;; Reset currently mounted text inputs to their default values
       ;; on navigating away; this is a privacy measure
       (doseq [[text-input default-value] @react/text-input-refs]
@@ -118,6 +129,13 @@
       (utils/update-if-present :initialRouteName name)
       (utils/update-if-present :mode name)))
 
+(defn new-get-state-for-action [default-get-state-for-action]
+  (fn [action state]
+    (let [event (get back-actions/back-actions @view-id)]
+      (when (and (= (.-type action) (.-BACK navigation/navigation-actions)) event (not= :default event))
+        (re-frame/dispatch [event]))
+      (default-get-state-for-action action state))))
+
 (defn stack-navigator [routes config]
   (let [res (nav-reagent/stack-navigator
              routes
@@ -139,24 +157,8 @@
                                               (let [route      (aget routes idx)
                                                     route-name (keyword (.-routeName route))]
                                                 (tabbar/minimize-bar route-name)))))}
-                    (prepare-config config)))
-        default-get-state-for-action  (.-getStateForAction (.-router res))
-        new-get-state-for-action (fn [action state]
-                                   ;; Override default getStateForAction on this stack navigator
-                                   ;; if we have a custom event set in wizard-back-event atom
-                                   (if (and (= (.-type action) (.-BACK navigation/navigation-actions))
-                                            @screens.navigation/wizard-back-event)
-                                     (if @screens.navigation/processing-back-event?
-                                       (do
-                                         (reset! screens.navigation/processing-back-event? false)
-                                         (default-get-state-for-action action state))
-                                       (do
-                                         (reset! screens.navigation/processing-back-event? true)
-                                         (re-frame/dispatch @screens.navigation/wizard-back-event)
-                                         ;; Return nil so that BACK event processing ends here
-                                         nil))
-                                     (default-get-state-for-action action state)))]
-    (set! (-> res .-router .-getStateForAction) new-get-state-for-action)
+                    (prepare-config config)))]
+    (set! (-> res .-router .-getStateForAction) (new-get-state-for-action (.-getStateForAction (.-router res))))
     res))
 
 (defn twopane-navigator [routes config]
@@ -218,11 +220,7 @@
                 :else
                 (nav-reagent/stack-screen (wrap screen-name screen-config)))]
       [screen-name (cond-> {:screen res}
-                     ;; TODO issue #8947
-                     ;; replace this hack with configuration
-                     (#{:create-multiaccount-choose-key
-                        :recover-multiaccount-select-storage}
-                      screen-name)
+                     (not (get back-actions/back-actions screen-name))
                      (assoc :navigationOptions {:gesturesEnabled false})
                      (:navigation screen-config)
                      (assoc :navigationOptions

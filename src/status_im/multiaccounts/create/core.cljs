@@ -19,9 +19,6 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.platform :as platform]))
 
-(defn get-signing-phrase [cofx]
-  (assoc cofx :signing-phrase (signing-phrase/generate)))
-
 (def step-kw-to-num
   {:generate-key         1
    :choose-key           2
@@ -66,8 +63,7 @@
                                           :back-action :intro-wizard/navigate-back
                                           :forward-action :intro-wizard/step-forward-pressed
                                           :encrypt-with-password? true
-                                          :first-time-setup? first-time-setup?})
-             ::navigation/add-wizard-back-event [:intro-wizard/step-back-pressed]}
+                                          :first-time-setup? first-time-setup?})}
             (navigation/navigate-to-cofx :create-multiaccount-generate-key nil)))
 
 (fx/defn dec-step
@@ -82,16 +78,10 @@
                        (= step :confirm-code)
                        (assoc-in [:intro-wizard :confirm-failure?] false))})
               (when (= :generate-key-step)
-                {:db (dissoc db :intro-wizard)
-                 ::navigation/remove-wizard-back-event nil}))))
-
-(fx/defn navigate-back
-  {:events [:intro-wizard/navigate-back]}
-  [cofx]
-  {::navigation/navigate-back nil})
+                {:db (dissoc db :intro-wizard)}))))
 
 (fx/defn intro-step-back
-  {:events [:intro-wizard/step-back-pressed]}
+  {:events [:intro-wizard/navigate-back]}
   [{:keys [db] :as cofx} skip-alert?]
   (let  [step (get-in db [:intro-wizard :step])]
     ;; Cannot go back after account has been created
@@ -101,16 +91,14 @@
         (utils/show-question
          (i18n/label :t/are-you-sure-to-cancel)
          (i18n/label :t/you-will-start-from-scratch)
-         #(re-frame/dispatch [:intro-wizard/step-back-pressed true])
-         #(re-frame/dispatch [:navigation/reset-processing-flag]))
+         #(re-frame/dispatch [:intro-wizard/navigate-back true]))
         (fx/merge cofx
                   dec-step
                   navigation/navigate-back)))))
 
 (fx/defn exit-wizard [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:db (dissoc db :intro-wizard)
-             ::navigation/remove-wizard-back-event nil}
+            {:db (dissoc db :intro-wizard)}
             (navigation/navigate-to-cofx :home nil)))
 
 (fx/defn init-key-generation
@@ -331,7 +319,7 @@
 (re-frame/reg-cofx
  ::get-signing-phrase
  (fn [cofx _]
-   (get-signing-phrase cofx)))
+   (assoc cofx :signing-phrase (signing-phrase/generate))))
 
 (fx/defn create-multiaccount-success
   {:events [::store-multiaccount-success]
