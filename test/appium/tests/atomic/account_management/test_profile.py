@@ -56,7 +56,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append("Message was not sent!")
         self.verify_no_errors()
 
-    @marks.testrail_id(5741)
+    @marks.testrail_id(6228)
     @marks.high
     def test_mobile_data_usage_popup_stop_syncing(self):
         sign_in_view = SignInView(self.driver)
@@ -78,7 +78,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if sign_in_view.element_by_text_part(offline_banner_text).is_element_displayed():
             self.driver.fail("Popup about offline history is shown")
 
-    @marks.testrail_id(6228)
+    @marks.testrail_id(6229)
     @marks.high
     def test_mobile_data_usage_settings(self):
         sign_in_view = SignInView(self.driver)
@@ -333,6 +333,26 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
                 self.errors.append('%s is not visible' % text)
         self.verify_no_errors()
 
+    @marks.testrail_id(5368)
+    @marks.high
+    def test_log_level_and_fleet(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        profile_view = sign_in_view.profile_button.click()
+        profile_view.advanced_button.click()
+        if 'release' in str(pytest.config.getoption('apk')):
+            # should be edited after showing some text in setting when log in disabled
+            if profile_view.log_level_setting.is_element_displayed():
+                self.errors.append('Log is not disabled')
+            if not profile_view.element_by_text('eth.beta').is_element_displayed():
+                self.errors.append('Fleet is not set to eth.beta')
+        else:
+            for text in 'INFO', 'eth.beta':
+                if not profile_view.element_by_text(text).is_element_displayed():
+                    self.errors.append('%s is not selected by default' % text)
+        self.verify_no_errors()
+
+
     @marks.testrail_id(5468)
     @marks.medium
     def test_deny_camera_access_changing_profile_photo(self):
@@ -532,11 +552,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         chat_2.chat_message_input.send_keys(message_1)
         chat_2.send_message_button.click()
         chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element()
-
-
-@marks.all
-@marks.account
-class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5762)
     @marks.high

@@ -162,6 +162,12 @@ class AdvancedButton(BaseButton):
         return self.navigate()
 
 
+class LogLevelSetting(BaseButton):
+
+    def __init__(self, driver):
+        super(LogLevelSetting, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="log-level-settings-button"]/android.widget.TextView[2]')
+
 class BackupRecoveryPhraseButton(BaseButton):
 
     def __init__(self, driver):
@@ -555,6 +561,7 @@ class ProfileView(BaseView):
         self.cross_icon = CrossIcon(self.driver)
         self.share_button = ShareButton(self.driver)
         self.advanced_button = AdvancedButton(self.driver)
+        self.log_level_setting = LogLevelSetting(self.driver)
         self.debug_mode_toggle = DebugModeToggle(self.driver)
         self.contacts_button = ContactsButton(self.driver)
         self.dapp_permissions_button = DappPermissionsButton(self.driver)
