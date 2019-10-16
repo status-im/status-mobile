@@ -464,6 +464,12 @@
  (fn [[acc address]]
    (some #(when (= (:address %) address) %) (:accounts acc))))
 
+(re-frame/reg-sub
+ :get-account
+ :<- [:multiaccount]
+ (fn [macc [_ address]]
+   (some #(when (= (:address %) address) %) (:accounts macc))))
+
 ;;CHAT ==============================================================================================================
 
 (re-frame/reg-sub

@@ -21,7 +21,8 @@
             [clojure.string :as string]
             [status-im.ui.screens.signing.styles :as styles]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.screens.hardwallet.pin.views :as pin.views]))
+            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
+            [status-im.utils.utils :as utils]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -49,27 +50,20 @@
 (defn displayed-name [contact]
   (if (or (:preferred-name contact) (:name contact))
     (multiaccounts/displayed-name contact)
-    (:address contact)))
+    (utils/get-shortened-checksum-address (:address contact))))
 
-(defn contact-item [title contact]
+(defn contact-item [title contact & [account]]
   [list-item/list-item
-   {:title-prefix       title
-    :title-prefix-width 45
-    :type               :small
-    :title
-    [copyable-text/copyable-text-view
-     {:copied-text (displayed-name contact)}
-     [react/text
-      {:ellipsize-mode  :middle
-       :number-of-lines 1
-       :style           {:color       colors/gray
-                         :font-family "monospace"
-                         ;; since this goes in list-item title
-                         ;; which has design constraints
-                         ;; specified in figma spec,
-                         ;; better to do this
-                         :line-height 22}}
-      (displayed-name contact)]]}])
+   {:title       title
+    :type        :small
+    :accessories (cond-> [[react/text
+                           {:ellipsize-mode  :middle
+                            :number-of-lines 1
+                            :style           {:font-family "monospace"
+                                              :line-height 22}}
+                           (displayed-name contact)]]
+                   account
+                   (conj [chat-icon/custom-icon-view-list (:name account) (:color account) 32]))}])
 
 (defn token-item [{:keys [icon color] :as token} display-symbol]
   (when token
@@ -257,6 +251,7 @@
   (views/letsubs [fee                   [:signing/fee]
                   sign                  [:signing/sign]
                   chain                 [:ethereum/chain-keyword]
+                  account               [:get-account (:address from)]
                   {:keys [amount-error gas-error]} [:signing/amount-errors (:address from)]
                   keycard-multiaccount? [:keycard-multiaccount?]
                   prices                [:prices]
@@ -270,7 +265,7 @@
          [react/view {:padding-top 20}
           [password-view sign]]
          [react/view
-          [contact-item (i18n/label :t/from) from]
+          [contact-item (i18n/label :t/from) from account]
           [separator]
           [contact-item (i18n/label :t/to) contact]
           [separator]
