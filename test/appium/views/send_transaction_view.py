@@ -83,6 +83,11 @@ class EnterRecipientAddressInput(BaseEditBox):
         super(EnterRecipientAddressInput, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Enter recipient address']")
 
+class EnterRecipientAddressInputText(BaseText):
+    def __init__(self, driver):
+        super(EnterRecipientAddressInputText, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("recipient-address-text")
+
 
 class RecentRecipientsButton(BaseButton):
     def __init__(self, driver):
@@ -201,6 +206,7 @@ class SendTransactionView(BaseView):
         self.scan_qr_code_button = ScanQRCodeButton(self.driver)
         self.enter_recipient_address_input = EnterRecipientAddressInput(self.driver)
         self.first_recipient_button = FirstRecipient(self.driver)
+        self.enter_recipient_address_text = EnterRecipientAddressInputText(self.driver)
         self.recent_recipients_button = RecentRecipientsButton(self.driver)
         self.amount_edit_box = AmountEditBox(self.driver)
 

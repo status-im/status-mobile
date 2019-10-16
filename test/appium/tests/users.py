@@ -12,6 +12,11 @@ ens_user['username'] = "Outstanding Actual Eyas"
 ens_user['public_key'] = "0x04318d20a2ca5fd0022579005ed24802e07d4ec610bede808dd13d3318af439e16d55be1a59af007a11120b" \
                          "d1c205861e5f53fe7b000a25e2b0d4eee7f0c5ebf7e"
 ens_user['ens'] = 'autotester'
+ens_user['address'] = '0x31419baa0242dFd2BB485b3e41A78210A1c2332A'
+
+ens_user_other_domain = dict()
+ens_user_other_domain['ens'] = 'tanyatest1.eth'
+ens_user_other_domain['address'] = '0xcf2272205cc0cf96Cfbb9Dd740BD681D1E86901E'
 
 wallet_users = dict()
 

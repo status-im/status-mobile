@@ -4,7 +4,7 @@ import string
 
 from tests import marks, camera_access_error_text, common_password
 from tests.base_test_case import SingleDeviceTestCase
-from tests.users import wallet_users, transaction_senders, basic_user
+from tests.users import wallet_users, transaction_senders, basic_user, ens_user, ens_user_other_domain
 from views.sign_in_view import SignInView
 
 
@@ -309,3 +309,36 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.driver.fail('Account was not added')
         if not account_button.color_matches('multi_account_color.png'):
             self.driver.fail('Account color does not match expected')
+
+    @marks.testrail_id(5406)
+    @marks.critical
+    def test_ens_username_recipient(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+
+        sign_in.just_fyi('switching to mainnet')
+        profile = sign_in.profile_button.click()
+        profile.switch_network('Mainnet with upstream RPC')
+        wallet = profile.wallet_button.click()
+
+        wallet.just_fyi('checking that "stateofus.eth" name will be resolved as recipient')
+        wallet.set_up_wallet()
+        wallet.accounts_status_account.click()
+        send_transaction = wallet.send_transaction_button.click()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.enter_recipient_address_button.click()
+        send_transaction.enter_recipient_address_input.set_value('%s.stateofus.eth' % ens_user['ens'])
+        send_transaction.done_button.click()
+        if send_transaction.enter_recipient_address_text.text != ens_user['address']:
+            self.errors.append('ENS address on stateofus.eth is not resolved as recipient')
+
+        wallet.just_fyi('checking that ".eth" name will be resolved as recipient')
+        send_transaction.chose_recipient_button.click()
+        send_transaction.enter_recipient_address_button.click()
+        send_transaction.enter_recipient_address_input.set_value(ens_user_other_domain['ens'])
+        send_transaction.done_button.click()
+
+        if send_transaction.enter_recipient_address_text.text != ens_user_other_domain['address']:
+            self.errors.append('ENS address on another domain is not resolved as recipient')
+
+        self.verify_no_errors()
