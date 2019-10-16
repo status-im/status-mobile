@@ -529,8 +529,9 @@
      [toolbar/toolbar
       {:style {:border-bottom-width 0
                :margin-top 16}}
-      (toolbar/nav-button
-       (actions/back #(re-frame/dispatch [:intro-wizard/navigate-back])))
+      (when-not (:processing? wizard-state)
+        (toolbar/nav-button
+         (actions/back #(re-frame/dispatch [:intro-wizard/navigate-back]))))
       nil]
      [react/view {:style {:flex 1
                           :justify-content :space-between}}
