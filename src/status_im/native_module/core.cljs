@@ -51,6 +51,11 @@
   (clear-web-data)
   (.logout (status)))
 
+(def receive-signals (atom true))
+
+(defn stop-signals! []
+  (reset! receive-signals (not @receive-signals)))
+
 (defonce listener
   (.addListener react/device-event-emitter "gethEvent"
                 #(re-frame/dispatch [:signals/signal-received (.-jsonEvent %)])))

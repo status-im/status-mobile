@@ -133,6 +133,7 @@
 (fx/defn init [cofx]
   {:pairing/get-our-installations nil})
 
+; installationID and identity
 (defn handle-bundles-added [{:keys [db] :as cofx} bundle]
   (let [installation-id  (:installationID bundle)]
     (when

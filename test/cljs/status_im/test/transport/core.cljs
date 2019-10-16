@@ -56,16 +56,6 @@
                           :pow       0.002631578947368421
                           :hash      "0x220ef9994a4fae64c112b27ed07ef910918159cbe6fcf8ac515ee2bf9a6711a0"}}])
 
-(deftest receive-whisper-messages-test
-  (testing "an error is reported"
-    (is (nil? (:chat-received-message/add-fx (message/receive-whisper-messages {:db {}} "error" #js [] nil)))))
-  (testing "messages is undefined"
-    (is (nil? (:chat-received-message/add-fx (message/receive-whisper-messages {:db {}} nil js/undefined nil)))))
-  (testing "happy path"
-    (let [actual (message/receive-whisper-messages {:db {}} nil messages sig)]
-      (testing "it add an fx for the message"
-        (is (:chat-received-message/add-fx actual))))))
-
 (deftest message-envelopes
   (let [chat-id "chat-id"
         from "from"

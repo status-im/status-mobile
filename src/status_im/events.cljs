@@ -8,6 +8,7 @@
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             status-im.multiaccounts.biometric.core
+            [status-im.native-module.core :as native-module]
             [status-im.bootnodes.core :as bootnodes]
             [status-im.browser.core :as browser]
             [status-im.browser.permissions :as browser.permissions]
@@ -309,6 +310,7 @@
 (handlers/register-handler-fx
  :bootnodes.ui/custom-bootnodes-switch-toggled
  (fn [cofx [_ value]]
+   (native-module/stop-signals!)
    (bootnodes/toggle-custom-bootnodes cofx value)))
 
 (handlers/register-handler-fx
