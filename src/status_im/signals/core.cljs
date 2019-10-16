@@ -55,6 +55,6 @@
       "subscriptions.data" (ethereum.subscriptions/handle-signal cofx event)
       "subscriptions.error" (ethereum.subscriptions/handle-error cofx event)
       "whisper.filter.added" (transport.filters/handle-negotiated-filter cofx event)
-      "messages.new" (transport.message/receive-messages cofx event)
+      ;"messages.new" (transport.message/receive-messages cofx event)
       "wallet" (ethereum.subscriptions/new-wallet-event cofx event)
       (log/debug "Event " type " not handled" event))))
