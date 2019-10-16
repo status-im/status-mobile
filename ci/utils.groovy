@@ -100,39 +100,6 @@ def pkgFind(glob) {
   return found[0].path
 }
 
-def uploadArtifact(path) {
-  /* defaults for upload */
-  def domain = 'ams3.digitaloceanspaces.com'
-  def bucket = 'status-im'
-  /* There's so many PR builds we need a separate bucket */
-  if (getBuildType() == 'pr') {
-    bucket = 'status-im-prs'
-  }
-  /* WARNING: s3cmd can't guess APK MIME content-type */
-  def customOpts = ''
-  if (path.endsWith('apk')) {
-    customOpts += "--mime-type='application/vnd.android.package-archive'"
-  }
-  /* We also need credentials for the upload */
-  withCredentials([usernamePassword(
-    credentialsId: 'digital-ocean-access-keys',
-    usernameVariable: 'DO_ACCESS_KEY',
-    passwordVariable: 'DO_SECRET_KEY'
-  )]) {
-    sh """
-      s3cmd \\
-        --acl-public \\
-        ${customOpts} \\
-        --host='${domain}' \\
-        --host-bucket='%(bucket)s.${domain}' \\
-        --access_key=${DO_ACCESS_KEY} \\
-        --secret_key=${DO_SECRET_KEY} \\
-        put ${path} s3://${bucket}/
-    """
-  }
-  return "https://${bucket}.${domain}/${getFilename(path)}"
-}
-
 def getBuildType() {
   def jobName = env.JOB_NAME
   if (jobName.contains('e2e')) {

@@ -104,7 +104,7 @@ pipeline {
     stage('Upload') {
       steps {
         script {
-          def urls = apks.collect { cmn.utils.uploadArtifact(it) }
+          def urls = apks.collect { cmn.uploadArtifact(it) }
           /* return only the universal APK */
           if (urls.size() > 1) { 
             env.PKG_URL = urls.find { it.contains('universal') }

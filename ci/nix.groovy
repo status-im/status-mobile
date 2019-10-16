@@ -12,9 +12,9 @@ def shell(Map opts = [:], String cmd) {
   ]
   /* merge defaults with received opts */
   opts = defaults + opts
-  /* Previous merge overwrites the array */
+  /* previous merge overwrites the array */
   opts.keep = (opts.keep + defaults.keep).unique()
-
+  /* not all targets can use a pure build */
   if (env.TARGET_OS in ['windows', 'ios']) {
     opts.pure = false
   }

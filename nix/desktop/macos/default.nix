@@ -1,4 +1,4 @@
-{ stdenv, callPackage,
+{ stdenv, callPackage, pkgs,
   darwin, qt5, status-go, baseImageFactory }:
 
 with darwin.apple_sdk.frameworks;
@@ -11,6 +11,7 @@ let
 
 in {
   buildInputs = [
+    pkgs.gnupg22
     baseImage
     qt5.full
     AppKit

@@ -80,7 +80,7 @@ pipeline {
           /* desktop */
           App: cmn.pkgUrl(nix), Mac: cmn.pkgUrl(osx), Win: cmn.pkgUrl(win),
           /* upload the sha256 checksums file too */
-          SHA: cmn.utils.uploadArtifact(cmn.utils.pkgFind('sha256')),
+          SHA: cmn.uploadArtifact(cmn.utils.pkgFind('sha256')),
         ]
         /* add URLs to the build description */
         cmn.ci.setBuildDesc(urls)

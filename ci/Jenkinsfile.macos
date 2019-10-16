@@ -90,7 +90,7 @@ pipeline {
     }
     stage('Upload') {
       steps {
-        script { env.PKG_URL = cmn.utils.uploadArtifact(dmg) }
+        script { env.PKG_URL = cmn.uploadArtifact(dmg) }
       }
     }
     stage('Cleanup') {

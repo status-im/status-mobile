@@ -85,7 +85,7 @@ pipeline {
     stage('Upload') {
       steps {
         script {
-          env.PKG_URL = cmn.utils.uploadArtifact(api)
+          env.PKG_URL = cmn.uploadArtifact(api)
           /* e2e builds get tested in SauceLabs */
           if (btype == 'e2e') {
             env.SAUCE_URL = ios.uploadToSauceLabs()

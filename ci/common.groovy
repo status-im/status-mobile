@@ -26,7 +26,7 @@ def updateBucketJSON(urls, fileName) {
   def contentJson = new JsonBuilder(content).toPrettyString()
   println "${fileName}:\n${contentJson}"
   new File(filePath).write(contentJson)
-  return utils.uploadArtifact(filePath)
+  return uploadArtifact(filePath)
 }
 
 def prep(type = 'nightly') {
@@ -65,6 +65,38 @@ def prep(type = 'nightly') {
     // run script in the nix shell so that node_modules gets instantiated before attempting the copies
     utils.nix.shell('scripts/copy-translations.sh chmod')
   }
+}
+
+def uploadArtifact(path) {
+  /* defaults for upload */
+  def domain = 'ams3.digitaloceanspaces.com'
+  def bucket = 'status-im'
+  /* There's so many PR builds we need a separate bucket */
+  if (utils.getBuildType() == 'pr') {
+    bucket = 'status-im-prs'
+  }
+  /* WARNING: s3cmd can't guess APK MIME content-type */
+  def customOpts = ''
+  if (path.endsWith('apk')) {
+    customOpts += "--mime-type='application/vnd.android.package-archive'"
+  }
+  /* We also need credentials for the upload */
+  withCredentials([usernamePassword(
+    credentialsId: 'digital-ocean-access-keys',
+    usernameVariable: 'DO_ACCESS_KEY',
+    passwordVariable: 'DO_SECRET_KEY'
+  )]) {
+    nix.shell("""
+      s3cmd \\
+        --acl-public ${customOpts} \\
+        --host="${domain}" \\
+        --host-bucket="%(bucket)s.${domain}" \\
+        --access_key=${DO_ACCESS_KEY} \\
+        --secret_key=${DO_SECRET_KEY} \\
+        put ${path} s3://${bucket}/
+    """, pure: false)
+  }
+  return "https://${bucket}.${domain}/${utils.getFilename(path)}"
 }
 
 return this
