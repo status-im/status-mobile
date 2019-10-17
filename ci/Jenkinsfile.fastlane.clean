@@ -7,6 +7,9 @@ pipeline {
     LC_ALL    = 'en_US.UTF-8'
     TARGET_OS = 'ios'
     FASTLANE_DISABLE_COLORS = 1
+    NIX_IGNORE_SYMLINK_STORE = 1
+    /* avoid writing to r/o /nix */
+    GEM_HOME  = '~/.rubygems'
   }
 
   options {
@@ -25,7 +28,8 @@ pipeline {
         nix = load('ci/nix.groovy')
         nix.shell(
           'bundle install --gemfile=fastlane/Gemfile',
-          attr: 'targets.mobile.fastlane.shell')
+          attr: 'targets.mobile.fastlane.shell'
+        )
       } }
     }
     stage('Clean Users'){
