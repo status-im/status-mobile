@@ -206,9 +206,11 @@
   (let [converted-value (* amount (get-in prices [(keyword display-symbol) (keyword (:code wallet-currency)) :price]))]
     [list-item/list-item
      {:type  :small
-      :title :t/send-request-amount
-      :error amount-error
-      :accessories [[react/nested-text {:style {:color colors/gray}}
+      :title (if amount-error
+               [react/view {:flex-grow 2}
+                [react/i18n-text {:style {:color colors/red :line-height 22} :key :t/send-request-amount}]]
+               :t/send-request-amount)
+      :accessories [[react/nested-text {:style {:color colors/gray :line-height 22}}
                      [{:style {:color colors/black}} (str (or amount 0))]
                      " "
                      (or display-symbol fee-display-symbol)
@@ -226,9 +228,10 @@
   (let [converted-fee-value (* fee (get-in prices [(keyword fee-display-symbol) (keyword (:code wallet-currency)) :price]))]
     [list-item/list-item
      {:type        :small
-      :title       :t/network-fee
-      :error       gas-error
-      :accessories [[react/nested-text {:style {:color colors/gray}}
+      :title       (if gas-error
+                     [react/text {:style {:color colors/red :flex-shrink 0 :line-height 22} :number-of-lines 1} (i18n/label :t/network-fee)]
+                     :t/network-fee)
+      :accessories [[react/nested-text {:style {:color colors/gray :line-height 22} :number-of-lines 1}
                      [{:style {:color colors/black}} fee]
                      " "
                      fee-display-symbol

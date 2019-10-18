@@ -190,7 +190,8 @@
                {:margin-right (if (= accessory last-accessory) 0 12)}}]
 
              :else
-             [react/view (cond-> {:margin-right (if (= accessory last-accessory) 0 16)}
+             [react/view (cond-> {:margin-right (if (= accessory last-accessory) 0 16)
+                                  :max-width   (if (= accessory last-accessory) (* @width 0.62) (* @width 0.55))}
                            ;; `:chevron` container is 10px wide (see up)
                            ;; but the chevron icon itself is 9px aligned in the
                            ;; container to the right - so 1px white-space on left
@@ -200,8 +201,7 @@
                            (assoc :margin-right 15))
               (cond
                 (or (string? accessory) (keyword? accessory) (number? accessory))
-                [react/text {:style
-                             (styles/accessory-text width (= accessory last-accessory))
+                [react/text {:style styles/accessory-text
                              :ellipsize-mode  :middle
                              :number-of-lines 1}
                  (utils.label/stringify accessory)]

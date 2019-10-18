@@ -1959,7 +1959,7 @@
      (let [amount-bn (money/formatted->internal (money/bignumber amount) (:symbol token) (:decimals token))
            amount-error (or (get-amount-error amount (:decimals token))
                             (get-sufficient-funds-error balance (:symbol token) amount-bn))]
-       (or amount-error (get-sufficient-gas-error balance (:symbol token) amount-bn gas gasPrice)))
+       (merge amount-error (get-sufficient-gas-error balance (:symbol token) amount-bn gas gasPrice)))
      (get-sufficient-gas-error balance nil nil gas gasPrice))))
 
 (re-frame/reg-sub

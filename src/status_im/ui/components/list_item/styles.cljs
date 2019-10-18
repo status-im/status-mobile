@@ -186,9 +186,8 @@
    :align-items     :center
    :justify-content :flex-start})
 
-(defn accessory-text [width last]
+(def accessory-text
   {:color       colors/gray
-   :max-width   (if last (* @width 0.62) (* @width 0.55))
    ;; we are doing the following to achieve pixel perfection
    ;; as reasonably possible as it can be, and achieve the
    ;; intent of the design spec
