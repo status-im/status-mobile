@@ -86,7 +86,7 @@ def uploadArtifact(path) {
     usernameVariable: 'DO_ACCESS_KEY',
     passwordVariable: 'DO_SECRET_KEY'
   )]) {
-    shell("""
+    sh("""
       s3cmd ${customOpts} \\
         --acl-public \\
         --host="${domain}" \\
