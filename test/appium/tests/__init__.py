@@ -45,3 +45,6 @@ connection_not_secure_text = "Connection is not secure! " \
                              "Do not sign transactions or send personal data on this site."
 connection_is_secure_text = "Connection is secure. Make sure you really trust this site " \
                             "before signing transactions or entering personal data."
+
+test_dapp_url = 'status-im.github.io/dapp'
+test_dapp_name = 'status-im.github.io'

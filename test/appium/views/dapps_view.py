@@ -55,6 +55,17 @@ class ClearAllDappButton(BaseButton):
         super(ClearAllDappButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('clear-all-dapps')
 
+class SelectAccountButton(BaseButton):
+    def __init__(self, driver):
+        super(SelectAccountButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('select-account')
+
+class SelectAccountRadioButton(BaseButton):
+    def __init__(self, driver, account_name):
+        super(SelectAccountRadioButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']/../../android.view.ViewGroup/android.view.ViewGroup[2]" % account_name)
+
+
 
 class DappsView(BaseView):
 
@@ -73,6 +84,11 @@ class DappsView(BaseView):
         self.remove_d_app_button = RemoveDappButton(self.driver)
         self.clear_all_d_app_button = ClearAllDappButton(self.driver)
 
+        #select account
+        self.select_account_button = SelectAccountButton(self.driver)
+        self.select_account_radio_button = SelectAccountRadioButton(self.driver,
+                                                                    account_name='Status account')
+
 
     def open_url(self, url):
         self.enter_url_editbox.click()
@@ -89,3 +105,6 @@ class DappsView(BaseView):
         entry.long_press_element()
         self.clear_all_d_app_button if clear_all else self.remove_d_app_button.click()
         return entry
+
+    def select_account_by_name(self, account_name='Status account'):
+        return SelectAccountRadioButton(self.driver, account_name)

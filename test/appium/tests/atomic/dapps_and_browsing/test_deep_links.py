@@ -1,6 +1,6 @@
 from selenium.common.exceptions import NoSuchElementException
 
-from tests import marks
+from tests import marks, test_dapp_url
 from tests.base_test_case import SingleDeviceTestCase
 from tests.users import basic_user
 from views.sign_in_view import SignInView
@@ -42,7 +42,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         self.driver.close_app()
-        dapp_name = 'status-im.github.io/dapp'
+        dapp_name = test_dapp_url
         dapp_deep_link = 'https://get.status.im/browse/%s' % dapp_name
         sign_in_view.open_weblink_and_login(dapp_deep_link)
         web_view = sign_in_view.get_chat_view()

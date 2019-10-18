@@ -2,6 +2,7 @@ import time
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from views.base_element import BaseButton, BaseText, BaseElement, BaseEditBox
 from views.base_view import BaseView
+from tests import test_dapp_url
 
 
 class WelcomeImageElement(BaseElement):
@@ -197,7 +198,7 @@ class HomeView(BaseView):
 
     def open_status_test_dapp(self, allow_all=True):
         dapp_view = self.dapp_tab_button.click()
-        dapp_view.open_url('status-im.github.io/dapp')
+        dapp_view.open_url(test_dapp_url)
         status_test_dapp = dapp_view.get_status_test_dapp_view()
         for _ in range(2):
             if allow_all:

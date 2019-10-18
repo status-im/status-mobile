@@ -2,7 +2,7 @@ import pytest
 import re
 
 from tests import marks, bootnode_address, mailserver_address, camera_access_error_text, \
-    photos_access_error_text
+    photos_access_error_text, test_dapp_url, test_dapp_name
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user
 from views.dapps_view import DappsView
@@ -424,25 +424,30 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(5738)
-    @marks.medium
+    @marks.high
     def test_dapps_permissions(self):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()
+        account_name = 'Status account'
+
+        home_view.just_fyi('open Status Test Dapp, allow all and check permissions in Profile')
         home_view.open_status_test_dapp()
         home_view.cross_icon.click()
         profile_view = home_view.profile_button.click()
         profile_view.privacy_and_security_button.click()
         profile_view.dapp_permissions_button.click()
-        profile_view.element_by_text('status-im.github.io').click()
-        if not profile_view.element_by_text('Wallet').is_element_displayed():
+        profile_view.element_by_text(test_dapp_name).click()
+        if not profile_view.element_by_text(account_name).is_element_displayed():
             self.errors.append('Wallet permission was not granted')
         if not profile_view.element_by_text('Chat key').is_element_displayed():
             self.errors.append('Contact code permission was not granted')
+
+        profile_view.just_fyi('revoke access and check that they are asked second time')
         profile_view.revoke_access_button.click()
         profile_view.back_button.click()
         dapp_view = profile_view.dapp_tab_button.click()
-        dapp_view.open_url('status-im.github.io/dapp')
-        if not dapp_view.element_by_text_part('connect to your wallet').is_element_displayed():
+        dapp_view.open_url(test_dapp_url)
+        if not dapp_view.element_by_text_part(account_name).is_element_displayed():
             self.errors.append('Wallet permission is not asked')
         if dapp_view.allow_button.is_element_displayed():
             dapp_view.allow_button.click(times_to_click=1)
