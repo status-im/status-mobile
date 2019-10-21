@@ -105,8 +105,8 @@
 
 (re-frame/reg-fx
  ::save-message
- (fn [messages]
-   (save-messages-rpc messages)))
+ (fn [messages]))
+   ;(save-messages-rpc messages)))
 
 (fx/defn save-message [cofx message]
   {::save-message [message]})

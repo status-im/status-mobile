@@ -310,7 +310,6 @@
 (handlers/register-handler-fx
  :bootnodes.ui/custom-bootnodes-switch-toggled
  (fn [cofx [_ value]]
-   (native-module/stop-signals!)
    (bootnodes/toggle-custom-bootnodes cofx value)))
 
 (handlers/register-handler-fx

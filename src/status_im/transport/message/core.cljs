@@ -4,6 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.chat.models.message :as models.message]
             [status-im.contact.device-info :as device-info]
+            [status-im.utils.handlers :as handlers]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.core :as ethereum]
             [status-im.transport.message.contact :as contact]
@@ -27,7 +28,7 @@
   in order to stop receiving that message"
   [cofx now-in-s filter-chat-id message-js]
   (let [blocked-contacts (get-in cofx [:db :contacts/blocked] #{})
-        payload (.-payload (.-message message-js))
+        payload (.-payload message-js)
         timestamp (.-timestamp (.-message message-js))
         metadata-js (.-metadata message-js)
         metadata {:author {:publicKey (.-publicKey (.-author metadata-js))
@@ -38,12 +39,8 @@
                   :messageId (.-messageId metadata-js)}
         raw-payload  {:raw-payload message-js}
         status-message (-> payload
-                           ethereum/hex-to-utf8
                            transit/deserialize)
         sig (-> metadata :author :publicKey)]
-    (println "PAYLOAD")
-    (println "METADATA" metadata)
-    (println "RAW PAYLOAD" raw-payload)
     (when (and sig
                status-message
                (not (blocked-contacts sig)))

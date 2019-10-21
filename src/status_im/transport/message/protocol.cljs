@@ -74,14 +74,9 @@
     (let [received-message-fx {:chat-received-message/add-fx
                                [(assoc (into {} this)
                                        :message-id
-                                       (or (get-in cofx [:metadata :messageId])
-                                           (transport.utils/message-id
-                                            signature
-                                            (.-payload (:js-obj cofx))))
+                                       (get-in cofx [:metadata :messageId])
                                        :chat-id chat-id
                                        :whisper-timestamp timestamp
-                                       :raw-payload-hash (ethereum/sha3
-                                                          (.-payload (:js-obj cofx)))
                                        :alias (get-in cofx [:metadata :author :alias])
                                        :identicon (get-in cofx [:metadata :author :identicon])
                                        :from signature
@@ -93,6 +88,4 @@
                                 (get-in this [:content :tribute-transaction])
                                 signature)))
   (validate [this]
-    (if (spec/valid? :message/message this)
-      this
-      (log/warn "failed to validate Message" (spec/explain-str :message/message this)))))
+    this))
