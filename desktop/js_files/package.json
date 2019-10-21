@@ -27,7 +27,7 @@
     "react-native": "git+https://github.com/status-im/react-native-desktop.git#v0.57.8_11",
     "react-native-background-timer": "^2.0.0",
     "react-native-camera": "^0.10.0",
-    "react-native-config": "git+https://github.com/status-im/react-native-config.git#v0.11.2-status",
+    "react-native-config": "git+https://github.com/status-im/react-native-config.git#v0.11.2",
     "react-native-dialogs": "^0.0.20",
     "react-native-fetch-polyfill": "^1.1.2",
     "react-native-fs": "git+https://github.com/status-im/react-native-fs.git#v2.9.7-status",
