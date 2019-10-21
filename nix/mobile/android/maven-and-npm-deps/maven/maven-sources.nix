@@ -2993,6 +2993,21 @@ in {
       sha256 = "1a1plgmrrxykyb3b91ccqz9wkg3k01fs3rkwvsbdg8iaw90xsdy3";
     };
   };
+  "https://jcenter.bintray.com/com/android/tools/annotations/24.2.3/annotations-24.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/annotations/24.2.3/annotations-24.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "59b7be20fbb50e5a1e1de554579932a49df2d526";
+      sha256 = "1v074r98nam56zh92vg1jlb8xx17jsjqaqyspwrpac9x2lnw8ni9";
+    };
+    jar = {
+      sha1 = "5cfce42220293835e7988ceefd9b0f4e9f284791";
+      sha256 = "053s42z9lad3q18x8ccmqia0ahwy4nz8qx544rf6mnd50cfkhnl3";
+    };
+  };
   "https://jcenter.bintray.com/com/android/tools/annotations/24.3.0/annotations-24.3.0" =
   {
     host = repositories.jcenter;
@@ -3066,6 +3081,21 @@ in {
     jar = {
       sha1 = "44e9cc678b260278b39349f7f13c305d68d17c8c";
       sha256 = "0kxdvscdyail6ykcp07hnd2sw5kikz4cq83vdafqqmycbh4wfkhl";
+    };
+  };
+  "https://jcenter.bintray.com/com/android/tools/build/builder/1.2.3/builder-1.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/build/builder/1.2.3/builder-1.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "e5cee6a84e8c0dd0462c90c987da9a453e395133";
+      sha256 = "1mqb9f6j3k137jzrvdf9jw5biydfz5jr577q1c5y0p7il6x1w260";
+    };
+    jar = {
+      sha1 = "4530e2d560877a7a514b63500e7263c973ee2413";
+      sha256 = "1a9kg811qpvbcshrpib23jngjblb5rvq3ffn5glsdinpddavn87b";
     };
   };
   "https://jcenter.bintray.com/com/android/tools/build/builder/1.3.0/builder-1.3.0" =
@@ -3143,6 +3173,21 @@ in {
       sha256 = "1pww8x60m0r8safpr6ncf4h0zyzx26dflxyx7h6zs5ahvls7vqwi";
     };
   };
+  "https://jcenter.bintray.com/com/android/tools/build/builder-model/1.2.3/builder-model-1.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/build/builder-model/1.2.3/builder-model-1.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "c2d1fcfd70ac408d0329777eebdad0c5e69394ae";
+      sha256 = "1vcqx5bv7nriygiq80w292cjwv886918k3dg8rvk0wbfdk0p11i4";
+    };
+    jar = {
+      sha1 = "31a6a8af1d5a4f528a5d0fa567fcd8234d100bd1";
+      sha256 = "0n3g7qs4x66s0pqjc7fpd1m60pallhf0y859gy5qydngb96izgxs";
+    };
+  };
   "https://jcenter.bintray.com/com/android/tools/build/builder-model/1.3.0/builder-model-1.3.0" =
   {
     host = repositories.jcenter;
@@ -3218,6 +3263,21 @@ in {
       sha256 = "1vi1sigcwkcx6hmi2ylprbj72fn6yh6jihwm4ks1c0chwpiwmyzc";
     };
   };
+  "https://jcenter.bintray.com/com/android/tools/build/builder-test-api/1.2.3/builder-test-api-1.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/build/builder-test-api/1.2.3/builder-test-api-1.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "ddc22f0e64280305d973c75fdc1f9c7bc1ff70a6";
+      sha256 = "12bzl5sa90slzm2v1b145ynf0dv702ync76cw86flfdgq9gpgqbk";
+    };
+    jar = {
+      sha1 = "821301502b154d3a66d93b72bcb9ffeba4487acd";
+      sha256 = "0v1mqpna3sdj0gb19c8xvmjbfgnp5v7jq136xmr8yqnpslvjl1p2";
+    };
+  };
   "https://jcenter.bintray.com/com/android/tools/build/builder-test-api/1.3.0/builder-test-api-1.3.0" =
   {
     host = repositories.jcenter;
@@ -3291,6 +3351,21 @@ in {
     jar = {
       sha1 = "c6f66d30006cebbaf8c1c7f8675e955223bf64e6";
       sha256 = "1rpa2plnz2znkszgg77fsm7zmcjiv77kh95r1s8x9nynf5ys0am6";
+    };
+  };
+  "https://jcenter.bintray.com/com/android/tools/build/gradle/1.2.3/gradle-1.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/build/gradle/1.2.3/gradle-1.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "d671be046e25694cc828a08f266e154fe44c83e0";
+      sha256 = "1q2gkfz9rh1ylyblk8xf7nfifvx97imy71961iasnj7rz4xpnfw4";
+    };
+    jar = {
+      sha1 = "2fc5a2f1ac2e86c5c4bb57241330198b2355e621";
+      sha256 = "18alri63pg257zvfvxx6c9y49m6lgqk75z0hpyrxs6d666pzgic8";
     };
   };
   "https://jcenter.bintray.com/com/android/tools/build/gradle/1.3.0/gradle-1.3.0" =
@@ -3383,6 +3458,21 @@ in {
       sha256 = "0yd0bmpg5qx1zpmlcfna0fk52fmsrllrfm17ll06176qsbnl5dxj";
     };
   };
+  "https://jcenter.bintray.com/com/android/tools/build/gradle-core/1.2.3/gradle-core-1.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/build/gradle-core/1.2.3/gradle-core-1.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "69c667339a5f5cc6eaab20e78dd2c91e7ec444bd";
+      sha256 = "0lcpxp2rmq1mv5db0gn94lxzy5dp6vb7f7nlrkp8nan5dd4c349r";
+    };
+    jar = {
+      sha1 = "4a448f6ea508a2b547a3fea4033d2b68d287a188";
+      sha256 = "13ccpqznxcsaarabgp14vy22rjngk8a7bvg3rrfrjpps6260x37r";
+    };
+  };
   "https://jcenter.bintray.com/com/android/tools/build/gradle-core/1.3.0/gradle-core-1.3.0" =
   {
     host = repositories.jcenter;
@@ -3456,6 +3546,21 @@ in {
     jar = {
       sha1 = "bceca436ab72301a3add739dbffb747ebb19ddc8";
       sha256 = "0by5zjrkaapg5cyzq8vv66pzfxnan524nh11l49vi4xakkajkh2l";
+    };
+  };
+  "https://jcenter.bintray.com/com/android/tools/build/manifest-merger/24.2.3/manifest-merger-24.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/build/manifest-merger/24.2.3/manifest-merger-24.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "b6eb232f3172d456888a1123b4df6fb8cc775ccc";
+      sha256 = "0y92nyxk83ckczj02vc97bxf85xsiv2ljfwkdsq0y1rbf61j9zz4";
+    };
+    jar = {
+      sha1 = "ac192088836974da767392eadc3beb16d37b65b3";
+      sha256 = "0rz83wnjk02fdwq5p7y8bxrlv25f260h86c9zybxnl83j58kf1sd";
     };
   };
   "https://jcenter.bintray.com/com/android/tools/build/manifest-merger/24.3.0/manifest-merger-24.3.0" =
@@ -3548,6 +3653,21 @@ in {
       sha256 = "0cdhgvmlwbrc233l4c9pzif3i8qhqgyhikm1zf055jiawrmb9nch";
     };
   };
+  "https://jcenter.bintray.com/com/android/tools/common/24.2.3/common-24.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/common/24.2.3/common-24.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "901c7fc072f88bd2f8c107034cd938914f0960ac";
+      sha256 = "1s7p2s3h39fhmiz3dnjz1rvfrpvgvmbwxg8xmx00zprh2zlj1rlc";
+    };
+    jar = {
+      sha1 = "1bcbdeecd08852eba2954b8376ef8cbf7704b39b";
+      sha256 = "0sf09vvjpkqgp601a2ryckkdfg73kjkx1a90sf2a0d8f4wxhfvy5";
+    };
+  };
   "https://jcenter.bintray.com/com/android/tools/common/24.3.0/common-24.3.0" =
   {
     host = repositories.jcenter;
@@ -3623,6 +3743,21 @@ in {
       sha256 = "0vxq71zz8v32sgr3qpa2rg04ibg55wdbkhsib3q0ljbgnmiw4xlp";
     };
   };
+  "https://jcenter.bintray.com/com/android/tools/ddms/ddmlib/24.2.3/ddmlib-24.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/ddms/ddmlib/24.2.3/ddmlib-24.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "9d63aa9878a1e4e7d5937287554cf182314c3162";
+      sha256 = "1ryhhihmqgbzbzha11p4hjziks6mbrmj8m6jf0z65xmqgc36fp17";
+    };
+    jar = {
+      sha1 = "72e612ad93e7b12d8f71c584f1f65a81e864e4de";
+      sha256 = "1nzmkcx9gvslh3mc63cwxxsdhm3rkhf50dbfqsvhbz02g50xixkm";
+    };
+  };
   "https://jcenter.bintray.com/com/android/tools/ddms/ddmlib/24.3.0/ddmlib-24.3.0" =
   {
     host = repositories.jcenter;
@@ -3696,6 +3831,21 @@ in {
     jar = {
       sha1 = "637a1a657b190ee8abbbf2298f09ed6e90c3b8ef";
       sha256 = "1a8jib0h7l83vw2cd3akp4h4rnns3j0rw920x9sfd0r1zb1ya345";
+    };
+  };
+  "https://jcenter.bintray.com/com/android/tools/dvlib/24.2.3/dvlib-24.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/dvlib/24.2.3/dvlib-24.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "874dd39acf4a5dbf8eaf8bf14d09d3263fe54ca7";
+      sha256 = "07cyfdlargqc5nls3z41klp7q0ngq8v7b91d3vmwhdwzgdjc6b0y";
+    };
+    jar = {
+      sha1 = "14e95bd58c53762138210f48eeb5d670e11ccdba";
+      sha256 = "1bjc3whv1mnx0nsa4bf62y26p3fh25j1c3mpdrgdlv0nz80bqgqc";
     };
   };
   "https://jcenter.bintray.com/com/android/tools/dvlib/24.3.0/dvlib-24.3.0" =
@@ -3863,6 +4013,21 @@ in {
       sha256 = "1swfzjpbnrf0wqiakjpgym06ndjyig8wkv93crllfiiw21klxppg";
     };
   };
+  "https://jcenter.bintray.com/com/android/tools/layoutlib/layoutlib-api/24.2.3/layoutlib-api-24.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/layoutlib/layoutlib-api/24.2.3/layoutlib-api-24.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "75d94529cc55a60ff319a8872481d693109eb691";
+      sha256 = "1x1zl9qi3x7iam84cbi8gbdc7bxsf6a94r9xxy2q54i3bwdayd50";
+    };
+    jar = {
+      sha1 = "0267861b0cc93c5c9cf85d901e9e1e975ae109fd";
+      sha256 = "0isqq7i5na36djd5ijw58bsxliaclsd5958c5n9yr2nm2q1qshd8";
+    };
+  };
   "https://jcenter.bintray.com/com/android/tools/layoutlib/layoutlib-api/24.3.0/layoutlib-api-24.3.0" =
   {
     host = repositories.jcenter;
@@ -3936,6 +4101,21 @@ in {
     jar = {
       sha1 = "7f120107f7cce494650581e345070818713eb433";
       sha256 = "1rknkfg0vbl6wxdfkqhrqs42xhhwrkwsb5i9ng429l3bizkafv08";
+    };
+  };
+  "https://jcenter.bintray.com/com/android/tools/lint/lint/24.2.3/lint-24.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/lint/lint/24.2.3/lint-24.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "6e3954eeec2bf2cded8b4685d747993b496a4f31";
+      sha256 = "090s7br1h3g1xbxdm4xi1zv9n02y14ybr79dw5lgqdjrxshhmq4x";
+    };
+    jar = {
+      sha1 = "3b2976b2b1b2e8cb13cb2224da81f624081db38a";
+      sha256 = "0x9w995279sb63sgx2i8jwgh6s1jid8a8f81cyhc9833hkw6a690";
     };
   };
   "https://jcenter.bintray.com/com/android/tools/lint/lint/24.3.0/lint-24.3.0" =
@@ -4013,6 +4193,21 @@ in {
       sha256 = "18g2dq6q8dfzkcbxwkhjzzwgqx83ymdqvpw6rw34h85sq2q3yzwj";
     };
   };
+  "https://jcenter.bintray.com/com/android/tools/lint/lint-api/24.2.3/lint-api-24.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/lint/lint-api/24.2.3/lint-api-24.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "a57d9b6e97ff8b0c0ad4d2faddb4e297e993c589";
+      sha256 = "0zwasbjsj8wbmsxvn3cca4ljhlxgp11gam69mw5l80ag19flv5wn";
+    };
+    jar = {
+      sha1 = "c3648cf4ae2ff004360e31ed177271d88ecd093a";
+      sha256 = "02vfjmcssgvwmvivdaapmzmbgbgcfjxb8mkymx7wxxilaqfnhbq3";
+    };
+  };
   "https://jcenter.bintray.com/com/android/tools/lint/lint-api/24.3.0/lint-api-24.3.0" =
   {
     host = repositories.jcenter;
@@ -4086,6 +4281,21 @@ in {
     jar = {
       sha1 = "077820b72a4390e2d640932106588de4dfa5ed67";
       sha256 = "0gaf3hm0bhjnbzqyy0i69l17a0d14qkgm2wy7j1qnwsffli6vk1a";
+    };
+  };
+  "https://jcenter.bintray.com/com/android/tools/lint/lint-checks/24.2.3/lint-checks-24.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/lint/lint-checks/24.2.3/lint-checks-24.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "5a5d9895947f0d73422712c2b60e9f072cbd08b6";
+      sha256 = "1v7wbnsg3jqqj3cgmld66daf9ngkycpq7s1jzl8gaznslmhwac7v";
+    };
+    jar = {
+      sha1 = "59fb927f5817e16796297140add6c879ee752f37";
+      sha256 = "0r7s8h37f8fsvjd61frpy9b8dsylhq18szsy660iy4wi9haphyj8";
     };
   };
   "https://jcenter.bintray.com/com/android/tools/lint/lint-checks/24.3.0/lint-checks-24.3.0" =
@@ -4178,6 +4388,21 @@ in {
       sha256 = "1m32bl87w7f34f8clfpzpv4q3d68km2bbv3fx0s26h2xkipl0610";
     };
   };
+  "https://jcenter.bintray.com/com/android/tools/sdk-common/24.2.3/sdk-common-24.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/sdk-common/24.2.3/sdk-common-24.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "3b03fb9231eacc057603176efa8aa1a6f6edef76";
+      sha256 = "07g24hf3pklpxpqlyq6x87z7njm80412rnjlpimsnq1gd0mivwbb";
+    };
+    jar = {
+      sha1 = "c59b15bdc3aaf46b13491827d8a6abaa6d5213b3";
+      sha256 = "1029mgy2b7ms8p9jhq9d80cn50isxq914m1a8v4zg5hrphcnas75";
+    };
+  };
   "https://jcenter.bintray.com/com/android/tools/sdk-common/24.3.0/sdk-common-24.3.0" =
   {
     host = repositories.jcenter;
@@ -4251,6 +4476,21 @@ in {
     jar = {
       sha1 = "7b2e09d45db370f3219c3da2d2e82493bdb9069f";
       sha256 = "16dkz0ql5zfxhfhvcir8jyqhagsab4ivwcgdmllbr89h4m0h60wa";
+    };
+  };
+  "https://jcenter.bintray.com/com/android/tools/sdklib/24.2.3/sdklib-24.2.3" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/android/tools/sdklib/24.2.3/sdklib-24.2.3";
+    type = "jar";
+    pom = {
+      sha1 = "becd1cd13f8f18fa15517d9f2defa453c9e0f2d5";
+      sha256 = "19fb338ivmjv2fwwmy103pq8g7j571p7a4v4r5fz1fbdmgbcaz2k";
+    };
+    jar = {
+      sha1 = "2e1b33d6544db11d30fa0037ee6751675ae42329";
+      sha256 = "0vm54hhbvrg8nkqhzhja3pwfjw2r8s8s1r58z8m1fj1dhkpby0by";
     };
   };
   "https://jcenter.bintray.com/com/android/tools/sdklib/24.3.0/sdklib-24.3.0" =
@@ -7123,21 +7363,6 @@ in {
     jar = {
       sha1 = "2e199436e395bef0367e64fdfd0ae727923b0278";
       sha256 = "0z7h1kc6pmv9s04r2675lsya26vv5lgr6cdxbrk0k49f56jrl7vn";
-    };
-  };
-  "https://oss.sonatype.org/content/repositories/snapshots/junit/junit/4.13-SNAPSHOT/junit-4.13-20191026.122450-195" =
-  {
-    host = repositories.sonatypeSnapshots;
-    path =
-      "junit/junit/4.13-SNAPSHOT/junit-4.13-20191026.122450-195";
-    type = "jar";
-    pom = {
-      sha1 = "67317da8f43c7b0bc98d676e3339ec45c1b8406c";
-      sha256 = "0c8pxpd849qsbbfkr9pvy5fmzsg82bfsnmx5v0niisjljwryaxbh";
-    };
-    jar = {
-      sha1 = "525650398d158003f5e69230f017623ae2fbe6cb";
-      sha256 = "1j8j9jcxpkay6sg8mcwdhz982aiasy4zq82hmfq1l74f3jv7y23g";
     };
   };
   "https://plugins.gradle.org/m2/com/diffplug/gradle/spotless/com.diffplug.gradle.spotless.gradle.plugin/3.23.0/com.diffplug.gradle.spotless.gradle.plugin-3.23.0" =
