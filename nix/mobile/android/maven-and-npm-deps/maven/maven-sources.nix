@@ -965,6 +965,21 @@ in {
       sha256 = "0lhp66q8rxf8cxylr8g6qjqy6s26prgrnmq133cnwx2r0ciyba53";
     };
   };
+  "https://dl.google.com/dl/android/maven2/com/android/support/support-compat/28.0.0/support-compat-28.0.0" =
+  {
+    host = repositories.google;
+    path =
+      "com/android/support/support-compat/28.0.0/support-compat-28.0.0";
+    type = "aar";
+    pom = {
+      sha1 = "ededbbdbfc461c09f992371624bf7fa564748c36";
+      sha256 = "06ln7psm2gm6nskdj48cgd2mrzs1mlk6m0px3jb0zz4249na0ybb";
+    };
+    jar = {
+      sha1 = "d252b640ed832cf8addc35ef0a9f9186dc7738a5";
+      sha256 = "12hi2xc9qshbdr2jw96664i3va9wj0pjjhv9r2hrwgzavc0knzp1";
+    };
+  };
   "https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/crash/26.2.1/crash-26.2.1" =
   {
     host = repositories.google;

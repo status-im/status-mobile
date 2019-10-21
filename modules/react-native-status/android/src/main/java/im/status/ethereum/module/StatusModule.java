@@ -10,7 +10,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+
 import androidx.core.content.FileProvider;
+
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
@@ -24,6 +26,8 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
@@ -32,6 +36,8 @@ import statusgo.Statusgo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
+
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -51,16 +57,18 @@ import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Nullable;
 
+import android.app.Service;
+
 class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, SignalHandler {
 
     private static final String TAG = "StatusModule";
     private static final String logsZipFileName = "Status-debug-logs.zip";
     private static final String gethLogFileName = "geth.log";
     private static final String statusLogFileName = "Status.log";
-
     private static StatusModule module;
     private ReactApplicationContext reactContext;
     private boolean rootedDevice;
+    private NewMessageSignalHandler newMessageSignalHandler;
 
     StatusModule(ReactApplicationContext reactContext, boolean rootedDevice) {
         super(reactContext);
@@ -82,46 +90,72 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @Override
     public void onHostPause() {
-
     }
 
     @Override
     public void onHostDestroy() {
+        Intent intent = new Intent(getReactApplicationContext(), ForegroundService.class);
+        getReactApplicationContext().stopService(intent);
+    }
 
+    @ReactMethod
+    public void enableNotifications() {
+        this.newMessageSignalHandler = new NewMessageSignalHandler(reactContext);
+    }
+
+    @ReactMethod
+    public void disableNotifications() {
+        if (newMessageSignalHandler != null) {
+            newMessageSignalHandler.stop();
+            newMessageSignalHandler = null;
+        }
     }
 
     private boolean checkAvailability() {
-      // We wait at least 10s for getCurrentActivity to return a value,
-      // otherwise we give up
-      for (int attempts = 0; attempts < 100; attempts++) {
-        if (getCurrentActivity() != null) {
-          return true;
+        // We wait at least 10s for getCurrentActivity to return a value,
+        // otherwise we give up
+        for (int attempts = 0; attempts < 100; attempts++) {
+            if (getCurrentActivity() != null) {
+                return true;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                if (getCurrentActivity() != null) {
+                    return true;
+                }
+                Log.d(TAG, "Activity doesn't exist");
+                return false;
+            }
         }
-        try {
-          Thread.sleep(100);
-        } catch (InterruptedException ex) {
-          if (getCurrentActivity() != null) {
-            return true;
-          }
-          Log.d(TAG, "Activity doesn't exist");
-          return false;
-        }
-      }
 
-      Log.d(TAG, "Activity doesn't exist");
-      return false;
+        Log.d(TAG, "Activity doesn't exist");
+        return false;
 
     }
 
     public String getNoBackupDirectory() {
-      return this.getReactApplicationContext().getNoBackupFilesDir().getAbsolutePath();
+        return this.getReactApplicationContext().getNoBackupFilesDir().getAbsolutePath();
     }
 
-    public void handleSignal(String jsonEvent) {
-        Log.d(TAG, "Signal event: " + jsonEvent);
-        WritableMap params = Arguments.createMap();
-        params.putString("jsonEvent", jsonEvent);
-        this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
+    public void handleSignal(final String jsonEventString) {
+        try {
+            final JSONObject jsonEvent = new JSONObject(jsonEventString);
+            String eventType = jsonEvent.getString("type");
+            Log.d(TAG, "Signal event: " + jsonEventString);
+            // NOTE: the newMessageSignalHandler is only instanciated if the user
+            // enabled notifications in the app
+            if (newMessageSignalHandler != null) {
+                if (eventType.equals("messages.new")) {
+                    newMessageSignalHandler.handleNewMessageSignal(jsonEvent);
+                }
+            }
+            WritableMap params = Arguments.createMap();
+            params.putString("jsonEvent", jsonEventString);
+            this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
+        } catch (JSONException e) {
+            Log.e(TAG, "JSON conversion failed: " + e.getMessage());
+        }
     }
 
     private File getLogsFile() {
@@ -278,29 +312,27 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void saveAccountAndLogin(final String accountData, final String password , final String config, final String subAccountsData) {
+    public void saveAccountAndLogin(final String accountData, final String password, final String config, final String subAccountsData) {
         Log.d(TAG, "saveAccountAndLogin");
         String finalConfig = prepareDirAndUpdateConfig(config);
         String result = Statusgo.saveAccountAndLogin(accountData, password, finalConfig, subAccountsData);
         if (result.startsWith("{\"error\":\"\"")) {
             Log.d(TAG, "StartNode result: " + result);
             Log.d(TAG, "Geth node started");
-        }
-        else {
+        } else {
             Log.e(TAG, "StartNode failed: " + result);
         }
     }
 
     @ReactMethod
-    public void saveAccountAndLoginWithKeycard(final String accountData, final String password , final String config, final String chatKey) {
+    public void saveAccountAndLoginWithKeycard(final String accountData, final String password, final String config, final String chatKey) {
         Log.d(TAG, "saveAccountAndLoginWithKeycard");
         String finalConfig = prepareDirAndUpdateConfig(config);
         String result = Statusgo.saveAccountAndLoginWithKeycard(accountData, password, finalConfig, chatKey);
         if (result.startsWith("{\"error\":\"\"")) {
             Log.d(TAG, "StartNode result: " + result);
             Log.d(TAG, "Geth node started");
-        }
-        else {
+        } else {
             Log.e(TAG, "StartNode failed: " + result);
         }
     }
@@ -311,8 +343,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         String result = Statusgo.login(accountData, password);
         if (result.startsWith("{\"error\":\"\"")) {
             Log.d(TAG, "Login result: " + result);
-        }
-        else {
+        } else {
             Log.e(TAG, "Login failed: " + result);
         }
     }
@@ -320,11 +351,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void logout() {
         Log.d(TAG, "logout");
+        disableNotifications();
         String result = Statusgo.logout();
         if (result.startsWith("{\"error\":\"\"")) {
             Log.d(TAG, "Logout result: " + result);
-        }
-        else {
+        } else {
             Log.e(TAG, "Logout failed: " + result);
         }
     }
@@ -387,11 +418,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         }
 
         Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    Statusgo.initKeystore(keydir);
-                }
-            };
+            @Override
+            public void run() {
+                Statusgo.initKeystore(keydir);
+            }
+        };
 
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
@@ -409,12 +440,12 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         }
 
         Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    String result =Statusgo.openAccounts(rootDir);
-                    callback.invoke(result);
-                }
-            };
+            @Override
+            public void run() {
+                String result = Statusgo.openAccounts(rootDir);
+                callback.invoke(result);
+            }
+        };
 
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
@@ -450,8 +481,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         String result = Statusgo.loginWithKeycard(accountData, password, chatKey);
         if (result.startsWith("{\"error\":\"\"")) {
             Log.d(TAG, "LoginWithKeycard result: " + result);
-        }
-        else {
+        } else {
             Log.e(TAG, "LoginWithKeycard failed: " + result);
         }
     }
@@ -459,13 +489,13 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private Boolean zip(File[] _files, File zipFile, Stack<String> errorList) {
         final int BUFFER = 0x8000;
 
-		try {
-			BufferedInputStream origin = null;
-			FileOutputStream dest = new FileOutputStream(zipFile);
-			ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
-			byte data[] = new byte[BUFFER];
+        try {
+            BufferedInputStream origin = null;
+            FileOutputStream dest = new FileOutputStream(zipFile);
+            ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
+            byte data[] = new byte[BUFFER];
 
-			for (int i = 0; i < _files.length; i++) {
+            for (int i = 0; i < _files.length; i++) {
                 final File file = _files[i];
                 if (file == null || !file.exists()) {
                     continue;
@@ -488,16 +518,16 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                     Log.e(TAG, e.getMessage());
                     errorList.push(e.getMessage());
                 }
-			}
+            }
 
             out.close();
 
             return true;
-		} catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
             return false;
-		}
+        }
     }
 
     private void dumpAdbLogsTo(final FileOutputStream statusLogStream) throws IOException {
@@ -518,13 +548,13 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         final Activity activity = getCurrentActivity();
 
         new AlertDialog.Builder(activity)
-                       .setTitle("Error")
-                       .setMessage(message)
-                       .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
-                           public void onClick(final DialogInterface dialog, final int id) {
-                               dialog.dismiss();
-                           }
-                       }).show();
+                .setTitle("Error")
+                .setMessage(message)
+                .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.dismiss();
+                    }
+                }).show();
     }
 
     @ReactMethod
@@ -543,8 +573,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(dbFile));
             outputStreamWriter.write(dbJson);
             outputStreamWriter.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Log.e(TAG, "File write failed: " + e.toString());
             showErrorMessage(e.getLocalizedMessage());
         }
@@ -567,7 +596,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             dumpAdbLogsTo(new FileOutputStream(statusLogFile));
 
             final Stack<String> errorList = new Stack<String>();
-            final Boolean zipped = zip(new File[] {dbFile, gethLogFile, statusLogFile}, zipFile, errorList);
+            final Boolean zipped = zip(new File[]{dbFile, gethLogFile, statusLogFile}, zipFile, errorList);
             if (zipped && zipFile.exists()) {
                 zipFile.setReadable(true, false);
                 callback.invoke(zipFile.getAbsolutePath());
@@ -579,8 +608,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             showErrorMessage(e.getLocalizedMessage());
             e.printStackTrace();
             return;
-        }
-        finally {
+        } finally {
             dbFile.delete();
             statusLogFile.delete();
             zipFile.deleteOnExit();
@@ -596,13 +624,13 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         }
 
         Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    String res = Statusgo.addPeer(enode);
+            @Override
+            public void run() {
+                String res = Statusgo.addPeer(enode);
 
-                    callback.invoke(res);
-                }
-            };
+                callback.invoke(res);
+            }
+        };
 
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
@@ -1026,138 +1054,138 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         }
     }
 
-  private Boolean is24Hour() {
-    return android.text.format.DateFormat.is24HourFormat(this.reactContext.getApplicationContext());
-  }
-
-  @ReactMethod
-  public void extractGroupMembershipSignatures(final String signaturePairs, final Callback callback) {
-    Log.d(TAG, "extractGroupMembershipSignatures");
-    if (!checkAvailability()) {
-      callback.invoke(false);
-      return;
+    private Boolean is24Hour() {
+        return android.text.format.DateFormat.is24HourFormat(this.reactContext.getApplicationContext());
     }
 
-    Runnable r = new Runnable() {
-      @Override
-      public void run() {
-        String result = Statusgo.extractGroupMembershipSignatures(signaturePairs);
+    @ReactMethod
+    public void extractGroupMembershipSignatures(final String signaturePairs, final Callback callback) {
+        Log.d(TAG, "extractGroupMembershipSignatures");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
 
-        callback.invoke(result);
-      }
-    };
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String result = Statusgo.extractGroupMembershipSignatures(signaturePairs);
 
-    StatusThreadPoolExecutor.getInstance().execute(r);
-  }
+                callback.invoke(result);
+            }
+        };
 
-  @ReactMethod
-  public void signGroupMembership(final String content, final Callback callback) {
-    Log.d(TAG, "signGroupMembership");
-    if (!checkAvailability()) {
-      callback.invoke(false);
-      return;
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
-    Runnable r = new Runnable() {
-      @Override
-      public void run() {
-        String result = Statusgo.signGroupMembership(content);
+    @ReactMethod
+    public void signGroupMembership(final String content, final Callback callback) {
+        Log.d(TAG, "signGroupMembership");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
 
-        callback.invoke(result);
-      }
-    };
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String result = Statusgo.signGroupMembership(content);
 
-    StatusThreadPoolExecutor.getInstance().execute(r);
-  }
+                callback.invoke(result);
+            }
+        };
 
-
-  @ReactMethod
-  public void updateMailservers(final String enodes, final Callback callback) {
-    Log.d(TAG, "updateMailservers");
-    if (!checkAvailability()) {
-      callback.invoke(false);
-      return;
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
-    Runnable r = new Runnable() {
-      @Override
-      public void run() {
-        String res = Statusgo.updateMailservers(enodes);
 
-        callback.invoke(res);
-      }
-    };
+    @ReactMethod
+    public void updateMailservers(final String enodes, final Callback callback) {
+        Log.d(TAG, "updateMailservers");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
 
-    StatusThreadPoolExecutor.getInstance().execute(r);
-  }
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.updateMailservers(enodes);
 
-  @ReactMethod
-  public void chaosModeUpdate(final boolean on, final Callback callback) {
-    Log.d(TAG, "chaosModeUpdate");
-    if (!checkAvailability()) {
-      callback.invoke(false);
-      return;
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
-    Runnable r = new Runnable() {
-      @Override
-      public void run() {
-        String res = Statusgo.chaosModeUpdate(on);
+    @ReactMethod
+    public void chaosModeUpdate(final boolean on, final Callback callback) {
+        Log.d(TAG, "chaosModeUpdate");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
 
-        callback.invoke(res);
-      }
-    };
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.chaosModeUpdate(on);
 
-    StatusThreadPoolExecutor.getInstance().execute(r);
-  }
+                callback.invoke(res);
+            }
+        };
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public String generateAlias(final String seed) {
-    return Statusgo.generateAlias(seed);
-  }
-
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public String identicon(final String seed) {
-    return Statusgo.identicon(seed);
-  }
-
-
-  @ReactMethod
-  public void getNodesFromContract(final String rpcEndpoint, final String contractAddress, final Callback callback) {
-    Log.d(TAG, "getNodesFromContract");
-    if (!checkAvailability()) {
-      callback.invoke(false);
-      return;
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
-    Runnable r = new Runnable() {
-      @Override
-      public void run() {
-        String res = Statusgo.getNodesFromContract(rpcEndpoint, contractAddress);
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String generateAlias(final String seed) {
+        return Statusgo.generateAlias(seed);
+    }
 
-        Log.d(TAG, res);
-        callback.invoke(res);
-      }
-    };
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String identicon(final String seed) {
+        return Statusgo.identicon(seed);
+    }
 
-    StatusThreadPoolExecutor.getInstance().execute(r);
-  }
 
-  @Override
-  public @Nullable
-  Map<String, Object> getConstants() {
-    HashMap<String, Object> constants = new HashMap<String, Object>();
+    @ReactMethod
+    public void getNodesFromContract(final String rpcEndpoint, final String contractAddress, final Callback callback) {
+        Log.d(TAG, "getNodesFromContract");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
 
-    constants.put("is24Hour", this.is24Hour());
-    constants.put("model", Build.MODEL);
-    constants.put("brand", Build.BRAND);
-    constants.put("buildId", Build.ID);
-    constants.put("deviceId", Build.BOARD);
-    return constants;
-  }
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.getNodesFromContract(rpcEndpoint, contractAddress);
 
-  @ReactMethod
-  public void isDeviceRooted(final Callback callback) {
-    callback.invoke(rootedDevice);
-  }
+                Log.d(TAG, res);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @Override
+    public @Nullable
+    Map<String, Object> getConstants() {
+        HashMap<String, Object> constants = new HashMap<String, Object>();
+
+        constants.put("is24Hour", this.is24Hour());
+        constants.put("model", Build.MODEL);
+        constants.put("brand", Build.BRAND);
+        constants.put("buildId", Build.ID);
+        constants.put("deviceId", Build.BOARD);
+        return constants;
+    }
+
+    @ReactMethod
+    public void isDeviceRooted(final Callback callback) {
+        callback.invoke(rootedDevice);
+    }
 }

@@ -6,6 +6,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.core :as ethereum]
+            [status-im.native-module.core :as status]
             [status-im.transport.message.contact :as contact]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.transit :as transit]
@@ -197,4 +198,3 @@
                      :params [confirmations]
                      :on-success #(log/debug "successfully confirmed messages")
                      :on-failure #(log/error "failed to confirm messages" %)}))))
-

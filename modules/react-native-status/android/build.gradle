@@ -24,6 +24,6 @@ android {
 dependencies {
     implementation 'com.facebook.react:react-native:+' // from node_modules
     compile 'com.github.status-im:function:0.0.1'
-
+    implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation(group: 'status-im', name: 'status-go', version: getStatusGoSHA1(), ext: 'aar')
 }

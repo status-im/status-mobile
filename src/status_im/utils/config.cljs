@@ -31,6 +31,8 @@
 (def max-message-delivery-attempts (js/parseInt (get-config :MAX_MESSAGE_DELIVERY_ATTEMPTS "6")))
 (def contract-nodes-enabled? (enabled? (get-config :CONTRACT_NODES "0")))
 (def mobile-ui-for-desktop? (enabled? (get-config :MOBILE_UI_FOR_DESKTOP "0")))
+;; NOTE: only disabled in releases
+(def local-notifications? (enabled? (get-config :LOCAL_NOTIFICATIONS "1")))
 
 ;; CONFIG VALUES
 (def log-level

@@ -4,6 +4,7 @@
           package="im.status.ethereum">
 
     <!-- non-dangerous permissions -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.NFC"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -68,6 +69,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
+        <service android:name="im.status.ethereum.module.ForegroundService"></service>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

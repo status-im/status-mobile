@@ -111,7 +111,7 @@
 (defn- flat-list-content
   [preferred-name registrar tribute-to-talk
    active-contacts-count show-backup-seed?
-   keycard-account?]
+   keycard-account? notifications-enabled?]
   [(cond-> {:title                (or (when registrar preferred-name)
                                       :t/ens-usernames)
             :subtitle             (if registrar
@@ -151,15 +151,23 @@
     [(when show-backup-seed?
        [components.common/counter {:size 22} 1]) :chevron]
     :on-press            #(re-frame/dispatch [:navigate-to :privacy-and-security])}
-   ;; TODO commented out for now because it will be enabled for android notifications
-   #_{:icon                :main-icons/notification
+   (when (and platform/android?
+              config/local-notifications?)
+     {:icon                :main-icons/notification
       :title               :t/notifications
       :accessibility-label :notifications-button
-      ;; TODO commented out for now, uncomment when notifications-settings view
-      ;; is populated. Then remove :on-press below
-      ;; :on-press            #(re-frame/dispatch [:navigate-to :notifications-settings])
-      :on-press            #(.openURL react/linking "app-settings://notification/status-im")
-      :accessories         [:chevron]}
+      :on-press
+      #(re-frame/dispatch
+        [:multiaccounts.ui/notifications-switched (not notifications-enabled?)])
+      :accessories
+      [[react/switch
+        {:track-color #js {:true colors/blue :false nil}
+         :value       notifications-enabled?
+         :on-value-change
+         #(re-frame/dispatch
+           [:multiaccounts.ui/notifications-switched
+            (not notifications-enabled?)])
+         :disabled    false}]]})
    {:icon                :main-icons/mobile
     :title               :t/sync-settings
     :accessibility-label :sync-settings-button
@@ -212,7 +220,8 @@
                 seed-backed-up?
                 mnemonic
                 keycard-key-uid
-                address]
+                address
+                notifications-enabled?]
          :as   multiaccount}         @(re-frame/subscribe [:multiaccount])
         active-contacts-count        @(re-frame/subscribe [:contacts/active-count])
         tribute-to-talk              @(re-frame/subscribe [:tribute-to-talk/profile])
@@ -225,7 +234,7 @@
      (flat-list-content
       preferred-name registrar tribute-to-talk
       active-contacts-count show-backup-seed?
-      keycard-key-uid)
+      keycard-key-uid notifications-enabled?)
      list-ref
      scroll-y]))
 

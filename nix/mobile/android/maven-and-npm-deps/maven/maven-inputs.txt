@@ -61,6 +61,7 @@ https://dl.google.com/dl/android/maven2/com/android/databinding/baseLibrary/3.3.
 https://dl.google.com/dl/android/maven2/com/android/databinding/baseLibrary/3.4.1/baseLibrary-3.4.1
 https://dl.google.com/dl/android/maven2/com/android/databinding/compilerCommon/3.0.1/compilerCommon-3.0.1
 https://dl.google.com/dl/android/maven2/com/android/support/appcompat-v7/28.0.0/appcompat-v7-28.0.0
+https://dl.google.com/dl/android/maven2/com/android/support/support-compat/28.0.0/support-compat-28.0.0
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/crash/26.2.1/crash-26.2.1
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/crash/26.3.1/crash-26.3.1
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/crash/26.4.1/crash-26.4.1

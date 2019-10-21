@@ -30,6 +30,12 @@
                               config
                               #(callback (types/json->clj %))))
 
+(defn enable-notifications []
+  (.enableNotifications (status)))
+
+(defn disable-notifications []
+  (.disableNotifications (status)))
+
 (defn save-account-and-login
   "NOTE: beware, the password has to be sha3 hashed"
   [multiaccount-data hashed-password config accounts-data]

@@ -12,6 +12,7 @@
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
+            [status-im.notifications.core :as notifications]
             [status-im.protocol.core :as protocol]
             [status-im.stickers.core :as stickers]
             [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
@@ -122,11 +123,12 @@
        (when (not= network-id fetched-network-id)
          ;;TODO: this shouldn't happen but in case it does
          ;;we probably want a better error message
-         (utils/show-popup (i18n/label :t/ethereum-node-started-incorrectly-title)
-                           (i18n/label :t/ethereum-node-started-incorrectly-description
-                                       {:network-id         network-id
-                                        :fetched-network-id fetched-network-id})
-                           #(re-frame/dispatch [::close-app-confirmed]))))}]})
+         (utils/show-popup
+          (i18n/label :t/ethereum-node-started-incorrectly-title)
+          (i18n/label :t/ethereum-node-started-incorrectly-description
+                      {:network-id         network-id
+                       :fetched-network-id fetched-network-id})
+          #(re-frame/dispatch [::close-app-confirmed]))))}]})
 
 (defn deserialize-config
   [{:keys [multiaccount current-network networks]}]
@@ -144,14 +146,18 @@
 (fx/defn get-config-callback
   {:events [::get-config-callback]}
   [{:keys [db] :as cofx} config]
-  (let [[{:keys [address] :as multiaccount} current-network networks] (deserialize-config config)
+  (let [[{:keys [address notifications-enabled?] :as multiaccount}
+         current-network networks] (deserialize-config config)
         network-id (str (get-in networks [current-network :config :NetworkId]))]
     (fx/merge cofx
-              {:db (assoc db
-                          :networks/current-network current-network
-                          :networks/networks networks
-                          :multiaccount (convert-multiaccount-addresses
-                                         multiaccount))}
+              (cond-> {:db (assoc db
+                                  :networks/current-network current-network
+                                  :networks/networks networks
+                                  :multiaccount (convert-multiaccount-addresses
+                                                 multiaccount))}
+                (and platform/android?
+                     notifications-enabled?)
+                (assoc ::notifications/enable nil))
               ;; NOTE: initializing mailserver depends on user mailserver
               ;; preference which is why we wait for config callback
               (protocol/initialize-protocol {:default-mailserver true})
@@ -169,9 +175,15 @@
   [{:keys [db] :as cofx} address password save-password?]
   (let [auth-method     (:auth-method db)
         new-auth-method (if save-password?
-                          (when-not (or (= "biometric" auth-method) (= "password" auth-method))
-                            (if (= auth-method "biometric-prepare") "biometric" "password"))
-                          (when (and auth-method (not= auth-method "none")) "none"))]
+                          (when-not (or (= "biometric" auth-method)
+                                        (= "password" auth-method))
+                            (if (= auth-method "biometric-prepare")
+                              "biometric"
+                              "password"))
+                          (when (and auth-method
+                                     (not= auth-method
+                                           "none"))
+                            "none"))]
     (fx/merge cofx
               {:db (assoc db :chats/loading? true)
                ::json-rpc/call
