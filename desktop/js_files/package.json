@@ -59,7 +59,7 @@
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status"
   },
   "optionalDependencies": {
-    "appdmg": "^0.5.2"
+    "appdmg": "^0.6.0"
   },
   "desktopExternalModules": [
     "node_modules/react-native-languages/desktop",
