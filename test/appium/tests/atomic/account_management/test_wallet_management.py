@@ -89,7 +89,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         public_chat = home_view.join_public_chat('testchat')
         public_chat.chat_message_input.paste_text_from_clipboard()
         if public_chat.chat_message_input.text != transaction_hash:
-            pytest.fail('Transaction hash was not copied')
+            self.driver.fail('Transaction hash was not copied')
 
     @marks.testrail_id(5341)
     @marks.critical
@@ -115,16 +115,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in.create_user()
         wallet = sign_in.wallet_button.click()
         wallet.set_up_wallet()
-        # if wallet.backup_recovery_phrase.is_element_present():
-        #     pytest.fail("'Backup your Recovery phrase' option is shown on Wallet for an account with no funds")
-        # wallet.receive_transaction_button.click()
-        # address = wallet.address_text.text[2:]
-        # wallet.get_back_to_home_view()
-        # home = wallet.home_button.click()
-        # self.network_api.get_donate(address)
-        # home.wallet_button.click()
         if not wallet.backup_recovery_phrase_warning_text.is_element_present():
-            pytest.fail("'Back up your seed phrase' warning is not shown on Wallet")
+            self.driver.fail("'Back up your seed phrase' warning is not shown on Wallet")
         wallet.multiaccount_more_options.click_until_presence_of_element(wallet.backup_recovery_phrase)
         wallet.backup_recovery_phrase.click()
         profile = wallet.get_profile_view()
@@ -145,7 +137,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         send_transaction = wallet.send_transaction_button.click()
         send_transaction.select_asset_button.click()
         if send_transaction.asset_by_name(asset_name).is_element_displayed():
-            pytest.fail('Collectibles can be sent from wallet')
+            self.driver.fail('Collectibles can be sent from wallet')
 
     @marks.testrail_id(5467)
     @marks.medium
@@ -168,6 +160,7 @@ class TestWalletManagement(SingleDeviceTestCase):
     @marks.testrail_id(5435)
     @marks.medium
     @marks.skip
+    # TODO: e2e blocker: 9225 (should be updated and enabled)
     def test_filter_transactions_history(self):
         user = wallet_users['C']
         sign_in_view = SignInView(self.driver)
@@ -184,7 +177,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             details = transaction_history.transactions_table.transaction_by_index(i).click()
             if details.get_recipient_address() != '0x' + user['address'] \
                     or details.element_by_text('Failed').is_element_displayed():
-                pytest.fail('Incoming transactions are not filtered')
+                self.driver.fail('Incoming transactions are not filtered')
             details.back_button.click()
 
         transaction_history.filters_button.click()
@@ -195,7 +188,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             details = transaction_history.transactions_table.transaction_by_index(i).click()
             if details.get_sender_address() != '0x' + user['address'] \
                     or details.element_by_text('Failed').is_element_displayed():
-                pytest.fail('Outgoing transactions are not filtered')
+                self.driver.fail('Outgoing transactions are not filtered')
             details.back_button.click()
 
         transaction_history.filters_button.click()
@@ -205,7 +198,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         for i in range(transaction_history.transactions_table.get_transactions_number()):
             details = transaction_history.transactions_table.transaction_by_index(i).click()
             if not details.element_by_text('Failed').is_element_displayed():
-                pytest.fail('Failed transactions are not filtered')
+                self.driver.fail('Failed transactions are not filtered')
             details.back_button.click()
         self.verify_no_errors()
 

@@ -29,7 +29,7 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view.find_text_part('Unable to load page')
         browsing_view.cross_icon.click()
         if home_view.element_by_text('Browser').is_element_displayed():
-            pytest.fail('Browser entity is shown for an invalid link')
+            self.driver.fail('Browser entity is shown for an invalid link')
 
     @marks.testrail_id(6210)
     @marks.high
@@ -99,6 +99,7 @@ class TestBrowsing(SingleDeviceTestCase):
     @marks.testrail_id(5321)
     @marks.skip
     @marks.critical
+    # TODO: update to use some static website
     def test_back_forward_buttons_browsing_website(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()

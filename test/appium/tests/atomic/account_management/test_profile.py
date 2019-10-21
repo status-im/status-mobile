@@ -232,7 +232,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             profile_view.swipe_down()
             if not profile_view.profile_picture.is_element_image_equals_template(
                     file_name.replace('.png', '_profile.png')):
-                pytest.fail('Profile picture was not updated')
+                self.driver.fail('Profile picture was not updated')
 
     @marks.testrail_id(5329)
     @marks.critical
@@ -342,7 +342,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view = sign_in_view.profile_button.click()
         profile_view.advanced_button.click()
         if 'release' in str(pytest.config.getoption('apk')):
-            # should be edited after showing some text in setting when log in disabled
+            # TODO: should be edited after showing some text in setting when log in disabled
             if profile_view.log_level_setting.is_element_displayed():
                 self.errors.append('Log is not disabled')
             if not profile_view.element_by_text('eth.beta').is_element_displayed():
@@ -485,6 +485,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5432)
     @marks.medium
+    @marks.skip
+    # TODO: e2e blocker: no force-logout after enabling bootnode (enable after fix)
     def test_custom_bootnodes(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -531,10 +533,13 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user()
         public_key = home_2.get_public_key()
+        home_2.get_back_to_home_view()
 
         profile_1 = home_1.profile_button.click()
         username_1 = profile_1.default_username_text.text
-        profile_1.advanced_button.click()
+
+        profile_1.just_fyi('add custom mailserver and connect to it')
+        profile_1.sync_settings_button.click()
         profile_1.mail_server_button.click()
         profile_1.plus_button.click()
         server_name = 'test'
@@ -548,6 +553,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.get_back_to_home_view()
         profile_1.home_button.click()
 
+        profile_1.just_fyi('start chat with user2 and check that all messages are delivered')
         chat_1 = home_1.add_contact(public_key)
         message = 'test message'
         chat_1.chat_message_input.send_keys(message)
@@ -641,7 +647,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         group_chat_name = 'group-%s' % device_1_home.get_public_chat_name()
         message_after_sync = 'sent after sync'
 
-        # device 1: join public chat, create group chat, edit user picture
+        device_1.just_fyi('join public chat, create group chat, edit user picture')
         device_1_public_chat = device_1_home.join_public_chat(public_chat_before_sync_name)
         device_1_public_chat.back_button.click()
         device_1_one_to_one = device_1_home.add_contact(basic_user['public_key'])
@@ -652,18 +658,18 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_profile = device_1_home.get_profile_view()
         device_1_profile.edit_profile_picture('sauce_logo.png')
 
-        # device 2: go to profile > Devices, set device name, discover device 2 to device 1
+        device_2.just_fyi('go to profile > Devices, set device name, discover device 2 to device 1')
         device_2_home = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
         device_2_profile = device_2_home.get_profile_view()
         device_2_profile.discover_and_advertise_device(device_2_name)
 
-        # device 1: enable pairing of `device 2` and sync
+        device_1.just_fyi('enable pairing of `device 2` and sync')
         device_1_profile.discover_and_advertise_device(device_1_name)
         device_1_profile.get_toggle_device_by_name(device_2_name).click()
         device_1_profile.sync_all_button.click()
         device_1_profile.sync_all_button.wait_for_visibility_of_element(15)
 
-        # device 2: check that public chat and profile details are updated
+        device_2.just_fyi('check that public chat and profile details are updated')
         device_2_home = device_2_profile.get_back_to_home_view()
         if not device_2_home.element_by_text('#%s' % public_chat_before_sync_name).is_element_displayed():
             self.errors.append('Public chat "%s" doesn\'t appear after initial sync'
@@ -673,7 +679,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if not device_2_profile.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
             self.errors.append('Profile picture was not updated after initial sync')
 
-        # device 1: send message to group chat, edit profile details and join to new public chat
+        device_1.just_fyi('send message to group chat, edit profile details and join to new public chat')
         device_1_home = device_1_profile.get_back_to_home_view()
         device_1_public_chat = device_1_home.join_public_chat(public_chat_after_sync_name)
         device_1_public_chat.back_button.click()
@@ -684,7 +690,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_profile = device_1_home.profile_button.click()
         device_1_profile.edit_profile_picture('sauce_logo_red.png')
 
-        # device 2: check that message in group chat is shown, profile details and public chats are synced
+        device_2.just_fyi('check that message in group chat is shown, profile details and public chats are synced')
         device_2_profile.home_button.click()
         if not device_2_home.element_by_text('#%s' % public_chat_after_sync_name).is_element_displayed():
             self.errors.append('Public chat "%s" doesn\'t appear on other device when devices are paired'

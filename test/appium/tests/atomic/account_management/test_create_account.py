@@ -15,6 +15,8 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.critical
     @marks.battery_consumption
     @marks.skip
+    # skipped because it is a part of other tests
+    # obsolate
     def test_create_account(self):
         sign_in = SignInView(self.driver, skip_popups=False)
         sign_in.accept_agreements()
@@ -53,7 +55,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.next_button.click()
 
         if sign_in.get_public_key() == public_key:
-            pytest.fail('New account was not created')
+            self.driver.fail('New account was not created')
 
     @marks.testrail_id(5379)
     @marks.high

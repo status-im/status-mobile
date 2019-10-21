@@ -64,6 +64,17 @@ class SelectAccountRadioButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='%s']/../../android.view.ViewGroup/android.view.ViewGroup[2]" % account_name)
 
 
+class AlwaysAllowRadioButton(BaseButton):
+    def __init__(self, driver):
+        super(AlwaysAllowRadioButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Always allow']/../android.view.ViewGroup")
+
+
+class CrossCloseWeb3PermissionButton(BaseButton):
+    def __init__(self, driver):
+        super(CrossCloseWeb3PermissionButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            '//*[contains(@text,"ÐApps can access")]/../android.view.ViewGroup[1]/android.view.ViewGroup')
 
 class DappsView(BaseView):
 
@@ -85,6 +96,9 @@ class DappsView(BaseView):
         self.select_account_button = SelectAccountButton(self.driver)
         self.select_account_radio_button = SelectAccountRadioButton(self.driver,
                                                                     account_name='Status account')
+        #permissions window
+        self.always_allow_radio_button = AlwaysAllowRadioButton(self.driver)
+        self.close_web3_permissions_window_button = CrossCloseWeb3PermissionButton(self.driver)
 
 
     def open_url(self, url):

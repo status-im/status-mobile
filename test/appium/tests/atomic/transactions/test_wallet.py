@@ -14,7 +14,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.testrail_id(5307)
     @marks.critical
     @marks.skip
-    # temporary skipped due to 8601
+    # TODO: temporary skipped due to 8601
     def test_send_eth_from_wallet_to_contact(self):
         recipient = basic_user
         sender = transaction_senders['N']
@@ -320,7 +320,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         eth_value = wallet_view.get_eth_value()
         stt_value = wallet_view.get_stt_value()
         if eth_value == 0 or stt_value == 0:
-            pytest.fail('No funds!')
+            self.driver.fail('No funds!')
         wallet_view.accounts_status_account.click()
         send_transaction = wallet_view.send_transaction_button.click()
         send_transaction.amount_edit_box.set_value(round(eth_value + 1))
@@ -526,6 +526,7 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
     @marks.testrail_id(5378)
     @marks.skip
     @marks.high
+    # TODO: temporary skipped due to 8601
     def test_transaction_message_sending_from_wallet(self):
         recipient = transaction_recipients['E']
         sender = transaction_senders['V']

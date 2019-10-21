@@ -21,11 +21,11 @@ class TestChatManagement(SingleDeviceTestCase):
             chat_view.send_message_button.click()
         chat_view.clear_history()
         if not chat_view.no_messages_in_chat.is_element_present():
-            pytest.fail('Message history is shown')
+            self.driver.fail('Message history is shown')
         home_view.relogin()
         home_view.get_chat_with_user(basic_user['username']).click()
         if not chat_view.no_messages_in_chat.is_element_present():
-            pytest.fail('Message history is shown after re-login')
+            self.driver.fail('Message history is shown after re-login')
 
     @marks.testrail_id(5319)
     @marks.critical
@@ -42,7 +42,7 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in.accept_agreements()
         sign_in.sign_in()
         if home.get_chat_with_user(basic_user['username']).is_element_displayed():
-            pytest.fail('Deleted 1-1 chat is present after relaunch app')
+            self.driver.fail('Deleted 1-1 chat is present after relaunch app')
 
     @marks.testrail_id(5343)
     @marks.critical
@@ -84,11 +84,11 @@ class TestChatManagement(SingleDeviceTestCase):
         contacts_view = home.start_new_chat_button.click()
         contacts_view.public_key_edit_box.paste_text_from_clipboard()
         if contacts_view.public_key_edit_box.text != public_key:
-            pytest.fail('Public key is not pasted from clipboard')
+            self.driver.fail('Public key is not pasted from clipboard')
         contacts_view.confirm()
         contacts_view.get_back_to_home_view()
         if not home.get_chat_with_user(basic_user['username']).is_element_present():
-            pytest.fail("No chat open in home view")
+            self.driver.fail("No chat open in home view")
 
     @marks.testrail_id(5387)
     @marks.high
@@ -135,7 +135,7 @@ class TestChatManagement(SingleDeviceTestCase):
         contacts_view.confirm()
         warning_text = contacts_view.element_by_text('Please enter or scan a valid chat key or username')
         if not warning_text.is_element_displayed():
-            pytest.fail('Error is not shown for invalid public key')
+            self.driver.fail('Error is not shown for invalid public key')
 
     @marks.testrail_id(5466)
     @marks.medium
@@ -217,7 +217,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
                         chat_1.element_by_text(username, 'text'),
                         chat_1.add_to_contacts,
                         chat_1.profile_send_message,
-                        # temporary skipped due to 8601
+                        # TODO: temporary skipped due to 8601
                         # chat_1.profile_send_transaction,
                         chat_1.profile_address_text]:
             if not element.scroll_to_element():
