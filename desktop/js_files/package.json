@@ -9,7 +9,7 @@
   "dependencies": {
     "assert": "^1.4.1",
     "bignumber.js": "git+https://github.com/status-im/bignumber.js.git#v4.0.2-status",
-    "buffer": "^3.6.0",
+    "buffer": "^5.4.3",
     "chance": "^1.0.12",
     "create-react-class": "^15.6.2",
     "emojilib": "^2.2.9",
