@@ -236,6 +236,11 @@ class SendTransactionButton(BaseButton):
         from views.send_transaction_view import SendTransactionView
         return SendTransactionView(self.driver)
 
+    def click(self):
+        self.find_element().click()
+        self.driver.info('Tap on %s' % self.name)
+        return self.navigate()
+
 
 class ReceiveTransactionButton(BaseButton):
 

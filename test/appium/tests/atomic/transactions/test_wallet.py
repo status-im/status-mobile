@@ -368,7 +368,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_with_password.click_until_presence_of_element(send_transaction.enter_password_input)
         send_transaction.enter_password_input.send_keys(common_password)
         send_transaction.sign_button.click()
-        send_transaction.element_by_text('intrinsic gas too low', 'text').wait_for_visibility_of_element(20)
+        send_transaction.element_by_text('intrinsic gas too low', 'text').wait_for_visibility_of_element(40)
         send_transaction.ok_button.click()
 
         send_transaction.sign_transaction_button.click()
@@ -425,6 +425,28 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.set_currency(user_currency)
         if not wallet_view.find_text_part('EUR'):
             self.driver.fail('EUR currency is not displayed')
+
+    @marks.testrail_id(5407)
+    @marks.medium
+    def test_cant_send_transaction_in_offline_mode(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        wallet_view.accounts_status_account.click()
+        send_transaction = wallet_view.send_transaction_button.click()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.accounts_button.click()
+        send_transaction.element_by_text("Status account").click()
+        send_transaction.amount_edit_box.click()
+        send_transaction.amount_edit_box.set_value("0")
+        send_transaction.confirm()
+        send_transaction.sign_transaction_button.click()
+        send_transaction.cancel_button.click()
+        send_transaction.toggle_airplane_mode()
+        send_transaction.sign_transaction_button.click()
+        if send_transaction.sign_with_password.is_element_displayed():
+            self.driver.fail("Sign transaction button is active in offline mode")
 
     @marks.testrail_id(6225)
     @marks.high
