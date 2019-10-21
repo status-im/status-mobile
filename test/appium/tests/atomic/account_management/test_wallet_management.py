@@ -109,16 +109,20 @@ class TestWalletManagement(SingleDeviceTestCase):
         self.verify_no_errors()
 
     @marks.testrail_id(5358)
-    @marks.critical
+    @marks.medium
     def test_backup_recovery_phrase_warning_from_wallet(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
         wallet = sign_in.wallet_button.click()
         wallet.set_up_wallet()
-        if not wallet.backup_recovery_phrase_warning_text.is_element_present():
-            self.driver.fail("'Back up your seed phrase' warning is not shown on Wallet")
-        wallet.multiaccount_more_options.click_until_presence_of_element(wallet.backup_recovery_phrase)
-        wallet.backup_recovery_phrase.click()
+        if wallet.backup_recovery_phrase_warning_text.is_element_present():
+            self.driver.fail("'Back up your seed phrase' warning is shown on Wallet while no funds are present")
+        address = wallet.get_wallet_address()
+        self.network_api.get_donate(address[2:])
+        wallet.back_button.click()
+        if not wallet.backup_recovery_phrase_warning_text.is_element_present(30):
+            self.driver.fail("'Back up your seed phrase' warning is not shown on Wallet with funds")
+        wallet.backup_recovery_phrase_warning_text.click()
         profile = wallet.get_profile_view()
         profile.backup_recovery_phrase()
 

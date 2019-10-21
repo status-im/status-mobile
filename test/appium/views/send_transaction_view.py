@@ -157,6 +157,14 @@ class UpdateFeeButton(BaseButton):
         super(UpdateFeeButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Update']")
 
+    def click(self):
+        for _ in range(3):
+            self.driver.info('Tap on %s' % self.name)
+            self.find_element().click()
+            self.driver.info('Wait for no %s' % self.name)
+            if not self.is_element_displayed(1):
+                return self.navigate()
+
 
 class ShareButton(BaseButton):
 
