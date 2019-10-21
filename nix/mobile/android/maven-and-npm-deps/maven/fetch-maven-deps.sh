@@ -92,12 +92,12 @@ function runGradleDepsCommand() {
   echo "# $1"
 
   # Run the gradle command and:
-  # - remove lines that end with (*) or (n)
+  # - remove lines that end with (*) or (n) but don't start with (+)
   # - keep only lines that start with \--- or +---
   # - remove lines that refer to a project
   # - extract the package name and version, ignoring version range indications, such as in `com.google.android.gms:play-services-ads:[15.0.1,16.0.0) -> 15.0.1`
   gradle $1 $gradle_opts \
-    | grep --invert-match -E ".+ \([\*n]\)$" \
+    | grep --invert-match -E "^[^+].+ \([\*n]\)$" \
     | grep -e "[\\\+]---" \
     | grep --invert-match -e "--- project :" \
     | sed -E "s;.*[\\\+]--- ([^ ]+:)(.+ -> )?([^ ]+).*$;\1\3;"
