@@ -11,6 +11,7 @@
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
+            [status-im.node.core :as node]
             [status-im.protocol.core :as protocol]
             [status-im.stickers.core :as stickers]
             [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
@@ -34,7 +35,7 @@
 (def contract-fleet? #{:eth.contract})
 
 (defn fetch-nodes [current-fleet resolve reject]
-  (let [default-nodes (-> (fleet/fleets {})
+  (let [default-nodes (-> (node/fleets {})
                           (get-in [:eth.beta :mail])
                           vals)]
     (if config/contract-nodes-enabled?

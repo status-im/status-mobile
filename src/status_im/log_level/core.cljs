@@ -13,9 +13,9 @@
                         (assoc settings :log-level log-level)
                         (dissoc settings :log-level))]
     (fx/merge cofx
-              (multiaccounts.update/update-settings new-settings
-                                                    {})
-              (node/prepare-new-config {:on-success #(when (not= (node/get-log-level settings) (node/get-log-level new-settings))
+              (multiaccounts.update/update-settings new-settings {})
+              (node/prepare-new-config {:on-success #(when (not= (node/get-log-level settings)
+                                                                 (node/get-log-level new-settings))
                                                        (re-frame/dispatch [:logout]))}))))
 
 (fx/defn show-change-log-level-confirmation

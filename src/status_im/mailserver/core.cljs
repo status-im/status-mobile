@@ -4,7 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.data-store.mailservers :as data-store.mailservers]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.fleet.core :as fleet]
+            [status-im.node.core :as node]
             [status-im.i18n :as i18n]
             [status-im.mailserver.constants :as constants]
             [status-im.mailserver.topics :as mailserver.topics]
@@ -44,13 +44,13 @@
   (= (:mailserver/current-id db) id))
 
 (defn fetch [{:keys [db] :as cofx} id]
-  (get-in db [:mailserver/mailservers (fleet/current-fleet db) id]))
+  (get-in db [:mailserver/mailservers (node/current-fleet-key db) id]))
 
 (defn fetch-current [{:keys [db] :as cofx}]
   (fetch cofx (:mailserver/current-id db)))
 
 (defn preferred-mailserver-id [{:keys [db] :as cofx}]
-  (get-in db [:multiaccount :settings :mailserver (fleet/current-fleet db)]))
+  (get-in db [:multiaccount :settings :mailserver (node/current-fleet-key db)]))
 
 (defn- round-robin
   "Find the choice and pick the next one, default to first if not found"
@@ -71,7 +71,7 @@
   "Use the preferred mailserver if set & exists, otherwise picks one randomly
   if current-id is not set, else round-robin"
   [{:keys [db] :as cofx}]
-  (let [current-fleet (fleet/current-fleet db)
+  (let [current-fleet (node/current-fleet-key db)
         current-id    (:mailserver/current-id db)
         preference    (preferred-mailserver-id cofx)
         choices       (-> db :mailserver/mailservers current-fleet keys)]
@@ -162,7 +162,7 @@
 
 (fx/defn generate-mailserver-symkey
   [{:keys [db] :as cofx} {:keys [password id] :as mailserver}]
-  (let [current-fleet (fleet/current-fleet db)]
+  (let [current-fleet (node/current-fleet-key db)]
     {:db (assoc-in db [:mailserver/mailservers current-fleet id :generating-sym-key?] true)
      :shh/generate-sym-key-from-password
      [{:password    password
@@ -414,7 +414,7 @@
   add sym-key to the mailserver in app-db and request messages if
   mailserver is ready"
   [{:keys [db] :as cofx} {:keys [id]} sym-key-id]
-  (let [current-fleet (fleet/current-fleet db)]
+  (let [current-fleet (node/current-fleet-key db)]
     (fx/merge cofx
               {:db (-> db
                        (assoc-in [:mailserver/mailservers current-fleet id :sym-key-id] sym-key-id)
@@ -427,7 +427,7 @@
   [{:keys [db] :as cofx}]
   (when-not (zero? (:peers-count db))
     (if-let [preferred-mailserver (preferred-mailserver-id cofx)]
-      (let [current-fleet (fleet/current-fleet db)]
+      (let [current-fleet (node/current-fleet-key db)]
         {:db
          (update-mailserver-state db :error)
          :ui/show-confirmation
@@ -976,7 +976,7 @@
   [{{:mailserver.edit/keys [mailserver] :keys [multiaccount] :as db} :db
     random-id-generator :random-id-generator :as cofx}]
   (let [{:keys [name url id]} mailserver
-        current-fleet         (fleet/current-fleet db)
+        current-fleet         (node/current-fleet-key db)
         mailserver            (build
                                (or (:value id)
                                    (keyword (string/replace (random-id-generator) "-" "")))
@@ -1008,7 +1008,7 @@
   [{:keys [db] :as cofx} id]
   (if (can-delete? cofx id)
     {:db (update-in db
-                    [:mailserver/mailservers (fleet/current-fleet db)]
+                    [:mailserver/mailservers (node/current-fleet-key db)]
                     dissoc id)
      ::json-rpc/call
      [{:method "mailservers_deleteMailserver"
@@ -1020,7 +1020,7 @@
 
 (fx/defn show-connection-confirmation
   [{:keys [db]} mailserver-id]
-  (let [current-fleet (fleet/current-fleet db)]
+  (let [current-fleet (node/current-fleet-key db)]
     {:ui/show-confirmation
      {:title               (i18n/label :t/close-app-title)
       :content             (i18n/label :t/connect-mailserver-content
@@ -1058,7 +1058,7 @@
 
 (fx/defn unpin
   [{:keys [db] :as cofx}]
-  (let [current-fleet (fleet/current-fleet db)
+  (let [current-fleet (node/current-fleet-key db)
         settings (get-in db [:multiaccount :settings])]
     (fx/merge cofx
               (multiaccounts.update/update-settings (update settings :mailserver dissoc current-fleet)
@@ -1067,7 +1067,7 @@
 
 (fx/defn pin
   [{:keys [db] :as cofx}]
-  (let [current-fleet (fleet/current-fleet db)
+  (let [current-fleet (node/current-fleet-key db)
         mailserver-id (:mailserver/current-id db)
         settings (get-in db [:multiaccount :settings])]
     (fx/merge cofx

@@ -2,12 +2,12 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.fleet.core :as fleet]
             [status-im.native-module.core :as status]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as utils.platform]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types])
+  (:require-macros [status-im.utils.slurp :refer [slurp]]))
 
 (defn- add-custom-bootnodes [config network all-bootnodes]
   (let [bootnodes (as-> all-bootnodes $
@@ -28,7 +28,8 @@
            :LogEnabled true)))
 
 (defn get-network-genesis-hash-prefix
-  "returns the hex representation of the first 8 bytes of a network's genesis hash"
+  "returns the hex representation of the first 8 bytes of
+  a network's genesis hash"
   [network]
   (case network
     1 "d4e56740f876aef8"
@@ -74,13 +75,30 @@
       (if utils.platform/desktop? ""
           config/log-level-status-go)))
 
+(def default-fleets (slurp "resources/config/fleets.json"))
+
+(defn fleets [{:keys [custom-fleets]}]
+  (as-> [(default-fleets)] $
+    (mapv #(:fleets (types/json->clj %)) $)
+    (conj $ custom-fleets)
+    (reduce merge $)))
+
+(defn current-fleet-key [db]
+  (keyword (get-in db [:multiaccount :settings :fleet]
+                   config/fleet)))
+
+(defn get-current-fleet
+  [db]
+  (get (fleets db)
+       (current-fleet-key db)))
+
 (defn- get-multiaccount-node-config
   [{:keys [multiaccount :networks/networks :networks/current-network]
     :or {current-network config/default-network
          networks constants/default-networks}
     :as db}]
-  (let [current-fleet-key (fleet/current-fleet db)
-        current-fleet (get (fleet/fleets db) current-fleet-key)
+  (let [current-fleet-key (current-fleet-key db)
+        current-fleet (get-current-fleet db)
         rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
         {:keys [installation-id settings bootnodes]
          :or {settings constants/default-multiaccount-settings}} multiaccount
@@ -98,9 +116,14 @@
              :Rendezvous    (not (empty? rendezvous-nodes))
              :ClusterConfig {:Enabled true
                              :Fleet              (name current-fleet-key)
-                             :BootNodes          (pick-nodes 4 (vals (:boot current-fleet)))
-                             :TrustedMailServers (pick-nodes 6 (vals (:mail current-fleet)))
-                             :StaticNodes        (into (pick-nodes 2 (vals (:whisper current-fleet))) (vals (:static current-fleet)))
+                             :BootNodes
+                             (pick-nodes 4 (vals (:boot current-fleet)))
+                             :TrustedMailServers
+                             (pick-nodes 6 (vals (:mail current-fleet)))
+                             :StaticNodes
+                             (into (pick-nodes 2
+                                               (vals (:whisper current-fleet)))
+                                   (vals (:static current-fleet)))
                              :RendezvousNodes    rendezvous-nodes})
 
       :always
@@ -112,15 +135,16 @@
                                        :LightClient true
                                        :MinimumPoW 0.001
                                        :EnableNTPSync true}
-             :ShhextConfig        {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
-                                   :InstallationID             installation-id
-                                   :MaxMessageDeliveryAttempts config/max-message-delivery-attempts
-                                   :MailServerConfirmations    config/mailserver-confirmations-enabled?
-                                   :DataSyncEnabled (boolean datasync?)
-                                   :DisableGenericDiscoveryTopic (boolean disable-discovery-topic?)
-                                   :SendV1Messages (boolean v1-messages?)
-                                   :PFSEnabled              true}
-             :RequireTopics           (get-topics current-network)
+             :ShhextConfig
+             {:BackupDisabledDataDir (utils.platform/no-backup-directory)
+              :InstallationID installation-id
+              :MaxMessageDeliveryAttempts config/max-message-delivery-attempts
+              :MailServerConfirmations  config/mailserver-confirmations-enabled?
+              :DataSyncEnabled (boolean datasync?)
+              :DisableGenericDiscoveryTopic (boolean disable-discovery-topic?)
+              :SendV1Messages (boolean v1-messages?)
+              :PFSEnabled true}
+             :RequireTopics (get-topics current-network)
              :StatusAccountsConfig {:Enabled true})
 
       (and
@@ -138,8 +162,9 @@
 (fx/defn save-new-config
   "Saves a new status-go config for the current account
    This RPC method is the only way to change the node config of an account.
-   NOTE: it is better used indirectly through `prepare-new-config`, which will take
-   care of building up the proper config based on settings in app-db"
+   NOTE: it is better used indirectly through `prepare-new-config`,
+    which will take care of building up the proper config based on settings in
+app-db"
   {:events [::save-new-config]}
   [{:keys [db]} config {:keys [on-success]}]
   {::json-rpc/call [{:method "settings_saveNodeConfig"
@@ -150,7 +175,8 @@
   "Use this function to apply settings to the current account node config"
   [{:keys [db]} {:keys [on-success]}]
   {::prepare-new-config [(get-new-config db)
-                         #(re-frame/dispatch [::save-new-config % {:on-success on-success}])]})
+                         #(re-frame/dispatch
+                           [::save-new-config % {:on-success on-success}])]})
 
 (re-frame/reg-fx
  ::prepare-new-config

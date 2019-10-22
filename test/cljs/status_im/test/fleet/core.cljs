@@ -1,7 +1,8 @@
 (ns status-im.test.fleet.core
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.constants :as constants]
-            [status-im.fleet.core :as fleet]))
+            [status-im.fleet.core :as fleet]
+            [status-im.node.core :as node]))
 
 (deftest fleets-test
   (testing "not passing any extra fleet"
@@ -12,17 +13,17 @@
              :eth.test
              :eth.contract}
            (into #{}
-                 (keys (fleet/fleets {})))))))
+                 (keys (node/fleets {})))))))
   (testing "passing a custom fleet"
     (testing "it sets the custom fleet"
       (is (= {:mail {"a" "a"}
               :whisper {"w" "w"}
               :boot {"b" "b"}}
              (:custom-fleet
-              (fleet/fleets {:custom-fleets {:custom-fleet
-                                             {:mail {"a" "a"}
-                                              :whisper {"w" "w"}
-                                              :boot {"b" "b"}}}})))))))
+              (node/fleets {:custom-fleets {:custom-fleet
+                                            {:mail {"a" "a"}
+                                             :whisper {"w" "w"}
+                                             :boot {"b" "b"}}}})))))))
 
 (deftest set-nodes-test
   (testing "set-nodes"
@@ -47,4 +48,3 @@
                     :password constants/mailserver-password
                     :address "c"}}
                actual-mailservers))))))
-

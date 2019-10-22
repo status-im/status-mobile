@@ -7,7 +7,7 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.fleet-settings.styles :as styles]
-            [status-im.fleet.core :as fleet-core]
+            [status-im.node.core :as node]
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -35,7 +35,7 @@
           fleet]]]])))
 
 (defn fleets [custom-fleets]
-  (map name (keys (fleet-core/fleets {:custom-fleets custom-fleets}))))
+  (map name (keys (node/fleets {:custom-fleets custom-fleets}))))
 
 (views/defview fleet-settings []
   (views/letsubs [custom-fleets [:fleets/custom-fleets]
