@@ -28,24 +28,6 @@ let
     # Fixes Cgo related build failures (see https://github.com/NixOS/nixpkgs/issues/25959 )
     hardeningDisable = [ "fortify" ];
 
-    # gomobile doesn't seem to be able to pass -ldflags with multiple values correctly to go build, so we just patch files here  
-    patchPhase = ''
-      date=$(date -u '+%Y-%m-%d.%H:%M:%S')
-
-      substituteInPlace cmd/statusd/main.go --replace \
-        "buildStamp = \"N/A\"" \
-        "buildStamp = \"$date\""
-      substituteInPlace params/version.go --replace \
-        "var Version string" \
-        "var Version string = \"${version}\""
-      substituteInPlace params/version.go --replace \
-        "var GitCommit string" \
-        "var GitCommit string = \"${rev}\""
-      substituteInPlace vendor/github.com/ethereum/go-ethereum/metrics/metrics.go --replace \
-        "var EnabledStr = \"false\"" \
-        "var EnabledStr = \"true\""
-    '';
-
     # Ensure XCode is present, instead of failing at the end of the build
     preConfigure = lib.optionalString isDarwin utils.enforceXCodeAvailable;
 

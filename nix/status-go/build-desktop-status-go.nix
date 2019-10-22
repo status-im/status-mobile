@@ -14,19 +14,25 @@ let
     inherit buildGoPackage go xcodeWrapper utils;
   };
 
+  # Remove desktop-only arguments from args
   args = removeAttrs args' [
-    "goBuildFlags"
-    "goBuildLdFlags"
-    "outputFileName"
-    "hostSystem"
-  ]; # Remove desktop-only arguments from args
+    "goBuildFlags" "goBuildLdFlags" "outputFileName" "hostSystem"
+  ];
+
   buildStatusGoDesktopLib = buildStatusGo (args // {
     buildMessage = "Building desktop library";
     #GOOS=windows GOARCH=amd64 CGO_ENABLED=1 go build ${goBuildFlags} -buildmode=c-archive -o $out/${outputFileName} ./lib
-    buildPhase = ''
+    buildPhase =
+      let
+        CGO_LDFLAGS = stdenv.lib.concatStringsSep " " goBuildLdFlags;
+      in ''
       pushd "$NIX_BUILD_TOP/go/src/${goPackagePath}" >/dev/null
 
-      go build -o $out/${outputFileName} ${goBuildFlags} -buildmode=c-archive ${goBuildLdFlags} ./lib
+      go build -o $out/${outputFileName} \
+          ${goBuildFlags} \
+          -buildmode=c-archive \
+          -ldflags='${CGO_LDFLAGS}' \
+          ./lib
 
       popd >/dev/null
     '';

@@ -14,7 +14,11 @@ let
   targetConfig = config;
   buildStatusGo = callPackage ./build-status-go.nix { inherit buildGoPackage go xcodeWrapper utils; };
 
-  args = removeAttrs args' [ "config" "goBuildFlags" "goBuildLdFlags" ]; # Remove mobile-only arguments from args
+  # Remove mobile-only arguments from args
+  args = removeAttrs args' [
+    "config" "goBuildFlags" "goBuildLdFlags"
+  ];
+
   buildStatusGoMobileLib = buildStatusGo (args // {
     nativeBuildInputs = [ gomobile ] ++ optional (targetConfig.name == "android") openjdk;
 
@@ -23,17 +27,21 @@ let
     buildPhase =
       let
         NIX_GOWORKDIR = "$NIX_BUILD_TOP/go-build";
-      in ''
+        CGO_LDFLAGS = concatStringsSep " " goBuildLdFlags;
+      in with targetConfig; ''
       mkdir ${NIX_GOWORKDIR}
 
       GOPATH=${gomobile.dev}:$GOPATH \
       PATH=${makeBinPath [ gomobile.bin ]}:$PATH \
       NIX_GOWORKDIR=${NIX_GOWORKDIR} \
-      ${concatStringsSep " " targetConfig.envVars} \
-      gomobile bind ${goBuildFlags} -target=${targetConfig.name} ${concatStringsSep " " targetConfig.gomobileExtraFlags} \
-                    -o ${targetConfig.outputFileName} \
-                    ${goBuildLdFlags} \
-                    ${goPackagePath}/mobile
+      ${concatStringsSep " " envVars} \
+      gomobile bind \
+          -target=${name} \
+          -ldflags='${CGO_LDFLAGS}' \
+          ${concatStringsSep " " gomobileExtraFlags} \
+          ${goBuildFlags} \
+          -o ${outputFileName} \
+          ${goPackagePath}/mobile
 
       rm -rf ${NIX_GOWORKDIR}
     '';
