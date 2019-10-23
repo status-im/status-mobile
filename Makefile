@@ -29,7 +29,7 @@ HOST_OS := $(shell uname | tr '[:upper:]' '[:lower:]')
 
 # This can come from Jenkins
 ifndef BUILD_TAG
-export BUILD_TAG = $(shell git rev-parse --short HEAD)
+export BUILD_TAG := $(shell git rev-parse --short HEAD)
 endif
 
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
@@ -322,6 +322,7 @@ _unknown-startdev-target-%:
 	${MAKE} _list | grep "watch-" | sed s/watch-/startdev-/; \
 	exit 1
 
+_startdev-%: SHELL := /bin/sh
 _startdev-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
 	$(eval DEVICE := $(word 3, $(subst -, , $@)))
