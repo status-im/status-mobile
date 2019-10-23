@@ -191,6 +191,26 @@ class TestChatManagement(SingleDeviceTestCase):
         if not home.plus_button.is_element_displayed():
             self.driver.fail('Chats view was not opened')
 
+    @marks.testrail_id(6213)
+    @marks.medium
+    def test_unblocked_user_is_not_added_in_contacts(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        chat_view = home.add_contact(basic_user["public_key"], add_in_contacts=False)
+        chat_view.chat_options.click()
+        chat_view.view_profile_button.click()
+        chat_view.block_contact()
+        profile = sign_in.profile_button.click()
+        profile.contacts_button.click()
+        profile.blocked_users_button.click()
+        profile.element_by_text(basic_user["username"]).click()
+        chat_view.unblock_contact_button.click()
+        chat_view.back_button.click()
+        home.plus_button.click()
+        home.start_new_chat_button.click()
+        if home.element_by_text(basic_user["username"]).is_element_displayed():
+            self.driver.fail("Unblocked user not added previously in contact list added in contacts!")
+
 
 @marks.chat
 class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
@@ -257,8 +277,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_element = chat_public_1.chat_element_by_text(message_before_block_2)
         chat_element.find_element()
         chat_element.member_photo.click()
-        chat_public_1.profile_block_contact.click()
-        chat_public_1.block_button.click()
+        chat_public_1.block_contact()
 
         device_1.just_fyi('messages from blocked user are hidden in public chat and close app')
         if chat_public_1.chat_element_by_text(message_before_block_2).is_element_displayed():
@@ -323,8 +342,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.just_fyi('block user')
         chat_1.chat_options.click()
         chat_1.view_profile_button.click()
-        chat_1.profile_block_contact.click()
-        chat_1.block_button.click()
+        chat_1.block_contact()
 
         device_1.just_fyi('no 1-1, messages from blocked user are hidden in public chat')
         if home_1.get_chat_with_user(basic_user['username']).is_element_displayed():

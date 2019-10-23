@@ -162,7 +162,7 @@ class UpdateFeeButton(BaseButton):
             self.driver.info('Tap on %s' % self.name)
             self.find_element().click()
             self.driver.info('Wait for no %s' % self.name)
-            if not self.is_element_displayed(1):
+            if not self.is_element_displayed():
                 return self.navigate()
 
 

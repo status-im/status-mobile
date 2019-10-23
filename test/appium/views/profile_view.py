@@ -478,7 +478,13 @@ class SyncAllButton(BaseButton):
 class ContactsButton(BaseButton):
     def __init__(self, driver):
         super(ContactsButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Contacts')
+        self.locator = self.Locator.accessibility_id('contacts-button')
+
+
+class BlockedUsersButton(BaseButton):
+    def __init__(self, driver):
+        super(BlockedUsersButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('blocked-users-list-button')
 
 
 class DappPermissionsButton(BaseButton):
@@ -564,6 +570,7 @@ class ProfileView(BaseView):
         self.log_level_setting = LogLevelSetting(self.driver)
         self.debug_mode_toggle = DebugModeToggle(self.driver)
         self.contacts_button = ContactsButton(self.driver)
+        self.blocked_users_button = BlockedUsersButton(self.driver)
         self.dapp_permissions_button = DappPermissionsButton(self.driver)
         self.revoke_access_button = RevokeAccessButton(self.driver)
         self.privacy_and_security_button = PrivacyAndSecurityButton(self.driver)

@@ -122,10 +122,16 @@ class ClearButton(BaseButton):
         self.locator = self.Locator.xpath_selector('//*[@text="CLEAR"]')
 
 
-class BlockButton(BaseButton):
+class BlockContactButton(BaseButton):
     def __init__(self, driver):
-        super(BlockButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(//*[@text="Block this user"])[2]')
+        super(BlockContactButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('block-contact')
+
+
+class UnblockContactButton(BaseButton):
+    def __init__(self, driver):
+        super(UnblockContactButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('unblock-contact')
 
 
 class LeaveButton(BaseButton):
@@ -389,7 +395,8 @@ class ChatView(BaseView):
         self.delete_chat_button = DeleteChatButton(self.driver)
         self.clear_history_button = ClearHistoryButton(self.driver)
         self.clear_button = ClearButton(self.driver)
-        self.block_button = BlockButton(self.driver)
+        self.block_contact_button = BlockContactButton(self.driver)
+        self.unblock_contact_button = UnblockContactButton(self.driver)
 
         # Group chats
         self.group_info = GroupInfoButton(self.driver)
@@ -566,3 +573,7 @@ class ChatView(BaseView):
         element.scroll_to_element()
         element.click()
         element.wait_for_invisibility_of_element()
+
+    def block_contact(self):
+        self.profile_block_contact.click()
+        self.block_contact_button.click()
