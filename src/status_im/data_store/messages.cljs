@@ -5,6 +5,7 @@
             [clojure.string :as string]
             [taoensso.timbre :as log]
             [re-frame.core :as re-frame]
+            [status-im.utils.types :as utils.types]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.constants :as constants]
             [status-im.utils.core :as utils]))
@@ -12,7 +13,7 @@
 (defn prepare-content [content]
   (if (string? content)
     content
-    (pr-str content)))
+    (utils.types/clj->json content)))
 
 (defn ->rpc [message]
   (-> message

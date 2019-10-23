@@ -2,6 +2,7 @@
   (:require [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [status-im.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
+            [clojure.string :as string]
             [status-im.multiaccounts.login.core :as login]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.pairing.core :as pairing]
@@ -42,19 +43,23 @@
 
 (fx/defn process
   [cofx event-str]
-  (let [{:keys [type event]} (types/json->clj event-str)]
+  ;; We only convert to clojure when strictly necessary or we know it
+  ;; won't impact performance, as it is a fairly costly operation on large-ish
+  ;; data structures
+  (let [data (.parse js/JSON event-str)
+        event-js (.-event data)
+        type (.-type data)]
     (case type
-      "node.login"         (status-node-started cofx event)
-      "envelope.sent"      (transport.message/update-envelopes-status cofx (:ids event) :sent)
-      "envelope.expired"   (transport.message/update-envelopes-status cofx (:ids event) :not-sent)
-      "bundles.added"      (pairing/handle-bundles-added cofx event)
-      "mailserver.request.completed" (mailserver/handle-request-completed cofx event)
+      "node.login"         (status-node-started cofx (js->clj event-js :keywordize-keys true))
+      "envelope.sent"      (transport.message/update-envelopes-status cofx (:ids (js->clj event-js :keywordize-keys true)) :sent)
+      "envelope.expired"   (transport.message/update-envelopes-status cofx (:ids (js->clj event-js :keywordize-keys true)) :not-sent)
+      "mailserver.request.completed" (mailserver/handle-request-completed cofx (js->clj event-js :keywordize-keys true))
       "mailserver.request.expired"   (when (multiaccounts.model/logged-in? cofx)
-                                       (mailserver/resend-request cofx {:request-id (:hash event)}))
-      "discovery.summary"  (summary cofx event)
-      "subscriptions.data" (ethereum.subscriptions/handle-signal cofx event)
-      "subscriptions.error" (ethereum.subscriptions/handle-error cofx event)
-      "whisper.filter.added" (transport.filters/handle-negotiated-filter cofx event)
-      "messages.new" (transport.message/receive-messages cofx event)
-      "wallet" (ethereum.subscriptions/new-wallet-event cofx event)
-      (log/debug "Event " type " not handled" event))))
+                                       (mailserver/resend-request cofx {:request-id (.-hash event-js)}))
+      "discovery.summary"  (summary cofx (js->clj event-js :keywordize-keys true))
+      "subscriptions.data" (ethereum.subscriptions/handle-signal cofx (js->clj event-js :keywordize-keys true))
+      "subscriptions.error" (ethereum.subscriptions/handle-error cofx (js->clj event-js :keywordize-keys true))
+      "whisper.filter.added" (transport.filters/handle-negotiated-filter cofx (js->clj event-js :keywordize-keys true))
+      "messages.new" (transport.message/receive-messages cofx event-js)
+      "wallet" (ethereum.subscriptions/new-wallet-event cofx (js->clj event-js :keywordize-keys true))
+      (log/debug "Event " type " not handled"))))
