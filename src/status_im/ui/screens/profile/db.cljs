@@ -22,6 +22,7 @@
 (spec/def :profile/name correct-name?)
 (spec/def :profile/status (spec/nilable string?))
 (spec/def :profile/photo-path (spec/nilable base64-encoded-image-path?))
+(spec/def :profile/photo-added? (spec/nilable boolean?))
 
 (spec/def :my-profile/default-name (spec/nilable string?))
 (spec/def :my-profile/editing? (spec/nilable boolean?))

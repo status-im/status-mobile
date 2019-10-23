@@ -28,7 +28,8 @@
             [status-im.wallet.core :as wallet]
             [taoensso.timbre :as log]
             [status-im.ui.screens.db :refer [app-db]]
-            [status-im.multiaccounts.biometric.core :as biometric]))
+            [status-im.multiaccounts.biometric.core :as biometric]
+            [status-im.utils.identicon :as identicon]))
 
 (def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
 (def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
@@ -271,6 +272,7 @@
                                :address address
                                :photo-path photo-path
                                :name name)
+                       (assoc :profile/photo-added? (= (identicon/identicon public-key) photo-path))
                        (update :multiaccounts/login dissoc
                                :error
                                :password))}

@@ -115,6 +115,7 @@
     :allow-icon-change?     false
     :include-remove-action? false}])
 
+;;TO-DO Rework generate-view to use 3 functions from large-toolbar
 (views/defview profile []
   (views/letsubs [list-ref (reagent/atom nil)
                   contact  [:contacts/current-contact]]

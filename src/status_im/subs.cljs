@@ -107,6 +107,8 @@
 (reg-root-key-sub :my-profile/advanced? :my-profile/advanced?)
 (reg-root-key-sub :my-profile/editing? :my-profile/editing?)
 (reg-root-key-sub :my-profile/profile :my-profile/profile)
+(reg-root-key-sub :profile/photo-added? :profile/photo-added?)
+
 ;;multiaccount
 (reg-root-key-sub :multiaccounts/multiaccounts :multiaccounts/multiaccounts)
 (reg-root-key-sub :multiaccounts/login :multiaccounts/login)

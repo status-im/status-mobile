@@ -69,7 +69,8 @@
               {:db (-> db
                        (assoc-in [:my-profile/profile :photo-path]
                                  (str "data:image/jpeg;base64," base64-image))
-                       (assoc :my-profile/editing? true))}
+                       (assoc :my-profile/editing? true)
+                       (assoc :profile/photo-added? true))}
               save)
     {:open-image-picker this-event}))
 

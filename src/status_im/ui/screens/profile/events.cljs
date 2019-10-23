@@ -38,7 +38,8 @@
              {:db (-> db
                       (assoc-in [:my-profile/profile :photo-path]
                                 (identicon/identicon (multiaccounts.model/current-public-key cofx)))
-                      (assoc :my-profile/editing? true))}
+                      (assoc :my-profile/editing? true
+                             :profile/photo-added? false))}
              (profile.models/save))))
 
 (handlers/register-handler-fx
