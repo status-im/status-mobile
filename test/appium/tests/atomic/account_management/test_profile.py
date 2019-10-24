@@ -2,7 +2,7 @@ import pytest
 import re
 
 from tests import marks, bootnode_address, mailserver_address, camera_access_error_text, \
-    photos_access_error_text, test_dapp_url, test_dapp_name
+    photos_access_error_text, test_dapp_url, test_dapp_name, mailserver_central_2, mailserver_central_3
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user
 from views.dapps_view import DappsView
@@ -478,6 +478,42 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append('Version number was not copied to clipboard')
         self.verify_no_errors()
 
+    @marks.testrail_id(5766)
+    @marks.medium
+    def test_use_pinned_mailserver(self):
+        sign_in_view = SignInView(self.driver)
+        home_view = sign_in_view.create_user()
+        profile_view = home_view.profile_button.click()
+
+        profile_view.just_fyi('pin mailserver')
+        profile_view.sync_settings_button.click()
+        # TODO: temporary to avoid issue 9269 - should be disabled after fix
+        mailserver = mailserver_central_2 if profile_view.element_by_text(mailserver_central_2).is_element_present() else mailserver_central_3
+        profile_view.mail_server_button.click()
+        profile_view.mail_server_auto_selection_button.click()
+        profile_view.element_by_text(mailserver).click()
+        profile_view.confirm_button.click()
+
+        profile_view.just_fyi('check that mailserver is pinned')
+        profile_view.back_button.click()
+        if not profile_view.element_by_text(mailserver).is_element_displayed():
+            self.errors.append('"%s" mailserver is not pinned' % mailserver)
+        profile_view.get_back_to_home_view()
+
+        profile_view.just_fyi('relogin and check that settings are preserved')
+        home_view.relogin()
+        home_view.profile_button.click()
+        profile_view.sync_settings_button.click()
+        if not profile_view.element_by_text(mailserver).is_element_displayed():
+            self.errors.append('"%s" mailserver is not pinned' % mailserver)
+        profile_view.mail_server_button.click()
+        profile_view.mail_server_auto_selection_button.click()
+        profile_view.element_by_text(mailserver).click()
+        if profile_view.confirm_button.is_element_displayed():
+            self.errors.append('can select mailserver with "Autoselection" switched on')
+
+        self.verify_no_errors()
+
 
 @marks.all
 @marks.account
@@ -528,7 +564,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5436)
     @marks.medium
-    def test_switch_mailserver(self):
+    def test_add_and_switch_to_custom_mailserver(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user()
@@ -541,15 +577,20 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.just_fyi('add custom mailserver and connect to it')
         profile_1.sync_settings_button.click()
         profile_1.mail_server_button.click()
+        # TODO: temporary pin mailserver to avoid issue 9269 - should be disabled after fix
+        profile_1.mail_server_auto_selection_button.click()
+        profile_1.element_by_text(mailserver_central_2).click()
+        profile_1.confirm_button.click()
+        profile_1.just_fyi('pin custom mailserver')
         profile_1.plus_button.click()
         server_name = 'test'
         profile_1.specify_name_input.set_value(server_name)
         profile_1.mail_server_address_input.set_value(mailserver_address)
         profile_1.save_button.click()
-        profile_1.mail_server_auto_selection_button.click()
         profile_1.mail_server_by_name(server_name).click()
         profile_1.mail_server_connect_button.click()
         profile_1.confirm_button.click()
+        profile_1.retry_to_connect_to_mailserver()
         profile_1.get_back_to_home_view()
         profile_1.home_button.click()
 
@@ -564,6 +605,65 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         chat_2.chat_message_input.send_keys(message_1)
         chat_2.send_message_button.click()
         chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element()
+
+    @marks.testrail_id(5767)
+    @marks.medium
+    def test_can_not_connect_to_mailserver(self):
+        self.create_drivers(2)
+        sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user()
+        profile_1 = home_1.profile_button.click()
+
+        profile_1.just_fyi('add non-working mailserver and connect to it')
+        profile_1.sync_settings_button.click()
+        profile_1.mail_server_button.click()
+        profile_1.plus_button.click()
+        server_name = 'test'
+        profile_1.specify_name_input.set_value(server_name)
+        profile_1.mail_server_address_input.set_value(mailserver_address.replace('4','5'))
+        profile_1.save_button.click()
+        profile_1.mail_server_auto_selection_button.click()
+        profile_1.mail_server_by_name(server_name).click()
+        profile_1.mail_server_connect_button.click()
+        profile_1.confirm_button.click()
+        profile_1.home_button.click()
+
+        if not profile_1.element_by_text_part('Error connecting').is_element_displayed(30):
+            sign_in_1.driver.fail("No popup with 'Error connecting' is shown")
+        profile_1.element_by_text('CANCEL').click()
+
+        home_2.just_fyi('send several messages to public channel')
+        public_chat_name = home_2.get_public_chat_name()
+        message = 'test_message'
+        public_chat_2 = home_2.join_public_chat(public_chat_name)
+        public_chat_2.chat_message_input.send_keys(message)
+        public_chat_2.send_message_button.click()
+        public_chat_2.back_button.click()
+
+        profile_1.just_fyi('join same public chat and try to reconnect via "Tap to reconnect" and check "Connecting"')
+        profile_1.home_button.click()
+        home_1.join_public_chat(public_chat_name)
+        public_chat_1 = home_1.get_chat_view()
+        chat_state = 'Could not connect to mailserver. Tap to reconnect'
+        public_chat_1.element_by_text(chat_state).click()
+        if not public_chat_1.element_by_text_part('Connecting').is_element_displayed():
+            self.errors.append("Indicator doesn't show 'Connecting'")
+
+        profile_1.just_fyi('check that can RETRY to connect')
+        for _ in range(2):
+            public_chat_1.element_by_text('RETRY').wait_for_element(30)
+            public_chat_1.element_by_text('RETRY').click()
+
+        profile_1.just_fyi('check that can pick another mailserver and receive messages')
+        public_chat_1.element_by_text('PICK ANOTHER').is_element_displayed(30)
+        public_chat_1.element_by_text_part('PICK ANOTHER').click()
+        profile_1.element_by_text(mailserver_central_2).click()
+        profile_1.confirm_button.click()
+        profile_1.home_button.click()
+        if not public_chat_1.chat_element_by_text(message).is_element_displayed(30):
+            self.errors.append("Chat history wasn't fetched")
+
+        self.verify_no_errors()
 
     @marks.testrail_id(5762)
     @marks.high

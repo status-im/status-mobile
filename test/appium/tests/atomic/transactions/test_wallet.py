@@ -228,7 +228,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True, decimals=7)
 
-    @marks.testrail_id(5351)
+    @marks.testrail_id(5350)
     @marks.high
     def test_token_with_more_than_allowed_decimals(self):
         sender = wallet_users['C']

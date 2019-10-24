@@ -376,7 +376,7 @@ class MailServerAddressInput(BaseEditBox):
 class MailServerAutoSelectionButton(BaseButton):
     def __init__(self, driver):
         super(MailServerAutoSelectionButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[contains(@text,'Automatic selection')]")
+        self.locator = self.Locator.accessibility_id("checkbox")
 
 
 class MailServerElement(BaseButton):
@@ -702,6 +702,15 @@ class ProfileView(BaseView):
         self.device_name_input.set_value(device_name)
         self.continue_button.click_until_presence_of_element(self.advertise_device_button, 2)
         self.advertise_device_button.click()
+
+    def retry_to_connect_to_mailserver(self):
+        i = 0
+        while self.element_by_text_part("Error connecting").is_element_present(20) and i < 5:
+            self.element_by_text('RETRY').click()
+            i += 1
+            self.just_fyi("retrying to connect: %s attempt" % i)
+        if i == 5:
+            self.driver.fail("Failed to connect after %s attempts" % i)
 
     @property
     def current_active_network(self):
