@@ -15,6 +15,7 @@
     "emojilib": "^2.2.9",
     "eth-phishing-detect": "^1.1.13",
     "events": "^1.1.1",
+    "functional-red-black-tree": "^1.0.1",
     "google-breakpad": "git+https://github.com/status-im/google-breakpad.git#v0.9.0",
     "hi-base32": "^0.5.0",
     "i18n-js": "^3.1.0",
@@ -52,8 +53,8 @@
     "@babel/preset-env": "7.1.0",
     "@babel/register": "7.6.2",
     "babel-preset-react-native": "^5.0.2",
-    "metro-react-native-babel-preset": "^0.45.6",
     "coveralls": "^3.0.4",
+    "metro-react-native-babel-preset": "^0.45.6",
     "nyc": "^14.1.1",
     "patch-package": "^5.1.1",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status"

@@ -10,15 +10,15 @@
   {:color (if outgoing colors/white colors/text)})
 
 (defn message-padding-top
-  [{:keys [first-in-group? display-username?]}]
+  [{:keys [last-in-group? display-username?]}]
   (if (and display-username?
-           first-in-group?)
+           last-in-group?)
     6
     2))
 
 (defn last-message-padding
-  [{:keys [last? typing]}]
-  (when (and last? (not typing))
+  [{:keys [first? typing]}]
+  (when (and first? (not typing))
     {:padding-bottom 16}))
 
 (defn message-body
@@ -139,11 +139,11 @@
    :margin-top (if incoming-group 4 0)})
 
 (defn message-view
-  [{:keys [content-type outgoing group-chat first-in-group?]}]
+  [{:keys [content-type outgoing group-chat last-in-group?]}]
   (merge {:padding-vertical   6
           :padding-horizontal 12
           :border-radius      8
-          :margin-top         (if (and first-in-group?
+          :margin-top         (if (and last-in-group?
                                        (or outgoing
                                            (not group-chat)))
                                 16

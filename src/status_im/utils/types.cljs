@@ -1,5 +1,7 @@
 (ns status-im.utils.types
-  (:require [cognitect.transit :as transit]))
+  (:require
+   [cljs-bean.core :as clj-bean]
+   [cognitect.transit :as transit]))
 
 (defn to-string [s]
   (if (keyword? s)
@@ -7,7 +9,7 @@
     s))
 
 (defn clj->json [data]
-  (.stringify js/JSON (clj->js data)))
+  (.stringify js/JSON (clj-bean/->js data)))
 
 (defn json->clj [json]
   (when-not (= json "undefined")

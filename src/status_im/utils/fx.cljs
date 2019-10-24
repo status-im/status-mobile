@@ -12,7 +12,7 @@
     cofx))
 
 (def ^:private mergeable-keys
-  #{:chat-received-message/add-fx
+  #{:dispatch-debounce
     :filters/load-filters
     :pairing/set-installation-metadata
     :status-im.data-store.messages/save-message

@@ -470,7 +470,7 @@
   [cofx {:keys [chat-id
                 message
                 membership-updates] :as membership-update}
-   {:keys [raw-payload metadata]}
+   {:keys [whisper-timestamp metadata]}
    sender-signature]
   (let [dev-mode? (get-in cofx [:db :multiaccount :dev-mode?])]
     (when (valid-chat-id? chat-id (extract-creator membership-update))
@@ -498,10 +498,11 @@
                               ;; don't allow anything but group messages
                               (instance? protocol/Message message)
                               (= :group-user-message (:message-type message)))
-                     (protocol/receive message chat-id sender-signature nil
-                                       (assoc %
-                                              :metadata metadata
-                                              :js-obj #js {:payload raw-payload}))))))))
+                     (protocol/receive message
+                                       chat-id
+                                       sender-signature
+                                       whisper-timestamp
+                                       (assoc % :metadata metadata))))))))
 
 (defn handle-sign-success
   "Upsert chat and send signed payload to group members"

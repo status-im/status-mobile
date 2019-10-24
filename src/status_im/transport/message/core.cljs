@@ -3,6 +3,7 @@
   (:require [goog.object :as o]
             [re-frame.core :as re-frame]
             [status-im.chat.models.message :as models.message]
+            [status-im.utils.handlers :as handlers]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.core :as ethereum]
             [status-im.transport.message.contact :as contact]
@@ -15,18 +16,13 @@
             [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]))
 
-(defn add-raw-payload
-  "Add raw payload for id calculation"
-  [{:keys [message] :as m}]
-  (assoc m :raw-payload (clj->js message)))
-
 (fx/defn receive-message
   "Receive message handles a new status-message.
   dedup-id is passed by status-go and is used to deduplicate messages at that layer.
   Once a message has been successfuly processed, that id needs to be sent back
   in order to stop receiving that message"
-  [cofx now-in-s filter-chat-id message-js]
-  (let [blocked-contacts (get-in cofx [:db :contacts/blocked] #{})
+  [{:keys [db]} now-in-s filter-chat-id message-js]
+  (let [blocked-contacts (get db :contacts/blocked #{})
         payload (.-payload message-js)
         timestamp (.-timestamp (.-message message-js))
         metadata-js (.-metadata message-js)
@@ -45,16 +41,17 @@
                (not (blocked-contacts sig)))
       (try
         (when-let [valid-message (protocol/validate status-message)]
-          (fx/merge (assoc cofx :js-obj raw-payload :metadata metadata)
-                    #(protocol/receive (assoc valid-message
-                                              :metadata metadata)
-                                       (or
-                                        filter-chat-id
-                                        (get-in valid-message [:content :chat-id])
-                                        sig)
-                                       sig
-                                       timestamp
-                                       %)))
+          (protocol/receive
+           (assoc valid-message
+                  :metadata metadata)
+           (or
+            filter-chat-id
+            (get-in valid-message [:content :chat-id])
+            sig)
+           sig
+           timestamp
+           {:db db
+            :metadata metadata}))
         (catch :default e nil))))) ; ignore unknown message types
 
 (defn- js-obj->seq [obj]
@@ -64,36 +61,42 @@
       (aget obj i))
     [obj]))
 
-(fx/defn receive-whisper-messages
-  [{:keys [now] :as cofx} error messages chat-id]
-  (if (and (not error)
-           messages)
-    (let [now-in-s (quot now 1000)
-          receive-message-fxs (map (fn [message]
-                                     (receive-message now-in-s chat-id message))
-                                   messages)]
-      (apply fx/merge cofx receive-message-fxs))
-    (log/error "Something went wrong" error messages)))
+(handlers/register-handler-fx
+ ::process
+ (fn [cofx [_ messages now-in-s]]
+   (let [[chat-id message] (first messages)
+         remaining-messages (rest messages)]
+     (if (seq remaining-messages)
+       (assoc
+        (receive-message cofx now-in-s chat-id message)
+        ;; We dispatch later to let the UI thread handle events, without this
+        ;; it will keep processing events ignoring user input.
+        :dispatch-later [{:ms 20 :dispatch [::process remaining-messages now-in-s]}])
+       (receive-message cofx now-in-s chat-id message)))))
 
-(fx/defn receive-messages [cofx event-js]
-  (let [fxs (keep
-             (fn [message-specs]
-               (let [chat (.-chat message-specs)
-                     messages (.-messages message-specs)
-                     error (.-error message-specs)]
-                 (when (seq messages)
-                   (receive-whisper-messages
-                    error
-                    messages
-                  ;; For discovery and negotiated filters we don't
-                  ;; set a chatID, and we use the signature of the message
-                  ;; to indicate which chat it is for
-                    (if (or (.-discovery chat)
-                            (.-negotiated chat))
-                      nil
-                      (.-chatId chat))))))
-             (.-messages event-js))]
-    (apply fx/merge cofx fxs)))
+(fx/defn receive-messages
+  "Initialize the ::process event, which will process messages one by one
+  dispatching later to itself"
+  [{:keys [now] :as cofx} event-js]
+  (let [now-in-s (quot now 1000)
+        events (reduce
+                (fn [acc message-specs]
+                  (let [chat (.-chat message-specs)
+                        messages (.-messages message-specs)
+                        error (.-error message-specs)
+                        chat-id (if (or (.-discovery chat)
+                                        (.-negotiated chat))
+                                  nil
+                                  (.-chatId chat))]
+                    (if (seq messages)
+                      (reduce (fn [acc m]
+                                (conj acc [chat-id m]))
+                              acc
+                              messages)
+                      acc)))
+                []
+                (.-messages event-js))]
+    {:dispatch [::process events now-in-s]}))
 
 (fx/defn remove-hash
   [{:keys [db] :as cofx} envelope-hash]
@@ -173,20 +176,3 @@
                      :on-success #(log/debug "successfully confirmed messages")
                      :on-failure #(log/error "failed to confirm messages" %)}))))
 
-(fx/defn receive-transit-message [cofx message chat-id signature timestamp]
-  (let [received-message-fx {:chat-received-message/add-fx
-                             [(assoc (into {} message)
-                                     :message-id
-                                     (get-in cofx [:metadata :messageId])
-                                     :chat-id chat-id
-                                     :whisper-timestamp timestamp
-                                     :alias (get-in cofx [:metadata :author :alias])
-                                     :identicon (get-in cofx [:metadata :author :identicon])
-                                     :from signature
-                                     :metadata (:metadata cofx)
-                                     :js-obj (:js-obj cofx))]}]
-    (whitelist/filter-message cofx
-                              received-message-fx
-                              (:message-type message)
-                              (get-in message [:content :tribute-transaction])
-                              signature)))

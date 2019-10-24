@@ -15,97 +15,31 @@
                                             :chat-id    "1"
                                             :name       "unchanged"})))))
 
-(deftest message-stream-tests
-  (testing "messages with no interspersed datemarks"
-    (let [m1       {:from     "1"
-                    :datemark "a"
-                    :outgoing false}
-          m2       {:from     "2"
-                    :datemark "a"
-                    :outgoing true}
-          m3       {:from     "2"
-                    :datemark "a"
-                    :outgoing true}
-          dm1      {:type  :datemark
-                    :value "a"}
-          messages [m1 m2 m3 dm1]
-          [actual-m1
-           actual-m2
-           actual-m3] (db/messages-stream messages)]
-      (testing "it marks only the first message as :last?"
-        (is (:last? actual-m1))
-        (is (not (:last? actual-m2)))
-        (is (not (:last? actual-m3))))
-      (testing "it marks the first outgoing message as :last-outgoing?"
-        (is (not (:last-outgoing? actual-m1)))
-        (is (:last-outgoing? actual-m2))
-        (is (not (:last-outgoing? actual-m3))))
-      (testing "it marks messages from the same author next to another with :first-in-group?"
-        (is (:first-in-group? actual-m1))
-        (is (not (:first-in-group? actual-m2)))
-        (is (:first-in-group? actual-m3)))
-      (testing "it marks messages with display-photo? when they are not outgoing and we are in a group chat"
-        (is (:display-photo? actual-m1))
-        (is (not (:display-photo? actual-m2)))
-        (is (not (:display-photo? actual-m3))))
-      (testing "it marks messages with display-username? when we display the photo and are the first in a group"
-        (is (:display-username? actual-m1))
-        (is (not (:display-username? actual-m2)))
-        (is (not (:display-username? actual-m3))))
-      (testing "it marks the last message from the same author with :last-in-group?"
-        (is (:last-in-group? actual-m1))
-        (is (:last-in-group? actual-m2))
-        (is (not (:last-in-group? actual-m3))))))
-  (testing "messages with interspersed datemarks"
-    (let [m1       {:from      "2"                          ; first & last in group
-                    :timestamp 63000
-                    :outgoing  true}
-          dm1      {:type  :datemark
-                    :value "a"}
-          m2       {:from      "2"                          ; first & last in group as more than 1 minute after previous message
-                    :timestamp 62000
-                    :outgoing  false}
-          m3       {:from      "2"                          ; last in group
-                    :timestamp 1
-                    :outgoing  false}
-          m4       {:from      "2"                          ; first in group
-                    :timestamp 0
-                    :outgoing  false}
-          dm2      {:type  :datemark
-                    :value "b"}
-          messages [m1 dm1 m2 m3 m4 dm2]
-          [actual-m1
-           _
-           actual-m2
-           actual-m3
-           actual-m4
-           _] (db/messages-stream messages)]
-      (testing "it marks the first outgoing message as :last-outgoing?"
-        (is (:last-outgoing? actual-m1))
-        (is (not (:last-outgoing? actual-m2)))
-        (is (not (:last-outgoing? actual-m3)))
-        (is (not (:last-outgoing? actual-m4))))
-      (testing "it sets :first-in-group? after a datemark"
-        (is (:first-in-group? actual-m1))
-        (is (:first-in-group? actual-m4)))
-      (testing "it sets :first-in-group? if more than 60s have passed since last message"
-        (is (:first-in-group? actual-m2)))
-      (testing "it sets :last-in-group? after a datemark"
-        (is (:last-in-group? actual-m1))
-        (is (:last-in-group? actual-m2))
-        (is (:last-in-group? actual-m3))
-        (is (not (:last-in-group? actual-m4))))))
-  (testing "system-messages"
-    (let [m1       {:from         "system"
-                    :message-type :system-message
-                    :datemark     "a"
-                    :outgoing     false}
-          messages [m1]
-          [actual-m1] (db/messages-stream messages)]
-      (testing "it does display the photo"
-        (is (:display-photo? actual-m1))
-        (testing "it does not display the username"
-          (is (not (:display-username? actual-m1))))))))
+(deftest intersperse-datemarks
+  (testing "it mantains the order even when timestamps are across days"
+    (let [message-1 {:datemark "Dec 31, 1999"
+                     :whisper-timestamp 946641600000} ; 1999}
+          message-2 {:datemark "Jan 1, 2000"
+                     :whisper-timestamp 946728000000} ; 2000 this will displayed in 1999
+          message-3 {:datemark "Dec 31, 1999"
+                     :whisper-timestamp 946641600000} ; 1999
+          message-4 {:datemark "Jan 1, 2000"
+                     :whisper-timestamp 946728000000} ; 2000
+          ordered-messages [message-4
+                            message-3
+                            message-2
+                            message-1]
+          [m1 d1 m2 m3 m4 d2 :as ms] (db/add-datemarks ordered-messages)]
+      (is (= "Jan 1, 2000"
+             (:datemark m1)))
+      (is (= {:type :datemark
+              :value "Jan 1, 2000"} d1))
+      (is (= "Dec 31, 1999"
+             (:datemark m2)
+             (:datemark m3)
+             (:datemark m4)))
+      (is (= {:type :datemark
+              :value "Dec 31, 1999"} d2)))))
 
 (deftest active-chats-test
   (with-redefs [gfycat/generate-gfy (constantly "generated")
@@ -119,227 +53,123 @@
         (is (= #{"1" "2"}
                (set (keys (db/active-chats {} chats {})))))))))
 
-#_(deftest messages-with-datemarks
-    (testing "empty state"
-      (is (empty?
-           (db/messages-with-datemarks
-            nil
-            nil
-            nil
-            nil
-            nil
-            false
-            false))))
-    (testing "empty state pub-chat"
-      (is (=
-           [{:type       :gap
-             :value      ":first-gap"
-             :first-gap? true}]
-           (db/messages-with-datemarks
-            nil
-            nil
-            nil
-            nil
-            {:lowest-request-from 10
-             :highest-request-to  30}
-            true
-            true))))
-    (testing "simple case"
-      (is (=
-           '({:whisper-timestamp 40
-              :timestamp         40
-              :content           nil
-              :timestamp-str     "14:00"
-              :datemark          "today"}
-             {:whisper-timestamp 30
-              :timestamp         30
-              :content           nil
-              :timestamp-str     "13:00"
-              :datemark          "today"}
-             {:value             "today"
-              :type              :datemark
-              :whisper-timestamp 30
-              :timestamp         30}
-             {:whisper-timestamp 20
-              :timestamp         20
-              :content           nil
-              :timestamp-str     "12:00"
-              :datemark          "yesterday"}
-             {:whisper-timestamp 10
-              :timestamp         10
-              :content           nil
-              :timestamp-str     "11:00"
-              :datemark          "yesterday"}
-             {:value             "yesterday"
-              :type              :datemark
-              :whisper-timestamp 10
-              :timestamp         10})
-           (db/messages-with-datemarks
-            {"yesterday"
-             (list
-              {:message-id        :m1
-               :timestamp-str     "11:00"
-               :whisper-timestamp 10
-               :timestamp         10}
-              {:message-id        :m2
-               :timestamp-str     "12:00"
-               :whisper-timestamp 20
-               :timestamp         20})
-             "today"
-             (list
-              {:message-id        :m3
-               :timestamp-str     "13:00"
-               :whisper-timestamp 30
-               :timestamp         30}
-              {:message-id        :m4
-               :timestamp-str     "14:00"
-               :whisper-timestamp 40
-               :timestamp         40})}
-            {:m1 {:whisper-timestamp 10
-                  :timestamp         10}
-             :m2 {:whisper-timestamp 20
-                  :timestamp         20}
-             :m3 {:whisper-timestamp 30
-                  :timestamp         30}
-             :m4 {:whisper-timestamp 40
-                  :timestamp         40}}
-            nil
-            nil
-            nil
-            nil
-            nil))))
-    (testing "simple case with gap"
-      (is (=
-           '({:whisper-timestamp 40
-              :timestamp         40
-              :content           nil
-              :timestamp-str     "14:00"
-              :datemark          "today"}
+(deftest add-gaps
+  (testing "empty state"
+    (is (empty?
+         (db/add-gaps
+          nil
+          nil
+          nil
+          false
+          false))))
+  (testing "empty state pub-chat"
+    (is (=
+         [{:type       :gap
+           :value      ":first-gap"
+           :first-gap? true}]
+         (db/add-gaps
+          nil
+          nil
+          {:lowest-request-from 10
+           :highest-request-to  30}
+          true
+          true))))
+  (testing "simple case with gap"
+    (is (= '({:whisper-timestamp 40
+              :message-id        :m4
+              :timestamp         40}
              {:type  :gap
               :value ":gapid1"
               :gaps  {:ids [:gapid1]}}
              {:whisper-timestamp 30
               :timestamp         30
-              :content           nil
-              :timestamp-str     "13:00"
-              :datemark          "today"}
+              :message-id        :m3}
              {:value             "today"
               :type              :datemark
               :whisper-timestamp 30
               :timestamp         30}
              {:whisper-timestamp 20
               :timestamp         20
-              :content           nil
-              :timestamp-str     "12:00"
-              :datemark          "yesterday"}
+              :message-id        :m2}
              {:whisper-timestamp 10
               :timestamp         10
-              :content           nil
-              :timestamp-str     "11:00"
-              :datemark          "yesterday"}
+              :message-id        :m1}
              {:value             "yesterday"
               :type              :datemark
               :whisper-timestamp 10
               :timestamp         10})
-           (db/messages-with-datemarks
-            {"yesterday"
-             (list
-              {:message-id        :m1
-               :timestamp-str     "11:00"
-               :whisper-timestamp 10
-               :timestamp         10}
-              {:message-id        :m2
-               :timestamp-str     "12:00"
-               :whisper-timestamp 20
-               :timestamp         20})
-             "today"
-             (list
-              {:message-id        :m3
-               :timestamp-str     "13:00"
-               :whisper-timestamp 30
-               :timestamp         30}
-              {:message-id        :m4
-               :timestamp-str     "14:00"
-               :whisper-timestamp 40
-               :timestamp         40})}
-            {:m1 {:whisper-timestamp 10
-                  :timestamp         10}
-             :m2 {:whisper-timestamp 20
-                  :timestamp         20}
-             :m3 {:whisper-timestamp 30
-                  :timestamp         30}
-             :m4 {:whisper-timestamp 40
-                  :timestamp         40}}
-            nil
+           (db/add-gaps
+            [{:message-id        :m4
+              :whisper-timestamp 40
+              :timestamp         40}
+             {:message-id        :m3
+              :whisper-timestamp 30
+              :timestamp         30}
+             {:type :datemark
+              :value "today"
+              :whisper-timestamp 30
+              :timestamp 30}
+             {:message-id        :m2
+              :whisper-timestamp 20
+              :timestamp         20}
+             {:message-id        :m1
+              :whisper-timestamp 10
+              :timestamp         10}
+             {:type :datemark
+              :value "yesterday"
+              :whisper-timestamp 10
+              :timestamp 10}]
             [{:from 25
               :to   30
               :id   :gapid1}]
             nil
             nil
             nil))))
-    (testing "simple case with gap after all messages"
-      (is (=
-           '({:type  :gap
+  (testing "simple case with gap after all messages"
+    (is (= '({:type  :gap
               :value ":gapid1"
               :gaps  {:ids (:gapid1)}}
              {:whisper-timestamp 40
-              :timestamp         40
-              :content           nil
-              :timestamp-str     "14:00"
-              :datemark          "today"}
+              :message-id        :m4
+              :timestamp         40}
              {:whisper-timestamp 30
-              :timestamp         30
-              :content           nil
-              :timestamp-str     "13:00"
-              :datemark          "today"}
+              :message-id        :m3
+              :timestamp         30}
              {:value             "today"
               :type              :datemark
               :whisper-timestamp 30
               :timestamp         30}
              {:whisper-timestamp 20
-              :timestamp         20
-              :content           nil
-              :timestamp-str     "12:00"
-              :datemark          "yesterday"}
+              :message-id        :m2
+              :timestamp         20}
              {:whisper-timestamp 10
-              :timestamp         10
-              :content           nil
-              :timestamp-str     "11:00"
-              :datemark          "yesterday"}
+              :message-id        :m1
+              :timestamp         10}
              {:value             "yesterday"
               :type              :datemark
               :whisper-timestamp 10
               :timestamp         10})
-           (db/messages-with-datemarks
-            {"yesterday"
-             (list
-              {:message-id        :m1
-               :timestamp-str     "11:00"
-               :whisper-timestamp 10
-               :timestamp         10}
-              {:message-id        :m2
-               :timestamp-str     "12:00"
-               :whisper-timestamp 20
-               :timestamp         20})
-             "today"
-             (list
-              {:message-id        :m3
-               :timestamp-str     "13:00"
-               :whisper-timestamp 30
-               :timestamp         30}
-              {:message-id        :m4
-               :timestamp-str     "14:00"
-               :whisper-timestamp 40
-               :timestamp         40})}
-            {:m1 {:whisper-timestamp 10
-                  :timestamp         10}
-             :m2 {:whisper-timestamp 20
-                  :timestamp         20}
-             :m3 {:whisper-timestamp 30
-                  :timestamp         30}
-             :m4 {:whisper-timestamp 40
-                  :timestamp         40}}
-            nil
+           (db/add-gaps
+            [{:message-id        :m4
+              :whisper-timestamp 40
+              :timestamp         40}
+             {:message-id        :m3
+              :whisper-timestamp 30
+              :timestamp         30}
+             {:type :datemark
+              :value "today"
+              :whisper-timestamp 30
+              :timestamp         30}
+             {:message-id        :m2
+              :whisper-timestamp 20
+              :timestamp         20}
+             {:message-id        :m1
+              :whisper-timestamp 10
+              :timestamp         10}
+             {:type :datemark
+              :value "yesterday"
+              :whisper-timestamp 10
+              :timestamp         10}]
             [{:from 100
               :to   110
               :id   :gapid1}]

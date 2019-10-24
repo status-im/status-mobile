@@ -13,7 +13,6 @@
                               :response-to-v2 "id-2"
                               :text "hta"}
                     :whisper-timestamp 1
-                    :js-obj {}
                     :dedup-id "ATIwMTkwODE0YTdkNWZhZGY1N2E0ZDU3MzUxZmJkNDZkZGM1ZTU4ZjRlYzUyYWYyMDA5NTc2NWYyYmIxOTQ2OTM3NGUwNjdiMvEpTIGEjHOTAyqsrN39wST4npnSAv1AR8jJWeubanjkoGIyJooD5RVRnx6ZMt+/JzBOD2hoZzlHQWA0bC6XbdU="
                     :outgoing-status :sending
                     :message-type :public-group-user-message

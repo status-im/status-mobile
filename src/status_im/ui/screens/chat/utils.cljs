@@ -46,8 +46,8 @@
               :on-press #(re-frame/dispatch [:chat.ui/start-public-chat (subs text 1) {:navigation-reset? true}])})})
 
 (defn- lookup-props [text-chunk message kind]
-  (let [prop    (get styling->prop kind)
-        prop-fn (get action->prop-fn kind)]
+  (let [prop    (get styling->prop (keyword kind))
+        prop-fn (get action->prop-fn (keyword kind))]
     (if prop-fn (prop-fn text-chunk message) prop)))
 
 (defn render-chunks [render-recipe message]

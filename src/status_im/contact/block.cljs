@@ -2,6 +2,8 @@
   (:require [re-frame.core :as re-frame]
             [status-im.chat.models :as chat.models]
             [status-im.chat.models.loading :as chat.models.loading]
+            [status-im.chat.models.message-list :as message-list]
+
             [status-im.chat.models.message :as chat.models.message]
             [status-im.contact.db :as contact.db]
             [status-im.data-store.chats :as chats-store]
@@ -35,19 +37,14 @@
                           #(apply dissoc % removed-messages-ids))
                ;; remove message groups
                (update-in [:chats chat-id]
-                          dissoc :message-groups)
+                          dissoc :message-list)
                (update-in [:chats chat-id]
                           assoc
                           :unviewed-messages-count unviewed-messages-count
                           :last-message-content last-message-content
                           :last-message-timestamp last-message-timestamp
                           :last-message-content-type last-message-content-type))]
-    (fx/merge cofx
-              {:db db}
-              ;; recompute message group
-              (chat.models.loading/group-chat-messages
-               chat-id
-               (vals (get-in db [:chats chat-id :messages]))))))
+    {:db (update-in db [:chats chat-id :message-list] message-list/add-many (vals (get-in db [:chats chat-id :messages])))}))
 
 (fx/defn contact-blocked
   {:events [::contact-blocked]}

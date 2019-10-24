@@ -44,47 +44,50 @@
             :current-chat-id "chat-id"
             :chats {"chat-id" {:messages {}}}}]
     (testing "a message coming from you!"
-      (let [actual (message/receive-many {:db db}
-                                         [{:from "me"
-                                           :message-type :user-message
-                                           :timestamp 0
-                                           :message-id "id"
-                                           :chat-id "chat-id"
-                                           :content "b"
-                                           :clock-value 1}])
+      (let [actual (message/receive-one {:db db}
+                                        {:from "me"
+                                         :message-type :user-message
+                                         :timestamp 0
+                                         :whisper-timestamp 0
+                                         :message-id "id"
+                                         :chat-id "chat-id"
+                                         :content "b"
+                                         :clock-value 1})
             message (get-in actual [:db :chats "chat-id" :messages "id"])]
         (testing "it adds the message"
           (is message))
         (testing "it marks the message as outgoing"
           (is (= true (:outgoing message))))))))
 
-(deftest receive-many-clock-value
+(deftest receive-one-clock-value
   (let [db {:multiaccount {:public-key "me"}
             :view-id :chat
             :current-chat-id "chat-id"
             :chats {"chat-id" {:last-clock-value 10
                                :messages {}}}}]
     (testing "a message with a higher clock value"
-      (let [actual (message/receive-many {:db db}
-                                         [{:from "chat-id"
-                                           :message-type :user-message
-                                           :timestamp 0
-                                           :message-id "id"
-                                           :chat-id "chat-id"
-                                           :content "b"
-                                           :clock-value 12}])
+      (let [actual (message/receive-one {:db db}
+                                        {:from "chat-id"
+                                         :message-type :user-message
+                                         :timestamp 0
+                                         :whisper-timestamp 0
+                                         :message-id "id"
+                                         :chat-id "chat-id"
+                                         :content "b"
+                                         :clock-value 12})
             chat-clock-value (get-in actual [:db :chats "chat-id" :last-clock-value])]
         (testing "it sets last-clock-value"
           (is (= 12 chat-clock-value)))))
     (testing "a message with a lower clock value"
-      (let [actual (message/receive-many {:db db}
-                                         [{:from "chat-id"
-                                           :message-type :user-message
-                                           :timestamp 0
-                                           :message-id "id"
-                                           :chat-id "chat-id"
-                                           :content "b"
-                                           :clock-value 2}])
+      (let [actual (message/receive-one {:db db}
+                                        {:from "chat-id"
+                                         :message-type :user-message
+                                         :timestamp 0
+                                         :whisper-timestamp 0
+                                         :message-id "id"
+                                         :chat-id "chat-id"
+                                         :content "b"
+                                         :clock-value 2})
             chat-clock-value (get-in actual [:db :chats "chat-id" :last-clock-value])]
         (testing "it sets last-clock-value"
           (is (= 10 chat-clock-value)))))))
@@ -101,27 +104,30 @@
                               :message-type :group-user-message
                               :message-id  "1"
                               :clock-value 1
+                              :whisper-timestamp 0
                               :timestamp   0}
         bad-chat-id-message  {:chat-id     "bad-chat-id"
                               :from        "present"
                               :message-type :group-user-message
                               :message-id  "1"
                               :clock-value 1
+                              :whisper-timestamp 0
                               :timestamp   0}
         bad-from-message     {:chat-id     "chat-id"
                               :from        "not-present"
                               :message-type :group-user-message
                               :message-id  "1"
                               :clock-value 1
+                              :whisper-timestamp 0
                               :timestamp   0}]
     (testing "a valid message"
-      (is (get-in (message/receive-many cofx [valid-message]) [:db :chats "chat-id" :messages "1"])))
+      (is (get-in (message/receive-one cofx valid-message) [:db :chats "chat-id" :messages "1"])))
     (testing "a message from someone not in the list of participants"
-      (is (= cofx (message/receive-many cofx [bad-from-message]))))
+      (is (not (message/receive-one cofx bad-from-message))))
     (testing "a message with non existing chat-id"
-      (is (= cofx (message/receive-many cofx [bad-chat-id-message]))))
+      (is (not (message/receive-one cofx bad-chat-id-message))))
     (testing "a message from a delete chat"
-      (is (= cofx-without-member (message/receive-many cofx-without-member [valid-message]))))))
+      (is (not (message/receive-one cofx-without-member valid-message))))))
 
 (deftest receive-public-chats
   (let [cofx                 {:db {:chats {"chat-id" {:public? true}}
@@ -133,17 +139,19 @@
                               :message-type :public-group-user-message
                               :message-id  "1"
                               :clock-value 1
+                              :whisper-timestamp 0
                               :timestamp   0}
         bad-chat-id-message  {:chat-id     "bad-chat-id"
                               :from        "present"
                               :message-type :public-group-user-message
                               :message-id  "1"
                               :clock-value 1
+                              :whisper-timestamp 0
                               :timestamp   0}]
     (testing "a valid message"
-      (is (get-in (message/receive-many cofx [valid-message]) [:db :chats "chat-id" :messages "1"])))
+      (is (get-in (message/receive-one cofx valid-message) [:db :chats "chat-id" :messages "1"])))
     (testing "a message with non existing chat-id"
-      (is (= cofx (message/receive-many cofx [bad-chat-id-message]))))))
+      (is (not (message/receive-one cofx bad-chat-id-message))))))
 
 (deftest receive-one-to-one
   (with-redefs [gfycat/generate-gfy (constantly "generated")
@@ -151,19 +159,21 @@
 
     (let [cofx                 {:db {:chats {"matching" {}}
                                      :multiaccount {:public-key "me"}
-                                     :current-chat-id "chat-id"
+                                     :current-chat-id "matching"
                                      :view-id :chat}}
           valid-message        {:chat-id     "matching"
                                 :from        "matching"
                                 :message-type :user-message
                                 :message-id  "1"
                                 :clock-value 1
+                                :whisper-timestamp 0
                                 :timestamp   0}
           own-message          {:chat-id     "matching"
                                 :from        "me"
                                 :message-type :user-message
                                 :message-id  "1"
                                 :clock-value 1
+                                :whisper-timestamp 0
                                 :timestamp   0}
 
           bad-chat-id-message  {:chat-id     "bad-chat-id"
@@ -171,29 +181,33 @@
                                 :message-type :user-message
                                 :message-id  "1"
                                 :clock-value 1
+                                :whisper-timestamp 0
                                 :timestamp   0}]
       (testing "a valid message"
-        (is (get-in (message/receive-many cofx [valid-message]) [:db :chats "matching" :messages "1"])))
+        (is (get-in (message/receive-one cofx valid-message) [:db :chats "matching" :messages "1"])))
       (testing "our own message"
-        (is (get-in (message/receive-many cofx [own-message]) [:db :chats "matching" :messages "1"])))
+        (is (get-in (message/receive-one cofx own-message) [:db :chats "matching" :messages "1"])))
       (testing "a message with non matching chat-id"
-        (is (get-in (message/receive-many cofx [bad-chat-id-message]) [:db :chats "not-matching" :messages "1"]))))))
+        (is (get-in (message/receive-one cofx bad-chat-id-message) [:db :chats "not-matching" :messages "1"]))))))
 
 (deftest delete-message
   (let [timestamp (time/now)
         cofx1     {:db {:chats {"chat-id" {:messages      {0 {:message-id  0
                                                               :content     "a"
                                                               :clock-value 0
+                                                              :whisper-timestamp (- timestamp 1)
                                                               :timestamp   (- timestamp 1)}
                                                            1 {:message-id  1
                                                               :content     "b"
                                                               :clock-value 1
+                                                              :whisper-timestamp timestamp
                                                               :timestamp   timestamp}}
                                            :message-groups {"datetime-today" '({:message-id 1}
                                                                                {:message-id 0})}}}}}
         cofx2     {:db {:chats {"chat-id" {:messages      {0 {:message-id  0
                                                               :content     "a"
                                                               :clock-value 0
+                                                              :whisper-timestamp timestamp
                                                               :timestamp   timestamp}}
                                            :message-groups {"datetime-today" '({:message-id 0})}}}}}
         fx1       (message/delete-message cofx1 "chat-id" 1)

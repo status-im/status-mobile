@@ -19,7 +19,6 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
-            [status-im.utils.priority-map :refer [empty-message-map]]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
 
@@ -92,18 +91,35 @@
      :timestamp          now
      :contacts           #{chat-id}
      :last-clock-value   0
-     :messages           empty-message-map}))
+     :messages           {}}))
 
-(fx/defn upsert-chat
-  "Upsert chat when not deleted"
+(fx/defn ensure-chat
+  "Add chat to db and update"
   [{:keys [db] :as cofx} {:keys [chat-id] :as chat-props}]
   (let [chat (merge
               (or (get (:chats db) chat-id)
                   (create-new-chat chat-id cofx))
               chat-props)]
-    (fx/merge cofx
-              {:db (update-in db [:chats chat-id] merge chat)}
-              (chats-store/save-chat chat))))
+    {:db (update-in db [:chats chat-id] merge chat)}))
+
+(fx/defn upsert-chat
+  "Upsert chat when not deleted"
+  [{:keys [db] :as cofx} {:keys [chat-id] :as chat-props}]
+  (fx/merge cofx
+            (ensure-chat chat-props)
+            #(chats-store/save-chat % (get-in % [:db :chats chat-id]))))
+
+(fx/defn handle-save-chat
+  {:events [::save-chat]}
+  [{:keys [db] :as cofx} chat-id]
+  (chats-store/save-chat cofx (get-in db [:chats chat-id])))
+
+(fx/defn save-chat-delayed
+  "Debounce saving the chat"
+  [_ chat-id]
+  {:dispatch-debounce [{:key :save-chat
+                        :event [::save-chat chat-id]
+                        :delay 500}]})
 
 (fx/defn add-public-chat
   "Adds new public group chat to db"
@@ -134,7 +150,7 @@
     (fx/merge
      cofx
      {:db            (update-in db [:chats chat-id] merge
-                                {:messages                  empty-message-map
+                                {:messages                  {}
                                  :message-groups            {}
                                  :last-message-content      nil
                                  :last-message-content-type nil

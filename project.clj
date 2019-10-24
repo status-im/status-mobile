@@ -78,7 +78,8 @@
                                         [day8.re-frame/tracing "0.5.0"]
                                         [hawk "0.2.11"]]
                          :source-paths ["src" "env/dev" "react-native/src/cljsjs" "components/src" "dev"]}]
-             :test     {:dependencies [[day8.re-frame/test "0.1.5"]]
+             :test     {:dependencies [[com.taoensso/tufte "2.1.0"]
+                                       [day8.re-frame/test "0.1.5"]]
                         :plugins      [[lein-doo "0.1.9"]]
                         :cljsbuild    {:builds
                                        [{:id           "test"

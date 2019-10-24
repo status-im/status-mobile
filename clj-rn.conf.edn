@@ -38,6 +38,7 @@
               "react-navigation"
               "react-native-navigation-twopane"
               "hi-base32"
+              "functional-red-black-tree"
               "react-native-mail"
               "react-native-shake"
               "@react-native-community/netinfo"]
@@ -74,6 +75,7 @@
                    "react-native-desktop-gesture-handler"
                    "web3-utils"
                    "react-navigation"
+                   "functional-red-black-tree"
                    "react-native-navigation-twopane"
                    "hi-base32"]
 

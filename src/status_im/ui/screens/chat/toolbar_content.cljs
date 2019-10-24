@@ -7,17 +7,6 @@
             [status-im.utils.datetime :as time])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defn- online-text [contact chat-id]
-  (if contact
-    (let [last-online      (get contact :last-online)
-          last-online-date (time/to-date last-online)
-          now-date         (t/now)]
-      (if (and (pos? last-online)
-               (<= last-online-date now-date))
-        (time/time-ago last-online-date)
-        (i18n/label :t/active-unknown)))
-    (i18n/label :t/active-unknown)))
-
 (defn- in-progress-text [{:keys [highestBlock currentBlock startBlock]}]
   (let [total      (- highestBlock startBlock)
         ready      (- currentBlock startBlock)

@@ -53,63 +53,59 @@
              {}
              chats))
 
-(defn sort-message-groups
-  "Sorts message groups according to timestamp of first message in group"
-  [message-groups messages]
-  (sort-by
-   (comp :timestamp (partial get messages) :message-id first second)
-   message-groups))
-
-(defn quoted-message-data
-  "Selects certain data from quoted message which must be available in the view"
-  [message-id messages]
-  (when-let [{:keys [from content]} (get messages message-id)]
-    {:from from
-     :text (:text content)}))
-
-(defn add-datemark
-  [[datemark
-    message-references]]
-  (let [{:keys [whisper-timestamp timestamp]} (first message-references)]
-    (conj message-references
-          {:value             datemark
-           :type              :datemark
-           :whisper-timestamp whisper-timestamp
-           :timestamp         timestamp})))
-
 (defn datemark? [{:keys [type]}]
   (= type :datemark))
 
+(defn intersperse-datemark
+  "Reduce step which expects the input list of messages to be sorted by clock value.
+  It makes best effort to group them by day.
+  We cannot sort them by :timestamp, as that represents the clock of the sender
+  and we have no guarantees on the order.
+  We naively and arbitrarly group them assuming that out-of-order timestamps
+  fall in the previous bucket.
+  A sends M1 to B with timestamp 2000-01-01T00:00:00
+  B replies M2 with timestamp    1999-12-31-23:59:59
+  M1 needs to be displayed before M2
+  so we bucket both in 1999-12-31"
+  [{:keys [acc last-timestamp last-datemark]} {:keys [whisper-timestamp datemark] :as msg}]
+  (cond (empty? acc)                                     ; initial element
+        {:last-timestamp whisper-timestamp
+         :last-datemark  datemark
+         :acc            (conj acc msg)}
+
+        (and (not= last-datemark datemark)               ; not the same day
+             (< whisper-timestamp last-timestamp))               ; not out-of-order
+        {:last-timestamp whisper-timestamp
+         :last-datemark  datemark
+         :acc            (conj acc {:value last-datemark ; intersperse datemark message
+                                    :type  :datemark}
+                               msg)}
+        :else
+        {:last-timestamp (min whisper-timestamp last-timestamp)  ; use last datemark
+         :last-datemark  last-datemark
+         :acc            (conj acc (assoc msg :datemark last-datemark))}))
+
+(defn add-datemarks
+  "Add a datemark in between an ordered seq of messages when two datemarks are not
+  the same. Ignore messages with out-of-order timestamps"
+  [messages]
+  (when (seq messages)
+    (let [messages-with-datemarks (:acc (reduce intersperse-datemark {:acc []} messages))]
+      ; Append last datemark
+      (conj messages-with-datemarks {:value (:datemark (peek messages-with-datemarks))
+                                     :type  :datemark}))))
+
 (defn gap? [{:keys [type]}]
   (= type :gap))
-
-(defn transform-message
-  [messages]
-  (fn [{:keys [message-id timestamp-str] :as reference}]
-    (if (or (datemark? reference)
-            (gap? reference))
-      reference
-      (let [{:keys [content quoted-message] :as message} (get messages message-id)
-            {:keys [response-to response-to-v2]} content
-            quote (if quoted-message
-                    quoted-message
-                    (some-> (or response-to-v2 response-to)
-                            (quoted-message-data messages)))]
-        (cond-> (-> message
-                    (update :content dissoc :response-to :response-to-v2)
-                    (assoc :timestamp-str timestamp-str))
-          ;; quoted message reference
-          quote
-          (assoc-in [:content :response-to] quote))))))
 
 (defn check-gap
   [gaps previous-message next-message]
   (let [previous-timestamp     (:whisper-timestamp previous-message)
         next-whisper-timestamp (:whisper-timestamp next-message)
-        next-timestamp         (quot (:timestamp next-message) 1000)
+        next-timestamp         (:timestamp next-message)
         ignore-next-message?   (> (js/Math.abs
                                    (- next-whisper-timestamp next-timestamp))
-                                  120)]
+                                  120000)]
     (reduce
      (fn [acc {:keys [from to id]}]
        (if (and next-message
@@ -137,15 +133,13 @@
          :value (clojure.string/join (:ids gaps))
          :gaps gaps}))
 
-(defn messages-with-datemarks
+(defn add-gaps
   "Converts message groups into sequence of messages interspersed with datemarks,
   with correct user statuses associated into message"
-  [message-groups messages messages-gaps
+  [message-list messages-gaps
    {:keys [highest-request-to lowest-request-from]} all-loaded? public?]
   (transduce
-   (comp
-    (mapcat add-datemark)
-    (map (transform-message messages)))
+   (map identity)
    (fn
      ([]
       (let [acc {:messages         (list)
@@ -162,9 +156,8 @@
                                       :value      (str :first-gap)
                                       :first-gap? true})
           acc)))
-     ([{:keys [messages datemark-reference previous-message gaps]} message]
-      (let [new-datemark? (datemark? message)
-            {:keys [gaps-number gap]}
+     ([{:keys [messages previous-message gaps]} message]
+      (let [{:keys [gaps-number gap]}
             (check-gap gaps previous-message message)
             add-gap?      (pos? gaps-number)]
         {:messages           (cond-> messages
@@ -173,16 +166,8 @@
                                (add-gap gap)
 
                                :always
-                               (conj
-                                (cond-> message
-                                  (not new-datemark?)
-                                  (assoc
-                                   :datemark
-                                   (:value datemark-reference)))))
+                               (conj message))
          :previous-message   message
-         :datemark-reference (if new-datemark?
-                               message
-                               datemark-reference)
          :gaps               (if add-gap?
                                (drop gaps-number gaps)
                                gaps)}))
@@ -190,73 +175,7 @@
       (cond-> messages
         (seq gaps)
         (add-gap {:ids (map :id gaps)}))))
-   message-groups))
-
-(defn- set-previous-message-info [stream]
-  (let [{:keys [display-photo? message-type] :as previous-message} (peek stream)]
-    (conj (pop stream) (assoc previous-message
-                              :display-username? (and display-photo?
-                                                      (not= :system-message message-type))
-                              :first-in-group?   true))))
-
-(defn display-photo? [{:keys [outgoing message-type]}]
-  (or (= :system-message message-type)
-      (and (not outgoing)
-           (not (= :user-message message-type)))))
-
-;; any message that comes after this amount of ms will be grouped separately
-(def ^:private group-ms 60000)
-
-(defn add-positional-metadata
-  "Reduce step which adds positional metadata to a message and conditionally
-  update the previous message with :first-in-group?."
-  [{:keys [stream last-outgoing-seen]}
-   {:keys [type message-type from datemark outgoing timestamp] :as message}]
-  (let [previous-message         (peek stream)
-        ;; Was the previous message from a different author or this message
-        ;; comes after x ms
-        last-in-group?           (or (= :system-message message-type)
-                                     (not= from (:from previous-message))
-                                     (> (- (:timestamp previous-message) timestamp) group-ms))
-        ;; Have we seen an outgoing message already?
-        last-outgoing?           (and (not last-outgoing-seen)
-                                      outgoing)
-        datemark?                (= :datemark (:type message))
-        ;; If this is a datemark or this is the last-message of a group,
-        ;; then the previous message was the first
-        previous-first-in-group? (or datemark?
-                                     last-in-group?)
-        new-message              (assoc message
-                                        :display-photo?  (display-photo? message)
-                                        :last-in-group?  last-in-group?
-                                        :last-outgoing?  last-outgoing?)]
-    {:stream             (cond-> stream
-                           previous-first-in-group?
-                           ;; update previous message if necessary
-                           set-previous-message-info
-
-                           :always
-                           (conj new-message))
-     ;; mark the last message sent by the user
-     :last-outgoing-seen (or last-outgoing-seen last-outgoing?)}))
-
-(defn messages-stream
-  "Enhances the messages in message sequence interspersed with datemarks
-  with derived stream context information, like:
-  `:first-in-group?`, `last-in-group?`, `:last?` and `:last-outgoing?` flags."
-  [ordered-messages]
-  (when (seq ordered-messages)
-    (let [initial-message (first ordered-messages)
-          message-with-metadata (assoc initial-message
-                                       :last-in-group? true
-                                       :last? true
-                                       :display-photo? (display-photo? initial-message)
-                                       :last-outgoing? (:outgoing initial-message))]
-      (->> (rest ordered-messages)
-           (reduce add-positional-metadata
-                   {:stream             [message-with-metadata]
-                    :last-outgoing-seen (:last-outgoing? message-with-metadata)})
-           :stream))))
+   (reverse message-list)))
 
 (def map->sorted-seq
   (comp (partial map second) (partial sort-by first)))

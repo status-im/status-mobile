@@ -12,50 +12,8 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.fx :as fx]
             [status-im.utils.priority-map :refer [empty-message-map]]
+            [status-im.chat.models.message-list :as message-list]
             [taoensso.timbre :as log]))
-
-(def index-messages (partial into empty-message-map
-                             (map (juxt :message-id identity))))
-
-(defn- sort-references
-  "Sorts message-references sequence primary by clock value,
-  breaking ties by `:message-id`"
-  [messages message-references]
-  (sort-by (juxt (comp :clock-value (partial get messages) :message-id)
-                 :message-id)
-           message-references))
-
-(fx/defn group-chat-messages
-  "Takes chat-id, new messages + cofx and properly groups them
-  into the `:message-groups`index in db"
-  [{:keys [db]} chat-id messages]
-  {:db (reduce (fn [db [datemark grouped-messages]]
-                 (update-in db [:chats chat-id :message-groups datemark]
-                            (fn [message-references]
-                              (->> grouped-messages
-                                   (map (fn [{:keys [message-id timestamp whisper-timestamp]}]
-                                          {:message-id        message-id
-                                           :timestamp-str     (time/timestamp->time timestamp)
-                                           :timestamp         timestamp
-                                           :whisper-timestamp whisper-timestamp}))
-                                   (into (or message-references '()))
-                                   (sort-references (get-in db [:chats chat-id :messages]))))))
-               db
-               (group-by (comp time/day-relative :timestamp) messages))})
-
-(defn- get-referenced-ids
-  "Takes map of `message-id->messages` and returns set of maps of
-  `{:response-to-v2 message-id}`,
-   excluding any `message-id` which is already in the original map"
-  [message-id->messages]
-  (into #{}
-        (comp (keep (fn [{:keys [content]}]
-                      (let [response-to-id
-                            (select-keys content [:response-to-v2])]
-                        (when (some (complement nil?) (vals response-to-id))
-                          response-to-id))))
-              (remove #(some message-id->messages (vals %))))
-        (vals message-id->messages)))
 
 (fx/defn update-chats-in-app-db
   {:events [:chats-list/load-success]}
@@ -91,28 +49,34 @@
   (when-not (or (nil? current-chat-id)
                 (not= chat-id current-chat-id))
     (let [already-loaded-messages    (get-in db [:chats current-chat-id :messages])
+          loaded-unviewed-messages-ids (get-in db [:chats current-chat-id :loaded-unviewed-messages-ids] #{})
           ;; We remove those messages that are already loaded, as we might get some duplicates
-          new-messages               (remove (comp already-loaded-messages :message-id)
-                                             messages)
-          unviewed-message-ids       (reduce
-                                      (fn [acc {:keys [seen message-id] :as message}]
-                                        (if (not seen)
-                                          (conj acc message-id)
-                                          acc))
-                                      #{}
-                                      new-messages)
+          {:keys [all-messages
+                  new-messages
+                  unviewed-message-ids]} (reduce (fn [{:keys [all-messages] :as acc}
+                                                      {:keys [seen message-id] :as message}]
+                                                   (cond-> acc
+                                                     (not seen)
+                                                     (update :unviewed-message-ids conj message-id)
 
-          indexed-messages           (index-messages new-messages)
-          new-message-ids            (keys indexed-messages)]
+                                                     (nil? (get all-messages message-id))
+                                                     (update :new-messages conj message)
+
+                                                     :always
+                                                     (update :all-messages assoc message-id message)))
+                                                 {:all-messages already-loaded-messages
+                                                  :unviewed-message-ids loaded-unviewed-messages-ids
+                                                  :new-messages []}
+                                                 messages)]
       (fx/merge cofx
                 {:db (-> db
-                         (update-in [:chats current-chat-id :loaded-unviewed-messages-ids] clojure.set/union  unviewed-message-ids)
+                         (assoc-in [:chats current-chat-id :loaded-unviewed-messages-ids] unviewed-message-ids)
                          (assoc-in [:chats current-chat-id :messages-initialized?] true)
-                         (update-in [:chats current-chat-id :messages] merge indexed-messages)
+                         (assoc-in [:chats current-chat-id :messages] all-messages)
+                         (update-in [:chats current-chat-id :message-list] message-list/add-many new-messages)
                          (assoc-in [:chats current-chat-id :cursor] cursor)
                          (assoc-in [:chats current-chat-id :all-loaded?]
                                    (empty? cursor)))}
-                (group-chat-messages current-chat-id new-messages)
                 (chat-model/mark-messages-seen current-chat-id)))))
 
 (fx/defn load-more-messages

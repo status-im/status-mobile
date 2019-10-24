@@ -85,6 +85,31 @@
   (when address
     (get-shortened-address (eip55/address->checksum (ethereum/normalized-address address)))))
 
+;; debounce, taken from https://github.com/johnswanson/re-frame-debounce-fx
+;    {:dispatch-debounce {:key :search
+;                         :event [:search value]
+;                         :delay 250}}))
+
+(def registered-keys (atom nil))
+
+(defn dispatch-if-not-superceded [{:keys [key delay event time-received]}]
+  (when (= time-received (get @registered-keys key))
+    ;; no new events on this key!
+    (re-frame/dispatch event)))
+
+(defn dispatch-debounced [{:keys [delay] :as debounce}]
+  (js/setTimeout
+   (fn [] (dispatch-if-not-superceded debounce))
+   delay))
+
+(re-frame/reg-fx
+ :dispatch-debounce
+ (fn dispatch-debounce [debounces]
+   (doseq [debounce debounces]
+     (let [ts (.getTime (js/Date.))]
+       (swap! registered-keys assoc (:key debounce) ts)
+       (dispatch-debounced (assoc debounce :time-received ts))))))
+
 ;; background-timer
 
 (defn set-timeout [cb ms]

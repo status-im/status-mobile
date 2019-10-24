@@ -2,6 +2,8 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.data-store.messages :as data-store.messages]
+
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.multiaccounts.logout.core :as multiaccounts.logout]
@@ -163,7 +165,10 @@
 (handlers/register-handler-fx
  :multiaccounts.logout.ui/logout-confirmed
  (fn [cofx _]
-   (multiaccounts.logout/logout cofx)))
+   (fx/merge
+    cofx
+    (data-store.messages/save-messages)
+    (multiaccounts.logout/logout))))
 
 ;; multiaccounts update module
 
@@ -630,11 +635,6 @@
  :chat/disable-cooldown
  (fn [cofx _]
    (chat/disable-chat-cooldown cofx)))
-
-(handlers/register-handler-fx
- :message/add
- (fn [cofx [_ messages]]
-   (chat.message/receive-many cofx messages)))
 
 (handlers/register-handler-fx
  :message/update-message-status
@@ -1237,12 +1237,6 @@
    (hardwallet/navigate-to-keycard-settings cofx)))
 
 ;; transport module
-
-(handlers/register-handler-fx
- :transport/messages-received
- [handlers/logged-in (re-frame/inject-cofx :random-id-generator)]
- (fn [cofx [_ js-error js-messages chat-id]]
-   (transport.message/receive-whisper-messages cofx js-error js-messages chat-id)))
 
 (handlers/register-handler-fx
  :transport/send-status-message-error

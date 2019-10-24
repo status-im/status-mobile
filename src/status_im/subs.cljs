@@ -731,18 +731,41 @@
    (:public? chat)))
 
 (re-frame/reg-sub
+ :chats/message-list
+ :<- [:chats/current-chat]
+ (fn [chat]
+   (:message-list chat)))
+
+(re-frame/reg-sub
+ :chats/messages
+ :<- [:chats/current-chat]
+ (fn [chat]
+   (:messages chat)))
+
+(defn hydrate-messages
+  "Pull data from messages and add it to the sorted list"
+  [message-list messages]
+  (keep #(if (= :message (% :type))
+           (when-let [message (messages (% :message-id))]
+             (merge message %))
+           %)
+        message-list))
+
+(re-frame/reg-sub
  :chats/current-chat-messages-stream
- :<- [:chats/current-chat-messages]
- :<- [:chats/current-chat-message-groups]
+ :<- [:chats/message-list]
+ :<- [:chats/messages]
  :<- [:chats/messages-gaps]
  :<- [:chats/range]
  :<- [:chats/all-loaded?]
  :<- [:chats/public?]
- (fn [[messages message-groups messages-gaps range all-loaded? public?]]
-   (-> (chat.db/sort-message-groups message-groups messages)
-       (chat.db/messages-with-datemarks
-        messages messages-gaps range all-loaded? public?)
-       chat.db/messages-stream)))
+ (fn [[message-list messages messages-gaps range all-loaded? public?]]
+   (-> (if message-list
+         (array-seq (.-values message-list))
+         [])
+       (chat.db/add-datemarks)
+       (hydrate-messages messages)
+       (chat.db/add-gaps messages-gaps range all-loaded? public?))))
 
 (re-frame/reg-sub
  :chats/current-chat-intro-status
@@ -1585,7 +1608,7 @@
  (fn [[contacts current-multiaccount] [_ identity]]
    (let [me? (= (:public-key current-multiaccount) identity)]
      (if me?
-       {:ens-name (:name current-multiaccount)
+       {:ens-name (:preferred-name current-multiaccount)
         :alias (gfycat/generate-gfy identity)}
        (let [contact (or (contacts identity)
                          (contact.db/public-key->new-contact identity))]
@@ -1593,6 +1616,29 @@
                        (:name contact))
           :alias (or (:alias contact)
                      (gfycat/generate-gfy identity))})))))
+
+(re-frame/reg-sub
+ :messages/quote-info
+ :<- [:chats/messages]
+ :<- [:contacts/contacts]
+ :<- [:multiaccount]
+ (fn [[messages contacts current-multiaccount] [_ message-id]]
+   (when-let [message (get messages message-id)]
+     (let [identity (:from message)
+           me? (= (:public-key current-multiaccount) identity)]
+       (if me?
+         {:quote       {:from  identity
+                        :text (get-in message [:content :text])}
+          :ens-name (:preferred-name current-multiaccount)
+          :alias (gfycat/generate-gfy identity)}
+         (let [contact (or (contacts identity)
+                           (contact.db/public-key->new-contact identity))]
+           {:quote     {:from  identity
+                        :text (get-in message [:content :text])}
+            :ens-name  (when (:ens-verified contact)
+                         (:name contact))
+            :alias (or (:alias contact)
+                       (gfycat/generate-gfy identity))}))))))
 
 (re-frame/reg-sub
  :contacts/all-contacts-not-in-current-chat

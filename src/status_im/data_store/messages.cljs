@@ -17,7 +17,7 @@
 
 (defn ->rpc [message]
   (-> message
-      (dissoc :js-obj :dedup-id)
+      (dissoc :dedup-id)
       (update :message-type name)
       (update :outgoing-status #(if % (name %) ""))
       (utils/update-if-present :content prepare-content)
@@ -109,8 +109,24 @@
  (fn [messages]
    (save-messages-rpc messages)))
 
-(fx/defn save-message [cofx message]
-  {::save-message [message]})
+(fx/defn save-messages [{:keys [db]}]
+  (when-let [messages (vals (:messages/stored db))]
+    ;; Pull message from database to pick up most recent changes, default to
+    ;; stored one in case it has been offloaded
+    (let [hydrated-messages (map #(get-in db [:chats (-> % :content :chat-id) :messages (:message-id %)] %) messages)]
+      {:db (dissoc db :messages/stored)
+       ::save-message hydrated-messages})))
+
+(fx/defn handle-save-messages
+  {:events [::save-messages]}
+  [cofx]
+  (save-messages cofx))
+
+(fx/defn save-message [{:keys [db]} {:keys [message-id] :as message}]
+  {:db (assoc-in db [:messages/stored message-id] message)
+   :dispatch-debounce [{:key :save-messages
+                        :event [::save-messages]
+                        :delay 500}]})
 
 (fx/defn delete-message [cofx id]
   (delete-message-rpc id))

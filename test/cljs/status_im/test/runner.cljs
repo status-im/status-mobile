@@ -7,7 +7,6 @@
             [status-im.test.chat.commands.input]
             [status-im.test.chat.db]
             [status-im.test.chat.models.input]
-            [status-im.test.chat.models.loading]
             [status-im.test.chat.models.message-content]
             [status-im.test.chat.models.message]
             [status-im.test.chat.models]
@@ -85,7 +84,6 @@
  'status-im.test.chat.db
  'status-im.test.chat.models
  'status-im.test.chat.models.input
- 'status-im.test.chat.models.loading
  'status-im.test.chat.models.message
  'status-im.test.chat.models.message-content
  'status-im.test.chat.views.photos
