@@ -1,4 +1,5 @@
 import random
+import string
 
 from support.utilities import get_merged_txs_list
 from tests import marks, unique_password, common_password
@@ -517,6 +518,38 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         if total_eth_from_two_accounts != expected_balance:
             self.driver.fail('Total wallet balance %s != of Status account (%s) + SubAccount (%s)' % (
                 total_eth_from_two_accounts, balance_of_status_account, balance_of_sub_account))
+
+    @marks.testrail_id(6235)
+    @marks.medium
+    def test_can_change_account_settings(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        status_account_address = wallet_view.get_wallet_address()
+        wallet_view.account_options_button.click()
+
+        wallet_view.just_fyi('open Account Settings screen and check that all elements are shown')
+        wallet_view.account_settings_button.click()
+        for text in 'On Status tree', status_account_address, "m/44'/60'/0'/0/0":
+            if not wallet_view.element_by_text(text).is_element_displayed():
+                self.errors.append("'%s' text is not shown on Account Settings screen!" % text)
+
+        wallet_view.just_fyi('change account name/color and verified applied changes')
+        account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+        wallet_view.account_name_input.send_keys(account_name)
+        wallet_view.account_color_button.select_color_by_position(1)
+        wallet_view.apply_settings_button.click()
+        wallet_view.element_by_text('This device').scroll_to_element()
+        wallet_view.back_button.click()
+        wallet_view.back_button.click()
+        account_button = wallet_view.get_account_by_name(account_name)
+        if not account_button.is_element_displayed():
+            self.driver.fail('Account name was not changed')
+        if not account_button.color_matches('multi_account_color.png'):
+            self.driver.fail('Account color does not match expected')
+
+        self.verify_no_errors()
 
 
 @marks.transaction

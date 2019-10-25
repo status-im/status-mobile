@@ -33,18 +33,18 @@ def get_username(device_home):
 
 
 def create_new_group_chat(device_1_home, device_2_home, chat_name):
-    # device 2: get public key and default username
+    device_2_home.just_fyi('get public key and default username')
     device_2_public_key = device_2_home.get_public_key()
     device_2_default_username = get_username(device_2_home)
 
-    # device 1: add device 2 as contact
+    device_1_home.just_fyi('add device 2 as contact')
     device_1_chat = device_1_home.add_contact(device_2_public_key)
     device_1_chat.get_back_to_home_view()
 
-    # device 1: create group chat with some user
+    device_1_home.just_fyi('create group chat with some user')
     device_1_chat = device_1_home.create_group_chat([device_2_default_username], chat_name)
 
-    # device 2: open group chat
+    device_2_home.just_fyi('navigate to group chat')
     device_2_chat = device_2_home.get_chat_with_user(chat_name).click()
 
     return device_1_chat, device_2_chat
@@ -66,6 +66,13 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         device_1_home, device_2_home = create_users(self.drivers[0], self.drivers[1])
         chat_name = device_1_home.get_public_chat_name()
+        device_1_home.plus_button.click()
+
+        device_1_home.new_group_chat_button.click()
+        if not device_1_home.element_by_text('Invite friends').is_element_displayed():
+            self.errors.append("No placeholder is shown when there are no contacts")
+        device_1_home.get_back_to_home_view()
+
         device_1_chat, device_2_chat = create_and_join_group_chat(device_1_home, device_2_home, chat_name)
 
         for chat in (device_1_chat, device_2_chat):

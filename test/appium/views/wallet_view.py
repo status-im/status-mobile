@@ -69,6 +69,11 @@ class OptionsButton(BaseButton):
         super(OptionsButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('options-menu-button')
 
+class AccountOptionsButton(BaseButton):
+    def __init__(self, driver, account_name):
+        super(AccountOptionsButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('(//*[@text="%s"]/..//*[@content-desc="icon"])[2]' % account_name)
+
 
 class ManageAssetsButton(BaseButton):
     def __init__(self, driver):
@@ -305,7 +310,7 @@ class AccountColorButton(BaseButton):
     def __init__(self, driver):
         super(AccountColorButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Account color']"
-                                                   "/following-sibling::android.view.ViewGroup")
+                                                   "/following-sibling::android.view.ViewGroup[1]")
 
     def select_color_by_position(self, position: int):
         self.click()
@@ -318,6 +323,15 @@ class FinishButton(BaseButton):
         super(FinishButton, self).__init__(driver)
         self.locator = self.Locator.text_selector('Finish')
 
+class AccountSettingsButton(BaseButton):
+    def __init__(self, driver):
+        super(AccountSettingsButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Account settings')
+
+class ApplySettingsButton(BaseButton):
+    def __init__(self, driver):
+        super(ApplySettingsButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Apply')
 
 class WalletView(BaseView):
     def __init__(self, driver):
@@ -367,6 +381,11 @@ class WalletView(BaseView):
         self.account_name_input = AccountNameInput(self.driver)
         self.account_color_button = AccountColorButton(self.driver)
         self.finish_button = FinishButton(self.driver)
+
+        # individual account settings
+        self.account_settings_button = AccountSettingsButton(self.driver)
+        self.apply_settings_button = ApplySettingsButton(self.driver)
+        self.account_options_button = AccountOptionsButton(self.driver, account_name='Status account')
 
     def get_usd_total_value(self):
         import re
@@ -428,6 +447,9 @@ class WalletView(BaseView):
 
     def asset_checkbox_by_name(self, asset_name):
         return AssetCheckBox(self.driver, asset_name)
+
+    def account_options_by_name(self, account_name):
+        return AccountOptionsButton(self.driver, account_name)
 
     def select_asset(self, *args):
         self.multiaccount_more_options.click()
