@@ -123,45 +123,48 @@
                        :style {:width image-size :height image-size}}])])))
 
 (defn choose-key [{:keys [multiaccounts selected-id view-height]}]
-  [react/scroll-view {:content-container-style {:flex 1
-                                                :justify-content (if (< view-height 600) :flex-start :flex-end)
-                                                :margin-top (if (< view-height 600) 20 0)
-                                                ;; We have to align top multiaccount entry
-                                                ;; with top key storage entry on the next screen
-                                                :margin-bottom (if (< view-height 600)
-                                                                 0
-                                                                 (/ view-height 12))}}
-   (for [[acc accessibility-n] (map vector multiaccounts (range (count multiaccounts)))]
-     (let [selected? (= (:id acc) selected-id)
-           public-key (get-in acc [:derived constants/path-whisper-keyword :publicKey])]
-       ^{:key public-key}
-       [react/touchable-highlight
-        {:accessibility-label (keyword (str "select-account-button-" accessibility-n))
-         :on-press #(re-frame/dispatch [:intro-wizard/on-key-selected (:id acc)])}
-        [react/view {:style (styles/list-item selected?)}
+  [react/view
+   {:style {:flex            1
+            :justify-content :center}}
+   [react/view
+    {:style {:flex       1
+             :height     200
+             :max-height 338}}
+    [react/scroll-view
+     {:content-container-style {:justify-content :flex-start}}
+     (for [[acc accessibility-n] (map vector multiaccounts (range (count multiaccounts)))]
+       (let [selected? (= (:id acc) selected-id)
+             public-key (get-in acc [:derived constants/path-whisper-keyword :publicKey])]
+         ^{:key public-key}
+         [react/touchable-highlight
+          {:accessibility-label (keyword (str "select-account-button-" accessibility-n))
+           :on-press #(re-frame/dispatch [:intro-wizard/on-key-selected (:id acc)])}
+          [react/view {:style (styles/list-item selected?)}
 
-         [react/image {:source      {:uri (identicon/identicon public-key)}
-                       :resize-mode :cover
-                       :style       styles/multiaccount-image}]
-         [react/view {:style {:margin-horizontal 16 :flex 1 :justify-content :space-between}}
-          [react/text {:style (assoc styles/wizard-text :text-align :left
-                                     :color colors/black
-                                     :font-weight "500")
-                       :number-of-lines 1
-                       :ellipsize-mode :middle}
-           (gfy/generate-gfy public-key)]
-          [react/text {:style (assoc styles/wizard-text
-                                     :text-align :left
-                                     :font-family "monospace")}
-           (utils/get-shortened-address public-key)]]
-         [radio/radio selected?]]]))])
+           [react/image {:source      {:uri (identicon/identicon public-key)}
+                         :resize-mode :cover
+                         :style       styles/multiaccount-image}]
+           [react/view {:style {:margin-horizontal 16 :flex 1 :justify-content :space-between}}
+            [react/text {:style (assoc styles/wizard-text :text-align :left
+                                       :color colors/black
+                                       :font-weight "500")
+                         :number-of-lines 1
+                         :ellipsize-mode :middle}
+             (gfy/generate-gfy public-key)]
+            [react/text {:style (assoc styles/wizard-text
+                                       :text-align :left
+                                       :font-family "monospace")}
+             (utils/get-shortened-address public-key)]]
+           [radio/radio selected?]]]))]]])
 
 (defn storage-entry [{:keys [type icon icon-width icon-height
                              image image-selected image-width image-height
                              title desc]} selected-storage-type]
   (let [selected? (= type selected-storage-type)]
     [react/view
-     [react/view {:style {:padding-top 14 :padding-bottom 4}}
+     {:style {:flex 1
+              :padding-top 14}}
+     [react/view {:style {:padding-bottom 4}}
       [react/text {:style (assoc styles/wizard-text :text-align :left :margin-left 16)}
        (i18n/label type)]]
      [react/touchable-highlight
@@ -200,16 +203,20 @@
                         :image-height   24
                         :title          :keycard
                         :desc           :keycard-desc}]]
-    [react/view {:style {:flex 1
-                         :justify-content (if (< view-height 600) :flex-start :flex-end)
-                         ;; We have to align top storage entry
-                         ;; with top multiaccount entry on the previous screen
-                         :margin-bottom (if (< view-height 600)
-                                          0
-                                          (+ (- 322 226) (/ view-height 12)))}}
-     [storage-entry (first storage-types) selected-storage-type]
-     [react/view {:style {:min-height 16 :max-height 16}}]
-     [storage-entry (second storage-types) selected-storage-type]]))
+    [react/view
+     {:style {:flex            1
+              :justify-content :center}}
+     [react/view
+      {:style
+       {:max-height       420
+        :flex             1
+        :justify-content  :flex-start}}
+      [react/view {:style {:justify-content :flex-start
+                           :height          264}}
+       [storage-entry (first storage-types) selected-storage-type]
+       [react/view {:style {:flex       1
+                            :max-height 16}}]
+       [storage-entry (second storage-types) selected-storage-type]]]]))
 
 (defn password-container [confirm-failure? view-width]
   (let [horizontal-margin 16]
@@ -315,7 +322,8 @@
                                    "-alt") (step-kw-to-num step)))))]
      (cond (#{:choose-key :select-key-storage} step)
            ; Use nested text for the "Learn more" link
-           [react/nested-text {:style styles/wizard-text}
+           [react/nested-text {:style (merge styles/wizard-text
+                                             {:height 60})}
             (str (i18n/label (keyword (str "intro-wizard-text" (step-kw-to-num step)))) " ")
             [{:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet :learn-more
                                              {:title (i18n/label (if (= step :choose-key) :t/about-names-title :t/about-key-storage-title))

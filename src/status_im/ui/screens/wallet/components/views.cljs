@@ -332,6 +332,8 @@
       [react/view styles/network-icon
        [vector-icons/icon :main-icons/network {:color :white}]]
       [react/text
+       {:style {:flex         1
+                :padding-left 16}}
        (cond (ethereum/testnet? network-id)
              (i18n/label :t/testnet-text {:testnet (get-in ethereum/chains [(ethereum/chain-id->chain-keyword network-id) :name] "Unknown")})
 
