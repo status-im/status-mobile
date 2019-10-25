@@ -83,7 +83,9 @@
       (if (ethereum/address? recipient)
         (let [checksum (eip55/address->checksum recipient)]
           (if (eip55/valid-address-checksum? checksum)
-            {:db       (assoc-in db [:wallet :send-transaction :to] checksum)
+            {:db       (-> db
+                           (assoc-in [:wallet :send-transaction :to] checksum)
+                           (assoc-in [:wallet :send-transaction :to-name] nil))
              :dispatch [:navigate-back]}
             {:ui/show-error (i18n/label :t/wallet-invalid-address-checksum {:data recipient})}))
         {:ui/show-error (i18n/label :t/wallet-invalid-address {:data recipient})}))))
