@@ -7,7 +7,7 @@
     "prepare": "patch-package"
   },
   "dependencies": {
-    "assert": "^1.4.1",
+    "assert": "^2.0.0",
     "bignumber.js": "git+https://github.com/status-im/bignumber.js.git#v4.0.2-status",
     "buffer": "^3.6.0",
     "chance": "^1.0.12",
