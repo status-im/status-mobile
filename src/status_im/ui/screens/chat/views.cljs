@@ -21,7 +21,6 @@
             [status-im.ui.screens.chat.message.datemark :as message-datemark]
             [status-im.ui.screens.chat.message.gap :as gap]
             [status-im.ui.screens.chat.message.message :as message]
-            [status-im.ui.screens.chat.message.options :as message-options]
             [status-im.ui.screens.chat.stickers.views :as stickers]
             [status-im.ui.screens.chat.styles.main :as style]
             [status-im.ui.screens.chat.toolbar-content :as toolbar-content]
@@ -398,7 +397,6 @@
   (letsubs [{:keys [public? chat-id chat-name show-input? group-chat contact] :as current-chat}
             [:chats/current-chat]
             current-chat-id       [:chats/current-chat-id]
-            show-message-options? [:chats/current-chat-ui-prop :show-message-options?]
             show-stickers?        [:chats/current-chat-ui-prop :show-stickers?]
             two-pane-ui-enabled?  [:two-pane-ui-enabled?]
             anim-translate-y      (animation/create-value
@@ -438,9 +436,7 @@
      (when show-input?
        [input/container])
      (when show-stickers?
-       [stickers/stickers-view])
-     (when show-message-options?
-       [message-options/view])]))
+       [stickers/stickers-view])]))
 
 (defview chat []
   [chat-root false])
