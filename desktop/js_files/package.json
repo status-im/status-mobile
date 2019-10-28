@@ -37,7 +37,7 @@
     "react-native-keychain": "git+https://github.com/status-im/react-native-keychain.git#v.3.0.0-4-status",
     "react-native-languages": "git+https://github.com/status-im/react-native-languages.git#v0.1.1-status",
     "react-native-navigation-twopane": "git+https://github.com/status-im/react-native-navigation-twopane.git#v0.0.2-status",
-    "react-native-os": "^1.1.0",
+    "react-native-os": "^1.2.5",
     "react-native-splash-screen": "^3.0.6",
     "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#0.33.16-status-rn049-desktop",
     "react-navigation": "^3.11.0",
