@@ -11,7 +11,6 @@
 ;;Contact
 
 (spec/def :contact/address (spec/nilable :global/address))
-(spec/def :contact/fcm-token (spec/nilable string?))
 (spec/def :contact/last-online (spec/nilable int?))
 (spec/def :contact/last-updated (spec/nilable int?))
 (spec/def :contact/name (spec/nilable string?))
@@ -31,8 +30,7 @@
 (spec/def :contact/contact (spec/keys  :req-un [:contact/address
                                                 :contact/public-key
                                                 :contact/system-tags]
-                                       :opt-un [:contact/fcm-token
-                                                :contact/name
+                                       :opt-un [:contact/name
                                                 :contact/photo-path
                                                 :contact/last-online
                                                 :contact/last-updated

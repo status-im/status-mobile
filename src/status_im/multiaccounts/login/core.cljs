@@ -11,7 +11,6 @@
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
-            [status-im.notifications.core :as notifications]
             [status-im.protocol.core :as protocol]
             [status-im.stickers.core :as stickers]
             [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
@@ -131,15 +130,14 @@
 
 (fx/defn get-config-callback
   {:events [::get-config-callback]}
-  [{:keys [db] :as cofx} config stored-pns]
+  [{:keys [db] :as cofx} config]
   (let [[{:keys [address] :as multiaccount} current-network networks] (deserialize-config config)
         network-id (str (get-in networks [current-network :config :NetworkId]))]
     (fx/merge cofx
               {:db (assoc db
                           :networks/current-network current-network
                           :networks/networks networks
-                          :multiaccount multiaccount)
-               :notifications/request-notifications-permissions nil}
+                          :multiaccount multiaccount)}
               ;; NOTE: initializing mailserver depends on user mailserver
               ;; preference which is why we wait for config callback
               (protocol/initialize-protocol {:default-mailserver true})
@@ -151,14 +149,11 @@
               (mobile-network/on-network-status-change)
               (chaos-mode/check-chaos-mode)
               (when-not platform/desktop?
-                (initialize-wallet))
-              (when stored-pns
-                (notifications/process-stored-event address stored-pns)))))
+                (initialize-wallet)))))
 
 (fx/defn login-only-events
   [{:keys [db] :as cofx} address password save-password?]
-  (let [stored-pns      (:push-notifications/stored db)
-        auth-method     (:auth-method db)
+  (let [auth-method     (:auth-method db)
         new-auth-method (if save-password?
                           (when-not (or (= "biometric" auth-method) (= "password" auth-method))
                             (if (= auth-method "biometric-prepare") "biometric" "password"))
@@ -178,7 +173,7 @@
                  :on-success #(re-frame/dispatch [::protocol/initialize-protocol {:mailservers (or % [])}])}
                 {:method     "settings_getConfigs"
                  :params     [["multiaccount" "current-network" "networks"]]
-                 :on-success #(re-frame/dispatch [::get-config-callback % stored-pns])}]}
+                 :on-success #(re-frame/dispatch [::get-config-callback %])}]}
               (when save-password?
                 (keychain/save-user-password address password))
               (when new-auth-method
@@ -243,8 +238,7 @@
                                :multiaccount))
                ::json-rpc/call
                [{:method "web3_clientVersion"
-                 :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]
-               :notifications/get-fcm-token nil}
+                 :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]}
               ;;FIXME
               (when nodes
                 (fleet/set-nodes :eth.contract nodes))

@@ -21,7 +21,7 @@
           expected  {:system-tags #{:contact/added}
                      :this-should-be-kept true
                      :last-updated 2
-                     :device-info nil
+
                      :name "name-v2"
                      :photo-path "photo-v2"}]
       (is (= expected (pairing/merge-contact contact-1 contact-2)))))
@@ -35,7 +35,7 @@
                      :photo-path "photo-v2"}
           expected  {:system-tags #{:contact/added}
                      :last-updated 2
-                     :device-info nil
+
                      :name "name-v2"
                      :photo-path "photo-v2"}]
       (is (= expected (pairing/merge-contact contact-1 contact-2)))))
@@ -47,7 +47,7 @@
                      :photo-path "photo-v2"}
           expected  {:system-tags #{:contact/added}
                      :last-updated 2
-                     :device-info nil
+
                      :name "name-v2"
                      :photo-path "photo-v2"}]
       (is (= expected (pairing/merge-contact contact-1 contact-2)))))
@@ -62,7 +62,7 @@
                      :photo-path "photo-v2"}
           expected  {:system-tags #{}
                      :last-updated 2
-                     :device-info nil
+
                      :name "name-v2"
                      :photo-path "photo-v2"}]
       (is (= expected (pairing/merge-contact contact-1 contact-2)))))
@@ -77,7 +77,7 @@
                      :photo-path "photo-v2"}
           expected  {:system-tags #{:contact/added}
                      :last-updated 2
-                     :device-info nil
+
                      :name "name-v2"
                      :photo-path "photo-v2"}]
       (is (= expected (pairing/merge-contact contact-1 contact-2)))))
@@ -89,42 +89,7 @@
                      :photo-path "photo-v2"}
           expected  {:system-tags #{}
                      :last-updated 2
-                     :device-info nil
-                     :name "name-v2"
-                     :photo-path "photo-v2"}]
-      (is (= expected (pairing/merge-contact contact-1 contact-2)))))
-  (testing "device-info"
-    (let [contact-1 {:system-tags #{:contact/added}
-                     :last-updated 1
-                     :name "name-v1"
-                     :device-info {"1" {:timestamp 1
-                                        :fcm-token "token-1"
-                                        :id "1"}
-                                   "2" {:timestamp 1
-                                        :fcm-token "token-2"
-                                        :id "2"}}
-                     :photo-path "photo-v1"}
-          contact-2 {:system-tags #{:contact/added}
-                     :last-updated 2
-                     :name "name-v2"
-                     :device-info {"2" {:timestamp 2
-                                        :fcm-token "token-2"
-                                        :id "2"}
-                                   "3" {:timestamp 2
-                                        :fcm-token "token-3"
-                                        :id "3"}}
-                     :photo-path "photo-v2"}
-          expected  {:system-tags #{:contact/added}
-                     :last-updated 2
-                     :device-info {"1" {:timestamp 1
-                                        :fcm-token "token-1"
-                                        :id "1"}
-                                   "2" {:timestamp 2
-                                        :fcm-token "token-2"
-                                        :id "2"}
-                                   "3" {:timestamp 2
-                                        :fcm-token "token-3"
-                                        :id "3"}}
+
                      :name "name-v2"
                      :photo-path "photo-v2"}]
       (is (= expected (pairing/merge-contact contact-1 contact-2))))))
@@ -179,12 +144,12 @@
                                      "contact-2" old-contact-2
                                      "contact-4" contact-4
                                      "contact-5" remote-contact-5}}
-            expected {"contact-1" (assoc new-contact-1 :device-info nil)
-                      "contact-2" (assoc new-contact-2 :device-info nil)
+            expected {"contact-1"  new-contact-1
+                      "contact-2"  new-contact-2
                       "contact-3" contact-3
                       "contact-4" (assoc contact-4
                                          :photo-path "generated")
-                      "contact-5" (assoc local-contact-5 :device-info nil)}]
+                      "contact-5"  local-contact-5}]
         (testing "not coming from us"
           (is (not (:db (pairing/handle-sync-installation cofx sync-message "not-us")))))
         (testing "coming from us"
@@ -226,7 +191,6 @@
                                            "2" {:has-bundle? false
                                                 :installation-id "2"}}}}
         pair-message {:device-type "ios"
-                      :fcm-token "fcm-token"
                       :name "name"
                       :installation-id "1"}]
     (testing "not coming from us"
@@ -234,7 +198,6 @@
     (testing "coming from us"
       (is (=  [["1"
                 {:name "name"
-                 :fcmToken "fcm-token"
                  :deviceType "ios"}]]
               (:pairing/set-installation-metadata
                (pairing/handle-pair-installation cofx pair-message 1 "us")))))))

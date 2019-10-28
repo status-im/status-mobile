@@ -27,9 +27,6 @@
 (def webview                #js {:WebView #js {}})
 (def status-keycard         #js {:default #js {}})
 
-(defrecord Notification [])
-(def react-native-firebase  #js {:default #js {:notifications #js {:Notification Notification}}})
-
 (def desktop-linking #js {:addEventListener (fn [])})
 (def desktop-shortcuts #js {:addEventListener (fn [])})
 

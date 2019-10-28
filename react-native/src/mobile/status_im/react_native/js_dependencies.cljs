@@ -20,7 +20,6 @@
 (def dismiss-keyboard       (js/require "dismissKeyboard"))
 (def image-crop-picker      (js/require "react-native-image-crop-picker"))
 (def image-resizer          (js/require "react-native-image-resizer"))
-(def react-native-firebase  (js/require "react-native-firebase"))
 (def snoopy                 (js/require "rn-snoopy"))
 (def snoopy-filter          (js/require "rn-snoopy/stream/filter"))
 (def snoopy-bars            (js/require "rn-snoopy/stream/bars"))

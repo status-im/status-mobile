@@ -150,14 +150,15 @@
     [(when show-backup-seed?
        [components.common/counter {:size 22} 1]) :chevron]
     :on-press            #(re-frame/dispatch [:navigate-to :privacy-and-security])}
-   {:icon                :main-icons/notification
-    :title               :t/notifications
-    :accessibility-label :notifications-button
-    ;; TODO commented out for now, uncomment when notifications-settings view
-    ;; is populated. Then remove :on-press below
-    ;; :on-press            #(re-frame/dispatch [:navigate-to :notifications-settings])
-    :on-press            #(.openURL react/linking "app-settings://notification/status-im")
-    :accessories         [:chevron]}
+   ;; TODO commented out for now because it will be enabled for android notifications
+   #_{:icon                :main-icons/notification
+      :title               :t/notifications
+      :accessibility-label :notifications-button
+      ;; TODO commented out for now, uncomment when notifications-settings view
+      ;; is populated. Then remove :on-press below
+      ;; :on-press            #(re-frame/dispatch [:navigate-to :notifications-settings])
+      :on-press            #(.openURL react/linking "app-settings://notification/status-im")
+      :accessories         [:chevron]}
    {:icon                :main-icons/mobile
     :title               :t/sync-settings
     :accessibility-label :sync-settings-button

@@ -5,13 +5,12 @@
             [status-im.ui.screens.wallet.add-new.views :as add-new]
             [fiddle.frame :as frame]))
 
-;:generate-key
-;:choose-key
-;:select-key-storage
-;:create-code
-;:confirm-code
-;:enable-fingerprint
-;:enable-notifications
+;;:generate-key
+;;:choose-key
+;;:select-key-storage
+;;:create-code
+;;:confirm-code
+;;:enable-fingerprint
 (re-frame/reg-sub :intro-wizard (fn [_] {:step :generate-key  :generating-keys? false}))
 
 (defn screens []

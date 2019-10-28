@@ -79,7 +79,6 @@
    :create-multiaccount-select-key-storage           intro/wizard-select-key-storage
    :create-multiaccount-create-code                  intro/wizard-create-code
    :create-multiaccount-confirm-code                 intro/wizard-confirm-code
-   :create-multiaccount-enable-notifications         intro/wizard-enable-notifications
    :recover-multiaccount-enter-phrase                intro/wizard-enter-phrase
    :recover-multiaccount-success                     intro/wizard-recovery-success
    :recover-multiaccount-select-storage              intro/wizard-select-key-storage

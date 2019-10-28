@@ -4,7 +4,6 @@
    [status-im.multiaccounts.model :as multiaccounts.model]
    [status-im.transport.filters.core :as transport.filters]
    [status-im.contact.db :as contact.db]
-   [status-im.contact.device-info :as device-info]
    [status-im.ethereum.core :as ethereum]
    [status-im.data-store.contacts :as contacts-store]
    [status-im.mailserver.core :as mailserver]
@@ -43,13 +42,10 @@
 
 (defn- own-info
   [db]
-  (let [{:keys [name preferred-name photo-path address]} (:multiaccount db)
-        fcm-token (get-in db [:notifications :fcm-token])]
+  (let [{:keys [name preferred-name photo-path address]} (:multiaccount db)]
     {:name          (or preferred-name name)
      :profile-image photo-path
-     :address       address
-     :device-info   (device-info/all {:db db})
-     :fcm-token     fcm-token}))
+     :address       address}))
 
 (fx/defn upsert-contact
   [{:keys [db] :as cofx}
@@ -105,7 +101,7 @@
   [{{:contacts/keys [contacts] :as db} :db :as cofx}
    public-key
    timestamp
-   {:keys [name profile-image address fcm-token device-info] :as m}]
+   {:keys [name profile-image address] :as m}]
   ;; We need to convert to timestamp ms as before we were using now in ms to
   ;; set last updated
   ;; Using whisper timestamp mostly works but breaks in a few scenarios:
@@ -121,7 +117,7 @@
       (let [contact          (get contacts public-key)
 
             ;; Backward compatibility with <= 0.9.21, as they don't send
-            ;; fcm-token & address in contact updates
+            ;; address in contact updates
             contact-props
             (cond-> {:public-key   public-key
                      :photo-path   profile-image
@@ -129,14 +125,9 @@
                      :address      (or address
                                        (:address contact)
                                        (ethereum/public-key->address public-key))
-                     :device-info  (device-info/merge-info
-                                    timestamp
-                                    (:device-info contact)
-                                    device-info)
                      :last-updated timestamp-ms
                      :system-tags  (conj (get contact :system-tags #{})
-                                         :contact/request-received)}
-              fcm-token (assoc :fcm-token fcm-token))]
+                                         :contact/request-received)})]
         (upsert-contact cofx contact-props)))))
 
 (fx/defn initialize-contacts [cofx]
@@ -182,4 +173,3 @@
   {:events [:contacts/ens-names-verified]}
   [{:keys [db]} names]
   {:db (update db :contacts/contacts add-ens-names names)})
-

@@ -1,6 +1,6 @@
 (ns status-im.multiaccounts.update.core
   (:require [status-im.contact.db :as contact.db]
-            [status-im.contact.device-info :as device-info]
+
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.transport.message.contact :as message.contact]
             [status-im.transport.message.protocol :as protocol]
@@ -10,9 +10,8 @@
 
 (fx/defn multiaccount-update-message [{:keys [db] :as cofx}]
   (let [multiaccount (:multiaccount db)
-        fcm-token (get-in db [:notifications :fcm-token])
         {:keys [name preferred-name photo-path address]} multiaccount]
-    (message.contact/ContactUpdate. (or preferred-name name) photo-path address fcm-token (device-info/all cofx))))
+    (message.contact/ContactUpdate. (or preferred-name name) photo-path address nil nil)))
 
 (fx/defn send-multiaccount-update [cofx]
   (protocol/send

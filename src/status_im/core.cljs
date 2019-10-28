@@ -3,7 +3,6 @@
             [status-im.utils.error-handler :as error-handler]
             [status-im.utils.platform :as platform]
             [status-im.ui.components.react :as react]
-            [status-im.notifications.background :as background-messaging]
             [reagent.core :as reagent]
             status-im.transport.impl.receive
             status-im.transport.impl.send
@@ -23,6 +22,4 @@
   (utils.logs/init-logs)
   (error-handler/register-exception-handler!)
   (re-frame/dispatch [:init/app-started])
-  (.registerComponent react/app-registry "StatusIm" #(reagent/reactify-component app-root))
-  (when platform/android?
-    (.registerHeadlessTask react/app-registry "RNFirebaseBackgroundMessage" background-messaging/message-handler-fn)))
+  (.registerComponent react/app-registry "StatusIm" #(reagent/reactify-component app-root)))

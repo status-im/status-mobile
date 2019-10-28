@@ -84,13 +84,3 @@
   (testing "http://get.status.im/blah"
     (testing "it returns false"
       (is (not (links/deep-link? "http://get.status.im/blah"))))))
-
-(deftest process-stored-event
-  (testing "the url is in the database"
-    (testing "it returns the event"
-      (= "some-url"
-         (links/process-stored-event {:db {:universal-links/url "some-url"}}))))
-  (testing "the url is not in the database"
-    (testing "it returns nil"
-      (= nil
-         (links/process-stored-event {:db {}})))))

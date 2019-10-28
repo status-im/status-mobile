@@ -3,7 +3,6 @@
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.native-module.core :as status]
             [status-im.network.net-info :as network]
-            [status-im.notifications.core :as notifications]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.screens.db :refer [app-db]]
             [status-im.ui.screens.navigation :as navigation]
@@ -22,34 +21,21 @@
 (fx/defn initialize-app-db
   "Initialize db to initial state"
   [{{:keys [view-id hardwallet initial-props desktop/desktop
-            supported-biometric-auth push-notifications/stored network/type]} :db}]
+            supported-biometric-auth network/type]} :db}]
   {:db (assoc app-db
               :initial-props initial-props
               :desktop/desktop (merge desktop (:desktop/desktop app-db))
               :network/type type
               :hardwallet (dissoc hardwallet :secrets)
               :supported-biometric-auth supported-biometric-auth
-              :view-id view-id
-              :push-notifications/stored stored)})
+              :view-id view-id)})
 
 (fx/defn initialize-views
   [cofx]
   (let [{{:multiaccounts/keys [multiaccounts] :as db} :db} cofx]
     (if (empty? multiaccounts)
       (navigation/navigate-to-cofx cofx :intro nil)
-      (let [multiaccount-with-notification
-            (when-not platform/desktop?
-              (notifications/lookup-contact-pubkey-from-hash
-               cofx
-               (first (keys (:push-notifications/stored db)))))
-            selection-fn
-            (if (not-empty multiaccount-with-notification)
-              #(filter (fn [multiaccount]
-                         (= multiaccount-with-notification
-                            (:public-key multiaccount)))
-                       %)
-              #(sort-by :last-sign-in > %))
-            {:keys [address public-key photo-path name]} (first (selection-fn (vals multiaccounts)))]
+      (let [{:keys [address public-key photo-path name]} (first (#(sort-by :last-sign-in > %) (vals multiaccounts)))]
         (multiaccounts.login/open-login cofx address photo-path name public-key)))))
 
 (fx/defn initialize-multiaccounts
@@ -74,7 +60,6 @@
              ::restore-native-settings              nil
              ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts %])
              :ui/listen-to-window-dimensions-change nil
-             :notifications/init                    nil
              ::network/listen-to-network-info       nil
              :hardwallet/register-card-events       nil
              :hardwallet/check-nfc-support          nil

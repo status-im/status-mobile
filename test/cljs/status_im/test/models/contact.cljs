@@ -17,10 +17,7 @@
                     1
                     {:name "name"
                      :profile-image "image"
-                     :address "address"
-                     :device-info [{:id "1"
-                                    :fcm-token "token-1"}]
-                     :fcm-token "token"})
+                     :address "address"})
             contact (get-in actual [:db :contacts/contacts public-key])]
         (testing "it adds a new contact"
           (is (=  {:public-key       public-key
@@ -28,10 +25,6 @@
                    :name             "name"
                    :last-updated     1000
                    :system-tags      #{:contact/request-received}
-                   :device-info      {"1" {:id "1"
-                                           :timestamp 1
-                                           :fcm-token "token-1"}}
-                   :fcm-token        "token"
                    :address          "address"}
                   contact)))))
     (testing "the contact is already in contacts"
@@ -42,42 +35,21 @@
                                          :photo-path       "old-image"
                                          :name             "old-name"
                                          :last-updated     0
-                                         :device-info      {"1" {:id "1"
-                                                                 :timestamp 0
-                                                                 :fcm-token "token-1"}
-                                                            "2" {:id "2"
-                                                                 :timestamp 0
-                                                                 :fcm-token "token-2"}}
                                          :system-tags      #{:contact/added}
-                                         :fcm-token        "old-token"
                                          :address          "old-address"}}}}
                       public-key
                       1
                       {:name "new-name"
                        :profile-image "new-image"
-                       :device-info [{:id "2"
-                                      :fcm-token "token-2"}
-                                     {:id "3"
-                                      :fcm-token "token-3"}]
-                       :address "new-address"
-                       :fcm-token "new-token"})
+                       :address "new-address"})
               contact (get-in actual [:db :contacts/contacts public-key])]
           (testing "it updates the contact and adds contact/request-received to system tags"
             (is (=  {:public-key       public-key
                      :photo-path       "new-image"
                      :name             "new-name"
                      :last-updated     1000
-                     :device-info      {"1" {:id "1"
-                                             :fcm-token "token-1"
-                                             :timestamp 0}
-                                        "2" {:id "2"
-                                             :fcm-token "token-2"
-                                             :timestamp 1}
-                                        "3" {:id "3"
-                                             :fcm-token "token-3"
-                                             :timestamp 1}}
+
                      :system-tags      #{:contact/added :contact/request-received}
-                     :fcm-token        "new-token"
                      :address          "new-address"}
                     contact)))))
       (testing "timestamp is equal to last-updated"
@@ -88,14 +60,12 @@
                                          :name             "old-name"
                                          :last-updated     1000
                                          :system-tags      #{:contact/added}
-                                         :fcm-token        "old-token"
                                          :address          "old-address"}}}}
                       public-key
                       1
                       {:name "new-name"
                        :profile-image "new-image"
-                       :address "new-address"
-                       :fcm-token "new-token"})
+                       :address "new-address"})
               contact (get-in actual [:db :contacts/contacts public-key])]
           (testing "it does nothing"
             (is (nil? actual)))))
@@ -107,14 +77,12 @@
                                          :name             "old-name"
                                          :last-updated     1000
                                          :system-tags      #{:contact/added :contact/request-received}
-                                         :fcm-token        "old-token"
                                          :address          "old-address"}}}}
                       public-key
                       0
                       {:name "new-name"
                        :profile-image "new-image"
-                       :address "new-address"
-                       :fcm-token "new-token"})
+                       :address "new-address"})
               contact (get-in actual [:db :contacts/contacts public-key])]
           (testing "it does nothing"
             (is (nil? actual))))))
@@ -123,8 +91,7 @@
                     {:db {:contacts/contacts
                           {public-key {:public-key       public-key
                                        :photo-path       "old-image"
-                                       :device-info      {"1" {:id "1"
-                                                               :fcm-token "token-1"}}
+
                                        :name             "old-name"
                                        :last-updated     0
                                        :system-tags      #{:contact/added}}}}}
@@ -137,8 +104,7 @@
           (is (=  {:public-key       public-key
                    :photo-path       "new-image"
                    :name             "new-name"
-                   :device-info      {"1" {:id "1"
-                                           :fcm-token "token-1"}}
+
                    :last-updated     1000
                    :system-tags      #{:contact/added :contact/request-received}
                    :address          address} contact)))))

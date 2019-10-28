@@ -129,19 +129,6 @@ RCT_EXPORT_METHOD(initKeystore) {
 }
 
 ////////////////////////////////////////////////////////////////////
-#pragma mark - SendDataNotification method
-//////////////////////////////////////////////////////////////////// sendDataNotification
-RCT_EXPORT_METHOD(sendDataNotification:(NSString *)dataPayloadJSON
-                  tokensJSON:(NSString *)tokensJSON
-                  callback:(RCTResponseSenderBlock)callback) {
-    NSString* result = StatusgoSendDataNotification(dataPayloadJSON, tokensJSON);
-    callback(@[result]);
-#if DEBUG
-    NSLog(@"SendDataNotification() method called");
-#endif
-}
-
-////////////////////////////////////////////////////////////////////
 #pragma mark - SendLogs method
 //////////////////////////////////////////////////////////////////// sendLogs
 RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson

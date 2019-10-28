@@ -17,8 +17,6 @@ import java.util.List;
 
 import im.status.ethereum.keycard.RNStatusKeycardPackage;
 import im.status.ethereum.module.StatusPackage;
-import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
-import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
 public class MainApplication extends MultiDexApplication implements ReactApplication {
 
@@ -33,8 +31,6 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
             StatusPackage statusPackage = new StatusPackage(RootUtil.isDeviceRooted());
             List<ReactPackage> packages = new PackageList(this).getPackages();
             packages.add(statusPackage);
-            packages.add(new RNFirebaseMessagingPackage());
-            packages.add(new RNFirebaseNotificationsPackage());
             packages.add(new ReactNativeDialogsPackage());
             packages.add(new RNStatusKeycardPackage());
             packages.add(new WebViewBridgePackage(BuildConfig.DEBUG_WEBVIEW == "1"));

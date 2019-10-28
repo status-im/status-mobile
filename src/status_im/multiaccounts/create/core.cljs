@@ -24,8 +24,7 @@
    :choose-key           2
    :select-key-storage   3
    :create-code          4
-   :confirm-code         5
-   :enable-notifications 6})
+   :confirm-code         5})
 
 (defn decrement-step [step]
   (let [inverted  (map-invert step-kw-to-num)]
@@ -84,22 +83,22 @@
   {:events [:intro-wizard/navigate-back]}
   [{:keys [db] :as cofx} skip-alert?]
   (let  [step (get-in db [:intro-wizard :step])]
-    ;; Cannot go back after account has been created
-    ;; and we're on "Enable notifications" step
-    (when-not (= :enable-notifications step)
-      (if (and (= step :choose-key) (not skip-alert?))
-        (utils/show-question
-         (i18n/label :t/are-you-sure-to-cancel)
-         (i18n/label :t/you-will-start-from-scratch)
-         #(re-frame/dispatch [:intro-wizard/navigate-back true]))
-        (fx/merge cofx
-                  dec-step
-                  navigation/navigate-back)))))
+    (if (and (= step :choose-key) (not skip-alert?))
+      (utils/show-question
+       (i18n/label :t/are-you-sure-to-cancel)
+       (i18n/label :t/you-will-start-from-scratch)
+       #(re-frame/dispatch [:intro-wizard/navigate-back true]))
+      (fx/merge cofx
+                dec-step
+                navigation/navigate-back))))
 
-(fx/defn exit-wizard [{:keys [db] :as cofx}]
+(fx/defn exit-wizard
+  [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db (dissoc db :intro-wizard)}
-            (navigation/navigate-to-cofx :home nil)))
+            (navigation/navigate-reset {:index 0
+                                        :key :chat-stack
+                                        :actions [{:routeName :home}]})))
 
 (fx/defn init-key-generation
   [{:keys [db] :as cofx}]
@@ -131,13 +130,9 @@
     (cond (confirm-failure? db)
           (on-confirm-failure cofx)
 
-          (or (= step :enable-notifications)
-              (and (not first-time-setup?) (= step :confirm-code)
-                   (:multiaccounts/login db)))
-          (fx/merge cofx
-                    (when (and (= step :enable-notifications) (not skip?))
-                      {:notifications/request-notifications-permissions nil})
-                    exit-wizard)
+          (and  (= step :confirm-code)
+                (:multiaccounts/login db))
+          (exit-wizard cofx)
 
           (= step :generate-key)
           (init-key-generation cofx)
@@ -160,11 +155,7 @@
                                          :step next-step)}
                             (when (= step :create-code)
                               store-key-code)
-                            (when (= next-step :enable-notifications)
-                              (navigation/navigate-reset {:index 0
-                                                          :actions [{:routeName :create-multiaccount-enable-notifications}]}))
-                            (when (not= next-step :enable-notifications)
-                              (navigation/navigate-to-cofx (->> next-step name (str "create-multiaccount-") keyword) nil)))))))
+                            (navigation/navigate-to-cofx (->> next-step name (str "create-multiaccount-") keyword) nil))))))
 
 (defn prepare-accounts-data
   [multiaccount]

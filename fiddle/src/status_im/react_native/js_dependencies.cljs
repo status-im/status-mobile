@@ -26,9 +26,6 @@
 (def svg                    (fn [] #js {:default #js {}}))
 (def status-keycard         (fn [] #js {:default #js {}}))
 
-(defrecord Notification [])
-(def react-native-firebase  (fn [] #js {:default #js {:notifications #js {:Notification Notification}}}))
-
 (def desktop-linking #js {:addEventListener (fn [])})
 (def desktop-shortcuts #js {:addEventListener (fn [])})
 

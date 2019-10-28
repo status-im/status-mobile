@@ -456,25 +456,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         }
     }
 
-    @ReactMethod
-    public void sendDataNotification(final String dataPayloadJSON, final String tokensJSON, final Callback callback) {
-        Log.d(TAG, "sendDataNotification");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    String res = Statusgo.sendDataNotification(dataPayloadJSON, tokensJSON);
-                    callback.invoke(res);
-                }
-            };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
-    }
-
     private Boolean zip(File[] _files, File zipFile, Stack<String> errorList) {
         final int BUFFER = 0x8000;
 

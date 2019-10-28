@@ -3,7 +3,6 @@
   (:require [goog.object :as o]
             [re-frame.core :as re-frame]
             [status-im.chat.models.message :as models.message]
-            [status-im.contact.device-info :as device-info]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.core :as ethereum]
             [status-im.transport.message.contact :as contact]
@@ -132,21 +131,7 @@
         (remove-hash cofx envelope-hash))
 
       (when-let [{:keys [from]} (get-in db [:chats chat-id :messages message-id])]
-        (let [{:keys [fcm-token]} (get-in db [:contacts/contacts chat-id])
-              ;; We pick the last max-installations devices
-              fcm-tokens
-              (as-> (get-in db [:contacts/contacts chat-id :device-info]) $
-                (vals $)
-                (sort-by :timestamp $)
-                (reverse $)
-                (map :fcm-token $)
-                (into #{} $)
-                (conj $ fcm-token)
-                (filter identity $)
-                (take (inc config/max-installations) $))]
-          (fx/merge cofx
-                    (check-confirmations status chat-id message-id)
-                    (models.message/send-push-notification chat-id message-id fcm-tokens status)))))))
+        (check-confirmations cofx status chat-id message-id)))))
 
 (fx/defn update-envelopes-status
   [{:keys [db] :as cofx} envelope-hashes status]
@@ -170,13 +155,10 @@
                       #(or % {:pending-confirmations messages-count})))})
 
 (defn- own-info [db]
-  (let [{:keys [name photo-path address]} (:multiaccount db)
-        fcm-token (get-in db [:notifications :fcm-token])]
+  (let [{:keys [name photo-path address]} (:multiaccount db)]
     {:name          name
      :profile-image photo-path
-     :address       address
-     :device-info   (device-info/all {:db db})
-     :fcm-token     fcm-token}))
+     :address       address}))
 
 (fx/defn resend-contact-request [cofx own-info chat-id {:keys [sym-key topic]}]
   (protocol/send (contact/map->ContactRequest own-info)

@@ -91,10 +91,6 @@ used to be able to put a timeout on fetch request
 TODO: check if the fetch timeout is actually aborting the request or only ignoring the callback on the response, if it
 doesn't then this is useless and we are better of using a simple seTimeout
 
-## "react-native-firebase": "5.1.1"
-
-used to have some stupid notifications and give free metadata to Google
-
 ## "react-native-fs": "^2.14.1"
 
 used for some filesystem related functions, for instance to get no-backup directory in `status-im.utils.platform`

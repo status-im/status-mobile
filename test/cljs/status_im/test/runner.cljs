@@ -13,7 +13,6 @@
             [status-im.test.chat.models]
             [status-im.test.chat.views.photos]
             [status-im.test.transport.filters.core]
-            [status-im.test.contacts.device-info]
             [status-im.test.data-store.chats]
             [status-im.test.data-store.messages]
             [status-im.test.data-store.contacts]
@@ -92,7 +91,6 @@
  'status-im.test.chat.views.photos
  'status-im.test.transport.filters.core
  'status-im.test.contacts.db
- 'status-im.test.contacts.device-info
  'status-im.test.data-store.chats
  'status-im.test.data-store.messages
  'status-im.test.data-store.contacts

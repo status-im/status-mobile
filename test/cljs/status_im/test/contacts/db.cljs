@@ -17,7 +17,6 @@
                               {:last-updated  0,
                                :address       "eca8218b5ebeb2c47ba94c1b6e0a779d78fff7bc",
                                :name          "User B",
-                               :fcm-token     nil,
                                :photo-path    "photo1",
                                :last-online   0,
                                :public-key
@@ -47,7 +46,6 @@
                  :public-key "0x048a2f8b80c60f89a91b4c1316e56f75b087f446e7b8701ceca06a40142d8efe1f5aa36bd0fee9e248060a8d5207b43ae98bef4617c18c71e66f920f324869c09f"}
                 {:last-updated     0
                  :name             "User B"
-                 :fcm-token        nil
                  :photo-path       "photo1"
                  :address          "eca8218b5ebeb2c47ba94c1b6e0a779d78fff7bc"
                  :last-online      0

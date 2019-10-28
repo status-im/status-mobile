@@ -35,7 +35,6 @@
             [status-im.mailserver.constants :as mailserver.constants]
             [status-im.mailserver.topics :as mailserver.topics]
             [status-im.node.core :as node]
-            [status-im.notifications.core :as notifications]
             [status-im.pairing.core :as pairing]
             [status-im.privacy-policy.core :as privacy-policy]
             [status-im.protocol.core :as protocol]
@@ -659,23 +658,6 @@
  (fn [cofx [_ event-str]]
    (log/debug :event-str event-str)
    (signals/process cofx event-str)))
-
-;; notifications module
-
-(handlers/register-handler-fx
- :notifications/notification-open-event-received
- (fn [cofx [_ decoded-payload ctx]]
-   (notifications/handle-push-notification-open cofx decoded-payload ctx)))
-
-(handlers/register-handler-fx
- :notifications.callback/get-fcm-token-success
- (fn [{:keys [db]} [_ fcm-token]]
-   {:db (assoc-in db [:notifications :fcm-token] fcm-token)}))
-
-(handlers/register-handler-fx
- :notifications.callback/on-message
- (fn [cofx [_ decoded-payload opts]]
-   (notifications/handle-on-message cofx decoded-payload opts)))
 
 ;; hardwallet module
 

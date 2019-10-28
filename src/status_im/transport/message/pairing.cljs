@@ -4,7 +4,7 @@
             [taoensso.timbre :as log]))
 
 (defrecord PairInstallation
-           [installation-id device-type name fcm-token]
+           [installation-id device-type name _]
   protocol/StatusMessage
   (validate [this]
     (if (spec/valid? :message/pair-installation this)

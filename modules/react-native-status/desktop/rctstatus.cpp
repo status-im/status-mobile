@@ -145,22 +145,6 @@ void RCTStatus::initKeystore() {
   logStatusGoResult("::initKeystore InitKeystore", result);
 }
 
-void RCTStatus::sendDataNotification(QString dataPayloadJSON,
-                                     QString tokensJSON, double callbackId) {
-  Q_D(RCTStatus);
-  qCDebug(RCTSTATUS) << "::sendDataNotification call - callbackId:"
-                     << callbackId;
-  QtConcurrent::run(
-      [&](QString dataPayloadJSON, QString tokensJSON, double callbackId) {
-        const char *result = SendDataNotification(
-            dataPayloadJSON.toUtf8().data(), tokensJSON.toUtf8().data());
-        logStatusGoResult("::sendDataNotification SendDataNotification",
-                          result);
-        d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
-      },
-      dataPayloadJSON, tokensJSON, callbackId);
-}
-
 #include <QApplication>
 #include <QMessageBox>
 #include <QProcess>

@@ -38,7 +38,6 @@
              :peers-count                        0
              :node-info                          {}
              :peers-summary                      []
-             :notifications                      {}
              :my-profile/editing?                false
              :transport/filters                  {}
              :transport/message-envelopes        {}
@@ -53,7 +52,6 @@
              :initial-props                      {}
              :desktop/desktop                    {:tab-view-id :home}
              :dimensions/window                  (dimensions/window)
-             :push-notifications/stored          {}
              :registry                           {}
              :stickers/packs-owned               #{}
              :stickers/packs-pending            #{}
@@ -167,9 +165,6 @@
 ;; DIMENSIONS
 (spec/def :dimensions/window map?)
 
-;; PUSH NOTIFICATIONS
-(spec/def :push-notifications/stored (spec/nilable map?))
-
 (spec/def ::hardwallet (spec/nilable map?))
 
 (spec/def :stickers/packs (spec/nilable map?))
@@ -215,7 +210,6 @@
                                 :networks/manage
                                 :bootnodes/manage
                                 :universal-links/url
-                                :push-notifications/stored
                                 :browser/browsers
                                 :browser/options
                                 :new/open-dapp
@@ -318,7 +312,6 @@
                                    :wallet/wallet
                                    :prices/prices
                                    :prices/prices-loading?
-                                   :notifications/notifications
                                    ::supported-biometric-auth
                                    ::collectible
                                    ::collectibles

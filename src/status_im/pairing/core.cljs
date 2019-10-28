@@ -4,7 +4,6 @@
             [status-im.chat.models :as models.chat]
             [status-im.contact.core :as contact]
             [status-im.contact.db :as contact.db]
-            [status-im.contact.device-info :as device-info]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.model :as multiaccounts.model]
@@ -66,11 +65,10 @@
   (sort (partial compare-installation our-installation-id) installations))
 
 (defn pair-installation [cofx]
-  (let [fcm-token         (get-in cofx [:db :notifications :fcm-token])
-        installation-id (get-in cofx [:db :multiaccount :installation-id])
+  (let [installation-id (get-in cofx [:db :multiaccount :installation-id])
         installation-name (get-in cofx [:db :pairing/installations installation-id :name])
         device-type     utils.platform/os]
-    (protocol/send (transport.pairing/PairInstallation. installation-id device-type installation-name fcm-token) nil cofx)))
+    (protocol/send (transport.pairing/PairInstallation. installation-id device-type installation-name nil) nil cofx)))
 
 (fx/defn confirm-message-processed
   [cofx confirmation]
@@ -88,11 +86,8 @@
         [old-contact new-contact] (sort-by :last-updated [remote local])]
     (-> local
         (merge new-contact)
-        (assoc :device-info (device-info/merge-info (:last-updated new-contact)
-                                                    (:device-info old-contact)
-                                                    (vals (:device-info new-contact)))
-               ;; we only take system tags from the newest contact version
-               :system-tags  (:system-tags new-contact)))))
+        (assoc ;; we only take system tags from the newest contact version
+         :system-tags  (:system-tags new-contact)))))
 
 (def merge-contacts (partial merge-with merge-contact))
 
@@ -124,11 +119,9 @@
 (fx/defn set-name
   "Set the name of the device"
   [{:keys [db] :as cofx} installation-name]
-  (let [fcm-token           (get-in cofx [:db :notifications :fcm-token])
-        our-installation-id (get-in db [:multiaccount :installation-id])]
+  (let [our-installation-id (get-in db [:multiaccount :installation-id])]
     {:pairing/set-installation-metadata [[our-installation-id {:name installation-name
-                                                               :deviceType utils.platform/os
-                                                               :fcmToken fcm-token}]]}))
+                                                               :deviceType utils.platform/os}]]}))
 
 (fx/defn init [cofx]
   {:pairing/get-our-installations nil})
@@ -350,15 +343,12 @@
       (confirm-message-processed cofx confirmation))))
 
 (defn handle-pair-installation
-  [{:keys [db] :as cofx} {:keys [name
-                                 fcm-token
-                                 installation-id
+  [{:keys [db] :as cofx} {:keys [name installation-id
                                  device-type]} timestamp sender]
   (if (and (= sender (multiaccounts.model/current-public-key cofx))
            (not= (get-in db [:multiaccount :installation-id]) installation-id))
     {:pairing/set-installation-metadata [[installation-id {:name name
-                                                           :deviceType device-type
-                                                           :fcmToken fcm-token}]]}
+                                                           :deviceType device-type}]]}
     (confirm-message-processed cofx (:metadata cofx))))
 
 (fx/defn update-installation [{:keys [db]} installation-id metadata]
@@ -366,8 +356,7 @@
                   assoc
                   :installation-id installation-id
                   :name (:name metadata)
-                  :device-type (:deviceType metadata)
-                  :fcmToken (:fcmToken metadata))})
+                  :device-type (:deviceType metadata))})
 
 (fx/defn load-installations [{:keys [db]} installations]
   {:db (assoc db :pairing/installations (reduce
@@ -377,7 +366,6 @@
                                                    :name (:name metadata)
                                                    :timestamp (:timestamp metadata)
                                                    :device-type (:deviceType metadata)
-                                                   :fcm-token (:fcmToken metadata)
                                                    :enabled? enabled}))
                                          {}
                                          installations))})

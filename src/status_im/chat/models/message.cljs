@@ -12,7 +12,6 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.mailserver.core :as mailserver]
             [status-im.native-module.core :as status]
-            [status-im.notifications.core :as notifications]
             [status-im.transport.message.group-chat :as message.group-chat]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.transit :as transit]
@@ -352,16 +351,6 @@
                 :last-clock-value          (:clock-value message)})
               (send chat-id message wrapped-record))))
 
-(fx/defn send-push-notification
-  [cofx chat-id message-id fcm-tokens status]
-  (log/debug "#6772 - send-push-notification" message-id fcm-tokens)
-  (when (and (seq fcm-tokens) (= status :sent))
-    (let [payload {:from (multiaccounts.model/current-public-key cofx)
-                   :to chat-id
-                   :id message-id}]
-      {:send-notification {:data-payload (notifications/encode-notification-payload payload)
-                           :tokens       fcm-tokens}})))
-
 (fx/defn update-message-status
   [{:keys [db] :as cofx} chat-id message-id status]
   (fx/merge cofx
@@ -443,16 +432,3 @@
  :chat-received-message/add-fx
  (fn [messages]
    (re-frame/dispatch [:message/add messages])))
-
-(re-frame/reg-fx
- :send-notification
- (fn [{:keys [data-payload tokens]}]
-   "Sends a notification to another device. data-payload is a Clojure map of strings to strings"
-   (let [data-payload-json (types/clj->json data-payload)
-         tokens-json       (types/clj->json tokens)]
-     (log/debug "send-notification data-payload-json:" data-payload-json "tokens-json:" tokens-json)
-     ;; NOTE: react-native-firebase doesn't have a good implementation of sendMessage
-     ;;       (supporting e.g. priority or content_available properties),
-     ;;       therefore we must use an implementation in status-go.
-     (status/send-data-notification {:data-payload data-payload-json :tokens tokens-json}
-                                    #(log/debug "send-data-notification cb result: " %)))))

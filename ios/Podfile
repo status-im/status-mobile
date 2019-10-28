@@ -9,9 +9,6 @@ target 'StatusIm' do
   # use_frameworks!
   require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
   # Pods for StatusIm
-  pod 'Firebase/Core', '~> 5.5'
-  pod 'Firebase/Messaging', '~> 5.5'
-
   pod 'React', :path => '../node_modules/react-native/'
   pod 'React-Core', :path => '../node_modules/react-native/React'
   pod 'React-DevSupport', :path => '../node_modules/react-native/React'

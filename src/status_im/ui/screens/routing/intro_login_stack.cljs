@@ -10,7 +10,6 @@
     :create-multiaccount-select-key-storage
     :create-multiaccount-create-code
     :create-multiaccount-confirm-code
-    :create-multiaccount-enable-notifications
     :recover-multiaccount-enter-phrase
     :recover-multiaccount-select-storage
     :recover-multiaccount-enter-password
@@ -63,7 +62,6 @@
                      :create-multiaccount-select-key-storage
                      :create-multiaccount-create-code
                      :create-multiaccount-confirm-code
-                     :create-multiaccount-enable-notifications
                      :recover-multiaccount-enter-phrase
                      :recover-multiaccount-select-storage
                      :recover-multiaccount-enter-password
@@ -83,8 +81,8 @@
                        :hardwallet-setup
                        :hardwallet-success]))
    :config  (if
-              ;; add view-id here if you'd like that view to be
-              ;; first view when app is started
+                ;; add view-id here if you'd like that view to be
+                ;; first view when app is started
              (#{:login :progress :multiaccounts :enter-pin-login :keycard-login-pin} view-id)
               {:initialRouteName view-id}
               {:initialRouteName :login})})

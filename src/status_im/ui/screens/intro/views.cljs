@@ -244,11 +244,6 @@
       (i18n/label :t/processing)]]
     [password-container confirm-failure? view-width]))
 
-(defn enable-notifications []
-  [vector-icons/icon :main-icons/bell {:container-style {:align-items :center
-                                                         :justify-content :center}
-                                       :width 66 :height 64}])
-
 (defn bottom-bar [{:keys [step weak-password? encrypt-with-password?
                           forward-action
                           next-button-disabled?
@@ -264,11 +259,11 @@
          [react/view {:min-height 46 :max-height 46 :align-self :stretch}
           [react/activity-indicator {:animating true
                                      :size      :large}]]
-         (#{:generate-key :recovery-success :enable-notifications} step)
+         (#{:generate-key :recovery-success} step)
          (let [label-kw (case step
                           :generate-key :generate-a-key
                           :recovery-success :re-encrypt-key
-                          :enable-notifications :intro-wizard-title6)]
+                          :intro-wizard-title6)]
            [react/view {:min-height 46 :max-height 46}
             [components.common/button {:button-style styles/bottom-button
                                        :on-press     #(re-frame/dispatch
@@ -292,12 +287,6 @@
                                                             (and (= step :create-code) weak-password?)
                                                             (and (= step :enter-phrase) next-button-disabled?))
                                              :forward? true}]]])
-   (when (= :enable-notifications step)
-     [components.common/button {:button-style (assoc styles/bottom-button :margin-top 20)
-                                :label (i18n/label :t/maybe-later)
-                                :accessibility-label :skip-notifications-button
-                                :on-press #(re-frame/dispatch [forward-action {:skip? true}])
-                                :background? false}])
 
    (when (or (= :generate-key step) (and processing? (= :recovery-success step)))
      [react/text {:style (assoc styles/wizard-text :margin-top 20)}
@@ -541,20 +530,6 @@
                           :forward-action (:forward-action wizard-state)}
                          wizard-state)]]]))
 
-(defn wizard-enable-notifications []
-  [react/view {:style {:flex 1}}
-   [toolbar/toolbar
-    {:style {:border-bottom-width 0
-             :margin-top 16}}
-    nil
-    nil]
-   [react/view {:style {:flex 1
-                        :justify-content :space-between}}
-    [top-bar {:step :enable-notifications}]
-    [enable-notifications]
-    [bottom-bar {:step :enable-notifications
-                 :forward-action :intro-wizard/step-forward-pressed}]]])
-
 (defview wizard-enter-phrase []
   (letsubs [wizard-state [:intro-wizard/enter-phrase]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
@@ -588,4 +563,3 @@
       [bottom-bar {:step :recovery-success
                    :forward-action   :multiaccounts.recover/re-encrypt-pressed
                    :processing? processing?}]]]))
-

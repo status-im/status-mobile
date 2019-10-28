@@ -20,7 +20,6 @@
                                        :opt-un [:contact/system-tags
                                                 :contact/last-updated
                                                 :contact/last-online
-                                                :contact/fcm-token
                                                 :pairing/pending?
                                                 :contact/tags]))
 (spec/def :pairing/contacts (spec/nilable (spec/map-of :global/not-empty-string :pairing/contact)))
@@ -77,9 +76,9 @@
                              :message/message-seen :message/message-seen
                              :message/group-membership-update :message/group-membership-update))
 
-(spec/def :message/contact-request (spec/keys :req-un [:contact/name ::profile-image :contact/address :contact/fcm-token]))
-(spec/def :message/contact-update (spec/keys :req-un [:contact/name ::profile-image :contact/address :contact/fcm-token]))
-(spec/def :message/contact-request-confirmed (spec/keys :req-un [:contact/name ::profile-image :contact/address :contact/fcm-token]))
+(spec/def :message/contact-request (spec/keys :req-un [:contact/name ::profile-image :contact/address]))
+(spec/def :message/contact-update (spec/keys :req-un [:contact/name ::profile-image :contact/address]))
+(spec/def :message/contact-request-confirmed (spec/keys :req-un [:contact/name ::profile-image :contact/address]))
 (spec/def :message/new-contact-key (spec/keys :req-un [::sym-key ::topic ::message]))
 
 (spec/def :message/message-seen (spec/keys :req-un [:message/ids]))

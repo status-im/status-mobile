@@ -38,8 +38,6 @@ public:
   Q_INVOKABLE void shouldMoveToInternalStorage(double callbackId);
   Q_INVOKABLE void moveToInternalStorage(double callbackId);
   Q_INVOKABLE void initKeystore();
-  Q_INVOKABLE void sendDataNotification(QString dataPayloadJSON,
-                                        QString tokensJSON, double callbackId);
   Q_INVOKABLE void sendLogs(QString dbJSON, QString jsLogs, double callbackId);
   Q_INVOKABLE void exportLogs(double callbackId);
   Q_INVOKABLE void addPeer(QString enode, double callbackId);
