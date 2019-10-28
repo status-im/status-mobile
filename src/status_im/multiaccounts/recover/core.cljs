@@ -190,11 +190,11 @@
   (let [storage-type (get-in db [:intro-wizard :selected-storage-type])]
     (if (= storage-type :advanced)
       ;;TODO: fix circular dependency to remove dispatch here
-      {:dispatch [:recovery.ui/keycard-option-pressed]})
-    (fx/merge cofx
-              {:db (update db :intro-wizard assoc :step :create-code
-                           :forward-action :multiaccounts.recover/enter-password-next-pressed)}
-              (navigation/navigate-to-cofx :recover-multiaccount-enter-password nil))))
+      {:dispatch [:recovery.ui/keycard-option-pressed]}
+      (fx/merge cofx
+                {:db (update db :intro-wizard assoc :step :create-code
+                             :forward-action :multiaccounts.recover/enter-password-next-pressed)}
+                (navigation/navigate-to-cofx :recover-multiaccount-enter-password nil)))))
 
 (fx/defn re-encrypt-pressed
   {:events [:multiaccounts.recover/re-encrypt-pressed]}
