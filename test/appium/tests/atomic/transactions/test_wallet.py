@@ -120,34 +120,21 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         if send_transaction.element_by_text_part('Transaction sent').is_element_displayed():
             self.driver.fail('Transaction was sent with a wrong password')
 
-    @marks.testrail_id(1452)
-
+    @marks.testrail_id(6236)
+    @marks.medium
     def test_transaction_appears_in_history(self):
-        recipient = basic_user
         sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        home_view = sign_in_view.get_home_view()
-        transaction_amount = home_view.get_unique_amount()
-        sender_public_key = home_view.get_public_key()
-        sender_address = home_view.public_key_to_address(sender_public_key)
-        home_view.home_button.click()
-        self.network_api.get_donate(sender_address)
+        home_view = sign_in_view.create_user()
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
-        wallet_view.wait_balance_changed_on_wallet_screen()
-        send_transaction = wallet_view.send_transaction_button.click()
-        send_transaction.amount_edit_box.click()
-        send_transaction.amount_edit_box.set_value(transaction_amount)
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(recipient['address'])
-        send_transaction.done_button.click()
-        send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction()
-        self.network_api.find_transaction_by_unique_amount(recipient['address'], transaction_amount)
+        address = wallet_view.get_wallet_address()[2:]
+        self.network_api.get_donate(address)
+        recipient = "0x"+basic_user['address']
+        sending_amount = "0.08"
+        wallet_view.send_transaction(asset_name='ETHro', amount=sending_amount, recipient=recipient, sign_transaction=True)
         transactions_view = wallet_view.transaction_history_button.click()
-        transactions_view.transactions_table.find_transaction(amount=transaction_amount)
+        transactions_view.transactions_table.find_transaction(amount=sending_amount)
+        transactions_view.transactions_table.find_transaction(amount="0.1")
 
     @marks.testrail_id(5461)
     @marks.medium

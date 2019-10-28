@@ -68,6 +68,7 @@
    [list-item/list-item
     {:theme     :action
      :title     :t/account-settings
+     :accessibility-label :account-settings-bottom-sheet
      :icon      :main-icons/info
      :on-press #(hide-sheet-and-dispatch [:navigate-to :account-settings])}]
    ;; Commented out for v1

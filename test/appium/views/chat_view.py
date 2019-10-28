@@ -125,7 +125,7 @@ class ClearButton(BaseButton):
 class BlockContactButton(BaseButton):
     def __init__(self, driver):
         super(BlockContactButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('block-contact')
+        self.locator = self.Locator.accessibility_id('block-contact-confirm')
 
 
 class UnblockContactButton(BaseButton):

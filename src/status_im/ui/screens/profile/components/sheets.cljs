@@ -40,5 +40,6 @@
       (i18n/label :t/block-contact-details)]
      [list-item/list-item
       {:theme               :action-destructive
+       :accessibility-label :block-contact-confirm
        :title               :t/block-contact
        :on-press            #(hide-sheet-and-dispatch [:contact.ui/block-contact-confirmed public-key])}]]))
