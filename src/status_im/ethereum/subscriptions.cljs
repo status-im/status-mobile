@@ -4,18 +4,21 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.tokens :as tokens]
-            [status-im.wallet.db :as wallet]
             [status-im.ethereum.transactions.core :as transactions]
+            [status-im.native-module.core :as status]
             [status-im.utils.fx :as fx]
+            [status-im.wallet.db :as wallet]
             [taoensso.timbre :as log]))
 
-(fx/defn handle-signal
+(fx/defn handle-subscription-data
+  {:events [::subcription-data-received]}
   [cofx {:keys [subscription_id data] :as event}]
   (if-let [handler (get-in cofx [:db :ethereum/subscriptions subscription_id])]
     (handler data)
     (log/warn ::unknown-subscription :event event)))
 
 (fx/defn handle-error
+  {:events [::subcription-error-received]}
   [cofx {:keys [subscription_id data] :as event}]
   (log/error ::error event))
 
@@ -54,9 +57,25 @@
                                    :from-block block-number}}))
 
 (fx/defn new-wallet-event
+  {:events [::new-wallet-event]}
   [{:keys [db] :as cofx} {:keys [type blockNumber accounts] :as event}]
   (case type
     "newblock" (new-block cofx false blockNumber accounts)
     "history" (new-block cofx true blockNumber accounts)
     "reorg" (reorg cofx blockNumber accounts)
     (log/warn ::unknown-wallet-event :type type :event event)))
+
+(defonce wallet-listener
+  (status/add-listener "wallet"
+                       #(re-frame/dispatch [::new-wallet-event %])
+                       true))
+
+(defonce subscription-data-listener
+  (status/add-listener "subscriptions.data"
+                       #(re-frame/dispatch [::subcription-data-received %])
+                       true))
+
+(defonce subscription-error-listener
+  (status/add-listener "subscriptions.error"
+                       #(re-frame/dispatch [::subcription-error-received %])
+                       true))

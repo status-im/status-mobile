@@ -11,6 +11,7 @@
    [status-im.mailserver.topics :as mailserver.topics]
    [status-im.mailserver.core :as mailserver]
    [status-im.multiaccounts.model :as multiaccounts.model]
+   [status-im.native-module.core :as status]
    [status-im.transport.utils :as utils]))
 
 (defn is-public-key? [k]
@@ -237,6 +238,7 @@
 
 (fx/defn handle-negotiated-filter
   "Check if it's a new filter, if so create an shh filter and process it"
+  {:events [::whisper-filter-added]}
   [{:keys [db] :as cofx} {:keys [filters]}]
   (let [processed-filters (map responses->filters filters)
         new-filters     (filter
@@ -245,6 +247,11 @@
     (when (seq new-filters)
       {:filters/add-raw-filters
        {:filters new-filters}})))
+
+(defonce wallet-listener
+  (status/add-listener "whisper.filter.added"
+                       #(re-frame/dispatch [::whisper-filter-added %])
+                       true))
 
 (fx/defn load-filters
   "Load all contacts and chats as filters"

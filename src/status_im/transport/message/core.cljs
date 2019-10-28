@@ -10,6 +10,7 @@
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.transit :as transit]
             [status-im.transport.utils :as transport.utils]
+            [status-im.native-module.core :as status]
             [status-im.tribute-to-talk.whitelist :as whitelist]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
@@ -76,25 +77,33 @@
       (apply fx/merge cofx receive-message-fxs))
     (log/error "Something went wrong" error messages)))
 
-(fx/defn receive-messages [cofx event-js]
+(fx/defn receive-messages
+  {:events [::messages-received]}
+  [cofx messages-per-chat]
+  (log/info "=================================================message=received===================================================")
   (let [fxs (keep
-             (fn [message-specs]
-               (let [chat (.-chat message-specs)
-                     messages (.-messages message-specs)
-                     error (.-error message-specs)]
-                 (when (seq messages)
-                   (receive-whisper-messages
-                    error
-                    messages
-                  ;; For discovery and negotiated filters we don't
-                  ;; set a chatID, and we use the signature of the message
-                  ;; to indicate which chat it is for
-                    (if (or (.-discovery chat)
-                            (.-negotiated chat))
-                      nil
-                      (.-chatId chat))))))
-             (.-messages event-js))]
+              (fn [message-specs]
+                (let [chat (.-chat message-specs)
+                      messages (.-messages message-specs)
+                      error (.-error message-specs)]
+                  (when (seq messages)
+                    (println (count messages))
+                    (receive-whisper-messages
+                     error
+                     messages
+                     ;; For discovery and negotiated filters we don't
+                     ;; set a chatID, and we use the signature of the message
+                     ;; to indicate which chat it is for
+                     (if (or (.-discovery chat)
+                             (.-negotiated chat))
+                       nil
+                       (.-chatId chat))))))
+              messages-per-chat)]
     (apply fx/merge cofx fxs)))
+
+(defonce message-listener
+  (status/add-listener "messages.new"
+                       #(re-frame/dispatch [::messages-received (.-messages %)])))
 
 (fx/defn remove-hash
   [{:keys [db] :as cofx} envelope-hash]
@@ -149,8 +158,19 @@
                     (models.message/send-push-notification chat-id message-id fcm-tokens status)))))))
 
 (fx/defn update-envelopes-status
+  {:events [::envelope-status-received]}
   [{:keys [db] :as cofx} envelope-hashes status]
   (apply fx/merge cofx (map #(update-envelope-status % status) envelope-hashes)))
+
+(defonce envelope-sent-listener
+  (status/add-listener "envelope.sent"
+                       #(re-frame/dispatch [::envelope-status-received (:ids %) :sent])
+                       true))
+
+(defonce envelope-expired-listener
+  (status/add-listener "envelope.expired"
+                       #(re-frame/dispatch [::envelope-status-received (:ids %) :not-sent])
+                       true))
 
 (fx/defn set-contact-message-envelope-hash
   [{:keys [db] :as cofx} chat-id envelope-hash]

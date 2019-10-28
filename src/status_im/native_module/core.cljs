@@ -51,9 +51,15 @@
   (clear-web-data)
   (.logout (status)))
 
-(defonce listener
-  (.addListener react/device-event-emitter "gethEvent"
-                #(re-frame/dispatch [:signals/signal-received (.-jsonEvent %)])))
+(defn add-listener
+  ([event-type listener-fn]
+   (add-listener event-type listener-fn false))
+  ([event-type listener-fn to-clj?]
+   (.addListener react/device-event-emitter
+                 event-type
+                 (if to-clj?
+                   #(listener-fn (js->clj (.parse js/JSON %) :keywordize-keys true))
+                   #(listener-fn (time (.parse js/JSON %)))))))
 
 (defn multiaccount-load-account
   "NOTE: beware, the password has to be sha3 hashed
@@ -271,4 +277,3 @@
   "Generate a icon based on a string, synchronously"
   [seed]
   (.identicon (status) seed))
-

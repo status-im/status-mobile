@@ -117,11 +117,58 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
       return this.getReactApplicationContext().getNoBackupFilesDir().getAbsolutePath();
     }
 
-    public void handleSignal(String jsonEvent) {
-        Log.d(TAG, "Signal event: " + jsonEvent);
-        WritableMap params = Arguments.createMap();
-        params.putString("jsonEvent", jsonEvent);
-        this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
+    public void handleSignal(String jsonEventString) {
+        Log.d(TAG, "Signal event: " + jsonEventString);
+        try {
+            final JSONObject jsonEvent = new JSONObject(jsonEventString);
+            String eventType = jsonEvent.getString("type");
+            String event = null;
+            switch (eventType) {
+            case "node.login":
+                event = jsonEvent.getJSONObject("event").toString();
+            break;
+            case "envelope.sent":
+                event = jsonEvent.getJSONObject("event").toString();
+                break;
+            case "envelope.expired":
+                event = jsonEvent.getJSONObject("event").toString();
+                break;
+            case "mailserver.request.completed":
+                event = jsonEventString;
+                break;
+            case "mailserver.request.expired":
+                event = jsonEvent.getJSONObject("event").toString();
+                break;
+            case "discovery.summary":
+                event = jsonEventString;
+                break;
+            case "subscriptions.data":
+                event = jsonEvent.getJSONObject("event").toString();
+                break;
+            case "subscriptions.error":
+                event = jsonEvent.getJSONObject("event").toString();
+                break;
+            case "whisper.filter.added":
+                event = jsonEvent.getJSONObject("event").toString();
+                break;
+            case "messages.new":
+                event = jsonEvent.getJSONObject("event").toString();
+                break;
+            case "wallet":
+                event = jsonEvent.getJSONObject("event").toString();
+                break;
+            default:
+                eventType = null;
+                break;
+            }
+
+            if(eventType != null){
+                this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventType, event);
+            }
+
+        } catch (JSONException e) {
+            Log.e(TAG, "JSON conversion failed: " + e.getMessage());
+        }
     }
 
     private File getLogsFile() {

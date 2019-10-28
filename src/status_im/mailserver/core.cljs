@@ -254,6 +254,22 @@
         mailserver-removed?
         (connect-to-mailserver cofx)))))
 
+(fx/defn update-summary
+  {:events [::summary-changed]}
+  [{:keys [db] :as cofx} peers-summary]
+  (let [previous-summary (:peers-summary db)
+        peers-count      (count peers-summary)]
+    (fx/merge cofx
+              {:db (assoc db
+                          :peers-summary peers-summary
+                          :peers-count peers-count)}
+              (peers-summary-change previous-summary))))
+
+(defonce summary-listener
+  (status/add-listener "discovery.summary"
+                       #(re-frame/dispatch [::summary-changed (:event %)])
+                       true))
+
 (defn adjust-request-for-transit-time
   [from]
   (let [ttl               (:ttl protocol/whisper-opts)
@@ -768,6 +784,7 @@
                    :mailserver/pending-requests))})
 
 (fx/defn handle-request-completed
+  {:events [::request-completed]}
   [{{:keys [chats]} :db :as cofx}
    {:keys [requestID lastEnvelopeHash cursor errorMessage]}]
   (when (multiaccounts.model/logged-in? cofx)
@@ -808,6 +825,10 @@
                                       :cursor     cursor}))))
       (handle-request-error cofx errorMessage))))
 
+(defonce request-completed-listener
+  (status/add-listener "mailserver.request.completed"
+                       #(re-frame/dispatch [::request-completed (:event %)])
+                       true))
 (fx/defn show-request-error-popup
   [{:keys [db]}]
   (let [mailserver-error (:mailserver/request-error db)]
@@ -865,45 +886,51 @@
                   :request    first-request})))))
 
 (fx/defn resend-request
-  [{:keys [db] :as cofx} {:keys [request-id]}]
-  (let [current-request (:mailserver/current-request db)
-        gap-request? (executing-gap-request? db)]
-    ;; no inflight request, do nothing
-    (when (and current-request
-               ;; the request was never successful
-               (or (nil? request-id)
-                   ;; we haven't received the request-id yet, but has expired,
-                   ;; so we retry even though we are not sure it's the current
-                   ;; request that failed
-                   (nil? (:request-id current-request))
-                   ;; this is the same request that we are currently processing
-                   (= request-id (:request-id current-request))))
+  {:events [::request-expired]}
+  [{:keys [db] :as cofx} request-id]
+  (when (multiaccounts.model/logged-in? cofx)
+    (let [current-request (:mailserver/current-request db)
+          gap-request? (executing-gap-request? db)]
+      ;; no inflight request, do nothing
+      (when (and current-request
+                 ;; the request was never successful
+                 (or (nil? request-id)
+                     ;; we haven't received the request-id yet, but has expired,
+                     ;; so we retry even though we are not sure it's the current
+                     ;; request that failed
+                     (nil? (:request-id current-request))
+                     ;; this is the same request that we are currently processing
+                     (= request-id (:request-id current-request))))
 
-      (if            (<= constants/maximum-number-of-attempts
-                         (:attempts current-request))
-        (fx/merge cofx
-                  {:db (update db :mailserver/current-request dissoc :attempts)}
-                  (change-mailserver))
-        (let [mailserver (get-mailserver-when-ready cofx)
-              offline? (= :offline (:network-status db))]
-          (cond
-            (and gap-request? offline?)
-            {:db (-> db
-                     (dissoc :mailserver/current-request)
-                     (update :mailserver/fetching-gaps-in-progress
-                             dissoc (:chat-id current-request))
-                     (dissoc :mailserver/planned-gap-requests))}
+        (if            (<= constants/maximum-number-of-attempts
+                           (:attempts current-request))
+          (fx/merge cofx
+                    {:db (update db :mailserver/current-request dissoc :attempts)}
+                    (change-mailserver))
+          (let [mailserver (get-mailserver-when-ready cofx)
+                offline? (= :offline (:network-status db))]
+            (cond
+              (and gap-request? offline?)
+              {:db (-> db
+                       (dissoc :mailserver/current-request)
+                       (update :mailserver/fetching-gaps-in-progress
+                               dissoc (:chat-id current-request))
+                       (dissoc :mailserver/planned-gap-requests))}
 
-            mailserver
-            (let [{:keys [topics from to cursor limit] :as request} current-request]
-              (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor "limit" (decrease-limit))
-              {:db                          (update-in db [:mailserver/current-request :attempts] inc)
-               :mailserver/decrease-limit   []
-               :mailserver/request-messages {:mailserver mailserver
-                                             :request    (assoc request :limit (decrease-limit))}})
+              mailserver
+              (let [{:keys [topics from to cursor limit] :as request} current-request]
+                (log/info "mailserver: message request " request-id "expired for mailserver topic" topics "from" from "to" to "cursor" cursor "limit" (decrease-limit))
+                {:db                          (update-in db [:mailserver/current-request :attempts] inc)
+                 :mailserver/decrease-limit   []
+                 :mailserver/request-messages {:mailserver mailserver
+                                               :request    (assoc request :limit (decrease-limit))}})
 
-            :else
-            {:mailserver/decrease-limit []}))))))
+              :else
+              {:mailserver/decrease-limit []})))))))
+
+(defonce request-expired-listener
+  (status/add-listener "mailserver.request.expired"
+                       #(re-frame/dispatch [::request-expired (:hash %)])))
 
 (fx/defn initialize-mailserver
   [cofx]

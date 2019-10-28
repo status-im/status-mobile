@@ -41,7 +41,6 @@
             [status-im.protocol.core :as protocol]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.search.core :as search]
-            [status-im.signals.core :as signals]
             [status-im.stickers.core :as stickers]
             [status-im.transport.core :as transport]
             [status-im.transport.message.core :as transport.message]
@@ -651,14 +650,6 @@
            (fn [raw-message]
              (chat.message/confirm-message-processed raw-message))
            raw-messages))))
-
-;; signal module
-
-(handlers/register-handler-fx
- :signals/signal-received
- (fn [cofx [_ event-str]]
-   (log/debug :event-str event-str)
-   (signals/process cofx event-str)))
 
 ;; notifications module
 

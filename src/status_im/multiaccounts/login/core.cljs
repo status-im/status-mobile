@@ -254,6 +254,31 @@
               (when recovering?
                 (navigation/navigate-to-cofx :home nil)))))
 
+(fx/defn status-node-started
+  {:events [::status-node-started]}
+  [{db :db :as cofx} {:keys [error]}]
+  (if error
+    {:db (-> db
+             (update :multiaccounts/login dissoc :processing)
+             (assoc-in [:multiaccounts/login :error]
+                       ;; NOTE: the only currently known error is
+                       ;; "file is not a database" which occurs
+                       ;; when the user inputs the wrong password
+                       ;; if that is the error that is found
+                       ;; we show the i18n label for wrong password
+                       ;; to the user
+                       ;; in case of an unknown error we show the
+                       ;; error
+                       (if (= error "file is not a database")
+                         (i18n/label :t/wrong-password)
+                         error)))}
+    (multiaccount-login-success cofx)))
+
+(defonce login-listener
+  (status/add-listener "node.login"
+                       #(re-frame/dispatch [::status-node-started %])
+                       true))
+
 (fx/defn open-keycard-login
   [{:keys [db] :as cofx}]
   (let [navigation-stack (:navigation-stack db)]
