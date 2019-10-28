@@ -29,15 +29,15 @@
   in order to stop receiving that message"
   [cofx now-in-s filter-chat-id message-js]
   (let [blocked-contacts (get-in cofx [:db :contacts/blocked] #{})
-        payload (.-payload message-js)
-        timestamp (.-timestamp (.-message message-js))
-        metadata-js (.-metadata message-js)
-        metadata {:author {:publicKey (.-publicKey (.-author metadata-js))
-                           :alias (.-alias (.-author metadata-js))
-                           :identicon (.-identicon (.-author metadata-js))}
-                  :dedupId (.-dedupId metadata-js)
-                  :encryptionId (.-encryptionId metadata-js)
-                  :messageId (.-messageId metadata-js)}
+        payload (:payload message-js)
+        timestamp (:timestamp (.-message message-js))
+        metadata-js (:metadata message-js)
+        metadata {:author {:publicKey (:-publicKey (:author metadata-js))
+                           :alias (:alias (:author metadata-js))
+                           :identicon (:identicon (:author metadata-js))}
+                  :dedupId (:dedupId metadata-js)
+                  :encryptionId (:encryptionId metadata-js)
+                  :messageId (:messageId metadata-js)}
         raw-payload  {:raw-payload message-js}
         status-message (-> payload
                            transit/deserialize)
@@ -75,35 +75,35 @@
                                      (receive-message now-in-s chat-id message))
                                    messages)]
       (apply fx/merge cofx receive-message-fxs))
-    (log/error "Something went wrong" error messages)))
+    (log/error "Something went wrong" (str (type error)) error messages)))
 
 (fx/defn receive-messages
   {:events [::messages-received]}
   [cofx messages-per-chat]
   (log/info "=================================================message=received===================================================")
   (let [fxs (keep
-              (fn [message-specs]
-                (let [chat (.-chat message-specs)
-                      messages (.-messages message-specs)
-                      error (.-error message-specs)]
-                  (when (seq messages)
-                    (println (count messages))
-                    (receive-whisper-messages
-                     error
-                     messages
+             (fn [message-specs]
+               (let [chat (:chat message-specs)
+                     messages (:messages message-specs)
+                     error (:error message-specs)]
+                 (when (seq messages)
+                   (println (count messages))
+                   (receive-whisper-messages
+                    error
+                    messages
                      ;; For discovery and negotiated filters we don't
                      ;; set a chatID, and we use the signature of the message
                      ;; to indicate which chat it is for
-                     (if (or (.-discovery chat)
-                             (.-negotiated chat))
-                       nil
-                       (.-chatId chat))))))
-              messages-per-chat)]
+                    (if (or (:discovery chat)
+                            (:negotiated chat))
+                      nil
+                      (:chatId chat))))))
+             messages-per-chat)]
     (apply fx/merge cofx fxs)))
 
 (defonce message-listener
   (status/add-listener "messages.new"
-                       #(re-frame/dispatch [::messages-received (.-messages %)])))
+                       #(re-frame/dispatch [::messages-received (:messages %)])))
 
 (fx/defn remove-hash
   [{:keys [db] :as cofx} envelope-hash]

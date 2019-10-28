@@ -9,7 +9,8 @@
             status-im.transport.impl.send
             [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.utils.logging.core :as utils.logs]
-            cljs.core.specs.alpha))
+            cljs.core.specs.alpha
+            [taoensso.timbre :as log]))
 
 (if js/goog.DEBUG
   (.ignoreWarnings (.-YellowBox js-dependencies/react-native)
@@ -19,7 +20,15 @@
                      "Warning: componentWillUpdate is deprecated and will be removed in the next major version. Use componentDidUpdate instead. As a temporary workaround, you can rename to UNSAFE_componentWillUpdate."])
   (aset js/console "disableYellowBox" true))
 
+(def a #js {:a 1 :b 2 :c {:d 1}})
+(def b {:a 1 :b 2 :c {:d 1}})
+(def c :c)
+(def d :d)
+
 (defn init [app-root]
+  (println "===============++PERFFFFFFF++======================")
+  (time (dotimes [x 100000] (.-d (.-c a))))
+  (time (dotimes [x 100000]  (d (c b))))
   (utils.logs/init-logs)
   (error-handler/register-exception-handler!)
   (re-frame/dispatch [:init/app-started])

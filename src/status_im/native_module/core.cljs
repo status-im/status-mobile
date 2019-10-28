@@ -1,6 +1,7 @@
 (ns status-im.native-module.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [cljs-bean.core :as bean]
             [status_im.utils.db :as utils.db]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.components.react :as react]
@@ -59,7 +60,7 @@
                  event-type
                  (if to-clj?
                    #(listener-fn (js->clj (.parse js/JSON %) :keywordize-keys true))
-                   #(listener-fn (time (.parse js/JSON %)))))))
+                   #(listener-fn  (time (bean/->clj %)))))))
 
 (defn multiaccount-load-account
   "NOTE: beware, the password has to be sha3 hashed
