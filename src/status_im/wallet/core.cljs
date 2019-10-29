@@ -155,13 +155,11 @@
         (reduce (fn [acc [address balances]]
                   (let [pos-balances
                         (reduce (fn [acc [token-address token-balance]]
-                                  (if (pos? token-balance)
-                                    (let [token-symbol (get tokens (name token-address))]
-                                      (if (or (empty? assets)
-                                              (assets token-symbol))
-                                        (assoc acc token-symbol token-balance)
-                                        acc))
-                                    acc))
+                                  (let [token-symbol (get tokens (name token-address))]
+                                    (if (or (and (empty? assets) (pos? token-balance))
+                                            (and (seq assets) (assets token-symbol)))
+                                      (assoc acc token-symbol token-balance)
+                                      acc)))
                                 {}
                                 balances)]
                     (if (not-empty pos-balances)
