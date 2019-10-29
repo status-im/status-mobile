@@ -245,6 +245,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         home_view.airplane_mode_button.click()
 
         chat = home_view.add_contact(transaction_senders['C']['public_key'])
+        chat.element_by_text('Offline').wait_for_visibility_of_element(15)
         if chat.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in 1-1 chat')
         chat.get_back_to_home_view()

@@ -413,8 +413,7 @@ class WalletView(BaseView):
         counter = 0
         while True:
             if counter >= wait_time:
-                self.driver.info('Balance is not changed during %s seconds!' % wait_time)
-                return
+                self.driver.fail('Balance is not changed during %s seconds!' % wait_time)
             elif self.get_eth_value() != expected_balance:
                 counter += 10
                 time.sleep(10)

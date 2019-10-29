@@ -2,7 +2,8 @@ import pytest
 import re
 
 from tests import marks, bootnode_address, mailserver_address, camera_access_error_text, \
-    photos_access_error_text, test_dapp_url, test_dapp_name, mailserver_central_2, mailserver_central_3
+    photos_access_error_text, test_dapp_url, test_dapp_name, mailserver_central_2, mailserver_central_3, \
+    mailserver_ams_01
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user
 from views.dapps_view import DappsView
@@ -488,7 +489,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.just_fyi('pin mailserver')
         profile_view.sync_settings_button.click()
         # TODO: temporary to avoid issue 9269 - should be disabled after fix
-        mailserver = mailserver_central_2 if profile_view.element_by_text(mailserver_central_2).is_element_present() else mailserver_central_3
+        mailserver = mailserver_central_3 if profile_view.element_by_text(mailserver_central_2).is_element_present() else mailserver_central_2
         profile_view.mail_server_button.click()
         profile_view.mail_server_auto_selection_button.click()
         profile_view.element_by_text(mailserver).click()
@@ -578,8 +579,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.sync_settings_button.click()
         profile_1.mail_server_button.click()
         # TODO: temporary pin mailserver to avoid issue 9269 - should be disabled after fix
+        mailserver = mailserver_ams_01 if profile_1.element_by_text(mailserver_central_2).is_element_present() else mailserver_central_2
         profile_1.mail_server_auto_selection_button.click()
-        profile_1.element_by_text(mailserver_central_2).click()
+        profile_1.element_by_text(mailserver).click()
         profile_1.confirm_button.click()
         profile_1.just_fyi('pin custom mailserver')
         profile_1.plus_button.click()
