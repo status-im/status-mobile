@@ -245,7 +245,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         # error_text = 'Amount is too precise. Max number of decimals is 7.'
         # if not send_transaction.element_by_text(error_text).is_element_displayed():
         #     self.errors.append('Warning about too precise amount is not shown when requesting a transaction')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5423)
     @marks.medium
@@ -294,7 +294,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.amount_edit_box.set_value(1)
         if not error_text.is_element_displayed():
             self.errors.append("'Insufficient funds' error is now shown when sending 1 STT from wallet with balance 0")
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5412)
     @marks.high
@@ -324,7 +324,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             self.errors.append(
                 "'Insufficient funds' error is now shown when sending %s STT from wallet with balance %s" % (
                     round(stt_value + 1), stt_value))
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5359)
     @marks.critical
@@ -400,7 +400,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                 self.errors.append('Transactions recipients do not match!')
             transactions_details.back_button.click()
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5429)
     @marks.medium
@@ -536,7 +536,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         if not account_button.color_matches('multi_account_color.png'):
             self.driver.fail('Account color does not match expected')
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
 
 @marks.transaction
@@ -578,4 +578,4 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
         chat_2 = home_2.get_chat_with_user(sender['username']).click()
         if not chat_2.chat_element_by_text(amount).is_element_displayed():
             self.errors.append('Transaction message is not shown in 1-1 chat for the recipient')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()

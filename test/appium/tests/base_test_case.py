@@ -115,14 +115,8 @@ class AbstractTestCase:
     def implicitly_wait(self):
         return 5
 
-    errors = []
-
     network_api = NetworkApi()
     github_report = GithubHtmlReport()
-
-    def verify_no_errors(self):
-        if self.errors:
-            pytest.fail('\n '.join([self.errors.pop(0) for _ in range(len(self.errors))]))
 
     def is_alert_present(self, driver):
         try:
@@ -155,6 +149,18 @@ class Driver(webdriver.Remote):
         pytest.fail('Device %s: %s' % (self.number, text))
 
 
+class Errors(object):
+    def __init__(self):
+        self.errors = list()
+
+    def append(self, text=str()):
+        self.errors.append(text)
+
+    def verify_no_errors(self):
+        if self.errors:
+            pytest.fail('\n '.join([self.errors.pop(0) for _ in range(len(self.errors))]))
+
+
 class SingleDeviceTestCase(AbstractTestCase):
 
     def setup_method(self, method, **kwargs):
@@ -169,6 +175,7 @@ class SingleDeviceTestCase(AbstractTestCase):
         self.driver = Driver(executor, capabilities)
         test_suite_data.current_test.testruns[-1].jobs[self.driver.session_id] = 1
         self.driver.implicitly_wait(self.implicitly_wait)
+        self.errors = Errors()
 
         if pytest.config.getoption('docker'):
             appium_container.reset_battery_stats()
@@ -191,6 +198,7 @@ class LocalMultipleDeviceTestCase(AbstractTestCase):
 
     def setup_method(self, method):
         self.drivers = dict()
+        self.errors = Errors()
 
     def create_drivers(self, quantity):
         capabilities = self.add_local_devices_to_capabilities()
@@ -217,6 +225,7 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
 
     def setup_method(self, method):
         self.drivers = dict()
+        self.errors = Errors()
 
     def create_drivers(self, quantity=2, max_duration=1800, custom_implicitly_wait=None):
         capabilities = {'maxDuration': max_duration}

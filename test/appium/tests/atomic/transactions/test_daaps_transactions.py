@@ -291,7 +291,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if not status_test_dapp.assets_button.is_element_displayed():
             self.errors.append('Could not sing the transaction!')
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5686)
     @marks.medium
@@ -390,7 +390,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if not wallet.send_transaction_button.is_element_displayed():
             self.errors.append('Could not sign the transaction!')
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5687)
     @marks.medium
@@ -469,4 +469,4 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if not wallet.send_transaction_button.is_element_displayed():
             self.errors.append('Could not sing the transaction!')
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()

@@ -32,7 +32,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.name_input.send_keys('user_%s' % get_current_time())
 
         sign_in.next_button.click()
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5356)
     @marks.critical
@@ -81,7 +81,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         shown_username = profile_view.default_username_text.text
         if shown_username != username:
             self.errors.append("Default username '%s' doesn't match '%s'" % (shown_username, username))
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5460)
     @marks.medium
@@ -106,7 +106,7 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         if not sign_in.find_text_part(mismatch_error):
             self.errors.append("'%s' is not shown")
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5414)
     @marks.critical

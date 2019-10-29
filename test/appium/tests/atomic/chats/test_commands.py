@@ -73,7 +73,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
                 self.errors.append("Request funds message doesn't contain text 'Transaction Request'")
         except TimeoutException:
             self.errors.append('Request funds message was not received')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5306)
     @marks.critical
@@ -127,7 +127,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
         except Failed as e:
             self.errors.append(e.msg)
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5318)
     @marks.critical
@@ -166,7 +166,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
         except Failed as e:
             self.errors.append(e.msg)
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5324)
     @marks.critical
@@ -212,7 +212,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
                 self.errors.append("Request funds message doesn't contain 'Send' button")
         except TimeoutException:
             self.errors.append('Request funds message was not received')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5383)
     @marks.high
@@ -276,7 +276,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True)
         except Failed as e:
             self.errors.append(e.msg)
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5352)
     @marks.critical
@@ -313,7 +313,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True)
         except Failed as e:
             self.errors.append(e.msg)
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5376)
     @marks.high
@@ -361,7 +361,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         chat.request_command.click()
         if chat.asset_by_name('MDS').is_element_displayed():
             self.errors.append('Token which is not enabled in wallet can be requested in 1-1 chat')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.logcat
     @marks.testrail_id(5417)
@@ -410,7 +410,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
             self.errors.append("Asset field doesn't contain 'ETHro' text")
         if not send_transaction_view.element_by_text_part(amount).is_element_displayed():
             self.errors.append('Amount is not visible')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5377)
     @marks.high
@@ -464,7 +464,7 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         chat_view.send_message_button.click()
         if not error_text.is_element_displayed():
             self.errors.append("'Insufficient funds' error is now shown when sending 1 STT from chat with balance 0")
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5473)
     @marks.medium
@@ -505,4 +505,4 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
             self.errors.append(
                 "'Insufficient funds' error is now shown when sending %s STT from chat with balance %s" % (
                     round(stt_value + 1), stt_value))
-        self.verify_no_errors()
+        self.errors.verify_no_errors()

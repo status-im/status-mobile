@@ -54,7 +54,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         chat.send_message_button.click()
         if not chat.chat_element_by_text(message).is_element_displayed():
             self.errors.append("Message was not sent!")
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(6228)
     @marks.high
@@ -106,7 +106,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append("Mobile data is enabled by default")
         if not profile_view.ask_me_when_on_mobile_network.attribute_value("checked"):
             self.errors.append("'Ask me when on mobile network' is not enabled by default")
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
 
     @marks.testrail_id(5454)
@@ -148,7 +148,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         wallet.share_via_messenger()
         if not wallet.element_by_text_part(address).is_element_present():
             self.errors.append("Can't share address")
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5375)
     @marks.high
@@ -186,7 +186,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         chat.paste_text()
         if chat.chat_message_input.text != address:
             self.errors.append('Wallet address was not copied')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5502)
     @marks.critical
@@ -219,7 +219,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append('No ENS name is shown in own profile after adding')
         if not dapp_view.element_by_text('%s.stateofus.eth' % ens_user['ens']).is_element_displayed():
             self.errors.append('No ENS name is shown in own profile after adding')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5475)
     @marks.low
@@ -255,7 +255,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.backup_recovery_phrase_button.click()
         if not profile_view.backup_recovery_phrase_button.is_element_displayed():
             self.errors.append('Back up seed phrase option is available after seed phrase backed up!')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5433)
     @marks.medium
@@ -332,7 +332,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         for text in basic_user['username'], 'Remove from contacts', 'Send message', 'Block this user':
             if not chat_view.element_by_text(text).scroll_to_element():
                 self.errors.append('%s is not visible' % text)
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5368)
     @marks.high
@@ -351,7 +351,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             for text in 'INFO', 'eth.beta':
                 if not profile_view.element_by_text(text).is_element_displayed():
                     self.errors.append('%s is not selected by default' % text)
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
 
     @marks.testrail_id(5468)
@@ -421,7 +421,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if not base_web_view.policy_summary.is_element_displayed():
             self.errors.append('{} Profile about view!'.format(no_link_open_error_msg))
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5738)
     @marks.high
@@ -453,7 +453,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             dapp_view.allow_button.click(times_to_click=1)
         if not dapp_view.element_by_text_part('to your profile').is_element_displayed():
             self.errors.append('Profile permission is not asked')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5428)
     @marks.low
@@ -476,7 +476,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         message_input.paste_text_from_clipboard()
         if message_input.text != app_version:
             self.errors.append('Version number was not copied to clipboard')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5766)
     @marks.medium
@@ -512,7 +512,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if profile_view.confirm_button.is_element_displayed():
             self.errors.append('can select mailserver with "Autoselection" switched on')
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
 
 @marks.all
@@ -663,7 +663,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if not public_chat_1.chat_element_by_text(message).is_element_displayed(30):
             self.errors.append("Chat history wasn't fetched")
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5762)
     @marks.high
@@ -725,7 +725,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if not chat.chat_element_by_text(message_after_sync).is_element_displayed():
             self.errors.append('"%s" message in 1-1 is not synced' % message_after_sync)
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5680)
     @marks.high
@@ -807,7 +807,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if not device_2_profile.profile_picture.is_element_image_equals_template('sauce_logo_red_profile.png'):
             self.errors.append('Profile picture was not updated after changing when devices are paired')
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(6226)
     @marks.critical
@@ -857,4 +857,4 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if chat_2.chat_element_by_text(message_text_2).username.text.lower() != '@' + user_1['ens']:
             self.errors.append('ENS username is not shown in public chat')
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()

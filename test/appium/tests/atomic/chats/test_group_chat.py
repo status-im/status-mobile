@@ -79,7 +79,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
             if chat.user_name_text.text != chat_name:
                 self.errors.append('Oops! Chat screen does not match the entered chat name %s' % chat_name)
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(3993)
     @marks.critical
@@ -99,7 +99,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
                         "Message from device: %s" % chat_driver.driver.number).is_element_displayed():
                     self.errors.append("Message from device '%s' was not received" % chat_driver.driver.number)
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5674)
     @marks.high
@@ -128,7 +128,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
             if not device_1_chat.chat_element_by_text(message).is_element_displayed():
                 self.errors.append("Message with test '%s' was not received" % message)
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(3997)
     @marks.high
@@ -152,7 +152,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         if device_1_home.element_by_text(chat_name).is_element_displayed():
             self.errors.append("Group chat '%s' is shown, but the chat has been deleted" % chat_name)
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(3998)
     @marks.high
@@ -191,7 +191,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         if not device_2_chat.chat_element_by_text(message_for_device_2).is_element_displayed(30):
             self.errors.append('Message that was sent after device 2 has joined is not visible')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5756)
     @marks.high
@@ -220,7 +220,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
             # device 2: check that chat doesn't reappear
             if device_2_home.element_by_text(chat_name).is_element_displayed():
                 self.errors.append("Group chat '%s' is shown, but the chat has been deleted" % chat_name)
-            self.verify_no_errors()
+            self.errors.verify_no_errors()
 
     @marks.testrail_id(4001)
     @marks.high
@@ -255,7 +255,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         if device_2_chat.chat_element_by_text(message_for_device_2).is_element_displayed():
             self.errors.append("Message with text '%s' was received" % message_for_device_2)
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5694)
     @marks.high
@@ -287,7 +287,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         # device 2: check that as admin can add new members to group chat
         device_2_chat.add_members_to_group_chat([chat_member['username']])
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5681)
     @marks.high
@@ -323,4 +323,4 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
                 device_1_chat.driver.fail(
                     "Message '%s' is shown after re-login, but group chat history has been cleared" % message)
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()

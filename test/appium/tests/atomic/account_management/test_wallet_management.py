@@ -50,7 +50,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             if wallet.element_by_text_part(text).is_element_displayed():
                 self.errors.append('Signing phrase pop up appears after wallet set up')
                 break
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5384)
     @marks.critical
@@ -106,7 +106,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.select_asset(asset)
         if wallet.asset_by_name(asset).is_element_displayed():
             self.errors.append('%s asset is shown in wallet but was deselected' % asset)
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5358)
     @marks.medium
@@ -204,7 +204,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             if not details.element_by_text('Failed').is_element_displayed():
                 self.driver.fail('Failed transactions are not filtered')
             details.back_button.click()
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5381)
     @marks.high
@@ -275,7 +275,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         send_transaction.select_asset_button.click_until_presence_of_element(token_element)
         if not token_element.is_element_displayed():
             self.errors.append('Custom token is not shown on Send Transaction view')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(6224)
     @marks.critical
@@ -338,4 +338,4 @@ class TestWalletManagement(SingleDeviceTestCase):
         if send_transaction.enter_recipient_address_text.text != ens_user_other_domain['address']:
             self.errors.append('ENS address on another domain is not resolved as recipient')
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()

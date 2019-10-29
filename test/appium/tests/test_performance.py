@@ -63,4 +63,4 @@ class TestPerformance(SingleDeviceTestCase):
             self.errors.append(
                 "time between submitting a password and successful login is '%s' seconds, while baseline is '%s'!"
                 % (time_to_login, baseline_login))
-        self.verify_no_errors()
+        self.errors.verify_no_errors()

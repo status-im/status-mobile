@@ -64,7 +64,7 @@ class TestChatManagement(SingleDeviceTestCase):
         home.join_public_chat(chat_name)
         if chat.chat_element_by_text(message).is_element_displayed():
             self.errors.append('Chat history is shown')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5304)
     @marks.high
@@ -105,7 +105,7 @@ class TestChatManagement(SingleDeviceTestCase):
         home.relogin()
         if home.get_chat_with_user(basic_user['username']).is_element_present(10):
             self.errors.append("One-to-one' chat is shown after re-login, but the chat has been deleted")
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5388)
     @marks.high
@@ -122,7 +122,7 @@ class TestChatManagement(SingleDeviceTestCase):
         home.relogin()
         if home.element_by_text(chat_name).is_element_present(5):
             self.errors.append("Public chat '%s' is shown after re-login, but the chat has been deleted" % chat_name)
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5464)
     @marks.medium
@@ -178,7 +178,7 @@ class TestChatManagement(SingleDeviceTestCase):
                     self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
                                        (element.text, keyword))
             home.search_chat_input.clear()
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(6221)
     @marks.medium
@@ -252,7 +252,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         if not contacts_1.element_by_text(username).is_element_displayed():
             self.errors.append("List of contacts doesn't contain added user")
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5786)
     @marks.critical
@@ -396,4 +396,4 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
                 "Message from blocked user '%s' is received after fetching new messages from offline"
                 % device_2.driver.number)
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()

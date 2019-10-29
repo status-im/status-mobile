@@ -64,7 +64,7 @@ class TestDApps(SingleDeviceTestCase):
         dapp_view.open_url(test_dapp_url)
         if status_test_dapp.allow_button.is_element_displayed():
             self.driver.append('DApp is asking permissions after relogin (Always allow is enabled)')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
 
     @marks.testrail_id(6232)
@@ -121,7 +121,7 @@ class TestDApps(SingleDeviceTestCase):
         if not send_transaction_view.element_by_text(address).is_element_displayed():
             self.errors.append("Wallet address %s in not shown in 'From' on Send Transaction screen" % address)
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5654)
     @marks.low

@@ -25,7 +25,7 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
         profile_view.backup_recovery_phrase_button.click()
         if not profile_view.backup_recovery_phrase_button.is_element_displayed():
             self.errors.append('Back up seed phrase option is active for recovered account!')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.skip
     @marks.testrail_id(845)
@@ -147,7 +147,7 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
             else:
                 recover_access_view.click_system_back_button()
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5499)
     @marks.medium
@@ -194,4 +194,4 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
                 self.errors.append('Restored wallet address "%s" does not match expected "%s"' % (address, account))
             profile_view = home_view.profile_button.click()
             profile_view.logout()
-        self.verify_no_errors()
+        self.errors.verify_no_errors()

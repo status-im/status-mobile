@@ -45,7 +45,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         # if chat_1.element_by_text_part(username_1).is_element_displayed():
         #     self.errors.append("Username '%s' is shown for the sender" % username_1)
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5386)
     @marks.high
@@ -112,7 +112,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
         if chat_element.new_messages_counter.is_element_displayed():
             self.errors.append('New messages counter is shown on chat element for already seen message')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(6202)
     @marks.low
@@ -147,7 +147,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_element_1 = chat_1.chat_element_by_text(message_text)
         if not chat_element_1.is_element_displayed(sec=10) or chat_element_1.replied_message_text != emoji_unicode:
             self.errors.append('Reply message was not received by the sender')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
 
 @marks.chat
@@ -169,7 +169,7 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         public_chat.send_message_button.click()
         if not public_chat.chat_element_by_text(message).is_element_displayed():
             self.errors.append('Message with korean characters is not shown')
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.skip
     @marks.testrail_id(5336)
@@ -204,7 +204,7 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         if len(chat.chat_item.find_elements()) <= 1:
             self.errors.append('No messages fetched for yesterday!')
 
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5675)
     @marks.high
@@ -240,4 +240,4 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         for message in (before_yesterday, quiet_time_before_yesterday):
             if not chat.element_by_text_part(message).is_element_displayed():
                 self.driver.fail('"%s" is not shown' % message)
-        self.verify_no_errors()
+        self.errors.verify_no_errors()
