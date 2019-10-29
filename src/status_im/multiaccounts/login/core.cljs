@@ -29,7 +29,8 @@
             [taoensso.timbre :as log]
             [status-im.ui.screens.db :refer [app-db]]
             [status-im.multiaccounts.biometric.core :as biometric]
-            [status-im.utils.identicon :as identicon]))
+            [status-im.utils.identicon :as identicon]
+            [status-im.ethereum.eip55 :as eip55]))
 
 (def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
 (def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
@@ -130,6 +131,13 @@
    current-network
    (types/deserialize networks)])
 
+(defn convert-multiaccount-addresses
+  [multiaccount]
+  (let [update-address #(update % :address eip55/address->checksum)]
+    (-> multiaccount
+        update-address
+        (update :accounts (partial mapv update-address)))))
+
 (fx/defn get-config-callback
   {:events [::get-config-callback]}
   [{:keys [db] :as cofx} config]
@@ -139,7 +147,8 @@
               {:db (assoc db
                           :networks/current-network current-network
                           :networks/networks networks
-                          :multiaccount multiaccount)}
+                          :multiaccount (convert-multiaccount-addresses
+                                         multiaccount))}
               ;; NOTE: initializing mailserver depends on user mailserver
               ;; preference which is why we wait for config callback
               (protocol/initialize-protocol {:default-mailserver true})
