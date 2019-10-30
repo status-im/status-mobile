@@ -315,7 +315,8 @@ dependencies {
     implementation project(':react-native-webview-bridge')
     implementation project(':react-native-status-keycard')
     implementation 'com.github.status-im:function:0.0.1'
-    implementation 'com.facebook.fresco:animated-gif:1.10.0'
+    implementation 'com.facebook.fresco:fresco:2.0.0'
+    implementation 'com.facebook.fresco:animated-gif:2.0.0'
 }
 
 // Run this once to be able to run the application with BUCK
