@@ -302,7 +302,7 @@ class AirplaneModeButton(BaseButton):
         action = TouchAction(self.driver)
         action.press(None, 50, 0).move_to(None, 50, 300).perform()
         super(AirplaneModeButton, self).click()
-        action.tap(None, 50, 600).perform()
+        action.press(None, 50, 600).move_to(None, 50, 0).perform()
 
 
 class BaseView(object):

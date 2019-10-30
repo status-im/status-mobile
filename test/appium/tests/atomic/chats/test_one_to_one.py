@@ -61,7 +61,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         home_1.connection_status.wait_for_invisibility_of_element(30)
         chat_element = home_1.get_chat_with_user(username_2)
-        chat_element.wait_for_visibility_of_element(20)
+        chat_element.wait_for_visibility_of_element(30)
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element(2)
 

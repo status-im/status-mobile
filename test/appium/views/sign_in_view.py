@@ -188,6 +188,7 @@ class SignInView(BaseView):
         self.next_button.click()
         self.confirm_your_password_input.set_value(password)
         self.next_button.click()
+        self.profile_button.wait_for_visibility_of_element(30)
         return self.get_home_view()
 
     def recover_access(self, passphrase: str, password: str = common_password):
@@ -211,7 +212,8 @@ class SignInView(BaseView):
     def sign_in(self, password=common_password):
         self.accept_agreements()
         self.password_input.set_value(password)
-        return self.sign_in_button.click()
+        self.confirm()
+        return self.get_home_view()
 
     def get_account_by_position(self, position: int):
         if self.ok_button.is_element_displayed():

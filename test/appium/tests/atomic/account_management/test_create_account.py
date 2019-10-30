@@ -72,7 +72,6 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.next_button.click()
         sign_in.confirm_your_password_input.set_value(common_password)
         sign_in.next_button.click()
-        sign_in.maybe_later_button.click()
         home_view = sign_in.get_home_view()
         text = 'There are no recent chats here yet. \nUse the (+) button to discover people \nto chat with'
         if not home_view.element_by_text(text).is_element_displayed():

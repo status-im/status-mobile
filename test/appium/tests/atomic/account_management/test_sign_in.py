@@ -61,7 +61,6 @@ class TestSignIn(SingleDeviceTestCase):
         self.driver.close_app()
         sign_in.toggle_airplane_mode()
         self.driver.launch_app()
-        sign_in.accept_agreements()
         home = sign_in.sign_in()
         home.home_button.wait_for_visibility_of_element()
         connection_text = sign_in.connection_status.text
