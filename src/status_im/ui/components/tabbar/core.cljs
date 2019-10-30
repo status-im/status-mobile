@@ -7,6 +7,7 @@
    [status-im.utils.platform :as platform]
    [status-im.ui.components.icons.vector-icons :as vector-icons]
    [status-im.ui.components.common.common :as components.common]
+   [status-im.ui.components.badge :as badge]
    [status-im.i18n :as i18n]
    [re-frame.core :as re-frame]))
 
@@ -67,8 +68,10 @@
        {:style tabs.styles/icon-container}
        [vector-icons/icon icon (tabs.styles/icon active?)]
        (when (pos? (if count @count 0))
-         [react/view tabs.styles/counter
-          [components.common/counter @count]])]
+         [react/view {:style (if (= nav-stack :chat-stack)
+                               tabs.styles/message-counter
+                               tabs.styles/counter)}
+          [badge/message-counter @count true]])]
       (when-not platform/desktop?
         [react/view {:style tabs.styles/tab-title-container}
          [react/text {:style (tabs.styles/new-tab-title active?)}

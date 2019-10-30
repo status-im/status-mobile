@@ -8,6 +8,7 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.list-item.views :as list-item]
+            [status-im.ui.components.badge :as badge]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.utils.contenthash :as contenthash]
@@ -64,9 +65,7 @@
 (defview unviewed-indicator [chat-id]
   (letsubs [unviewed-messages-count [:chats/unviewed-messages-count chat-id]]
     (when (pos? unviewed-messages-count)
-      [components.common/counter {:size                22
-                                  :accessibility-label :unread-messages-count-text}
-       unviewed-messages-count])))
+      [badge/message-counter unviewed-messages-count])))
 
 (defn home-list-item [[_ home-item]]
   (let [{:keys

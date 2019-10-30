@@ -46,6 +46,11 @@
    :top      0
    :position :absolute})
 
+(def message-counter
+  {:right    -10
+   :top      0
+   :position :absolute})
+
 (def touchable-container
   {:flex   1
    :height tabs-height})

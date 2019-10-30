@@ -1,6 +1,7 @@
 (ns status-im.ui.components.badge
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.i18n :as i18n]))
 
 (defn badge [label & [small?]]
   [react/view (merge
@@ -11,3 +12,10 @@
                 :justify-content :center
                 :align-items :center})
    [react/text {:style {:typography :caption :color colors/white}} label]])
+
+(defn message-counter [value & [small?]]
+  [badge
+   (if (> value 99)
+     (i18n/label :t/counter-99-plus)
+     value)
+   small?])
