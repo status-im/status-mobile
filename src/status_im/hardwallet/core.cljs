@@ -1645,7 +1645,7 @@
                                     (filter #(= (:id %) selected-id))
                                     first
                                     :mnemonic)
-        recovery-mnemonic (get-in db [:multiaccounts/recover :passphrase])
+        recovery-mnemonic (get-in db [:intro-wizard :passphrase])
         mnemonic' (or user-selected-mnemonic mnemonic recovery-mnemonic)
         pin' (or pin (vector->string (get-in db [:hardwallet :pin :current])))]
     (fx/merge cofx
