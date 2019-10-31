@@ -235,8 +235,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
                     file_name.replace('.png', '_profile.png')):
                 self.driver.fail('Profile picture was not updated')
 
-    @marks.testrail_id(5329)
-    @marks.critical
+    @marks.testrail_id(6239)
+    @marks.medium
     def test_backup_recovery_phrase(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -257,6 +257,33 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if not profile_view.backup_recovery_phrase_button.is_element_displayed():
             self.errors.append('Back up seed phrase option is available after seed phrase backed up!')
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(5329)
+    @marks.critical
+    def test_recover_account_from_new_user_seedphrase(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        profile_view = sign_in_view.profile_button.click()
+        profile_view.privacy_and_security_button.click()
+        profile_view.backup_recovery_phrase_button.click()
+        profile_view.ok_continue_button.click()
+        recovery_phrase = " ".join(profile_view.get_recovery_phrase().values())
+        profile_view.back_button.click()
+        profile_view.back_button.click()
+        public_key = profile_view.get_public_key()
+        wallet_view = profile_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        address = wallet_view.get_wallet_address()
+        self.driver.reset()
+        sign_in_view.accept_agreements()
+        sign_in_view.recover_access(recovery_phrase)
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        if wallet_view.get_wallet_address() != address:
+            self.driver.fail("Seed phrase displayed in new accounts for back up does not recover respective address")
+        profile_view = wallet_view.profile_button.click()
+        if profile_view.get_public_key() != public_key:
+            self.driver.fail("Seed phrase displayed in new accounts for back up does not recover respective public key")
 
     @marks.testrail_id(5433)
     @marks.medium
