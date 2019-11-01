@@ -1,4 +1,5 @@
 (defproject status-im "0.1.0-SNAPSHOT"
+
   :url "https://github.com/status-im/status-react/"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
