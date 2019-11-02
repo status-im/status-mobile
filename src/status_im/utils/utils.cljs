@@ -1,5 +1,8 @@
 (ns status-im.utils.utils
-  (:require [status-im.i18n :as i18n]
+  (:require [clojure.string :as string]
+            [goog.string :as gstring]
+            [goog.string.format]
+            [status-im.i18n :as i18n]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [re-frame.core :as re-frame]
             [status-im.utils.platform :as platform]
@@ -151,3 +154,9 @@
   (if platform/desktop?
     (js/clearInterval id)
     (.clearInterval rn-dependencies/background-timer id)))
+
+(defn format-decimals [amount places]
+  (let [decimal-part (get (string/split (str amount) ".") 1)]
+    (if (> (count decimal-part) places)
+      (gstring/format (str "%." places "f") amount)
+      (or (str amount) 0))))

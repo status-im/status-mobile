@@ -49,3 +49,9 @@
   (is (= {:a 1 :b 2} (u/deep-merge {:a 1} {:b 2})))
   (is (= {:a {:b 1 :c 2}} (u/deep-merge {:a {:b 1 :c 1}} {:a {:c 2}})))
   (is (= {:a {:b {:c 2}} :d 1} (u/deep-merge {:a {:b {:c 1}} :d 1} {:a {:b {:c 2}}}))))
+
+(deftest format-decimals-test
+  (is (= "1" (uu/format-decimals 1 5)))
+  (is (= "1.1" (uu/format-decimals 1.1 5)))
+  (is (= "1.111111" (uu/format-decimals 1.111111 7)))
+  (is (= "1.1" (uu/format-decimals 1.111 1))))

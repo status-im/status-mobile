@@ -21,7 +21,8 @@
             [clojure.string :as string]
             [status-im.ui.screens.signing.styles :as styles]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.screens.hardwallet.pin.views :as pin.views]))
+            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
+            [status-im.utils.utils :as utils]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -229,7 +230,7 @@
       :title :t/send-request-amount
       :error amount-error
       :accessories [[react/nested-text {:style {:color colors/gray}}
-                     [{:style {:color colors/black}} (str (or amount 0))]
+                     [{:style {:color colors/black}} (utils/format-decimals amount 6)]
                      " "
                      (or display-symbol fee-display-symbol)
                      " • "
@@ -249,7 +250,7 @@
       :title       :t/network-fee
       :error       gas-error
       :accessories [[react/nested-text {:style {:color colors/gray}}
-                     [{:style {:color colors/black}} fee]
+                     [{:style {:color colors/black}} (utils/format-decimals fee 6)]
                      " "
                      fee-display-symbol
                      " • "
