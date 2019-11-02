@@ -37,7 +37,7 @@
 
 (defn fetch-nodes [current-fleet resolve reject]
   (let [default-nodes (-> (node/fleets {})
-                          (get-in [:eth.beta :mail])
+                          (get-in [:eth.staging :mail])
                           vals)]
     (if config/contract-nodes-enabled?
       (do
@@ -47,7 +47,7 @@
          contract-address
          (handlers/response-handler resolve
                                     (fn [error]
-                                      (log/warn "could not fetch nodes from contract defaulting to eth.beta")
+                                      (log/warn "could not fetch nodes from contract defaulting to eth.staging")
                                       (resolve default-nodes)))))
       (resolve default-nodes))))
 

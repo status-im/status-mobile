@@ -40,17 +40,17 @@
       (testing "it shows the popup"
         (is (:ui/show-confirmation (mailserver/change-mailserver
                                     {:db {:multiaccount {:settings
-                                                         {:fleet :beta
-                                                          :mailserver {:beta "id"}}}
+                                                         {:fleet :staging
+                                                          :mailserver {:staging "id"}}}
                                           :peers-count 1}})))))
     (testing "there's not a preferred mailserver"
       (testing "it changes the mailserver"
         (is (= :a
                (get-in
                 (mailserver/change-mailserver
-                 {:db {:mailserver/mailservers {:beta {:a "b"}}
+                 {:db {:mailserver/mailservers {:staging {:a "b"}}
                        :multiaccount {:settings
-                                      {:fleet :beta}}
+                                      {:fleet :staging}}
                        :peers-count 1}})
                 [:db :mailserver/current-id]))))
       (testing "it does not show the popup"
@@ -131,10 +131,10 @@
 
 (deftest edit-mailserver
   (let [db {:mailserver/mailservers
-            {:eth.beta {"a" {:id      "a"
-                             :address valid-enode-address
-                             :password password
-                             :name    "name"}}}}
+            {:eth.staging {"a" {:id      "a"
+                                :address valid-enode-address
+                                :password password
+                                :name    "name"}}}}
         cofx {:db db}]
     (testing "when no id is given"
       (let [actual (mailserver/edit cofx nil)]
@@ -186,36 +186,36 @@
 
 (deftest fetch-mailserver
   (testing "it fetches the mailserver from the db"
-    (let [cofx {:db {:mailserver/mailservers {:eth.beta {"a" {:id      "a"
-                                                              :name    "old-name"
-                                                              :address "enode://old-id:old-password@url:port"}}}}}]
+    (let [cofx {:db {:mailserver/mailservers {:eth.staging {"a" {:id      "a"
+                                                                 :name    "old-name"
+                                                                 :address "enode://old-id:old-password@url:port"}}}}}]
       (is (mailserver/fetch cofx "a")))))
 
 (deftest fetch-current-mailserver
   (testing "it fetches the mailserver from the db with corresponding id"
     (let [cofx {:db {:mailserver/current-id "a"
-                     :mailserver/mailservers {:eth.beta {"a" {:id      "a"
-                                                              :name    "old-name"
-                                                              :address "enode://old-id:old-password@url:port"}}}}}]
+                     :mailserver/mailservers {:eth.staging {"a" {:id      "a"
+                                                                 :name    "old-name"
+                                                                 :address "enode://old-id:old-password@url:port"}}}}}]
       (is (mailserver/fetch-current cofx)))))
 
 (deftest set-current-mailserver
   (with-redefs [rand-nth (comp last sort)]
-    (let [cofx {:db {:mailserver/mailservers {:eth.beta {"a" {}
-                                                         "b" {}
-                                                         "c" {}
-                                                         "d" {}}}}}]
+    (let [cofx {:db {:mailserver/mailservers {:eth.staging {"a" {}
+                                                            "b" {}
+                                                            "c" {}
+                                                            "d" {}}}}}]
       (testing "the user has already a preference"
         (let [cofx (assoc-in cofx
                              [:db :multiaccount :settings]
-                             {:mailserver {:eth.beta "a"}})]
+                             {:mailserver {:eth.staging "a"}})]
           (testing "the mailserver exists"
             (testing "it sets the preferred mailserver"
               (is (= "a" (-> (mailserver/set-current-mailserver cofx)
                              :db
                              :mailserver/current-id)))))
           (testing "the mailserver does not exists"
-            (let [cofx (update-in cofx [:db :mailserver/mailservers :eth.beta] dissoc "a")]
+            (let [cofx (update-in cofx [:db :mailserver/mailservers :eth.staging] dissoc "a")]
               (testing "sets a random mailserver"
                 (is (= "d" (-> (mailserver/set-current-mailserver cofx)
                                :db
@@ -250,10 +250,10 @@
 (deftest delete-mailserver
   (testing "the user is not connected to the mailserver"
     (let [cofx {:random-id-generator (constantly "random-id")
-                :db {:mailserver/mailservers {:eth.beta {"a" {:id           "a"
-                                                              :name         "old-name"
-                                                              :user-defined true
-                                                              :address      "enode://old-id:old-password@url:port"}}}}}
+                :db {:mailserver/mailservers {:eth.staging {"a" {:id           "a"
+                                                                 :name         "old-name"
+                                                                 :user-defined true
+                                                                 :address      "enode://old-id:old-password@url:port"}}}}}
           actual (mailserver/delete cofx "a")]
       (testing "it removes the mailserver from the list"
         (is (not (mailserver/fetch actual "a"))))
@@ -261,17 +261,17 @@
         (is (= 1 (count (::json-rpc/call actual)))))))
   (testing "the mailserver is not user-defined"
     (let [cofx {:random-id-generator (constantly "random-id")
-                :db {:mailserver/mailservers {:eth.beta {"a" {:id      "a"
-                                                              :name    "old-name"
-                                                              :address "enode://old-id:old-password@url:port"}}}}}
+                :db {:mailserver/mailservers {:eth.staging {"a" {:id      "a"
+                                                                 :name    "old-name"
+                                                                 :address "enode://old-id:old-password@url:port"}}}}}
           actual (mailserver/delete cofx "a")]
       (testing "it does not delete the mailserver"
         (is (= {:dispatch [:navigate-back]} actual)))))
   (testing "the user is connected to the mailserver"
     (let [cofx {:random-id-generator (constantly "random-id")
-                :db {:mailserver/mailservers {:eth.beta {"a" {:id      "a"
-                                                              :name    "old-name"
-                                                              :address "enode://old-id:old-password@url:port"}}}}}
+                :db {:mailserver/mailservers {:eth.staging {"a" {:id      "a"
+                                                                 :name    "old-name"
+                                                                 :address "enode://old-id:old-password@url:port"}}}}}
           actual (mailserver/delete cofx "a")]
       (testing "it does not remove the mailserver from the list"
         (is (= {:dispatch [:navigate-back]} actual))))))
@@ -286,11 +286,11 @@
           actual (mailserver/upsert cofx)]
 
       (testing "it adds the enode to mailserver/mailservers"
-        (is (= {:eth.beta {:randomid {:password "test-password"
-                                      :address "enode://test-id@url:port"
-                                      :name "test-name"
-                                      :id :randomid
-                                      :user-defined true}}}
+        (is (= {:eth.staging {:randomid {:password "test-password"
+                                         :address "enode://test-id@url:port"
+                                         :name "test-name"
+                                         :id :randomid
+                                         :user-defined true}}}
                (get-in actual [:db :mailserver/mailservers]))))
       (testing "it navigates back"
         (is (= [:navigate-back]
@@ -303,19 +303,19 @@
                                                   :name {:value "new-name"}
                                                   :url  {:value "enode://new-id:new-password@url:port"}}
 
-                     :mailserver/mailservers {:eth.beta {:a {:id      :a
-                                                             :name    "old-name"
-                                                             :address "enode://old-id:old-password@url:port"}}}}}
+                     :mailserver/mailservers {:eth.staging {:a {:id      :a
+                                                                :name    "old-name"
+                                                                :address "enode://old-id:old-password@url:port"}}}}}
           actual (mailserver/upsert cofx)]
       (testing "it navigates back"
         (is (= [:navigate-back]
                (:dispatch actual))))
       (testing "it updates the enode to mailserver/mailservers"
-        (is (= {:eth.beta {:a {:password "new-password"
-                               :address "enode://new-id@url:port"
-                               :name "new-name"
-                               :id :a
-                               :user-defined true}}}
+        (is (= {:eth.staging {:a {:password "new-password"
+                                  :address "enode://new-id@url:port"
+                                  :name "new-name"
+                                  :id :a
+                                  :user-defined true}}}
                (get-in actual [:db :mailserver/mailservers]))))
       (testing "it stores it in the db"
         (is (= 1 (count (::json-rpc/call actual))))))))
@@ -325,10 +325,10 @@
         :peers-summary (if registered-peer?
                          [{:id "mailserver-id" :enode "enode://mailserver-id@ip"}]
                          [])
-        :multiaccount {:settings {:fleet :eth.beta}}
+        :multiaccount {:settings {:fleet :eth.staging}}
         :mailserver/current-id "mailserver-a"
-        :mailserver/mailservers {:eth.beta {"mailserver-a" {:sym-key-id sym-key
-                                                            :address "enode://mailserver-id@ip"}}}}})
+        :mailserver/mailservers {:eth.staging {"mailserver-a" {:sym-key-id sym-key
+                                                               :address "enode://mailserver-id@ip"}}}}})
 
 (defn peers-summary-change-result [sym-key registered-peer? registered-peer-before?]
   (mailserver/peers-summary-change (cofx-fixtures sym-key
@@ -581,34 +581,34 @@
   (testing "it removes the preference"
     (let [db {:mailserver/current-id "mailserverid"
               :mailserver/mailservers
-              {:eth.beta {"mailserverid" {:address  "mailserver-address"
-                                          :password "mailserver-password"}}}
+              {:eth.staging {"mailserverid" {:address  "mailserver-address"
+                                             :password "mailserver-password"}}}
               :multiaccount
-              {:settings {:fleet :eth.beta
-                          :mailserver {:eth.beta "mailserverid"}}}}]
+              {:settings {:fleet :eth.staging
+                          :mailserver {:eth.staging "mailserverid"}}}}]
       (is (not (get-in (mailserver/unpin {:db db})
-                       [:db :multiaccount :settings :mailserver :eth.beta]))))))
+                       [:db :multiaccount :settings :mailserver :eth.staging]))))))
 
 (deftest pin-test
   (testing "it removes the preference"
     (let [db {:mailserver/current-id "mailserverid"
               :mailserver/mailservers
-              {:eth.beta {"mailserverid" {:address  "mailserver-address"
-                                          :password "mailserver-password"}}}
+              {:eth.staging {"mailserverid" {:address  "mailserver-address"
+                                             :password "mailserver-password"}}}
               :multiaccount
-              {:settings {:fleet :eth.beta
+              {:settings {:fleet :eth.staging
                           :mailserver {}}}}]
       (is (= "mailserverid" (get-in (mailserver/pin {:db db})
-                                    [:db :multiaccount :settings :mailserver :eth.beta]))))))
+                                    [:db :multiaccount :settings :mailserver :eth.staging]))))))
 
 (deftest connect-to-mailserver
   (let [db {:mailserver/current-id "mailserverid"
             :mailserver/mailservers
-            {:eth.beta {"mailserverid" {:address  "mailserver-address"
-                                        :password "mailserver-password"}}}
+            {:eth.staging {"mailserverid" {:address  "mailserver-address"
+                                           :password "mailserver-password"}}}
             :multiaccount
-            {:settings {:fleet :eth.beta
-                        :mailserver {:eth.beta "mailserverid"}}}}]
+            {:settings {:fleet :eth.staging
+                        :mailserver {:eth.staging "mailserverid"}}}}]
     (testing "it adds the peer"
       (is (= "mailserver-address"
              (:mailserver/add-peer (mailserver/connect-to-mailserver {:db db})))))
@@ -619,7 +619,7 @@
                  first
                  :password))))
     (let [mailserver-with-sym-key-db (assoc-in db
-                                               [:mailserver/mailservers :eth.beta "mailserverid" :sym-key-id]
+                                               [:mailserver/mailservers :eth.staging "mailserverid" :sym-key-id]
                                                "somesymkeyid")]
       (testing "it does not generate a sym key if already present"
         (is (not (-> (mailserver/connect-to-mailserver {:db mailserver-with-sym-key-db})

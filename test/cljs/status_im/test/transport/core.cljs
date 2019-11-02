@@ -10,12 +10,12 @@
   (let [cofx {:db {:multiaccount {:public-key "1"}}}]
     (testing "custom mailservers"
       (let [ms-1            {:id :a
-                             :fleet :eth.beta
+                             :fleet :eth.staging
                              :name "name-1"
                              :address "address-1"
                              :password "password-1"}
             ms-2            {:id :b
-                             :fleet :eth.beta
+                             :fleet :eth.staging
                              :name "name-2"
                              :address "address-2"
                              :password "password-2"}
@@ -24,12 +24,12 @@
                              :name "name-3"
                              :address "address-3"
                              :password "password-3"}
-            expected-mailservers {:eth.beta {:a (-> ms-1
-                                                    (dissoc :fleet)
-                                                    (assoc :user-defined true))
-                                             :b (-> ms-2
-                                                    (dissoc ms-2 :fleet)
-                                                    (assoc :user-defined true))}
+            expected-mailservers {:eth.staging {:a (-> ms-1
+                                                       (dissoc :fleet)
+                                                       (assoc :user-defined true))
+                                                :b (-> ms-2
+                                                       (dissoc ms-2 :fleet)
+                                                       (assoc :user-defined true))}
                                   :eth.test {:c (-> ms-3
                                                     (dissoc :fleet)
                                                     (assoc :user-defined true))}}]
@@ -40,8 +40,8 @@
                                                         :mailserver-topics {}
                                                         :default-mailserver true})
                     [:db :mailserver/mailservers])
-                   (update-in [:eth.beta :a] dissoc :generating-sym-key?)
-                   (update-in [:eth.beta :b] dissoc :generating-sym-key?)
+                   (update-in [:eth.staging :a] dissoc :generating-sym-key?)
+                   (update-in [:eth.staging :b] dissoc :generating-sym-key?)
                    (update-in [:eth.test :c] dissoc :generating-sym-key?))))))))
 
 (def sig "0x04325367620ae20dd878dbb39f69f02c567d789dd21af8a88623dc5b529827c2812571c380a2cd8236a2851b8843d6486481166c39debf60a5d30b9099c66213e4")

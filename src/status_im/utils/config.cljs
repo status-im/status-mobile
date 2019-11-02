@@ -40,7 +40,7 @@
 (def log-level-status-go
   (-> (get-config :LOG_LEVEL_STATUS_GO "")
       string/upper-case))
-(def fleet (get-config :FLEET "eth.beta"))
+(def fleet (get-config :FLEET "eth.staging"))
 (def default-network (get-config :DEFAULT_NETWORK))
 (def pow-target (js/parseFloat (get-config :POW_TARGET "0.002")))
 (def pow-time (js/parseInt (get-config :POW_TIME "1")))
