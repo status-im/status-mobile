@@ -133,6 +133,105 @@
      [react/view {:align-items :center :margin-top 16 :margin-bottom 40}
       [sign-with-keycard-button nil nil]])])
 
+(defn signature-request [{:keys [error formatted-data
+                                 fiat-amount fiat-currency
+                                 keycard-step
+                                 in-progress? enabled?] :as sign} small-screen?]
+  (let [message (:message formatted-data)
+        title (case keycard-step
+                :connect :t/looking-for-cards
+                :signing :t/processing
+                :error      :t/lost-connection
+                :success :t/success)
+        subtitle (case keycard-step
+                   :connect :t/hold-card
+                   :signing :t/try-keeping-the-card-still
+                   :error :t/tap-card-again
+                   :success :t/transaction-signed)]
+    [react/view (assoc styles/message :padding-vertical 16 :align-items :center)
+     [react/view {:style {:align-self :flex-start :padding-left 16 :margin-bottom 24}}
+      [react/text {:style {:font-size (if small-screen? 15 17) :font-weight "700"}}
+       (i18n/label :t/confirmation-request)]]
+     (when (and (:formatted-amount message) (:formatted-currency message))
+       [react/view {:style {:margin-bottom 24 :align-self :stretch}}
+        [react/nested-text {:style {:font-weight "500" :font-size (if small-screen? 34 44)
+                                    :text-align :center}}
+         (str (:formatted-amount message) " ")
+         [{:style {:color colors/gray}} (:formatted-currency message)]]
+        [react/text {:style {:font-size 19 :text-align :center
+                             :margin-bottom 16}}
+         (str fiat-amount " " fiat-currency)]
+        [separator]])
+     [react/view {:style (styles/sheet-icon (case keycard-step
+                                              (:connect :signing) colors/blue-transparent-10
+                                              :error              colors/red-transparent-10
+                                              :success            colors/green-transparent-10))}
+      (case keycard-step
+        :connect
+        [icons/icon :main-icons/nfc {:color colors/blue :width 27 :height 21}]
+        :signing
+        [react/activity-indicator {:animating true :color colors/blue}]
+        :error
+        [icons/icon :main-icons/close {:color colors/red}]
+        :success
+        [icons/icon :main-icons/check {:color colors/green}])]
+     [react/text {:style (styles/sheet-title small-screen?)} (i18n/label title)]
+     [react/text {:style (styles/sheet-subtitle small-screen?)} (i18n/label subtitle)]
+     [button/button {:type            :main
+                     :disabled?       (= keycard-step :success)
+                     :text-style      {:font-size (if small-screen? 18 20)}
+                     :style           {:align-self :stretch}
+                     :container-style {:height (if small-screen? 52 64)}
+                     :label           (i18n/label :t/show-transaction-data)
+                     :on-press        #(re-frame/dispatch [:show-popover {:view :transaction-data}])}]
+     [button/button {:type            :main
+                     :theme           :red
+                     :disabled?       (= keycard-step :success)
+                     :container-style {:margin-top 8
+                                       :height     64 :margin-bottom 16}
+                     :style           {:align-self :stretch}
+                     :text-style     {:font-size 20}
+                     :label           (i18n/label :t/decline)
+                     :on-press        #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}]]))
+
+(defn- transaction-data-item [{:keys [label data]}]
+  [react/view
+   [react/text {:style {:font-size     17
+                        :line-height   20
+                        :margin-bottom 8
+                        :color         colors/gray}}
+    label]
+   [react/text {:style {:font-size     17
+                        :line-height   20
+                        :margin-bottom 24}}
+    data]])
+
+(views/defview transaction-data []
+  (views/letsubs
+    [{:keys [formatted-data]} [:signing/sign]]
+    [react/view {:style {:flex 1}}
+     [react/view {:style {:margin-horizontal 24
+                          :margin-top        24}}
+      [react/text {:style {:font-size   17
+                           :font-weight "700"}}
+       (i18n/label :t/transaction-data)]]
+     [react/scroll-view {:style {:flex               1
+                                 :margin-horizontal  8
+                                 :padding-horizontal 16
+                                 :padding-vertical   10
+                                 :margin-vertical    14}}
+      [transaction-data-item {:label "Label"
+                              :data  formatted-data}]]
+     [separator]
+     [react/view {:style {:margin-horizontal 8
+                          :margin-vertical   16}}
+      [button/button  {:type            :main
+                       :text-style      {:font-size 20}
+                       :style           {:margin-horizontal 0}
+                       :container-style {:height 64}
+                       :label           (i18n/label :t/close)
+                       :on-press        #(re-frame/dispatch [:hide-popover])}]]]))
+
 (views/defview password-view [{:keys [type error in-progress? enabled?] :as sign}]
   (views/letsubs [phrase [:signing/phrase]]
     (case type
@@ -160,19 +259,22 @@
       [react/view])))
 
 (views/defview message-sheet []
-  (views/letsubs [{:keys [formatted-data type] :as sign} [:signing/sign]]
-    [react/view styles/message
-     [react/view styles/message-header
-      [react/text {:style {:typography :title-bold}} (i18n/label :t/signing-a-message)]
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}
-       [react/view {:padding 6}
-        [react/text {:style {:color colors/blue}} (i18n/label :t/cancel)]]]]
-     [separator]
-     [react/view {:padding-top 16 :flex 1}
-      [react/view styles/message-border
-       [react/scroll-view
-        [react/text (or formatted-data "")]]]
-      [password-view sign]]]))
+  (views/letsubs [{:keys [formatted-data type] :as sign} [:signing/sign]
+                  small-screen? [:dimensions/small-screen?]]
+    (if (= type :pinless)
+      [signature-request sign small-screen?]
+      [react/view styles/message
+       [react/view styles/message-header
+        [react/text {:style {:typography :title-bold}} (i18n/label :t/signing-a-message)]
+        [react/touchable-highlight {:on-press #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}
+         [react/view {:padding 6}
+          [react/text {:style {:color colors/blue}} (i18n/label :t/cancel)]]]]
+       [separator]
+       [react/view {:padding-top 16 :flex 1}
+        [react/view styles/message-border
+         [react/scroll-view
+          [react/text (or formatted-data "")]]]
+        [password-view sign]]])))
 
 (defn amount-item [prices wallet-currency amount amount-error display-symbol fee-display-symbol prices-loading?]
   (let [converted-value (* amount (get-in prices [(keyword display-symbol) (keyword (:code wallet-currency)) :price]))]

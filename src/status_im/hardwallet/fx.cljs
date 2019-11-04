@@ -95,6 +95,10 @@
  card/sign)
 
 (re-frame/reg-fx
+ :hardwallet/sign-typed-data
+ card/sign-typed-data)
+
+(re-frame/reg-fx
  :hardwallet/login-with-keycard
  status/login-with-keycard)
 

@@ -225,8 +225,12 @@
 (def ^:const web3-shh-get-filter-changes "shh_getFilterChanges")
 (def ^:const web3-shh-get-messages "shh_getMessages")
 
+;; Keycard ns
+
+(def ^:const web3-keycard-sign-typed-data "keycard_signTypedData")
+
 (defn web3-sign-message? [method]
-  (#{web3-sign-typed-data web3-sign-typed-data-v3 web3-personal-sign} method))
+  (#{web3-sign-typed-data web3-sign-typed-data-v3 web3-personal-sign web3-keycard-sign-typed-data} method))
 
 (def ^:const status-create-address "status_createaddress")
 

@@ -59,6 +59,12 @@
       (then on-success)
       (catch on-failure)))
 
+(defn install-cash-applet [{:keys [on-success on-failure]}]
+  (.. status-keycard
+      installCashApplet
+      (then on-success)
+      (catch on-failure)))
+
 (defn init-card [{:keys [pin on-success on-failure]}]
   (.. status-keycard
       (init pin)
@@ -178,6 +184,14 @@
         (then on-success)
         (catch on-failure))))
 
+(defn sign-typed-data
+  [{:keys [hash on-success on-failure]}]
+  (when hash
+    (.. status-keycard
+        (signPinless hash)
+        (then on-success)
+        (catch on-failure))))
+
 (defrecord RealKeycard []
   keycard/Keycard
   (keycard/check-nfc-support [this args]
@@ -200,6 +214,8 @@
     (get-application-info args))
   (keycard/install-applet [this args]
     (install-applet args))
+  (keycard/install-cash-applet [this args]
+    (install-cash-applet args))
   (keycard/init-card [this args]
     (init-card args))
   (keycard/install-applet-and-init-card [this args]
@@ -231,4 +247,6 @@
   (keycard/get-keys [this args]
     (get-keys args))
   (keycard/sign [this args]
-    (sign args)))
+    (sign args))
+  (keycard/sign-typed-data [this args]
+    (sign-typed-data args)))

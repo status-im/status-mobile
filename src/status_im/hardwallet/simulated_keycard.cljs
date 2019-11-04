@@ -60,6 +60,7 @@
   (later #(on-success (get @state :application-info))))
 
 (defn install-applet [args])
+(defn install-cash-applet [args])
 
 (def kk1-password "6d9ZHjn94kFP4bPm")
 
@@ -121,6 +122,7 @@
 (defn unpair-and-delete [args])
 (defn get-keys [args])
 (defn sign [args])
+(defn sign-typed-data [args])
 
 (defrecord SimulatedKeycard []
   keycard/Keycard

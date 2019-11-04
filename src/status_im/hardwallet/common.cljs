@@ -411,7 +411,7 @@
   [{:keys [db] :as cofx} error]
   (log/debug "[hardwallet] application info error " error)
   (let [on-card-read      (get-in db [:hardwallet :on-card-read])
-        on-card-connected (get-in db [:hardwallet :on-card-conncted])
+        on-card-connected (get-in db [:hardwallet :on-card-connected])
         login?            (= on-card-read :hardwallet/login-with-keycard)
         tag-was-lost?     (tag-lost? (:error error))]
     (when-not tag-was-lost?

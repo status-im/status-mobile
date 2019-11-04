@@ -79,11 +79,12 @@
   {:events [:signing.ui/sign-with-keycard-pressed]}
   [{:keys [db] :as cofx}]
   (let [message (get-in db [:signing/tx :message])]
-    (fx/merge cofx
-              {:db (-> db
-                       (assoc-in [:hardwallet :pin :enter-step] :sign)
-                       (assoc-in [:signing/sign :keycard-step] :pin)
-                       (assoc-in [:signing/sign :type] :keycard))}
-              (if message
-                (hash-message message)
-                (hash-transaction)))))
+    (fx/merge
+     cofx
+     {:db (-> db
+              (assoc-in [:hardwallet :pin :enter-step] :sign)
+              (assoc-in [:signing/sign :type] :keycard)
+              (assoc-in [:signing/sign :keycard-step] :pin))}
+     (if message
+       (hash-message message nil)
+       (hash-transaction)))))

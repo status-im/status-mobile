@@ -423,3 +423,40 @@
          (re-frame/dispatch
           [:hardwallet.callback/on-sign-error
            (error-object->map response)])))})))
+
+(defn install-cash-applet []
+  (log/info "[keycard] install-cash-applet")
+  (keycard/install-cash-applet
+   card
+   {:on-success
+    (fn [response]
+      (log/info "[keycard response succ] install-cash-applet"
+                (js->clj response :keywordize-keys true))
+      (re-frame/dispatch
+       [:hardwallet.callback/on-install-applet-success response]))
+    :on-failure
+    (fn [response]
+      (log/info "[keycard response fail] install-cash-applet"
+                (error-object->map response))
+      (re-frame/dispatch
+       [:hardwallet.callback/on-install-applet-error
+        (error-object->map response)]))}))
+
+(defn sign-typed-data
+  [{:keys [hash] :as args}]
+  (log/info "[keycard] sign-typed-data" args)
+  (keycard/sign-typed-data
+   card
+   {:hash hash
+    :on-success
+    (fn [response]
+      (log/info "[keycard response succ] sign-typed-data" (js->clj response :keywordize-keys true))
+      (re-frame/dispatch [:hardwallet.callback/on-sign-success
+                          response]))
+    :on-failure
+    (fn [response]
+      (log/info "[keycard response fail] sign-typed-data"
+                (error-object->map response))
+      (re-frame/dispatch
+       [:hardwallet.callback/on-sign-error
+        (error-object->map response)]))}))

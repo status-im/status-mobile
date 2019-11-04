@@ -325,9 +325,12 @@
         (when (or (not message?) (and address data))
           (signing/sign cofx (merge
                               (if message?
-                                {:message {:address address :data data :typed? (not= constants/web3-personal-sign method)
-                                           :from    dapps-address}}
-                                {:tx-obj (update (first params) :from #(or % dapps-address))})
+                                {:message {:address address
+                                           :data data
+                                           :typed? (not= constants/web3-personal-sign method)
+                                           :pinless? (= method constants/web3-keycard-sign-typed-data)
+                                           :from dapps-address}}
+                                {:tx-obj  (update (first params) :from #(or % dapps-address))})
                               {:on-result [:browser.dapp/transaction-on-result message-id id]
                                :on-error  [:browser.dapp/transaction-on-error message-id]}))))
       (if (#{"eth_accounts" "eth_coinbase"} method)
@@ -347,6 +350,7 @@
   [{:keys [db] :as cofx} dapp-name {:keys [method] :as payload} message-id]
   (let [{:dapps/keys [permissions]} db]
     (if (and (#{"eth_accounts" "eth_coinbase" "eth_sendTransaction" "eth_sign"
+                "keycard_signTypedData"
                 "eth_signTypedData" "personal_sign" "personal_ecRecover"} method)
              (not (some #{constants/dapp-permission-web3} (get-in permissions [dapp-name :permissions]))))
       (send-to-bridge cofx

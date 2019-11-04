@@ -10,8 +10,9 @@
             [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]
             [status-im.react-native.js-dependencies :as js-dependencies]
-            [status-im.ui.screens.biometric.views :as biometric]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.screens.signing.views :as signing]
+            [status-im.ui.screens.biometric.views :as biometric]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -132,6 +133,9 @@
 
                    (= :disable-password-saving view)
                    [biometric/disable-password-saving-popover]
+
+                   (= :transaction-data view)
+                   [signing/transaction-data]
 
                    :else
                    [view])]]]]])))})))
