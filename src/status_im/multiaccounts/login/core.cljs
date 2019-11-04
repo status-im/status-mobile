@@ -68,7 +68,10 @@
   {:events [:multiaccounts.login.ui/password-input-submitted]}
   [{:keys [db] :as cofx}]
   (let [{:keys [address password name photo-path]} (:multiaccounts/login db)]
-    {:db (assoc-in db [:multiaccounts/login :processing] true)
+    {:db (-> db
+             (assoc-in [:multiaccounts/login :processing] true)
+             (dissoc :intro-wizard)
+             (update :hardwallet dissoc :flow))
      ::login [(types/clj->json {:name name :address address :photo-path photo-path})
               (ethereum/sha3 (security/safe-unmask-data password))]}))
 
