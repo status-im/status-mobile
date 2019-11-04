@@ -16,8 +16,7 @@
             {:db (assoc db :network-status (if is-connected? :online :offline))}
             (when is-connected?
               (if-not (= (count (get-in db [:wallet :accounts])) (count (get-in db [:multiaccount :accounts])))
-                (wallet/update-balances nil)))
-            (mailserver/network-connection-status-changed is-connected?)))
+                (wallet/update-balances nil)))))
 
 (fx/defn change-network-type
   [{:keys [db] :as cofx} old-network-type network-type expensive?]

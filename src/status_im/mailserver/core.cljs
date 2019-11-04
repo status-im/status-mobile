@@ -472,16 +472,6 @@
   [{:keys [db]}]
   {:db (dissoc db :mailserver/request-to)})
 
-(fx/defn network-connection-status-changed
-  "when host reconnects, reset request-to and
-  reconnect to mailserver"
-  [{:keys [db] :as cofx} is-connected?]
-  (when (and (multiaccounts.model/logged-in? cofx)
-             is-connected?)
-    (fx/merge cofx
-              (reset-request-to)
-              (connect-to-mailserver))))
-
 (fx/defn remove-gaps
   [{:keys [db] :as cofx} chat-id]
   (fx/merge cofx
