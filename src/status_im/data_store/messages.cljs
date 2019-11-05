@@ -28,7 +28,7 @@
                                 :content-type :contentType
                                 :clock-value :clockValue
                                 :outgoing-status :outgoingStatus})
-      (assoc :replyTo (get-in message [:content :response-to-v2]))))
+      (assoc :replyTo (get-in message [:content :response-to]))))
 
 (defn update-quoted-message [message]
   (let [parsed-content (utils/safe-read-message-content (get-in message [:quotedMessage :content]))]

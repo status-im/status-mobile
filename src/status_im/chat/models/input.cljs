@@ -133,7 +133,7 @@
                                             :content      (cond-> {:chat-id current-chat-id
                                                                    :text    input-text}
                                                             message-id
-                                                            (assoc :response-to-v2 message-id)
+                                                            (assoc :response-to message-id)
                                                             preferred-name
                                                             (assoc :name preferred-name))})
                 (commands.input/set-command-reference nil)

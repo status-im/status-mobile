@@ -70,9 +70,7 @@
   [{:keys [chat-id message-id content
            timestamp-str group-chat outgoing current-public-key expanded?] :as message}]
   [message-view message
-   (let [response-to (or (:response-to content)
-                         (:response-to-v2 content))
-
+   (let [response-to (:response-to content)
          collapsible? (and (:should-collapse? content) group-chat)]
      [react/view
       (when response-to
@@ -98,8 +96,7 @@
 
 (defn emoji-message
   [{:keys [content current-public-key alias] :as message}]
-  (let [response-to (or (:response-to content)
-                        (:response-to-v2 content))]
+  (let [response-to (:response-to content)]
     [message-view message
      [react/view {:style (style/style-message-text false)}
       (when response-to

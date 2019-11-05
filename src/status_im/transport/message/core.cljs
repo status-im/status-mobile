@@ -16,6 +16,31 @@
             [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]))
 
+(def message-type-message 1)
+
+(defn build-message [parsed-message-js]
+  (let [content (.-content parsed-message-js)
+        built-message
+        (protocol/Message.
+         {:text (.-text content)
+          :response-to (.-response-to content)
+          :chat-id (.-chat_id content)}
+         (.-content_type parsed-message-js)
+         (keyword (.-message_type parsed-message-js))
+         (.-clock parsed-message-js)
+         (.-timestamp parsed-message-js))]
+    built-message))
+
+(defn handle-message
+  "Check if parsedMessage is present and of a supported type, if so
+  build a record using the right type. Otherwise defaults to transit
+  deserializing"
+  [message-js]
+  (if (and (.-parsedMessage message-js)
+           (= message-type-message) (.-messageType message-js))
+    (build-message (.-parsedMessage message-js))
+    (transit/deserialize (.-payload message-js))))
+
 (fx/defn receive-message
   "Receive message handles a new status-message.
   dedup-id is passed by status-go and is used to deduplicate messages at that layer.
@@ -23,7 +48,6 @@
   in order to stop receiving that message"
   [{:keys [db]} now-in-s filter-chat-id message-js]
   (let [blocked-contacts (get db :contacts/blocked #{})
-        payload (.-payload message-js)
         timestamp (.-timestamp (.-message message-js))
         metadata-js (.-metadata message-js)
         metadata {:author {:publicKey (.-publicKey (.-author metadata-js))
@@ -32,9 +56,7 @@
                   :dedupId (.-dedupId metadata-js)
                   :encryptionId (.-encryptionId metadata-js)
                   :messageId (.-messageId metadata-js)}
-        raw-payload  {:raw-payload message-js}
-        status-message (-> payload
-                           transit/deserialize)
+        status-message (handle-message message-js)
         sig (-> metadata :author :publicKey)]
     (when (and sig
                status-message
