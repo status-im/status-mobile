@@ -36,6 +36,9 @@ mailserver_address = "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499
                      "fb7cefd31c3c88d600a775f14ed5781520a88ecd25da3c6:status-offline-inbox@35.225.227.79:30504"
 mailserver_central_2 = 'mail-02.gc-us-central1-a.eth.beta'
 mailserver_central_3 = 'mail-03.gc-us-central1-a.eth.beta'
+mailserver_staging_central_1 = 'mail-01.gc-us-central1-a.eth.staging'
+mailserver_staging_ams_1 = 'mail-01.do-ams3.eth.staging'
+
 mailserver_ams_01 = 'mail-01.do-ams3.eth.beta'
 camera_access_error_text = "To grant the required camera permission, please go to your system settings " \
                            "and make sure that Status > Camera is selected."

@@ -2,7 +2,7 @@ import pytest
 import re
 
 from tests import marks, bootnode_address, mailserver_address, camera_access_error_text, \
-    photos_access_error_text, test_dapp_url, test_dapp_name, mailserver_central_2, mailserver_central_3, \
+    photos_access_error_text, test_dapp_url, test_dapp_name, mailserver_staging_ams_1, mailserver_staging_central_1, \
     mailserver_ams_01
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user
@@ -373,10 +373,10 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             # TODO: should be edited after showing some text in setting when log in disabled
             if profile_view.log_level_setting.is_element_displayed():
                 self.errors.append('Log is not disabled')
-            if not profile_view.element_by_text('eth.beta').is_element_displayed():
-                self.errors.append('Fleet is not set to eth.beta')
+            if not profile_view.element_by_text('eth.staging').is_element_displayed():
+                self.errors.append('Fleet is not set to eth.staging')
         else:
-            for text in 'INFO', 'eth.beta':
+            for text in 'INFO', 'eth.staging':
                 if not profile_view.element_by_text(text).is_element_displayed():
                     self.errors.append('%s is not selected by default' % text)
         self.errors.verify_no_errors()
@@ -494,7 +494,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         node_version = profile_view.node_version_text.text
         if not re.search("\d{1}[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)]", app_version):
             self.errors.append("App version %s didn't match expected format" % app_version)
-        if not re.search("StatusIM\/android-\d{3}\/go\d{1}[.]\d{1,2}[.]\d{1,2}", node_version):
+        if not re.search("StatusIM\/v\d{1}[.]\d{1,2}[.]\d{1,2}-beta.\d\/android-\d{3}\/go\d{1}[.]\d{1,2}[.]\d{1,2}", node_version):
             self.errors.append("Node version %s didn't match expected format" % node_version)
         profile_view.app_version_text.click()
         profile_view.back_button.click()
@@ -516,7 +516,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.just_fyi('pin mailserver')
         profile_view.sync_settings_button.click()
         # TODO: temporary to avoid issue 9269 - should be disabled after fix
-        mailserver = mailserver_central_3 if profile_view.element_by_text(mailserver_central_2).is_element_present() else mailserver_central_2
+        mailserver = mailserver_staging_central_1 if profile_view.element_by_text(mailserver_staging_ams_1).is_element_present() else mailserver_staging_ams_1
         profile_view.mail_server_button.click()
         profile_view.mail_server_auto_selection_button.click()
         profile_view.element_by_text(mailserver).click()
@@ -606,7 +606,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.sync_settings_button.click()
         profile_1.mail_server_button.click()
         # TODO: temporary pin mailserver to avoid issue 9269 - should be disabled after fix
-        mailserver = mailserver_ams_01 if profile_1.element_by_text(mailserver_central_2).is_element_present() else mailserver_central_2
+        mailserver = mailserver_ams_01 if profile_1.element_by_text(mailserver_staging_ams_1).is_element_present() else mailserver_staging_ams_1
         profile_1.mail_server_auto_selection_button.click()
         profile_1.element_by_text(mailserver).click()
         profile_1.confirm_button.click()
@@ -686,7 +686,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.just_fyi('check that can pick another mailserver and receive messages')
         public_chat_1.element_by_text('PICK ANOTHER').is_element_displayed(30)
         public_chat_1.element_by_text_part('PICK ANOTHER').click()
-        profile_1.element_by_text(mailserver_central_2).click()
+        profile_1.element_by_text(mailserver_staging_ams_1).click()
         profile_1.confirm_button.click()
         profile_1.home_button.click()
         if not public_chat_1.chat_element_by_text(message).is_element_displayed(30):
