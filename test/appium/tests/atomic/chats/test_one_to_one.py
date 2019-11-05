@@ -72,7 +72,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2.connection_status.wait_for_invisibility_of_element(60)
         message_2 = 'one more message'
         chat_2.chat_message_input.send_keys(message_2)
-        chat_2.send_message_button.click()
+        chat_2.send_message_button.click_until_absense_of_element(chat_2.send_message_button)
 
         home_1.toggle_airplane_mode()  # turning on WiFi connection on primary device
 

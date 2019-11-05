@@ -280,3 +280,14 @@ class BaseButton(BaseElement):
                 return self.navigate()
             except (NoSuchElementException, TimeoutException):
                 counter += 1
+
+    def click_until_absense_of_element(self, desired_element, attempts=3):
+        counter = 0
+        while desired_element.is_element_present(1) and counter <= attempts:
+            try:
+                self.driver.info('Tap on %s' % self.name)
+                self.find_element().click()
+                self.driver.info('Wait for %s' % desired_element.name)
+                counter += 1
+            except (NoSuchElementException, TimeoutException):
+                return self.navigate()
