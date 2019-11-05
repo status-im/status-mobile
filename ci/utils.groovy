@@ -31,10 +31,11 @@ def gitCommit() {
   return GIT_COMMIT.take(6)
 }
 
-def pkgFilename(type, ext, arch="universal") {
+def pkgFilename(type, ext, arch=null) {
+  /* the grep removes the null arch */
   return [
     "StatusIm", timestamp(), gitCommit(), type, arch,
-  ].join('-') + ".${ext}"
+  ].grep().join('-') + ".${ext}"
 }
 
 def doGitRebase() {

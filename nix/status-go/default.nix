@@ -12,8 +12,8 @@ let
   gomobile = callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit target-os xcodeWrapper utils buildGoPackage; };
   buildStatusGoDesktopLib = callPackage ./build-desktop-status-go.nix { inherit buildGoPackage go xcodeWrapper utils; };
   buildStatusGoMobileLib = callPackage ./build-mobile-status-go.nix { inherit buildGoPackage go gomobile xcodeWrapper utils; };
-  extractStatusGoConfig = callPackage ./extract-status-go-config.nix { inherit (stdenv) lib; };
   versionJSON = importJSON ../../status-go-version.json; # TODO: Simplify this path search with lib.locateDominatingFile
+  versionRegex = "^v?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+(-[[:alnum:].]+)$";
   owner = versionJSON.owner;
   repo = versionJSON.repo;
   version = versionJSON.version;
@@ -58,8 +58,10 @@ let
   goBuildFlags = "-v";
   # status-go params to be set at build time, important for About section and metrics
   goBuildParams = {
-    Version = removePrefix "v" version; # Geth forces a 'v' prefix
     GitCommit = rev;
+    Version = if (builtins.match versionRegex version) != null
+      then removePrefix "v" version # Geth forces a 'v' prefix
+      else "develop"; # to reduce metrics cardinality in Prometheus
   };
   # These are necessary for status-go to show correct version
   paramsLdFlags = attrValues (mapAttrs (name: value:

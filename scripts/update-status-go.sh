@@ -37,7 +37,9 @@ STATUS_GO_COMMIT_SHA1=$(git ls-remote ${repoUrl} U ${STATUS_GO_VERSION} | cut -f
 
 if [[ -z "${STATUS_GO_COMMIT_SHA1}" ]]; then
     echo "Could not find SHA1 for rev ${STATUS_GO_VERSION}, assuming it's a commit."
+    echo "WARNING: Setting 'version' value to 'develop'"
     STATUS_GO_COMMIT_SHA1="${STATUS_GO_VERSION}"
+    STATUS_GO_VERSION="develop" # to reduce metrics cardinality in Prometheus
 fi
 
 STATUS_GO_SHA256=$(nix-prefetch-url --unpack ${repoUrl}/archive/${STATUS_GO_VERSION}.zip)
