@@ -144,17 +144,6 @@ def updateEnv(type) {
     envFile = "${env.WORKSPACE}/.env.${type}"
   }
   sh "ln -sf ${envFile} .env"
-  /* find a list of .env settings to check for them in params */
-  def envContents = readFile(envFile)
-  def envLines = envContents.split()
-  def envVars = envLines.collect { it.split('=').first() }
-  /* for each var available in params modify the .env file */
-  envVars.each { var ->
-    if (params.get(var)) { /* var exists in params and is not empty */
-      println("Changing setting: ${var}=${params.get(var)}")
-      sh "sed -i'.bkp' 's/${var}=.*/${var}=${params.get(var)}/' ${envFile}"
-    }
-  }
   /* show contents for debugging purposes */
   sh "cat ${envFile}"
 }
