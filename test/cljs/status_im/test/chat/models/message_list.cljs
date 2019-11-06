@@ -26,7 +26,7 @@
           messages (shuffle [m1 m2 m3])
           [actual-m1
            actual-m2
-           actual-m3] (vals (s/build messages))]
+           actual-m3] (s/->seq (s/add-many nil messages))]
       (testing "it sorts them correclty"
         (is (= "message-3" (:message-id actual-m1)))
         (is (= "message-2" (:message-id actual-m2)))
@@ -65,7 +65,7 @@
 (def random-range (shuffle ascending-range))
 
 (defnp build-message-list [messages]
-  (s/build messages))
+  (s/add-many nil messages))
 
 (defnp append-to-message-list [l message]
   (s/add l message))
@@ -84,7 +84,7 @@
 
 (deftest ^:benchmark benchmark-list
   (let [messages (sort-by :timestamp (mapv (fn [i] (let [i (+ 100000 i 1)] {:timestamp i :clock-value i :message-id (str i) :whisper-timestamp i})) (range 100)))
-        built-list (s/build messages)]
+        built-list (s/add-many nil messages)]
     (testing "prepending to list"
       (profile {} (dotimes [_ 10] (prepend-to-message-list
                                    built-list
@@ -127,7 +127,7 @@
                            :message-id "103"
                            :timestamp 3
                            :whisper-timestamp 3}]
-        current-list (s/build current-messages)]
+        current-list (s/add-many nil current-messages)]
     (testing "inserting a newer message"
       (let [new-message {:timestamp 12
                          :clock-value 112
@@ -135,7 +135,7 @@
                          :whisper-timestamp 12}]
         (is (= 112
                (-> (s/add current-list new-message)
-                   vals
+                   (s/->seq)
                    first
                    :clock-value)))))
     (testing "inserting an older message"
@@ -145,7 +145,7 @@
                          :whisper-timestamp 0}]
         (is (= 100
                (-> (s/add current-list new-message)
-                   vals
+                   (s/->seq)
                    last
                    :clock-value)))))
     (testing "inserting in the middle of the list"
@@ -155,7 +155,7 @@
                          :whisper-timestamp 7}]
         (is (= 107
                (-> (s/add current-list new-message)
-                   vals
+                   (s/->seq)
                    (nth 1)
                    :clock-value)))))
     (testing "inserting in the middle of the list, clock-value clash"
@@ -165,6 +165,6 @@
                          :whisper-timestamp 6}]
         (is (= "106a"
                (-> (s/add current-list new-message)
-                   vals
-                   (nth 1)
+                   (s/->seq)
+                   (nth 2)
                    :message-id)))))))

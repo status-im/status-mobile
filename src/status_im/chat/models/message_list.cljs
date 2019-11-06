@@ -15,9 +15,11 @@
 (defn prepare-message [{:keys [message-id
                                clock-value
                                message-type
+                               from
                                outgoing
                                whisper-timestamp]}]
   (-> {:whisper-timestamp whisper-timestamp
+       :from from
        :one-to-one? (= :user-message message-type)
        :system-message? (= :system-message message-type)
        :clock-value clock-value
@@ -74,8 +76,7 @@
                                   outgoing)
            :first-in-group?   (or (nil? previous-message)
                                   (not (same-group? current-message previous-message)))
-           :last-in-group?    (or (nil? next-message)
-                                  (not (same-group? current-message next-message)))
+           :last-in-group?    last-in-group?
            :display-username? (and last-in-group?
                                    (not outgoing)
                                    (not one-to-one?))
@@ -154,3 +155,8 @@
   (reduce add
           message-list
           messages))
+
+(defn ->seq [message-list]
+  (if message-list
+    (array-seq (.-values message-list))
+    []))

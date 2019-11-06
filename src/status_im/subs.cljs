@@ -9,6 +9,7 @@
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.db :as chat.db]
             [status-im.chat.models :as chat.models]
+            [status-im.chat.models.message-list :as models.message-list]
             [status-im.constants :as constants]
             [status-im.contact.db :as contact.db]
             [status-im.ethereum.core :as ethereum]
@@ -760,9 +761,7 @@
  :<- [:chats/all-loaded?]
  :<- [:chats/public?]
  (fn [[message-list messages messages-gaps range all-loaded? public?]]
-   (-> (if message-list
-         (array-seq (.-values message-list))
-         [])
+   (-> (models.message-list/->seq message-list)
        (chat.db/add-datemarks)
        (hydrate-messages messages)
        (chat.db/add-gaps messages-gaps range all-loaded? public?))))
