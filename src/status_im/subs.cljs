@@ -482,6 +482,12 @@
  (fn [[macc acc]]
    (some #(when (= (:address %) (:address acc)) %) (:accounts macc))))
 
+(re-frame/reg-sub
+ :multiple-multiaccounts?
+ :<- [:multiaccounts/multiaccounts]
+ (fn [multiaccounts]
+   (> (count multiaccounts) 1)))
+
 ;;CHAT ==============================================================================================================
 
 (re-frame/reg-sub

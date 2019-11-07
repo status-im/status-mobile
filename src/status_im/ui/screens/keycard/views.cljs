@@ -3,6 +3,7 @@
   (:require [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
@@ -363,15 +364,16 @@
             enter-step [:hardwallet/pin-enter-step]
             status [:hardwallet/pin-status]
             error-label [:hardwallet/pin-error-label]
+            multiple-multiaccounts? [:multiple-multiaccounts?]
             {:keys [address name] :as account} [:multiaccounts/login]]
     [react/view styles/container
      [toolbar/toolbar
       {:transparent? true
        :style        {:margin-top 32}}
-      [toolbar/nav-text
-       {:handler #(re-frame/dispatch [:keycard.login.pin.ui/cancel-pressed])
-        :style   {:padding-left 21}}
-       (i18n/label :t/cancel)]
+      (when multiple-multiaccounts?
+        [toolbar/nav-button
+         (actions/back
+          #(re-frame/dispatch [:keycard.login.pin.ui/cancel-pressed]))])
       [react/text {:style {:color colors/gray}}
        (i18n/label :t/step-i-of-n {:number 2
                                    :step   1})]
