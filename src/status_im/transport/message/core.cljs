@@ -25,6 +25,7 @@
         (protocol/Message.
          {:text (.-text content)
           :response-to (.-response-to content)
+          :name (.-name content)
           :chat-id (.-chat_id content)}
          (.-content_type parsed-message-js)
          (keyword (.-message_type parsed-message-js))
@@ -38,7 +39,7 @@
   deserializing"
   [message-js]
   (if (and (.-parsedMessage message-js)
-           (= message-type-message) (.-messageType message-js))
+           (= message-type-message (.-messageType message-js)))
     (build-message (.-parsedMessage message-js))
     (transit/deserialize (.-payload message-js))))
 

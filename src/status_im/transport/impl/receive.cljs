@@ -64,6 +64,6 @@
                          :identicon (get-in cofx [:metadata :author :identicon])
                          :from signature
                          :metadata (:metadata cofx))]
-      (chat.message/receive-one cofx message))))
-  ; disable verification until enabled in status-go
-;                (ens/verify-names-from-message this signature))))
+      (fx/merge
+       (chat.message/receive-one cofx message)
+       (ens/verify-names-from-message this signature)))))
