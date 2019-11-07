@@ -90,7 +90,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         wallet_1.set_up_wallet()
         wallet_1.home_button.click()
         wallet_2.set_up_wallet()
-        init_balance = wallet_2.get_eth_value()
+        init_balance = wallet_2.get_asset_amount_by_name('ETHro')
         wallet_2.home_button.click()
 
         chat_1 = home_1.add_contact(recipient['public_key'])
@@ -123,7 +123,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_2.get_back_to_home_view()
         home_2.wallet_button.click()
         try:
-            wallet_2.wait_balance_changed_on_wallet_screen(expected_balance=init_balance + float(amount))
+            wallet_2.wait_balance_is_equal_expected_amount('ETHro', expected_balance=init_balance + float(amount))
             self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
         except Failed as e:
             self.errors.append(e.msg)
@@ -144,7 +144,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         wallet_1.set_up_wallet()
         wallet_1.home_button.click()
         wallet_2.set_up_wallet()
-        init_balance = wallet_2.get_eth_value()
+        init_balance = wallet_2.get_asset_amount_by_name('ETHro')
         wallet_2.home_button.click()
 
         chat_2 = home_2.add_contact(sender['public_key'])
@@ -162,7 +162,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_2.get_back_to_home_view()
         home_2.wallet_button.click()
         try:
-            wallet_2.wait_balance_changed_on_wallet_screen(expected_balance=init_balance + float(amount))
+            wallet_2.wait_balance_is_equal_expected_amount('ETHro', expected_balance=init_balance + float(amount))
             self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
         except Failed as e:
             self.errors.append(e.msg)
@@ -477,8 +477,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
-        eth_value = wallet_view.get_eth_value()
-        stt_value = wallet_view.get_stt_value()
+        eth_value = wallet_view.get_asset_amount_by_name('ETHro')
+        stt_value = wallet_view.get_asset_amount_by_name('STT')
         if eth_value == 0 or stt_value == 0:
             self.driver.fail('No funds!')
         home_view = wallet_view.home_button.click()

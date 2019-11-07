@@ -120,6 +120,40 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         if send_transaction.element_by_text_part('Transaction sent').is_element_displayed():
             self.driver.fail('Transaction was sent with a wrong password')
 
+    @marks.testrail_id(6237)
+    @marks.high
+    def test_fetching_balance_after_offline(self):
+        sender = wallet_users['A']
+        sign_in_view = SignInView(self.driver)
+
+        sign_in_view.just_fyi('Restore account with funds offline')
+        sign_in_view.toggle_airplane_mode()
+        sign_in_view.access_key_button.click()
+        sign_in_view.recover_access(sender['passphrase'])
+        home_view = sign_in_view.get_home_view()
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+
+        sign_in_view.just_fyi('Go back to online and check that balance is updated')
+        sign_in_view.toggle_airplane_mode()
+        wallet_view.wait_balance_is_changed('ETHro')
+        wallet_view.wait_balance_is_changed('STT')
+
+        sign_in_view.just_fyi('Send some tokens to other account')
+        recipient = "0x" + basic_user['address']
+        sending_amount = wallet_view.get_unique_amount()
+        asset = 'STT'
+        wallet_view.accounts_status_account.click_until_presence_of_element(wallet_view.send_transaction_button)
+        wallet_view.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient,
+                                     sign_transaction=True)
+        sign_in_view.toggle_airplane_mode()
+        self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, token=True)
+
+        sign_in_view.just_fyi('Change that balance is updated')
+        initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
+        sign_in_view.toggle_airplane_mode()
+        wallet_view.wait_balance_is_changed('STT', initial_amount_STT)
+
     @marks.testrail_id(6236)
     @marks.medium
     def test_transaction_appears_in_history(self):
@@ -127,11 +161,15 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         home_view = sign_in_view.create_user()
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
+
         address = wallet_view.get_wallet_address()[2:]
         self.network_api.get_donate(address)
+        wallet_view.wait_balance_is_equal_expected_amount()
         recipient = "0x"+basic_user['address']
         sending_amount = "0.08"
-        wallet_view.send_transaction(asset_name='ETHro', amount=sending_amount, recipient=recipient, sign_transaction=True)
+        asset = 'ETHro'
+        wallet_view.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient, sign_transaction=True)
+        wallet_view.wait_balance_is_changed(asset, wallet_view.get_asset_amount_by_name(asset))
         transactions_view = wallet_view.transaction_history_button.click()
         transactions_view.transactions_table.find_transaction(amount=sending_amount)
         transactions_view.transactions_table.find_transaction(amount="0.1")
@@ -256,7 +294,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
-        bigger_amount = wallet_view.get_eth_value() + 1
+        bigger_amount = wallet_view.get_asset_amount_by_name('ETHro') + 1
         send_transaction = wallet_view.send_transaction_button.click()
         amount_edit_box = send_transaction.amount_edit_box
         amount_edit_box.click()
@@ -304,8 +342,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view.recover_access(sender['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
-        eth_value = wallet_view.get_eth_value()
-        stt_value = wallet_view.get_stt_value()
+        eth_value = wallet_view.get_asset_amount_by_name('ETHro')
+        stt_value = wallet_view.get_asset_amount_by_name('STT')
         if eth_value == 0 or stt_value == 0:
             self.driver.fail('No funds!')
         wallet_view.accounts_status_account.click()

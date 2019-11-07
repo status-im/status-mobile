@@ -157,6 +157,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(5372)
     @marks.high
+    @marks.skip
+    # skipped because it is part of other tests
     def test_request_eth_in_status_test_dapp(self):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()
@@ -169,7 +171,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.cross_icon.click()
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
-        wallet_view.wait_balance_changed_on_wallet_screen()
+        wallet_view.wait_balance_is_equal_expected_amount()
 
     @marks.testrail_id(5355)
     @marks.medium

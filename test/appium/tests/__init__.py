@@ -32,13 +32,13 @@ unique_password = 'unique' + get_current_time()
 
 bootnode_address = "enode://a8a97f126f5e3a340cb4db28a1187c325290ec08b2c9a6b1f19845ac86c46f9fac2ba13328822590" \
                    "fd3de3acb09cc38b5a05272e583a2365ad1fa67f66c55b34@167.99.210.203:30404"
-mailserver_address = "enode://531e252ec966b7e83f5538c19bf1cde7381cc7949026a6e499b6e998e695751aadf26d4c98d5a4eab" \
-                     "fb7cefd31c3c88d600a775f14ed5781520a88ecd25da3c6:status-offline-inbox@35.225.227.79:30504"
+mailserver_address = "enode://e4fc10c1f65c8aed83ac26bc1bfb21a45cc1a8550a58077c8d2de2a0e0cd18e40fd40f7e6f7d02dc" \
+                     "6cd06982b014ce88d6e468725ffe2c138e958788d0002a7f:status-offline-inbox@35.239.193.41:443"
 mailserver_central_2 = 'mail-02.gc-us-central1-a.eth.beta'
 mailserver_central_3 = 'mail-03.gc-us-central1-a.eth.beta'
 mailserver_staging_central_1 = 'mail-01.gc-us-central1-a.eth.staging'
 mailserver_staging_ams_1 = 'mail-01.do-ams3.eth.staging'
-
+mailserver_staging_hk = 'mail-01.ac-cn-hongkong-c.eth.staging'
 mailserver_ams_01 = 'mail-01.do-ams3.eth.beta'
 camera_access_error_text = "To grant the required camera permission, please go to your system settings " \
                            "and make sure that Status > Camera is selected."

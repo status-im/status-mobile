@@ -77,10 +77,10 @@ class NetworkApi(object):
                             (amount, address))
                         return transaction
 
-    def wait_for_confirmation_of_transaction(self, address, amount):
+    def wait_for_confirmation_of_transaction(self, address, amount, token=False):
         start_time = time.time()
         while round(time.time() - start_time, ndigits=2) < 900:  # should be < idleTimeout capability
-            transaction = self.find_transaction_by_unique_amount(address, amount)
+            transaction = self.find_transaction_by_unique_amount(address, amount, token)
             if int(transaction['confirmations']) >= 12:
                 return
             time.sleep(10)

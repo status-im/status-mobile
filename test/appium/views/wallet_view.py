@@ -23,7 +23,7 @@ class TransactionHistoryButton(BaseButton):
 
     def __init__(self, driver):
         super(TransactionHistoryButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='History']")
+        self.locator = self.Locator.text_selector("History")
 
     def navigate(self):
         from views.transactions_view import TransactionsView
@@ -33,19 +33,13 @@ class TransactionHistoryButton(BaseButton):
 class ChooseFromContactsButton(BaseButton):
     def __init__(self, driver):
         super(ChooseFromContactsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Choose From Contacts']")
+        self.locator = self.Locator.text_selector("Choose From Contacts")
 
 
-class EthAssetText(BaseText):
-    def __init__(self, driver):
-        super(EthAssetText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='ETHro']/preceding-sibling::*[1]")
-
-
-class STTAssetText(BaseText):
-    def __init__(self, driver):
-        super(STTAssetText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='STT']/preceding-sibling::*[1]")
+class AssetText(BaseText):
+    def __init__(self, driver, asset):
+        super(AssetText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']/preceding-sibling::*[1]" % asset)
 
 
 class UsdTotalValueText(BaseText):
@@ -340,8 +334,6 @@ class WalletView(BaseView):
 
         self.send_transaction_button = SendTransactionButton(self.driver)
         self.transaction_history_button = TransactionHistoryButton(self.driver)
-        self.eth_asset_value = EthAssetText(self.driver)
-        self.stt_asset_value = STTAssetText(self.driver)
         self.usd_total_value = UsdTotalValueText(self.driver)
 
         self.send_transaction_request = SendTransactionRequestButton(self.driver)
@@ -391,17 +383,16 @@ class WalletView(BaseView):
         import re
         return float(re.sub('[~,]', '', self.usd_total_value.text))
 
-    def get_eth_value(self):
-        self.eth_asset_value.scroll_to_element()
-        return float(self.eth_asset_value.text)
 
-    def get_stt_value(self):
-        self.stt_asset_value.scroll_to_element()
-        return float(self.stt_asset_value.text)
+
+    def get_asset_amount_by_name(self, asset: str):
+        asset_value = AssetText(self.driver, asset)
+        asset_value.scroll_to_element()
+        return float(asset_value.text)
 
     def verify_currency_balance(self, expected_rate: int, errors: list):
         usd = self.get_usd_total_value()
-        eth = self.get_eth_value()
+        eth = self.get_asset_amount_by_name('ETHro')
         expected_usd = round(eth * expected_rate, 2)
         percentage_diff = abs((usd - expected_usd) / ((usd + expected_usd) / 2)) * 100
         if percentage_diff > 2:
@@ -409,19 +400,40 @@ class WalletView(BaseView):
         else:
             self.driver.info('Current USD balance %s is ok' % usd)
 
-    def wait_balance_changed_on_wallet_screen(self, expected_balance=0.1, wait_time=300):
+
+    def wait_balance_is_equal_expected_amount(self, asset ='ETHro', expected_balance=0.1, wait_time=300):
         counter = 0
         while True:
             if counter >= wait_time:
                 self.driver.fail('Balance is not changed during %s seconds!' % wait_time)
-            elif self.get_eth_value() != expected_balance:
+            elif self.get_asset_amount_by_name(asset) != expected_balance:
                 counter += 10
                 time.sleep(10)
                 self.swipe_down()
-                self.driver.info('Waiting %s seconds for ETH update' % counter)
+                self.driver.info('Waiting %s seconds for %s balance update' % (counter,asset))
             else:
                 self.driver.info('Transaction received, balance updated!')
                 return
+
+    def wait_balance_is_changed(self, asset ='ETHro', initial_balance=0, wait_time=300):
+        counter = 0
+        while True:
+            if counter >= wait_time:
+                self.driver.fail('Balance is not changed during %s seconds!' % wait_time)
+            elif self.asset_by_name(asset).is_element_present() and self.get_asset_amount_by_name(asset) == initial_balance:
+                counter += 10
+                time.sleep(10)
+                self.swipe_down()
+                self.driver.info('Waiting %s seconds for %s to update' % (counter,asset))
+            elif not self.asset_by_name(asset).is_element_present(10):
+                counter += 10
+                time.sleep(10)
+                self.swipe_down()
+                self.driver.info('Waiting %s seconds for %s to display asset' % (counter, asset))
+            else:
+                self.driver.info('Balance is updated!')
+                return
+
 
     def get_sign_in_phrase(self):
         return ' '.join([element.text for element in self.sign_in_phrase.find_elements()])

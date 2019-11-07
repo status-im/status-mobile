@@ -104,8 +104,12 @@ class ChatElement(BaseButton):
         class UnreadMessagesCountText(BaseText):
             def __init__(self, driver, parent_locator: str):
                 super(UnreadMessagesCountText, self).__init__(driver)
-                locator_str = "//*[@content-desc='unread-messages-count-text']"
+                # TODO: commented until accessibility-id will be added back
+                # locator_str = "//*[@content-desc='unread-messages-count-text']"
+                # self.locator = self.Locator.xpath_selector(parent_locator + locator_str)
+                locator_str = "/android.view.ViewGroup[3]//android.widget.TextView"
                 self.locator = self.Locator.xpath_selector(parent_locator + locator_str)
+
 
         return UnreadMessagesCountText(self.driver, self.locator.value)
 

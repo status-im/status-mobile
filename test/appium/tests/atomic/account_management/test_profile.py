@@ -3,7 +3,7 @@ import re
 
 from tests import marks, bootnode_address, mailserver_address, camera_access_error_text, \
     photos_access_error_text, test_dapp_url, test_dapp_name, mailserver_staging_ams_1, mailserver_staging_central_1, \
-    mailserver_ams_01
+    mailserver_staging_hk
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user
 from views.dapps_view import DappsView
@@ -606,7 +606,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.sync_settings_button.click()
         profile_1.mail_server_button.click()
         # TODO: temporary pin mailserver to avoid issue 9269 - should be disabled after fix
-        mailserver = mailserver_ams_01 if profile_1.element_by_text(mailserver_staging_ams_1).is_element_present() else mailserver_staging_ams_1
+        mailserver = mailserver_staging_hk if profile_1.element_by_text(mailserver_staging_ams_1).is_element_present() else mailserver_staging_ams_1
         profile_1.mail_server_auto_selection_button.click()
         profile_1.element_by_text(mailserver).click()
         profile_1.confirm_button.click()
