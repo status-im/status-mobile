@@ -781,7 +781,7 @@
 	"pin-changed": "6-digit passcode has been changed",
 	"pin-code": "6-digit passcode",
 	"pin-code-description": "Unlocks the card",
-	"pin-mismatch": "6-digit passcode does not match",
+	"pin-mismatch": "Wrong passcode",
 	"pin-retries-left": "You have {{number}} retries left",
 	"preparing-card": "Preparing card",
 	"preview-privacy": "Preview privacy mode",
