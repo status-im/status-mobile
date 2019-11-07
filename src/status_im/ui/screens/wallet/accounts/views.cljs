@@ -18,9 +18,6 @@
 
 (def state (reagent/atom {:tab :assets}))
 
-(defn total-tilde [value]
-  (when (and (not= "0" value) (not= "..." value)) "~"))
-
 (views/defview account-card [{:keys [name color address] :as account}]
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:account-portfolio-value address]]
@@ -31,7 +28,6 @@
      [react/view {:style (styles/card color)}
       [react/view {:flex-direction :row :align-items :center :justify-content :space-between}
        [react/nested-text {:style {:color colors/white-transparent :font-weight "500"}}
-        (total-tilde portfolio-value)
         [{:style {:color colors/white}} portfolio-value]
         " "
         (:code currency)]
@@ -93,7 +89,6 @@
                   portfolio-value [:portfolio-value]]
     [react/view
      [react/nested-text {:style {:font-size 32 :color colors/gray :font-weight "600"}}
-      (total-tilde portfolio-value)
       [{:style {:color colors/black}} portfolio-value]
       " "
       (:code currency)]

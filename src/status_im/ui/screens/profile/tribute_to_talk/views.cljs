@@ -259,7 +259,7 @@
        [{:style {:font-size 22 :color colors/gray}} token]]
       [react/nested-text
        {:style {:font-size 12}}
-       (str "~" fiat-amount)
+       fiat-amount
        [{:style {:font-size 12 :color colors/gray}}
         (str " " fiat-currency)]]
       (if (or (nil? public-key) (= tribute-status :required))

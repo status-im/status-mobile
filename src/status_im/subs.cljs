@@ -1888,7 +1888,7 @@
               :step step
               :state (or state (if snt-amount :completed :disabled))
               :editing? editing?
-              :fiat-value (str "~" fiat-value " " (:code currency))}
+              :fiat-value (str fiat-value " " (:code currency))}
 
        (= step :set-snt-amount)
        (assoc :snt-amount (str screen-snt-amount)

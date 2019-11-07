@@ -221,7 +221,7 @@
                      " • "
                      [{:style {:color colors/black}}
                       (if converted-value
-                        (str "~" (i18n/format-currency converted-value (:code wallet-currency)))
+                        (i18n/format-currency converted-value (:code wallet-currency))
                         [react/activity-indicator {:color   :colors/gray
                                                    :ios   {:size  :small}
                                                    :android {:size :16}}])]
@@ -241,7 +241,7 @@
                      " • "
                      [{:style {:color colors/black}}
                       (if converted-fee-value
-                        (str "~" (i18n/format-currency converted-fee-value (:code wallet-currency)))
+                        (i18n/format-currency converted-fee-value (:code wallet-currency))
                         [react/activity-indicator {:color   :colors/gray
                                                    :ios   {:size  :small}
                                                    :android {:size :16}}])]
