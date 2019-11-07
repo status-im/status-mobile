@@ -506,7 +506,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.get_account_by_name(account_name).click()
         wallet_view.send_transaction_button.click()
         wallet_view.back_button.click()
-        balance_after_receiving_tx = float(wallet_view.eth_asset_value.text)
+        balance_after_receiving_tx = float(wallet_view.get_asset_amount_by_name('ETHro'))
         expected_balance = self.network_api.get_rounded_balance(balance_after_receiving_tx, transaction_amount)
         if balance_after_receiving_tx != expected_balance:
             self.driver.fail('New account balance %s does not match expected %s after receiving a transaction' % (
@@ -536,7 +536,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.back_button.click()
         balance_of_sub_account = float(self.network_api.get_balance(sub_account_address)) / 1000000000000000000
         balance_of_status_account = float(self.network_api.get_balance(status_account_address)) / 1000000000000000000
-        total_eth_from_two_accounts = float(wallet_view.eth_asset_value.text)
+        total_eth_from_two_accounts = float(wallet_view.get_asset_amount_by_name('ETHro'))
         expected_balance = self.network_api.get_rounded_balance(total_eth_from_two_accounts,
                                                                 (balance_of_status_account + balance_of_sub_account))
 
