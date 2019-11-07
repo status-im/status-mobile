@@ -368,6 +368,29 @@
             (listen-to-hardware-back-button)
             (navigation/navigate-to-cofx :keycard-recovery-pin nil)))
 
+(fx/defn on-generate-mnemonic-success
+  [{:keys [db] :as cofx} mnemonic]
+  (fx/merge cofx
+            {:db (-> db
+                     (assoc-in [:hardwallet :setup-step] :recovery-phrase)
+                     (assoc-in [:hardwallet :on-card-connected] nil)
+                     (assoc-in [:hardwallet :secrets :mnemonic] mnemonic))}
+            (navigation/navigate-to-cofx :keycard-onboarding-recovery-phrase nil)))
+
+(fx/defn set-mnemonic
+  [{:keys [db] :as cofx}]
+  (let [selected-id (get-in db [:intro-wizard :selected-id])
+        accounts    (get-in db [:intro-wizard :multiaccounts])
+        mnemonic    (->> accounts
+                         (filter (fn [{:keys [id]}]
+                                   (= id selected-id)))
+                         first
+                         :mnemonic)]
+    (fx/merge
+     cofx
+     {:db (assoc-in db [:hardwallet :secrets :mnemonic] mnemonic)}
+     (on-generate-mnemonic-success mnemonic))))
+
 (fx/defn generate-mnemonic
   [cofx]
   (let [{:keys [pairing]} (get-in cofx [:db :hardwallet :secrets])]
@@ -1539,7 +1562,7 @@
               (when (= flow :import)
                 (load-recovery-pin-screen))
               (when (= flow :create)
-                (generate-mnemonic)))))
+                (set-mnemonic)))))
 
 (fx/defn on-pair-error
   [{:keys [db] :as cofx} {:keys [error code]}]
@@ -1556,15 +1579,6 @@
                 (navigation/navigate-to-cofx :keycard-recovery-pair nil))
               (when (not= setup-step :enter-pair-code)
                 (process-error code error)))))
-
-(fx/defn on-generate-mnemonic-success
-  [{:keys [db] :as cofx} mnemonic]
-  (fx/merge cofx
-            {:db (-> db
-                     (assoc-in [:hardwallet :setup-step] :recovery-phrase)
-                     (assoc-in [:hardwallet :on-card-connected] nil)
-                     (assoc-in [:hardwallet :secrets :mnemonic] mnemonic))}
-            (navigation/navigate-to-cofx :keycard-onboarding-recovery-phrase nil)))
 
 (fx/defn on-generate-mnemonic-error
   [{:keys [db] :as cofx} {:keys [error code]}]
