@@ -1,8 +1,10 @@
 (ns status-im.ui.screens.chat.styles.message.message
   (:require [status-im.constants :as constants]
             [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as photos]
             [status-im.utils.platform :as platform]
+            [status-im.ui.components.typography :as typography]
             [status-im.utils.styles :as styles]))
 
 (defn style-message-text
@@ -216,3 +218,98 @@
    :color (if outgoing
             colors/white-transparent-70
             colors/gray)})
+
+;; Markdown styles
+
+(def default-text-style
+  {:max-font-size-multiplier react/max-font-size-multiplier
+   :style (assoc typography/default-style
+                 :line-height 22)})
+
+(def outgoing-text-style
+  (update default-text-style :style
+          assoc :color colors/white))
+
+(defn text-style [outgoing]
+  (if outgoing
+    outgoing-text-style
+    default-text-style))
+
+(def emph-text-style
+  (update default-text-style :style
+          assoc :font-style :italic))
+
+(def outgoing-emph-text-style
+  (update emph-text-style :style
+          assoc :color colors/white))
+
+(defn emph-style [outgoing]
+  (if outgoing
+    outgoing-emph-text-style
+    emph-text-style))
+
+(def strong-text-style
+  (update default-text-style :style
+          assoc :font-weight "700"))
+
+(def outgoing-strong-text-style
+  (update strong-text-style :style
+          assoc :color colors/white))
+
+(defn strong-style [outgoing]
+  (if outgoing
+    outgoing-strong-text-style
+    strong-text-style))
+
+(def monospace-fonts (if platform/ios? "Courier" "monospace"))
+
+(def code-block-background "#2E386B")
+
+(def inline-code-style
+  (update default-text-style :style
+          assoc
+          :font-family monospace-fonts
+          :color colors/white
+          :background-color code-block-background))
+
+(def codeblock-style {:style {:padding 10
+                              :background-color code-block-background
+                              :border-radius 4}})
+
+(def codeblock-text-style
+  (update default-text-style :style
+          assoc
+          :font-family monospace-fonts
+          :color colors/white))
+
+(def default-blockquote-style
+  {:style {:border-left-width 2
+           :padding-left 3
+           :border-left-color colors/gray-transparent-40}})
+
+(def outgoing-blockquote-style
+  (update default-blockquote-style :style
+          assoc
+          :border-left-color colors/white-transparent))
+
+(defn blockquote-style [outgoing]
+  (if outgoing
+    outgoing-blockquote-style
+    default-blockquote-style))
+
+(def default-blockquote-text-style
+  (update default-text-style :style
+          assoc
+          :line-height 19
+          :font-size 14
+          :color colors/black-transparent-50))
+
+(def outgoing-blockquote-text-style
+  (update default-blockquote-text-style :style
+          assoc
+          :color colors/white-transparent-70))
+
+(defn blockquote-text-style [outgoing]
+  (if outgoing
+    outgoing-blockquote-text-style
+    default-blockquote-text-style))

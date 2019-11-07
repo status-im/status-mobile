@@ -24,7 +24,7 @@
     data))
 
 ;; Links starting with javascript:// should not be handled at all
-(def javascript-link-regex #"javascript://.*")
+(def javascript-link-regex #"(?i)javascript://.*")
 ;; Anything with rtlo character we don't handle as it might be a spoofed url
 (def rtlo-link-regex #".*\u202e.*")
 

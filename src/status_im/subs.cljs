@@ -505,9 +505,9 @@
 (re-frame/reg-sub
  ::show-suggestions-view?
  :<- [:chats/current-chat-ui-prop :show-suggestions?]
- :<- [:chats/current-chat]
+ :<- [:chats/current-chat-input-text]
  :<- [:chats/all-available-commands]
- (fn [[show-suggestions? {:keys [input-text]} commands]]
+ (fn [[show-suggestions? input-text commands]]
    (and (or show-suggestions?
             (commands.input/starts-as-command? (string/trim (or input-text ""))))
         (seq commands))))
@@ -523,7 +523,7 @@
  ::get-commands-for-chat
  :<- [:chats/id->command]
  :<- [::access-scope->command-id]
- :<- [:chats/current-chat]
+ :<- [:chats/current-raw-chat]
  (fn [[id->command access-scope->command-id chat]]
    (commands/chat-commands id->command access-scope->command-id chat)))
 
@@ -666,9 +666,21 @@
              :messages))))
 
 (re-frame/reg-sub
- :chats/current-chat
+ :chats/current-raw-chat
  :<- [:chats/active-chats]
  :<- [:chats/current-chat-id]
+ (fn [[chats current-chat-id]]
+   (get chats current-chat-id)))
+
+(re-frame/reg-sub
+ :chats/current-chat-input-text
+ :<- [:chats/current-raw-chat]
+ (fn [chat]
+   (:input-text chat)))
+
+(re-frame/reg-sub
+ :chats/current-chat
+ :<- [:chats/current-raw-chat]
  :<- [:multiaccount/public-key]
  :<- [:mailserver/ranges]
  :<- [:chats/content-layout-height]
@@ -677,27 +689,28 @@
  :<- [:ethereum/chain-keyword]
  :<- [:prices]
  :<- [:wallet/currency]
- (fn [[chats current-chat-id my-public-key ranges height
+ (fn [[{:keys [group-chat
+               chat-id
+               contact
+               messages]
+        :as current-chat} my-public-key ranges height
        input-height ttt-settings chain-keyword prices currency]]
-   (let [{:keys [group-chat contact messages]
-          :as current-chat}
-         (get chats current-chat-id)]
-     (when current-chat
-       (cond-> (enrich-current-chat current-chat ranges height input-height)
-         (empty? messages)
-         (assoc :universal-link
-                (links/generate-link :public-chat :external current-chat-id))
+   (when current-chat
+     (cond-> (enrich-current-chat current-chat ranges height input-height)
+       (empty? messages)
+       (assoc :universal-link
+              (links/generate-link :public-chat :external chat-id))
 
-         (chat.models/public-chat? current-chat)
-         (assoc :show-input? true)
+       (chat.models/public-chat? current-chat)
+       (assoc :show-input? true)
 
-         (and (chat.models/group-chat? current-chat)
-              (group-chats.db/joined? my-public-key current-chat))
-         (assoc :show-input? true)
+       (and (chat.models/group-chat? current-chat)
+            (group-chats.db/joined? my-public-key current-chat))
+       (assoc :show-input? true)
 
-         (not group-chat)
-         (enrich-current-one-to-one-chat my-public-key ttt-settings
-                                         chain-keyword prices currency))))))
+       (not group-chat)
+       (enrich-current-one-to-one-chat my-public-key ttt-settings
+                                       chain-keyword prices currency)))))
 
 (re-frame/reg-sub
  :chats/current-chat-message
@@ -798,10 +811,10 @@
 
 (re-frame/reg-sub
  :chats/selected-chat-command
- :<- [:chats/current-chat]
+ :<- [:chats/current-chat-input-text]
  :<- [:chats/current-chat-ui-prop :selection]
  :<- [::get-commands-for-chat]
- (fn [[{:keys [input-text]} selection commands]]
+ (fn [[input-text selection commands]]
    (commands.input/selected-chat-command input-text selection commands)))
 
 (re-frame/reg-sub

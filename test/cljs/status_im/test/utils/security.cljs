@@ -16,6 +16,10 @@
 (deftest safe-link-test-exceptions
   (testing "a javascript link"
     (is (not (security/safe-link? "javascript://anything"))))
+  (testing "a javascript link mixed cases"
+    (is (not (security/safe-link? "JaVasCrIpt://anything"))))
+  (testing "a javascript link upper cases"
+    (is (not (security/safe-link? "JAVASCRIPT://anything"))))
   (testing "rtlo links"
     (is (not (security/safe-link? rtlo-link)))))
 

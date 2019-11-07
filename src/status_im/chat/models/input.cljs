@@ -7,6 +7,7 @@
             [status-im.chat.commands.sending :as commands.sending]
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.models :as chat]
+            [status-im.chat.models.message-content :as message-content]
             [status-im.chat.models.message :as chat.message]
             [status-im.constants :as constants]
             [status-im.js-dependencies :as dependencies]
@@ -125,11 +126,15 @@
     (let [{:keys [message-id]}
           (get-in db [:chats current-chat-id :metadata :responding-to-message])
           show-name?     (get-in db [:multiaccount :show-name?])
-          preferred-name (when show-name? (get-in db [:multiaccount :preferred-name]))]
+          preferred-name (when show-name? (get-in db [:multiaccount :preferred-name]))
+          emoji? (message-content/emoji-only-content? {:text input-text
+                                                       :response-to message-id})]
       (fx/merge cofx
                 {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-message] nil)}
                 (chat.message/send-message {:chat-id      current-chat-id
-                                            :content-type constants/content-type-text
+                                            :content-type (if emoji?
+                                                            constants/content-type-emoji
+                                                            constants/content-type-text)
                                             :content      (cond-> {:chat-id current-chat-id
                                                                    :text    input-text}
                                                             message-id
@@ -139,15 +144,6 @@
                 (commands.input/set-command-reference nil)
                 (set-chat-input-text nil)
                 (process-cooldown)))))
-
-(defn send-plain-text-message-fx
-  "no command detected, when not empty, proceed by sending text message without command processing"
-  [{:keys [db] :as cofx} message-text current-chat-id]
-  (when-not (string/blank? message-text)
-    (chat.message/send-message cofx {:chat-id      current-chat-id
-                                     :content-type constants/content-type-text
-                                     :content      (cond-> {:chat-id current-chat-id
-                                                            :text    message-text})})))
 
 (fx/defn send-sticker-fx
   [{:keys [db] :as cofx} {:keys [hash pack]} current-chat-id]

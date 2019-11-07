@@ -2,8 +2,11 @@
   (:require [re-frame.core :as re-frame]
             [status-im.chat.commands.receiving :as commands-receiving]
             [status-im.constants :as constants]
+            [status-im.utils.http :as http]
             [status-im.i18n :as i18n]
+            [reagent.core :as reagent]
             [status-im.ui.components.colors :as colors]
+            [status-im.utils.security :as security]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.popup-menu.views :as desktop.pop-up]
@@ -66,32 +69,89 @@
                :on-press #(re-frame/dispatch [:chat.ui/message-expand-toggled chat-id message-id])}
    (i18n/label (if expanded? :show-less :show-more))])
 
+(defn render-inline [message-text outgoing acc {:keys [type literal destination] :as node}]
+  (case type
+    ""
+    (conj acc literal)
+
+    "code"
+    (conj acc [react/text-class style/inline-code-style literal])
+
+    "emph"
+    (conj acc [react/text-class (style/emph-style outgoing) literal])
+
+    "strong"
+    (conj acc [react/text-class (style/strong-style outgoing) literal])
+
+    "link"
+    (conj acc
+          [react/text-class
+           {:style
+            {:color (if outgoing colors/white colors/blue)
+             :text-decoration-line :underline}
+            :on-press
+            #(when (and (security/safe-link? destination)
+                        (security/safe-link-text? message-text))
+               (if platform/desktop?
+                 (.openURL react/linking (http/normalize-url destination))
+                 (re-frame/dispatch
+                  [:browser.ui/message-link-pressed destination])))}
+           destination])
+
+    "status-tag"
+    (conj acc [react/text-class
+               {:style {:color (if outgoing colors/white colors/blue)
+                        :text-decoration-line :underline}
+                :on-press
+                #(re-frame/dispatch
+                  [:chat.ui/start-public-chat literal {:navigation-reset? true}])}
+               "#"
+               literal])
+
+    (conj acc literal)))
+
+(defn render-block [{:keys [chat-id message-id content
+                            timestamp-str group-chat outgoing
+                            current-public-key expanded?] :as message}
+                    acc
+                    {:keys [type literal children]}]
+  (case type
+
+    "paragraph"
+    (conj acc (reduce
+               (fn [acc e] (render-inline (:text content) outgoing acc e))
+               [react/text-class (style/text-style outgoing)]
+               children))
+
+    "blockquote"
+    (conj acc [react/view (style/blockquote-style outgoing)
+               [react/text-class (style/blockquote-text-style outgoing)
+                (.substring literal 0 (dec (.-length literal)))]])
+
+    "codeblock"
+    (conj acc [react/view style/codeblock-style
+               [react/text-class style/codeblock-text-style
+                (.substring literal 0 (dec (.-length literal)))]])
+
+    acc))
+
+(defn render-parsed-text [{:keys [timestamp-str
+                                  outgoing] :as message}
+
+                          tree]
+  (conj (reduce (fn [acc e] (render-block message acc e)) [react/view {}] tree)
+        [react/text {:style (style/message-timestamp-placeholder outgoing)}
+         (str "  " timestamp-str)]))
+
 (defn text-message
   [{:keys [chat-id message-id content
            timestamp-str group-chat outgoing current-public-key expanded?] :as message}]
   [message-view message
-   (let [response-to (:response-to content)
-         collapsible? (and (:should-collapse? content) group-chat)]
+   (let [response-to (:response-to content)]
      [react/view
-      (when response-to
+      (when (seq response-to)
         [quoted-message response-to (:quoted-message message) outgoing current-public-key])
-      (apply react/nested-text
-             (cond-> {:style (style/text-message collapsible? outgoing)
-                      :text-break-strategy :balanced
-                      :parseBasicMarkdown true
-                      :markdownCodeBackgroundColor colors/black
-                      :markdownCodeForegroundColor colors/green}
-
-               (and collapsible? (not expanded?))
-               (assoc :number-of-lines constants/lines-collapse-threshold))
-             (conj (if-let [render-recipe (:render-recipe content)]
-                     (chat.utils/render-chunks render-recipe message)
-                     [(:text content)])
-                   [{:style (style/message-timestamp-placeholder outgoing)}
-                    (str "  " timestamp-str)]))
-
-      (when collapsible?
-        [expand-button expanded? chat-id message-id])])
+      [render-parsed-text message (:parsed-text content)]])
    {:justify-timestamp? true}])
 
 (defn emoji-message

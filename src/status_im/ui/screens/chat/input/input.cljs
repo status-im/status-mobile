@@ -24,7 +24,7 @@
             [status-im.ui.screens.chat.stickers.views :as stickers]))
 
 (defview basic-text-input [{:keys [set-container-width-fn height single-line-input?]}]
-  (letsubs [{:keys [input-text]} [:chats/current-chat]
+  (letsubs [input-text           [:chats/current-chat-input-text]
             cooldown-enabled?    [:chats/cooldown-enabled?]]
     [react/text-input
      (merge
@@ -91,7 +91,7 @@
         {:placeholder (i18n/label :cooldown/text-input-disabled)}))]))
 
 (defview invisible-input [{:keys [set-layout-width-fn value]}]
-  (letsubs [{:keys [input-text]} [:chats/current-chat]]
+  (letsubs [input-text    [:chats/current-chat-input-text]]
     [react/text {:style     style/invisible-input-text
                  :on-layout #(let [w (-> (.-nativeEvent %)
                                          (.-layout)
@@ -184,7 +184,7 @@
 (defview input-container []
   (letsubs [margin               [:chats/input-margin]
             mainnet?             [:mainnet?]
-            {:keys [input-text]} [:chats/current-chat]
+            input-text           [:chats/current-chat-input-text]
             result-box           [:chats/current-chat-ui-prop :result-box]
             show-stickers?       [:chats/current-chat-ui-prop :show-stickers?]
             state-text (reagent/atom "")]

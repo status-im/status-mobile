@@ -589,6 +589,8 @@ var TopLevel = {
   "prev": function() {},
   "hasNext": function() {},
   "hasPrev": function() {},
+  "rtl": function() {},
+  "lineCount": function() {},
   "key": function() {},
   "keys": function() {},
   "values": function() {},

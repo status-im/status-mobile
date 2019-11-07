@@ -51,6 +51,7 @@
    "shhext_chatMessages" {}
    "shhext_saveChat" {}
    "shhext_contacts" {}
+   "shhext_prepareContent" {}
    "shhext_blockContact" {}
    ;;TODO not used anywhere?
    "shhext_deleteChat" {}

@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.chat.commands.receiving :as commands-receiving]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.chat.db :as chat.db]
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat-loading]
@@ -37,17 +38,14 @@
 
 (defn- prepare-message
   [{:keys [content content-type] :as message} chat-id current-chat?]
-  (let [emoji? (message-content/emoji-only-content? content)]
-    ;; TODO janherich: enable the animations again once we can do them more efficiently
-    (cond-> message
-      current-chat?
-      (assoc :seen true)
+  (cond-> message
+    current-chat?
+    (assoc :seen true) (and (= constants/content-type-text content-type)
+                            (message-content/should-collapse?
+                             (:text content)
+                             (:line-count content)))
 
-      emoji?
-      (assoc :content-type constants/content-type-emoji)
-
-      (and (= constants/content-type-text content-type) (not emoji?))
-      (update :content message-content/enrich-content))))
+    (assoc :should-collapse? true)))
 
 (defn system-message? [{:keys [message-type]}]
   (= :system-message message-type))
@@ -250,24 +248,46 @@
                        :message          message
                        :current-chat?    (= (get-in cofx [:db :current-chat-id]) chat-id)})))
 
-(fx/defn upsert-and-send
-  [{:keys [now] :as cofx} {:keys [chat-id from] :as message}]
-  (let [message         (remove-icon message)
-        send-record     (protocol/map->Message (select-keys message transport-keys))
+(fx/defn prepare-message-content [cofx chat-id message]
+  {::json-rpc/call
+   [{:method "shhext_prepareContent"
+     :params [(:content message)]
+     :on-success #(re-frame/dispatch [::prepared-message chat-id message %])
+     :on-failure #(log/error "failed to prepare content" %)}]})
+
+(fx/defn prepared-message
+  {:events [::prepared-message]}
+  [{:keys [now] :as cofx} chat-id message content]
+  (let [message-with-content
+        (update message :content
+                assoc
+                :parsed-text  (:parsedText content)
+                :line-count (:lineCount content)
+                :should-collapse? (message-content/should-collapse?
+                                   (:text content)
+                                   (:lineCount content))
+                :rtl? (:rtl content))
+        send-record     (protocol/map->Message
+                         (select-keys message-with-content transport-keys))
         wrapped-record  (if (= (:message-type send-record) :group-user-message)
                           (wrap-group-message cofx chat-id send-record)
-                          send-record)
-        message (assoc message :outgoing-status :sending)]
-
+                          send-record)]
     (fx/merge cofx
               (chat-model/upsert-chat
                {:chat-id                   chat-id
                 :timestamp                 now
-                :last-message-timestamp    (:timestamp message)
-                :last-message-content      (:content message)
-                :last-message-content-type (:content-type message)
-                :last-clock-value          (:clock-value message)})
-              (send chat-id message wrapped-record))))
+                :last-message-timestamp    (:timestamp message-with-content)
+                :last-message-content      (:content message-with-content)
+                :last-message-content-type (:content-type message-with-content)
+                :last-clock-value          (:clock-value message-with-content)})
+              (send chat-id message-with-content wrapped-record))))
+
+(fx/defn upsert-and-send
+  [{:keys [now] :as cofx} {:keys [chat-id from] :as message}]
+  (let [message         (remove-icon message)
+        message (assoc message :outgoing-status :sending)]
+
+    (prepare-message-content cofx chat-id message)))
 
 (fx/defn update-message-status
   [{:keys [db] :as cofx} chat-id message-id status]

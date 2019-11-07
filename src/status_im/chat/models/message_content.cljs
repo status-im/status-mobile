@@ -40,9 +40,9 @@
   (and (seq text)
        (re-matches constants/regx-rtl-characters (first text))))
 
-(defn- should-collapse? [text]
+(defn should-collapse? [text line-count]
   (or (<= constants/chars-collapse-threshold (count text))
-      (<= constants/lines-collapse-threshold (inc (count (query-regex #"\n" text))))))
+      (<= constants/lines-collapse-threshold (inc line-count))))
 
 (defn- sorted-ranges [{:keys [metadata text]} metadata-keys]
   (->> (if metadata-keys
@@ -80,28 +80,6 @@
                               [(subs text offset (count text)) :text])]
        (cond-> builder
          end-record (conj end-record))))))
-
-(defn enrich-content
-  "Enriches message content with `:metadata`, `:render-recipe` and `:rtl?` information.
-  Metadata map keys can by any of the `:link`, `:tag`, `:mention` actions
-  or `:bold` and `:italic` stylings.
-  Value for each key is sequence of tuples representing ranges in original
-  `:text` content. "
-  [{:keys [text] :as content}]
-  (let [[_ metadata] (reduce (fn [[text metadata] [type regex]]
-                               (if-let [matches (query-regex regex text)]
-                                 [(clear-ranges matches text) (assoc metadata type matches)]
-                                 [text metadata]))
-                             [text {}]
-                             (if platform/desktop?
-                               (into stylings actions)
-                               actions))]
-    (cond-> content
-      (seq metadata) (as-> content
-                           (assoc content :metadata metadata)
-                       (assoc content :render-recipe (build-render-recipe content)))
-      (right-to-left-text? text) (assoc :rtl? true)
-      (should-collapse? text) (assoc :should-collapse? true))))
 
 (defn emoji-only-content?
   "Determines if text is just an emoji"

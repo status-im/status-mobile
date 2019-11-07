@@ -59,6 +59,7 @@
 (spec/def :message.content/params (spec/map-of keyword? any?))
 
 (spec/def ::content-type #{constants/content-type-text constants/content-type-command
+                           constants/content-type-emoji
                            constants/content-type-command-request constants/content-type-sticker})
 (spec/def ::message-type #{:group-user-message :public-group-user-message :user-message})
 (spec/def ::clock-value (spec/and pos-int?

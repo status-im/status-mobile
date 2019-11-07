@@ -12,6 +12,7 @@
             [status-im.transport.message.transit :as transit]
             [status-im.transport.utils :as transport.utils]
             [status-im.tribute-to-talk.whitelist :as whitelist]
+            [cljs-bean.core :as clj-bean]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
@@ -19,14 +20,20 @@
 
 (def message-type-message 1)
 
+(defn build-content [content-js]
+  {:text (.-text content-js)
+   :line-count (.-lineCount content-js)
+   :parsed-text (clj-bean/->clj (.-parsedText content-js))
+   :name (.-name content-js)
+   :rtl? (.-rtl content-js)
+   :response-to (aget content-js "response-to")
+   :chat-id (.-chat_id content-js)})
+
 (defn build-message [parsed-message-js]
   (let [content (.-content parsed-message-js)
         built-message
         (protocol/Message.
-         {:text (.-text content)
-          :response-to (aget content "response-to")
-          :name (.-name content)
-          :chat-id (.-chat_id content)}
+         (build-content content)
          (.-content_type parsed-message-js)
          (keyword (.-message_type parsed-message-js))
          (.-clock parsed-message-js)

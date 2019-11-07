@@ -617,11 +617,6 @@
              #(mark-messages-seen %))))
 
 (handlers/register-handler-fx
- :chat/send-plain-text-message
- (fn [{{:keys [current-chat-id]} :db :as cofx} [_ message-text]]
-   (chat.input/send-plain-text-message-fx cofx message-text current-chat-id)))
-
-(handlers/register-handler-fx
  :chat/send-sticker
  (fn [{{:keys [current-chat-id multiaccount]} :db :as cofx} [_ {:keys [hash] :as sticker}]]
    (fx/merge

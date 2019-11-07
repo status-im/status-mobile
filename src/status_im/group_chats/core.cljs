@@ -3,7 +3,9 @@
   (:require [clojure.set :as clojure.set]
             [clojure.spec.alpha :as spec]
             [clojure.string :as string]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [re-frame.core :as re-frame]
+            [status-im.chat.models.message-content :as message-content]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.utils.pairing :as pairing.utils]
@@ -463,6 +465,43 @@
        (transport.filters/upsert-group-chat-topics)
        (transport.filters/load-members members)))))
 
+(fx/defn prepared-message
+  {:events [::prepared-message]}
+  [{:keys [now] :as cofx}
+   chat-id message
+   content
+   sender-signature
+   whisper-timestamp
+   metadata]
+  (let [message-with-content
+        (update message :content
+                assoc
+                :parsed-text  (:parsedText content)
+                :line-count (:lineCount content)
+                :should-collapse? (message-content/should-collapse?
+                                   (:text content)
+                                   (:lineCount content))
+                :rtl? (:rtl content))]
+    (protocol/receive message-with-content
+                      chat-id
+                      sender-signature
+                      whisper-timestamp
+                      (assoc cofx :metadata metadata))))
+
+(fx/defn prepare-message-content
+  [cofx chat-id message sender-signature whisper-timestamp metadata]
+  {::json-rpc/call
+   [{:method "shhext_prepareContent"
+     :params [(:content message)]
+     :on-success #(re-frame/dispatch [::prepared-message
+                                      chat-id
+                                      message
+                                      %
+                                      sender-signature
+                                      whisper-timestamp
+                                      metadata])
+     :on-failure #(log/error "failed to prepare content" %)}]})
+
 (fx/defn handle-membership-update
   "Upsert chat and receive message if valid"
   ;; Care needs to be taken here as chat-id is not coming from a whisper filter
@@ -498,11 +537,13 @@
                               ;; don't allow anything but group messages
                               (instance? protocol/Message message)
                               (= :group-user-message (:message-type message)))
-                     (protocol/receive message
-                                       chat-id
-                                       sender-signature
-                                       whisper-timestamp
-                                       (assoc % :metadata metadata))))))))
+                     (prepare-message-content
+                      %
+                      chat-id
+                      message
+                      sender-signature
+                      whisper-timestamp
+                      metadata)))))))
 
 (defn handle-sign-success
   "Upsert chat and send signed payload to group members"

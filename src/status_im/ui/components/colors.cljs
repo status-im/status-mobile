@@ -25,7 +25,7 @@
 (def black-transparent (alpha black 0.1)) ;; Used as background color for rounded button on dark background and as background color for containers like "Backup recovery phrase"
 (def black-transparent-20 (alpha black 0.2)) ; accounts divider
 (def black-transparent-40 (alpha black 0.4))
-
+(def black-transparent-50 (alpha black 0.5))
 (def black-light "#2d2d2d") ;; sign-with-keycard-button
 
 ;; DARK GREY

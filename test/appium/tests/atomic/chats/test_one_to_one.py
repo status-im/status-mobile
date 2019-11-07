@@ -207,7 +207,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         home_2.home_button.click()
 
         chat_1 = home_1.add_contact(public_key_2)
-        url_message = 'status.im'
+        url_message = 'http://status.im'
         chat_1.chat_message_input.send_keys(url_message)
         chat_1.send_message_button.click()
         chat_1.get_back_to_home_view()
