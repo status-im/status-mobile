@@ -30,8 +30,6 @@
             [status-im.ui.screens.hardwallet.connect.views :as hardwallet.connect]
             [status-im.ui.screens.hardwallet.pin.views :as hardwallet.pin]
             [status-im.ui.screens.hardwallet.settings.views :as hardwallet.settings]
-            [status-im.ui.screens.hardwallet.setup.views :as hardwallet.setup]
-            [status-im.ui.screens.hardwallet.success.views :as hardwallet.success]
             [status-im.ui.screens.keycard.onboarding.views :as keycard.onboarding]
             [status-im.ui.screens.keycard.recovery.views :as keycard.recovery]
             [status-im.ui.screens.keycard.views :as keycard]
@@ -94,8 +92,6 @@
    :enter-pin-settings                               hardwallet.pin/enter-pin
    :enter-pin-sign                                   hardwallet.pin/enter-pin
    :enter-pin-modal                                  [:modal hardwallet.pin/enter-pin]
-   :hardwallet-setup                                 hardwallet.setup/hardwallet-setup
-   :hardwallet-success                               hardwallet.success/hardwallet-success
    :keycard-onboarding-intro                         keycard.onboarding/intro
    :keycard-onboarding-start                         keycard.onboarding/start
    :keycard-onboarding-puk-code                      keycard.onboarding/puk-code

@@ -889,20 +889,6 @@
    {:db (assoc-in db [:hardwallet :setup-step] :recovery-phrase)}))
 
 (handlers/register-handler-fx
- :hardwallet/connection-error
- (fn [_ _]
-   {:utils/show-popup {:title      (i18n/label :t/cant-read-card)
-                       :content    (i18n/label :t/cant-read-card-error-explanation)
-                       :on-dismiss #(re-frame/dispatch [:hardwallet.ui/connection-error-confirm-button-pressed])}}))
-
-(handlers/register-handler-fx
- :hardwallet.ui/connection-error-confirm-button-pressed
- (fn [{:keys [db] :as cofx} _]
-   (fx/merge cofx
-             {:db (assoc-in db [:hardwallet :setup-step] :begin)}
-             (navigation/navigate-to-cofx :hardwallet-setup nil))))
-
-(handlers/register-handler-fx
  :hardwallet/load-generating-mnemonic-screen
  (fn [cofx _]
    (hardwallet/load-generating-mnemonic-screen cofx)))

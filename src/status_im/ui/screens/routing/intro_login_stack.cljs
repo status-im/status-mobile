@@ -20,8 +20,6 @@
     :intro-wizard
     :hardwallet-authentication-method
     :hardwallet-connect
-    :hardwallet-setup
-    :hardwallet-success
     :keycard-connection-lost
     :keycard-connection-lost-setup
     :keycard-nfc-on
@@ -77,9 +75,7 @@
                        :keycard-blank
                        :keycard-wrong
                        :keycard-unpaired
-                       :not-keycard
-                       :hardwallet-setup
-                       :hardwallet-success]))
+                       :not-keycard]))
    :config  (if
                 ;; add view-id here if you'd like that view to be
                 ;; first view when app is started
