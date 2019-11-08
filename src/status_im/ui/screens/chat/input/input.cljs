@@ -159,6 +159,7 @@
     [react/scroll-view {:style style/reply-message-content}
      [react/view {:style style/reply-message-to-container}
       [vector-icons/tiny-icon :tiny-icons/tiny-reply {:container-style style/reply-icon
+                                                      :accessibility-label :tiny-reply-icon
                                                       :width 20
                                                       :color colors/gray}]
       (chat-utils/format-reply-author from alias ens-name current-public-key style/reply-message-author)]

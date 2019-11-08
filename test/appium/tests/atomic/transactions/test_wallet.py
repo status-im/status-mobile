@@ -393,7 +393,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_with_password.click_until_presence_of_element(send_transaction.enter_password_input)
         send_transaction.enter_password_input.send_keys(common_password)
         send_transaction.sign_button.click()
-        send_transaction.element_by_text('intrinsic gas too low', 'text').wait_for_visibility_of_element(40)
+        send_transaction.element_by_text('intrinsic gas too low', 'text').wait_for_visibility_of_element(80)
         send_transaction.ok_button.click()
 
         send_transaction.sign_transaction_button.click()
@@ -409,6 +409,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         self.network_api.find_transaction_by_unique_amount(sender['address'], amount)
 
     @marks.testrail_id(5314)
+    @marks.critical
     def test_can_see_all_transactions_in_history(self):
         address = wallet_users['D']['address']
         passphrase = wallet_users['D']['passphrase']

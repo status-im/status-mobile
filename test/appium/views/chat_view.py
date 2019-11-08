@@ -14,10 +14,23 @@ class ChatMessageInput(BaseEditBox):
         self.locator = self.Locator.accessibility_id('chat-message-input')
 
 
+class TinyReplyIconInMessageInput(BaseElement):
+    def __init__(self, driver):
+        super(TinyReplyIconInMessageInput, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('tiny-reply-icon')
+
+
+class CancelReplyButton(BaseEditBox):
+    def __init__(self, driver):
+        super(CancelReplyButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('cancel-message-reply')
+
+
 class AddToContacts(BaseButton):
     def __init__(self, driver):
         super(AddToContacts, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('add-to-contacts-button')
+
 
 class RemoveFromContactsButton(BaseButton):
     def __init__(self, driver):
@@ -98,6 +111,12 @@ class ClearHistoryButton(BaseButton):
     def __init__(self, driver):
         super(ClearHistoryButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="Clear history"]')
+
+
+class ReplyMessageButton(BaseButton):
+    def __init__(self, driver):
+        super(ReplyMessageButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector("Reply")
 
 
 class GroupInfoButton(BaseButton):
@@ -380,6 +399,8 @@ class ChatView(BaseView):
         super(ChatView, self).__init__(driver)
 
         self.chat_message_input = ChatMessageInput(self.driver)
+        self.tiny_reply_icon_in_message_input = TinyReplyIconInMessageInput(self.driver)
+        self.cancel_reply_button = CancelReplyButton(self.driver)
         self.add_to_contacts = AddToContacts(self.driver)
         self.remove_from_contacts = RemoveFromContactsButton(self.driver)
         self.user_name_text = UserNameText(self.driver)
@@ -399,6 +420,7 @@ class ChatView(BaseView):
         self.members_button = MembersButton(self.driver)
         self.delete_chat_button = DeleteChatButton(self.driver)
         self.clear_history_button = ClearHistoryButton(self.driver)
+        self.reply_message_button = ReplyMessageButton(self.driver)
         self.clear_button = ClearButton(self.driver)
         self.block_contact_button = BlockContactButton(self.driver)
         self.unblock_contact_button = UnblockContactButton(self.driver)
@@ -567,6 +589,10 @@ class ChatView(BaseView):
     def send_message(self, message: str = 'test message'):
         self.chat_message_input.send_keys(message)
         self.send_message_button.click()
+
+    def quote_message(self, message = str):
+        self.chat_element_by_text(message).long_press_element()
+        self.reply_message_button.click()
 
     def move_to_messages_by_time_marker(self, marker='Today'):
         self.driver.info("Moving to messages by time marker: '%s'" % marker)

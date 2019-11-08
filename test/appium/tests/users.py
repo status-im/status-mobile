@@ -18,6 +18,14 @@ ens_user_other_domain = dict()
 ens_user_other_domain['ens'] = 'tanyatest1.eth'
 ens_user_other_domain['address'] = '0xcf2272205cc0cf96Cfbb9Dd740BD681D1E86901E'
 
+dummy_user = dict()
+dummy_user['username'] = "Vain Wordy Hagfish"
+dummy_user['passphrase'] = "near broom kiss excess sad switch slab melt trade crash spare dinner"
+dummy_user['public_key'] = "0x04596348471aa19d31c8503fa00f95abd0fc3ca908668817284b52b7ced95f966cc13457254aa908aa8e64" \
+                           "a2748453accf9d358b8d7a1448597201c664dc280e37"
+dummy_user['address'] = "0xdF6Bc71206d7ea89ec905a7f5ce8Ff34C85eB04e"
+
+
 wallet_users = dict()
 
 wallet_users['A'] = dict()

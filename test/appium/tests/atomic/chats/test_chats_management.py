@@ -2,7 +2,7 @@ import pytest
 import time
 
 from tests import marks, camera_access_error_text, get_current_time
-from tests.users import basic_user
+from tests.users import basic_user, dummy_user
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -211,6 +211,39 @@ class TestChatManagement(SingleDeviceTestCase):
         if home.element_by_text(basic_user["username"]).is_element_displayed():
             self.driver.fail("Unblocked user not added previously in contact list added in contacts!")
 
+    @marks.testrail_id(5496)
+    @marks.low
+    def test_can_remove_quote_snippet_from_inputs(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        chat_view = home.add_contact(dummy_user["public_key"], add_in_contacts=False)
+        message_to_quote_1_to_1 = "This is a message to quote in 1-1"
+        message_to_quote_public = "This is a message to quote in public"
+
+        chat_view.just_fyi("Send and quote message in 1-1 chat")
+        chat_view.send_message(message_to_quote_1_to_1)
+        chat_view.quote_message(message_to_quote_1_to_1)
+        chat_view.get_back_to_home_view(times_to_click_on_back_btn=1)
+
+        chat_view.just_fyi("Send and quote message in public chat")
+        public_chat_name = home.get_public_chat_name()
+        home.join_public_chat(public_chat_name)
+        chat_view.send_message(message_to_quote_public)
+        chat_view.quote_message(message_to_quote_public)
+
+        chat_view.just_fyi("Clear quotes from both chats")
+        chat_view.cancel_reply_button.click()
+
+        if chat_view.tiny_reply_icon_in_message_input.is_element_displayed():
+            self.errors.append("Message quote kept in public chat input after it's cancelation")
+        chat_view.get_back_to_home_view(times_to_click_on_back_btn=1)
+        home.get_chat_with_user(dummy_user["username"]).click()
+        chat_view.cancel_reply_button.click()
+        if chat_view.tiny_reply_icon_in_message_input.is_element_displayed():
+            self.errors.append("Message quote kept in 1-1 chat input after it's cancelation")
+
+        self.errors.verify_no_errors()
+
 
 @marks.chat
 class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
@@ -301,9 +334,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
                     "'%s' from blocked user %s are shown in public chat" % (message, device_2.driver.number))
 
     @marks.testrail_id(5763)
-    @marks.high
+    @marks.medium
     def test_block_user_from_one_to_one_header(self):
-
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         message_before_block_1 = "Before block from %s" % device_1.driver.number

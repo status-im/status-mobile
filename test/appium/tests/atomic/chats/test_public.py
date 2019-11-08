@@ -138,8 +138,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         if not chat_element_2.is_element_displayed(sec=10):
             self.errors.append('Message with emoji was not received in public chat by the recipient')
 
-        chat_element_2.long_press_element()
-        chat_2.element_by_text('Reply').click()
+        chat_2.quote_message(emoji_unicode)
         message_text = 'test message'
         chat_2.chat_message_input.send_keys(message_text)
         chat_2.send_message_button.click()

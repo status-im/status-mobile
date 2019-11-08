@@ -541,12 +541,12 @@ class BaseView(object):
         raw_public_key = bytearray.fromhex(public_key.replace('0x04', ''))
         return datatypes.PublicKey(raw_public_key).to_address()[2:]
 
-    def get_back_to_home_view(self):
+    def get_back_to_home_view(self, times_to_click_on_back_btn=5):
         counter = 0
         from views.home_view import PlusButton
         while not PlusButton(self.driver).is_element_displayed(2):
             try:
-                if counter >= 5:
+                if counter >= times_to_click_on_back_btn:
                     break
                 self.back_button.click()
             except (NoSuchElementException, TimeoutException):
