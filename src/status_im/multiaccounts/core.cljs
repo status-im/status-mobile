@@ -53,6 +53,11 @@
   (multiaccounts.update/multiaccount-update cofx
                                             {:wallet-set-up-passed? true} {}))
 
+(fx/defn confirm-home-tooltip
+  [cofx]
+  (multiaccounts.update/multiaccount-update cofx
+                                            {:hide-home-tooltip? true} {}))
+
 (fx/defn switch-dev-mode
   [cofx dev-mode?]
   (multiaccounts.update/multiaccount-update cofx

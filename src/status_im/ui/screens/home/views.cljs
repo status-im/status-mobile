@@ -18,38 +18,87 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.animation :as animation]
             [status-im.constants :as constants]
-            [status-im.ui.components.colors :as colors])
+            [status-im.ui.components.colors :as colors]
+            [status-im.utils.fx :as fx])
   (:require-macros [status-im.utils.views :as views]))
 
-(defn welcome []
-  [react/view {:style styles/welcome-view}
-   [react/view {:flex 1}]
-   [status-bar/status-bar {:type :main}]
-   [react/view {:style styles/welcome-image-container}
-    [components.common/image-contain
-     {:container-style {}}
-     {:image (resources/get-image :welcome-image) :width 750 :height 556}]]
-   [react/i18n-text {:style styles/welcome-text :key :welcome-to-status}]
-   [react/view
-    [react/i18n-text {:style styles/welcome-text-description
-                      :key   :welcome-to-status-description}]]
-   [react/view {:flex 1}]
-   [react/view {:align-items :center :margin-bottom 52}
-    [components.common/button {:on-press #(re-frame/dispatch [:navigate-back])
-                               :label    (i18n/label :t/get-started)}]]])
+(defn welcome-blank-page [blank?]
+  (when blank?
+    [react/view {:style {:flex 1 :flex-direction :row :align-items :center :justify-content :center}}
+     [react/i18n-text {:style styles/welcome-blank-text :key :welcome-blank-message}]]))
 
-(defn home-empty-view []
+(defn welcome-image-wrapper []
+  (let [dimensions (reagent/atom {})]
+    (fn []
+      [react/view {:on-layout  (fn [e]
+                                 (reset! dimensions (js->clj (-> e .-nativeEvent .-layout) :keywordize-keys true)))
+                   :style {:align-items :center
+                           :justify-content :center
+                           :flex 1}}
+       (let [padding    0
+             image-size (- (min (:width @dimensions) (:height @dimensions)) padding)]
+         [react/image {:source (resources/get-image :welcome)
+                       :resize-mode :contain
+                       :style {:width image-size :height image-size}}])])))
+
+(defn welcome []
+  [react/view {:style {:flex 1}}
+   [react/view {:style styles/welcome-view}
+    [status-bar/status-bar {:type :main}]
+    [welcome-image-wrapper]
+    [react/i18n-text {:style styles/welcome-text :key :welcome-to-status}]
+    [react/view
+     [react/i18n-text {:style styles/welcome-text-description
+                       :key   :welcome-to-status-description}]]
+    [react/view {:align-items :center :margin-bottom 50}
+     [components.common/button {:on-press #(re-frame/dispatch [:navigate-back])
+                                :accessibility-label :lets-go-button
+                                :label    (i18n/label :t/lets-go)}]]]])
+
+(defn- start-chat [topic]
+  (re-frame/dispatch [:chat.ui/start-public-chat topic {:navigation-reset? true}])
+  (re-frame/dispatch [:set :public-group-topic nil]))
+
+(defn chat-tags-view []
+  [react/view {:align-items :center :margin-top 16}
+   [react/i18n-text {:style styles/no-chats-text :key :follow-your-interests}]
+   [react/view {:style styles/tags-wrapper}
+    (for [item ["introductions", "chitchat", "status", "crypto", "tech", "music", "movies"]]
+      [react/touchable-highlight {:key item :on-press #(start-chat item)}
+       [react/text {:style styles/tag-text} (str "#" item)]])]])
+
+(defn home-tooltip-view [blank? hide-home-tooltip?]
   (filter.views/reset-height)
   [react/view styles/no-chats
-   [react/i18n-text {:style styles/no-chats-text :key :no-recent-chats}]
-   [react/view {:align-items :center :margin-top 20}
-    [components.common/button {:on-press #(list-selection/open-share {:message (i18n/label :t/get-status-at)})
-                               :label    (i18n/label :t/invite-friends)}]]])
+   (if-not hide-home-tooltip?
+     [react/view styles/no-chats-wrapper
+      [react/view {:style {:flex-direction :row}}
+       [react/view {:flex 1}
+        [react/view {:style styles/empty-chats-header-container}
+         [components.common/image-contain
+          {:container-style {:width 60 :height 60 :margin-top -20}}
+          {:image (resources/get-image :empty-chats-header) :width 60 :height 60}]]
+        [react/view {:style {:position :absolute :right 0 :top 5}}
+         [react/touchable-highlight {:on-press (when-not hide-home-tooltip?
+                                                 #(re-frame/dispatch [:multiaccounts.ui/hide-home-tooltip]))
+                                     :accessibility-label :hide-home-button}
+          [react/view {:style styles/close-icon-container}
+           [icons/icon :main-icons/close {:color colors/white :width 19 :height 19}]]]]]]
+      [react/i18n-text {:style styles/no-chats-text :key :chat-and-transact}]
+      [react/view {:align-items :center :margin-top 16}
+       [components.common/button {:on-press #(list-selection/open-share {:message (i18n/label :t/get-status-at)})
+                                  :accessibility-label :invite-friends-button
+                                  :label    (i18n/label :t/invite-friends)}]]
+      [react/view {:align-items :center :margin-top 16}
+       [react/view {:style styles/hr-wrapper}]
+       [react/i18n-text {:style styles/or-text :key :or}]]
+      [chat-tags-view]]
+     [welcome-blank-page blank?])])
 
-(defn home-items-view [_ _ _ search-input-state]
+(defn home-items-view [_ _ _ _ search-input-state]
   (let [previous-touch      (reagent/atom nil)
         scrolling-from-top? (reagent/atom true)]
-    (fn [search-filter chats all-home-items]
+    (fn [search-filter chats all-home-items hide-home-tooltip?]
       (if search-filter
         [filter.views/home-filtered-items-list chats]
         [react/animated-view
@@ -81,7 +130,7 @@
          [list/flat-list {:data           all-home-items
                           :key-fn         first
                           :header         [react/view {:height 4 :flex 1}]
-                          :footer         [react/view {:height 68 :flex 1}]
+                          :footer 				[react/view {:height 380 :margin-top 70} [home-tooltip-view false hide-home-tooltip?]]
                           :on-scroll-begin-drag
                           (fn [e]
                             (reset! scrolling-from-top?
@@ -109,6 +158,7 @@
   (views/letsubs
     [anim-translate-y (animation/create-value connectivity/neg-connectivity-bar-height)
      {:keys [search-filter chats all-home-items]} [:home-items]
+     {:keys [hide-home-tooltip?]} [:multiaccount]
      window-width [:dimensions/window-width]
      two-pane-ui-enabled? [:two-pane-ui-enabled?]]
     (let [home-width (if (> window-width constants/two-pane-min-width)
@@ -144,11 +194,12 @@
             [filter.views/search-input-wrapper search-filter]
             (if (and (not search-filter)
                      (empty? all-home-items))
-              [home-empty-view]
+              [home-tooltip-view true hide-home-tooltip?]
               [home-items-view
                search-filter
                chats
                all-home-items
+               hide-home-tooltip?
                filter.views/search-input-state])])]
         [home-action-button home-width]]])))
 

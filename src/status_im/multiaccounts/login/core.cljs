@@ -84,7 +84,7 @@
                 {:db (update db :hardwallet dissoc :flow)}
                 (if (= :import flow)
                   (navigation/navigate-to-cofx :keycard-recovery-success nil)
-                  (navigation/navigate-to-cofx :home nil))))))
+                  (navigation/navigate-to-cofx :welcome nil))))))
 
 (fx/defn  initialize-dapp-permissions
   {:events [::initialize-dapp-permissions]}

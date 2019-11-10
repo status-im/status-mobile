@@ -149,6 +149,11 @@
  (fn [cofx _]
    (multiaccounts/confirm-wallet-set-up cofx)))
 
+(handlers/register-handler-fx
+ :multiaccounts.ui/hide-home-tooltip
+ (fn [cofx _]
+   (multiaccounts/confirm-home-tooltip cofx)))
+
 ;; multiaccounts login module
 (handlers/register-handler-fx
  :multiaccounts.login.ui/multiaccount-selected

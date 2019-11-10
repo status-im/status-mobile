@@ -5,6 +5,7 @@
    :empty-recent         "images/ui/empty-recent.png"
    :analytics-image      "images/ui/analytics-image.png"
    :welcome-image       "images/ui/welcome-image.png"
+   :welcome              "images/ui/welcome.jpg"
    :intro1               "images/ui/intro1.png"
    :intro2               "images/ui/intro2.png"
    :intro3               "images/ui/intro3.png"

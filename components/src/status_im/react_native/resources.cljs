@@ -3,8 +3,10 @@
 (def ui
   {:empty-hashtags      (js/require "./resources/images/ui/empty-hashtags.png")
    :empty-recent        (js/require "./resources/images/ui/empty-recent.png")
+   :empty-chats-header  (js/require "./resources/images/ui/empty-chats-header.png")
    :analytics-image     (js/require "./resources/images/ui/analytics-image.png")
    :welcome-image       (js/require "./resources/images/ui/welcome-image.png")
+   :welcome             (js/require "./resources/images/ui/welcome.jpg")
    :intro1              (js/require "./resources/images/ui/intro1.jpg")
    :intro2              (js/require "./resources/images/ui/intro2.jpg")
    :intro3              (js/require "./resources/images/ui/intro3.jpg")

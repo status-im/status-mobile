@@ -761,7 +761,7 @@
             {:db (update db :hardwallet dissoc
                          :multiaccount-wallet-address
                          :multiaccount-whisper-public-key)}
-            (navigation/navigate-to-cofx :home nil)))
+            (navigation/navigate-to-cofx :welcome nil)))
 
 (fx/defn login-got-it-pressed
   {:events [:keycard.login.ui/got-it-pressed
@@ -1717,7 +1717,7 @@
                 :login?          true})
               (if (= flow :import)
                 (navigation/navigate-to-cofx :keycard-recovery-success nil)
-                (navigation/navigate-to-cofx :home nil)))))
+                (navigation/navigate-to-cofx :welcome nil)))))
 
 (fx/defn on-generate-and-load-key-success
   [{:keys [db random-guid-generator] :as cofx} data]

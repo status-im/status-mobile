@@ -88,33 +88,49 @@
 
 (def no-chats
   {:flex               1
-   :align-items        :center
-   :justify-content    :center
-   :padding-horizontal 34
-   :align-self         :stretch
+   :padding-top        16
+   :padding-horizontal 16
    :background-color   :white
    :transform          [{:translateY (- search-input-height)}]})
 
+(def no-chats-wrapper
+  {:width         "100%"
+   :align-items   :center
+   :border-color  colors/gray-lighter
+   :border-width  1
+   :border-radius 16})
+
 (def no-chats-text
-  {:text-align     :center
-   :color          colors/gray})
+  {:font-size   15
+   :width       270
+   :margin-top  12
+   :line-height 22
+   :text-align  :center
+   :color       colors/black})
 
 (def welcome-view
-  {:flex 1})
+  {:flex            1
+   :justify-content :flex-end})
 
 (def welcome-image-container
-  {:align-items :center
-   :margin-top  42})
+  {:align-items :center})
 
 (def welcome-text
-  {:typography  :header
-   :margin-top  32
-   :text-align  :center})
+  {:typography :header
+   :text-align :center})
+
+(def welcome-blank-text
+  {:font-size   15
+   :width       270
+   :line-height 22
+   :text-align  :center
+   :color       colors/gray})
 
 (def welcome-text-description
-  {:margin-top        8
+  {:margin-top        16
+   :margin-bottom     32
    :text-align        :center
-   :margin-horizontal 32
+   :margin-horizontal 40
    :color             colors/gray})
 
 (defn action-button-container [home-width]
@@ -138,3 +154,53 @@
    :shadow-opacity   1
    :shadow-color     "rgba(0, 12, 63, 0.2)"
    :elevation        2})
+
+(def empty-chats-header-container
+  {:flex-direction  :row
+   :align-items     :center
+   :justify-content :center})
+
+(def hr-wrapper
+  {:position         :absolute
+   :width            "100%"
+   :height           1
+   :top              9
+   :border-top-width 1
+   :border-color     colors/gray-lighter})
+
+(def or-text
+  {:width            40
+   :background-color colors/white
+   :font-size        12
+   :text-align       :center
+   :color            colors/gray})
+
+(def tags-wrapper
+  {:width           300
+   :margin-top      10
+   :margin-bottom   18
+   :flex-direction  :row
+   :flex-wrap       :wrap
+   :align-items     :center
+   :text-align      :center
+   :justify-content :center})
+
+(def tag-text
+  {:font-size     13
+   :font-weight   "500"
+   :line-height   20
+   :margin-left   10
+   :margin-right  10
+   :margin-top    6
+   :margin-bottom 6
+   :color         colors/blue})
+
+(def close-icon-container
+  {:width            19
+   :height           19
+   :margin-top       3
+   :margin-right     8
+   :border-radius    12
+   :background-color colors/gray
+   :align-items      :center
+   :justify-content  :center})

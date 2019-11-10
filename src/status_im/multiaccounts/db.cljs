@@ -35,6 +35,7 @@
 (spec/def :multiaccount/seed-backed-up? (spec/nilable boolean?))
 (spec/def :multiaccount/installation-id :global/not-empty-string)
 (spec/def :multiaccount/wallet-set-up-passed? (spec/nilable boolean?))
+(spec/def :multiaccount/hide-home-tooltip? (spec/nilable boolean?))
 (spec/def :multiaccount/desktop-alpha-release-warning-shown? (spec/nilable boolean?))
 (spec/def :multiaccount/keycard-instance-uid (spec/nilable string?))
 (spec/def :multiaccount/keycard-key-uid (spec/nilable string?))
@@ -52,6 +53,7 @@
                                                          :multiaccount/seed-backed-up? :multiaccount/mnemonic :multiaccount/desktop-notifications?
                                                          :multiaccount/chaos-mode?
                                                          :multiaccount/wallet-set-up-passed? :multiaccount/last-request
+                                                         :multiaccount/hide-home-tooltip?
                                                          :multiaccount/bootnodes
                                                          :multiaccount/desktop-alpha-release-warning-shown?
                                                          :multiaccount/keycard-instance-uid
