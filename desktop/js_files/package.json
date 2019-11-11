@@ -22,7 +22,7 @@
     "identicon.js": "git+https://github.com/status-im/identicon.js.git#v1.2.1-status",
     "metro": "^0.48.1",
     "nfc-react-native": "git+https://github.com/status-im/nfc-react-native.git#v0.3.8-status",
-    "qrcode": "^1.4.1",
+    "qrcode": "^1.4.4",
     "react": "^16.6.1",
     "react-dom": "^16.4.2",
     "react-native": "git+https://github.com/status-im/react-native-desktop.git#v0.57.8_11",
