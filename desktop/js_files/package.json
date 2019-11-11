@@ -24,7 +24,7 @@
     "nfc-react-native": "git+https://github.com/status-im/nfc-react-native.git#v0.3.8-status",
     "qrcode": "^1.4.1",
     "react": "^16.6.1",
-    "react-dom": "^16.4.2",
+    "react-dom": "^16.11.0",
     "react-native": "git+https://github.com/status-im/react-native-desktop.git#v0.57.8_11",
     "react-native-background-timer": "^2.0.0",
     "react-native-camera": "^3.8.0",
