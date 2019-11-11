@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.6.4",
-    "@babel/generator": "7.0.0",
+    "@babel/generator": "7.7.2",
     "@babel/helper-builder-react-jsx": "7.3.0",
     "@babel/plugin-transform-block-scoping": "7.0.0",
     "@babel/preset-env": "7.1.0",
