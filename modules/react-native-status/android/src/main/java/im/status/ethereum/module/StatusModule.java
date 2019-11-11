@@ -360,6 +360,13 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         }
     }
 
+    @ReactMethod
+    public void deleteAccount(final String address) {
+        Log.d(TAG, "deleteAccount");
+        String result = Statusgo.deleteAccount(address);
+        Log.d(TAG, "deleteAccount result: " + result);
+    }
+
     private void deleteDirectory(File folder) {
         File[] files = folder.listFiles();
         if (files != null) {

@@ -4,7 +4,9 @@
             [status-im.hardwallet.card :as card]
             [status-im.native-module.core :as status]
             [status-im.react-native.js-dependencies :as js-dependencies]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.fx :as fx]
+            [status-im.multiaccounts.logout.core :as multiaccounts.logout]))
 
 (re-frame/reg-fx
  :hardwallet/get-application-info

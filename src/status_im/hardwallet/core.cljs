@@ -5,6 +5,7 @@
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.multiaccounts.logout.core :as multiaccounts.logout]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
+            status-im.multiaccounts.delete.core
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.mnemonic :as mnemonic]
             [status-im.i18n :as i18n]
@@ -880,24 +881,26 @@
 (fx/defn on-remove-key-success
   [{:keys [db] :as cofx}]
   (let [multiaccount-address (get-in db [:multiaccount :address])
-        instance-uid (get-in db [:hardwallet :application-info :instance-uid])
-        pairings (get-in db [:hardwallet :pairings])]
+        instance-uid         (get-in db [:hardwallet :application-info :instance-uid])
+        pairings             (get-in db [:hardwallet :pairings])]
     (fx/merge cofx
-              {:db                 (-> db
-                                       (update :multiaccounts/multiaccounts dissoc multiaccount-address)
-                                       (assoc-in [:hardwallet :secrets] nil)
-                                       (update-in [:hardwallet :pairings] dissoc (keyword instance-uid))
-                                       (assoc-in [:hardwallet :whisper-public-key] nil)
-                                       (assoc-in [:hardwallet :wallet-address] nil)
-                                       (assoc-in [:hardwallet :application-info] nil)
-                                       (assoc-in [:hardwallet :on-card-connected] nil)
-                                       (assoc-in [:hardwallet :pin] {:status      nil
-                                                                     :error-label nil
-                                                                     :on-verified nil}))
-               :hardwallet/persist-pairings (dissoc pairings (keyword instance-uid))
-               ;;FIXME delete multiaccount
-               :utils/show-popup   {:title   ""
-                                    :content (i18n/label :t/card-reseted)}}
+              {:db (-> db
+                       (update :multiaccounts/multiaccounts dissoc multiaccount-address)
+                       (assoc-in [:hardwallet :secrets] nil)
+                       (update-in [:hardwallet :pairings] dissoc (keyword instance-uid))
+                       (assoc-in [:hardwallet :whisper-public-key] nil)
+                       (assoc-in [:hardwallet :wallet-address] nil)
+                       (assoc-in [:hardwallet :application-info] nil)
+                       (assoc-in [:hardwallet :on-card-connected] nil)
+                       (assoc-in [:hardwallet :pin] {:status      nil
+                                                     :error-label nil
+                                                     :on-verified nil}))
+
+               :hardwallet/persist-pairings
+               (dissoc pairings instance-uid)
+
+               :multiaccounts/delete
+               multiaccount-address}
               (multiaccounts.logout/logout))))
 
 (fx/defn on-remove-key-error
@@ -1226,6 +1229,8 @@
         pairing (get-pairing db)
         card-connected? (get-in db [:hardwallet :card-connected?])
         setup? (boolean (get-in db [:hardwallet :setup-step]))]
+    (log/debug "[hardwallet] verify-pin:"
+               " pairing " pairing)
     (if card-connected?
       {:db                    (assoc-in db [:hardwallet :pin :status] :verifying)
        :hardwallet/verify-pin {:pin     pin
@@ -1370,6 +1375,9 @@
         setup-step (get-in db [:hardwallet :setup-step])
         pin (get-in db [:hardwallet :pin enter-step])
         numbers-entered (count pin)]
+    (log/debug "[hardwallet] process-pin-input:"
+               " setup-step " setup-step
+               ", enter-step " enter-step)
     (cond-> {:db (assoc-in db [:hardwallet :pin :status] nil)}
 
       (and (= enter-step :login)

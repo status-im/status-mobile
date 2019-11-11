@@ -47,6 +47,11 @@
   [multiaccount-data password config chat-key]
   (.saveAccountAndLoginWithKeycard (status) multiaccount-data password config chat-key))
 
+(defn delete-account
+  "Deletes account"
+  [address]
+  (.deleteAccount (status) address))
+
 (defn login
   "NOTE: beware, the password has to be sha3 hashed"
   [account-data hashed-password]
@@ -273,3 +278,4 @@
   "Generate a icon based on a string, synchronously"
   [seed]
   (.identicon (status) seed))
+

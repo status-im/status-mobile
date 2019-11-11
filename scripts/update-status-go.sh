@@ -28,7 +28,7 @@ if [ $# -eq 0 ]; then
 fi
 
 STATUS_GO_REPO="${STATUS_GO_REPO:=status-go}"
-STATUS_GO_OWNER="${STATUS_GO_OWNER:=status-im}"
+STATUS_GO_OWNER="${STATUS_GO_OWNER:=rasom}"
 STATUS_GO_VERSION=$1
 
 repoUrl="https://github.com/${STATUS_GO_OWNER}/${STATUS_GO_REPO}"
