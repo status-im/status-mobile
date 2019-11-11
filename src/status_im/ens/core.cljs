@@ -131,7 +131,8 @@
   [{:keys [db] :as cofx}]
   (let [{:keys [custom-domain? username]}
         (:ens/registration db)
-        {:keys [address public-key]} (:multiaccount db)
+        {:keys [public-key]} (:multiaccount db)
+        address (ethereum/default-address db)
         chain (ethereum/chain-keyword db)
         chain-id (ethereum/chain-id db)
         contract (get stateofus/registrars chain)
