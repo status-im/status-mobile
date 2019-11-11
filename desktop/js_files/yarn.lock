@@ -2310,10 +2310,10 @@ cosmiconfig@^5.0.5:
     js-yaml "^3.13.1"
     parse-json "^4.0.0"
 
-coveralls@^3.0.4:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/coveralls/-/coveralls-3.0.6.tgz#5c63b2759b6781118e7439bd870ba5e9ee428b25"
-  integrity sha512-Pgh4v3gCI4T/9VijVrm8Ym5v0OgjvGLKj3zTUwkvsCiwqae/p6VLzpsFNjQS2i6ewV7ef+DjFJ5TSKxYt/mCrA==
+coveralls@^3.0.7:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/coveralls/-/coveralls-3.0.7.tgz#1eca48e47976e9573d6a2f18b97c2fea4026f34a"
+  integrity sha512-mUuH2MFOYB2oBaA4D4Ykqi9LaEYpMMlsiOMJOrv358yAjP6enPIk55fod2fNJ8AvwoYXStWQls37rA+s5e7boA==
   dependencies:
     growl "~> 1.10.0"
     js-yaml "^3.13.1"
@@ -4622,6 +4622,13 @@ metro-babel-register@^0.48.1:
     "@babel/register" "^7.0.0"
     core-js "^2.2.2"
     escape-string-regexp "^1.0.5"
+
+metro-babel7-plugin-react-transform@0.45.6:
+  version "0.45.6"
+  resolved "https://registry.yarnpkg.com/metro-babel7-plugin-react-transform/-/metro-babel7-plugin-react-transform-0.45.6.tgz#e13b7b0e87e4f908d61b1bf88753af1119e19f58"
+  integrity sha512-NsVKqiBaF+Tm3FXzqiEExl9iJG+EimbpQP5h9ygxBE4AsYRc2S3X/YD/1ds3RTHMgfhinWVaus+DrG5OqK5mTA==
+  dependencies:
+    "@babel/helper-module-imports" "^7.0.0"
 
 metro-babel7-plugin-react-transform@0.48.5:
   version "0.48.5"

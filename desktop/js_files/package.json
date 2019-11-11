@@ -53,7 +53,7 @@
     "@babel/preset-env": "7.1.0",
     "@babel/register": "7.6.2",
     "babel-preset-react-native": "^5.0.2",
-    "coveralls": "^3.0.4",
+    "coveralls": "^3.0.7",
     "metro-react-native-babel-preset": "^0.45.6",
     "nyc": "^14.1.1",
     "patch-package": "^5.1.1",
