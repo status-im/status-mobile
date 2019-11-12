@@ -15,20 +15,13 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]))
 
-; Whether we should be strict about verifying ens, currently disabled as
-; status-go can't be upgrade because of geth 1.9 incompatibility
-(def only-verified-ens false)
 (defn displayed-name
   "Use preferred name, name or alias in that order"
   [{:keys [name preferred-name alias public-key ens-verified]}]
   (let [ens-name (or preferred-name
                      name)]
-    ;; Preferred name is our own
-    ;; otherwise we make sure is verified
-    (if (or preferred-name
-            (and only-verified-ens
-                 ens-verified
-                 name))
+    ;; Preferred name is our own otherwise we make sure it's verified
+    (if (or preferred-name (and ens-verified name))
       (let [username (stateofus/username ens-name)]
         (str "@" (or username ens-name)))
       (or alias (gfycat/generate-gfy public-key)))))

@@ -180,6 +180,13 @@
    :margin-right        12
    :text-align-vertical :center})
 
+(def message-author-name-container
+  {:padding-top         6
+   :padding-left        12
+   :padding-right       16
+   :margin-right        12
+   :text-align-vertical :center})
+
 (defn quoted-message-container [outgoing]
   {:margin-bottom              6
    :padding-bottom             6

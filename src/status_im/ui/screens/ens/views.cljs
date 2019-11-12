@@ -19,7 +19,10 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.utils.navigation :as navigation])
+            [status-im.utils.navigation :as navigation]
+            [status-im.ui.components.list-item.views :as list-item]
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.multiaccounts.core :as multiaccounts])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- button
@@ -582,14 +585,15 @@
     [button {:on-press #(re-frame/dispatch [::ens/get-started-pressed])
              :label    (i18n/label :t/get-started)}]]])
 
-(defn- name-item [{:keys [name action hide-chevron?]}]
+(defn- name-item [{:keys [name action]}]
   (let [stateofus-username (stateofus/username name)
         s                  (or stateofus-username name)]
-    [list/big-list-item {:text          s
-                         :subtext       (when stateofus-username stateofus/domain)
-                         :action-fn     action
-                         :icon          :main-icons/username
-                         :hide-chevron? hide-chevron?}]))
+    [list-item/list-item
+     {:title       s
+      :subtitle    (when stateofus-username stateofus/domain)
+      :on-press    action
+      :icon        :main-icons/username
+      :accessories [:chevron]}]))
 
 (defn- name-list [names preferred-name]
   [react/view {:style {:flex 1 :margin-top 16}}
@@ -612,13 +616,15 @@
              [name-item {:name name :hide-chevron? true :action action}]]
             [radio/radio (= name preferred-name)]]]))]]]])
 
-(defn- registered [names {:keys [preferred-name address public-key name]} show?]
+(defn- registered [names {:keys [preferred-name public-key name] :as account} show?]
   [react/view {:style {:flex 1}}
    [react/scroll-view
     [react/view {:style {:margin-top 8}}
-     [list/big-list-item {:text      (i18n/label :t/ens-add-username)
-                          :action-fn #(re-frame/dispatch [::ens/add-username-pressed])
-                          :icon      :main-icons/add}]]
+     [list-item/list-item
+      {:title    (i18n/label :t/ens-add-username)
+       :theme    :action
+       :on-press #(re-frame/dispatch [::ens/add-username-pressed])
+       :icon     :main-icons/add}]]
     [react/view {:style {:margin-top 22 :margin-bottom 8}}
      [react/text {:style {:color colors/gray :margin-horizontal 16}}
       (i18n/label :t/ens-your-usernames)]
@@ -645,22 +651,23 @@
       {:label-kw  :ens-show-username
        :action-fn #(re-frame/dispatch [::ens/switch-show-username])
        :value     show?}]]
-    (let [message (merge {:from public-key
-                          :last-in-group? true
-                          :display-username? true
-                          :display-photo? true
-                          :alias name
-                          :content {:text (i18n/label :t/ens-test-message)
-                                    :name (when show? preferred-name)}
+    (let [message (merge {:content {:text (i18n/label :t/ens-test-message)}
                           :content-type "text/plain"
-                          :timestamp-str "9:41 AM"}
-                         (when show?
-                           {:name preferred-name}))]
-      [message/message-body message
-       [message/text-message message]])]])
+                          :timestamp-str "9:41 AM"})]
+      [react/view
+       [react/view {:padding-left 60}
+        (if show?
+          ^{:key "ens-name"}
+          [message/message-author-name public-key]
+          ^{:key "generated"}
+          [message/message-author-name nil name])]
+       [react/view {:flex-direction :row}
+        [react/view {:padding-left 16 :padding-right 8 :padding-top 4}
+         [photos/photo (multiaccounts/displayed-photo account) {:size 36}]]
+        [message/text-message message]]])]])
 
 (views/defview main []
-  (views/letsubs [{:keys [names multiaccount preferred-name show?]} [:ens.main/screen]]
+  (views/letsubs [{:keys [names multiaccount show?]} [:ens.main/screen]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [status-bar/status-bar {:type :main}]
      [toolbar/simple-toolbar

@@ -192,7 +192,7 @@
 
 (defview message-author-name [from alias]
   (letsubs [{:keys [ens-name]} [:contacts/contact-name-by-identity from]]
-    (chat.utils/format-author alias style/message-author-name ens-name)))
+    (chat.utils/format-author alias style/message-author-name-container ens-name)))
 
 (defn message-body
   [{:keys [alias

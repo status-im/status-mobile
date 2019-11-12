@@ -54,9 +54,9 @@
                 ;                                           :content-height 150}
                 ;                                          contact])
 
-(defn render-detail [{:keys [name public-key] :as detail}]
+(defn render-detail [{:keys [alias public-key] :as detail}]
   [list-item/list-item
-   {:title    name
+   {:title    alias
     :subtitle (utils/get-shortened-address public-key)
     :icon     [chat-icon/contact-icon-contacts-tab detail]
     :accessibility-label :profile-public-key
@@ -118,10 +118,12 @@
 ;;TO-DO Rework generate-view to use 3 functions from large-toolbar
 (views/defview profile []
   (views/letsubs [list-ref (reagent/atom nil)
-                  contact  [:contacts/current-contact]]
+                  {:keys [ens-verified name] :as contact}  [:contacts/current-contact]]
     (when contact
       (let [header-in-toolbar    (header-in-toolbar contact)
-            header               (header contact)
+            header               (header (cond-> contact
+                                           (and ens-verified name)
+                                           (assoc :usernames [name])))
             content
             [[list/action-list (actions contact)
               {:container-style        styles/action-container

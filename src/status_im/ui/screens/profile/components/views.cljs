@@ -44,6 +44,13 @@
                     :number-of-lines 1}
         generated-name])]))
 
+(defn- group-name [name]
+  [react/view styles/profile-header-name-container
+   [react/text {:style styles/profile-name-text
+                :number-of-lines 2
+                :ellipsize-mode  :tail}
+    name]])
+
 (defn- profile-header-display [{:keys [name public-key] :as contact}
                                allow-icon-change? include-remove-action?]
   [react/view (merge styles/profile-header-display {:padding-horizontal 16})
@@ -84,6 +91,11 @@
      [chat-icon.screen/my-profile-icon {:multiaccount contact
                                         :edit?        false}])
    [names contact]])
+
+(defn group-header-display [{:keys [chat-name color]}]
+  [react/view (merge styles/profile-header-display {:padding-horizontal 16})
+   [chat-icon.screen/profile-icon-view nil chat-name color nil 64 nil]
+   [group-name chat-name]])
 
 (defn profile-header
   [{:keys [contact allow-icon-change? include-remove-action?]}]
