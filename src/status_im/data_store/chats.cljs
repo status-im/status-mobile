@@ -121,7 +121,7 @@
                                 :deleted-at-clock-value :deletedAtClockValue
                                 :is-active :active
                                 :last-clock-value :lastClockValue})
-      (dissoc :referenced-messages :message-groups :gaps-loaded? :pagination-info
+      (dissoc :message-list :gaps-loaded? :pagination-info
               :public? :group-chat :messages
               :might-have-join-time-messages?
               :loaded-unviewed-messages-ids

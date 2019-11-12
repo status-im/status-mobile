@@ -2,7 +2,10 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
+            [status-im.utils.datetime :as time]
             [status-im.transport.message.protocol :as protocol]
+            [status-im.chat.models.message-list :as models.message-list]
+
             [status-im.chat.models.message :as message]
             [status-im.utils.datetime :as time]))
 
@@ -191,36 +194,53 @@
         (is (get-in (message/receive-one cofx bad-chat-id-message) [:db :chats "not-matching" :messages "1"]))))))
 
 (deftest delete-message
-  (let [timestamp (time/now)
-        cofx1     {:db {:chats {"chat-id" {:messages      {0 {:message-id  0
-                                                              :content     "a"
-                                                              :clock-value 0
-                                                              :whisper-timestamp (- timestamp 1)
-                                                              :timestamp   (- timestamp 1)}
-                                                           1 {:message-id  1
-                                                              :content     "b"
-                                                              :clock-value 1
-                                                              :whisper-timestamp timestamp
-                                                              :timestamp   timestamp}}
-                                           :message-groups {"datetime-today" '({:message-id 1}
-                                                                               {:message-id 0})}}}}}
-        cofx2     {:db {:chats {"chat-id" {:messages      {0 {:message-id  0
-                                                              :content     "a"
-                                                              :clock-value 0
-                                                              :whisper-timestamp timestamp
-                                                              :timestamp   timestamp}}
-                                           :message-groups {"datetime-today" '({:message-id 0})}}}}}
-        fx1       (message/delete-message cofx1 "chat-id" 1)
-        fx2       (message/delete-message cofx2 "chat-id" 0)]
-    (testing "Deleting message deletes it along with all references"
-      (is (= '(0)
-             (keys (get-in fx1 [:db :chats "chat-id" :messages]))))
-      (is (= {"datetime-today" '({:message-id 0})}
-             (get-in fx1 [:db :chats "chat-id" :message-groups])))
-      (is (= {}
-             (get-in fx2 [:db :chats "chat-id" :messages])))
-      (is (= {}
-             (get-in fx2 [:db :chats "chat-id" :message-groups]))))))
+  (with-redefs [time/day-relative (constantly "day-relative")
+                time/timestamp->time (constantly "timestamp")]
+    (let [cofx1     {:db {:chats {"chat-id" {:messages      {0 {:message-id  0
+                                                                :content     "a"
+                                                                :clock-value 0
+                                                                :whisper-timestamp 0
+                                                                :timestamp   0}
+                                                             1 {:message-id  1
+                                                                :content     "b"
+                                                                :clock-value 1
+                                                                :whisper-timestamp 1
+                                                                :timestamp   1}}
+                                             :message-list [{:something :something}]}}}}
+          cofx2     {:db {:chats {"chat-id" {:messages      {0 {:message-id  0
+                                                                :content     "a"
+                                                                :clock-value 0
+                                                                :whisper-timestamp 1
+                                                                :timestamp   1}}
+                                             :message-list [{:something :something}]}}}}
+          fx1       (message/delete-message cofx1 "chat-id" 1)
+          fx2       (message/delete-message cofx2 "chat-id" 0)]
+      (testing "Deleting message deletes it along with all references"
+        (is (= '(0)
+               (keys (get-in fx1 [:db :chats "chat-id" :messages]))))
+        (is (= [{:one-to-one? false
+                 :message-id 0
+                 :whisper-timestamp 0
+                 :type :message
+                 :display-photo? true
+                 :system-message? false
+                 :last-in-group? true
+                 :datemark "day-relative"
+                 :clock-value 0
+                 :first-in-group? true
+                 :from nil
+                 :first-outgoing? nil
+                 :outgoing-seen? nil
+                 :timestamp-str "timestamp"
+                 :first? true
+                 :display-username? true
+                 :outgoing nil}]
+               (models.message-list/->seq
+                (get-in fx1 [:db :chats "chat-id" :message-list]))))
+        (is (= {}
+               (get-in fx2 [:db :chats "chat-id" :messages])))
+        (is (= nil
+               (get-in fx2 [:db :chats "chat-id" :message-list])))))))
 
 (deftest add-outgoing-status
   (testing "coming from us"

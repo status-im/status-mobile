@@ -64,6 +64,6 @@
                          :identicon (get-in cofx [:metadata :author :identicon])
                          :from signature
                          :metadata (:metadata cofx))]
-      (fx/merge
-       (chat.message/receive-one cofx message)
-       (ens/verify-names-from-message this signature)))))
+      (fx/merge cofx
+                (chat.message/receive-one message)
+                (ens/verify-names-from-message this signature)))))

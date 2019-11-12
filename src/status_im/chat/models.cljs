@@ -151,7 +151,7 @@
      cofx
      {:db            (update-in db [:chats chat-id] merge
                                 {:messages                  {}
-                                 :message-groups            {}
+                                 :message-list              nil
                                  :last-message-content      nil
                                  :last-message-content-type nil
                                  :last-message-timestamp    nil

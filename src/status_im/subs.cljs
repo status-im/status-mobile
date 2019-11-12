@@ -712,12 +712,6 @@
    (or messages {})))
 
 (re-frame/reg-sub
- :chats/current-chat-message-groups
- :<- [:chats/current-chat]
- (fn [{:keys [message-groups]}]
-   (or message-groups {})))
-
-(re-frame/reg-sub
  :chats/messages-gaps
  :<- [:mailserver/gaps]
  :<- [:chats/current-chat-id]

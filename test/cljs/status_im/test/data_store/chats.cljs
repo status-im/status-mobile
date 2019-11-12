@@ -4,10 +4,9 @@
             [status-im.data-store.chats :as chats]))
 
 (deftest ->to-rpc
-  (let [chat {:referenced-messages []
-              :public? false
+  (let [chat {:public? false
               :group-chat true
-              :message-groups {}
+              :message-list []
               :color "color"
               :contacts #{"a" "b" "c" "d"}
               :last-clock-value 10

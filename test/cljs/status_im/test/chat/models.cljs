@@ -64,7 +64,7 @@
 
 (deftest clear-history-test
   (let [chat-id "1"
-        cofx    {:db {:chats {chat-id {:message-groups          {:something "a"}
+        cofx    {:db {:chats {chat-id {:message-list            [{:something "a"}]
                                        :messages                {"1" {:clock-value 1}
                                                                  "2" {:clock-value 10}
                                                                  "3" {:clock-value 2}}
@@ -74,7 +74,7 @@
         (is (= {} (get-in actual [:db :chats chat-id :messages])))))
     (testing "it deletes all the message groups"
       (let [actual (chat/clear-history cofx chat-id)]
-        (is (= {} (get-in actual [:db :chats chat-id :message-groups])))))
+        (is (= nil (get-in actual [:db :chats chat-id :message-list])))))
     (testing "it deletes unviewed messages set"
       (let [actual (chat/clear-history cofx chat-id)]
         (is (= 0 (get-in actual [:db :chats chat-id :unviewed-messages-count])))))

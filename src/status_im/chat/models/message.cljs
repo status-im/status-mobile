@@ -292,27 +292,18 @@
               (send chat-id message wrapped-record)
               (update-message-status chat-id message-id :sending))))
 
-(fx/defn remove-message-from-group
-  [{:keys [db]} chat-id {:keys [timestamp message-id]}]
-  (let [datemark (time/day-relative timestamp)]
-    {:db (update-in db [:chats chat-id :message-groups]
-                    (fn [groups]
-                      (let [message-references (get groups datemark)]
-                        (if (= 1 (count message-references))
-                          ;; message removed is the only one in group, remove whole group
-                          (dissoc groups datemark)
-                          ;; remove message from `message-references` list
-                          (assoc groups datemark
-                                 (remove (comp (partial = message-id) :message-id)
-                                         message-references))))))}))
+(fx/defn rebuild-message-list
+  [{:keys [db]} chat-id]
+  {:db (assoc-in db [:chats chat-id :message-list]
+                 (message-list/add-many nil (vals (get-in db [:chats chat-id :messages]))))})
 
 (fx/defn delete-message
-  "Deletes chat message, along its occurence in all references, like `:message-groups`"
+  "Deletes chat message, rebuild message-list"
   [{:keys [db] :as cofx} chat-id message-id]
   (fx/merge cofx
             {:db            (update-in db [:chats chat-id :messages] dissoc message-id)}
             (messages-store/delete-message message-id)
-            (remove-message-from-group chat-id (get-in db [:chats chat-id :messages message-id]))))
+            (rebuild-message-list chat-id)))
 
 (fx/defn add-system-messages [cofx messages]
   (let [messages-fx (map #(add-message

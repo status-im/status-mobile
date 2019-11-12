@@ -24,7 +24,7 @@
         built-message
         (protocol/Message.
          {:text (.-text content)
-          :response-to (.-response-to content)
+          :response-to (aget content "response-to")
           :name (.-name content)
           :chat-id (.-chat_id content)}
          (.-content_type parsed-message-js)
