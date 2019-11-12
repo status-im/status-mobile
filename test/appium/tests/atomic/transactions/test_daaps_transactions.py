@@ -58,7 +58,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view.sign_transaction()
         for text in 'Contract deployed at: ', 'Call contract get function', \
                     'Call contract set function', 'Call function 2 times in a row':
-            if not status_test_dapp.element_by_text(text).is_element_displayed(120):
+            if not status_test_dapp.element_by_text(text).is_element_displayed(180):
                 self.driver.fail('Contract was not created')
 
     @marks.testrail_id(5784)
