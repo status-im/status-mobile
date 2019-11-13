@@ -317,10 +317,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         String finalConfig = prepareDirAndUpdateConfig(config);
         String result = Statusgo.saveAccountAndLogin(accountData, password, finalConfig, subAccountsData);
         if (result.startsWith("{\"error\":\"\"")) {
-            Log.d(TAG, "StartNode result: " + result);
+            Log.d(TAG, "saveAccountAndLogin result: " + result);
             Log.d(TAG, "Geth node started");
         } else {
-            Log.e(TAG, "StartNode failed: " + result);
+            Log.e(TAG, "saveAccountAndLogin failed: " + result);
         }
     }
 
@@ -330,10 +330,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         String finalConfig = prepareDirAndUpdateConfig(config);
         String result = Statusgo.saveAccountAndLoginWithKeycard(accountData, password, finalConfig, chatKey);
         if (result.startsWith("{\"error\":\"\"")) {
-            Log.d(TAG, "StartNode result: " + result);
+            Log.d(TAG, "saveAccountAndLoginWithKeycard result: " + result);
             Log.d(TAG, "Geth node started");
         } else {
-            Log.e(TAG, "StartNode failed: " + result);
+            Log.e(TAG, "saveAccountAndLoginWithKeycard failed: " + result);
         }
     }
 

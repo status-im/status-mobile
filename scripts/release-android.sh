@@ -7,9 +7,7 @@ source "$_current_dir/lib/setup/path-support.sh"
 source_lib "platform.sh"
 
 nixOpts=(
-  "--arg env {BUILD_ENV=\"${BUILD_ENV}\";}"
-  "--arg env {ANDROID_ABI_SPLIT=\"${ANDROID_ABI_SPLIT}\";}"
-  "--arg env {ANDROID_ABI_INCLUDE=\"${ANDROID_ABI_INCLUDE}\";}"
+  "--arg env {BUILD_ENV=\"${BUILD_ENV}\";ANDROID_ABI_SPLIT=\"${ANDROID_ABI_SPLIT}\";ANDROID_ABI_INCLUDE=\"${ANDROID_ABI_INCLUDE}\";}"
   "--argstr build-type ${BUILD_TYPE}"
   "--argstr build-number ${BUILD_NUMBER}"
   "--argstr keystore-file ${STORE_FILE}"
