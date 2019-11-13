@@ -178,7 +178,7 @@
 	"create-a-pin": "Create a 6-digit passcode",
 	"create-group-chat": "Create group chat",
 	"create-multiaccount": "Create multiaccount",
-	"create-new-key": "Create a new key",
+	"create-new-key": "Get a new key",
 	"create-pin": "Create 6-digit passcode",
 	"create-pin-description": "You'll need your card + this 6-digit passcode to unlock Status and to confirm transactions",
 	"created-group-chat-description": "You created the group {{group-name}}",

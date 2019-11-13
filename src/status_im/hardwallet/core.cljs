@@ -20,7 +20,8 @@
             status-im.hardwallet.fx
             [status-im.ui.components.react :as react]
             [status-im.constants :as constants]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]))
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
 
 (def default-pin "000000")
 
@@ -497,13 +498,12 @@
             (navigation/navigate-to-cofx :keycard-recovery-enter-mnemonic nil)))
 
 (fx/defn start-import-flow
-  {:events [::recover-with-keycard-pressed
-            :keycard.login.ui/recover-key-pressed]}
+  {:events [::recover-with-keycard-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db                           (assoc-in db [:hardwallet :flow] :import)
-             :dispatch                     [:bottom-sheet/hide-sheet]
              :hardwallet/check-nfc-enabled nil}
+            (bottom-sheet/hide-bottom-sheet)
             (navigation/navigate-to-cofx :keycard-recovery-intro nil)))
 
 (fx/defn access-key-pressed
@@ -775,22 +775,19 @@
 (fx/defn login-pin-more-icon-pressed
   {:events [:keycard.login.pin.ui/more-icon-pressed]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:dispatch [:bottom-sheet/show-sheet :keycard.login/more {}]}))
+  (bottom-sheet/show-bottom-sheet cofx {:view :keycard.login/more}))
 
 (fx/defn login-create-key-pressed
   {:events [:keycard.login.ui/create-new-key-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:dispatch [:bottom-sheet/hide-sheet]}
+            (bottom-sheet/hide-bottom-sheet)
             (start-onboarding-flow)))
 
 (fx/defn login-add-key-pressed
   {:events [:keycard.login.ui/add-key-pressed]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:dispatch [:bottom-sheet/hide-sheet]}
-            (start-import-flow)))
+  (start-import-flow cofx))
 
 (fx/defn login-remember-me-changed
   {:events [:keycard.login.ui/remember-me-changed]}

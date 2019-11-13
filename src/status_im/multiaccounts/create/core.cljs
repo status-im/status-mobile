@@ -17,7 +17,8 @@
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
 
 (def step-kw-to-num
   {:generate-key         1
@@ -51,18 +52,31 @@
         {:keys [address]} (get-selected-multiaccount cofx)
         hashed-password (ethereum/sha3 (security/safe-unmask-data key-code))
         callback #(re-frame/dispatch [::store-multiaccount-success key-code %])]
+    (log/debug "create-multiaccount")
     {::store-multiaccount [selected-id address hashed-password callback]}))
+
+(fx/defn prepare-intro-wizard
+  [{:keys [db] :as cofx} first-time-setup?]
+  {:db (assoc db :intro-wizard {:step :generate-key
+                                :weak-password? true
+                                :back-action :intro-wizard/navigate-back
+                                :forward-action :intro-wizard/step-forward-pressed
+                                :encrypt-with-password? true
+                                :first-time-setup? first-time-setup?})})
 
 (fx/defn intro-wizard
   {:events [:multiaccounts.create.ui/intro-wizard]}
   [{:keys [db] :as cofx} first-time-setup?]
   (fx/merge cofx
-            {:db (assoc db :intro-wizard {:step :generate-key
-                                          :weak-password? true
-                                          :back-action :intro-wizard/navigate-back
-                                          :forward-action :intro-wizard/step-forward-pressed
-                                          :encrypt-with-password? true
-                                          :first-time-setup? first-time-setup?})}
+            (prepare-intro-wizard first-time-setup?)
+            (navigation/navigate-to-cofx :create-multiaccount-generate-key nil)))
+
+(fx/defn get-new-key
+  {:events [:multiaccounts.create.ui/get-new-key]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            (prepare-intro-wizard false)
+            (bottom-sheet/hide-bottom-sheet)
             (navigation/navigate-to-cofx :create-multiaccount-generate-key nil)))
 
 (fx/defn dec-step
@@ -128,19 +142,18 @@
     (cond (confirm-failure? db)
           (on-confirm-failure cofx)
 
-          (and  (= step :confirm-code)
-                (:multiaccounts/login db))
-          (exit-wizard cofx)
-
           (= step :generate-key)
           (init-key-generation cofx)
 
           (and (= step :confirm-code)
-               (not (:multiaccounts/login db))
                (not processing?))
           (fx/merge cofx
                     {:db (assoc-in db [:intro-wizard :processing?] true)}
                     create-multiaccount)
+
+          (and  (= step :confirm-code)
+                (:multiaccounts/login db))
+          (exit-wizard cofx)
 
           (and (= step :select-key-storage)
                (= :advanced selected-storage-type))

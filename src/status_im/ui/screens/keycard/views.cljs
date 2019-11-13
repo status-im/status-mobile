@@ -376,9 +376,7 @@
         [toolbar/nav-button
          (actions/back
           #(re-frame/dispatch [:keycard.login.pin.ui/cancel-pressed]))])
-      [react/text {:style {:color colors/gray}}
-       (i18n/label :t/step-i-of-n {:number 2
-                                   :step   1})]
+      nil
       [react/view {:margin-right 20}
        [react/touchable-highlight
         {:on-press #(re-frame/dispatch [:keycard.login.pin.ui/more-icon-pressed])}
@@ -441,7 +439,7 @@
         :step          enter-step}]
       [react/view {:margin-bottom (if small-screen? 25 32)}
        [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:keycard.login.ui/recover-key-pressed])}
+        {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])}
         [react/text {:style {:color colors/blue}}
          (i18n/label :t/recover-key)]]]]]))
 
@@ -530,21 +528,13 @@
                                       :animating true}])]]])))
 
 (defn- more-sheet-content []
-  [react/view {:flex           1
-               :flex-direction :row
-               :margin-top     18}
-   [react/view {:flex 1}
-    [list-item/list-item
-     {:theme     :action
-      :title     :t/create-new-key
-      :icon      :main-icons/profile
-      :on-press  #(re-frame/dispatch [:keycard.login.ui/create-new-key-pressed])}]
-    [list-item/list-item
-     {:theme     :action
-      :title     :t/add-another-key
-      :icon      :main-icons/add
-      :on-press  #(re-frame/dispatch [:keycard.login.ui/add-key-pressed])}]]])
+  [react/view {:flex 1}
+   [list-item/list-item
+    {:theme     :action
+     :title     :t/create-new-key
+     :icon      :main-icons/profile
+     :on-press  #(re-frame/dispatch [:multiaccounts.create.ui/get-new-key])}]])
 
 (def more-sheet
   {:content        more-sheet-content
-   :content-height 149})
+   :content-height 65})
