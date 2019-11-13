@@ -234,6 +234,11 @@ class ProfileBlockContactButton(BaseButton):
         super(ProfileBlockContactButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('block-contact')
 
+class ProfileAddToContactsButton(BaseButton):
+    def __init__(self, driver):
+        super(ProfileAddToContactsButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('add-to-contacts-button')
+
 
 class JoinChatButton(BaseButton):
     def __init__(self, driver):
@@ -423,6 +428,7 @@ class ChatView(BaseView):
         self.profile_send_transaction = ProfileSendTransactionButton(self.driver)
         self.profile_address_text = ProfileAddressText(self.driver)
         self.profile_block_contact = ProfileBlockContactButton(self.driver)
+        self.profile_add_to_contacts = ProfileAddToContactsButton(self.driver)
 
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing complete:')

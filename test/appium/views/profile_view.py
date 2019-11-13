@@ -527,6 +527,12 @@ class AskMeWhenOnMobileNetworkToggle(BaseButton):
         self.locator = self.Locator.xpath_selector(
             "//*[@text='Ask me when on mobile network']/../*[name()='android.widget.Switch']")
 
+class ENSUsernameInChatSettings(BaseElement):
+    def __init__(self, driver):
+        super(ENSUsernameInChatSettings, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@content-desc='chat-icon']/../android.widget.TextView[2]")
+
 
 
 class ProfileView(BaseView):
@@ -614,6 +620,7 @@ class ProfileView(BaseView):
 
         # ENS
         self.show_ens_name_in_chats = ShowENSNameInChatsToggle(self.driver)
+        self.username_in_ens_chat_settings_text = ENSUsernameInChatSettings(self.driver)
 
         # Mobile Data
         self.use_mobile_data = UseMobileDataToggle(self.driver)

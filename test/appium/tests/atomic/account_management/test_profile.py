@@ -840,8 +840,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6226)
     @marks.critical
-    # TODO: should be completed after https://github.com/status-im/status-react/issues/8854 is ready
-    def test_ens_in_public_chat(self):
+    def test_ens_in_public_and_1_1_chats(self):
         self.create_drivers(2)
         device_1, device_2 = self.drivers[0], self.drivers[1]
         sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
@@ -857,8 +856,13 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         dapp_view_1 = DappsView(device_1)
         dapp_view_1.element_by_text('Get started').click()
         dapp_view_1.ens_name.set_value(ens_user['ens'])
-        dapp_view_1.check_ens_name.click()
+        expected_text = 'This user name is owned by you and connected with your Chat key.'
+        if not dapp_view_1.wait_for_element_starts_with_text(expected_text):
+            sign_in_1.driver.fail("No %s is shown" % expected_text)
+        dapp_view_1.check_ens_name.click_until_presence_of_element(dapp_view_1.element_by_text('Ok, got it'))
         dapp_view_1.element_by_text('Ok, got it').click()
+        if profile_1.username_in_ens_chat_settings_text.text != user_1['username']:
+            self.errors.append('Default username is not shown in ENS usernames')
         dapp_view_1.back_button.click()
         profile_1.home_button.click()
 
@@ -877,6 +881,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_1.profile_button.click()
         profile_1.element_by_text('Your ENS name').click()
         profile_1.show_ens_name_in_chats.click()
+        if profile_1.username_in_ens_chat_settings_text.text != '@' + user_1['ens']:
+            self.errors.append('ENS username is not shown in ENS usernames Chat Settings after enabling')
         profile_1.back_button.click()
         profile_1.home_button.click()
         home_1.get_chat_with_user('#' + chat_name).click()
@@ -884,5 +890,24 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         chat_1.send_message(message_text_2)
         if not chat_2.wait_for_element_starts_with_text('@' + user_1['ens']):
             self.errors.append('ENS username is not shown in public chat')
+
+        home_2.just_fyi('check that ENS name is shown in 1-1 chat without adding user as contact in header, profile, options')
+        chat_2.get_back_to_home_view()
+        chat_2_one_to_one = home_2.add_contact(ens_user['public_key'], False)
+        if chat_2_one_to_one.user_name_text.text != '@' + user_1['ens']:
+            self.errors.append('ENS username is not shown in 1-1 chat header')
+        chat_2_one_to_one.chat_options.click()
+        if not chat_2_one_to_one.element_by_text('@' + user_1['ens']).is_element_displayed():
+            self.errors.append('ENS username is not shown in 1-1 chat options')
+        chat_2_one_to_one.view_profile_button.click()
+        if not chat_2_one_to_one.element_by_text('@' + user_1['ens']).is_element_displayed():
+            self.errors.append('ENS username is not shown in user profile')
+
+        home_2.just_fyi('add user to contacts and check that ENS name is shown in contact')
+        chat_2_one_to_one.profile_add_to_contacts.click()
+        profile_2 = chat_2_one_to_one.profile_button.click()
+        profile_2.contacts_button.click()
+        if not profile_2.element_by_text('@' + user_1['ens']).is_element_displayed():
+            self.errors.append('ENS username is not shown in contacts')
 
         self.errors.verify_no_errors()
