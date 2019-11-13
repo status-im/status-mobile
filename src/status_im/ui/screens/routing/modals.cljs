@@ -9,4 +9,6 @@
    :selection-modal-screen
    :wallet-transactions-filter
    :welcome
-   :keycard-welcome])
+   :keycard-welcome
+   :new-chat
+   :new-public-chat])

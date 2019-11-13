@@ -122,7 +122,7 @@
      [react/scroll-view
       [react/view {:style styles/suggested-contacts}
        (doall
-        (for [topic (public-chat/default-public-chats)]
+        (for [topic public-chat/default-public-chats]
           ^{:key topic}
           [react/touchable-highlight {:on-press #(do
                                                    (re-frame/dispatch [:set :public-group-topic nil])

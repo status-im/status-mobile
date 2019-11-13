@@ -3,7 +3,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.contact.contact :as contact-view]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -12,12 +11,16 @@
             [status-im.ui.screens.add-new.styles :as add-new.styles]
             [status-im.ui.screens.add-new.new-chat.styles :as styles]
             [status-im.utils.platform :as platform]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [status-im.ui.components.list-item.views :as list-item]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.multiaccounts.core :as multiaccounts]))
 
 (defn- render-row [row _ _]
-  [contact-view/contact-view {:contact       row
-                              :on-press      #(re-frame/dispatch [:chat.ui/start-chat (:public-key %) {:navigation-reset? true}])
-                              :show-forward? true}])
+  [list-item/list-item {:title       (multiaccounts/displayed-name row)
+                        :icon        [chat-icon/contact-icon-contacts-tab row]
+                        :accessories [:chevron]
+                        :on-press    #(re-frame/dispatch [:chat.ui/start-chat (:public-key row) {:navigation-reset? true}])}])
 
 ;;TODO workaround for https://github.com/facebook/react-native/issues/23653 (https://github.com/status-im/status-react/issues/8548)
 (def tw (reagent/atom "95%"))
@@ -26,9 +29,9 @@
   (views/letsubs [contacts      [:contacts/active]
                   new-identity  [:contacts/new-identity]
                   error-message [:new-identity-error]]
-    [react/keyboard-avoiding-view {:style {:flex 1}}
+    [react/view {:style {:flex 1}}
      [status-bar/status-bar]
-     [toolbar.view/simple-toolbar (i18n/label :t/new-chat)]
+     [toolbar.view/simple-toolbar (i18n/label :t/new-chat) true]
      [react/view add-new.styles/new-chat-container
       [react/view add-new.styles/new-chat-input-container
        [react/text-input {:ref                 (fn [v] (js/setTimeout #(reset! tw (if v "100%" "95%")) 100))
@@ -50,15 +53,14 @@
                                     :style               add-new.styles/button-container
                                     :accessibility-label :scan-contact-code-button}
          [react/view
-          [vector-icons/icon :main-icons/qr {:color colors/blue}]]])]
-     [react/text {:style styles/error-message}
-      error-message]
+          [vector-icons/icon :main-icons/camera {:color colors/blue}]]])]
+     (when error-message
+       [react/text {:style styles/error-message}
+        error-message])
      (when (seq contacts)
-       [react/text {:style styles/list-title}
-        (i18n/label :t/contacts)])
+       [list-item/list-item {:title :t/contacts :type :section-header}])
      [list/flat-list {:data                      contacts
                       :key-fn                    :address
                       :render-fn                 render-row
-                      :default-separator?        true
                       :enableEmptySections       true
                       :keyboardShouldPersistTaps :always}]]))

@@ -416,7 +416,7 @@
   "ens-username-owned-continue": "Continuing will connect this username with your key.",
   "ens-username-taken": "Username already taken :(",
 	"enter-12-words": "Enter the 12 words of your seed phrase, separated by single spaces",
-	"enter-contact-code": "Enter chat key or username",
+	"enter-contact-code": "Enter ENS username or chat key",
 	"enter-ens-or-contact-code": "Enter ENS username or chat key",
 	"enter-pair-code": "Enter your pairing code",
 	"enter-pair-code-description": "Pairing code was displayed to you during the Keycard setup",
@@ -1119,5 +1119,6 @@
 	"on-status-tree": "On Status tree",
 	"derivation-path": "Derivation path",
 	"storage": "Storage",
-	"keycard-free-pairing-slots": "Keycard has {{n}} free pairing slots"
+	"keycard-free-pairing-slots": "Keycard has {{n}} free pairing slots",
+	"public-chat-description": "A public chat is where you get to hang out with others, make friends and talk about subjects of your interest."
 }

@@ -7,14 +7,12 @@
              :select-chat
              :profile
              :new
-             :new-chat
              :qr-scanner
              :take-picture
              :new-group
              :add-participants-toggle-list
              :contact-toggle-list
              :group-chat-profile
-             :new-public-chat
              :stickers
              :stickers-pack]
    :config  {:initialRouteName :home

@@ -7,7 +7,11 @@
 
 (def topic-hash
   (merge group-chat-name-input
-         {:margin-left 14}))
+         {:margin-left  16
+          :margin-right 10
+          :font-size    24
+          :color        colors/gray
+          :font-weight  "500"}))
 
 (def group-container
   {:flex           1

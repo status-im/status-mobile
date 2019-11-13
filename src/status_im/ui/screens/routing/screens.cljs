@@ -123,13 +123,13 @@
    :select-chat                                      chat/select-chat
    :profile                                          profile.contact/profile
    :new                                              add-new/add-new
-   :new-chat                                         new-chat/new-chat
+   :new-chat                                         [:modal new-chat/new-chat]
    :qr-scanner                                       qr-scanner/qr-scanner
    :new-group                                        group/new-group
    :add-participants-toggle-list                     group/add-participants-toggle-list
    :contact-toggle-list                              group/contact-toggle-list
    :group-chat-profile                               profile.group-chat/group-chat-profile
-   :new-public-chat                                  new-public-chat/new-public-chat
+   :new-public-chat                                  [:modal new-public-chat/new-public-chat]
    :open-dapp                                        open-dapp/open-dapp
    :browser                                          browser/browser
    :stickers                                         stickers/packs
