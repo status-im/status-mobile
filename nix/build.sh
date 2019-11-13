@@ -9,7 +9,7 @@ resultPath="${gitRoot}/result/"
 function cleanup() {
   # clear trapped signals
   trap - EXIT ERR INT QUIT
-  # do the actual cleanup, ignore failure 
+  # do the actual cleanup, ignore failure
   if ./nix/clean.sh "${nixResultPath}"; then
     echo "Successful cleanup!"
   elif [[ -n "${IN_CI_ENVIRONMENT}" ]]; then
@@ -38,7 +38,7 @@ targetAttr="${1}"
 shift
 
 if [[ -z "${targetAttr}" ]]; then
-  echo "First argument is madatory and has to specify the Nix attribute!"
+  echo "First argument is mandatory and has to specify the Nix attribute!"
   exit 1
 fi
 

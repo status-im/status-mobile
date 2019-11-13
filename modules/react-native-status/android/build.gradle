@@ -1,6 +1,12 @@
 apply plugin: 'com.android.library'
 
 def getStatusGoSHA1 = { ->
+    def statusgoOverridePath = System.getenv("STATUS_GO_SRC_OVERRIDE")
+    if (statusgoOverridePath != null) {
+        printf "build.gradle: Using local version of status-go from ${statusgoOverridePath}"
+        return "unknown" // This value is defined in https://github.com/status-im/status-react/blob/develop/nix/status-go/default.nix, in `srcData.shortRev`
+    }
+
     def jsonSlurper = new groovy.json.JsonSlurper()
     def content = new File('../status-go-version.json').text
     def object = jsonSlurper.parseText(content)

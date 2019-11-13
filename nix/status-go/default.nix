@@ -1,34 +1,50 @@
-{ target-os, stdenv, callPackage,
+{ target-os, config, stdenv, callPackage,
   buildGoPackage, go, fetchFromGitHub, openjdk,
   androidPkgs, xcodeWrapper }:
 
 let
   inherit (stdenv.lib)
     catAttrs concatStrings fileContents importJSON makeBinPath
-    optional optionalString removePrefix strings attrValues mapAttrs;
- 
+    optional optionalString removePrefix strings attrValues mapAttrs attrByPath
+    traceValFn;
+
   platform = callPackage ../platform.nix { inherit target-os; };
   utils = callPackage ../utils.nix { inherit xcodeWrapper; };
   gomobile = callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit target-os xcodeWrapper utils buildGoPackage; };
   buildStatusGoDesktopLib = callPackage ./build-desktop-status-go.nix { inherit buildGoPackage go xcodeWrapper utils; };
   buildStatusGoMobileLib = callPackage ./build-mobile-status-go.nix { inherit buildGoPackage go gomobile xcodeWrapper utils; };
-  versionJSON = importJSON ../../status-go-version.json; # TODO: Simplify this path search with lib.locateDominatingFile
-  versionRegex = "^v?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+(-[[:alnum:].]+)$";
-  owner = versionJSON.owner;
-  repo = versionJSON.repo;
-  version = versionJSON.version;
-  sha256 = versionJSON.src-sha256;
-  rev = versionJSON.commit-sha1;
-  shortRev = strings.substring 0 7 rev;
-  goPackagePath = "github.com/${owner}/${repo}";
-  src = fetchFromGitHub { inherit rev owner repo sha256; name = "${repo}-${shortRev}-source"; };
-  # Replace src value with the path to a local status-go repository if you want to perform a build against it, e.g.
-  #src = /home/<user>/go/src/github.com/status-im/status-go;
+  srcData =
+    # If config.status_go.src_override is defined, instruct Nix to use that path to build status-go
+    if (attrByPath ["status_go" "src_override"] "" config) != "" then rec {
+        owner = "status-im";
+        repo = "status-go";
+        version = "develop";
+        goPackagePath = "github.com/${owner}/${repo}";
+        rev = "unknown";
+        shortRev = "unknown";
+        versionName = "develop";
+        src = stdenv.lib.cleanSource "${traceValFn (path: "Using local ${repo} sources from ${path}\n") config.status_go.src_override}";
+    } else
+      # Otherwise grab it from the location defined by status-go-version.json
+      let
+        versionJSON = importJSON ../../status-go-version.json; # TODO: Simplify this path search with lib.locateDominatingFile
+        versionRegex = "^v?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+(-[[:alnum:].]+)$";
+        sha256 = versionJSON.src-sha256;
+      in rec {
+        inherit (versionJSON) owner repo version;
+        goPackagePath = "github.com/${owner}/${repo}";
+        rev = versionJSON.commit-sha1;
+        shortRev = strings.substring 0 7 rev;
+        versionName = if (builtins.match versionRegex version) != null
+                      then removePrefix "v" version # Geth forces a 'v' prefix
+                      else "develop"; # to reduce metrics cardinality in Prometheus
+        src = fetchFromGitHub { inherit rev owner repo sha256; name = "${repo}-${srcData.shortRev}-source"; };
+      };
 
   mobileConfigs = {
     android = {
       name = "android";
-      outputFileName = "status-go-${shortRev}.aar";
+      outputFileName = "status-go-${srcData.shortRev}.aar";
       envVars = [
         "ANDROID_HOME=${androidPkgs.androidsdk}/libexec/android-sdk"
         "ANDROID_NDK_HOME=${androidPkgs.ndk-bundle}/libexec/android-sdk/ndk-bundle"
@@ -58,10 +74,8 @@ let
   goBuildFlags = "-v";
   # status-go params to be set at build time, important for About section and metrics
   goBuildParams = {
-    GitCommit = rev;
-    Version = if (builtins.match versionRegex version) != null
-      then removePrefix "v" version # Geth forces a 'v' prefix
-      else "develop"; # to reduce metrics cardinality in Prometheus
+    GitCommit = srcData.rev;
+    Version = srcData.versionName;
   };
   # These are necessary for status-go to show correct version
   paramsLdFlags = attrValues (mapAttrs (name: value:
@@ -73,7 +87,7 @@ let
     "-w" # -w disables DWARF debugging information
   ];
 
-  statusGoArgs = { inherit owner repo rev version goPackagePath src goBuildFlags goBuildLdFlags; };
+  statusGoArgs = { inherit (srcData) src owner repo rev version goPackagePath; inherit goBuildFlags goBuildLdFlags; };
   status-go-packages = {
     desktop = buildStatusGoDesktopLib (statusGoArgs // {
       outputFileName = "libstatus.a";

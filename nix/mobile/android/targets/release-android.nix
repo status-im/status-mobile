@@ -1,4 +1,4 @@
-{ stdenv, stdenvNoCC, lib, target-os, callPackage,
+{ stdenv, stdenvNoCC, lib, config, target-os, callPackage,
   mkFilter, bash, file, gnumake, watchmanFactory, gradle,
   androidEnvShellHook, mavenAndNpmDeps,
   nodejs, openjdk, jsbundle, status-go, unzip, zlib }:
@@ -9,12 +9,16 @@
   keystore-file ? "", # Path to the .keystore file used to sign the package
   secrets-file ? "", # Path to the file containing secret environment variables
   watchmanSockPath ? "", # Path to the socket file exposed by an external watchman instance (workaround needed for building Android on macOS)
-  env ? {} # Attribute set contaning environment variables to expose to the build script
+  env ? {} # Attribute set containing environment variables to expose to the build script
 }:
 
 assert (builtins.stringLength watchmanSockPath) > 0 -> stdenv.isDarwin;
 
 let
+  inherit (stdenv.lib) hasAttrByPath optionalAttrs;
+  env' = env // optionalAttrs (hasAttrByPath ["status_go" "src_override"] config) {
+    STATUS_GO_SRC_OVERRIDE = config.status_go.src_override;
+  };
   baseName = "release-${target-os}";
   name = "status-react-build-${baseName}";
   gradleHome = "$NIX_BUILD_TOP/.gradle";
@@ -100,8 +104,8 @@ in stdenv.mkDerivation {
       inherit (lib) catAttrs concatStrings concatStringsSep mapAttrsToList makeLibraryPath optionalString substring toUpper;
       # Take the env attribute set and build a couple of scripts
       #  (one to export the environment variables, and another to unset them)
-      exportEnvVars = concatStringsSep ";" (mapAttrsToList (name: value: "export ${name}='${value}'") env);
-      unsetEnvVars = concatStringsSep ";" (mapAttrsToList (name: value: "unset ${name}") env);
+      exportEnvVars = concatStringsSep ";" (mapAttrsToList (name: value: "export ${name}='${value}'") env');
+      unsetEnvVars = concatStringsSep ";" (mapAttrsToList (name: value: "unset ${name}") env');
       adhocEnvVars = optionalString stdenv.isLinux "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${makeLibraryPath [ zlib ]}";
       capitalizedBuildType = toUpper (substring 0 1 buildType) + substring 1 (-1) buildType;
     in ''

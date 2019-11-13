@@ -7,6 +7,7 @@ source "$_current_dir/lib/setup/path-support.sh"
 source_lib "platform.sh"
 
 nixOpts=(
+  "--arg config {android_sdk.accept_license=true;status_go.src_override=\"${STATUS_GO_SRC_OVERRIDE}\";}"
   "--arg env {BUILD_ENV=\"${BUILD_ENV}\";ANDROID_ABI_SPLIT=\"${ANDROID_ABI_SPLIT}\";ANDROID_ABI_INCLUDE=\"${ANDROID_ABI_INCLUDE}\";}"
   "--argstr build-type ${BUILD_TYPE}"
   "--argstr build-number ${BUILD_NUMBER}"

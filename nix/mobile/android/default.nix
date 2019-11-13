@@ -15,7 +15,7 @@ let
   mavenAndNpmDeps = callPackage ./maven-and-npm-deps { inherit stdenv stdenvNoCC gradle bash nodejs zlib localMavenRepoBuilder mkFilter projectNodePackage; };
 
   # TARGETS
-  release = callPackage ./targets/release-android.nix { inherit target-os gradle mavenAndNpmDeps mkFilter nodejs jsbundle status-go zlib watchmanFactory; androidEnvShellHook = androidEnv.shellHook; };
+  release = callPackage ./targets/release-android.nix { inherit target-os config gradle mavenAndNpmDeps mkFilter nodejs jsbundle status-go zlib watchmanFactory; androidEnvShellHook = androidEnv.shellHook; };
   generate-maven-and-npm-deps-shell = callPackage ./maven-and-npm-deps/maven/shell.nix { inherit mkShell gradle maven nodejs projectNodePackage status-go; androidEnvShellHook = androidEnv.shellHook; };
   adb-shell = mkShell {
     buildInputs = [ androidEnv.licensedAndroidEnv ];
@@ -36,7 +36,7 @@ in {
       inherit (stdenv.lib) catAttrs concatStrings;
     in ''
     ${concatStrings (catAttrs "shellHook" [ mavenAndNpmDeps androidEnv ])}
-    
+
     $STATUS_REACT_HOME/scripts/generate-keystore.sh
 
     $STATUS_REACT_HOME/nix/mobile/reset-node_modules.sh "${mavenAndNpmDeps.deriv}/project" || exit

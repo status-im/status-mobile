@@ -33,7 +33,7 @@ export BUILD_TAG := $(shell git rev-parse --short HEAD)
 endif
 
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
-export _NIX_KEEP ?= TMPDIR,BUILD_ENV
+export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE
 export NIX_CONF_DIR = $(PWD)/nix
 # We don't want to use /run/user/$UID because it runs out of space too easilly
 export TMPDIR = /tmp/tmp-status-react-$(BUILD_TAG)
@@ -109,7 +109,7 @@ clean: _fix-node-perms _tmpdir-rm ##@prepare Remove all output folders
 	git clean -dxf
 
 watchman-clean: export _NIX_ATTR := targets.watchman.shell
-watchman-clean: ##@prepare Delete repo directory from watchman 
+watchman-clean: ##@prepare Delete repo directory from watchman
 	watchman watch-del $${STATUS_REACT_HOME}
 
 disable-githooks: SHELL := /bin/sh
@@ -167,7 +167,7 @@ prod-build-android: jsbundle-android ##@legacy temporary legacy alias for jsbund
 jsbundle-android: SHELL := /bin/sh
 jsbundle-android: export TARGET_OS ?= android
 jsbundle-android: export BUILD_ENV ?= prod
-jsbundle-android: ##@jsbundle Compile JavaScript and Clojure into index.android.js 
+jsbundle-android: ##@jsbundle Compile JavaScript and Clojure into index.android.js
 	# Call nix-build to build the 'targets.mobile.jsbundle' attribute and copy the index.android.js file to the project root
 	@git clean -dxf ./index.$(TARGET_OS).js
 	nix/build.sh targets.mobile.jsbundle && \
@@ -178,7 +178,7 @@ prod-build-ios: jsbundle-ios ##@legacy temporary legacy alias for jsbundle-ios
 
 jsbundle-ios: export TARGET_OS ?= ios
 jsbundle-ios: export BUILD_ENV ?= prod
-jsbundle-ios: ##@jsbundle Compile JavaScript and Clojure into index.ios.js 
+jsbundle-ios: ##@jsbundle Compile JavaScript and Clojure into index.ios.js
 	@git clean -dxf -f ./index.$(TARGET_OS).js && \
 	lein jsbundle-ios && \
 	node prepare-modules.js
@@ -188,7 +188,7 @@ prod-build-desktop: jsbundle-desktop ##@legacy temporary legacy alias for jsbund
 
 jsbundle-desktop: export TARGET_OS ?= $(HOST_OS)
 jsbundle-desktop: export BUILD_ENV ?= prod
-jsbundle-desktop: ##@jsbundle Compile JavaScript and Clojure into index.desktop.js 
+jsbundle-desktop: ##@jsbundle Compile JavaScript and Clojure into index.desktop.js
 	git clean -qdxf -f ./index.desktop.js desktop/ && \
 	lein jsbundle-desktop && \
 	node prepare-modules.js
