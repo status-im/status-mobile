@@ -60,10 +60,8 @@
             [react/text {:ellipsize-mode  :tail
                          :number-of-lines 1
                          :style           styles/chat-last-message}
-             (if (= constants/content-type-command (:content-type last-message))
-               [chat-item/command-short-preview last-message]
-               (or (:text last-message-content)
-                   (i18n/label :no-messages-yet)))]))]
+             (or (:text last-message-content)
+                 (i18n/label :no-messages-yet))]))]
        [react/view {:style styles/timestamp}
         [chat-item/message-timestamp (:timestamp last-message)]
         (when (pos? unviewed-messages-count)

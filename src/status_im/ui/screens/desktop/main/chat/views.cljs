@@ -161,17 +161,6 @@
 
 (defmulti message (fn [_ _ {:keys [content-type]}] content-type))
 
-(defmethod message constants/content-type-command
-  [_ _ {:keys [from] :as message}]
-  [react/view
-   [react/view {:style {:flex-direction :row :align-items :center :margin-top 15}}
-    [member-photo from]
-    [message-author-name message]]
-   [react/view {:style styles/not-first-in-group-wrapper}
-    [photo-placeholder]
-    [react/view {:style styles/message-command-container}
-     [message/message-content-command message]]]])
-
 (defmethod message constants/content-type-sticker
   [_ _ {:keys [content] :as message}]
   [message-wrapper message

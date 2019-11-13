@@ -3,7 +3,6 @@
             [status-im.constants :as constants]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.messages :as data-store.messages]
-            [status-im.chat.commands.core :as commands]
             [status-im.transport.filters.core :as filters]
             [status-im.chat.models :as chat-model]
             [status-im.ethereum.json-rpc :as json-rpc]
@@ -30,8 +29,7 @@
     (fx/merge cofx
               {:db (assoc db :chats chats
                           :chats/loading? false)}
-              (filters/load-filters)
-              (commands/load-commands commands/register))))
+              (filters/load-filters))))
 
 (fx/defn initialize-chats
   "Initialize persisted chats on startup"

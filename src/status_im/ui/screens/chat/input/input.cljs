@@ -5,10 +5,7 @@
             [re-frame.core :as re-frame]
             [status-im.ui.screens.chat.styles.input.input :as style]
             [status-im.ui.screens.chat.styles.message.message :as message-style]
-            [status-im.ui.screens.chat.input.parameter-box :as parameter-box]
             [status-im.ui.screens.chat.input.send-button :as send-button]
-            [status-im.ui.screens.chat.input.suggestions :as suggestions]
-            [status-im.ui.screens.chat.input.validation-messages :as validation-messages]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.chat.utils :as chat-utils]
             [status-im.i18n :as i18n]
@@ -100,24 +97,6 @@
                                (set-layout-width-fn w))}
      (or input-text "")]))
 
-(defn- input-helper-view-on-update [{:keys [opacity-value placeholder]}]
-  (fn [_]
-    (let [to-value (if @placeholder 1 0)]
-      (animation/start
-       (animation/timing opacity-value {:toValue         to-value
-                                        :duration        300
-                                        :useNativeDriver true})))))
-
-(defview input-helper [{:keys [width]}]
-  (letsubs [placeholder   [:chats/input-placeholder]
-            opacity-value (animation/create-value 0)
-            on-update     (input-helper-view-on-update {:opacity-value opacity-value
-                                                        :placeholder   placeholder})]
-    {:component-did-update on-update}
-    [react/animated-view {:style (style/input-helper-view width opacity-value)}
-     [react/text {:style (style/input-helper-text width)}
-      placeholder]]))
-
 (defn get-options [type]
   (case (keyword type)
     :phone {:keyboard-type "phone-pad"}
@@ -126,33 +105,20 @@
     nil))
 
 (defview input-view [{:keys [single-line-input? set-text state-text]}]
-  (letsubs [command [:chats/selected-chat-command]]
-    (let [component              (reagent/current-component)
-          set-layout-width-fn    #(reagent/set-state component {:width %})
-          set-container-width-fn #(reagent/set-state component {:container-width %})
-          {:keys [width]} (reagent/state component)]
-      [react/view {:style style/input-root}
-       [react/animated-view {:style style/input-animated}
-        [invisible-input {:set-layout-width-fn set-layout-width-fn}]
-        (if platform/desktop?
-          [basic-text-input-desktop {:set-container-width-fn set-container-width-fn
-                                     :single-line-input?     single-line-input?
-                                     :set-text               set-text
-                                     :state-text             state-text}]
-          [basic-text-input {:set-container-width-fn set-container-width-fn
-                             :single-line-input?     single-line-input?}])
-        [input-helper {:width width}]]])))
-
-(defview commands-button []
-  (letsubs [commands      [:chats/all-available-commands]
-            reply-message [:chats/reply-message]]
-    (when (and (not reply-message) (seq commands))
-      [react/touchable-highlight
-       {:on-press            #(re-frame/dispatch [:chat.ui/set-command-prefix])
-        :accessibility-label :chat-commands-button}
-       [react/view
-        [vector-icons/icon :main-icons/commands {:container-style style/input-commands-icon
-                                                 :color           colors/gray}]]])))
+  (let [component              (reagent/current-component)
+        set-layout-width-fn    #(reagent/set-state component {:width %})
+        set-container-width-fn #(reagent/set-state component {:container-width %})
+        {:keys [width]} (reagent/state component)]
+    [react/view {:style style/input-root}
+     [react/animated-view {:style style/input-animated}
+      [invisible-input {:set-layout-width-fn set-layout-width-fn}]
+      (if platform/desktop?
+        [basic-text-input-desktop {:set-container-width-fn set-container-width-fn
+                                   :single-line-input?     single-line-input?
+                                   :set-text               set-text
+                                   :state-text             state-text}]
+        [basic-text-input {:set-container-width-fn set-container-width-fn
+                           :single-line-input?     single-line-input?}])]]))
 
 (defview reply-message [from alias message-text]
   (letsubs [{:keys [ens-name]} [:contacts/contact-name-by-identity from]
@@ -183,7 +149,7 @@
                                                 :height 19
                                                 :color           colors/white}]]]]])))
 
-(defview input-container []
+(defview container []
   (letsubs [margin               [:chats/input-margin]
             mainnet?             [:mainnet?]
             input-text           [:chats/current-chat-input-text]
@@ -221,10 +187,3 @@
                 (set-text ""))]
             [send-button/send-button-view {:input-text input-text}
              #(re-frame/dispatch [:chat.ui/send-current-message])]))]])))
-
-(defn container []
-  [react/view
-   [parameter-box/parameter-box-view]
-   [suggestions/suggestions-view]
-   [validation-messages/validation-messages-view]
-   [input-container]])

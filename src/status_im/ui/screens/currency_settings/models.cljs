@@ -3,6 +3,9 @@
             [status-im.utils.fx :as fx]
             [status-im.wallet.core :as wallet]))
 
+(defn get-currency [db]
+  (or (get-in db [:multiaccount :settings :wallet :currency]) :usd))
+
 (fx/defn set-currency
   [{:keys [db] :as cofx} currency]
   (let [settings     (get-in db [:multiaccount :settings])

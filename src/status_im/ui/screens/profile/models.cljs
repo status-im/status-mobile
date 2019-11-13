@@ -5,7 +5,6 @@
             [status-im.ui.screens.profile.navigation]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.chat.models :as chat-models]
-            [status-im.chat.commands.input :as commands-input]
             [status-im.utils.image-processing :as image-processing]
             [taoensso.timbre :as log]
             [status-im.utils.fx :as fx]))
@@ -23,10 +22,8 @@
    "photo"))
 
 (defn send-transaction [chat-id {:keys [db] :as cofx}]
-  (let [send-command (get-in db [:id->command ["send" #{:personal-chats}]])]
-    (fx/merge cofx
-              (chat-models/start-chat chat-id {:navigation-reset? true})
-              (commands-input/select-chat-input-command send-command nil))))
+  ;;TODO start send transaction command flow
+  (chat-models/start-chat chat-id {:navigation-reset? true}))
 
 (defn- valid-name? [name]
   (spec/valid? :profile/name name))

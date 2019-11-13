@@ -63,7 +63,10 @@
           [chat-icon/custom-icon-view-list (:name token) color 32])]}]
      [separator]]))
 
-(defn header [{:keys [in-progress?] :as sign} {:keys [contact amount token approve?] :as tx} display-symbol fee fee-display-symbol]
+(defn header
+  [{:keys [in-progress?] :as sign}
+   {:keys [contact amount token approve?] :as tx}
+   display-symbol fee fee-display-symbol]
   [react/view styles/header
    (when sign
      [react/touchable-highlight (when-not in-progress? {:on-press #(re-frame/dispatch [:set :signing/sign nil])})

@@ -2,9 +2,6 @@
   (:require [doo.runner :refer-macros [doo-tests]]
             [status-im.test.browser.core]
             [status-im.test.browser.permissions]
-            [status-im.test.chat.commands.core]
-            [status-im.test.chat.commands.impl.transactions]
-            [status-im.test.chat.commands.input]
             [status-im.test.chat.db]
             [status-im.test.chat.models.input]
             [status-im.test.chat.models.message]
@@ -78,9 +75,6 @@
 (doo-tests
  'status-im.test.browser.core
  'status-im.test.browser.permissions
- 'status-im.test.chat.commands.core
- 'status-im.test.chat.commands.impl.transactions
- 'status-im.test.chat.commands.input
  'status-im.test.chat.db
  'status-im.test.chat.models
  'status-im.test.chat.models.input

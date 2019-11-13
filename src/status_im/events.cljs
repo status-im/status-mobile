@@ -13,8 +13,6 @@
             [status-im.bootnodes.core :as bootnodes]
             [status-im.browser.core :as browser]
             [status-im.browser.permissions :as browser.permissions]
-            [status-im.chat.commands.core :as commands]
-            [status-im.chat.commands.input :as commands.input]
             [status-im.chat.db :as chat.db]
             [status-im.chat.models :as chat]
             [status-im.chat.models.input :as chat.input]
@@ -66,7 +64,6 @@
             [status-im.wallet.custom-tokens.core :as custom-tokens]
             [status-im.wallet.db :as wallet.db]
             [taoensso.timbre :as log]
-            [status-im.chat.commands.sending :as commands.sending]
             [status-im.utils.money :as money]
             status-im.popover.core))
 
@@ -573,16 +570,6 @@
    (chat.input/set-chat-input-text cofx text)))
 
 (handlers/register-handler-fx
- :chat.ui/select-chat-input-command
- (fn [cofx [_ command params previous-command-message]]
-   (chat.input/select-chat-input-command cofx command params previous-command-message)))
-
-(handlers/register-handler-fx
- :chat.ui/set-command-prefix
- (fn [cofx _]
-   (chat.input/set-command-prefix cofx)))
-
-(handlers/register-handler-fx
  :chat.ui/cancel-message-reply
  (fn [cofx _]
    (chat.input/cancel-message-reply cofx)))
@@ -596,20 +583,6 @@
  :chat.ui/send-current-message
  (fn [cofx _]
    (chat.input/send-current-message cofx)))
-
-(handlers/register-handler-fx
- :chat.ui/set-command-parameter
- (fn [{{:keys [chats current-chat-id chat-ui-props id->command access-scope->command-id]} :db :as cofx} [_ value]]
-   (let [current-chat   (get chats current-chat-id)
-         selection      (get-in chat-ui-props [current-chat-id :selection])
-         commands       (commands/chat-commands id->command access-scope->command-id current-chat)
-         {:keys [current-param-position params]} (commands.input/selected-chat-command
-                                                  (:input-text current-chat) selection commands)
-         last-param-idx (dec (count params))]
-     (commands.input/set-command-parameter cofx
-                                           (= current-param-position last-param-idx)
-                                           current-param-position
-                                           value))))
 
 (defn- mark-messages-seen
   [{:keys [db] :as cofx}]
@@ -1589,7 +1562,8 @@
      (fx/merge cofx
                (navigation/navigate-back)
                (chat/start-chat public-key nil)
-               (commands.sending/send public-key
-                                      request-command
-                                      {:asset  (name symbol)
-                                       :amount (str (money/internal->formatted amount symbol decimals))})))))
+               ;; TODO send
+               #_(commands.sending/send public-key
+                                        request-command
+                                        {:asset  (name symbol)
+                                         :amount (str (money/internal->formatted amount symbol decimals))})))))

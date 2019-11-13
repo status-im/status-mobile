@@ -65,16 +65,16 @@
         :title               :t/recover-with-keycard
         :disabled?           (not config/hardwallet-enabled?)
         :accessibility-label :recover-with-keycard-button
-        :icon                [react/view {:border-width     1
-                                          :border-radius    20
-                                          :border-color     colors/blue-light
-                                          :background-color colors/blue-light
-                                          :justify-content  :center
-                                          :align-items      :center
-                                          :width            40
-                                          :height           40}
-                              [react/image {:source (resources/get-image :keycard-logo-blue)
-                                            :style  {:width 24 :height 24}}]]
+        :icon [react/view {:border-width     1
+                           :border-radius    20
+                           :border-color     colors/blue-light
+                           :background-color colors/blue-light
+                           :justify-content  :center
+                           :align-items      :center
+                           :width            40
+                           :height           40}
+               [react/image {:source (resources/get-image :keycard-logo-blue)
+                             :style  {:width 24 :height 24}}]]
         :on-press            #(re-frame/dispatch [::hardwallet/recover-with-keycard-pressed])}])]])
 
 (defn bottom-sheet []

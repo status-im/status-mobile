@@ -1,8 +1,6 @@
 (ns status-im.chat.db
   (:require [clojure.set :as clojure.set]
             [clojure.string :as string]
-            [status-im.chat.commands.core :as commands]
-            [status-im.chat.commands.input :as commands.input]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.contact.db :as contact.db]
             [status-im.group-chats.db :as group-chats.db]
@@ -179,11 +177,3 @@
 
 (def map->sorted-seq
   (comp (partial map second) (partial sort-by first)))
-
-(defn available-commands
-  [commands {:keys [input-text]}]
-  (->> commands
-       map->sorted-seq
-       (filter (fn [{:keys [type]}]
-                 (when (commands.input/starts-as-command? input-text)
-                   (string/includes? (commands/command-name type) input-text))))))

@@ -1,8 +1,6 @@
 (ns status-im.ui.screens.home.views.inner-item
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.chat.commands.core :as commands]
-            [status-im.chat.commands.receiving :as commands-receiving]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
@@ -16,12 +14,6 @@
             [status-im.utils.datetime :as time])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defview command-short-preview [message]
-  (letsubs [id->command [:chats/id->command]
-            {:keys [contacts]} [:chats/current-chat]]
-    (when-let [command (commands-receiving/lookup-command-by-ref message id->command)]
-      (commands/generate-short-preview command (commands/add-chat-contacts contacts message)))))
-
 (defn message-content-text [{:keys [content content-type] :as message}]
   [react/view styles/last-message-container
    (cond
@@ -30,9 +22,6 @@
      [react/text {:style               styles/last-message-text
                   :accessibility-label :no-messages-text}
       (i18n/label :t/no-messages)]
-
-     (= constants/content-type-command content-type)
-     [command-short-preview message]
 
      (= constants/content-type-sticker content-type)
      [react/image {:style  {:margin 1 :width 20 :height 20}

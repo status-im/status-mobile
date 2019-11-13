@@ -152,26 +152,8 @@
                          :height      min-input-height
                          :left        left}})
 
-(def input-commands-icon
-  {:margin        14
-   :height        24
-   :width         24})
-
 (def input-clear-container
   {:width       24
    :height      24
    :margin-top  7
    :align-items :center})
-
-(def commands-root
-  {:flex-direction :row
-   :align-items    :center})
-
-(def command-list-icon-container
-  {:width   32
-   :height  32
-   :padding 4})
-
-(def commands-list-icon
-  {:height 24
-   :width  24})

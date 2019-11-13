@@ -27,16 +27,6 @@
    :margin-right 16
    :width        60})
 
-(def message-command-container
-  {:align-self         :flex-start
-   :border-radius      8
-   :border-color       colors/black-transparent
-   :border-width       1
-   :padding-horizontal 12
-   :padding-vertical   10
-   :align-items        :flex-start
-   :width              230})
-
 (def author
   {:font-weight "500"
    :font-size   14})

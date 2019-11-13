@@ -1,7 +1,6 @@
 (ns status-im.chat.models.message
   (:require [re-frame.core :as re-frame]
             [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.chat.commands.receiving :as commands-receiving]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.chat.db :as chat.db]
             [status-im.chat.models :as chat-model]
@@ -120,20 +119,16 @@
 
 (fx/defn add-received-message
   [{:keys [db] :as cofx}
-   {:keys [from message-id chat-id content metadata] :as raw-message}]
+   {:keys [from message-id chat-id content metadata] :as message}]
   (let [{:keys [current-chat-id view-id]} db
         current-public-key             (multiaccounts.model/current-public-key cofx)
         current-chat?                  (and (or (= :chat view-id)
                                                 (= :chat-modal view-id))
-                                            (= current-chat-id chat-id))
-        message  (-> raw-message
-                     (commands-receiving/enhance-receive-parameters cofx))]
-    (fx/merge cofx
-              (add-message {:batch?       true
-                            :message      message
-                            :metadata     metadata
-                            :current-chat? current-chat?})
-              (commands-receiving/receive message))))
+                                            (= current-chat-id chat-id))]
+    (add-message cofx {:batch?       true
+                       :message      message
+                       :metadata     metadata
+                       :current-chat? current-chat?})))
 
 (defn- add-to-chat?
   [{:keys [db]} {:keys [chat-id clock-value message-id from]}]

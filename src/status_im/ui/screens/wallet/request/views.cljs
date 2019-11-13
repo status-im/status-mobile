@@ -33,13 +33,4 @@
       [button/button
        {:on-press            #(re-frame/dispatch [:wallet.accounts/share address])
         :label               :t/share-address
-        :accessibility-label :share-address-button}]]
-     ;;TODO temporary hide for v1
-     #_[button/button
-        {:on-press
-         #(do
-            (re-frame/dispatch [:hide-popover])
-            (re-frame/dispatch [:navigate-to :wallet-send-transaction-request address]))
-         :accessibility-label :sent-transaction-request-button
-         :label               :t/send-transaction-request
-         :type                :secondary}]]))
+        :accessibility-label :share-address-button}]]]))

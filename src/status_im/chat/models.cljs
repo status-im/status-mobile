@@ -233,8 +233,7 @@
   "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
   [{:keys [db] :as cofx} chat-id]
   (fx/merge cofx
-            {:db (-> (assoc db :current-chat-id chat-id)
-                     (set-chat-ui-props {:validation-messages nil}))}
+            {:db (assoc db :current-chat-id chat-id)}
             ;; Group chat don't need this to load as all the loading of topics
             ;; happens on membership changes
             (when-not (group-chat? cofx chat-id)

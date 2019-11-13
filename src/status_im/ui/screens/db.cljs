@@ -193,7 +193,6 @@
                                 :contacts/click-action
                                 :contacts/click-params
                                 :pairing/installations
-                                :commands/stored-command
                                 :group/selected-contacts
                                 :multiaccounts/multiaccounts
                                 :multiaccounts/recover
@@ -303,8 +302,6 @@
                                    :chat/last-clock-value
                                    :chat/loaded-chats
                                    :chat/bot-db
-                                   :chat/id->command
-                                   :chat/access-scope->command-id
                                    :ens/registration
                                    :wallet/wallet
                                    :prices/prices

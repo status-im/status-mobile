@@ -10,8 +10,6 @@
 (def content-type-text "text/plain")
 (def content-type-sticker "sticker")
 (def content-type-status "status")
-(def content-type-command "command")
-(def content-type-command-request "command-request")
 (def content-type-emoji "emoji")
 
 (def desktop-content-types

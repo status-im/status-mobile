@@ -4,8 +4,6 @@
             [taoensso.timbre :as log]
             [re-frame.core :as re-frame]
             [status-im.browser.core :as browser]
-            [status-im.chat.commands.core :as commands]
-            [status-im.chat.commands.input :as commands.input]
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.db :as chat.db]
             [status-im.chat.models :as chat.models]
@@ -119,9 +117,7 @@
 ;;chat
 (reg-root-key-sub ::cooldown-enabled? :chat/cooldown-enabled?)
 (reg-root-key-sub ::chats :chats)
-(reg-root-key-sub ::access-scope->command-id :access-scope->command-id)
 (reg-root-key-sub ::chat-ui-props :chat-ui-props)
-(reg-root-key-sub :chats/id->command :id->command)
 (reg-root-key-sub :chats/current-chat-id :current-chat-id)
 (reg-root-key-sub :public-group-topic :public-group-topic)
 (reg-root-key-sub :chats/loading? :chats/loading?)
@@ -524,31 +520,6 @@
    (get-in collectibles [(keyword symbol) (js/parseInt token)])))
 
 (re-frame/reg-sub
- ::show-suggestions-view?
- :<- [:chats/current-chat-ui-prop :show-suggestions?]
- :<- [:chats/current-chat-input-text]
- :<- [:chats/all-available-commands]
- (fn [[show-suggestions? input-text commands]]
-   (and (or show-suggestions?
-            (commands.input/starts-as-command? (string/trim (or input-text ""))))
-        (seq commands))))
-
-(re-frame/reg-sub
- ::show-suggestions?
- :<- [::show-suggestions-view?]
- :<- [:chats/selected-chat-command]
- (fn [[show-suggestions-box? selected-command]]
-   (and show-suggestions-box? (not selected-command))))
-
-(re-frame/reg-sub
- ::get-commands-for-chat
- :<- [:chats/id->command]
- :<- [::access-scope->command-id]
- :<- [:chats/current-raw-chat]
- (fn [[id->command access-scope->command-id chat]]
-   (commands/chat-commands id->command access-scope->command-id chat)))
-
-(re-frame/reg-sub
  :chats/chat
  :<- [:chats/active-chats]
  (fn [chats [_ chat-id]]
@@ -592,12 +563,6 @@
  :<- [:chats/current-chat-ui-props]
  (fn [ui-props [_ prop]]
    (get ui-props prop)))
-
-(re-frame/reg-sub
- :chats/validation-messages
- :<- [:chats/current-chat-ui-props]
- (fn [ui-props]
-   (some-> ui-props :validation-messages)))
 
 (re-frame/reg-sub
  :chats/input-margin
@@ -816,55 +781,6 @@
      (if (empty? messages)
        :empty
        :messages))))
-
-(re-frame/reg-sub
- :chats/available-commands
- :<- [::get-commands-for-chat]
- :<- [:chats/current-chat]
- (fn [[commands chat]]
-   (chat.db/available-commands commands chat)))
-
-(re-frame/reg-sub
- :chats/all-available-commands
- :<- [::get-commands-for-chat]
- (fn [commands]
-   (chat.db/map->sorted-seq commands)))
-
-(re-frame/reg-sub
- :chats/selected-chat-command
- :<- [:chats/current-chat-input-text]
- :<- [:chats/current-chat-ui-prop :selection]
- :<- [::get-commands-for-chat]
- (fn [[input-text selection commands]]
-   (commands.input/selected-chat-command input-text selection commands)))
-
-(re-frame/reg-sub
- :chats/input-placeholder
- :<- [:chats/current-chat]
- :<- [:chats/selected-chat-command]
- (fn [[{:keys [input-text]} {:keys [params current-param-position cursor-in-the-end?]}]]
-   (when (and cursor-in-the-end? (string/ends-with? (or input-text "") chat.constants/spacing-char))
-     (get-in params [current-param-position :placeholder]))))
-
-(re-frame/reg-sub
- :chats/parameter-box
- :<- [:chats/current-chat]
- :<- [:chats/selected-chat-command]
- (fn [[_ {:keys [current-param-position params]}]]
-   (when (and params current-param-position)
-     (get-in params [current-param-position :suggestions]))))
-
-(re-frame/reg-sub
- :chats/show-parameter-box?
- :<- [:chats/parameter-box]
- :<- [::show-suggestions?]
- :<- [:chats/validation-messages]
- :<- [:chats/selected-chat-command]
- (fn [[chat-parameter-box show-suggestions? validation-messages {:keys [command-completion]}]]
-   (and chat-parameter-box
-        (not validation-messages)
-        (not show-suggestions?)
-        (not (= :complete command-completion)))))
 
 (re-frame/reg-sub
  :chats/unviewed-messages-count

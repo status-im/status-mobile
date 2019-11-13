@@ -53,14 +53,13 @@
 
 (spec/def :message.content/text (spec/and string? (complement s/blank?)))
 (spec/def :message.content/response-to string?)
-(spec/def :message.content/command-path (spec/tuple string? (spec/coll-of (spec/or :scope keyword? :chat-id string?) :kind set? :min-count 1)))
 (spec/def :message.content/uri (spec/and string? (complement s/blank?)))
 (spec/def :message.content/pack (spec/and string? (complement s/blank?)))
 (spec/def :message.content/params (spec/map-of keyword? any?))
 
-(spec/def ::content-type #{constants/content-type-text constants/content-type-command
+(spec/def ::content-type #{constants/content-type-text
                            constants/content-type-emoji
-                           constants/content-type-command-request constants/content-type-sticker})
+                           constants/content-type-sticker})
 (spec/def ::message-type #{:group-user-message :public-group-user-message :user-message})
 (spec/def ::clock-value (spec/and pos-int?
                                   utils.clocks/safe-timestamp?))
@@ -91,19 +90,10 @@
 (spec/def :message/message-common (spec/keys :req-un [::content-type ::message-type ::clock-value ::timestamp]))
 (spec/def :message.text/content (spec/keys :req-un [:message.content/text]
                                            :req-opt [:message.content/response-to]))
-(spec/def :message.command/content (spec/keys :req-un [:message.content/command-path :message.content/params]))
 
 (spec/def :message.sticker/content (spec/keys :req-un [:message.content/hash]))
 
 (defmulti content-type :content-type)
-
-(defmethod content-type constants/content-type-command [_]
-  (spec/merge :message/message-common
-              (spec/keys :req-un [:message.command/content])))
-
-(defmethod content-type constants/content-type-command-request [_]
-  (spec/merge :message/message-common
-              (spec/keys :req-un [:message.command/content])))
 
 (defmethod content-type constants/content-type-sticker [_]
   (spec/merge :message/message-common

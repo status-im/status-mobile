@@ -152,10 +152,7 @@
                                 4)}
          (if (= content-type constants/content-type-emoji)
            {:flex-direction :row}
-           {:background-color (if outgoing colors/blue colors/blue-light)})
-         (when (= content-type constants/content-type-command)
-           {:padding-top    12
-            :padding-bottom 10})))
+           {:background-color (if outgoing colors/blue colors/blue-light)})))
 
 (def play-image
   {:width  33

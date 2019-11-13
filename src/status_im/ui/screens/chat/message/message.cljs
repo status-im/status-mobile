@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.chat.message.message
   (:require [re-frame.core :as re-frame]
-            [status-im.chat.commands.receiving :as commands-receiving]
             [status-im.constants :as constants]
             [status-im.utils.http :as http]
             [status-im.i18n :as i18n]
@@ -19,41 +18,35 @@
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defview message-content-command
-  [command-message]
-  (letsubs [id->command [:chats/id->command]
-            {:keys [contacts]} [:chats/current-chat]]
-    (let [{:keys [type] :as command} (commands-receiving/lookup-command-by-ref command-message id->command)]
-      ;;TODO temporary disable commands for v1
-      [react/text (str "Unhandled command: " (-> command-message :content :command-path first))])))
-
-(defview message-timestamp
-  [t justify-timestamp? outgoing command? content content-type]
-  (when-not command?
-    [react/text {:style (style/message-timestamp-text
-                         justify-timestamp?
-                         outgoing
-                         (:rtl? content)
-                         (= content-type constants/content-type-emoji))} t]))
+(defn message-timestamp
+  [t justify-timestamp? outgoing content content-type]
+  [react/text {:style (style/message-timestamp-text
+                       justify-timestamp?
+                       outgoing
+                       (:rtl? content)
+                       (= content-type constants/content-type-emoji))} t])
 
 (defn message-view
-  [{:keys [timestamp-str outgoing content content-type] :as message} message-content {:keys [justify-timestamp?]}]
+  [{:keys [timestamp-str outgoing content content-type] :as message}
+   message-content {:keys [justify-timestamp?]}]
   [react/view (style/message-view message)
    message-content
-   [message-timestamp timestamp-str justify-timestamp? outgoing (or (get content :command-path)
-                                                                    (get content :command-ref))
+   [message-timestamp timestamp-str justify-timestamp? outgoing
     content content-type]])
 
-(defview quoted-message [message-id {:keys [from text]} outgoing current-public-key]
-  (letsubs [{:keys [quote
-                    ens-name
-                    alias]}
+(defview quoted-message
+  [message-id {:keys [from text]} outgoing current-public-key]
+  (letsubs [{:keys [quote ens-name alias]}
             [:messages/quote-info message-id]]
     (when (or quote text)
       [react/view {:style (style/quoted-message-container outgoing)}
        [react/view {:style style/quoted-message-author-container}
-        [vector-icons/tiny-icon :tiny-icons/tiny-reply {:color (if outgoing colors/white-transparent colors/gray)}]
-        (chat.utils/format-reply-author (or from (:from quote)) alias ens-name current-public-key (partial style/quoted-message-author outgoing))]
+        [vector-icons/tiny-icon :tiny-icons/tiny-reply
+         {:color (if outgoing colors/white-transparent colors/gray)}]
+        (chat.utils/format-reply-author
+         (or from (:from quote))
+         alias ens-name current-public-key
+         (partial style/quoted-message-author outgoing))]
 
        [react/text {:style           (style/quoted-message-text outgoing)
                     :number-of-lines 5}
@@ -183,17 +176,6 @@
   [wrapper message]
   [wrapper message [message-content-status message]])
 
-(defmethod message-content constants/content-type-command
-  [wrapper message]
-  [wrapper message
-   [message-view message [message-content-command message]]])
-
-;; Todo remove after couple of releases
-(defmethod message-content constants/content-type-command-request
-  [wrapper message]
-  [wrapper message
-   [message-view message [message-content-command message]]])
-
 (defmethod message-content constants/content-type-emoji
   [wrapper message]
   [wrapper message [emoji-message message]])
@@ -234,15 +216,6 @@
     [react/view style/not-sent-icon
      [vector-icons/icon :main-icons/warning {:color colors/red}]]]])
 
-(defview command-status [{{:keys [network]} :params}]
-  (letsubs [current-network [:chain-name]]
-    (when (and network (not= current-network network))
-      [react/view style/not-sent-view
-       [react/text {:style style/not-sent-text}
-        (i18n/label :network-mismatch)]
-       [react/view style/not-sent-icon
-        [vector-icons/icon :main-icons/warning {:color colors/red}]]])))
-
 (defn message-delivery-status
   [{:keys [chat-id message-id outgoing-status
            first-outgoing?
@@ -255,9 +228,7 @@
                   [react/view style/delivery-view
                    [react/text {:style style/delivery-text}
                     (i18n/label :t/status-sent)]])
-      (when (and (not outgoing-status)
-                 (:command content))
-        [command-status content]))))
+      nil)))
 
 (defview message-author-name [from alias]
   (letsubs [{:keys [ens-name]} [:contacts/contact-name-by-identity from]]
