@@ -152,6 +152,9 @@
 (defn pairing []
   (loading :t/keycard-onboarding-pairing-header))
 
+(defn processing []
+  (loading :t/processing))
+
 (defn welcome []
   [react/view {:flex            1
                :justify-content :space-between

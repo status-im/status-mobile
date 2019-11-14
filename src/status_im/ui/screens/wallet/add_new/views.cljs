@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.add-new.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
+            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.ui.components.colors :as colors]
@@ -84,6 +85,20 @@
                       :label     "Next"
                       :on-press  #(re-frame/dispatch [:wallet.accounts/add-watch-account])
                       :disabled? (not (ethereum/address? address))}}]]))
+
+(defview pin []
+  (letsubs [pin [:hardwallet/pin]
+            status [:hardwallet/pin-status]
+            error-label [:hardwallet/pin-error-label]]
+    [react/keyboard-avoiding-view {:style {:flex 1}}
+     [topbar/topbar]
+     [pin.views/pin-view
+      {:pin               pin
+       :status            status
+       :title-label       :t/current-pin
+       :description-label :t/current-pin-description
+       :error-label       error-label
+       :step              :export-key}]]))
 
 (defview password []
   (letsubs [{:keys [error]} [:add-account]

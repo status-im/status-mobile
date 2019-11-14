@@ -140,6 +140,7 @@ var TopLevel = {
   "exec" : function () {},
   "execute" : function () {},
   "exists" : function () {},
+  "exportKeyWithPath" : function () {},
   "extPost" : function () {},
   "extractGroupMembershipSignatures" : function () {},
   "identicon": function() {},

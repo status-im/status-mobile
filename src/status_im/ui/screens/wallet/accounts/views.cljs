@@ -156,16 +156,13 @@
        [icons/icon :main-icons/send {:color :white}]]]]))
 
 (views/defview accounts []
-  (views/letsubs [{:keys [keycard-pairing]} [:multiaccount]
-                  accounts [:multiaccount/accounts]]
+  (views/letsubs [accounts [:multiaccount/accounts]]
     [react/scroll-view {:horizontal true}
      [react/view {:flex-direction :row :padding-top 11 :padding-bottom 12}
       (for [account accounts]
         ^{:key account}
         [account-card account])
-      ;; TODO: enable keycard support for adding new accounts
-      (when-not keycard-pairing
-        [add-card])]]))
+      [add-card]]]))
 
 (defn accounts-overview []
   [react/view {:flex 1}

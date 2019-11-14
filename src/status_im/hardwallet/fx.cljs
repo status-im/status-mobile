@@ -79,6 +79,10 @@
  card/remove-key-with-unpair)
 
 (re-frame/reg-fx
+ :hardwallet/export-key
+ card/export-key)
+
+(re-frame/reg-fx
  :hardwallet/unpair-and-delete
  card/unpair-and-delete)
 

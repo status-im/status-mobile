@@ -101,6 +101,7 @@
    :keycard-nfc-on                                   keycard/nfc-on
    :keycard-connection-lost                          keycard/connection-lost
    :keycard-connection-lost-setup                    keycard/connection-lost-setup
+   :keycard-processing                               keycard/processing
    :keycard-recovery-intro                           keycard.recovery/intro
    :keycard-recovery-start                           keycard.recovery/start
    :keycard-recovery-pair                            keycard.recovery/pair
@@ -181,6 +182,7 @@
    :add-new-account                                  add-account/add-account
    :add-watch-account                                add-account/add-watch-account
    :add-new-account-password                         add-account/password
+   :add-new-account-pin                              add-account/pin
    :account-added                                    account-settings/account-added
    :account-settings                                 account-settings/account-settings})
 

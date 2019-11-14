@@ -41,9 +41,9 @@
                 (fn [result]
                   (let [{:keys [publicKey address]}
                         (get (types/json->clj result) (keyword path))]
-                    (re-frame/dispatch [::account-generated
-                                        {:name       (str "Account " path-num)
-                                         :address    address
+                    (re-frame/dispatch [:wallet.accounts/account-generated
+                                        {:name (str "Account " path-num)
+                                         :address address
                                          :public-key publicKey
                                          :path       (str constants/path-wallet-root "/" path-num)
                                          :color      (rand-nth colors/account-colors)}])))))))))))))
@@ -79,7 +79,7 @@
               {:error (i18n/label :t/add-account-incorrect-password)})})
 
 (fx/defn account-generated
-  {:events [::account-generated]}
+  {:events [:wallet.accounts/account-generated]}
   [{:keys [db] :as cofx} account]
   (fx/merge cofx
             {:db (update db :add-account assoc :account account :step :generated)}
@@ -138,9 +138,15 @@
 (fx/defn start-adding-new-account
   {:events [:wallet.accounts/start-adding-new-account]}
   [{:keys [db] :as cofx} {:keys [type] :as add-account}]
-  (let [screen (case type :generate :add-new-account-password :watch :add-watch-account)]
+  (let [{:keys [keycard-pairing]} (:multiaccount db)
+        screen (case type
+                 :generate (if keycard-pairing :add-new-account-pin
+                               :add-new-account-password)
+                 :watch :add-watch-account)]
     (fx/merge cofx
-              {:db (assoc db :add-account add-account)}
+              {:db (cond-> (assoc db :add-account add-account)
+                     keycard-pairing
+                     (assoc-in [:hardwallet :pin :enter-step] :export-key))}
               (navigation/navigate-to-cofx screen nil))))
 
 (fx/defn enter-phrase-next-pressed

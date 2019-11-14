@@ -10,6 +10,7 @@
                    :add-new-account                   :default
                    :add-watch-account                 :default
                    :add-new-account-password          :default
+                   :add-new-account-pin               :default
                    :about-app                         :default
                    :help-center                       :default
                    :advanced-settings                 :default

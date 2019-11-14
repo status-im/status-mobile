@@ -173,6 +173,14 @@
       (then #(re-frame/dispatch [:hardwallet.callback/on-remove-key-success %]))
       (catch #(re-frame/dispatch [:hardwallet.callback/on-remove-key-error (error-object->map %)]))))
 
+(defn export-key
+  [{:keys [pin pairing path]}]
+  (log/debug "[keycard] export-key pairing:" pairing "pin:" pin "path:" path)
+  (.. keycard
+      (exportKeyWithPath pairing pin path)
+      (then #(re-frame/dispatch [:hardwallet.callback/on-export-key-success %]))
+      (catch #(re-frame/dispatch [:hardwallet.callback/on-export-key-error (error-object->map %)]))))
+
 (defn unpair-and-delete
   [{:keys [pin pairing]}]
   (log/debug "[keycard] unpair-and-delete")
