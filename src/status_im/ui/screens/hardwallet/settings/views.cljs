@@ -121,9 +121,11 @@
              [action-row {:icon     :main-icons/add
                           :label    :t/change-pin
                           :on-press #(re-frame/dispatch [:keycard-settings.ui/change-pin-pressed])}]
-             [action-row {:icon     :main-icons/close
-                          :label    :t/unpair-card
-                          :on-press #(re-frame/dispatch [:keycard-settings.ui/unpair-card-pressed])}]])])]
+             ;; TODO(rasom): uncomment this when unpairing will be enabled
+             ;; https://github.com/status-im/status-react/issues/9227
+             #_[action-row {:icon     :main-icons/close
+                            :label    :t/unpair-card
+                            :on-press #(re-frame/dispatch [:keycard-settings.ui/unpair-card-pressed])}]])])]
       ; NOTE: Reset card is hidden until multiaccount removal will be implemented
       #_(when pairing
           [react/view {:margin-bottom 35
