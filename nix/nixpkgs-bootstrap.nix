@@ -1,6 +1,8 @@
 # This file controls the pinned version of nixpkgs we use for our Nix environment
-{ config ? { android_sdk.accept_license = true; },
-  pkgs ? (import ((import <nixpkgs> { }).fetchFromGitHub {
+let
+  inherit (import <nixpkgs> { }) fetchFromGitHub;
+  defaultConfig = { android_sdk.accept_license = true; };
+  nixpkgsSrc = {
     name = "nixpkgs-source";
     owner = "status-im";
     repo = "nixpkgs";
@@ -9,8 +11,15 @@
     # To get the compressed Nix sha256, use:
     # nix-prefetch-url --unpack https://github.com/${ORG}/nixpkgs/archive/${REV}.tar.gz
     # The last line will be the hash.
-  })) { inherit config; } }:
+  };
 
-  {
-    inherit pkgs config;
-  }
+in {
+  config ? { },
+  config' ? defaultConfig // config,
+  pkgs ? (import (fetchFromGitHub nixpkgsSrc)) { config = config'; }
+}:
+
+{
+  inherit pkgs;
+  config = config';
+}

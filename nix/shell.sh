@@ -52,7 +52,7 @@ if [[ "$TARGET_OS" =~ (linux|windows|darwin|macos) ]]; then
 fi
 
 if [ -n "${STATUS_GO_SRC_OVERRIDE}" ]; then
-  shellArgs+=("--arg config {android_sdk.accept_license=true;status_go.src_override=\"${STATUS_GO_SRC_OVERRIDE}\";}")
+  shellArgs+=("--arg config {status_go.src_override=\"${STATUS_GO_SRC_OVERRIDE}\";}")
 fi
 
 # if _NIX_ATTR is specified we shouldn't use shell.nix, the path will be different

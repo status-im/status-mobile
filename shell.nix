@@ -1,4 +1,4 @@
-{ config ? { android_sdk.accept_license = true; },
+{ config ? { },
   nixpkgs-bootstrap ? import ./nix/nixpkgs-bootstrap.nix { inherit config; },
   pkgs ? nixpkgs-bootstrap.pkgs,
   target-os ? "none" }:
