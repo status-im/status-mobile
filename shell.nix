@@ -1,4 +1,5 @@
-{ nixpkgs-bootstrap ? import ./nix/nixpkgs-bootstrap.nix { },
+{ config ? { android_sdk.accept_license = true; },
+  nixpkgs-bootstrap ? import ./nix/nixpkgs-bootstrap.nix { inherit config; },
   pkgs ? nixpkgs-bootstrap.pkgs,
   target-os ? "none" }:
 
@@ -32,7 +33,7 @@ in mkShell {
   # none means we shouldn't include project specific deps
   buildInputs = if target-os == "none" then
     coreInputs
-  else 
+  else
     with pkgs; [
       unzip
       ncurses
@@ -46,7 +47,7 @@ in mkShell {
 
   inputsFrom = if target-os == "none" then
     []
-  else 
+  else
     [ project.shell ];
 
   shellHook = project.shell.shellHook;

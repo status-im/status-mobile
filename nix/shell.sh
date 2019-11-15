@@ -9,7 +9,7 @@
 #     This allows for drilling down into a specific attribute in Nix expressions.
 # - _NIX_PURE: This variable allows for making the shell pure with the use of --pure.
 #     Take note that this makes Nix tools like `nix-build` unavailable in the shell.
-# - _NIX_KEEP: This variable allows specifying which env vars to keep for Nix pure shell. 
+# - _NIX_KEEP: This variable allows specifying which env vars to keep for Nix pure shell.
 
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -49,6 +49,10 @@ if [[ "$TARGET_OS" =~ (linux|windows|darwin|macos) ]]; then
   # so we need to call it from an impure shell.
   # Hopefully we'll be able to fix this later on with something like yarn2nix
   nix-shell ${shellArgs[@]} --run "scripts/prepare-for-desktop-platform.sh" || exit
+fi
+
+if [ -n "${STATUS_GO_SRC_OVERRIDE}" ]; then
+  shellArgs+=("--arg config {android_sdk.accept_license=true;status_go.src_override=\"${STATUS_GO_SRC_OVERRIDE}\";}")
 fi
 
 # if _NIX_ATTR is specified we shouldn't use shell.nix, the path will be different
