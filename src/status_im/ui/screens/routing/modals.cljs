@@ -11,4 +11,6 @@
    :welcome
    :keycard-welcome
    :new-chat
-   :new-public-chat])
+   :new-public-chat
+   :contact-code
+   :qr-scanner])

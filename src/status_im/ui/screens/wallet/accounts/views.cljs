@@ -22,7 +22,7 @@
                   portfolio-value [:account-portfolio-value address]]
     [react/touchable-highlight {:on-press      #(re-frame/dispatch [:navigate-to :wallet-account account])
                                 :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                    {:content        (fn [] [sheets/send-receive address])
+                                                                    {:content        (fn [] [sheets/send-receive account])
                                                                      :content-height 130}])}
      [react/view {:style (styles/card color)}
       [react/view {:flex-direction :row :align-items :center :justify-content :space-between}
@@ -61,16 +61,18 @@
    (when active?
      [react/view {:width 24 :height 3 :border-radius 4 :background-color colors/blue}])])
 
-(defn render-asset [currency]
+(defn render-asset [currency & [on-press]]
   (fn [{:keys [icon decimals amount color value] :as token}]
     [list-item/list-item
-     {:title-prefix         (wallet.utils/format-amount amount decimals)
-      :title                (wallet.utils/display-symbol token)
-      :title-color-override colors/gray
-      :subtitle             (str (if value value 0) " " currency)
-      :icon                 (if icon
-                              [list/item-image icon]
-                              [chat-icon/custom-icon-view-list (:name token) color])}]))
+     (cond-> {:title-prefix         (wallet.utils/format-amount amount decimals)
+              :title                (wallet.utils/display-symbol token)
+              :title-color-override colors/gray
+              :subtitle             (str (if value value 0) " " currency)
+              :icon                 (if icon
+                                      [list/item-image icon]
+                                      [chat-icon/custom-icon-view-list (:name token) color])}
+       on-press
+       (assoc :on-press #(on-press token)))]))
 
 (views/defview assets []
   (views/letsubs [{:keys [tokens nfts]} [:wallet/all-visible-assets-with-values]

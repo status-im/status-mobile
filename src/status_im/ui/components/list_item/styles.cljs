@@ -196,5 +196,4 @@
 
 (def error
   {:bottom-value 0
-   :color        colors/red-light
    :font-size    12})

@@ -6,7 +6,6 @@
             status-im.transport.db
             status-im.multiaccounts.db
             status-im.contact.db
-            status-im.ui.screens.qr-scanner.db
             status-im.ui.screens.group.db
             status-im.chat.specs
             status-im.ui.screens.profile.db
@@ -183,6 +182,8 @@
 
 (spec/def :popover/popover (spec/nilable map?))
 
+(spec/def :wallet/prepare-transaction (spec/nilable map?))
+
 (spec/def ::db (spec/keys :opt [:contacts/contacts
                                 :contacts/new-identity
                                 :contacts/new-identity-error
@@ -248,6 +249,7 @@
                                 :bottom-sheet/view
                                 :bottom-sheet/options
                                 :wallet/custom-token-screen
+                                :wallet/prepare-transaction
                                 :signing/in-progress?
                                 :signing/queue
                                 :signing/sign
@@ -282,9 +284,6 @@
                                    :navigation/navigation-stack
                                    :navigation/prev-tab-view-id
                                    :navigation/prev-view-id
-                                   :qr/qr-codes
-                                   :qr/qr-modal
-                                   :qr/current-qr-context
                                    :chat/chats
                                    :chat/current-chat-id
                                    :chat/chat-id

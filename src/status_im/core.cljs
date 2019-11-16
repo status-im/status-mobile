@@ -12,10 +12,9 @@
 
 (if js/goog.DEBUG
   (.ignoreWarnings (.-YellowBox js-dependencies/react-native)
-                   #js
-                    ["re-frame: overwriting"
-                     "Warning: componentWillMount is deprecated and will be removed in the next major version. Use componentDidMount instead. As a temporary workaround, you can rename to UNSAFE_componentWillMount."
-                     "Warning: componentWillUpdate is deprecated and will be removed in the next major version. Use componentDidUpdate instead. As a temporary workaround, you can rename to UNSAFE_componentWillUpdate."])
+                   #js ["re-frame: overwriting"
+                        "Warning: componentWillMount is deprecated and will be removed in the next major version. Use componentDidMount instead. As a temporary workaround, you can rename to UNSAFE_componentWillMount."
+                        "Warning: componentWillUpdate is deprecated and will be removed in the next major version. Use componentDidUpdate instead. As a temporary workaround, you can rename to UNSAFE_componentWillUpdate."])
   (aset js/console "disableYellowBox" true))
 
 (defn init [app-root]

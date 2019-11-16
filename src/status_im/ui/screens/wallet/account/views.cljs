@@ -39,7 +39,7 @@
      [icons/icon icon {:color colors/white}]
      [react/text {:style {:margin-left 8 :color colors/white}} label]]]])
 
-(views/defview account-card [{:keys [address color]}]
+(views/defview account-card [{:keys [address color] :as account}]
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:account-portfolio-value address]
                   window-width    [:dimensions/window-width]]
@@ -62,9 +62,15 @@
                                       :accessibility-label :share-wallet-address-icon}]]]
      [react/view {:height                     52 :background-color colors/black-transparent-20
                   :border-bottom-right-radius 8 :border-bottom-left-radius 8 :flex-direction :row}
-      [button (i18n/label :t/wallet-send) :main-icons/send #(re-frame/dispatch [:navigate-to :wallet-send-transaction address])]
+      [button
+       (i18n/label :t/wallet-send)
+       :main-icons/send
+       #(re-frame/dispatch [:wallet/prepare-transaction-from-wallet account])]
       [react/view {:style styles/divider}]
-      [button (i18n/label :t/receive) :main-icons/receive  #(re-frame/dispatch [:show-popover {:view :share-account :address address}])]]]))
+      [button
+       (i18n/label :t/receive)
+       :main-icons/receive
+       #(re-frame/dispatch [:show-popover {:view :share-account :address address}])]]]))
 
 (defn render-collectible [address]
   (fn [{:keys [name icon amount] :as collectible}]

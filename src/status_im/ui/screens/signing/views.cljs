@@ -4,8 +4,6 @@
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.animation :as anim]
-            [reagent.core :as reagent]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.button :as button]
             [status-im.ui.components.copyable-text :as copyable-text]
@@ -22,27 +20,8 @@
             [status-im.ui.screens.signing.styles :as styles]
             [status-im.react-native.resources :as resources]
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
+            [status-im.ui.components.bottom-panel.views :as bottom-panel]
             [status-im.utils.utils :as utils]))
-
-(defn hide-panel-anim
-  [bottom-anim-value alpha-value window-height]
-  (anim/start
-   (anim/parallel
-    [(anim/spring bottom-anim-value {:toValue         (- window-height)
-                                     :useNativeDriver true})
-     (anim/timing alpha-value {:toValue         0
-                               :duration        500
-                               :useNativeDriver true})])))
-
-(defn show-panel-anim
-  [bottom-anim-value alpha-value]
-  (anim/start
-   (anim/parallel
-    [(anim/spring bottom-anim-value {:toValue         40
-                                     :useNativeDriver true})
-     (anim/timing alpha-value {:toValue         0.4
-                               :duration        500
-                               :useNativeDriver true})])))
 
 (defn separator []
   [react/view {:height 1 :background-color colors/gray-lighter}])
@@ -50,27 +29,22 @@
 (defn displayed-name [contact]
   (if (or (:preferred-name contact) (:name contact))
     (multiaccounts/displayed-name contact)
-    (:address contact)))
+    (utils/get-shortened-checksum-address (:address contact))))
 
 (defn contact-item [title contact]
   [list-item/list-item
-   {:title-prefix       title
+   {:title       title
     :title-prefix-width 45
     :type               :small
-    :title
-    [copyable-text/copyable-text-view
-     {:copied-text (displayed-name contact)}
-     [react/text
-      {:ellipsize-mode  :middle
-       :number-of-lines 1
-       :style           {:color       colors/gray
-                         :font-family "monospace"
-                         ;; since this goes in list-item title
-                         ;; which has design constraints
-                         ;; specified in figma spec,
-                         ;; better to do this
-                         :line-height 22}}
-      (displayed-name contact)]]}])
+    :accessories
+    [[copyable-text/copyable-text-view
+      {:copied-text (displayed-name contact)}
+      [react/text
+       {:ellipsize-mode  :middle
+        :number-of-lines 1
+        :style           {:font-family "monospace"
+                          :line-height 22}}
+       (displayed-name contact)]]]}])
 
 (defn token-item [{:keys [icon color] :as token} display-symbol]
   (when token
@@ -107,9 +81,10 @@
        [{:style {:color colors/black}} (displayed-name contact)]]
       [react/text {:style {:margin-top 6 :color colors/gray}}
        (str fee " " fee-display-symbol " " (string/lower-case (i18n/label :t/network-fee)))])]
-   [react/touchable-highlight (when-not in-progress? {:on-press #(re-frame/dispatch [:signing.ui/cancel-is-pressed])})
-    [react/view {:padding 6}
-     [react/text {:style {:color colors/blue}} (i18n/label :t/cancel)]]]])
+   [button/button (merge {:type :secondary
+                          :container-style {:padding-horizontal 24}
+                          :label (i18n/label :t/cancel)}
+                         (when-not in-progress? {:on-press #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}))]])
 
 (views/defview keycard-pin-view []
   (views/letsubs [pin [:hardwallet/pin]
@@ -268,6 +243,13 @@
                       {:content        (fn [] [sheets/fee-bottom-sheet fee-display-symbol])
                        :content-height 270}])}]))
 
+(views/defview network-item []
+  (views/letsubs [network-name [:network-name]]
+    [list-item/list-item
+     {:title       :t/network
+      :type        :small
+      :accessories [[react/text network-name]]}]))
+
 (views/defview sheet [{:keys [from contact amount token approve?] :as tx}]
   (views/letsubs [fee                   [:signing/fee]
                   sign                  [:signing/sign]
@@ -275,7 +257,8 @@
                   {:keys [amount-error gas-error]} [:signing/amount-errors (:address from)]
                   keycard-multiaccount? [:keycard-multiaccount?]
                   prices                [:prices]
-                  wallet-currency       [:wallet/currency]]
+                  wallet-currency       [:wallet/currency]
+                  mainnet?              [:mainnet?]]
     (let [display-symbol     (wallet.utils/display-symbol token)
           fee-display-symbol (wallet.utils/display-symbol (tokens/native-currency chain))]
       [react/view styles/sheet
@@ -285,6 +268,10 @@
          [react/view {:padding-top 20}
           [password-view sign]]
          [react/view
+          (when-not mainnet?
+            [react/view
+             [network-item]
+             [separator]])
           [contact-item (i18n/label :t/from) from]
           [separator]
           [contact-item (i18n/label :t/to) contact]
@@ -300,47 +287,11 @@
                              :disabled? (or amount-error gas-error)
                              :label     :t/sign-with-password}])]])])))
 
-(defn signing-view [tx window-height]
-  (let [bottom-anim-value (anim/create-value window-height)
-        alpha-value       (anim/create-value 0)
-        clear-timeout     (atom nil)
-        current-tx        (reagent/atom nil)
-        update?           (reagent/atom nil)]
-    (reagent/create-class
-     {:component-will-update (fn [_ [_ tx _]]
-                               (when @clear-timeout (js/clearTimeout @clear-timeout))
-                               (cond
-                                 @update?
-                                 (do (reset! update? false)
-                                     (show-panel-anim bottom-anim-value alpha-value))
-
-                                 (and @current-tx tx)
-                                 (do (reset! update? true)
-                                     (js/setTimeout #(reset! current-tx tx) 600)
-                                     (hide-panel-anim bottom-anim-value alpha-value (- window-height)))
-
-                                 tx
-                                 (do (reset! current-tx tx)
-                                     (show-panel-anim bottom-anim-value alpha-value))
-
-                                 :else
-                                 (do (reset! clear-timeout (js/setTimeout #(reset! current-tx nil) 500))
-                                     (hide-panel-anim bottom-anim-value alpha-value (- window-height)))))
-      :reagent-render        (fn []
-                               (when @current-tx
-                                 [react/keyboard-avoiding-view {:style {:position :absolute :top 0 :bottom 0 :left 0 :right 0}}
-                                  [react/view {:flex 1}
-                                   [react/animated-view {:flex 1 :background-color :black :opacity alpha-value}]
-                                   [react/animated-view {:style {:position  :absolute
-                                                                 :transform [{:translateY bottom-anim-value}]
-                                                                 :bottom 0 :left 0 :right 0}}
-                                    [react/view {:flex 1}
-                                     (if (:message @current-tx)
-                                       [message-sheet]
-                                       [sheet @current-tx])]]]]))})))
-
 (views/defview signing []
-  (views/letsubs [tx [:signing/tx]
-                  {window-height :height} [:dimensions/window]]
-    ;;we use select-keys here because we don't want to update view if other keys in map is changed
-    [signing-view (when tx (select-keys tx [:from :contact :amount :token :approve? :message])) window-height]))
+  (views/letsubs [tx [:signing/tx]]
+    [bottom-panel/animated-bottom-panel
+     ;;we use select-keys here because we don't want to update view if other keys in map are changed
+     (when tx (select-keys tx [:from :contact :amount :token :approve? :message]))
+     #(if (:message %)
+        [message-sheet]
+        [sheet %])]))

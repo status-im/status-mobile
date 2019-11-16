@@ -302,7 +302,13 @@
 
 (defn create-main-screen-view [current-view]
   (fn [props & children]
-    (apply vector (adapt-class (object/get js-dependencies/safe-area-context "SafeAreaView")) props children)))
+    (apply
+     vector
+     (adapt-class (object/get js-dependencies/safe-area-context "SafeAreaView"))
+     (cond-> props
+       (= current-view :qr-scanner)
+       (assoc :background-color :black))
+     children)))
 
 (defn main-screen-modal-view [current-view & components]
   ;; NOTE on Android we use Modal component and it manages statusbar area by itself

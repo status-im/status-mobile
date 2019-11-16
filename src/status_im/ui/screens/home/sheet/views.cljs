@@ -40,8 +40,8 @@
       :accessibility-label :scan-qr-code-button
       :icon                :main-icons/qr
       :on-press            #(hide-sheet-and-dispatch [:qr-scanner.ui/scan-qr-code-pressed
-                                                      {:toolbar-title (i18n/label :t/scan-qr)}
-                                                      :handle-qr-code])}]
+                                                      {:title (i18n/label :t/scan-qr)
+                                                       :handler :handle-qr-code}])}]
     [list-item/list-item
      {:theme               :action
       :title               :t/invite-friends

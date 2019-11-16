@@ -49,11 +49,14 @@
 (def green "#44d058") ;; icon for successful inboud transaction
 (def green-transparent-10 (alpha green 0.1)) ;; icon for successful inboud transaction
 
+(def purple "#887af9")
+(def orange "#FE8F59")
+
 (def chat-colors ["#fa6565"
                   "#7cda00"
-                  "#887af9"
+                  purple
                   "#51d0f0"
-                  "#fe8f59"
+                  orange
                   "#d37ef4"])
 
 (def account-colors ["#9B832F"
@@ -61,7 +64,7 @@
                      "#1D806F"
                      "#FA6565"
                      "#7CDA00"
-                     "#887AF9"
+                     purple
                      "#8B3131"])
 
 (def text black)

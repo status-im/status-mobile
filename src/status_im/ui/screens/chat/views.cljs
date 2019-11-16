@@ -26,7 +26,8 @@
             [status-im.ui.screens.profile.tribute-to-talk.views
              :as
              tribute-to-talk.views]
-            [status-im.utils.platform :as platform])
+            [status-im.utils.platform :as platform]
+            [status-im.ui.screens.chat.extensions.views :as extensions])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn add-contact-bar
@@ -287,7 +288,7 @@
         :on-press (fn [_]
                     (re-frame/dispatch
                      [:chat.ui/set-chat-ui-props {:messages-focused? true
-                                                  :show-stickers?    false}])
+                                                  :input-bottom-sheet nil}])
                     (react/dismiss-keyboard!))}
        [react/view (style/intro-header-container height intro-status no-messages)
         ;; Icon section
@@ -396,7 +397,7 @@
   (letsubs [{:keys [public? chat-id chat-name show-input? group-chat contact] :as current-chat}
             [:chats/current-chat]
             current-chat-id       [:chats/current-chat-id]
-            show-stickers?        [:chats/current-chat-ui-prop :show-stickers?]
+            input-bottom-sheet    [:chats/current-chat-ui-prop :input-bottom-sheet]
             two-pane-ui-enabled?  [:two-pane-ui-enabled?]
             anim-translate-y      (animation/create-value
                                    (if two-pane-ui-enabled? 0 connectivity/neg-connectivity-bar-height))]
@@ -432,8 +433,12 @@
          [messages-view current-chat modal?])]]
      (when show-input?
        [input/container])
-     (when show-stickers?
-       [stickers/stickers-view])]))
+     (case input-bottom-sheet
+       :stickers
+       [stickers/stickers-view]
+       :extensions
+       [extensions/extensions-view]
+       nil)]))
 
 (defview chat []
   [chat-root false])

@@ -20,6 +20,7 @@
             [status-im.ui.screens.popover.views :as popover]
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im.utils.dimensions :as dimensions]
+            [status-im.ui.screens.wallet.send.views :as wallet]
             status-im.ui.screens.wallet.collectibles.etheremon.views
             status-im.ui.screens.wallet.collectibles.cryptostrikers.views
             status-im.ui.screens.wallet.collectibles.cryptokitties.views
@@ -167,6 +168,7 @@
                ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
               :persistNavigationState (when js/goog.DEBUG persist-state)
               :loadNavigationState    (when js/goog.DEBUG load-state)}]
+            [wallet/prepare-transaction]
             [signing/signing]
             [bottom-sheet]
             [popover/popover]]]))})))

@@ -20,7 +20,9 @@
             [status-im.wallet.db :as wallet.db]
             [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.signing.core :as signing]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im.contact.db :as contact.db]
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
 
 (re-frame/reg-fx
  :wallet/get-balance
@@ -342,17 +344,9 @@
     (multiaccounts.update/update-settings cofx new-settings {})))
 
 (fx/defn set-and-validate-amount
-  {:events [:wallet.send/set-and-validate-amount]}
+  {:events [:wallet.send/set-amount-text]}
   [{:keys [db]} amount]
-  (let [chain (ethereum/chain-keyword db)
-        all-tokens (:wallet/all-tokens db)
-        symbol (get-in db [:wallet :send-transaction :symbol])
-        {:keys [decimals]} (tokens/asset-for all-tokens chain symbol)
-        {:keys [value error]} (wallet.db/parse-amount amount decimals)]
-    {:db (-> db
-             (assoc-in [:wallet :send-transaction :amount] (money/formatted->internal value symbol decimals))
-             (assoc-in [:wallet :send-transaction :amount-text] amount)
-             (assoc-in [:wallet :send-transaction :amount-error] error))}))
+  {:db (assoc-in db [:wallet/prepare-transaction :amount-text] amount)})
 
 (fx/defn set-symbol
   {:events [:wallet.send/set-symbol]}
@@ -365,21 +359,27 @@
 
 (fx/defn sign-transaction-button-clicked
   {:events  [:wallet.ui/sign-transaction-button-clicked]}
-  [{:keys [db] :as cofx}]
-  (let [{:keys [to symbol amount from]} (get-in cofx [:db :wallet :send-transaction])
-        {:keys [symbol address]} (tokens/asset-for (:wallet/all-tokens db)
-                                                   (ethereum/chain-keyword db)
-                                                   symbol)
+  [{:keys [db] :as cofx} {:keys [to amount from token from-chat? gas gasPrice]}]
+  (let [{:keys [symbol address]} token
         amount-hex (str "0x" (abi-spec/number-to-hex amount))
-        to-norm (ethereum/normalized-address to)]
-    (signing/sign cofx {:tx-obj    (if (= symbol :ETH)
-                                     {:to   to-norm
-                                      :from from
-                                      :value amount-hex}
-                                     {:to   (ethereum/normalized-address address)
-                                      :from from
-                                      :data (abi-spec/encode "transfer(address,uint256)" [to-norm amount-hex])})
-                        :on-result [:navigate-back]})))
+        to-norm (ethereum/normalized-address (if (string? to) to (:address to)))
+        from-address (:address from)]
+    (fx/merge cofx
+              {:db (dissoc db :wallet/prepare-transaction)}
+              #(if from-chat?
+                 nil;;TODO from chat, send request message or if ens name sign tx and send tx message
+                 (signing/sign % {:tx-obj (if (= symbol :ETH)
+                                            {:to    to-norm
+                                             :from  from-address
+                                             :value amount-hex}
+                                            {:to       (ethereum/normalized-address address)
+                                             :from     from-address
+                                             :data     (abi-spec/encode
+                                                        "transfer(address,uint256)"
+                                                        [to-norm amount-hex])
+                                             ;;Note: data from qr (eip681)
+                                             :gas      gas
+                                             :gasPrice gasPrice})})))))
 
 (fx/defn set-and-validate-amount-request
   {:events [:wallet.request/set-and-validate-amount]}
@@ -390,8 +390,60 @@
              (assoc-in [:wallet :request-transaction :amount-text] amount)
              (assoc-in [:wallet :request-transaction :amount-error] error))}))
 
+;;TODO request isn't implemented
 (fx/defn set-symbol-request
   {:events [:wallet.request/set-symbol]}
   [{:keys [db]} symbol]
-  {:db (-> db
-           (assoc-in [:wallet :request-transaction :symbol] symbol))})
+  {:db (assoc-in db [:wallet :request-transaction :symbol] symbol)})
+
+(fx/defn prepare-transaction-from-chat
+  {:events [:wallet/prepare-transaction-from-chat]}
+  [{:keys [db]}]
+  (let [identity (:current-chat-id db)]
+    {:db (assoc db :wallet/prepare-transaction
+                {:from (ethereum/get-default-account (get-in db [:multiaccount :accounts]))
+                 :to   (or (get-in db [:contacts/contacts identity])
+                           (-> identity
+                               contact.db/public-key->new-contact
+                               contact.db/enrich-contact))
+                 :symbol :ETH
+                 :from-chat? true})}))
+
+(fx/defn prepare-transaction-from-wallet
+  {:events [:wallet/prepare-transaction-from-wallet]}
+  [{:keys [db]} account]
+  {:db (assoc db :wallet/prepare-transaction
+              {:from       account
+               :to         nil
+               :symbol     :ETH
+               :from-chat? false})})
+
+(fx/defn qr-scanner-allowed
+  {:events [:wallet.send/qr-scanner-allowed]}
+  [{:keys [db] :as cofx} options]
+  (fx/merge cofx
+            {:db (assoc-in db [:wallet/prepare-transaction :modal-opened?] true)}
+            (bottom-sheet/hide-bottom-sheet)
+            (navigation/navigate-to-cofx :qr-scanner options)))
+
+(fx/defn wallet-send-set-symbol
+  {:events [:wallet.send/set-symbol]}
+  [{:keys [db] :as cofx} symbol]
+  (fx/merge cofx
+            {:db (assoc-in db [:wallet/prepare-transaction :symbol] symbol)}
+            (bottom-sheet/hide-bottom-sheet)))
+
+(fx/defn wallet-send-set-field
+  {:events [:wallet.send/set-field]}
+  [{:keys [db] :as cofx} field value]
+  (fx/merge cofx
+            {:db (assoc-in db [:wallet/prepare-transaction field] value)}
+            (bottom-sheet/hide-bottom-sheet)))
+
+(fx/defn navigate-to-recipient-code
+  {:events [:wallet.send/navigate-to-recipient-code]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (assoc-in db [:wallet/prepare-transaction :modal-opened?] true)}
+            (bottom-sheet/hide-bottom-sheet)
+            (navigation/navigate-to-cofx :contact-code nil)))

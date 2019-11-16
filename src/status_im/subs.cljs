@@ -166,6 +166,7 @@
 (reg-root-key-sub :prices-loading? :prices-loading?)
 (reg-root-key-sub :wallet.transactions :wallet.transactions)
 (reg-root-key-sub :wallet/custom-token-screen :wallet/custom-token-screen)
+(reg-root-key-sub :wallet/prepare-transaction :wallet/prepare-transaction)
 
 ;;ethereum
 (reg-root-key-sub :ethereum/current-block :ethereum/current-block)
@@ -283,6 +284,12 @@
  :<- [:current-network]
  (fn [network]
    (ethereum/network->chain-name network)))
+
+(re-frame/reg-sub
+ :network-name
+ :<- [:current-network]
+ (fn [network]
+   (ethereum/network->network-name network)))
 
 (re-frame/reg-sub
  :chain-id
@@ -489,6 +496,12 @@
    (some #(when (= (:address %) (:address acc)) %) (:accounts macc))))
 
 (re-frame/reg-sub
+ :account-by-address
+ :<- [:multiaccount]
+ (fn [macc [_ address]]
+   (some #(when (= (:address %) address) %) (:accounts macc))))
+
+(re-frame/reg-sub
  :multiple-multiaccounts?
  :<- [:multiaccounts/multiaccounts]
  (fn [multiaccounts]
@@ -539,7 +552,7 @@
  :<- [:chats/current-chat-ui-prop :input-height]
  :<- [:chats/current-chat-ui-prop :input-focused?]
  :<- [:keyboard-height]
- :<- [:chats/current-chat-ui-prop :show-stickers?]
+ :<- [:chats/current-chat-ui-prop :input-bottom-sheet]
  (fn [[home-content-layout-height input-height input-focused? kheight stickers?]]
    (- (+ home-content-layout-height tabs.styles/tabs-height)
       (if platform/iphone-x?
@@ -2070,21 +2083,27 @@
      (get-sufficient-gas-error balance nil nil gas gasPrice))))
 
 (re-frame/reg-sub
- :wallet.send/transaction
- :<- [::send-transaction]
+ :wallet.send/prepare-transaction-with-balance
+ :<- [:wallet/prepare-transaction]
  :<- [:wallet]
  :<- [:offline?]
  :<- [:wallet/all-tokens]
  :<- [:ethereum/chain-keyword]
- (fn [[{:keys [amount symbol from to amount-error] :as transaction}
+ (fn [[{:keys [symbol from to amount-text] :as transaction}
        wallet offline? all-tokens chain]]
-   (let [balance (get-in wallet [:accounts from :balance])
-         token (tokens/asset-for all-tokens chain symbol)]
-     (assoc (merge transaction
-                   (when amount
-                     (get-sufficient-funds-error balance symbol amount)))
+   (let [balance (get-in wallet [:accounts (:address from) :balance])
+         {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)
+         {:keys [value error]} (wallet.db/parse-amount amount-text decimals)
+         amount  (money/formatted->internal value symbol decimals)
+         {:keys [amount-error] :as transaction-new}
+         (merge transaction
+                {:amount-error error}
+                (when amount
+                  (get-sufficient-funds-error balance symbol amount)))]
+     (assoc transaction-new
+            :amount amount
             :balance balance
-            :token token
+            :token (assoc token :amount (get balance (:symbol token)))
             :sign-enabled? (and to
                                 (nil? amount-error)
                                 (not (nil? amount))

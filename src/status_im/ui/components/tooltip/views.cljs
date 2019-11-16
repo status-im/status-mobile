@@ -18,9 +18,9 @@
       (when label
         [react/view (styles/tooltip-text-container color)
          [react/text {:style (styles/tooltip-text font-size)} label]])
-      [vector-icons/icon :icons/tooltip-triangle (assoc
-                                                  styles/tooltip-triangle
-                                                  :color color)]]]))
+      #_[vector-icons/icon :icons/tooltip-triangle (assoc
+                                                    styles/tooltip-triangle
+                                                    :color color)]]]))
 
 (views/defview bottom-tooltip-info [label on-close]
   (views/letsubs [bottom-anim-value (animation/create-value 150)

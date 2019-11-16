@@ -31,7 +31,7 @@
 (def tabs-list-data
   (->>
    [{:nav-stack           :chat-stack
-     :content             {:title (i18n/label :t/chats)
+     :content             {:title (i18n/label :t/chat)
                            :icon  :main-icons/message}
      :count-subscription  :chats/unread-messages-number
      :accessibility-label :home-tab-button}

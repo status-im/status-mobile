@@ -26,9 +26,8 @@
    :padding-horizontal 16
    :height             52})
 
-(styles/defn input [w]
+(styles/def input
   {:padding-horizontal 14
-   :width              w
    :desktop            {:height 30
                         :width  "100%"}
    :android            {:padding 0}})

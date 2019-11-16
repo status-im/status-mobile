@@ -14,6 +14,6 @@
    :android (create-status-bar-style {:translucent?     true
                                       :bar-style        "dark-content"})})
 
-(styles/def status-bar-transparent
+(styles/def status-bar-black
   {:ios     (create-status-bar-style {:background-color colors/transparent})
-   :android (create-status-bar-style {:translucent?     true})})
+   :android (create-status-bar-style {:background-color colors/black})})

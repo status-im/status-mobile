@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.routing.screens
   (:require [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.screens.multiaccounts.login.views :as login]
-            [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]
             [status-im.ui.screens.multiaccounts.views :as multiaccounts]
             [status-im.ui.screens.add-new.new-chat.views :as new-chat]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
@@ -59,8 +58,6 @@
             [status-im.ui.screens.stickers.views :as stickers]
             [status-im.ui.screens.wallet.collectibles.views :as collectibles]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [status-im.ui.screens.wallet.request.views :as request]
-            [status-im.ui.screens.wallet.send.views :as send]
             [status-im.ui.screens.wallet.settings.views :as wallet-settings]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
@@ -124,7 +121,7 @@
    :profile                                          profile.contact/profile
    :new                                              add-new/add-new
    :new-chat                                         [:modal new-chat/new-chat]
-   :qr-scanner                                       qr-scanner/qr-scanner
+   :qr-scanner                                       [:modal qr-scanner/qr-scanner]
    :new-group                                        group/new-group
    :add-participants-toggle-list                     group/add-participants-toggle-list
    :contact-toggle-list                              group/contact-toggle-list
@@ -140,14 +137,7 @@
    :wallet                                           wallet.accounts/accounts-overview
    :wallet-account                                   wallet.account/account
    :collectibles-list                                collectibles/collectibles-list
-   :contact-code                                     wallet.components/contact-code
-   :wallet-send-transaction                          send/send-transaction
-   :recent-recipients                                wallet.components/recent-recipients
-   :select-account                                   wallet.components/accounts
-   :recipient-qr-code                                wallet.components/recipient-qr-code
-   :wallet-send-assets                               wallet.components/send-assets
-   :wallet-send-transaction-request                  request/send-transaction-request
-   :wallet-request-assets                            wallet.components/request-assets
+   :contact-code                                     [:modal wallet.components/contact-code]
    :wallet-transaction-details                       wallet-transactions/transaction-details
    :wallet-settings-hook                             wallet-settings/settings-hook
    :wallet-settings-assets                           wallet-settings/manage-assets

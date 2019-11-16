@@ -7,7 +7,6 @@
              :select-chat
              :profile
              :new
-             :qr-scanner
              :take-picture
              :new-group
              :add-participants-toggle-list

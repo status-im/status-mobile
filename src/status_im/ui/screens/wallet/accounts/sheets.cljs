@@ -35,20 +35,22 @@
          :accessibility-label :wallet-backup-recovery-title
          :on-press            #(hide-sheet-and-dispatch [:navigate-to :backup-seed])}])]))
 
-(defn send-receive [address]
+(defn send-receive [account]
   [react/view
    [list-item/list-item
     {:theme               :action
      :title               :t/wallet-send
      :icon                :main-icons/send
      :accessibility-label :send-transaction-button
-     :on-press            #(hide-sheet-and-dispatch [:navigate-to :wallet-send-transaction address])}]
+     :on-press            #(hide-sheet-and-dispatch [:wallet/prepare-transaction-from-wallet account])}]
    [list-item/list-item
     {:theme               :action
      :title               :t/receive
      :icon                :main-icons/receive
      :accessibility-label :receive-transaction-button
-     :on-press            #(hide-sheet-and-dispatch [:show-popover {:view :share-account :address address}])}]])
+     :on-press            #(hide-sheet-and-dispatch
+                            [:show-popover {:view    :share-account
+                                            :address (:address account)}])}]])
 
 (defn add-account []
   [react/view

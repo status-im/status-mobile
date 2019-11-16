@@ -45,8 +45,8 @@
        :accessibility-label :scan-qr-code-button
        :icon                :main-icons/qr
        :on-press            #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
-                                                 {:toolbar-title (i18n/label :t/scan-qr)}
-                                                 :handle-qr-code])}])])
+                                                 {:title (i18n/label :t/scan-qr)
+                                                  :handler :handle-qr-code}])}])])
 
 (defn add-new []
   [react/view {:flex 1 :background-color :white}

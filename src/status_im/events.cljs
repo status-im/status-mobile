@@ -222,7 +222,7 @@
 
 (handlers/register-handler-fx
  :mailserver.callback/qr-code-scanned
- (fn [cofx [_ _ url]]
+ (fn [cofx [_ url _]]
    (mailserver/set-url-from-qr cofx url)))
 
 (handlers/register-handler-fx
@@ -327,7 +327,7 @@
 
 (handlers/register-handler-fx
  :bootnodes.callback/qr-code-scanned
- (fn [cofx [_ _ url]]
+ (fn [cofx [_ url _]]
    (bootnodes/set-bootnodes-from-qr cofx url)))
 
 (handlers/register-handler-fx
@@ -386,30 +386,32 @@
 
 (handlers/register-handler-fx
  :browser.bridge.callback/qr-code-scanned
- (fn [cofx [_ _ data qr-code-data]]
+ (fn [cofx [_ data qr-code-data]]
    (browser/handle-scanned-qr-code cofx data (:data qr-code-data))))
 
 (handlers/register-handler-fx
  :browser.bridge.callback/qr-code-canceled
- (fn [cofx [_ _ qr-code-data]]
+ (fn [cofx [_ qr-code-data _]]
    (browser/handle-canceled-qr-code cofx (:data qr-code-data))))
 
 ;; qr-scanner module
 
 (handlers/register-handler-fx
  :qr-scanner.ui/scan-qr-code-pressed
- (fn [cofx [_ identifier handler & [opts]]]
-   (qr-scanner/scan-qr-code cofx identifier (merge {:handler handler} opts))))
+ (fn [cofx [_ opts]]
+   (qr-scanner/scan-qr-code cofx opts)))
 
 (handlers/register-handler-fx
  :qr-scanner.callback/scan-qr-code-success
- (fn [cofx [_ context data]]
-   (qr-scanner/set-qr-code cofx context data)))
+ (fn [cofx [_ opts data]]
+   (qr-scanner/set-qr-code cofx opts data)))
 
 (handlers/register-handler-fx
  :qr-scanner.callback/scan-qr-code-cancel
- (fn [cofx [_ context]]
-   (qr-scanner/set-qr-code-cancel cofx context)))
+ (fn [cofx [_ opts]]
+   (fx/merge cofx
+             (qr-scanner/set-qr-code-cancel opts)
+             (navigation/navigate-back))))
 
 ;; privacy-policy module
 
@@ -1268,7 +1270,7 @@
 (handlers/register-handler-fx
  :contact/qr-code-scanned
  [(re-frame/inject-cofx :random-id-generator)]
- (fn [{:keys [db] :as cofx}  [_ _ contact-identity]]
+ (fn [{:keys [db] :as cofx}  [_ contact-identity _]]
    (let [current-multiaccount (:multiaccount db)
          fx              {:db (assoc db :contacts/new-identity contact-identity)}
          validation-result (new-chat.db/validate-pub-key db contact-identity)]
@@ -1573,6 +1575,11 @@
  :dismiss-keyboard
  (fn []
    (react/dismiss-keyboard!)))
+
+(handlers/register-handler-fx
+ :dismiss-keyboard
+ (fn [_]
+   {:dismiss-keyboard nil}))
 
 (handlers/register-handler-fx
  :wallet-send-request

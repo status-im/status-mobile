@@ -35,7 +35,6 @@
                      :mobile-network-settings
                      :backup-seed
                      :tribute-to-talk
-                     :qr-scanner
                      :my-profile-ext-settings]
 
               config/hardwallet-enabled?

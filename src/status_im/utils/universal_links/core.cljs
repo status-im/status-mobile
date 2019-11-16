@@ -81,8 +81,8 @@
       (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key) :profile nil))))
 
 (fx/defn handle-eip681 [cofx url]
-  {:dispatch-n [[:navigate-to :wallet-send-transaction]
-                [:wallet/fill-request-from-url url :deep-link]]})
+  {:dispatch-n [[:navigate-to :wallet]
+                [:wallet/fill-request-from-url url]]})
 
 (defn handle-not-found [full-url]
   (log/info "universal-links: no handler for " full-url))

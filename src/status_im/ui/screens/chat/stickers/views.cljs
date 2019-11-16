@@ -19,14 +19,14 @@
 (def icon-container  (+ (* icon-horizontal-margin 2) icon-size))
 (def scroll-x (reagent/atom 0))
 
-(defn button [show-stickers?]
+(defn button [stickers-showing?]
   [react/touchable-highlight
    {:on-press (fn [_]
-                (re-frame/dispatch [:chat.ui/set-chat-ui-props {:show-stickers? (not show-stickers?)}])
+                (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet (when-not stickers-showing? :stickers)}])
                 (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
     :accessibility-label :show-stickers-icon}
    [vector-icons/icon :main-icons/stickers {:container-style {:margin 14 :margin-right 6}
-                                            :color           (if show-stickers? colors/blue colors/gray)}]])
+                                            :color           (if stickers-showing? colors/blue colors/gray)}]])
 
 (defn- no-stickers-yet-panel []
   [react/view {:style {:flex 1 :align-items :center :justify-content :center}}

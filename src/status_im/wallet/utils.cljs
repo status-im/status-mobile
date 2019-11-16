@@ -9,9 +9,9 @@
 
 ;;NOTE(goranjovic) - we are internally using symbol ETH for native currencies of any ethereum network
 ;; some sidechains have different names for this native currency, which we handle with `symbol-display` override.
-(defn display-symbol [{:keys [symbol-display symbol] :as token}]
-  (when token
-    (clojure.core/name (or symbol-display symbol))))
+(defn display-symbol [{:keys [symbol-display symbol]}]
+  (when-let [name (or symbol-display symbol)]
+    (clojure.core/name name)))
 
 ;;NOTE(goranjovic) - in addition to custom symbol display, some sidechain native currencies are listed under a different
 ;; ticker on exchange networks. We handle that with `symbol-exchange` override.

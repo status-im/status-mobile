@@ -10,7 +10,6 @@
             [status-im.ui.screens.add-new.styles :as add-new.styles]
             [status-im.ui.screens.add-new.new-chat.styles :as styles]
             [status-im.utils.platform :as platform]
-            [reagent.core :as reagent]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.multiaccounts.core :as multiaccounts]))
@@ -21,9 +20,6 @@
                         :accessories [:chevron]
                         :on-press    #(re-frame/dispatch [:chat.ui/start-chat (:public-key row) {:navigation-reset? true}])}])
 
-;;TODO workaround for https://github.com/facebook/react-native/issues/23653 (https://github.com/status-im/status-react/issues/8548)
-(def tw (reagent/atom "95%"))
-
 (views/defview new-chat []
   (views/letsubs [contacts      [:contacts/active]
                   new-identity  [:contacts/new-identity]
@@ -32,12 +28,11 @@
      [toolbar.view/simple-toolbar (i18n/label :t/new-chat) true]
      [react/view add-new.styles/new-chat-container
       [react/view add-new.styles/new-chat-input-container
-       [react/text-input {:ref                 (fn [v] (js/setTimeout #(reset! tw (if v "100%" "95%")) 100))
-                          :on-change-text      #(re-frame/dispatch [:new-chat/set-new-identity %])
+       [react/text-input {:on-change-text      #(re-frame/dispatch [:new-chat/set-new-identity %])
                           :on-submit-editing   #(when (and new-identity (not error-message))
                                                   (re-frame/dispatch [:contact.ui/contact-code-submitted]))
                           :placeholder         (i18n/label :t/enter-contact-code)
-                          :style               (add-new.styles/input @tw)
+                          :style               add-new.styles/input
                           ;; This input is fine to preserve inputs
                           ;; so its contents will not be erased 
                           ;; in onWillBlur navigation event handler
@@ -46,8 +41,8 @@
                           :return-key-type     :go}]]
       (when-not platform/desktop?
         [react/touchable-highlight {:on-press            #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
-                                                                              {:toolbar-title (i18n/label :t/new-contact)}
-                                                                              :contact/qr-code-scanned])
+                                                                              {:title (i18n/label :t/new-contact)
+                                                                               :handler :contact/qr-code-scanned}])
                                     :style               add-new.styles/button-container
                                     :accessibility-label :scan-contact-code-button}
          [react/view

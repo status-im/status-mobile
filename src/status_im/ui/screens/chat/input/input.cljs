@@ -21,7 +21,8 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.config :as config]
             [taoensso.timbre :as log]
-            [status-im.ui.screens.chat.stickers.views :as stickers]))
+            [status-im.ui.screens.chat.stickers.views :as stickers]
+            [status-im.ui.screens.chat.extensions.views :as extensions]))
 
 (defview basic-text-input [{:keys [set-container-width-fn height single-line-input?]}]
   (letsubs [input-text           [:chats/current-chat-input-text]
@@ -35,7 +36,7 @@
        :editable               (not cooldown-enabled?)
        :blur-on-submit         false
        :on-focus               #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused?    true
-                                                                                :show-stickers?    false
+                                                                                :input-bottom-sheet nil
                                                                                 :messages-focused? false}])
        :on-blur                #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused? false}])
        :on-submit-editing      #(when single-line-input?
@@ -66,7 +67,7 @@
        :editable               (not cooldown-enabled?)
        :blur-on-submit         false
        :on-focus               #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused?    true
-                                                                                :show-stickers?    false
+                                                                                :input-bottom-sheet nil
                                                                                 :messages-focused? false}])
        :on-blur                #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused? false}])
        :submit-shortcut        {:key "Enter"}
@@ -187,14 +188,13 @@
             mainnet?             [:mainnet?]
             input-text           [:chats/current-chat-input-text]
             result-box           [:chats/current-chat-ui-prop :result-box]
-            show-stickers?       [:chats/current-chat-ui-prop :show-stickers?]
-            state-text (reagent/atom "")]
+            input-bottom-sheet   [:chats/current-chat-ui-prop :input-bottom-sheet]
+            state-text           (reagent/atom "")]
     {:component-will-unmount #(when platform/desktop?
                                 (re-frame/dispatch [:chat.ui/set-chat-input-text @state-text]))
 
      :component-did-mount    #(when-not (string/blank? input-text) (reset! state-text input-text))}
     (let [single-line-input? (:singleLineInput result-box)
-          component          (reagent/current-component)
           set-text           #(reset! state-text %)
           input-text-empty? (if platform/desktop?
                               (string/blank? state-text)
@@ -209,9 +209,10 @@
        [react/view {:style style/input-container}
         [input-view {:single-line-input? single-line-input? :set-text set-text :state-text state-text}]
         (when (and input-text-empty? mainnet?)
-          [stickers/button show-stickers?])
-        (if input-text-empty?
-          [commands-button]
+          [stickers/button (= :stickers input-bottom-sheet)])
+        (when (and input-text-empty?) ;;TODO show only for 1-1 chats?
+          [extensions/button (= :extensions input-bottom-sheet)])
+        (when-not input-text-empty?
           (if platform/desktop?
             [send-button/send-button-view {:input-text @state-text}
              #(do

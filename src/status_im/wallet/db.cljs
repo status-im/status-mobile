@@ -1,8 +1,6 @@
 (ns status-im.wallet.db
   (:require [cljs.spec.alpha :as spec]
             [status-im.i18n :as i18n]
-            status-im.ui.screens.wallet.request.db
-            status-im.ui.screens.wallet.send.db
             [status-im.utils.money :as money]
             [status-im.utils.priority-map :refer [empty-transaction-map]]))
 
@@ -25,9 +23,7 @@
 (spec/def :wallet/balance any?)
 (spec/def :wallet/filters set?)
 
-(spec/def :wallet/wallet (spec/keys :opt-un [:wallet/send-transaction
-                                             :wallet/request-transaction
-                                             :wallet/transactions-queue
+(spec/def :wallet/wallet (spec/keys :opt-un [:wallet/transactions-queue
                                              :wallet/balance-loading?
                                              :wallet/errors
                                              :wallet/transactions

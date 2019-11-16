@@ -5,6 +5,5 @@
 
 (handlers/register-handler-fx
  :handle-qr-code
- (fn [cofx [_ _ data]]
-   (log/debug "qr code scanned with data " data)
+ (fn [cofx [_ data _]]
    (models/handle-qr-code cofx data)))

@@ -34,8 +34,8 @@
 
 (def qr-code
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
-                                                             {:toolbar-title (i18n/label :t/add-mailserver)}
-                                                             :mailserver.callback/qr-code-scanned])
+                                                             {:title (i18n/label :t/add-mailserver)
+                                                              :handler :mailserver.callback/qr-code-scanned}])
                               :style    styles/qr-code}
    [react/view
     [vector-icons/icon :main-icons/qr {:color colors/blue}]]])

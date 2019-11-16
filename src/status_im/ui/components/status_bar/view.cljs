@@ -4,7 +4,7 @@
             [status-im.utils.platform :as platform]))
 
 (defn get-config [view-id]
-  (or (get {:recipient-qr-code {:type :transparent}}
+  (or (get {:qr-scanner {:type :black}}
            view-id)
       {:type :main}))
 
@@ -26,12 +26,12 @@
                 network-activity-indicator-visible
                 translucent]}
         (case type
-          :transparent styles/status-bar-transparent
+          :black styles/status-bar-black
           styles/status-bar-default)]
+    (when bar-style
+      (.setBarStyle react/status-bar-class (clj->js bar-style)) true)
     (when (and background-color platform/android?)
       (.setBackgroundColor react/status-bar-class (clj->js background-color)))
-    (when bar-style
-      (.setBarStyle react/status-bar-class (clj->js bar-style)))
     (when hidden
       (.setHidden react/status-bar-class (clj->js hidden)))
     (when network-activity-indicator-visible

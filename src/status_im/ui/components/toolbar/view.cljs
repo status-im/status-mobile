@@ -33,10 +33,10 @@
 (defn nav-text
   ([text] (nav-text nil text))
   ([{:keys [handler] :as props} text]
-   [react/text (utils/deep-merge {:style    styles/item-text
-                                  :on-press (or handler #(re-frame/dispatch [:navigate-back]))}
-                                 props)
-    text]))
+   [react/touchable-highlight {:on-press (or handler #(re-frame/dispatch [:navigate-back]))}
+    [react/text (utils/deep-merge {:style styles/item-text}
+                                  props)
+     text]]))
 
 (defn nav-clear-text
   ([text] (nav-clear-text nil text))

@@ -7,7 +7,6 @@
    :justify-content :space-between
    :padding-top     16
    :padding-left    16
-   :padding-right   24
    :margin-bottom   11})
 
 (def message-header

@@ -16,7 +16,7 @@
      (= :previous type)
      {:padding-right 20 :padding-left 12}
      :else nil)
-   {:padding-vertical 11 :border-radius 8
+   {:height 44 :border-radius 8
     :align-items :center :justify-content :center
     :background-color (cond
                         (#{:secondary :next :previous} type)
@@ -51,7 +51,7 @@
 
   Spec: https://www.figma.com/file/cb4p8AxLtTF3q1L6JYDnKN15/Index?node-id=858%3A0"
 
-  [{:keys [label type theme disabled? on-press accessibility-label style] :or {type :main theme :blue}}]
+  [{:keys [label type theme disabled? on-press accessibility-label style container-style] :or {type :main theme :blue}}]
   (let [label (utils.label/stringify label)]
     [react/touchable-opacity (cond-> {:on-press on-press
                                       :active-opacity 0.5
@@ -61,7 +61,7 @@
                                (assoc :disabled (boolean disabled?))
                                accessibility-label
                                (assoc :accessibility-label accessibility-label))
-     [react/view {:style (style-container type disabled? theme)}
+     [react/view {:style (merge (style-container type disabled? theme) container-style)}
       [react/view {:flex-direction :row :align-items :center}
        (when (= type :previous)
          [vector-icons/icon :main-icons/back {:container-style {:width 24 :height 24 :margin-right 4}
