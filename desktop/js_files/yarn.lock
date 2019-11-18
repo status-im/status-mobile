@@ -6292,9 +6292,10 @@ react-native-image-resizer@^1.1.0:
   version "3.0.0-rc.3"
   resolved "git+https://github.com/status-im/react-native-keychain.git#5895bafa11e734325eaaffd56dda8ca50bfc5275"
 
-"react-native-languages@git+https://github.com/status-im/react-native-languages.git#v0.1.1-status":
+"react-native-languages@git+https://github.com/status-im/react-native-languages.git#3.0.2":
   version "3.0.2"
-  resolved "git+https://github.com/status-im/react-native-languages.git#60338ff3040b8af68d33233aebeb36db4d31aed0"
+  uid "828ee9875d5a3f853ae1714e78db53864f0e87ca"
+  resolved "git+https://github.com/status-im/react-native-languages.git#828ee9875d5a3f853ae1714e78db53864f0e87ca"
 
 "react-native-navigation-twopane@git+https://github.com/status-im/react-native-navigation-twopane.git#v0.0.2-status":
   version "0.0.2"
