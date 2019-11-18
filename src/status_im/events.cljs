@@ -246,11 +246,6 @@
    (mailserver/save-settings cofx current-fleet mailserver-id)))
 
 (handlers/register-handler-fx
- :mailserver.ui/reconnect-mailserver-pressed
- (fn [cofx _]
-   (mailserver/connect-to-mailserver cofx)))
-
-(handlers/register-handler-fx
  :mailserver.ui/unpin-pressed
  (fn [cofx _]
    (mailserver/unpin cofx)))

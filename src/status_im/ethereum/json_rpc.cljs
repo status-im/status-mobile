@@ -76,6 +76,7 @@
    "settings_saveNodeConfig" {}
    "accounts_getAccounts" {}
    "accounts_saveAccounts" {}
+   "mailservers_ping" {}
    "mailservers_addMailserver" {}
    "mailservers_getMailservers" {}
    "mailservers_deleteMailserver" {}

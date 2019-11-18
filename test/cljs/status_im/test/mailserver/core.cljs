@@ -45,14 +45,14 @@
                                           :peers-count 1}})))))
     (testing "there's not a preferred mailserver"
       (testing "it changes the mailserver"
-        (is (= :a
+        (is (= "mailservers_ping"
                (get-in
                 (mailserver/change-mailserver
                  {:db {:mailserver/mailservers {:staging {:a "b"}}
                        :multiaccount {:settings
                                       {:fleet :staging}}
                        :peers-count 1}})
-                [:db :mailserver/current-id]))))
+                [::json-rpc/call 0 :method]))))
       (testing "it does not show the popup"
         (is (not (:ui/show-confirmation (mailserver/change-mailserver
                                          {:db {:peers-count 1}}))))))))
@@ -179,73 +179,82 @@
 
 (deftest connected-mailserver
   (testing "it returns true when set in mailserver/current-id"
-    (let [cofx {:db {:mailserver/current-id "a"}}]
-      (is (mailserver/connected? cofx "a"))))
+    (let [db {:mailserver/current-id "a"}]
+      (is (mailserver/connected? db "a"))))
   (testing "it returns false otherwise"
-    (is (not (mailserver/connected? {:db {}} "a")))))
+    (is (not (mailserver/connected? {} "a")))))
 
 (deftest fetch-mailserver
   (testing "it fetches the mailserver from the db"
-    (let [cofx {:db {:mailserver/mailservers {:eth.staging {"a" {:id      "a"
-                                                                 :name    "old-name"
-                                                                 :address "enode://old-id:old-password@url:port"}}}}}]
-      (is (mailserver/fetch cofx "a")))))
+    (let [db {:mailserver/mailservers {:eth.staging {"a" {:id      "a"
+                                                          :name    "old-name"
+                                                          :address "enode://old-id:old-password@url:port"}}}}]
+      (is (mailserver/fetch db "a")))))
 
 (deftest fetch-current-mailserver
   (testing "it fetches the mailserver from the db with corresponding id"
-    (let [cofx {:db {:mailserver/current-id "a"
-                     :mailserver/mailservers {:eth.staging {"a" {:id      "a"
-                                                                 :name    "old-name"
-                                                                 :address "enode://old-id:old-password@url:port"}}}}}]
-      (is (mailserver/fetch-current cofx)))))
+    (let [db {:mailserver/current-id "a"
+              :mailserver/mailservers {:eth.staging {"a" {:id      "a"
+                                                          :name    "old-name"
+                                                          :address "enode://old-id:old-password@url:port"}}}}]
+      (is (mailserver/fetch-current db)))))
 
 (deftest set-current-mailserver
-  (with-redefs [rand-nth (comp last sort)]
-    (let [cofx {:db {:mailserver/mailservers {:eth.staging {"a" {}
-                                                            "b" {}
-                                                            "c" {}
-                                                            "d" {}}}}}]
-      (testing "the user has already a preference"
-        (let [cofx (assoc-in cofx
-                             [:db :multiaccount :settings]
-                             {:mailserver {:eth.staging "a"}})]
-          (testing "the mailserver exists"
-            (testing "it sets the preferred mailserver"
-              (is (= "a" (-> (mailserver/set-current-mailserver cofx)
-                             :db
-                             :mailserver/current-id)))))
-          (testing "the mailserver does not exists"
-            (let [cofx (update-in cofx [:db :mailserver/mailservers :eth.staging] dissoc "a")]
-              (testing "sets a random mailserver"
-                (is (= "d" (-> (mailserver/set-current-mailserver cofx)
-                               :db
-                               :mailserver/current-id))))))))
-      (testing "the user has not set an explicit preference"
-        (testing "current-id is not set"
-          (testing "it sets a random mailserver"
-            (is (= "d" (-> (mailserver/set-current-mailserver cofx)
+  (let [cofx {:db {:mailserver/mailservers {:eth.staging {"a" {}
+                                                          "b" {}
+                                                          "c" {}
+                                                          "d" {}}}}}]
+    (testing "the user has already a preference"
+      (let [cofx (assoc-in cofx
+                           [:db :multiaccount :settings]
+                           {:mailserver {:eth.staging "a"}})]
+        (testing "the mailserver exists"
+          (testing "it sets the preferred mailserver"
+            (is (= "a" (-> (mailserver/set-current-mailserver cofx)
                            :db
                            :mailserver/current-id)))))
-        (testing "current-id is set"
-          (testing "it sets the next mailserver"
-            (is (= "c" (-> (mailserver/set-current-mailserver (assoc-in
-                                                               cofx
-                                                               [:db :mailserver/current-id]
-                                                               "b"))
-                           :db
-                           :mailserver/current-id)))
-            (is (= "a" (-> (mailserver/set-current-mailserver (assoc-in
-                                                               cofx
-                                                               [:db :mailserver/current-id]
-                                                               "d"))
-                           :db
-                           :mailserver/current-id)))
-            (is (= "a" (-> (mailserver/set-current-mailserver (assoc-in
-                                                               cofx
-                                                               [:db :mailserver/current-id]
-                                                               "non-existing"))
-                           :db
-                           :mailserver/current-id)))))))))
+        (testing "the mailserver does not exists"
+          (let [cofx (update-in cofx [:db :mailserver/mailservers :eth.staging] dissoc "a")]
+            (testing "look for fastest mailserver"
+              (is (= "mailservers_ping"
+                     (-> (mailserver/set-current-mailserver cofx)
+                         ::json-rpc/call
+                         first
+                         :method))))))))
+    (testing "the user has not set an explicit preference"
+      (testing "current-id is not set"
+        (testing "it looks for fastest mailserver"
+          (is (= "mailservers_ping"
+                 (-> (mailserver/set-current-mailserver cofx)
+                     ::json-rpc/call
+                     first
+                     :method)))))
+      (testing "current-id is set"
+        (testing "it looks for fastest mailserver"
+          (is (= "mailservers_ping"
+                 (-> (mailserver/set-current-mailserver (assoc-in
+                                                         cofx
+                                                         [:db :mailserver/current-id]
+                                                         "b"))
+                     ::json-rpc/call
+                     first
+                     :method)))
+          (is (= "mailservers_ping"
+                 (-> (mailserver/set-current-mailserver (assoc-in
+                                                         cofx
+                                                         [:db :mailserver/current-id]
+                                                         "d"))
+                     ::json-rpc/call
+                     first
+                     :method)))
+          (is (= "mailservers_ping"
+                 (-> (mailserver/set-current-mailserver (assoc-in
+                                                         cofx
+                                                         [:db :mailserver/current-id]
+                                                         "non-existing"))
+                     ::json-rpc/call
+                     first
+                     :method))))))))
 
 (deftest delete-mailserver
   (testing "the user is not connected to the mailserver"
@@ -256,7 +265,7 @@
                                                                  :address      "enode://old-id:old-password@url:port"}}}}}
           actual (mailserver/delete cofx "a")]
       (testing "it removes the mailserver from the list"
-        (is (not (mailserver/fetch actual "a"))))
+        (is (not (mailserver/fetch (:db actual) "a"))))
       (testing "it stores it in the db"
         (is (= 1 (count (::json-rpc/call actual)))))))
   (testing "the mailserver is not user-defined"
@@ -343,12 +352,14 @@
   (testing "there's a current request"
     (testing "it reached the maximum number of attempts"
       (testing "it changes mailserver"
-        (is (= :connecting
-               (get-in (mailserver/resend-request
-                        {:db {:mailserver/current-request
-                              {:attempts constants/maximum-number-of-attempts}}}
-                        {})
-                       [:db :mailserver/state])))))
+        (is (= "mailservers_ping"
+               (-> (mailserver/resend-request
+                    {:db {:mailserver/current-request
+                          {:attempts constants/maximum-number-of-attempts}}}
+                    {})
+                   ::json-rpc/call
+                   first
+                   :method)))))
     (testing "it did not reach the maximum number of attempts"
       (testing "it reached the maximum number of attempts"
         (testing "it decrease the limit")
