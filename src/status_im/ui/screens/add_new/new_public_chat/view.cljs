@@ -48,7 +48,7 @@
    [react/text {:style styles/public-chat-icon-symbol}
     (first topic)]])
 
-(defn- render-topic [topic]
+(defn render-topic [topic]
   ^{:key topic}
   [react/touchable-highlight {:on-press            #(start-chat topic)
                               :accessibility-label :chat-item}

@@ -651,9 +651,9 @@
       {:label-kw  :ens-show-username
        :action-fn #(re-frame/dispatch [::ens/switch-show-username])
        :value     show?}]]
-    (let [message (merge {:content {:text (i18n/label :t/ens-test-message)}
-                          :content-type "text/plain"
-                          :timestamp-str "9:41 AM"})]
+    (let [message {:content {:parsed-text [{:type "paragraph", :children [{:literal (i18n/label :t/ens-test-message)}]}]}
+                   :content-type "text/plain"
+                   :timestamp-str "9:41 AM"}]
       [react/view
        [react/view {:padding-left 60}
         (if show?

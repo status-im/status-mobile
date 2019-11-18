@@ -19,7 +19,8 @@
             [status-im.ui.components.animation :as animation]
             [status-im.constants :as constants]
             [status-im.ui.components.colors :as colors]
-            [status-im.utils.fx :as fx])
+            [status-im.utils.fx :as fx]
+            [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn welcome-blank-page [blank?]
@@ -55,17 +56,13 @@
                                 :accessibility-label :lets-go-button
                                 :label    (i18n/label :t/lets-go)}]]]])
 
-(defn- start-chat [topic]
-  (re-frame/dispatch [:chat.ui/start-public-chat topic {:navigation-reset? true}])
-  (re-frame/dispatch [:set :public-group-topic nil]))
-
 (defn chat-tags-view []
   [react/view {:align-items :center :margin-top 16}
    [react/i18n-text {:style styles/no-chats-text :key :follow-your-interests}]
    [react/view {:style styles/tags-wrapper}
-    (for [item ["introductions", "chitchat", "status", "crypto", "tech", "music", "movies"]]
-      [react/touchable-highlight {:key item :on-press #(start-chat item)}
-       [react/text {:style styles/tag-text} (str "#" item)]])]])
+    [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :center}
+     (for [chat new-public-chat/default-public-chats]
+       (new-public-chat/render-topic chat))]]])
 
 (defn home-tooltip-view [blank? hide-home-tooltip?]
   (filter.views/reset-height)
