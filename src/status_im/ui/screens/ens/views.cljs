@@ -14,7 +14,6 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.chat.message.message :as message]

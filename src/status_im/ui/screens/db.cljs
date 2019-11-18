@@ -311,4 +311,4 @@
                                    ::collectibles
                                    :registry/registry
                                    ::two-pane-ui-enabled?
-                                   ::generate-account]))
+                                   ::add-account]))

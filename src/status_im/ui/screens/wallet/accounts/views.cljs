@@ -17,16 +17,17 @@
 
 (def state (reagent/atom {:tab :assets}))
 
-(views/defview account-card [{:keys [name color address] :as account}]
+(views/defview account-card [{:keys [name color address type] :as account}]
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:account-portfolio-value address]]
-    [react/touchable-highlight {:on-press      #(re-frame/dispatch [:navigate-to :wallet-account account])
-                                :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                    {:content        (fn [] [sheets/send-receive account])
-                                                                     :content-height 130}])}
+    [react/touchable-highlight
+     {:on-press      #(re-frame/dispatch [:navigate-to :wallet-account account])
+      :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                          {:content        (fn [] [sheets/send-receive account type])
+                                           :content-height 130}])}
      [react/view {:style (styles/card color)}
       [react/view {:flex-direction :row :align-items :center :justify-content :space-between}
-       [react/nested-text {:style {:color colors/white-transparent :font-weight "500"}}
+       [react/nested-text {:style {:color colors/white-transparent :font-weight "500" :flex-shrink 1}}
         [{:style {:color colors/white}} portfolio-value]
         " "
         (:code currency)]

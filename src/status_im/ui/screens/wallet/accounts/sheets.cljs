@@ -35,14 +35,15 @@
          :accessibility-label :wallet-backup-recovery-title
          :on-press            #(hide-sheet-and-dispatch [:navigate-to :backup-seed])}])]))
 
-(defn send-receive [account]
+(defn send-receive [account type]
   [react/view
-   [list-item/list-item
-    {:theme               :action
-     :title               :t/wallet-send
-     :icon                :main-icons/send
-     :accessibility-label :send-transaction-button
-     :on-press            #(hide-sheet-and-dispatch [:wallet/prepare-transaction-from-wallet account])}]
+   (when-not (= type :watch)
+     [list-item/list-item
+      {:theme               :action
+       :title               :t/wallet-send
+       :icon                :main-icons/send
+       :accessibility-label :send-transaction-button
+       :on-press            #(hide-sheet-and-dispatch [:wallet/prepare-transaction-from-wallet account])}])
    [list-item/list-item
     {:theme               :action
      :title               :t/receive
@@ -63,7 +64,7 @@
     {:theme     :action
      :title     :t/add-a-watch-account
      :icon      :main-icons/watch
-     :disabled? true}]])
+     :on-press #(hide-sheet-and-dispatch [:wallet.accounts/start-adding-new-account {:type :watch}])}]])
 
 (defn account-settings []
   [react/view

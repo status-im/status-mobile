@@ -182,6 +182,7 @@
    :welcome                                          [:modal home/welcome]
    :keycard-welcome                                  keycard/welcome
    :add-new-account                                  add-account/add-account
+   :add-watch-account                                add-account/add-watch-account
    :add-new-account-password                         add-account/password
    :account-added                                    account-settings/account-added
    :account-settings                                 account-settings/account-settings})

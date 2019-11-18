@@ -181,7 +181,7 @@
 (reg-root-key-sub :intro-wizard-state :intro-wizard)
 
 (reg-root-key-sub :popover/popover :popover/popover)
-(reg-root-key-sub :generate-account :generate-account)
+(reg-root-key-sub :add-account :add-account)
 
 (reg-root-key-sub :keycard :hardwallet)
 
@@ -510,6 +510,12 @@
  :<- [:multiaccounts/multiaccounts]
  (fn [multiaccounts]
    (> (count multiaccounts) 1)))
+
+(re-frame/reg-sub
+ :accounts-without-watch-only
+ :<- [:multiaccount]
+ (fn [macc]
+   (filter #(not= (:type %) :watch) (:accounts macc))))
 
 ;;CHAT ==============================================================================================================
 
