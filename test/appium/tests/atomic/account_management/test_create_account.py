@@ -53,6 +53,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.next_button.click()
         sign_in.confirm_your_password_input.set_value(common_password)
         sign_in.next_button.click()
+        sign_in.lets_go_button.click()
 
         if sign_in.get_public_key() == public_key:
             self.driver.fail('New account was not created')
@@ -72,14 +73,27 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.next_button.click()
         sign_in.confirm_your_password_input.set_value(common_password)
         sign_in.next_button.click()
+        sign_in.lets_go_button.click()
         home_view = sign_in.get_home_view()
-        text = 'There are no recent chats here yet. \nUse the (+) button to discover people \nto chat with'
-        if not home_view.element_by_text(text).is_element_displayed():
-            self.errors.append("'%s' text is not shown" % text)
+        texts = ['Chat and transact privately with your friends.','Follow your interests in one of the many Public Chats.']
+        for text in texts:
+            if not home_view.element_by_text(text).is_element_displayed():
+                self.errors.append("'%s' text is not shown" % text)
         profile_view = home_view.profile_button.click()
         shown_username = profile_view.default_username_text.text
         if shown_username != username:
             self.errors.append("Default username '%s' doesn't match '%s'" % (shown_username, username))
+        profile_view.home_button.click()
+        profile_view.cross_icon_iside_welcome_screen_button.click()
+        if home_view.element_by_text(texts[0]).is_element_displayed():
+            self.errors.append("'%s' text is shown, but welcome view was closed" % texts[0])
+        home_view.relogin()
+        if home_view.element_by_text(texts[0]).is_element_displayed():
+            self.errors.append("'%s' text is shown after relogin, but welcome view was closed" % texts[0])
+        text_after_closing_welcome_screen = "Your chats will appear here. To start new chats press the ⊕ button"
+        if not home_view.element_by_text(text_after_closing_welcome_screen).is_element_displayed():
+            self.errors.append("'%s' text is not shown after welcome view was closed" % text_after_closing_welcome_screen)
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5460)

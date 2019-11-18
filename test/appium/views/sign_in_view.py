@@ -55,6 +55,11 @@ class SignInButton(BaseButton):
         from views.home_view import HomeView
         return HomeView(self.driver)
 
+class LetsGoButton(BaseEditBox):
+    def __init__(self, driver):
+        super(LetsGoButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('lets-go-button')
+
 
 class RecoverAccessButton(BaseButton):
 
@@ -178,6 +183,7 @@ class SignInView(BaseView):
         self.name_input = NameInput(self.driver)
         self.other_multiaccounts_button = OtherMultiAccountsButton(self.driver)
         self.privacy_policy_link = PrivacyPolicyLink(self.driver)
+        self.lets_go_button = LetsGoButton(self.driver)
 
     def create_user(self, password=common_password):
         self.get_started_button.click()
@@ -188,6 +194,7 @@ class SignInView(BaseView):
         self.next_button.click()
         self.confirm_your_password_input.set_value(password)
         self.next_button.click()
+        self.lets_go_button.click()
         self.profile_button.wait_for_visibility_of_element(30)
         return self.get_home_view()
 
@@ -206,7 +213,9 @@ class SignInView(BaseView):
         recover_access_view.create_password_input.set_value(password)
         recover_access_view.next_button.click()
         recover_access_view.confirm_your_password_input.set_value(password)
-        recover_access_view.next_button.click_until_presence_of_element(recover_access_view.home_button)
+        recover_access_view.next_button.click_until_presence_of_element(self.lets_go_button)
+        self.lets_go_button.click()
+        self.profile_button.wait_for_visibility_of_element(30)
         return self.get_home_view()
 
     def sign_in(self, password=common_password):

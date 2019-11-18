@@ -242,6 +242,11 @@ class CrossIcon(BaseButton):
         super(CrossIcon, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[1]')
 
+class CrossIconInWelcomeScreen(BaseButton):
+    def __init__(self, driver):
+        super(CrossIconInWelcomeScreen, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('hide-home-button')
+
 
 class ShowRoots(BaseButton):
 
@@ -335,6 +340,7 @@ class BaseView(object):
         self.get_started_button = GetStartedButton(self.driver)
         self.ok_got_it_button = OkGotItButton(self.driver)
         self.progress_bar = ProgressBar(self.driver)
+        self.cross_icon_iside_welcome_screen_button = CrossIconInWelcomeScreen(self.driver)
 
         # external browser
         self.open_in_status_button = OpenInStatusButton(self.driver)
@@ -350,6 +356,7 @@ class BaseView(object):
             'edit_box': BaseEditBox,
             'text': BaseText
         }
+
 
     def accept_agreements(self):
         iterations = int()
