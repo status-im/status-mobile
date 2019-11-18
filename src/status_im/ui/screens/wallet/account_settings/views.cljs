@@ -33,7 +33,7 @@
                 :type     :secondary}}]]))
 
 (defview account-added []
-  (letsubs [{:keys [account]} [:generate-account]]
+  (letsubs [{:keys [account]} [:add-account]]
     [react/keyboard-avoiding-view {:flex 1}
      [react/scroll-view {:keyboard-should-persist-taps :handled
                          :style                        {:margin-top 70 :flex 1}}
@@ -51,20 +51,22 @@
         {:label          (i18n/label :t/account-name)
          :auto-focus     false
          :default-value  (:name account)
-         :on-change-text #(re-frame/dispatch [:set-in [:generate-account :account :name] %])}]
+         :placeholder    (i18n/label :t/account-name)
+         :on-change-text #(re-frame/dispatch [:set-in [:add-account :account :name] %])}]
        [react/text {:style {:margin-top 30}} (i18n/label :t/account-color)]
        [react/touchable-highlight
         {:on-press #(re-frame/dispatch [:show-popover
                                         {:view  [colors-popover (:color account)
                                                  (fn [new-color]
-                                                   (re-frame/dispatch [:set-in [:generate-account :account :color] new-color])
+                                                   (re-frame/dispatch [:set-in [:add-account :account :color] new-color])
                                                    (re-frame/dispatch [:hide-popover]))]
                                          :style {:max-height "60%"}}])}
         [react/view {:height      52 :margin-top 12 :background-color (:color account) :border-radius 8
                      :align-items :flex-end :justify-content :center :padding-right 12}
          [icons/icon :main-icons/dropdown {:color colors/white}]]]]]
      [toolbar/toolbar
-      {:right {:type      :next
+      {:show-border? true
+       :right {:type      :next
                :label     (i18n/label :t/finish)
                :on-press  #(re-frame/dispatch [:wallet.accounts/save-generated-account])
                :disabled? (string/blank? (:name account))}}]]))
@@ -77,7 +79,7 @@
      value)])
 
 (defview account-settings []
-  (letsubs [{:keys [address color path] :as account} [:current-account]
+  (letsubs [{:keys [address color path type] :as account} [:current-account]
             new-account (reagent/atom nil)]
     [react/keyboard-avoiding-view {:flex 1}
      [topbar/toolbar {}
@@ -109,13 +111,15 @@
                      :border-radius 8
                      :align-items   :flex-end :justify-content :center :padding-right 12}
          [icons/icon :main-icons/dropdown {:color colors/white}]]]
-       [property (i18n/label :t/type) (i18n/label :t/on-status-tree)]
+       [property (i18n/label :t/type) (case type :watch "Watch-only" (i18n/label :t/on-status-tree))]
        [property (i18n/label :t/wallet-address)
         [copyable-text/copyable-text-view
          {:copied-text address}
          [react/text {:style {:margin-top 6 :font-family "monospace"}} address]]]
-       [property (i18n/label :t/derivation-path)
-        [copyable-text/copyable-text-view
-         {:copied-text path}
-         [react/text {:style {:margin-top 6 :font-family "monospace"}} path]]]
-       [property (i18n/label :t/storage) (i18n/label :t/this-device)]]]]))
+       (when-not (= type :watch)
+         [property (i18n/label :t/derivation-path)
+          [copyable-text/copyable-text-view
+           {:copied-text path}
+           [react/text {:style {:margin-top 6 :font-family "monospace"}} path]]])
+       (when-not (= type :watch)
+         [property (i18n/label :t/storage) (i18n/label :t/this-device)])]]]))

@@ -15,4 +15,4 @@
 
 (defmethod navigation/preload-data! :add-new-account
   [db [event]]
-  (dissoc db :generate-account))
+  (dissoc db :add-account))

@@ -98,7 +98,7 @@
 
 (views/defview select-account []
   (views/letsubs [height [:dimensions/window-height]
-                  {:keys [accounts]} [:multiaccount]
+                  accounts [:accounts-without-watch-only]
                   {:keys [name color] :as dapps-account} [:dapps-account]]
     [react/view {:position           :absolute
                  :z-index            2

@@ -5,6 +5,7 @@
    :screens [:wallet
              :wallet-account
              :add-new-account
+             :add-watch-account
              :add-new-account-password
              :account-added
              :account-settings

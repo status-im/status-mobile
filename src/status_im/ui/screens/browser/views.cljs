@@ -91,7 +91,7 @@
 
 (views/defview navigation [url can-go-back? can-go-forward? dapps-account]
   (views/letsubs [height [:dimensions/window-height]
-                  {:keys [accounts]} [:multiaccount]]
+                  accounts [:accounts-without-watch-only]]
     [react/view styles/navbar
      [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser.ui/previous-page-button-pressed])
                                  :disabled            (not can-go-back?)

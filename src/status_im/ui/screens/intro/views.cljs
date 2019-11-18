@@ -545,14 +545,11 @@
 (defview wizard-enter-phrase []
   (letsubs [wizard-state [:intro-wizard/enter-phrase]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
-     [toolbar/toolbar
-      {:style {:border-bottom-width 0
-               :margin-top 16}}
+     [toolbar/toolbar {:style {:border-bottom-width 0}}
       (toolbar/nav-button
        (actions/back #(re-frame/dispatch [:intro-wizard/navigate-back])))
       nil]
-     [react/view {:style {:flex 1
-                          :justify-content :space-between}}
+     [react/view {:style {:flex 1 :justify-content :space-between}}
       [top-bar {:step :enter-phrase}]
       [enter-phrase wizard-state]
       [bottom-bar (merge {:step :enter-phrase
