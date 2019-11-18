@@ -54,7 +54,7 @@
     "@babel/register": "^7.7.0",
     "babel-preset-react-native": "^5.0.2",
     "coveralls": "^3.0.7",
-    "metro-react-native-babel-preset": "^0.45.6",
+    "metro-react-native-babel-preset": "^0.57.0",
     "nyc": "^14.1.1",
     "patch-package": "^5.1.1",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status"
