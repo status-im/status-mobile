@@ -138,12 +138,16 @@
 (fx/defn intro-step-forward
   {:events [:intro-wizard/step-forward-pressed]}
   [{:keys [db] :as cofx} {:keys [skip?] :as opts}]
-  (let  [{:keys [step first-time-setup? selected-storage-type processing?]} (:intro-wizard db)]
+  (let  [{:keys [step selected-storage-type processing? weak-password?]} (:intro-wizard db)]
     (cond (confirm-failure? db)
           (on-confirm-failure cofx)
 
           (= step :generate-key)
           (init-key-generation cofx)
+
+          (and  (= step :create-code)
+                (= weak-password? true))
+          nil
 
           (and (= step :confirm-code)
                (not processing?))
