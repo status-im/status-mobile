@@ -41,7 +41,7 @@ shellArgs=(
 if [[ -n "${TARGET_OS}" ]]; then
     shellArgs+=("--argstr target-os ${TARGET_OS}")
 else
-    echo -e "${YELLOW}Env is missing TARGET_OS, assuming no target platform.${NC} See nix/README.md for more details." > /dev/stderr
+    echo -e "${YELLOW}Env is missing TARGET_OS, assuming no target platform.${NC} See nix/README.md for more details." 1>&2
 fi
 
 if [[ "$TARGET_OS" =~ (linux|windows|darwin|macos) ]]; then
@@ -65,7 +65,7 @@ fi
 # ENTER_NIX_SHELL is the fake command used when `make shell` is run.
 # It is just a special string, not a variable, and a marker to not use `--run`.
 if [[ $@ == "ENTER_NIX_SHELL" ]]; then
-  echo -e "${GREEN}Configuring ${_NIX_ATTR:-default} Nix shell for target '${TARGET_OS:-none}'...${NC}" > /dev/stderr
+  echo -e "${GREEN}Configuring ${_NIX_ATTR:-default} Nix shell for target '${TARGET_OS:-none}'...${NC}" 1>&2
   exec nix-shell ${shellArgs[@]} ${entryPoint}
 else
   # Not all builds are ready to be run in a pure environment
@@ -78,6 +78,6 @@ else
   if [[ -n "${_NIX_KEEP}" ]]; then
     shellArgs+=("--keep ${_NIX_KEEP//;/ --keep }")
   fi
-  echo -e "${GREEN}Configuring ${pureDesc}${_NIX_ATTR:-default} Nix shell for target '${TARGET_OS}'...${NC}" > /dev/stderr
+  echo -e "${GREEN}Configuring ${pureDesc}${_NIX_ATTR:-default} Nix shell for target '${TARGET_OS}'...${NC}" 1>&2
   exec nix-shell ${shellArgs[@]} --run "$@" ${entryPoint}
 fi

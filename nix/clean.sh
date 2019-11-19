@@ -15,19 +15,30 @@ function findRelated() {
     path="${1}"
     found+=("${path}")
     if [[ "${path}" =~ .*.chroot ]]; then
-        log " ! Chroot:    ${path}"
-        continue
+        log " ! Chroot:     ${path}"
+        return
+    elif [[ "${path}" =~ .*.lock ]]; then
+        log " ! Lock:       ${path}"
+        return
+    elif [[ "${path}" =~ .*status-react-shell.drv ]]; then
+        echo -n "${path}"
+        return
     fi
     log " ? Checking:   ${path}"
     drv=$(getDrvFiles "${path}")
     # if drv is unknown-deriver then path is a source
     if [[ "${drv}" == "unknown-deriver" ]]; then
-        drv=$(getReferrers "${path}")
+        drv=$(getReferrers "${path}" | head -n1)
         src="${path}"
     elif [[ -f "${drv}" ]]; then
         src=$(getSources "${drv}")
     fi
-    if [ $(getRoots "${drv}" | wc -l) -eq 0 ]; then
+    # empty paths means this is a source
+    if [[ -z "${drv}" ]]; then
+        echo -n "${src}"
+        return
+    fi
+    if [[ $(getRoots "${drv}" | wc -l) -eq 0 ]]; then
         log " - Derivation: ${drv}"
         log " - Source:     ${src}"
         found+=("${drv}" "${src}")

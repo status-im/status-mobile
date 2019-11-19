@@ -32,13 +32,23 @@ ifndef BUILD_TAG
 export BUILD_TAG := $(shell git rev-parse --short HEAD)
 endif
 
-# Defines which variables will be kept for Nix pure shell, use semicolon as divider
-export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE
-export NIX_CONF_DIR = $(PWD)/nix
 # We don't want to use /run/user/$UID because it runs out of space too easilly
 export TMPDIR = /tmp/tmp-status-react-$(BUILD_TAG)
 # this has to be specified for both the Node.JS server process and the Qt process
 export REACT_SERVER_PORT ?= 5001
+
+# Our custom config is located in nix/nix.conf
+export NIX_CONF_DIR = $(PWD)/nix
+# Defines which variables will be kept for Nix pure shell, use semicolon as divider
+export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE
+export _NIX_ROOT = /nix
+
+# MacOS root is read-only, read nix/README.md for details
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+export NIX_IGNORE_SYMLINK_STORE=1
+export _NIX_ROOT = /opt/nix
+endif
 
 #----------------
 # Nix targets
@@ -63,7 +73,7 @@ nix-clean: ##@nix Remove all status-react build artifacts from /nix/store
 
 nix-purge: SHELL := /bin/sh
 nix-purge: ##@nix Completely remove the complete Nix setup
-	sudo rm -rf /nix ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
+	sudo rm -rf $(_NIX_ROOT) ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
 
 nix-add-gcroots: export TARGET_OS := none
 nix-add-gcroots: ##@nix Add Nix GC roots to avoid status-react expressions being garbage collected
@@ -252,6 +262,10 @@ endif
 #--------------
 # Tests
 #--------------
+
+lint: export _NIX_ATTR := targets.leiningen.shell
+lint: ##@test Run code style checks
+	lein cljfmt check
 
 test: export _NIX_ATTR := targets.leiningen.shell
 test: ##@test Run tests once in NodeJS
