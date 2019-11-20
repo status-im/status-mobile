@@ -184,7 +184,7 @@
                       :last-message-content-type content-type)})))
 
 (fx/defn receive-one
-  [{:keys [now] :as cofx} message]
+  [cofx message]
   (when-let [chat-id (extract-chat-id cofx message)]
     (let [message-with-chat-id (assoc message :chat-id chat-id)]
       (when (add-to-chat? cofx message-with-chat-id)

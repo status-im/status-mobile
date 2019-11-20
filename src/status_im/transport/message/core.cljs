@@ -55,7 +55,7 @@
   dedup-id is passed by status-go and is used to deduplicate messages at that layer.
   Once a message has been successfuly processed, that id needs to be sent back
   in order to stop receiving that message"
-  [{:keys [db]} now-in-s filter-chat-id message-js]
+  [{:keys [db] :as cofx} now-in-s filter-chat-id message-js]
   (let [blocked-contacts (get db :contacts/blocked #{})
         timestamp (.-timestamp (.-message message-js))
         metadata-js (.-metadata message-js)
@@ -81,8 +81,7 @@
             sig)
            sig
            timestamp
-           {:db db
-            :metadata metadata}))
+           (assoc cofx :metadata metadata)))
         (catch :default e nil))))) ; ignore unknown message types
 
 (defn- js-obj->seq [obj]
