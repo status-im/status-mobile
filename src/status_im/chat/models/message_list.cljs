@@ -37,6 +37,8 @@
   We check the time, and the author"
   [a b]
   (and
+   (not (:system-message? a))
+   (not (:system-message? b))
    (= (:from a) (:from b))
    (<= (js/Math.abs (- (:whisper-timestamp a) (:whisper-timestamp b))) group-ms)))
 

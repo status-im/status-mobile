@@ -168,3 +168,32 @@
                    (s/->seq)
                    (nth 2)
                    :message-id)))))))
+
+(deftest same-group-test
+  (testing "two messages from the same author and close together"
+    (is (s/same-group? {:whisper-timestamp 1
+                        :from "1"}
+                       {:whisper-timestamp 2
+                        :from "1"})))
+  (testing "two messages from the same author, close together, first system-message"
+    (is (not (s/same-group? {:whisper-timestamp 1
+                             :system-message? true
+                             :from "1"}
+                            {:whisper-timestamp 2
+                             :from "1"}))))
+  (testing "two messages from the same author, close together, second system-message"
+    (is (not (s/same-group? {:whisper-timestamp 1
+                             :from "1"}
+                            {:whisper-timestamp 2
+                             :system-message? true
+                             :from "1"}))))
+  (testing "two messages from the same author and far apart"
+    (is (not (s/same-group? {:whisper-timestamp 1
+                             :from "1"}
+                            {:whisper-timestamp 2000000
+                             :from "1"}))))
+  (testing "two messages not from the same author and close together"
+    (is (not (s/same-group? {:whisper-timestamp 1
+                             :from "2"}
+                            {:whisper-timestamp 2
+                             :from "1"})))))
