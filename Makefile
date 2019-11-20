@@ -315,6 +315,11 @@ android-ports: ##@other Add proxies to Android Device/Simulator
 	adb reverse tcp:4567 tcp:4567 && \
 	adb forward tcp:5561 tcp:5561
 
+android-devices: export _NIX_ATTR := targets.mobile.android.adb.shell
+android-devices: export TARGET_OS ?= android
+android-devices: ##@other Invoke adb devices
+	adb devices
+
 android-logcat: export _NIX_ATTR := targets.mobile.android.adb.shell
 android-logcat: export TARGET_OS ?= android
 android-logcat: ##@other Read status-react logs from Android phone using adb

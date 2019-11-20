@@ -42,3 +42,60 @@ _callImmediatesPass@http://localhost:8081/index.bundle?pla<…>
 ## Solution
 
 go through known faulty commit looking for deleted requires
+
+
+# Git "unable to access" errors during `yarn install`
+
+## Description
+Developer updates `package.json` file with a new dependency using a GitHub URL. So it looks like this:
+```
+  "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#feature/exportKeyWithPath",
+```
+Afterwards, when running e.g. `make react-native-android`, they might see the following confusing error:
+```
+# macOS
+fatal: unable to access 'https://github.com/siphiuel/react-native-status-keycard.git/': SSL certificate problem: unable to get local issuer certificate
+# Linux
+fatal: unable to access 'https://github.com/status-im/react-native-status-keycard.git/': Could not resolve host: github.com
+info Visit https://yarnpkg.com/en/docs/cli/install for documentation about this command.
+```
+
+## Cause
+`yarn.lock` is not updated to be in sync with `package.json`.
+
+## Solution
+Update yarn.lock file. In order to do this, perform the following steps on a clean `status-react` repo:
+```
+cd status-react
+ln -sf mobile/js_files/package.json .
+ln -sf mobile/js_files/yarn.lock .
+yarn install
+```
+and don't forget to commit updated `yarn.lock` together with `package.json`.
+
+
+# adb server/client version mismatch errors
+
+## Description
+Running some adb commands, e.g. `adb devices` or `make android-ports` (in turn invokes `adb reverse`/`adb forward` commands) may display the following message:
+```
+adb server version (40) doesn't match this client (41); killing...
+```
+or the reverse
+```
+adb server version (41) doesn't match this client (40); killing...
+```
+
+This might cause all kinds of difficult-to-debug errors, e.g.:
+  -  not being able to find the device through `adb devices`
+  -  `make run-android` throwing `com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: device 'device-id' not found.`
+  -  `make run-android` throwing `- Error: Command failed: ./gradlew app:installDebug -PreactNativeDevServerPort=8081 Unable to install /status-react/android/app/build/outputs/apk/debug/app-debug.apk com.android.ddmlib.InstallException: EOF`
+  - dropped CLJS repl connections (that have been enabled previously with the help of `make android-ports`)
+
+## Cause
+System's local adb and Nix's adb differ. As adb include of server/client processes, this can cause subtle version errors that cause adb to kill mismatching server processes.
+
+## Solution
+Always use respective `make` commands, e.g. `make android-ports`, `make android-devices`, etc.
+
+Alternatively, run adb commands only from `TARGET_OS=android make shell` shell. Don't forget the `TARGET_OS=android` env var setting - otherwise adb will still be selected from the system's default location. You can double-check this by running `which adb`.
