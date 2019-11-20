@@ -50,4 +50,4 @@
  :keycard-multiaccount?
  (fn [db]
    (boolean
-    (get-in db [:multiaccount :keycard-key-uid]))))
+    (get-in db [:multiaccount :keycard-pairing]))))

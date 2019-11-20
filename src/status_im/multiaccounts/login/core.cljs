@@ -248,12 +248,15 @@
 
 (fx/defn multiaccount-login-success
   [{:keys [db] :as cofx}]
-  (let [{:keys [address password save-password? name photo-path creating?]} (:multiaccounts/login db)
+  (let [{:keys [address password save-password? creating?]} (:multiaccounts/login db)
         recovering? (get-in db [:intro-wizard :recovering?])
         login-only? (not (or creating?
                              recovering?
                              (keycard-setup? cofx)))
         nodes nil]
+    (log/debug "[multiaccount] multiaccount-login-success"
+               "login-only?" login-only?
+               "recovering?" recovering?)
     (fx/merge cofx
               {:db (-> db
                        (dissoc :multiaccounts/login)
@@ -288,7 +291,7 @@
 
 (fx/defn open-login
   [{:keys [db] :as cofx} address photo-path name public-key]
-  (let [keycard-multiaccount? (get-in db [:multiaccounts/multiaccounts address :keycard-key-uid])]
+  (let [keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts address :keycard-pairing]))]
     (fx/merge cofx
               {:db (-> db
                        (update :multiaccounts/login assoc

@@ -362,7 +362,7 @@
   [{:keys [db] :as cofx} {:keys [to amount from token from-chat? gas gasPrice]}]
   (let [{:keys [symbol address]} token
         amount-hex (str "0x" (abi-spec/number-to-hex amount))
-        to-norm (ethereum/normalized-address (if (string? to) to (:address to)))
+        to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))
         from-address (:address from)]
     (fx/merge cofx
               {:db (dissoc db :wallet/prepare-transaction)}
@@ -372,7 +372,7 @@
                                             {:to    to-norm
                                              :from  from-address
                                              :value amount-hex}
-                                            {:to       (ethereum/normalized-address address)
+                                            {:to       (ethereum/normalized-hex address)
                                              :from     from-address
                                              :data     (abi-spec/encode
                                                         "transfer(address,uint256)"

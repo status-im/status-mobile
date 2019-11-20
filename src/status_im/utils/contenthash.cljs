@@ -56,7 +56,7 @@
                            b58/encode))})))
 
 (defn url [hex]
-  (let [{:keys [namespace hash]} (decode (ethereum/normalized-address hex))]
+  (let [{:keys [namespace hash]} (decode (ethereum/normalized-hex hex))]
     (case namespace
       :ipfs (str "https://ipfs.infura.io/ipfs/" hash)
       "")))

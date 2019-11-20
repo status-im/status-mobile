@@ -21,7 +21,7 @@
 
 (defn namehash
   [s]
-  (ethereum/normalized-address
+  (ethereum/normalized-hex
    (if (string/blank? s)
      default-namehash
      (let [[label remainder] (-> s

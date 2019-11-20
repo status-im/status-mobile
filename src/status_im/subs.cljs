@@ -22,6 +22,7 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.db :as multiaccounts.db]
+            [status-im.multiaccounts.recover.core :as recover]
             [status-im.pairing.core :as pairing]
             [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.tribute-to-talk.db :as tribute-to-talk.db]
@@ -265,6 +266,13 @@
     :processing? (:processing? wizard-state)}))
 
 (re-frame/reg-sub
+ :intro-wizard/recover-existing-account?
+ :<- [:intro-wizard]
+ :<- [:multiaccounts/multiaccounts]
+ (fn [[intro-wizard multiaccounts]]
+   (recover/existing-account? (:root-key intro-wizard) multiaccounts)))
+
+(re-frame/reg-sub
  :settings/logging-enabled
  :<- [:desktop/desktop]
  (fn [desktop _]
@@ -446,7 +454,7 @@
  :multiaccount/default-address
  :<- [:multiaccount]
  (fn [{:keys [accounts]}]
-   (ethereum/normalized-address
+   (ethereum/normalized-hex
     (:address (ethereum/get-default-account accounts)))))
 
 (re-frame/reg-sub

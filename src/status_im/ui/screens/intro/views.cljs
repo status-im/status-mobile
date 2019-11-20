@@ -253,7 +253,7 @@
 (defn bottom-bar [{:keys [step weak-password? encrypt-with-password?
                           forward-action
                           next-button-disabled?
-                          processing?] :as wizard-state}]
+                          processing? existing-account?] :as wizard-state}]
   [react/view {:style {:margin-bottom (if (or (#{:choose-key :select-key-storage
                                                  :enter-phrase :recovery-success} step)
                                               (and (#{:create-code :confirm-code} step)
@@ -271,11 +271,16 @@
                           :recovery-success :re-encrypt-key
                           :intro-wizard-title6)]
            [react/view {:min-height 46 :max-height 46}
-            [components.common/button {:button-style styles/bottom-button
-                                       :on-press     #(re-frame/dispatch
-                                                       [forward-action])
-                                       :accessibility-label :onboarding-next-button
-                                       :label        (i18n/label label-kw)}]])
+            [components.common/button
+             {:button-style        (if existing-account?
+                                     styles/disabled-bottom-button
+                                     styles/bottom-button)
+              :on-press            (when-not existing-account?
+                                     #(re-frame/dispatch [forward-action]))
+              :accessibility-label :onboarding-next-button
+              :label               (i18n/label label-kw)
+              :label-style         (when existing-account?
+                                     styles/disabled-bottom-button-text)}]])
          (and (#{:create-code :confirm-code} step)
               (not encrypt-with-password?))
          [components.common/button {:button-style styles/bottom-button
@@ -555,7 +560,8 @@
                          wizard-state)]]]))
 
 (defview wizard-recovery-success []
-  (letsubs [{:keys [pubkey processing?]} [:intro-wizard/recovery-success]]
+  (letsubs [{:keys [pubkey processing?]} [:intro-wizard/recovery-success]
+            existing-account? [:intro-wizard/recover-existing-account?]]
     [react/view {:style {:flex 1}}
      [toolbar/toolbar
       {:style {:border-bottom-width 0
@@ -567,6 +573,7 @@
                           :justify-content :space-between}}
       [top-bar {:step :recovery-success}]
       [recovery-success pubkey]
-      [bottom-bar {:step :recovery-success
-                   :forward-action   :multiaccounts.recover/re-encrypt-pressed
-                   :processing? processing?}]]]))
+      [bottom-bar {:step              :recovery-success
+                   :forward-action    :multiaccounts.recover/re-encrypt-pressed
+                   :processing?       processing?
+                   :existing-account? existing-account?}]]]))

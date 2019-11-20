@@ -14,7 +14,13 @@
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.ethereum.eip55 :as eip55]))
+
+(defn existing-account?
+  [root-key multiaccounts]
+  (contains? multiaccounts ((fnil clojure.string/lower-case "")
+                            (:address root-key))))
 
 (defn check-phrase-warnings [recovery-phrase]
   (cond (string/blank? recovery-phrase) :required-field
@@ -47,7 +53,7 @@
         multiaccount-address (-> (:address multiaccount)
                                  (string/lower-case)
                                  (string/replace-first "0x" ""))
-        keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts multiaccount-address :keycard-key-uid]))]
+        keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts multiaccount-address :keycard-pairing]))]
     (if keycard-multiaccount?
       ;; trying to recover multiaccount created with keycard
       {:db        (-> db
@@ -105,16 +111,31 @@
              (re-frame/dispatch [::import-multiaccount-success
                                  root-data derived-data])))))))))
 
+(fx/defn show-existing-multiaccount-alert
+  [_ address]
+  {:utils/show-confirmation
+   {:title               (i18n/label :t/multiaccount-exists-title)
+    :content             (i18n/label :t/multiaccount-exists-content)
+    :confirm-button-text (i18n/label :t/unlock)
+    :on-accept           #(re-frame/dispatch
+                           [:multiaccounts.login.ui/multiaccount-selected
+                            (clojure.string/lower-case address)])
+    :on-cancel           #(re-frame/dispatch [:navigate-to :multiaccounts])}})
+
 (fx/defn on-import-multiaccount-success
   {:events [::import-multiaccount-success]}
-  [{:keys [db] :as cofx} root-data derived-data]
-  (fx/merge cofx
-            {:db (update db :intro-wizard
-                         assoc :root-key root-data
-                         :derived derived-data
-                         :step :recovery-success
-                         :forward-action :multiaccounts.recover/re-encrypt-pressed)}
-            (navigation/navigate-to-cofx :recover-multiaccount-success nil)))
+  [{:keys [db] :as cofx} {:keys [address] :as root-data} derived-data]
+  (let [multiaccounts (:multiaccounts/multiaccounts db)]
+    (fx/merge
+     cofx
+     {:db (update db :intro-wizard
+                  assoc :root-key root-data
+                  :derived derived-data
+                  :step :recovery-success
+                  :forward-action :multiaccounts.recover/re-encrypt-pressed)}
+     (when (existing-account? root-data multiaccounts)
+       (show-existing-multiaccount-alert address))
+     (navigation/navigate-to-cofx :recover-multiaccount-success nil))))
 
 (fx/defn enter-phrase-pressed
   {:events [::enter-phrase-pressed]}

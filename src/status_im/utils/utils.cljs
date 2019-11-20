@@ -86,7 +86,7 @@
 
 (defn get-shortened-checksum-address [address]
   (when address
-    (get-shortened-address (eip55/address->checksum (ethereum/normalized-address address)))))
+    (get-shortened-address (eip55/address->checksum (ethereum/normalized-hex address)))))
 
 ;; debounce, taken from https://github.com/johnswanson/re-frame-debounce-fx
 ;    {:dispatch-debounce {:key :search

@@ -21,7 +21,8 @@
             [status-im.ui.components.react :as react]
             [status-im.constants :as constants]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
+            [status-im.multiaccounts.recover.core :as recover]))
 
 (def default-pin "000000")
 
@@ -38,12 +39,12 @@
          (filter #(= keycard-instance-uid (:keycard-instance-uid %)))
          first)))
 
-(defn- find-multiaccount-by-keycard-key-uid
-  [db keycard-key-uid]
-  (when keycard-key-uid
+(defn- find-multiaccount-by-key-uid
+  [db key-uid]
+  (when key-uid
     (->> (:multiaccounts/multiaccounts db)
          vals
-         (filter #(= keycard-key-uid (:keycard-key-uid %)))
+         (filter #(= (ethereum/normalized-hex key-uid) (:key-uid %)))
          first)))
 
 (defn get-pairing
@@ -55,7 +56,7 @@
     (get-in db [:hardwallet :secrets :pairing])
     (when key-uid
       (:keycard-pairing
-       (find-multiaccount-by-keycard-key-uid db key-uid))))))
+       (find-multiaccount-by-key-uid db key-uid))))))
 
 (fx/defn listen-to-hardware-back-button
   [{:keys [db]}]
@@ -514,9 +515,9 @@
                   (load-pin-screen)))
               (when (and (= card-state :multiaccount)
                          (= flow :import))
-                (let [existing-multiaccount (find-multiaccount-by-keycard-key-uid db key-uid)]
-                  (if existing-multiaccount
-                    (show-existing-multiaccount-alert)
+                (let [{:keys [address]} (find-multiaccount-by-key-uid db key-uid)]
+                  (if address
+                    (recover/show-existing-multiaccount-alert address)
                     (if pairing
                       (load-recovery-pin-screen)
                       (load-pair-screen)))))
@@ -539,11 +540,12 @@
 
 (fx/defn navigate-to-enter-pin-screen
   [{:keys [db] :as cofx}]
-  (let [keycard-key-uid (get-in db [:hardwallet :application-info :key-uid])
-        multiaccount-key-uid (get-in db [:multiaccount :keycard-key-uid])]
-    (if (or (nil? multiaccount-key-uid)
-            (and keycard-key-uid
-                 (= keycard-key-uid multiaccount-key-uid)))
+  (let [key-uid (get-in db [:hardwallet :application-info :key-uid])
+        multiaccount-key-uid (get-in db [:multiaccount :key-uid])
+        keycard-multiaccount? (boolean (get-in db [:multiaccount :keycard-pairing]))]
+    (if (or (nil? keycard-multiaccount?)
+            (and key-uid
+                 (= key-uid multiaccount-key-uid)))
       (fx/merge cofx
                 {:db (assoc-in db [:hardwallet :pin :current] [])}
                 (navigation/navigate-to-cofx :enter-pin-settings nil))
@@ -635,17 +637,17 @@
   {:events [:hardwallet/login-with-keycard]}
   [{:keys [db] :as cofx}]
   (let [application-info (get-in db [:hardwallet :application-info])
-        keycard-key-uid (get-in db [:hardwallet :application-info :key-uid])
+        key-uid (get-in db [:hardwallet :application-info :key-uid])
         multiaccount (get-in db [:multiaccounts/multiaccounts (get-in db [:multiaccounts/login :address])])
-        multiaccount-key-uid (get multiaccount :keycard-key-uid)
+        multiaccount-key-uid (get multiaccount :key-uid)
         multiaccount-mismatch? (or (nil? multiaccount)
-                                   (not= multiaccount-key-uid keycard-key-uid))
+                                   (not= multiaccount-key-uid key-uid))
         pairing (:keycard-pairing multiaccount)]
     (cond
       (empty? application-info)
       (navigation/navigate-to-cofx cofx :not-keycard nil)
 
-      (empty? keycard-key-uid)
+      (empty? key-uid)
       (navigation/navigate-to-cofx cofx :keycard-blank nil)
 
       multiaccount-mismatch?
@@ -665,13 +667,15 @@
 
 (fx/defn on-get-application-info-success
   [{:keys [db] :as cofx} info on-success]
-  (let [info' (js->clj info :keywordize-keys true)
-        {:keys [pin-retry-counter puk-retry-counter instance-uid]} info'
+  (let [info' (-> info
+                  (js->clj :keywordize-keys true)
+                  (update :key-uid ethereum/normalized-hex))
+        {:keys [pin-retry-counter puk-retry-counter]} info'
         view-id (:view-id db)
         connect-screen? (contains? #{:hardwallet-connect
                                      :hardwallet-connect-sign
                                      :hardwallet-connect-settings} view-id)
-        {:keys [card-state on-card-read]} (:hardwallet db)
+        {:keys [on-card-read]} (:hardwallet db)
         on-success' (or on-success on-card-read)
         enter-step (if (zero? pin-retry-counter)
                      :puk
@@ -1006,11 +1010,10 @@
 
 (fx/defn delete-card
   [{:keys [db] :as cofx}]
-  (let [keycard-key-uid (get-in db [:hardwallet :application-info :key-uid])
-        multiaccount-key-uid (get-in db [:multiaccount :keycard-key-uid])]
-    (if (or (nil? multiaccount-key-uid)
-            (and keycard-key-uid
-                 (= keycard-key-uid multiaccount-key-uid)))
+  (let [key-uid (get-in db [:hardwallet :application-info :key-uid])
+        multiaccount-key-uid (get-in db [:multiaccount :key-uid])]
+    (if (and key-uid
+             (= key-uid multiaccount-key-uid))
       {:hardwallet/delete nil}
       (unauthorized-operation cofx))))
 
@@ -1752,7 +1755,7 @@
                 :address              address
                 :publicKey            public-key
                 :keycard-instance-uid instance-uid
-                :keycard-key-uid      key-uid
+                :keyUid               (ethereum/normalized-hex key-uid)
                 :keycard-pairing      pairing
                 :keycard-paired-on    paired-on
                 :chat-key             whisper-private-key}
@@ -1858,7 +1861,7 @@
                        ; https://github.com/ethereum/go-ethereum/blob/master/internal/ethapi/api.go#L431
                        (clojure.string/replace-first #"00$", "1b")
                        (clojure.string/replace-first #"01$", "1c")
-                       (ethereum/normalized-address))]
+                       (ethereum/normalized-hex))]
     {:dispatch
      [:signing/sign-message-completed (types/clj->json {:result signature'})]}))
 

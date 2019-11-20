@@ -497,7 +497,7 @@
       [react/view {:style {:margin-top 22}}
        (when-not pending?
          [section {:title   (i18n/label :t/wallet-address)
-                   :content (ethereum/normalized-address address)}])
+                   :content (ethereum/normalized-hex address)}])
        (when-not pending?
          [react/view {:style {:margin-top 14}}
           [section {:title   (i18n/label :t/key)

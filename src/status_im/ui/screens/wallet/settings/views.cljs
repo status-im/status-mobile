@@ -100,7 +100,7 @@
         :render-fn render-token-wrapper}]]]))
 
 (defn- create-payload [address]
-  {:address (ethereum/normalized-address address)})
+  {:address (ethereum/normalized-hex address)})
 
 (defview settings-hook []
   (letsubs [{:keys [label view on-close]} [:get-screen-params :wallet-settings-hook]

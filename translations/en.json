@@ -679,6 +679,8 @@
 	"mobile-syncing-sheet-details": "Status tends to use a lot of data when syncing chats. You can choose not to sync when on mobile network",
 	"mobile-syncing-sheet-title": "Sync using Mobile data",
 	"more": "more",
+	"multiaccount-exists-title": "Multiaccount already exists",
+	"multiaccount-exists-content": "This multiaccount already exists. You just need to unlock it",
 	"multiaccounts-recover-enter-phrase-text": "Enter 12, 15, 18, 21 or 24 words.\nSeparate words by a single space.",
 	"multiaccounts-recover-enter-phrase-title": "Enter your seed phrase",
 	"name": "Name",

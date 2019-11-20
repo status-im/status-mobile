@@ -157,8 +157,13 @@
 ;; multiaccounts login module
 (handlers/register-handler-fx
  :multiaccounts.login.ui/multiaccount-selected
- (fn [cofx [_ address photo-path name public-key]]
-   (multiaccounts.login/open-login cofx address photo-path name public-key)))
+ (fn [{:keys [db] :as cofx} [_ address]]
+   (let [{:keys [photo-path name public-key]}
+         (get-in db [:multiaccounts/multiaccounts address])]
+     (fx/merge
+      cofx
+      {:db (dissoc db :intro-wizard)}
+      (multiaccounts.login/open-login address photo-path name public-key)))))
 
 ;; multiaccounts logout module
 

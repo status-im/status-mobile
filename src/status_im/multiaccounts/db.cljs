@@ -38,10 +38,9 @@
 (spec/def :multiaccount/hide-home-tooltip? (spec/nilable boolean?))
 (spec/def :multiaccount/desktop-alpha-release-warning-shown? (spec/nilable boolean?))
 (spec/def :multiaccount/keycard-instance-uid (spec/nilable string?))
-(spec/def :multiaccount/keycard-key-uid (spec/nilable string?))
+(spec/def :multiaccount/key-uid (spec/nilable string?))
 (spec/def :multiaccount/keycard-pairing (spec/nilable string?))
 (spec/def :multiaccount/keycard-paired-on (spec/nilable int?))
-
 (spec/def :multiaccount/multiaccount (spec/keys :opt-un [:multiaccount/name :multiaccount/address
                                                          :multiaccount/photo-path
                                                          :multiaccount/signing-phrase
@@ -57,7 +56,7 @@
                                                          :multiaccount/bootnodes
                                                          :multiaccount/desktop-alpha-release-warning-shown?
                                                          :multiaccount/keycard-instance-uid
-                                                         :multiaccount/keycard-key-uid
+                                                         :multiaccount/key-uid
                                                          :multiaccount/keycard-pairing
                                                          :multiaccount/keycard-paired-on
                                                          :multiaccount/root-address

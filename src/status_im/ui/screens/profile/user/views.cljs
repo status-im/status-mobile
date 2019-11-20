@@ -218,7 +218,7 @@
                 preferred-name
                 seed-backed-up?
                 mnemonic
-                keycard-key-uid
+                keycard-pairing
                 address
                 notifications-enabled?]
          :as   multiaccount}         @(re-frame/subscribe [:multiaccount])
@@ -233,7 +233,7 @@
      (flat-list-content
       preferred-name registrar tribute-to-talk
       active-contacts-count show-backup-seed?
-      keycard-key-uid notifications-enabled?)
+      keycard-pairing notifications-enabled?)
      list-ref
      scroll-y]))
 

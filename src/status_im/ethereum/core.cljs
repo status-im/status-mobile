@@ -55,15 +55,15 @@
 
 (def hex-prefix "0x")
 
-(defn normalized-address [address]
-  (when address
-    (if (string/starts-with? address hex-prefix)
-      address
-      (str hex-prefix address))))
+(defn normalized-hex [hex]
+  (when hex
+    (if (string/starts-with? hex hex-prefix)
+      hex
+      (str hex-prefix hex))))
 
 (defn current-address [db]
   (-> (get-in db [:multiaccount :address])
-      normalized-address))
+      normalized-hex))
 
 (defn get-default-account [accounts]
   (some #(when (:wallet %) %) accounts))
@@ -82,8 +82,8 @@
 (defn coordinates [public-key]
   (when-let [hex (naked-address public-key)]
     (when (= public-key-length (count (subs hex 2)))
-      {:x (normalized-address (subs hex 2 66))
-       :y (normalized-address (subs hex 66))})))
+      {:x (normalized-hex (subs hex 2 66))
+       :y (normalized-hex (subs hex 66))})))
 
 (defn address? [s]
   (when s
@@ -126,8 +126,8 @@
 
 (defn address= [address1 address2]
   (and address1 address2
-       (= (normalized-address address1)
-          (normalized-address address2))))
+       (= (normalized-hex address1)
+          (normalized-hex address2))))
 
 (defn public-key->address [public-key]
   (let [length (count public-key)

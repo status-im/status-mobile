@@ -55,7 +55,7 @@
                                      :line-height 22 :font-size 13
                                      :font-family "monospace"
                                      :color colors/white-transparent-70}}
-       (ethereum/normalized-address address)]]
+       (ethereum/normalized-hex address)]]
      [react/view {:position :absolute :top 12 :right 12}
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-popover {:view :share-account :address address}])}
        [icons/icon :main-icons/share {:color colors/white

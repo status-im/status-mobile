@@ -205,37 +205,44 @@
 
 (fx/defn on-multiaccount-created
   [{:keys [signing-phrase random-guid-generator db] :as cofx}
-   {:keys [address chat-key keycard-instance-uid keycard-key-uid keycard-pairing keycard-paired-on mnemonic] :as multiaccount}
+   {:keys [address chat-key keycard-instance-uid keyUid
+           keycard-pairing keycard-paired-on mnemonic public-key]
+    :as multiaccount}
    password
    {:keys [seed-backed-up? login?] :or {login? true}}]
   (let [[wallet-account {:keys [publicKey]} :as accounts-data] (prepare-accounts-data multiaccount)
         name (gfycat/generate-gfy publicKey)
         photo-path (identicon/identicon publicKey)
-        multiaccount-data {:name name :address address :photo-path photo-path}
-        new-multiaccount (cond-> {; address of the master key
-                                  :address             address
+        multiaccount-data {:name       name
+                           :address    address
+                           :photo-path photo-path
+                           :key-uid    keyUid}
+        keycard-multiaccount? (boolean keycard-pairing)
+        new-multiaccount (cond-> {;; address of the master key
+                                  :address               address
+                                  ;; sha256 of master public key
+                                  :key-uid               keyUid
                                   ;; The address from which we derive any wallet
-                                  :wallet-root-address (get-in multiaccount [:derived constants/path-wallet-root-keyword :address])
+                                  :wallet-root-address   (get-in multiaccount [:derived constants/path-wallet-root-keyword :address])
                                   ;; The address from which we derive any chat account/encryption keys
-                                  :eip1581-address     (get-in multiaccount [:derived constants/path-eip1581-keyword :address])
-                                  :name                name
-                                  :photo-path          photo-path
-                                  ; public key of the chat account
-                                  :public-key          publicKey
-                                  ; default address for Dapps
-                                  :dapps-address       (:address wallet-account)
-                                  :latest-derived-path 0
-                                  :accounts            [wallet-account]
-                                  :signing-phrase      signing-phrase
+                                  :eip1581-address       (get-in multiaccount [:derived constants/path-eip1581-keyword :address])
+                                  :name                  name
+                                  :photo-path            photo-path
+                                  ;; public key of the chat account
+                                  :public-key            publicKey
+                                  ;; default address for Dapps
+                                  :dapps-address         (:address wallet-account)
+                                  :latest-derived-path   0
+                                  :accounts              [wallet-account]
+                                  :signing-phrase        signing-phrase
+                                  :installation-id       (random-guid-generator)
+                                  :mnemonic              mnemonic
+                                  :settings              constants/default-multiaccount-settings}
 
-                                  :installation-id     (random-guid-generator)
-                                  :mnemonic            mnemonic
-                                  :settings            constants/default-multiaccount-settings}
-
-                           keycard-key-uid (assoc :keycard-instance-uid keycard-instance-uid
-                                                  :keycard-key-uid keycard-key-uid
-                                                  :keycard-pairing keycard-pairing
-                                                  :keycard-paired-on keycard-paired-on))
+                           keycard-multiaccount?
+                           (assoc :keycard-instance-uid keycard-instance-uid
+                                  :keycard-pairing keycard-pairing
+                                  :keycard-paired-on keycard-paired-on))
         db (assoc db
                   :multiaccounts/login {:address      address
                                         :name         name
@@ -250,7 +257,7 @@
               {:db (cond-> db
                      seed-backed-up?
                      (assoc-in [:multiaccount :seed-backed-up?] true))}
-              (if keycard-key-uid
+              (if keycard-multiaccount?
                 (save-account-and-login-with-keycard new-multiaccount
                                                      password
                                                      (node/get-new-config db)

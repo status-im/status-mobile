@@ -85,7 +85,7 @@
                   settings                 [:multiaccount-settings]
                   supported-biometric-auth [:supported-biometric-auth]
                   auth-method              [:auth-method]
-                  {:keys [keycard-key-uid]} [:multiaccount]]
+                  keycard-multiaccount?    [:keycard-multiaccount?]]
     (let [show-backup-seed? (and (not seed-backed-up?)
                                  (not (string/blank? mnemonic)))]
       [react/view {:flex 1 :background-color colors/white}
@@ -93,6 +93,6 @@
         (i18n/label :t/privacy-and-security)]
        [list/flat-list
         {:data      (list-data show-backup-seed? settings supported-biometric-auth
-                               (= auth-method "biometric") (boolean keycard-key-uid))
+                               (= auth-method "biometric") keycard-multiaccount?)
          :key-fn    (fn [_ i] (str i))
          :render-fn list/flat-list-generic-render-fn}]])))

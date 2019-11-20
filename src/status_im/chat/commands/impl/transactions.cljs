@@ -308,7 +308,7 @@
           current-chat-id (:current-chat-id db)
           amount-hex      (str "0x" (abi-spec/number-to-hex (money/formatted->internal value symbol decimals)))
           to              (ethereum/public-key->address current-chat-id)
-          to-norm         (ethereum/normalized-address (if (= symbol :ETH) to address))
+          to-norm         (ethereum/normalized-hex (if (= symbol :ETH) to address))
           tx-obj          (if (= symbol :ETH)
                             {:to    to-norm
                              :value amount-hex}
