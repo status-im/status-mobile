@@ -60,6 +60,12 @@ class InviteFriendsButton(BaseButton):
         self.locator = self.Locator.accessibility_id('invite-friends-button')
 
 
+class ChatsMenuInviteFriendsButton(BaseButton):
+    def __init__(self, driver):
+        super(ChatsMenuInviteFriendsButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('chats-menu-invite-friends-button')
+
+
 class ChatElement(BaseButton):
     def __init__(self, driver, username_part):
         super(ChatElement, self).__init__(driver)
@@ -145,6 +151,7 @@ class HomeView(BaseView):
         self.new_group_chat_button = NewGroupChatButton(self.driver)
         self.join_public_chat_button = JoinPublicChatButton(self.driver)
         self.invite_friends_button = InviteFriendsButton(self.driver)
+        self.chats_menu_invite_friends_button = ChatsMenuInviteFriendsButton(self.driver)
         self.delete_chat_button = DeleteChatButton(self.driver)
 
     def wait_for_syncing_complete(self):

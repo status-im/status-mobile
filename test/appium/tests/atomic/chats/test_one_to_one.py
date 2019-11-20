@@ -545,7 +545,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         message_input.paste_text_from_clipboard()
         chat.send_message_button.click()
 
-        chat.chat_element_by_text(message_text[:-2] + ' ').wait_for_visibility_of_element(2)
+        chat.chat_element_by_text(message_text[:-2]).wait_for_visibility_of_element(2)
 
     @marks.testrail_id(5328)
     @marks.critical

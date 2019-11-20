@@ -396,9 +396,10 @@ class BaseView(object):
         self.driver.info('=========================================================================')
         self.driver.info(string)
 
-    def click_system_back_button(self):
+    def click_system_back_button(self, times=1):
         self.driver.info('Click system back button')
-        self.driver.press_keycode(4)
+        for _ in range(times):
+            self.driver.press_keycode(4)
 
     def cut_text(self):
         self.driver.info('Cut text')

@@ -45,7 +45,7 @@
     [list-item/list-item
      {:theme               :action
       :title               :t/invite-friends
-      :accessibility-label :invite-friends-button
+      :accessibility-label :chats-menu-invite-friends-button
       :icon                :main-icons/share
       :on-press            #(do
                               (re-frame/dispatch [:bottom-sheet/hide-sheet])

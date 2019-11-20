@@ -55,7 +55,7 @@ class TestWalletManagement(SingleDeviceTestCase):
     @marks.testrail_id(5384)
     @marks.critical
     def test_open_transaction_on_etherscan(self):
-        user = wallet_users['A']
+        user = wallet_users['D']
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(user['passphrase'])
         wallet_view = home_view.wallet_button.click()
@@ -73,7 +73,7 @@ class TestWalletManagement(SingleDeviceTestCase):
     @marks.testrail_id(5427)
     @marks.medium
     def test_copy_transaction_hash(self):
-        user = wallet_users['A']
+        user = wallet_users['D']
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(user['passphrase'])
         wallet_view = home_view.wallet_button.click()
