@@ -10,18 +10,18 @@ let
 
   androidComposition = androidenv.composeAndroidPackages {
     toolsVersion = "26.1.1";
-    platformToolsVersion = "28.0.2";
-    buildToolsVersions = [ "28.0.3" ];
+    platformToolsVersion = "29.0.5";
+    buildToolsVersions = [ "29.0.2" ];
     includeEmulator = false;
-    platformVersions = [ "28" ];
+    platformVersions = [ "29" ];
     includeSources = false;
     includeDocs = false;
     includeSystemImages = false;
     systemImageTypes = [ "default" ];
-    lldbVersions = [ "2.0.2558144" ];
-    cmakeVersions = [ "3.6.4111459" ];
+    lldbVersions = [ "3.1.4508709" ];
+    cmakeVersions = [ "3.10.2" ];
     includeNDK = true;
-    ndkVersion = "19.2.5345600";
+    ndkVersion = "21.0.5935234";
     useGoogleAPIs = false;
     useGoogleTVAddOns = false;
     includeExtras = [ "extras;android;m2repository" "extras;google;m2repository" ];

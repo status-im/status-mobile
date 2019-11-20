@@ -21,7 +21,7 @@ let
     pname = repo;
     version = "${version}-${strings.substring 0 7 rev}-${host}";
 
-    nativeBuildInputs = 
+    nativeBuildInputs =
       nativeBuildInputs ++
       lib.optional isDarwin xcodeWrapper;
 
@@ -53,11 +53,9 @@ let
     '';
 
     # replace hardcoded paths to go package in /nix/store, otherwise Nix will fail the build
-    preFixup = ''
-      ${preFixup}
-
+    preFixup = preFixup + ''
       find $out -type f -exec ${removeExpr removeReferences} '{}' + || true
-      return
+      return # make sure we stop fixup so as to not allow the host preFixup script to proceed
     '';
 
     passthru = { inherit owner version rev; };

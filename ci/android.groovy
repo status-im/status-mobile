@@ -93,7 +93,7 @@ def renameAPKs() {
   /* rename each for upload & archiving */
   for (apk in found) {
     def arch = extractArchFromAPK(apk)
-    def pkg = utils.pkgFilename(btype, 'apk', arch)
+    def pkg = utils.pkgFilename(env.BUILD_TYPE, 'apk', arch)
     def newApk = "result/${pkg}"
     renamed += newApk
     sh "cp ${apk.path} ${newApk}"
@@ -118,7 +118,7 @@ def uploadToSauceLabs() {
   if (changeId != null) {
     env.SAUCE_LABS_NAME = "${changeId}.apk"
   } else {
-    def pkg = utils.pkgFilename(utils.getBuildType(), 'apk', 'x86')
+    def pkg = utils.pkgFilename(env.BUILD_TYPE, 'apk', 'x86')
     env.SAUCE_LABS_NAME = "${pkg}"
   }
   withCredentials([
@@ -134,7 +134,8 @@ def uploadToSauceLabs() {
       keep: [
         'FASTLANE_DISABLE_COLORS', 'APK_PATHS',
         'SAUCE_ACCESS_KEY', 'SAUCE_USERNAME', 'SAUCE_LABS_NAME'
-      ]
+      ],
+      pure: false
     )
   }
   return env.SAUCE_LABS_NAME

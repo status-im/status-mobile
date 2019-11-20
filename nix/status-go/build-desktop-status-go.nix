@@ -28,6 +28,8 @@ let
       in ''
       pushd "$NIX_BUILD_TOP/go/src/${goPackagePath}" >/dev/null
 
+      export GO111MODULE=off
+
       go build -o $out/${outputFileName} \
           ${goBuildFlags} \
           -buildmode=c-archive \

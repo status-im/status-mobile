@@ -17,7 +17,7 @@ let
   # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
   stdenv = pkgs.stdenvNoCC;
   maven = pkgs.maven;
-  baseGo = pkgs.go_1_12;
+  baseGo = pkgs.go_1_13;
   go = pkgs.callPackage ./patched-go { inherit baseGo; };
   buildGoPackage = pkgs.buildGoPackage.override { inherit go; };
   desktop = pkgs.callPackage ./desktop { inherit target-os stdenv status-go pkgs go nodejs; inherit (pkgs) darwin; };
@@ -37,7 +37,9 @@ let
 
   # TARGETS
   leiningen-shell = mkShell {
-    buildInputs = with pkgs; [ clojure leiningen flock maven nodejs openjdk ];
+    buildInputs = with pkgs; [
+      clojure leiningen flock maven nodejs openjdk
+    ] ++ optional isDarwin pkgs.cocoapods;
     shellHook =
       if target-os == "android" then mobile.android.shellHook else
       if target-os == "ios" then mobile.ios.shellHook else "";
@@ -60,9 +62,9 @@ in {
 
   shell = {
     buildInputs = unique ([
+      yarn
       nodejs
       pkgs.python27 # for e.g. gyp
-      yarn
     ] ++ optional isDarwin pkgs.cocoapods
       ++ optional (isDarwin && !platform.targetIOS) pkgs.clang
       ++ optional (!isDarwin) pkgs.gcc8

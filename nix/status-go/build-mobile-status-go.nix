@@ -31,10 +31,11 @@ let
       in with targetConfig; ''
       mkdir ${NIX_GOWORKDIR}
 
-      GOPATH=${gomobile.dev}:$GOPATH \
-      PATH=${makeBinPath [ gomobile.bin ]}:$PATH \
-      NIX_GOWORKDIR=${NIX_GOWORKDIR} \
-      ${concatStringsSep " " envVars} \
+      export GO111MODULE=off
+      export GOPATH=${gomobile.dev}:$GOPATH
+      export PATH=${makeBinPath [ gomobile.bin ]}:$PATH
+      export NIX_GOWORKDIR=${NIX_GOWORKDIR}
+      export ${concatStringsSep " " envVars}
       gomobile bind \
           -target=${name} \
           -ldflags='${CGO_LDFLAGS}' \

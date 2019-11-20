@@ -1,5 +1,5 @@
 #
-# This Nix expression appends/modifies an existing attribute set in order to run scripts/setup if needed, 
+# This Nix expression appends/modifies an existing attribute set in order to run scripts/setup if needed,
 #  as well as define STATUS_REACT_HOME
 #
 

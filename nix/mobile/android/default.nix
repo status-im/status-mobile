@@ -38,7 +38,6 @@ in {
     ${concatStrings (catAttrs "shellHook" [ mavenAndNpmDeps androidEnv ])}
 
     $STATUS_REACT_HOME/scripts/generate-keystore.sh
-
     $STATUS_REACT_HOME/nix/mobile/reset-node_modules.sh "${mavenAndNpmDeps.deriv}/project" || exit
   '';
 
