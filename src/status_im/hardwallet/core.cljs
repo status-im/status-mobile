@@ -1151,8 +1151,8 @@
   (let [on-verified (get-in db [:hardwallet :pin :on-verified])
         pairing (get-pairing db)]
     (fx/merge cofx
-              {:db (update-in [:hardwallet :pin] merge {:status      nil
-                                                        :error-label nil})}
+              {:db (update-in db [:hardwallet :pin] merge {:status      nil
+                                                           :error-label nil})}
               (clear-on-card-connected)
               (when-not (contains? #{:hardwallet/unpair
                                      :hardwallet/generate-and-load-key
