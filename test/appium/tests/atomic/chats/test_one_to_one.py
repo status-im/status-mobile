@@ -309,9 +309,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5425)
     @marks.medium
-    @marks.skip
-    # TODO: e2e blocker: 8995 (should be enabled after fix)
-    def test_bold_and_italic_text_in_messages(self):
+    # TODO: should be completed with quoting after fix 9480
+    def test_markdown_support_in_messages(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         device_1_home, device_2_home = sign_in_1.create_user(), sign_in_2.create_user()
@@ -322,27 +321,30 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_home.home_button.click()
 
         device_2_chat = device_2_home.add_contact(device_1_public_key)
-
-        bold_text = 'bold text'
-        bold_text_expected = u'\u200b' + bold_text + u'\u200b'  # Zero width whitespaces
-        device_2_chat.chat_message_input.send_keys('*%s*' % bold_text)
+        device_2_chat.chat_message_input.send_keys('test message')
         device_2_chat.send_message_button.click()
-        if not device_2_chat.chat_element_by_text(bold_text_expected).is_element_displayed():
-            self.errors.append('Bold text is not displayed in 1-1 chat for the sender \n')
-
         device_1_chat = device_1_home.get_chat_with_user(default_username_2).click()
-        if not device_1_chat.chat_element_by_text(bold_text_expected).is_element_displayed():
-            self.errors.append('Bold text is not displayed in 1-1 chat for the recipient \n')
 
-        italic_text = 'italic text'
-        italic_text_expected = u'\u200b' + italic_text + u'\u200b'
-        device_2_chat.chat_message_input.send_keys('_%s_' % italic_text)
-        device_2_chat.send_message_button.click()
-        if not device_2_chat.chat_element_by_text(italic_text_expected).is_element_displayed():
-            self.errors.append('Italic text is not displayed in 1-1 chat for the sender \n')
+        markdown = {
+            'bold text in asterics' : '**',
+            'bold text in underscores' : '__',
+            'italic text in asteric': '*',
+            'italic text in underscore' : '_',
+            'inline code' : '`',
+            'code blocks' : '```',
+            # 'quote reply (one row)' : '>',
+        }
 
-        if not device_1_chat.chat_element_by_text(italic_text_expected).is_element_displayed():
-            self.errors.append('Italic text is not displayed in 1-1 chat for the recipient \n')
+        for message, symbol in markdown.items():
+            device_1_home.just_fyi('checking that "%s" is applied (%s) in 1-1 chat' % (message, symbol))
+            message_to_send = symbol + message + symbol if 'quote' not in message else symbol + message
+            device_2_chat.chat_message_input.send_keys(message_to_send)
+            device_2_chat.send_message_button.click()
+            if not device_2_chat.chat_element_by_text(message).is_element_displayed():
+                self.errors.append('%s is not displayed with markdown in 1-1 chat for the sender \n' % message)
+
+            if not device_1_chat.chat_element_by_text(message).is_element_displayed():
+                self.errors.append('%s is not displayed with markdown in 1-1 chat for the recipient \n' % message)
 
         device_1_chat.get_back_to_home_view()
         device_2_chat.get_back_to_home_view()
@@ -350,21 +352,16 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_home.join_public_chat(chat_name)
         device_2_home.join_public_chat(chat_name)
 
-        device_2_chat.chat_message_input.send_keys('*%s*' % bold_text)
-        device_2_chat.send_message_button.click()
-        if not device_2_chat.chat_element_by_text(bold_text_expected).is_element_displayed():
-            self.errors.append('Bold text is not displayed in public chat for the sender')
+        for message, symbol in markdown.items():
+            device_1_home.just_fyi('checking that "%s" is applied (%s) in public chat' % (message, symbol))
+            message_to_send = symbol + message + symbol if 'quote' not in message else symbol + message
+            device_2_chat.chat_message_input.send_keys(message_to_send)
+            device_2_chat.send_message_button.click()
+            if not device_2_chat.chat_element_by_text(message).is_element_displayed():
+                self.errors.append('%s is not displayed with markdown in public chat for the sender \n' % message)
 
-        if not device_1_chat.chat_element_by_text(bold_text_expected).is_element_displayed():
-            self.errors.append('Bold text is not displayed in public chat for the recipient')
-
-        device_2_chat.chat_message_input.send_keys('_%s_' % italic_text)
-        device_2_chat.send_message_button.click()
-        if not device_2_chat.chat_element_by_text(italic_text_expected).is_element_displayed():
-            self.errors.append('Italic text is not displayed in public chat for the sender')
-
-        if not device_1_chat.chat_element_by_text(italic_text_expected).is_element_displayed():
-            self.errors.append('Italic text is not displayed in 1-1 chat for the recipient')
+            if not device_1_chat.chat_element_by_text(message).is_element_displayed():
+                self.errors.append('%s is not displayed with markdown in public chat for the recipient \n' % message)
 
         self.errors.verify_no_errors()
 
