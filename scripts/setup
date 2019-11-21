@@ -50,7 +50,7 @@ fi
 setup_header "Installing requirements..."
 
 if [ "$IN_NIX_SHELL" != 'pure' ] && ! is_nixos && ! program_exists nix; then
-  required_version=$(toolversion nix)
+  required_version="2.3.1"
   NIX_INSTALLER_NO_MODIFY_PROFILE=1 bash <(curl https://nixos.org/releases/nix/nix-${required_version}/install) --no-daemon
   if [ $? -eq 0 ]; then
     echo -e "${YELLOW}**********************************************************************************************************"

@@ -16,8 +16,6 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 PLATFORM_FOLDER="desktop/js_files"
 
-$GIT_ROOT/scripts/run-environment-check.sh desktop
-
 if [ ! -f package.json ] || [ $(readlink package.json) != "${PLATFORM_FOLDER}/package.json" ]; then
   rm -rf node_modules
 

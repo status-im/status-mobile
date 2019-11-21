@@ -25,7 +25,3 @@ function program_version_exists() {
   fi
   $(exit 1)
 }
-
-function toolversion() {
-  ${GIT_ROOT}/scripts/toolversion "${1}"
-}

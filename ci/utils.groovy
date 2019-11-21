@@ -3,14 +3,6 @@ def getVersion() {
   return readFile(path).trim()
 }
 
-def getToolVersion(name) {
-  def version = sh(
-    returnStdout: true,
-    script: "${env.WORKSPACE}/scripts/toolversion ${name}"
-  ).trim()
-  return version
-}
-
 def branchName() {
   return env.GIT_BRANCH.replaceAll(/.*origin\//, '')
 }
