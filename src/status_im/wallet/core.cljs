@@ -220,6 +220,8 @@
   (let [addresses (or addresses (map (comp string/lower-case :address) accounts))
         chain     (ethereum/chain-keyword db)
         assets    (get-in settings [:wallet :visible-tokens chain])
+        first-login?   (get-in settings [:wallet :first-login])
+        SNT            (if first-login? :SNT nil)
         tokens    (->> (tokens/tokens-for all-tokens chain)
                        (remove #(or (:hidden? %)))
                        (reduce (fn [acc {:keys [address symbol]}]
@@ -238,7 +240,7 @@
          (multiaccounts.update/update-settings
           (assoc-in settings
                     [:wallet :visible-tokens chain]
-                    #{})
+                    (merge #{} SNT))
           {}))))))
 
 (fx/defn update-prices
@@ -320,10 +322,14 @@
   [{:keys [db] :as cofx} balances]
   (let [chain          (ethereum/chain-keyword db)
         settings       (get-in db [:multiaccount :settings])
+        first-login?   (get-in settings [:wallet :first-login])
+        SNT            (if first-login? :SNT nil)
         visible-tokens (into #{} (flatten (map keys (vals balances))))
-        new-settings (assoc-in settings
-                               [:wallet :visible-tokens chain]
-                               visible-tokens)]
+        new-settings (-> settings
+                         (assoc-in [:wallet :visible-tokens chain]
+                                   (merge visible-tokens SNT))
+                         (assoc-in [:wallet :first-login] false))]
+    (js/console.log (str "FIRST LOGIN = " first-login?))
     (fx/merge cofx
               (multiaccounts.update/update-settings cofx new-settings {})
               (update-tokens-balances balances)

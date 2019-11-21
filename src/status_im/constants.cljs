@@ -82,7 +82,8 @@
 (def default-multiaccount-settings
   {:web3-opt-in?     true
    :preview-privacy? false
-   :wallet           {:visible-tokens {}}})
+   :wallet           {:visible-tokens {}
+                      :first-login true}})
 
 (def currencies
   {:aed {:id :aed :code "AED" :display-name (i18n/label :t/currency-display-name-aed) :symbol "د.إ"}
