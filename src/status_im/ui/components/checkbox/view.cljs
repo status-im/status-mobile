@@ -10,7 +10,7 @@
   [{:keys [on-value-change checked? accessibility-label
            disabled? style icon-style]
     :or   {accessibility-label :checkbox}}]
-  [react/touchable-highlight
+  [(if on-value-change react/touchable-highlight react/view)
    (merge {:style               (merge
                                  styles/wrapper
                                  style)

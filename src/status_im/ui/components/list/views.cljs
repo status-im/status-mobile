@@ -103,7 +103,7 @@
                                       {:on-long-press on-long-press}))
    (conj item
          [react/view {:style (merge style styles/item-checkbox)}
-          [checkbox/checkbox props]])])
+          [checkbox/checkbox (dissoc props :on-value-change)]])])
 
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn list-item-with-radio-button
