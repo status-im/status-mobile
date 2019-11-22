@@ -9,7 +9,8 @@
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.list-item.views :as list-item])
+            [status-im.ui.components.list-item.views :as list-item]
+            [reagent.core :as reagent])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn toolbar []
@@ -31,27 +32,45 @@
       {:theme    :action
        :title    :t/token-details
        :icon     :main-icons/warning
-       :on-press #(hide-sheet-and-dispatch [:navigate-to :wallet-custom-token-details token])}]
+       :on-press #(hide-sheet-and-dispatch
+                   [:navigate-to :wallet-custom-token-details token])}]
      (when custom?
        [list-item/list-item
         {:theme    :action-destructive
          :title    :t/remove-token
          :icon     :main-icons/delete
-         :on-press #(hide-sheet-and-dispatch [:wallet.custom-token.ui/remove-pressed token])}])]))
+         :on-press #(hide-sheet-and-dispatch
+                     [:wallet.custom-token.ui/remove-pressed token])}])]))
 
-(defn- render-token [{:keys [symbol name icon color custom? checked?] :as token}]
-  [list/list-item-with-checkbox
-   {:checked?        checked?
-    :on-long-press   #(re-frame/dispatch [:bottom-sheet/show-sheet {:content        (custom-token-actions-view token)
-                                                                    :content-height (if custom? 128 68)}])
-    :on-value-change #(re-frame/dispatch [:wallet.settings/toggle-visible-token (keyword symbol) %])}
-   [list/item
-    (if icon
-      [list/item-image icon]
-      [chat-icon/custom-icon-view-list name color])
-    [list/item-content
-     [list/item-primary name]
-     [list/item-secondary symbol]]]])
+(defn render-token
+  [{:keys [symbol name icon color custom? checked?] :as token}]
+  (reagent/create-class
+   {:should-component-update
+    (fn [this [_ old-token] [_ new-token]]
+      (not= (:checked? old-token) (:checked? new-token)))
+    :reagent-render
+    (fn [{:keys [symbol name icon color custom? checked?] :as token}]
+      [list/list-item-with-checkbox
+       {:checked?        checked?
+        :on-long-press
+        #(re-frame/dispatch
+          [:bottom-sheet/show-sheet
+           {:content        (custom-token-actions-view token)
+            :content-height (if custom? 128 68)}])
+        :on-value-change
+        #(re-frame/dispatch
+          [:wallet.settings/toggle-visible-token (keyword symbol) %])}
+       [list/item
+        (if icon
+          [list/item-image icon]
+          [chat-icon/custom-icon-view-list name color])
+        [list/item-content
+         [list/item-primary name]
+         [list/item-secondary symbol]]]])}))
+
+(defn- render-token-wrapper
+  [token]
+  [render-token token])
 
 (defview manage-assets []
   (letsubs [{custom-tokens true default-tokens nil} [:wallet/grouped-chain-tokens]]
@@ -59,23 +78,26 @@
      [toolbar]
      [react/view {:style components.styles/flex}
       [list/section-list
-       {:header                      [react/view {:margin-top 16}
-                                      [list-item/list-item
-                                       {:theme     :action
-                                        :title     :t/add-custom-token
-                                        :icon      :main-icons/add
-                                        :on-press  #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]]
-        :sections                    (concat
-                                      (when (seq custom-tokens)
-                                        [{:title (i18n/label :t/custom)
-                                          :data  custom-tokens}])
-                                      [{:title (i18n/label :t/default)
-                                        :data  default-tokens}])
-        :key-fn                      :address
+       {:header
+        [react/view {:margin-top 16}
+         [list-item/list-item
+          {:theme     :action
+           :title     :t/add-custom-token
+           :icon      :main-icons/add
+           :on-press
+           #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]]
+        :sections (concat
+                   (when (seq custom-tokens)
+                     [{:title (i18n/label :t/custom)
+                       :data  custom-tokens}])
+                   [{:title (i18n/label :t/default)
+                     :data  default-tokens}])
+        :key-fn :address
         :stickySectionHeadersEnabled false
-        :render-section-header-fn    (fn [{:keys [title data]}]
-                                       [list-item/list-item {:type :section-header :title title}])
-        :render-fn                   render-token}]]]))
+        :render-section-header-fn
+        (fn [{:keys [title data]}]
+          [list-item/list-item {:type :section-header :title title}])
+        :render-fn render-token-wrapper}]]]))
 
 (defn- create-payload [address]
   {:address (ethereum/normalized-address address)})
