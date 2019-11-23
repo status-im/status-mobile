@@ -15,7 +15,6 @@
             [status-im.ui.components.list.styles :as list.styles]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as topbar]
@@ -56,7 +55,6 @@
   ([toolbar content] (simple-screen nil toolbar content))
   ([{:keys [avoid-keyboard?]} toolbar content]
    [(top-view avoid-keyboard?) {:flex 1}
-    [status-bar/status-bar]
     toolbar
     content]))
 

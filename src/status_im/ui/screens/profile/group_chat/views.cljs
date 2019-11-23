@@ -9,7 +9,6 @@
             [status-im.ui.components.contact.contact :as contact]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [re-frame.core :as re-frame]
             [status-im.ui.components.common.styles :as common.styles]
@@ -85,7 +84,6 @@
             allow-adding-members? (and admin?
                                        (< (count members) constants/max-group-chat-participants))]
         [react/view profile.components.styles/profile
-         [status-bar/status-bar]
          ;;TODO doesn't work, needs to be fixed
          ;(if editing?
            ;[group-chat-profile-edit-toolbar]

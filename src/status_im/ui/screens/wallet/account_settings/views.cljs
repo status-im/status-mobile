@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.account-settings.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as topbar]
             [status-im.ui.components.text-input.view :as text-input]
             [re-frame.core :as re-frame]
@@ -36,7 +35,6 @@
 (defview account-added []
   (letsubs [{:keys [account]} [:generate-account]]
     [react/keyboard-avoiding-view {:flex 1}
-     [status-bar/status-bar]
      [react/scroll-view {:keyboard-should-persist-taps :handled
                          :style                        {:margin-top 70 :flex 1}}
       [react/view {:align-items :center :padding-horizontal 40}
@@ -82,7 +80,6 @@
   (letsubs [{:keys [address color path] :as account} [:current-account]
             new-account (reagent/atom nil)]
     [react/keyboard-avoiding-view {:flex 1}
-     [status-bar/status-bar]
      [topbar/toolbar {}
       topbar/default-nav-back
       [topbar/content-title (i18n/label :t/account-settings)]

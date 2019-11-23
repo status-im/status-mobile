@@ -9,7 +9,6 @@
             [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar.view]
@@ -179,7 +178,6 @@
           url-original    (browser/get-current-url browser)
           opt-in?         (or (nil? (:web3-opt-in? settings)) (:web3-opt-in? settings))]
       [react/view {:style styles/browser}
-       [status-bar/status-bar]
        [toolbar error? url url-original browser browser-id url-editing? webview]
        [react/view
         (when loading?

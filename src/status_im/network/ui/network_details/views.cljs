@@ -1,7 +1,6 @@
 (ns status-im.network.ui.network-details.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
@@ -19,7 +18,6 @@
           connected?               (= id current-network)
           custom?                  (seq (filter #(= (:id %) id) (:custom networks)))]
       [react/view st/container
-       [status-bar/status-bar]
        [react/view components.styles/flex
         [toolbar/simple-toolbar (i18n/label :t/network-details)]
         [react/view components.styles/flex

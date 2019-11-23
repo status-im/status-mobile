@@ -6,7 +6,6 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar.view]
             [status-im.ui.screens.add-new.styles :as add-new.styles]
             [status-im.ui.screens.add-new.new-chat.styles :as styles]
@@ -30,7 +29,6 @@
                   new-identity  [:contacts/new-identity]
                   error-message [:new-identity-error]]
     [react/view {:style {:flex 1}}
-     [status-bar/status-bar]
      [toolbar.view/simple-toolbar (i18n/label :t/new-chat) true]
      [react/view add-new.styles/new-chat-container
       [react/view add-new.styles/new-chat-input-container

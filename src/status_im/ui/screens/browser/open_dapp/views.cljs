@@ -4,7 +4,6 @@
    [status-im.i18n :as i18n]
    [status-im.ui.components.colors :as colors]
    [status-im.ui.components.react :as react]
-   [status-im.ui.components.status-bar.view :as status-bar]
    [status-im.ui.screens.browser.open-dapp.styles :as styles]
    [status-im.ui.components.list.views :as list]
    [status-im.ui.components.common.common :as components.common]
@@ -125,7 +124,6 @@
   (views/letsubs [browsers [:browser/browsers-vals]
                   url-text (atom nil)]
     [react/keyboard-avoiding-view {:style {:flex 1}}
-     [status-bar/status-bar]
      [react/text-input {:on-change-text      #(reset! url-text %)
                         :on-submit-editing   #(re-frame/dispatch [:browser.ui/open-url @url-text])
                         :placeholder         (i18n/label :t/enter-url)

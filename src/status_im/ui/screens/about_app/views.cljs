@@ -8,7 +8,6 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.about-app.styles :as styles]))
 
@@ -57,7 +56,6 @@
   (views/letsubs [app-version  [:get-app-short-version]
                   node-version [:get-app-node-version]]
     [react/view {:flex 1 :background-color colors/white}
-     [status-bar/status-bar]
      [toolbar/simple-toolbar
       (i18n/label :t/about-app)]
      [list/flat-list

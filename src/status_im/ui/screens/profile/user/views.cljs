@@ -15,7 +15,6 @@
             [status-im.ui.components.list.views :as list.views]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.chat.photos :as photos]
@@ -244,11 +243,10 @@
         scroll-y (animation/create-value 0)]
     (large-toolbar/add-listener anim-opacity scroll-y)
     (fn []
-      [react/safe-area-view
+      [react/view
        {:style
         (merge {:flex 1}
                (when platform/ios?
                  {:margin-bottom tabs.styles/tabs-diff}))}
-       [status-bar/status-bar {:type :main}]
        [minimized-toolbar-handler anim-opacity]
        [content-with-header list-ref scroll-y]])))

@@ -5,7 +5,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.stickers.styles :as styles]
@@ -61,7 +60,6 @@
 (defview packs []
   (letsubs [packs [:stickers/all-packs]]
     [react/view styles/screen
-     [status-bar/status-bar]
      [react/keyboard-avoiding-view components.styles/flex
       [toolbar/simple-toolbar (i18n/label :t/sticker-market)]
       [react/scroll-view {:keyboard-should-persist-taps :handled :style {:padding 16}}
@@ -75,7 +73,6 @@
 (defview pack-main [modal?]
   (letsubs [{:keys [id name author price thumbnail stickers installed owned pending]} [:stickers/get-current-pack]]
     [react/view styles/screen
-     [status-bar/status-bar]
      [react/keyboard-avoiding-view components.styles/flex
       [toolbar/simple-toolbar nil modal?]
       [react/view {:height 74 :align-items :center :flex-direction :row :padding-horizontal 16}

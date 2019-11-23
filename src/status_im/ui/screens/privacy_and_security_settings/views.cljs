@@ -7,7 +7,6 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.multiaccounts.biometric.core :as biometric])
   (:require-macros [status-im.utils.views :as views]))
@@ -90,7 +89,6 @@
     (let [show-backup-seed? (and (not seed-backed-up?)
                                  (not (string/blank? mnemonic)))]
       [react/view {:flex 1 :background-color colors/white}
-       [status-bar/status-bar]
        [toolbar/simple-toolbar
         (i18n/label :t/privacy-and-security)]
        [list/flat-list

@@ -6,7 +6,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.toolbar.actions :as act]
             [status-im.ui.components.toolbar.view :as toolbar]
@@ -55,7 +54,6 @@
             view-id [:view-id]
             supported-biometric-auth [:supported-biometric-auth]]
     [react/keyboard-avoiding-view {:style ast/multiaccounts-view}
-     [status-bar/status-bar]
      [login-toolbar can-navigate-back?]
      [react/scroll-view styles/login-view
       [react/view styles/login-badge-container

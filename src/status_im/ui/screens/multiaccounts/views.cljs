@@ -6,7 +6,6 @@
             [status-im.ui.screens.multiaccounts.styles :as styles]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -47,7 +46,6 @@
 (defview multiaccounts []
   (letsubs [multiaccounts [:multiaccounts/multiaccounts]]
     [react/view styles/multiaccounts-view
-     [status-bar/status-bar]
      [react/text {:style {:typography :header :margin-top 24 :text-align :center}}
       (i18n/label :t/unlock)]
      [react/view styles/multiaccounts-container

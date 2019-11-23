@@ -4,7 +4,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
@@ -114,7 +113,6 @@
   (letsubs [{:keys [filters all-filters? on-touch-select-all]}
             [:wallet.transactions.filters/screen]]
     [react/view styles/filter-container
-     [status-bar/status-bar {:type :modal-main}]
      [toolbar/toolbar {}
       [toolbar/nav-clear-text
        {:accessibility-label :done-button}
@@ -223,7 +221,6 @@
              :as transaction}
             [:wallet.transactions.details/screen hash address]]
     [react/view {:style components.styles/flex}
-     [status-bar/status-bar]
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/transaction-details)]

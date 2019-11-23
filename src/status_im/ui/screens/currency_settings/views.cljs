@@ -5,7 +5,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.currency-settings.styles :as styles]
@@ -26,7 +25,6 @@
 (views/defview currency-settings []
   (views/letsubs [currency-id [:wallet.settings/currency]]
     [react/view {:flex 1}
-     [status-bar/status-bar]
      [toolbar/simple-toolbar
       (i18n/label :t/main-currency)]
      [react/view styles/wrapper

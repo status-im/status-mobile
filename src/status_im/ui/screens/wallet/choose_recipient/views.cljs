@@ -5,7 +5,6 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.camera :as camera]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as topbar]
             [status-im.ui.screens.wallet.choose-recipient.styles :as styles]
@@ -48,7 +47,6 @@
             dimensions        [:dimensions/window]
             camera-flashlight [:wallet.send/camera-flashlight]]
     [react/view {:style styles/qr-code}
-     [status-bar/status-bar {:type :transparent}]
      [topbar camera-flashlight]
      [react/text {:style               (styles/qr-code-text dimensions)
                   :accessibility-label :scan-qr-code-with-wallet-address-text}

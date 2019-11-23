@@ -7,7 +7,6 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.screens.profile.components.views :as profile.components]
@@ -29,7 +28,6 @@
   (views/letsubs [bootnodes-enabled [:settings/bootnodes-enabled]
                   bootnodes         [:settings/network-bootnodes]]
     [react/view {:flex 1}
-     [status-bar/status-bar]
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/bootnodes-settings)]

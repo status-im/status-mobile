@@ -154,18 +154,19 @@
       :reagent-render
       (fn []
         (when (and @view-id main-component)
-          [react/view {:flex 1}
-           [:> (if @two-pane? @main-component-two-pane @main-component)
-            {:ref                    (fn [r]
-                                       (navigation/set-navigator-ref r)
-                                       (when (and
-                                              platform/android?
-                                              (not js/goog.DEBUG)
-                                              (not (contains? #{:intro :login :progress} @view-id)))
-                                         (navigation/navigate-to @view-id nil)))
-              ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
-             :persistNavigationState (when js/goog.DEBUG persist-state)
-             :loadNavigationState    (when js/goog.DEBUG load-state)}]
-           [signing/signing]
-           [bottom-sheet]
-           [popover/popover]]))})))
+          [react/safe-area-provider
+           [react/view {:flex 1}
+            [:> (if @two-pane? @main-component-two-pane @main-component)
+             {:ref                    (fn [r]
+                                        (navigation/set-navigator-ref r)
+                                        (when (and
+                                               platform/android?
+                                               (not js/goog.DEBUG)
+                                               (not (contains? #{:intro :login :progress} @view-id)))
+                                          (navigation/navigate-to @view-id nil)))
+               ;; see https://reactnavigation.org/docs/en/state-persistence.html#development-mode
+              :persistNavigationState (when js/goog.DEBUG persist-state)
+              :loadNavigationState    (when js/goog.DEBUG load-state)}]
+            [signing/signing]
+            [bottom-sheet]
+            [popover/popover]]]))})))

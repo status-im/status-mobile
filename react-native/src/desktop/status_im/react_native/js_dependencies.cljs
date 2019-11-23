@@ -37,3 +37,4 @@
 (def react-native-mail      #js {:mail (fn [])})
 (def async-storage          #js {})
 (def back-handler           #js {})
+(def safe-area-context      #js {})

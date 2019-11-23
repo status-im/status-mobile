@@ -6,7 +6,6 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.toolbar.view :as toolbar])
@@ -46,7 +45,6 @@
   (views/letsubs [current-network [:networks/current-network]
                   networks        [:get-networks]]
     [react/view components.styles/flex
-     [status-bar/status-bar]
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/network-settings)]

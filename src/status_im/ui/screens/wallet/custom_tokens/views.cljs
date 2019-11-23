@@ -4,7 +4,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.common.common :as components.common]
             [clojure.string :as string]
@@ -25,7 +24,6 @@
   (letsubs [{:keys [contract name symbol balance decimals in-progress? error error-name error-symbol]}
             [:wallet/custom-token-screen]]
     [react/keyboard-avoiding-view {:flex 1 :background-color :white}
-     [status-bar/status-bar]
      [toolbar/toolbar nil
       toolbar/default-nav-back
       [toolbar/content-title
@@ -108,7 +106,6 @@
   (letsubs [{:keys [address name symbol decimals custom?] :as token}
             [:get-screen-params]]
     [react/keyboard-avoiding-view {:flex 1 :background-color :white}
-     [status-bar/status-bar]
      [toolbar/toolbar nil
       toolbar/default-nav-back
       [toolbar/content-title name]]

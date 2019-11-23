@@ -21,7 +21,6 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.constants :as constants]
             [status-im.utils.config :as config]
             [status-im.utils.platform :as platform]))
@@ -83,7 +82,6 @@
 (defview intro []
   (letsubs  [{window-height :height} [:dimensions/window]]
     [react/view {:style styles/intro-view}
-     [status-bar/status-bar {:flat? true}]
      [intro-viewer [{:image (:intro1 resources/ui)
                      :title :intro-title1
                      :text :intro-text1}

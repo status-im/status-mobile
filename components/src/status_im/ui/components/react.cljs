@@ -35,7 +35,6 @@
 (def app-registry (get-react-property "AppRegistry"))
 (def app-state (get-react-property "AppState"))
 (def view (get-class "View"))
-(def safe-area-view (get-class "SafeAreaView"))
 (def progress-bar (get-class "ProgressBarAndroid"))
 
 (def status-bar-class (when-not platform/desktop? (get-react-property "StatusBar")))
@@ -299,26 +298,20 @@
    {:preview [view {}]}
    comp])
 
-;; Platform-specific View
+(def safe-area-provider (adapt-class (object/get js-dependencies/safe-area-context "SafeAreaProvider")))
 
-(defmulti create-main-screen-view #(cond
-                                     platform/iphone-x? :iphone-x
-                                     platform/ios? :ios
-                                     platform/android? :android))
-
-(defmethod create-main-screen-view :iphone-x [current-view]
+(defn create-main-screen-view [current-view]
   (fn [props & children]
-    (apply vector safe-area-view props children)))
+    (apply vector (adapt-class (object/get js-dependencies/safe-area-context "SafeAreaView")) props children)))
 
-(defmethod create-main-screen-view :default [_]
-  view)
-
-(views/defview main-screen-modal-view [current-view & components]
-  (views/letsubs []
-    (let [main-screen-view (create-main-screen-view current-view)]
-      [main-screen-view styles/flex
-       [(if (= current-view :chat-modal)
-          view
-          keyboard-avoiding-view)
-        {:flex 1 :flex-direction :column}
-        (apply vector view styles/flex components)]])))
+(defn main-screen-modal-view [current-view & components]
+  ;; NOTE on Android we use Modal component and it manages statusbar area by itself
+  [(if platform/ios?
+     (create-main-screen-view current-view)
+     view)
+   styles/flex
+   [(if (= current-view :chat-modal)
+      view
+      keyboard-avoiding-view)
+    {:flex 1 :flex-direction :column}
+    (apply vector view styles/flex components)]])

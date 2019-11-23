@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.account.views
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
@@ -23,7 +22,6 @@
 
 (defn toolbar-view [title]
   [react/view
-   [status-bar/status-bar]
    [toolbar/toolbar {:transparent? true}
     toolbar/default-nav-back
     [toolbar/content-title title]

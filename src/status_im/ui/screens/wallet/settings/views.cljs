@@ -6,7 +6,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
@@ -57,7 +56,6 @@
 (defview manage-assets []
   (letsubs [{custom-tokens true default-tokens nil} [:wallet/grouped-chain-tokens]]
     [react/view (merge components.styles/flex {:background-color :white})
-     [status-bar/status-bar]
      [toolbar]
      [react/view {:style components.styles/flex}
       [list/section-list
@@ -86,7 +84,6 @@
   (letsubs [{:keys [label view on-close]} [:get-screen-params :wallet-settings-hook]
             {address :address} [:multiaccount]]
     [react/keyboard-avoiding-view {:style {:flex 1 :background-color colors/blue}}
-     [status-bar/status-bar {:type :wallet}]
      [toolbar/toolbar
       {:style {:border-bottom-color colors/white-transparent-10}}
       [toolbar/nav-button

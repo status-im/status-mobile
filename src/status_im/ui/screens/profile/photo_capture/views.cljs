@@ -3,7 +3,6 @@
             [reagent.core :as reagent]
             [status-im.ui.components.camera :as camera]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.profile.photo-capture.styles :as styles]
@@ -25,7 +24,6 @@
 (defn profile-photo-capture []
   (let [camera-ref (reagent/atom nil)]
     [react/view styles/container
-     [status-bar/status-bar]
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/image-source-title)]]

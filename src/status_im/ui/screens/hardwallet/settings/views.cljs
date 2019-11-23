@@ -3,7 +3,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -52,7 +51,6 @@
 (defview reset-card []
   (letsubs [disabled? [:keycard-reset-card-disabled?]]
     [react/view {:flex 1}
-     [status-bar/status-bar]
      [toolbar/simple-toolbar
       (i18n/label :t/reset-card)]
      [react/view {:flex             1
@@ -91,7 +89,6 @@
             puk-retry-counter [:hardwallet/puk-retry-counter]
             pairing [:keycard-multiaccount-pairing]]
     [react/view {:flex 1}
-     [status-bar/status-bar]
      [toolbar/simple-toolbar
       (i18n/label :t/status-keycard)]
      [react/view {:flex             1

@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.accounts.views
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.toolbar.styles :as toolbar.styles]
             [status-im.ui.components.colors :as colors]
@@ -133,7 +132,6 @@
 
 (defn accounts-overview []
   [react/view {:flex 1}
-   [status-bar/status-bar]
    [react/scroll-view
     [accounts-options]
     [react/view {:margin-top 8 :padding-horizontal 16}

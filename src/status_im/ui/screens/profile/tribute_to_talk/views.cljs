@@ -7,7 +7,6 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.profile.tribute-to-talk.styles :as styles])
@@ -326,8 +325,7 @@
                     fiat-value disable-button? state]}
             [:tribute-to-talk/settings-ui]]
     [react/keyboard-avoiding-view {:style styles/container}
-     [react/safe-area-view {:style {:flex 1}}
-      [status-bar/status-bar]
+     [react/view {:style {:flex 1}}
       [toolbar/toolbar
        nil
        (when-not (= :finish step)

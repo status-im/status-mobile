@@ -2,7 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as common.styles]
             [status-im.ui.components.text-input.view :as text-input.view]
             [status-im.ui.components.toolbar.view :as toolbar]
@@ -74,7 +73,6 @@
   (views/letsubs [topic [:public-group-topic]
                   error [:public-chat.new/topic-error-message]]
     [react/view {:style styles/group-container}
-     [status-bar/status-bar]
      [toolbar/simple-toolbar
       (i18n/label :t/new-public-group-chat)
       true]

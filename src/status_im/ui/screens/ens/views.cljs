@@ -216,7 +216,6 @@
   (views/letsubs [{:keys [state custom-domain? username]}
                   [:ens/search-screen]]
     [react/keyboard-avoiding-view {:flex 1}
-     [status-bar/status-bar {:type :main}]
      [toolbar]
      [react/scroll-view {:style {:flex 1}
                          ;;NOTE required so that switching custom-domain
@@ -316,7 +315,6 @@
                   [:ens/checkout-screen]]
     (let [checked? (reagent/atom false)]
       [react/keyboard-avoiding-view {:flex 1}
-       [status-bar/status-bar {:type :main}]
        [toolbar]
        [react/scroll-view {:style {:flex 1}}
         [react/view {:style {:flex 1
@@ -397,7 +395,6 @@
 (views/defview confirmation []
   (views/letsubs [{:keys [state username]} [:ens/confirmation-screen]]
     [react/keyboard-avoiding-view {:flex 1}
-     [status-bar/status-bar {:type :main}]
      [toolbar]
      [react/view {:style {:flex 1
                           :align-items :center
@@ -441,7 +438,6 @@
 (views/defview terms []
   (views/letsubs [{:keys [contract]} [:get-screen-params :ens-terms]]
     [react/scroll-view {:style {:flex 1}}
-     [status-bar/status-bar {:type :main}]
      [toolbar/simple-toolbar
       (i18n/label :t/ens-terms-registration)]
      [react/view {:style {:height 136 :background-color colors/gray-lighter :justify-content :center :align-items :center}}
@@ -484,7 +480,6 @@
   (views/letsubs [{:keys [name address custom-domain? public-key pending?]}
                   [:ens.name/screen]]
     [react/view {:style {:flex 1}}
-     [status-bar/status-bar {:type :main}]
      [toolbar/simple-toolbar
       name]
      [react/scroll-view {:style {:flex 1}}
@@ -669,7 +664,6 @@
 (views/defview main []
   (views/letsubs [{:keys [names multiaccount show?]} [:ens.main/screen]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
-     [status-bar/status-bar {:type :main}]
      [toolbar/simple-toolbar
       (i18n/label :t/ens-usernames)]
      (if (seq names)

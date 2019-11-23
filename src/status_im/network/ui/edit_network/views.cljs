@@ -6,7 +6,6 @@
    [status-im.i18n :as i18n]
    [status-im.ui.components.styles :as components.styles]
    [status-im.ui.components.common.common :as components.common]
-   [status-im.ui.components.status-bar.view :as status-bar]
    [status-im.ui.components.toolbar.view :as toolbar]
    [status-im.ui.components.list.views :as list]
    [status-im.ui.components.text-input.view :as text-input]
@@ -31,7 +30,6 @@
                   is-valid?      [:manage-network-valid?]]
     (let [custom? (= (get-in manage-network [:chain :value]) :custom)]
       [react/view styles/container
-       [status-bar/status-bar]
        [react/keyboard-avoiding-view components.styles/flex
         [toolbar/simple-toolbar (i18n/label :t/add-network)]
         [react/scroll-view

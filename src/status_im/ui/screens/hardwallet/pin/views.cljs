@@ -7,7 +7,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.hardwallet.pin.styles :as styles]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]))
 
@@ -129,7 +128,6 @@
             error-label [:hardwallet/pin-error-label]]
     [react/view {:flex             1
                  :background-color colors/white}
-     [status-bar/status-bar]
      [toolbar/toolbar
       nil
       [toolbar/nav-button (assoc toolbar.actions/default-back

@@ -4,7 +4,6 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.fleet-settings.styles :as styles]
             [status-im.node.core :as node]
@@ -41,7 +40,6 @@
   (views/letsubs [custom-fleets [:fleets/custom-fleets]
                   current-fleet [:settings/current-fleet]]
     [react/view {:flex 1}
-     [status-bar/status-bar]
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/fleet-settings)]]

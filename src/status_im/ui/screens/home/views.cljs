@@ -45,7 +45,6 @@
 (defn welcome []
   [react/view {:style {:flex 1}}
    [react/view {:style styles/welcome-view}
-    [status-bar/status-bar {:type :main}]
     [welcome-image-wrapper]
     [react/i18n-text {:style styles/welcome-text :key :welcome-to-status}]
     [react/view
@@ -127,7 +126,7 @@
          [list/flat-list {:data           all-home-items
                           :key-fn         first
                           :header         [react/view {:height 4 :flex 1}]
-                          :footer 				[react/view {:height 380 :margin-top 70} [home-tooltip-view false hide-home-tooltip?]]
+                          :footer         [react/view {:height 380 :margin-top 70} [home-tooltip-view false hide-home-tooltip?]]
                           :on-scroll-begin-drag
                           (fn [e]
                             (reset! scrolling-from-top?
@@ -167,7 +166,6 @@
                            {:margin-bottom tabs.styles/tabs-diff})
                          (when two-pane-ui-enabled?
                            {:border-right-width 1 :border-right-color colors/gray-lighter}))
-       [status-bar/status-bar {:type :main}]
        [react/keyboard-avoiding-view {:style     {:flex 1}
                                       :on-layout (fn [e]
                                                    (re-frame/dispatch

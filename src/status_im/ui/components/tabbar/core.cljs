@@ -110,8 +110,7 @@
     content
     (when platform/iphone-x?
       [react/view
-       {:style tabs.styles/ios-titles-cover}])]
-   [react/safe-area-view {:flex 1}]])
+       {:style tabs.styles/ios-titles-cover}])]])
 
 (defn tabs-animation-wrapper-android
   [keyboard-shown? view-id content]

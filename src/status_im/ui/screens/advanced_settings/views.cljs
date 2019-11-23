@@ -5,7 +5,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]))
 
 (defn- normal-mode-settings-data [network-name current-log-level
@@ -137,7 +136,6 @@
                   current-log-level        [:settings/current-log-level]
                   current-fleet            [:settings/current-fleet]]
     [react/view {:flex 1 :background-color colors/white}
-     [status-bar/status-bar]
      [toolbar/simple-toolbar
       (i18n/label :t/advanced)]
      [list/flat-list

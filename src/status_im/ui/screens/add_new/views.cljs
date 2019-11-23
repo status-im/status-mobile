@@ -4,7 +4,6 @@
             [status-im.ui.components.common.common :as common]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.utils.platform :as platform]
             [status-im.ui.components.list-item.views :as list-item]))
@@ -51,7 +50,6 @@
 
 (defn add-new []
   [react/view {:flex 1 :background-color :white}
-   [status-bar/status-bar]
    [toolbar/simple-toolbar (i18n/label :t/new)]
    [common/separator]
    [options-list]])

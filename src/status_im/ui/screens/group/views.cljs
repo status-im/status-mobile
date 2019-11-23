@@ -14,7 +14,6 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.utils.platform :as platform]
             [status-im.ui.components.contact.contact :as contact]
@@ -128,7 +127,6 @@
   (views/letsubs [contacts                [:contacts/active]
                   selected-contacts-count [:selected-contacts-count]]
     [react/keyboard-avoiding-view {:style styles/group-container}
-     [status-bar/status-bar]
      [toolbar
       (i18n/label :t/new-group-chat)
       (i18n/label :t/group-chat-members-count
@@ -148,7 +146,6 @@
     (let [save-btn-enabled? (and (spec/valid? :global/not-empty-string group-name) (pos? (count contacts)))]
       [react/keyboard-avoiding-view (merge {:behavior :padding}
                                            styles/group-container)
-       [status-bar/status-bar]
        [toolbar
         (i18n/label :t/new-group-chat)
         (i18n/label :t/group-chat-members-count
@@ -176,7 +173,6 @@
                   selected-contacts-count         [:selected-participants-count]]
     (let [current-participants-count (count (:contacts current-chat))]
       [react/keyboard-avoiding-view {:style styles/group-container}
-       [status-bar/status-bar]
        [toolbar
         name
         (i18n/label :t/group-chat-members-count

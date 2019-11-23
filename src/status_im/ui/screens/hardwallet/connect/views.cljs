@@ -7,7 +7,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]))
@@ -44,7 +43,6 @@
   (letsubs [nfc-enabled? [:hardwallet/nfc-enabled?]
             setup-step [:hardwallet-setup-step]]
     [react/view styles/container
-     [status-bar/status-bar]
      [react/view {:flex            1
                   :flex-direction  :column
                   :justify-content :space-between}

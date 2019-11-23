@@ -53,3 +53,4 @@
 (def react-native-shake  #js {})
 (def net-info  #js {})
 (def touchid  #js {})
+(def safe-area-context #js {})

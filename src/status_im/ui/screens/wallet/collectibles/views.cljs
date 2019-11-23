@@ -4,7 +4,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as component.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.wallet.collectibles.styles :as styles]))
@@ -20,7 +19,6 @@
             collectibles [:screen-collectibles]]
     [react/view styles/container
      [react/view {:style component.styles/flex}
-      [status-bar/status-bar]
       [toolbar/toolbar {}
        toolbar/default-nav-back
        [toolbar/content-title name]]

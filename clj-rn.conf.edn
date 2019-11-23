@@ -41,7 +41,8 @@
               "functional-red-black-tree"
               "react-native-mail"
               "react-native-shake"
-              "@react-native-community/netinfo"]
+              "@react-native-community/netinfo"
+              "react-native-safe-area-context"]
  ;; Desktop modules
  :desktop-modules ["buffer"
                    "bignumber.js"

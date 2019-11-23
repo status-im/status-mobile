@@ -40,3 +40,4 @@
 (def desktop-menu           #js {:addEventListener (fn [])})
 (def desktop-config         #js {:addEventListener (fn [])})
 (def desktop-shortcuts      #js {:addEventListener (fn [])})
+(def safe-area-context      (js/require "react-native-safe-area-context"))

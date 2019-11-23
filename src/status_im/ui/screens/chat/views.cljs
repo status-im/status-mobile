@@ -13,7 +13,6 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.chat.actions :as actions]
@@ -404,8 +403,6 @@
     [react/view {:style     style/chat-view
                  :on-layout (fn [e]
                               (re-frame/dispatch [:set :layout-height (-> e .-nativeEvent .-layout .-height)]))}
-     ^{:key current-chat-id}
-     [status-bar/status-bar (when modal? {:type :modal-white})]
      [toolbar/toolbar
       {:chat? true
        :style {:z-index 2}}

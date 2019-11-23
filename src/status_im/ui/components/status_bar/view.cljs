@@ -3,28 +3,8 @@
             [status-im.ui.components.status-bar.styles :as styles]
             [status-im.utils.platform :as platform]))
 
-(defn status-bar [{:keys [type flat?]}]
-  (let [view-style
-        (case type
-          :main styles/view-main
-          :modal-main styles/view-modal-main
-          :transparent styles/view-transparent
-          :modal styles/view-modal
-          :modal-white styles/view-modal-white
-          :modal-wallet styles/view-modal-wallet
-          :transaction styles/view-transaction
-          :wallet styles/view-wallet
-          :wallet-tab styles/view-wallet-tab
-          styles/view-default)]
-    (when-not platform/desktop?
-      [react/view {:style (cond-> view-style flat? (assoc :elevation 0))}])))
-
 (defn get-config [view-id]
-  (or (get {:create-multiaccount             {:flat? true}
-            :chat-modal                      {:type :modal-white}
-            :intro                           {:flat? true}
-            :recipient-qr-code               {:type :transparent}
-            :wallet-transactions-filter      {:type :modal-main}}
+  (or (get {:recipient-qr-code {:type :transparent}}
            view-id)
       {:type :main}))
 
@@ -46,15 +26,7 @@
                 network-activity-indicator-visible
                 translucent]}
         (case type
-          :main styles/status-bar-main
-          :modal-main styles/status-bar-main-main
           :transparent styles/status-bar-transparent
-          :modal styles/status-bar-modal
-          :modal-white styles/status-bar-modal-white
-          :modal-wallet styles/status-bar-modal-wallet
-          :transaction styles/status-bar-transaction
-          :wallet styles/status-bar-wallet
-          :wallet-tab styles/status-bar-wallet-tab
           styles/status-bar-default)]
     (when (and background-color platform/android?)
       (.setBackgroundColor react/status-bar-class (clj->js background-color)))

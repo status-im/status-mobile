@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.add-new.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
@@ -14,7 +13,6 @@
 
 (defn add-account []
   [react/view {:flex 1}
-   [status-bar/status-bar]
    [toolbar/toolbar {:transparent? true} toolbar/default-nav-back nil]
    [react/scroll-view {:keyboard-should-persist-taps :handled
                        :style                        {:flex 1}}
@@ -39,7 +37,6 @@
   (letsubs [{:keys [error]} [:generate-account]
             entered-password (reagent/atom "")]
     [react/keyboard-avoiding-view {:style {:flex 1}}
-     [status-bar/status-bar {:flat? true}]
      [toolbar/toolbar {:transparent? true} toolbar/default-nav-back nil]
      [react/view {:flex 1}
       [react/view {:style {:flex            1
