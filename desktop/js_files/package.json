@@ -46,7 +46,7 @@
     "web3-utils": "^1.2.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.2",
+    "@babel/core": "^7.7.4",
     "@babel/generator": "^7.7.2",
     "@babel/helper-builder-react-jsx": "^7.7.0",
     "@babel/plugin-transform-block-scoping": "7.0.0",
