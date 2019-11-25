@@ -873,14 +873,6 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
 
-"@babel/plugin-transform-block-scoping@7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-block-scoping/-/plugin-transform-block-scoping-7.0.0.tgz#1745075edffd7cdaf69fab2fb6f9694424b7e9bc"
-  integrity sha512-GWEMCrmHQcYWISilUrk9GDqH4enf3UmhOEbNbNrlNAX1ssH3MsS1xLOS6rdjRVPgA7XXVPn87tRkdTEoA/dxEg==
-  dependencies:
-    "@babel/helper-plugin-utils" "^7.0.0"
-    lodash "^4.17.10"
-
 "@babel/plugin-transform-block-scoping@7.0.0-beta.47":
   version "7.0.0-beta.47"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-block-scoping/-/plugin-transform-block-scoping-7.0.0-beta.47.tgz#b737cc58a81bea57efd5bda0baef9a43a25859ad"
@@ -889,18 +881,10 @@
     "@babel/helper-plugin-utils" "7.0.0-beta.47"
     lodash "^4.17.5"
 
-"@babel/plugin-transform-block-scoping@^7.0.0":
-  version "7.5.5"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-block-scoping/-/plugin-transform-block-scoping-7.5.5.tgz#a35f395e5402822f10d2119f6f8e045e3639a2ce"
-  integrity sha512-82A3CLRRdYubkG85lKwhZB0WZoHxLGsJdux/cOVaJCJpvYFl1LVzAIFyRsa7CvXqW8rBM4Zf3Bfn8PHt5DP0Sg==
-  dependencies:
-    "@babel/helper-plugin-utils" "^7.0.0"
-    lodash "^4.17.13"
-
-"@babel/plugin-transform-block-scoping@^7.6.3":
-  version "7.6.3"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-block-scoping/-/plugin-transform-block-scoping-7.6.3.tgz#6e854e51fbbaa84351b15d4ddafe342f3a5d542a"
-  integrity sha512-7hvrg75dubcO3ZI2rjYTzUrEuh1E9IyDEhhB6qfcooxhDA33xx2MasuLVgdxzcP6R/lipAC6n9ub9maNW6RKdw==
+"@babel/plugin-transform-block-scoping@7.7.4", "@babel/plugin-transform-block-scoping@^7.0.0", "@babel/plugin-transform-block-scoping@^7.6.3":
+  version "7.7.4"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-block-scoping/-/plugin-transform-block-scoping-7.7.4.tgz#200aad0dcd6bb80372f94d9e628ea062c58bf224"
+  integrity sha512-2VBe9u0G+fDt9B5OV5DQH4KBf5DoiNkwFKOz0TCvBWvdAN2rOykCTkrL+jTLxfCAm76l9Qo5OqL7HBOx2dWggg==
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
     lodash "^4.17.13"
