@@ -67,22 +67,12 @@
     source-map "^0.5.0"
     trim-right "^1.0.1"
 
-"@babel/generator@^7.0.0", "@babel/generator@^7.4.0", "@babel/generator@^7.6.3", "@babel/generator@^7.6.4":
-  version "7.6.4"
-  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.6.4.tgz#a4f8437287bf9671b07f483b76e3bb731bc97671"
-  integrity sha512-jsBuXkFoZxk0yWLyGI9llT9oiQ2FeTASmRFE32U+aaDTfoE92t78eroO7PTpU/OrYq38hlcDM6vbfLDaOLy+7w==
+"@babel/generator@^7.0.0", "@babel/generator@^7.4.0", "@babel/generator@^7.6.3", "@babel/generator@^7.6.4", "@babel/generator@^7.7.2", "@babel/generator@^7.7.4":
+  version "7.7.4"
+  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.7.4.tgz#db651e2840ca9aa66f327dcec1dc5f5fa9611369"
+  integrity sha512-m5qo2WgdOJeyYngKImbkyQrnUN1mPceaG5BV+G0E3gWsa4l/jCSryWJdM2x8OuGAOyh+3d5pVYfZWCiNFtynxg==
   dependencies:
-    "@babel/types" "^7.6.3"
-    jsesc "^2.5.1"
-    lodash "^4.17.13"
-    source-map "^0.5.0"
-
-"@babel/generator@^7.7.2":
-  version "7.7.2"
-  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.7.2.tgz#2f4852d04131a5e17ea4f6645488b5da66ebf3af"
-  integrity sha512-WthSArvAjYLz4TcbKOi88me+KmDJdKSlfwwN8CnUYn9jBkzhq0ZEPuBfkAWIvjJ3AdEV1Cf/+eSQTnp3IDJKlQ==
-  dependencies:
-    "@babel/types" "^7.7.2"
+    "@babel/types" "^7.7.4"
     jsesc "^2.5.1"
     lodash "^4.17.13"
     source-map "^0.5.0"
@@ -1568,19 +1558,10 @@
     lodash "^4.17.5"
     to-fast-properties "^2.0.0"
 
-"@babel/types@^7.0.0", "@babel/types@^7.2.0", "@babel/types@^7.3.0", "@babel/types@^7.4.0", "@babel/types@^7.4.4", "@babel/types@^7.5.5", "@babel/types@^7.6.0", "@babel/types@^7.6.3":
-  version "7.6.3"
-  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.6.3.tgz#3f07d96f854f98e2fbd45c64b0cb942d11e8ba09"
-  integrity sha512-CqbcpTxMcpuQTMhjI37ZHVgjBkysg5icREQIEZ0eG1yCNwg3oy+5AaLiOKmjsCj6nqOsa6Hf0ObjRVwokb7srA==
-  dependencies:
-    esutils "^2.0.2"
-    lodash "^4.17.13"
-    to-fast-properties "^2.0.0"
-
-"@babel/types@^7.7.0", "@babel/types@^7.7.1", "@babel/types@^7.7.2":
-  version "7.7.2"
-  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.7.2.tgz#550b82e5571dcd174af576e23f0adba7ffc683f7"
-  integrity sha512-YTf6PXoh3+eZgRCBzzP25Bugd2ngmpQVrk7kXX0i5N9BO7TFBtIgZYs7WtxtOGs8e6A4ZI7ECkbBCEHeXocvOA==
+"@babel/types@^7.0.0", "@babel/types@^7.2.0", "@babel/types@^7.3.0", "@babel/types@^7.4.0", "@babel/types@^7.4.4", "@babel/types@^7.5.5", "@babel/types@^7.6.0", "@babel/types@^7.6.3", "@babel/types@^7.7.0", "@babel/types@^7.7.1", "@babel/types@^7.7.2", "@babel/types@^7.7.4":
+  version "7.7.4"
+  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.7.4.tgz#516570d539e44ddf308c07569c258ff94fde9193"
+  integrity sha512-cz5Ji23KCi4T+YIE/BolWosrJuSmoZeN1EFnRtBwF+KKLi8GG/Z2c2hOJJeCXPk4mwk4QFvTmwIodJowXgttRA==
   dependencies:
     esutils "^2.0.2"
     lodash "^4.17.13"
