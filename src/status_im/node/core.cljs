@@ -119,15 +119,17 @@
              :BrowsersConfig {:Enabled true}
              :PermissionsConfig {:Enabled true}
              :MailserversConfig {:Enabled true}
+             :EnableNTPSync true
              :WhisperConfig           {:Enabled true
                                        :LightClient true
-                                       :MinimumPoW 0.001
-                                       :EnableNTPSync true}
+                                       :MinimumPoW 0.001}
              :ShhextConfig
              {:BackupDisabledDataDir (utils.platform/no-backup-directory)
               :InstallationID installation-id
               :MaxMessageDeliveryAttempts config/max-message-delivery-attempts
               :MailServerConfirmations  config/mailserver-confirmations-enabled?
+              :VerifyTransactionURL "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"
+              :VerifyTransactionChainID 1
               :DataSyncEnabled true
               :PFSEnabled true}
              :RequireTopics (get-topics current-network)

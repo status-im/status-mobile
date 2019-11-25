@@ -19,6 +19,7 @@
                                :response-to "a"}
                      :whisper-timestamp 1
                      :outgoing-status :sending
+                     :command-parameters nil
                      :outgoing true
                      :message-type 0
                      :clock-value 2

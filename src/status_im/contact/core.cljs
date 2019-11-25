@@ -19,7 +19,10 @@
 (fx/defn load-contacts
   {:events [::contacts-loaded]}
   [{:keys [db] :as cofx} all-contacts]
-  (let [contacts-list (map #(vector (:public-key %) %) all-contacts)
+  (let [contacts-list (map #(vector (:public-key %) (if (empty? (:address %))
+                                                      (dissoc % :address)
+                                                      %))
+                           all-contacts)
         contacts (into {} contacts-list)
         tr-to-talk-enabled? (-> db tribute-to-talk/get-settings tribute-to-talk/enabled?)]
     (fx/merge cofx
@@ -123,12 +126,10 @@
             (cond-> {:public-key   public-key
                      :photo-path   profile-image
                      :name         name
-                     :address      (or address
-                                       (:address contact)
-                                       (ethereum/public-key->address public-key))
                      :last-updated timestamp-ms
                      :system-tags  (conj (get contact :system-tags #{})
-                                         :contact/request-received)})]
+                                         :contact/request-received)}
+              address (assoc :address address))]
         (upsert-contact cofx contact-props)))))
 
 (fx/defn initialize-contacts [cofx]

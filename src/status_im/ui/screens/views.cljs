@@ -12,7 +12,6 @@
             [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
             [status-im.utils.platform :as platform]
-            [status-im.ui.screens.wallet.send.views :as wallet.send]
             [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
             [status-im.ui.screens.keycard.views :as keycard]
             [status-im.ui.screens.home.sheet.views :as home.sheet]
@@ -170,6 +169,8 @@
               :persistNavigationState (when js/goog.DEBUG persist-state)
               :loadNavigationState    (when js/goog.DEBUG load-state)}]
             [wallet/prepare-transaction]
+            [wallet/request-transaction]
+            [wallet/select-account]
             [signing/signing]
             [bottom-sheet]
             [popover/popover]]]))})))

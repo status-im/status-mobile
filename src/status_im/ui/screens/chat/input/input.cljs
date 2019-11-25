@@ -155,6 +155,7 @@
             input-text           [:chats/current-chat-input-text]
             result-box           [:chats/current-chat-ui-prop :result-box]
             input-bottom-sheet   [:chats/current-chat-ui-prop :input-bottom-sheet]
+            one-to-one-chat?     [:current-chat/one-to-one-chat?]
             state-text           (reagent/atom "")]
     {:component-will-unmount #(when platform/desktop?
                                 (re-frame/dispatch [:chat.ui/set-chat-input-text @state-text]))
@@ -176,7 +177,7 @@
         [input-view {:single-line-input? single-line-input? :set-text set-text :state-text state-text}]
         (when (and input-text-empty? mainnet?)
           [stickers/button (= :stickers input-bottom-sheet)])
-        (when (and input-text-empty?) ;;TODO show only for 1-1 chats?
+        (when (and one-to-one-chat? input-text-empty? mainnet?)
           [extensions/button (= :extensions input-bottom-sheet)])
         (when-not input-text-empty?
           (if platform/desktop?

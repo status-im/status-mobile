@@ -6,7 +6,6 @@
             [status-im.contact.core :as model]))
 
 (def public-key "0x04fcf40c526b09ff9fb22f4a5dbd08490ef9b64af700870f8a0ba2133f4251d5607ed83cd9047b8c2796576bc83fa0de23a13a4dced07654b8ff137fe744047917")
-(def address "71adb0644e2b590e37dafdfea8bd58f0c7668c7f")
 
 (deftest handle-contact-update-test
   (with-redefs [json-rpc/call (constantly nil)]
@@ -16,16 +15,14 @@
                     public-key
                     1
                     {:name "name"
-                     :profile-image "image"
-                     :address "address"})
+                     :profile-image "image"})
             contact (get-in actual [:db :contacts/contacts public-key])]
         (testing "it adds a new contact"
           (is (=  {:public-key       public-key
                    :photo-path       "image"
                    :name             "name"
                    :last-updated     1000
-                   :system-tags      #{:contact/request-received}
-                   :address          "address"}
+                   :system-tags      #{:contact/request-received}}
                   contact)))))
     (testing "the contact is already in contacts"
       (testing "timestamp is greater than last-updated"
@@ -35,13 +32,11 @@
                                          :photo-path       "old-image"
                                          :name             "old-name"
                                          :last-updated     0
-                                         :system-tags      #{:contact/added}
-                                         :address          "old-address"}}}}
+                                         :system-tags      #{:contact/added}}}}}
                       public-key
                       1
                       {:name "new-name"
-                       :profile-image "new-image"
-                       :address "new-address"})
+                       :profile-image "new-image"})
               contact (get-in actual [:db :contacts/contacts public-key])]
           (testing "it updates the contact and adds contact/request-received to system tags"
             (is (=  {:public-key       public-key
@@ -49,8 +44,7 @@
                      :name             "new-name"
                      :last-updated     1000
 
-                     :system-tags      #{:contact/added :contact/request-received}
-                     :address          "new-address"}
+                     :system-tags      #{:contact/added :contact/request-received}}
                     contact)))))
       (testing "timestamp is equal to last-updated"
         (let [actual (model/handle-contact-update
@@ -59,13 +53,11 @@
                                          :photo-path       "old-image"
                                          :name             "old-name"
                                          :last-updated     1000
-                                         :system-tags      #{:contact/added}
-                                         :address          "old-address"}}}}
+                                         :system-tags      #{:contact/added}}}}}
                       public-key
                       1
                       {:name "new-name"
-                       :profile-image "new-image"
-                       :address "new-address"})
+                       :profile-image "new-image"})
               contact (get-in actual [:db :contacts/contacts public-key])]
           (testing "it does nothing"
             (is (nil? actual)))))
@@ -76,13 +68,11 @@
                                          :photo-path       "old-image"
                                          :name             "old-name"
                                          :last-updated     1000
-                                         :system-tags      #{:contact/added :contact/request-received}
-                                         :address          "old-address"}}}}
+                                         :system-tags      #{:contact/added :contact/request-received}}}}}
                       public-key
                       0
                       {:name "new-name"
-                       :profile-image "new-image"
-                       :address "new-address"})
+                       :profile-image "new-image"})
               contact (get-in actual [:db :contacts/contacts public-key])]
           (testing "it does nothing"
             (is (nil? actual))))))
@@ -106,8 +96,7 @@
                    :name             "new-name"
 
                    :last-updated     1000
-                   :system-tags      #{:contact/added :contact/request-received}
-                   :address          address} contact)))))
+                   :system-tags      #{:contact/added :contact/request-received}} contact)))))
     (testing "the message is coming from us"
       (testing "it does not update contacts"
         (is (nil? (model/handle-contact-update {:db {:multiaccount {:public-key "me"}}} "me" 1 {})))))))
@@ -121,7 +110,6 @@
             expected {(str "0x" pk1) {:alias "generated"
                                       :identicon "generated"
                                       :name "name-1"
-                                      :address "6dd28d3d14c6ded091ed38a6735350ce92fe1956"
                                       :ens-verified true
                                       :ens-verified-at 1
                                       :public-key (str "0x" pk1)
@@ -129,7 +117,6 @@
                       (str "0x" pk2) {:alias "generated"
                                       :name  "name-2"
                                       :identicon "generated"
-                                      :address "7ab91a68f65c1365d8071302a71599273acb68a2"
                                       :ens-verified false
                                       :ens-verified-at 2
                                       :public-key (str "0x" pk2)

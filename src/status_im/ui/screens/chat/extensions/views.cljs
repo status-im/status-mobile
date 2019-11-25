@@ -37,7 +37,7 @@
                                   :height    panel-height
                                   :transform [{:translateY bottom-anim-value}]
                                   :opacity   alpha-value}}
-     [react/view
+     [react/view {:style {:flex-direction :row}}
       [react/touchable-highlight
        {:on-press #(re-frame/dispatch [:wallet/prepare-transaction-from-chat])}
        [react/view {:width 128 :height 128 :justify-content :space-between
@@ -47,13 +47,12 @@
                      :justify-content :center}
          [icons/icon :main-icons/send {:color colors/white}]]
         [react/text {:typography :medium} (i18n/label :t/send-transaction)]]]
-      ;;TODO not implemented yet
-      #_[react/touchable-highlight
-         {:on-press #(re-frame/dispatch [:wallet/prepare-transaction-from-chat])}
-         [react/view {:width 128 :height 128 :justify-content :space-between
-                      :padding-horizontal 10 :padding-vertical 12 :margin-top 8
-                      :background-color (colors/alpha colors/orange 0.2) :border-radius 16 :margin-left 8}
-          [react/view {:background-color colors/orange :width 40 :height 40 :border-radius 20 :align-items :center
-                       :justify-content :center}
-           [icons/icon :main-icons/receive {:color colors/white}]]
-          [react/text {:typography :medium} (i18n/label :t/request-transaction)]]]]]))
+      [react/touchable-highlight
+       {:on-press #(re-frame/dispatch [:wallet/prepare-request-transaction-from-chat])}
+       [react/view {:width 128 :height 128 :justify-content :space-between
+                    :padding-horizontal 10 :padding-vertical 12
+                    :background-color (colors/alpha colors/orange 0.2) :border-radius 16 :margin-left 8}
+        [react/view {:background-color colors/orange :width 40 :height 40 :border-radius 20 :align-items :center
+                     :justify-content :center}
+         [icons/icon :main-icons/receive {:color colors/white}]]
+        [react/text {:typography :medium} (i18n/label :t/request-transaction)]]]]]))

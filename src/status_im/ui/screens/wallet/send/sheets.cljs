@@ -19,19 +19,19 @@
                   (:code currency)
                   #(re-frame/dispatch [:wallet.send/set-symbol (:symbol %)]))}]))
 
-(defn render-account [field]
+(defn render-account [field event]
   (fn [account]
     [list-item/list-item
      {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
       :title    (:name account)
-      :on-press #(re-frame/dispatch [:wallet.send/set-field field account])}]))
+      :on-press #(re-frame/dispatch [event field account])}]))
 
-(views/defview accounts-list [field]
+(views/defview accounts-list [field event]
   (views/letsubs [accounts [:multiaccount/accounts]
                   accounts-whithout-watch [:accounts-without-watch-only]]
     [list/flat-list {:data      (if (= :to field) accounts accounts-whithout-watch)
                      :key-fn    :address
-                     :render-fn (render-account field)}]))
+                     :render-fn (render-account field event)}]))
 
 (defn- request-camera-permissions []
   (let [options {:handler        :wallet.send/qr-scanner-result
@@ -50,7 +50,7 @@
 (defn show-accounts-list []
   (re-frame/dispatch [:bottom-sheet/hide-sheet])
   (js/setTimeout #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                      {:content        (fn [] [accounts-list :to])
+                                      {:content        (fn [] [accounts-list :to :wallet.send/set-field])
                                        :content-height 300}]) 400))
 
 (defn choose-recipient []

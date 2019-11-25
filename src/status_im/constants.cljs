@@ -7,15 +7,24 @@
 
 (def ms-in-bg-for-require-bioauth 5000)
 
-(def content-type-text 1)
-(def content-type-sticker 2)
-(def content-type-status 3)
-(def content-type-emoji 4)
+(def ^:const content-type-text 1)
+(def ^:const content-type-sticker 2)
+(def ^:const content-type-status 3)
+(def ^:const content-type-emoji 4)
+(def ^:const content-type-command 5)
 
-(def message-type-one-to-one 1)
-(def message-type-public-group 2)
-(def message-type-private-group 3)
-(def message-type-private-group-system-message 4)
+(def ^:const message-type-one-to-one 1)
+(def ^:const message-type-public-group 2)
+(def ^:const message-type-private-group 3)
+(def ^:const message-type-private-group-system-message 4)
+
+(def ^:const command-state-request-address-for-transaction 1)
+(def ^:const command-state-request-address-for-transaction-declined 2)
+(def ^:const command-state-request-address-for-transaction-accepted 3)
+(def ^:const command-state-request-transaction 4)
+(def ^:const command-state-request-transaction-declined 5)
+(def ^:const command-state-transaction-pending 6)
+(def ^:const command-state-transaction-sent 7)
 
 (def desktop-content-types
   #{content-type-text content-type-emoji content-type-status})

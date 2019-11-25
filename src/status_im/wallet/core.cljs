@@ -3,6 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.constants :as constants]
+            [status-im.chat.models.message :as chat.message]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.json-rpc :as json-rpc]
@@ -343,7 +344,6 @@
                                    (flatten (map keys (vals balances))))]
     (fx/merge cofx
               (multiaccounts.update/multiaccount-update
-               cofx
                :wallet/visible-tokens (assoc visible-tokens
                                              chain
                                              chain-visible-tokens)
@@ -366,29 +366,151 @@
   [{:keys [db]} amount]
   {:db (assoc-in db [:wallet/prepare-transaction :amount-text] amount)})
 
+(fx/defn set-and-validate-request-amount
+  {:events [:wallet.request/set-amount-text]}
+  [{:keys [db]} amount]
+  {:db (assoc-in db [:wallet/prepare-transaction :amount-text] amount)})
+
+(fx/defn sign-transaction-button-clicked-from-chat
+  {:events  [:wallet.ui/sign-transaction-button-clicked-from-chat]}
+  [{:keys [db] :as cofx} {:keys [to amount from token request? from-chat? gas gasPrice]}]
+  (let [{:keys [symbol address]} token
+        to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))
+        from-address (:address from)
+        identity (:current-chat-id db)]
+    (fx/merge cofx
+              {:db (-> db
+                       (update-in [:chat-ui-props identity] dissoc :input-bottom-sheet)
+                       (dissoc :wallet/prepare-transaction))
+              ;;TODO from chat, send request message or if ens name sign tx and send tx message
+               ::json-rpc/call [{:method "shhext_requestAddressForTransaction"
+                                 :params [(:current-chat-id db)
+                                          from-address
+                                          amount
+                                          (when-not (= symbol :ETH)
+                                            address)]
+                                 :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})))
+
+(fx/defn request-transaction-button-clicked-from-chat
+  {:events  [:wallet.ui/request-transaction-button-clicked]}
+  [{:keys [db] :as cofx} {:keys [to amount from token from-chat? gas gasPrice]}]
+  (let [{:keys [symbol address]} token
+        to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))
+        from-address (:address from)
+        identity (:current-chat-id db)]
+    (fx/merge cofx
+              {:db (-> db
+                       (update-in [:chat-ui-props identity] dissoc :input-bottom-sheet)
+                       (dissoc db :wallet/prepare-transaction))
+               ::json-rpc/call [{:method "shhext_requestTransaction"
+                                 :params [(:public-key to)
+                                          amount
+                                          (when-not (= symbol :ETH)
+                                            address)
+                                          from-address]
+                                 :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})))
+
+(fx/defn accept-request-transaction-button-clicked-from-command
+  {:events  [:wallet.ui/accept-request-transaction-button-clicked-from-command]}
+  [{:keys [db] :as cofx} chat-id {:keys [address value from id contract] :as request-parameters}]
+  (let [identity (:current-chat-id db)
+        all-tokens (:wallet/all-tokens db)
+        current-network-string  (:networks/current-network db)
+        prices (:prices db)
+        all-networks (:networks/networks db)
+        current-network (get all-networks current-network-string)
+        chain (ethereum/network->chain-keyword current-network)
+        {:keys [symbol icon decimals] :as token}
+        (if (seq contract)
+          (get (get all-tokens chain) contract)
+          (tokens/native-currency chain))
+        amount-text (str (money/internal->formatted value symbol decimals))]
+    {:db (assoc db :wallet/prepare-transaction
+                {:from (ethereum/get-default-account (:multiaccount/accounts db))
+                 :to   (or (get-in db [:contacts/contacts identity])
+                           (-> identity
+                               contact.db/public-key->new-contact
+                               contact.db/enrich-contact))
+                 :request-parameters request-parameters
+                 :chat-id chat-id
+                 :symbol symbol
+                 :amount-text amount-text
+                 :request? true
+                 :from-chat? true})}))
+
+(fx/defn sign-transaction-button-clicked-from-request
+  {:events  [:wallet.ui/sign-transaction-button-clicked-from-request]}
+  [{:keys [db] :as cofx} {:keys [to amount from token gas gasPrice]}]
+  (let [{:keys [request-parameters]} (:wallet/prepare-transaction db)
+        {:keys [symbol address]} token
+        amount-hex (str "0x" (abi-spec/number-to-hex amount))
+        to-norm (:address request-parameters)
+        from-address (:address from)]
+    (fx/merge cofx
+              {:db (dissoc db :wallet/prepare-transaction)}
+              (fn [cofx]
+                (signing/sign cofx {:tx-obj (if (= symbol :ETH)
+                                              {:to    to-norm
+                                               :from  from-address
+                                               :message-id (:id request-parameters)
+                                               :command? true
+                                               :value amount-hex}
+                                              {:to       (ethereum/normalized-hex address)
+                                               :from     from-address
+                                               :command? true
+                                               :message-id (:id request-parameters)
+                                               :data     (abi-spec/encode
+                                                          "transfer(address,uint256)"
+                                                          [to-norm amount-hex])
+                                               ;;Note: data from qr (eip681)
+                                               :gas      gas
+                                               :gasPrice gasPrice})})))))
+
 (fx/defn sign-transaction-button-clicked
   {:events  [:wallet.ui/sign-transaction-button-clicked]}
-  [{:keys [db] :as cofx} {:keys [to amount from token from-chat? gas gasPrice]}]
+  [{:keys [db] :as cofx} {:keys [to amount from token gas gasPrice]}]
   (let [{:keys [symbol address]} token
         amount-hex (str "0x" (abi-spec/number-to-hex amount))
         to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))
         from-address (:address from)]
     (fx/merge cofx
               {:db (dissoc db :wallet/prepare-transaction)}
-              #(if from-chat?
-                 nil;;TODO from chat, send request message or if ens name sign tx and send tx message
-                 (signing/sign % {:tx-obj (if (= symbol :ETH)
-                                            {:to    to-norm
-                                             :from  from-address
-                                             :value amount-hex}
-                                            {:to       (ethereum/normalized-hex address)
-                                             :from     from-address
-                                             :data     (abi-spec/encode
-                                                        "transfer(address,uint256)"
-                                                        [to-norm amount-hex])
-                                             ;;Note: data from qr (eip681)
-                                             :gas      gas
-                                             :gasPrice gasPrice})})))))
+              (fn [cofx]
+                (signing/sign cofx {:tx-obj (if (= symbol :ETH)
+                                              {:to    to-norm
+                                               :from  from-address
+                                               :value amount-hex}
+                                              {:to       (ethereum/normalized-hex address)
+                                               :from     from-address
+                                               :data     (abi-spec/encode
+                                                          "transfer(address,uint256)"
+                                                          [to-norm amount-hex])
+                                               ;;Note: data from qr (eip681)
+                                               :gas      gas
+                                               :gasPrice gasPrice})})))))
+
+(fx/defn sign-transaction-button-clicked-from-command
+  {:events  [:wallet.ui/sign-transaction-button-clicked]}
+  [{:keys [db] :as cofx} {:keys [to amount from token gas gasPrice]}]
+  (let [{:keys [symbol address]} token
+        amount-hex (str "0x" (abi-spec/number-to-hex amount))
+        to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))
+        from-address (:address from)]
+    (fx/merge cofx
+              {:db (dissoc db :wallet/prepare-transaction)}
+              (fn [cofx]
+                (signing/sign cofx {:tx-obj (if (= symbol :ETH)
+                                              {:to    to-norm
+                                               :from  from-address
+                                               :value amount-hex}
+                                              {:to       (ethereum/normalized-hex address)
+                                               :from     from-address
+                                               :data     (abi-spec/encode
+                                                          "transfer(address,uint256)"
+                                                          [to-norm amount-hex])
+                                               ;;Note: data from qr (eip681)
+                                               :gas      gas
+                                               :gasPrice gasPrice})})))))
 
 (fx/defn set-and-validate-amount-request
   {:events [:wallet.request/set-and-validate-amount]}
@@ -410,13 +532,27 @@
   [{:keys [db]}]
   (let [identity (:current-chat-id db)]
     {:db (assoc db :wallet/prepare-transaction
-                {:from (ethereum/get-default-account (get db [:multiaccount/accounts]))
+                {:from (ethereum/get-default-account (:multiaccount/accounts db))
                  :to   (or (get-in db [:contacts/contacts identity])
                            (-> identity
                                contact.db/public-key->new-contact
                                contact.db/enrich-contact))
                  :symbol :ETH
                  :from-chat? true})}))
+
+(fx/defn prepare-request-transaction-from-chat
+  {:events [:wallet/prepare-request-transaction-from-chat]}
+  [{:keys [db]}]
+  (let [identity (:current-chat-id db)]
+    {:db (assoc db :wallet/prepare-transaction
+                {:from (ethereum/get-default-account (:multiaccount/accounts db))
+                 :to   (or (get-in db [:contacts/contacts identity])
+                           (-> identity
+                               contact.db/public-key->new-contact
+                               contact.db/enrich-contact))
+                 :symbol :ETH
+                 :from-chat? true
+                 :request-command? true})}))
 
 (fx/defn prepare-transaction-from-wallet
   {:events [:wallet/prepare-transaction-from-wallet]}
@@ -426,6 +562,24 @@
                :to         nil
                :symbol     :ETH
                :from-chat? false})})
+
+(fx/defn cancel-transaction-command
+  {:events [:wallet/cancel-transaction-command]}
+  [{:keys [db]}]
+  (let [identity (:current-chat-id db)]
+    {:db (-> db
+             (dissoc :wallet/prepare-transaction)
+             (update-in [:chat-ui-props identity] dissoc :input-bottom-sheet))}))
+
+(fx/defn finalize-transaction-from-command
+  {:events [:wallet/finalize-transaction-from-command]}
+  [{:keys [db]} account to symbol amount]
+  {:db (assoc db :wallet/prepare-transaction
+              {:from       account
+               :to         to
+               :symbol     symbol
+               :amount     amount
+               :from-command? true})})
 
 (fx/defn qr-scanner-allowed
   {:events [:wallet.send/qr-scanner-allowed]}
@@ -444,6 +598,13 @@
 
 (fx/defn wallet-send-set-field
   {:events [:wallet.send/set-field]}
+  [{:keys [db] :as cofx} field value]
+  (fx/merge cofx
+            {:db (assoc-in db [:wallet/prepare-transaction field] value)}
+            (bottom-sheet/hide-bottom-sheet)))
+
+(fx/defn wallet-request-set-field
+  {:events [:wallet.request/set-field]}
   [{:keys [db] :as cofx} field value]
   (fx/merge cofx
             {:db (assoc-in db [:wallet/prepare-transaction field] value)}

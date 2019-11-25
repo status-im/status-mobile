@@ -10,7 +10,6 @@
             [status-im.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
             [status-im.transport.message.protocol :as transport.protocol]
-            [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.navigation :as navigation]
@@ -227,8 +226,7 @@
             (when platform/desktop?
               (mark-messages-seen chat-id))
             (when (and (one-to-one-chat? cofx chat-id) (not (contact.db/contact-exists? db chat-id)))
-              (contact.core/create-contact chat-id))
-            (tribute-to-talk/check-tribute chat-id)))
+              (contact.core/create-contact chat-id))))
 
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
@@ -294,5 +292,4 @@
   [cofx identity]
   (fx/merge (assoc-in cofx [:db :contacts/identity] identity)
             (contact.core/create-contact identity)
-            (tribute-to-talk/check-tribute identity)
             (navigation/navigate-to-cofx :profile nil)))
