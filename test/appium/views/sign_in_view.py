@@ -55,7 +55,7 @@ class SignInButton(BaseButton):
         from views.home_view import HomeView
         return HomeView(self.driver)
 
-class LetsGoButton(BaseEditBox):
+class LetsGoButton(BaseButton):
     def __init__(self, driver):
         super(LetsGoButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('lets-go-button')
@@ -194,7 +194,7 @@ class SignInView(BaseView):
         self.next_button.click()
         self.confirm_your_password_input.set_value(password)
         self.next_button.click()
-        self.lets_go_button.click()
+        self.lets_go_button.click_until_absense_of_element(self.lets_go_button)
         self.profile_button.wait_for_visibility_of_element(30)
         return self.get_home_view()
 

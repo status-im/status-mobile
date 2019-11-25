@@ -6,7 +6,6 @@ from tests import marks, bootnode_address, mailserver_address, camera_access_err
     mailserver_staging_hk
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user
-from views.dapps_view import DappsView
 from views.sign_in_view import SignInView
 
 
@@ -199,8 +198,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile = home.profile_button.click()
         profile.switch_network('Mainnet with upstream RPC')
         home.profile_button.click()
-        profile.element_by_text('ENS usernames').click()
-        dapp_view = DappsView(self.driver)
+        dapp_view = profile.ens_usernames_button.click()
 
         dapp_view.just_fyi('check if your name can be added via "ENS usernames" in Profile')
         dapp_view.element_by_text('Get started').click()
@@ -547,6 +545,37 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(6219)
+    @marks.medium
+    def test_set_primary_ens_custom_domain(self):
+        sign_in_view = SignInView(self.driver)
+        ens_not_stateofus = ens_user['ens_another_domain']
+        ens_stateofus = ens_user['ens']
+        home_view = sign_in_view.recover_access(ens_user['passphrase'])
+
+        home_view.just_fyi('add 2 ENS names in Profile')
+        profile_view = home_view.profile_button.click()
+        dapp_view = profile_view.connect_existing_status_ens(ens_stateofus)
+        profile_view.element_by_text("Add username").click()
+        profile_view.element_by_text_part("another domain").click()
+        dapp_view.ens_name.set_value(ens_not_stateofus)
+        dapp_view.check_ens_name.click_until_presence_of_element(dapp_view.element_by_text('Ok, got it'))
+        dapp_view.element_by_text('Ok, got it').click()
+
+        home_view.just_fyi('check that by default %s ENS is set' % ens_stateofus)
+        dapp_view.element_by_text('Primary username').click()
+        message_to_check = 'Your messages are displayed to others with'
+        if not dapp_view.element_by_text('%s\n@%s.stateofus.eth' % (message_to_check, ens_stateofus)).is_element_displayed():
+             self.errors.append('%s ENS username is not set as primary by default' % ens_stateofus)
+
+        home_view.just_fyi('check view in chat settings ENS from other domain: %s after set new primary ENS' % ens_not_stateofus)
+        dapp_view.set_primary_ens_username(ens_user['ens_another_domain']).click()
+        profile_view.show_ens_name_in_chats.click()
+        if profile_view.username_in_ens_chat_settings_text.text != '@' + ens_not_stateofus:
+            self.errors.append('ENS username %s is not shown in ENS username Chat Settings after enabling' % ens_not_stateofus)
+
+        self.errors.verify_no_errors()
+
 
 @marks.all
 @marks.account
@@ -857,8 +886,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1 = sign_in_1.profile_button.click()
         profile_1.switch_network('Mainnet with upstream RPC')
         home_1.profile_button.click()
-        profile_1.element_by_text('ENS usernames').click()
-        dapp_view_1 = DappsView(device_1)
+        dapp_view_1 = profile_1.ens_usernames_button.click()
         dapp_view_1.element_by_text('Get started').click()
         dapp_view_1.ens_name.set_value(ens_user['ens'])
         expected_text = 'This user name is owned by you and connected with your Chat key.'
@@ -868,7 +896,13 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         dapp_view_1.element_by_text('Ok, got it').click()
         if profile_1.username_in_ens_chat_settings_text.text != user_1['username']:
             self.errors.append('Default username is not shown in ENS usernames')
-        dapp_view_1.back_button.click()
+
+        home_1.just_fyi('check ENS name wallet address and public key')
+        profile_1.element_by_text(user_1['ens']).click()
+        for text in ('10 SNT, deposit unlocked', user_1['address'].lower(), user_1['public_key'] ):
+            if not profile_1.element_by_text_part(text).is_element_displayed():
+                self.errors.append('%s text is not shown' % text)
+        dapp_view_1.get_back_to_home_view()
         profile_1.home_button.click()
 
         home_2.just_fyi('joining same public chat, checking default username on message')

@@ -63,6 +63,12 @@ class SelectAccountRadioButton(BaseButton):
         super(SelectAccountRadioButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='%s']/../../android.view.ViewGroup/android.view.ViewGroup[2]" % account_name)
 
+class SetPrimaryUsername(BaseButton):
+    def __init__(self, driver, ens_name):
+        super(SetPrimaryUsername, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "(//android.widget.ScrollView//*[@text='%s'])[2]/../../../android.view.ViewGroup[2]" % ens_name)
+
 
 class AlwaysAllowRadioButton(BaseButton):
     def __init__(self, driver):
@@ -119,3 +125,6 @@ class DappsView(BaseView):
 
     def select_account_by_name(self, account_name='Status account'):
         return SelectAccountRadioButton(self.driver, account_name)
+
+    def set_primary_ens_username(self, ens_name):
+        return SetPrimaryUsername(self.driver, ens_name)

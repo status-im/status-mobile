@@ -7,16 +7,14 @@ basic_user['address'] = "f184747445c3B85CEb147DfB136067CB93d95F1D"
 basic_user['special_chars_password'] = " !\"#$Á%Ö&'()*+Í, -./:ä;<=>?@[\\]^_`{|}~ "
 
 ens_user = dict()
-ens_user['passphrase'] = "husband rough hotel obey annual you member reopen struggle air evoke taxi"
-ens_user['username'] = "Outstanding Actual Eyas"
-ens_user['public_key'] = "0x04318d20a2ca5fd0022579005ed24802e07d4ec610bede808dd13d3318af439e16d55be1a59af007a11120b" \
-                         "d1c205861e5f53fe7b000a25e2b0d4eee7f0c5ebf7e"
-ens_user['ens'] = 'autotester'
-ens_user['address'] = '0x31419baa0242dFd2BB485b3e41A78210A1c2332A'
+ens_user['passphrase'] = "fashion quality know robust copy neck stand embody entry task orient suggest"
+ens_user['username'] = "Legal Vibrant Indianabat"
+ens_user['public_key'] = "0x04359bb3e73cba0b815d71e562670ad00bb5d2db0d16cd1c4c92c668b61fde2274d6e487fcdffe66f913b3fea2a" \
+                         "3058f53ce7946c2b501aa61a9ca8a883df72dc9"
+ens_user['ens'] = 'statuse2e'
+ens_user['ens_another_domain'] = 'statuse2e.eth'
+ens_user['address'] = '0x1eE3058Bd300246B4B20E687Efc9Eba81FF7814b'
 
-ens_user_other_domain = dict()
-ens_user_other_domain['ens'] = 'tanyatest1.eth'
-ens_user_other_domain['address'] = '0xcf2272205cc0cf96Cfbb9Dd740BD681D1E86901E'
 
 dummy_user = dict()
 dummy_user['username'] = "Vain Wordy Hagfish"

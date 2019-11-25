@@ -107,6 +107,19 @@ class DefaultUserNameText(BaseText):
         self.locator = self.Locator.xpath_selector(
             '//android.view.ViewGroup[@content-desc="edit-profile-photo-button"]/../android.widget.TextView')
 
+class ENSusernames(BaseButton):
+    def __init__(self, driver):
+        super(ENSusernames, self).__init__(driver)
+        self.locator = self.Locator.text_selector('ENS usernames')
+
+    def navigate(self):
+        from views.dapps_view import DappsView
+        return DappsView(self.driver)
+
+    def click(self):
+        self.scroll_to_element().click()
+        return self.navigate()
+
 
 class ShareMyProfileButton(BaseButton):
 
@@ -621,6 +634,7 @@ class ProfileView(BaseView):
         # ENS
         self.show_ens_name_in_chats = ShowENSNameInChatsToggle(self.driver)
         self.username_in_ens_chat_settings_text = ENSUsernameInChatSettings(self.driver)
+        self.ens_usernames_button = ENSusernames(self.driver)
 
         # Mobile Data
         self.use_mobile_data = UseMobileDataToggle(self.driver)
@@ -725,6 +739,19 @@ class ProfileView(BaseView):
             self.just_fyi("retrying to connect: %s attempt" % i)
         if i == 5:
             self.driver.fail("Failed to connect after %s attempts" % i)
+
+    def connect_existing_status_ens(self, name):
+        self.just_fyi('switching to mainnet and add ENS')
+        profile = self.profile_button.click()
+        profile.switch_network('Mainnet with upstream RPC')
+        self.profile_button.click()
+        dapp_view = self.ens_usernames_button.click()
+        dapp_view.element_by_text('Get started').click()
+        dapp_view.ens_name.set_value(name)
+        dapp_view.check_ens_name.click_until_presence_of_element(self.element_by_text('Ok, got it'))
+        dapp_view.element_by_text('Ok, got it').click()
+        return dapp_view
+
 
     @property
     def current_active_network(self):
