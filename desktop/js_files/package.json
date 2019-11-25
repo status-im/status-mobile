@@ -51,7 +51,7 @@
     "@babel/helper-builder-react-jsx": "^7.7.0",
     "@babel/plugin-transform-block-scoping": "7.0.0",
     "@babel/preset-env": "^7.7.1",
-    "@babel/register": "^7.7.0",
+    "@babel/register": "^7.7.4",
     "babel-preset-react-native": "^5.0.2",
     "coveralls": "^3.0.7",
     "metro-react-native-babel-preset": "^0.57.0",
