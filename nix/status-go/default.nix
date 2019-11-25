@@ -1,5 +1,5 @@
 { target-os, config, stdenv, callPackage,
-  buildGoPackage, go, fetchFromGitHub, openjdk,
+  buildGoPackage, go, fetchFromGitHub, mkFilter, openjdk,
   androidPkgs, xcodeWrapper }:
 
 let
@@ -23,7 +23,20 @@ let
         rev = "unknown";
         shortRev = "unknown";
         versionName = "develop";
-        src = stdenv.lib.cleanSource "${traceValFn (path: "Using local ${repo} sources from ${path}\n") config.status_go.src_override}";
+        src =
+          let path = traceValFn (path: "Using local ${repo} sources from ${path}\n") config.status_go.src_override;
+          in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
+            inherit path;
+            name = "${repo}-source-${shortRev}";
+            filter =
+              # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
+              mkFilter {
+                dirRootsToInclude = [];
+                dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".vscode" ".dependabot" ".github" ".ethereumtest" "build" "eth-node" "protocol" ];
+                filesToInclude = [ "Makefile" "go.mod" "go.sum" "VERSION" ];
+                root = path;
+              };
+          };
     } else
       # Otherwise grab it from the location defined by status-go-version.json
       let

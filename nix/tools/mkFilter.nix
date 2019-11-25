@@ -16,23 +16,27 @@ let
       allowedPathElementsSubset = take count allowedPathElements;
     in (compareLists compare allowedPathElementsSubset pathElementsSubset) == 0;
 
-  mkFilter = { dirRootsToInclude, # Relative paths of directories to include
+  mkFilter = {
+    dirRootsToInclude, # Relative paths of directories to include
     dirsToExclude ? [ ], # Base names of directories to exclude
     filesToInclude ? [ ], # Relative path of files to include
     filesToExclude ? [ ], # Relative path of files to exclude
     root }:
-    path: type:
     let
-      baseName = baseNameOf (toString path);
-      subpath = elemAt (splitString "${toString root}/" path) 1;
-      spdir = elemAt (splitString "/" subpath) 0;
+      allPathRootsAllowed = (length dirRootsToInclude) == 0;
+    in
+      path: type:
+      let
+        baseName = baseNameOf (toString path);
+        subpath = elemAt (splitString "${toString root}/" path) 1;
+        spdir = elemAt (splitString "/" subpath) 0;
 
-    in lib.cleanSourceFilter path type && (
-      (type != "directory" && (elem spdir filesToInclude) && !(elem spdir filesToExclude)) ||
-      # check if any part of the directory path is described in dirRootsToInclude
-      ((any (dirRootToInclude: isPathAllowed dirRootToInclude subpath) dirRootsToInclude) && ! (
-        # Filter out version control software files/directories
-        (type == "directory" && (elem baseName dirsToExclude))
-    )));
+      in lib.cleanSourceFilter path type && (
+        (type != "directory" && (elem spdir filesToInclude) && !(elem spdir filesToExclude)) ||
+        # check if any part of the directory path is described in dirRootsToInclude
+        ((allPathRootsAllowed || (any (dirRootToInclude: isPathAllowed dirRootToInclude subpath) dirRootsToInclude)) && ! (
+          # Filter out version control software files/directories
+          (type == "directory" && (elem baseName dirsToExclude))
+      )));
 
 in mkFilter
