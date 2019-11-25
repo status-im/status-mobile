@@ -183,7 +183,7 @@
 
 (defn touchable-highlight [props content]
   [touchable-highlight-class
-   (merge {:underlay-color :transparent} props)
+   (merge {:underlay-color :transparent} (update props :style #(merge % {:border-color :red :border-width 2})))
    content])
 
 (defn touchable-without-feedback [props content]
