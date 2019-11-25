@@ -194,6 +194,7 @@ class SignInView(BaseView):
         self.next_button.click()
         self.confirm_your_password_input.set_value(password)
         self.next_button.click()
+        self.lets_go_button.wait_for_visibility_of_element(30)
         self.lets_go_button.click_until_absense_of_element(self.lets_go_button)
         self.profile_button.wait_for_visibility_of_element(30)
         return self.get_home_view()
