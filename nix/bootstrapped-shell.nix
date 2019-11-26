@@ -5,29 +5,28 @@
 
 { stdenv, mkShell, target-os, git }:
 
-let
-  shell' = shellAttr:
-    shellAttr // {
-      nativeBuildInputs = (shellAttr.nativeBuildInputs or [ ]) ++ [ git ];
-      TARGET_OS = target-os;
-      shellHook = ''
-        set -e
+# Declare a specialized mkShell function which adds some bootstrapping
+#  so that e.g. STATUS_REACT_HOME is automatically available in the shell
+attrs:
+  (mkShell.override({ inherit stdenv; }) attrs)
+          .overrideAttrs(super: {
+    nativeBuildInputs = (super.nativeBuildInputs or [ ]) ++ [ git ];
+    TARGET_OS = target-os;
+    shellHook = ''
+      set -e
 
-        export STATUS_REACT_HOME=$(git rev-parse --show-toplevel)
+      export LANG="en_US.UTF-8"
+      export LANGUAGE="en_US.UTF-8"
 
-        ${shellAttr.shellHook or ""}
+      export STATUS_REACT_HOME=$(git rev-parse --show-toplevel)
 
-        if [ "$IN_NIX_SHELL" != 'pure' ] && [ ! -f $STATUS_REACT_HOME/.ran-setup ]; then
-          $STATUS_REACT_HOME/scripts/setup
-          touch $STATUS_REACT_HOME/.ran-setup
-        fi
+      ${super.shellHook or ""}
 
-        set +e
-      '';
-    };
-  # Declare a specialized mkShell function which adds some bootstrapping
-  #  so that e.g. STATUS_REACT_HOME is automatically available in the shell
-  mkShell' = shellAttr:
-    (mkShell.override { inherit stdenv; }) (shell' shellAttr);
+      if [ "$IN_NIX_SHELL" != 'pure' ] && [ ! -f $STATUS_REACT_HOME/.ran-setup ]; then
+        $STATUS_REACT_HOME/scripts/setup
+        touch $STATUS_REACT_HOME/.ran-setup
+      fi
 
-in mkShell'
+      set +e
+    '';
+  })
