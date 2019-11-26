@@ -62,7 +62,7 @@
                        ;:torchMode     (camera/set-torch camera-flashlight)
                        :onBarCodeRead #(when-not @read-once?
                                          (reset! read-once? true)
-                                         (re-frame/dispatch [:wallet.send/resolve-ens-addresses (camera/get-qr-code-data %) :qr]))}]]
+                                         (re-frame/dispatch [:wallet.send/qr-code-request-scanned (camera/get-qr-code-data %) :qr]))}]]
       [viewfinder dimensions (size dimensions)]]
      [toolbar/toolbar
       {:center {:type                :secondary

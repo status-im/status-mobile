@@ -6,7 +6,6 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.chat.models :as chat]
             [status-im.constants :as constants]
-            [status-im.ethereum.eip681 :as eip681]
             [status-im.pairing.core :as pairing]
             [status-im.utils.security :as security]
             [status-im.ui.components.list-selection :as list-selection]
@@ -86,8 +85,10 @@
       (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key) :profile nil))))
 
 (fx/defn handle-eip681 [cofx url]
-  (choose-recipient/resolve-ens-addresses url :deep-link)
-  {:dispatch [:navigate-to :wallet-send-transaction]})
+  (fx/merge
+   cofx
+   (choose-recipient/resolve-ens-addresses url :deep-link)
+   (navigation/navigate-to-cofx :wallet-send-transaction nil)))
 
 (defn handle-not-found [full-url]
   (log/info "universal-links: no handler for " full-url))

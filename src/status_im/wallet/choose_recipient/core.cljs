@@ -156,7 +156,7 @@
    :dispatch   [:navigate-back]})
 
 (fx/defn resolve-ens-addresses
-  {:events [:wallet.send/resolve-ens-addresses]}
+  {:events [:wallet.send/resolve-ens-addresses :wallet.send/qr-code-request-scanned]}
   [{{:networks/keys [current-network] :wallet/keys [all-tokens] :as db} :db}
    uri origin]
   (when-let [message (eip681/parse-uri uri)]
