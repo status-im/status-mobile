@@ -104,7 +104,7 @@
              [react/view styles/permissions-panel-wallet-icon-container
               (when icon
                 [icons/icon icon {:color :white}])])]
-          [react/text {:style styles/permissions-panel-title-label}
+          [react/text {:style styles/permissions-panel-title-label :number-of-lines 2}
            (str "\"" dapp-name "\" " title)]
           (when (= :wallet type)
             [react/view styles/permissions-account
@@ -114,7 +114,7 @@
                            :style         {:margin-horizontal 6 :color (:color dapps-account) :typography :main-medium
                                            :font-size         13}}
                (:name dapps-account)]]])
-          [react/text {:style styles/permissions-panel-description-label}
+          [react/text {:style styles/permissions-panel-description-label :number-of-lines 2}
            description]
           [react/view {:flex-direction :row :margin-top 24}
            [button/button
