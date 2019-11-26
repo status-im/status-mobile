@@ -227,6 +227,7 @@
        (if confirm-failure? (i18n/label :t/password_error1) " ")]
 
       [react/text-input {:secure-text-entry true
+                         :auto-capitalize :none
                          :auto-focus true
                          :accessibility-label :password-input
                          :text-align :center
