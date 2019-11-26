@@ -90,23 +90,20 @@
   {:flex               1
    :padding-top        16
    :padding-horizontal 16
-   :background-color   :white
-   :transform          [{:translateY (- search-input-height)}]})
+   :background-color   :white})
 
-(def no-chats-wrapper
-  {:width         "100%"
-   :align-items   :center
+(def chat-tooltip
+  {:align-items   :center
    :border-color  colors/gray-lighter
    :border-width  1
-   :border-radius 16})
+   :border-radius 16
+   :margin        16})
 
 (def no-chats-text
-  {:font-size   15
-   :width       270
-   :margin-top  12
-   :line-height 22
-   :text-align  :center
-   :color       colors/black})
+  {:margin-top        50
+   :margin-horizontal 16
+   :line-height       22
+   :text-align        :center})
 
 (def welcome-view
   {:flex            1
@@ -156,8 +153,7 @@
    :elevation        2})
 
 (def empty-chats-header-container
-  {:flex-direction  :row
-   :align-items     :center
+  {:align-items     :center
    :justify-content :center})
 
 (def hr-wrapper
@@ -176,14 +172,8 @@
    :color            colors/gray})
 
 (def tags-wrapper
-  {:width           300
-   :margin-top      10
-   :margin-bottom   18
-   :flex-direction  :row
-   :flex-wrap       :wrap
-   :align-items     :center
-   :text-align      :center
-   :justify-content :center})
+  {:margin-top      10
+   :margin-bottom   18})
 
 (def tag-text
   {:font-size     13
@@ -196,10 +186,8 @@
    :color         colors/blue})
 
 (def close-icon-container
-  {:width            19
-   :height           19
-   :margin-top       3
-   :margin-right     8
+  {:width            24
+   :height           24
    :border-radius    12
    :background-color colors/gray
    :align-items      :center

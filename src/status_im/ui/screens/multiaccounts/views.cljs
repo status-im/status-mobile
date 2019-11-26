@@ -26,8 +26,9 @@
                    :ellipsize-mode :middle
                    :numberOfLines  1}
        name]]
-     [react/text {:style styles/multiaccount-badge-pub-key-text}
-      (utils/get-shortened-address public-key)]]
+     ;;TODO we don't have public key in multiaccounts
+     #_[react/text {:style styles/multiaccount-badge-pub-key-text}
+        (utils/get-shortened-address public-key)]]
     [react/view {:flex 1}]
     (when keycard-pairing
       [react/view {:justify-content  :center
