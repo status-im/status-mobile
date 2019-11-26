@@ -115,7 +115,7 @@
     (->> members
          (map #(or (get all-contacts %)
                    (public-key->new-contact %)))
-         (sort-by (comp clojure.string/lower-case :name))
+         (sort-by (comp clojure.string/lower-case #(or (:name %) (:alias %))))
          (map #(if (get admins (:public-key %))
                  (assoc % :admin? true)
                  %)))))

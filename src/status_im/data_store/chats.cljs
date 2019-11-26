@@ -111,13 +111,11 @@
       type->rpc
       marshal-members
       (update :membership-updates marshal-membership-updates)
-      (utils/update-if-present :last-message-content messages/prepare-content)
+      (update :last-message messages/->rpc)
       (clojure.set/rename-keys {:chat-id :id
                                 :membership-updates :membershipUpdates
                                 :unviewed-messages-count :unviewedMessagesCount
-                                :last-message-content :lastMessageContent
-                                :last-message-content-type :lastMessageContentType
-                                :last-message-timestamp :lastMessageTimestamp
+                                :last-message :lastMessage
                                 :deleted-at-clock-value :deletedAtClockValue
                                 :is-active :active
                                 :last-clock-value :lastClockValue})
@@ -133,16 +131,13 @@
       unmarshal-members
       (clojure.set/rename-keys {:id :chat-id
                                 :membershipUpdates :membership-updates
-                                :unviewedMessagesCount :unviewed-messages-count
-                                :lastMessageContent :last-message-content
-                                :lastMessageContentType :last-message-content-type
-                                :lastMessageTimestamp :last-message-timestamp
                                 :deletedAtClockValue :deleted-at-clock-value
+                                :unviewedMessagesCount :unviewed-messages-count
+                                :lastMessage :last-message
                                 :active :is-active
                                 :lastClockValue :last-clock-value})
       (update :membership-updates (partial unmarshal-membership-updates (:id chat)))
-      (update :last-message-content utils/safe-read-message-content)
-      (update :last-clock-value utils.clocks/safe-timestamp)
+      (update :last-message #(when % (messages/<-rpc %)))
       (dissoc :chatType :members)))
 
 (fx/defn save-chat [cofx {:keys [chat-id] :as chat}]

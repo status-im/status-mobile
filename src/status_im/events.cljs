@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.data-store.messages :as data-store.messages]
-
+            [status-im.data-store.chats :as data-store.chats]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.multiaccounts.logout.core :as multiaccounts.logout]
@@ -172,10 +172,7 @@
 (handlers/register-handler-fx
  :multiaccounts.logout.ui/logout-confirmed
  (fn [cofx _]
-   (fx/merge
-    cofx
-    (data-store.messages/save-messages)
-    (multiaccounts.logout/logout))))
+   (multiaccounts.logout/logout cofx)))
 
 ;; multiaccounts update module
 
@@ -551,8 +548,12 @@
 
 (handlers/register-handler-fx
  :chat.ui/resend-message
- (fn [cofx [_ chat-id message-id]]
-   (chat.message/resend-message cofx chat-id message-id)))
+ (fn [{:keys [db] :as cofx} [_ chat-id message-id]]
+   (let [message (get-in db [:chats chat-id :messages message-id])]
+     (fx/merge
+      cofx
+      (transport.message/set-message-envelope-hash chat-id message-id (:message-type message) 1)
+      (chat.message/resend-message chat-id message-id)))))
 
 (handlers/register-handler-fx
  :chat.ui/delete-message
@@ -615,16 +616,6 @@
  :message/update-message-status
  (fn [cofx [_ chat-id message-id status]]
    (chat.message/update-message-status cofx chat-id message-id status)))
-
-(handlers/register-handler-fx
- :message/messages-persisted
- (fn [cofx [_ raw-messages]]
-   (apply fx/merge
-          cofx
-          (map
-           (fn [raw-message]
-             (chat.message/confirm-message-processed raw-message))
-           raw-messages))))
 
 ;; signal module
 
@@ -1204,13 +1195,20 @@
  (fn [{:keys [db] :as cofx} [_ err]]
    (log/error :send-status-message-error err)))
 
+(fx/defn handle-update [cofx {:keys [chats messages] :as response}]
+  (let [chats (map data-store.chats/<-rpc chats)
+        messages (map data-store.messages/<-rpc messages)
+        message-fxs (map chat.message/receive-one messages)
+        chat-fxs (map #(chat/ensure-chat (dissoc % :unviewed-messages-count)) chats)]
+    (apply fx/merge cofx (concat chat-fxs message-fxs))))
+
 (handlers/register-handler-fx
  :transport/message-sent
- (fn [cofx [_ chat-id message message-type message-id messages-count]]
-   (fx/merge cofx
-             (when message (chat.message/add-message-with-id (assoc message :message-id message-id) chat-id))
-
-             (transport.message/set-message-envelope-hash chat-id message-id message-type messages-count))))
+ (fn [cofx [_ response messages-count]]
+   (let [{:keys [localChatId id messageType]} (-> response :messages first)]
+     (fx/merge cofx
+               (handle-update response)
+               (transport.message/set-message-envelope-hash localChatId id messageType messages-count)))))
 
 (handlers/register-handler-fx
  :transport/contact-message-sent

@@ -3,6 +3,10 @@
   (:require [goog.object :as o]
             [re-frame.core :as re-frame]
             [status-im.chat.models.message :as models.message]
+            [status-im.chat.models :as models.chat]
+            [status-im.data-store.messages :as data-store.messages]
+            [status-im.data-store.chats :as data-store.chats]
+            [status-im.constants :as constants]
             [status-im.utils.handlers :as handlers]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.core :as ethereum]
@@ -12,77 +16,34 @@
             [status-im.transport.message.transit :as transit]
             [status-im.transport.utils :as transport.utils]
             [status-im.tribute-to-talk.whitelist :as whitelist]
+            [status-im.ens.core :as ens]
             [cljs-bean.core :as clj-bean]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]))
 
-(def message-type-message 1)
-
-(defn build-content [content-js]
-  {:text (.-text content-js)
-   :line-count (.-lineCount content-js)
-   :parsed-text (clj-bean/->clj (.-parsedText content-js))
-   :name (.-name content-js)
-   :rtl? (.-rtl content-js)
-   :response-to (aget content-js "response-to")
-   :chat-id (.-chat_id content-js)})
-
-(defn build-message [parsed-message-js]
-  (let [content (.-content parsed-message-js)
-        built-message
-        (protocol/Message.
-         (build-content content)
-         (.-content_type parsed-message-js)
-         (keyword (.-message_type parsed-message-js))
-         (.-clock parsed-message-js)
-         (.-timestamp parsed-message-js))]
-    built-message))
-
-(defn handle-message
-  "Check if parsedMessage is present and of a supported type, if so
-  build a record using the right type. Otherwise defaults to transit
-  deserializing"
-  [message-js]
-  (if (and (.-parsedMessage message-js)
-           (= message-type-message (.-messageType message-js)))
-    (build-message (.-parsedMessage message-js))
-    (transit/deserialize (.-payload message-js))))
-
-(fx/defn receive-message
+(fx/defn handle-raw-message
   "Receive message handles a new status-message.
   dedup-id is passed by status-go and is used to deduplicate messages at that layer.
   Once a message has been successfuly processed, that id needs to be sent back
   in order to stop receiving that message"
-  [{:keys [db] :as cofx} now-in-s filter-chat-id message-js]
-  (let [blocked-contacts (get db :contacts/blocked #{})
-        timestamp (.-timestamp (.-message message-js))
-        metadata-js (.-metadata message-js)
-        metadata {:author {:publicKey (.-publicKey (.-author metadata-js))
-                           :alias (.-alias (.-author metadata-js))
-                           :identicon (.-identicon (.-author metadata-js))}
-                  :dedupId (.-dedupId metadata-js)
-                  :encryptionId (.-encryptionId metadata-js)
-                  :messageId (.-messageId metadata-js)}
-        status-message (handle-message message-js)
-        sig (-> metadata :author :publicKey)]
-    (when (and sig
-               status-message
-               (not (blocked-contacts sig)))
-      (try
-        (when-let [valid-message (protocol/validate status-message)]
-          (protocol/receive
-           (assoc valid-message
-                  :metadata metadata)
-           (or
-            filter-chat-id
-            (get-in valid-message [:content :chat-id])
-            sig)
-           sig
-           timestamp
-           (assoc cofx :metadata metadata)))
-        (catch :default e nil))))) ; ignore unknown message types
+  [{:keys [db] :as cofx} raw-message-js]
+  (let [timestamp (.-timestamp raw-message-js)
+        sig (.-from raw-message-js)
+        payload (.-payload raw-message-js)]
+    (let [status-message (transit/deserialize payload)]
+      (when (and sig
+                 status-message)
+        (try
+          (when-let [valid-message (protocol/validate status-message)]
+            (protocol/receive
+             valid-message
+             sig
+             sig
+             timestamp
+             cofx))
+          (catch :default e nil)))))) ; ignore unknown message types
 
 (defn- js-obj->seq [obj]
   ;; Sometimes the filter will return a single object instead of a collection
@@ -91,42 +52,48 @@
       (aget obj i))
     [obj]))
 
+(fx/defn handle-chat [cofx chat]
+  ;; :unviewed-messages-count is managed by status-react, so we don't copy
+  ;; over it
+  (models.chat/ensure-chat cofx (dissoc chat :unviewed-messages-count)))
+
+(fx/defn handle-message-2 [cofx message]
+  (fx/merge cofx
+            (models.message/receive-one message)
+            (ens/verify-names-from-message message (:from message))))
+
+(fx/defn process-response [cofx response-js]
+  (let [chats (.-chats response-js)
+        raw-messages (.-rawMessages response-js)
+        messages (.-messages response-js)]
+    (cond
+      (seq chats)
+      (let [chat (.pop chats)]
+        (fx/merge cofx
+                  {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (handle-chat (-> chat (clj-bean/->clj) (data-store.chats/<-rpc)))))
+      (seq raw-messages)
+      (let [first-filter (aget raw-messages 0)
+            messages     (.-messages first-filter)
+            first-message (.pop messages)]
+       ;; Pop the empty array
+        (when (= (.-length messages) 0)
+          (.pop raw-messages))
+        (when first-message
+          (fx/merge cofx
+                    {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                    (handle-raw-message first-message))))
+
+      (seq messages)
+      (let [message (.pop messages)]
+        (fx/merge cofx
+                  {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (handle-message-2 (-> message (clj-bean/->clj) (data-store.messages/<-rpc))))))))
+
 (handlers/register-handler-fx
  ::process
- (fn [cofx [_ messages now-in-s]]
-   (let [[chat-id message] (first messages)
-         remaining-messages (rest messages)]
-     (if (seq remaining-messages)
-       (assoc
-        (receive-message cofx now-in-s chat-id message)
-        ;; We dispatch later to let the UI thread handle events, without this
-        ;; it will keep processing events ignoring user input.
-        :dispatch-later [{:ms 20 :dispatch [::process remaining-messages now-in-s]}])
-       (receive-message cofx now-in-s chat-id message)))))
-
-(fx/defn receive-messages
-  "Initialize the ::process event, which will process messages one by one
-  dispatching later to itself"
-  [{:keys [now] :as cofx} event-js]
-  (let [now-in-s (quot now 1000)
-        events (reduce
-                (fn [acc message-specs]
-                  (let [chat (.-chat message-specs)
-                        messages (.-messages message-specs)
-                        error (.-error message-specs)
-                        chat-id (if (or (.-discovery chat)
-                                        (.-negotiated chat))
-                                  nil
-                                  (.-chatId chat))]
-                    (if (seq messages)
-                      (reduce (fn [acc m]
-                                (conj acc [chat-id m]))
-                              acc
-                              messages)
-                      acc)))
-                []
-                (.-messages event-js))]
-    {:dispatch [::process events now-in-s]}))
+ (fn [cofx [_ response-js]]
+   (process-response cofx response-js)))
 
 (fx/defn remove-hash
   [{:keys [db] :as cofx} envelope-hash]
@@ -192,16 +159,3 @@
     {:name          name
      :profile-image photo-path
      :address       address}))
-
-(fx/defn resend-contact-request [cofx own-info chat-id {:keys [sym-key topic]}]
-  (protocol/send (contact/map->ContactRequest own-info)
-                 chat-id cofx))
-
-(re-frame/reg-fx
- :transport/confirm-messages-processed
- (fn [confirmations]
-   (when (seq confirmations)
-     (json-rpc/call {:method "shhext_confirmMessagesProcessedByID"
-                     :params [confirmations]
-                     :on-success #(log/debug "successfully confirmed messages")
-                     :on-failure #(log/error "failed to confirm messages" %)}))))

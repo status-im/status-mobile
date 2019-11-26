@@ -35,13 +35,15 @@
    "shhext_sendPublicMessage" {}
    "shhext_enableInstallation" {}
    "shhext_disableInstallation" {}
+   "shhext_sendChatMessage" {}
+   "shhext_reSendChatMessage" {}
    "shhext_getOurInstallations" {}
    "shhext_setInstallationMetadata" {}
    "shhext_loadFilters" {}
    "shhext_loadFilter" {}
    "shhext_removeFilters" {}
    "shhext_chats" {}
-   "shhext_saveMessages" {}
+   "shhext_addSystemMessages" {}
    "shhext_deleteMessagesFrom" {}
    "shhext_deleteMessagesByChatID" {}
    "shhext_deleteMessage" {}

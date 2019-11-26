@@ -60,7 +60,7 @@
 (spec/def ::content-type #{constants/content-type-text
                            constants/content-type-emoji
                            constants/content-type-sticker})
-(spec/def ::message-type #{:group-user-message :public-group-user-message :user-message})
+(spec/def ::message-type #{constants/message-type-private-group constants/message-type-public-group constants/message-type-one-to-one})
 (spec/def ::clock-value (spec/and pos-int?
                                   utils.clocks/safe-timestamp?))
 (spec/def ::timestamp (spec/nilable pos-int?))

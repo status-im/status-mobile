@@ -3,6 +3,7 @@
             [reagent.core :as reagent]
             [status-im.ens.core :as ens]
             [status-im.ethereum.core :as ethereum]
+            [status-im.constants :as constants]
             [status-im.ethereum.ens :as ethereum.ens]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.i18n :as i18n]
@@ -649,7 +650,7 @@
        :action-fn #(re-frame/dispatch [::ens/switch-show-username])
        :value     show?}]]
     (let [message {:content {:parsed-text [{:type "paragraph", :children [{:literal (i18n/label :t/ens-test-message)}]}]}
-                   :content-type "text/plain"
+                   :content-type constants/content-type-text
                    :timestamp-str "9:41 AM"}]
       [react/view
        [react/view {:padding-left 60}

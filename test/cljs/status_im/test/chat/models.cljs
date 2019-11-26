@@ -65,9 +65,7 @@
 (deftest clear-history-test
   (let [chat-id "1"
         cofx    {:db {:chats {chat-id {:message-list            [{:something "a"}]
-                                       :messages                {"1" {:clock-value 1}
-                                                                 "2" {:clock-value 10}
-                                                                 "3" {:clock-value 2}}
+                                       :last-message            {:clock-value 10}
                                        :unviewed-messages-count 1}}}}]
     (testing "it deletes all the messages"
       (let [actual (chat/clear-history cofx chat-id)]
@@ -85,7 +83,7 @@
       (let [actual (chat/clear-history (update-in cofx
                                                   [:db :chats chat-id]
                                                   assoc
-                                                  :messages {}
+                                                  :last-message nil
                                                   :deleted-at-clock-value 100)
                                        chat-id)]
         (is (= 100 (get-in actual [:db :chats chat-id :deleted-at-clock-value])))))
@@ -94,7 +92,7 @@
         (let [actual (chat/clear-history (update-in cofx
                                                     [:db :chats chat-id]
                                                     assoc
-                                                    :messages {})
+                                                    :last-message nil)
                                          chat-id)]
           (is (= 42 (get-in actual [:db :chats chat-id :deleted-at-clock-value]))))))
     (testing "it adds the relevant rpc calls"
@@ -104,7 +102,8 @@
 
 (deftest remove-chat-test
   (let [chat-id "1"
-        cofx    {:db {:chats {chat-id {:messages {"1" {:clock-value 1}
+        cofx    {:db {:chats {chat-id {:last-message {:clock-value 10}
+                                       :messages {"1" {:clock-value 1}
                                                   "2" {:clock-value 10}
                                                   "3" {:clock-value 2}}}}}}]
     (testing "it deletes all the messages"

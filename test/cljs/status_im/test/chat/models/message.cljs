@@ -2,6 +2,7 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
+            [status-im.constants :as constants]
             [status-im.utils.datetime :as time]
             [status-im.transport.message.protocol :as protocol]
             [status-im.chat.models.message-list :as models.message-list]
@@ -49,51 +50,17 @@
     (testing "a message coming from you!"
       (let [actual (message/receive-one {:db db}
                                         {:from "me"
-                                         :message-type :user-message
+                                         :message-type constants/message-type-one-to-one
                                          :timestamp 0
                                          :whisper-timestamp 0
                                          :message-id "id"
                                          :chat-id "chat-id"
+                                         :outgoing true
                                          :content "b"
                                          :clock-value 1})
             message (get-in actual [:db :chats "chat-id" :messages "id"])]
         (testing "it adds the message"
-          (is message))
-        (testing "it marks the message as outgoing"
-          (is (= true (:outgoing message))))))))
-
-(deftest receive-one-clock-value
-  (let [db {:multiaccount {:public-key "me"}
-            :view-id :chat
-            :current-chat-id "chat-id"
-            :chats {"chat-id" {:last-clock-value 10
-                               :messages {}}}}]
-    (testing "a message with a higher clock value"
-      (let [actual (message/receive-one {:db db}
-                                        {:from "chat-id"
-                                         :message-type :user-message
-                                         :timestamp 0
-                                         :whisper-timestamp 0
-                                         :message-id "id"
-                                         :chat-id "chat-id"
-                                         :content "b"
-                                         :clock-value 12})
-            chat-clock-value (get-in actual [:db :chats "chat-id" :last-clock-value])]
-        (testing "it sets last-clock-value"
-          (is (= 12 chat-clock-value)))))
-    (testing "a message with a lower clock value"
-      (let [actual (message/receive-one {:db db}
-                                        {:from "chat-id"
-                                         :message-type :user-message
-                                         :timestamp 0
-                                         :whisper-timestamp 0
-                                         :message-id "id"
-                                         :chat-id "chat-id"
-                                         :content "b"
-                                         :clock-value 2})
-            chat-clock-value (get-in actual [:db :chats "chat-id" :last-clock-value])]
-        (testing "it sets last-clock-value"
-          (is (= 10 chat-clock-value)))))))
+          (is message))))))
 
 (deftest receive-group-chats
   (let [cofx                 {:db {:chats {"chat-id" {:contacts #{"present"}
@@ -104,21 +71,21 @@
         cofx-without-member  (update-in cofx [:db :chats "chat-id" :members-joined] disj "a")
         valid-message        {:chat-id     "chat-id"
                               :from        "present"
-                              :message-type :group-user-message
+                              :message-type constants/message-type-private-group
                               :message-id  "1"
                               :clock-value 1
                               :whisper-timestamp 0
                               :timestamp   0}
         bad-chat-id-message  {:chat-id     "bad-chat-id"
                               :from        "present"
-                              :message-type :group-user-message
+                              :message-type constants/message-type-private-group
                               :message-id  "1"
                               :clock-value 1
                               :whisper-timestamp 0
                               :timestamp   0}
         bad-from-message     {:chat-id     "chat-id"
                               :from        "not-present"
-                              :message-type :group-user-message
+                              :message-type constants/message-type-private-group
                               :message-id  "1"
                               :clock-value 1
                               :whisper-timestamp 0
@@ -139,14 +106,14 @@
                                    :view-id :chat}}
         valid-message        {:chat-id     "chat-id"
                               :from        "anyone"
-                              :message-type :public-group-user-message
+                              :message-type constants/message-type-public-group
                               :message-id  "1"
                               :clock-value 1
                               :whisper-timestamp 0
                               :timestamp   0}
         bad-chat-id-message  {:chat-id     "bad-chat-id"
                               :from        "present"
-                              :message-type :public-group-user-message
+                              :message-type constants/message-type-public-group
                               :message-id  "1"
                               :clock-value 1
                               :whisper-timestamp 0
@@ -166,14 +133,14 @@
                                      :view-id :chat}}
           valid-message        {:chat-id     "matching"
                                 :from        "matching"
-                                :message-type :user-message
+                                :message-type constants/message-type-one-to-one
                                 :message-id  "1"
                                 :clock-value 1
                                 :whisper-timestamp 0
                                 :timestamp   0}
           own-message          {:chat-id     "matching"
                                 :from        "me"
-                                :message-type :user-message
+                                :message-type constants/message-type-one-to-one
                                 :message-id  "1"
                                 :clock-value 1
                                 :whisper-timestamp 0
@@ -181,7 +148,7 @@
 
           bad-chat-id-message  {:chat-id     "bad-chat-id"
                                 :from        "not-matching"
-                                :message-type :user-message
+                                :message-type constants/message-type-one-to-one
                                 :message-id  "1"
                                 :clock-value 1
                                 :whisper-timestamp 0
@@ -229,38 +196,15 @@
                  :clock-value 0
                  :first-in-group? true
                  :from nil
-                 :first-outgoing? nil
-                 :outgoing-seen? nil
+                 :first-outgoing? false
+                 :outgoing-seen? false
                  :timestamp-str "timestamp"
                  :first? true
                  :display-username? true
-                 :outgoing nil}]
+                 :outgoing false}]
                (models.message-list/->seq
                 (get-in fx1 [:db :chats "chat-id" :message-list]))))
         (is (= {}
                (get-in fx2 [:db :chats "chat-id" :messages])))
         (is (= nil
                (get-in fx2 [:db :chats "chat-id" :message-list])))))))
-
-(deftest add-outgoing-status
-  (testing "coming from us"
-    (testing "system-message"
-      (let [message (message/add-outgoing-status {:message-type :system-message
-                                                  :from "us"} "us")]
-        (is (not (:outgoing message)))
-        (is (not (:outgoing-status message)))))
-    (testing "has already a an outgoing status"
-      (testing "it does not override it"
-        (let [message (message/add-outgoing-status {:outgoing-status :sending
-                                                    :from "us"} "us")]
-          (is (:outgoing message))
-          (is (= :sending (:outgoing-status message))))))
-    (testing "does not have an outgoing status"
-      (testing "it sets it to sent"
-        (let [message (message/add-outgoing-status {:from "us"} "us")]
-          (is (:outgoing message))
-          (is (= :sent (:outgoing-status message)))))))
-  (testing "not coming from us"
-    (let [message (message/add-outgoing-status {:from "not-us"} "us")]
-      (is (not (:outgoing message)))
-      (is (not (:outgoing-status message))))))

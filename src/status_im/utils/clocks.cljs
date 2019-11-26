@@ -41,7 +41,7 @@
 ;;
 ;; But what we can do, is to use our time to make a "bid", hoping that it will
 ;; beat the current chat-timestamp. So our Lamport timestamp format is:
-;; {unix-timestamp-ms}{2-digits-post-id}
+;; {unix-timestamp-ms}
 ;;
 ;; We always need to make sure we take the max value between the last-clock-value
 ;; for the chat and the bid-timestamp.
@@ -70,13 +70,12 @@
 ;; http://amturing.acm.org/p558-lamport.pdf
 
 (def one-month-in-ms (* 60 60 24 31 1000))
-(def post-id-digits 100)
 
 (defn- ->timestamp-bid []
-  (* (utils.datetime/timestamp) post-id-digits))
+  (utils.datetime/timestamp))
 
 (defn max-timestamp []
-  (* (+ one-month-in-ms (utils.datetime/timestamp)) post-id-digits))
+  (+ one-month-in-ms (utils.datetime/timestamp)))
 ; The timestamp has an upper limit of Number.MAX_SAFE_INTEGER
 ; A malicious client could send a crafted message with timestamp = Number.MAX_SAFE_INTEGER
 ; which effectively would DoS the chat, as any new message would get

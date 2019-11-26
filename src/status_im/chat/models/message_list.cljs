@@ -2,6 +2,7 @@
   (:require
    [status-im.js-dependencies :as dependencies]
    [taoensso.timbre :as log]
+   [status-im.constants :as constants]
    [status-im.utils.fx :as fx]
    [status-im.chat.db :as chat.db]
    [status-im.utils.datetime :as time]))
@@ -20,12 +21,13 @@
                                whisper-timestamp]}]
   (-> {:whisper-timestamp whisper-timestamp
        :from from
-       :one-to-one? (= :user-message message-type)
-       :system-message? (= :system-message message-type)
+       :one-to-one? (= constants/message-type-one-to-one message-type)
+       :system-message? (= constants/message-type-private-group-system-message
+                           message-type)
        :clock-value clock-value
        :type :message
        :message-id message-id
-       :outgoing outgoing}
+       :outgoing (boolean outgoing)}
       add-datemark
       add-timestamp))
 
@@ -65,7 +67,8 @@
   We divide messages in groups. Messages are sorted descending so :first? is
   the most recent message, similarly :first-in-group? is the most recent message
   in a group."
-  [{:keys [one-to-one? outgoing] :as current-message}
+  [{:keys [system-message?
+           one-to-one? outgoing] :as current-message}
    {:keys [outgoing-seen?] :as previous-message}
    next-message]
   (let [last-in-group? (or (nil? next-message)
@@ -80,6 +83,7 @@
                                   (not (same-group? current-message previous-message)))
            :last-in-group?    last-in-group?
            :display-username? (and last-in-group?
+                                   (not system-message?)
                                    (not outgoing)
                                    (not one-to-one?))
            :display-photo?   (display-photo? current-message))))
@@ -100,10 +104,13 @@
 
 (defn update-previous-message
   "If this is a new group, we mark the previous as the last one in the group"
-  [current-message {:keys [one-to-one? outgoing] :as previous-message}]
+  [current-message {:keys [one-to-one?
+                           system-message?
+                           outgoing] :as previous-message}]
   (let [last-in-group? (not (same-group? current-message previous-message))]
     (assoc previous-message
            :display-username? (and last-in-group?
+                                   (not system-message?)
                                    (not outgoing)
                                    (not one-to-one?))
            :last-in-group?  last-in-group?)))

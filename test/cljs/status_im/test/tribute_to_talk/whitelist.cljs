@@ -1,6 +1,7 @@
 (ns status-im.test.tribute-to-talk.whitelist
   (:require [cljs.test :refer-macros [deftest testing is]]
             [status-im.utils.gfycat.core :as gfycat]
+            [status-im.constants :as constants]
             [status-im.utils.identicon :as identicon]
             [status-im.tribute-to-talk.whitelist :as whitelist]))
 
@@ -113,21 +114,21 @@
       (whitelist/filter-message
        (whitelist/enable-whitelist ttt-enabled-multiaccount)
        :unfiltered-fx
-       :user-message
+       constants/message-type-one-to-one
        nil
        "whitelisted because added"))
     (testing "tribute to talk is disabled"
       (whitelist/filter-message
        ttt-disabled-multiaccount
        :unfiltered-fx
-       :user-message
+       constants/message-type-one-to-one
        nil
        "public-key"))
     (testing "user is not whitelisted but transaction is valid"
       (let [result (whitelist/filter-message
                     ttt-enabled-multiaccount
                     #(assoc % :message-received true)
-                    :user-message
+                    constants/message-type-one-to-one
                     "transaction-hash-1"
                     sender-pk)]
         (is (contains? (get-in result [:db :contacts/whitelist])

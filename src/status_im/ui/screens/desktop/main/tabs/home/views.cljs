@@ -20,16 +20,13 @@
   [{:keys [chat-id name group-chat
            color public? public-key
            timestamp chat-name
-           last-message-content
-           last-message-timestamp
-           last-message-content-type]
+           last-message]
     :as chat-item}]
   (views/letsubs [photo-path              [:contacts/chat-photo chat-id]
                   unviewed-messages-count [:chats/unviewed-messages-count chat-id]
                   current-chat-id         [:chats/current-chat-id]]
-    (let [last-message {:content      last-message-content
-                        :timestamp    (if (pos? last-message-timestamp) last-message-timestamp timestamp)
-                        :content-type last-message-content-type}
+    (let [last-message (or last-message
+                           {:timestamp timestamp})
           name (or chat-name
                    (gfycat/generate-gfy public-key))
           [unviewed-messages-label large?] [(utils/unread-messages-count unviewed-messages-count) true]
@@ -60,7 +57,7 @@
             [react/text {:ellipsize-mode  :tail
                          :number-of-lines 1
                          :style           styles/chat-last-message}
-             (or (:text last-message-content)
+             (or (:text last-message)
                  (i18n/label :no-messages-yet))]))]
        [react/view {:style styles/timestamp}
         [chat-item/message-timestamp (:timestamp last-message)]

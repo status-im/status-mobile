@@ -238,7 +238,7 @@
 (fx/defn handle-negotiated-filter
   "Check if it's a new filter, if so create an shh filter and process it"
   [{:keys [db] :as cofx} {:keys [filters]}]
-  (let [processed-filters (map responses->filters filters)
+  (let [processed-filters (map #(responses->filters (assoc % :negotiated true)) filters)
         new-filters     (filter
                          (partial not-loaded? db)
                          processed-filters)]

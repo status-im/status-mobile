@@ -140,7 +140,7 @@ class NewMessageSignalHandler {
 
     void handleNewMessageSignal(JSONObject newMessageSignal) {
         try {
-            JSONArray chatsNewMessagesData = newMessageSignal.getJSONObject("event").getJSONArray("messages");
+            JSONArray chatsNewMessagesData = newMessageSignal.getJSONObject("event").getJSONArray("chats");
             for (int i = 0; i < chatsNewMessagesData.length(); i++) {
                 try {
                     upsertChat(chatsNewMessagesData.getJSONObject(i));
@@ -148,6 +148,15 @@ class NewMessageSignalHandler {
                     Log.e(TAG, "JSON conversion failed: " + e.getMessage());
                 }
             }
+            JSONArray messagesNewMessagesData = newMessageSignal.getJSONObject("event").getJSONArray("messages");
+            for (int i = 0; i < messagesNewMessagesData.length(); i++) {
+                try {
+                    upsertMessage(messagesNewMessagesData.getJSONObject(i));
+                } catch (JSONException e) {
+                    Log.e(TAG, "JSON conversion failed: " + e.getMessage());
+                }
+            }
+
             if(shouldRefreshNotifications) {
                 refreshNotifications();
                 shouldRefreshNotifications = false;
@@ -173,72 +182,69 @@ class NewMessageSignalHandler {
         return person;
     }
 
-    private void upsertChat(JSONObject chatNewMessagesData) {
+    private void upsertChat(JSONObject chatData) {
         try {
-            JSONObject chatData = chatNewMessagesData.getJSONObject("chat");
             // NOTE: this is an exemple of chatData
             // {"chatId":"contact-discovery-3622","filterId":"c0239d63f830e8b25f4bf7183c8d207f355a925b89514a17068cae4898e7f193",
             //  "symKeyId":"","oneToOne":true,"identity":"046599511623d7385b926ce709ac57d518dac10d451a81f75cd32c7fb4b1c...",
             // "topic":"0xc446561b","discovery":false,"negotiated":false,"listen":true}
-            boolean oneToOne = chatData.getBoolean("oneToOne");
+            int oneToOne = chatData.getInt("chatType");
             // NOTE: for now we only notify one to one chats
             // TODO: also notifiy on mentions, keywords and group chats
             // TODO: one would have to pass the ens name and keywords to notify on when instanciating the class as well
             // as have a method to add new ones after the handler is instanciated
-            if (oneToOne) {
-                JSONArray messagesData = chatNewMessagesData.getJSONArray("messages");
+            if (oneToOne == 1) {
+                //JSONArray messagesData = chatNewMessagesData.getJSONArray("messages");
 
                 // there is no proper id for oneToOne chat in chatData so we peek into first message sig
                 // TODO: won't work for sync becaus it could be our own message
-                String id = messagesData.getJSONObject(0).getJSONObject("message").getString("sig");
+                String id = chatData.getString("id");
                 StatusChat chat = chats.get(id);
 
 
                 // if the chat was not already there, we create one
                 if (chat == null) {
-                    chat = new StatusChat(id, oneToOne);
+                    chat = new StatusChat(id, true);
                 }
 
-                ArrayList<StatusMessage> messages = chat.getMessages();
-                // parse the new messages
-                for (int j = 0; j < messagesData.length(); j++) {
-                    StatusMessage message = createMessage(messagesData.getJSONObject(j));
-                    if (message != null) {
-                        messages.add(message);
-                    }
-                }
-
-                if (!messages.isEmpty()) {
-                    chat.setMessages(messages);
                     chats.put(id, chat);
-                    shouldRefreshNotifications = true;
-                }
             }
         } catch (JSONException e) {
             Log.e(TAG, "JSON conversion failed: " + e.getMessage());
         }
     }
 
-    private StatusMessage createMessage(JSONObject messageData) {
-        try {
-            JSONObject metadata = messageData.getJSONObject("metadata");
-            JSONObject authorMetadata = metadata.getJSONObject("author");
-            JSONArray payload = new JSONArray(messageData.getString("payload"));
-            // NOTE: this is an exemple of payload we are currently working with
-            // it is in the transit format, which is basically JSON
-            // refer to `transport.message.transit.cljs` on react side for details
-            // ["~#c4",["7","text/plain","~:public-group-user-message",157201130275201,1572011302752,["^ ","~:chat-id","test","~:text","7"]]]
-            if (payload.getString(0).equals("~#c4")) {
-                Person author = getPerson(authorMetadata.getString("publicKey"), authorMetadata.getString("identicon"), authorMetadata.getString("alias"));
-                JSONArray payloadContent = payload.getJSONArray(1);
-                String text = payloadContent.getString(0);
-                Double timestamp = payloadContent.getDouble(4);
-                return new StatusMessage(author, timestamp.longValue(), text);
-            }
-        } catch (JSONException e) {
-            Log.e(TAG, "JSON conversion failed: " + e.getMessage());
+
+
+    private void upsertMessage(JSONObject messageData) {
+      try {
+        String chatId = messageData.getString("localChatId");
+        StatusChat chat = chats.get(chatId);
+        if (chat == null) {
+          return;
         }
-        return null;
+
+        StatusMessage message = createMessage(messageData);
+        if (message != null) {
+          chat.appendMessage(message);
+          chats.put(chatId, chat);
+          shouldRefreshNotifications = true;
+        }
+
+      }
+      catch (JSONException e) {
+        Log.e(TAG, "JSON conversion failed: " + e.getMessage());
+      }
+    }
+
+    private StatusMessage createMessage(JSONObject messageData) {
+      try {
+        Person author = getPerson(messageData.getString("from"), messageData.getString("identicon"), messageData.getString("alias"));
+        return new StatusMessage(author,  messageData.getLong("whisperTimestamp"), messageData.getString("text"));
+      } catch (JSONException e) {
+        Log.e(TAG, "JSON conversion failed: " + e.getMessage());
+      }
+      return null;
     }
 }
 
@@ -252,6 +258,7 @@ class StatusChat {
         this.id = id;
         this.oneToOne = oneToOne;
         this.messages = new  ArrayList<StatusMessage>();
+        this.name = name;
     }
 
     public String getId() {
@@ -259,15 +266,23 @@ class StatusChat {
     }
 
     public String getName() {
-        //TODO this should be improved as it would rename the chat
-        // after our own user if we were posting from another device
-        // in 1-1 chats it should be the name of the user whose
-        // key is different than ours
-        return getLastMessage().getAuthor().getName().toString();
+
+      //TODO this should be improved as it would rename the chat
+      // after our own user if we were posting from another device
+      // in 1-1 chats it should be the name of the user whose
+      // key is different than ours
+      StatusMessage message = getLastMessage();
+      if (message == null) {
+        return "no-name";
+      }
+      return message.getAuthor().getName().toString();
     }
 
     private StatusMessage getLastMessage() {
+      if (messages.size() > 0) {
         return messages.get(messages.size()-1);
+      }
+      return null;
     }
 
     public long getTimestamp() {
@@ -278,8 +293,8 @@ class StatusChat {
         return messages;
     }
 
-    public void setMessages(ArrayList<StatusMessage> messages) {
-        this.messages = messages;
+    public void appendMessage(StatusMessage message) {
+      this.messages.add(message);
     }
 
     public String getSummary() {

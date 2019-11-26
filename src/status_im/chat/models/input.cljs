@@ -100,12 +100,9 @@
                                             :content-type (if emoji?
                                                             constants/content-type-emoji
                                                             constants/content-type-text)
-                                            :content      (cond-> {:chat-id current-chat-id
-                                                                   :text    input-text}
-                                                            message-id
-                                                            (assoc :response-to message-id)
-                                                            preferred-name
-                                                            (assoc :name preferred-name))})
+                                            :text input-text
+                                            :response-to message-id
+                                            :ens-name preferred-name})
                 (set-chat-input-text nil)
                 (process-cooldown)))))
 
@@ -114,10 +111,9 @@
   (when-not (string/blank? hash)
     (chat.message/send-message cofx {:chat-id      current-chat-id
                                      :content-type constants/content-type-sticker
-                                     :content      (cond-> {:chat-id current-chat-id
-                                                            :hash    hash
-                                                            :pack    pack
-                                                            :text    "Update to latest version to see a nice sticker here!"})})))
+                                     :sticker {:hash hash
+                                               :pack pack}
+                                     :text    "Update to latest version to see a nice sticker here!"})))
 
 (fx/defn send-current-message
   "Sends message from current chat input"

@@ -291,8 +291,8 @@
            (stateofus/valid-username? ens-name))))
 
 (fx/defn verify-names-from-message [cofx {:keys [content]} signature]
-  (when (should-be-verified? cofx (:name content) signature)
-    {::verify-names [{:name (:name content)
+  (when (should-be-verified? cofx (:ens-name content) signature)
+    {::verify-names [{:name (:ens-name content)
                       :publicKey (subs signature 2)}]}))
 
 (fx/defn verify-names-from-contact-request [cofx {:keys [name]} signature]

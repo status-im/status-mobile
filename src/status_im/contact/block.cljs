@@ -23,9 +23,7 @@
    public-key
    {:keys [chat-id
            unviewed-messages-count
-           last-message-content
-           last-message-timestamp
-           last-message-content-type]}]
+           last-message]}]
   (let [removed-messages-ids (keep
                               (fn [[message-id {:keys [from]}]]
                                 (when (= from public-key)
@@ -41,9 +39,7 @@
                (update-in [:chats chat-id]
                           assoc
                           :unviewed-messages-count unviewed-messages-count
-                          :last-message-content last-message-content
-                          :last-message-timestamp last-message-timestamp
-                          :last-message-content-type last-message-content-type))]
+                          :last-message last-message))]
     {:db (update-in db [:chats chat-id :message-list] message-list/add-many (vals (get-in db [:chats chat-id :messages])))}))
 
 (fx/defn contact-blocked

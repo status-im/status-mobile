@@ -57,6 +57,8 @@ var TopLevel = {
   "code" : function () {},
   "concat" : function () {},
   "confirmMessagesProcessed" : function () {},
+  "chats": function() {},
+  "rawMessages": function() {},
   "messages": function() {},
   "discovery": function() {},
   "dismiss": function() {},

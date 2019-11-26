@@ -27,8 +27,6 @@
               :is-active true
               :messages {}
               :pagination-info {}
-              :last-message-content "content"
-              :last-message-content-type "type"
               :chat-id "chat-id"
               :loaded-unviewed-messages-ids []
               :timestamp 2
@@ -37,8 +35,7 @@
                        :color "color"
                        :name "name"
                        :chatType 3
-                       :lastMessageContent "content"
-                       :lastMessageContentType "type"
+                       :lastMessage nil
                        :members #{{:id "a"
                                    :admin true
                                    :joined true}
@@ -90,9 +87,6 @@
                          :admin false
                          :joined false}]
               :lastClockValue 10
-              :lastMessageContent "\"content\"" ;; goes through edn/read-string
-              :lastMessageContentType "type"
-
               :membershipUpdates [{:type "chat-created"
                                    :name "test"
                                    :clockValue 1
@@ -111,11 +105,9 @@
         expected-chat {:public? false
                        :group-chat true
                        :color "color"
-                       :last-message-content "content"
-                       :last-message-content-type "type"
-
                        :contacts #{"a" "b" "c" "d"}
                        :last-clock-value 10
+                       :last-message nil
                        :admins #{"a" "b"}
                        :members-joined #{"a" "c"}
                        :name "name"

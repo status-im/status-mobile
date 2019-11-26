@@ -11,12 +11,12 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as status]
-            [status-im.transport.message.protocol :as protocol]
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.screens.mobile-network-settings.utils
              :as
              mobile-network-utils]
             [status-im.ui.screens.navigation :as navigation]
+            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.platform :as platform]
@@ -42,6 +42,14 @@
 
 (defn connected? [db id]
   (= (:mailserver/current-id db) id))
+
+(def whisper-opts
+  {;; time drift that is tolerated by whisper, in seconds
+   :whisper-drift-tolerance 10
+   ;; ttl of 10 sec
+   :ttl                     10
+   :powTarget               config/pow-target
+   :powTime                 config/pow-time})
 
 (defn fetch [db id]
   (get-in db [:mailserver/mailservers (node/current-fleet-key db) id]))
@@ -297,8 +305,8 @@
 
 (defn adjust-request-for-transit-time
   [from]
-  (let [ttl               (:ttl protocol/whisper-opts)
-        whisper-tolerance (:whisper-drift-tolerance protocol/whisper-opts)
+  (let [ttl               (:ttl whisper-opts)
+        whisper-tolerance (:whisper-drift-tolerance whisper-opts)
         adjustment    (+ whisper-tolerance ttl)
         adjusted-from (- (max from adjustment) adjustment)]
     (log/debug "Adjusting mailserver request" "from:" from

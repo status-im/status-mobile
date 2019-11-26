@@ -10,55 +10,37 @@
             [status-im.constants :as constants]
             [status-im.utils.core :as utils]))
 
-(defn prepare-content [content]
-  (if (string? content)
+(defn ->rpc [{:keys [content] :as message}]
+  (cond-> message
     content
-    (utils.types/clj->json content)))
-
-(defn ->rpc [message]
-  (-> message
-      (dissoc :dedup-id)
-      (update :message-type name)
-      (update :outgoing-status #(if % (name %) ""))
-      (utils/update-if-present :content prepare-content)
-      (clojure.set/rename-keys {:message-id :id
-                                :whisper-timestamp :whisperTimestamp
-                                :message-type :messageType
-                                :chat-id :chatId
-                                :content-type :contentType
-                                :clock-value :clockValue
-                                :outgoing-status :outgoingStatus})
-      (assoc :replyTo (get-in message [:content :response-to]))))
-
-(defn update-quoted-message [message]
-  (let [parsed-content (utils/safe-read-message-content (get-in message [:quotedMessage :content]))]
-    (cond-> message
-      parsed-content
-      (assoc :quoted-message {:from (get-in message [:quotedMessage :from])
-                              :text (:text parsed-content)})
-      :always
-      (dissoc message :quotedMessage))))
+    (assoc :text (:text content)
+           :sticker (:sticker content))
+    :always
+    (clojure.set/rename-keys {:chat-id :chatId
+                              :clock-value :clock})))
 
 (defn <-rpc [message]
-  (when-let [parsed-content (utils/safe-read-message-content (:content message))]
-    (let [outgoing-status (when-not (empty? (:outgoingStatus message))
-                            (keyword (:outgoingStatus message)))]
+  (-> message
+      (clojure.set/rename-keys {:id :message-id
+                                :whisperTimestamp :whisper-timestamp
+                                :messageType :message-type
+                                :localChatId :chat-id
+                                :contentType  :content-type
+                                :clock  :clock-value
+                                :quotedMessage :quoted-message
+                                :outgoingStatus :outgoing-status})
 
-      (-> message
-          (update :messageType keyword)
-          (update :outgoingStatus keyword)
-          (assoc :content parsed-content
-                 :outgoingStatus outgoing-status
-                 :outgoing outgoing-status)
-          (update-quoted-message)
-          (clojure.set/rename-keys {:id :message-id
-                                    :whisperTimestamp :whisper-timestamp
-                                    :messageType :message-type
-                                    :chatId :chat-id
-                                    :contentType  :content-type
-                                    :replyTo :reply-to
-                                    :clockValue  :clock-value
-                                    :outgoingStatus :outgoing-status})))))
+      (update :outgoing-status keyword)
+      (assoc :content {:chat-id (:chatId message)
+                       :text (:text message)
+                       :sticker (:sticker message)
+                       :ens-name (:ensName message)
+                       :line-count (:lineCount message)
+                       :parsed-text (:parsedText message)
+                       :rtl (:rtl message)
+                       :response-to (:responseTo message)}
+             :outgoing (boolean (:outgoingStatus message)))
+      (dissoc :ensName :chatId :text :rtl :responseTo :sticker :lineCount :parsedText)))
 
 (defn update-outgoing-status-rpc [message-id status]
   {::json-rpc/call [{:method "shhext_updateMessageOutgoingStatus"
@@ -66,12 +48,11 @@
                      :on-success #(log/debug "updated message outgoing stauts" message-id status)
                      :on-failure #(log/error "failed to update message outgoing status" message-id status %)}]})
 
-(defn save-messages-rpc [messages]
-  (let [confirmations (keep :metadata messages)]
-    (json-rpc/call {:method "shhext_saveMessages"
-                    :params [(map ->rpc messages)]
-                    :on-success #(re-frame/dispatch [:message/messages-persisted confirmations])
-                    :on-failure #(log/error "failed to save messages" %)})))
+(defn save-system-messages-rpc [messages]
+  (json-rpc/call {:method "shhext_addSystemMessages"
+                  :params [(map ->rpc messages)]
+                  :on-success #(re-frame/dispatch [:messages/system-messages-saved (map <-rpc %)])
+                  :on-failure #(log/error "failed to save messages" %)}))
 
 (defn messages-by-chat-id-rpc [chat-id cursor limit on-success]
   {::json-rpc/call [{:method "shhext_chatMessages"
@@ -80,9 +61,9 @@
                                    (on-success (update result :messages #(map <-rpc %))))
                      :on-failure #(log/error "failed to get messages" %)}]})
 
-(defn mark-seen-rpc [ids]
+(defn mark-seen-rpc [chat-id ids]
   {::json-rpc/call [{:method "shhext_markMessagesSeen"
-                     :params [ids]
+                     :params [chat-id ids]
                      :on-success #(log/debug "successfully marked as seen")
                      :on-failure #(log/error "failed to get messages" %)}]})
 
@@ -105,28 +86,12 @@
                      :on-failure #(log/error "failed to delete messages by chat-id" % chat-id)}]})
 
 (re-frame/reg-fx
- ::save-message
+ ::save-system-message
  (fn [messages]
-   (save-messages-rpc messages)))
+   (save-system-messages-rpc messages)))
 
-(fx/defn save-messages [{:keys [db]}]
-  (when-let [messages (vals (:messages/stored db))]
-    ;; Pull message from database to pick up most recent changes, default to
-    ;; stored one in case it has been offloaded
-    (let [hydrated-messages (map #(get-in db [:chats (-> % :content :chat-id) :messages (:message-id %)] %) messages)]
-      {:db (dissoc db :messages/stored)
-       ::save-message hydrated-messages})))
-
-(fx/defn handle-save-messages
-  {:events [::save-messages]}
-  [cofx]
-  (save-messages cofx))
-
-(fx/defn save-message [{:keys [db]} {:keys [message-id] :as message}]
-  {:db (assoc-in db [:messages/stored message-id] message)
-   :dispatch-debounce [{:key :save-messages
-                        :event [::save-messages]
-                        :delay 500}]})
+(fx/defn save-system-messages [cofx messages]
+  {::save-system-message messages})
 
 (fx/defn delete-message [cofx id]
   (delete-message-rpc id))
@@ -134,8 +99,8 @@
 (fx/defn delete-messages-from [cofx author]
   (delete-messages-from-rpc author))
 
-(fx/defn mark-messages-seen [_ ids]
-  (mark-seen-rpc ids))
+(fx/defn mark-messages-seen [_ chat-id ids]
+  (mark-seen-rpc chat-id ids))
 
 (fx/defn update-outgoing-status [cofx message-id status]
   (update-outgoing-status-rpc message-id status))

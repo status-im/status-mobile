@@ -57,14 +57,7 @@
                  (:membership-updates actual))))
         (testing "it sets the right admins"
           (is (= #{admin}
-                 (:admins actual))))
-        (testing "it adds a system message"
-          (is (= 3 (count (:messages actual)))))
-        (testing "it adds the right text"
-          (is (= ["group-chat-created"
-                  "group-chat-member-added"
-                  "group-chat-member-added"]
-                 (map (comp :text :content) (sort-by :clock-value (vals (:messages actual)))))))))
+                 (:admins actual))))))
     (testing "a chat with the wrong id"
       (let [bad-chat-id (str random-id member-2)
             actual      (->
@@ -162,18 +155,7 @@
             (testing "members are updated"
               (is (= #{member-1 member-2 member-4} (:contacts actual-chat))))
             (testing "the name is updated"
-              (is (= "new-name" (:name actual-chat))))
-            (testing "it adds a system message"
-              (is (= 7 (count (:messages actual-chat)))))
-            (testing "it sets the right text"
-              (is (= ["group-chat-created"
-                      "group-chat-member-added"
-                      "group-chat-member-added"
-                      "group-chat-admin-added"
-                      "group-chat-member-added"
-                      "group-chat-member-removed"
-                      "group-chat-name-changed"]
-                     (map (comp :text :content) (sort-by :clock-value (vals (:messages actual-chat)))))))))))))
+              (is (= "new-name" (:name actual-chat))))))))))
 
 (deftest build-group-test
   (testing "only adds"

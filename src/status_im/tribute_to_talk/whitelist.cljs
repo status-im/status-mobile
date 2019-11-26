@@ -1,6 +1,7 @@
 (ns status-im.tribute-to-talk.whitelist
   (:require [status-im.contact.db :as contact.db]
             [status-im.data-store.contacts :as contacts-store]
+            [status-im.constants :as constants]
             [status-im.tribute-to-talk.db :as tribute-to-talk.db]
             [status-im.utils.fx :as fx]))
 
@@ -61,7 +62,7 @@
   along the message"
   [{:keys [db] :as cofx} received-message-fx message-type tribute-transaction from]
   ;; if it is not a user-message or the user is whitelisted it passes
-  (if (or (not= :user-message message-type)
+  (if (or (not= constants/message-type-one-to-one message-type)
           (contains? (:contacts/whitelist db) from))
     received-message-fx
     ;; if ttt is disabled it passes

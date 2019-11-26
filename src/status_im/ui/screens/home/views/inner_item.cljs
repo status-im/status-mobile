@@ -25,7 +25,7 @@
 
      (= constants/content-type-sticker content-type)
      [react/image {:style  {:margin 1 :width 20 :height 20}
-                   :source {:uri (contenthash/url (:hash content))}}]
+                   :source {:uri (contenthash/url (-> content :sticker :hash))}}]
 
      (string/blank? (:text content))
      [react/text {:style styles/last-message-text}
@@ -36,14 +36,7 @@
                   :number-of-lines     1
                   :ellipsize-mode      :tail
                   :accessibility-label :chat-message-text}
-      (string/trim-newline (:text content))]
-
-     :else
-     [react/text {:style               styles/last-message-text
-                  :number-of-lines     1
-                  :ellipsize-mode      :tail
-                  :accessibility-label :chat-message-text}
-      content])])
+      (string/trim-newline (:text content))])])
 
 (defn message-timestamp [timestamp]
   (when timestamp
@@ -61,10 +54,8 @@
          [chat-id chat-name
           color online group-chat
           public? contact
-          last-message-timestamp
           timestamp
-          last-message-content
-          last-message-content-type]} home-item
+          last-message]} home-item
         private-group?                (and group-chat (not public?))
         public-group?                 (and group-chat public?)
         truncated-chat-name           (utils/truncate-str chat-name 30)
@@ -81,14 +72,14 @@
                                    :else          nil)
       :title                     truncated-chat-name
       :title-accessibility-label :chat-name-text
-      :title-row-accessory       [message-timestamp (if (pos? last-message-timestamp)
-                                                      last-message-timestamp
+      :title-row-accessory       [message-timestamp (if (pos? (:whisper-timestamp last-message))
+                                                      (:whisper-timestamp last-message)
                                                       timestamp)]
       :subtitle
       (let [{:keys [tribute-status tribute-label]} (:tribute-to-talk contact)]
         (if (not (#{:require :pending} tribute-status))
-          [message-content-text {:content      last-message-content
-                                 :content-type last-message-content-type}]
+          [message-content-text {:content      (:content last-message)
+                                 :content-type (:content-type last-message)}]
           tribute-label))
       :subtitle-row-accessory    [unviewed-indicator chat-id]
       :on-press                  #(do

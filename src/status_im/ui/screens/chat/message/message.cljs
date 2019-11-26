@@ -52,11 +52,6 @@
                     :number-of-lines 5}
         (or text (:text quote))]])))
 
-(defview message-content-status [{:keys [content]}]
-  [react/view style/status-container
-   [react/text {:style style/status-text}
-    (:text content)]])
-
 (defn expand-button [expanded? chat-id message-id]
   [react/text {:style    style/message-expand-button
                :on-press #(re-frame/dispatch [:chat.ui/message-expand-toggled chat-id message-id])}
@@ -102,6 +97,14 @@
                literal])
 
     (conj acc literal)))
+
+(defview message-content-status [{:keys [content]}]
+  [react/view style/status-container
+   [react/text {:style style/status-text}
+    (reduce
+     (fn [acc e] (render-inline (:text content) false acc e))
+     [react/text-class {:style style/status-text}]
+     (-> content :parsed-text peek :children))]])
 
 (defn render-block [{:keys [chat-id message-id content
                             timestamp-str group-chat outgoing
@@ -184,7 +187,7 @@
   [wrapper {:keys [content] :as message}]
   [wrapper message
    [react/image {:style {:margin 10 :width 140 :height 140}
-                 :source {:uri (contenthash/url (:hash content))}}]])
+                 :source {:uri (contenthash/url (-> content :sticker :hash))}}]])
 
 (defmethod message-content :default
   [wrapper {:keys [content-type] :as message}]
@@ -220,7 +223,7 @@
   [{:keys [chat-id message-id outgoing-status
            first-outgoing?
            content message-type] :as message}]
-  (when (not= :system-message message-type)
+  (when (not= constants/message-type-private-group-system-message message-type)
     (case outgoing-status
       :sending  [message-activity-indicator]
       :not-sent [message-not-sent-text chat-id message-id]
@@ -267,25 +270,26 @@
 
 (defn chat-message
   [{:keys [outgoing group-chat modal? current-public-key content-type content] :as message}]
-  [react/view
-   [react/touchable-highlight
-    {:on-press      (fn [arg]
-                      (if (and platform/desktop? (= "right" (.-button (.-nativeEvent arg))))
-                        (open-chat-context-menu message)
-                        (do
-                          (when (and (= content-type constants/content-type-sticker) (:pack content))
-                            (re-frame/dispatch [:stickers/open-sticker-pack (:pack content)]))
-                          (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
-                                                                          :input-bottom-sheet nil}])
-                          (when-not platform/desktop?
-                            (react/dismiss-keyboard!)))))
-     :on-long-press #(when (or (= content-type constants/content-type-text)
-                               (= content-type constants/content-type-emoji))
-                       (open-chat-context-menu message))}
-    [react/view {:accessibility-label :chat-item}
-     (let [incoming-group (and group-chat (not outgoing))]
-       [message-content message-body (merge message
-                                            {:current-public-key current-public-key
-                                             :group-chat         group-chat
-                                             :modal?             modal?
-                                             :incoming-group     incoming-group})])]]])
+  (let [sticker (:sticker content)]
+    [react/view
+     [react/touchable-highlight
+      {:on-press      (fn [arg]
+                        (if (and platform/desktop? (= "right" (.-button (.-nativeEvent arg))))
+                          (open-chat-context-menu message)
+                          (do
+                            (when (and (= content-type constants/content-type-sticker) (:pack sticker))
+                              (re-frame/dispatch [:stickers/open-sticker-pack (:pack sticker)]))
+                            (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
+                                                                            :input-bottom-sheet nil}])
+                            (when-not platform/desktop?
+                              (react/dismiss-keyboard!)))))
+       :on-long-press #(when (or (= content-type constants/content-type-text)
+                                 (= content-type constants/content-type-emoji))
+                         (open-chat-context-menu message))}
+      [react/view {:accessibility-label :chat-item}
+       (let [incoming-group (and group-chat (not outgoing))]
+         [message-content message-body (merge message
+                                              {:current-public-key current-public-key
+                                               :group-chat         group-chat
+                                               :modal?             modal?
+                                               :incoming-group     incoming-group})])]]]))

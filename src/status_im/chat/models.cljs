@@ -114,13 +114,6 @@
   [{:keys [db] :as cofx} chat-id]
   (chats-store/save-chat cofx (get-in db [:chats chat-id])))
 
-(fx/defn save-chat-delayed
-  "Debounce saving the chat"
-  [_ chat-id]
-  {:dispatch-debounce [{:key :save-chat
-                        :event [::save-chat chat-id]
-                        :delay 500}]})
-
 (fx/defn add-public-chat
   "Adds new public group chat to db"
   [cofx topic]
@@ -139,12 +132,9 @@
   "Clears history of the particular chat"
   [{:keys [db] :as cofx} chat-id]
   (let [{:keys [messages
+                last-message
                 deleted-at-clock-value]} (get-in db [:chats chat-id])
-        last-message-clock-value (or (->> messages
-                                          vals
-                                          (sort-by (comp unchecked-negate :clock-value))
-                                          first
-                                          :clock-value)
+        last-message-clock-value (or (:clock-value last-message)
                                      deleted-at-clock-value
                                      (utils.clocks/send 0))]
     (fx/merge
@@ -152,9 +142,7 @@
      {:db            (update-in db [:chats chat-id] merge
                                 {:messages                  {}
                                  :message-list              nil
-                                 :last-message-content      nil
-                                 :last-message-content-type nil
-                                 :last-message-timestamp    nil
+                                 :last-message              nil
                                  :unviewed-messages-count   0
                                  :deleted-at-clock-value    last-message-clock-value})}
      (messages-store/delete-messages-by-chat-id chat-id)
@@ -204,13 +192,11 @@
   [{:keys [db] :as cofx} {:keys [chat-id loaded-unviewed-messages-ids]}]
   (let [{:keys [loaded-unviewed-messages-ids unviewed-messages-count]}
         (get-in db [:chats chat-id])]
-    (upsert-chat
-     cofx
-     {:chat-id                      chat-id
-      :unviewed-messages-count      (subtract-seen-messages
-                                     unviewed-messages-count
-                                     loaded-unviewed-messages-ids)
-      :loaded-unviewed-messages-ids #{}})))
+    {:db (update-in db [:chats chat-id] assoc
+                    :unviewed-messages-count      (subtract-seen-messages
+                                                   unviewed-messages-count
+                                                   loaded-unviewed-messages-ids)
+                    :loaded-unviewed-messages-ids #{})}))
 
 (fx/defn mark-messages-seen
   "Marks all unviewed loaded messages as seen in particular chat"
@@ -224,7 +210,7 @@
                                                     true))
                                         db
                                         loaded-unviewed-ids)}
-                (messages-store/mark-messages-seen loaded-unviewed-ids)
+                (messages-store/mark-messages-seen chat-id loaded-unviewed-ids)
                 (update-chats-unviewed-messages-count {:chat-id chat-id})
                 (when platform/desktop?
                   (update-dock-badge-label))))))

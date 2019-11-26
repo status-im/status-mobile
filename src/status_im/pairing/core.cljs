@@ -4,6 +4,7 @@
             [status-im.chat.models :as models.chat]
             [status-im.contact.core :as contact]
             [status-im.contact.db :as contact.db]
+            [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.model :as multiaccounts.model]
@@ -69,10 +70,6 @@
         installation-name (get-in cofx [:db :pairing/installations installation-id :name])
         device-type     utils.platform/os]
     (protocol/send (transport.pairing/PairInstallation. installation-id device-type installation-name nil) nil cofx)))
-
-(fx/defn confirm-message-processed
-  [cofx confirmation]
-  {:transport/confirm-messages-processed [confirmation]})
 
 (defn send-pair-installation
   [cofx payload]
@@ -321,8 +318,8 @@
 (defn handle-sync-installation
   [{:keys [db] :as cofx} {:keys [contacts account chat]} sender]
   (let [confirmation  (:metadata cofx)]
-    (if (= sender (multiaccounts.model/current-public-key cofx))
-      (let [on-success #(re-frame/dispatch [:message/messages-persisted [confirmation]])
+    (when (= sender (multiaccounts.model/current-public-key cofx))
+      (let [on-success #(log/debug "handled sync installation successfully")
             new-contacts  (when (seq contacts)
                             (vals (merge-contacts (:contacts/contacts db)
                                                   ((comp ensure-photo-path
@@ -339,17 +336,15 @@
                     :on-success on-success}]}
                  #(when (:public? chat)
                     (models.chat/start-public-chat % (:chat-id chat) {:dont-navigate? true}))]
-                contacts-fx)))
-      (confirm-message-processed cofx confirmation))))
+                contacts-fx))))))
 
 (defn handle-pair-installation
   [{:keys [db] :as cofx} {:keys [name installation-id
                                  device-type]} timestamp sender]
-  (if (and (= sender (multiaccounts.model/current-public-key cofx))
-           (not= (get-in db [:multiaccount :installation-id]) installation-id))
+  (when (and (= sender (multiaccounts.model/current-public-key cofx))
+             (not= (get-in db [:multiaccount :installation-id]) installation-id))
     {:pairing/set-installation-metadata [[installation-id {:name name
-                                                           :deviceType device-type}]]}
-    (confirm-message-processed cofx (:metadata cofx))))
+                                                           :deviceType device-type}]]}))
 
 (fx/defn update-installation [{:keys [db]} installation-id metadata]
   {:db (update-in db [:pairing/installations installation-id]

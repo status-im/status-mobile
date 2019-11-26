@@ -115,8 +115,11 @@
   "return all the topics for this chat, including discovery topics if specified"
   [topics chat-id include-discovery?]
   (reduce-kv
-   (fn [acc topic {:keys [discovery? chat-ids]}]
-     (if (or (and discovery?
+   (fn [acc topic {:keys [negotiated?
+                          discovery?
+                          chat-ids]}]
+     (if (or (and (or discovery?
+                      negotiated?)
                   include-discovery?)
              (chat-ids chat-id))
        (conj acc topic)
