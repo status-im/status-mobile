@@ -189,6 +189,6 @@
                       message
                       (map vector paths addresses))
               origin]))}}))
-    (-> {:db db}
-        (assoc :ui/show-error (i18n/label :t/wallet-invalid-address {:data uri}))
-        (assoc :dispatch [:navigate-back]))))
+    (cond-> {:db db}
+      true (assoc :ui/show-error (i18n/label :t/wallet-invalid-address {:data uri}))
+      (= origin :qr) (assoc :dispatch [:navigate-back]))))
