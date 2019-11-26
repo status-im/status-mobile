@@ -37,22 +37,19 @@
       (re-frame/dispatch [:screens/on-will-focus current-view-id]))
     :on-did-focus
     (fn []
+      (when @back-button-listener (.remove @back-button-listener))
       (reset!
        back-button-listener
        (.addEventListener
         js-dependencies/back-handler
         "hardwareBackPress"
-        (fn []
-          (not (get back-actions/back-actions current-view-id)))))
+        #(not (get back-actions/back-actions current-view-id))))
       (when-not modal?
         (status-bar/set-status-bar current-view-id)))
     :on-will-blur
     (fn [payload]
       (reset! screen-focused? false)
       (log/debug :on-will-blur current-view-id)
-      (when @back-button-listener
-        (.remove @back-button-listener)
-        (reset! back-button-listener nil))
       ;; Reset currently mounted text inputs to their default values
       ;; on navigating away; this is a privacy measure
       (doseq [[text-input default-value] @react/text-input-refs]
