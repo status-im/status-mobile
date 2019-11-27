@@ -9,7 +9,7 @@
 
 ;; translations
 (def translations-by-locale
-  (->> (i18n/translations [:en :es_419 :fa :ko :ms :pl :ru :zh_Hans_CN])
+  (->> (i18n/translations [:en :es_419 :fa :ko :ms :pl :ru :zh :zh_Hans_CN])
        (map (fn [[k t]]
               (let [k' (-> (name k)
                            (string/replace "_" "-")
