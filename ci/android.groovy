@@ -148,7 +148,8 @@ def uploadToDiawi() {
     nix.shell(
       'fastlane android upload_diawi',
       attr: 'targets.mobile.fastlane.shell',
-      keep: ['FASTLANE_DISABLE_COLORS', 'APK_PATHS', 'DIAWI_TOKEN']
+      keep: ['FASTLANE_DISABLE_COLORS', 'APK_PATHS', 'DIAWI_TOKEN'],
+      pure: false
     )
   }
   diawiUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
