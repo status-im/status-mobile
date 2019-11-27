@@ -174,7 +174,7 @@
                   [[:address] [:function-arguments :address]])]
       (if (empty? ens-names)
       ;; if there is no ens-names, we dispatch request-uri-parsed immediately
-        (request-uri-parsed message origin)
+        (request-uri-parsed cofx message origin)
         {::resolve-addresses
          {:registry (get ens/ens-registries (ethereum/chain-keyword db))
           :ens-names ens-names
