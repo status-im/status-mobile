@@ -637,5 +637,6 @@ class BaseView(object):
         start_web_browser(self.driver)
         self.send_as_keyevent(deep_link)
         self.confirm()
+        self.open_in_status_button.scroll_to_element()
         self.open_in_status_button.click()
 

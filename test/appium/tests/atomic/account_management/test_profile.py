@@ -497,7 +497,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         node_version = profile_view.node_version_text.text
         if not re.search("\d{1}[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)]", app_version):
             self.errors.append("App version %s didn't match expected format" % app_version)
-        if not re.search("StatusIM\/v\d{1}[.]\d{1,2}[.]\d{1,2}-beta.\d\/android-\d{3}\/go\d{1}[.]\d{1,2}[.]\d{1,2}", node_version):
+        if not re.search("StatusIM\/v.*\/android-\d{3}\/go\d{1}[.]\d{1,2}[.]\d{1,2}", node_version):
             self.errors.append("Node version %s didn't match expected format" % node_version)
         profile_view.app_version_text.click()
         profile_view.back_button.click()
