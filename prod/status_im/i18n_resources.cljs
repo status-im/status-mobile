@@ -4,7 +4,7 @@
 (def default-device-language
   (keyword (.-language rn-dependencies/react-native-languages)))
 
-(def languages [:af :ar :bel :cs :da :de :de_ch :el :en :es :es_419 :es_ar :es_mx :fa :fi :fr :fr_ch :fy :he :hi :hu :id :it_ch :ja :ko :la :lt :lv :ms :nb :ne :nl :pl :pt_br :pt_pt :ro :ru :sl :sr_rs_cyrl :sr_rs :latn :sv :sw :th :tr :uk :ur :vi :zh :zh_Hans_CN :zh_hans :zh_hant :zh_hant_hk :zh_hant_sg :zh_hant_tw :zh_wuu :zh_yue])
+(def languages [:af :ar :bel :cs :da :de :de_ch :el :en :es :es_419 :es_ar :es_mx :fa :fi :fr :fr_ch :fy :he :hi :hu :id :it_ch :ja :ko :la :lt :lv :ms :nb :ne :nl :pl :pt_br :pt_pt :ro :ru :sl :sr_rs_cyrl :sr_rs :latn :sv :sw :th :tr :uk :ur :vi :zh])
 
 (defonce loaded-languages
   (atom
@@ -59,14 +59,7 @@
       :uk         (js/require "status-modules/translations/uk.json")
       :ur         (js/require "status-modules/translations/ur.json")
       :vi         (js/require "status-modules/translations/vi.json")
-      :zh_Hans_CN (js/require "status-modules/translations/zh_Hans_CN.json")
-      :zh_hans    (js/require "status-modules/translations/zh_hans.json")
-      :zh_hant    (js/require "status-modules/translations/zh_hant.json")
-      :zh_hant_hk (js/require "status-modules/translations/zh_hant_hk.json")
-      :zh_hant_sg (js/require "status-modules/translations/zh_hant_sg.json")
-      :zh_hant_tw (js/require "status-modules/translations/zh_hant_tw.json")
-      :zh_wuu     (js/require "status-modules/translations/zh_wuu.json")
-      :zh_yue     (js/require "status-modules/translations/zh_yue.json")})
+      :zh         (js/require "status-modules/translations/zh.json")})
 
 (defn valid-language [lang]
   (if (contains? prod-translations lang)
