@@ -686,7 +686,7 @@
 (handlers/register-handler-fx
  :hardwallet.callback/check-nfc-support-success
  (fn [cofx [_ supported?]]
-   (hardwallet/set-nfc-support cofx supported?)))
+   (hardwallet/set-nfc-supported cofx supported?)))
 
 (handlers/register-handler-fx
  :hardwallet.callback/on-card-connected

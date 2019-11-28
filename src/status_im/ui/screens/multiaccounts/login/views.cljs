@@ -92,7 +92,7 @@
                                 :margin-top      19}}
             [checkbox/checkbox {:checked?        save-password?
                                 :style           {:margin-left 3 :margin-right 10}
-                                :on-value-change #(re-frame/dispatch [:set-in [:multiaccounts/login :save-password?] %])}]
+                                :on-value-change #(re-frame/dispatch [:multiaccounts/save-password %])}]
             [react/text (i18n/label :t/save-password)]]))]]
      (when processing
        [react/view styles/processing-view

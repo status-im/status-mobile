@@ -2,20 +2,16 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.multiaccounts.logout.core :as multiaccounts.logout]
-            [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.mnemonic :as mnemonic]
             [status-im.i18n :as i18n]
-            [status-im.node.core :as node]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
             [status-im.utils.datetime :as utils.datetime]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
-            [status-im.wallet.core :as wallet]
             [taoensso.timbre :as log]
             status-im.hardwallet.fx
             [status-im.ui.components.react :as react]
@@ -23,7 +19,9 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.multiaccounts.recover.core :as recover]
-            [status-im.ethereum.eip55 :as eip55]))
+            [status-im.ethereum.eip55 :as eip55]
+            [status-im.utils.keychain.core :as keychain]
+            [status-im.hardwallet.nfc :as nfc]))
 
 (def default-pin "000000")
 
@@ -58,6 +56,11 @@
     (when key-uid
       (:keycard-pairing
        (find-multiaccount-by-key-uid db key-uid))))))
+
+(re-frame/reg-fx
+ :hardwallet/set-nfc-supported
+ (fn [supported?]
+   (nfc/set-nfc-supported? supported?)))
 
 (fx/defn listen-to-hardware-back-button
   [{:keys [db]}]
@@ -164,10 +167,10 @@
                                               remove-instance-uid? (assoc :keycard-instance-uid nil))
                                             {}))
 
-(defn hardwallet-supported? [{:keys [db]}]
+(defn hardwallet-supported? []
   (and config/hardwallet-enabled?
        platform/android?
-       (get-in db [:hardwallet :nfc-supported?])))
+       (nfc/nfc-supported?)))
 
 (fx/defn unauthorized-operation
   [{:keys [db] :as cofx}]
@@ -628,7 +631,7 @@
         pairing (get-in db [:multiaccounts/multiaccounts multiaccount-address :keycard-pairing])
         pin (string/join (get-in db [:hardwallet :pin :login]))]
     (when (and pairing
-               (not (empty? pin)))
+               (seq pin))
       {:db                  (-> db
                                 (assoc-in [:hardwallet :pin :status] :verifying))
        :hardwallet/get-keys {:pairing pairing
@@ -723,9 +726,9 @@
                   (when on-card-read
                     (dispatch-event on-card-read)))))))
 
-(fx/defn set-nfc-support
-  [{:keys [db]} supported?]
-  {:db (assoc-in db [:hardwallet :nfc-supported?] supported?)})
+(fx/defn set-nfc-supported
+  [_ supported?]
+  {:hardwallet/set-nfc-supported supported?})
 
 (fx/defn keycard-option-pressed
   {:events [:onboarding.ui/keycard-option-pressed]}
@@ -1774,14 +1777,15 @@
   (let [account-data (js->clj data :keywordize-keys true)]
     (fx/merge cofx
               {:db (-> db
-                       (assoc-in [:hardwallet :multiaccount] (-> account-data
-                                                                 (update :address #(str "0x" %))
-                                                                 (update :whisper-address #(str "0x" %))
-                                                                 (update :wallet-address #(str "0x" %))
-                                                                 (update :public-key #(str "0x" %))
-                                                                 (update :whisper-public-key #(str "0x" %))
-                                                                 (update :wallet-public-key #(str "0x" %))
-                                                                 (update :instance-uid #(get-in db [:hardwallet :multiaccount :instance-uid] %))))
+                       (assoc-in [:hardwallet :multiaccount]
+                                 (-> account-data
+                                     (update :address ethereum/normalized-hex)
+                                     (update :whisper-address ethereum/normalized-hex)
+                                     (update :wallet-address ethereum/normalized-hex)
+                                     (update :public-key ethereum/normalized-hex)
+                                     (update :whisper-public-key ethereum/normalized-hex)
+                                     (update :wallet-public-key ethereum/normalized-hex)
+                                     (update :instance-uid #(get-in db [:hardwallet :multiaccount :instance-uid] %))))
                        (assoc-in [:hardwallet :multiaccount-wallet-address] (:wallet-address account-data))
                        (assoc-in [:hardwallet :multiaccount-whisper-public-key] (:whisper-public-key account-data))
                        (assoc-in [:hardwallet :application-info :key-uid] (:key-uid account-data))
@@ -1808,28 +1812,65 @@
 
 (fx/defn on-get-keys-success
   [{:keys [db] :as cofx} data]
-  (let [{:keys [address whisper-address encryption-public-key whisper-private-key] :as account-data} (js->clj data :keywordize-keys true)
-        address (str "0x" address)
+  (let [{:keys [address encryption-public-key whisper-private-key] :as account-data} (js->clj data :keywordize-keys true)
+        address (ethereum/normalized-hex address)
         {:keys [photo-path name]} (get-in db [:multiaccounts/multiaccounts address])
         key-uid (get-in db [:hardwallet :application-info :key-uid])
-        multiaccount-data (types/clj->json {:name name :address address :photo-path photo-path})]
-    (fx/merge cofx
-              {:db                              (-> db
-                                                    (assoc-in [:hardwallet :pin :status] nil)
-                                                    (assoc-in [:hardwallet :pin :login] [])
-                                                    (assoc-in [:hardwallet :multiaccount] (update account-data :whisper-public-key #(str "0x" %)))
-                                                    (assoc-in [:hardwallet :flow] nil)
-                                                    (update :multiaccounts/login assoc
-                                                            :password encryption-public-key
-                                                            :address address
-                                                            :photo-path photo-path
-                                                            :name name))
-               :hardwallet/get-application-info {:pairing (get-pairing db key-uid)}
-               :hardwallet/login-with-keycard   {:multiaccount-data multiaccount-data
-                                                 :password          encryption-public-key
-                                                 :chat-key          whisper-private-key}}
-              (clear-on-card-connected)
-              (clear-on-card-read))))
+        multiaccount-data (types/clj->json {:name name :address address :photo-path photo-path})
+        save-keys? (get-in db [:multiaccounts/login :save-password?])]
+    (fx/merge
+     cofx
+     {:db
+      (-> db
+          (assoc-in [:hardwallet :pin :status] nil)
+          (assoc-in [:hardwallet :pin :login] [])
+          (assoc-in [:hardwallet :multiaccount]
+                    (update account-data :whisper-public-key ethereum/normalized-hex))
+          (assoc-in [:hardwallet :flow] nil)
+          (update :multiaccounts/login assoc
+                  :password encryption-public-key
+                  :address address
+                  :photo-path photo-path
+                  :name name))
+
+      :hardwallet/get-application-info {:pairing (get-pairing db key-uid)}
+      :hardwallet/login-with-keycard   {:multiaccount-data multiaccount-data
+                                        :password          encryption-public-key
+                                        :chat-key          whisper-private-key}}
+     (when save-keys?
+       (keychain/save-hardwallet-keys address encryption-public-key whisper-private-key))
+     (clear-on-card-connected)
+     (clear-on-card-read))))
+
+(fx/defn on-hardwallet-keychain-keys
+  {:events [:multiaccounts.login.callback/get-hardwallet-keys-success]}
+  [{:keys [db] :as cofx} address [encryption-public-key whisper-private-key :as creds]]
+  (if (nil? creds)
+    (navigation/navigate-to-cofx cofx :keycard-login-pin nil)
+    (let [{:keys [photo-path name]} (get-in db [:multiaccounts/multiaccounts address])
+          multiaccount-data         (types/clj->json {:name       name
+                                                      :address    address
+                                                      :photo-path photo-path})
+          account-data {:address address
+                        :encryption-public-key encryption-public-key
+                        :whisper-private-key whisper-private-key}]
+      {:db
+       (-> db
+           (assoc-in [:hardwallet :pin :status] nil)
+           (assoc-in [:hardwallet :pin :login] [])
+           (assoc-in [:hardwallet :multiaccount]
+                     (update account-data :whisper-public-key ethereum/normalized-hex))
+           (assoc-in [:hardwallet :flow] nil)
+           (update :multiaccounts/login assoc
+                   :password encryption-public-key
+                   :address address
+                   :photo-path photo-path
+                   :name name
+                   :save-password? true))
+       :hardwallet/login-with-keycard
+       {:multiaccount-data multiaccount-data
+        :password          encryption-public-key
+        :chat-key          whisper-private-key}})))
 
 (fx/defn on-get-keys-error
   [{:keys [db] :as cofx} error]

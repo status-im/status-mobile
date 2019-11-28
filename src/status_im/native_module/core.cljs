@@ -165,8 +165,7 @@
 
 (defn login-with-keycard
   [{:keys [multiaccount-data password chat-key]}]
-  (log/debug "[native-module] login-with-keycard"
-             "password" password)
+  (log/debug "[native-module] login-with-keycard")
   (clear-web-data)
   (.loginWithKeycard (status) multiaccount-data password chat-key))
 

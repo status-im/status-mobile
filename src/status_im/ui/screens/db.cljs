@@ -54,8 +54,7 @@
              :registry                           {}
              :stickers/packs-owned               #{}
              :stickers/packs-pending            #{}
-             :hardwallet                         {:nfc-supported? false
-                                                  :nfc-enabled?   false
+             :hardwallet                         {:nfc-enabled?   false
                                                   :pin            {:original     []
                                                                    :confirmation []
                                                                    :current      []

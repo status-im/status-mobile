@@ -78,7 +78,7 @@
                  (merge home.sheet/group-chat-actions)
 
                  (= view :recover-sheet)
-                 (merge recover.views/bottom-sheet))
+                 (merge (recover.views/bottom-sheet)))
           height-atom (reagent/atom (if (:content-height opts) (:content-height opts) nil))]
       [bottom-sheet-comp opts height-atom])))
 

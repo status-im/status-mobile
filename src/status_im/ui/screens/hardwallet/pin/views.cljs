@@ -7,8 +7,9 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.hardwallet.pin.styles :as styles]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.toolbar.actions :as toolbar.actions]))
+            [status-im.ui.components.toolbar.actions :as toolbar.actions]
+            [status-im.ui.components.checkbox.view :as checkbox]
+            [status-im.utils.platform :as platform]))
 
 (defn numpad-button [n step enabled? small-screen?]
   [react/touchable-highlight
@@ -68,8 +69,21 @@
                        (repeat (- 12 (count puk))
                                nil))))])
 
-(defn pin-view [{:keys [pin title-label description-label step status error-label
-                        retry-counter small-screen?]}]
+(defn save-password []
+  (let [{:keys [save-password?]} @(re-frame/subscribe [:multiaccounts/login])
+        auth-method @(re-frame/subscribe [:auth-method])]
+    (when-not (and platform/android? (not auth-method))
+      [react/view
+       {:style {:flex-direction :row}}
+       [checkbox/checkbox
+        {:checked?        save-password?
+         :style           {:margin-right 10}
+         :on-value-change #(re-frame/dispatch [:multiaccounts/save-password %])}]
+       [react/text (i18n/label :t/hardwallet-dont-ask-card)]])))
+
+(defn pin-view
+  [{:keys [pin title-label description-label step status error-label
+           retry-counter small-screen? save-password-checkbox?]}]
   (let [enabled? (not= status :verifying)]
     [react/scroll-view
      [react/view styles/pin-container
@@ -81,8 +95,7 @@
          [react/text {:style           styles/create-pin-text
                       :number-of-lines 2}
           (i18n/label description-label)])
-       [react/view {:margin-top 40
-                    :height     (if small-screen? 18 22)}
+       [react/view {:flex 1}
         (case status
           :verifying [react/view styles/waiting-indicator-container
                       [react/activity-indicator {:animating true
@@ -94,6 +107,8 @@
             [react/view {:margin-top (if (= step :puk) 24 8)}
              [react/text {:style {:text-align :center}}
               (i18n/label :t/pin-retries-left {:number retry-counter})]]))]
+       (when save-password-checkbox?
+         [save-password])
        (if (= step :puk)
          [puk-indicators pin status]
          [pin-indicators pin status nil])

@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.react :as react]
+            [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.screens.keycard.styles :as styles]
@@ -370,8 +371,7 @@
             retry-counter [:hardwallet/retry-counter]]
     [react/view styles/container
      [toolbar/toolbar
-      {:transparent? true
-       :style        {:margin-top 32}}
+      {:transparent? true}
       (when multiple-multiaccounts?
         [toolbar/nav-button
          (actions/back
@@ -385,12 +385,11 @@
      [react/view {:flex            1
                   :flex-direction  :column
                   :justify-content :space-between
-                  :align-items     :center
-                  :margin-top      (if small-screen? 28 46)}
+                  :align-items     :center}
       [react/view {:flex-direction  :column
-                   :flex            1
                    :justify-content :center
-                   :align-items     :center}
+                   :align-items     :center
+                   :height          140}
        [react/view {:margin-horizontal 16
                     :flex-direction    :column}
         [react/view {:justify-content :center
@@ -431,12 +430,13 @@
                      :ellipsize-mode  :middle}
          (utils.core/truncate-str address 14 true)]]]
       [pin.views/pin-view
-       {:pin           pin
-        :retry-counter retry-counter
-        :small-screen? small-screen?
-        :status        status
-        :error-label   error-label
-        :step          enter-step}]
+       {:pin                     pin
+        :retry-counter           retry-counter
+        :small-screen?           small-screen?
+        :status                  status
+        :error-label             error-label
+        :step                    enter-step
+        :save-password-checkbox? true}]
       [react/view {:margin-bottom (if small-screen? 25 32)}
        [react/touchable-highlight
         {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])}

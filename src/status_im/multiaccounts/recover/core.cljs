@@ -4,9 +4,9 @@
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.mnemonic :as mnemonic]
+            [status-im.hardwallet.nfc :as nfc]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [status-im.multiaccounts.db :as db]
             [status-im.native-module.core :as status]
             [status-im.popover.core :as popover]
             [status-im.ui.screens.navigation :as navigation]
@@ -14,8 +14,7 @@
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]
-            [status-im.ethereum.eip55 :as eip55]))
+            [status-im.utils.utils :as utils]))
 
 (defn existing-account?
   [root-key multiaccounts]
@@ -225,7 +224,8 @@
                          assoc :step :select-key-storage
                          :forward-action :multiaccounts.recover/select-storage-next-pressed
                          :selected-storage-type :default)}
-            (if platform/android?
+            (if (and platform/android?
+                     (nfc/nfc-supported?))
               (navigation/navigate-to-cofx :recover-multiaccount-select-storage nil)
               (select-storage-next-pressed))))
 

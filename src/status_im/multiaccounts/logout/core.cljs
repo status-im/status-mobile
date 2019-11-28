@@ -22,7 +22,7 @@
 (fx/defn logout
   {:events [:logout]}
   [cofx]
-  (logout-method cofx "none"))
+  (logout-method cofx keychain/auth-method-none))
 
 (fx/defn show-logout-confirmation [_]
   {:ui/show-confirmation
@@ -34,9 +34,9 @@
 
 (fx/defn biometric-logout
   {:events [:biometric-logout]}
-  [{:keys [db] :as cofx}]
+  [cofx]
   (fx/merge cofx
-            (logout-method "biometric-prepare")
+            (logout-method keychain/auth-method-biometric-prepare)
             (fn [{:keys [db]}]
               {:db (assoc-in db [:multiaccounts/login :save-password?] true)})))
 

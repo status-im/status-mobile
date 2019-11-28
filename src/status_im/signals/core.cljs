@@ -14,6 +14,8 @@
 
 (fx/defn status-node-started
   [{db :db :as cofx} {:keys [error]}]
+  (log/debug "[signals] status-node-started"
+             "error" error)
   (if error
     {:db (-> db
              (update :multiaccounts/login dissoc :processing)

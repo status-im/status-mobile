@@ -31,7 +31,9 @@
             [status-im.ui.screens.db :refer [app-db]]
             [status-im.multiaccounts.biometric.core :as biometric]
             [status-im.utils.identicon :as identicon]
-            [status-im.ethereum.eip55 :as eip55]))
+            [status-im.ethereum.eip55 :as eip55]
+            [status-im.popover.core :as popover]
+            [status-im.hardwallet.nfc :as nfc]))
 
 (def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
 (def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
@@ -171,19 +173,24 @@
               (when-not platform/desktop?
                 (initialize-wallet)))))
 
+(defn get-new-auth-method [auth-method save-password?]
+  (if save-password?
+    (when-not (or (= keychain/auth-method-biometric auth-method)
+                  (= keychain/auth-method-password auth-method))
+      (if (= auth-method keychain/auth-method-biometric-prepare)
+        keychain/auth-method-biometric
+        keychain/auth-method-password))
+    (when (and auth-method
+               (not= auth-method keychain/auth-method-none))
+      keychain/auth-method-none)))
+
 (fx/defn login-only-events
   [{:keys [db] :as cofx} address password save-password?]
   (let [auth-method     (:auth-method db)
-        new-auth-method (if save-password?
-                          (when-not (or (= "biometric" auth-method)
-                                        (= "password" auth-method))
-                            (if (= auth-method "biometric-prepare")
-                              "biometric"
-                              "password"))
-                          (when (and auth-method
-                                     (not= auth-method
-                                           "none"))
-                            "none"))]
+        new-auth-method (get-new-auth-method auth-method save-password?)]
+    (log/debug "[login] login-only-events"
+               "auth-method" auth-method
+               "new-auth-method" new-auth-method)
     (fx/merge cofx
               {:db (assoc db :chats/loading? true)
                ::json-rpc/call
@@ -202,8 +209,7 @@
                  :on-success #(re-frame/dispatch [::get-config-callback %])}]}
               (when save-password?
                 (keychain/save-user-password address password))
-              (when new-auth-method
-                (keychain/save-auth-method address new-auth-method))
+              (keychain/save-auth-method address (or new-auth-method auth-method))
               (navigation/navigate-to-cofx :home nil)
               (when platform/desktop?
                 (chat-model/update-dock-badge-label)))))
@@ -291,55 +297,106 @@
 
 (fx/defn open-login
   [{:keys [db] :as cofx} address photo-path name public-key]
-  (let [keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts address :keycard-pairing]))]
-    (fx/merge cofx
-              {:db (-> db
-                       (update :multiaccounts/login assoc
-                               :public-key public-key
-                               :address address
-                               :photo-path photo-path
-                               :name name)
-                       (assoc :profile/photo-added? (= (identicon/identicon public-key) photo-path))
-                       (update :multiaccounts/login dissoc
-                               :error
-                               :password))}
-              (if keycard-multiaccount?
-                (open-keycard-login)
-                (keychain/get-auth-method address)))))
+  (fx/merge cofx
+            {:db (-> db
+                     (update :multiaccounts/login assoc
+                             :public-key public-key
+                             :address address
+                             :photo-path photo-path
+                             :name name)
+                     (assoc :profile/photo-added? (= (identicon/identicon public-key) photo-path))
+                     (update :multiaccounts/login dissoc
+                             :error
+                             :password))}
+            (keychain/get-auth-method address)))
 
 (fx/defn open-login-callback
   {:events [:multiaccounts.login.callback/get-user-password-success]}
   [{:keys [db] :as cofx} password]
-  (if password
-    (fx/merge cofx
-              {:db (update-in db [:multiaccounts/login] assoc :password password :save-password? true)}
-              (navigation/navigate-to-cofx :progress nil)
-              login)
-    (navigation/navigate-to-cofx cofx :login nil)))
+  (let [address (get-in db [:multiaccounts/login :address])
+        keycard-account? (boolean (get-in db [:multiaccounts/multiaccounts
+                                              address
+                                              :keycard-pairing]))]
+    (if password
+      (fx/merge
+       cofx
+       {:db (update-in db [:multiaccounts/login] assoc
+                       :password password
+                       :save-password? true)}
+       (navigation/navigate-to-cofx :progress nil)
+       login)
+      (navigation/navigate-to-cofx
+       cofx
+       (if keycard-account? :keycard-login-pin :login)
+       nil))))
+
+(fx/defn get-credentials
+  [{:keys [db] :as cofx} address]
+  (let [keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts address :keycard-pairing]))]
+    (log/debug "[login] get-credentials"
+               "keycard-multiacc?" keycard-multiaccount?)
+    (if keycard-multiaccount?
+      (keychain/get-hardwallet-keys cofx address)
+      (keychain/get-user-password cofx address))))
 
 (fx/defn get-auth-method-success
   "Auth method: nil - not supported, \"none\" - not selected, \"password\", \"biometric\", \"biometric-prepare\""
   {:events [:multiaccounts.login/get-auth-method-success]}
   [{:keys [db] :as cofx} auth-method]
-  (let [address (get-in db [:multiaccounts/login :address])]
+  (let [address (get-in db [:multiaccounts/login :address])
+        keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts address :keycard-pairing]))]
+    (log/debug "[login] get-auth-method-success"
+               "auth-method" auth-method
+               "keycard-multiacc?" keycard-multiaccount?)
     (fx/merge cofx
               {:db (assoc db :auth-method auth-method)}
               #(case auth-method
-                 "biometric"
+                 keychain/auth-method-biometric
                  (biometric/biometric-auth %)
-                 "password"
-                 (keychain/get-user-password % address)
+                 keychain/auth-method-password
+                 (get-credentials % address)
 
                  ;;nil or "none" or "biometric-prepare"
-                 (open-login-callback % nil)))))
+                 (if keycard-multiaccount?
+                   (open-keycard-login %)
+                   (open-login-callback % nil))))))
 
 (fx/defn biometric-auth-done
   {:events [:biometric-auth-done]}
   [{:keys [db] :as cofx} {:keys [bioauth-success bioauth-message bioauth-code]}]
   (let [address (get-in db [:multiaccounts/login :address])]
+    (log/debug "[biometric] biometric-auth-done"
+               "bioauth-success" bioauth-success
+               "bioauth-message" bioauth-message
+               "bioauth-code" bioauth-code)
     (if bioauth-success
-      (keychain/get-user-password cofx address)
+      (get-credentials cofx address)
       (fx/merge cofx
                 {:db (assoc-in db [:multiaccounts/login :save-password?] true)}
                 (biometric/show-message bioauth-message bioauth-code)
                 (open-login-callback nil)))))
+
+(fx/defn save-password
+  {:events [:multiaccounts/save-password]}
+  [{:keys [db] :as cofx} save-password?]
+  (let [bioauth-supported?   (boolean (get db :supported-biometric-auth))
+        previous-auth-method (get db :auth-method)]
+    (log/debug "[login] save-password"
+               "save-password?" save-password?
+               "bioauth-supported?" bioauth-supported?
+               "previous-auth-method" previous-auth-method)
+    (fx/merge
+     cofx
+     {:db (cond-> (assoc db :auth-method keychain/auth-method-none)
+            (or save-password?
+                (not bioauth-supported?)
+                (and (not save-password?)
+                     bioauth-supported?
+                     (= previous-auth-method keychain/auth-method-none)))
+            (assoc-in [:multiaccounts/login :save-password?] save-password?))}
+     (when bioauth-supported?
+       (if save-password?
+         (popover/show-popover {:view :secure-with-biometric})
+         (when-not (= previous-auth-method keychain/auth-method-none)
+           (popover/show-popover {:view :disable-password-saving})))))))
+

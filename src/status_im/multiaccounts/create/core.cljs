@@ -5,6 +5,7 @@
             [status-im.ethereum.core :as ethereum]
             [taoensso.timbre :as log]
             [status-im.i18n :as i18n]
+            [status-im.hardwallet.nfc :as nfc]
             [status-im.multiaccounts.db :as db]
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
@@ -30,14 +31,16 @@
 (defn decrement-step [step]
   (let [inverted  (map-invert step-kw-to-num)]
     (if (and (= step :create-code)
-             (not platform/android?))
+             (or (not platform/android?)
+                 (not (nfc/nfc-supported?))))
       :choose-key
       (inverted (dec (step-kw-to-num step))))))
 
 (defn inc-step [step]
   (let [inverted  (map-invert step-kw-to-num)]
     (if (and (= step :choose-key)
-             (not platform/android?))
+             (or (not platform/android?)
+                 (not (nfc/nfc-supported?))))
       :create-code
       (inverted (inc (step-kw-to-num step))))))
 
@@ -138,7 +141,9 @@
 (fx/defn intro-step-forward
   {:events [:intro-wizard/step-forward-pressed]}
   [{:keys [db] :as cofx} {:keys [skip?] :as opts}]
-  (let  [{:keys [step selected-storage-type processing? weak-password?]} (:intro-wizard db)]
+  (let [{:keys [step selected-storage-type processing? weak-password?]} (:intro-wizard db)]
+    (log/debug "[multiaccount.create] intro-step-forward"
+               "step" step)
     (cond (confirm-failure? db)
           (on-confirm-failure cofx)
 

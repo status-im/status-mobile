@@ -31,12 +31,12 @@
     :title                   (str (i18n/label :t/lock-app-with) " " (biometric/get-label supported-biometric-auth))
     :container-margin-bottom 8
     :accessibility-label     :biometric-auth-settings-switch
-    :disabled?               (or (not (some? supported-biometric-auth)) keycard?)
+    :disabled?               (not (some? supported-biometric-auth))
     :accessories             [[react/switch
                                {:track-color     #js {:true colors/blue :false nil}
                                 :value           (boolean biometric-auth?)
                                 :on-value-change #(re-frame/dispatch [:multiaccounts.ui/biometric-auth-switched %])
-                                :disabled        (or (not (some? supported-biometric-auth)) keycard?)}]]
+                                :disabled        (not supported-biometric-auth)}]]
     :on-press                #(re-frame/dispatch [:multiaccounts.ui/biometric-auth-switched
                                                   ((complement boolean) biometric-auth?)])}
    ;; TODO - uncomment when implemented

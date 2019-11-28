@@ -106,6 +106,12 @@
                    (= :enable-biometric view)
                    [biometric/enable-biometric-popover]
 
+                   (= :secure-with-biometric view)
+                   [biometric/secure-with-biometric-popover]
+
+                   (= :disable-password-saving view)
+                   [biometric/disable-password-saving-popover]
+
                    :else
                    [view])]]]]])))})))
 

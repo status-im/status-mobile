@@ -77,7 +77,11 @@
        #js {:authenticationType (enum-val "ACCESS_CONTROL" "BIOMETRY_ANY_OR_DEVICE_PASSCODE")})
       (.then callback)))
 
+(defn- whisper-key-name [address]
+  (str address "-whisper"))
+
 (defn can-save-user-password? [callback]
+  (log/debug "[keychain] can-save-user-password?")
   (cond
     platform/ios?
     (check-conditions callback device-encrypted?)
@@ -91,6 +95,7 @@
 (defn save-credentials
   "Stores the credentials for the address to the Keychain"
   [server username password callback]
+  (log/debug "[keychain] save-credentials")
   (-> (.setInternetCredentials rn/keychain (string/lower-case server) username password
                                keychain-secure-hardware keychain-restricted-availability)
       (.then callback)))
@@ -98,10 +103,16 @@
 (defn get-credentials
   "Gets the credentials for a specified server from the Keychain"
   [server callback]
+  (log/debug "[keychain] get-credentials")
   (if platform/mobile?
     (-> (.getInternetCredentials rn/keychain (string/lower-case server))
         (.then callback))
     (callback))) ;; no-op for Desktop
+
+(def ^:const auth-method-password "password")
+(def ^:const auth-method-biometric "biometric")
+(def ^:const auth-method-biometric-prepare "biometric-prepare")
+(def ^:const auth-method-none "none")
 
 (re-frame/reg-fx
  :keychain/get-auth-method
@@ -109,13 +120,32 @@
    (can-save-user-password?
     (fn [can-save?]
       (if can-save?
-        (get-credentials (str address "-auth") #(callback (if % (.-password %) "none")))
+        (get-credentials (str address "-auth")
+                         #(callback (if %
+                                      (.-password %)
+                                      auth-method-none)))
         (callback nil))))))
 
 (re-frame/reg-fx
  :keychain/get-user-password
  (fn [[address callback]]
    (get-credentials address #(if % (callback (security/mask-data (.-password %))) (callback nil)))))
+
+(re-frame/reg-fx
+ :keychain/get-hardwallet-keys
+ (fn [[address callback]]
+   (get-credentials
+    address
+    (fn [encryption-key-data]
+      (if encryption-key-data
+        (get-credentials
+         (whisper-key-name address)
+         (fn [whisper-key-data]
+           (if whisper-key-data
+             (callback [(.-password encryption-key-data)
+                        (.-password whisper-key-data)])
+             (callback nil))))
+        (callback nil))))))
 
 (re-frame/reg-fx
  :keychain/save-user-password
@@ -134,6 +164,8 @@
 (re-frame/reg-fx
  :keychain/save-auth-method
  (fn [[address method]]
+   (log/debug "[keychain] :keychain/save-auth-method"
+              "method" method)
    (save-credentials
     (str address "-auth")
     address
@@ -144,6 +176,24 @@
              " "
              "The app will continue to work normally, "
              "but you will have to login again next time you launch it."))))))
+
+(re-frame/reg-fx
+ :keychain/save-hardwallet-keys
+ (fn [[address encryption-public-key whisper-private-key]]
+   (save-credentials
+    address
+    address
+    encryption-public-key
+    #(when-not %
+       (log/error
+        (str "Error while saving encryption-public-key"))))
+   (save-credentials
+    (whisper-key-name address)
+    address
+    whisper-private-key
+    #(when-not %
+       (log/error
+        (str "Error while saving whisper-private-key"))))))
 
 (re-frame/reg-fx
  :keychain/clear-user-password
@@ -160,12 +210,26 @@
 (fx/defn get-user-password
   [_ address]
   {:keychain/get-user-password
-   [address #(re-frame/dispatch [:multiaccounts.login.callback/get-user-password-success % address])]})
+   [address
+    #(re-frame/dispatch
+      [:multiaccounts.login.callback/get-user-password-success % address])]})
+
+(fx/defn get-hardwallet-keys
+  [_ address]
+  {:keychain/get-hardwallet-keys
+   [address
+    #(re-frame/dispatch
+      [:multiaccounts.login.callback/get-hardwallet-keys-success address %])]})
 
 (fx/defn save-user-password
-  [cofx address password]
+  [_ address password]
   {:keychain/save-user-password [address password]})
 
+(fx/defn save-hardwallet-keys
+  [_ address encryption-public-key whisper-private-key]
+  {:keychain/save-hardwallet-keys [address
+                                   encryption-public-key
+                                   whisper-private-key]})
 (fx/defn save-auth-method
   [{:keys [db]} address method]
   {:db                        (assoc db :auth-method method)

@@ -1,23 +1,13 @@
 (ns status-im.ui.screens.multiaccounts.recover.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
+  (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.hardwallet.core :as hardwallet]
+            [status-im.hardwallet.nfc :as nfc]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.styles :as components.styles]
             [status-im.utils.config :as config]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.utils.security :as security]
             [status-im.ui.components.colors :as colors]
-            [status-im.utils.gfycat.core :as gfy]
-            [status-im.utils.identicon :as identicon]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.screens.intro.views :as intro.views]
-            [status-im.utils.utils :as utils]
-            [status-im.constants :as constants]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.utils.platform :as platform]
             [status-im.react-native.resources :as resources]
@@ -68,7 +58,8 @@
       :icon                :main-icons/text
       :on-press            #(re-frame/dispatch [::multiaccounts.recover/enter-phrase-pressed])}]
     (when (and config/hardwallet-enabled?
-               platform/android?)
+               platform/android?
+               (nfc/nfc-supported?))
       [list-item/list-item
        {:theme               :action
         :title               :t/recover-with-keycard
@@ -86,6 +77,9 @@
                                             :style  {:width 24 :height 24}}]]
         :on-press            #(re-frame/dispatch [::hardwallet/recover-with-keycard-pressed])}])]])
 
-(def bottom-sheet
+(defn bottom-sheet []
   {:content        bottom-sheet-view
-   :content-height (if platform/android? 130 65)})
+   :content-height (if (and platform/android?
+                            (nfc/nfc-supported?))
+                     130
+                     65)})
