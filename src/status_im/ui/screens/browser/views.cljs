@@ -20,16 +20,11 @@
             [status-im.utils.http :as http]
             [status-im.utils.js-resources :as js-res]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.screens.browser.accounts :as accounts])
+            [status-im.ui.screens.browser.accounts :as accounts]
+            [status-im.utils.debounce :as debounce])
   (:require-macros
    [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :as views]))
-
-(def timeout (atom {}))
-
-(defn debounce [event]
-  (when @timeout (js/clearTimeout @timeout))
-  (reset! timeout (js/setTimeout #(re-frame/dispatch event) 500)))
 
 (def browser-config-edn
   (slurp "./src/status_im/utils/browser_config.edn"))
@@ -69,7 +64,7 @@
    {:browser? true}
    [toolbar.view/nav-button
     (actions/close (fn []
-                     (when @timeout (js/clearTimeout @timeout))
+                     (debounce/clear)
                      (re-frame/dispatch [:navigate-back])
                      (when error?
                        (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
@@ -146,7 +141,9 @@
         :bounces                               false
         :local-storage-enabled                 true
         :render-error                          web-view-error
-        :on-navigation-state-change            #(debounce [:browser/navigation-state-changed % error?])
+        :on-navigation-state-change            #(do
+                                                  (re-frame/dispatch [:set-in [:ens/registration :state] :searching])
+                                                  (debounce/debounce [:browser/navigation-state-changed % error?] 500))
         :on-bridge-message                     #(re-frame/dispatch [:browser/bridge-message-received %])
         :on-load                               #(re-frame/dispatch [:browser/loading-started])
         :on-error                              #(re-frame/dispatch [:browser/error-occured])

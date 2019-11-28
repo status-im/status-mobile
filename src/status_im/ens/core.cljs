@@ -32,6 +32,11 @@
    (ens/get-addr registry name cb)))
 
 (re-frame/reg-fx
+ ::resolve-owner
+ (fn [[registry name cb]]
+   (ens/get-owner registry name cb)))
+
+(re-frame/reg-fx
  ::resolve-pubkey
  (fn [[registry name cb]]
    (resolver/pubkey registry name cb)))
@@ -99,9 +104,14 @@
                               :actions [{:routeName :my-profile}
                                         {:routeName :ens-confirmation}]}))
 
-(defn- on-resolve
+(defn- on-resolve-owner
   [registry custom-domain? username address public-key response]
   (cond
+
+    ;; No address for a stateofus subdomain: it can be registered
+    (and (= response ens/default-address) (not custom-domain?))
+    (re-frame/dispatch [::name-resolved username :available])
+
     ;; if we get an address back, we try to get the public key associated
     ;; with the username as well
     (= (eip55/address->checksum address)
@@ -112,10 +122,6 @@
                                             (not public-key) :owned
                                             (= % public-key) :connected
                                             :else :connected-with-different-key)]))
-
-    ;; No address for a stateofus subdomain: it can be registered
-    (and (nil? response) (not custom-domain?))
-    (re-frame/dispatch [::name-resolved username :available])
 
     :else
     (re-frame/dispatch [::name-resolved username :taken])))
@@ -183,9 +189,9 @@
              {:keys [public-key]} multiaccount
              address (ethereum/default-address db)
              registry (get ens/ens-registries (ethereum/chain-keyword db))]
-         {::resolve-address [registry
-                             (fullname custom-domain? username)
-                             #(on-resolve registry custom-domain? username address public-key %)]})))))
+         {::resolve-owner [registry
+                           (fullname custom-domain? username)
+                           #(on-resolve-owner registry custom-domain? username address public-key %)]})))))
 
 (fx/defn return-to-ens-main-screen
   {:events [::got-it-pressed ::cancel-pressed]}

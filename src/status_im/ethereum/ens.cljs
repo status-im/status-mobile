@@ -160,4 +160,7 @@
             ens-name
             #(addr % ens-name cb)))
 
-;; TODO ABI, pubkey
+(defn get-owner
+  [registry ens-name cb]
+  {:pre [(is-valid-eth-name? ens-name)]}
+  (owner registry ens-name cb))

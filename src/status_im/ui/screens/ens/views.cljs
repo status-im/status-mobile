@@ -22,7 +22,8 @@
             [status-im.utils.navigation :as navigation]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.screens.chat.photos :as photos]
-            [status-im.multiaccounts.core :as multiaccounts])
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- button
@@ -195,21 +196,23 @@
        ;;disappearing when switching between stateofus and custom domain
        ^{:key placeholder}
        [react/text-input
-        {:ref               #(reset! input-ref %)
-         :on-change-text    #(re-frame/dispatch [::ens/set-username-candidate %])
-         :on-submit-editing #(re-frame/dispatch [::ens/input-submitted])
-         :auto-capitalize   :none
-         :auto-complete-type "off"
-         :auto-focus        true
-         :auto-correct      false
-         :keyboard-type     :visible-password
-         :default-value     ""
-         :text-align        :center
-         :placeholder       placeholder
+        {:ref                    #(reset! input-ref %)
+         :on-change-text         #(do
+                                    (re-frame/dispatch [:set-in [:ens/registration :state] :searching])
+                                    (debounce/debounce [::ens/set-username-candidate %] 600))
+         :on-submit-editing      #(re-frame/dispatch [::ens/input-submitted])
+         :auto-capitalize        :none
+         :auto-complete-type     "off"
+         :auto-focus             true
+         :auto-correct           false
+         :keyboard-type          :visible-password
+         :default-value          ""
+         :text-align             :center
+         :placeholder            placeholder
          :placeholder-text-color colors/text-gray
-         :style             {:flex 1
-                             :font-size 22
-                             :padding-left 48}}]
+         :style                  {:flex         1
+                                  :font-size    22
+                                  :padding-left 48}}]
        [input-icon state]])))
 
 (views/defview search []
