@@ -1565,3 +1565,13 @@
                                         request-command
                                         {:asset  (name symbol)
                                          :amount (str (money/internal->formatted amount symbol decimals))})))))
+
+(handlers/register-handler-fx
+ :identicon-generated
+ (fn [{:keys [db]} [_ path identicon]]
+   {:db (assoc-in db path identicon)}))
+
+(handlers/register-handler-fx
+ :gfycat-generated
+ (fn [{:keys [db]} [_ path gfycat]]
+   {:db (assoc-in db path gfycat)}))

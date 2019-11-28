@@ -259,6 +259,8 @@
  :<- [:intro-wizard]
  (fn [wizard-state]
    {:pubkey (get-in wizard-state [:derived constants/path-whisper-keyword :publicKey])
+    :name (get-in wizard-state [:derived constants/path-whisper-keyword :name])
+    :photo-path (get-in wizard-state [:derived constants/path-whisper-keyword :photo-path])
     :processing? (:processing? wizard-state)}))
 
 (re-frame/reg-sub

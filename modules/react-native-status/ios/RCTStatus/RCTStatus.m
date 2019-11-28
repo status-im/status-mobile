@@ -585,8 +585,36 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(generateAlias:(NSString *)publicKey) {
   return StatusgoGenerateAlias(publicKey);
 }
 
+RCT_EXPORT_METHOD(generateAliasAsync:(NSString *)publicKey
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"generateAliasAsync() method called");
+#endif
+    NSString *result = StatusgoGenerateAlias(publicKey);
+    callback(@[result]);
+}
+
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(identicon:(NSString *)publicKey) {
   return StatusgoIdenticon(publicKey);
+}
+
+RCT_EXPORT_METHOD(identiconAsync:(NSString *)publicKey
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"identiconAsync() method called");
+#endif
+    NSString *result = StatusgoIdenticon(publicKey);
+    callback(@[result]);
+}
+
+RCT_EXPORT_METHOD(generateAliasAndIdenticonAsync:(NSString *)publicKey
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"generateAliasAndIdenticonAsync() method called");
+#endif
+    NSString *identiconResult = StatusgoIdenticon(publicKey);
+    NSString *aliasResult = StatusgoGenerateAlias(publicKey);
+    callback(@[aliasResult, identiconResult]);
 }
 
 RCT_EXPORT_METHOD(callPrivateRPC:(NSString *)payload

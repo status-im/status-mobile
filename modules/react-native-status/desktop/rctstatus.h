@@ -93,7 +93,10 @@ public:
   Q_INVOKABLE static void statusGoEventCallback(const char *event);
 
   Q_INVOKABLE QString identicon(QString publicKey);
+  Q_INVOKABLE void identiconAsync(QString publicKey, double callbackId);
   Q_INVOKABLE QString generateAlias(QString publicKey);
+  Q_INVOKABLE void generateAliasAsync(QString publicKey, double callbackId);
+  Q_INVOKABLE void generateAliasAndIdenticonAsync(QString publicKey, double callbackId);
 
   void emitStatusGoEvent(QString event);
 

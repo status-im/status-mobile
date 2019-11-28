@@ -1144,9 +1144,74 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         return Statusgo.generateAlias(seed);
     }
 
+    @ReactMethod
+    public void generateAliasAsync(final String seed, final Callback callback) {
+        Log.d(TAG, "generateAliasAsync");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.generateAlias(seed);
+
+                Log.d(TAG, res);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String identicon(final String seed) {
         return Statusgo.identicon(seed);
+    }
+
+    @ReactMethod
+    public void identiconAsync(final String seed, final Callback callback) {
+        Log.d(TAG, "identiconAsync");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.identicon(seed);
+
+                Log.d(TAG, res);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void generateAliasAndIdenticonAsync(final String seed, final Callback callback) {
+        Log.d(TAG, "generateAliasAndIdenticonAsync");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String resIdenticon = Statusgo.identicon(seed);
+                String resAlias = Statusgo.generateAlias(seed);
+
+                Log.d(TAG, resIdenticon);
+                Log.d(TAG, resAlias);
+                callback.invoke(resAlias, resIdenticon);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
 

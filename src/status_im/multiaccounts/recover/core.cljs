@@ -107,9 +107,15 @@
           constants/path-whisper
           constants/path-default-wallet]
          (fn [result]
-           (let [derived-data (types/json->clj result)]
-             (re-frame/dispatch [::import-multiaccount-success
-                                 root-data derived-data])))))))))
+           (let [derived-data (types/json->clj result)
+                 public-key (get-in derived-data [constants/path-whisper-keyword :publicKey])]
+             (status/gfycat-identicon-async
+              public-key
+              (fn [name photo-path]
+                (let [derived-whisper (derived-data constants/path-whisper-keyword)
+                      derived-data-extended (assoc-in derived-data [constants/path-whisper-keyword] (merge derived-whisper {:name name :photo-path photo-path}))]
+                  (re-frame/dispatch [::import-multiaccount-success
+                                      root-data derived-data-extended]))))))))))))
 
 (fx/defn show-existing-multiaccount-alert
   [_ address]

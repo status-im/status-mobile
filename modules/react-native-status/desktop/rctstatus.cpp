@@ -653,13 +653,38 @@ void RCTStatus::chaosModeUpdate(bool on, double callbackId) {
 QString RCTStatus::generateAlias(QString publicKey) {
   Q_D(RCTStatus);
   qCDebug(RCTSTATUS) << "::generateAlias call";
-  // return GenerateGfycat(publicKey.toUtf8().data());
-  return "test";
+  return "";
+}
+
+void RCTStatus::generateAliasAsync(QString publicKey, double callbackId) {
+  Q_D(RCTStatus);
+  qCDebug(RCTSTATUS) << "::generateAliasAsync call";
+  QByteArray b = publicKey.toUtf8();
+  const char *result = GenerateAlias({b.data(), b.length()});
+    qCDebug(RCTSTATUS) << "::generateAliasAsync call result"<<result;
+  d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
 }
 
 QString RCTStatus::identicon(QString publicKey) {
   Q_D(RCTStatus);
   qCDebug(RCTSTATUS) << "::identicon call";
-  // return Identicon(publicKey.toUtf8().data());
-  return "test";
+  return "";
+}
+
+void RCTStatus::identiconAsync(QString publicKey, double callbackId) {
+  Q_D(RCTStatus);
+  qCDebug(RCTSTATUS) << "::identiconAsync call";
+  QByteArray b = publicKey.toUtf8();
+  const char *result = Identicon({b.data(), b.length()});
+  qCDebug(RCTSTATUS) << "::identiconAsync call result"<<result;
+  d->bridge->invokePromiseCallback(callbackId, QVariantList{result});
+}
+
+void RCTStatus::generateAliasAndIdenticonAsync(QString publicKey, double callbackId) {
+  Q_D(RCTStatus);
+  qCDebug(RCTSTATUS) << "::generateAliasAndIdenticonAsync call";
+  QByteArray pubKey = publicKey.toUtf8();
+  const char *alias = GenerateAlias({pubKey.data(), pubKey.length()});
+  const char *identicon = Identicon({pubKey.data(), pubKey.length()});
+  d->bridge->invokePromiseCallback(callbackId, QVariantList{alias, identicon});
 }

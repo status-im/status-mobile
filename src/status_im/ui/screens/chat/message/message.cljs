@@ -242,6 +242,7 @@
            last-in-group?
            first-in-group?
            display-photo?
+           identicon
            display-username?
            from
            outgoing
@@ -254,7 +255,7 @@
        (when first-in-group?
          [react/touchable-highlight {:on-press #(when-not modal? (re-frame/dispatch [:chat.ui/show-profile from]))}
           [react/view
-           [photos/member-photo from]]])])
+           [photos/member-photo from identicon]]])])
     [react/view (style/group-message-view outgoing display-photo?)
      (when display-username?
        [react/touchable-opacity {:on-press #(re-frame/dispatch [:chat.ui/show-profile from])}

@@ -36,5 +36,5 @@
 (def net-info               #js {:default #js {}})
 (def react-native-mail      #js {:mail (fn [])})
 (def async-storage          #js {})
-(def back-handler           #js {})
+(def back-handler           #js {:addEventListener (fn [])})
 (def safe-area-context      #js {})

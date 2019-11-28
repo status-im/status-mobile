@@ -348,7 +348,7 @@
   (let [next-count (min all-messages-count (+ @messages-to-load load-step))]
     (reset! messages-to-load next-count)))
 
-(defview messages-view-desktop [{:keys [chat-id group-chat]}
+(defview messages-view-desktop [{:keys [chat-id group-chat pending-invite-inviter-name]}
                                 modal?]
   (letsubs [messages           [:chats/current-chat-messages-stream]
             current-public-key [:multiaccount/public-key]
@@ -391,7 +391,9 @@
               :current-public-key current-public-key
               :row                message-obj
               :idx                #(or (:message-id message-obj) (:value message-obj))
-              :list-ref           messages-list-ref}]))]]])))
+              :list-ref           messages-list-ref}]))]]
+       (if pending-invite-inviter-name
+         [group-chat-footer chat-id])])))
 
 (defview chat-root [modal?]
   (letsubs [{:keys [public? chat-id chat-name show-input? group-chat contact] :as current-chat}

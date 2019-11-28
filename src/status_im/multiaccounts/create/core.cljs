@@ -54,8 +54,18 @@
   (let [{:keys [selected-id address key-code]} (:intro-wizard db)
         {:keys [address]} (get-selected-multiaccount cofx)
         hashed-password (ethereum/sha3 (security/safe-unmask-data key-code))
-        callback #(re-frame/dispatch [::store-multiaccount-success key-code %])]
-    (log/debug "create-multiaccount")
+        callback (fn [result]
+                   (let [derived-data (types/json->clj result)
+                         publicKey (get-in derived-data [constants/path-whisper-keyword :publicKey])]
+                     (status/gfycat-identicon-async
+                      publicKey
+                      (fn [name photo-path]
+                        (let [derived-whisper (derived-data constants/path-whisper-keyword)
+                              derived-data-extended (assoc-in derived-data
+                                                              [constants/path-whisper-keyword]
+                                                              (merge derived-whisper {:name name :photo-path photo-path}))]
+                          (re-frame/dispatch [::store-multiaccount-success
+                                              key-code derived-data-extended]))))))]
     {::store-multiaccount [selected-id address hashed-password callback]}))
 
 (fx/defn prepare-intro-wizard
@@ -188,10 +198,12 @@
       :wallet     true
       :path       constants/path-default-wallet
       :name       "Status account"})
-   (let [{:keys [publicKey address]}
+   (let [{:keys [publicKey address name photo-path]}
          (get-in multiaccount [:derived constants/path-whisper-keyword])]
      {:publicKey publicKey
       :address    address
+      :name       name
+      :photo-path photo-path
       :path       constants/path-whisper
       :chat       true})])
 
@@ -216,9 +228,7 @@
     :as multiaccount}
    password
    {:keys [seed-backed-up? login?] :or {login? true}}]
-  (let [[wallet-account {:keys [publicKey]} :as accounts-data] (prepare-accounts-data multiaccount)
-        name (gfycat/generate-gfy publicKey)
-        photo-path (identicon/identicon publicKey)
+  (let [[wallet-account {:keys [publicKey photo-path name]} :as accounts-data] (prepare-accounts-data multiaccount)
         multiaccount-data {:name       name
                            :address    address
                            :photo-path photo-path
@@ -349,7 +359,7 @@
                            (assoc
                             (get-selected-multiaccount cofx)
                             :derived
-                            (types/json->clj derived))
+                            derived)
                            password
                            {:seed-backed-up? false}))
 

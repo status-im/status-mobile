@@ -414,7 +414,7 @@
                            :margin-top 8}}
        (i18n/label :t/processing)]])])
 
-(defn recovery-success [pubkey]
+(defn recovery-success [pubkey name photo-path]
   [react/view {:flex           1
                :justify-content  :space-between
                :background-color colors/white}
@@ -430,7 +430,7 @@
       [react/view {:justify-content :center
                    :align-items     :center
                    :margin-bottom   11}
-       [react/image {:source {:uri (identicon/identicon pubkey)}
+       [react/image {:source {:uri photo-path}
                      :style  {:width         61
                               :height        61
                               :border-radius 30
@@ -441,7 +441,7 @@
                                      :font-weight "500"}
                    :number-of-lines 1
                    :ellipsize-mode  :middle}
-       (gfy/generate-gfy pubkey)]
+       name]
       [react/text {:style           {:text-align  :center
                                      :margin-top  4
                                      :color       colors/gray
@@ -558,7 +558,7 @@
                          wizard-state)]]]))
 
 (defview wizard-recovery-success []
-  (letsubs [{:keys [pubkey processing?]} [:intro-wizard/recovery-success]
+  (letsubs [{:keys [pubkey processing? name photo-path]} [:intro-wizard/recovery-success]
             existing-account? [:intro-wizard/recover-existing-account?]]
     [react/view {:style {:flex 1}}
      [toolbar/toolbar
@@ -570,7 +570,7 @@
      [react/view {:style {:flex 1
                           :justify-content :space-between}}
       [top-bar {:step :recovery-success}]
-      [recovery-success pubkey]
+      [recovery-success pubkey name photo-path]
       [bottom-bar {:step              :recovery-success
                    :forward-action    :multiaccounts.recover/re-encrypt-pressed
                    :processing?       processing?

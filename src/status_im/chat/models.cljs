@@ -3,6 +3,7 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.transport.filters.core :as transport.filters]
             [status-im.contact.core :as contact.core]
+            [status-im.contact.db :as contact.db]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
             [status-im.ethereum.json-rpc :as json-rpc]
@@ -226,6 +227,8 @@
               (transport.filters/load-chat chat-id))
             (when platform/desktop?
               (mark-messages-seen chat-id))
+            (when (and (one-to-one-chat? cofx chat-id) (not (contact.db/contact-exists? db chat-id)))
+              (contact.core/create-contact chat-id))
             (tribute-to-talk/check-tribute chat-id)))
 
 (fx/defn navigate-to-chat

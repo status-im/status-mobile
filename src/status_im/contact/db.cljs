@@ -120,6 +120,10 @@
                  (assoc % :admin? true)
                  %)))))
 
+(defn contact-exists?
+  [db public-key]
+  (get-in db [:contacts/contacts public-key]))
+
 (defn added?
   ([{:keys [system-tags]}]
    (contains? system-tags :contact/added))

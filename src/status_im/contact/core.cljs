@@ -147,7 +147,10 @@
                         (get-in db [:contacts/contacts public-key]))
                     (assoc :tribute-to-talk (or tribute-to-talk
                                                 {:disabled? true})))]
-    {:db (assoc-in db [:contacts/contacts public-key] contact)}))
+    {:db (assoc-in db [:contacts/contacts public-key] contact)
+     :insert-identicons [[public-key [:contacts/contacts public-key :identicon]]]
+     :insert-gfycats    [[public-key [:contacts/contacts public-key :name]]
+                         [public-key [:contacts/contacts public-key :alias]]]}))
 
 (defn add-ens-names [contacts names]
   (reduce-kv (fn [acc public-key-keyword result]

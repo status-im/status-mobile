@@ -19,8 +19,8 @@
      (when identicon?
        [react/view {:style (style/photo-border size)}])]))
 
-(defview member-photo [from & [size]]
+(defview member-photo [from & [identicon size]]
   (letsubs [photo-path [:chats/photo-path from]]
-    (photo photo-path
+    (photo (or photo-path identicon)
            {:accessibility-label :member-photo
             :size                (or size style/default-size)})))
