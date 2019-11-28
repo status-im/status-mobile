@@ -2,7 +2,7 @@
 { stdenv, utils, callPackage,
   buildGoPackage, go, gomobile, openjdk, xcodeWrapper }:
 
-{ owner, repo, rev, version, goPackagePath, src, host,
+{ owner, repo, rev, version, sanitizedVersion, goPackagePath, src, host,
 
   # mobile-only arguments
   goBuildFlags, goBuildLdFlags,

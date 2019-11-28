@@ -1,6 +1,6 @@
 { buildGoPackage, go, xcodeWrapper, stdenv, utils }:
 
-{ owner, repo, rev, version, goPackagePath, src, host,
+{ owner, repo, rev, version, sanitizedVersion, goPackagePath, src, host,
   nativeBuildInputs ? [],
   buildPhase, buildMessage,
   installPhase ? "",
@@ -19,7 +19,7 @@ let
   args = removeAttrs args' [ "buildMessage" ]; # Remove our arguments from args before passing them on to buildGoPackage
   buildStatusGo = buildGoPackage (args // {
     pname = repo;
-    version = "${version}-${strings.substring 0 7 rev}-${host}";
+    version = "${sanitizedVersion}-${strings.substring 0 7 rev}-${host}";
 
     nativeBuildInputs =
       nativeBuildInputs ++
@@ -58,7 +58,7 @@ let
       return # make sure we stop fixup so as to not allow the host preFixup script to proceed
     '';
 
-    passthru = { inherit owner version rev; };
+    passthru = { inherit owner repo version rev; };
 
     meta = {
       # Add default meta information

@@ -43,13 +43,17 @@ let
         versionJSON = importJSON ../../status-go-version.json; # TODO: Simplify this path search with lib.locateDominatingFile
         versionRegex = "^v?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+(-[[:alnum:].]+)$";
         sha256 = versionJSON.src-sha256;
+        sanitizeVersion = builtins.replaceStrings
+          [ "/" ]
+          [ "_" ];
       in rec {
         inherit (versionJSON) owner repo version;
+        sanitizedVersion = sanitizeVersion versionJSON.version;
         goPackagePath = "github.com/${owner}/${repo}";
         rev = versionJSON.commit-sha1;
         shortRev = strings.substring 0 7 rev;
-        versionName = if (builtins.match versionRegex version) != null
-                      then removePrefix "v" version # Geth forces a 'v' prefix
+        versionName = if (builtins.match versionRegex sanitizedVersion) != null
+                      then removePrefix "v" sanitizedVersion # Geth forces a 'v' prefix
                       else "develop"; # to reduce metrics cardinality in Prometheus
         src = fetchFromGitHub { inherit rev owner repo sha256; name = "${repo}-${srcData.shortRev}-source"; };
       };
@@ -100,7 +104,7 @@ let
     "-w" # -w disables DWARF debugging information
   ];
 
-  statusGoArgs = { inherit (srcData) src owner repo rev version goPackagePath; inherit goBuildFlags goBuildLdFlags; };
+  statusGoArgs = { inherit (srcData) src owner repo rev version sanitizedVersion goPackagePath; inherit goBuildFlags goBuildLdFlags; };
   status-go-packages = {
     desktop = buildStatusGoDesktopLib (statusGoArgs // {
       outputFileName = "libstatus.a";
