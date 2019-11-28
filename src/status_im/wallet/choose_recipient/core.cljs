@@ -157,7 +157,7 @@
 
 (fx/defn resolve-ens-addresses
   {:events [:wallet.send/resolve-ens-addresses :wallet.send/qr-code-request-scanned]}
-  [{{:networks/keys [current-network] :wallet/keys [all-tokens] :as db} :db}
+  [{{:networks/keys [current-network] :wallet/keys [all-tokens] :as db} :db :as cofx}
    uri origin]
   (if-let [message (eip681/parse-uri uri)]
   ;; first we get a vector of ens-names to resolve and a vector of paths of
