@@ -12,7 +12,8 @@
 (fx/defn sheet-defaults
   [{:keys [db]}]
   (let [remember-choice? (get-in db [:multiaccount :remember-syncing-choice?])]
-    {:db (assoc db :mobile-network/remember-choice? remember-choice?)}))
+    {:db (assoc db :mobile-network/remember-choice? (or (nil? remember-choice?)
+                                                        remember-choice?))}))
 
 (fx/defn on-network-status-change
   [{:keys [db] :as cofx}]
