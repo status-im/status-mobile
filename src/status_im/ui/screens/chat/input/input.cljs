@@ -69,7 +69,7 @@
        [react/view {:style style/input-container}
         [basic-text-input input-text cooldown-enabled?]
         (when input-text-empty?
-          [image/button show-image?])
+          [image/button (= :images input-bottom-sheet)])
         (when (and input-text-empty? mainnet?)
           [stickers/button (= :stickers input-bottom-sheet)])
         (when (and one-to-one-chat? input-text-empty? (or config/commands-enabled? mainnet?))

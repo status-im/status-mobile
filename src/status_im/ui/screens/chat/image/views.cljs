@@ -7,20 +7,22 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.screens.chat.image.styles :as styles]
-            [status-im.ui.components.button :as button]
             [status-im.utils.utils :as utils]
             [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as icons]))
 
-(defn button [show-image?]
+(defn button [images-showing?]
   [react/touchable-highlight
-   {:on-press            (fn [_]
-                           (re-frame/dispatch [:chat.ui/set-chat-ui-props {:show-image? (not show-image?)
-                                                                           :show-stickers? false}])
-                           (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
+   {:on-press
+    (fn [_]
+      (re-frame/dispatch [:chat.ui/set-chat-ui-props
+                          {:input-bottom-sheet (when-not images-showing? :images)}])
+      (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
     :accessibility-label :show-photo-icon}
-   [vector-icons/icon :main-icons/photo {:container-style {:margin 14 :margin-right 6}
-                                         :color           (if show-image? colors/blue colors/gray)}]])
+   [vector-icons/icon
+    :main-icons/photo
+    {:container-style {:margin 14 :margin-right 6}
+     :color           (if images-showing? colors/blue colors/gray)}]])
 
 (defn show-panel-anim
   [bottom-anim-value alpha-value]
