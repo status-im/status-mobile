@@ -610,7 +610,7 @@ class BaseView(object):
         logcat = self.logcat
         items_in_logcat = list()
         for key, value in kwargs.items():
-            if re.findall('\W%s$|\W%s\W' % (value, value), logcat):
+            if re.findall(r'\W%s$|\W%s\W' % (value, value), logcat):
                 items_in_logcat.append('%s in logcat!!!' % key.capitalize())
         return items_in_logcat
 

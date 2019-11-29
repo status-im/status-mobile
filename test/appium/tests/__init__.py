@@ -23,7 +23,7 @@ def get_current_time():
 def debug(text: str):
     logging.debug(text)
 
-
+pytest_config_global = dict()
 test_suite_data = TestSuiteData()
 appium_container = AppiumContainer()
 

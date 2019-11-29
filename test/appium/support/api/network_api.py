@@ -6,12 +6,13 @@ import requests
 import time
 from json import JSONDecodeError
 from decimal import Decimal
+import tests
 
 
 class NetworkApi(object):
 
     def __init__(self):
-        self.network_url = 'http://api-%s.etherscan.io/api?' % pytest.config.getoption('network')
+        self.network_url = 'http://api-%s.etherscan.io/api?' % tests.pytest_config_global['network']
         self.faucet_url = 'https://faucet-ropsten.status.im/donate'
         self.faucet_backup_url = 'https://faucet.ropsten.be/donate'
         self.headers = {

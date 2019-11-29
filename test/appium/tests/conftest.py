@@ -14,6 +14,7 @@ from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
 from support.testrail_report import TestrailReport
 from tests.users import transaction_senders
+import tests
 
 sauce_username = environ.get('SAUCE_USERNAME')
 sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
@@ -142,8 +143,8 @@ def is_uploaded():
 
 
 def pytest_configure(config):
+    tests.pytest_config_global = vars(config.option)
     config.addinivalue_line("markers", "testrail_id(name): empty")
-
     if config.getoption('log_steps'):
         import logging
         logging.basicConfig(level=logging.INFO)
@@ -221,12 +222,12 @@ def pytest_runtest_makereport(item, call):
             current_test.testruns[-1].error = error
         if is_sauce_env:
             update_sauce_jobs(current_test.name, current_test.testruns[-1].jobs, report.passed)
-        if pytest.config.getoption('docker'):
+        if item.config.getoption('docker'):
             device_stats = appium_container.get_device_stats()
-            if pytest.config.getoption('bugreport'):
+            if item.config.getoption('bugreport'):
                 appium_container.generate_bugreport(item.name)
 
-            build_name = pytest.config.getoption('apk')
+            build_name = item.config.getoption('apk')
             # Find type of tests that are run on the device
             if 'battery_consumption' in item.keywords._markers:
                 test_group = 'battery_consumption'

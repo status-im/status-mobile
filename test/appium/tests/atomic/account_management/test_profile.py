@@ -1,4 +1,3 @@
-import pytest
 import re
 
 from tests import marks, bootnode_address, mailserver_address, camera_access_error_text, \
@@ -7,6 +6,7 @@ from tests import marks, bootnode_address, mailserver_address, camera_access_err
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user
 from views.sign_in_view import SignInView
+from tests import pytest_config_global
 
 
 @marks.all
@@ -372,7 +372,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
         profile_view.advanced_button.click()
-        if 'release' in str(pytest.config.getoption('apk')):
+        if 'release' in str(pytest_config_global['apk']):
             # TODO: should be edited after showing some text in setting when log in disabled
             if profile_view.log_level_setting.is_element_displayed():
                 self.errors.append('Log is not disabled')
@@ -495,9 +495,9 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.about_button.click()
         app_version = profile_view.app_version_text.text
         node_version = profile_view.node_version_text.text
-        if not re.search("\d{1}[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)]", app_version):
+        if not re.search(r'\d{1}[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)]', app_version):
             self.errors.append("App version %s didn't match expected format" % app_version)
-        if not re.search("StatusIM\/v.*\/android-\d{3}\/go\d{1}[.]\d{1,2}[.]\d{1,2}", node_version):
+        if not re.search(r'StatusIM\/v.*\/android-\d{3}\/go\d{1}[.]\d{1,2}[.]\d{1,2}', node_version):
             self.errors.append("Node version %s didn't match expected format" % node_version)
         profile_view.app_version_text.click()
         profile_view.back_button.click()
