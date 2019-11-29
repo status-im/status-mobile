@@ -1,6 +1,6 @@
 pipeline {
 
-  agent { label 'linux1' }
+  agent { label 'linux' }
 
   parameters {
     string(
@@ -33,6 +33,13 @@ pipeline {
   }
 
   stages {
+    stage('Setup') {
+      steps { script {
+        dir('test/appium') {
+          sh 'pip3 install --user -r requirements.txt'
+        }
+      } }
+    }
     stage('Test') {
       steps { script {
         currentBuild.displayName = "PR-${params.PR_ID}"
