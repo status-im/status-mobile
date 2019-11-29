@@ -284,6 +284,8 @@ class OpenInStatusButton(BaseButton):
 
     def click(self):
         self.wait_for_visibility_of_element()
+        # using sleep is wrong, but implicit wait for element can't help in particular case
+        time.sleep(3)
         self.swipe_to_web_element()
         self.wait_for_element().click()
 
