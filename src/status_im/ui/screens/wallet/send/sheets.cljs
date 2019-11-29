@@ -57,14 +57,17 @@
    (for [item [{:title    (i18n/label :t/accounts)
                 :icon     :main-icons/profile
                 :theme    :action
+                :accessibility-label :chose-recipient-accounts-button
                 :on-press show-accounts-list}
                {:title    (i18n/label :t/scan-qr)
                 :icon     :main-icons/qr
                 :theme    :action
+                :accessibility-label :chose-recipient-scan-qr
                 :on-press request-camera-permissions}
                {:title    (i18n/label :t/recipient-code)
                 :icon     :main-icons/address
                 :theme    :action
+                :accessibility-label :choose-recipient-recipient-code
                 :on-press #(re-frame/dispatch [:wallet.send/navigate-to-recipient-code])}]]
      ^{:key item}
      [list-item/list-item item])])

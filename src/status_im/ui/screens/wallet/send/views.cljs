@@ -71,6 +71,7 @@
      {:title       (utils/get-shortened-checksum-address
                     (if (string? contact) contact (:address contact)))
       :subtitle    (when-not contact (i18n/label :t/wallet-choose-recipient))
+      :accessibility-label :choose-recipient-button
       :on-press    #(do
                       (re-frame/dispatch [:dismiss-keyboard])
                       (re-frame/dispatch [:bottom-sheet/show-sheet
@@ -107,9 +108,10 @@
      [list-item/list-item {:type :section-header :title :t/to}]
      [render-contact to from-chat?]
      [toolbar/toolbar
-      {:center {:label     :t/wallet-send
-                :disabled? (not sign-enabled?)
-                :on-press  #(re-frame/dispatch [:wallet.ui/sign-transaction-button-clicked tx])}}]]))
+      {:center {:label               :t/wallet-send
+                :accessibility-label :send-transaction-bottom-sheet
+                :disabled?           (not sign-enabled?)
+                :on-press            #(re-frame/dispatch [:wallet.ui/sign-transaction-button-clicked tx])}}]]))
 
 (defview prepare-transaction []
   (letsubs [tx [:wallet/prepare-transaction]]

@@ -67,6 +67,7 @@
      (cond-> {:title-prefix         (wallet.utils/format-amount amount decimals)
               :title                (wallet.utils/display-symbol token)
               :title-color-override colors/gray
+              :accessibility-label (str (:symbol token)  "-asset-value")
               :subtitle             (str (if value value 0) " " currency)
               :icon                 (if icon
                                       [list/item-image icon]

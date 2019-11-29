@@ -19,7 +19,7 @@ class CancelButton(BaseButton):
 class SignTransactionButton(BaseButton):
     def __init__(self, driver):
         super(SignTransactionButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('sign-transaction-button')
+        self.locator = self.Locator.accessibility_id('send-transaction-bottom-sheet')
 
 
 class AmountEditBox(BaseEditBox, BaseButton):
@@ -63,30 +63,31 @@ class ChooseRecipientButton(BaseButton):
 class AccountsButton(BaseButton):
     def __init__(self, driver):
         super(AccountsButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Accounts')
+        self.locator = self.Locator.accessibility_id('chose-recipient-accounts-button')
 
 
 class EnterRecipientAddressButton(BaseButton):
     def __init__(self, driver):
         super(EnterRecipientAddressButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Enter recipient address']")
+        self.locator = self.Locator.accessibility_id('choose-recipient-recipient-code')
 
 
 class ScanQRCodeButton(BaseButton):
     def __init__(self, driver):
         super(ScanQRCodeButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Scan QR code')
+        self.locator = self.Locator.accessibility_id('chose-recipient-scan-qr')
 
 
 class EnterRecipientAddressInput(BaseEditBox):
     def __init__(self, driver):
         super(EnterRecipientAddressInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Enter recipient address']")
+        self.locator = self.Locator.accessibility_id("recipient-address-input")
+
 
 class EnterRecipientAddressInputText(BaseText):
     def __init__(self, driver):
         super(EnterRecipientAddressInputText, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("recipient-address-text")
+        self.locator = self.Locator.xpath_selector("//*[@content-desc='choose-recipient-button']/android.widget.TextView")
 
 
 class RecentRecipientsButton(BaseButton):
@@ -258,4 +259,7 @@ class SendTransactionView(BaseView):
 
     def get_transaction_fee_total(self):
         return self.transaction_fee_total_value.text.split()[0]
+
+    def get_formatted_recipient_address(self, address):
+        return address[:6] + '…' + address[-4:]
 

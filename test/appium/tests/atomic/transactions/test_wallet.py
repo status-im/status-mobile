@@ -352,7 +352,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         error_text = send_transaction.element_by_text('Insufficient funds')
         if not error_text.is_element_displayed():
             self.errors.append(
-                "'Insufficient funds' error is now shown when sending %s ETH from wallet with balance %s" % (
+                "'Insufficient funds' error is not shown when sending %s ETH from wallet with balance %s" % (
                     round(eth_value + 1), eth_value))
         send_transaction.select_asset_button.click()
         send_transaction.asset_by_name('STT').scroll_to_element()
@@ -360,7 +360,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.amount_edit_box.set_value(round(stt_value + 1))
         if not error_text.is_element_displayed():
             self.errors.append(
-                "'Insufficient funds' error is now shown when sending %s STT from wallet with balance %s" % (
+                "'Insufficient funds' error is not shown when sending %s STT from wallet with balance %s" % (
                     round(stt_value + 1), stt_value))
         self.errors.verify_no_errors()
 
@@ -396,17 +396,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.element_by_text('intrinsic gas too low', 'text').wait_for_visibility_of_element(80)
         send_transaction.ok_button.click()
 
-        send_transaction.sign_transaction_button.click()
-        send_transaction.network_fee_button.click()
-        send_transaction.gas_limit_input.clear()
-        gas_limit = '1005000'
-        send_transaction.gas_limit_input.set_value(gas_limit)
-        send_transaction.gas_price_input.clear()
-        gas_price = str(round(float(send_transaction.gas_price_input.text)) + 10)
-        send_transaction.gas_price_input.send_keys(gas_price)
-        send_transaction.update_fee_button.click()
-        send_transaction.sign_transaction()
-        self.network_api.find_transaction_by_unique_amount(sender['address'], amount)
 
     @marks.testrail_id(5314)
     @marks.critical
