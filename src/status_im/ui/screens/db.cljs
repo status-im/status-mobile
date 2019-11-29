@@ -255,7 +255,8 @@
                                 :signing/sign
                                 :signing/tx
                                 :signing/edit-fee
-                                :popover/popover]
+                                :popover/popover
+                                :wallet/sign-phrase-showed?]
                           :opt-un [::modal
                                    ::was-modal?
                                    ::rpc-url

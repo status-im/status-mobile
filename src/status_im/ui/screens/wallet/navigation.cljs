@@ -4,10 +4,12 @@
 
 (defmethod navigation/preload-data! :wallet-stack
   [db [event]]
-  (let [wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])]
-    (if (or (= event :navigate-back) wallet-set-up-passed?)
+  (let [wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])
+        sign-phrase-showed?   (get db :wallet/sign-phrase-showed?)]
+    (if (or (= event :navigate-back) wallet-set-up-passed? sign-phrase-showed?)
       db
-      (assoc db :popover/popover {:view [signing-phrase/signing-phrase]}))))
+      (assoc db :popover/popover {:view [signing-phrase/signing-phrase]}
+             :wallet/sign-phrase-showed? true))))
 
 (defmethod navigation/preload-data! :wallet-add-custom-token
   [db [event]]
