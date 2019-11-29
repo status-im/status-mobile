@@ -158,7 +158,7 @@
        [react/view {:style style/input-container}
         [input-view {:single-line-input? single-line-input? :set-text set-text :state-text state-text}]
         (when input-text-empty?
-          [image/button show-image?])
+          [image/button (= :images input-bottom-sheet)])
         (when (and input-text-empty? mainnet?)
           [stickers/button (= :stickers input-bottom-sheet)])
         (when (and one-to-one-chat? input-text-empty? (or config/commands-enabled? mainnet?))
