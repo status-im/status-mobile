@@ -25,7 +25,7 @@ pipeline {
     LANG     = "en_US.UTF-8"
     LC_ALL   = "en_US.UTF-8"
     LANGUAGE = "en_US.UTF-8"
-    TARGET_OS = 'android'
+    TARGET   = 'android'
     BUILD_ENV = 'prod'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     FASTLANE_DISABLE_COLORS = 1
@@ -58,7 +58,7 @@ pipeline {
         /* Build implicit dependencies if needed (we run `lein deps :tree` but it's not really required, for this purpose)
            Implicit dependencies include building a patched node_modules, fetching maven dependencies, and anything else required.
            We do this before the parallel steps so we have a known starting situation. */
-        script { cmn.nix.shell('lein deps :tree', attr: 'targets.leiningen.shell') }
+        script { cmn.nix.shell('lein deps :tree', attr: 'shells.lein') }
       }
     }
     stage('Parallel Assemble') {
@@ -66,12 +66,12 @@ pipeline {
         stage('Checks') { stages {
           stage('Lint') {
             steps {
-              script { cmn.nix.shell('lein cljfmt check', attr: 'targets.leiningen.shell') }
+              script { cmn.nix.shell('lein cljfmt check', attr: 'shells.lein') }
             }
           }
           stage('Tests') {
             steps {
-              script { cmn.nix.shell('lein test-cljs', attr: 'targets.leiningen.shell') }
+              script { cmn.nix.shell('lein test-cljs', attr: 'shells.lein') }
             }
           }
         } }

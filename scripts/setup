@@ -8,8 +8,8 @@
 # Usage: scripts/setup
 ########################################################################
 
-_current_dir=$(cd "${BASH_SOURCE%/*}" && pwd)
-source "$_current_dir/lib/setup/path-support.sh"
+GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
+source "$GIT_ROOT/scripts/lib/setup/path-support.sh"
 
 source_lib "output.sh"
 source_lib "packages.sh"
@@ -28,30 +28,15 @@ if [ $_need_curl -eq 1 ] && ! program_exists "curl"; then
   exit 1
 fi
 
-if is_linux && [ -z "$IN_CI_ENVIRONMENT" ]; then
-  watches=$(cat /proc/sys/fs/inotify/max_user_watches)
-  required_watches=524288
-  if [ $watches -lt $required_watches ]; then
-    cecho "@b@cyan[[fs.inotify.max_user_watches limit is too low ($watches), increasing it]]"
-    echo fs.inotify.max_user_watches=$required_watches | sudo tee -a /etc/sysctl.conf
-    sudo sysctl -p
-  fi
-
-  if [ -f "/etc/arch-release" ]; then
-    # Arch Linux
-    userns=$(sysctl -n kernel.unprivileged_userns_clone)
-    if [ "$userns" != '1' ]; then
-      sudo sysctl kernel.unprivileged_userns_clone=1
-    fi
-  fi
-fi
+# bump max watches limit to avoid issues with RN builds
+$GIT_ROOT/scripts/inotify_fix.sh
 
 ####
 setup_header "Installing requirements..."
 
 if [ "$IN_NIX_SHELL" != 'pure' ] && ! is_nixos && ! program_exists nix; then
   required_version="2.3.1"
-  NIX_INSTALLER_NO_MODIFY_PROFILE=1 bash <(curl https://nixos.org/releases/nix/nix-${required_version}/install) --no-daemon
+  NIX_INSTALLER_NO_MODIFY_PROFILE=1 NIX_IGNORE_SYMLINK_STORE=1 bash <(curl https://nixos.org/releases/nix/nix-${required_version}/install) --no-daemon
   if [ $? -eq 0 ]; then
     echo -e "${YELLOW}**********************************************************************************************************"
     echo "The Nix package manager was successfully installed."

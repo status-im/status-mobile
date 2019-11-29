@@ -17,7 +17,7 @@ nixOpts=(
 if is_macos; then
   # Start a watchman instance if not started already and store its socket path.
   # In order to get access to the right versions of watchman and jq, we start an ad-hoc nix-shell that imports the packages from nix/nixpkgs-bootstrap.
-  WATCHMAN_SOCKFILE=$(watchman get-sockname --no-pretty | jq -r .sockname)
+  WATCHMAN_SOCKFILE = $(watchman get-sockname --no-pretty | jq -r .sockname)
   nixOpts+=(
     "--argstr watchmanSockPath ${WATCHMAN_SOCKFILE}"
     "--option extra-sandbox-paths ${STORE_FILE};${WATCHMAN_SOCKFILE}"
@@ -28,4 +28,4 @@ else
   )
 fi
 
-${GIT_ROOT}/nix/build.sh targets.mobile.${TARGET_OS}.release "${nixOpts[@]}"
+${GIT_ROOT}/nix/scripts/build.sh targets.mobile.android.release "${nixOpts[@]}"

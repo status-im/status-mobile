@@ -42,6 +42,10 @@ export NIX_CONF_DIR = $(PWD)/nix
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
 export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE
 export _NIX_ROOT = /nix
+# legacy TARGET_OS variable support
+ifdef TARGET_OS
+export TARGET ?= $(TARGET_OS)
+endif
 
 # MacOS root is read-only, read nix/README.md for details
 UNAME_S := $(shell uname -s)
@@ -58,7 +62,7 @@ endif
 ifdef IN_NIX_SHELL
 SHELL := env bash
 else
-SHELL := ./nix/shell.sh
+SHELL := ./nix/scripts/shell.sh
 endif
 
 shell: ##@prepare Enter into a pre-configured shell
@@ -68,30 +72,32 @@ else
 	@echo "${YELLOW}Nix shell is already active$(RESET)"
 endif
 
+nix-gc: ##@nix Garbage collect all packages older than 20 days from /nix/store
+	nix-collect-garbage --delete-old --delete-older-than 20d
+
 nix-clean: ##@nix Remove all status-react build artifacts from /nix/store
-	nix/clean.sh
+	nix/scripts/clean.sh
 
 nix-purge: SHELL := /bin/sh
 nix-purge: ##@nix Completely remove the complete Nix setup
-	sudo rm -rf $(_NIX_ROOT) ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
+	sudo rm -rf $(_NIX_ROOT)/* ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
 
-nix-add-gcroots: export TARGET_OS := none
+nix-add-gcroots: export TARGET := default
 nix-add-gcroots: ##@nix Add Nix GC roots to avoid status-react expressions being garbage collected
 	scripts/add-nix-gcroots.sh
 
 nix-update-gradle: ##@nix Update maven nix expressions based on current gradle setup
 	nix/mobile/android/maven-and-npm-deps/maven/generate-nix.sh
 
-nix-update-lein: export TARGET_OS := none
+nix-update-lein: export TARGET := lein
 nix-update-lein: ##@nix Update maven nix expressions based on current lein setup
 	nix/tools/lein/generate-nix.sh nix/lein
 
-nix-update-gems: export TARGET_OS := none
-nix-update-gems: export _NIX_ATTR := targets.leiningen.shell
+nix-update-gems: export TARGET := lein
 nix-update-gems: ##@nix Update Ruby gems in fastlane/Gemfile.lock and fastlane/gemset.nix
 	fastlane/update.sh
 
-nix-update-pods: export TARGET_OS := ios
+nix-update-pods: export TARGET := ios
 nix-update-pods: ##@nix Update CocoaPods in ios/Podfile.lock
 	cd ios && pod update
 
@@ -118,7 +124,7 @@ clean: SHELL := /bin/sh
 clean: _fix-node-perms _tmpdir-rm ##@prepare Remove all output folders
 	git clean -dxf
 
-watchman-clean: export _NIX_ATTR := targets.watchman.shell
+watchman-clean: export TARGET := watchman
 watchman-clean: ##@prepare Delete repo directory from watchman
 	watchman watch-del $${STATUS_REACT_HOME}
 
@@ -130,7 +136,7 @@ disable-githooks: ##@prepare Disables lein githooks
 		-e 's|:pre-commit|;; :pre-commit|' project.clj; \
 	rm project.clj~
 
-pod-install: export TARGET_OS := ios
+pod-install: export TARGET := ios
 pod-install: ##@prepare Run 'pod install' to install podfiles and update Podfile.lock
 	cd ios && pod install; cd --
 
@@ -139,7 +145,7 @@ pod-install: ##@prepare Run 'pod install' to install podfiles and update Podfile
 #----------------
 release: release-android release-ios ##@build build release for Android and iOS
 
-release-android: export TARGET_OS ?= android
+release-android: export TARGET ?= android
 release-android: export BUILD_ENV ?= prod
 release-android: export BUILD_TYPE ?= nightly
 release-android: export BUILD_NUMBER ?= 9999
@@ -149,7 +155,7 @@ release-android: export ANDROID_ABI_INCLUDE ?= armeabi-v7a;arm64-v8a;x86
 release-android: ##@build build release for Android
 	scripts/release-android.sh
 
-release-ios: export TARGET_OS ?= ios
+release-ios: export TARGET ?= ios
 release-ios: export BUILD_ENV ?= prod
 release-ios: watchman-clean ##@build build release for iOS release
 	@git clean -dxf -f target/ios && \
@@ -157,14 +163,14 @@ release-ios: watchman-clean ##@build build release for iOS release
 	scripts/copy-translations.sh && \
 	xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration Release -destination 'generic/platform=iOS' -UseModernBuildSystem=N clean archive
 
-release-desktop: export TARGET_OS ?= $(HOST_OS)
-release-desktop: ##@build build release for desktop release based on TARGET_OS
+release-desktop: export TARGET ?= $(HOST_OS)
+release-desktop: ##@build build release for desktop release based on TARGET
 	@$(MAKE) jsbundle-desktop && \
 	scripts/copy-translations.sh && \
 	scripts/build-desktop.sh; \
 	$(MAKE) watchman-clean
 
-release-windows-desktop: export TARGET_OS ?= windows
+release-windows-desktop: export TARGET ?= windows
 release-windows-desktop: ##@build build release for windows desktop release
 	@$(MAKE) jsbundle-desktop && \
 	scripts/copy-translations.sh && \
@@ -175,28 +181,28 @@ prod-build-android: jsbundle-android ##@legacy temporary legacy alias for jsbund
 	@echo "${YELLOW}This a deprecated target name, use jsbundle-android.$(RESET)"
 
 jsbundle-android: SHELL := /bin/sh
-jsbundle-android: export TARGET_OS ?= android
+jsbundle-android: export TARGET ?= android
 jsbundle-android: export BUILD_ENV ?= prod
 jsbundle-android: ##@jsbundle Compile JavaScript and Clojure into index.android.js
-	# Call nix-build to build the 'targets.mobile.jsbundle' attribute and copy the index.android.js file to the project root
-	@git clean -dxf ./index.$(TARGET_OS).js
-	nix/build.sh targets.mobile.jsbundle && \
-	mv result/index.$(TARGET_OS).js ./
+	# Call nix-build to build the 'targets.mobile.android.jsbundle' attribute and copy the index.android.js file to the project root
+	@git clean -dxf ./index.$(TARGET).js
+	nix/scripts/build.sh targets.mobile.android.jsbundle && \
+	mv result/index.$(TARGET).js ./
 
 prod-build-ios: jsbundle-ios ##@legacy temporary legacy alias for jsbundle-ios
 	@echo "${YELLOW}This a deprecated target name, use jsbundle-ios.$(RESET)"
 
-jsbundle-ios: export TARGET_OS ?= ios
+jsbundle-ios: export TARGET ?= ios
 jsbundle-ios: export BUILD_ENV ?= prod
 jsbundle-ios: ##@jsbundle Compile JavaScript and Clojure into index.ios.js
-	@git clean -dxf -f ./index.$(TARGET_OS).js && \
+	@git clean -dxf -f ./index.$(TARGET).js && \
 	lein jsbundle-ios && \
 	node prepare-modules.js
 
 prod-build-desktop: jsbundle-desktop ##@legacy temporary legacy alias for jsbundle-desktop
 	@echo "${YELLOW}This a deprecated target name, use jsbundle-desktop.$(RESET)"
 
-jsbundle-desktop: export TARGET_OS ?= $(HOST_OS)
+jsbundle-desktop: export TARGET ?= $(HOST_OS)
 jsbundle-desktop: export BUILD_ENV ?= prod
 jsbundle-desktop: ##@jsbundle Compile JavaScript and Clojure into index.desktop.js
 	git clean -qdxf -f ./index.desktop.js desktop/ && \
@@ -212,26 +218,26 @@ _watch-%: ##@watch Start development for device
 	$(eval DEVICE := $(word 3, $(subst -, , $@)))
 	clj -R:dev build.clj watch --platform $(SYSTEM) --$(SYSTEM)-device $(DEVICE)
 
-watch-ios-real: export TARGET_OS ?= ios
+watch-ios-real: export TARGET := ios
 watch-ios-real: _watch-ios-real ##@watch Start development for iOS real device
 
-watch-ios-simulator: export TARGET_OS ?= ios
+watch-ios-simulator: export TARGET := ios
 watch-ios-simulator: _watch-ios-simulator ##@watch Start development for iOS simulator
 
-watch-android-real: export TARGET_OS ?= android
+watch-android-real: export TARGET := android
 watch-android-real: _watch-android-real ##@watch Start development for Android real device
 
-watch-android-avd: export TARGET_OS ?= android
+watch-android-avd: export TARGET := android
 watch-android-avd: _watch-android-avd ##@watch Start development for Android AVD
 
-watch-android-genymotion: export TARGET_OS ?= android
+watch-android-genymotion: export TARGET ?= android
 watch-android-genymotion: _watch-android-genymotion ##@watch Start development for Android Genymotion
 
-watch-desktop: export TARGET_OS ?= $(HOST_OS)
+watch-desktop: export TARGET ?= $(HOST_OS)
 watch-desktop: ##@watch Start development for Desktop
 	clj -R:dev build.clj watch --platform desktop
 
-desktop-server: export TARGET_OS ?= $(HOST_OS)
+desktop-server: export TARGET ?= $(HOST_OS)
 desktop-server:
 	node ubuntu-server.js
 
@@ -243,15 +249,15 @@ _run-%:
 	npx react-native run-$(SYSTEM)
 
 # TODO: Migrate this to a Nix recipe, much the same way as nix/mobile/android/targets/release-android.nix
-run-android: export TARGET_OS ?= android
+run-android: export TARGET := android
 run-android: ##@run Run Android build
 	npx react-native run-android --appIdSuffix debug
 
-run-desktop: export TARGET_OS ?= $(HOST_OS)
+run-desktop: export TARGET ?= $(HOST_OS)
 run-desktop: _run-desktop ##@run Run Desktop build
 
 SIMULATOR=
-run-ios: export TARGET_OS ?= ios
+run-ios: export TARGET := ios
 run-ios: ##@run Run iOS build
 ifneq ("$(SIMULATOR)", "")
 	npx react-native run-ios --simulator="$(SIMULATOR)"
@@ -263,15 +269,15 @@ endif
 # Tests
 #--------------
 
-lint: export _NIX_ATTR := targets.leiningen.shell
+lint: export TARGET := lein
 lint: ##@test Run code style checks
 	lein cljfmt check
 
-test: export _NIX_ATTR := targets.leiningen.shell
+test: export TARGET := lein
 test: ##@test Run tests once in NodeJS
 	lein with-profile test doo node test once
 
-test-auto: export _NIX_ATTR := targets.leiningen.shell
+test-auto: export TARGET := lein
 test-auto: ##@test Run tests in interactive (auto) mode in NodeJS
 	lein with-profile test doo node test
 
@@ -281,52 +287,46 @@ coverage: ##@test Run tests once in NodeJS generating coverage
 #--------------
 # Other
 #--------------
-react-native-desktop: export TARGET_OS ?= $(HOST_OS)
+react-native-desktop: export TARGET ?= $(HOST_OS)
 react-native-desktop: export _NIX_PURE ?= true
 react-native-desktop: ##@other Start react native packager
 	@scripts/start-react-native.sh
 
-react-native-android: export TARGET_OS ?= android
+react-native-android: export TARGET := android
 react-native-android: export _NIX_PURE ?= true
 react-native-android: ##@other Start react native packager for Android client
 	@scripts/start-react-native.sh
 
-react-native-ios: export TARGET_OS ?= ios
+react-native-ios: export TARGET := ios
 react-native-ios: export _NIX_PURE ?= true
 react-native-ios: ##@other Start react native packager for Android client
 	@scripts/start-react-native.sh
 
-geth-connect: export _NIX_ATTR := targets.mobile.android.adb.shell
-geth-connect: export TARGET_OS ?= android
+geth-connect: export TARGET := adb
 geth-connect: ##@other Connect to Geth on the device
 	adb forward tcp:8545 tcp:8545 && \
 	build/bin/geth attach http://localhost:8545
 
-android-clean: export TARGET_OS ?= android
 android-clean: ##@prepare Clean Gradle state
 	git clean -dxf -f ./android/app/build
 	[ -d android/.gradle ] && cd android && ./gradlew clean
 
-android-ports: export _NIX_ATTR := targets.mobile.android.adb.shell
-android-ports: export TARGET_OS ?= android
+android-ports: export TARGET := adb
 android-ports: ##@other Add proxies to Android Device/Simulator
 	adb reverse tcp:8081 tcp:8081 && \
 	adb reverse tcp:3449 tcp:3449 && \
 	adb reverse tcp:4567 tcp:4567 && \
 	adb forward tcp:5561 tcp:5561
 
-android-devices: export _NIX_ATTR := targets.mobile.android.adb.shell
-android-devices: export TARGET_OS ?= android
+android-devices: export TARGET := adb
 android-devices: ##@other Invoke adb devices
 	adb devices
 
-android-logcat: export _NIX_ATTR := targets.mobile.android.adb.shell
-android-logcat: export TARGET_OS ?= android
+android-logcat: export TARGET := adb
 android-logcat: ##@other Read status-react logs from Android phone using adb
 	adb logcat | grep -e RNBootstrap -e ReactNativeJS -e ReactNative -e StatusModule -e StatusNativeLogs -e 'F DEBUG   :' -e 'Go      :' -e 'GoLog   :' -e 'libc    :'
 
-android-install: export _NIX_ATTR := targets.mobile.android.adb.shell
-android-install: export TARGET_OS ?= android
+android-install: export TARGET := adb
 android-install: export BUILD_TYPE ?= release
 android-install:
 	adb install result/app-$(BUILD_TYPE).apk
@@ -351,15 +351,15 @@ _startdev-%:
 		$(MAKE) watch-$(SYSTEM)-$(DEVICE) || $(MAKE) _unknown-startdev-target-$@; \
 	fi
 
-startdev-android-avd: export TARGET_OS = android
+startdev-android-avd: export TARGET = android
 startdev-android-avd: _startdev-android-avd
-startdev-android-genymotion: export TARGET_OS = android
+startdev-android-genymotion: export TARGET = android
 startdev-android-genymotion: _startdev-android-genymotion
-startdev-android-real: export TARGET_OS = android
+startdev-android-real: export TARGET = android
 startdev-android-real: _startdev-android-real
-startdev-desktop: export TARGET_OS ?= $(HOST_OS)
+startdev-desktop: export TARGET ?= $(HOST_OS)
 startdev-desktop: _startdev-desktop
-startdev-ios-real: export TARGET_OS = ios
+startdev-ios-real: export TARGET = ios
 startdev-ios-real: _startdev-ios-real
-startdev-ios-simulator: export TARGET_OS = ios
+startdev-ios-simulator: export TARGET = ios
 startdev-ios-simulator: _startdev-ios-simulator

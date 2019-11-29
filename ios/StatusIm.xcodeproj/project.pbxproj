@@ -527,7 +527,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-StatusIm/Pods-StatusIm-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-StatusIm/Pods-StatusIm-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/QBImagePickerController/QBImagePicker.bundle",
 				"${PODS_ROOT}/RSKImageCropper/RSKImageCropper/RSKImageCropperStrings.bundle",
 			);
@@ -538,7 +538,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-StatusIm/Pods-StatusIm-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-StatusIm/Pods-StatusIm-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		2EAC54E16AB243C3EBBFE1BA /* [CP] Check Pods Manifest.lock */ = {

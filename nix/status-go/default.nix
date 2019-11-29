@@ -1,16 +1,14 @@
-{ target-os, config, stdenv, callPackage,
-  buildGoPackage, go, fetchFromGitHub, mkFilter, openjdk,
-  androidPkgs, xcodeWrapper }:
+{ config, stdenv, callPackage, mkShell, mergeSh, buildGoPackage, go,
+  fetchFromGitHub, mkFilter, openjdk, androidPkgs, xcodeWrapper }:
 
 let
   inherit (stdenv.lib)
     catAttrs concatStrings fileContents importJSON makeBinPath
-    optional optionalString removePrefix strings attrValues mapAttrs attrByPath
+    optional optionalString strings attrValues mapAttrs attrByPath
     traceValFn;
 
-  platform = callPackage ../platform.nix { inherit target-os; };
-  utils = callPackage ../utils.nix { inherit xcodeWrapper; };
-  gomobile = callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit target-os xcodeWrapper utils buildGoPackage; };
+  utils = callPackage ./utils.nix { inherit xcodeWrapper; };
+  gomobile = callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit xcodeWrapper utils buildGoPackage; };
   buildStatusGoDesktopLib = callPackage ./build-desktop-status-go.nix { inherit buildGoPackage go xcodeWrapper utils; };
   buildStatusGoMobileLib = callPackage ./build-mobile-status-go.nix { inherit buildGoPackage go gomobile xcodeWrapper utils; };
   srcData =
@@ -18,12 +16,11 @@ let
     if (attrByPath ["status_go" "src_override"] "" config) != "" then rec {
         owner = "status-im";
         repo = "status-go";
-        version = "develop";
-        goPackagePath = "github.com/${owner}/${repo}";
         rev = "unknown";
         shortRev = "unknown";
-        sanitizedVersion = version;
-        versionName = "develop";
+        rawVersion = "develop";
+        cleanVersion = rawVersion;
+        goPackagePath = "github.com/${owner}/${repo}";
         src =
           let path = traceValFn (path: "Using local ${repo} sources from ${path}\n") config.status_go.src_override;
           in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
@@ -42,20 +39,14 @@ let
       # Otherwise grab it from the location defined by status-go-version.json
       let
         versionJSON = importJSON ../../status-go-version.json; # TODO: Simplify this path search with lib.locateDominatingFile
-        versionRegex = "^v?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+(-[[:alnum:].]+)$";
         sha256 = versionJSON.src-sha256;
-        sanitizeVersion = builtins.replaceStrings
-          [ "/" ]
-          [ "_" ];
       in rec {
         inherit (versionJSON) owner repo version;
-        sanitizedVersion = sanitizeVersion versionJSON.version;
-        goPackagePath = "github.com/${owner}/${repo}";
         rev = versionJSON.commit-sha1;
         shortRev = strings.substring 0 7 rev;
-        versionName = if (builtins.match versionRegex sanitizedVersion) != null
-                      then removePrefix "v" sanitizedVersion # Geth forces a 'v' prefix
-                      else "develop"; # to reduce metrics cardinality in Prometheus
+        rawVersion = versionJSON.version;
+        cleanVersion = utils.sanitizeVersion versionJSON.version;
+        goPackagePath = "github.com/${owner}/${repo}";
         src = fetchFromGitHub { inherit rev owner repo sha256; name = "${repo}-${srcData.shortRev}-source"; };
       };
 
@@ -93,7 +84,7 @@ let
   # status-go params to be set at build time, important for About section and metrics
   goBuildParams = {
     GitCommit = srcData.rev;
-    Version = srcData.versionName;
+    Version = srcData.cleanVersion;
   };
   # These are necessary for status-go to show correct version
   paramsLdFlags = attrValues (mapAttrs (name: value:
@@ -105,7 +96,7 @@ let
     "-w" # -w disables DWARF debugging information
   ];
 
-  statusGoArgs = { inherit (srcData) src owner repo rev version sanitizedVersion goPackagePath; inherit goBuildFlags goBuildLdFlags; };
+  statusGoArgs = { inherit (srcData) src owner repo rev cleanVersion goPackagePath; inherit goBuildFlags goBuildLdFlags; };
   status-go-packages = {
     desktop = buildStatusGoDesktopLib (statusGoArgs // {
       outputFileName = "libstatus.a";
@@ -124,46 +115,41 @@ let
     });
   };
 
-  buildInputs = if target-os == "android" then
-    android.buildInputs
-  else if target-os == "ios" then
-    ios.buildInputs
-  else if target-os == "all" then
-    currentHostConfig.allTargets
-  else if platform.targetDesktop then
-    desktop.buildInputs
-  else
-    throw "Unexpected target platform ${target-os}";
-  android = {
-    buildInputs = optional platform.targetAndroid [ status-go-packages.android ];
-    shellHook =
-      optionalString platform.targetAndroid ''
+  android = rec {
+    buildInputs = [ status-go-packages.android ];
+    shell = mkShell {
+      inherit buildInputs;
+      shellHook = ''
         # These variables are used by the Status Android Gradle build script in android/build.gradle
         export STATUS_GO_ANDROID_LIBDIR=${status-go-packages.android}/lib
       '';
+    };
   };
-  ios = {
-    buildInputs = optional platform.targetIOS [ status-go-packages.ios ];
-    shellHook =
-      optionalString platform.targetIOS ''
+  ios = rec {
+    buildInputs = [ status-go-packages.ios ];
+    shell = mkShell {
+      inherit buildInputs;
+      shellHook = ''
         # These variables are used by the iOS build preparation section in nix/mobile/ios/default.nix
         export RCTSTATUS_FILEPATH=${status-go-packages.ios}/lib/Statusgo.framework
       '';
+    };
   };
-  desktop = {
-    buildInputs = optional platform.targetDesktop [ status-go-packages.desktop ];
-    shellHook =
-      optionalString platform.targetDesktop ''
+  desktop = rec {
+    buildInputs = [ status-go-packages.desktop ];
+    shell = mkShell {
+      inherit buildInputs;
+      shellHook = ''
         # These variables are used by the Status Desktop CMake build script in modules/react-native-status/desktop/CMakeLists.txt
         export STATUS_GO_DESKTOP_INCLUDEDIR=${status-go-packages.desktop}/include
         export STATUS_GO_DESKTOP_LIBDIR=${status-go-packages.desktop}/lib
       '';
+    };
   };
   platforms = [ android ios desktop ];
 
 in {
-  inherit buildInputs;
-  shellHook = concatStrings (catAttrs "shellHook" platforms);
+  shell = mergeSh mkShell {} (catAttrs "shell" platforms);
 
   # CHILD DERIVATIONS
   inherit android ios desktop;

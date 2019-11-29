@@ -1,16 +1,9 @@
-# target-os = [ 'windows' 'linux' 'macos' 'darwin' 'android' 'ios' 'all' ]
-{ config ? { },
-  nixpkgs-bootstrap ? import ./nix/nixpkgs-bootstrap.nix { inherit config; },
-  pkgs ? nixpkgs-bootstrap.pkgs,
-  stdenv ? pkgs.stdenv,
-  target-os ? "none" }:
+{
+  config ? { }, # for passing status_go.src_override
+}:
 
-let deriv = pkgs.callPackage ./nix/derivation.nix { inherit pkgs target-os; inherit (nixpkgs-bootstrap) config; };
-
+let
+  main = import ./nix/default.nix { inherit config; };
 in {
-  targets = {
-    inherit (deriv) mobile leiningen watchman status-go;
-  };
-
-  inherit (deriv) shell;
+  inherit (main) pkgs targets shells;
 }

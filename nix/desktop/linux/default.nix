@@ -1,4 +1,4 @@
-{ stdenv, callPackage,
+{ stdenv, mkShell, callPackage,
   appimagekit, patchelf, qt5, status-go, baseImageFactory }:
 
 with stdenv;
@@ -11,7 +11,7 @@ let
   appimagekit = callPackage ./appimagekit { };
   linuxdeployqt = callPackage ./linuxdeployqt { inherit appimagekit; };
 
-in {
+in rec {
   buildInputs = [
     appimagekit
     linuxdeployqt
@@ -19,10 +19,12 @@ in {
     qt5.full
   ] ++ status-go.buildInputs;
 
-  shellHook =
-    concatStrings (catAttrs "shellHook" [ baseImage status-go ] ) + ''
+  shell = mkShell {
+    inherit buildInputs;
+    shellHook = concatStrings (catAttrs "shellHook" [ baseImage status-go ]) + ''
       export QT_PATH="${qt5.full}"
       export QT_BASEBIN_PATH="${qt5.qtbase.bin}"
       export PATH="${qt5.full}/bin:$PATH"
     '';
+  };
 }

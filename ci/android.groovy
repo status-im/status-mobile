@@ -107,8 +107,8 @@ def uploadToPlayStore(type = 'nightly') {
   ]) {
     nix.shell(
       "fastlane android ${type}",
-      attr: 'targets.mobile.fastlane.shell',
-      keep: ['FASTLANE_DISABLE_COLORS', 'APK_PATHS', 'GOOGLE_PLAY_JSON_KEY']
+      keep: ['FASTLANE_DISABLE_COLORS', 'APK_PATHS', 'GOOGLE_PLAY_JSON_KEY'],
+      attr: 'shells.fastlane'
     )
   }
 }
@@ -130,11 +130,11 @@ def uploadToSauceLabs() {
   ]) {
     nix.shell(
       'fastlane android saucelabs',
-      attr: 'targets.mobile.fastlane.shell',
       keep: [
         'FASTLANE_DISABLE_COLORS', 'APK_PATHS',
         'SAUCE_ACCESS_KEY', 'SAUCE_USERNAME', 'SAUCE_LABS_NAME'
       ],
+      attr: 'shells.fastlane',
       pure: false
     )
   }
@@ -147,8 +147,8 @@ def uploadToDiawi() {
   ]) {
     nix.shell(
       'fastlane android upload_diawi',
-      attr: 'targets.mobile.fastlane.shell',
       keep: ['FASTLANE_DISABLE_COLORS', 'APK_PATHS', 'DIAWI_TOKEN'],
+      attr: 'shells.fastlane',
       pure: false
     )
   }

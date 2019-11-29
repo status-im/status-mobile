@@ -7,22 +7,21 @@
 def shell(Map opts = [:], String cmd) {
   def defaults = [
     pure: true,
-    args: ['target-os': env.TARGET_OS ? env.TARGET_OS : 'none'],
-    keep: ['LOCALE_ARCHIVE_2_27', 'IN_CI_ENVIRONMENT'],
+    args: ['target': env.TARGET ? env.TARGET : 'default'],
+    keep: ['LOCALE_ARCHIVE_2_27'],
   ]
   /* merge defaults with received opts */
   opts = defaults + opts
   /* previous merge overwrites the array */
   opts.keep = (opts.keep + defaults.keep).unique()
   /* not all targets can use a pure build */
-  if (env.TARGET_OS in ['windows', 'ios']) {
+  if (env.TARGET in ['windows', 'ios']) {
     opts.pure = false
   }
   sh("""
       set +x
       . ~/.nix-profile/etc/profile.d/nix.sh
       set -x
-      IN_CI_ENVIRONMENT=1 \\
       nix-shell --run \'${cmd}\' ${_getNixCommandArgs(opts, true)}
   """)
 }
@@ -38,13 +37,11 @@ def shell(Map opts = [:], String cmd) {
  *  - safeEnv - Name of env variables to pass securely through to Nix build (they won't get captured in Nix derivation file)
  **/
 def build(Map opts = [:]) {
-  env.IN_CI_ENVIRONMENT = '1'
-
   def defaults = [
     pure: true,
     link: true,
-    args: ['target-os': env.TARGET_OS],
-    keep: ['IN_CI_ENVIRONMENT'],
+    args: ['target': env.TARGET],
+    keep: [],
     attr: null,
     sbox: [],
     safeEnv: [],
@@ -140,7 +137,7 @@ private def _getNixCommandArgs(Map opts = [:], boolean isShell) {
 }
 
 def prepEnv() {
-  if (env.TARGET_OS in ['linux', 'windows', 'android']) {
+  if (env.TARGET in ['linux', 'windows', 'android']) {
     def glibcLocales = sh(
       returnStdout: true,
       script: """

@@ -1,39 +1,11 @@
-{ config ? { },
-  nixpkgs-bootstrap ? import ./nix/nixpkgs-bootstrap.nix { inherit config; },
-  pkgs ? nixpkgs-bootstrap.pkgs,
-  target-os ? "none" }:
+{
+  config ? { },      # for passing status_go.src_override
+  target ? "default" # see nix/shells.nix for all valid values
+}:
 
 let
-  project = import ./default.nix {
-    inherit target-os pkgs nixpkgs-bootstrap;
-    inherit (nixpkgs-bootstrap) config;
-  };
-  mkShell = pkgs.callPackage ./nix/bootstrapped-shell.nix {
-    inherit stdenv target-os;
-    inherit (pkgs) mkShell;
-  };
-  platform = pkgs.callPackage ./nix/platform.nix { inherit target-os; };
-  # TODO: Try to use stdenv for iOS. The problem is with building iOS as the build is trying to pass parameters to Apple's ld that are meant for GNU's ld (e.g. -dynamiclib)
-  stdenv = pkgs.stdenvNoCC;
-  # those should always be present in a shell
-  coreInputs = with pkgs; [
-    bash curl file flock git gnumake jq wget
-  ];
-
-in mkShell {
-  name = "status-react-shell";
-  # none means we shouldn't include project specific deps
-  buildInputs =
-    coreInputs ++
-    stdenv.lib.optionals (target-os != "none") (with pkgs; [
-      unzip
-      ncurses
-      lsof # used in scripts/start-react-native.sh
-      ps # used in scripts/start-react-native.sh
-      clojure
-      leiningen
-      maven
-      watchman
-    ]);
-  inputsFrom = stdenv.lib.optional (target-os != "none") project.shell;
-}
+  project = import ./default.nix { inherit config; };
+in
+  # this is where the $TARGET env variable affects things
+  project.pkgs.mergeSh project.shells.default [ project.shells.${target} ]
+  # combining with default shell to include all the standard utilities

@@ -12,17 +12,17 @@ __NOTE:__ If you are in Asia you might want to add the `https://nix-cache-cn.sta
 
 In order to access an interactive Nix shell a user should run `make shell`.
 
-The Nix shell is started in this repo via the [`nix/shell.sh`](/nix/shell.sh) script, which is a wrapper around the `nix-shell` command and is intended for use with our main [`Makefile`](/Makefile). This allows for an implicit use of `nix-shell` as the default shell in the `Makefile`.
+The Nix shell is started in this repo via the [`nix/scripts/shell.sh`](/nix/scripts/shell.sh) script, which is a wrapper around the `nix-shell` command and is intended for use with our main [`Makefile`](/Makefile). This allows for an implicit use of `nix-shell` as the default shell in the `Makefile`.
 
-By default the shell starts without any specific target platform, if you want to change that you should export the `TARGET_OS` env variable with the right value:
+Normally the shell starts without any specific target platform, if you want to change that you should export the `TARGET` env variable with appropriate value:
 
 ```bash
-make shell TARGET_OS=android
+make shell TARGET=android
 ```
 
 This way your shell and all other nix commands should run in a setup that is tailored towards Android development.
 
-For valid values you can check the [`nix/platform.nix`](/nix/platform.nix) file.
+For valid values you can check the [`nix/shells.nix`](/nix/shells.nix) file.
 
 ## Using a local status-go repository
 

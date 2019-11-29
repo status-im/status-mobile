@@ -21,7 +21,7 @@ inputs2nix=$(realpath --relative-to="${current_dir}" "${GIT_ROOT}/nix/tools/mave
 
 echo "Regenerating Nix files, this process should take about 90 minutes"
 nix-shell --run "set -Eeuo pipefail; LC_ALL=C ${current_dir}/fetch-maven-deps.sh | sort -u -o ${inputs_file_path}" \
-          --pure -A targets.mobile.android.generate-maven-and-npm-deps-shell --argstr target-os android --show-trace "${GIT_ROOT}/default.nix"
+          --pure -A targets.mobile.android.generate-maven-and-npm-deps-shell --show-trace "${GIT_ROOT}/default.nix"
 
 pushd ${current_dir}
 ${inputs2nix} ${inputs_file_path} > ${output_nix_file_path}

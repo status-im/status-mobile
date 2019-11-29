@@ -1,12 +1,11 @@
-{ stdenv, callPackage,
-  conan, nsis, go, baseImageFactory }:
+{ stdenv, mkShell, conan, nsis, go, baseImageFactory }:
 
 assert stdenv.isLinux;
 
 let
   baseImage = baseImageFactory "windows";
 
-in {
+in rec {
   buildInputs = stdenv.lib.optionals stdenv.isLinux [
     conan
     nsis
@@ -14,8 +13,11 @@ in {
     go # Needed for Windows build only
   ];
 
-  shellHook = ''
-    ${baseImage.shellHook}
-    unset QT_PATH
-  '';
+  shell = mkShell {
+    inherit buildInputs;
+    shellHook = ''
+      ${baseImage.shellHook}
+      unset QT_PATH
+    '';
+  };
 }

@@ -5,7 +5,7 @@ pipeline {
     LANG      = 'en_US.UTF-8'
     LANGUAGE  = 'en_US.UTF-8'
     LC_ALL    = 'en_US.UTF-8'
-    TARGET_OS = 'ios'
+    TARGET    = 'ios'
     FASTLANE_DISABLE_COLORS = 1
     /* See nix/README.md */
     NIX_IGNORE_SYMLINK_STORE = 1
@@ -29,7 +29,7 @@ pipeline {
         nix = load('ci/nix.groovy')
         nix.shell(
           'bundle install --gemfile=fastlane/Gemfile',
-          attr: 'targets.mobile.fastlane.shell'
+          attr: 'shells.fastlane'
         )
       } }
     }
@@ -44,8 +44,8 @@ pipeline {
         ]) {
           nix.shell(
             'bundle exec --gemfile=fastlane/Gemfile fastlane ios clean',
-            attr: 'targets.mobile.fastlane.shell',
             keep: ['FASTLANE_APPLE_ID', 'FASTLANE_PASSWORD']
+            attr: 'shells.fastlane',
           )
         }
       } }

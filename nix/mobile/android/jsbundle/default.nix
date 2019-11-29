@@ -2,18 +2,18 @@
 # This Nix expression builds an index.*.js file for the current repository given a node modules Nix expression
 #
 
-{ stdenv, stdenvNoCC, lib, target-os, callPackage, pkgs,
-  mkFilter, clojure, leiningen, maven, nodejs, localMavenRepoBuilder, projectNodePackage }:
+{ target-os ? "android",
+  stdenv, mkFilter, clojure, leiningen, nodejs,
+  leinProjectDeps, localMavenRepoBuilder, projectNodePackage }:
 
 let
   lein-command = if target-os == "all" then "lein jsbundle" else "lein jsbundle-${target-os}";
-  lein-project-deps = import ../lein/lein-project-deps.nix { };
-  leinProjectDepsLocalRepo = localMavenRepoBuilder "lein-project-deps" lein-project-deps;
+  leinProjectDepsLocalRepo = localMavenRepoBuilder "lein-project-deps" leinProjectDeps;
 
 in stdenv.mkDerivation {
   name = "status-react-build-jsbundle-${target-os}";
   src =
-    let path = ./../..;
+    let path = ./../../../..;
     in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
       inherit path;
       name = "status-react-source-jsbundle";

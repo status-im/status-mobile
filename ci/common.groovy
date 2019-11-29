@@ -43,28 +43,26 @@ def prep(type = 'nightly') {
   /* pick right .env and update from params */
   utils.updateEnv(type)
 
-  if (env.TARGET_OS == 'android' || env.TARGET_OS == 'ios') {
+  if (['android', 'ios'].contains(env.TARGET)) {
     /* Run at start to void mismatched numbers */
     utils.genBuildNumber()
   }
 
-  nix.shell('watchman watch-del-all', attr: 'targets.watchman.shell')
+  nix.shell('watchman watch-del-all', attr: 'shells.watchman')
 
-  if (env.TARGET_OS == 'ios') {
+  if (env.TARGET == 'ios') {
     /* install ruby dependencies */
     nix.shell(
       'bundle install --gemfile=fastlane/Gemfile --quiet',
-      attr: 'targets.mobile.fastlane.shell')
+      attr: 'shells.fastlane')
   }
 
-  if (env.TARGET_OS == 'macos' || env.TARGET_OS == 'linux' || env.TARGET_OS == 'windows') {
+  if (['macos', 'linux', 'windows'].contains(env.TARGET)) {
     /* node deps, pods, and status-go download */
     nix.shell('scripts/prepare-for-desktop-platform.sh', pure: false)
-    sh('scripts/copy-translations.sh')
-  } else if (env.TARGET_OS != 'android') {
-    // run script in the nix shell so that node_modules gets instantiated before attempting the copies
-    nix.shell('scripts/copy-translations.sh chmod')
   }
+  /* run script in the nix shell so that node_modules gets instantiated before attempting the copies */
+  nix.shell('scripts/copy-translations.sh chmod', attr: "shells.${env.TARGET}")
 }
 
 def uploadArtifact(path) {

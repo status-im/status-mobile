@@ -3,15 +3,15 @@
 #   as well as a local version of the Maven repository required by Gradle scripts
 #
 
-{ stdenv, stdenvNoCC, lib, callPackage,
+{ stdenv, lib, callPackage, mkShell,
   gradle, bash, file, nodejs, zlib,
   projectNodePackage, localMavenRepoBuilder, mkFilter }:
 
 let
-  mavenLocalRepo = callPackage ./maven { inherit localMavenRepoBuilder; stdenv = if stdenv.isLinux then stdenv else stdenvNoCC; };
+  mavenLocalRepo = callPackage ./maven { inherit localMavenRepoBuilder stdenv; };
 
   # Import the native dependencies for React Native Android builds
-  react-native-deps = callPackage ./maven/reactnative-android-native-deps.nix { inherit stdenvNoCC; };
+  react-native-deps = callPackage ./maven/reactnative-android-native-deps.nix { };
 
   createMobileFilesSymlinks = root: ''
     ln -sf ${root}/mobile/js_files/package.json ${root}/package.json
@@ -190,11 +190,12 @@ let
       };
 
 in {
-  deriv = deps;
+  drv = deps;
+  shell = mkShell {
+    shellHook = ''
+      ${createMobileFilesSymlinks "$STATUS_REACT_HOME"}
 
-  shellHook = ''
-    ${createMobileFilesSymlinks "$STATUS_REACT_HOME"}
-
-    export STATUSREACT_NIX_MAVEN_REPO="${deps}/.m2/repository"
-  '';
+      export STATUSREACT_NIX_MAVEN_REPO="${deps}/.m2/repository"
+    '';
+  };
 }

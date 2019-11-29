@@ -1,9 +1,6 @@
+{ stdenv, utils, callPackage, buildGoPackage, go, xcodeWrapper }:
 
-{ stdenv, utils, callPackage,
-  buildGoPackage, go, xcodeWrapper }:
-
-{ owner, repo, rev, version, goPackagePath, src, host,
-
+{ owner, repo, rev, cleanVersion, goPackagePath, src, host,
   # desktop-only arguments
   goBuildFlags, goBuildLdFlags,
   outputFileName,

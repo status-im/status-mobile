@@ -1,6 +1,6 @@
 { buildGoPackage, go, xcodeWrapper, stdenv, utils }:
 
-{ owner, repo, rev, version, sanitizedVersion, goPackagePath, src, host,
+{ owner, repo, rev, cleanVersion, goPackagePath, src, host,
   nativeBuildInputs ? [],
   buildPhase, buildMessage,
   installPhase ? "",
@@ -19,7 +19,7 @@ let
   args = removeAttrs args' [ "buildMessage" ]; # Remove our arguments from args before passing them on to buildGoPackage
   buildStatusGo = buildGoPackage (args // {
     pname = repo;
-    version = "${sanitizedVersion}-${strings.substring 0 7 rev}-${host}";
+    version = "${cleanVersion}-${strings.substring 0 7 rev}-${host}";
 
     nativeBuildInputs =
       nativeBuildInputs ++

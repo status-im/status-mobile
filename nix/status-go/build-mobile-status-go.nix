@@ -1,8 +1,7 @@
-
 { stdenv, utils, callPackage,
   buildGoPackage, go, gomobile, openjdk, xcodeWrapper }:
 
-{ owner, repo, rev, version, sanitizedVersion, goPackagePath, src, host,
+{ owner, repo, rev, cleanVersion, goPackagePath, src, host,
 
   # mobile-only arguments
   goBuildFlags, goBuildLdFlags,
@@ -12,7 +11,9 @@ let
   inherit (stdenv.lib) concatStringsSep makeBinPath optional;
 
   targetConfig = config;
-  buildStatusGo = callPackage ./build-status-go.nix { inherit buildGoPackage go xcodeWrapper utils; };
+  buildStatusGo = callPackage ./build-status-go.nix {
+    inherit buildGoPackage go xcodeWrapper utils;
+  };
 
   # Remove mobile-only arguments from args
   args = removeAttrs args' [

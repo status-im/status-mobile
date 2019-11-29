@@ -1,4 +1,4 @@
-{ stdenv, stdenvNoCC, lib, config, target-os, callPackage,
+{ stdenv, lib, config, callPackage,
   mkFilter, bash, file, gnumake, watchmanFactory, gradle,
   androidEnvShellHook, mavenAndNpmDeps,
   nodejs, openjdk, jsbundle, status-go, unzip, zlib }:
@@ -15,15 +15,15 @@
 assert (builtins.stringLength watchmanSockPath) > 0 -> stdenv.isDarwin;
 
 let
-  inherit (stdenv.lib) hasAttrByPath optionalAttrs;
+  inherit (lib) hasAttrByPath optionalAttrs;
   env' = env // optionalAttrs (hasAttrByPath ["status_go" "src_override"] config) {
     STATUS_GO_SRC_OVERRIDE = config.status_go.src_override;
   };
-  baseName = "release-${target-os}";
+  baseName = "release-android";
   name = "status-react-build-${baseName}";
   gradleHome = "$NIX_BUILD_TOP/.gradle";
-  localMavenRepo = "${mavenAndNpmDeps.deriv}/.m2/repository";
-  sourceProjectDir = "${mavenAndNpmDeps.deriv}/project";
+  localMavenRepo = "${mavenAndNpmDeps.drv}/.m2/repository";
+  sourceProjectDir = "${mavenAndNpmDeps.drv}/project";
   envFileName =
     if (build-type == "release" || build-type == "nightly" || build-type == "e2e") then ".env.${build-type}" else
     if build-type != "" then ".env.jenkins" else ".env";
@@ -116,7 +116,7 @@ in stdenv.mkDerivation {
     ${if secrets-file != "" then "source ${secrets-file}" else ""}
 
     ${androidEnvShellHook}
-    ${concatStrings (catAttrs "shellHook" [ mavenAndNpmDeps status-go ])}
+    ${concatStrings (catAttrs "shellHook" [ mavenAndNpmDeps.shell status-go.shell ])}
 
     pushd $sourceRoot/android
     ${adhocEnvVars} ./gradlew -PversionCode=${build-number} assemble${capitalizedBuildType} || exit

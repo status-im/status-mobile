@@ -2,17 +2,17 @@
 
 set -e
 
-gitRoot=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
-resultPath="${gitRoot}/result/"
+GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
+resultPath="${GIT_ROOT}/result/"
 
 # cleanup for artifacts created during builds
 function cleanup() {
   # clear trapped signals
   trap - EXIT ERR INT QUIT
   # do the actual cleanup, ignore failure
-  if ./nix/clean.sh "${nixResultPath}"; then
+  if ${GIT_ROOT}/nix/scripts/clean.sh "${nixResultPath}"; then
     echo "Successful cleanup!"
-  elif [[ -n "${IN_CI_ENVIRONMENT}" ]]; then
+  elif [[ -n "${JENKINS_URL}" ]]; then
     # in CI removing some paths can fail due to parallel builds
     echo "Ignoring cleanup failure in CI."
   else
@@ -29,6 +29,7 @@ function extractResults() {
   mkdir -p "${resultPath}"
   cp -vfr ${nixResultPath}/* "${resultPath}"
   chmod -R u+w "${resultPath}"
+  ls -l "${resultPath}"
 }
 
 # Load Nix profile
@@ -49,7 +50,6 @@ nixOpts=(
   "--fallback"
   "--no-out-link"
   "--show-trace"
-  "--argstr target-os ${TARGET_OS}"
   "--attr ${targetAttr}"
   "${@}"
   "default.nix"

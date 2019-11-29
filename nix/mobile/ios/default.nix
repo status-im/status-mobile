@@ -1,16 +1,14 @@
-{ config, stdenv, stdenvNoCC, callPackage, mkShell, fastlane, cocoapods,
-  xcodeWrapper, mkFilter, fetchurl, flock, nodejs, bash, zlib, procps,
-  status-go, projectNodePackage }:
+{ callPackage, lib, stdenv, mkShell, mergeSh, mkFilter, 
+  xcodeWrapper, projectNodePackage, status-go,
+  flock, procps, watchman, bundler, fastlane }:
 
 let
-  inherit (stdenv.lib) catAttrs concatStrings unique;
+  inherit (lib) catAttrs unique;
 
-  createMobileFilesSymlinks = root: ''
-    # Set up symlinks to mobile enviroment in project root 
-    ln -sf ${root}/mobile/js_files/package.json ${root}/package.json
-    ln -sf ${root}/mobile/js_files/metro.config.js ${root}/metro.config.js
-    ln -sf ${root}/mobile/js_files/yarn.lock ${root}/yarn.lock
-  '';
+  pod = callPackage ./pod-shell.nix { };
+  status-go-shell = callPackage ./status-go-shell.nix { inherit status-go; };
+
+  selectedSources = [ status-go fastlane ];
 
   src =
     let path = ./../../..;
@@ -27,32 +25,33 @@ let
         };
     };
 
-  selectedSources = [ fastlane status-go ];
-
   buildInputs = unique ([
-    cocoapods
-    fastlane.drv
-    xcodeWrapper
+    xcodeWrapper watchman bundler procps
     flock # used in reset-node_modules.sh
-    procps
   ] ++ catAttrs "buildInputs" selectedSources);
 
   shellHook = ''
-    ${status-go.shellHook}
-    ${fastlane.shellHook}
+    pushd "$STATUS_REACT_HOME" > /dev/null
+    {
+      # Set up symlinks to mobile enviroment in project root 
+      ln -sf ./mobile/js_files/metro.config.js ./metro.config.js
+      ln -sf ./mobile/js_files/package.json ./package.json
+      ln -sf ./mobile/js_files/yarn.lock ./yarn.lock
 
-    ${createMobileFilesSymlinks "$STATUS_REACT_HOME"}
-
-    $STATUS_REACT_HOME/nix/mobile/reset-node_modules.sh "${projectNodePackage}" && \
-    $STATUS_REACT_HOME/nix/mobile/ios/install-pods-and-status-go.sh || \
-    exit
+      # check if node modules changed and if so install them
+      ./nix/mobile/reset-node_modules.sh "${projectNodePackage}"
+    }
+    popd > /dev/null
   '';
 
-in {
-  inherit xcodeWrapper shellHook buildInputs;
-
-  # TARGETS
-  shell = mkShell {
+  localShell = mkShell {
     inherit buildInputs shellHook;
   };
+
+in {
+  inherit shellHook buildInputs pod;
+
+  shell = mergeSh localShell [
+    fastlane.shell status-go-shell pod.shell
+  ];
 }

@@ -14,7 +14,7 @@ mkShell {
   ];
   shellHook = ''
     ${androidEnvShellHook}
-    ${status-go.shellHook}
+    ${status-go.shell.shellHook}
     $STATUS_REACT_HOME/nix/mobile/reset-node_modules.sh "${projectNodePackage}"
   '';
 }

@@ -25,7 +25,7 @@ pipeline {
     LANG     = "en_US.UTF-8"
     LC_ALL   = "en_US.UTF-8"
     LANGUAGE = "en_US.UTF-8"
-    TARGET_OS = 'macos'
+    TARGET   = 'macos'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     /* See nix/README.md */
     NIX_IGNORE_SYMLINK_STORE = 1
@@ -56,12 +56,12 @@ pipeline {
         stage('Checks') { stages {
           stage('Lint') {
             steps {
-              script { cmn.nix.shell('lein cljfmt check', attr: 'targets.leiningen.shell') }
+              script { cmn.nix.shell('lein cljfmt check', attr: 'shells.lein') }
             }
           }
           stage('Tests') {
             steps {
-              script { cmn.nix.shell('lein test-cljs', attr: 'targets.leiningen.shell') }
+              script { cmn.nix.shell('lein test-cljs', attr: 'shells.lein') }
             }
           }
         } }

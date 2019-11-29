@@ -32,16 +32,20 @@ pipeline {
     }
     stage('Setup') {
       steps { script {
-        sh 'scripts/setup'
         nix.shell('nix-env -i openssh', pure: false)
+        /* some build targets don't build on MacOS */
+        uname = sh(script: 'uname', returnStdout: true)
       } }
     }
     stage('Build status-go') {
       steps { script {
-        ['android', 'desktop', 'ios'].each { os ->
+        def platforms = ['android', 'desktop', 'ios']
+        if (uname != "Darwin") {
+          platforms.removeAll { it == "ios" }
+        }
+        platforms.each { os ->
           nix.build(
             attr: "targets.status-go.${os}.buildInputs",
-            args: ['target-os': 'all'],
             link: false
           )
         }
@@ -52,8 +56,7 @@ pipeline {
         /* build/fetch things required to produce a js-bundle for android
          * (e.g. maven and node repos) */
         nix.build(
-          attr: 'targets.mobile.jsbundle',
-          args: ['target-os': 'android'],
+          attr: 'targets.mobile.android.jsbundle',
           pure: false,
           link: false
         )
@@ -64,7 +67,6 @@ pipeline {
         /* build/fetch things required to build jsbundle and android */
         nix.build(
           attr: 'targets.mobile.android.buildInputs',
-          args: ['target-os': 'android'],
           pure: false,
           link: false
         )
@@ -72,10 +74,9 @@ pipeline {
     }
     stage('Build nix shell deps') {
       steps { script {
-        /* build/fetch things required to instantiate shell.nix for TARGET_OS=all */
+        /* build/fetch things required to instantiate shell.nix for TARGET=all */
         nix.build(
-          attr: 'shell',
-          args: ['target-os': 'all'],
+          attr: 'shells.default.buildInputs',
           link: false
         )
       } }
@@ -97,7 +98,7 @@ pipeline {
   post {
     always { script {
       nix.shell('nix-store --optimize', pure: false)
-      nix.shell('nix/clean.sh', pure: false)
+      nix.shell('nix/scripts/clean.sh', pure: false)
     } }
   }
 }

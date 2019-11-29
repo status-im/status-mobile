@@ -29,7 +29,7 @@ pipeline {
     LANG     = "en_US.UTF-8"
     LC_ALL   = "en_US.UTF-8"
     LANGUAGE = "en_US.UTF-8"
-    TARGET_OS = 'windows'
+    TARGET   = 'windows'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     VERBOSE_LEVEL = '3'
     /* Conan settings */
@@ -61,12 +61,12 @@ pipeline {
         stage('Checks') { stages {
           stage('Lint') {
             steps {
-              script { cmn.nix.shell('lein cljfmt check', attr: 'targets.leiningen.shell') }
+              script { cmn.nix.shell('lein cljfmt check', attr: 'shells.lein') }
             }
           }
           stage('Tests') {
             steps {
-              script { cmn.nix.shell('lein test-cljs', attr: 'targets.leiningen.shell') }
+              script { cmn.nix.shell('lein test-cljs', attr: 'shells.lein') }
             }
           }
         } }

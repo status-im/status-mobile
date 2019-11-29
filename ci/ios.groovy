@@ -17,9 +17,9 @@ def bundle() {
     default:            target = 'nightly';
   }
   /* configure build metadata */
-  nix.shell(plutil('CFBundleShortVersionString', utils.getVersion()), attr: 'targets.mobile.ios.shell')
-  nix.shell(plutil('CFBundleVersion', utils.genBuildNumber()), attr: 'targets.mobile.ios.shell')
-  nix.shell(plutil('CFBundleBuildUrl', currentBuild.absoluteUrl), attr: 'targets.mobile.ios.shell')
+  nix.shell(plutil('CFBundleShortVersionString', utils.getVersion()), attr: 'shells.ios')
+  nix.shell(plutil('CFBundleVersion', utils.genBuildNumber()), attr: 'shells.ios')
+  nix.shell(plutil('CFBundleBuildUrl', currentBuild.absoluteUrl), attr: 'shells.ios')
   /* the dir might not exist */
   sh 'mkdir -p status-e2e'
   /* build the actual app */
@@ -38,7 +38,8 @@ def bundle() {
         'FASTLANE_DISABLE_COLORS',
         'FASTLANE_PASSWORD', 'KEYCHAIN_PASSWORD',
         'MATCH_PASSWORD', 'FASTLANE_APPLE_ID',
-      ]
+      ],
+      attr: 'shells.ios'
     )
   }
   /* rename built file for uploads and archivization */
@@ -64,8 +65,8 @@ def uploadToDiawi() {
   ]) {
     nix.shell(
       'bundle exec --gemfile=fastlane/Gemfile fastlane ios upload_diawi',
-      attr: 'targets.mobile.fastlane.shell',
-      keep: ['FASTLANE_DISABLE_COLORS', 'DIAWI_TOKEN']
+      keep: ['FASTLANE_DISABLE_COLORS', 'DIAWI_TOKEN'],
+      attr: 'shells.fastlane'
     )
   }
   diawiUrl = readFile "${env.WORKSPACE}/fastlane/diawi.out"
@@ -90,8 +91,8 @@ def uploadToSauceLabs() {
   ]) {
     nix.shell(
       'bundle exec --gemfile=fastlane/Gemfile fastlane ios saucelabs',
-      attr: 'targets.mobile.fastlane.shell',
-      keep: ['FASTLANE_DISABLE_COLORS', 'SAUCE_ACCESS_KEY', 'SAUCE_USERNAME']
+      keep: ['FASTLANE_DISABLE_COLORS', 'SAUCE_ACCESS_KEY', 'SAUCE_USERNAME'],
+      attr: 'shells.fastlane'
     )
   }
   return env.SAUCE_LABS_NAME

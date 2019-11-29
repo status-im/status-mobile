@@ -98,4 +98,4 @@ System's local adb and Nix's adb differ. As adb include of server/client process
 ## Solution
 Always use respective `make` commands, e.g. `make android-ports`, `make android-devices`, etc.
 
-Alternatively, run adb commands only from `TARGET_OS=android make shell` shell. Don't forget the `TARGET_OS=android` env var setting - otherwise adb will still be selected from the system's default location. You can double-check this by running `which adb`.
+Alternatively, run adb commands only from `make shell TARGET=android` shell. Don't forget the `TARGET=android` env var setting - otherwise `adb` will still be selected from the system's default location. You can double-check this by running `which adb`.

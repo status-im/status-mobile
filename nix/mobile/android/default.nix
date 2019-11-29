@@ -1,49 +1,64 @@
-{ config, stdenv, stdenvNoCC, target-os ? "android", callPackage, mkShell,
-  mkFilter, androidenv, fetchurl, flock, openjdk, nodejs, bash, maven, zlib,
-  status-go, localMavenRepoBuilder, projectNodePackage, jsbundle }:
+{ config, lib, callPackage, mkShell, mergeSh, androidenv, flock, openjdk,
+  status-go, localMavenRepoBuilder, projectNodePackage }:
 
 let
-  platform = callPackage ../../platform.nix { inherit target-os; };
-
-  androidEnv = callPackage ./android-env.nix { inherit target-os openjdk; };
   gradle = callPackage ./gradle.nix { };
+  androidEnv = callPackage ./android-env.nix { };
+  leinProjectDeps = import ../../lein/lein-project-deps.nix { };
+
+  # Import a jsbundle compiled out of clojure codebase
+  jsbundle = callPackage ./jsbundle/default.nix {
+    inherit leinProjectDeps localMavenRepoBuilder projectNodePackage;
+  };
 
   # Import a patched version of watchman (important for sandboxed builds on macOS)
   watchmanFactory = callPackage ./watchman.nix { };
 
   # Import a local patched version of node_modules, together with a local version of the Maven repo
-  mavenAndNpmDeps = callPackage ./maven-and-npm-deps { inherit stdenv stdenvNoCC gradle bash nodejs zlib localMavenRepoBuilder mkFilter projectNodePackage; };
-
-  # TARGETS
-  release = callPackage ./targets/release-android.nix { inherit target-os config gradle mavenAndNpmDeps mkFilter nodejs jsbundle status-go zlib watchmanFactory; androidEnvShellHook = androidEnv.shellHook; };
-  generate-maven-and-npm-deps-shell = callPackage ./maven-and-npm-deps/maven/shell.nix { inherit mkShell gradle maven nodejs projectNodePackage status-go; androidEnvShellHook = androidEnv.shellHook; };
-  adb-shell = mkShell {
-    buildInputs = [ androidEnv.licensedAndroidEnv ];
-    inherit (androidEnv) shellHook;
+  mavenAndNpmDeps = callPackage ./maven-and-npm-deps {
+    inherit gradle localMavenRepoBuilder projectNodePackage;
   };
 
+  # TARGETS
+  release = callPackage ./targets/release-android.nix {
+    inherit config gradle mavenAndNpmDeps jsbundle status-go watchmanFactory;
+    androidEnvShellHook = androidEnv.shell.shellHook;
+  };
+
+  generate-maven-and-npm-deps-shell = callPackage ./maven-and-npm-deps/maven/shell.nix {
+    inherit gradle projectNodePackage status-go;
+    androidEnvShellHook = androidEnv.shell.shellHook;
+  };
+
+  buildInputs = [
+    mavenAndNpmDeps.drv openjdk gradle
+    flock # used in reset-node_modules.sh
+  ];
+
 in {
+  # TARGETS
+  inherit release jsbundle generate-maven-and-npm-deps-shell buildInputs;
   inherit (androidEnv) androidComposition;
 
-  buildInputs = assert platform.targetAndroid; [
-    mavenAndNpmDeps.deriv
-    flock # used in reset-node_modules.sh
-    openjdk
-    gradle
-  ];
-  shellHook =
-    let
-      inherit (stdenv.lib) catAttrs concatStrings;
-    in ''
-    ${concatStrings (catAttrs "shellHook" [ mavenAndNpmDeps androidEnv ])}
+  shell = mergeSh
+    (mkShell {
+      inherit buildInputs;
+      inputsFrom = [ release gradle ];
+      shellHook = ''
+        pushd "$STATUS_REACT_HOME" > /dev/null
+        {
+          ./scripts/generate-keystore.sh
+          # check if node modules changed and if so install them
+          ./nix/mobile/reset-node_modules.sh "${mavenAndNpmDeps.drv}/project"
+        }
+      '';
+    })
+    (lib.catAttrs "shell" [ status-go mavenAndNpmDeps androidEnv ]);
 
-    $STATUS_REACT_HOME/scripts/generate-keystore.sh
-    $STATUS_REACT_HOME/nix/mobile/reset-node_modules.sh "${mavenAndNpmDeps.deriv}/project" || exit
-  '';
-
-  # TARGETS
-  inherit release generate-maven-and-npm-deps-shell;
   adb = {
-    shell = adb-shell;
+    shell = mkShell {
+      buildInputs = [ androidEnv.drv ];
+      inherit (androidEnv.shell) shellHook;
+    };
   };
 }

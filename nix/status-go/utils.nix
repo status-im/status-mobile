@@ -1,4 +1,4 @@
-{ xcodeWrapper }:
+{ xcodeWrapper, lib }:
 
 let
   RED = "\\033[0;31m";
@@ -39,7 +39,19 @@ let
     fi
   '';
 
+  # paths don't like slashes in them
+  dropSlashes = builtins.replaceStrings [ "/" ] [ "_" ];
+  # if version doesn't match this it's probably a commit
+  versionRegex = "^v?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+(-[[:alnum:].]+)?$";
+  sanitizeVersion = version:
+    if (builtins.match versionRegex version) != null
+    # Geth forces a 'v' prefix for all versions
+    then lib.removePrefix "v" (dropSlashes version) 
+    # reduce metrics cardinality in Prometheus
+    else "develop"; 
+
 in {
-  inherit enforceXCodeAvailable
+  inherit sanitizeVersion
+          enforceXCodeAvailable
           enforceiPhoneSDKAvailable;
 }

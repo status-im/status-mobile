@@ -1,4 +1,4 @@
-{ stdenv, target-os, callPackage, utils, fetchgit,
+{ stdenv, callPackage, utils, fetchgit,
   buildGoPackage, glibc, ncurses5, zlib, makeWrapper, patchelf,
   platform-tools, xcodeWrapper
 }:
@@ -6,9 +6,6 @@
 let
   inherit (stdenv) isDarwin;
   inherit (stdenv.lib) optional optionalString strings;
-
-  platform = callPackage ../../platform.nix { inherit target-os; };
-
 in buildGoPackage rec {
   pname = "gomobile";
   version = "20190719-${strings.substring 0 7 rev}";
@@ -27,7 +24,7 @@ in buildGoPackage rec {
   patches = [ ./resolve-nix-android-sdk.patch ];
 
   postPatch = ''
-    ${optionalString platform.targetAndroid ''substituteInPlace cmd/gomobile/install.go --replace "\`adb\`" "\`${platform-tools}/bin/adb\`"''}
+    substituteInPlace cmd/gomobile/install.go --replace "\`adb\`" "\`${platform-tools}/bin/adb\`"
     
     # Prevent a non-deterministic temporary directory from polluting the resulting object files
     substituteInPlace cmd/gomobile/env.go \
