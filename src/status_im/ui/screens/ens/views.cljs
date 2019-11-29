@@ -118,7 +118,7 @@
 
     (:available :connected :connected-with-different-key :owned)
     [react/touchable-highlight
-     {:on-press #(re-frame/dispatch [::ens/input-icon-pressed])}
+     {:on-press #(debounce/dispatch-and-chill [::ens/input-icon-pressed] 3000)}
      [icon-wrapper colors/blue
       [vector-icons/icon :main-icons/arrow-right {:color colors/white}]]]
 
@@ -199,7 +199,7 @@
         {:ref                    #(reset! input-ref %)
          :on-change-text         #(do
                                     (re-frame/dispatch [:set-in [:ens/registration :state] :searching])
-                                    (debounce/debounce [::ens/set-username-candidate %] 600))
+                                    (debounce/debounce-and-dispatch [::ens/set-username-candidate %] 600))
          :on-submit-editing      #(re-frame/dispatch [::ens/input-submitted])
          :auto-capitalize        :none
          :auto-complete-type     "off"

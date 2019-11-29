@@ -143,7 +143,9 @@
         :render-error                          web-view-error
         :on-navigation-state-change            #(do
                                                   (re-frame/dispatch [:set-in [:ens/registration :state] :searching])
-                                                  (debounce/debounce [:browser/navigation-state-changed % error?] 500))
+                                                  (debounce/debounce-and-dispatch
+                                                   [:browser/navigation-state-changed % error?]
+                                                   500))
         :on-bridge-message                     #(re-frame/dispatch [:browser/bridge-message-received %])
         :on-load                               #(re-frame/dispatch [:browser/loading-started])
         :on-error                              #(re-frame/dispatch [:browser/error-occured])

@@ -18,7 +18,8 @@
             [status-im.utils.money :as money]
             [status-im.signing.core :as signing]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [taoensso.timbre :as log])
+            [taoensso.timbre :as log]
+            [status-im.utils.random :as random])
   (:refer-clojure :exclude [name]))
 
 (defn fullname [custom-domain? username]
@@ -105,26 +106,27 @@
                                         {:routeName :ens-confirmation}]}))
 
 (defn- on-resolve-owner
-  [registry custom-domain? username address public-key response]
-  (cond
+  [registry custom-domain? username address public-key response resolve-last-id* resolve-last-id]
+  (when (= @resolve-last-id* resolve-last-id)
+    (cond
 
-    ;; No address for a stateofus subdomain: it can be registered
-    (and (= response ens/default-address) (not custom-domain?))
-    (re-frame/dispatch [::name-resolved username :available])
+      ;; No address for a stateofus subdomain: it can be registered
+      (and (= response ens/default-address) (not custom-domain?))
+      (re-frame/dispatch [::name-resolved username :available])
 
-    ;; if we get an address back, we try to get the public key associated
-    ;; with the username as well
-    (= (eip55/address->checksum address)
-       (eip55/address->checksum response))
-    (resolver/pubkey registry (fullname custom-domain? username)
-                     #(re-frame/dispatch [::name-resolved username
-                                          (cond
-                                            (not public-key) :owned
-                                            (= % public-key) :connected
-                                            :else :connected-with-different-key)]))
+      ;; if we get an address back, we try to get the public key associated
+      ;; with the username as well
+      (= (eip55/address->checksum address)
+         (eip55/address->checksum response))
+      (resolver/pubkey registry (fullname custom-domain? username)
+                       #(re-frame/dispatch [::name-resolved username
+                                            (cond
+                                              (not public-key) :owned
+                                              (= % public-key) :connected
+                                              :else :connected-with-different-key)]))
 
-    :else
-    (re-frame/dispatch [::name-resolved username :taken])))
+      :else
+      (re-frame/dispatch [::name-resolved username :taken]))))
 
 (defn registration-cost
   [chain-id]
@@ -174,12 +176,16 @@
       :searching)
     :else :invalid))
 
+;;NOTE we want to handle only last resolve
+(def resolve-last-id (atom nil))
+
 (fx/defn set-username-candidate
   {:events [::set-username-candidate]}
   [{:keys [db]} username]
   (let [{:keys [custom-domain?]} (:ens/registration db)
         usernames (into #{} (get-in db [:multiaccount :usernames]))
         state (state custom-domain? username usernames)]
+    (reset! resolve-last-id (random/id))
     (merge
      {:db (update db :ens/registration assoc
                   :username username
@@ -191,7 +197,9 @@
              registry (get ens/ens-registries (ethereum/chain-keyword db))]
          {::resolve-owner [registry
                            (fullname custom-domain? username)
-                           #(on-resolve-owner registry custom-domain? username address public-key %)]})))))
+                           #(on-resolve-owner
+                             registry custom-domain? username address public-key %
+                             resolve-last-id @resolve-last-id)]})))))
 
 (fx/defn return-to-ens-main-screen
   {:events [::got-it-pressed ::cancel-pressed]}
