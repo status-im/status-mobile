@@ -22,7 +22,8 @@
             [status-im.constants :as constants]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
-            [status-im.multiaccounts.recover.core :as recover]))
+            [status-im.multiaccounts.recover.core :as recover]
+            [status-im.ethereum.eip55 :as eip55]))
 
 (def default-pin "000000")
 
@@ -1747,10 +1748,12 @@
                        (assoc-in [:hardwallet :setup-step] nil)
                        (assoc :intro-wizard nil))}
               (multiaccounts.create/on-multiaccount-created
-               {:derived              {constants/path-whisper-keyword        {:publicKey whisper-public-key
-                                                                              :address   whisper-address}
-                                       constants/path-default-wallet-keyword {:publicKey wallet-public-key
-                                                                              :address   wallet-address}}
+               {:derived              {constants/path-whisper-keyword
+                                       {:publicKey whisper-public-key
+                                        :address   (eip55/address->checksum whisper-address)}
+                                       constants/path-default-wallet-keyword
+                                       {:publicKey wallet-public-key
+                                        :address   (eip55/address->checksum wallet-address)}}
                 :mnemonic             ""
                 :address              address
                 :publicKey            public-key
