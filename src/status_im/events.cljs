@@ -1374,8 +1374,8 @@
 
 (handlers/register-handler-fx
  :stickers/load-sticker-pack-success
- (fn [cofx [_ edn-string id price open?]]
-   (stickers/load-sticker-pack-success cofx edn-string id price open?)))
+ (fn [cofx [_ edn-string id price]]
+   (stickers/load-sticker-pack-success cofx edn-string id price)))
 
 (handlers/register-handler-fx
  :stickers/install-pack
@@ -1389,8 +1389,8 @@
 
 (handlers/register-handler-fx
  :stickers/load-pack
- (fn [cofx [_ url id price open?]]
-   (stickers/load-pack cofx url id price open?)))
+ (fn [cofx [_ url id price]]
+   (stickers/load-pack cofx url id price)))
 
 (handlers/register-handler-fx
  :stickers/select-pack

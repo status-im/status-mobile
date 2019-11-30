@@ -43,8 +43,8 @@
                  (zero? price) (i18n/label :t/free)
                  :else (str (money/wei-> :eth price)))])]])))
 
-(defn pack-badge [{:keys [name author price thumbnail preview id installed owned pending] :as pack}]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :stickers-pack pack])}
+(defn pack-badge [{:keys [name author price thumbnail preview id installed owned pending]}]
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :stickers-pack {:id id}])}
    [react/view {:margin-bottom 27}
     [react/image {:style {:height 200 :border-radius 20} :source {:uri (contenthash/url preview)}}]
     [react/view {:height 64 :align-items :center :flex-direction :row}
@@ -62,34 +62,43 @@
     [react/view styles/screen
      [react/keyboard-avoiding-view components.styles/flex
       [toolbar/simple-toolbar (i18n/label :t/sticker-market)]
-      [react/scroll-view {:keyboard-should-persist-taps :handled :style {:padding 16}}
-       [react/view
-        (for [pack packs]
-          ^{:key pack}
-          [pack-badge pack])]]]]))
+      (if (seq packs)
+        [react/scroll-view {:keyboard-should-persist-taps :handled :style {:padding 16}}
+         [react/view
+          (for [pack packs]
+            ^{:key pack}
+            [pack-badge pack])]]
+        [react/view {:flex 1 :align-items :center :justify-content :center}
+         [react/activity-indicator {:animating true}]])]]))
 
 (def sticker-icon-size 60)
 
 (defview pack-main [modal?]
-  (letsubs [{:keys [id name author price thumbnail stickers installed owned pending]} [:stickers/get-current-pack]]
-    [react/view styles/screen
-     [react/keyboard-avoiding-view components.styles/flex
-      [toolbar/simple-toolbar nil modal?]
-      [react/view {:height 74 :align-items :center :flex-direction :row :padding-horizontal 16}
-       [thumbnail-icon (contenthash/url thumbnail) 64]
-       [react/view {:padding-horizontal 16 :flex 1}
-        [react/text {:style {:typography :header}} name]
-        [react/text {:style {:color colors/gray :margin-top 6}} author]]
-       (if installed
-         [installed-icon]
-         [price-badge price id owned pending])]
-      [react/view {:style {:padding-top 8 :flex 1}}
-       [react/scroll-view {:keyboard-should-persist-taps :handled :style {:flex 1}}
-        [react/view {:flex-direction :row :flex-wrap :wrap}
-         (for [{:keys [hash]} stickers]
-           ^{:key hash}
-           [react/image {:style (styles/sticker-image sticker-icon-size)
-                         :source {:uri (contenthash/url hash)}}])]]]]]))
+  (letsubs [{:keys [id name author price thumbnail
+                    stickers installed owned pending]
+             :as pack}
+            [:stickers/get-current-pack]]
+    [react/keyboard-avoiding-view components.styles/flex
+     [toolbar/simple-toolbar nil modal?]
+     (if pack
+       [react/view {:flex 1}
+        [react/view {:height 74 :align-items :center :flex-direction :row :padding-horizontal 16}
+         [thumbnail-icon (contenthash/url thumbnail) 64]
+         [react/view {:padding-horizontal 16 :flex 1}
+          [react/text {:style {:typography :header}} name]
+          [react/text {:style {:color colors/gray :margin-top 6}} author]]
+         (if installed
+           [installed-icon]
+           [price-badge price id owned pending])]
+        [react/view {:style {:padding-top 8 :flex 1}}
+         [react/scroll-view {:keyboard-should-persist-taps :handled :style {:flex 1}}
+          [react/view {:flex-direction :row :flex-wrap :wrap}
+           (for [{:keys [hash]} stickers]
+             ^{:key hash}
+             [react/image {:style (styles/sticker-image sticker-icon-size)
+                           :source {:uri (contenthash/url hash)}}])]]]]
+       [react/view {:flex 1 :align-items :center :justify-content :center}
+        [react/activity-indicator {:animating true}]])]))
 
 (defview pack []
   [pack-main false])

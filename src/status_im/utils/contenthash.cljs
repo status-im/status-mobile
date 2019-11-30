@@ -58,7 +58,7 @@
 (defn url [hex]
   (let [{:keys [namespace hash]} (decode (ethereum/normalized-hex hex))]
     (case namespace
-      :ipfs (str "https://ipfs.infura.io/ipfs/" hash)
+      :ipfs (str "https://cloudflare-ipfs.com/ipfs/" hash)
       "")))
 
 (fx/defn cat

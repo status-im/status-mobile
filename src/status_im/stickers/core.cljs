@@ -15,10 +15,10 @@
             [clojure.string :as string]))
 
 (defn pack-data-callback
-  [id open?]
+  [id]
   (fn [[category owner mintable timestamp price contenthash]]
     (when-let [url (contenthash/url contenthash)]
-      (re-frame/dispatch [:stickers/load-pack url id price open?]))))
+      (re-frame/dispatch [:stickers/load-pack url id price]))))
 
 (re-frame/reg-fx
  :stickers/set-pending-timout-fx
@@ -27,7 +27,7 @@
                       10000)))
 
 (defn eth-call-pack-data
-  [contract id open?]
+  [contract id]
   (json-rpc/eth-call
    {:contract contract
     ;; Returns vector of pack data parameters by pack id:
@@ -35,12 +35,12 @@
     :method "getPackData(uint256)"
     :params [id]
     :outputs ["bytes4[]" "address" "bool" "uint256" "uint256" "bytes"]
-    :on-success (pack-data-callback id open?)}))
+    :on-success (pack-data-callback id)}))
 
 (re-frame/reg-fx
  :stickers/pack-data-fx
  (fn [[contract id]]
-   (eth-call-pack-data contract id true)))
+   (eth-call-pack-data contract id)))
 
 (re-frame/reg-fx
  :stickers/load-packs-fx
@@ -53,7 +53,7 @@
      :on-success
      (fn [[count]]
        (dotimes [id count]
-         (eth-call-pack-data contract id false)))})))
+         (eth-call-pack-data contract id)))})))
 
 (re-frame/reg-fx
  :stickers/owned-packs-fx
@@ -108,16 +108,14 @@
   (contains? sticker :hash))
 
 (fx/defn load-sticker-pack-success
-  [{:keys [db] :as cofx} edn-string id price open?]
+  [{:keys [db] :as cofx} edn-string id price]
   (let [{:keys [stickers] :as pack} (assoc (get (edn/read-string edn-string) 'meta)
                                            :id id :price price)]
     (fx/merge cofx
               {:db (cond-> db
                      (and (seq stickers)
                           (every? valid-sticker? stickers))
-                     (assoc-in [:stickers/packs id] pack))}
-              #(when open?
-                 (navigation/navigate-to-cofx % :stickers-pack-modal pack)))))
+                     (assoc-in [:stickers/packs id] pack))})))
 
 (fx/defn open-sticker-pack
   [{{:stickers/keys [packs packs-installed] :networks/keys [current-network] :as db} :db :as cofx} id]
@@ -125,17 +123,17 @@
     (let [pack    (or (get packs-installed id)
                       (get packs id))
           contract-address (contracts/get-address db :status/stickers)]
-      (if pack
-        (navigation/navigate-to-cofx cofx :stickers-pack-modal pack)
-        (when contract-address
-          {:stickers/pack-data-fx [contract-address id]})))))
+      (fx/merge cofx
+                (navigation/navigate-to-cofx :stickers-pack-modal {:id id})
+                #(when (and contract-address (not pack))
+                   {:stickers/pack-data-fx [contract-address id]})))))
 
 (fx/defn load-pack
-  [cofx url id price open?]
+  [cofx url id price]
   {:http-get {:url url
               :success-event-creator
               (fn [o]
-                [:stickers/load-sticker-pack-success o id price open?])}})
+                [:stickers/load-sticker-pack-success o id price])}})
 
 (fx/defn load-packs
   [{:keys [db]}]
