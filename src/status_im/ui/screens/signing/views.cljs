@@ -165,6 +165,7 @@
        [signing-phrase-view phrase]
        [text-input/text-input-with-label
         {:secure-text-entry   true
+         :text-content-type   :none
          :placeholder         (i18n/label :t/enter-password)
          :on-change-text      #(re-frame/dispatch [:signing.ui/password-is-changed (security/mask-data %)])
          :accessibility-label :enter-password-input
