@@ -51,6 +51,7 @@
 (def text-input-class (get-web-class "TextInput"))
 (def image-class (get-web-class "Image"))
 (def picker-obj nil)
+(def animated-flat-list-class #())
 (defn picker-class [] )
 (defn picker-item-class [] )
 
@@ -98,7 +99,7 @@
 (defn prepare-text-props [props]
   (-> props
       (update :style typography/get-style)
-      (update :style assoc :font-family "Inter")
+      (update-in [:style :font-family] #(or % "Inter"))
       (assoc :max-font-size-multiplier max-font-size-multiplier)))
 
 (defn prepare-nested-text-props [props]
