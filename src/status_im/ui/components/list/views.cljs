@@ -98,12 +98,15 @@
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn list-item-with-checkbox
   [{:keys [on-value-change style checked? on-long-press] :as props} item]
-  [react/touchable-highlight (merge {:on-press #(on-value-change (not checked?))}
-                                    (when on-long-press
-                                      {:on-long-press on-long-press}))
-   (conj item
-         [react/view {:style (merge style styles/item-checkbox)}
-          [checkbox/checkbox (dissoc props :on-value-change)]])])
+  [react/touchable-without-feedback
+   (merge {:on-press #(on-value-change (not checked?))}
+          (when on-long-press
+            {:on-long-press on-long-press}))
+   [react/view
+    {:style {:background-color :green
+             :width            100
+             :height           100}}
+    [checkbox/checkbox (dissoc props :on-value-change)]]])
 
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn list-item-with-radio-button
