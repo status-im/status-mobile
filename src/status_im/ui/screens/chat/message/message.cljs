@@ -139,9 +139,18 @@
                                   outgoing] :as message}
 
                           tree]
-  (conj (reduce (fn [acc e] (render-block message acc e)) [react/view {}] tree)
-        [react/text {:style (style/message-timestamp-placeholder outgoing)}
-         (str "  " timestamp-str)]))
+  (let [elements (reduce (fn [acc e] (render-block message acc e)) [react/view {}] tree)
+        timestamp [react/text {:style (style/message-timestamp-placeholder outgoing)}
+                   (str "  " timestamp-str)]
+        last-element (peek elements)]
+      ;; Using `nth` here as slightly faster than `first`, roughly 30%
+      ;; It's worth considering pure js structures for this code path as
+      ;; it's perfomance critical
+    (if (= react/text-class (nth last-element 0))
+      ;; Append timestamp to last text
+      (conj (pop elements) (conj last-element timestamp))
+      ;; Append timestamp to new block
+      (conj elements timestamp))))
 
 (defn text-message
   [{:keys [chat-id message-id content
