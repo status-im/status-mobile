@@ -26,6 +26,7 @@ pipeline {
     LC_ALL   = "en_US.UTF-8"
     LANGUAGE = "en_US.UTF-8"
     TARGET_OS = 'ios'
+    NIX_IGNORE_SYMLINK_STORE = 1
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     FASTLANE_DISABLE_COLORS = 1
     REALM_DISABLE_ANALYTICS = 1
@@ -63,7 +64,9 @@ pipeline {
     }
     stage('Build') {
       steps {
-        script { cmn.nix.shell('lein prod-build-ios') }
+        script {
+          cmn.nix.shell('lein prod-build-ios')
+        }
       }
     }
     stage('Bundle') {

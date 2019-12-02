@@ -30,8 +30,10 @@ in mkShell' {
     ps # used in scripts/start-react-native.sh
     unzip
     wget
-  ] ++
-  (if useFastlanePkg then [ fastlane' ] else lib.optionals platform.targetMobile [ bundler ruby ]); # bundler/ruby used for fastlane on macOS
+    fastlane'
+    bundler
+    ruby
+  ];
   inputsFrom = [ projectDeps ];
   TARGET_OS = target-os;
   shellHook = ''
@@ -46,6 +48,15 @@ in mkShell' {
       $STATUS_REACT_HOME/scripts/setup
       touch $STATUS_REACT_HOME/.ran-setup
     fi
+
+    # HACK: see https://github.com/facebook/react-native/pull/25146/
+    HACK_FILE='node_modules/react-native/React/Base/RCTModuleMethod.mm'
+    set -x
+    if [[ -f $HACK_FILE ]] && ! grep 'RCTReadString(input, "__attribute__((__unused__))' $HACK_FILE; then
+      sed -i.bkp '/return RCTReadString/a RCTReadString(input, "__attribute__((__unused__))") ||' $HACK_FILE
+    fi
+    set +x
+
     set +e
   '';
 }

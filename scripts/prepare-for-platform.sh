@@ -90,7 +90,7 @@ case $1 in
           git apply $GIT_ROOT/ios/patches/ios-legacy-build-system.patch || \
           echo "Patch already applied"
         # CocoaPods are trash and can't handle other pod instances running at the same time
-        $GIT_ROOT/scripts/wait-for.sh pod 240
+        $GIT_ROOT/scripts/wait-for.sh 240 'pod install'
         pushd $GIT_ROOT/ios && pod install; popd
       fi
     fi
