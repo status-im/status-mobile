@@ -26,6 +26,10 @@ pipeline {
       name: 'PR_ID',
       description: 'ID of the Pull Request triggering this build.',
     )
+    string(
+      name: 'TR_CASE_IDS',
+      description: 'IDs of the TestRail case, separated by a comma. (Optional)',
+    )
   }
 
   options {
@@ -33,6 +37,12 @@ pipeline {
   }
 
   stages {
+    stage('Checks') {
+      steps {
+        if (params.APK_NAME == null) { error("APK_NAME parameter not set!") }
+        if (params.PR_ID == null) { error("PR_ID parameter not set!") }
+      }
+    }
     stage('Setup') {
       steps { script {
         dir('test/appium') {
@@ -43,6 +53,11 @@ pipeline {
     stage('Test') {
       steps { script {
         currentBuild.displayName = "PR-${params.PR_ID}"
+        /* for managing optional arguments */
+        def extraPytestOpts = ""
+        if (params.TR_CASE_IDS != "") {
+          extraPytestOpts = "--run_testrail_ids='${params.TR_CASE_IDS}'"
+        }
 
         withCredentials([
           string(
@@ -69,7 +84,8 @@ pipeline {
                 --network=${params.NETWORK} \
                 --apk=${params.APK_NAME} \
                 --build=PR-${params.PR_ID} \
-                --pr_number=${params.PR_ID}
+                --pr_number=${params.PR_ID} \
+                ${extraPytestOpts}
             """
           }
         }
