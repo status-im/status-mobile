@@ -1,5 +1,6 @@
 (ns status-im.utils.universal-links.core
   (:require [cljs.spec.alpha :as spec]
+            [clojure.string :as string]
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.model :as multiaccounts.model]
@@ -16,7 +17,8 @@
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as platform]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.wallet.choose-recipient.core :as choose-recipient]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link
@@ -42,6 +44,9 @@
   (some->> url
            (re-matches regex)
            peek))
+
+(defn is-request-url? [url]
+  (string/starts-with? url "ethereum:"))
 
 (defn universal-link? [url]
   (boolean
@@ -81,8 +86,9 @@
       (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key) :profile nil))))
 
 (fx/defn handle-eip681 [cofx url]
-  {:dispatch-n [[:navigate-to :wallet]
-                [:wallet/fill-request-from-url url]]})
+  (fx/merge cofx
+            (choose-recipient/resolve-ens-addresses url)
+            (navigation/navigate-to-cofx  :wallet nil)))
 
 (defn handle-not-found [full-url]
   (log/info "universal-links: no handler for " full-url))
@@ -107,7 +113,7 @@
     (match-url url browse-regex)
     (handle-browse cofx (match-url url browse-regex))
 
-    (some? (eip681/parse-uri url))
+    (is-request-url? url)
     (handle-eip681 cofx url)
 
     :else (handle-not-found url)))
