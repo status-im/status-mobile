@@ -325,10 +325,13 @@
                        :save-password? true)}
        (navigation/navigate-to-cofx :progress nil)
        login)
-      (navigation/navigate-to-cofx
+      (fx/merge
        cofx
-       (if keycard-account? :keycard-login-pin :login)
-       nil))))
+       (when keycard-account?
+         {:db (assoc-in db [:hardwallet :pin :enter-step] :login)})
+       (navigation/navigate-to-cofx
+        (if keycard-account? :keycard-login-pin :login)
+        nil)))))
 
 (fx/defn get-credentials
   [{:keys [db] :as cofx} address]
@@ -372,8 +375,9 @@
     (if bioauth-success
       (get-credentials cofx address)
       (fx/merge cofx
-                {:db (assoc-in db [:multiaccounts/login :save-password?] true)}
+                {:db (assoc-in db [:multiaccounts/login :save-password?] false)}
                 (biometric/show-message bioauth-message bioauth-code)
+                (keychain/save-auth-method address keychain/auth-method-none)
                 (open-login-callback nil)))))
 
 (fx/defn save-password
