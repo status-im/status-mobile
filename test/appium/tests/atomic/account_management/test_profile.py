@@ -41,9 +41,11 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view = sign_in_view.profile_button.click()
         profile_view.sync_settings_button.click()
         profile_view.element_by_text('Mobile data').click()
-        for toggle in profile_view.use_mobile_data, profile_view.ask_me_when_on_mobile_network:
-            if not toggle.attribute_value('checked'):
-                self.errors.append("Toggles in Mobile settings are not enabled")
+        if not profile_view.use_mobile_data.attribute_value('checked'):
+            self.errors.append("Use mobile data option is enabled after 'Continue syncing' selected")
+        if profile_view.ask_me_when_on_mobile_network.attribute_value('checked'):
+            self.errors.append("'Ask me when on mobile network' option not enabled even it was checked when 'Continue"
+                               "syncing' selected!")
 
         sign_in_view.just_fyi("Check that can join public chat and send message")
         chat_name = sign_in_view.get_public_chat_name()
