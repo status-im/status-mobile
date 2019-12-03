@@ -549,7 +549,8 @@
       (toolbar/nav-button
        (actions/back #(re-frame/dispatch [:intro-wizard/navigate-back])))
       nil]
-     [react/view {:style {:flex 1 :justify-content :space-between}}
+     [react/view {:style {:flex            1
+                          :justify-content :space-between}}
       [top-bar {:step :enter-phrase}]
       [enter-phrase wizard-state]
       [bottom-bar (merge {:step :enter-phrase

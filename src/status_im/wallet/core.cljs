@@ -447,3 +447,12 @@
             {:db (assoc-in db [:wallet/prepare-transaction :modal-opened?] true)}
             (bottom-sheet/hide-bottom-sheet)
             (navigation/navigate-to-cofx :contact-code nil)))
+
+(fx/defn show-delete-account-confirmation
+  {:events [:wallet.settings/show-delete-account-confirmation]}
+  [_ account]
+  {:ui/show-confirmation {:title               (i18n/label :t/are-you-sure?)
+                          :confirm-button-text (i18n/label :t/yes)
+                          :cancel-button-text  (i18n/label :t/no)
+                          :on-accept           #(re-frame/dispatch [:wallet.accounts/delete-account account])
+                          :on-cancel           #()}})

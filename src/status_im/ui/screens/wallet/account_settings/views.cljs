@@ -11,7 +11,8 @@
             [clojure.string :as string]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.copyable-text :as copyable-text]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [status-im.ui.components.list-item.views :as list-item]))
 
 (defview colors-popover [selected-color on-press]
   (letsubs [width [:dimensions/window-width]]
@@ -92,34 +93,44 @@
                                      (reset! new-account nil))}])]
      [react/scroll-view {:keyboard-should-persist-taps :handled
                          :style                        {:flex 1}}
-      [react/view {:margin-horizontal 16 :padding-bottom 28 :padding-top 10}
-       [text-input/text-input-with-label
-        {:label          (i18n/label :t/account-name)
-         :label-style    {:color colors/gray}
-         :auto-focus     false
-         :default-value  (:name account)
-         :on-change-text #(swap! new-account assoc :name %)}]
-       [react/text {:style {:margin-top 30 :color colors/gray}} (i18n/label :t/account-color)]
-       [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:show-popover
-                                        {:view  [colors-popover color
-                                                 (fn [new-color]
-                                                   (swap! new-account assoc :color new-color)
-                                                   (re-frame/dispatch [:hide-popover]))]
-                                         :style {:max-height "60%"}}])}
-        [react/view {:height        52 :margin-top 12 :background-color (or (:color @new-account) color)
-                     :border-radius 8
-                     :align-items   :flex-end :justify-content :center :padding-right 12}
-         [icons/icon :main-icons/dropdown {:color colors/white}]]]
-       [property (i18n/label :t/type) (case type :watch "Watch-only" (i18n/label :t/on-status-tree))]
-       [property (i18n/label :t/wallet-address)
-        [copyable-text/copyable-text-view
-         {:copied-text address}
-         [react/text {:style {:margin-top 6 :font-family "monospace"}} address]]]
-       (when-not (= type :watch)
-         [property (i18n/label :t/derivation-path)
-          [copyable-text/copyable-text-view
-           {:copied-text path}
-           [react/text {:style {:margin-top 6 :font-family "monospace"}} path]]])
-       (when-not (= type :watch)
-         [property (i18n/label :t/storage) (i18n/label :t/this-device)])]]]))
+      [react/view {:padding-bottom 28 :padding-top 10}
+       [react/view {:margin-horizontal 16}
+        [text-input/text-input-with-label
+         {:label          (i18n/label :t/account-name)
+          :label-style    {:color colors/gray}
+          :auto-focus     false
+          :default-value  (:name account)
+          :on-change-text #(swap! new-account assoc :name %)}]
+        [react/text {:style {:margin-top 30 :color colors/gray}} (i18n/label :t/account-color)]
+        [react/touchable-highlight
+         {:on-press #(re-frame/dispatch [:show-popover
+                                         {:view  [colors-popover color
+                                                  (fn [new-color]
+                                                    (swap! new-account assoc :color new-color)
+                                                    (re-frame/dispatch [:hide-popover]))]
+                                          :style {:max-height "60%"}}])}
+         [react/view {:height        52 :margin-top 12 :background-color (or (:color @new-account) color)
+                      :border-radius 8
+                      :align-items   :flex-end :justify-content :center :padding-right 12}
+          [icons/icon :main-icons/dropdown {:color colors/white}]]]
+        [property (i18n/label :t/type)
+         (case type
+           :watch (i18n/label :t/watch-only)
+           (i18n/label :t/on-status-tree))]
+        [property (i18n/label :t/wallet-address)
+         [copyable-text/copyable-text-view
+          {:copied-text address}
+          [react/text {:style {:margin-top 6 :font-family "monospace"}} address]]]
+        (when-not (= type :watch)
+          [property (i18n/label :t/derivation-path)
+           [copyable-text/copyable-text-view
+            {:copied-text path}
+            [react/text {:style {:margin-top 6 :font-family "monospace"}} path]]])
+        (when-not (= type :watch)
+          [property (i18n/label :t/storage) (i18n/label :t/this-device)])]
+       (when (= type :watch)
+         [react/view
+          [react/view {:margin-bottom 8 :margin-top 28 :height 1 :background-color colors/gray-lighter}]
+          [list-item/list-item
+           {:theme :action-destructive :title :t/delete-account
+            :on-press #(re-frame/dispatch [:wallet.settings/show-delete-account-confirmation account])}]])]]]))

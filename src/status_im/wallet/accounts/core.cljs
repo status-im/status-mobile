@@ -95,6 +95,16 @@
         new-accounts (replace {account new-account} accounts)]
     (multiaccounts.update/multiaccount-update cofx {:accounts new-accounts} nil)))
 
+(fx/defn delete-account
+  {:events [:wallet.accounts/delete-account]}
+  [{:keys [db] :as cofx} account]
+  (let [{:keys [accounts]} (:multiaccount db)
+        new-accounts (vec (remove #(= account %) accounts))]
+    (println account new-accounts)
+    (fx/merge cofx
+              (multiaccounts.update/multiaccount-update {:accounts new-accounts} nil)
+              (navigation/navigate-to-cofx :wallet nil))))
+
 (fx/defn save-generated-account
   {:events [:wallet.accounts/save-generated-account]}
   [{:keys [db] :as cofx}]

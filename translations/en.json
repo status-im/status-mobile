@@ -1135,5 +1135,7 @@
 	"derivation-path": "Derivation path",
 	"storage": "Storage",
 	"keycard-free-pairing-slots": "Keycard has {{n}} free pairing slots",
-	"public-chat-description": "A public chat is where you get to hang out with others, make friends and talk about subjects of your interest."
+	"public-chat-description": "A public chat is where you get to hang out with others, make friends and talk about subjects of your interest.",
+	"delete-account": "Delete account",
+	"watch-only": "Watch-only"
 }

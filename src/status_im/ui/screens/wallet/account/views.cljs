@@ -64,7 +64,8 @@
                   :border-bottom-right-radius 8 :border-bottom-left-radius 8 :flex-direction :row}
       (if (= type :watch)
         [react/view {:flex 1 :align-items :center :justify-content :center}
-         [react/text {:style {:margin-left 8 :color colors/white}} "Watch-only"]]
+         [react/text {:style {:margin-left 8 :color colors/white}}
+          (i18n/label :t/watch-only)]]
         [button
          (i18n/label :t/wallet-send)
          :main-icons/send
