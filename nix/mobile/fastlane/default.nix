@@ -27,6 +27,7 @@ let
 in {
   # We only include bundler in regular shell if targetting iOS, because that's how the CI builds the whole project
   buildInputs = unique (optionals platform.targetIOS bundlerDeps);
+  drv = fastlane;
   inherit shellHook;
 
   # TARGETS

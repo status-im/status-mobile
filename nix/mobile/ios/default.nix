@@ -1,4 +1,4 @@
-{ config, stdenv, stdenvNoCC, callPackage, mkShell,
+{ config, stdenv, stdenvNoCC, callPackage, mkShell, fastlane, cocoapods,
   xcodeWrapper, mkFilter, fetchurl, flock, nodejs, bash, zlib, procps,
   status-go, projectNodePackage }:
 
@@ -27,23 +27,19 @@ let
         };
     };
 
-  selectedSources = [ status-go ];
-
-  # TARGETS
-  shell = mkShell {
-    buildInputs = [ xcodeWrapper ];
-  };
-
-in {
-  inherit xcodeWrapper;
+  selectedSources = [ fastlane status-go ];
 
   buildInputs = unique ([
+    cocoapods
+    fastlane.drv
     xcodeWrapper
     flock # used in reset-node_modules.sh
     procps
   ] ++ catAttrs "buildInputs" selectedSources);
+
   shellHook = ''
     ${status-go.shellHook}
+    ${fastlane.shellHook}
 
     ${createMobileFilesSymlinks "$STATUS_REACT_HOME"}
 
@@ -52,6 +48,11 @@ in {
     exit
   '';
 
+in {
+  inherit xcodeWrapper shellHook buildInputs;
+
   # TARGETS
-  inherit shell;
+  shell = mkShell {
+    inherit buildInputs shellHook;
+  };
 }
