@@ -10,7 +10,7 @@
 
 (styles/def status-bar-default
   {:ios     (create-status-bar-style {:background-color colors/white
-                                      :bar-style        "default"})
+                                      :bar-style        "dark-content"})
    :android (create-status-bar-style {:translucent?     true
                                       :bar-style        "dark-content"})})
 
