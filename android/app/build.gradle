@@ -80,7 +80,6 @@ project.ext.react = [
     nodeExecutableAndArgs: ["node", "--max-old-space-size=16384"],
     entryFile: "index.android.js",
     enableHermes: true,     // clean and rebuild if changing. NOTE: Hermes engine is required for Android 64-bit builds running on 64 devices, to guard against a hang in the UI thread after invoking status-go
-    hermesCommand: "../../node_modules/hermes-engine/%OS-BIN%/hermes", // Can be removed once RN moves to a version which depends on hermes-engine instead of hermesvm
     bundleInPr: true,
     inputExcludes: ["android/**", "ios/**", "react-native/**", "src/**", "test/**"]
 ]

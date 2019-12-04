@@ -154,21 +154,7 @@ let
           substituteInPlace ${projectBuildDir}/node_modules/react-native/react.gradle \
             --replace \
               'targetName.toLowerCase().contains("release")' \
-              '!targetName.toLowerCase().contains("debug")' \
-            --replace \
-              'commandLine(getHermesCommand(), "-emit-binary", "-out", jsBundleFile, jsBundleFile, *hermesFlags)' \
-              'def jsBundleFileIn = File.createTempFile("index.android",".tmp")
-              jsBundleFileIn.deleteOnExit()
-              ant.move(
-                  file: jsBundleFile,
-                  tofile: jsBundleFileIn
-              );
-              commandLine(getHermesCommand(), "-emit-binary", "-out", jsBundleFile, jsBundleFileIn, *hermesFlags)
-              ' \
-            || exit
-
-          # Remove legacy hermesvm folder (can be removed once we upgrade RN to a version which depends on newer hermes-engine package instead of hermesvm)
-          rm -r ${projectBuildDir}/node_modules/hermesvm
+              '!targetName.toLowerCase().contains("debug")'
 
           # Patch dependencies which are not yet ported to AndroidX
           npx jetify
