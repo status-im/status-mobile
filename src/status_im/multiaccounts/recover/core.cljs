@@ -14,7 +14,8 @@
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
 
 (defn existing-account?
   [root-key multiaccounts]
@@ -139,18 +140,21 @@
 (fx/defn enter-phrase-pressed
   {:events [::enter-phrase-pressed]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db       (assoc db
-                              :intro-wizard {:step :enter-phrase
-                                             :recovering? true
-                                             :next-button-disabled? true
-                                             :weak-password? true
-                                             :encrypt-with-password? true
-                                             :first-time-setup? false
-                                             :back-action :intro-wizard/navigate-back
-                                             :forward-action :multiaccounts.recover/enter-phrase-next-pressed})
-             :dispatch [:bottom-sheet/hide-sheet]}
-            (navigation/navigate-to-cofx :recover-multiaccount-enter-phrase nil)))
+  (fx/merge
+   cofx
+   {:db (-> db
+            (assoc :intro-wizard
+                   {:step                   :enter-phrase
+                    :recovering?            true
+                    :next-button-disabled?  true
+                    :weak-password?         true
+                    :encrypt-with-password? true
+                    :first-time-setup?      false
+                    :back-action            :intro-wizard/navigate-back
+                    :forward-action         :multiaccounts.recover/enter-phrase-next-pressed})
+            (update :hardwallet dissoc :flow))}
+   (bottom-sheet/hide-bottom-sheet)
+   (navigation/navigate-to-cofx :recover-multiaccount-enter-phrase nil)))
 
 (fx/defn proceed-to-import-mnemonic
   {:events [:multiaccounts.recover/enter-phrase-next-pressed]}
