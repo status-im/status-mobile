@@ -71,6 +71,7 @@
   {:events [:multiaccounts.create.ui/intro-wizard]}
   [{:keys [db] :as cofx} first-time-setup?]
   (fx/merge cofx
+            {:db (update db :hardwallet dissoc :flow)}
             (prepare-intro-wizard first-time-setup?)
             (navigation/navigate-to-cofx :create-multiaccount-generate-key nil)))
 
