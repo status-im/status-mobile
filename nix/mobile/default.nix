@@ -6,7 +6,7 @@ let
 
   platform = callPackage ../platform.nix { inherit target-os; };
   xcodewrapperArgs = {
-    version = "11.1";
+    version = "11.2.1";
   };
   xcodeWrapper = composeXcodeWrapper xcodewrapperArgs;
   androidPlatform = callPackage ./android { inherit config target-os mkShell mkFilter nodejs maven localMavenRepoBuilder projectNodePackage jsbundle; status-go = status-go.android; };
