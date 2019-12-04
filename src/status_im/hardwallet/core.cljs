@@ -516,7 +516,11 @@
               (when (= card-state :pre-init)
                 (if (= flow :import)
                   (navigation/navigate-to-cofx :keycard-recovery-no-key nil)
-                  (load-pin-screen)))
+                  (fn [cofx]
+                    (fx/merge
+                     cofx
+                     (clear-on-card-read)
+                     (load-pin-screen)))))
               (when (and (= card-state :multiaccount)
                          (= flow :import))
                 (let [{:keys [address]} (find-multiaccount-by-key-uid db key-uid)]
@@ -1418,9 +1422,10 @@
 (fx/defn process-pin-input
   [{:keys [db]}]
   (let [enter-step (get-in db [:hardwallet :pin :enter-step])
-        setup-step (get-in db [:hardwallet :setup-step])
         pin (get-in db [:hardwallet :pin enter-step])
         numbers-entered (count pin)]
+    (log/debug "[hardwallet] process-pin-input"
+               "enter-step" enter-step)
     (cond-> {:db (assoc-in db [:hardwallet :pin :status] nil)}
 
       (and (= enter-step :login)
