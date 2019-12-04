@@ -157,7 +157,6 @@ class TestWalletManagement(SingleDeviceTestCase):
         send_transaction.deny_button.click()
         send_transaction.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
         send_transaction.ok_button.click()
-        send_transaction.chose_recipient_button.click()
         send_transaction.scan_qr_code_button.click()
         send_transaction.deny_button.wait_for_visibility_of_element(2)
 

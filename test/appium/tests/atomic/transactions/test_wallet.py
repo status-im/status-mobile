@@ -168,7 +168,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         recipient = "0x"+basic_user['address']
         sending_amount = "0.08"
         asset = 'ETHro'
-        wallet_view.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient, sign_transaction=True)
+        wallet_view.send_transaction(asset_name='ETH', amount=sending_amount, recipient=recipient, sign_transaction=True)
         wallet_view.wait_balance_is_changed(asset, wallet_view.get_asset_amount_by_name(asset))
         transactions_view = wallet_view.transaction_history_button.click()
         transactions_view.transactions_table.find_transaction(amount=sending_amount)
@@ -287,6 +287,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5423)
     @marks.medium
+    @marks.skip
+    # TODO skip until tooltips visibility in page xml is fixed pr-9555
     def test_send_valid_amount_after_insufficient_funds_error(self):
         sender = transaction_senders['T']
         sign_in_view = SignInView(self.driver)
@@ -315,6 +317,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5471)
     @marks.medium
+    @marks.skip
+    # TODO skip until tooltips visibility in page xml is fixed pr-9555
     def test_insufficient_funds_wallet_0_balance(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -336,6 +340,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5412)
     @marks.high
+    @marks.skip
+    # TODO skip until tooltips visibility in page xml is fixed pr-9555
     def test_insufficient_funds_wallet_positive_balance(self):
         sender = wallet_users['A']
         sign_in_view = SignInView(self.driver)
@@ -448,7 +454,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view.create_user()
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
-        wallet_view.accounts_status_account.click()
+        wallet_view.toggle_airplane_mode()
+        wallet_view.accounts_status_account.click_until_presence_of_element(wallet_view.send_transaction_button)
         send_transaction = wallet_view.send_transaction_button.click()
         send_transaction.chose_recipient_button.click()
         send_transaction.accounts_button.click()
@@ -456,9 +463,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.amount_edit_box.click()
         send_transaction.amount_edit_box.set_value("0")
         send_transaction.confirm()
-        send_transaction.sign_transaction_button.click()
-        send_transaction.cancel_button.click()
-        send_transaction.toggle_airplane_mode()
         send_transaction.sign_transaction_button.click()
         if send_transaction.sign_with_password.is_element_displayed():
             self.driver.fail("Sign transaction button is active in offline mode")

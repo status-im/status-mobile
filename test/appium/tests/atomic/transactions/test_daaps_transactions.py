@@ -222,6 +222,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(5685)
     @marks.medium
+    @marks.skip
+    # TODO skip until tooltips visibility in page xml is fixed pr-9555
     def test_not_enough_eth_for_gas_validation_from_dapp(self):
         singin_view = SignInView(self.driver)
         home_view = singin_view.create_user()
