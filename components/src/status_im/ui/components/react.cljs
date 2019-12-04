@@ -26,8 +26,6 @@
 (def native-modules (.-NativeModules js-dependencies/react-native))
 (def device-event-emitter (.-DeviceEventEmitter js-dependencies/react-native))
 
-(def dismiss-keyboard! js-dependencies/dismiss-keyboard)
-
 (def splash-screen (.-SplashScreen native-modules))
 
 ;; React Components
@@ -41,6 +39,7 @@
 
 (def scroll-view-class (get-class "ScrollView"))
 (def keyboard-avoiding-view-class (get-class "KeyboardAvoidingView"))
+
 
 (def text-class (get-class "Text"))
 (def text-input-class (get-class "TextInput"))
@@ -87,6 +86,7 @@
 
 (def dimensions (.-Dimensions js-dependencies/react-native))
 (def keyboard (.-Keyboard js-dependencies/react-native))
+(defn dismiss-keyboard! [] (.dismiss keyboard))
 (def linking (.-Linking js-dependencies/react-native))
 (def desktop-notification (.-DesktopNotification (.-NativeModules js-dependencies/react-native)))
 

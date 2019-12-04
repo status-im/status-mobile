@@ -31,7 +31,7 @@ node_modules/react-native/Libraries/polyfills/.*
 ; require from fbjs/lib instead: require('fbjs/lib/warning')
 node_modules/warning/.*
 ; Flow doesn't support platforms
-.*/Libraries/Utilities/HMRLoadingView.js
+.*/Libraries/Utilities/LoadingView.js
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
 
@@ -75,7 +75,9 @@ experimental.strict_type_args=true
 munge_underscores=true
 
 module.name_mapper='^image![a-zA-Z0-9$_-]+$' -> 'GlobalImageStub'
-module.name_mapper='^[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\)$' -> 'RelativeImageStub'
+module.name_mapper='^react-native$' -> '<PROJECT_ROOT>/node_modules/react-native/Libraries/react-native/react-native-implementation'
+module.name_mapper='^react-native/\(.*\)$' -> '<PROJECT_ROOT>/node_modules/react-native/\1'
+module.name_mapper='^[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\)$' -> '<PROJECT_ROOT>/node_modules/react-native/Libraries/Image/RelativeImageStub'
 
 module.file_ext=.js
 module.file_ext=.jsx
@@ -92,4 +94,4 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 
 [version]
-^0.98.0
+^0.105.0

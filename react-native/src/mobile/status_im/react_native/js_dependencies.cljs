@@ -17,7 +17,6 @@
 (def react-native-languages (.-default (js/require "react-native-languages")))
 (def camera                 (js/require "react-native-camera"))
 (def dialogs                (js/require "react-native-dialogs"))
-(def dismiss-keyboard       (js/require "dismissKeyboard"))
 (def image-crop-picker      (js/require "react-native-image-crop-picker"))
 (def image-resizer          (js/require "react-native-image-resizer"))
 (def snoopy                 (js/require "rn-snoopy"))

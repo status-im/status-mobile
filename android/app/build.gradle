@@ -200,13 +200,7 @@ android {
         exclude '/lib/mips64/**'
         exclude '/lib/armeabi/**'
 
-        pickFirst '**/armeabi-v7a/libc++_shared.so'
-        pickFirst '**/x86/libc++_shared.so'
-        pickFirst '**/arm64-v8a/libc++_shared.so'
-        pickFirst '**/x86_64/libc++_shared.so'
-        pickFirst '**/x86/libjsc.so'
-        pickFirst '**/armeabi-v7a/libjsc.so'
-        
+
         /** Fix for: Execution failed for task ':app:transformNativeLibsWithStripDebugSymbolForDebug'.
         *   with recent version of ndk (17.0.4754217)
         */

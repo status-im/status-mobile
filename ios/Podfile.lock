@@ -1,6 +1,14 @@
 PODS:
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
+  - FBLazyVector (0.61.0)
+  - FBReactNativeSpec (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - RCTRequired (= 0.61.0)
+    - RCTTypeSafety (= 0.61.0)
+    - React-Core (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - ReactCommon/turbomodule/core (= 0.61.0)
   - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
@@ -12,66 +20,186 @@ PODS:
     - glog
   - glog (0.3.5)
   - QBImagePickerController (3.4.0)
-  - React (0.60.5):
-    - React-Core (= 0.60.5)
-    - React-DevSupport (= 0.60.5)
-    - React-RCTActionSheet (= 0.60.5)
-    - React-RCTAnimation (= 0.60.5)
-    - React-RCTBlob (= 0.60.5)
-    - React-RCTImage (= 0.60.5)
-    - React-RCTLinking (= 0.60.5)
-    - React-RCTNetwork (= 0.60.5)
-    - React-RCTSettings (= 0.60.5)
-    - React-RCTText (= 0.60.5)
-    - React-RCTVibration (= 0.60.5)
-    - React-RCTWebSocket (= 0.60.5)
-  - React-Core (0.60.5):
+  - RCTRequired (0.61.0)
+  - RCTTypeSafety (0.61.0):
+    - FBLazyVector (= 0.61.0)
     - Folly (= 2018.10.22.00)
-    - React-cxxreact (= 0.60.5)
-    - React-jsiexecutor (= 0.60.5)
-    - yoga (= 0.60.5.React)
-  - React-cxxreact (0.60.5):
+    - RCTRequired (= 0.61.0)
+    - React-Core (= 0.61.0)
+  - React (0.61.0):
+    - React-Core (= 0.61.0)
+    - React-Core/DevSupport (= 0.61.0)
+    - React-Core/RCTWebSocket (= 0.61.0)
+    - React-RCTActionSheet (= 0.61.0)
+    - React-RCTAnimation (= 0.61.0)
+    - React-RCTBlob (= 0.61.0)
+    - React-RCTImage (= 0.61.0)
+    - React-RCTLinking (= 0.61.0)
+    - React-RCTNetwork (= 0.61.0)
+    - React-RCTSettings (= 0.61.0)
+    - React-RCTText (= 0.61.0)
+    - React-RCTVibration (= 0.61.0)
+  - React-Core (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default (= 0.61.0)
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-jsiexecutor (= 0.61.0)
+    - Yoga
+  - React-Core/CoreModulesHeaders (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-jsiexecutor (= 0.61.0)
+    - Yoga
+  - React-Core/Default (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-jsiexecutor (= 0.61.0)
+    - Yoga
+  - React-Core/DevSupport (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default (= 0.61.0)
+    - React-Core/RCTWebSocket (= 0.61.0)
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-jsiexecutor (= 0.61.0)
+    - React-jsinspector (= 0.61.0)
+    - Yoga
+  - React-Core/RCTActionSheetHeaders (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-jsiexecutor (= 0.61.0)
+    - Yoga
+  - React-Core/RCTAnimationHeaders (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-jsiexecutor (= 0.61.0)
+    - Yoga
+  - React-Core/RCTBlobHeaders (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-jsiexecutor (= 0.61.0)
+    - Yoga
+  - React-Core/RCTImageHeaders (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-jsiexecutor (= 0.61.0)
+    - Yoga
+  - React-Core/RCTLinkingHeaders (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-jsiexecutor (= 0.61.0)
+    - Yoga
+  - React-Core/RCTNetworkHeaders (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-jsiexecutor (= 0.61.0)
+    - Yoga
+  - React-Core/RCTSettingsHeaders (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-jsiexecutor (= 0.61.0)
+    - Yoga
+  - React-Core/RCTTextHeaders (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-jsiexecutor (= 0.61.0)
+    - Yoga
+  - React-Core/RCTVibrationHeaders (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-jsiexecutor (= 0.61.0)
+    - Yoga
+  - React-Core/RCTWebSocket (0.61.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default (= 0.61.0)
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-jsiexecutor (= 0.61.0)
+    - Yoga
+  - React-CoreModules (0.61.0):
+    - FBReactNativeSpec (= 0.61.0)
+    - Folly (= 2018.10.22.00)
+    - RCTTypeSafety (= 0.61.0)
+    - React-Core/CoreModulesHeaders (= 0.61.0)
+    - React-RCTImage (= 0.61.0)
+    - ReactCommon/turbomodule/core (= 0.61.0)
+  - React-cxxreact (0.61.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-    - React-jsinspector (= 0.60.5)
-  - React-DevSupport (0.60.5):
-    - React-Core (= 0.60.5)
-    - React-RCTWebSocket (= 0.60.5)
-  - React-jsi (0.60.5):
+    - React-jsinspector (= 0.61.0)
+  - React-jsi (0.61.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-    - React-jsi/Default (= 0.60.5)
-  - React-jsi/Default (0.60.5):
+    - React-jsi/Default (= 0.61.0)
+  - React-jsi/Default (0.61.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-  - React-jsiexecutor (0.60.5):
+  - React-jsiexecutor (0.61.0):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-    - React-cxxreact (= 0.60.5)
-    - React-jsi (= 0.60.5)
-  - React-jsinspector (0.60.5)
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+  - React-jsinspector (0.61.0)
   - react-native-background-timer (2.1.1):
     - React
-  - react-native-camera (3.3.3):
+  - react-native-camera (3.6.0):
     - React
-    - react-native-camera/RCT (= 3.3.3)
-    - react-native-camera/RN (= 3.3.3)
-  - react-native-camera/RCT (3.3.3):
+    - react-native-camera/RCT (= 3.6.0)
+    - react-native-camera/RN (= 3.6.0)
+  - react-native-camera/RCT (3.6.0):
     - React
-  - react-native-camera/RN (3.3.3):
+  - react-native-camera/RN (3.6.0):
     - React
   - react-native-image-resizer (1.0.0):
     - React
   - react-native-mail (4.0.0):
     - React
   - react-native-netinfo (4.4.0):
+    - React
+  - react-native-safe-area-context (0.6.0):
     - React
   - react-native-shake (3.4.0):
     - React
@@ -81,34 +209,46 @@ PODS:
     - React
   - react-native-webview-bridge (0.33.17):
     - React
-  - React-RCTActionSheet (0.60.5):
-    - React-Core (= 0.60.5)
-  - React-RCTAnimation (0.60.5):
-    - React-Core (= 0.60.5)
-  - React-RCTBlob (0.60.5):
-    - React-Core (= 0.60.5)
-    - React-RCTNetwork (= 0.60.5)
-    - React-RCTWebSocket (= 0.60.5)
-  - React-RCTImage (0.60.5):
-    - React-Core (= 0.60.5)
-    - React-RCTNetwork (= 0.60.5)
-  - React-RCTLinking (0.60.5):
-    - React-Core (= 0.60.5)
-  - React-RCTNetwork (0.60.5):
-    - React-Core (= 0.60.5)
-  - React-RCTSettings (0.60.5):
-    - React-Core (= 0.60.5)
-  - React-RCTText (0.60.5):
-    - React-Core (= 0.60.5)
-  - React-RCTVibration (0.60.5):
-    - React-Core (= 0.60.5)
-  - React-RCTWebSocket (0.60.5):
-    - React-Core (= 0.60.5)
+  - React-RCTActionSheet (0.61.0):
+    - React-Core/RCTActionSheetHeaders (= 0.61.0)
+  - React-RCTAnimation (0.61.0):
+    - React-Core/RCTAnimationHeaders (= 0.61.0)
+  - React-RCTBlob (0.61.0):
+    - React-Core/RCTBlobHeaders (= 0.61.0)
+    - React-Core/RCTWebSocket (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - React-RCTNetwork (= 0.61.0)
+  - React-RCTImage (0.61.0):
+    - React-Core/RCTImageHeaders (= 0.61.0)
+    - React-RCTNetwork (= 0.61.0)
+  - React-RCTLinking (0.61.0):
+    - React-Core/RCTLinkingHeaders (= 0.61.0)
+  - React-RCTNetwork (0.61.0):
+    - React-Core/RCTNetworkHeaders (= 0.61.0)
+  - React-RCTSettings (0.61.0):
+    - React-Core/RCTSettingsHeaders (= 0.61.0)
+  - React-RCTText (0.61.0):
+    - React-Core/RCTTextHeaders (= 0.61.0)
+  - React-RCTVibration (0.61.0):
+    - React-Core/RCTVibrationHeaders (= 0.61.0)
+  - ReactCommon/jscallinvoker (0.61.0):
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-cxxreact (= 0.61.0)
+  - ReactCommon/turbomodule/core (0.61.0):
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core (= 0.61.0)
+    - React-cxxreact (= 0.61.0)
+    - React-jsi (= 0.61.0)
+    - ReactCommon/jscallinvoker (= 0.61.0)
   - RNFS (2.14.1):
     - React
-  - RNGestureHandler (1.3.0):
+  - RNGestureHandler (1.4.1):
     - React
-  - RNImageCropPicker (0.25.0):
+  - RNImageCropPicker (0.25.3):
     - QBImagePickerController
     - React-Core
     - React-RCTImage
@@ -117,9 +257,9 @@ PODS:
     - React
   - RNLanguages (3.0.2):
     - React
-  - RNScreens (1.0.0-alpha.22):
+  - RNScreens (1.0.0-alpha.23):
     - React
-  - RNSVG (9.8.4):
+  - RNSVG (9.11.1):
     - React
   - RSKImageCropper (2.2.3)
   - SQLCipher (3.4.2):
@@ -130,16 +270,22 @@ PODS:
   - SSZipArchive (2.2.2)
   - TouchID (4.4.1):
     - React
-  - yoga (0.60.5.React)
+  - Yoga (1.14.0)
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
+  - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
+  - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
   - React (from `../node_modules/react-native/`)
-  - React-Core (from `../node_modules/react-native/React`)
+  - React-Core (from `../node_modules/react-native/`)
+  - React-Core/DevSupport (from `../node_modules/react-native/`)
+  - React-Core/RCTWebSocket (from `../node_modules/react-native/`)
+  - React-CoreModules (from `../node_modules/react-native/React/CoreModules`)
   - React-cxxreact (from `../node_modules/react-native/ReactCommon/cxxreact`)
-  - React-DevSupport (from `../node_modules/react-native/React`)
   - React-jsi (from `../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
@@ -148,6 +294,7 @@ DEPENDENCIES:
   - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-shake (from `../node_modules/react-native-shake`)
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-webview (from `../node_modules/react-native-webview`)
@@ -161,7 +308,8 @@ DEPENDENCIES:
   - React-RCTSettings (from `../node_modules/react-native/Libraries/Settings`)
   - React-RCTText (from `../node_modules/react-native/Libraries/Text`)
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
-  - React-RCTWebSocket (from `../node_modules/react-native/Libraries/WebSocket`)
+  - ReactCommon/jscallinvoker (from `../node_modules/react-native/ReactCommon`)
+  - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
@@ -172,10 +320,10 @@ DEPENDENCIES:
   - SQLCipher (~> 3.0)
   - SSZipArchive
   - TouchID (from `../node_modules/react-native-touch-id`)
-  - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
+  - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - boost-for-react-native
     - QBImagePickerController
     - RSKImageCropper
@@ -185,18 +333,26 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
+  FBLazyVector:
+    :path: "../node_modules/react-native/Libraries/FBLazyVector"
+  FBReactNativeSpec:
+    :path: "../node_modules/react-native/Libraries/FBReactNativeSpec"
   Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  RCTRequired:
+    :path: "../node_modules/react-native/Libraries/RCTRequired"
+  RCTTypeSafety:
+    :path: "../node_modules/react-native/Libraries/TypeSafety"
   React:
     :path: "../node_modules/react-native/"
   React-Core:
-    :path: "../node_modules/react-native/React"
+    :path: "../node_modules/react-native/"
+  React-CoreModules:
+    :path: "../node_modules/react-native/React/CoreModules"
   React-cxxreact:
     :path: "../node_modules/react-native/ReactCommon/cxxreact"
-  React-DevSupport:
-    :path: "../node_modules/react-native/React"
   React-jsi:
     :path: "../node_modules/react-native/ReactCommon/jsi"
   React-jsiexecutor:
@@ -213,6 +369,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-mail"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   react-native-shake:
     :path: "../node_modules/react-native-shake"
   react-native-splash-screen:
@@ -239,8 +397,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/Libraries/Text"
   React-RCTVibration:
     :path: "../node_modules/react-native/Libraries/Vibration"
-  React-RCTWebSocket:
-    :path: "../node_modules/react-native/Libraries/WebSocket"
+  ReactCommon:
+    :path: "../node_modules/react-native/ReactCommon"
   RNFS:
     :path: "../node_modules/react-native-fs"
   RNGestureHandler:
@@ -257,54 +415,59 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-svg"
   TouchID:
     :path: "../node_modules/react-native-touch-id"
-  yoga:
+  Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
+  FBLazyVector: cb37b5590a27600f0a889222d7c1f019625f4168
+  FBReactNativeSpec: 6fda0eee5b059ee8ea0f845f4060620ff96b5b55
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
-  glog: 7b113d8578aa09b57aa5945dd002bc37d0ab4fb5
+  glog: 353a32027a69db3807b94c7cbc2900fc4370098c
   QBImagePickerController: d54cf93db6decf26baf6ed3472f336ef35cae022
-  React: 53c53c4d99097af47cf60594b8706b4e3321e722
-  React-Core: ba421f6b4f4cbe2fb17c0b6fc675f87622e78a64
-  React-cxxreact: 8384287780c4999351ad9b6e7a149d9ed10a2395
-  React-DevSupport: 197fb409737cff2c4f9986e77c220d7452cb9f9f
-  React-jsi: 4d8c9efb6312a9725b18d6fc818ffc103f60fec2
-  React-jsiexecutor: 90ad2f9db09513fc763bc757fdc3c4ff8bde2a30
-  React-jsinspector: e08662d1bf5b129a3d556eb9ea343a3f40353ae4
-  react-native-background-timer: 1b6e6b4e10f1b74c367a1fdc3c72b67c619b222b
-  react-native-camera: 3050fa68d12e6abdc0bfdaf0e80f4acd45268454
-  react-native-image-resizer: 4516052af6ae0248caf4ccf356caecefe60072d7
-  react-native-mail: 7e37dfbe93ff0d4c7df346b738854dbed533e86f
-  react-native-netinfo: 2bb2e5094edcfecfb340a85053608526cb20f185
-  react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
-  react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
-  react-native-webview: 0658813bcc4b6c22f3cbb035a2227aa896a8cbc0
-  react-native-webview-bridge: 3023f6b0e84cdf8e4a96511d2b04e73b038f95f0
-  React-RCTActionSheet: b0f1ea83f4bf75fb966eae9bfc47b78c8d3efd90
-  React-RCTAnimation: 359ba1b5690b1e87cc173558a78e82d35919333e
-  React-RCTBlob: 5e2b55f76e9a1c7ae52b826923502ddc3238df24
-  React-RCTImage: f5f1c50922164e89bdda67bcd0153952a5cfe719
-  React-RCTLinking: d0ecbd791e9ddddc41fa1f66b0255de90e8ee1e9
-  React-RCTNetwork: e26946300b0ab7bb6c4a6348090e93fa21f33a9d
-  React-RCTSettings: d0d37cb521b7470c998595a44f05847777cc3f42
-  React-RCTText: b074d89033583d4f2eb5faf7ea2db3a13c7553a2
-  React-RCTVibration: 2105b2e0e2b66a6408fc69a46c8a7fb5b2fdade0
-  React-RCTWebSocket: cd932a16b7214898b6b7f788c8bddb3637246ac4
-  RNFS: a8fbe7060fa49157d819466404794ad9c58e58cf
-  RNGestureHandler: 5329a942fce3d41c68b84c2c2276ce06a696d8b0
-  RNImageCropPicker: 0a731d984e64ee4c28bddaa7ce52262e4b80979f
-  RNKeychain: 216f37338fcb9e5c3a2530f1e3295f737a690cb1
-  RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
-  RNScreens: 720a9e6968beb73e8196239801e887d8401f86ed
-  RNSVG: a78b4c581e33a1bb72968997d167afabf72b05dc
+  RCTRequired: 81db8debffc2eb932841fa02dcf5a2e911af74c1
+  RCTTypeSafety: 39a7d8643abe2460aef0adeb9acbe9401b579fff
+  React: 89f2294058332cf7c4feee644e17d5024da1f531
+  React-Core: c55956aa434fae94816b665f99d51d50f48d5993
+  React-CoreModules: c70b9db4f48e31474bb022716fff41983b335ce2
+  React-cxxreact: 1dbe583c02d15d269f13451d203e645bb233fc96
+  React-jsi: f9126dd5818fbd8fbf869be9bbc1c0543973e1a1
+  React-jsiexecutor: 752f034d0f007d1141a1c52ba9ef3fd9668fbfa7
+  React-jsinspector: 044105eea064aec81adc5e4d777a8f6589e7d094
+  react-native-background-timer: bb7a98c8e97fc7c290de2d423dd09ddb73dcbcbb
+  react-native-camera: 9c50d7def800895e7991ccda6203929553ceec9c
+  react-native-image-resizer: 04a3409e7d4ad646c4468671c69dec490def139c
+  react-native-mail: ff4aba592530d80ac96eea6c1ca03114b84d630a
+  react-native-netinfo: a91b5cf92ed3ada997cfe2bf067633386eb19fd8
+  react-native-safe-area-context: 686e5d98bb021d8ca415ec5cf2a30dfc0d7d0d93
+  react-native-shake: e9d1368d6f0ec7e48c8afc91e379b81006b9ba42
+  react-native-splash-screen: a49be22f0f6648b8416f3bd28258645eeaa5b42b
+  react-native-webview: ad9581723f4d401c22cb3a371811d4dc9310df56
+  react-native-webview-bridge: c712d20bbe7e2a2fabdd5d8ccdfec5e704455763
+  React-RCTActionSheet: 49433f6e3659ba5d3ee650e44b9c18743ef9a7fc
+  React-RCTAnimation: 12f86a4e3542032329366b03bca2cc254a7c64a9
+  React-RCTBlob: ba90a4144ad478a022b79a4e8a1f150548d39425
+  React-RCTImage: f652d97e49f4b0f26c7df336e723a0d259179967
+  React-RCTLinking: e738422857085a1c40c57505a25920160d365783
+  React-RCTNetwork: d0d635ad07deed0c05a1b1499d1ab4ce5c41ac97
+  React-RCTSettings: ae6f8b64ee5c5e4fc629f5109042e122fd0fd14b
+  React-RCTText: 3f24042210886ee8c02613758013010be04b291e
+  React-RCTVibration: d55e1365be416980217914fe009e9d55dec02e03
+  ReactCommon: eb96b70a2a5bed775e919151fd77699fed52944c
+  RNFS: 6a2bfb5d0b14cf0ad72667f76202358abba4aacf
+  RNGestureHandler: 311e3b1cef021a7c9ef31e97e7dc31970cc6288d
+  RNImageCropPicker: c406db73f02f11bf3a887f856ff04ee50af173f4
+  RNKeychain: 627c6095cef215dd3d9804a9a9cf45ab96aa3997
+  RNLanguages: e3ae05ef105937645218272429dac0c3f7633451
+  RNScreens: 354046589421edc3d83d5c6212475bf1fb9a731d
+  RNSVG: 2e097b92aaa6d4e0f354fd7c49cbf3b17f8b3920
   RSKImageCropper: a446db0e8444a036b34f3c43db01b2373baa4b2a
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
   SSZipArchive: fa16b8cc4cdeceb698e5e5d9f67e9558532fbf23
-  TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
-  yoga: 312528f5bbbba37b4dcea5ef00e8b4033fdd9411
+  TouchID: b0640fedb86fa2db2fe1df15b61594ad49e76288
+  Yoga: 6af72bedeaea291a3a3717772d6d41836f23a1b9
 
-PODFILE CHECKSUM: 7b53149061c27253efb0c63580a220c0e836aad4
+PODFILE CHECKSUM: e8a3c84ad33b072f07411f663eebeba6d10436ee
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.5.3

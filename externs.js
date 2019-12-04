@@ -59,6 +59,7 @@ var TopLevel = {
   "confirmMessagesProcessed" : function () {},
   "messages": function() {},
   "discovery": function() {},
+  "dismiss": function() {},
   "negotiated": function() {},
   "chatId": function() {},
   "confirmMessagesProcessedByID" : function () {},
