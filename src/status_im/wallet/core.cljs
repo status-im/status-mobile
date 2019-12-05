@@ -197,10 +197,18 @@
   (set/difference (set visible-token-symbols)
                   (set (map :symbol (tokens/nfts-for all-tokens chain)))))
 
+(defn rpc->token [tokens]
+  (reduce (fn [acc {:keys [address] :as token}]
+            (assoc acc
+                   address
+                   (assoc token :custom? true)))
+          {}
+          tokens))
+
 (fx/defn initialize-tokens
-  [{:keys [db] :as cofx}]
-  (let [custom-tokens (get-in db [:multiaccount :settings :wallet :custom-tokens])
-        chain         (ethereum/chain-keyword db)
+  [{:keys [db] :as cofx} custom-tokens]
+  (let [chain         (ethereum/chain-keyword db)
+        custom-tokens {chain (rpc->token custom-tokens)}
         ;;TODO why do we need all tokens ? chain can be changed only through relogin
         all-tokens    (merge-with
                        merge

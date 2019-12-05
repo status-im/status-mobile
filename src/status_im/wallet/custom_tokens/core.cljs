@@ -171,18 +171,20 @@
         new-token {:address  contract
                    :name     name
                    :symbol   symbol
-                   :custom?  true
                    :decimals (int decimals)
                    :color    (rand-nth colors/chat-colors)}]
-    (fx/merge (assoc-in cofx
-                        [:db :wallet/all-tokens chain-key contract]
-                        new-token)
+    (fx/merge {:db (assoc-in db [:wallet/all-tokens chain-key contract]
+                             (assoc new-token :custom? true))
+               ::json-rpc/call [{:method "wallet_addCustomToken"
+                                 :params [new-token]}]}
               (wallet/add-custom-token new-token))))
 
 (fx/defn remove-custom-token
   [{:keys [db] :as cofx} {:keys [address] :as token}]
   (let [chain-key (ethereum/chain-keyword db)]
-    (fx/merge (update-in cofx [:db :wallet/all-tokens chain-key] dissoc address)
+    (fx/merge {:db (update-in db [:wallet/all-tokens chain-key] dissoc address)
+               ::json-rpc/call [{:method "wallet_deleteCustomToken"
+                                 :params [address]}]}
               (wallet/remove-custom-token token))))
 
 (fx/defn field-is-edited

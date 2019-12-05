@@ -60,9 +60,11 @@
  (fn [[account-data hashed-password]]
    (status/login account-data hashed-password)))
 
-(fx/defn initialize-wallet [cofx]
+(fx/defn initialize-wallet
+  {:events [::initialize-wallet]}
+  [cofx custom-tokens]
   (fx/merge cofx
-            (wallet/initialize-tokens)
+            (wallet/initialize-tokens custom-tokens)
             (wallet/update-balances nil)
             (wallet/update-prices)
             (transactions/initialize)))
@@ -161,7 +163,11 @@
                                                  multiaccount))}
                 (and platform/android?
                      notifications-enabled?)
-                (assoc ::notifications/enable nil))
+                (assoc ::notifications/enable nil)
+                (not platform/desktop?)
+                (assoc ::json-rpc/call
+                       [{:method     "wallet_getCustomTokens"
+                         :on-success #(re-frame/dispatch [::initialize-wallet %])}]))
               ;; NOTE: initializing mailserver depends on user mailserver
               ;; preference which is why we wait for config callback
               (protocol/initialize-protocol {:default-mailserver true})
@@ -171,9 +177,7 @@
               (contact/initialize-contacts)
               (stickers/init-stickers-packs)
               (mobile-network/on-network-status-change)
-              (chaos-mode/check-chaos-mode)
-              (when-not platform/desktop?
-                (initialize-wallet)))))
+              (chaos-mode/check-chaos-mode))))
 
 (defn get-new-auth-method [auth-method save-password?]
   (if save-password?
@@ -249,7 +253,7 @@
                                              :default-mailserver true})
               (chaos-mode/check-chaos-mode)
               (when-not platform/desktop?
-                (initialize-wallet)))))
+                (initialize-wallet nil)))))
 
 (defn- keycard-setup? [cofx]
   (boolean (get-in cofx [:db :hardwallet :flow])))
@@ -408,4 +412,3 @@
          (popover/show-popover {:view :secure-with-biometric})
          (when-not (= previous-auth-method keychain/auth-method-none)
            (popover/show-popover {:view :disable-password-saving})))))))
-

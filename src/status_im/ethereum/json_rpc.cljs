@@ -69,6 +69,9 @@
    "status_chats" {}
    "wallet_getTransfers" {}
    "wallet_getTokensBalances" {}
+   "wallet_getCustomTokens" {}
+   "wallet_addCustomToken" {}
+   "wallet_deleteCustomToken" {}
    "browsers_getBrowsers" {}
    "browsers_addBrowser" {}
    "browsers_deleteBrowser" {}
