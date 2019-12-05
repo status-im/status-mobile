@@ -13,8 +13,8 @@
 (if js/goog.DEBUG
   (.ignoreWarnings (.-YellowBox js-dependencies/react-native)
                    #js ["re-frame: overwriting"
-                        "Warning: componentWillMount is deprecated and will be removed in the next major version. Use componentDidMount instead. As a temporary workaround, you can rename to UNSAFE_componentWillMount."
-                        "Warning: componentWillUpdate is deprecated and will be removed in the next major version. Use componentDidUpdate instead. As a temporary workaround, you can rename to UNSAFE_componentWillUpdate."])
+                        "Warning: componentWillMount has been renamed, and is not recommended for use. See https://fb.me/react-async-component-lifecycle-hooks for details."
+                        "Warning: componentWillUpdate has been renamed, and is not recommended for use. See https://fb.me/react-async-component-lifecycle-hooks for details."])
   (aset js/console "disableYellowBox" true))
 
 (defn init [app-root]
