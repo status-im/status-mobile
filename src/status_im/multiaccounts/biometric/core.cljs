@@ -118,16 +118,16 @@
    (authenticate-fx #(cb %) options)))
 
 (fx/defn update-biometric [{db :db :as cofx} biometric-auth?]
-  (let [address (or (get-in db [:multiaccount :address])
-                    (get-in db [:multiaccounts/login :address]))]
+  (let [key-uid (or (get-in db [:multiaccount :key-uid])
+                    (get-in db [:multiaccounts/login :key-uid]))]
     (fx/merge cofx
               (keychain/save-auth-method
-               address
+               key-uid
                (if biometric-auth?
                  keychain/auth-method-biometric
                  keychain/auth-method-none))
               #(when-not biometric-auth?
-                 {:keychain/clear-user-password address}))))
+                 {:keychain/clear-user-password key-uid}))))
 
 (fx/defn biometric-auth-switched
   {:events [:multiaccounts.ui/biometric-auth-switched]}

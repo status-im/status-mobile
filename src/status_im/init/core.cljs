@@ -35,18 +35,18 @@
   (let [{{:multiaccounts/keys [multiaccounts] :as db} :db} cofx]
     (if (empty? multiaccounts)
       (navigation/navigate-to-cofx cofx :intro nil)
-      (let [{:keys [address public-key photo-path name]} (first (#(sort-by :last-sign-in > %) (vals multiaccounts)))]
-        (multiaccounts.login/open-login cofx address photo-path name public-key)))))
+      (let [{:keys [key-uid public-key photo-path name]} (first (#(sort-by :last-sign-in > %) (vals multiaccounts)))]
+        (multiaccounts.login/open-login cofx key-uid photo-path name public-key)))))
 
 (fx/defn initialize-multiaccounts
   {:events [::initialize-multiaccounts]}
   [{:keys [db] :as cofx} all-multiaccounts]
-  (let [multiaccounts (reduce (fn [acc {:keys [address key-uid keycard-pairing] :as multiaccount}]
-                                (-> (assoc acc address multiaccount)
-                                    (assoc-in [address :key-uid] (when-not (string/blank? key-uid)
-                                                                   key-uid))
-                                    (assoc-in [address :keycard-pairing] (when-not (string/blank? keycard-pairing)
-                                                                           keycard-pairing))))
+  (let [multiaccounts (reduce (fn [acc {:keys [key-uid keycard-pairing]
+                                        :as multiaccount}]
+                                (-> (assoc acc key-uid multiaccount)
+                                    (assoc-in [key-uid :keycard-pairing]
+                                              (when-not (string/blank? keycard-pairing)
+                                                keycard-pairing))))
                               {}
                               all-multiaccounts)]
     (fx/merge cofx

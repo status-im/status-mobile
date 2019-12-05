@@ -69,13 +69,15 @@
 
 (fx/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
-  [{:keys [db] :as cofx}]
-  (let [{:keys [address password name photo-path]} (:multiaccounts/login db)]
+  [{:keys [db]}]
+  (let [{:keys [key-uid password name photo-path]} (:multiaccounts/login db)]
     {:db (-> db
              (assoc-in [:multiaccounts/login :processing] true)
              (dissoc :intro-wizard)
              (update :hardwallet dissoc :flow))
-     ::login [(types/clj->json {:name name :address address :photo-path photo-path})
+     ::login [(types/clj->json {:name       name
+                                :key-uid    key-uid
+                                :photo-path photo-path})
               (ethereum/sha3 (security/safe-unmask-data password))]}))
 
 (fx/defn finish-keycard-setup
@@ -185,7 +187,7 @@
       keychain/auth-method-none)))
 
 (fx/defn login-only-events
-  [{:keys [db] :as cofx} address password save-password?]
+  [{:keys [db] :as cofx} key-uid password save-password?]
   (let [auth-method     (:auth-method db)
         new-auth-method (get-new-auth-method auth-method save-password?)]
     (log/debug "[login] login-only-events"
@@ -208,14 +210,14 @@
                  :params     [["multiaccount" "current-network" "networks"]]
                  :on-success #(re-frame/dispatch [::get-config-callback %])}]}
               (when save-password?
-                (keychain/save-user-password address password))
-              (keychain/save-auth-method address (or new-auth-method auth-method))
+                (keychain/save-user-password key-uid password))
+              (keychain/save-auth-method key-uid (or new-auth-method auth-method))
               (navigation/navigate-to-cofx :home nil)
               (when platform/desktop?
                 (chat-model/update-dock-badge-label)))))
 
 (fx/defn create-only-events
-  [{:keys [db] :as cofx} address password]
+  [{:keys [db] :as cofx}]
   (let [{:keys [multiaccount :networks/networks :networks/current-network]} db]
     (fx/merge cofx
               {:db (assoc db
@@ -254,7 +256,7 @@
 
 (fx/defn multiaccount-login-success
   [{:keys [db] :as cofx}]
-  (let [{:keys [address password save-password? creating?]} (:multiaccounts/login db)
+  (let [{:keys [key-uid password save-password? creating?]} (:multiaccounts/login db)
         recovering? (get-in db [:intro-wizard :recovering?])
         login-only? (not (or creating?
                              recovering?
@@ -278,8 +280,8 @@
               (when nodes
                 (fleet/set-nodes :eth.contract nodes))
               (if login-only?
-                (login-only-events address password save-password?)
-                (create-only-events address password))
+                (login-only-events key-uid password save-password?)
+                (create-only-events))
               (when recovering?
                 (navigation/navigate-to-cofx :home nil)))))
 
@@ -296,26 +298,26 @@
                 (navigation/navigate-to-cofx :keycard-login-pin nil)))))
 
 (fx/defn open-login
-  [{:keys [db] :as cofx} address photo-path name public-key]
+  [{:keys [db] :as cofx} key-uid photo-path name public-key]
   (fx/merge cofx
             {:db (-> db
                      (update :multiaccounts/login assoc
                              :public-key public-key
-                             :address address
+                             :key-uid key-uid
                              :photo-path photo-path
                              :name name)
                      (assoc :profile/photo-added? (= (identicon/identicon public-key) photo-path))
                      (update :multiaccounts/login dissoc
                              :error
                              :password))}
-            (keychain/get-auth-method address)))
+            (keychain/get-auth-method key-uid)))
 
 (fx/defn open-login-callback
   {:events [:multiaccounts.login.callback/get-user-password-success]}
   [{:keys [db] :as cofx} password]
-  (let [address (get-in db [:multiaccounts/login :address])
+  (let [key-uid (get-in db [:multiaccounts/login :key-uid])
         keycard-account? (boolean (get-in db [:multiaccounts/multiaccounts
-                                              address
+                                              key-uid
                                               :keycard-pairing]))]
     (if password
       (fx/merge
@@ -334,20 +336,20 @@
         nil)))))
 
 (fx/defn get-credentials
-  [{:keys [db] :as cofx} address]
-  (let [keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts address :keycard-pairing]))]
+  [{:keys [db] :as cofx} key-uid]
+  (let [keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts key-uid :keycard-pairing]))]
     (log/debug "[login] get-credentials"
                "keycard-multiacc?" keycard-multiaccount?)
     (if keycard-multiaccount?
-      (keychain/get-hardwallet-keys cofx address)
-      (keychain/get-user-password cofx address))))
+      (keychain/get-hardwallet-keys cofx key-uid)
+      (keychain/get-user-password cofx key-uid))))
 
 (fx/defn get-auth-method-success
   "Auth method: nil - not supported, \"none\" - not selected, \"password\", \"biometric\", \"biometric-prepare\""
   {:events [:multiaccounts.login/get-auth-method-success]}
   [{:keys [db] :as cofx} auth-method]
-  (let [address (get-in db [:multiaccounts/login :address])
-        keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts address :keycard-pairing]))]
+  (let [key-uid (get-in db [:multiaccounts/login :key-uid])
+        keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts key-uid :keycard-pairing]))]
     (log/debug "[login] get-auth-method-success"
                "auth-method" auth-method
                "keycard-multiacc?" keycard-multiaccount?)
@@ -357,7 +359,7 @@
                  keychain/auth-method-biometric
                  (biometric/biometric-auth %)
                  keychain/auth-method-password
-                 (get-credentials % address)
+                 (get-credentials % key-uid)
 
                  ;;nil or "none" or "biometric-prepare"
                  (if keycard-multiaccount?
@@ -367,17 +369,17 @@
 (fx/defn biometric-auth-done
   {:events [:biometric-auth-done]}
   [{:keys [db] :as cofx} {:keys [bioauth-success bioauth-message bioauth-code]}]
-  (let [address (get-in db [:multiaccounts/login :address])]
+  (let [key-uid (get-in db [:multiaccounts/login :key-uid])]
     (log/debug "[biometric] biometric-auth-done"
                "bioauth-success" bioauth-success
                "bioauth-message" bioauth-message
                "bioauth-code" bioauth-code)
     (if bioauth-success
-      (get-credentials cofx address)
+      (get-credentials cofx key-uid)
       (fx/merge cofx
                 {:db (assoc-in db [:multiaccounts/login :save-password?] false)}
                 (biometric/show-message bioauth-message bioauth-code)
-                (keychain/save-auth-method address keychain/auth-method-none)
+                (keychain/save-auth-method key-uid keychain/auth-method-none)
                 (open-login-callback nil)))))
 
 (fx/defn save-password

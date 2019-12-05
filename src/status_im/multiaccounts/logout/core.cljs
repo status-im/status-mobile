@@ -9,12 +9,12 @@
             [status-im.utils.keychain.core :as keychain]))
 
 (fx/defn logout-method [{:keys [db] :as cofx} auth-method]
-  (let [address (get-in db [:multiaccount :address])]
+  (let [key-uid (get-in db [:multiaccount :key-uid])]
     (fx/merge cofx
               {::logout                      nil
-               :keychain/clear-user-password address
+               :keychain/clear-user-password key-uid
                ::init/open-multiaccounts     #(re-frame/dispatch [::init/initialize-multiaccounts %])}
-              (keychain/save-auth-method address auth-method)
+              (keychain/save-auth-method key-uid auth-method)
               (transport/stop-whisper)
               (chaos-mode/stop-checking)
               (init/initialize-app-db))))

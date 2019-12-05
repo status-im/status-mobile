@@ -14,6 +14,7 @@
 (spec/def :multiaccount/accounts (spec/nilable vector?))
 
 (spec/def :multiaccount/address :global/address)
+(spec/def :multiaccount/key-uid string?)
 (spec/def :multiaccount/name :global/not-empty-string)
 (spec/def :multiaccount/public-key :global/public-key)
 (spec/def :multiaccount/signed-up? (spec/nilable boolean?))
@@ -67,6 +68,6 @@
 ;;used during logging
 (spec/def :multiaccounts/login (spec/nilable map?))
 ;;before login
-(spec/def :multiaccounts/multiaccount (spec/keys :req-un [:multiaccount/name :multiaccount/address]
+(spec/def :multiaccounts/multiaccount (spec/keys :req-un [:multiaccount/name :multiaccount/key-uid]
                                                  :opt-un [:multiaccount/timestamp]))
-(spec/def :multiaccounts/multiaccounts (spec/nilable (spec/map-of :multiaccount/address :multiaccounts/multiaccount)))
+(spec/def :multiaccounts/multiaccounts (spec/nilable (spec/map-of :multiaccount/key-uid :multiaccounts/multiaccount)))

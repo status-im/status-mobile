@@ -16,8 +16,10 @@
             [status-im.react-native.resources :as resources]))
 
 (defn multiaccount-view
-  [{:keys [address photo-path name public-key keycard-pairing]}]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:multiaccounts.login.ui/multiaccount-selected address])}
+  [{:keys [key-uid photo-path name keycard-pairing]}]
+  [react/touchable-highlight
+   {:on-press #(re-frame/dispatch
+                [:multiaccounts.login.ui/multiaccount-selected key-uid])}
    [react/view styles/multiaccount-view
     [photos/photo photo-path {:size styles/multiaccount-image-size}]
     [react/view styles/multiaccount-badge-text-view

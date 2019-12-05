@@ -50,9 +50,8 @@
     (some #(when (= selected-id (:id %)) %) multiaccounts)))
 
 (fx/defn create-multiaccount
-  [{:keys [db] :as cofx}]
-  (let [{:keys [selected-id address key-code]} (:intro-wizard db)
-        {:keys [address]} (get-selected-multiaccount cofx)
+  [{:keys [db]}]
+  (let [{:keys [selected-id key-code]} (:intro-wizard db)
         hashed-password (ethereum/sha3 (security/safe-unmask-data key-code))
         callback (fn [result]
                    (let [derived-data (types/json->clj result)
@@ -66,7 +65,7 @@
                                                               (merge derived-whisper {:name name :photo-path photo-path}))]
                           (re-frame/dispatch [::store-multiaccount-success
                                               key-code derived-data-extended]))))))]
-    {::store-multiaccount [selected-id address hashed-password callback]}))
+    {::store-multiaccount [selected-id hashed-password callback]}))
 
 (fx/defn prepare-intro-wizard
   [{:keys [db] :as cofx} first-time-setup?]
@@ -260,12 +259,12 @@
                                   :keycard-pairing keycard-pairing
                                   :keycard-paired-on keycard-paired-on))
         db (assoc db
-                  :multiaccounts/login {:address      address
-                                        :name         name
-                                        :photo-path   photo-path
-                                        :password     password
-                                        :creating?    true
-                                        :processing   true}
+                  :multiaccounts/login {:key-uid    keyUid
+                                        :name       name
+                                        :photo-path photo-path
+                                        :password   password
+                                        :creating?  true
+                                        :processing true}
                   :multiaccount new-multiaccount
                   :networks/current-network constants/default-network
                   :networks/networks constants/default-networks)]
@@ -365,7 +364,7 @@
 
 (re-frame/reg-fx
  ::store-multiaccount
- (fn [[id address hashed-password callback]]
+ (fn [[id hashed-password callback]]
    (status/multiaccount-store-derived
     id
     [constants/path-wallet-root

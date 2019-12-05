@@ -46,7 +46,8 @@
 (defn save-account-and-login
   "NOTE: beware, the password has to be sha3 hashed"
   [multiaccount-data hashed-password config accounts-data]
-  (log/debug "[native-module] save-account-and-login")
+  (log/debug "[native-module] save-account-and-login"
+             "multiaccount-data" multiaccount-data)
   (clear-web-data)
   (.saveAccountAndLogin (status) multiaccount-data hashed-password config accounts-data))
 
@@ -125,12 +126,12 @@
 (defn multiaccount-store-derived
   "NOTE: beware, the password has to be sha3 hashed"
   [account-id paths hashed-password callback]
-  (log/debug "[native-module]  multiaccount-store-derived")
+  (log/debug "[native-module]  multiaccount-store-derived"
+             "account-id" account-id)
   (.multiAccountStoreDerived (status)
                              (types/clj->json {:accountID account-id
                                                :paths paths
                                                :password hashed-password})
-
                              callback))
 
 (defn multiaccount-generate-and-derive-addresses

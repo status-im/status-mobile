@@ -366,7 +366,7 @@
             status [:hardwallet/pin-status]
             error-label [:hardwallet/pin-error-label]
             multiple-multiaccounts? [:multiple-multiaccounts?]
-            {:keys [address name] :as account} [:multiaccounts/login]
+            {:keys [key-uid name] :as account} [:multiaccounts/login]
             small-screen? [:dimensions/small-screen?]
             retry-counter [:hardwallet/retry-counter]]
     [react/view styles/container
@@ -428,7 +428,7 @@
                                        :font-family "monospace"}
                      :number-of-lines 1
                      :ellipsize-mode  :middle}
-         (utils.core/truncate-str address 14 true)]]]
+         (utils.core/truncate-str key-uid 14 true)]]]
       [pin.views/pin-view
        {:pin                     pin
         :retry-counter           retry-counter
@@ -445,7 +445,7 @@
 
 (defview login-connect-card []
   (letsubs [status [:hardwallet/pin-status]
-            {:keys [address name] :as account} [:multiaccounts/login]]
+            {:keys [key-uid name] :as account} [:multiaccounts/login]]
     (let [in-progress? (= status :verifying)]
       [react/view styles/container
        [toolbar/toolbar
@@ -506,7 +506,7 @@
                                          :font-family "monospace"}
                        :number-of-lines 1
                        :ellipsize-mode  :middle}
-           (utils.core/truncate-str address 14 true)]]]
+           (utils.core/truncate-str key-uid 14 true)]]]
         [react/view {:margin-bottom   12
                      :flex            1
                      :align-items     :center

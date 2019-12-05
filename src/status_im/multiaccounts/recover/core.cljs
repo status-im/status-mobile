@@ -19,8 +19,7 @@
 
 (defn existing-account?
   [root-key multiaccounts]
-  (contains? multiaccounts ((fnil clojure.string/lower-case "")
-                            (:address root-key))))
+  (contains? multiaccounts (:key-uid root-key)))
 
 (defn check-phrase-warnings [recovery-phrase]
   (cond (string/blank? recovery-phrase) :required-field
@@ -49,11 +48,8 @@
    :interceptors [(re-frame/inject-cofx :random-guid-generator)
                   (re-frame/inject-cofx ::multiaccounts.create/get-signing-phrase)]}
   [{:keys [db] :as cofx} password]
-  (let [multiaccount (get-in db [:intro-wizard :root-key])
-        multiaccount-address (-> (:address multiaccount)
-                                 (string/lower-case)
-                                 (string/replace-first "0x" ""))
-        keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts multiaccount-address :keycard-pairing]))]
+  (let [{:keys [key-uid] :as multiaccount} (get-in db [:intro-wizard :root-key])
+        keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts key-uid :keycard-pairing]))]
     (if keycard-multiaccount?
       ;; trying to recover multiaccount created with keycard
       {:db        (-> db
@@ -70,14 +66,14 @@
 
 (fx/defn store-multiaccount
   {:events [::recover-multiaccount-confirmed]}
-  [{:keys [db] :as cofx}]
+  [{:keys [db]}]
   (let [password (get-in db [:intro-wizard :key-code])
-        {:keys [passphrase root-key]} (:intro-wizard db)
-        {:keys [id address]} root-key
+        {:keys [root-key]} (:intro-wizard db)
+        {:keys [id]} root-key
         callback #(re-frame/dispatch [::store-multiaccount-success password])
         hashed-password (ethereum/sha3 (security/safe-unmask-data password))]
     {:db (assoc-in db [:intro-wizard :processing?] true)
-     ::multiaccounts.create/store-multiaccount [id address hashed-password callback]}))
+     ::multiaccounts.create/store-multiaccount [id hashed-password callback]}))
 
 (fx/defn recover-multiaccount-with-checks
   {:events [::sign-in-button-pressed]}
@@ -118,19 +114,18 @@
                                       root-data derived-data-extended]))))))))))))
 
 (fx/defn show-existing-multiaccount-alert
-  [_ address]
+  [_ key-uid]
   {:utils/show-confirmation
    {:title               (i18n/label :t/multiaccount-exists-title)
     :content             (i18n/label :t/multiaccount-exists-content)
     :confirm-button-text (i18n/label :t/unlock)
     :on-accept           #(re-frame/dispatch
-                           [:multiaccounts.login.ui/multiaccount-selected
-                            (clojure.string/lower-case address)])
+                           [:multiaccounts.login.ui/multiaccount-selected key-uid])
     :on-cancel           #(re-frame/dispatch [:navigate-to :multiaccounts])}})
 
 (fx/defn on-import-multiaccount-success
   {:events [::import-multiaccount-success]}
-  [{:keys [db] :as cofx} {:keys [address] :as root-data} derived-data]
+  [{:keys [db] :as cofx} {:keys [key-uid] :as root-data} derived-data]
   (let [multiaccounts (:multiaccounts/multiaccounts db)]
     (fx/merge
      cofx
@@ -140,7 +135,7 @@
                   :step :recovery-success
                   :forward-action :multiaccounts.recover/re-encrypt-pressed)}
      (when (existing-account? root-data multiaccounts)
-       (show-existing-multiaccount-alert address))
+       (show-existing-multiaccount-alert key-uid))
      (navigation/navigate-to-cofx :recover-multiaccount-success nil))))
 
 (fx/defn enter-phrase-pressed

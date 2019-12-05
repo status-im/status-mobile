@@ -486,15 +486,6 @@
                     (proceed-with-generating-key)))
         (load-pair-screen cofx)))))
 
-(fx/defn show-existing-multiaccount-alert
-  [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:utils/show-confirmation {:title               nil
-                                       :content             (i18n/label :t/keycard-existing-multiaccount)
-                                       :cancel-button-text  ""
-                                       :confirm-button-text :t/okay}}
-            (navigation/navigate-back)))
-
 (fx/defn check-card-state
   {:events [:hardwallet/check-card-state]}
   [{:keys [db] :as cofx}]
@@ -523,12 +514,11 @@
                      (load-pin-screen)))))
               (when (and (= card-state :multiaccount)
                          (= flow :import))
-                (let [{:keys [address]} (find-multiaccount-by-key-uid db key-uid)]
-                  (if address
-                    (recover/show-existing-multiaccount-alert address)
-                    (if pairing
-                      (load-recovery-pin-screen)
-                      (load-pair-screen)))))
+                (if (find-multiaccount-by-key-uid db key-uid)
+                  (recover/show-existing-multiaccount-alert key-uid)
+                  (if pairing
+                    (load-recovery-pin-screen)
+                    (load-pair-screen))))
               (when (= card-state :blank)
                 (if (= flow :import)
                   (navigation/navigate-to-cofx :keycard-recovery-no-key nil)
@@ -631,13 +621,12 @@
 
 (fx/defn get-keys-from-keycard
   [{:keys [db]}]
-  (let [multiaccount-address (get-in db [:multiaccounts/login :address])
-        pairing (get-in db [:multiaccounts/multiaccounts multiaccount-address :keycard-pairing])
+  (let [key-uid (get-in db [:multiaccounts/login :key-uid])
+        pairing (get-in db [:multiaccounts/multiaccounts key-uid :keycard-pairing])
         pin (string/join (get-in db [:hardwallet :pin :login]))]
     (when (and pairing
                (seq pin))
-      {:db                  (-> db
-                                (assoc-in [:hardwallet :pin :status] :verifying))
+      {:db                  (assoc-in db [:hardwallet :pin :status] :verifying)
        :hardwallet/get-keys {:pairing pairing
                              :pin     pin}})))
 
@@ -646,7 +635,7 @@
   [{:keys [db] :as cofx}]
   (let [application-info (get-in db [:hardwallet :application-info])
         key-uid (get-in db [:hardwallet :application-info :key-uid])
-        multiaccount (get-in db [:multiaccounts/multiaccounts (get-in db [:multiaccounts/login :address])])
+        multiaccount (get-in db [:multiaccounts/multiaccounts (get-in db [:multiaccounts/login :key-uid])])
         multiaccount-key-uid (get multiaccount :key-uid)
         multiaccount-mismatch? (or (nil? multiaccount)
                                    (not= multiaccount-key-uid key-uid))
@@ -947,12 +936,12 @@
 
 (fx/defn on-remove-key-success
   [{:keys [db] :as cofx}]
-  (let [multiaccount-address (get-in db [:multiaccount :address])
+  (let [key-uid (get-in db [:multiaccount :key-uid])
         instance-uid (get-in db [:hardwallet :application-info :instance-uid])
         pairings (get-in db [:hardwallet :pairings])]
     (fx/merge cofx
               {:db                 (-> db
-                                       (update :multiaccounts/multiaccounts dissoc multiaccount-address)
+                                       (update :multiaccounts/multiaccounts dissoc key-uid)
                                        (assoc-in [:hardwallet :secrets] nil)
                                        (update-in [:hardwallet :pairings] dissoc (keyword instance-uid))
                                        (assoc-in [:hardwallet :whisper-public-key] nil)
@@ -984,10 +973,10 @@
 
 (fx/defn on-delete-success
   [{:keys [db] :as cofx}]
-  (let [multiaccount-address (get-in db [:multiaccount :address])]
+  (let [key-uid (get-in db [:multiaccount :key-uid])]
     (fx/merge cofx
               {:db                 (-> db
-                                       (update :multiaccounts/multiaccounts dissoc multiaccount-address)
+                                       (update :multiaccounts/multiaccounts dissoc key-uid)
                                        (assoc-in [:hardwallet :secrets] nil)
                                        (assoc-in [:hardwallet :application-info] nil)
                                        (assoc-in [:hardwallet :pin] {:status      nil
@@ -1817,11 +1806,12 @@
 
 (fx/defn on-get-keys-success
   [{:keys [db] :as cofx} data]
-  (let [{:keys [address encryption-public-key whisper-private-key] :as account-data} (js->clj data :keywordize-keys true)
-        address (ethereum/normalized-hex address)
-        {:keys [photo-path name]} (get-in db [:multiaccounts/multiaccounts address])
+  (let [{:keys [key-uid encryption-public-key whisper-private-key] :as account-data} (js->clj data :keywordize-keys true)
+        {:keys [photo-path name]} (get-in db [:multiaccounts/multiaccounts key-uid])
         key-uid (get-in db [:hardwallet :application-info :key-uid])
-        multiaccount-data (types/clj->json {:name name :address address :photo-path photo-path})
+        multiaccount-data (types/clj->json {:name       name
+                                            :key-uid    key-uid
+                                            :photo-path photo-path})
         save-keys? (get-in db [:multiaccounts/login :save-password?])]
     (fx/merge
      cofx
@@ -1834,7 +1824,7 @@
           (assoc-in [:hardwallet :flow] nil)
           (update :multiaccounts/login assoc
                   :password encryption-public-key
-                  :address address
+                  :key-uid key-uid
                   :photo-path photo-path
                   :name name))
 
@@ -1843,22 +1833,22 @@
                                         :password          encryption-public-key
                                         :chat-key          whisper-private-key}}
      (when save-keys?
-       (keychain/save-hardwallet-keys address encryption-public-key whisper-private-key))
+       (keychain/save-hardwallet-keys key-uid encryption-public-key whisper-private-key))
      (clear-on-card-connected)
      (clear-on-card-read))))
 
 (fx/defn on-hardwallet-keychain-keys
   {:events [:multiaccounts.login.callback/get-hardwallet-keys-success]}
-  [{:keys [db] :as cofx} address [encryption-public-key whisper-private-key :as creds]]
+  [{:keys [db] :as cofx} key-uid [encryption-public-key whisper-private-key :as creds]]
   (if (nil? creds)
     (navigation/navigate-to-cofx cofx :keycard-login-pin nil)
-    (let [{:keys [photo-path name]} (get-in db [:multiaccounts/multiaccounts address])
+    (let [{:keys [photo-path name]} (get-in db [:multiaccounts/multiaccounts key-uid])
           multiaccount-data         (types/clj->json {:name       name
-                                                      :address    address
+                                                      :key-uid    key-uid
                                                       :photo-path photo-path})
-          account-data {:address address
+          account-data {:key-uid               key-uid
                         :encryption-public-key encryption-public-key
-                        :whisper-private-key whisper-private-key}]
+                        :whisper-private-key   whisper-private-key}]
       {:db
        (-> db
            (assoc-in [:hardwallet :pin :status] nil)
@@ -1868,7 +1858,7 @@
            (assoc-in [:hardwallet :flow] nil)
            (update :multiaccounts/login assoc
                    :password encryption-public-key
-                   :address address
+                   :key-uid key-uid
                    :photo-path photo-path
                    :name name
                    :save-password? true))

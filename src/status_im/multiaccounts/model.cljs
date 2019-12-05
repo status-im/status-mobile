@@ -5,7 +5,7 @@
    (get-in cofx [:db :multiaccount])))
 
 (defn credentials [cofx]
-  (select-keys (get-in cofx [:db :multiaccounts/login]) [:address :password :save-password?]))
+  (select-keys (get-in cofx [:db :multiaccounts/login]) [:key-uid :password :save-password?]))
 
 (defn current-public-key
   [cofx]

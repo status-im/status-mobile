@@ -116,11 +116,11 @@
 
 (re-frame/reg-fx
  :keychain/get-auth-method
- (fn [[address callback]]
+ (fn [[key-uid callback]]
    (can-save-user-password?
     (fn [can-save?]
       (if can-save?
-        (get-credentials (str address "-auth")
+        (get-credentials (str key-uid "-auth")
                          #(callback (if %
                                       (.-password %)
                                       auth-method-none)))
@@ -128,18 +128,18 @@
 
 (re-frame/reg-fx
  :keychain/get-user-password
- (fn [[address callback]]
-   (get-credentials address #(if % (callback (security/mask-data (.-password %))) (callback nil)))))
+ (fn [[key-uid callback]]
+   (get-credentials key-uid #(if % (callback (security/mask-data (.-password %))) (callback nil)))))
 
 (re-frame/reg-fx
  :keychain/get-hardwallet-keys
- (fn [[address callback]]
+ (fn [[key-uid callback]]
    (get-credentials
-    address
+    key-uid
     (fn [encryption-key-data]
       (if encryption-key-data
         (get-credentials
-         (whisper-key-name address)
+         (whisper-key-name key-uid)
          (fn [whisper-key-data]
            (if whisper-key-data
              (callback [(.-password encryption-key-data)
@@ -149,10 +149,10 @@
 
 (re-frame/reg-fx
  :keychain/save-user-password
- (fn [[address password]]
+ (fn [[key-uid password]]
    (save-credentials
-    address
-    address
+    key-uid
+    key-uid
     (security/safe-unmask-data password)
     #(when-not %
        (log/error
@@ -163,12 +163,12 @@
 
 (re-frame/reg-fx
  :keychain/save-auth-method
- (fn [[address method]]
+ (fn [[key-uid method]]
    (log/debug "[keychain] :keychain/save-auth-method"
               "method" method)
    (save-credentials
-    (str address "-auth")
-    address
+    (str key-uid "-auth")
+    key-uid
     method
     #(when-not %
        (log/error
@@ -179,17 +179,17 @@
 
 (re-frame/reg-fx
  :keychain/save-hardwallet-keys
- (fn [[address encryption-public-key whisper-private-key]]
+ (fn [[key-uid encryption-public-key whisper-private-key]]
    (save-credentials
-    address
-    address
+    key-uid
+    key-uid
     encryption-public-key
     #(when-not %
        (log/error
         (str "Error while saving encryption-public-key"))))
    (save-credentials
-    (whisper-key-name address)
-    address
+    (whisper-key-name key-uid)
+    key-uid
     whisper-private-key
     #(when-not %
        (log/error
@@ -197,40 +197,40 @@
 
 (re-frame/reg-fx
  :keychain/clear-user-password
- (fn [address]
+ (fn [key-uid]
    (when platform/mobile?
-     (-> (.resetInternetCredentials rn/keychain (string/lower-case address))
+     (-> (.resetInternetCredentials rn/keychain (string/lower-case key-uid))
          (.then #(when-not % (log/error (str "Error while clearing saved password."))))))))
 
 (fx/defn get-auth-method
-  [_ address]
+  [_ key-uid]
   {:keychain/get-auth-method
-   [address #(re-frame/dispatch [:multiaccounts.login/get-auth-method-success % address])]})
+   [key-uid #(re-frame/dispatch [:multiaccounts.login/get-auth-method-success % key-uid])]})
 
 (fx/defn get-user-password
-  [_ address]
+  [_ key-uid]
   {:keychain/get-user-password
-   [address
+   [key-uid
     #(re-frame/dispatch
-      [:multiaccounts.login.callback/get-user-password-success % address])]})
+      [:multiaccounts.login.callback/get-user-password-success % key-uid])]})
 
 (fx/defn get-hardwallet-keys
-  [_ address]
+  [_ key-uid]
   {:keychain/get-hardwallet-keys
-   [address
+   [key-uid
     #(re-frame/dispatch
-      [:multiaccounts.login.callback/get-hardwallet-keys-success address %])]})
+      [:multiaccounts.login.callback/get-hardwallet-keys-success key-uid %])]})
 
 (fx/defn save-user-password
-  [_ address password]
-  {:keychain/save-user-password [address password]})
+  [_ key-uid password]
+  {:keychain/save-user-password [key-uid password]})
 
 (fx/defn save-hardwallet-keys
-  [_ address encryption-public-key whisper-private-key]
-  {:keychain/save-hardwallet-keys [address
+  [_ key-uid encryption-public-key whisper-private-key]
+  {:keychain/save-hardwallet-keys [key-uid
                                    encryption-public-key
                                    whisper-private-key]})
 (fx/defn save-auth-method
-  [{:keys [db]} address method]
+  [{:keys [db]} key-uid method]
   {:db                        (assoc db :auth-method method)
-   :keychain/save-auth-method [address method]})
+   :keychain/save-auth-method [key-uid method]})
