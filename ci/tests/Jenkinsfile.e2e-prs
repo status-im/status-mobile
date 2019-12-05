@@ -29,6 +29,7 @@ pipeline {
     string(
       name: 'TR_CASE_IDS',
       description: 'IDs of the TestRail case, separated by a comma. (Optional)',
+      defaultValue: '',
     )
   }
 
@@ -54,8 +55,8 @@ pipeline {
       steps { script {
         currentBuild.displayName = "PR-${params.PR_ID}"
         /* for managing optional arguments */
-        def extraPytestOpts = ""
-        if (params.TR_CASE_IDS != "") {
+        def extraPytestOpts = ''
+        if (params.TR_CASE_IDS != '') {
           extraPytestOpts = "--run_testrail_ids='${params.TR_CASE_IDS}'"
         }
 
