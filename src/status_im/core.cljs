@@ -10,13 +10,13 @@
             [status-im.utils.logging.core :as utils.logs]
             cljs.core.specs.alpha))
 
-(if js/goog.DEBUG
-  (.ignoreWarnings (.-YellowBox js-dependencies/react-native)
-                   #js ["re-frame: overwriting"
-                        "Warning: componentWillMount is deprecated and will be removed in the next major version. Use componentDidMount instead. As a temporary workaround, you can rename to UNSAFE_componentWillMount."
-                        "Warning: componentWillUpdate is deprecated and will be removed in the next major version. Use componentDidUpdate instead. As a temporary workaround, you can rename to UNSAFE_componentWillUpdate."])
-  (aset js/console "disableYellowBox" true))
-
+#_(if js/goog.DEBUG
+    (.ignoreWarnings (.-YellowBox js-dependencies/react-native)
+                     #js ["re-frame: overwriting"
+                          "Warning: componentWillMount is deprecated and will be removed in the next major version. Use componentDidMount instead. As a temporary workaround, you can rename to UNSAFE_componentWillMount."
+                          "Warning: componentWillUpdate is deprecated and will be removed in the next major version. Use componentDidUpdate instead. As a temporary workaround, you can rename to UNSAFE_componentWillUpdate."])
+    (aset js/console "disableYellowBox" true))
+(aset js/console "disableYellowBox" true)
 (defn init [app-root]
   (utils.logs/init-logs)
   (error-handler/register-exception-handler!)

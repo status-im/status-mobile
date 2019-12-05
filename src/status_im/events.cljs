@@ -1555,6 +1555,11 @@
    {:dismiss-keyboard nil}))
 
 (handlers/register-handler-fx
+ :browser/fill-mode
+ (fn [{:keys [db]}]
+   {:db (update db :browser-full-screen? not)}))
+
+(handlers/register-handler-fx
  :wallet-send-request
  (fn [{:keys [db] :as cofx} [_ public-key amount symbol decimals]]
    (assert public-key)

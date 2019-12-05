@@ -311,4 +311,5 @@
                                    ::collectibles
                                    :registry/registry
                                    ::two-pane-ui-enabled?
-                                   ::add-account]))
+                                   ::add-account
+                                   ::browser-full-screen?]))

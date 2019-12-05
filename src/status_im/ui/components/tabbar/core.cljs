@@ -59,8 +59,9 @@
                 (re-frame/subscribe [count-subscription]))]
     [react/touchable-highlight
      {:style               tabs.styles/touchable-container
-      :disabled            active?
+      ;:disabled            active?
       :on-press            #(re-frame/dispatch-sync [:navigate-to nav-stack])
+      :on-long-press       #(when (= nav-stack :browser-stack) (re-frame/dispatch [:browser/fill-mode]))
       :accessibility-label accessibility-label}
      [react/view
       {:style tabs.styles/new-tab-container}

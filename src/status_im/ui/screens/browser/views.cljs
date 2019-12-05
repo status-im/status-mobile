@@ -120,7 +120,7 @@
 (views/defview browser-component
   [{:keys [webview error? url browser browser-id unsafe? can-go-back?
            can-go-forward? resolving? network-id url-original
-           show-permission show-tooltip opt-in? dapp? name dapps-account]}]
+           show-permission show-tooltip opt-in? dapp? name dapps-account browser-full-screen?]}]
   {:should-component-update (fn [_ _ args]
                               (let [[_ props] args]
                                 (not (nil? (:url props)))))}
@@ -155,7 +155,8 @@
                                                       (js-res/web3-init (:address dapps-account) (str network-id)))
                                                     (get-inject-js url))
         :injected-java-script                  (js-res/webview-js)}])]
-   [navigation url-original can-go-back? can-go-forward? dapps-account]
+   (when-not browser-full-screen?
+     [navigation url-original can-go-back? can-go-forward? dapps-account])
    [permissions.views/permissions-panel [(:dapp? browser) (:dapp browser) dapps-account] show-permission]
    (when show-tooltip
      [tooltip/bottom-tooltip-info
@@ -171,13 +172,15 @@
                   {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
                   {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:browser/options]
                   dapps-account [:dapps-account]
-                  network-id [:chain-id]]
+                  network-id [:chain-id]
+                  browser-full-screen? [:browser-full-screen?]]
     (let [can-go-back?    (browser/can-go-back? browser)
           can-go-forward? (browser/can-go-forward? browser)
           url-original    (browser/get-current-url browser)
           opt-in?         (or (nil? (:web3-opt-in? settings)) (:web3-opt-in? settings))]
       [react/view {:style styles/browser}
-       [toolbar error? url url-original browser browser-id url-editing? webview]
+       (when-not browser-full-screen?
+         [toolbar error? url url-original browser browser-id url-editing? webview])
        [react/view
         (when loading?
           [connectivity/loading-indicator window-width])]
@@ -197,4 +200,5 @@
                            :show-tooltip    show-tooltip
                            :opt-in?         opt-in?
                            :name            name
-                           :dapps-account   dapps-account}]])))
+                           :dapps-account   dapps-account
+                           :browser-full-screen? browser-full-screen?}]])))

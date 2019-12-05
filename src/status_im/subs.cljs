@@ -58,6 +58,8 @@
 (defn reg-root-key-sub [sub-name db-key]
   (re-frame/reg-sub sub-name (fn [db] (get db db-key))))
 
+(reg-root-key-sub :browser-full-screen? :browser-full-screen?)
+
 ;;view
 (reg-root-key-sub :view-id :view-id)
 (reg-root-key-sub :navigation-stack :navigation-stack)
