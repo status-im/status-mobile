@@ -287,21 +287,25 @@
   - mailserver connected: we mark the mailserver as trusted peer"
   [{:keys [db] :as cofx} previous-summary]
   (when (:multiaccount db)
-    (let [{:keys [peers-summary peers-count]} db
-          {:keys [address sym-key-id] :as mailserver} (fetch-current db)
-          mailserver-was-registered? (registered-peer? previous-summary
-                                                       address)
-          mailserver-is-registered?  (registered-peer? peers-summary
-                                                       address)
-          mailserver-added?          (and mailserver-is-registered?
-                                          (not mailserver-was-registered?))
-          mailserver-removed?        (and mailserver-was-registered?
-                                          (not mailserver-is-registered?))]
-      (cond
-        mailserver-added?
-        (mark-trusted-peer cofx)
-        mailserver-removed?
-        (connect-to-mailserver cofx)))))
+    (if (:mailserver/current-id db)
+      (let [{:keys [peers-summary peers-count]} db
+            {:keys [address sym-key-id] :as mailserver} (fetch-current db)
+            mailserver-was-registered? (registered-peer? previous-summary
+                                                         address)
+            mailserver-is-registered?  (registered-peer? peers-summary
+                                                         address)
+            mailserver-added?          (and mailserver-is-registered?
+                                            (not mailserver-was-registered?))
+            mailserver-removed?        (and mailserver-was-registered?
+                                            (not mailserver-is-registered?))]
+        (cond
+          mailserver-added?
+          (mark-trusted-peer cofx)
+          mailserver-removed?
+          (connect-to-mailserver cofx)))
+      ;; if there is no current mailserver defined,
+      ;; we set it first
+      (set-current-mailserver cofx))))
 
 (defn adjust-request-for-transit-time
   [from]
