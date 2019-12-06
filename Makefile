@@ -323,7 +323,7 @@ android-devices: ##@other Invoke adb devices
 android-logcat: export _NIX_ATTR := targets.mobile.android.adb.shell
 android-logcat: export TARGET_OS ?= android
 android-logcat: ##@other Read status-react logs from Android phone using adb
-	adb logcat | grep -e RNBootstrap -e ReactNativeJS -e ReactNative -e StatusModule -e StatusNativeLogs
+	adb logcat | grep -e RNBootstrap -e ReactNativeJS -e ReactNative -e StatusModule -e StatusNativeLogs -e 'F DEBUG   :' -e 'Go      :' -e 'GoLog   :' -e 'libc    :'
 
 android-install: export _NIX_ATTR := targets.mobile.android.adb.shell
 android-install: export TARGET_OS ?= android

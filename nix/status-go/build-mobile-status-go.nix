@@ -37,12 +37,12 @@ let
       export NIX_GOWORKDIR=${NIX_GOWORKDIR}
       export ${concatStringsSep " " envVars}
       gomobile bind \
-          -target=${name} \
-          -ldflags='${CGO_LDFLAGS}' \
-          ${concatStringsSep " " gomobileExtraFlags} \
-          ${goBuildFlags} \
-          -o ${outputFileName} \
-          ${goPackagePath}/mobile
+        -target=${name} \
+        -ldflags='${CGO_LDFLAGS}' \
+        ${concatStringsSep " " gomobileExtraFlags} \
+        ${goBuildFlags} \
+        -o ${outputFileName} \
+        ${goPackagePath}/mobile
 
       rm -rf ${NIX_GOWORKDIR}
     '';

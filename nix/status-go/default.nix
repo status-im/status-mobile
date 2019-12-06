@@ -22,6 +22,7 @@ let
         goPackagePath = "github.com/${owner}/${repo}";
         rev = "unknown";
         shortRev = "unknown";
+        sanitizedVersion = version;
         versionName = "develop";
         src =
           let path = traceValFn (path: "Using local ${repo} sources from ${path}\n") config.status_go.src_override;
@@ -32,7 +33,7 @@ let
               # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
               mkFilter {
                 dirRootsToInclude = [];
-                dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".vscode" ".dependabot" ".github" ".ethereumtest" "build" "eth-node" "protocol" ];
+                dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".vscode" ".dependabot" ".github" ".ethereumtest" "build" ];
                 filesToInclude = [ "Makefile" "go.mod" "go.sum" "VERSION" ];
                 root = path;
               };
