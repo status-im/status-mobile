@@ -88,7 +88,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         wallet_view.set_up_wallet()
         status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
-        status_test_dapp.transactions_button.click()
+        status_test_dapp.transactions_button.click_until_presence_of_element(status_test_dapp.send_two_tx_in_batch_button)
         send_transaction_view = status_test_dapp.send_two_tx_in_batch_button.click()
         send_transaction_view.sign_transaction()
 

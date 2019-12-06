@@ -254,8 +254,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True, decimals=7)
 
-    @marks.testrail_id(5350)
+    @marks.testrail_id(6245)
     @marks.high
+    @marks.skip
+    # temporary skipped until tooltips will be visible in xml #9555
     def test_token_with_more_than_allowed_decimals(self):
         sender = wallet_users['C']
         sign_in_view = SignInView(self.driver)
