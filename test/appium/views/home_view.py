@@ -212,6 +212,7 @@ class HomeView(BaseView):
         dapp_view = self.dapp_tab_button.click()
         dapp_view.open_url(test_dapp_url)
         status_test_dapp = dapp_view.get_status_test_dapp_view()
+        status_test_dapp.allow_button.wait_for_element(20)
         if allow_all:
             status_test_dapp.allow_button.click_until_absense_of_element(status_test_dapp.allow_button)
         else:
