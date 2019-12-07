@@ -17,7 +17,7 @@
 (styles/def last-message-text
   {:flex        1
    :align-self  :stretch
-   :line-height 22
+   :line-height 21
    :color       colors/gray
    :desktop     {:max-height 20}})
 
