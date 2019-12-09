@@ -6316,10 +6316,10 @@ react-native-image-resizer@^1.1.0:
   version "0.0.2"
   resolved "git+https://github.com/status-im/react-native-navigation-twopane.git#04ed5fddfb46a6a3ee30776987acb4d3b11c27d4"
 
-react-native-os@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-os/-/react-native-os-1.1.0.tgz#bfbe1c44d8a5b14a6f3a3a405d8ada6f547a516e"
-  integrity sha1-v74cRNilsUpvOjpAXYrab1R6UW4=
+react-native-os@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/react-native-os/-/react-native-os-1.2.6.tgz#1bb16d78ccad1143972183a04f443cf1af9fbefa"
+  integrity sha512-OlT+xQAcvkcnf7imgXiu+myMkqDt4xw2bP5SlVo19hEn5XHBkPMLX7dk3sSGxxncH/ToMDsf1KLyrPabNVtadA==
 
 react-native-safe-area-view@^0.14.1:
   version "0.14.6"
