@@ -29,15 +29,23 @@
 
 (fx/defn handle-network-info-change
   {:events [::network-info-changed]}
-  [{:keys [db] :as cofx} {:keys [isConnected type details] :as state}]
+  [{:keys [db] :as cofx} {:keys [isConnected type details]}]
   (let [old-network-status (:network-status db)
         old-network-type (:network/type db)
         connectivity-status (if isConnected :online :offline)]
-    (fx/merge cofx
-              (when-not (= connectivity-status old-network-status)
-                (change-network-status isConnected))
-              (when-not (= type old-network-type)
-                (change-network-type old-network-type type (:is-connection-expensive details))))))
+    (log/debug "[network] ::network-info-changed"
+               "old-network-status" old-network-status
+               "old-network-type" old-network-type
+               "connectivity-status" connectivity-status)
+    (fx/merge
+     cofx
+     (when-not (= connectivity-status old-network-status)
+       (change-network-status isConnected))
+     (when-not (= type old-network-type)
+       (change-network-type old-network-type type
+                            (:is-connection-expensive details)))
+     (when (= :online connectivity-status)
+       (mailserver/set-current-mailserver)))))
 
 (defn add-net-info-listener []
   (when react-components/net-info

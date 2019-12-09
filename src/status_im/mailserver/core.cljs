@@ -262,6 +262,8 @@
    The pool size is 1/4 of the mailservers were pinged successfully"
   {:events [::get-latency-callback]}
   [{:keys [db] :as cofx} latency-results]
+  (log/debug "[mailserver] ::get-latency-callback"
+             "latency-results" latency-results)
   (let [successful-pings (remove :error latency-results)]
     (when (seq successful-pings)
       (let [address (-> (take (pool-size (count successful-pings))
