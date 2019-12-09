@@ -5,19 +5,19 @@ from views.sign_in_view import SignInView
 
 
 def return_left_chat_system_message(username):
-    return "%s left the group" % username
+    return "@%s left the group" % username
 
 
 def return_created_chat_system_message(username, chat_name):
-    return "%s created the group %s" % (username, chat_name)
+    return "@%s created the group %s" % (username, chat_name)
 
 
 def return_joined_chat_system_message(username):
-    return "%s has joined the group" % username
+    return "@%s joined the group" % username
 
 
 def return_made_admin_system_message(username):
-    return "%s has been made admin" % username
+    return "@%s has been made admin" % username
 
 
 def create_users(driver_1, driver_2):

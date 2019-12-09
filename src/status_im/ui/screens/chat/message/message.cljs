@@ -18,6 +18,10 @@
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
+(defview mention-element [from]
+  (letsubs [{:keys [ens-name alias]} [:contacts/contact-name-by-identity from]]
+    (str "@" (or ens-name alias))))
+
 (defn message-timestamp
   [t justify-timestamp? outgoing content content-type]
   [react/text {:style (style/message-timestamp-text
@@ -85,6 +89,14 @@
                  (re-frame/dispatch
                   [:browser.ui/message-link-pressed destination])))}
            destination])
+
+    "mention"
+    (conj acc [react/text-class
+               {:style {:color (if outgoing colors/mention-outgoing colors/mention-incoming)}
+                :on-press
+                #(re-frame/dispatch
+                  [:chat.ui/start-chat literal {:navigation-reset? true}])}
+               [mention-element literal]])
 
     "status-tag"
     (conj acc [react/text-class

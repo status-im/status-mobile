@@ -34,32 +34,6 @@
 ; Build an event id from a message
 (def event-id (comp ethereum/sha3 event->string))
 
-(defn marshal-membership-updates [updates]
-  (mapcat (fn [{:keys [signature events from]}]
-            (map #(-> %
-                      (assoc
-                       :clockValue (:clock-value %)
-                       :id (event-id %)
-                       :signature signature
-                       :from from)
-                      (dissoc :clock-value)) events)) updates))
-
-(defn unmarshal-membership-updates [chat-id updates]
-  (->> updates
-       (group-by :signature)
-       (map (fn [[signature events]]
-              {:events
-               (into []
-                     (sort-by :clock-value (map #(-> %
-                                                     (assoc :clock-value (:clockValue %))
-                                                     (update :members (fn [members] (into #{} members)))
-                                                     (dissoc :signature :from :id :clockValue)
-                                                     remove-empty-vals) events)))
-               :from  (-> events first :from)
-               :signature signature
-               :chat-id chat-id}))
-       (into #{})))
-
 (defn type->rpc [{:keys [public? group-chat] :as chat}]
   (assoc chat :chatType (cond
                           public? public-chat-type
@@ -110,10 +84,9 @@
   (-> chat
       type->rpc
       marshal-members
-      (update :membership-updates marshal-membership-updates)
       (update :last-message messages/->rpc)
       (clojure.set/rename-keys {:chat-id :id
-                                :membership-updates :membershipUpdates
+                                :membership-update-events :membershipUpdateEvents
                                 :unviewed-messages-count :unviewedMessagesCount
                                 :last-message :lastMessage
                                 :deleted-at-clock-value :deletedAtClockValue
@@ -130,13 +103,12 @@
       rpc->type
       unmarshal-members
       (clojure.set/rename-keys {:id :chat-id
-                                :membershipUpdates :membership-updates
+                                :membershipUpdateEvents :membership-update-events
                                 :deletedAtClockValue :deleted-at-clock-value
                                 :unviewedMessagesCount :unviewed-messages-count
                                 :lastMessage :last-message
                                 :active :is-active
                                 :lastClockValue :last-clock-value})
-      (update :membership-updates (partial unmarshal-membership-updates (:id chat)))
       (update :last-message #(when % (messages/<-rpc %)))
       (dissoc :chatType :members)))
 

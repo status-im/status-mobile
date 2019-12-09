@@ -13,7 +13,6 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.mailserver.core :as mailserver]
             [status-im.native-module.core :as status]
-            [status-im.transport.message.group-chat :as message.group-chat]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.message.transit :as transit]
             [status-im.transport.utils :as transport.utils]
@@ -116,29 +115,32 @@
          (get-in cofx [:db :chats chat-id :public?])) chat-id
     (and (= constants/message-type-one-to-one message-type)
          (= (multiaccounts.model/current-public-key cofx) from)) chat-id
+    (= constants/message-type-private-group-system-message message-type) chat-id
     (= constants/message-type-one-to-one message-type) from))
 
 (fx/defn update-unviewed-count
   [{:keys [now db] :as cofx} {:keys [chat-id
                                      from
+                                     message-type
                                      message-id] :as message}]
-  (let [{:keys [current-chat-id view-id]} db
-        chat-view?         (or (= :chat view-id)
-                               (= :chat-modal view-id))
-        current-count (get-in db [:chats chat-id :unviewed-messages-count])]
-    (cond
-      (= from (multiaccounts.model/current-public-key cofx))
-      ;; nothing to do
-      nil
+  (when-not (= message-type constants/message-type-private-group-system-message)
+    (let [{:keys [current-chat-id view-id]} db
+          chat-view?         (or (= :chat view-id)
+                                 (= :chat-modal view-id))
+          current-count (get-in db [:chats chat-id :unviewed-messages-count])]
+      (cond
+        (= from (multiaccounts.model/current-public-key cofx))
+       ;; nothing to do
+        nil
 
-      (and chat-view? (= current-chat-id chat-id))
-      (fx/merge cofx
-                (data-store.messages/mark-messages-seen current-chat-id [message-id]))
+        (and chat-view? (= current-chat-id chat-id))
+        (fx/merge cofx
+                  (data-store.messages/mark-messages-seen current-chat-id [message-id]))
 
-      :else
-      {:db (update-in db [:chats chat-id]
-                      assoc
-                      :unviewed-messages-count (inc current-count))})))
+        :else
+        {:db (update-in db [:chats chat-id]
+                        assoc
+                        :unviewed-messages-count (inc current-count))}))))
 
 (fx/defn receive-one
   [cofx message]

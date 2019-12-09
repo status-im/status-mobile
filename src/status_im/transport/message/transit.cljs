@@ -2,7 +2,6 @@
  status-im.transport.message.transit
   (:require [status-im.transport.message.contact :as contact]
             [status-im.transport.message.protocol :as protocol]
-            [status-im.transport.message.group-chat :as group-chat]
             [status-im.transport.message.pairing :as pairing]
             [status-im.constants :as constants]
             [cognitect.transit :as transit]))
@@ -50,12 +49,6 @@
       ;; no need for legacy conversions for rest of the content types
       #js [content content-type message-type clock-value timestamp])))
 
-(deftype GroupMembershipUpdateHandler []
-  Object
-  (tag [this v] "g5")
-  (rep [this {:keys [chat-id membership-updates message]}]
-    #js [chat-id membership-updates message]))
-
 (deftype SyncInstallationHandler []
   Object
   (tag [this v] "p1")
@@ -74,7 +67,6 @@
                               contact/ContactRequestConfirmed  (ContactRequestConfirmedHandler.)
                               contact/ContactUpdate            (ContactUpdateHandler.)
                               protocol/Message                 (MessageHandler.)
-                              group-chat/GroupMembershipUpdate (GroupMembershipUpdateHandler.)
                               pairing/SyncInstallation         (SyncInstallationHandler.)
                               pairing/PairInstallation         (PairInstallationHandler.)}}))
 
@@ -109,8 +101,6 @@
                               "c5" (fn [])
                               "c6" (fn [[name profile-image address _ _]]
                                      (contact/ContactUpdate. name profile-image address nil nil))
-                              "g5" (fn [[chat-id membership-updates message]]
-                                     (group-chat/GroupMembershipUpdate. chat-id membership-updates message))
                               "p1" (fn [[contacts account chat]]
                                      (pairing/SyncInstallation. contacts account chat))
                               "p2" (fn [[installation-id device-type name _]]

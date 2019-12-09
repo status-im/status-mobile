@@ -861,14 +861,13 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('Public chat "%s" doesn\'t appear on other device when devices are paired'
                                % public_chat_before_sync_name)
 
-        # Disabling for now until GroupMembershipUpdate is also moved to status-go
-        #device_2_home.element_by_text(group_chat_name).click()
-        #device_2_group_chat = device_2_home.get_chat_view()
+        device_2_home.element_by_text(group_chat_name).click()
+        device_2_group_chat = device_2_home.get_chat_view()
 
-        #if not device_2_group_chat.chat_element_by_text(message_after_sync).is_element_displayed():
-        #    self.errors.append('"%s" message in group chat is not synced' % message_after_sync)
+        if not device_2_group_chat.chat_element_by_text(message_after_sync).is_element_displayed():
+            self.errors.append('"%s" message in group chat is not synced' % message_after_sync)
 
-        #device_2_group_chat.get_back_to_home_view()
+        device_2_group_chat.get_back_to_home_view()
         device_2_home.profile_button.click()
         if not device_2_profile.profile_picture.is_element_image_equals_template('sauce_logo_red_profile.png'):
             self.errors.append('Profile picture was not updated after changing when devices are paired')

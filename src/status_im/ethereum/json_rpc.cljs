@@ -36,6 +36,13 @@
    "shhext_enableInstallation" {}
    "shhext_disableInstallation" {}
    "shhext_sendChatMessage" {}
+   "shhext_confirmJoiningGroup" {}
+   "shhext_addAdminsToGroupChat" {}
+   "shhext_addMembersToGroupChat" {}
+   "shhext_removeMemberFromGroupChat" {}
+   "shhext_leaveGroupChat" {}
+   "shhext_changeGroupChatName" {}
+   "shhext_createGroupChatWithMembers" {}
    "shhext_reSendChatMessage" {}
    "shhext_getOurInstallations" {}
    "shhext_setInstallationMetadata" {}

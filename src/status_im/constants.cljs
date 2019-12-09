@@ -7,15 +7,15 @@
 
 (def ms-in-bg-for-require-bioauth 5000)
 
-(def content-type-text 0)
-(def content-type-sticker 1)
-(def content-type-status 2)
-(def content-type-emoji 3)
+(def content-type-text 1)
+(def content-type-sticker 2)
+(def content-type-status 3)
+(def content-type-emoji 4)
 
-(def message-type-one-to-one 0)
-(def message-type-public-group 1)
-(def message-type-private-group 2)
-(def message-type-private-group-system-message 3)
+(def message-type-one-to-one 1)
+(def message-type-public-group 2)
+(def message-type-private-group 3)
+(def message-type-private-group-system-message 4)
 
 (def desktop-content-types
   #{content-type-text content-type-emoji content-type-status})

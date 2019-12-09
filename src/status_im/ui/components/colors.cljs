@@ -67,6 +67,8 @@
                      purple
                      "#8B3131"])
 
+(def mention-incoming "#0DA4C9")
+(def mention-outgoing "#9EE8FA")
 (def text black)
 (def text-gray gray)
 

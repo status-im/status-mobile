@@ -1170,17 +1170,6 @@
  (fn [cofx [_ chat-id]]
    (group-chats/join-chat cofx chat-id)))
 
-(handlers/register-handler-fx
- :group-chats.callback/sign-success
- [(re-frame/inject-cofx :random-guid-generator)]
- (fn [cofx [_ group-update]]
-   (group-chats/handle-sign-success cofx group-update)))
-
-(handlers/register-handler-fx
- :group-chats.callback/extract-signature-success
- (fn [cofx [_ group-update message-info sender-signature]]
-   (group-chats/handle-membership-update cofx group-update message-info sender-signature)))
-
 ;; profile module
 
 (handlers/register-handler-fx

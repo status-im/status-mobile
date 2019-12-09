@@ -20,7 +20,6 @@
             [status-im.test.ethereum.mnemonic]
             [status-im.test.ethereum.stateofus]
             [status-im.test.fleet.core]
-            [status-im.test.group-chats.core]
             [status-im.test.hardwallet.core]
             [status-im.test.i18n]
             [status-im.test.mailserver.core]
@@ -93,7 +92,6 @@
  'status-im.test.ethereum.mnemonic
  'status-im.test.ethereum.stateofus
  'status-im.test.fleet.core
- 'status-im.test.group-chats.core
  'status-im.test.hardwallet.core
  'status-im.test.i18n
  'status-im.test.mailserver.core
