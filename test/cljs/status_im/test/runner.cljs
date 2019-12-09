@@ -27,6 +27,7 @@
             [status-im.test.mailserver.topics]
             [status-im.test.models.bootnode]
             [status-im.test.models.contact]
+            status-im.test.multiaccounts.login.core
             [status-im.test.multiaccounts.model]
             [status-im.test.multiaccounts.recover.core]
             [status-im.test.multiaccounts.update.core]
@@ -100,6 +101,7 @@
  'status-im.test.mailserver.topics
  'status-im.test.models.bootnode
  'status-im.test.models.contact
+ 'status-im.test.multiaccounts.login.core
  'status-im.test.multiaccounts.model
  'status-im.test.multiaccounts.recover.core
  'status-im.test.multiaccounts.update.core
