@@ -6256,10 +6256,10 @@ react-native-background-timer@^2.0.0:
   resolved "https://registry.yarnpkg.com/react-native-background-timer/-/react-native-background-timer-2.1.1.tgz#9a2489681ab2f8033c213c73272e9d4c47572cd5"
   integrity sha512-cuXIIv+dcG8a8qkTD8pMzeqOEZCO+UGKglZWIe1osve+yJslmCowYQff+bI9xa7NOt2w+Vtd4L3d9JonlSqODg==
 
-react-native-camera@^3.9.0:
-  version "3.9.0"
-  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-3.9.0.tgz#334d9d7be5476d673af4df954929958ecc36ed55"
-  integrity sha512-qUhog1yd7FQ9xRTxN1SP+T5f4uLuVY5eXx6mMlBCNsqvYSoKCWFHH1Kpil9fx7d2iOl/o09o/7kHNcSl9RkrkQ==
+react-native-camera@^3.13.1:
+  version "3.13.1"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-3.13.1.tgz#016a011ca264d7044e2f1ad11fc624b90020aeb9"
+  integrity sha512-HXCo75sFYOJRqtbiG12ttoG6K4UdS1mfOwu6NoQmxj6IV2KrNgdOYO4YTyLymGUXNs3LyOWpJskVvCRupoFA3A==
   dependencies:
     prop-types "^15.6.2"
 
