@@ -8,8 +8,9 @@
             [status-im.utils.types :as types]
             [status-im.utils.fx :as fx]))
 
-(defn current-fleet-sub [settings]
-  (keyword (or (get settings :fleet)
+(defn current-fleet-sub
+  [multiaccount]
+  (keyword (or (get multiaccount :fleet)
                config/fleet)))
 
 (defn format-mailserver
@@ -69,15 +70,12 @@
 
 (fx/defn save
   [{:keys [db now] :as cofx} fleet]
-  (let [settings (get-in db [:multiaccount :settings])
-        new-settings (if fleet
-                       (assoc settings :fleet fleet)
-                       (dissoc settings :fleet))]
-    (fx/merge cofx
-              (multiaccounts.update/update-settings new-settings {})
-              (node/prepare-new-config
-               {:on-success
-                #(when (not= fleet
-                             (:fleet settings))
-                   (re-frame/dispatch
-                    [:multiaccounts.update.callback/save-settings-success]))}))))
+  (let [old-fleet (get-in db [:multiaccount :fleet])]
+    (when (not= fleet old-fleet)
+      (fx/merge
+       cofx
+       (multiaccounts.update/multiaccount-update :fleet fleet {})
+       (node/prepare-new-config
+        {:on-success
+         #(re-frame/dispatch
+           [:multiaccounts.update.callback/save-settings-success])})))))

@@ -84,7 +84,7 @@
     (reduce merge $)))
 
 (defn current-fleet-key [db]
-  (keyword (get-in db [:multiaccount :settings :fleet]
+  (keyword (get-in db [:multiaccount :fleet]
                    config/fleet)))
 
 (defn get-current-fleet
@@ -94,16 +94,13 @@
 
 (defn- get-multiaccount-node-config
   [{:keys [multiaccount :networks/networks :networks/current-network]
-    :or {current-network config/default-network
-         networks constants/default-networks}
     :as db}]
   (let [current-fleet-key (current-fleet-key db)
         current-fleet (get-current-fleet db)
         rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
-        {:keys [installation-id settings bootnodes]
-         :or {settings constants/default-multiaccount-settings}} multiaccount
-        use-custom-bootnodes (get-in settings [:bootnodes current-network])
-        log-level (get-log-level settings)]
+        {:keys [installation-id log-level
+                custom-bootnodes custom-bootnodes-enabled?]} multiaccount
+        use-custom-bootnodes (get custom-bootnodes-enabled? current-network)]
     (cond-> (get-in networks [current-network :config])
       :always
       (get-base-node-config)
@@ -145,7 +142,7 @@
       (and
        config/bootnodes-settings-enabled?
        use-custom-bootnodes)
-      (add-custom-bootnodes current-network bootnodes)
+      (add-custom-bootnodes current-network custom-bootnodes)
 
       :always
       (add-log-level log-level))))
@@ -162,8 +159,8 @@
 app-db"
   {:events [::save-new-config]}
   [{:keys [db]} config {:keys [on-success]}]
-  {::json-rpc/call [{:method "settings_saveNodeConfig"
-                     :params [config]
+  {::json-rpc/call [{:method "settings_saveSetting"
+                     :params [:node-config config]
                      :on-success on-success}]})
 
 (fx/defn prepare-new-config

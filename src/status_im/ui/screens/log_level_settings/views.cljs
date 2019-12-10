@@ -46,7 +46,7 @@
     :value "TRACE"}])
 
 (views/defview log-level-settings []
-  (views/letsubs [current-log-level [:settings/current-log-level]]
+  (views/letsubs [current-log-level [:log-level/current-log-level]]
     [react/view {:flex 1}
      [topbar/topbar {:title :t/log-level-settings}]
      [react/view styles/wrapper

@@ -12,7 +12,7 @@
             [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :as views]))
 
-(defn- list-data [mnemonic settings supported-biometric-auth biometric-auth? keycard?]
+(defn- list-data [mnemonic preview-privacy? supported-biometric-auth biometric-auth? keycard?]
   [{:type                 :section-header
     :title                :t/security
     :container-margin-top 6}
@@ -64,7 +64,7 @@
     :accessories
     [[react/switch
       {:track-color #js {:true colors/blue :false nil}
-       :value       (boolean (:preview-privacy? settings))
+       :value (boolean preview-privacy?)
        :on-value-change
        #(re-frame/dispatch
          [:multiaccounts.ui/preview-privacy-mode-switched %])
@@ -72,7 +72,7 @@
     :on-press
     #(re-frame/dispatch
       [:multiaccounts.ui/preview-privacy-mode-switched
-       ((complement boolean) (:preview-privacy? settings))])}
+       ((complement boolean) preview-privacy?)])}
    {:type :divider}
    ;; TODO - uncomment when implemented
    (comment
@@ -83,15 +83,14 @@
       :theme                   :action-destructive})])
 
 (views/defview privacy-and-security []
-  (views/letsubs [{:keys [mnemonic]} [:multiaccount]
-                  settings                 [:multiaccount-settings]
+  (views/letsubs [{:keys [mnemonic preview-privacy?]} [:multiaccount]
                   supported-biometric-auth [:supported-biometric-auth]
                   auth-method              [:auth-method]
                   keycard-multiaccount?    [:keycard-multiaccount?]]
     [react/view {:flex 1 :background-color colors/white}
      [topbar/topbar {:title :t/privacy-and-security}]
      [list/flat-list
-      {:data      (list-data mnemonic settings supported-biometric-auth
+      {:data      (list-data mnemonic preview-privacy? supported-biometric-auth
                              (= auth-method "biometric") keycard-multiaccount?)
        :key-fn    (fn [_ i] (str i))
        :render-fn list/flat-list-generic-render-fn}]]))

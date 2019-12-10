@@ -89,8 +89,8 @@
 (views/defview advanced-settings []
   (views/letsubs [{:keys [chaos-mode?]} [:multiaccount]
                   network-name             [:network-name]
-                  current-log-level        [:settings/current-log-level]
-                  current-fleet            [:settings/current-fleet]]
+                  current-log-level        [:log-level/current-log-level]
+                  current-fleet            [:fleets/current-fleet]]
     [react/view {:flex 1 :background-color colors/white}
      [topbar/topbar {:title :t/advanced}]
      [list/flat-list

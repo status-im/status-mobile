@@ -38,8 +38,9 @@
 (handlers/register-handler-fx
  :show-collectibles-list
  (fn [{:keys [db]} [_ {:keys [symbol amount] :as collectible} address]]
-   (let [chain               (ethereum/chain-id->chain-keyword
-                              (get-in constants/default-networks [(:networks/current-network db) :config :NetworkId]))
+   (let [{:networks/keys [current-network networks]} db
+         chain               (ethereum/chain-id->chain-keyword
+                              (get-in networks [current-network :config :NetworkId]))
          all-tokens          (:wallet/all-tokens db)
          items-number        (money/to-number amount)
          loaded-items-number (count (get-in db [:collectibles symbol]))]
@@ -99,7 +100,8 @@
 (def kudos :KDO)
 
 (defmethod load-collectible-fx kudos [{db :db} symbol id]
-  (let [chain-id   (get-in constants/default-networks [(:network db) :config :NetworkId])
+  (let [{:networks/keys [current-network networks]} db
+        chain-id   (get-in networks [current-network :config :NetworkId])
         all-tokens (:wallet/all-tokens db)]
     {:erc721-token-uri [all-tokens symbol id chain-id]}))
 

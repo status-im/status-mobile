@@ -130,8 +130,8 @@
                          (dissoc :add-account))}
                 (when (= type :generate)
                   (multiaccounts.update/multiaccount-update
-                   {:latest-derived-path (inc latest-derived-path)}
-                   nil))
+                   :latest-derived-path (inc latest-derived-path)
+                   {}))
                 (wallet/update-balances nil)
                 (navigation/navigate-to-cofx :wallet nil)))))
 

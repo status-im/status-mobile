@@ -19,8 +19,8 @@
    :name    bootnode-name})
 
 (fx/defn fetch [cofx id]
-  (let [network (get-in cofx [:db :network])]
-    (get-in cofx [:db :multiaccount :bootnodes network id])))
+  (let [network (get-in cofx [:db :networks/current-network])]
+    (get-in cofx [:db :multiaccount :custom-bootnodes network id])))
 
 (fx/defn set-input
   [{:keys [db]} input-key value]
@@ -47,16 +47,16 @@
     (assoc fxs :dispatch [:navigate-to :edit-bootnode])))
 
 (defn custom-bootnodes-in-use? [{:keys [db] :as cofx}]
-  (let [network (:network db)]
-    (get-in db [:multiaccount :settings :bootnodes network])))
+  (let [network (:networks/current-network db)]
+    (get-in db [:multiaccount :custom-bootnodes-enabled? network])))
 
 (fx/defn delete [{{:keys [multiaccount] :as db} :db :as cofx} id]
-  (let [network     (:network db)
-        new-multiaccount (update-in multiaccount [:bootnodes network] dissoc id)]
+  (let [network     (:networks/current-network db)
+        new-multiaccount (update-in multiaccount [:custom-bootnodes network] dissoc id)]
     (fx/merge cofx
               {:db (assoc db :multiaccount new-multiaccount)}
               (multiaccounts.update/multiaccount-update
-               (select-keys new-multiaccount [:bootnodes])
+               :custom-bootnodes (:custom-bootnodes new-multiaccount)
                {:success-event (when (custom-bootnodes-in-use? cofx)
                                  [:multiaccounts.update.callback/save-settings-success])}))))
 
@@ -64,14 +64,14 @@
   [{{:bootnodes/keys [manage] :keys [multiaccount] :as db} :db
     random-id-generator :random-id-generator :as cofx}]
   (let [{:keys [name id url]} manage
-        network (:network db)
+        network (:networks/current-network db)
         bootnode (build
                   (or (:value id) (random-id-generator))
                   (:value name)
                   (:value url)
                   network)
         new-bootnodes (assoc-in
-                       (:bootnodes multiaccount)
+                       (:custom-bootnodes multiaccount)
                        [network (:id bootnode)]
                        bootnode)]
 
@@ -79,17 +79,19 @@
               {:db       (dissoc db :bootnodes/manage)
                :dispatch [:navigate-back]}
               (multiaccounts.update/multiaccount-update
-               {:bootnodes new-bootnodes}
+               :custom-bootnodes new-bootnodes
                {:success-event (when (custom-bootnodes-in-use? cofx)
                                  [:multiaccounts.update.callback/save-settings-success])}))))
 
 (fx/defn toggle-custom-bootnodes
+  {:events [:bootnodes.ui/custom-bootnodes-switch-toggled]}
   [{:keys [db] :as cofx} value]
   (let [current-network (:networks/current-network db)
-        settings (get-in db [:multiaccount :settings])]
-    (multiaccounts.update/update-settings cofx
-                                          (assoc-in settings [:bootnodes current-network] value)
-                                          {:success-event [:multiaccounts.update.callback/save-settings-success]})))
+        bootnodes-settings (get-in db [:multiaccount :custom-bootnodes-enabled?])]
+    (multiaccounts.update/multiaccount-update
+     cofx
+     :custom-bootnodes-enabled? (assoc bootnodes-settings current-network value)
+     {:success-event [:multiaccounts.update.callback/save-settings-success]})))
 
 (fx/defn set-bootnodes-from-qr
   [cofx url]

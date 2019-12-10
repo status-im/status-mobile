@@ -8,13 +8,13 @@
   ;;there is no changes, but it is an edge case that shouldn't really happen
   (let [efx (multiaccounts.update/multiaccount-update
              {:db {:multiaccount {:not-empty "would throw an error if was empty"}}}
-             nil {})
+             nil nil {})
         json-rpc (into #{} (map :method (::json-rpc/call efx)))]
-    (is (json-rpc "settings_saveConfig"))
+    (is (json-rpc "settings_saveSetting"))
     (is (= (get-in efx [:db :multiaccount]) {:not-empty "would throw an error if was empty"}))))
 
 (deftest test-clean-seed-phrase
   (let [efx (multiaccounts.update/clean-seed-phrase {:db {:multiaccount {:mnemonic "lalalala"}}})
         json-rpc (into #{} (map :method (::json-rpc/call efx)))]
-    (is (json-rpc "settings_saveConfig"))
-    (is (= (get-in efx [:db :multiaccount]) {:mnemonic nil}))))
+    (is (json-rpc "settings_saveSetting"))
+    (is (nil? (get-in efx [:db :multiaccount :mnemonic])))))

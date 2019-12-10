@@ -75,7 +75,7 @@
 (def sender-address "0xdff1a5e4e57d9723b3294e0f4413372e3ea9a8ff")
 
 (def ttt-enabled-multiaccount
-  {:db {:multiaccount {:settings {:tribute-to-talk {:testnet {:snt-amount "1000000000000000000"}}}}
+  {:db {:multiaccount {:tribute-to-talk {:testnet {:snt-amount "1000000000000000000"}}}
         :networks/current-network "testnet_rpc"
         :networks/networks {"testnet_rpc" {:config {:NetworkId 3}}}
         :contacts/contacts user-contacts
@@ -87,7 +87,7 @@
         :ethereum/current-block 8}})
 
 (def ttt-disabled-multiaccount
-  {:db {:multiaccount {:settings {:tribute-to-talk {}}}
+  {:db {:multiaccount {:tribute-to-talk {}}
         :networks/current-network "testnet_rpc"
         :networks/networks {"testnet_rpc" {:config {:NetworkId 3}}}
         :contacts/contacts user-contacts}})

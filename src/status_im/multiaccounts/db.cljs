@@ -43,7 +43,6 @@
 (spec/def :multiaccount/chaos-mode? (spec/nilable boolean?))
 (spec/def :multiaccount/bootnodes (spec/nilable :bootnodes/bootnodes))
 (spec/def :multiaccount/mailserver (spec/nilable string?))
-(spec/def :multiaccount/settings (spec/nilable (spec/map-of keyword? any?)))
 (spec/def :multiaccount/signing-phrase :global/not-empty-string)
 (spec/def :multiaccount/mnemonic (spec/nilable string?))
 (spec/def :multiaccount/sharing-usage-data? (spec/nilable boolean?))
@@ -63,7 +62,7 @@
                                                          :multiaccount/installation-id
                                                          :multiaccount/debug? :multiaccount/last-updated :multiaccount/public-key
                                                          :multiaccount/email :multiaccount/signed-up?
-                                                         :multiaccount/settings :multiaccount/mailserver
+                                                         :multiaccount/mailserver
                                                          :multiaccount/sharing-usage-data?
                                                          :multiaccount/mnemonic :multiaccount/desktop-notifications?
                                                          :multiaccount/chaos-mode?

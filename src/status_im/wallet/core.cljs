@@ -59,7 +59,7 @@
   (assoc-in db [:wallet :errors error-type] (or err :unknown-error)))
 
 (fx/defn on-update-prices-fail
-  {::events [::update-prices-fail]}
+  {:events [::update-prices-fail]}
   [{:keys [db]} err]
   (log/debug "Unable to get prices: " err)
   {:db (-> db
@@ -225,10 +225,10 @@
   [{{:keys [network-status :wallet/all-tokens
             multiaccount :multiaccount/accounts] :as db} :db
     :as cofx} addresses]
-  (let [{:keys [settings]} multiaccount
-        addresses (or addresses (map (comp string/lower-case :address) accounts))
+  (let [addresses (or addresses (map (comp string/lower-case :address) accounts))
+        {:keys [:wallet/visible-tokens]} multiaccount
         chain     (ethereum/chain-keyword db)
-        assets    (get-in settings [:wallet :visible-tokens chain])
+        assets    (get visible-tokens chain)
         init?     (or (empty? assets)
                       (= assets (constants/default-visible-tokens chain)))
         tokens    (->> (tokens/tokens-for all-tokens chain)
@@ -249,21 +249,20 @@
                                      :init?     init?}
         :db                         (clear-error-message db :balance-update)}
        (when-not assets
-         (multiaccounts.update/update-settings
-          (assoc-in settings
-                    [:wallet :visible-tokens chain]
-                    #{})
+         (multiaccounts.update/multiaccount-update
+          :wallet/visible-tokens (assoc visible-tokens chain (or (constants/default-visible-tokens chain)
+                                                                 #{}))
           {}))))))
 
 (fx/defn update-prices
   [{{:keys [network-status :wallet/all-tokens]
-     {:keys [address chaos-mode? settings]} :multiaccount :as db} :db}]
+     {:keys [address currency chaos-mode? :wallet/visible-tokens]
+      :or {currency :usd}} :multiaccount :as db} :db}]
   (let [chain       (ethereum/chain-keyword db)
         mainnet?    (= :mainnet chain)
-        assets      (get-in settings [:wallet :visible-tokens chain] #{})
+        assets      (get visible-tokens chain #{})
         tokens      (tokens-symbols assets all-tokens chain)
-        currency-id (or (get-in settings [:wallet :currency]) :usd)
-        currency    (get constants/currencies currency-id)]
+        currency    (get constants/currencies currency)]
     (when (not= network-status :offline)
       {:wallet/get-prices
        {:from          (if mainnet?
@@ -281,10 +280,11 @@
            (clear-error-message :prices-update)
            (assoc :prices-loading? true))})))
 
-(defn- set-checked [ids id checked?]
-  (if checked?
-    (conj (or ids #{}) id)
-    (disj ids id)))
+(defn- set-checked [tokens-id token-id checked?]
+  (let [tokens-id (or tokens-id #{})]
+    (if checked?
+      (conj tokens-id token-id)
+      (disj tokens-id token-id))))
 
 (fx/defn on-update-prices-success
   {:events [::update-prices-success]}
@@ -300,16 +300,20 @@
                  [:wallet :accounts (eip55/address->checksum address) :balance :ETH]
                  (money/bignumber balance))})
 
-(defn update-toggle-in-settings
-  [{{:keys [multiaccount] :as db} :db} symbol checked?]
-  (let [chain        (ethereum/chain-keyword db)
-        settings     (get multiaccount :settings)]
-    (update-in settings [:wallet :visible-tokens chain] #(set-checked % symbol checked?))))
+(fx/defn update-toggle-in-settings
+  [{{:keys [multiaccount] :as db} :db :as cofx} symbol checked?]
+  (let [chain          (ethereum/chain-keyword db)
+        visible-tokens (get multiaccount :wallet/visible-tokens)]
+    (multiaccounts.update/multiaccount-update
+     cofx
+     :wallet/visible-tokens (update visible-tokens
+                                    chain
+                                    #(set-checked % symbol checked?))
+     {})))
 
 (fx/defn toggle-visible-token
   [cofx symbol checked?]
-  (let [new-settings (update-toggle-in-settings cofx symbol checked?)]
-    (multiaccounts.update/update-settings cofx new-settings {})))
+  (update-toggle-in-settings cofx symbol checked?))
 
 (fx/defn update-tokens-balances
   {:events [::update-tokens-balances-success]}
@@ -332,35 +336,30 @@
 (fx/defn configure-token-balance-and-visibility
   {:events [::tokens-found]}
   [{:keys [db] :as cofx} balances]
-  (let [chain          (ethereum/chain-keyword db)
-        settings       (get-in db [:multiaccount :settings])
-        visible-tokens (into (or
-                              (constants/default-visible-tokens chain)
-                              #{})
-                             (flatten (map keys (vals balances))))
-        new-settings (assoc-in settings
-                               [:wallet :visible-tokens chain]
-                               visible-tokens)]
+  (let [chain (ethereum/chain-keyword db)
+        visible-tokens (get-in db [:multiaccount :wallet/visible-tokens])
+        chain-visible-tokens (into (or (constants/default-visible-tokens chain)
+                                       #{})
+                                   (flatten (map keys (vals balances))))]
     (fx/merge cofx
-              (multiaccounts.update/update-settings cofx new-settings {})
+              (multiaccounts.update/multiaccount-update
+               cofx
+               :wallet/visible-tokens (assoc visible-tokens
+                                             chain
+                                             chain-visible-tokens)
+               {})
               (update-tokens-balances balances)
               (update-prices))))
 
 (fx/defn add-custom-token
-  [{:keys [db] :as cofx} {:keys [symbol address] :as token}]
-  (let [chain        (ethereum/chain-keyword db)
-        settings     (update-toggle-in-settings cofx symbol true)
-        new-settings (assoc-in settings [:wallet :custom-tokens chain address] token)]
-    (fx/merge cofx
-              (multiaccounts.update/update-settings cofx new-settings {})
-              (update-balances nil))))
+  [{:keys [db] :as cofx} {:keys [symbol]}]
+  (fx/merge cofx
+            (update-toggle-in-settings symbol true)
+            (update-balances nil)))
 
 (fx/defn remove-custom-token
-  [{:keys [db] :as cofx} {:keys [symbol address]}]
-  (let [chain        (ethereum/chain-keyword db)
-        settings     (update-toggle-in-settings cofx symbol false)
-        new-settings (update-in settings [:wallet :custom-tokens chain] dissoc address)]
-    (multiaccounts.update/update-settings cofx new-settings {})))
+  [{:keys [db] :as cofx} {:keys [symbol]}]
+  (update-toggle-in-settings cofx symbol false))
 
 (fx/defn set-and-validate-amount
   {:events [:wallet.send/set-amount-text]}

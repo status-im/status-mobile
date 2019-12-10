@@ -39,9 +39,8 @@
     (testing "there's a preferred mailserver"
       (testing "it shows the popup"
         (is (:ui/show-confirmation (mailserver/change-mailserver
-                                    {:db {:multiaccount {:settings
-                                                         {:fleet :staging
-                                                          :mailserver {:staging "id"}}}
+                                    {:db {:multiaccount {:fleet :staging
+                                                         :pinned-mailservers {:staging "id"}}
                                           :peers-count 1}})))))
     (testing "there's not a preferred mailserver"
       (testing "it changes the mailserver"
@@ -49,8 +48,7 @@
                (get-in
                 (mailserver/change-mailserver
                  {:db {:mailserver/mailservers {:staging {:a "b"}}
-                       :multiaccount {:settings
-                                      {:fleet :staging}}
+                       :multiaccount {:fleet :staging}
                        :peers-count 1}})
                 [::json-rpc/call 0 :method]))))
       (testing "it does not show the popup"
@@ -206,8 +204,8 @@
                                                           "d" {}}}}}]
     (testing "the user has already a preference"
       (let [cofx (assoc-in cofx
-                           [:db :multiaccount :settings]
-                           {:mailserver {:eth.staging "a"}})]
+                           [:db :multiaccount]
+                           {:pinned-mailservers {:eth.staging "a"}})]
         (testing "the mailserver exists"
           (testing "it sets the preferred mailserver"
             (is (= "a" (-> (mailserver/set-current-mailserver cofx)
@@ -334,7 +332,7 @@
         :peers-summary (if registered-peer?
                          [{:id "mailserver-id" :enode "enode://mailserver-id@ip"}]
                          [])
-        :multiaccount {:settings {:fleet :eth.staging}}
+        :multiaccount {:fleet :eth.staging}
         :mailserver/current-id "mailserver-a"
         :mailserver/mailservers {:eth.staging {"mailserver-a" {:sym-key-id sym-key
                                                                :address "enode://mailserver-id@ip"}}}}})
@@ -595,10 +593,10 @@
               {:eth.staging {"mailserverid" {:address  "mailserver-address"
                                              :password "mailserver-password"}}}
               :multiaccount
-              {:settings {:fleet :eth.staging
-                          :mailserver {:eth.staging "mailserverid"}}}}]
+              {:fleet :eth.staging
+               :pinned-mailservers {:eth.staging "mailserverid"}}}]
       (is (not (get-in (mailserver/unpin {:db db})
-                       [:db :multiaccount :settings :mailserver :eth.staging]))))))
+                       [:db :multiaccount :pinned-mailservers :eth.staging]))))))
 
 (deftest pin-test
   (testing "it removes the preference"
@@ -607,10 +605,10 @@
               {:eth.staging {"mailserverid" {:address  "mailserver-address"
                                              :password "mailserver-password"}}}
               :multiaccount
-              {:settings {:fleet :eth.staging
-                          :mailserver {}}}}]
+              {:fleet :eth.staging
+               :pinned-mailservers {}}}]
       (is (= "mailserverid" (get-in (mailserver/pin {:db db})
-                                    [:db :multiaccount :settings :mailserver :eth.staging]))))))
+                                    [:db :multiaccount :pinned-mailservers :eth.staging]))))))
 
 (deftest connect-to-mailserver
   (let [db {:mailserver/current-id "mailserverid"
@@ -618,8 +616,8 @@
             {:eth.staging {"mailserverid" {:address  "mailserver-address"
                                            :password "mailserver-password"}}}
             :multiaccount
-            {:settings {:fleet :eth.staging
-                        :mailserver {:eth.staging "mailserverid"}}}}]
+            {:fleet :eth.staging
+             :pinned-mailservers {:eth.staging "mailserverid"}}}]
     (testing "it adds the peer"
       (is (= "mailserver-address"
              (:mailserver/add-peer (mailserver/connect-to-mailserver {:db db})))))

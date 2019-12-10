@@ -2,6 +2,7 @@
   (:require [clojure.set :refer [map-invert]]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
+            [status-im.data-store.settings :as data-store.settings]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [taoensso.timbre :as log]
@@ -208,17 +209,19 @@
       :chat       true})])
 
 (fx/defn save-account-and-login-with-keycard
-  [_ multiaccount-data password node-config accounts-data chat-key]
+  [_ multiaccount-data password settings node-config accounts-data chat-key]
   {::save-account-and-login-with-keycard [(types/clj->json multiaccount-data)
                                           password
+                                          (types/clj->json settings)
                                           node-config
                                           (types/clj->json accounts-data)
                                           chat-key]})
 
 (fx/defn save-account-and-login
-  [_ multiaccount-data password node-config accounts-data]
+  [_ multiaccount-data password settings node-config accounts-data]
   {::save-account-and-login [(types/clj->json multiaccount-data)
                              password
+                             (types/clj->json settings)
                              node-config
                              (types/clj->json accounts-data)]})
 
@@ -233,32 +236,43 @@
         multiaccount-data {:name       name
                            :address    address
                            :photo-path photo-path
-                           :key-uid    keyUid}
+                           :key-uid    keyUid
+                           :keycard-pairing keycard-pairing}
         keycard-multiaccount? (boolean keycard-pairing)
-        new-multiaccount (cond-> {;; address of the master key
-                                  :address               address
-                                  ;; sha256 of master public key
-                                  :key-uid               keyUid
-                                  ;; The address from which we derive any wallet
-                                  :wallet-root-address   (get-in multiaccount [:derived constants/path-wallet-root-keyword :address])
-                                  ;; The address from which we derive any chat account/encryption keys
-                                  :eip1581-address       (get-in multiaccount [:derived constants/path-eip1581-keyword :address])
-                                  :name                  name
-                                  :photo-path            photo-path
-                                  ;; public key of the chat account
-                                  :public-key            public-key
-                                  ;; default address for Dapps
-                                  :dapps-address         (:address wallet-account)
-                                  :latest-derived-path   0
-                                  :signing-phrase        signing-phrase
-                                  :installation-id       (random-guid-generator)
-                                  :settings              constants/default-multiaccount-settings}
-                           save-mnemonic?
-                           (assoc :mnemonic mnemonic)
-                           keycard-multiaccount?
-                           (assoc :keycard-instance-uid keycard-instance-uid
-                                  :keycard-pairing keycard-pairing
-                                  :keycard-paired-on keycard-paired-on))
+        eip1581-address (get-in multiaccount [:derived
+                                              constants/path-eip1581-keyword
+                                              :address])
+        new-multiaccount
+        (cond-> (merge
+                 {;; address of the master key
+                  :address               address
+                  ;; sha256 of master public key
+                  :key-uid               keyUid
+                  ;; The address from which we derive any wallet
+                  :wallet-root-address
+                  (get-in multiaccount [:derived
+                                        constants/path-wallet-root-keyword
+                                        :address])
+                  :name                  name
+                  :photo-path            photo-path
+                  ;; public key of the chat account
+                  :public-key            public-key
+                  ;; default address for Dapps
+                  :dapps-address         (:address wallet-account)
+                  :latest-derived-path   0
+                  :signing-phrase        signing-phrase
+                  :installation-id       (random-guid-generator)}
+                 constants/default-multiaccount)
+          ;; The address from which we derive any chat
+          ;; account/encryption keys
+          eip1581-address
+          (assoc :eip1581-address eip1581-address)
+          save-mnemonic?
+          (assoc :mnemonic mnemonic)
+          keycard-multiaccount?
+          (assoc :keycard-instance-uid keycard-instance-uid
+                 :keycard-pairing keycard-pairing
+                 :keycard-paired-on keycard-paired-on))
         db (assoc db
                   :multiaccounts/login {:key-uid    keyUid
                                         :name       name
@@ -269,17 +283,22 @@
                   :multiaccount new-multiaccount
                   :multiaccount/accounts [wallet-account]
                   :networks/current-network constants/default-network
-                  :networks/networks constants/default-networks)]
+                  :networks/networks (data-store.settings/rpc->networks constants/default-networks))
+        settings (assoc new-multiaccount
+                        :networks/current-network constants/default-network
+                        :networks/networks constants/default-networks)]
     (fx/merge cofx
               {:db db}
               (if keycard-multiaccount?
-                (save-account-and-login-with-keycard new-multiaccount
+                (save-account-and-login-with-keycard multiaccount-data
                                                      password
+                                                     settings
                                                      (node/get-new-config db)
                                                      accounts-data
                                                      chat-key)
                 (save-account-and-login multiaccount-data
                                         (ethereum/sha3 (security/safe-unmask-data password))
+                                        settings
                                         (node/get-new-config db)
                                         accounts-data))
               (when (:intro-wizard db)
@@ -377,16 +396,18 @@
 
 (re-frame/reg-fx
  ::save-account-and-login
- (fn [[multiaccount-data hashed-password config accounts-data]]
+ (fn [[multiaccount-data hashed-password settings config accounts-data]]
    (status/save-account-and-login multiaccount-data
                                   hashed-password
+                                  settings
                                   config
                                   accounts-data)))
 (re-frame/reg-fx
  ::save-account-and-login-with-keycard
- (fn [[multiaccount-data password config accounts-data chat-key]]
+ (fn [[multiaccount-data password settings config accounts-data chat-key]]
    (status/save-account-and-login-with-keycard multiaccount-data
                                                (security/safe-unmask-data password)
+                                               settings
                                                config
                                                accounts-data
                                                chat-key)))

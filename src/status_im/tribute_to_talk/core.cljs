@@ -29,24 +29,25 @@
 
 (fx/defn update-settings
   [{:keys [db] :as cofx} {:keys [snt-amount message update] :as new-settings}]
-  (let [multiaccount-settings (get-in db [:multiaccount :settings])
+  (let [tribute-to-talk-settings (get-in db [:multiaccount :tribute-to-talk])
         chain-keyword    (ethereum/chain-keyword db)
-        tribute-to-talk-settings (cond-> (merge (tribute-to-talk.db/get-settings db)
-                                                new-settings)
-                                   new-settings
-                                   (assoc :seen? true)
+        tribute-to-talk-chain-settings
+        (cond-> (merge (tribute-to-talk.db/get-settings db)
+                       new-settings)
+          new-settings
+          (assoc :seen? true)
 
-                                   (not new-settings)
-                                   (dissoc :snt-amount :manifest)
+          (not new-settings)
+          (dissoc :snt-amount :manifest)
 
-                                   (and (contains? new-settings :update)
-                                        (nil? update))
-                                   (dissoc :update))]
+          (and (contains? new-settings :update)
+               (nil? update))
+          (dissoc :update))]
     (fx/merge cofx
-              (multiaccounts.update/update-settings
-               (-> multiaccount-settings
-                   (assoc-in [:tribute-to-talk chain-keyword]
-                             tribute-to-talk-settings))
+              (multiaccounts.update/multiaccount-update
+               :tribute-to-talk (assoc tribute-to-talk-settings
+                                       chain-keyword
+                                       tribute-to-talk-chain-settings)
                {})
               (whitelist/enable-whitelist))))
 

@@ -39,7 +39,7 @@
 
 (views/defview fleet-settings []
   (views/letsubs [custom-fleets [:fleets/custom-fleets]
-                  current-fleet [:settings/current-fleet]]
+                  current-fleet [:fleets/current-fleet]]
     [react/view {:flex 1}
      [topbar/topbar {:title :t/fleet-settings}]
      [react/view styles/wrapper

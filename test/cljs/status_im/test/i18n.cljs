@@ -351,9 +351,6 @@
     :device-to-device
     :devices
     :disable
-    :disable-discovery-topic
-    :disable-discovery-topic-warning-content
-    :disable-discovery-topic-warning-title
     :disabled
     :disconnected
     :discover
@@ -1031,9 +1028,6 @@
     :use-valid-contact-code
     :use-valid-contact-code-desktop
     :use-valid-qr-code
-    :v1-messages
-    :v1-messages-warning-content
-    :v1-messages-warning-title
     :validation-amount-invalid-number
     :validation-amount-is-too-precise
     :version

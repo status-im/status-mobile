@@ -77,13 +77,13 @@
 (handlers/register-handler-fx
  :multiaccounts.update.callback/published
  (fn [{:keys [now] :as cofx} _]
-   (multiaccounts.update/multiaccount-update cofx {:last-updated now} {})))
+   (multiaccounts.update/multiaccount-update cofx :last-updated now {})))
 
 (handlers/register-handler-fx
  :multiaccounts.update.callback/failed-to-publish
  (fn [{:keys [now] :as cofx} [_ message]]
    (log/warn "failed to publish multiaccount update" message)
-   (multiaccounts.update/multiaccount-update cofx {:last-updated now} {})))
+   (multiaccounts.update/multiaccount-update cofx :last-updated now {})))
 
 (handlers/register-handler-fx
  :multiaccounts.ui/dev-mode-switched
@@ -290,11 +290,6 @@
 ;; bootnodes module
 
 (handlers/register-handler-fx
- :bootnodes.ui/custom-bootnodes-switch-toggled
- (fn [cofx [_ value]]
-   (bootnodes/toggle-custom-bootnodes cofx value)))
-
-(handlers/register-handler-fx
  :bootnodes.ui/add-bootnode-pressed
  (fn [cofx [_ bootnode-id]]
    (bootnodes/edit cofx bootnode-id)))
@@ -354,7 +349,8 @@
 (handlers/register-handler-fx
  :log-level.ui/logging-enabled-confirmed
  (fn [cofx [_ enabled]]
-   (log-level/save-logging-enabled cofx enabled)))
+   ;;FIXME desktop only
+   #_(log-level/save-logging-enabled cofx enabled)))
 
 ;; Browser bridge module
 
@@ -583,7 +579,8 @@
    (fx/merge
     cofx
     (multiaccounts.update/multiaccount-update
-     {:stickers/recent-stickers (conj (remove #(= hash %) (:stickers/recent-stickers multiaccount)) hash)}
+     :stickers/recent-stickers
+     (conj (remove #(= hash %) (:stickers/recent-stickers multiaccount)) hash)
      {})
     (chat.input/send-sticker-fx sticker current-chat-id))))
 

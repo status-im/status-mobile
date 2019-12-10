@@ -83,64 +83,22 @@
    :last-updated                         0
    :address                              "7540c34d6c4082391f12468580a9a4e0724c6755"
    :mnemonic                             "tumble gorilla neglect dumb budget involve tennis ocean diary eagle lady ring"
-   :bootnodes                            {}
+   :custom-bootnodes                     {}
    :signing-phrase                       "bull exam weed"
    :signed-up?                           true
    :name                                 "name"
    :last-request                         nil
    :desktop-notifications?               false
-   :settings                             {:preview-privacy? true
-                                          :fleet        :eth.beta
-                                          :wallet       {:visible-tokens {:testnet #{:STT
-                                                                                     :HND}
-                                                                          :mainnet #{:SNT}
-                                                                          :rinkeby #{:MOKSHA
-                                                                                     :KDO}
-                                                                          :xdai    #{}
-                                                                          :poa     #{}}}}
-   :networks/networks                    {"testnet"     {:id      "testnet"
-                                                         :name    "Ropsten"
-                                                         :config  {:NetworkId      3
-                                                                   :DataDir        "/ethereum/testnet"
-                                                                   :LightEthConfig {:Enabled true}}
-                                                         :rpc-url nil}
-                                          "testnet_rpc" {:id      "testnet_rpc"
-                                                         :name    "Ropsten with upstream RPC"
-                                                         :config  {:NetworkId      3
-                                                                   :DataDir        "/ethereum/testnet_rpc"
-                                                                   :UpstreamConfig {:Enabled true
-                                                                                    :URL     "https://ropsten.infura.io/z6GCTmjdP3FETEJmMBI4"}}
-                                                         :rpc-url nil}
-                                          "rinkeby_rpc" {:id      "rinkeby_rpc"
-                                                         :name    "Rinkeby with upstream RPC"
-                                                         :config  {:NetworkId      4
-                                                                   :DataDir        "/ethereum/rinkeby_rpc"
-                                                                   :UpstreamConfig {:Enabled true
-                                                                                    :URL     "https://rinkeby.infura.io/z6GCTmjdP3FETEJmMBI4"}}
-                                                         :rpc-url nil}
-                                          "mainnet_rpc" {:id      "mainnet_rpc"
-                                                         :name    "Mainnet with upstream RPC"
-                                                         :config  {:NetworkId      1
-                                                                   :DataDir        "/ethereum/mainnet_rpc"
-                                                                   :UpstreamConfig {:Enabled true
-                                                                                    :URL     "https://mainnet.infura.io/z6GCTmjdP3FETEJmMBI4"}}
-                                                         :rpc-url nil}
-                                          "xdai_rpc"    {:id      "xdai_rpc"
-                                                         :name    "xDai Chain"
-                                                         :config  {:NetworkId      100
-                                                                   :DataDir        "/ethereum/xdai_rpc"
-                                                                   :UpstreamConfig {:Enabled true
-                                                                                    :URL     "https://dai.poa.network"}}
-                                                         :rpc-url nil}
-                                          "poa_rpc"     {:id      "poa_rpc"
-                                                         :name    "POA Network"
-                                                         :config  {:NetworkId      99
-                                                                   :DataDir        "/ethereum/poa_rpc"
-                                                                   :UpstreamConfig {:Enabled true
-                                                                                    :URL     "https://poa.infura.io"}}
-                                                         :rpc-url nil}}
+   :wallet/visible-tokens                {:testnet #{:STT
+                                                     :HND}
+                                          :mainnet #{:SNT}
+                                          :rinkeby #{:MOKSHA
+                                                     :KDO}
+                                          :xdai    #{}
+                                          :poa     #{}}
+   :preview-privacy? true
+   :fleet        :eth.beta
    :photo-path                           "data:image/png;base64iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAADAFBMVEX////YsYwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABPGFwxAAABAHRSTlP//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKmfXxgAABnNJREFUeNoBaAaX+QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEAAAAAAQEBAQAAAAABAQEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAQAAAAABAQEBAAAAAAEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEBAAAAAAEBAQEAAAAAAQEBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEAAAAAAQEBAQAAAAABAQEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAQAAAAABAQEBAAAAAAEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEBAAAAAAEBAQEAAAAAAQEBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEAAAAAAQEBAQAAAAABAQEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAQAAAAABAQEBAAAAAAEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEBAAAAAAEBAQEAAAAAAQEBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEAAAAAAQEBAQAAAAABAQEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAQAAAAABAQEBAAAAAAEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEBAAAAAAEBAQEAAAAAAQEBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEBAQEBAAAAAAEBAQEBAQEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAQEBAQEAAAAAAQEBAQEBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEBAQEBAQAAAAABAQEBAQEBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEBAQEBAAAAAAEBAQEBAQEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAloYA4a9rBHIAAAAASUVORK5CYII="
-   :network                              "mainnet_rpc"
    :wallet-set-up-passed?                false
    :public-key                           "0x04173f7cdea0076a7998abb674cc79fe61337c42db77043c01d5b0f3e3ac1e5a45bca0c93bb9f3c3d38b7cc9a7337cd64f9f9b2114fe4bbdfe1ae2633ba14d8c9c"
    :keycard-key-uid                      nil

@@ -47,9 +47,9 @@
        (fx/merge
         cofx
         (multiaccounts.update/multiaccount-update
-         {:syncing-on-mobile-network? sync?
-          :remember-syncing-choice?   remember-choice?}
-         {})
+         :syncing-on-mobile-network? (boolean sync?) {})
+        (multiaccounts.update/multiaccount-update
+         :remember-syncing-choice? (boolean remember-choice?) {})
         (bottom-sheet/hide-bottom-sheet)
         (when (and (utils/cellular? network) sync?)
           (mailserver/process-next-messages-request)))))))

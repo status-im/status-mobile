@@ -51,14 +51,13 @@
 
 (fx/defn save [{:keys [db now] :as cofx}]
   (let [{:keys [photo-path]} (:my-profile/profile db)
-        cleaned-name (clean-name db :my-profile/profile)
-        cleaned-edit (merge {:name         cleaned-name
-                             :last-updated now}
-                            (if photo-path
-                              {:photo-path photo-path}))]
+        cleaned-name (clean-name db :my-profile/profile)]
     (fx/merge cofx
               (clear-profile)
-              (multiaccounts.update/multiaccount-update cleaned-edit {}))))
+              (multiaccounts.update/multiaccount-update :name cleaned-name {})
+              (multiaccounts.update/multiaccount-update :last-updated now {})
+              (when photo-path
+                (multiaccounts.update/multiaccount-update :photo-path photo-path {})))))
 
 (defn update-picture [this-event base64-image {:keys [db] :as cofx}]
   (if base64-image

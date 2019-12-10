@@ -51,17 +51,17 @@
 (fx/defn confirm-wallet-set-up
   [cofx]
   (multiaccounts.update/multiaccount-update cofx
-                                            {:wallet-set-up-passed? true} {}))
+                                            :wallet-set-up-passed? true {}))
 
 (fx/defn confirm-home-tooltip
   [cofx]
   (multiaccounts.update/multiaccount-update cofx
-                                            {:hide-home-tooltip? true} {}))
+                                            :hide-home-tooltip? true {}))
 
 (fx/defn switch-dev-mode
   [cofx dev-mode?]
   (multiaccounts.update/multiaccount-update cofx
-                                            {:dev-mode? dev-mode?}
+                                            :dev-mode? dev-mode?
                                             {}))
 
 (fx/defn switch-notifications
@@ -72,7 +72,7 @@
                ::notifications/enable
                ::notifications/disable) nil}
             (multiaccounts.update/multiaccount-update
-             {:notifications-enabled? notifications-enabled?}
+             :notifications-enabled? (boolean notifications-enabled?)
              {})))
 
 (fx/defn switch-chaos-mode
@@ -81,25 +81,24 @@
     (fx/merge cofx
               {::chaos-mode-changed chaos-mode?}
               (multiaccounts.update/multiaccount-update
-               {:chaos-mode? chaos-mode?}
+               :chaos-mode? (boolean chaos-mode?)
                {}))))
 
 (fx/defn enable-notifications [cofx desktop-notifications?]
   (multiaccounts.update/multiaccount-update
    cofx
-   {:desktop-notifications? desktop-notifications?}
+   :desktop-notifications? desktop-notifications?
    {}))
 
 (fx/defn switch-preview-privacy-mode
   [{:keys [db] :as cofx} private?]
-  (let [settings (get-in db [:multiaccount :settings])]
-    (fx/merge cofx
-              {::blank-preview-flag-changed private?}
-              (multiaccounts.update/update-settings
-               (assoc settings :preview-privacy? private?)
-               {}))))
+  (fx/merge cofx
+            {::blank-preview-flag-changed private?}
+            (multiaccounts.update/multiaccount-update
+             :preview-privacy? (boolean private?)
+             {})))
 
 (fx/defn switch-preview-privacy-mode-flag
   [{:keys [db]}]
-  (let [private? (get-in db [:multiaccount :settings :preview-privacy?])]
+  (let [private? (get-in db [:multiaccount :preview-privacy?])]
     {::blank-preview-flag-changed private?}))

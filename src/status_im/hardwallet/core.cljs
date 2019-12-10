@@ -163,11 +163,14 @@
 
 (fx/defn remove-pairing-from-multiaccount
   [cofx {:keys [remove-instance-uid?]}]
-  (multiaccounts.update/multiaccount-update cofx
-                                            (cond-> {:keycard-pairing nil
-                                                     :keycard-paired-on nil}
-                                              remove-instance-uid? (assoc :keycard-instance-uid nil))
-                                            {}))
+  (fx/merge cofx
+            (multiaccounts.update/multiaccount-update
+             :keycard-pairing nil {})
+            (multiaccounts.update/multiaccount-update
+             :keycard-paired-on nil {})
+            (when remove-instance-uid?
+              (multiaccounts.update/multiaccount-update
+               :keycard-instance-uid nil {}))))
 
 (defn hardwallet-supported? []
   (and config/hardwallet-enabled?
@@ -1648,10 +1651,11 @@
 
 (fx/defn set-multiaccount-pairing
   [{:keys [db] :as cofx} {:keys [address] :as multiaccount} pairing paired-on]
-  (multiaccounts.update/multiaccount-update cofx
-                                            {:keycard-pairing pairing
-                                             :keycard-paired-on paired-on}
-                                            {}))
+  (fx/merge cofx
+            (multiaccounts.update/multiaccount-update
+             :keycard-pairing pairing {})
+            (multiaccounts.update/multiaccount-update
+             :keycard-paired-on paired-on {})))
 
 (fx/defn on-retrieve-pairings-success
   {:events [:hardwallet.callback/on-retrieve-pairings-success]}
@@ -1817,8 +1821,10 @@
                 public-key
                 whisper-public-key
                 wallet-public-key
+                wallet-root-public-key
                 whisper-address
                 wallet-address
+                wallet-root-address
                 whisper-private-key
                 encryption-public-key
                 instance-uid
@@ -1839,7 +1845,10 @@
                          (assoc-in [:hardwallet :setup-step] nil)
                          (assoc :intro-wizard nil))}
                 (multiaccounts.create/on-multiaccount-created
-                 {:derived              {constants/path-whisper-keyword
+                 {:derived              {constants/path-wallet-root-keyword
+                                         {:publicKey wallet-root-public-key
+                                          :address (eip55/address->checksum wallet-root-address)}
+                                         constants/path-whisper-keyword
                                          {:publicKey  whisper-public-key
                                           :address    (eip55/address->checksum whisper-address)
                                           :name       name
@@ -1848,7 +1857,7 @@
                                          {:publicKey wallet-public-key
                                           :address   (eip55/address->checksum wallet-address)}}
                   :address              address
-                  :public-key            public-key
+                  :public-key           public-key
                   :keycard-instance-uid instance-uid
                   :keyUid               (ethereum/normalized-hex key-uid)
                   :keycard-pairing      pairing
@@ -1884,9 +1893,11 @@
                                      (update :address ethereum/normalized-hex)
                                      (update :whisper-address ethereum/normalized-hex)
                                      (update :wallet-address ethereum/normalized-hex)
+                                     (update :wallet-root-address ethereum/normalized-hex)
                                      (update :public-key ethereum/normalized-hex)
                                      (update :whisper-public-key ethereum/normalized-hex)
                                      (update :wallet-public-key ethereum/normalized-hex)
+                                     (update :wallet-root-public-key ethereum/normalized-hex)
                                      (update :instance-uid #(get-in db [:hardwallet :multiaccount :instance-uid] %))))
                        (assoc-in [:hardwallet :multiaccount-wallet-address] (:wallet-address account-data))
                        (assoc-in [:hardwallet :multiaccount-whisper-public-key] (:whisper-public-key account-data))

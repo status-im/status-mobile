@@ -116,8 +116,8 @@
 
 (fx/defn request-uri-parsed
   {:events [:wallet/request-uri-parsed]}
-  [{{:networks/keys [current-network] :wallet/keys [all-tokens] :as db} :db} data uri]
-  (let [current-chain-id (get-in constants/default-networks [current-network :config :NetworkId])
+  [{{:networks/keys [networks current-network] :wallet/keys [all-tokens] :as db} :db} data uri]
+  (let [current-chain-id (get-in networks [current-network :config :NetworkId])
         {:keys [address chain-id] :as details} (extract-details data current-chain-id all-tokens)
         valid-network?   (boolean (= current-chain-id chain-id))
         previous-state   (get db :wallet/prepare-transaction)

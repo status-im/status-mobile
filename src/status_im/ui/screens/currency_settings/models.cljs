@@ -4,12 +4,12 @@
             [status-im.wallet.core :as wallet]))
 
 (defn get-currency [db]
-  (or (get-in db [:multiaccount :settings :wallet :currency]) :usd))
+  (get-in db [:multiaccount :currency] :usd))
 
 (fx/defn set-currency
   [{:keys [db] :as cofx} currency]
-  (let [settings     (get-in db [:multiaccount :settings])
-        new-settings (assoc-in settings [:wallet :currency] currency)]
-    (fx/merge cofx
-              (multiaccounts.update/update-settings new-settings {})
-              (wallet/update-prices))))
+  (fx/merge cofx
+            (multiaccounts.update/multiaccount-update
+             :currency currency
+             {})
+            (wallet/update-prices)))

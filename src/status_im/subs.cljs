@@ -271,11 +271,12 @@
  (fn [[intro-wizard multiaccounts]]
    (recover/existing-account? (:root-key intro-wizard) multiaccounts)))
 
-(re-frame/reg-sub
- :settings/logging-enabled
- :<- [:desktop/desktop]
- (fn [desktop _]
-   (get desktop :logging-enabled false)))
+;;FIXME not needed until desktop enabled
+#_(re-frame/reg-sub
+   :settings/logging-enabled
+   :<- [:desktop/desktop]
+   (fn [desktop _]
+     (get desktop :logging-enabled false)))
 
 (re-frame/reg-sub
  :current-network
@@ -457,28 +458,16 @@
                 (security/safe-unmask-data password))))
 
 (re-frame/reg-sub
- :settings/current-fleet
- :<- [:multiaccount-settings]
- (fn [sett]
-   (fleet/current-fleet-sub sett)))
-
-(re-frame/reg-sub
- :multiaccount-settings
+ :fleets/current-fleet
  :<- [:multiaccount]
- (fn [acc]
-   (get acc :settings)))
+ (fn [multiaccount]
+   (fleet/current-fleet-sub multiaccount)))
 
 (re-frame/reg-sub
- :multiaccount/address
+ :log-level/current-log-level
  :<- [:multiaccount]
- (fn [acc]
-   (get acc :address)))
-
-(re-frame/reg-sub
- :settings/current-log-level
- :<- [:multiaccount-settings]
- (fn [sett]
-   (or (get sett :log-level)
+ (fn [multiaccount]
+   (or (get multiaccount :log-level)
        config/log-level-status-go)))
 
 (re-frame/reg-sub
@@ -893,18 +882,18 @@
 ;;BOOTNODES ============================================================================================================
 
 (re-frame/reg-sub
- :settings/bootnodes-enabled
+ :custom-bootnodes/enabled?
  :<- [:multiaccount]
  :<- [:networks/current-network]
- (fn [[{:keys [settings]} current-network]]
-   (get-in settings [:bootnodes current-network])))
+ (fn [[{:keys [custom-bootnodes-enabled?]} current-network]]
+   (get custom-bootnodes-enabled? current-network)))
 
 (re-frame/reg-sub
- :settings/network-bootnodes
+ :custom-bootnodes/network-bootnodes
  :<- [:multiaccount]
  :<- [:networks/current-network]
  (fn [[multiaccount current-network]]
-   (get-in multiaccount [:bootnodes current-network])))
+   (get-in multiaccount [:custom-bootnodes current-network])))
 
 (re-frame/reg-sub
  :get-manage-bootnode
@@ -1078,9 +1067,9 @@
 
 (re-frame/reg-sub
  :wallet.settings/currency
- :<- [:multiaccount-settings]
+ :<- [:multiaccount]
  (fn [settings]
-   (or (get-in settings [:wallet :currency]) :usd)))
+   (or (get settings :currency) :usd)))
 
 (defn- get-balance-total-value
   [balance prices currency token->decimals]
@@ -1162,7 +1151,7 @@
  :<- [:ethereum/chain-keyword]
  :<- [:multiaccount]
  (fn [[chain current-multiaccount]]
-   (get-in current-multiaccount [:settings :wallet :visible-tokens chain])))
+   (get-in current-multiaccount [:wallet/visible-tokens chain])))
 
 (re-frame/reg-sub
  :wallet/visible-assets
@@ -1705,7 +1694,7 @@
 
 (re-frame/reg-sub
  :mailserver/fleet-mailservers
- :<- [:settings/current-fleet]
+ :<- [:fleets/current-fleet]
  :<- [:mailserver/mailservers]
  (fn [[current-fleet mailservers]]
    (current-fleet mailservers)))
@@ -1738,9 +1727,10 @@
 
 (re-frame/reg-sub
  :mailserver/preferred-id
- :<- [:multiaccount-settings]
- (fn [settings]
-   (get-in settings [:mailserver (fleet/current-fleet-sub settings)])))
+ :<- [:multiaccount]
+ (fn [multiaccount]
+   (get-in multiaccount
+           [:pinned-mailservers (fleet/current-fleet-sub multiaccount)])))
 
 ;;SEARCH ==============================================================================================================
 
@@ -1779,10 +1769,10 @@
 ;; TRIBUTE TO TALK
 (re-frame/reg-sub
  :tribute-to-talk/settings
- :<- [:multiaccount-settings]
+ :<- [:multiaccount]
  :<- [:ethereum/chain-keyword]
- (fn [[settings chain-keyword]]
-   (get-in settings [:tribute-to-talk chain-keyword])))
+ (fn [[multiaccount chain-keyword]]
+   (get-in multiaccount [:tribute-to-talk]) chain-keyword))
 
 (re-frame/reg-sub
  :tribute-to-talk/screen-params
@@ -2062,14 +2052,14 @@
 
 (defn- label-networks [default-networks]
   (fn [network]
-    (let [custom? (not (contains? default-networks (:id network)))]
+    (let [custom? (not (default-networks (:id network)))]
       (assoc network :custom? custom?))))
 
 (re-frame/reg-sub
  :get-networks
  :<- [:networks/networks]
  (fn [networks]
-   (let [networks (map (label-networks constants/default-networks) (sort-by :name (vals networks)))
+   (let [networks (map (label-networks (into #{} (map :id constants/default-networks))) (sort-by :name (vals networks)))
          types    [:mainnet :testnet :custom]]
      (zipmap
       types

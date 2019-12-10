@@ -461,7 +461,7 @@
             {:browser/clear-web-data nil}
             (bottom-sheet/hide-bottom-sheet)
             (browser.permissions/clear-dapps-permissions)
-            (multiaccounts.update/multiaccount-update {:dapps-address address} {})
+            (multiaccounts.update/multiaccount-update :dapps-address address {})
             #(when (= (:view-id db) :browser)
                (merge (navigation/navigate-back %)
                       {:dispatch [:browser.ui/browser-item-selected (get-in db [:browser/options :browser-id])]}))))

@@ -58,7 +58,7 @@
   (fetch db (:mailserver/current-id db)))
 
 (defn preferred-mailserver-id [db]
-  (get-in db [:multiaccount :settings :mailserver (node/current-fleet-key db)]))
+  (get-in db [:multiaccount :pinned-mailservers (node/current-fleet-key db)]))
 
 (defn mailserver-address->id [db address]
   (let [current-fleet (node/current-fleet-key db)]
@@ -1126,25 +1126,27 @@
 (fx/defn save-settings
   [{:keys [db] :as cofx} current-fleet mailserver-id]
   (let [{:keys [address]} (fetch-current db)
-        settings (get-in db [:multiaccount :settings])
+        pinned-mailservers (get-in db [:multiaccount :pinned-mailservers])
         ;; Check if previous mailserver was pinned
-        pinned?  (get-in settings [:mailserver current-fleet])]
+        pinned?  (get pinned-mailservers current-fleet)]
     (fx/merge cofx
               {:db (assoc db :mailserver/current-id mailserver-id)
                :mailserver/remove-peer address}
               (connect-to-mailserver)
               (when pinned?
-                (multiaccounts.update/update-settings
-                 (assoc-in settings [:mailserver current-fleet] mailserver-id)
+                (multiaccounts.update/multiaccount-update
+                 :pinned-mailservers (assoc pinned-mailservers
+                                            current-fleet
+                                            mailserver-id)
                  {})))))
 
 (fx/defn unpin
   [{:keys [db] :as cofx}]
   (let [current-fleet (node/current-fleet-key db)
-        settings (get-in db [:multiaccount :settings])]
+        pinned-mailservers (get-in db [:multiaccount :pinned-mailservers])]
     (fx/merge cofx
-              (multiaccounts.update/update-settings
-               (update settings :mailserver dissoc current-fleet)
+              (multiaccounts.update/multiaccount-update
+               :pinned-mailservers (dissoc pinned-mailservers current-fleet)
                {})
               (change-mailserver))))
 
@@ -1152,11 +1154,13 @@
   [{:keys [db] :as cofx}]
   (let [current-fleet (node/current-fleet-key db)
         mailserver-id (:mailserver/current-id db)
-        settings (get-in db [:multiaccount :settings])]
-    (fx/merge cofx
-              (multiaccounts.update/update-settings
-               (assoc-in settings [:mailserver current-fleet] mailserver-id)
-               {}))))
+        pinned-mailservers (get-in db [:multiaccount :pinned-mailservers])]
+    (multiaccounts.update/multiaccount-update
+     cofx
+     :pinned-mailservers (assoc pinned-mailservers
+                                current-fleet
+                                mailserver-id)
+     {})))
 
 (fx/defn load-gaps-fx [{:keys [db] :as cofx} chat-id]
   (when-not (get-in db [:chats chat-id :gaps-loaded?])

@@ -136,8 +136,8 @@
   [{:keys [db] :as cofx} network]
   (fx/merge cofx
             {:db (assoc db :networks/current-network network)
-             ::json-rpc/call [{:method "settings_saveConfig"
-                               :params ["current-network" network]
+             ::json-rpc/call [{:method "settings_saveSetting"
+                               :params [:networks/current-network network]
                                :on-success #()}]}
             (node/prepare-new-config {:on-success #(re-frame/dispatch [:logout])})))
 
@@ -146,8 +146,8 @@
   [{:keys [db] :as cofx} network]
   (let [networks (dissoc (:networks/networks db) network)]
     {:db (assoc db :networks/networks networks)
-     ::json-rpc/call [{:method "settings_saveConfig"
-                       :params ["networks" (types/serialize networks)]
+     ::json-rpc/call [{:method "settings_saveSetting"
+                       :params [:networks/networks (vals networks)]
                        :on-success #(re-frame/dispatch [:navigate-back])}]}))
 
 (defn new-network
@@ -183,8 +183,8 @@
         {:db (-> db
                  (dissoc :networks/manage)
                  (assoc :networks/networks new-networks))
-         ::json-rpc/call [{:method "settings_saveConfig"
-                           :params ["networks" (types/serialize new-networks)]
+         ::json-rpc/call [{:method "settings_saveSetting"
+                           :params [:networks/networks (vals new-networks)]
                            :on-success #(re-frame/dispatch [:navigate-back])}]}
         {:ui/show-error "chain-id already defined"}))
     {:ui/show-error "invalid network parameters"}))

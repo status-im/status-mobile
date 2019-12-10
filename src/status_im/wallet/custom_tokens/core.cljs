@@ -8,7 +8,8 @@
             [status-im.ui.components.react :as react]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
-            [status-im.wallet.core :as wallet]))
+            [status-im.wallet.core :as wallet]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]))
 
 (re-frame/reg-fx
  :wallet.custom-token/get-decimals

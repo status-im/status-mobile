@@ -71,10 +71,13 @@
   (let [name   (fullname custom-domain? username)
         names  (get-in db [:multiaccount :usernames] [])
         new-names (conj names name)]
-    (multiaccounts.update/multiaccount-update cofx
-                                              (cond-> {:usernames new-names}
-                                                (empty? names) (assoc :preferred-name name))
-                                              {:on-success #(re-frame/dispatch [::username-saved])})))
+    (fx/merge cofx
+              (multiaccounts.update/multiaccount-update
+               :usernames new-names
+               {:on-success #(re-frame/dispatch [::username-saved])})
+              (when (empty? names)
+                (multiaccounts.update/multiaccount-update
+                 :preferred-name name {})))))
 
 (fx/defn on-input-submitted
   {:events [::input-submitted ::input-icon-pressed]}
@@ -226,7 +229,7 @@
   {:events [::save-preferred-name]}
   [{:keys [db] :as cofx} name]
   (multiaccounts.update/multiaccount-update cofx
-                                            {:preferred-name name}
+                                            :preferred-name name
                                             {}))
 
 (fx/defn on-registration-failure

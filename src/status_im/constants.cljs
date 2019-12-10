@@ -35,56 +35,57 @@
 (def system "system")
 
 (def mainnet-networks
-  {"mainnet_rpc" {:id     "mainnet_rpc",
-                  :name   "Mainnet with upstream RPC",
-                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
-                           :DataDir        "/ethereum/mainnet_rpc"
-                           :UpstreamConfig {:Enabled true
-                                            :URL     "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"}}}})
+  [{:id     "mainnet_rpc",
+    :name   "Mainnet with upstream RPC",
+    :config {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
+             :DataDir        "/ethereum/mainnet_rpc"
+             :UpstreamConfig {:Enabled true
+                              :URL     "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"}}}])
 
 (def sidechain-networks
-  {"xdai_rpc" {:id     "xdai_rpc",
-               :name   "xDai Chain",
-               :config {:NetworkId      (ethereum/chain-keyword->chain-id :xdai)
-                        :DataDir        "/ethereum/xdai_rpc"
-                        :UpstreamConfig {:Enabled true
-                                         :URL     "https://dai.poa.network"}}}
-   "poa_rpc"  {:id     "poa_rpc",
-               :name   "POA Network",
-               :config {:NetworkId      (ethereum/chain-keyword->chain-id :poa)
-                        :DataDir        "/ethereum/poa_rpc"
-                        :UpstreamConfig {:Enabled true
-                                         :URL     "https://core.poa.network"}}}})
+  [{:id     "xdai_rpc",
+    :name   "xDai Chain",
+    :config {:NetworkId      (ethereum/chain-keyword->chain-id :xdai)
+             :DataDir        "/ethereum/xdai_rpc"
+             :UpstreamConfig {:Enabled true
+                              :URL     "https://dai.poa.network"}}}
+   {:id     "poa_rpc",
+    :name   "POA Network",
+    :config {:NetworkId      (ethereum/chain-keyword->chain-id :poa)
+             :DataDir        "/ethereum/poa_rpc"
+             :UpstreamConfig {:Enabled true
+                              :URL     "https://core.poa.network"}}}])
 
 (def testnet-networks
-  {"testnet_rpc" {:id     "testnet_rpc",
-                  :name   "Ropsten with upstream RPC",
-                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
-                           :DataDir        "/ethereum/testnet_rpc"
-                           :UpstreamConfig {:Enabled true
-                                            :URL     "https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a"}}}
-   "rinkeby_rpc" {:id     "rinkeby_rpc",
-                  :name   "Rinkeby with upstream RPC",
-                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
-                           :DataDir        "/ethereum/rinkeby_rpc"
-                           :UpstreamConfig {:Enabled true
-                                            :URL     "https://rinkeby.infura.io/v3/f315575765b14720b32382a61a89341a"}}}
-   "goerli_rpc"  {:id     "goerli_rpc",
-                  :name   "Goerli with upstream RPC",
-                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
-                           :DataDir        "/ethereum/goerli_rpc"
-                           :UpstreamConfig {:Enabled true
-                                            :URL     "https://goerli.blockscout.com/"}}}})
+  [{:id     "testnet_rpc",
+    :name   "Ropsten with upstream RPC",
+    :config {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
+             :DataDir        "/ethereum/testnet_rpc"
+             :UpstreamConfig {:Enabled true
+                              :URL     "https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a"}}}
+   {:id     "rinkeby_rpc",
+    :name   "Rinkeby with upstream RPC",
+    :config {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
+             :DataDir        "/ethereum/rinkeby_rpc"
+             :UpstreamConfig {:Enabled true
+                              :URL     "https://rinkeby.infura.io/v3/f315575765b14720b32382a61a89341a"}}}
+   {:id     "goerli_rpc",
+    :name   "Goerli with upstream RPC",
+    :config {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
+             :DataDir        "/ethereum/goerli_rpc"
+             :UpstreamConfig {:Enabled true
+                              :URL     "https://goerli.blockscout.com/"}}}])
 
 (def default-networks
-  (merge testnet-networks mainnet-networks sidechain-networks))
+  (concat testnet-networks mainnet-networks sidechain-networks))
 
-(def default-multiaccount-settings
+(def default-multiaccount
   {:preview-privacy? config/blank-preview?
-   :wallet           {:visible-tokens {:mainnet #{:SNT}}}})
+   :wallet/visible-tokens {:mainnet #{:SNT}}
+   :currency :usd})
 
 (defn default-visible-tokens [chain]
-  (get-in default-multiaccount-settings [:wallet :visible-tokens chain]))
+  (get-in default-multiaccount [:wallet/visible-tokens chain]))
 
 (def currencies
   {:aed {:id :aed :code "AED" :display-name (i18n/label :t/currency-display-name-aed) :symbol "د.إ"}

@@ -82,10 +82,8 @@
    "permissions_addDappPermissions" {}
    "permissions_getDappPermissions" {}
    "permissions_deleteDappPermissions" {}
-   "settings_saveConfig" {}
-   "settings_getConfig" {}
-   "settings_getConfigs" {}
-   "settings_saveNodeConfig" {}
+   "settings_saveSetting" {}
+   "settings_getSettings" {}
    "accounts_getAccounts" {}
    "accounts_saveAccounts" {}
    "accounts_deleteAccount" {}

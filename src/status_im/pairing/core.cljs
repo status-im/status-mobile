@@ -8,6 +8,7 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.transport.message.pairing :as transport.pairing]
             [status-im.transport.message.protocol :as protocol]
             [status-im.ui.screens.navigation :as navigation]
@@ -319,21 +320,38 @@
   [{:keys [db] :as cofx} {:keys [contacts account chat]} sender]
   (let [confirmation  (:metadata cofx)]
     (when (= sender (multiaccounts.model/current-public-key cofx))
-      (let [on-success #(log/debug "handled sync installation successfully")
-            new-contacts  (when (seq contacts)
+      (let [new-contacts  (when (seq contacts)
                             (vals (merge-contacts (:contacts/contacts db)
                                                   ((comp ensure-photo-path
                                                          ensure-system-tags) contacts))))
-            new-multiaccount   (merge-multiaccount (:multiaccount db) account)
-            contacts-fx   (when new-contacts (mapv contact/upsert-contact new-contacts))]
+            {old-name :name
+             old-photo-path :photo-path
+             old-last-updated :last-updated
+             :as multiaccount} (:multiaccount db)
+            {:keys [name photo-path last-updated]}
+            (merge-multiaccount multiaccount account)
+            contacts-fx (when new-contacts
+                          (mapv contact/upsert-contact new-contacts))]
         (apply fx/merge
                cofx
                (concat
-                [{:db                 (assoc db :multiaccount new-multiaccount)
+                [{:db (-> db
+                          (assoc-in [:multiaccount :name] name)
+                          (assoc-in [:multiaccount :last-updated] last-updated)
+                          (assoc-in [:multiaccount :photo-path] photo-path))
                   ::json-rpc/call
-                  [{:method "settings_saveConfig"
-                    :params ["multiaccount" (types/serialize new-multiaccount)]
-                    :on-success on-success}]}
+                  [(when (not= old-name name)
+                     {:method "settings_saveConfig"
+                      :params [:name name]
+                      :on-success #(log/debug "handled sync of name field successfully")})
+                   (when (not= old-photo-path photo-path)
+                     {:method "settings_saveConfig"
+                      :params [:photo-path photo-path]
+                      :on-success #(log/debug "handled sync of photo-path field successfully")})
+                   (when (not= old-last-updated last-updated)
+                     {:method "settings_saveConfig"
+                      :params [:last-updated last-updated]
+                      :on-success #(log/debug "handled sync of last-updated field successfully")})]}
                  #(when (:public? chat)
                     (models.chat/start-public-chat % (:chat-id chat) {:dont-navigate? true}))]
                 contacts-fx))))))

@@ -34,7 +34,8 @@
             [status-im.ethereum.eip55 :as eip55]
             [status-im.popover.core :as popover]
             [status-im.hardwallet.nfc :as nfc]
-            [status-im.multiaccounts.core :as multiaccounts]))
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.data-store.settings :as data-store.settings]))
 
 (def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
 (def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
@@ -163,13 +164,6 @@
    current-network
    (types/deserialize networks)])
 
-(defn convert-multiaccount-addresses
-  [multiaccount]
-  (let [update-address #(update % :address eip55/address->checksum)]
-    (-> multiaccount
-        update-address
-        (update :accounts (partial mapv update-address)))))
-
 (re-frame/reg-fx
  ;;TODO: this could be replaced by a single API call on status-go side
  ::initialize-wallet
@@ -191,18 +185,19 @@
        (.catch (fn [error]
                  (log/error "Failed to initialize wallet"))))))
 
-(fx/defn get-config-callback
-  {:events [::get-config-callback]}
-  [{:keys [db] :as cofx} config]
-  (let [[{:keys [address notifications-enabled?] :as multiaccount}
-         current-network networks] (deserialize-config config)
+(fx/defn get-settings-callback
+  {:events [::get-settings-callback]}
+  [{:keys [db] :as cofx} settings]
+  (let [{:keys [address notifications-enabled?
+                networks/current-network networks/networks] :as settings}
+        (data-store.settings/rpc->settings settings)
+        multiaccount (dissoc settings :networks/current-network :networks/networks)
         network-id (str (get-in networks [current-network :config :NetworkId]))]
     (fx/merge cofx
               (cond-> {:db (assoc db
                                   :networks/current-network current-network
                                   :networks/networks networks
-                                  :multiaccount (convert-multiaccount-addresses
-                                                 multiaccount))}
+                                  :multiaccount multiaccount)}
                 (and platform/android?
                      notifications-enabled?)
                 (assoc ::notifications/enable nil)
@@ -252,9 +247,8 @@
                  :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}
                 {:method     "mailservers_getMailservers"
                  :on-success #(re-frame/dispatch [::protocol/initialize-protocol {:mailservers (or % [])}])}
-                {:method     "settings_getConfigs"
-                 :params     [["multiaccount" "current-network" "networks"]]
-                 :on-success #(re-frame/dispatch [::get-config-callback %])}]}
+                {:method     "settings_getSettings"
+                 :on-success #(re-frame/dispatch [::get-settings-callback %])}]}
               (when save-password?
                 (keychain/save-user-password key-uid password))
               (keychain/save-auth-method key-uid (or new-auth-method auth-method))
@@ -264,8 +258,7 @@
 
 (fx/defn create-only-events
   [{:keys [db] :as cofx}]
-  (let [{:keys [multiaccount :multiaccount/accounts
-                :networks/networks :networks/current-network]} db]
+  (let [{:keys [multiaccount :multiaccount/accounts]} db]
     (fx/merge cofx
               {:db (assoc db
                           ;;NOTE when login the filters are initialized twice
@@ -275,20 +268,8 @@
                           ;;later on there is a check that filters have been initialized twice
                           ;;so here we set it at 1 already so that it passes the check once it has
                           ;;been initialized
-                          :filters/initialized 1
-                          :network constants/default-network
-                          :networks/networks constants/default-networks)
-               :filters/load-filters []
-               ::json-rpc/call
-               [{:method "settings_saveConfig"
-                 :params ["multiaccount" (types/serialize multiaccount)]
-                 :on-success #()}
-                {:method "settings_saveConfig"
-                 :params ["networks" (types/serialize networks)]
-                 :on-success #()}
-                {:method "settings_saveConfig"
-                 :params ["current-network" current-network]
-                 :on-success #()}]}
+                          :filters/initialized 1)
+               :filters/load-filters []}
               (finish-keycard-setup)
               (protocol/initialize-protocol {:mailservers []
                                              :mailserver-ranges {}
