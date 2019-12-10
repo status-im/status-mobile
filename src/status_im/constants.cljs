@@ -80,8 +80,7 @@
   (merge testnet-networks mainnet-networks sidechain-networks))
 
 (def default-multiaccount-settings
-  {:web3-opt-in?     true
-   :preview-privacy? false
+  {:preview-privacy? false
    :wallet           {:visible-tokens {}}})
 
 (def currencies
@@ -245,11 +244,9 @@
 (def ^:const api-request "api-request")
 (def ^:const history-state-changed "history-state-changed")
 (def ^:const debug-metrics "debug_metrics")
-(def ^:const web3-send-async "web3-send-async")
 (def ^:const web3-send-async-read-only "web3-send-async-read-only")
 (def ^:const web3-send-async-callback "web3-send-async-callback")
 (def ^:const scan-qr-code "scan-qr-code")
-(def ^:const scan-qr-code-callback "scan-qr-code-callback")
 
 ;;ipfs
 (def ^:const ipfs-proto-code "e3")

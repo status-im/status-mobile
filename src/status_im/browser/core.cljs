@@ -320,7 +320,7 @@
 
 (fx/defn web3-send-async
   [cofx {:keys [method params id] :as payload} message-id]
-  (let [message? (constants/web3-sign-message? method)
+  (let [message?      (constants/web3-sign-message? method)
         dapps-address (get-in cofx [:db :multiaccount :dapps-address])]
     (if (or message? (= constants/web3-send-transaction method))
       (let [[address data] (when message? (normalize-sign-message-params params))]
@@ -328,8 +328,8 @@
           (signing/sign cofx (merge
                               (if message?
                                 {:message {:address address :data data :typed? (not= constants/web3-personal-sign method)
-                                           :from dapps-address}}
-                                {:tx-obj  (update (first params) :from #(or % dapps-address))})
+                                           :from    dapps-address}}
+                                {:tx-obj (update (first params) :from #(or % dapps-address))})
                               {:on-result [:browser.dapp/transaction-on-result message-id id]
                                :on-error  [:browser.dapp/transaction-on-error message-id]}))))
       (if (#{"eth_accounts" "eth_coinbase"} method)
@@ -337,7 +337,7 @@
                               :messageId message-id
                               :result    {:jsonrpc "2.0"
                                           :id      (int id)
-                                          :result (if (= method "eth_coinbase") dapps-address [dapps-address])}})
+                                          :result  (if (= method "eth_coinbase") dapps-address [dapps-address])}})
         {:browser/call-rpc [payload
                             #(re-frame/dispatch [:browser.callback/call-rpc
                                                  {:type      constants/web3-send-async-callback
@@ -354,7 +354,7 @@
       (send-to-bridge cofx
                       {:type      constants/web3-send-async-callback
                        :messageId message-id
-                       :error     {:code 4100 :message "The requested account has not been authorized by the user."}})
+                       :error     {:code 4100}})
       (web3-send-async cofx payload message-id))))
 
 (fx/defn handle-scanned-qr-code
@@ -385,9 +385,6 @@
       (fx/merge cofx
                 (update-browser-history browser url)
                 (resolve-url nil))
-
-      (= type constants/web3-send-async)
-      (web3-send-async cofx payload messageId)
 
       (= type constants/web3-send-async-read-only)
       (web3-send-async-read-only cofx dapp-name payload messageId)

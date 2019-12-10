@@ -132,11 +132,6 @@
    (multiaccounts/toggle-disable-discovery-topic cofx enabled?)))
 
 (handlers/register-handler-fx
- :multiaccounts.ui/web3-opt-in-mode-switched
- (fn [cofx [_ opt-in]]
-   (multiaccounts/switch-web3-opt-in-mode cofx opt-in)))
-
-(handlers/register-handler-fx
  :multiaccounts.ui/preview-privacy-mode-switched
  (fn [cofx [_ private?]]
    (multiaccounts/switch-preview-privacy-mode cofx private?)))

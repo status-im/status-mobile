@@ -89,8 +89,7 @@
    :name                                 "name"
    :last-request                         nil
    :desktop-notifications?               false
-   :settings                             {:web3-opt-in? true
-                                          :preview-privacy? true
+   :settings                             {:preview-privacy? true
                                           :fleet        :eth.beta
                                           :wallet       {:visible-tokens {:testnet #{:STT
                                                                                      :HND}

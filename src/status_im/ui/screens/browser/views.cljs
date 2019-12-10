@@ -26,14 +26,6 @@
    [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :as views]))
 
-(def browser-config-edn
-  (slurp "./src/status_im/utils/browser_config.edn"))
-
-(def browser-config
-  (memoize
-   (fn []
-     (edn/read-string (browser-config-edn)))))
-
 (defn toolbar-content [url url-original {:keys [secure?]} url-editing? webview]
   (let [url-text (atom url)]
     [react/view styles/toolbar-content
@@ -79,11 +71,6 @@
     [react/text {:style styles/web-view-error-text}
      (str desc)]]))
 
-(defn get-inject-js [url]
-  (when url
-    (let [domain-name (nth (re-find #"^\w+://(www\.)?([^/:]+)" url) 2)]
-      (get (:inject-js (browser-config)) domain-name))))
-
 (views/defview navigation [url can-go-back? can-go-forward? dapps-account]
   (views/letsubs [height [:dimensions/window-height]
                   accounts [:accounts-without-watch-only]]
@@ -120,7 +107,7 @@
 (views/defview browser-component
   [{:keys [webview error? url browser browser-id unsafe? can-go-back?
            can-go-forward? resolving? network-id url-original
-           show-permission show-tooltip opt-in? dapp? name dapps-account]}]
+           show-permission show-tooltip dapp? name dapps-account]}]
   {:should-component-update (fn [_ _ args]
                               (let [[_ props] args]
                                 (not (nil? (:url props)))))}
@@ -149,11 +136,7 @@
         :on-bridge-message                     #(re-frame/dispatch [:browser/bridge-message-received %])
         :on-load                               #(re-frame/dispatch [:browser/loading-started])
         :on-error                              #(re-frame/dispatch [:browser/error-occured])
-        :injected-on-start-loading-java-script (str (when-not opt-in? (js-res/web3))
-                                                    (if opt-in?
-                                                      (js-res/web3-opt-in-init (str network-id))
-                                                      (js-res/web3-init (:address dapps-account) (str network-id)))
-                                                    (get-inject-js url))
+        :injected-on-start-loading-java-script (js-res/ethereum-provider (str network-id))
         :injected-java-script                  (js-res/webview-js)}])]
    [navigation url-original can-go-back? can-go-forward? dapps-account]
    [permissions.views/permissions-panel [(:dapp? browser) (:dapp browser) dapps-account] show-permission]
@@ -167,15 +150,13 @@
 (views/defview browser []
   (views/letsubs [webview (atom nil)
                   window-width [:dimensions/window-width]
-                  {:keys [settings]} [:multiaccount]
                   {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
                   {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:browser/options]
                   dapps-account [:dapps-account]
                   network-id [:chain-id]]
     (let [can-go-back?    (browser/can-go-back? browser)
           can-go-forward? (browser/can-go-forward? browser)
-          url-original    (browser/get-current-url browser)
-          opt-in?         (or (nil? (:web3-opt-in? settings)) (:web3-opt-in? settings))]
+          url-original    (browser/get-current-url browser)]
       [react/view {:style styles/browser}
        [toolbar error? url url-original browser browser-id url-editing? webview]
        [react/view
@@ -195,6 +176,5 @@
                            :network-id      network-id
                            :show-permission show-permission
                            :show-tooltip    show-tooltip
-                           :opt-in?         opt-in?
                            :name            name
                            :dapps-account   dapps-account}]])))

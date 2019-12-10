@@ -131,13 +131,6 @@
                (assoc settings :disable-discovery-topic? enabled?)
                {}))))
 
-(fx/defn switch-web3-opt-in-mode
-  [{:keys [db] :as cofx} opt-in]
-  (let [settings (get-in db [:multiaccount :settings])]
-    (multiaccounts.update/update-settings cofx
-                                          (assoc settings :web3-opt-in? opt-in)
-                                          {})))
-
 (fx/defn switch-preview-privacy-mode
   [{:keys [db] :as cofx} private?]
   (let [settings (get-in db [:multiaccount :settings])]

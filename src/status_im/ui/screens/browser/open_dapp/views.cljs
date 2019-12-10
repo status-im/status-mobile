@@ -12,9 +12,7 @@
    [status-im.react-native.resources :as resources]
    [status-im.ui.components.list-item.views :as list-item]
    [status-im.ui.components.icons.vector-icons :as vector-icons]
-   [status-im.ui.components.radio :as radio]
    [status-im.ui.components.icons.vector-icons :as icons]
-   [reagent.core :as reagent]
    [status-im.ui.screens.browser.accounts :as accounts])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -51,39 +49,8 @@
 (def dapp-image-data {:image (resources/get-image :dapp-store) :width 768 :height 333})
 (defn dapp-image [] [components.common/image-contain nil dapp-image-data])
 
-(def privacy-otions-visible? (reagent/atom true))
-
-(views/defview privacy-options []
-  (views/letsubs [{:keys [settings]} [:multiaccount]]
-    (let [privacy-enabled? (or (nil? (:web3-opt-in? settings)) (:web3-opt-in? settings))]
-      (when @privacy-otions-visible?
-        [react/view styles/privacy-container
-         [react/view {:style {:flex-direction :row}}
-          [react/view {:flex 1}
-           [react/text {:style {:typography :main-medium}} (i18n/label :t/dapps-can-access)]]
-          [react/touchable-highlight {:on-press #(reset! privacy-otions-visible? false)}
-           [react/view {:style {:width 40 :height 30 :align-items :center :margin-left 20}}
-            [react/view {:style styles/close-icon-container}
-             [icons/icon :main-icons/close {:color colors/white :width 19 :height 19}]]]]]
-         [react/touchable-highlight
-          {:on-press (when-not privacy-enabled?
-                       #(re-frame/dispatch [:multiaccounts.ui/web3-opt-in-mode-switched (not privacy-enabled?)]))}
-          [react/view {:style {:height 56 :justify-content :center :margin-top 8}}
-           [react/view {:style {:flex-direction :row :align-items :center}}
-            [radio/radio privacy-enabled?]
-            [react/text {:style {:margin-left 14}} (i18n/label :t/require-my-permission)]]
-           [react/text {:style styles/might-break}
-            (i18n/label :t/might-break)]]]
-         [react/touchable-highlight
-          {:on-press (when privacy-enabled?
-                       #(re-frame/dispatch [:multiaccounts.ui/web3-opt-in-mode-switched (not privacy-enabled?)]))}
-          [react/view {:style {:flex-direction :row  :height 40 :align-items :center}}
-           [radio/radio (not privacy-enabled?)]
-           [react/text {:style {:margin-left 14}} (i18n/label :t/always-allow)]]]]))))
-
 (defn list-header [empty?]
   [react/view (when empty? {:flex 1})
-   [privacy-options]
    [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/open-url "https://dap.ps"])}
     [react/view styles/dapp-store-container
      [dapp-image nil dapp-image-data]
