@@ -35,12 +35,20 @@
 (def system "system")
 
 (def mainnet-networks
-  {"mainnet_rpc" {:id     "mainnet_rpc",
-                  :name   "Mainnet with upstream RPC",
-                  :config {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
-                           :DataDir        "/ethereum/mainnet_rpc"
-                           :UpstreamConfig {:Enabled true
-                                            :URL     "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"}}}})
+  {"mainnet_rpc"
+   {:id     "mainnet_rpc",
+    :name   "Mainnet with upstream RPC",
+    :config {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
+             :DataDir        "/ethereum/mainnet_rpc"
+             :UpstreamConfig {:Enabled true
+                              :URL     "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"}}}
+   "mainnet_rpc_cloudflare"
+   {:id     "mainnet_rpc_cloudflare",
+    :name   "Mainnet with upstream RPC (cloudflare)",
+    :config {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
+             :DataDir        "/ethereum/mainnet_rpc_2"
+             :UpstreamConfig {:Enabled true
+                              :URL     "https://cloudflare-eth.com"}}}})
 
 (def sidechain-networks
   {"xdai_rpc" {:id     "xdai_rpc",

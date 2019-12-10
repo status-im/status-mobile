@@ -101,12 +101,11 @@
    "mailservers_deleteChatRequestRange" {}})
 
 (defn call
-  [{:keys [method params on-success on-error] :as p}]
+  [{:keys [method params on-success on-error] :as p :or {params []}}]
   (if-let [method-options (json-rpc-api method)]
     (let [{:keys [id on-result subscription?]
            :or {on-result identity
-                id        1
-                params    []}} method-options
+                id        1}} method-options
           on-error (or on-error
                        #(log/warn :json-rpc/error method :error % :params params))]
       (if (nil? method)
