@@ -514,6 +514,13 @@
    (> (count multiaccounts) 1)))
 
 (re-frame/reg-sub
+ :multiaccounts.login/keycard-account?
+ :<- [:multiaccounts/multiaccounts]
+ :<- [:multiaccounts/login]
+ (fn [[multiaccounts {:keys [key-uid]}]]
+   (get-in multiaccounts [key-uid :keycard-pairing])))
+
+(re-frame/reg-sub
  :accounts-without-watch-only
  :<- [:multiaccount]
  (fn [macc]

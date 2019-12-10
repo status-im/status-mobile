@@ -46,6 +46,7 @@
              ["with-profile" "prod" "cljsbuild" "once" "desktop"]]
             "figwheel-repl"      ["with-profile" "+figwheel" "run" "-m" "clojure.main" "env/dev/run.clj"]
             "test-cljs"          ["with-profile" "test" "doo" "node" "test" "once"]
+            "test-cljs-auto"     ["with-profile" "test" "doo" "node" "test" "auto"]
             "test-protocol"      ["with-profile" "test" "doo" "node" "protocol" "once"]
             "test-env-dev-utils" ["with-profile" "test" "doo" "node" "env-dev-utils" "once"]}
   :profiles {:dev      {:dependencies [[cider/piggieback "0.4.0"]]

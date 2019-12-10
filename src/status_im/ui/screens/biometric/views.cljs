@@ -69,12 +69,17 @@
     :on-confirm        :biometric-logout}])
 
 (defn secure-with-biometric-popover []
-  (let [bio-label-type (get-bio-type-label)]
+  (let [bio-label-type (get-bio-type-label)
+        keycard-account? @(re-frame/subscribe
+                           [:multiaccounts.login/keycard-account?])]
     [biometric-popover
      {:title-label     :t/biometric-secure-with
       :ok-button-label :t/biometric-enable-button
       :on-confirm      :biometric/enable
 
       :description-text
-      [[{:style {:color colors/gray}} (i18n/label :t/biometric-enable)]
+      [[{:style {:color colors/gray}}
+        (if keycard-account?
+          (i18n/label :t/biometric-enable-keycard)
+          (i18n/label :t/biometric-enable))]
        [{} (i18n/label :t/biometric-sign-in {:bio-type-label bio-label-type})]]}]))

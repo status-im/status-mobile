@@ -393,7 +393,10 @@
                "previous-auth-method" previous-auth-method)
     (fx/merge
      cofx
-     {:db (cond-> (assoc db :auth-method keychain/auth-method-none)
+     {:db (cond-> db
+            (not= previous-auth-method
+                  keychain/auth-method-biometric-prepare)
+            (assoc :auth-method keychain/auth-method-none)
             (or save-password?
                 (not bioauth-supported?)
                 (and (not save-password?)
