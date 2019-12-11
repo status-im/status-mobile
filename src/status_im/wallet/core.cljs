@@ -350,15 +350,6 @@
   [{:keys [db]} amount]
   {:db (assoc-in db [:wallet/prepare-transaction :amount-text] amount)})
 
-(fx/defn set-symbol
-  {:events [:wallet.send/set-symbol]}
-  [{:keys [db]} symbol]
-  {:db (-> db
-           (assoc-in [:wallet :send-transaction :symbol] symbol)
-           (assoc-in [:wallet :send-transaction :amount] nil)
-           (assoc-in [:wallet :send-transaction :amount-text] nil)
-           (assoc-in [:wallet :send-transaction :asset-error] nil))})
-
 (fx/defn sign-transaction-button-clicked
   {:events  [:wallet.ui/sign-transaction-button-clicked]}
   [{:keys [db] :as cofx} {:keys [to amount from token from-chat? gas gasPrice]}]

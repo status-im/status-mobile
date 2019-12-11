@@ -292,12 +292,6 @@
    (ethereum/network->chain-name network)))
 
 (re-frame/reg-sub
- :network-name
- :<- [:current-network]
- (fn [network]
-   (ethereum/network->network-name network)))
-
-(re-frame/reg-sub
  :chain-id
  :<- [:current-network]
  (fn [network]
