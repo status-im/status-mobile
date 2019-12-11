@@ -97,6 +97,7 @@
       [react/view {:justify-content :center :flex 1}
        [react/text-input {:secure-text-entry true
                           :auto-focus        true
+                          :auto-capitalize   :none
                           :text-align        :center
                           :placeholder       ""
                           :style             {:typography :header}
