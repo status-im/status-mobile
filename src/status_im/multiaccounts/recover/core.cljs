@@ -15,7 +15,8 @@
             [status-im.utils.types :as types]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
+            [taoensso.timbre :as log]))
 
 (defn existing-account?
   [root-key multiaccounts]
@@ -91,6 +92,7 @@
 (re-frame/reg-fx
  ::import-multiaccount
  (fn [{:keys [passphrase password]}]
+   (log/debug "[recover] ::import-multiaccount")
    (status/multiaccount-import-mnemonic
     passphrase
     password

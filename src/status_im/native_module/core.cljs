@@ -334,4 +334,5 @@
 (defn gfycat-identicon-async
   "Generate an icon based on a string and 3 words random name asynchronously"
   [seed callback]
+  (log/debug "[native-module] gfycat-identicon-async")
   (.generateAliasAndIdenticonAsync (status) seed callback))

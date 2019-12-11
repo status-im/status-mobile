@@ -21,7 +21,8 @@
             [status-im.multiaccounts.recover.core :as recover]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.utils.keychain.core :as keychain]
-            [status-im.hardwallet.nfc :as nfc]))
+            [status-im.hardwallet.nfc :as nfc]
+            [status-im.native-module.core :as status]))
 
 (def default-pin "000000")
 
@@ -1726,10 +1727,21 @@
                                                   :pin      pin'}}
               (navigation/navigate-to-cofx :keycard-onboarding-finishing nil))))
 
+(re-frame/reg-fx
+ ::generate-name-and-photo
+ (fn [public-key]
+   (status/gfycat-identicon-async
+    public-key
+    (fn [whisper-name photo-path]
+      (re-frame/dispatch
+       [::on-name-and-photo-generated whisper-name photo-path])))))
+
 (fx/defn create-keycard-multiaccount
   [{:keys [db] :as cofx}]
   (let [{{:keys [multiaccount secrets flow]} :hardwallet} db
         {:keys [address
+                name
+                photo-path
                 public-key
                 whisper-public-key
                 wallet-public-key
@@ -1739,32 +1751,58 @@
                 encryption-public-key
                 instance-uid
                 key-uid]} multiaccount
-        {:keys [pairing paired-on]} secrets]
-    (fx/merge cofx
-              {:db (-> db
-                       (assoc-in [:hardwallet :setup-step] nil)
-                       (assoc :intro-wizard nil))}
-              (multiaccounts.create/on-multiaccount-created
-               {:derived              {constants/path-whisper-keyword
-                                       {:publicKey whisper-public-key
-                                        :address   (eip55/address->checksum whisper-address)}
-                                       constants/path-default-wallet-keyword
-                                       {:publicKey wallet-public-key
-                                        :address   (eip55/address->checksum wallet-address)}}
-                :mnemonic             ""
-                :address              address
-                :publicKey            public-key
-                :keycard-instance-uid instance-uid
-                :keyUid               (ethereum/normalized-hex key-uid)
-                :keycard-pairing      pairing
-                :keycard-paired-on    paired-on
-                :chat-key             whisper-private-key}
-               encryption-public-key
-               {:seed-backed-up? true
-                :login?          true})
-              (if (= flow :import)
-                (navigation/navigate-to-cofx :keycard-recovery-success nil)
-                (navigation/navigate-to-cofx :welcome nil)))))
+        {:keys [pairing paired-on]} secrets
+        {:keys [name photo-path]}
+        (if (nil? name)
+          ;; name might have been generated during recovery via passphrase
+          (get-in db [:intro-wizard :derived constants/path-whisper-keyword])
+          {:name       name
+           :photo-path photo-path})]
+    ;; if a name is still `nil` we have to generate it before multiaccount's
+    ;; creation otherwise spec validation will fail
+    (if (nil? name)
+      {::generate-name-and-photo whisper-public-key}
+      (fx/merge cofx
+                {:db (-> db
+                         (assoc-in [:hardwallet :setup-step] nil)
+                         (assoc :intro-wizard nil))}
+                (multiaccounts.create/on-multiaccount-created
+                 {:derived              {constants/path-whisper-keyword
+                                         {:publicKey  whisper-public-key
+                                          :address    (eip55/address->checksum whisper-address)
+                                          :name       name
+                                          :photo-path photo-path}
+                                         constants/path-default-wallet-keyword
+                                         {:publicKey wallet-public-key
+                                          :address   (eip55/address->checksum wallet-address)}}
+                  :mnemonic             ""
+                  :address              address
+                  :publicKey            public-key
+                  :keycard-instance-uid instance-uid
+                  :keyUid               (ethereum/normalized-hex key-uid)
+                  :keycard-pairing      pairing
+                  :keycard-paired-on    paired-on
+                  :chat-key             whisper-private-key}
+                 encryption-public-key
+                 {:seed-backed-up? true
+                  :login?          true})
+                (if (= flow :import)
+                  (navigation/navigate-to-cofx :keycard-recovery-success nil)
+                  (navigation/navigate-to-cofx :welcome nil))))))
+
+(fx/defn on-name-and-photo-generated
+  {:events [::on-name-and-photo-generated]
+   :interceptors [(re-frame/inject-cofx :random-guid-generator)
+                  (re-frame/inject-cofx ::multiaccounts.create/get-signing-phrase)]}
+  [{:keys [db] :as cofx} whisper-name photo-path]
+  (fx/merge
+   cofx
+   {:db (update-in db [:hardwallet :multiaccount]
+                   (fn [multiacc]
+                     (assoc multiacc
+                            :name whisper-name
+                            :photo-path photo-path)))}
+   (create-keycard-multiaccount)))
 
 (fx/defn on-generate-and-load-key-success
   [{:keys [db random-guid-generator] :as cofx} data]
