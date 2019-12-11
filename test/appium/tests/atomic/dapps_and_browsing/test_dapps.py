@@ -38,35 +38,6 @@ class TestDApps(SingleDeviceTestCase):
         if not status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
             self.driver.fail('Public key is not returned')
 
-    @marks.testrail_id(6234)
-    @marks.high
-    def test_always_allow_web3_permissions(self):
-        user = basic_user
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(passphrase=user['passphrase'])
-        dapp_view = sign_in_view.dapp_tab_button.click()
-
-        dapp_view.just_fyi('check that web3 permissions window is shown')
-        if not dapp_view.element_by_text_part('ÐApps can access my wallet').is_element_displayed():
-            self.errors.append('Permissions window is not shown!')
-
-        dapp_view.just_fyi('check that can enable "Always allow" and Dapp will not ask for permissions')
-        dapp_view.always_allow_radio_button.click()
-        dapp_view.close_web3_permissions_window_button.click()
-        dapp_view.open_url(test_dapp_url)
-        status_test_dapp = dapp_view.get_status_test_dapp_view()
-        if status_test_dapp.allow_button.is_element_displayed():
-            self.driver.append('DApp is asking permissions (Always allow is enabled)')
-
-        dapp_view.just_fyi('check that after relogin window is not reappearing and DApps are still not asking for permissions')
-        sign_in_view.relogin()
-        sign_in_view.dapp_tab_button.click()
-        dapp_view.open_url(test_dapp_url)
-        if status_test_dapp.allow_button.is_element_displayed():
-            self.driver.append('DApp is asking permissions after relogin (Always allow is enabled)')
-        self.errors.verify_no_errors()
-
-
     @marks.testrail_id(6232)
     @marks.medium
     def test_switching_accounts_in_dapp(self):
