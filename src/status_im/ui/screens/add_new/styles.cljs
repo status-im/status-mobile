@@ -30,4 +30,5 @@
   {:padding-horizontal 14
    :desktop            {:height 30
                         :width  "100%"}
-   :android            {:padding 0}})
+   :android            {:padding 0
+                        :width  "100%"}})
