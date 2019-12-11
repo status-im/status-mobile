@@ -334,7 +334,9 @@
   (let [chain        (ethereum/chain-keyword db)
         settings     (update-toggle-in-settings cofx symbol true)
         new-settings (assoc-in settings [:wallet :custom-tokens chain address] token)]
-    (multiaccounts.update/update-settings cofx new-settings {})))
+    (fx/merge cofx
+              (multiaccounts.update/update-settings cofx new-settings {})
+              (update-balances nil))))
 
 (fx/defn remove-custom-token
   [{:keys [db] :as cofx} {:keys [symbol address]}]
