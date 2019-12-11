@@ -82,36 +82,47 @@
 (views/defview sheet [_]
   (views/letsubs [{:keys [amount-error amount-text from token to sign-enabled? from-chat?] :as tx}
                   [:wallet.send/prepare-transaction-with-balance]
-                  small-screen? [:dimensions/small-screen?]]
-    [react/view (styles/sheet small-screen?)
-     [header small-screen?]
-     [react/view (merge {:flex-direction :row :padding-horizontal 24 :align-items :center}
-                        (when-not small-screen?
-                          {:margin-top 16 :margin-bottom 16}))
-      [react/text-input
-       {:style               {:font-size (if small-screen? 24 38)
-                              :color (when amount-error colors/red)
-                              :flex-shrink 1}
-        :keyboard-type       :numeric
-        :accessibility-label :amount-input
-        :default-value       amount-text
-        :auto-focus          true
-        :on-change-text      #(re-frame/dispatch [:wallet.send/set-amount-text %])
-        :placeholder         "0.0 "}]
-      [asset-selector tx]
-      (when amount-error
-        [tooltip/tooltip amount-error {:bottom-value 2
-                                       :font-size    12}])]
-     [components/separator]
-     [list-item/list-item {:type :section-header :title :t/from}]
-     [render-account from token]
-     [list-item/list-item {:type :section-header :title :t/to}]
-     [render-contact to from-chat?]
-     [toolbar/toolbar
-      {:center {:label               :t/wallet-send
-                :accessibility-label :send-transaction-bottom-sheet
-                :disabled?           (not sign-enabled?)
-                :on-press            #(re-frame/dispatch [:wallet.ui/sign-transaction-button-clicked tx])}}]]))
+                  window-height [:dimensions/window-height]
+                  keyboard-height [:keyboard-height]]
+    (let [small-screen? (< (- window-height keyboard-height) 450)]
+      [react/view {:style (styles/sheet small-screen?)}
+       [header small-screen?]
+       [react/view {:flex-direction :row :padding-horizontal 24 :align-items :center
+                    :margin-vertical (if small-screen? 8 16)}
+        [react/text-input
+         {:style               {:font-size (if small-screen? 24 38)
+                                :color (when amount-error colors/red)
+                                :flex-shrink 1}
+          :keyboard-type       :numeric
+          :accessibility-label :amount-input
+          :default-value       amount-text
+          :auto-focus          true
+          :on-change-text      #(re-frame/dispatch [:wallet.send/set-amount-text %])
+          :placeholder         "0.0 "}]
+        [asset-selector tx]
+        (when amount-error
+          [tooltip/tooltip amount-error {:bottom-value 2
+                                         :font-size    12}])]
+       [components/separator]
+       (when-not small-screen?
+         [list-item/list-item {:type :section-header :title :t/from}])
+       [react/view {:flex-direction :row :flex 1 :align-items :center}
+        (when small-screen?
+          [react/i18n-text {:style {:width 50 :text-align :right :color colors/gray} :key :t/from}])
+        [react/view {:flex 1}
+         [render-account from token]]]
+       (when-not small-screen?
+         [list-item/list-item {:type :section-header :title :t/to}])
+       [react/view {:flex-direction :row :flex 1 :align-items :center}
+        (when small-screen?
+          [react/i18n-text {:style {:width 50 :text-align :right :color colors/gray} :key :t/to}])
+        [react/view {:flex 1}
+         [render-contact to from-chat?]]]
+       [toolbar/toolbar
+        {:center {:label               :t/wallet-send
+                  :accessibility-label :send-transaction-bottom-sheet
+                  :disabled?           (not sign-enabled?)
+                  :on-press            #(re-frame/dispatch [:wallet.ui/sign-transaction-button-clicked tx])}}]])))
 
 (defview prepare-transaction []
   (letsubs [tx [:wallet/prepare-transaction]]
