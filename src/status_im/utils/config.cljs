@@ -33,6 +33,7 @@
 (def mobile-ui-for-desktop? (enabled? (get-config :MOBILE_UI_FOR_DESKTOP "0")))
 ;; NOTE: only disabled in releases
 (def local-notifications? (enabled? (get-config :LOCAL_NOTIFICATIONS "1")))
+(def blank-preview? (enabled? (get-config :BLANK_PREVIEW "1")))
 
 ;; CONFIG VALUES
 (def log-level

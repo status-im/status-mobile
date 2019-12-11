@@ -6,7 +6,6 @@
              :chat
              :select-chat
              :profile
-             :new
              :take-picture
              :new-group
              :add-participants-toggle-list

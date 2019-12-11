@@ -13,7 +13,6 @@
             status-im.mailserver.db
             status-im.ens.db
             status-im.browser.db
-            status-im.ui.screens.add-new.db
             status-im.ui.screens.add-new.new-public-chat.db
             status-im.ui.components.bottom-sheet.core
             [status-im.wallet.db :as wallet.db]))
@@ -211,7 +210,6 @@
                                 :universal-links/url
                                 :browser/browsers
                                 :browser/options
-                                :new/open-dapp
                                 :navigation/screen-params
                                 :chat/cooldowns
                                 :chat/cooldown-enabled?

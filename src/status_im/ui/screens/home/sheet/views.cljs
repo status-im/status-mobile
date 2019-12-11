@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.home.sheet.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
@@ -34,14 +34,6 @@
       :accessibility-label :join-public-chat-button
       :icon                :main-icons/public-chat
       :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-public-chat])}]
-    [list-item/list-item
-     {:theme               :action
-      :title               :t/scan-qr
-      :accessibility-label :scan-qr-code-button
-      :icon                :main-icons/qr
-      :on-press            #(hide-sheet-and-dispatch [:qr-scanner.ui/scan-qr-code-pressed
-                                                      {:title (i18n/label :t/scan-qr)
-                                                       :handler :handle-qr-code}])}]
     [list-item/list-item
      {:theme               :action
       :title               :t/invite-friends
@@ -110,7 +102,7 @@
 
 (def add-new
   {:content        add-new-view
-   :content-height 320})
+   :content-height 280})
 
 (def public-chat-actions
   {:content        public-chat-actions-view

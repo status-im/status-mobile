@@ -139,3 +139,8 @@
               (multiaccounts.update/update-settings
                (assoc settings :preview-privacy? private?)
                {}))))
+
+(fx/defn switch-preview-privacy-mode-flag
+  [{:keys [db]}]
+  (let [private? (get-in db [:multiaccount :settings :preview-privacy?])]
+    {::blank-preview-flag-changed private?}))

@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.events
   (:require status-im.events
-            status-im.ui.screens.add-new.events
             status-im.ui.screens.add-new.new-chat.events
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events

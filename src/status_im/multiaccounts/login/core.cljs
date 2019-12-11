@@ -33,7 +33,8 @@
             [status-im.utils.identicon :as identicon]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.popover.core :as popover]
-            [status-im.hardwallet.nfc :as nfc]))
+            [status-im.hardwallet.nfc :as nfc]
+            [status-im.multiaccounts.core :as multiaccounts]))
 
 (def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
 (def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
@@ -177,7 +178,8 @@
               (contact/initialize-contacts)
               (stickers/init-stickers-packs)
               (mobile-network/on-network-status-change)
-              (chaos-mode/check-chaos-mode))))
+              (chaos-mode/check-chaos-mode)
+              (multiaccounts/switch-preview-privacy-mode-flag))))
 
 (defn get-new-auth-method [auth-method save-password?]
   (if save-password?
@@ -252,6 +254,7 @@
                                              :mailserver-topics {}
                                              :default-mailserver true})
               (chaos-mode/check-chaos-mode)
+              (multiaccounts/switch-preview-privacy-mode-flag)
               (when-not platform/desktop?
                 (initialize-wallet nil)))))
 

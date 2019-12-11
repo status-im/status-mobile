@@ -4,7 +4,6 @@
             [status-im.ui.screens.multiaccounts.views :as multiaccounts]
             [status-im.ui.screens.add-new.new-chat.views :as new-chat]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
-            [status-im.ui.screens.add-new.views :as add-new]
             [status-im.ui.screens.bootnodes-settings.edit-bootnode.views
              :as
              edit-bootnode]
@@ -119,7 +118,6 @@
    :chat                                             chat/chat
    :select-chat                                      chat/select-chat
    :profile                                          profile.contact/profile
-   :new                                              add-new/add-new
    :new-chat                                         [:modal new-chat/new-chat]
    :qr-scanner                                       [:modal qr-scanner/qr-scanner]
    :new-group                                        group/new-group

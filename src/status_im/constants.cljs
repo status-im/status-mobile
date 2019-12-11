@@ -80,7 +80,7 @@
   (merge testnet-networks mainnet-networks sidechain-networks))
 
 (def default-multiaccount-settings
-  {:preview-privacy? false
+  {:preview-privacy? config/blank-preview?
    :wallet           {:visible-tokens {}}})
 
 (def currencies
