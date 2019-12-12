@@ -443,11 +443,10 @@
    public-key))
 
 (re-frame/reg-sub
- :multiaccount/default-address
+ :multiaccount/default-account
  :<- [:multiaccount]
  (fn [{:keys [accounts]}]
-   (ethereum/normalized-hex
-    (:address (ethereum/get-default-account accounts)))))
+   (ethereum/get-default-account accounts)))
 
 (re-frame/reg-sub
  :sign-in-enabled?
@@ -1905,12 +1904,12 @@
  :ens/checkout-screen
  :<- [:ens/registration]
  :<- [:ens.stateofus/registrar]
- :<- [:multiaccount/default-address]
+ :<- [:multiaccount/default-account]
  :<- [:multiaccount/public-key]
  :<- [:chain-id]
  (fn [[{:keys [custom-domain? username]}
-       registrar default-address public-key chain-id]]
-   {:address        default-address
+       registrar default-account public-key chain-id]]
+   {:address        (ethereum/normalized-hex (:address default-account))
     :username       username
     :public-key     public-key
     :custom-domain? custom-domain?

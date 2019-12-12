@@ -13,7 +13,8 @@
             [reagent.core :as reagent]
             [re-frame.core :as re-frame]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
-            [status-im.ui.screens.wallet.accounts.styles :as styles]))
+            [status-im.ui.screens.wallet.accounts.styles :as styles]
+            [status-im.utils.utils :as utils.utils]))
 
 (def state (reagent/atom {:tab :assets}))
 
@@ -97,6 +98,20 @@
       (:code currency)]
      [react/text {:style {:color colors/gray}} (i18n/label :t/wallet-total-value)]]))
 
+(defn- request-camera-permissions []
+  (let [options {:handler :wallet.send/qr-scanner-result}]
+    (re-frame/dispatch
+     [:request-permissions
+      {:permissions [:camera]
+       :on-allowed
+       #(re-frame/dispatch [:wallet.send/qr-scanner-allowed options])
+       :on-denied
+       #(utils.utils/set-timeout
+         (fn []
+           (utils.utils/show-popup (i18n/label :t/error)
+                                   (i18n/label :t/camera-access-error)))
+         50)}])))
+
 (views/defview accounts-options []
   (views/letsubs [{:keys [seed-backed-up?]} [:multiaccount]
                   empty-balances?           [:empty-balances?]]
@@ -116,12 +131,29 @@
           [react/text {:style               {:color colors/gray}
                        :accessibility-label :back-up-your-seed-phrase-warning}
            (i18n/label :t/back-up-your-seed-phrase)]]])]
-     [react/touchable-highlight {:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                {:content        (sheets/accounts-options seed-backed-up?)
-                                                                 :content-height (if seed-backed-up? 190 250)}])}
-      [react/view {:height          toolbar.styles/toolbar-height :width toolbar.styles/toolbar-height :align-items :center
+     [react/touchable-highlight
+      {:on-press #(request-camera-permissions)}
+      [react/view {:height          toolbar.styles/toolbar-height
+                   :width 24 :align-items :center
+                   :justify-content :center}
+       [icons/icon :main-icons/qr {:accessibility-label :accounts-qr-code}]]]
+     [react/touchable-highlight
+      {:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                      {:content        (sheets/accounts-options seed-backed-up?)
+                                       :content-height (if seed-backed-up? 190 250)}])}
+      [react/view {:height          toolbar.styles/toolbar-height
+                   :width toolbar.styles/toolbar-height :align-items :center
                    :justify-content :center}
        [icons/icon :main-icons/more {:accessibility-label :accounts-more-options}]]]]))
+
+(views/defview  send-button []
+  (views/letsubs [account [:multiaccount/default-account]]
+    [react/view styles/send-button-container
+     [react/touchable-highlight
+      {:accessibility-label :send-transaction-button
+       :on-press            #(re-frame/dispatch [:wallet/prepare-transaction-from-wallet account])}
+      [react/view styles/send-button
+       [icons/icon :main-icons/send {:color :white}]]]]))
 
 (views/defview accounts []
   (views/letsubs [{:keys [accounts keycard-pairing]} [:multiaccount]]
@@ -141,4 +173,6 @@
     [react/view {:margin-top 8 :padding-horizontal 16}
      [total-value]
      [accounts]]
-    [assets]]])
+    [assets]
+    [react/view {:height 68}]]
+   [send-button]])
