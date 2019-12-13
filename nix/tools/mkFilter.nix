@@ -24,11 +24,13 @@ let
     root }:
     let
       allPathRootsAllowed = (length dirRootsToInclude) == 0;
+      # this removes superfluous slashes from the path
+      cleanRoot = "${toString (/. + root)}/";
     in
       path: type:
       let
         baseName = baseNameOf (toString path);
-        subpath = elemAt (splitString "${toString root}/" path) 1;
+        subpath = elemAt (splitString cleanRoot path) 1;
         spdir = elemAt (splitString "/" subpath) 0;
 
       in lib.cleanSourceFilter path type && (
