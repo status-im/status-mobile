@@ -78,7 +78,7 @@
 (re-frame/reg-fx
  ::resolve-addresses
  (fn [{:keys [registry ens-names callback]}]
-   ;; resolve all addresses then call the callback function with the array of 
+   ;; resolve all addresses then call the callback function with the array of
    ;;addresses as parameter
    (-> (js/Promise.all
         (clj->js (mapv (fn [ens-name]
@@ -127,7 +127,7 @@
       amount-changed? (changed-amount-warning old-amount new-amount)
       (not (:from previous-state))
       (update :db assoc-in [:wallet/prepare-transaction :from]
-              (ethereum/get-default-account (get-in db [:multiaccount :accounts])))
+              (ethereum/get-default-account (get db :multiaccount/accounts)))
       (not old-symbol)
       (update :db assoc-in [:wallet/prepare-transaction :symbol] (or new-symbol :ETH))
       (not address) (assoc :ui/show-error (i18n/label :t/wallet-invalid-address {:data uri}))

@@ -27,7 +27,7 @@
       :on-press #(re-frame/dispatch [:wallet.send/set-field field account])}]))
 
 (views/defview accounts-list [field]
-  (views/letsubs [{:keys [accounts]} [:multiaccount]
+  (views/letsubs [accounts [:multiaccount/accounts]
                   accounts-whithout-watch [:accounts-without-watch-only]]
     [list/flat-list {:data      (if (= :to field) accounts accounts-whithout-watch)
                      :key-fn    :address

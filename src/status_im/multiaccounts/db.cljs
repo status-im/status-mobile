@@ -11,7 +11,23 @@
 (spec/def ::password  (spec/and :global/not-empty-string valid-length?))
 
 (spec/def :multiaccount/root-address (spec/nilable string?))
-(spec/def :multiaccount/accounts (spec/nilable vector?))
+
+(spec/def :account/path string?)
+(spec/def :account/color string?)
+(spec/def :account/name string?)
+(spec/def :account/storage keyword?)
+(spec/def :account/type keyword?)
+(spec/def :account/wallet boolean?)
+(spec/def :account/chat boolean?)
+(spec/def :account/public-key :global/public-key)
+(spec/def :account/address :global/address)
+
+(spec/def :multiaccount/account
+  (spec/keys :req-un [:account/address :account/color :account/name]
+             :opt-un [:account/public-key :account/path
+                      :account/storage :account/type
+                      :account/wallet :account/chat]))
+(spec/def :multiaccount/accounts (spec/coll-of :multiaccount/account :kind vector?))
 
 (spec/def :multiaccount/address :global/address)
 (spec/def :multiaccount/key-uid string?)

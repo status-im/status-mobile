@@ -80,7 +80,7 @@
      value)])
 
 (defview account-settings []
-  (letsubs [{:keys [address color path type] :as account} [:current-account]
+  (letsubs [{:keys [address color path type] :as account} [:multiaccount/current-account]
             new-account (reagent/atom nil)]
     [react/keyboard-avoiding-view {:flex 1}
      [topbar/toolbar {}

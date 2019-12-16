@@ -69,7 +69,7 @@
   (some #(when (:wallet %) %) accounts))
 
 (defn default-address [db]
-  (-> (get-in db [:multiaccount :accounts])
+  (-> (get db :multiaccount/accounts)
       get-default-account
       :address))
 

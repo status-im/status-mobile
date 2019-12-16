@@ -39,12 +39,12 @@
                 [path]
                 hashed-password
                 (fn [result]
-                  (let [{:keys [public-key address]}
+                  (let [{:keys [publicKey address]}
                         (get (types/json->clj result) (keyword path))]
                     (re-frame/dispatch [::account-generated
                                         {:name       (str "Account " path-num)
                                          :address    address
-                                         :public-key public-key
+                                         :public-key publicKey
                                          :path       (str constants/path-wallet-root "/" path-num)
                                          :color      (rand-nth colors/account-colors)}])))))))))))))
 
@@ -88,39 +88,47 @@
 (fx/defn save-account
   {:events [:wallet.accounts/save-account]}
   [{:keys [db] :as cofx} account {:keys [name color]}]
-  (let [{:keys [accounts]} (:multiaccount db)
+  (let [accounts (:multiaccount/accounts db)
         new-account  (cond-> account
                        name (assoc :name name)
                        color (assoc :color color))
         new-accounts (replace {account new-account} accounts)]
-    (multiaccounts.update/multiaccount-update cofx {:accounts new-accounts} nil)))
+    {::json-rpc/call [{:method     "accounts_saveAccounts"
+                       :params     [[new-account]]
+                       :on-success #()}]
+     :db (assoc db :multiaccount/accounts new-accounts)}))
 
 (fx/defn delete-account
   {:events [:wallet.accounts/delete-account]}
   [{:keys [db] :as cofx} account]
-  (let [{:keys [accounts]} (:multiaccount db)
+  (let [accounts (:multiaccount/accounts db)
         new-accounts (vec (remove #(= account %) accounts))]
-    (println account new-accounts)
     (fx/merge cofx
-              (multiaccounts.update/multiaccount-update {:accounts new-accounts} nil)
+              {::json-rpc/call [{:method     "accounts_deleteAccount"
+                                 :params     [(:address account)]
+                                 :on-success #()}]
+               :db (assoc db :multiaccount/accounts new-accounts)}
               (navigation/navigate-to-cofx :wallet nil))))
 
 (fx/defn save-generated-account
   {:events [:wallet.accounts/save-generated-account]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [accounts latest-derived-path]} (:multiaccount db)
-        {:keys [account path type]} (:add-account db)]
+  (let [{:keys [latest-derived-path]} (:multiaccount db)
+        {:keys [account path type]} (:add-account db)
+        accounts (:multiaccount/accounts db)
+        new-accounts (conj accounts account)]
     (when account
       (fx/merge cofx
                 {::json-rpc/call [{:method     "accounts_saveAccounts"
                                    :params     [[account]]
                                    :on-success #()}]
-                 :db             (dissoc db :add-account)}
-                (multiaccounts.update/multiaccount-update
-                 (merge {:accounts (conj accounts account)}
-                        (when (= type :generate)
-                          {:latest-derived-path (max (int path) latest-derived-path)}))
-                 nil)
+                 :db (-> db
+                         (assoc :multiaccount/accounts new-accounts)
+                         (dissoc :add-account))}
+                (when (= type :generate)
+                  (multiaccounts.update/multiaccount-update
+                   {:latest-derived-path (inc latest-derived-path)}
+                   nil))
                 (wallet/update-balances nil)
                 (navigation/navigate-to-cofx :wallet nil)))))
 
@@ -149,8 +157,6 @@
               {:db (assoc-in db [:add-account :account]
                              {:name       ""
                               :address    (eip55/address->checksum (ethereum/normalized-hex address))
-                              :public-key nil
-                              :path       ""
                               :type       :watch
                               :color      (rand-nth colors/account-colors)})}
               (navigation/navigate-to-cofx :account-added nil))))

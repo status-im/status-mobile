@@ -3,6 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.eip55 :as eip55]
             [taoensso.timbre :as log]
             [status-im.i18n :as i18n]
             [status-im.hardwallet.nfc :as nfc]
@@ -55,9 +56,9 @@
         hashed-password (ethereum/sha3 (security/safe-unmask-data key-code))
         callback (fn [result]
                    (let [derived-data (types/json->clj result)
-                         publicKey (get-in derived-data [constants/path-whisper-keyword :publicKey])]
+                         public-key (get-in derived-data [constants/path-whisper-keyword :publicKey])]
                      (status/gfycat-identicon-async
-                      publicKey
+                      public-key
                       (fn [name photo-path]
                         (let [derived-whisper (derived-data constants/path-whisper-keyword)
                               derived-data-extended (assoc-in derived-data
@@ -191,16 +192,16 @@
   [multiaccount]
   [(let [{:keys [publicKey address]}
          (get-in multiaccount [:derived constants/path-default-wallet-keyword])]
-     {:publicKey publicKey
-      :address    address
+     {:public-key publicKey
+      :address    (eip55/address->checksum address)
       :color      colors/blue
       :wallet     true
       :path       constants/path-default-wallet
       :name       "Status account"})
    (let [{:keys [publicKey address name photo-path]}
          (get-in multiaccount [:derived constants/path-whisper-keyword])]
-     {:publicKey publicKey
-      :address    address
+     {:public-key publicKey
+      :address    (eip55/address->checksum address)
       :name       name
       :photo-path photo-path
       :path       constants/path-whisper
@@ -227,7 +228,7 @@
     :as multiaccount}
    password
    {:keys [seed-backed-up? login?] :or {login? true}}]
-  (let [[wallet-account {:keys [publicKey photo-path name]} :as accounts-data] (prepare-accounts-data multiaccount)
+  (let [[wallet-account {:keys [public-key photo-path name]} :as accounts-data] (prepare-accounts-data multiaccount)
         multiaccount-data {:name       name
                            :address    address
                            :photo-path photo-path
@@ -244,11 +245,10 @@
                                   :name                  name
                                   :photo-path            photo-path
                                   ;; public key of the chat account
-                                  :public-key            publicKey
+                                  :public-key            public-key
                                   ;; default address for Dapps
                                   :dapps-address         (:address wallet-account)
                                   :latest-derived-path   0
-                                  :accounts              [wallet-account]
                                   :signing-phrase        signing-phrase
                                   :installation-id       (random-guid-generator)
                                   :mnemonic              mnemonic
@@ -266,6 +266,7 @@
                                         :creating?  true
                                         :processing true}
                   :multiaccount new-multiaccount
+                  :multiaccount/accounts [wallet-account]
                   :networks/current-network constants/default-network
                   :networks/networks constants/default-networks)]
     (fx/merge cofx

@@ -223,9 +223,11 @@
         {:wallet/validate-tokens (get tokens/all-default-tokens chain)})))))
 
 (fx/defn update-balances
-  [{{:keys [network-status :wallet/all-tokens]
-     {:keys [settings accounts]} :multiaccount :as db} :db :as cofx} addresses]
-  (let [addresses (or addresses (map (comp string/lower-case :address) accounts))
+  [{{:keys [network-status :wallet/all-tokens
+            multiaccount :multiaccount/accounts] :as db} :db
+    :as cofx} addresses]
+  (let [{:keys [settings]} multiaccount
+        addresses (or addresses (map (comp string/lower-case :address) accounts))
         chain     (ethereum/chain-keyword db)
         assets    (get-in settings [:wallet :visible-tokens chain])
         tokens    (->> (tokens/tokens-for all-tokens chain)
@@ -402,7 +404,7 @@
   [{:keys [db]}]
   (let [identity (:current-chat-id db)]
     {:db (assoc db :wallet/prepare-transaction
-                {:from (ethereum/get-default-account (get-in db [:multiaccount :accounts]))
+                {:from (ethereum/get-default-account (get db [:multiaccount/accounts]))
                  :to   (or (get-in db [:contacts/contacts identity])
                            (-> identity
                                contact.db/public-key->new-contact

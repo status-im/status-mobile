@@ -1777,7 +1777,7 @@
                                           :address   (eip55/address->checksum wallet-address)}}
                   :mnemonic             ""
                   :address              address
-                  :publicKey            public-key
+                  :public-key            public-key
                   :keycard-instance-uid instance-uid
                   :keyUid               (ethereum/normalized-hex key-uid)
                   :keycard-pairing      pairing

@@ -15,7 +15,7 @@
   (fx/merge cofx
             {:db (assoc db :network-status (if is-connected? :online :offline))}
             (when is-connected?
-              (if-not (= (count (get-in db [:wallet :accounts])) (count (get-in db [:multiaccount :accounts])))
+              (if-not (= (count (get-in db [:wallet :accounts])) (count (get db :multiaccount/accounts)))
                 (wallet/update-balances nil)))))
 
 (fx/defn change-network-type

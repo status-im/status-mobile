@@ -61,14 +61,34 @@
  (fn [[account-data hashed-password]]
    (status/login account-data hashed-password)))
 
+(defn rpc->accounts [accounts]
+  (reduce (fn [acc {:keys [chat type wallet] :as account}]
+            (if chat
+              acc
+              (let [account (cond->
+                             (update account :address
+                                     eip55/address->checksum)
+                              type
+                              (update :type keyword))]
+                ;; if the account is the default wallet we
+                ;; put it first in the list
+                (if wallet
+                  (into [account] acc)
+                  (conj acc account)))))
+          []
+          accounts))
+
 (fx/defn initialize-wallet
   {:events [::initialize-wallet]}
-  [cofx custom-tokens]
-  (fx/merge cofx
-            (wallet/initialize-tokens custom-tokens)
-            (wallet/update-balances nil)
-            (wallet/update-prices)
-            (transactions/initialize)))
+  [{:keys [db] :as cofx} accounts custom-tokens]
+  (fx/merge
+   cofx
+   {:db (assoc db :multiaccount/accounts
+               (rpc->accounts accounts))}
+   (wallet/initialize-tokens custom-tokens)
+   (wallet/update-balances nil)
+   (wallet/update-prices)
+   (transactions/initialize)))
 
 (fx/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
@@ -150,6 +170,27 @@
         update-address
         (update :accounts (partial mapv update-address)))))
 
+(re-frame/reg-fx
+ ;;TODO: this could be replaced by a single API call on status-go side
+ ::initialize-wallet
+ (fn [callback]
+   (-> (js/Promise.all
+        (clj->js
+         [(js/Promise.
+           (fn [resolve reject]
+             (json-rpc/call {:method "accounts_getAccounts"
+                             :on-success resolve
+                             :on-error reject})))
+          (js/Promise.
+           (fn [resolve reject]
+             (json-rpc/call {:method "wallet_getCustomTokens"
+                             :on-success resolve
+                             :on-error reject})))]))
+       (.then (fn [[accounts custom-tokens]]
+                (callback accounts custom-tokens)))
+       (.catch (fn [error]
+                 (log/error "Failed to initialize wallet"))))))
+
 (fx/defn get-config-callback
   {:events [::get-config-callback]}
   [{:keys [db] :as cofx} config]
@@ -166,9 +207,8 @@
                      notifications-enabled?)
                 (assoc ::notifications/enable nil)
                 (not platform/desktop?)
-                (assoc ::json-rpc/call
-                       [{:method     "wallet_getCustomTokens"
-                         :on-success #(re-frame/dispatch [::initialize-wallet %])}]))
+                (assoc ::initialize-wallet
+                       #(re-frame/dispatch [::initialize-wallet %])))
               ;; NOTE: initializing mailserver depends on user mailserver
               ;; preference which is why we wait for config callback
               (protocol/initialize-protocol {:default-mailserver true})
@@ -224,7 +264,8 @@
 
 (fx/defn create-only-events
   [{:keys [db] :as cofx}]
-  (let [{:keys [multiaccount :networks/networks :networks/current-network]} db]
+  (let [{:keys [multiaccount :multiaccount/accounts
+                :networks/networks :networks/current-network]} db]
     (fx/merge cofx
               {:db (assoc db
                           ;;NOTE when login the filters are initialized twice
@@ -256,7 +297,7 @@
               (chaos-mode/check-chaos-mode)
               (multiaccounts/switch-preview-privacy-mode-flag)
               (when-not platform/desktop?
-                (initialize-wallet nil)))))
+                (initialize-wallet accounts nil)))))
 
 (defn- keycard-setup? [cofx]
   (boolean (get-in cofx [:db :hardwallet :flow])))

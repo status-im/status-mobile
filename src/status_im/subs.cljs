@@ -113,6 +113,7 @@
 (reg-root-key-sub :multiaccounts/multiaccounts :multiaccounts/multiaccounts)
 (reg-root-key-sub :multiaccounts/login :multiaccounts/login)
 (reg-root-key-sub :multiaccount :multiaccount)
+(reg-root-key-sub :multiaccount/accounts :multiaccount/accounts)
 (reg-root-key-sub :get-recover-multiaccount :multiaccounts/recover)
 ;;chat
 (reg-root-key-sub ::cooldown-enabled? :chat/cooldown-enabled?)
@@ -444,8 +445,8 @@
 
 (re-frame/reg-sub
  :multiaccount/default-account
- :<- [:multiaccount]
- (fn [{:keys [accounts]}]
+ :<- [:multiaccount/accounts]
+ (fn [accounts]
    (ethereum/get-default-account accounts)))
 
 (re-frame/reg-sub
@@ -468,6 +469,12 @@
    (get acc :settings)))
 
 (re-frame/reg-sub
+ :multiaccount/address
+ :<- [:multiaccount]
+ (fn [acc]
+   (get acc :address)))
+
+(re-frame/reg-sub
  :settings/current-log-level
  :<- [:multiaccount-settings]
  (fn [sett]
@@ -482,23 +489,23 @@
 
 (re-frame/reg-sub
  :dapps-account
- :<- [:multiaccount]
+ :<- [:multiaccount/accounts]
  :<- [:dapps-address]
- (fn [[acc address]]
-   (some #(when (= (:address %) address) %) (:accounts acc))))
+ (fn [[accounts address]]
+   (some #(when (= (:address %) address) %) accounts)))
 
 (re-frame/reg-sub
- :current-account
- :<- [:multiaccount]
+ :multiaccount/current-account
+ :<- [:multiaccount/accounts]
  :<- [:get-screen-params :wallet-account]
- (fn [[macc acc]]
-   (some #(when (= (:address %) (:address acc)) %) (:accounts macc))))
+ (fn [[accounts acc]]
+   (some #(when (= (:address %) (:address acc)) %) accounts)))
 
 (re-frame/reg-sub
  :account-by-address
- :<- [:multiaccount]
- (fn [macc [_ address]]
-   (some #(when (= (:address %) address) %) (:accounts macc))))
+ :<- [:multiaccount/accounts]
+ (fn [accounts [_ address]]
+   (some #(when (= (:address %) address) %) accounts)))
 
 (re-frame/reg-sub
  :multiple-multiaccounts?
@@ -515,9 +522,9 @@
 
 (re-frame/reg-sub
  :accounts-without-watch-only
- :<- [:multiaccount]
- (fn [macc]
-   (filter #(not= (:type %) :watch) (:accounts macc))))
+ :<- [:multiaccount/accounts]
+ (fn [accounts]
+   (filter #(not= (:type %) :watch) accounts)))
 
 ;;CHAT ==============================================================================================================
 
@@ -1027,8 +1034,8 @@
 (re-frame/reg-sub
  :balance-default
  :<- [:wallet]
- :<- [:multiaccount]
- (fn [[wallet {:keys [accounts]}]]
+ :<- [:multiaccount/accounts]
+ (fn [[wallet accounts]]
    (get-in wallet [:accounts (:address (ethereum/get-default-account accounts)) :balance])))
 
 (re-frame/reg-sub

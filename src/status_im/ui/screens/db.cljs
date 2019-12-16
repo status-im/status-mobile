@@ -196,6 +196,7 @@
                                 :multiaccounts/multiaccounts
                                 :multiaccounts/recover
                                 :multiaccounts/login
+                                :multiaccount/accounts
                                 :my-profile/profile
                                 :my-profile/default-name
                                 :my-profile/editing?
