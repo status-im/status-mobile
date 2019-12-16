@@ -11,6 +11,8 @@
             [re-frame.core :as re-frame]
             [status-im.ui.components.icons.vector-icons :as icons]))
 
+(def animation-duration 150)
+
 (defn search-input [_ {:keys [on-cancel on-focus on-change]}]
   (let [input-is-focused? (reagent/atom false)
         input-ref (reagent/atom nil)]
@@ -61,21 +63,18 @@
     (animation/start
      (animation/timing (:height @search-input-state)
                        {:toValue         0
-                        :duration        350
+                        :duration        animation-duration
                         :easing          (.out (animation/easing)
                                                (.-quad (animation/easing)))
                         :useNativeDriver true})
      #(swap! search-input-state assoc :to-hide? true))))
 
-(defn set-search-state-visible!
-  [visible?]
-  (swap! search-input-state assoc :show? visible?)
-  (swap! search-input-state assoc :to-hide? visible?)
-  (animation/set-value (:height @search-input-state)
-                       (if visible? 0 (- styles/search-input-height))))
-
-(defn reset-height []
-  (set-search-state-visible! false))
+(defn update-search-state!
+  []
+  (let [visible? (:to-hide? @search-input-state)]
+    (swap! search-input-state assoc :show? visible?)
+    (animation/set-value (:height @search-input-state)
+                         (if visible? 0 (- styles/search-input-height)))))
 
 (defn hide-search!
   []
@@ -85,7 +84,7 @@
   (animation/start
    (animation/timing (:height @search-input-state)
                      {:toValue         (- styles/search-input-height)
-                      :duration        350
+                      :duration        animation-duration
                       :easing          (.in (animation/easing)
                                             (.-quad (animation/easing)))
                       :useNativeDriver true})
@@ -95,9 +94,9 @@
   [search-filter]
   (reagent/create-class
    {:component-will-unmount
-    #(set-search-state-visible! (:to-hide? @search-input-state))
+    #(update-search-state!)
     :component-did-mount
-    #(set-search-state-visible! (:to-hide? @search-input-state))
+    #(update-search-state!)
     :reagent-render
     (fn [search-filter]
       [search-input search-filter
