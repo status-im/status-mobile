@@ -103,10 +103,7 @@
         {:keys [installation-id settings bootnodes]
          :or {settings constants/default-multiaccount-settings}} multiaccount
         use-custom-bootnodes (get-in settings [:bootnodes current-network])
-        log-level (get-log-level settings)
-        datasync? (:datasync? settings)
-        disable-discovery-topic? (:disable-discovery-topic? settings)
-        v1-messages? (:v1-messages? settings)]
+        log-level (get-log-level settings)]
     (cond-> (get-in networks [current-network :config])
       :always
       (get-base-node-config)
@@ -140,9 +137,7 @@
               :InstallationID installation-id
               :MaxMessageDeliveryAttempts config/max-message-delivery-attempts
               :MailServerConfirmations  config/mailserver-confirmations-enabled?
-              :DataSyncEnabled (boolean datasync?)
-              :DisableGenericDiscoveryTopic (boolean disable-discovery-topic?)
-              :SendV1Messages (boolean v1-messages?)
+              :DataSyncEnabled true
               :PFSEnabled true}
              :RequireTopics (get-topics current-network)
              :StatusAccountsConfig {:Enabled true})

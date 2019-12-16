@@ -117,21 +117,6 @@
    (multiaccounts/enable-notifications cofx desktop-notifications?)))
 
 (handlers/register-handler-fx
- :multiaccounts.ui/toggle-datasync
- (fn [cofx [_ enabled?]]
-   (multiaccounts/toggle-datasync cofx enabled?)))
-
-(handlers/register-handler-fx
- :multiaccounts.ui/toggle-v1-messages
- (fn [cofx [_ enabled?]]
-   (multiaccounts/toggle-v1-messages cofx enabled?)))
-
-(handlers/register-handler-fx
- :multiaccounts.ui/toggle-disable-discovery-topic
- (fn [cofx [_ enabled?]]
-   (multiaccounts/toggle-disable-discovery-topic cofx enabled?)))
-
-(handlers/register-handler-fx
  :multiaccounts.ui/preview-privacy-mode-switched
  (fn [cofx [_ private?]]
    (multiaccounts/switch-preview-privacy-mode cofx private?)))

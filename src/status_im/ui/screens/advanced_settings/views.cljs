@@ -39,69 +39,27 @@
     :on-press
     #(re-frame/dispatch [:navigate-to :bootnodes-settings])
     :accessories         [:chevron]}
-   {:type                    :small
-    :title                   :t/dev-mode
-    :accessibility-label     :dev-mode-settings-switch
-    :container-margin-bottom 8
-    :on-press
-    #(re-frame/dispatch
-      [:multiaccounts.ui/dev-mode-switched (not dev-mode?)])
-    :accessories
-    [[react/switch
-      {:track-color #js {:true colors/blue :false nil}
-       :value       dev-mode?
-       :on-value-change
-       #(re-frame/dispatch
-         [:multiaccounts.ui/dev-mode-switched (not dev-mode?)])
-       :disabled    false}]]}
-   {:type :divider}])
+   #_{:type                    :small
+      :title                   :t/dev-mode
+      :accessibility-label     :dev-mode-settings-switch
+      :container-margin-bottom 8
+      :on-press
+      #(re-frame/dispatch
+        [:multiaccounts.ui/dev-mode-switched (not dev-mode?)])
+      :accessories
+      [[react/switch
+        {:track-color #js {:true colors/blue :false nil}
+         :value       dev-mode?
+         :on-value-change
+         #(re-frame/dispatch
+           [:multiaccounts.ui/dev-mode-switched (not dev-mode?)])
+         :disabled    false}]]}
+   #_{:type :divider}])
 
-(defn- dev-mode-settings-data [settings chaos-mode?]
+(defn- dev-mode-settings-data [chaos-mode?]
   [{:container-margin-top 8
     :type                 :section-header
     :title                :t/dev-mode-settings}
-   {:type                :small
-    :title               :t/datasync
-    :accessibility-label :datasync-settings-switch
-    :accessories
-    [[react/switch
-      {:track-color #js {:true colors/blue :false nil}
-       :value       (boolean (:datasync? settings))
-       :on-value-change
-       #(re-frame/dispatch [:multiaccounts.ui/toggle-datasync %])
-       :disabled    false}]]
-    :on-press
-    #(re-frame/dispatch
-      [:multiaccounts.ui/toggle-datasync
-       ((complement boolean) (:datasync? settings))])}
-   {:type                :small
-    :title               :t/v1-messages
-    :accessibility-label :v1-messages-settings-switch
-    :accessories
-    [[react/switch
-      {:track-color #js {:true colors/blue :false nil}
-       :value       (boolean (:v1-messages? settings))
-       :on-value-change
-       #(re-frame/dispatch [:multiaccounts.ui/toggle-v1-messages %])
-       :disabled    false}]]
-    :on-press
-    #(re-frame/dispatch
-      [:multiaccounts.ui/toggle-v1-messages
-       ((complement boolean) (:v1-messages? settings))])}
-   {:type                :small
-    :title               :t/disable-discovery-topic
-    :accessibility-label :discovery-topic-settings-switch
-    :accessories
-    [[react/switch
-      {:track-color #js {:true colors/blue :false nil}
-       :value       (boolean (:disable-discovery-topic? settings))
-       :on-value-change
-       #(re-frame/dispatch [:multiaccounts.ui/toggle-disable-discovery-topic %])
-       :disabled    false}]]
-    :on-press
-    #(re-frame/dispatch
-      [:multiaccounts.ui/toggle-disable-discovery-topic
-       ((complement boolean) (:disable-discovery-topic? settings))])}
    {:type                :small
     :title               :t/chaos-mode
     :accessibility-label :chaos-mode-settings-switch
@@ -119,19 +77,18 @@
    [react/view {:height 24}]])
 
 (defn- flat-list-data [network-name current-log-level current-fleet
-                       dev-mode? settings chaos-mode?]
+                       dev-mode? chaos-mode?]
   (if dev-mode?
     (into
      (normal-mode-settings-data
       network-name current-log-level current-fleet dev-mode?)
-     (dev-mode-settings-data
-      settings chaos-mode?))
+     (dev-mode-settings-data chaos-mode?))
     ;; else
     (normal-mode-settings-data
      network-name current-log-level current-fleet dev-mode?)))
 
 (views/defview advanced-settings []
-  (views/letsubs [{:keys [chaos-mode? dev-mode? settings]} [:multiaccount]
+  (views/letsubs [{:keys [chaos-mode?]} [:multiaccount]
                   network-name             [:network-name]
                   current-log-level        [:settings/current-log-level]
                   current-fleet            [:settings/current-fleet]]
@@ -141,8 +98,7 @@
      [list/flat-list
       {:data      (flat-list-data
                    network-name current-log-level
-                   current-fleet dev-mode? settings
-                   chaos-mode?)
+                   current-fleet false chaos-mode?)
 
        :key-fn    (fn [_ i] (str i))
        :render-fn list/flat-list-generic-render-fn}]]))

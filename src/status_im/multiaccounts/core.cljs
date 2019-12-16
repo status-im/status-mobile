@@ -90,47 +90,6 @@
    {:desktop-notifications? desktop-notifications?}
    {}))
 
-(fx/defn toggle-datasync
-  [{:keys [db] :as cofx} enabled?]
-  (let [settings (get-in db [:multiaccount :settings])
-        warning  {:utils/show-popup
-                  {:title (i18n/label :t/datasync-warning-title)
-                   :content (i18n/label :t/datasync-warning-content)}}]
-
-    (fx/merge cofx
-              (when enabled? warning)
-              (multiaccounts.update/update-settings
-               (assoc settings :datasync? enabled?)
-               {}))))
-
-(fx/defn toggle-v1-messages
-  [{:keys [db] :as cofx} enabled?]
-  (let [settings (get-in db [:multiaccount :settings])
-        warning  {:utils/show-popup
-                  {:title (i18n/label :t/v1-messages-warning-title)
-                   :content (i18n/label :t/v1-messages-warning-content)}}]
-
-    (fx/merge cofx
-              (when enabled? warning)
-              (multiaccounts.update/update-settings
-               (assoc settings :v1-messages? enabled?)
-               {}))))
-
-(fx/defn toggle-disable-discovery-topic
-  [{:keys [db] :as cofx} enabled?]
-  (let [settings (get-in db [:multiaccount :settings])
-        warning  {:utils/show-popup
-                  {:title
-                   (i18n/label :t/disable-discovery-topic-warning-title)
-                   :content
-                   (i18n/label :t/disable-discovery-topic-warning-content)}}]
-
-    (fx/merge cofx
-              (when enabled? warning)
-              (multiaccounts.update/update-settings
-               (assoc settings :disable-discovery-topic? enabled?)
-               {}))))
-
 (fx/defn switch-preview-privacy-mode
   [{:keys [db] :as cofx} private?]
   (let [settings (get-in db [:multiaccount :settings])]
