@@ -229,14 +229,6 @@
                                             {:preferred-name name}
                                             {}))
 
-(fx/defn switch-show-username
-  {:events [::switch-show-username]}
-  [{:keys [db] :as cofx} _]
-  (let [show-name? (not (get-in db [:multiaccount :show-name?]))]
-    (multiaccounts.update/multiaccount-update cofx
-                                              {:show-name? show-name?}
-                                              {})))
-
 (fx/defn on-registration-failure
   "TODO not sure there is actually anything to do here
    it should only be called if the user cancels the signing

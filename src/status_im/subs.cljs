@@ -1886,12 +1886,6 @@
    (:preferred-name multiaccount)))
 
 (re-frame/reg-sub
- :ens/show?
- :<- [:multiaccount]
- (fn [multiaccount]
-   (:show-name? multiaccount)))
-
-(re-frame/reg-sub
  :ens/search-screen
  :<- [:ens/registration]
  (fn [{:keys [custom-domain? username state]}]
@@ -1950,12 +1944,10 @@
  :<- [:multiaccount/usernames]
  :<- [:multiaccount]
  :<- [:ens/preferred-name]
- :<- [:ens/show?]
- (fn [[names multiaccount preferred-name show?]]
+ (fn [[names multiaccount preferred-name]]
    {:names          names
     :multiaccount   multiaccount
-    :preferred-name preferred-name
-    :show?          (or show? false)}))
+    :preferred-name preferred-name}))
 
 ;;SIGNING =============================================================================================================
 

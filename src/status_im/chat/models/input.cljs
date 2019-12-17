@@ -90,8 +90,7 @@
   (when-not (string/blank? input-text)
     (let [{:keys [message-id]}
           (get-in db [:chats current-chat-id :metadata :responding-to-message])
-          show-name?     (get-in db [:multiaccount :show-name?])
-          preferred-name (when show-name? (get-in db [:multiaccount :preferred-name]))
+          preferred-name (get-in db [:multiaccount :preferred-name])
           emoji? (message-content/emoji-only-content? {:text input-text
                                                        :response-to message-id})]
       (fx/merge cofx

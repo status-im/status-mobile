@@ -590,8 +590,7 @@
      {:title       s
       :subtitle    (when stateofus-username stateofus/domain)
       :on-press    action
-      :icon        :main-icons/username
-      :accessories [:chevron]}]))
+      :icon        :main-icons/username}]))
 
 (defn- name-list [names preferred-name]
   [react/view {:style {:flex 1 :margin-top 16}}
@@ -633,32 +632,27 @@
           [name-item {:name name :action #(re-frame/dispatch [::ens/navigate-to-name name])}])]
        [react/text {:style {:color colors/gray :font-size 15}}
         (i18n/label :t/ens-no-usernames)])]
-    [react/view {:style {:padding-top 22 :border-color colors/gray-lighter :border-top-width 1}}
-     [react/text {:style {:color colors/gray :margin-horizontal 16}}
-      (i18n/label :t/ens-chat-settings)]
+    [react/view {:style {:padding-vertical 22 :border-color colors/gray-lighter :border-top-width 1}}
      (when (> (count names) 1)
-       [profile.components/settings-item
-        {:label-kw  :ens-primary-username
-         :value     preferred-name
-         :action-fn #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                         {:content
-                                          (fn [] (name-list names preferred-name))
-                                          :content-height
-                                          (+ 72 (* (min 4 (count names)) 64))}])}])
-     [profile.components/settings-switch-item
-      {:label-kw  :ens-show-username
-       :action-fn #(re-frame/dispatch [::ens/switch-show-username])
-       :value     show?}]]
-    (let [message {:content {:parsed-text [{:type "paragraph", :children [{:literal (i18n/label :t/ens-test-message)}]}]}
+       [react/view
+        [react/text {:style {:color colors/gray :margin-horizontal 16}}
+         (i18n/label :t/ens-chat-settings)]
+        [profile.components/settings-item
+         {:label-kw  :ens-primary-username
+          :value     preferred-name
+          :action-fn #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                          {:content
+                                           (fn [] (name-list names preferred-name))
+                                           :content-height
+                                           (+ 72 (* (min 4 (count names)) 64))}])}]])]
+    (let [message {:content {:parsed-text
+                             [{:type "paragraph"
+                               :children [{:literal (i18n/label :t/ens-test-message)}]}]}
                    :content-type constants/content-type-text
                    :timestamp-str "9:41 AM"}]
       [react/view
        [react/view {:padding-left 60}
-        (if show?
-          ^{:key "ens-name"}
-          [message/message-author-name public-key]
-          ^{:key "generated"}
-          [message/message-author-name nil name])]
+        [message/message-author-name public-key]]
        [react/view {:flex-direction :row}
         [react/view {:padding-left 16 :padding-right 8 :padding-top 4}
          [photos/photo (multiaccounts/displayed-photo account) {:size 36}]]
