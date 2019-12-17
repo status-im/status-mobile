@@ -9,7 +9,9 @@
             [status-im.i18n :as i18n]
             [status-im.utils.money :as money]
             [status-im.utils.fx :as fx]
-            [status-im.ui.screens.navigation :as navigation]))
+            [status-im.ui.screens.navigation :as navigation]
+            [clojure.string :as string]
+            [status-im.ethereum.stateofus :as stateofus]))
 
 (fx/defn toggle-flashlight
   {:events [:wallet/toggle-flashlight]}
@@ -94,19 +96,23 @@
   {:events [:wallet.send/set-recipient ::recipient-address-resolved]}
   [{:keys [db]} recipient]
   (let [chain (ethereum/chain-keyword db)]
-    (if (ens/is-valid-eth-name? recipient)
+    (cond
+      (ethereum/address? recipient)
+      (let [checksum (eip55/address->checksum recipient)]
+        (if (eip55/valid-address-checksum? checksum)
+          {:db       (-> db
+                         (assoc-in [:wallet/prepare-transaction :to] checksum)
+                         (assoc-in [:wallet/prepare-transaction :modal-opened?] false))
+           :dispatch [:navigate-back]}
+          {:ui/show-error (i18n/label :t/wallet-invalid-address-checksum {:data recipient})}))
+      (not (string/blank? recipient))
       {::resolve-address {:registry (get ens/ens-registries chain)
-                          :ens-name recipient
+                          :ens-name (if (= (.indexOf recipient ".") -1)
+                                      (stateofus/subdomain recipient)
+                                      recipient)
                           :cb       #(re-frame/dispatch [::recipient-address-resolved %])}}
-      (if (ethereum/address? recipient)
-        (let [checksum (eip55/address->checksum recipient)]
-          (if (eip55/valid-address-checksum? checksum)
-            {:db       (-> db
-                           (assoc-in [:wallet/prepare-transaction :to] checksum)
-                           (assoc-in [:wallet/prepare-transaction :modal-opened?] false))
-             :dispatch [:navigate-back]}
-            {:ui/show-error (i18n/label :t/wallet-invalid-address-checksum {:data recipient})}))
-        {:ui/show-error (i18n/label :t/wallet-invalid-address {:data recipient})}))))
+      :else
+      {:ui/show-error (i18n/label :t/wallet-invalid-address {:data recipient})})))
 
 (fx/defn request-uri-parsed
   {:events [:wallet/request-uri-parsed]}
