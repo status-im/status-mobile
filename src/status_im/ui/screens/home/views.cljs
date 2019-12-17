@@ -84,16 +84,37 @@
    [react/i18n-text {:style styles/welcome-blank-text :key :welcome-blank-message}]])
 
 (defn home-items-view [_ _ _ _ search-input-state]
-  (let [analyze-pos? (reagent/atom true)
-        start-pos (reagent/atom 0)]
+  (let [previous-touch      (reagent/atom nil)
+        scrolling-from-top? (reagent/atom true)]
     (fn [search-filter chats all-home-items hide-home-tooltip?]
       (if search-filter
         [filter.views/home-filtered-items-list chats]
         [react/animated-view
-         {:style {:flex             1
-                  :background-color :white
-                  :margin-bottom    (- styles/search-input-height)
-                  :transform        [{:translateY (:height @search-input-state)}]}}
+         (merge {:style {:flex             1
+                         :background-color :white
+                         :margin-bottom    (- styles/search-input-height)
+                         :transform        [{:translateY (:height @search-input-state)}]}}
+                (when @scrolling-from-top?
+                  {:on-start-should-set-responder-capture
+                   (fn [event]
+                     (let [current-position  (.-pageY (.-nativeEvent event))
+                           current-timestamp (.-timestamp (.-nativeEvent event))]
+                       (reset! previous-touch
+                               [current-position current-timestamp]))
+
+                     false)
+                   :on-move-should-set-responder
+                   (fn [event]
+                     (let [current-position  (.-pageY (.-nativeEvent event))
+                           current-timestamp (.-timestamp (.-nativeEvent event))
+                           [previous-position previous-timestamp] @previous-touch]
+                       (when (and previous-position
+                                  (not (:show? @search-input-state))
+                                  (> 100 (- current-timestamp previous-timestamp))
+                                  (< 10 (- current-position
+                                           previous-position)))
+                         (filter.views/show-search!)))
+                     false)}))
          (if (or (seq all-home-items) (not hide-home-tooltip?))
            [list/flat-list (merge {:data           all-home-items
                                    :key-fn         first
@@ -104,24 +125,16 @@
                                                     [react/view {:height 68 :flex 1}]]
                                    :on-scroll-begin-drag
                                    (fn [e]
-                                     (reset! analyze-pos? true)
-                                     (reset! start-pos (.-y (.-contentOffset (.-nativeEvent e)))))
-                                   :on-scroll-end-drag
-                                   (fn [e]
-                                     (reset! analyze-pos? false))
-                                   :on-scroll
-                                   (fn [e]
-                                     (let [y-pos (.-y (.-contentOffset (.-nativeEvent e)))
-                                           scroling-down? (> y-pos @start-pos)
-                                           scrolling-up-from-top? (< y-pos -20)]
-                                       (if (and @analyze-pos? scrolling-up-from-top?)
-                                         (filter.views/show-search!))
-                                       (if (and @analyze-pos? scroling-down?)
-                                         (filter.views/hide-search!))))
+                                     (reset! scrolling-from-top?
+                                             ;; check if scrolling up from top of list
+                                             (zero? (.-y (.-contentOffset (.-nativeEvent e))))))
                                    :render-fn
                                    (fn [home-item _]
                                      [inner-item/home-list-item home-item])})]
-           [welcome-blank-page])]))))
+           [welcome-blank-page])
+         (when (:to-hide? @search-input-state)
+           [react/view {:width  1
+                        :height styles/search-input-height}])]))))
 
 (views/defview home-action-button [home-width]
   (views/letsubs [logging-in? [:multiaccounts/login]]
