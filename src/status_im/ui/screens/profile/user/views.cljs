@@ -109,7 +109,7 @@
 
 (defn- flat-list-content
   [preferred-name registrar tribute-to-talk
-   active-contacts-count show-backup-seed?
+   active-contacts-count mnemonic
    keycard-account? notifications-enabled?]
   [(cond-> {:title                (or (when registrar preferred-name)
                                       :t/ens-usernames)
@@ -147,7 +147,7 @@
     :title               :t/privacy-and-security
     :accessibility-label :privacy-and-security-settings-button
     :accessories
-    [(when show-backup-seed?
+    [(when mnemonic
        [components.common/counter {:size 22} 1]) :chevron]
     :on-press            #(re-frame/dispatch [:navigate-to :privacy-and-security])}
    (when (and platform/android?
@@ -216,23 +216,20 @@
 (defn content-with-header [list-ref scroll-y]
   (let [{:keys [public-key
                 preferred-name
-                seed-backed-up?
                 mnemonic
                 keycard-pairing
                 address
                 notifications-enabled?]
-         :as   multiaccount}         @(re-frame/subscribe [:multiaccount])
-        active-contacts-count        @(re-frame/subscribe [:contacts/active-count])
-        tribute-to-talk              @(re-frame/subscribe [:tribute-to-talk/profile])
-        registrar                    @(re-frame/subscribe [:ens.stateofus/registrar])
-        photo-added?                 @(re-frame/subscribe [:profile/photo-added?])
-        show-backup-seed? (and (not seed-backed-up?)
-                               (not (string/blank? mnemonic)))]
+         :as   multiaccount} @(re-frame/subscribe [:multiaccount])
+        active-contacts-count @(re-frame/subscribe [:contacts/active-count])
+        tribute-to-talk @(re-frame/subscribe [:tribute-to-talk/profile])
+        registrar @(re-frame/subscribe [:ens.stateofus/registrar])
+        photo-added? @(re-frame/subscribe [:profile/photo-added?])]
     [large-toolbar/flat-list-with-header-handler
      (header multiaccount photo-added?)
      (flat-list-content
       preferred-name registrar tribute-to-talk
-      active-contacts-count show-backup-seed?
+      active-contacts-count mnemonic
       keycard-pairing notifications-enabled?)
      list-ref
      scroll-y]))

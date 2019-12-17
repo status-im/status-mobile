@@ -7,7 +7,7 @@
   (re-frame/dispatch [:bottom-sheet/hide-sheet])
   (re-frame/dispatch event))
 
-(defn accounts-options [seed-backed-up?]
+(defn accounts-options [mnemonic]
   (fn []
     [react/view
      [list-item/list-item
@@ -27,7 +27,7 @@
        :title    :t/view-signing
        :icon     :main-icons/info
        :on-press #(hide-sheet-and-dispatch [:show-popover {:view :signing-phrase}])}]
-     (when-not seed-backed-up?
+     (when mnemonic
        [list-item/list-item
         {:theme               :action-destructive
          :title               :t/wallet-backup-recovery-title

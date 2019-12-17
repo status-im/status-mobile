@@ -113,11 +113,11 @@
          50)}])))
 
 (views/defview accounts-options []
-  (views/letsubs [{:keys [seed-backed-up?]} [:multiaccount]
+  (views/letsubs [{:keys [mnemonic]} [:multiaccount]
                   empty-balances?           [:empty-balances?]]
     [react/view {:flex-direction :row :align-items :center}
      [react/view {:flex 1 :padding-left 16}
-      (when (and (not seed-backed-up?)
+      (when (and mnemonic
                  (not empty-balances?))
         [react/touchable-highlight
          {:on-press #(re-frame/dispatch [:navigate-to :backup-seed])}
@@ -139,8 +139,8 @@
        [icons/icon :main-icons/qr {:accessibility-label :accounts-qr-code}]]]
      [react/touchable-highlight
       {:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                      {:content        (sheets/accounts-options seed-backed-up?)
-                                       :content-height (if seed-backed-up? 190 250)}])}
+                                      {:content        (sheets/accounts-options mnemonic)
+                                       :content-height (if mnemonic 250 190)}])}
       [react/view {:height          toolbar.styles/toolbar-height
                    :width toolbar.styles/toolbar-height :align-items :center
                    :justify-content :center}

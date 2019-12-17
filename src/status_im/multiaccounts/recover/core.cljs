@@ -63,7 +63,7 @@
         (multiaccounts.create/on-multiaccount-created cofx
                                                       multiaccount
                                                       password
-                                                      {:seed-backed-up? true})))))
+                                                      {})))))
 
 (fx/defn store-multiaccount
   {:events [::recover-multiaccount-confirmed]}

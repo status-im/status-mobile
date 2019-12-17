@@ -279,7 +279,7 @@
      (i18n/label :t/advanced-settings)]
     [vector-icons/icon :main-icons/next {:style {:tint-color colors/gray}}]]])
 
-(views/defview profile [{:keys [seed-backed-up? mnemonic] :as user}]
+(views/defview profile [{:keys [mnemonic] :as user}]
   (views/letsubs [current-view-id [:view-id]
                   editing?        [:my-profile/editing?]] ;; TODO janherich: refactor my-profile, unnecessary complicated structure in db (could be just `:staged-name`/`:editing?` fields in multiaccount map) and horrible way to access it woth `:get`/`:set` subs/events
     (let [adv-settings-open?           (= current-view-id :advanced-settings)
@@ -288,7 +288,7 @@
           installations-open?          (= current-view-id :installations)
           backup-recovery-phrase-open? (= current-view-id :backup-recovery-phrase)
           notifications?               (get-in user [:desktop-notifications?])
-          show-backup-seed?            (and (not seed-backed-up?) (not (string/blank? mnemonic)))]
+          show-backup-seed?            (not mnemonic)]
       [react/view
        [react/view {:style styles/profile-edit}
         [react/touchable-highlight {:on-press #(re-frame/dispatch (if editing?

@@ -49,7 +49,6 @@
 (spec/def :multiaccount/sharing-usage-data? (spec/nilable boolean?))
 (spec/def :multiaccount/desktop-notifications? (spec/nilable boolean?))
 (spec/def :multiaccount/dev-mode? (spec/nilable boolean?))
-(spec/def :multiaccount/seed-backed-up? (spec/nilable boolean?))
 (spec/def :multiaccount/installation-id :global/not-empty-string)
 (spec/def :multiaccount/wallet-set-up-passed? (spec/nilable boolean?))
 (spec/def :multiaccount/hide-home-tooltip? (spec/nilable boolean?))
@@ -66,7 +65,7 @@
                                                          :multiaccount/email :multiaccount/signed-up?
                                                          :multiaccount/settings :multiaccount/mailserver
                                                          :multiaccount/sharing-usage-data?
-                                                         :multiaccount/seed-backed-up? :multiaccount/mnemonic :multiaccount/desktop-notifications?
+                                                         :multiaccount/mnemonic :multiaccount/desktop-notifications?
                                                          :multiaccount/chaos-mode?
                                                          :multiaccount/wallet-set-up-passed? :multiaccount/last-request
                                                          :multiaccount/hide-home-tooltip?

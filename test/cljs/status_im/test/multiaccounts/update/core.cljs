@@ -17,4 +17,4 @@
   (let [efx (multiaccounts.update/clean-seed-phrase {:db {:multiaccount {:mnemonic "lalalala"}}})
         json-rpc (into #{} (map :method (::json-rpc/call efx)))]
     (is (json-rpc "settings_saveConfig"))
-    (is (= (get-in efx [:db :multiaccount]) {:seed-backed-up? true, :mnemonic nil}))))
+    (is (= (get-in efx [:db :multiaccount]) {:mnemonic nil}))))

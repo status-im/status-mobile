@@ -1775,7 +1775,6 @@
                                          constants/path-default-wallet-keyword
                                          {:publicKey wallet-public-key
                                           :address   (eip55/address->checksum wallet-address)}}
-                  :mnemonic             ""
                   :address              address
                   :public-key            public-key
                   :keycard-instance-uid instance-uid
@@ -1784,8 +1783,7 @@
                   :keycard-paired-on    paired-on
                   :chat-key             whisper-private-key}
                  encryption-public-key
-                 {:seed-backed-up? true
-                  :login?          true})
+                 {})
                 (if (= flow :import)
                   (navigation/navigate-to-cofx :keycard-recovery-success nil)
                   (navigation/navigate-to-cofx :welcome nil))))))

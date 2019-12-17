@@ -1020,8 +1020,8 @@
 (re-frame/reg-sub
  :get-profile-unread-messages-number
  :<- [:multiaccount]
- (fn [{:keys [seed-backed-up? mnemonic]}]
-   (if (or seed-backed-up? (string/blank? mnemonic)) 0 1)))
+ (fn [{:keys [mnemonic]}]
+   (if mnemonic 1 0)))
 
 ;;WALLET ==============================================================================================================
 

@@ -11,22 +11,23 @@
             [status-im.multiaccounts.biometric.core :as biometric])
   (:require-macros [status-im.utils.views :as views]))
 
-(defn- list-data [show-backup-seed? settings supported-biometric-auth biometric-auth? keycard?]
+(defn- list-data [mnemonic settings supported-biometric-auth biometric-auth? keycard?]
   [{:type                 :section-header
     :title                :t/security
     :container-margin-top 6}
    {:type                    :small
     :title                   :t/back-up-seed-phrase
     :accessibility-label     :back-up-recovery-phrase-button
-    :disabled?               (not show-backup-seed?)
+    :disabled?               (not mnemonic)
     ;; TODO - remove container bottom margin
     ;; when items below are implemented
     :container-margin-bottom 8
     :on-press
     #(re-frame/dispatch [:navigate-to :backup-seed])
     :accessories
-    (when show-backup-seed? [[components.common/counter {:size 22} 1]
-                             :chevron])}
+    (when mnemonic
+      [[components.common/counter {:size 22} 1]
+       :chevron])}
    {:type                    :small
     :title                   (str (i18n/label :t/lock-app-with) " " (biometric/get-label supported-biometric-auth))
     :container-margin-bottom 8
@@ -81,18 +82,16 @@
       :theme                   :action-destructive})])
 
 (views/defview privacy-and-security []
-  (views/letsubs [{:keys [seed-backed-up? mnemonic]} [:multiaccount]
+  (views/letsubs [{:keys [mnemonic]} [:multiaccount]
                   settings                 [:multiaccount-settings]
                   supported-biometric-auth [:supported-biometric-auth]
                   auth-method              [:auth-method]
                   keycard-multiaccount?    [:keycard-multiaccount?]]
-    (let [show-backup-seed? (and (not seed-backed-up?)
-                                 (not (string/blank? mnemonic)))]
-      [react/view {:flex 1 :background-color colors/white}
-       [toolbar/simple-toolbar
-        (i18n/label :t/privacy-and-security)]
-       [list/flat-list
-        {:data      (list-data show-backup-seed? settings supported-biometric-auth
-                               (= auth-method "biometric") keycard-multiaccount?)
-         :key-fn    (fn [_ i] (str i))
-         :render-fn list/flat-list-generic-render-fn}]])))
+    [react/view {:flex 1 :background-color colors/white}
+     [toolbar/simple-toolbar
+      (i18n/label :t/privacy-and-security)]
+     [list/flat-list
+      {:data      (list-data mnemonic settings supported-biometric-auth
+                             (= auth-method "biometric") keycard-multiaccount?)
+       :key-fn    (fn [_ i] (str i))
+       :render-fn list/flat-list-generic-render-fn}]]))

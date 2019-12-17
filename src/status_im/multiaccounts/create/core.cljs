@@ -227,7 +227,7 @@
            keycard-pairing keycard-paired-on mnemonic public-key]
     :as multiaccount}
    password
-   {:keys [seed-backed-up? login?] :or {login? true}}]
+   {:keys [save-mnemonic? login?] :or {login? true save-mnemonic? false}}]
   (let [[wallet-account {:keys [public-key photo-path name]} :as accounts-data] (prepare-accounts-data multiaccount)
         multiaccount-data {:name       name
                            :address    address
@@ -251,9 +251,9 @@
                                   :latest-derived-path   0
                                   :signing-phrase        signing-phrase
                                   :installation-id       (random-guid-generator)
-                                  :mnemonic              mnemonic
                                   :settings              constants/default-multiaccount-settings}
-
+                           save-mnemonic?
+                           (assoc :mnemonic mnemonic)
                            keycard-multiaccount?
                            (assoc :keycard-instance-uid keycard-instance-uid
                                   :keycard-pairing keycard-pairing
@@ -270,9 +270,7 @@
                   :networks/current-network constants/default-network
                   :networks/networks constants/default-networks)]
     (fx/merge cofx
-              {:db (cond-> db
-                     seed-backed-up?
-                     (assoc-in [:multiaccount :seed-backed-up?] true))}
+              {:db db}
               (if keycard-multiaccount?
                 (save-account-and-login-with-keycard new-multiaccount
                                                      password
@@ -361,7 +359,7 @@
                             :derived
                             derived)
                            password
-                           {:seed-backed-up? false}))
+                           {:save-mnemonic? true}))
 
 (re-frame/reg-fx
  ::store-multiaccount

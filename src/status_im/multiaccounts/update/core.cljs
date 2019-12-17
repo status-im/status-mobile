@@ -67,8 +67,7 @@
   "A helper function that removes seed phrase from storage."
   [cofx]
   (multiaccount-update cofx
-                       {:seed-backed-up? true
-                        :mnemonic        nil}
+                       {:mnemonic nil}
                        {}))
 
 (fx/defn update-settings
