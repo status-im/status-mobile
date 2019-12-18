@@ -339,4 +339,13 @@ class TestWalletManagement(SingleDeviceTestCase):
         if send_transaction.enter_recipient_address_text.text != formatted_ens_user_address:
             self.errors.append('ENS address on another domain is not resolved as recipient')
 
+        wallet.just_fyi('checking that "stateofus.eth" name without domain will be resolved as recipient')
+        send_transaction.chose_recipient_button.click()
+        send_transaction.enter_recipient_address_button.click()
+        send_transaction.enter_recipient_address_input.set_value(ens_user['ens'])
+        send_transaction.done_button.click()
+
+        if send_transaction.enter_recipient_address_text.text != formatted_ens_user_address:
+            self.errors.append('ENS address "stateofus.eth" without domain is not resolved as recipient')
+
         self.errors.verify_no_errors()
