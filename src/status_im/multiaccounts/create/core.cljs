@@ -208,10 +208,11 @@
       :chat       true})])
 
 (fx/defn save-account-and-login-with-keycard
-  [_ multiaccount-data password node-config chat-key]
+  [_ multiaccount-data password node-config accounts-data chat-key]
   {::save-account-and-login-with-keycard [(types/clj->json multiaccount-data)
                                           password
                                           node-config
+                                          (types/clj->json accounts-data)
                                           chat-key]})
 
 (fx/defn save-account-and-login
@@ -275,6 +276,7 @@
                 (save-account-and-login-with-keycard new-multiaccount
                                                      password
                                                      (node/get-new-config db)
+                                                     accounts-data
                                                      chat-key)
                 (save-account-and-login multiaccount-data
                                         (ethereum/sha3 (security/safe-unmask-data password))
@@ -382,8 +384,9 @@
                                   accounts-data)))
 (re-frame/reg-fx
  ::save-account-and-login-with-keycard
- (fn [[multiaccount-data password config chat-key]]
+ (fn [[multiaccount-data password config accounts-data chat-key]]
    (status/save-account-and-login-with-keycard multiaccount-data
                                                (security/safe-unmask-data password)
                                                config
+                                               accounts-data
                                                chat-key)))

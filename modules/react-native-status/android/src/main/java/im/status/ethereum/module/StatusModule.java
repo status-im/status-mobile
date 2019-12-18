@@ -312,10 +312,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void saveAccountAndLogin(final String accountData, final String password, final String config, final String subAccountsData) {
+    public void saveAccountAndLogin(final String multiaccountData, final String password, final String config, final String accountsData) {
         Log.d(TAG, "saveAccountAndLogin");
         String finalConfig = prepareDirAndUpdateConfig(config);
-        String result = Statusgo.saveAccountAndLogin(accountData, password, finalConfig, subAccountsData);
+        String result = Statusgo.saveAccountAndLogin(multiaccountData, password, finalConfig, accountsData);
         if (result.startsWith("{\"error\":\"\"")) {
             Log.d(TAG, "saveAccountAndLogin result: " + result);
             Log.d(TAG, "Geth node started");
@@ -325,10 +325,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void saveAccountAndLoginWithKeycard(final String accountData, final String password, final String config, final String chatKey) {
+    public void saveAccountAndLoginWithKeycard(final String multiaccountData, final String password, final String config, final String accountsData, final String chatKey) {
         Log.d(TAG, "saveAccountAndLoginWithKeycard");
         String finalConfig = prepareDirAndUpdateConfig(config);
-        String result = Statusgo.saveAccountAndLoginWithKeycard(accountData, password, finalConfig, chatKey);
+        String result = Statusgo.saveAccountAndLoginWithKeycard(multiaccountData, password, finalConfig, accountsData, chatKey);
         if (result.startsWith("{\"error\":\"\"")) {
             Log.d(TAG, "saveAccountAndLoginWithKeycard result: " + result);
             Log.d(TAG, "Geth node started");

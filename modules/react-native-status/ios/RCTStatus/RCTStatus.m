@@ -378,28 +378,29 @@ RCT_EXPORT_METHOD(prepareDirAndUpdateConfig:(NSString *)config
 }
 
 //////////////////////////////////////////////////////////////////// saveAccountAndLogin
-RCT_EXPORT_METHOD(saveAccountAndLogin:(NSString *)accountData
+RCT_EXPORT_METHOD(saveAccountAndLogin:(NSString *)multiaccountData
                   password:(NSString *)password
                   config:(NSString *)config
-                  subAccountsData:(NSString *)subAccountsData) {
+                  accountsData:(NSString *)accountsData) {
 #if DEBUG
     NSLog(@"SaveAccountAndLogin() method called");
 #endif
     NSString *finalConfig = [self prepareDirAndUpdateConfig:config];
-    NSString *result = StatusgoSaveAccountAndLogin(accountData, password, finalConfig, subAccountsData);
+    NSString *result = StatusgoSaveAccountAndLogin(multiaccountData, password, finalConfig, accountsData);
     NSLog(@"%@", result);
 }
 
 //////////////////////////////////////////////////////////////////// saveAccountAndLoginWithKeycard
-RCT_EXPORT_METHOD(saveAccountAndLoginWithKeycard:(NSString *)accountData
+RCT_EXPORT_METHOD(saveAccountAndLoginWithKeycard:(NSString *)multiaccountData
                   password:(NSString *)password
                   config:(NSString *)config
+                  accountsData:(NSString *)accountsData
                   chatKey:(NSString *)chatKey) {
 #if DEBUG
     NSLog(@"SaveAccountAndLoginWithKeycard() method called");
 #endif
     NSString *finalConfig = [self prepareDirAndUpdateConfig:config];
-    NSString *result = StatusgoSaveAccountAndLoginWithKeycard(accountData, password, finalConfig, chatKey);
+    NSString *result = StatusgoSaveAccountAndLoginWithKeycard(multiaccountData, password, finalConfig, accountsData, chatKey);
     NSLog(@"%@", result);
 }
 
