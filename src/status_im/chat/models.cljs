@@ -12,7 +12,6 @@
             [status-im.transport.message.protocol :as transport.protocol]
             [status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.desktop.events :as desktop.events]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.clocks :as utils.clocks]
@@ -266,9 +265,7 @@
               (add-public-chat topic)
               (transport.filters/load-chat topic)
               #(when-not dont-navigate?
-                 (navigate-to-chat % topic opts))
-              #(when platform/desktop?
-                 (desktop.events/change-tab % :home)))))
+                 (navigate-to-chat % topic opts)))))
 
 (fx/defn disable-chat-cooldown
   "Turns off chat cooldown (protection against message spamming)"

@@ -9,7 +9,6 @@
             [status-im.ui.components.react :as react]
             [status-im.core :as core]
             [status-im.utils.snoopy :as snoopy]
-            [status-im.ui.components.desktop.shortcuts :as shortcuts]
             [status-im.ui.screens.desktop.views :as desktop-views]
             [status-im.desktop.deep-links :as deep-links]
             [status-im.utils.config :as config]))
@@ -32,7 +31,7 @@
     (reagent/create-class
      {:component-did-mount (fn [this]
                              (re-frame/dispatch [:set-initial-props (reagent/props this)])
-                             (shortcuts/register-default-shortcuts)
+                             ;(shortcuts/register-default-shortcuts)
                              (deep-links/add-event-listener))
       :reagent-render      (fn [props]
                              desktop-views/main)})))

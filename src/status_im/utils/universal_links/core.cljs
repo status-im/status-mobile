@@ -12,7 +12,6 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
-            [status-im.ui.screens.desktop.main.chat.events :as desktop.events]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
@@ -81,9 +80,7 @@
   (log/info "universal-links: handling view profile" public-key)
   (if (new-chat.db/own-public-key? db public-key)
     (navigation/navigate-to-cofx cofx :my-profile nil)
-    (if platform/desktop?
-      (desktop.events/show-profile-desktop public-key cofx)
-      (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key) :profile nil))))
+    (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key) :profile nil)))
 
 (fx/defn handle-eip681 [cofx url]
   (fx/merge cofx
