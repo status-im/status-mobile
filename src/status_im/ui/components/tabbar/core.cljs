@@ -37,8 +37,8 @@
      :accessibility-label :home-tab-button}
     (when-not platform/desktop?
       {:nav-stack           :browser-stack
-       :content             {:title (i18n/label :t/dapps)
-                             :icon  :main-icons/dapp}
+       :content             {:title (i18n/label :t/browser)
+                             :icon  :main-icons/browser}
        :accessibility-label :dapp-tab-button})
     (when-not platform/desktop?
       {:nav-stack           :wallet-stack
