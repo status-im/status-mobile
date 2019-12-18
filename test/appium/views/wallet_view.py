@@ -186,7 +186,7 @@ class ViewInCryptoKittiesButton(BaseButton):
         return BaseWebView(self.driver)
 
     def click(self):
-        self.wait_for_element(30).click()
+        self.wait_for_element(60).click()
         self.driver.info('Tap on View in CryptoKitties')
         return self.navigate()
 

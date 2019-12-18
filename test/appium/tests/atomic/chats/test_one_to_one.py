@@ -726,5 +726,5 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         profile = home.profile_button.click()
         profile.switch_network('Mainnet with upstream RPC')
         chat = home.add_contact(ens_user['ens'])
-        if not chat.element_by_text(ens_user['username']).is_element_displayed():
+        if not chat.element_by_text("@" + ens_user['ens']).is_element_displayed():
             self.driver.fail('Wrong user is resolved from username when starting 1-1 chat.')
