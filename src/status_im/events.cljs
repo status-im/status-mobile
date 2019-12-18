@@ -1210,17 +1210,13 @@
 (handlers/register-handler-fx
  :contact/qr-code-scanned
  [(re-frame/inject-cofx :random-id-generator)]
- (fn [{:keys [db] :as cofx}  [_ contact-identity _]]
-   (let [current-multiaccount (:multiaccount db)
-         fx              {:db (assoc db :contacts/new-identity contact-identity)}
-         validation-result (new-chat.db/validate-pub-key db contact-identity)]
+ (fn [{:keys [db] :as cofx} [_ contact-identity _]]
+   (let [validation-result (new-chat.db/validate-pub-key db contact-identity)]
      (if (some? validation-result)
        {:utils/show-popup {:title (i18n/label :t/unable-to-read-this-code)
                            :content validation-result
                            :on-dismiss #(re-frame/dispatch [:navigate-to-clean :home])}}
-       (fx/merge cofx
-                 fx
-                 (chat/start-chat contact-identity {:navigation-reset? true}))))))
+       (chat/start-chat cofx contact-identity {:navigation-reset? true})))))
 
 (handlers/register-handler-fx
  :contact.ui/start-group-chat-pressed
@@ -1237,7 +1233,11 @@
  :contact.ui/contact-code-submitted
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [{{:contacts/keys [new-identity]} :db :as cofx} _]
-   (chat/start-chat cofx new-identity {:navigation-reset? true})))
+   (let [{:keys [public-key ens-name]} new-identity]
+     (fx/merge cofx
+               (chat/start-chat public-key {:navigation-reset? true})
+               #(when ens-name
+                  (contact/name-verified % public-key ens-name))))))
 
 ;; search module
 

@@ -13,7 +13,8 @@
    [status-im.tribute-to-talk.whitelist :as whitelist]
    [status-im.ui.screens.navigation :as navigation]
    [status-im.utils.config :as config]
-   [status-im.utils.fx :as fx]))
+   [status-im.utils.fx :as fx]
+   [status-im.utils.datetime :as time]))
 
 (fx/defn load-contacts
   {:events [::contacts-loaded]}
@@ -71,7 +72,7 @@
                       (update :system-tags
                               (fnil #(conj % :contact/added) #{})))]
       (fx/merge cofx
-                {:db (assoc-in db [:contacts/new-identity] "")}
+                {:db (dissoc db :contacts/new-identity)}
                 (upsert-contact contact)
                 (whitelist/add-to-whitelist public-key)
                 (send-contact-request contact)
@@ -94,7 +95,7 @@
   (when (not= (get-in db [:multiaccount :public-key]) public-key)
     (let [contact (build-contact cofx public-key)]
       (fx/merge cofx
-                {:db (assoc-in db [:contacts/new-identity] "")}
+                {:db (dissoc db :contacts/new-identity)}
                 (upsert-contact contact)))))
 
 (fx/defn handle-contact-update
@@ -176,3 +177,12 @@
   {:events [:contacts/ens-names-verified]}
   [{:keys [db]} names]
   {:db (update db :contacts/contacts add-ens-names names)})
+
+(fx/defn name-verified
+  {:events [:contacts/ens-name-verified]}
+  [{:keys [db]} public-key ens-name]
+  {:db (update-in db [:contacts/contacts public-key]
+                  merge
+                  {:name            ens-name
+                   :ens-verified-at (quot (time/timestamp) 1000)
+                   :ens-verified    true})})

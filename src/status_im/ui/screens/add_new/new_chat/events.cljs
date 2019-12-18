@@ -5,7 +5,8 @@
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.resolver :as resolver]
             [status-im.ui.screens.add-new.new-chat.db :as db]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.utils.handlers :as handlers]
+            [status-im.ethereum.stateofus :as stateofus]))
 
 (re-frame/reg-fx
  :resolve-public-key
@@ -14,17 +15,19 @@
 
 (handlers/register-handler-fx
  :new-chat/set-new-identity
- (fn [{{:keys [network-status] :as db} :db} [_ new-identity]]
+ (fn [{db :db} [_ new-identity new-ens-name]]
    (let [is-public-key? (and (string? new-identity)
                              (string/starts-with? new-identity "0x"))]
      (merge {:db (assoc db
-                        :contacts/new-identity       new-identity
+                        :contacts/new-identity {:public-key new-identity :ens-name new-ens-name}
                         :contacts/new-identity-error (db/validate-pub-key db new-identity))}
             (when (and (not is-public-key?)
                        (ens/valid-eth-name-prefix? new-identity))
-              (let [chain (ethereum/chain-keyword db)]
+              (let [chain    (ethereum/chain-keyword db)
+                    ens-name (string/lower-case
+                              (if (ens/is-valid-eth-name? new-identity)
+                                new-identity
+                                (stateofus/subdomain new-identity)))]
                 {:resolve-public-key {:registry (get ens/ens-registries chain)
-                                      :ens-name (if (ens/is-valid-eth-name? new-identity)
-                                                  new-identity
-                                                  (str new-identity ".stateofus.eth"))
-                                      :cb #(re-frame/dispatch [:new-chat/set-new-identity %])}}))))))
+                                      :ens-name ens-name
+                                      :cb       #(re-frame/dispatch [:new-chat/set-new-identity % ens-name])}}))))))

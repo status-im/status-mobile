@@ -46,7 +46,7 @@
 
 (spec/def :contacts/contacts (spec/nilable (spec/map-of :global/not-empty-string :contact/contact)))
 ;;public key of new contact during adding this new contact
-(spec/def :contacts/new-identity (spec/nilable string?))
+(spec/def :contacts/new-identity (spec/nilable map?))
 (spec/def :contacts/new-identity-error (spec/nilable string?))
 ;;on showing this contact's profile (andrey: better to move into profile ns)
 (spec/def :contacts/identity (spec/nilable :global/not-empty-string))
