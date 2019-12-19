@@ -359,10 +359,11 @@ class BaseView(object):
             'text': BaseText
         }
 
-
     def accept_agreements(self):
         iterations = int()
-        while iterations <= 2 and (self.ok_button.is_element_displayed(2) or
+        self.close_native_device_dialog("Messages")
+        self.close_native_device_dialog("Youtube")
+        while iterations <= 1 and (self.ok_button.is_element_displayed(2) or
                                    self.continue_button.is_element_displayed(2)):
             for button in self.ok_button, self.continue_button:
                 try:
@@ -371,6 +372,16 @@ class BaseView(object):
                 except (NoSuchElementException, TimeoutException):
                     pass
             iterations += 1
+
+    def close_native_device_dialog(self, alert_text_part):
+        element = self.element_by_text_part(alert_text_part)
+        if element.is_element_present(1):
+            self.driver.info("Dismissing %s alert" % alert_text_part)
+            self.dismiss_alert()
+
+    def dismiss_alert(self):
+        self.driver.info("Dismiss alert")
+        self.driver.switch_to.alert().dismiss()
 
     @property
     def logcat(self):
@@ -619,9 +630,7 @@ class BaseView(object):
 
     def toggle_airplane_mode(self):
         self.airplane_mode_button.click()
-        mms_service = self.element_by_text_part("MmsService")
-        if mms_service.is_element_displayed():
-            self.driver.switch_to.alert().dismiss()
+        self.close_native_device_dialog("MmsService")
 
     def toggle_mobile_data(self):
         self.driver.start_activity(app_package='com.android.settings', app_activity='.Settings')

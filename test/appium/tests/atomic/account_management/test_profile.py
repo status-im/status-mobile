@@ -299,7 +299,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         home.share_via_messenger()
         home.find_text_part("Get Status at http://status.im")
 
-
     @marks.testrail_id(5431)
     @marks.medium
     def test_add_custom_network(self):

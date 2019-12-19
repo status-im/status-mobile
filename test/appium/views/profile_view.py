@@ -657,7 +657,6 @@ class ProfileView(BaseView):
 
     def add_custom_network(self):
         self.advanced_button.click()
-        self.debug_mode_toggle.click()
         self.network_settings_button.scroll_to_element()
         self.network_settings_button.click()
         self.plus_button.click_until_presence_of_element(self.ropsten_chain_button)

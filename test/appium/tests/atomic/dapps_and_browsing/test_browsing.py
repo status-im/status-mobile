@@ -28,7 +28,7 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view = daap_view.open_url('invalid.takoe')
         browsing_view.find_text_part('Unable to load page')
         browsing_view.cross_icon.click()
-        if home_view.element_by_text('Browser').is_element_displayed():
+        if home_view.element_by_text('Recent').is_element_displayed():
             self.driver.fail('Browser entity is shown for an invalid link')
 
     @marks.testrail_id(6210)
