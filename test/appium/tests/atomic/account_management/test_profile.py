@@ -571,7 +571,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         home_view.just_fyi('check view in chat settings ENS from other domain: %s after set new primary ENS' % ens_not_stateofus)
         dapp_view.set_primary_ens_username(ens_user['ens_another_domain']).click()
-        profile_view.show_ens_name_in_chats.click()
         if profile_view.username_in_ens_chat_settings_text.text != '@' + ens_not_stateofus:
             self.errors.append('ENS username %s is not shown in ENS username Chat Settings after enabling' % ens_not_stateofus)
 
@@ -895,8 +894,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             sign_in_1.driver.fail("No %s is shown" % expected_text)
         dapp_view_1.check_ens_name.click_until_presence_of_element(dapp_view_1.element_by_text('Ok, got it'))
         dapp_view_1.element_by_text('Ok, got it').click()
-        if profile_1.username_in_ens_chat_settings_text.text != user_1['username']:
-            self.errors.append('Default username is not shown in ENS usernames')
 
         home_1.just_fyi('check ENS name wallet address and public key')
         profile_1.element_by_text(user_1['ens']).click()
@@ -906,21 +903,13 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         dapp_view_1.get_back_to_home_view()
         profile_1.home_button.click()
 
-        home_2.just_fyi('joining same public chat, checking default username on message')
+        home_2.just_fyi('joining same public chat, set ENS name and check it in chat from device2')
         chat_name = home_1.get_public_chat_name()
         chat_2 = home_2.join_public_chat(chat_name)
         chat_1 = home_1.join_public_chat(chat_name)
-        message_text_1 = 'test message 1'
-        chat_1.send_message(message_text_1)
-        if chat_2.chat_element_by_text(message_text_1).username.text != user_1['username']:
-            self.errors.append('Default username is not shown in public chat')
-        chat_2.send_message('message from device 2')
-
-        home_1.just_fyi('set ENS name for public chat and check it from device2')
         chat_1.get_back_to_home_view()
         home_1.profile_button.click()
         profile_1.element_by_text('Your ENS name').click()
-        profile_1.show_ens_name_in_chats.click()
         if profile_1.username_in_ens_chat_settings_text.text != '@' + user_1['ens']:
             self.errors.append('ENS username is not shown in ENS usernames Chat Settings after enabling')
         profile_1.back_button.click()

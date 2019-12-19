@@ -521,13 +521,6 @@ class PrivacyAndSecurityButton(BaseButton):
         super(PrivacyAndSecurityButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('privacy-and-security-settings-button')
 
-
-class ShowENSNameInChatsToggle(BaseButton):
-    def __init__(self, driver):
-        super(ShowENSNameInChatsToggle, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//*[@text='Show my ENS username in chats']/following-sibling::*[1][name()='android.widget.Switch'] ")
-
 class UseMobileDataToggle(BaseButton):
     def __init__(self, driver):
         super(UseMobileDataToggle, self).__init__(driver)
@@ -632,7 +625,6 @@ class ProfileView(BaseView):
         self.sync_all_button = SyncAllButton(self.driver)
 
         # ENS
-        self.show_ens_name_in_chats = ShowENSNameInChatsToggle(self.driver)
         self.username_in_ens_chat_settings_text = ENSUsernameInChatSettings(self.driver)
         self.ens_usernames_button = ENSusernames(self.driver)
 
