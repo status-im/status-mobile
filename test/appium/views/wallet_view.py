@@ -273,6 +273,20 @@ class AddAnAccountButton(BaseButton):
         super(AddAnAccountButton, self).__init__(driver)
         self.locator = self.Locator.text_selector('Add an account')
 
+class AddAWatchOnlyAddressButton(BaseButton):
+    def __init__(self, driver):
+        super(AddAWatchOnlyAddressButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Add a watch-only address')
+
+class EnterAddressInput(BaseEditBox):
+    def __init__(self, driver):
+        super(EnterAddressInput, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Enter address')
+
+class DeleteAccountButton(BaseButton):
+    def __init__(self, driver):
+        super(DeleteAccountButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Delete account')
 
 class GenerateNewAccountButton(BaseButton):
     def __init__(self, driver):
@@ -367,6 +381,9 @@ class WalletView(BaseView):
         self.set_currency_button = SetCurrencyButton(self.driver)
         self.add_account_button = AddAccountButton(self.driver)
         self.add_an_account_button = AddAnAccountButton(self.driver)
+        self.add_watch_only_address_button = AddAWatchOnlyAddressButton(self.driver)
+        self.enter_address_input = EnterAddressInput(self.driver)
+        self.delete_account_button = DeleteAccountButton(self.driver)
         self.generate_new_account_button = GenerateNewAccountButton(self.driver)
         self.enter_your_password_input = EnterYourPasswordInput(self.driver)
         self.generate_account_button = GenerateAccountButton(self.driver)
@@ -377,12 +394,13 @@ class WalletView(BaseView):
         # individual account settings
         self.account_settings_button = AccountSettingsButton(self.driver)
         self.apply_settings_button = ApplySettingsButton(self.driver)
-        self.account_options_button = AccountOptionsButton(self.driver, account_name='Status account')
 
     def get_usd_total_value(self):
         import re
         return float(re.sub('[~,]', '', self.usd_total_value.text))
 
+    def get_account_options_by_name(self, account_name='Status account'):
+        return AccountOptionsButton(self.driver, account_name)
 
 
     def get_asset_amount_by_name(self, asset: str):

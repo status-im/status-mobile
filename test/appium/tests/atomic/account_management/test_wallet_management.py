@@ -1,4 +1,3 @@
-import pytest
 import random
 import string
 
@@ -305,6 +304,59 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.driver.fail('Account was not added')
         if not account_button.color_matches('multi_account_color.png'):
             self.driver.fail('Account color does not match expected')
+
+    @marks.testrail_id(6244)
+    @marks.high
+    def test_add_and_delete_watch_only_account_to_multiaccount_instance(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+
+        wallet_view.just_fyi('Add watch-only account')
+        wallet_view.add_account_button.click()
+        wallet_view.add_watch_only_address_button.click()
+        wallet_view.enter_address_input.send_keys(basic_user['address'])
+        wallet_view.next_button.click()
+        account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+        wallet_view.account_name_input.send_keys(account_name)
+        wallet_view.finish_button.click()
+        account_button = wallet_view.get_account_by_name(account_name)
+        if not account_button.is_element_displayed():
+            self.driver.fail('Account was not added')
+
+        wallet_view.just_fyi('Check that overall balance is changed after adding watch-only account')
+        for asset in ('ETHro', 'ADI', 'STT'):
+            wallet_view.wait_balance_is_changed(asset)
+
+        wallet_view.just_fyi('Check individual watch-only account view, settings and receive option')
+        wallet_view.get_account_by_name(account_name).click()
+        if wallet_view.send_transaction_button.is_element_displayed():
+            self.errors.append('Send button is shown on watch-only wallet')
+        if not wallet_view.element_by_text('Watch-only').is_element_displayed():
+            self.errors.append('No "Watch-only" label is shown on watch-only wallet')
+        wallet_view.receive_transaction_button.click()
+        if wallet_view.address_text.text[2:] != basic_user['address']:
+            self.errors.append('Wrong address %s is shown in "Receive" popup for watch-only account ' % wallet_view.address_text.text)
+        wallet_view.close_share_popup()
+        wallet_view.get_account_options_by_name(account_name).click()
+        wallet_view.account_settings_button.click()
+        if not wallet_view.element_by_text('Watch-only').is_element_displayed():
+            self.errors.append('"Watch-only" type is not shown in account settings')
+
+        wallet_view.just_fyi('Delete watch-only account')
+        wallet_view.delete_account_button.click()
+        wallet_view.yes_button.click()
+        if account_button.is_element_displayed():
+            self.driver.fail('Account was not deleted')
+        # TODO: uncomment check of assets after fix of 9717
+        # for asset in ('ETHro', 'ADI', 'STT'):
+        #     balance = wallet_view.get_asset_amount_by_name(asset)
+        #     if balance != 0:
+        #         self.errors.append("Balance for %s is not updated after deleting watch-only account" % asset)
+
+        self.errors.verify_no_errors()
+
 
     @marks.testrail_id(5406)
     @marks.critical

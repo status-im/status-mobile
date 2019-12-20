@@ -1,4 +1,3 @@
-import pytest
 
 from tests import marks, unique_password, common_password
 from tests.base_test_case import SingleDeviceTestCase

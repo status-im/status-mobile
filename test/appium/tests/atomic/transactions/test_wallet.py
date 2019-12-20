@@ -548,7 +548,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
         status_account_address = wallet_view.get_wallet_address()
-        wallet_view.account_options_button.click()
+        wallet_view.get_account_options_by_name().click()
 
         wallet_view.just_fyi('open Account Settings screen and check that all elements are shown')
         wallet_view.account_settings_button.click()

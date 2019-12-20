@@ -584,7 +584,7 @@ class BaseView(object):
         sign_in_view = self.get_sign_in_view()
         sign_in_view.sign_in(password)
 
-    def close_share_chat_key_popup(self):
+    def close_share_popup(self):
         TouchAction(self.driver).tap(None, 255, 104, 1).perform()
 
     def get_public_key(self):
@@ -592,7 +592,7 @@ class BaseView(object):
         profile_view.share_my_profile_button.click()
         profile_view.public_key_text.wait_for_visibility_of_element()
         public_key = profile_view.public_key_text.text
-        self.close_share_chat_key_popup()
+        self.close_share_popup()
         return public_key
 
     def share_via_messenger(self):

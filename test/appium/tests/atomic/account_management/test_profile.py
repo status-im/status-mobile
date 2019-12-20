@@ -140,7 +140,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append("Can't share public key")
         for _ in range(2):
             profile_view.click_system_back_button()
-        profile_view.close_share_chat_key_popup()
+        profile_view.close_share_popup()
         wallet = profile_view.wallet_button.click()
         wallet.set_up_wallet()
         wallet.accounts_status_account.click()
@@ -162,7 +162,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         public_key = profile_view.public_key_text.text
         profile_view.public_key_text.long_press_element()
         profile_view.copy_text()
-        profile_view.close_share_chat_key_popup()
+        profile_view.close_share_popup()
         home = profile_view.home_button.click()
         chat = home.add_contact(transaction_senders['M']['public_key'])
         chat.chat_message_input.click()
