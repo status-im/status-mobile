@@ -14,7 +14,8 @@
    [status-im.ui.components.text-input.view :as text-input]
    [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]
    [status-im.ui.components.tooltip.views :as tooltip]
-   [clojure.string :as string]))
+   [clojure.string :as string]
+   [status-im.ui.components.topbar :as topbar]))
 
 (defn connect-button [id]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:mailserver.ui/connect-pressed id])}
@@ -51,7 +52,7 @@
           invalid-url? (contains? validation-errors :url)]
       [react/view components.styles/flex
        [react/keyboard-avoiding-view components.styles/flex
-        [toolbar/simple-toolbar (i18n/label (if id :t/mailserver-details :t/add-mailserver))]
+        [topbar/topbar {:title (if id :t/mailserver-details :t/add-mailserver)}]
         [react/scroll-view {:keyboard-should-persist-taps :handled}
          [react/view styles/edit-mailserver-view
           [text-input/text-input-with-label

@@ -8,7 +8,8 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.multiaccounts.biometric.core :as biometric])
+            [status-im.multiaccounts.biometric.core :as biometric]
+            [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- list-data [mnemonic settings supported-biometric-auth biometric-auth? keycard?]
@@ -88,8 +89,7 @@
                   auth-method              [:auth-method]
                   keycard-multiaccount?    [:keycard-multiaccount?]]
     [react/view {:flex 1 :background-color colors/white}
-     [toolbar/simple-toolbar
-      (i18n/label :t/privacy-and-security)]
+     [topbar/topbar {:title :t/privacy-and-security}]
      [list/flat-list
       {:data      (list-data mnemonic settings supported-biometric-auth
                              (= auth-method "biometric") keycard-multiaccount?)

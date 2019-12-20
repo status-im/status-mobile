@@ -13,16 +13,13 @@
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.tooltip.views :as tooltip]
-            [status-im.ui.screens.hardwallet.pin.views :as pin.views]))
+            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defview intro []
   (letsubs [flow [:hardwallet-flow]]
     [react/view styles/container
-     [toolbar/toolbar
-      {:transparent? true
-       :style        {:margin-top 32}}
-      toolbar/default-nav-back
-      nil]
+     [topbar/topbar]
      [react/view {:flex            1
                   :flex-direction  :column
                   :justify-content :space-between
@@ -103,11 +100,7 @@
 
 (defn start []
   [react/view styles/container
-   [toolbar/toolbar
-    {:transparent? true
-     :style        {:margin-top 32}}
-    toolbar/default-nav-back
-    nil]
+   [topbar/topbar]
    [react/view {:flex            1
                 :flex-direction  :column
                 :justify-content :space-between
@@ -140,8 +133,7 @@
             puk-code [:hardwallet-puk-code]]
     [react/view styles/container
      [toolbar/toolbar
-      {:transparent? true
-       :style        {:margin-top 32}}
+      {:transparent? true}
       [toolbar/nav-text
        {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
         :style   {:padding-left 21}}
@@ -242,8 +234,7 @@
             small-screen? [:dimensions/small-screen?]]
     [react/view styles/container
      [toolbar/toolbar
-      {:transparent? true
-       :style        {:margin-top 32}}
+      {:transparent? true}
       [toolbar/nav-text
        {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
         :style   {:padding-left 21}}
@@ -287,8 +278,7 @@
   (letsubs [mnemonic [:hardwallet-mnemonic]]
     [react/view styles/container
      [toolbar/toolbar
-      {:transparent? true
-       :style        {:margin-top 32}}
+      {:transparent? true}
       [toolbar/nav-text
        {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
         :style   {:padding-left 21}}
@@ -358,8 +348,7 @@
     (let [{:keys [word idx]} word]
       [react/view styles/container
        [toolbar/toolbar
-        {:transparent? true
-         :style        {:margin-top 32}}
+        {:transparent? true}
         [toolbar/nav-text
          {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
           :style   {:padding-left 21}}

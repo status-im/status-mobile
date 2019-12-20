@@ -9,7 +9,8 @@
             [status-im.ui.screens.dapps-permissions.styles :as styles]
             [status-im.constants :as constants]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.icons.vector-icons :as icons]))
+            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn d-icon []
   [react/view styles/icon-container
@@ -32,8 +33,7 @@
 (views/defview dapps-permissions []
   (views/letsubs [permissions [:dapps/permissions]]
     [react/view {:flex 1 :background-color colors/white}
-     [toolbar/simple-toolbar
-      (i18n/label :t/dapps-permissions)]
+     [topbar/topbar {:title :t/dapps-permissions}]
      [list/flat-list
       {:data      (vec (map prepare-items (vals permissions)))
        :key-fn    (fn [_ i] (str i))
@@ -43,7 +43,7 @@
   (views/letsubs [{:keys [dapp permissions]} [:get-screen-params]
                   {:keys [name]} [:dapps-account]]
     [react/view {:flex 1 :background-color colors/white}
-     [toolbar/simple-toolbar dapp]
+     [topbar/topbar {:title dapp}]
      [list/flat-list
       {:data      (vec (map (prepare-items-manage name) permissions))
        :key-fn    (fn [_ i] (str i))

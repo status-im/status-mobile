@@ -8,7 +8,8 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.network.ui.styles :as st]
             [status-im.network.core :as network]
-            [status-im.network.ui.views :as network-settings]))
+            [status-im.network.ui.views :as network-settings]
+            [status-im.ui.components.topbar :as topbar]))
 
 (views/defview network-details []
   (views/letsubs [{:keys [networks/selected-network]} [:get-screen-params]
@@ -19,7 +20,7 @@
           custom?                  (seq (filter #(= (:id %) id) (:custom networks)))]
       [react/view st/container
        [react/view components.styles/flex
-        [toolbar/simple-toolbar (i18n/label :t/network-details)]
+        [topbar/topbar {:title :t/network-details}]
         [react/view components.styles/flex
          [network-settings/network-badge
           {:name       name

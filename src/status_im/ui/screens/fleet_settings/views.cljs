@@ -7,7 +7,8 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.fleet-settings.styles :as styles]
             [status-im.node.core :as node]
-            [status-im.utils.platform :as platform])
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- fleet-icon [current?]
@@ -40,9 +41,7 @@
   (views/letsubs [custom-fleets [:fleets/custom-fleets]
                   current-fleet [:settings/current-fleet]]
     [react/view {:flex 1}
-     [toolbar/toolbar {}
-      toolbar/default-nav-back
-      [toolbar/content-title (i18n/label :t/fleet-settings)]]
+     [topbar/topbar {:title :t/fleet-settings}]
      [react/view styles/wrapper
       [list/flat-list {:data               (fleets custom-fleets)
                        :default-separator? false

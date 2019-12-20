@@ -5,8 +5,7 @@
             [status-im.ui.components.list.views :as list.views]
             [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.contact.contact :as contact-view]
-            [status-im.ui.components.toolbar.view :as toolbar.view])
+            [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn contacts-list-item [{:keys [public-key] :as contact}]
@@ -20,9 +19,7 @@
   (letsubs [blocked-contacts-count [:contacts/blocked-count]
             contacts      [:contacts/active]]
     [react/view {:flex 1}
-     [toolbar.view/toolbar nil
-      toolbar.view/default-nav-back
-      (toolbar.view/content-title (i18n/label :t/contacts))]
+     [topbar/topbar {:title :t/contacts}]
      [react/scroll-view {:flex 1}
       [list.views/big-list-item
        {:style               {:margin-vertical 16}
@@ -41,7 +38,7 @@
   (letsubs [blocked-contacts [:contacts/blocked]]
     [react/view {:flex 1
                  :background-color colors/white}
-     [toolbar.view/simple-toolbar (i18n/label :t/blocked-users)]
+     [topbar/topbar {:title :t/blocked-users}]
      [react/scroll-view {:style {:background-color colors/white
                                  :padding-vertical 8}}
       [list.views/flat-list

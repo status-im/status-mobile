@@ -1,11 +1,10 @@
 (ns status-im.ui.screens.help-center.views
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.topbar :as topbar]))
 
 (def data
   [{:type                :small
@@ -36,8 +35,7 @@
 
 (defn help-center []
   [react/view {:flex 1 :background-color colors/white}
-   [toolbar/simple-toolbar
-    (i18n/label :t/need-help)]
+   [topbar/topbar {:title :t/need-help}]
    [list/flat-list
     {:data      data
      :key-fn    (fn [_ i] (str i))

@@ -8,8 +8,8 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.screens.about-app.styles :as styles]))
+            [status-im.ui.screens.about-app.styles :as styles]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn- data [app-version node-version]
   [{:type                :small
@@ -56,8 +56,7 @@
   (views/letsubs [app-version  [:get-app-short-version]
                   node-version [:get-app-node-version]]
     [react/view {:flex 1 :background-color colors/white}
-     [toolbar/simple-toolbar
-      (i18n/label :t/about-app)]
+     [topbar/topbar {:title :t/about-app}]
      [list/flat-list
       {:data      (data app-version node-version)
        :key-fn    (fn [_ i] (str i))

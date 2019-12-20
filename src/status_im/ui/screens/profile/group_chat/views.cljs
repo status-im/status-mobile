@@ -2,36 +2,23 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.utils.platform :as platform]
             [status-im.constants :as constants]
-            [status-im.ui.screens.profile.group-chat.styles :as styles]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.components.styles :as profile.components.styles]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.components.contact.contact :as contact]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.common.styles :as common.styles]
             [status-im.i18n :as i18n]
-            [status-im.utils.utils :as utils]
-            [status-im.ui.components.list-item.views :as list-item]))
+            [status-im.ui.components.list-item.views :as list-item]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn group-chat-profile-toolbar [admin?]
-  [toolbar/toolbar {}
-   toolbar/default-nav-back
-   nil
+  [topbar/topbar
    (when admin?
-     [toolbar/text-action {:handler #(re-frame/dispatch [:group-chat-profile/start-editing])
-                           :accessibility-label :edit-button}
-      (i18n/label :t/edit)])])
-
-(defn group-chat-profile-edit-toolbar []
-  [toolbar/toolbar {}
-   nil
-   nil
-   [toolbar/text-action {:handler   #(re-frame/dispatch [:group-chats.ui/save-pressed])
-                         :accessibility-label :done-button}
-    (i18n/label :t/done)]])
+     {:accessories
+      [{:label               :t/edit
+        :accessibility-label :edit-button
+        :handler             #(re-frame/dispatch [:group-chat-profile/start-editing])}]})])
 
 (defn member-actions [chat-id member us-admin?]
   (concat

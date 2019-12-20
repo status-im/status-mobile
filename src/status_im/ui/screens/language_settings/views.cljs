@@ -1,10 +1,8 @@
 (ns status-im.ui.screens.language-settings.views
-  (:require [status-im.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]))
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn language-settings []
   [react/view {:flex 1 :background-color colors/white}
-   [toolbar/simple-toolbar
-    (i18n/label :t/language)]])
+   [topbar/topbar {:title :t/language}]])

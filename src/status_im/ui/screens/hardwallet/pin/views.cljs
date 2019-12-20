@@ -6,10 +6,9 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.hardwallet.pin.styles :as styles]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.checkbox.view :as checkbox]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn numpad-button [n step enabled? small-screen?]
   [react/touchable-highlight
@@ -143,12 +142,11 @@
             error-label [:hardwallet/pin-error-label]]
     [react/view {:flex             1
                  :background-color colors/white}
-     [toolbar/toolbar
-      nil
-      [toolbar/nav-button (assoc toolbar.actions/default-back
-                                 :handler
-                                 #(re-frame/dispatch [:hardwallet.ui/enter-pin-navigate-back-button-clicked]))]
-      nil]
+     [topbar/topbar
+      {:navigation
+       {:icon    :main-icons/back
+        :accessibility-label :back-button
+        :handler #(re-frame/dispatch [:hardwallet.ui/enter-pin-navigate-back-button-clicked])}}]
      (if (zero? pin-retry-counter)
        [pin-view {:pin               pin
                   :retry-counter     (when (< puk-retry-counter puk-retries) puk-retry-counter)

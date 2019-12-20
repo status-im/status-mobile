@@ -2,9 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
@@ -13,10 +11,9 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
             [status-im.utils.core :as utils.core]
-            [status-im.utils.gfycat.core :as gfy]
-            [status-im.utils.identicon :as identicon]
             [status-im.ui.components.list-item.views :as list-item]
-            [status-im.ui.screens.chat.photos :as photos]))
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defview connection-lost []
   (letsubs [{:keys [card-connected?]} [:keycard]]
@@ -89,11 +86,7 @@
 
 (defn nfc-on []
   [react/view styles/container
-   [toolbar/toolbar
-    {:transparent? true
-     :style        {:margin-top 32}}
-    toolbar/default-nav-back
-    nil]
+   [topbar/topbar]
    [react/view {:flex            1
                 :flex-direction  :column
                 :justify-content :space-between
@@ -121,9 +114,7 @@
 
 (defn loading [title-label]
   [react/view styles/container
-   [toolbar/toolbar {:transparent? true
-                     :style        {:margin-top 32}}
-    nil nil]
+   [topbar/topbar {:navigation :none}]
    [react/view {:flex            1
                 :flex-direction  :column
                 :justify-content :space-between
@@ -370,18 +361,14 @@
             small-screen? [:dimensions/small-screen?]
             retry-counter [:hardwallet/retry-counter]]
     [react/view styles/container
-     [toolbar/toolbar
-      {:transparent? true}
-      (when multiple-multiaccounts?
-        [toolbar/nav-button
-         (actions/back
-          #(re-frame/dispatch [:keycard.login.pin.ui/cancel-pressed]))])
-      nil
-      [react/view {:margin-right 20}
-       [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:keycard.login.pin.ui/more-icon-pressed])}
-        [vector-icons/icon :main-icons/more {:color           colors/black
-                                             :container-style {:margin-left 5}}]]]]
+     [topbar/topbar
+      (cond-> {:accessories [{:icon    :main-icons/more
+                              :handler #(re-frame/dispatch [:keycard.login.pin.ui/more-icon-pressed])}]}
+        multiple-multiaccounts?
+        (assoc :navigation
+               {:icon    :main-icons/back
+                :accessibility-label :back-button
+                :handler #(re-frame/dispatch [:keycard.login.pin.ui/cancel-pressed])}))]
      [react/view {:flex            1
                   :flex-direction  :column
                   :justify-content :space-between
@@ -449,8 +436,7 @@
     (let [in-progress? (= status :verifying)]
       [react/view styles/container
        [toolbar/toolbar
-        {:transparent? true
-         :style        {:margin-top 32}}
+        {:transparent? true}
         nil
         [react/text {:style {:color colors/gray}}
          (i18n/label :t/step-i-of-n {:number 2

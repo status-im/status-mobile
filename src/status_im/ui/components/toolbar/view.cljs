@@ -163,10 +163,3 @@
                  :justify-content :center
                  :align-items     :center}
      action-items]]))
-
-;;TODO remove
-(defn simple-toolbar
-  "A simple toolbar composed of a nav-back item and a single line title."
-  ([] (simple-toolbar nil))
-  ([title] (simple-toolbar title false))
-  ([title modal?] (toolbar nil (if modal? default-nav-close default-nav-back) [content-title title])))

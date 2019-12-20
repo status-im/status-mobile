@@ -8,7 +8,8 @@
             [status-im.ui.components.common.common :as common]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
-            [status-im.react-native.resources :as resources]))
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn authentication-method-row [{:keys [title on-press icon]}]
   [react/touchable-highlight {:on-press on-press}
@@ -24,9 +25,7 @@
 (defn hardwallet-authentication-method []
   [react/view styles/container
    [react/view components.styles/flex
-    [toolbar/toolbar {}
-     toolbar/default-nav-back
-     nil]
+    [topbar/topbar]
     [common/separator]
     [react/view styles/choose-authentication-method
      [react/view styles/lock-image-container

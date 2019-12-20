@@ -137,7 +137,6 @@
    :collectibles-list                                collectibles/collectibles-list
    :contact-code                                     [:modal wallet.components/contact-code]
    :wallet-transaction-details                       wallet-transactions/transaction-details
-   :wallet-settings-hook                             wallet-settings/settings-hook
    :wallet-settings-assets                           wallet-settings/manage-assets
    :wallet-add-custom-token                          custom-tokens/add-custom-token
    :wallet-custom-token-details                      custom-tokens/custom-token-details

@@ -7,25 +7,9 @@
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.screens.wallet.transactions.styles :as styles])
+            [status-im.ui.screens.wallet.transactions.styles :as styles]
+            [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
-
-(defn history-action
-  [all-filters?]
-  (cond-> {:icon      :main-icons/filter
-           :icon-opts {:accessibility-label :filters-button}
-           :handler   #(re-frame/dispatch [:navigate-to :wallet-transactions-filter])}
-
-    (not all-filters?)
-    (assoc-in [:icon-opts :overlay-style] styles/corner-dot)))
-
-(defn- toolbar-view
-  [all-filters?]
-  [toolbar/toolbar nil
-   toolbar/default-nav-back
-   [toolbar/content-title (i18n/label :t/transactions-history)]
-   [toolbar/actions
-    [(history-action all-filters?)]]])
 
 (defn- transaction-icon
   [icon-key background-color color]
@@ -113,17 +97,11 @@
   (letsubs [{:keys [filters all-filters? on-touch-select-all]}
             [:wallet.transactions.filters/screen]]
     [react/view styles/filter-container
-     [toolbar/toolbar {}
-      [toolbar/nav-clear-text
-       {:accessibility-label :done-button}
-       (i18n/label :t/done)]
-      [toolbar/content-title
-       (i18n/label :t/transactions-filter-title)]
-      [toolbar/text-action
-       {:handler             on-touch-select-all
-        :disabled?           all-filters?
-        :accessibility-label :select-all-button}
-       (i18n/label :t/transactions-filter-select-all)]]
+     [topbar/topbar {:title       :t/transactions-filter-title
+                     :navigation  {:label   (i18n/label :t/done)
+                                   :handler #(re-frame/dispatch [:navigate-back])}
+                     :accessories [{:label   :t/transactions-filter-select-all
+                                    :handler on-touch-select-all}]}]
      [react/view
       {:style (merge {:background-color :white} components.styles/flex)}
       [list/section-list {:sections [{:title
@@ -221,6 +199,7 @@
              :as transaction}
             [:wallet.transactions.details/screen hash address]]
     [react/view {:style components.styles/flex}
+     ;;TODO options should be replaced by bottom sheet ,and topbar should be used here
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/transaction-details)]

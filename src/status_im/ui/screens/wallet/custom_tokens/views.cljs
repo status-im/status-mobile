@@ -8,7 +8,8 @@
             [status-im.ui.components.common.common :as components.common]
             [clojure.string :as string]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.list-item.views :as list-item]))
+            [status-im.ui.components.list-item.views :as list-item]
+            [status-im.ui.components.topbar :as topbar]))
 
 (def debounce-timers (atom {}))
 
@@ -24,10 +25,7 @@
   (letsubs [{:keys [contract name symbol balance decimals in-progress? error error-name error-symbol]}
             [:wallet/custom-token-screen]]
     [react/keyboard-avoiding-view {:flex 1 :background-color :white}
-     [toolbar/toolbar nil
-      toolbar/default-nav-back
-      [toolbar/content-title
-       (i18n/label :t/add-custom-token)]]
+     [topbar/topbar {:title :t/add-custom-token}]
      [react/scroll-view {:keyboard-should-persist-taps :handled :style {:flex 1 :margin-top 8 :padding-horizontal 16}}
       [react/view {:style {:flex-direction :row :justify-content :space-between :padding-vertical 10}}
        [react/text (i18n/label :t/contract-address)]
@@ -106,9 +104,7 @@
   (letsubs [{:keys [address name symbol decimals custom?] :as token}
             [:get-screen-params]]
     [react/keyboard-avoiding-view {:flex 1 :background-color :white}
-     [toolbar/toolbar nil
-      toolbar/default-nav-back
-      [toolbar/content-title name]]
+     [topbar/topbar {:title name}]
      [react/scroll-view {:keyboard-should-persist-taps :handled
                          :style {:flex 1 :margin-top 8}}
       [react/view {:padding-horizontal 16}

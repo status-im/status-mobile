@@ -4,7 +4,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.ui.screens.keycard.views :as views]
-            [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -17,16 +16,12 @@
             [status-im.utils.identicon :as identicon]
             [status-im.utils.core :as utils.core]
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
-            [status-im.ui.components.tooltip.views :as tooltip]))
+            [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn intro []
   [react/view styles/container
-   [toolbar/toolbar
-    {:transparent? true
-     :style        {:margin-top 32}}
-    (toolbar/nav-button
-     (actions/back #(re-frame/dispatch [:navigate-back])))
-    nil]
+   [topbar/topbar]
    [react/view {:flex            1
                 :flex-direction  :column
                 :justify-content :space-between
@@ -76,11 +71,7 @@
 
 (defn start []
   [react/view styles/container
-   [toolbar/toolbar
-    {:transparent? true
-     :style        {:margin-top 32}}
-    toolbar/default-nav-back
-    nil]
+   [topbar/topbar]
    [react/view {:flex            1
                 :flex-direction  :column
                 :justify-content :space-between
@@ -119,8 +110,7 @@
             retry-counter [:hardwallet/retry-counter]]
     [react/view styles/container
      [toolbar/toolbar
-      {:transparent? true
-       :style        {:margin-top 32}}
+      {:transparent? true}
       [toolbar/nav-text
        {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
         :style   {:padding-left 21}}
@@ -154,8 +144,7 @@
             ref (atom nil)]
     [react/view styles/container
      [toolbar/toolbar
-      {:transparent? true
-       :style        {:margin-top 32}}
+      {:transparent? true}
       [toolbar/nav-text
        {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
         :style   {:padding-left 21}}
@@ -218,11 +207,7 @@
   (letsubs [address [:hardwallet-multiaccount-wallet-address]
             whisper-public-key [:hardwallet-multiaccount-whisper-public-key]]
     [react/view styles/container
-     [toolbar/toolbar
-      {:transparent? true
-       :style        {:margin-top 32}}
-      nil
-      nil]
+     [topbar/topbar {:navigation :none}]
      [react/view {:flex            1
                   :flex-direction  :column
                   :justify-content :space-between
@@ -277,11 +262,7 @@
 (defview no-key []
   (letsubs [card-state [:hardwallet-card-state]]
     [react/view styles/container
-     [toolbar/toolbar
-      {:transparent? true
-       :style        {:margin-top 32}}
-      nil
-      nil]
+     [topbar/topbar {:navigation :none}]
      [react/view {:flex            1
                   :flex-direction  :column
                   :justify-content :space-between

@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.account-settings.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as topbar]
             [status-im.ui.components.text-input.view :as text-input]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
@@ -12,7 +11,8 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.copyable-text :as copyable-text]
             [reagent.core :as reagent]
-            [status-im.ui.components.list-item.views :as list-item]))
+            [status-im.ui.components.list-item.views :as list-item]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defview colors-popover [selected-color on-press]
   (letsubs [width [:dimensions/window-width]]
@@ -83,14 +83,16 @@
   (letsubs [{:keys [address color path type] :as account} [:multiaccount/current-account]
             new-account (reagent/atom nil)]
     [react/keyboard-avoiding-view {:flex 1}
-     [topbar/toolbar {}
-      topbar/default-nav-back
-      [topbar/content-title (i18n/label :t/account-settings)]
-      (when (and @new-account (not= "" (:name @new-account)))
-        [button/button {:type :secondary :label (i18n/label :t/apply)
-                        :on-press #(do
-                                     (re-frame/dispatch [:wallet.accounts/save-account account @new-account])
-                                     (reset! new-account nil))}])]
+     [topbar/topbar
+      (cond-> {:title :t/account-settings}
+        (and @new-account (not= "" (:name @new-account)))
+        (assoc :accessories [{:label :t/apply
+                              :handler
+                              #(do
+                                 (re-frame/dispatch [:wallet.accounts/save-account
+                                                     account
+                                                     @new-account])
+                                 (reset! new-account nil))}]))]
      [react/scroll-view {:keyboard-should-persist-taps :handled
                          :style                        {:flex 1}}
       [react/view {:padding-bottom 28 :padding-top 10}

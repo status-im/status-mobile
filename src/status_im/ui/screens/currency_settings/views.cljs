@@ -8,7 +8,8 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.currency-settings.styles :as styles]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn render-currency [current-currency-id]
   (fn [{:keys [id code display-name] :as currency}]
@@ -25,8 +26,7 @@
 (views/defview currency-settings []
   (views/letsubs [currency-id [:wallet.settings/currency]]
     [react/view {:flex 1}
-     [toolbar/simple-toolbar
-      (i18n/label :t/main-currency)]
+     [topbar/topbar {:title :t/main-currency}]
      [react/view styles/wrapper
       [list/flat-list {:data      (->> constants/currencies
                                        vals

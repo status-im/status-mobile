@@ -2,15 +2,13 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.utils.config :as config]
             [status-im.ui.components.checkbox.view :as checkbox.views]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.toolbar.actions :as toolbar.actions]
-            [status-im.ui.screens.offline-messaging-settings.styles :as styles]))
+            [status-im.ui.screens.offline-messaging-settings.styles :as styles]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn- mailserver-icon [connected?]
   [react/view (if platform/desktop?
@@ -52,11 +50,10 @@
                   preferred-mailserver-id [:mailserver/preferred-id]
                   mailservers             [:mailserver/fleet-mailservers]]
     [react/view {:flex 1}
-     [toolbar/toolbar {}
-      toolbar/default-nav-back
-      [toolbar/content-title (i18n/label :t/offline-messaging-settings)]
-      [toolbar/actions
-       [(toolbar.actions/add false #(re-frame/dispatch [:mailserver.ui/add-pressed]))]]]
+     [topbar/topbar
+      {:title       :t/offline-messaging-settings
+       :accessories [{:icon    :main-icons/add
+                      :handler #(re-frame/dispatch [:mailserver.ui/add-pressed])}]}]
      [react/view styles/wrapper
       [pinned-state preferred-mailserver-id]
       [list/flat-list {:data               (vals mailservers)

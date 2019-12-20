@@ -11,7 +11,8 @@
    [status-im.ui.components.text-input.view :as text-input]
    [status-im.network.core :as network]
    [status-im.network.ui.edit-network.styles :as styles]
-   [clojure.string :as string]))
+   [clojure.string :as string]
+   [status-im.ui.components.topbar :as topbar]))
 
 (defn- render-network-type [manage-network type]
   (let [name (case type
@@ -31,7 +32,7 @@
     (let [custom? (= (get-in manage-network [:chain :value]) :custom)]
       [react/view styles/container
        [react/keyboard-avoiding-view components.styles/flex
-        [toolbar/simple-toolbar (i18n/label :t/add-network)]
+        [topbar/topbar {:title :t/add-network}]
         [react/scroll-view
          [react/view styles/edit-network-view
           [text-input/text-input-with-label

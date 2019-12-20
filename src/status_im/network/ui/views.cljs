@@ -7,8 +7,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.toolbar.actions :as toolbar.actions]
-            [status-im.ui.components.toolbar.view :as toolbar])
+            [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- network-icon [connected? size]
@@ -45,11 +44,9 @@
   (views/letsubs [current-network [:networks/current-network]
                   networks        [:get-networks]]
     [react/view components.styles/flex
-     [toolbar/toolbar {}
-      toolbar/default-nav-back
-      [toolbar/content-title (i18n/label :t/network-settings)]
-      [toolbar/actions
-       [(toolbar.actions/add false #(re-frame/dispatch [::network/add-network-pressed]))]]]
+     [topbar/topbar {:title       :t/network-settings
+                     :accessories [{:icon    :main-icons/add
+                                    :handler #(re-frame/dispatch [::network/add-network-pressed])}]}]
      [react/view styles/wrapper
       [list/section-list {:sections           [{:title (i18n/label :t/main-networks)
                                                 :key :mainnet

@@ -13,9 +13,9 @@
             [status-im.ui.components.checkbox.view :as checkbox.views]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.text-input.view :as text-input]
-            [status-im.ui.screens.pairing.styles :as styles]))
+            [status-im.ui.screens.pairing.styles :as styles]
+            [status-im.ui.components.topbar :as topbar]))
 
 (def syncing (reagent/atom false))
 (def installation-name (reagent/atom ""))
@@ -186,9 +186,7 @@
 (views/defview installations []
   (views/letsubs [installations [:pairing/installations]]
     [react/view {:flex 1}
-     [toolbar/toolbar {}
-      toolbar/default-nav-back
-      [toolbar/content-title (i18n/label :t/devices)]]
+     [topbar/topbar {:title :t/devices}]
      [react/scroll-view {:style {:background-color :white}}
       (if (string/blank? (-> installations first :name))
         [edit-installation-name]

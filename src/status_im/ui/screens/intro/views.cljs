@@ -14,16 +14,15 @@
             [status-im.utils.gfycat.core :as gfy]
             [status-im.ui.components.colors :as colors]
             [reagent.core :as r]
-            [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.screens.intro.styles :as styles]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.i18n :as i18n]
             [status-im.constants :as constants]
             [status-im.utils.config :as config]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn dots-selector [{:keys [on-press n selected color]}]
   [react/view {:style (styles/dot-selector n)}
@@ -453,12 +452,11 @@
 (defview wizard-generate-key []
   (letsubs [wizard-state [:intro-wizard/generate-key]]
     [react/view {:style {:flex 1}}
-     [toolbar/toolbar
-      {:style {:border-bottom-width 0
-               :margin-top 16}}
-      (toolbar/nav-button
-       (actions/back #(re-frame/dispatch [:intro-wizard/navigate-back])))
-      nil]
+     [topbar/topbar
+      {:navigation
+       {:icon    :main-icons/back
+        :accessibility-label :back-button
+        :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
      [react/view {:style {:flex 1
                           :justify-content :space-between}}
       [top-bar {:step :generate-key}]
@@ -470,14 +468,10 @@
 (defview wizard-choose-key []
   (letsubs [wizard-state [:intro-wizard/choose-key]]
     [react/view {:style {:flex 1}}
-     [toolbar/toolbar
-      {:style {:border-bottom-width 0
-               :margin-left 16
-               :margin-top 16}}
-      (toolbar/nav-text
-       {:handler #(re-frame/dispatch [:intro-wizard/navigate-back])}
-       (i18n/label :t/cancel))
-      nil]
+     [topbar/topbar
+      {:navigation
+       {:label    :t/cancel
+        :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
      [react/view {:style {:flex 1
                           :justify-content :space-between}}
       [top-bar {:step :choose-key}]
@@ -488,18 +482,15 @@
 (defview wizard-select-key-storage []
   (letsubs [wizard-state [:intro-wizard/select-key-storage]]
     [react/view {:style {:flex 1}}
-     [toolbar/toolbar
-      {:style (merge {:border-bottom-width 0
-                      :margin-top 16}
-                     (when (:recovering? wizard-state)
-                       {:margin-left 16}))}
-      (if (:recovering? wizard-state)
-        (toolbar/nav-text
-         {:handler #(re-frame/dispatch [:intro-wizard/navigate-back])}
-         (i18n/label :t/cancel))
-        (toolbar/nav-button
-         (actions/back #(re-frame/dispatch [:intro-wizard/navigate-back]))))
-      nil]
+     [topbar/topbar
+      {:navigation
+       (if (:recovering? wizard-state)
+         {:label   :t/cancel
+          :accessibility-label :back-button
+          :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}
+         {:icon    :main-icons/back
+          :accessibility-label :back-button
+          :handler #(re-frame/dispatch [:intro-wizard/navigate-back])})}]
      [react/view {:style {:flex 1
                           :justify-content :space-between}}
       [top-bar {:step :select-key-storage}]
@@ -510,12 +501,11 @@
 (defview wizard-create-code []
   (letsubs [wizard-state [:intro-wizard/create-code]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
-     [toolbar/toolbar
-      {:style {:border-bottom-width 0
-               :margin-top 16}}
-      (toolbar/nav-button
-       (actions/back #(re-frame/dispatch [:intro-wizard/navigate-back])))
-      nil]
+     [topbar/topbar
+      {:navigation
+       {:icon    :main-icons/back
+        :accessibility-label :back-button
+        :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
      [react/view {:style {:flex 1
                           :justify-content :space-between}}
       [top-bar {:step :create-code :encrypt-with-password? (:encrypt-with-password? wizard-state)}]
@@ -527,13 +517,12 @@
 (defview wizard-confirm-code []
   (letsubs [wizard-state [:intro-wizard/confirm-code]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
-     [toolbar/toolbar
-      {:style {:border-bottom-width 0
-               :margin-top 16}}
+     [topbar/topbar
       (when-not (:processing? wizard-state)
-        (toolbar/nav-button
-         (actions/back #(re-frame/dispatch [:intro-wizard/navigate-back]))))
-      nil]
+        {:navigation
+         {:icon    :main-icons/back
+          :accessibility-label :back-button
+          :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}})]
      [react/view {:style {:flex 1
                           :justify-content :space-between}}
       [top-bar {:step :confirm-code :encrypt-with-password? (:encrypt-with-password? wizard-state)}]
@@ -545,10 +534,11 @@
 (defview wizard-enter-phrase []
   (letsubs [wizard-state [:intro-wizard/enter-phrase]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
-     [toolbar/toolbar {:style {:border-bottom-width 0}}
-      (toolbar/nav-button
-       (actions/back #(re-frame/dispatch [:intro-wizard/navigate-back])))
-      nil]
+     [topbar/topbar
+      {:navigation
+       {:icon    :main-icons/back
+        :accessibility-label :back-button
+        :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
      [react/view {:style {:flex            1
                           :justify-content :space-between}}
       [top-bar {:step :enter-phrase}]
@@ -561,12 +551,11 @@
   (letsubs [{:keys [pubkey processing? name photo-path]} [:intro-wizard/recovery-success]
             existing-account? [:intro-wizard/recover-existing-account?]]
     [react/view {:style {:flex 1}}
-     [toolbar/toolbar
-      {:style {:border-bottom-width 0
-               :margin-top 16}}
-      (toolbar/nav-button
-       (actions/back #(re-frame/dispatch [:intro-wizard/navigate-back])))
-      nil]
+     [topbar/topbar
+      {:navigation
+       {:icon    :main-icons/back
+        :accessibility-label :back-button
+        :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
      [react/view {:style {:flex 1
                           :justify-content :space-between}}
       [top-bar {:step :recovery-success}]

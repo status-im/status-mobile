@@ -5,7 +5,8 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]))
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn- list-data [mailserver-id use-mobile-data?]
   (let [mobile-data-usage-state (if use-mobile-data?
@@ -51,8 +52,7 @@
   (views/letsubs [{:keys [syncing-on-mobile-network?]} [:multiaccount]
                   mailserver-id                        [:mailserver/current-id]]
     [react/view {:flex 1 :background-color colors/white}
-     [toolbar/simple-toolbar
-      (i18n/label :t/sync-settings)]
+     [topbar/topbar {:title :t/sync-settings}]
      [list/flat-list
       {:data      (list-data mailserver-id syncing-on-mobile-network?)
        :key-fn    (fn [_ i] (str i))

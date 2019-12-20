@@ -5,11 +5,10 @@
             [status-im.ui.screens.hardwallet.connect.styles :as styles]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.styles :as components.styles]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.toolbar.actions :as toolbar.actions]))
+            [status-im.ui.components.toolbar.actions :as toolbar.actions]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defview nfc-enabled []
   (letsubs [card-read-in-progress? [:hardwallet/card-read-in-progress?]]
@@ -46,11 +45,11 @@
      [react/view {:flex            1
                   :flex-direction  :column
                   :justify-content :space-between}
-      [toolbar/toolbar {}
-       [toolbar/nav-button (assoc toolbar.actions/default-back
-                                  :handler
-                                  #(re-frame/dispatch [:hardwallet.ui/hardwallet-connect-navigate-back-button-clicked]))]
-       nil]
+      [topbar/topbar
+       {:navigation
+        {:icon    :main-icons/back
+         :accessibility-label :back-button
+         :handler #(re-frame/dispatch [:hardwallet.ui/hardwallet-connect-navigate-back-button-clicked])}}]
       [react/view styles/hardwallet-connect
        (if nfc-enabled?
          [nfc-enabled]

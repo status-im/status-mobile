@@ -5,10 +5,10 @@
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
             status-im.ui.screens.mobile-network-settings.events
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.utils.platform :as platform]
-            [status-im.ui.screens.mobile-network-settings.sheets :as sheets]))
+            [status-im.ui.screens.mobile-network-settings.sheets :as sheets]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn settings-separator []
   [react/view
@@ -20,7 +20,7 @@
              remember-syncing-choice?]}
      [:multiaccount]]
     [react/view {:style styles/container}
-     [toolbar/simple-toolbar (i18n/label :t/mobile-network-settings)]
+     [topbar/topbar {:title :t/mobile-network-settings}]
      (when platform/ios?
        [settings-separator])
      [react/view {:style styles/switch-container}

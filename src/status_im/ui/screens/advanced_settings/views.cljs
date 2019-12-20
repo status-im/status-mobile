@@ -1,11 +1,10 @@
 (ns status-im.ui.screens.advanced-settings.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]))
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn- normal-mode-settings-data [network-name current-log-level
                                   current-fleet dev-mode?]
@@ -93,8 +92,7 @@
                   current-log-level        [:settings/current-log-level]
                   current-fleet            [:settings/current-fleet]]
     [react/view {:flex 1 :background-color colors/white}
-     [toolbar/simple-toolbar
-      (i18n/label :t/advanced)]
+     [topbar/topbar {:title :t/advanced}]
      [list/flat-list
       {:data      (flat-list-data
                    network-name current-log-level

@@ -12,7 +12,8 @@
             [status-im.utils.platform :as platform]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.multiaccounts.core :as multiaccounts]))
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn- render-row [row _ _]
   [list-item/list-item {:title       (multiaccounts/displayed-name row)
@@ -25,7 +26,7 @@
                   new-identity  [:contacts/new-identity]
                   error-message [:new-identity-error]]
     [react/view {:style {:flex 1}}
-     [toolbar.view/simple-toolbar (i18n/label :t/new-chat) true]
+     [topbar/topbar {:title :t/new-chat :modal? true}]
      [react/view add-new.styles/new-chat-container
       [react/view add-new.styles/new-chat-input-container
        [react/text-input {:on-change-text      #(re-frame/dispatch [:new-chat/set-new-identity %])

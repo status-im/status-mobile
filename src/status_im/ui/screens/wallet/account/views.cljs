@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.account.views
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.ui.screens.wallet.accounts.views :as accounts]
@@ -16,21 +15,19 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.utils.money :as money]
-            [status-im.wallet.utils :as wallet.utils]))
+            [status-im.wallet.utils :as wallet.utils]
+            [status-im.ui.components.topbar :as topbar]))
 
 (def state (reagent/atom {:tab :assets}))
 
 (defn toolbar-view [title]
-  [react/view
-   [toolbar/toolbar {:transparent? true}
-    toolbar/default-nav-back
-    [toolbar/content-title title]
-    [toolbar/actions
-     [{:icon      :main-icons/more
-       :icon-opts {:color :black}
-       :handler   #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                       {:content        sheets/account-settings
-                                        :content-height 60}])}]]]])
+  [topbar/topbar
+   {:title title
+    :accessories
+    [{:icon    :main-icons/more
+      :handler #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                    {:content        sheets/account-settings
+                                     :content-height 60}])}]}])
 
 (defn button [label icon handler]
   [react/touchable-highlight {:on-press handler :style {:flex 1}}

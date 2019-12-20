@@ -3,12 +3,12 @@
             [reagent.core :as reagent]
             [status-im.ui.components.camera :as camera]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.profile.photo-capture.styles :as styles]
             [status-im.utils.image-processing :as image-processing]
             [taoensso.timbre :as log]
-            [status-im.ui.components.icons.vector-icons :as icons]))
+            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn image-captured [data]
   (let [path       (.-uri data)
@@ -24,9 +24,7 @@
 (defn profile-photo-capture []
   (let [camera-ref (reagent/atom nil)]
     [react/view styles/container
-     [toolbar/toolbar {}
-      toolbar/default-nav-back
-      [toolbar/content-title (i18n/label :t/image-source-title)]]
+     [topbar/topbar {:title :t/image-source-title}]
      [camera/camera {:style         {:flex 1}
                      ;:aspect        (:fill camera/aspects)
                      :captureQuality "480p"

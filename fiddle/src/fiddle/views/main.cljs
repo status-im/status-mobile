@@ -9,6 +9,7 @@
             [fiddle.views.list-items :as list-items]
             [fiddle.views.ui :as ui]
             [fiddle.views.toolbar :as toolbar]
+            [fiddle.views.topbar :as topbar]
             [re-frame.core :as re-frame]))
 
 (defn btn [id label view-id]
@@ -44,7 +45,8 @@
        :screens [screens/screens]
        :typography [typography/typography]
        :list-items [list-items/list-items]
-       :toolbar [toolbar/toolbar]
+       :toolbar [toolbar/toolbar-view]
+       :top-bar [topbar/topbar-view]
        :list-header [list-items/list-header]
        :ui [ui/ui]
        [react/text "TODO"])]))

@@ -15,16 +15,17 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.utils.utils :as utils]
-            [status-im.ui.components.icons.vector-icons :as icons])
+            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn login-toolbar [can-navigate-back?]
-  [toolbar/toolbar
-   {:style {:border-bottom-width 0
-            :margin-top          0}}
-   (when can-navigate-back?
-     [toolbar/nav-button (act/back #(re-frame/dispatch [:navigate-reset :multiaccounts]))])
-   nil])
+  [topbar/topbar
+   {:navigation (if can-navigate-back?
+                  {:icon                :main-icons/back
+                   :accessibility-label :back-button
+                   :handler             #(re-frame/dispatch [:navigate-reset :multiaccounts])}
+                  :none)}])
 
 (defn login-multiaccount [password-text-input]
   (.blur password-text-input)

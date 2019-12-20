@@ -23,7 +23,8 @@
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.utils.debounce :as debounce])
+            [status-im.utils.debounce :as debounce]
+            [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- button
@@ -90,9 +91,7 @@
     {:color colors/white}]])
 
 (defn- toolbar []
-  [toolbar/toolbar nil
-   [toolbar/nav-button (actions/back #(re-frame/dispatch [:navigate-back]))]
-   [toolbar/content-title (i18n/label :t/ens-your-username)]])
+  [topbar/topbar {:title :t/ens-your-username}])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; SEARCH SCREEN
@@ -441,8 +440,7 @@
 (views/defview terms []
   (views/letsubs [{:keys [contract]} [:get-screen-params :ens-terms]]
     [react/scroll-view {:style {:flex 1}}
-     [toolbar/simple-toolbar
-      (i18n/label :t/ens-terms-registration)]
+     [topbar/topbar {:title :t/ens-terms-registration}]
      [react/view {:style {:height 136 :background-color colors/gray-lighter :justify-content :center :align-items :center}}
       [react/text {:style {:text-align :center :typography :header :letter-spacing -0.275}}
        (i18n/label :t/ens-terms-header)]]
@@ -483,8 +481,7 @@
   (views/letsubs [{:keys [name address custom-domain? public-key pending?]}
                   [:ens.name/screen]]
     [react/view {:style {:flex 1}}
-     [toolbar/simple-toolbar
-      name]
+     [topbar/topbar {:title name}]
      [react/scroll-view {:style {:flex 1}}
       (when-not custom-domain?
         [react/view {:style {:flex 1 :margin-horizontal 16}}
@@ -661,8 +658,7 @@
 (views/defview main []
   (views/letsubs [{:keys [names multiaccount show?]} [:ens.main/screen]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
-     [toolbar/simple-toolbar
-      (i18n/label :t/ens-usernames)]
+     [topbar/topbar {:title :t/ens-usernames}]
      (if (seq names)
        [registered names multiaccount show?]
        [welcome])]))

@@ -12,7 +12,8 @@
             status-im.utils.db
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
-            [status-im.i18n-resources :as i18n-resources])
+            [status-im.i18n-resources :as i18n-resources]
+            [status-im.ui.components.topbar :as topbar])
   (:require-macros
    [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :as views]))
@@ -73,9 +74,7 @@
   (views/letsubs [topic [:public-group-topic]
                   error [:public-chat.new/topic-error-message]]
     [react/view {:style styles/group-container}
-     [toolbar/simple-toolbar
-      (i18n/label :t/new-public-group-chat)
-      true]
+     [topbar/topbar {:title :t/new-public-group-chat :modal? true}]
      [react/scroll-view {:style {:flex 1}}
       [react/view {:padding-horizontal 16}
        [react/view {:align-items :center :padding-vertical 12}

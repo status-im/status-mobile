@@ -9,7 +9,8 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.stickers.styles :as styles]
             [status-im.utils.contenthash :as contenthash]
-            [status-im.utils.money :as money])
+            [status-im.utils.money :as money]
+            [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- thumbnail-icon [uri size]
@@ -61,7 +62,7 @@
   (letsubs [packs [:stickers/all-packs]]
     [react/view styles/screen
      [react/keyboard-avoiding-view components.styles/flex
-      [toolbar/simple-toolbar (i18n/label :t/sticker-market)]
+      [topbar/topbar {:title :t/sticker-market}]
       (if (seq packs)
         [react/scroll-view {:keyboard-should-persist-taps :handled :style {:padding 16}}
          [react/view
@@ -79,7 +80,7 @@
              :as pack}
             [:stickers/get-current-pack]]
     [react/keyboard-avoiding-view components.styles/flex
-     [toolbar/simple-toolbar nil modal?]
+     [topbar/topbar {:modal? modal?}]
      (if pack
        [react/view {:flex 1}
         [react/view {:height 74 :align-items :center :flex-direction :row :padding-horizontal 16}

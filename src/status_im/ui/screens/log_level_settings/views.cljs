@@ -1,12 +1,11 @@
 (ns status-im.ui.screens.log-level-settings.views
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.log-level-settings.styles :as styles]
-            [status-im.utils.platform :as platform])
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- log-level-icon [current?]
@@ -49,9 +48,7 @@
 (views/defview log-level-settings []
   (views/letsubs [current-log-level [:settings/current-log-level]]
     [react/view {:flex 1}
-     [toolbar/toolbar {}
-      toolbar/default-nav-back
-      [toolbar/content-title (i18n/label :t/log-level-settings)]]
+     [topbar/topbar {:title :t/log-level-settings}]
      [react/view styles/wrapper
       [list/flat-list {:data               log-levels
                        :default-separator? false

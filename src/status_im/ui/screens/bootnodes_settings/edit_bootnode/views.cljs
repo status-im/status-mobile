@@ -14,7 +14,8 @@
    [status-im.ui.screens.bootnodes-settings.edit-bootnode.styles :as styles]
    [status-im.utils.platform :as platform]
    [status-im.ui.components.tooltip.views :as tooltip]
-   [clojure.string :as string]))
+   [clojure.string :as string]
+   [status-im.ui.components.topbar :as topbar]))
 
 (defn delete-button [id]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:bootnodes.ui/delete-pressed id])}
@@ -42,7 +43,7 @@
           invalid-url? (contains? validation-errors :url)]
       [react/view styles/container
        [react/keyboard-avoiding-view components.styles/flex
-        [toolbar/simple-toolbar (i18n/label (if id :t/bootnode-details :t/add-bootnode))]
+        [topbar/topbar {:title (if id :t/bootnode-details :t/add-bootnode)}]
         [react/scroll-view {:keyboard-should-persist-taps :handled}
          [react/view styles/edit-bootnode-view
           [text-input/text-input-with-label

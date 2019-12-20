@@ -3,11 +3,11 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.common :as components.common]))
+            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn- action-row [{:keys [icon label on-press color-theme]}]
   [react/touchable-highlight
@@ -51,8 +51,7 @@
 (defview reset-card []
   (letsubs [disabled? [:keycard-reset-card-disabled?]]
     [react/view {:flex 1}
-     [toolbar/simple-toolbar
-      (i18n/label :t/reset-card)]
+     [topbar/topbar {:title :t/reset-card}]
      [react/view {:flex             1
                   :background-color :white}
       [react/view {:margin-top  71
@@ -89,8 +88,7 @@
             puk-retry-counter [:hardwallet/puk-retry-counter]
             pairing [:keycard-multiaccount-pairing]]
     [react/view {:flex 1}
-     [toolbar/simple-toolbar
-      (i18n/label :t/status-keycard)]
+     [topbar/topbar {:title :t/status-keycard}]
      [react/view {:flex             1
                   :background-color :white}
       [react/view {:margin-top  47

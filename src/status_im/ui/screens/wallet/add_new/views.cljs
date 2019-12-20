@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.add-new.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as topbar]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.ui.components.colors :as colors]
@@ -11,11 +10,12 @@
             [status-im.multiaccounts.db :as multiaccounts.db]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ethereum.core :as ethereum]))
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn add-account []
   [react/view {:flex 1}
-   [topbar/simple-toolbar]
+   [topbar/topbar]
    [react/scroll-view {:keyboard-should-persist-taps :handled
                        :style                        {:flex 1}}
     [react/view {:align-items :center :padding-horizontal 40 :margin-bottom 52}
@@ -63,7 +63,7 @@
 (defview add-watch-account []
   (letsubs [{:keys [address]} [:add-account]]
     [react/keyboard-avoiding-view {:flex 1}
-     [topbar/simple-toolbar]
+     [topbar/topbar]
      [react/view {:flex            1
                   :justify-content :space-between
                   :align-items     :center :margin-horizontal 16}
@@ -89,7 +89,7 @@
   (letsubs [{:keys [error]} [:add-account]
             entered-password (reagent/atom "")]
     [react/keyboard-avoiding-view {:style {:flex 1}}
-     [topbar/simple-toolbar]
+     [topbar/topbar]
      [react/view {:flex            1
                   :justify-content :space-between
                   :align-items     :center :margin-horizontal 16}
