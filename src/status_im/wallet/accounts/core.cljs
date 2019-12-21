@@ -102,12 +102,15 @@
   {:events [:wallet.accounts/delete-account]}
   [{:keys [db] :as cofx} account]
   (let [accounts (:multiaccount/accounts db)
-        new-accounts (vec (remove #(= account %) accounts))]
+        new-accounts (vec (remove #(= account %) accounts))
+        deleted-address (get-in account [:address])]
     (fx/merge cofx
               {::json-rpc/call [{:method     "accounts_deleteAccount"
                                  :params     [(:address account)]
                                  :on-success #()}]
-               :db (assoc db :multiaccount/accounts new-accounts)}
+               :db (-> db
+                       (assoc :multiaccount/accounts new-accounts)
+                       (assoc-in [:wallet :accounts deleted-address] nil))}
               (navigation/navigate-to-cofx :wallet nil))))
 
 (fx/defn save-generated-account
