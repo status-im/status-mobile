@@ -82,13 +82,13 @@ class CreateMultiaccountButton(BaseButton):
 class GenerateKeyButton(BaseButton):
     def __init__(self, driver):
         super(GenerateKeyButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Generate a key']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Generate keys']")
 
 
 class GenerateNewKeyButton(BaseButton):
     def __init__(self, driver):
         super(GenerateNewKeyButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Generate a new key']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Generate keys']")
 
 
 class IHaveMultiaccountButton(RecoverAccessButton):
@@ -100,7 +100,7 @@ class IHaveMultiaccountButton(RecoverAccessButton):
 class AccessKeyButton(RecoverAccessButton):
     def __init__(self, driver):
         super(AccessKeyButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Access key']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Access existing keys']")
 
 
 class MaybeLaterButton(BaseButton):

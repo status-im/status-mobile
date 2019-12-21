@@ -20,7 +20,7 @@ class ReencryptYourKeyButton(BaseButton):
 
     def __init__(self, driver):
         super(ReencryptYourKeyButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Re-encrypt your key']")
+        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Re-encrypt your keys']")
 
 
 class ConfirmRecoverAccess(BaseButton):

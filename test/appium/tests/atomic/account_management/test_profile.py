@@ -889,7 +889,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         dapp_view_1 = profile_1.ens_usernames_button.click()
         dapp_view_1.element_by_text('Get started').click()
         dapp_view_1.ens_name.set_value(ens_user['ens'])
-        expected_text = 'This user name is owned by you and connected with your Chat key.'
+        expected_text = 'This user name is owned by you and connected with your chat key.'
         if not dapp_view_1.wait_for_element_starts_with_text(expected_text):
             sign_in_1.driver.fail("No %s is shown" % expected_text)
         dapp_view_1.check_ens_name.click_until_presence_of_element(dapp_view_1.element_by_text('Ok, got it'))

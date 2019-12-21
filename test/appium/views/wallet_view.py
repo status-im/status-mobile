@@ -291,7 +291,7 @@ class DeleteAccountButton(BaseButton):
 class GenerateNewAccountButton(BaseButton):
     def __init__(self, driver):
         super(GenerateNewAccountButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Generate a new key')
+        self.locator = self.Locator.text_selector('Generate keys')
 
 
 class EnterYourPasswordInput(BaseEditBox):
@@ -304,7 +304,7 @@ class EnterYourPasswordInput(BaseEditBox):
 class GenerateAccountButton(BaseButton):
     def __init__(self, driver):
         super(GenerateAccountButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Generate key')
+        self.locator = self.Locator.text_selector('Generate keys')
 
 
 class AccountNameInput(BaseEditBox):

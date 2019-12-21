@@ -381,7 +381,7 @@ class BaseView(object):
 
     def dismiss_alert(self):
         self.driver.info("Dismiss alert")
-        self.driver.switch_to.alert().dismiss()
+        self.driver.switch_to.alert.dismiss()
 
     @property
     def logcat(self):
