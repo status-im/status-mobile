@@ -242,6 +242,13 @@ class CrossIcon(BaseButton):
         super(CrossIcon, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[1]')
 
+
+class NativeCloseButton(BaseButton):
+    def __init__(self, driver):
+        super(NativeCloseButton, self).__init__(driver)
+        self.locator = self.Locator.id('android:id/aerr_close')
+
+
 class CrossIconInWelcomeScreen(BaseButton):
     def __init__(self, driver):
         super(CrossIconInWelcomeScreen, self).__init__(driver)
@@ -338,6 +345,7 @@ class BaseView(object):
         self.confirm_button = ConfirmButton(self.driver)
         self.connection_status = ConnectionStatusText(self.driver)
         self.cross_icon = CrossIcon(self.driver)
+        self.native_close_button = NativeCloseButton(self.driver)
         self.show_roots_button = ShowRoots(self.driver)
         self.get_started_button = GetStartedButton(self.driver)
         self.ok_got_it_button = OkGotItButton(self.driver)
@@ -376,12 +384,13 @@ class BaseView(object):
     def close_native_device_dialog(self, alert_text_part):
         element = self.element_by_text_part(alert_text_part)
         if element.is_element_present(1):
-            self.driver.info("Dismissing %s alert" % alert_text_part)
+            self.driver.info("Closing '%s' alert..." % alert_text_part)
             self.dismiss_alert()
 
     def dismiss_alert(self):
-        self.driver.info("Dismiss alert")
-        self.driver.switch_to.alert.dismiss()
+        self.native_close_button.click()
+        self.driver.info("Alert closed")
+
 
     @property
     def logcat(self):
