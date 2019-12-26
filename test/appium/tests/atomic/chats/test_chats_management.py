@@ -250,11 +250,13 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5332)
     @marks.critical
-    def test_add_contact_from_public_chat(self):
+    def test_add_and_remove_contact_from_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()
         chat_name = 'testaddcontact'
+
+        device_1.just_fyi('join same public chat')
         chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
         message = 'test message' + str(round(time.time()))
 
@@ -262,6 +264,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_2.send_message_button.click()
         chat_2.driver.quit()
 
+        device_1.just_fyi('tap on userpic and check redirect to user profile')
         chat_element = chat_1.chat_element_by_text(message)
         chat_element.find_element()
         username = chat_element.username.text
@@ -275,15 +278,47 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
                         chat_1.profile_address_text]:
             if not element.scroll_to_element():
                 self.errors.append('%s is not visible' % element.name)
+
+        device_1.just_fyi('add user to contacts, check contact list in Profile and below "Start new chat"')
         chat_1.add_to_contacts.click()
         if not chat_1.remove_from_contacts.is_element_displayed():
             self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
+        profile_1 = chat_1.profile_button.click()
+        userprofile = profile_1.open_contact_from_profile(username)
+        if not userprofile.remove_from_contacts.is_element_displayed():
+            self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
 
+        profile_1.home_button.click()
         chat_1.get_back_to_home_view()
         home_1.plus_button.click()
-        contacts_1 = home_1.start_new_chat_button.click()
-        if not contacts_1.element_by_text(username).is_element_displayed():
-            self.errors.append("List of contacts doesn't contain added user")
+        home_1.start_new_chat_button.click()
+        if not home_1.element_by_text(username).is_element_displayed():
+            home_1.driver.fail('List of contacts below "Start new chat" does not contain added user')
+        home_1.element_by_text(username).click()
+        if not chat_1.chat_message_input.is_element_displayed():
+            home_1.driver.fail('No redirect to 1-1 chat if tap on Contact below "Start new chat"')
+        if chat_1.add_to_contacts.is_element_displayed():
+            self.errors.append('"Add to contacts" button is shown in 1-1 after adding user to contacts from profile')
+
+        device_1.just_fyi('remove user from contacts')
+        chat_1.profile_button.click()
+        profile_1.element_by_text(username).click()
+        userprofile.remove_from_contacts.click()
+        if userprofile.remove_from_contacts.is_element_displayed():
+            self.errors.append("'Remove from contacts' is not changed to 'Add to contacts'")
+        userprofile.back_button.click()
+        # TODO: next line is added temporary to avoid navigation issue #7437 - should be deleted after fix
+        home_1.profile_button.click()
+        if profile_1.element_by_text(username).is_element_displayed():
+            profile_1.driver.fail('List of contacts in profile contains removed user')
+        profile_1.home_button.click()
+        if not chat_1.add_to_contacts.is_element_displayed():
+            self.errors.append('"Add to contacts" button is not shown in 1-1 after removing user from contacts')
+        home_1.get_back_to_home_view()
+        home_1.plus_button.click()
+        home_1.start_new_chat_button.click()
+        if home_1.element_by_text(username).is_element_displayed():
+            home_1.driver.fail('List of contacts below "Start new chat" contains removed user')
 
         self.errors.verify_no_errors()
 

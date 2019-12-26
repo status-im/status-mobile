@@ -76,7 +76,8 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.lets_go_button.click()
         home_view = sign_in.get_home_view()
         texts = ['Chat and transact privately with your friends.',
-                 'Follow your interests in one of the many public chats.']
+                 'Follow your interests in one of the many public chats.',
+                 '#status']
         for text in texts:
             if not home_view.element_by_text(text).is_element_displayed():
                 self.errors.append("'%s' text is not shown" % text)

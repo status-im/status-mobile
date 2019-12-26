@@ -29,6 +29,19 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         home_1.add_contact(public_key_2)
         home_1.get_back_to_home_view()
 
+        home_1.plus_button.click_until_presence_of_element(home_1.join_public_chat_button)
+        home_1.start_new_chat_button.click()
+        preselected_chats = ['#status', '#introductions', '#chitchat', '#crypto', '#tech', '#music', '#movies', '#support']
+        for chat in preselected_chats:
+            if not home_1.element_by_text(chat).is_element_displayed():
+                self.errors.append("'%s' text is not in the list of preselected chats" % chat)
+        home_1.element_by_text('#status').click()
+        status_chat = home_1.get_chat_view()
+        if not status_chat.chat_message_input.is_element_displayed():
+            self.errors.append('No redirect to chat if tap on #status chat')
+        status_chat.get_back_to_home_view()
+
+
         public_chat_name = home_1.get_public_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(public_chat_name), home_2.join_public_chat(public_chat_name)
 
@@ -37,13 +50,8 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_1.send_message_button.click()
 
         # chat_2.verify_message_is_under_today_text(message, self.errors)
-        # TODO: should be replaced with ens name after https://github.com/status-im/status-react/pull/8487
-        # full_username = '%s • %s' % (username_1, default_username_1)
         if chat_2.chat_element_by_text(message).username.text != default_username_1:
             self.errors.append("Default username '%s' is not shown next to the received message" % default_username_1)
-
-        # if chat_1.element_by_text_part(username_1).is_element_displayed():
-        #     self.errors.append("Username '%s' is shown for the sender" % username_1)
 
         self.errors.verify_no_errors()
 

@@ -643,6 +643,12 @@ class ProfileView(BaseView):
         signin_view = SignInView(self.driver)
         signin_view.sign_in()
 
+    def open_contact_from_profile(self, username):
+        self.contacts_button.click()
+        self.element_by_text(username).click()
+        from views.chat_view import ChatView
+        return ChatView(self.driver)
+
     def switch_development_mode(self):
         self.advanced_button.click()
         self.debug_mode_toggle.click()
