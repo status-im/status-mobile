@@ -20,6 +20,13 @@ class TinyReplyIconInMessageInput(BaseElement):
         self.locator = self.Locator.accessibility_id('tiny-reply-icon')
 
 
+class QuoteUsernameInMessageInput(BaseText):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.xpath_selector("//android.view.ViewGroup[@content-desc='tiny-reply-icon']/"
+                                                   "../android.widget.TextView[1]")
+
+
 class CancelReplyButton(BaseEditBox):
     def __init__(self, driver):
         super(CancelReplyButton, self).__init__(driver)
@@ -349,14 +356,25 @@ class ChatElementByText(BaseText):
 
     @property
     def replied_message_text(self):
-        class RepliedMessageText(BaseButton):
+        class RepliedMessageText(BaseText):
             def __init__(self, driver, parent_locator):
                 super(RepliedMessageText, self).__init__(driver)
                 self.locator = self.Locator.xpath_selector(
                     parent_locator + "/preceding-sibling::*[1]/android.widget.TextView[2]")
-
         try:
             return RepliedMessageText(self.driver, self.message_locator).text
+        except NoSuchElementException:
+            return ''
+
+    @property
+    def replied_to_username_text(self):
+        class RepliedToUsernameText(BaseText):
+            def __init__(self, driver, parent_locator):
+                super(RepliedToUsernameText, self).__init__(driver)
+                self.locator = self.Locator.xpath_selector(
+                    parent_locator + "/preceding-sibling::*[1]/android.widget.TextView[1]")
+        try:
+            return RepliedToUsernameText(self.driver, self.message_locator).text
         except NoSuchElementException:
             return ''
 
@@ -400,6 +418,7 @@ class ChatView(BaseView):
 
         self.chat_message_input = ChatMessageInput(self.driver)
         self.tiny_reply_icon_in_message_input = TinyReplyIconInMessageInput(self.driver)
+        self.quote_username_in_message_input = QuoteUsernameInMessageInput(self.driver)
         self.cancel_reply_button = CancelReplyButton(self.driver)
         self.add_to_contacts = AddToContacts(self.driver)
         self.remove_from_contacts = RemoveFromContactsButton(self.driver)

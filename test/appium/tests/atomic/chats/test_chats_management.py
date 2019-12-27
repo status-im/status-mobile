@@ -464,3 +464,56 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
                 % device_2.driver.number)
 
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(6233)
+    @marks.medium
+    def test_reply_to_message_in_chats(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        message_from_sender = "Message sender"
+        message_from_receiver = "Message receiver"
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+
+        device_1.just_fyi('Both devices join to 1-1 chat')
+        device_2_public_key = home_2.get_public_key()
+        device_1_profile = home_1.profile_button.click()
+        device_1_username = device_1_profile.default_username_text.text
+        home_1.home_button.click()
+
+        device_1.just_fyi("Sender adds receiver and quotes own message and sends")
+        device_1_chat = home_1.add_contact(device_2_public_key)
+        device_1_chat.send_message(message_from_sender)
+        device_1_chat.quote_message(message_from_sender)
+        if device_1_chat.quote_username_in_message_input.text != "You":
+            self.errors.append("'You' is not displayed in reply quote snippet replying to own message")
+        reply_to_message_from_sender = message_from_sender + " reply"
+        device_1_chat.send_message(reply_to_message_from_sender)
+
+        device_1.just_fyi("Receiver verifies received reply...")
+        home_2.home_button.click()
+        device_2_chat_item = home_2.get_chat_with_user(device_1_username)
+        device_2_chat_item.wait_for_visibility_of_element(20)
+        device_2_chat = device_2_chat_item.click()
+        if device_2_chat.chat_element_by_text(reply_to_message_from_sender).replied_message_text != message_from_sender:
+            self.errors.append("No reply received in 1-1 chat")
+
+        device_1_chat.back_button.click()
+        device_2_chat.back_button.click()
+
+        device_1.just_fyi('both devices joining the same public chat and send messages')
+        chat_name = device_1.get_public_chat_name()
+        for home in home_1, home_2:
+            home.join_public_chat(chat_name)
+        chat_public_1, chat_public_2 = home_1.get_chat_view(), home_2.get_chat_view()
+        chat_public_1.send_message(message_from_sender)
+        chat_public_2.quote_message(message_from_sender)
+        if chat_public_2.quote_username_in_message_input.text != device_1_username:
+            self.errors.append(" %s is not displayed in reply quote snippet replying to own message " % device_1_username)
+
+        device_1.just_fyi('Message receiver verifies reply is present in received message')
+        chat_public_2.send_message(message_from_receiver)
+        public_replied_message = chat_public_1.chat_element_by_text(message_from_receiver)
+        if public_replied_message.replied_message_text != message_from_sender:
+            self.errors.append("Reply is not present in message received in public chat")
+
+        self.errors.verify_no_errors()
