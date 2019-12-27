@@ -30,7 +30,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         home_1.get_back_to_home_view()
 
         home_1.plus_button.click_until_presence_of_element(home_1.join_public_chat_button)
-        home_1.start_new_chat_button.click()
+        home_1.join_public_chat_button.click()
         preselected_chats = ['#status', '#introductions', '#chitchat', '#crypto', '#tech', '#music', '#movies', '#support']
         for chat in preselected_chats:
             if not home_1.element_by_text(chat).is_element_displayed():

@@ -410,6 +410,17 @@ class MailServerConnectButton(BaseButton):
         super(MailServerConnectButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('mailserver-connect-button')
 
+class MailServerDeleteButton(BaseButton):
+
+    def __init__(self, driver):
+        super(MailServerDeleteButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('mailserver-delete-button')
+
+class MailServerConfirmDeleteButton(BaseButton):
+
+    def __init__(self, driver):
+        super(MailServerConfirmDeleteButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('DELETE MAILSERVER')
 
 class ActiveNetworkName(BaseText):
 
@@ -615,6 +626,8 @@ class ProfileView(BaseView):
         self.mail_server_address_input = MailServerAddressInput(self.driver)
         self.mail_server_connect_button = MailServerConnectButton(self.driver)
         self.mail_server_auto_selection_button = MailServerAutoSelectionButton(self.driver)
+        self.mail_server_delete_button = MailServerDeleteButton(self.driver)
+        self.mail_server_confirm_delete_button = MailServerConfirmDeleteButton(self.driver)
 
         # Pairing
         self.devices_button = DevicesButton(self.driver)

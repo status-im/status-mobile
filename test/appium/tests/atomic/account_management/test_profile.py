@@ -626,7 +626,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5436)
     @marks.medium
-    def test_add_and_switch_to_custom_mailserver(self):
+    def test_add_switch_delete_custom_mailserver(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user()
@@ -636,7 +636,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1 = home_1.profile_button.click()
         username_1 = profile_1.default_username_text.text
 
-        profile_1.just_fyi('add custom mailserver and connect to it')
+        profile_1.just_fyi('disable autoselection')
         profile_1.sync_settings_button.click()
         profile_1.mail_server_button.click()
         # TODO: temporary pin mailserver to avoid issue 9269 - should be disabled after fix
@@ -644,10 +644,19 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.mail_server_auto_selection_button.click()
         profile_1.element_by_text(mailserver).click()
         profile_1.confirm_button.click()
-        profile_1.just_fyi('pin custom mailserver')
+        profile_1.just_fyi('add custom mailserver (check address/name validation) and connect to it')
         profile_1.plus_button.click()
         server_name = 'test'
+        # TODO: blocked due to issue 7333
+        # profile_1.save_button.click()
+        # if profile_1.element_by_text(mailserver_staging_ams_1).is_element_displayed():
+        #     self.errors.append('Could add custom mailserver with empty address and name')
         profile_1.specify_name_input.set_value(server_name)
+        profile_1.mail_server_address_input.set_value(mailserver_address[:-3])
+        profile_1.save_button.click()
+        if profile_1.element_by_text(mailserver_staging_ams_1).is_element_displayed():
+            self.errors.append('could add custom mailserver with invalid address')
+        profile_1.mail_server_address_input.clear()
         profile_1.mail_server_address_input.set_value(mailserver_address)
         profile_1.save_button.click()
         profile_1.mail_server_by_name(server_name).click()
@@ -668,6 +677,27 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         chat_2.chat_message_input.send_keys(message_1)
         chat_2.send_message_button.click()
         chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element()
+
+        profile_1.just_fyi('delete custom mailserver')
+        chat_1.profile_button.click()
+        profile_1.sync_settings_button.click()
+        profile_1.mail_server_button.click()
+        profile_1.element_by_text(mailserver).click()
+        profile_1.confirm_button.click()
+        profile_1.element_by_text(server_name).click()
+        profile_1.mail_server_delete_button.click()
+        profile_1.mail_server_confirm_delete_button.click()
+        if profile_1.element_by_text(server_name).is_element_displayed():
+            self.errors.append('Deleted custom mailserver is shown')
+        profile_1.get_back_to_home_view()
+        profile_1.relogin()
+        chat_1.profile_button.click()
+        profile_1.sync_settings_button.click()
+        profile_1.mail_server_button.click()
+        if profile_1.element_by_text(server_name).is_element_displayed():
+            self.errors.append('Deleted custom mailserver is shown after relogin')
+
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5767)
     @marks.medium
