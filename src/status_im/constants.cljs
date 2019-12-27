@@ -81,7 +81,10 @@
 
 (def default-multiaccount-settings
   {:preview-privacy? config/blank-preview?
-   :wallet           {:visible-tokens {}}})
+   :wallet           {:visible-tokens {:mainnet #{:SNT}}}})
+
+(defn default-visible-tokens [chain]
+  (get-in default-multiaccount-settings [:wallet :visible-tokens chain]))
 
 (def currencies
   {:aed {:id :aed :code "AED" :display-name (i18n/label :t/currency-display-name-aed) :symbol "د.إ"}

@@ -174,20 +174,19 @@
 
 (re-frame/reg-fx
  :wallet/get-tokens-balances
- (fn [{:keys [addresses tokens assets]}]
-   (let [tokens-addresses (keys tokens)]
-     (json-rpc/call
-      {:method "wallet_getTokensBalances"
-       :params [addresses tokens-addresses]
-       :on-success
-       (fn [results]
-         (when-let [balances (clean-up-results results tokens assets)]
-           (re-frame/dispatch (if (empty? assets)
-                                ;; NOTE: when there it is not a visible
-                                ;; assets we make an initialization round
-                                [::tokens-found balances]
-                                [::update-tokens-balances-success balances]))))
-       :on-error   #(re-frame/dispatch [::update-token-balance-fail %])}))))
+ (fn [{:keys [addresses tokens init? assets]}]
+   (json-rpc/call
+    {:method "wallet_getTokensBalances"
+     :params [addresses (keys tokens)]
+     :on-success
+     (fn [results]
+       (when-let [balances (clean-up-results results tokens (if init? nil assets))]
+         (re-frame/dispatch (if init?
+                              ;; NOTE: when there it is not a visible
+                              ;; assets we make an initialization round
+                              [::tokens-found balances]
+                              [::update-tokens-balances-success balances]))))
+     :on-error   #(re-frame/dispatch [::update-token-balance-fail %])})))
 
 (defn clear-error-message [db error-type]
   (update-in db [:wallet :errors] dissoc error-type))
@@ -230,8 +229,13 @@
         addresses (or addresses (map (comp string/lower-case :address) accounts))
         chain     (ethereum/chain-keyword db)
         assets    (get-in settings [:wallet :visible-tokens chain])
+        init?     (or (empty? assets)
+                      (= assets (constants/default-visible-tokens chain)))
         tokens    (->> (tokens/tokens-for all-tokens chain)
-                       (remove #(or (:hidden? %)))
+                       (remove #(or (:hidden? %)
+                                    ;;if not init remove not visible tokens
+                                    (and (not init?)
+                                         (not (get assets (:symbol %))))))
                        (reduce (fn [acc {:keys [address symbol]}]
                                  (assoc acc address symbol))
                                {}))]
@@ -240,10 +244,10 @@
        cofx
        {:wallet/get-balances        addresses
         :wallet/get-tokens-balances {:addresses addresses
+                                     :tokens    tokens
                                      :assets    assets
-                                     :tokens    tokens}
-        :db                         (-> db
-                                        (clear-error-message :balance-update))}
+                                     :init?     init?}
+        :db                         (clear-error-message db :balance-update)}
        (when-not assets
          (multiaccounts.update/update-settings
           (assoc-in settings
@@ -330,7 +334,10 @@
   [{:keys [db] :as cofx} balances]
   (let [chain          (ethereum/chain-keyword db)
         settings       (get-in db [:multiaccount :settings])
-        visible-tokens (into #{} (flatten (map keys (vals balances))))
+        visible-tokens (into (or
+                              (constants/default-visible-tokens chain)
+                              #{})
+                             (flatten (map keys (vals balances))))
         new-settings (assoc-in settings
                                [:wallet :visible-tokens chain]
                                visible-tokens)]
