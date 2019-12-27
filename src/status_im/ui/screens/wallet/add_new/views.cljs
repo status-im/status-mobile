@@ -62,7 +62,7 @@
    :background-color   colors/gray-lighter})
 
 (defview add-watch-account []
-  (letsubs [{:keys [address]} [:add-account]]
+  (letsubs [add-account-disabled? [:add-account-disabled?]]
     [react/keyboard-avoiding-view {:flex 1}
      [topbar/topbar]
      [react/view {:flex            1
@@ -84,7 +84,7 @@
        :right        {:type      :next
                       :label     "Next"
                       :on-press  #(re-frame/dispatch [:wallet.accounts/add-watch-account])
-                      :disabled? (not (ethereum/address? address))}}]]))
+                      :disabled? add-account-disabled?}}]]))
 
 (defview pin []
   (letsubs [pin [:hardwallet/pin]

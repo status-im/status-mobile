@@ -526,6 +526,14 @@
  (fn [accounts]
    (filter #(not= (:type %) :watch) accounts)))
 
+(re-frame/reg-sub
+ :add-account-disabled?
+ :<- [:multiaccount/accounts]
+ :<- [:add-account]
+ (fn [[accounts {:keys [address]}]]
+   (or (not (ethereum/address? address))
+       (some #(when (= (:address %) address) %) accounts))))
+
 ;;CHAT ==============================================================================================================
 
 (re-frame/reg-sub
