@@ -21,7 +21,7 @@
           :default-value   (:value gas-edit)
           :keyboard-type   :numeric
           :auto-capitalize :none
-          :placeholder     "0.000"
+          :placeholder     "0"
           :auto-focus      false}]]
        [react/view {:flex 1 :margin-left 33}
         [text-input/text-input-with-label

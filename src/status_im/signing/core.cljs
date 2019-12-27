@@ -188,10 +188,14 @@
                  :dismiss-keyboard
                  nil}
                 #(when-not gas
-                   {:signing/update-estimated-gas {:obj           tx-obj
-                                                   :success-event :signing/update-estimated-gas-success}})
+                   {:db (assoc-in (:db %) [:signing/edit-fee :gas-loading?] true)
+                    :signing/update-estimated-gas {:obj           tx-obj
+                                                   :success-event :signing/update-estimated-gas-success
+                                                   :error-event :signing/update-estimated-gas-error}})
                 #(when-not gasPrice
-                   {:signing/update-gas-price {:success-event :signing/update-gas-price-success}})))))
+                   {:db (assoc-in (:db %) [:signing/edit-fee :gas-price-loading?] true)
+                    :signing/update-gas-price {:success-event :signing/update-gas-price-success
+                                               :error-event :signing/update-gas-price-error}})))))
 
 (fx/defn check-queue [{:keys [db] :as cofx}]
   (let [{:signing/keys [in-progress? queue]} db]

@@ -16,6 +16,12 @@
     (.lt (money/->wei :gwei value) min-gas-price-wei) :t/wallet-send-min-wei
     (-> (money/->wei :gwei value) .decimalPlaces pos?) :t/invalid-number))
 
+(defmethod get-error-label-key :gas [_ value]
+  (cond
+    (not value) :t/invalid-number
+    (.lt value (money/bignumber 1)) :t/invalid-number
+    (-> value .decimalPlaces pos?) :t/invalid-number))
+
 (defmethod get-error-label-key :default [_ value]
   (when (or (not value)
             (<= value 0))
@@ -58,12 +64,26 @@
 (fx/defn update-estimated-gas-success
   {:events [:signing/update-estimated-gas-success]}
   [{db :db} gas]
-  {:db (assoc-in db [:signing/tx :gas] gas)})
+  {:db (-> db
+           (assoc-in [:signing/tx :gas] gas)
+           (assoc-in [:signing/edit-fee :gas-loading?] false))})
 
 (fx/defn update-gas-price-success
   {:events [:signing/update-gas-price-success]}
   [{db :db} price]
-  {:db (assoc-in db [:signing/tx :gasPrice] price)})
+  {:db (-> db
+           (assoc-in [:signing/tx :gasPrice] price)
+           (assoc-in [:signing/edit-fee :gas-price-loading?] false))})
+
+(fx/defn update-estimated-gas-error
+  {:events [:signing/update-estimated-gas-error]}
+  [{db :db}]
+  {:db (assoc-in db [:signing/edit-fee :gas-loading?] false)})
+
+(fx/defn update-gas-price-error
+  {:events [:signing/update-gas-price-error]}
+  [{db :db}]
+  {:db (assoc-in db [:signing/edit-fee :gas-price-loading?] false)})
 
 (fx/defn open-fee-sheet
   {:events [:signing.ui/open-fee-sheet]}
@@ -86,15 +106,17 @@
 
 (re-frame/reg-fx
  :signing/update-gas-price
- (fn [{:keys [success-event edit?]}]
+ (fn [{:keys [success-event error-event]}]
    (json-rpc/call
     {:method     "eth_gasPrice"
-     :on-success #(re-frame/dispatch [success-event % edit?])})))
+     :on-success #(re-frame/dispatch [success-event %])
+     :on-error #(re-frame/dispatch [error-event %])})))
 
 (re-frame/reg-fx
  :signing/update-estimated-gas
- (fn [{:keys [obj success-event]}]
+ (fn [{:keys [obj success-event error-event]}]
    (json-rpc/call
     {:method     "eth_estimateGas"
      :params     [obj]
-     :on-success #(re-frame/dispatch [success-event %])})))
+     :on-success #(re-frame/dispatch [success-event %])
+     :on-error #(re-frame/dispatch [error-event %])})))

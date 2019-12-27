@@ -221,30 +221,35 @@
                      " "
                      (str (:code wallet-currency))]]}]))
 
-(defn fee-item [prices wallet-currency fee-display-symbol fee gas-error]
-  (let [converted-fee-value (* fee (get-in prices [(keyword fee-display-symbol) (keyword (:code wallet-currency)) :price]))]
-    [list-item/list-item
-     {:type        :small
-      :title       :t/network-fee
-      :error       gas-error
-      :accessories [[react/nested-text {:style {:color colors/gray}}
-                     [{:style {:color colors/black}} (utils/format-decimals fee 6)]
-                     " "
-                     fee-display-symbol
-                     " • "
-                     [{:style {:color colors/black}}
-                      (if converted-fee-value
-                        (i18n/format-currency converted-fee-value (:code wallet-currency))
-                        [react/activity-indicator {:color   :colors/gray
-                                                   :ios   {:size  :small}
-                                                   :android {:size :16}}])]
-                     " "
-                     (str (:code wallet-currency))]
-                    :chevron]
-      :on-press    #(re-frame/dispatch
-                     [:signing.ui/open-fee-sheet
-                      {:content        (fn [] [sheets/fee-bottom-sheet fee-display-symbol])
-                       :content-height 270}])}]))
+(defn loading-indicator []
+  [react/activity-indicator {:color   :colors/gray
+                             :ios   {:size  :small}
+                             :android {:size :16}}])
+
+(views/defview fee-item [prices wallet-currency fee-display-symbol fee gas-error]
+  (views/letsubs [{:keys [gas-price-loading? gas-loading?]} [:signing/edit-fee]]
+    (let [converted-fee-value (* fee (get-in prices [(keyword fee-display-symbol) (keyword (:code wallet-currency)) :price]))]
+      [list-item/list-item
+       {:type        :small
+        :title       :t/network-fee
+        :error       (when-not (or gas-price-loading? gas-loading?) gas-error)
+        :disabled?   (or gas-price-loading? gas-loading?)
+        :accessories (if (or gas-price-loading? gas-loading?)
+                       [[loading-indicator]]
+                       [[react/nested-text {:style {:color colors/gray}}
+                         [{:style {:color colors/black}} (utils/format-decimals fee 6)]
+                         " "
+                         fee-display-symbol
+                         " • "
+                         [{:style {:color colors/black}}
+                          (i18n/format-currency converted-fee-value (:code wallet-currency))]
+                         " "
+                         (str (:code wallet-currency))]
+                        :chevron])
+        :on-press    #(re-frame/dispatch
+                       [:signing.ui/open-fee-sheet
+                        {:content        (fn [] [sheets/fee-bottom-sheet fee-display-symbol])
+                         :content-height 270}])}])))
 
 (views/defview network-item []
   (views/letsubs [network-name [:network-name]]
