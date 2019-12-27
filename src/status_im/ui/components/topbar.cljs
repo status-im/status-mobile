@@ -30,26 +30,27 @@
         icon
         [icons/icon icon]
         label
-        [react/text {:style {:color colors/blue}} label])]]))
+        [react/text {:style {:color colors/blue}}
+         (utils.label/stringify label)])]]))
 
-(defn topbar [& [{:keys [title navigation accessories show-border? modal?]}]]
-  (let [navigation    (or navigation (default-navigation modal?))
-        title-padding (reagent/atom 16)]
-    (fn [_]
-      [react/view (cond-> {:height 56 :align-items :center :flex-direction :row}
-                    show-border?
-                    (assoc :border-bottom-width 1 :border-bottom-color colors/gray-lighter))
-       (when-not (= navigation :none)
-         [container {} title-padding
-          [button navigation true]])
-       [react/view {:flex 1}]
-       (when accessories
-         [container {:flex-direction :row :padding-right 6} title-padding
-          (for [value accessories]
-            ^{:key value}
-            [button value false])])
-       (when title
-         [react/view {:position :absolute :left @title-padding :right @title-padding
-                      :top      0 :bottom 0 :align-items :center :justify-content :center}
-          [react/text {:style {:typography :title-bold :text-align :center} :number-of-lines 2}
-           (utils.label/stringify title)]])])))
+(defn topbar [_]
+  (let [title-padding (reagent/atom 16)]
+    (fn [& [{:keys [title navigation accessories show-border? modal?]}]]
+      (let [navigation (or navigation (default-navigation modal?))]
+        [react/view (cond-> {:height 56 :align-items :center :flex-direction :row}
+                      show-border?
+                      (assoc :border-bottom-width 1 :border-bottom-color colors/gray-lighter))
+         (when-not (= navigation :none)
+           [container {} title-padding
+            [button navigation true]])
+         [react/view {:flex 1}]
+         (when accessories
+           [container {:flex-direction :row :padding-right 6} title-padding
+            (for [value accessories]
+              ^{:key value}
+              [button value false])])
+         (when title
+           [react/view {:position :absolute :left @title-padding :right @title-padding
+                        :top      0 :bottom 0 :align-items :center :justify-content :center}
+            [react/text {:style {:typography :title-bold :text-align :center} :number-of-lines 2}
+             (utils.label/stringify title)]])]))))
