@@ -6,7 +6,7 @@
 
 (defn sanitize-passphrase [s]
   (-> (string/trim s)
-      (string/replace #"\s+" " ")))
+      (string/replace #"[\s\n]+" " ")))
 
 (defn passphrase->words [s]
   (when s

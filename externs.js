@@ -614,5 +614,6 @@ var TopLevel = {
   "multiAccountReset" : function () {},
   "multiAccountLoadAccount" : function () {},
   "multiAccountStoreAccount" : function () {},
-  "multiAccountImportMnemonic" : function () {}
+  "multiAccountImportMnemonic" : function () {},
+  "validateMnemonic" : function () {}
 }

@@ -338,3 +338,9 @@
   [seed callback]
   (log/debug "[native-module] gfycat-identicon-async")
   (.generateAliasAndIdenticonAsync (status) seed callback))
+
+(defn validate-mnemonic
+  "Validate that a mnemonic conforms to BIP39 dictionary/checksum standards"
+  [mnemonic callback]
+  (log/debug "[native-module] validate-mnemonic")
+  (.validateMnemonic (status) mnemonic callback))

@@ -1253,4 +1253,26 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     public void isDeviceRooted(final Callback callback) {
         callback.invoke(rootedDevice);
     }
+    
+    @ReactMethod
+    public void validateMnemonic(final String seed, final Callback callback) {
+        Log.d(TAG, "validateMnemonic");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String resValidateMnemonic = Statusgo.validateMnemonic(seed);
+
+                Log.d(TAG, resValidateMnemonic);
+                callback.invoke(resValidateMnemonic);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
 }
+

@@ -601,6 +601,15 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(identicon:(NSString *)publicKey) {
   return StatusgoIdenticon(publicKey);
 }
 
+RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"validateMnemonic() method called");
+#endif
+    NSString *result = StatusgoValidateMnemonic(seed);
+    callback(@[result]);
+}
+
 RCT_EXPORT_METHOD(identiconAsync:(NSString *)publicKey
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG

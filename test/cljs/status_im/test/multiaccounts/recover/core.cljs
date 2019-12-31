@@ -2,7 +2,6 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.multiaccounts.recover.core :as models]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [clojure.string :as string]
             [status-im.utils.security :as security]
             [status-im.i18n :as i18n]))
 
@@ -10,9 +9,7 @@
 
 
 (deftest check-phrase-warnings
-  (is (nil? (models/check-phrase-warnings "monkey monkey monkey monkey monkey monkey monkey monkey monkey monkey monkey monkey")))
-  (is (nil? (models/check-phrase-warnings "game buzz method pretty olympic fat quit display velvet unveil marine crater")))
-  (is (= :recovery-phrase-unknown-words  (models/check-phrase-warnings "game buzz method pretty zeus fat quit display velvet unveil marine crater"))))
+  (is (= :required-field (models/check-phrase-warnings ""))))
 
 ;;;; handlers
 

@@ -34,15 +34,9 @@
                :line-height 22}}
       (i18n/label :t/custom-seed-phrase-text-1)
       [{:style {:color colors/black}}
-       (i18n/label :t/custom-seed-phrase-text-2)]
-      (i18n/label :t/custom-seed-phrase-text-3)
-      [{:style {:color colors/black}}
-       (i18n/label :t/custom-seed-phrase-text-4)]]]
+       (i18n/label :t/custom-seed-phrase-text-2)]]]
     [react/view {:margin-vertical 24
                  :align-items     :center}
-     [button/button {:on-press            #(re-frame/dispatch [::multiaccounts.recover/continue-pressed])
-                     :accessibility-label :continue-custom-seed-phrase
-                     :label               (i18n/label :t/continue)}]
      [button/button {:on-press            #(re-frame/dispatch [:hide-popover])
                      :accessibility-label :cancel-custom-seed-phrase
                      :type                :secondary

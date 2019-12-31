@@ -1116,8 +1116,6 @@
 	"custom-seed-phrase": "Custom seed phrase",
 	"custom-seed-phrase-text-1": "This looks like a custom seed phrase and doesn't match the Status dictionary. This could also mean ",
 	"custom-seed-phrase-text-2": "some words are misspelled.",
-	"custom-seed-phrase-text-3": " If so, you'll end up creating a",
-	"custom-seed-phrase-text-4": " new account",
 	"to-enable-biometric": "To enable {{bio-type-label}}, your must save your password on the unlock screen",
 	"ok-save-pass": "OK, save password",
 	"lock-app-with": "Lock app with",

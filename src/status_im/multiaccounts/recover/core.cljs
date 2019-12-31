@@ -22,10 +22,13 @@
   [root-key multiaccounts]
   (contains? multiaccounts (:key-uid root-key)))
 
+(re-frame/reg-fx
+ ::validate-mnemonic
+ (fn [[passphrase callback]]
+   (status/validate-mnemonic passphrase callback)))
+
 (defn check-phrase-warnings [recovery-phrase]
-  (cond (string/blank? recovery-phrase) :required-field
-        (not (mnemonic/valid-words? recovery-phrase)) :recovery-phrase-invalid
-        (not (mnemonic/status-generated-phrase? recovery-phrase)) :recovery-phrase-unknown-words))
+  (cond (string/blank? recovery-phrase) :required-field))
 
 (fx/defn set-phrase
   {:events [:multiaccounts.recover/passphrase-input-changed]}
@@ -160,14 +163,20 @@
    (navigation/navigate-to-cofx :recover-multiaccount-enter-phrase nil)))
 
 (fx/defn proceed-to-import-mnemonic
-  {:events [:multiaccounts.recover/enter-phrase-next-pressed]}
-  [{:keys [db] :as cofx}]
+  {:events [:multiaccounts.recover/phrase-validated]}
+  [{:keys [db] :as cofx} phrase-warnings]
   (let [{:keys [password passphrase]} (:intro-wizard db)]
-    (if (check-phrase-warnings passphrase)
+    (if-not (string/blank? (:error (types/json->clj phrase-warnings)))
       (popover/show-popover cofx {:view :custom-seed-phrase})
       (when (mnemonic/valid-length? passphrase)
-        {::import-multiaccount {:passphrase passphrase
+        {::import-multiaccount {:passphrase (mnemonic/sanitize-passphrase passphrase)
                                 :password   password}}))))
+
+(fx/defn seed-phrase-next-pressed
+  {:events [:multiaccounts.recover/enter-phrase-next-pressed]}
+  [{:keys [db] :as cofx}]
+  (let [{:keys [passphrase]} (:intro-wizard db)]
+    {::validate-mnemonic [passphrase #(re-frame/dispatch [:multiaccounts.recover/phrase-validated %])]}))
 
 (fx/defn continue-to-import-mnemonic
   {:events [::continue-pressed]}
