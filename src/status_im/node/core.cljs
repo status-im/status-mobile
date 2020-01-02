@@ -6,7 +6,8 @@
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as utils.platform]
-            [status-im.utils.types :as types])
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log])
   (:require-macros [status-im.utils.slurp :refer [slurp]]))
 
 (defn- add-custom-bootnodes [config network all-bootnodes]

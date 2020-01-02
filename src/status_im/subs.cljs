@@ -1175,6 +1175,33 @@
      (group-by :custom? (map #(assoc % :checked? (boolean (get vt-set (keyword (:symbol %))))) all-tokens)))))
 
 (re-frame/reg-sub
+ :wallet/fetching-tx-history?
+ :<- [:wallet]
+ (fn [wallet [_ address]]
+   (get-in wallet [:fetching address :history?])))
+
+(re-frame/reg-sub
+ :wallet/fetching-recent-tx-history?
+ :<- [:wallet]
+ (fn [wallet [_ address]]
+   (get-in wallet [:fetching address :recent?])))
+
+(re-frame/reg-sub
+ :wallet/tx-history-fetched?
+ :<- [:wallet]
+ (fn [wallet [_ address]]
+   (get-in wallet [:fetching address :all-fetched?])))
+
+(re-frame/reg-sub
+ :wallet/etherscan-link
+ (fn [db [_ address]]
+   (let [network (:networks/current-network db)
+         link    (get-in constants/default-networks-by-id
+                         [network :etherscan-link])]
+     (when link
+       (str link address)))))
+
+(re-frame/reg-sub
  :wallet/error-message
  :<- [:wallet]
  (fn [wallet]

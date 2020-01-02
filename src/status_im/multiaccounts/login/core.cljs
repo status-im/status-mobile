@@ -89,7 +89,10 @@
    (wallet/initialize-tokens custom-tokens)
    (wallet/update-balances nil)
    (wallet/update-prices)
-   (transactions/initialize)))
+   (transactions/initialize
+    (->> accounts
+         (filter :wallet)
+         (map :address)))))
 
 (fx/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
