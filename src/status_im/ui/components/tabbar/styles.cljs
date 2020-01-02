@@ -46,9 +46,13 @@
    :top      0
    :position :absolute})
 
+;; NOTE: Extra padding to allow badge width to be up to 42 (in case of 99+)
+;; 42 Max allowed width, 24 icon width as per spec, 16 left pos as per spec.
+(def ^:private message-counter-left (+ (/ (- 42 24) 2) 16))
+
 (def message-counter
-  {:right    -10
-   :top      0
+  {:left     message-counter-left
+   :bottom   6
    :position :absolute})
 
 (def touchable-container

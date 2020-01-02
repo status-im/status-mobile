@@ -9,9 +9,12 @@
                  {:height 18 :border-radius 9 :min-width 18 :padding-horizontal 6}
                  {:height 22 :border-radius 11 :min-width 22 :padding-horizontal 8})
                {:background-color colors/blue
-                :justify-content :center
-                :align-items :center})
-   [react/text {:style {:typography :caption :color colors/white}} label]])
+                :justify-content  :center
+                :align-items      :center})
+   [react/text {:style {:typography  :caption
+                        :font-weight "500"
+                        :color       colors/white}}
+    label]])
 
 (defn message-counter [value & [small?]]
   [badge
