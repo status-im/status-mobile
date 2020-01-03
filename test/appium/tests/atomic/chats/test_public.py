@@ -49,7 +49,6 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys(message)
         chat_1.send_message_button.click()
 
-        # chat_2.verify_message_is_under_today_text(message, self.errors)
         if chat_2.chat_element_by_text(message).username.text != default_username_1:
             self.errors.append("Default username '%s' is not shown next to the received message" % default_username_1)
 
@@ -159,59 +158,6 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
 @marks.chat
 class TestPublicChatSingleDevice(SingleDeviceTestCase):
-
-    @marks.skip
-    @marks.testrail_id(5392)
-    @marks.high
-    # TODO: update to use korean keyboard
-    def test_send_korean_characters(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        chat_name = home.get_public_chat_name()
-        public_chat = home.join_public_chat(chat_name)
-        message = '파란하늘'
-        public_chat.chat_message_input.send_keys(message)
-        if public_chat.chat_message_input.text != message:
-            self.errors.append('Korean characters are not displayed properly in the chat message input')
-        public_chat.send_message_button.click()
-        if not public_chat.chat_element_by_text(message).is_element_displayed():
-            self.errors.append('Message with korean characters is not shown')
-        self.errors.verify_no_errors()
-
-    @marks.skip
-    @marks.testrail_id(5336)
-    @marks.medium
-    # skipped as it is a part of other tests
-    def test_user_can_interact_with_public_chat(self):
-        signin = SignInView(self.driver)
-        home_view = signin.create_user()
-        chat = home_view.join_public_chat('evripidis-middellijn')
-
-        try:
-            chat.empty_public_chat_message.wait_for_invisibility_of_element()
-        except TimeoutException:
-            self.driver.fail('Empty chat: history is not fetched!')
-
-        # just to generate random text to be sent
-        text = generate_timestamp()
-        chat.send_message(text)
-
-        if not chat.chat_element_by_text(text).is_element_displayed():
-            self.errors.append('User sent message but it did not appear in chat!')
-
-        chat.move_to_messages_by_time_marker('Today')
-        if not chat.element_by_text('Today').is_element_displayed():
-            self.errors.append("'Today' chat marker is not shown")
-        if len(chat.chat_item.find_elements()) <= 1:
-            self.errors.append('No messages fetched for today!')
-
-        chat.move_to_messages_by_time_marker('Yesterday')
-        if not chat.element_by_text('Yesterday').is_element_displayed():
-            self.errors.append("'Yesterday' chat marker is not shown")
-        if len(chat.chat_item.find_elements()) <= 1:
-            self.errors.append('No messages fetched for yesterday!')
-
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(5675)
     @marks.high

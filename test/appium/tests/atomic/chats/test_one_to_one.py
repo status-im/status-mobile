@@ -3,7 +3,6 @@ import time
 import emoji
 import random
 import string
-from datetime import datetime
 from selenium.common.exceptions import TimeoutException
 
 from tests import marks, get_current_time
@@ -364,44 +363,48 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.skip
     @marks.testrail_id(5385)
     @marks.high
-    # TODO: update with correct time - doesn't work for now
     def test_timestamp_in_chats(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        username_1 = 'user_%s' % get_current_time()
         device_1_home, device_2_home = sign_in_1.create_user(), sign_in_2.create_user()
         device_2_public_key = device_2_home.get_public_key()
         device_2_home.home_button.click()
+        device_1_profile = device_1_home.profile_button.click()
+        default_username_1 = device_1_profile.default_username_text.text
+        device_1_profile.home_button.click()
 
         device_1_chat = device_1_home.add_contact(device_2_public_key)
 
+        device_1_chat.just_fyi('check user picture and timestamps in chat for sender and recipient in 1-1 chat')
         message = 'test text'
         device_1_chat.chat_message_input.send_keys(message)
         device_1_chat.send_message_button.click()
-        sent_time = datetime.strptime(device_1_chat.driver.device_time, '%a %b %d %H:%M:%S GMT %Y').strftime("%I:%M %p")
+        sent_time = device_1_chat.convert_device_time_to_chat_timestamp()
+
         if not device_1_chat.chat_element_by_text(message).contains_text(sent_time):
             self.errors.append('Timestamp is not displayed in 1-1 chat for the sender')
         if device_1_chat.chat_element_by_text(message).member_photo.is_element_displayed():
             self.errors.append('Member photo is displayed in 1-1 chat for the sender')
 
-        device_2_chat = device_2_home.get_chat_with_user(username_1).click()
+        device_2_chat = device_2_home.get_chat_with_user(default_username_1).click()
         if not device_2_chat.chat_element_by_text(message).contains_text(sent_time):
             self.errors.append('Timestamp is not displayed in 1-1 chat for the recipient')
-        if not device_2_chat.chat_element_by_text(message).member_photo.is_element_displayed():
-            self.errors.append('Member photo is not displayed in 1-1 chat for the recipient')
+        if device_2_chat.chat_element_by_text(message).member_photo.is_element_displayed():
+            self.errors.append('Member photo is displayed in 1-1 chat for the recipient')
+        for chat in device_1_chat, device_2_chat:
+            chat.verify_message_is_under_today_text(message, self.errors)
 
-        device_1_chat.get_back_to_home_view()
-        device_2_chat.get_back_to_home_view()
+        device_1_chat.just_fyi('check user picture and timestamps in chat for sender and recipient in public chat')
         chat_name = device_1_home.get_public_chat_name()
-        device_1_home.join_public_chat(chat_name)
-        device_2_home.join_public_chat(chat_name)
+        for chat in device_1_chat, device_2_chat:
+            home_view = chat.get_back_to_home_view()
+            home_view.join_public_chat(chat_name)
 
         device_2_chat.chat_message_input.send_keys(message)
         device_2_chat.send_message_button.click()
-        sent_time = datetime.strptime(device_2_chat.driver.device_time, '%a %b %d %H:%M:%S GMT %Y').strftime("%I:%M %p")
+        sent_time = device_2_chat.convert_device_time_to_chat_timestamp()
         if not device_2_chat.chat_element_by_text(message).contains_text(sent_time):
             self.errors.append('Timestamp is not displayed in public chat for the sender')
         if device_2_chat.chat_element_by_text(message).member_photo.is_element_displayed():
@@ -410,7 +413,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if not device_1_chat.chat_element_by_text(message).contains_text(sent_time):
             self.errors.append('Timestamp is not displayed in public chat for the recipient')
         if not device_1_chat.chat_element_by_text(message).member_photo.is_element_displayed():
-            self.errors.append('Member photo is not displayed in 1-1 chat for the recipient')
+            self.errors.append('Member photo is not displayed in public chat for the recipient')
+        for chat in device_1_chat, device_2_chat:
+            chat.verify_message_is_under_today_text(message, self.errors)
 
         self.errors.verify_no_errors()
 

@@ -584,7 +584,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
     @marks.testrail_id(5432)
     @marks.medium
     @marks.skip
-    # TODO: e2e blocker: no force-logout after enabling bootnode (enable after fix)
+    # TODO: e2e blocker 9135: no force-logout after enabling bootnode (enable after fix)
     def test_custom_bootnodes(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])

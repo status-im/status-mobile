@@ -27,25 +27,6 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
             self.errors.append('Back up seed phrase option is active for recovered account!')
         self.errors.verify_no_errors()
 
-    @marks.skip
-    @marks.testrail_id(845)
-    # test doesn't exist in TestRail
-    # obsolate
-    def test_recover_account_with_incorrect_passphrase(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        public_key = sign_in.get_public_key()
-        profile = sign_in.get_profile_view()
-        profile.backup_recovery_phrase_button.click()
-        profile.ok_continue_button.click()
-        recovery_phrase = profile.get_recovery_phrase()
-
-        self.driver.reset()
-        sign_in.accept_agreements()
-        sign_in.recover_access(passphrase=' '.join(list(recovery_phrase.values())[::-1]))
-        if sign_in.get_public_key() == public_key:
-            self.driver.fail('The same account is recovered with reversed passphrase')
-
     @marks.logcat
     @marks.testrail_id(5366)
     @marks.critical
@@ -58,6 +39,7 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
 
 
 class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
+
     @marks.testrail_id(5363)
     @marks.high
     def test_pass_phrase_validation(self):

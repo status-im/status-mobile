@@ -97,21 +97,19 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view.element_by_text('Google').wait_for_element(30)
 
     @marks.testrail_id(5321)
-    @marks.skip
     @marks.critical
-    # TODO: update to use some static website
     def test_back_forward_buttons_browsing_website(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
         daap_view = home.dapp_tab_button.click()
-        browsing_view = daap_view.open_url('www.wikipedia.org')
-        browsing_view.element_by_text_part('Русский', 'button').click()
-        browsing_view.find_text_part('Избранная статья')
+        browsing_view = daap_view.open_url('status.im')
+        browsing_view.element_by_text_part('Get Involved', 'button').click()
+        browsing_view.find_text_part('An Open Source Community')
         browsing_view.browser_previous_page_button.click()
-        browsing_view.find_text_part('English', 15)
+        browsing_view.find_text_part('Get Status', 15)
 
         browsing_view.browser_next_page_button.click()
-        browsing_view.find_text_part('Избранная статья')
+        browsing_view.find_text_part('An Open Source Community')
         browsing_view.back_to_home_button.click()
 
     @marks.testrail_id(5354)

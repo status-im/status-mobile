@@ -11,29 +11,6 @@ from tests.users import basic_user
 @marks.account
 class TestCreateAccount(SingleDeviceTestCase):
 
-    @marks.testrail_id(5300)
-    @marks.critical
-    @marks.battery_consumption
-    @marks.skip
-    # skipped because it is a part of other tests
-    # obsolate
-    def test_create_account(self):
-        sign_in = SignInView(self.driver, skip_popups=False)
-        sign_in.accept_agreements()
-        if not sign_in.i_have_multiaccount_button.is_element_displayed():
-            self.errors.append("'I have an account' button is not displayed")
-        sign_in.create_multiaccount_button.click()
-        sign_in.password_input.set_value(common_password)
-        sign_in.next_button.click()
-        sign_in.confirm_password_input.set_value(common_password)
-        sign_in.next_button.click()
-
-        sign_in.element_by_text_part('Display name').wait_for_element(30)
-        sign_in.name_input.send_keys('user_%s' % get_current_time())
-
-        sign_in.next_button.click()
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(5356)
     @marks.critical
     def test_switch_users_and_add_new_account(self):

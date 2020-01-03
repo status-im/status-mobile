@@ -349,11 +349,10 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet_view.yes_button.click()
         if account_button.is_element_displayed():
             self.driver.fail('Account was not deleted')
-        # TODO: uncomment check of assets after fix of 9717
-        # for asset in ('ETHro', 'ADI', 'STT'):
-        #     balance = wallet_view.get_asset_amount_by_name(asset)
-        #     if balance != 0:
-        #         self.errors.append("Balance for %s is not updated after deleting watch-only account" % asset)
+        for asset in ('ETHro', 'ADI', 'STT'):
+            balance = wallet_view.get_asset_amount_by_name(asset)
+            if balance != 0:
+                self.errors.append("Balance for %s is not updated after deleting watch-only account" % asset)
 
         self.errors.verify_no_errors()
 

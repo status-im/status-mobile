@@ -154,24 +154,6 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if values_in_logcat:
             self.driver.fail(values_in_logcat)
 
-    @marks.testrail_id(5372)
-    @marks.high
-    @marks.skip
-    # skipped because it is part of other tests
-    def test_request_eth_in_status_test_dapp(self):
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.create_user()
-        status_test_dapp = home_view.open_status_test_dapp()
-        status_test_dapp.wait_for_d_aap_to_load()
-        status_test_dapp.assets_button.click()
-        status_test_dapp.request_eth_button.click()
-        status_test_dapp.element_by_text_part('Faucet request').wait_for_visibility_of_element()
-        status_test_dapp.ok_button.click()
-        status_test_dapp.cross_icon.click()
-        wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.wait_balance_is_equal_expected_amount()
-
     @marks.testrail_id(5355)
     @marks.medium
     def test_onboarding_screen_when_requesting_tokens_for_new_account(self):

@@ -1,4 +1,6 @@
 import time
+from datetime import datetime
+import dateutil.parser
 
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
@@ -628,3 +630,9 @@ class ChatView(BaseView):
     def block_contact(self):
         self.profile_block_contact.click()
         self.block_contact_button.click()
+
+    def convert_device_time_to_chat_timestamp(self):
+        sent_time_object = dateutil.parser.parse(self.driver.device_time)
+        timestamp = datetime.strptime("%s:%s" % (sent_time_object.hour, sent_time_object.minute), '%H:%M').strftime("%I:%M %p")
+        timestamp = timestamp[1:] if timestamp[0] == '0' else timestamp
+        return timestamp
