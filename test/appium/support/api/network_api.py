@@ -78,11 +78,11 @@ class NetworkApi(object):
                             (amount, address))
                         return transaction
 
-    def wait_for_confirmation_of_transaction(self, address, amount, token=False):
+    def wait_for_confirmation_of_transaction(self, address, amount, confirmations=12, token=False):
         start_time = time.time()
         while round(time.time() - start_time, ndigits=2) < 900:  # should be < idleTimeout capability
             transaction = self.find_transaction_by_unique_amount(address, amount, token)
-            if int(transaction['confirmations']) >= 12:
+            if int(transaction['confirmations']) >= confirmations:
                 return
             time.sleep(10)
         pytest.fail('Transaction with amount %s was not confirmed, address is %s' % (amount, address))

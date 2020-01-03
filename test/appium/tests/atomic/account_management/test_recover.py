@@ -81,9 +81,9 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
                 'words count': 1,
                 'popup' : False
             },
-            # outside mnemonic
+            # mnemonic but checksum validation fails
             {
-                'phrase': '; two three four five six seven eight nine ten eleven twelve',
+                'phrase': 'one two three four five six seven eight nine ten eleven twelve',
                 'element to check': recover_access_view.warnings.invalid_recovery_phrase,
                 'validation message': '',
                 'words count': 12,
@@ -136,16 +136,8 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
                 if not recover_access_view.find_full_text(text):
                     self.errors.append('"%s" text is not shown' % text)
                 recover_access_view.cancel_custom_seed_phrase_button.click()
-                recover_access_view.next_button.click()
-                recover_access_view.continue_custom_seed_phrase_button.click()
-                recover_access_view.reencrypt_your_key_button.click()
-                recover_access_view.next_button.click()
-                recover_access_view.create_password_input.set_value(common_password)
-                recover_access_view.next_button.click()
-                recover_access_view.confirm_your_password_input.set_value(common_password)
-                recover_access_view.next_button.click_until_presence_of_element(recover_access_view.home_button)
-            else:
-                recover_access_view.click_system_back_button()
+
+            recover_access_view.click_system_back_button()
 
         self.errors.verify_no_errors()
 

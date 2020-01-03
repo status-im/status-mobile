@@ -147,7 +147,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient,
                                      sign_transaction=True)
         sign_in_view.toggle_airplane_mode()
-        self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, token=True)
+        self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, confirmations=6, token=True)
 
         sign_in_view.just_fyi('Change that balance is updated')
         initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
@@ -392,7 +392,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_input.set_value(recipient_address)
         send_transaction.done_button.click()
         send_transaction.sign_transaction_button.click()
-        send_transaction.network_fee_button.click()
+        send_transaction.network_fee_button.click_until_presence_of_element(send_transaction.gas_limit_input)
         send_transaction.gas_limit_input.clear()
         send_transaction.gas_limit_input.set_value('1')
         send_transaction.gas_price_input.clear()
@@ -470,7 +470,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             self.driver.fail("Sign transaction button is active in offline mode")
 
     @marks.testrail_id(6225)
-    @marks.high
+    @marks.medium
     def test_send_funds_between_accounts_in_multiaccount_instance(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -527,7 +527,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
 
         wallet_view.just_fyi("Verify total ETH on main wallet view")
-        self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount_1)
+        self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount_1, 3)
         self.network_api.verify_balance_is_updated((updated_balance + transaction_amount_1), status_account_address)
         send_transaction.back_button.click()
         balance_of_sub_account = float(self.network_api.get_balance(sub_account_address)) / 1000000000000000000

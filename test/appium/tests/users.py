@@ -34,11 +34,12 @@ wallet_users['A']['public_key'] = "0x04fa759cc29261fd7779cf8b3566de61e3fb22aca46
                                   "9a957fdab86e277e4bb7ec90f7998d21fc16690397d3783b8d8711e1"
 
 wallet_users['B'] = dict()
-wallet_users['B']['passphrase'] = "subway size dial screen stomach route skin kitchen radar true coffee six"
-wallet_users['B']['username'] = "Idealistic Assured Spidermonkey"
-wallet_users['B']['address'] = "85b159bad0d500483b307ec6892c7fa3be591cbc"
-wallet_users['B']['public_key'] = "0x04c068a1467abf8d18ea4a020e52880d855c5a418e52c1ef29cc9b30999ed986cf5c9fe55" \
-                                  "d6ffd10659be32c8c1ce15dbf7dc0659e238a0169eb7e18be9757baa8"
+wallet_users['B']['passphrase'] = "unknown endless ill average shell foil kitchen runway left race neither exhaust"
+wallet_users['B']['username'] = "Bulky Able Firecrest"
+wallet_users['B']['address'] = "0F3EFF5CacEe63045be97281316457fb78dd659E"
+wallet_users['B']['public_key'] = "0x04f3c372522a087bd6895a67b669601e6b6825b2ee7add5942d10efd1c3c836a1d9a677d94d33" \
+                                  "895833b6ebe523f0fe5965f73558da58520a3f9c7a00e73f75d61"
+
 
 wallet_users['C'] = dict()
 wallet_users['C']['passphrase'] = "purchase ensure mistake crystal person similar shaft family shield clog risk market"
