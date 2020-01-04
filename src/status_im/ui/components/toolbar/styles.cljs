@@ -13,8 +13,7 @@
 (def toolbar-title-container
   {:justify-content :center
    :align-items     :center
-   :flex-direction  :column
-   :margin-left     6})
+   :flex-direction  :column})
 
 (def toolbar-title-text
   {:typography :title-bold
