@@ -651,7 +651,6 @@
     :message-reply
     :message-syncing
     :messages
-    :messages-search-coming-soon
     :might-break
     :migrations-erase-multiaccounts-data-button
     :migrations-failed-content

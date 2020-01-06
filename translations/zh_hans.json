@@ -589,7 +589,6 @@
     "message-options-cancel": "取消",
     "message-reply": "回复",
     "messages": "消息",
-    "messages-search-coming-soon": "搜索消息历史记录",
     "might-break": "可能会破坏一些ÐApp",
     "migrations-erase-multiaccounts-data-button": "删除帐户数据",
     "migrations-failed-content": "{{message}} \n架构版本：初始{{initial-version}} ，当前{{current-version}} ，最后{{last-version}} \n\n请在#status公共聊天中告诉我们此问题。如果按“取消”按钮，则不会产生任何后果。如果按“ {{erase-accounts-data-button-text}} ”按钮，帐户的数据库将被删除，您将能够解锁帐户。所有帐户的数据都将丢失。",

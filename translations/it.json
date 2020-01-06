@@ -666,7 +666,6 @@
     "message-reply": "Rispondere",
     "message-syncing": "Sincronizzazione dei messaggi",
     "messages": "Messaggi",
-    "messages-search-coming-soon": "Ricerca nella cronologia dei messaggi in arrivo",
     "might-break": "Potrebbe rompere alcune ÐApps",
     "migrations-erase-multiaccounts-data-button": "Cancella tutti i tuoi Multi-Account",
     "migrations-failed-content": "{{message}} \n versione dello schema: iniziale {{initial-version}} , attuale {{current-version}} , ultima {{last-version}} \n\n Fateci sapere questo problema nella chat pubblica di #status. Se si preme il pulsante \"Annulla\", non accadrà nulla. Se premi il pulsante \" {{erase-multiaccounts-data-button-text}} \", il db del Multi-Account verrà rimosso e sarai in grado di sbloccare il Multi-Account. Tutti i dati del Multi-Account andranno persi.",

@@ -21,14 +21,15 @@
     [react/view {:flex 1}
      [topbar/topbar {:title :t/contacts}]
      [react/scroll-view {:flex 1}
-      [list.views/big-list-item
-       {:style               {:margin-vertical 16}
-        :text                (i18n/label :t/blocked-users)
-        :icon                :main-icons/cancel
-        :icon-color          colors/red
-        :accessibility-label :blocked-users-list-button
-        :accessory-value     blocked-contacts-count
-        :action-fn           #(re-frame/dispatch [:navigate-to :blocked-users-list])}]
+      (when (pos? blocked-contacts-count)
+        [list.views/big-list-item
+         {:style               {:margin-vertical 16}
+          :text                (i18n/label :t/blocked-users)
+          :icon                :main-icons/cancel
+          :icon-color          colors/red
+          :accessibility-label :blocked-users-list-button
+          :accessory-value     blocked-contacts-count
+          :action-fn           #(re-frame/dispatch [:navigate-to :blocked-users-list])}])
       [list.views/flat-list
        {:data                      contacts
         :key-fn                    :address

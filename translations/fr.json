@@ -666,7 +666,6 @@
     "message-reply": "Répondre",
     "message-syncing": "Synchronisation des messages",
     "messages": "Messages",
-    "messages-search-coming-soon": "Recherche de l'historique des messages à venir",
     "might-break": "Peut casser quelques ÐApps",
     "migrations-erase-multiaccounts-data-button": "Effacer la base de données du multicompte",
     "migrations-failed-content": "{{message}} \n version du schéma: initial {{initial-version}} , actuel {{current-version}} , dernier {{last-version}} \n\n Veuillez nous informer de ce problème sur le chat public #status. Si vous appuyez sur le bouton \"Annuler\", rien ne se passera. Si vous appuyez sur le bouton \" {{erase-multiaccounts-data-button-text}} \", la base de données multi-comptes sera supprimée et vous pourrez déverrouiller plusieurs comptes. Toutes les données multi-comptes seront perdues.",

@@ -114,9 +114,7 @@
   [list/section-list
    {:style                       {:margin-bottom -35}
     :sections                    [{:title :t/chats
-                                   :data  chats}
-                                  {:title :t/messages
-                                   :data  []}]
+                                   :data  chats}]
     :key-fn                      first
     ;; true by default on iOS
     :stickySectionHeadersEnabled false
@@ -129,9 +127,7 @@
     (fn [{:keys [title data]}]
       (when (empty? data)
         [list/big-list-item
-         {:text          (i18n/label (if (= title "messages")
-                                       :t/messages-search-coming-soon
-                                       :t/no-result))
+         {:text          (i18n/label :t/no-result)
           :text-color    colors/gray
           :hide-chevron? true
           :action-fn     #()

@@ -660,7 +660,6 @@
 	"message-reply": "Reply",
 	"message-syncing": "Message syncing",
 	"messages": "Messages",
-	"messages-search-coming-soon": "Searching message history coming soon",
 	"might-break": "Might break some ÐApps",
 	"migrations-erase-multiaccounts-data-button": "Erase multiaccount's db",
 	"migrations-failed-content": "{{message}}\nschema version: initial {{initial-version}}, current {{current-version}}, last {{last-version}}\n\nPlease let us know about this problem at #status public chat. If you press \"Cancel\" button, nothing will happen. If you press \"{{erase-multiaccounts-data-button-text}}\" button, multiaccount's db will be removed and you will be able to unlock multiaccount. All multiaccount's data will be lost.",

@@ -658,7 +658,6 @@
     "message-reply": "답변하기",
     "message-syncing": "메시지 동기화",
     "messages": "메시지",
-    "messages-search-coming-soon": "메시지 기록 검색 기능 개발 중",
     "might-break": "일부 디앱에 오류를 일으킬 수 있습니다",
     "migrations-erase-multiaccounts-data-button": "계정 DB 삭제",
     "migrations-failed-content": "{{message}} \n스키마 버전: 초기 {{initial-version}} , 현재 {{current-version}} , 마지막 {{last-version}} \n\n #status public chat 에서 이 문제에 대해 알려 주시기 바랍니다. \"취소\"버튼을 누르면 원래 상태로 돌아갑니다. \"{{erase-multiaccounts-data-button-text}}\" 버튼을 누르면 계정의 모든 DB가 제거되고 계정을 잠금해제 할 수 있습니다. 이 경우 계정의 모든 데이터가 손실됩니다.",

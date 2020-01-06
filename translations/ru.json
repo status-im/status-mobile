@@ -658,7 +658,6 @@
     "message-reply": "Ответить",
     "message-syncing": "Синхронизация сообщений",
     "messages": "Сообщения",
-    "messages-search-coming-soon": "Поиск истории сообщений будет в ближайшее время",
     "might-break": "Может сломать некоторые ÐApp",
     "migrations-erase-multiaccounts-data-button": "Стереть базу данных мультиаккаунта",
     "migrations-failed-content": "{{message}} \n версия схемы: начальная {{initial-version}}, текущая {{current-version}}, последняя {{last-version}} \n\nПожалуйста, сообщите нам об этой проблеме в #status публичном чате. Если вы нажмете кнопку «Отмена», ничего не произойдет. Если вы нажмете кнопку «{{erase-multiaccounts-data-button-text}}», база данных мультиаккаунта будет удалена, и вы сможете разблокировать мультиаккаунт. Все данные мультиаккаунта будут потеряны.",

@@ -698,7 +698,6 @@
     "message-reply": "الرد",
     "message-syncing": "لم يتم إرسال الرسالة",
     "messages": "رسائل",
-    "messages-search-coming-soon": "البحث في سجل الرسائل قريبًا",
     "might-break": "قد كسر بعض ÐApps",
     "migrations-erase-multiaccounts-data-button": "مسح db متعدد الحسابات",
     "migrations-failed-content": "{{message}} \n إصدار المخطط: الأولي {{initial-version}} ، الحالي {{current-version}} ، {{last-version}} \n\n يرجى إعلامنا بهذه المشكلة على الدردشة العامة #status. إذا قمت بالضغط على زر \"إلغاء\" ، فلن يحدث شيء. إذا قمت بالضغط على زر \" {{erase-multiaccounts-data-button-text}} \" ، فستتم إزالة db multiaccount وستكون قادرًا على إلغاء قفل الحساب المتعدد. سيتم فقد جميع بيانات الحساب المتعدد.",
