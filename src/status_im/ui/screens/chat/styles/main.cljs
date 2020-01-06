@@ -159,19 +159,14 @@
 (def add-contact
   {:flex-direction      :row
    :align-items         :center
-   :height              36
+   :justify-content     :center
+   :padding-vertical    6
    :border-bottom-width 1
-   :justify-content :center
    :border-color        colors/gray-lighter})
 
-(def add-contact-center
-  {:flex-direction :row})
-
 (def add-contact-text
-  {:text-align          :center
-   :text-align-vertical :center
-   :padding-left        4
-   :color               colors/blue})
+  {:margin-left 4
+   :color       colors/blue})
 
 (def add-contact-close-icon
   {:margin-right 12})

@@ -35,9 +35,8 @@
   [react/touchable-highlight
    {:on-press
     #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
-    :accessibility-label :add-to-contacts-button
-    :style style/add-contact}
-   [react/view style/add-contact-center
+    :accessibility-label :add-to-contacts-button}
+   [react/view {:style style/add-contact}
     [vector-icons/icon :main-icons/add
      {:color colors/blue}]
     [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]])
