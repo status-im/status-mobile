@@ -40,8 +40,15 @@
 
 (def mailserver-pinned
   {:padding-horizontal 16
-   :flex-direction :row
-   :padding-vertical 5})
+   :flex-direction     :row
+   :align-items        :center
+   :padding-vertical   5})
+
+(def mailserver-pinned-checkbox-container
+  {:width           40
+   :height          40
+   :align-items     :center
+   :justify-content :center})
 
 (def mailserver-pinned-text-container
-  {:margin-top 15})
+  {:padding-horizontal 15})
