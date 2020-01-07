@@ -30,8 +30,8 @@
 
 (defn- no-stickers-yet-panel []
   [react/view {:style {:flex 1 :align-items :center :justify-content :center}}
-   [vector-icons/icon :stickers-icons/stickers-big {:color colors/gray
-                                                    :width 64
+   [vector-icons/icon :stickers-icons/stickers-big {:color  colors/gray
+                                                    :width  64
                                                     :height 64}]
    [react/text {:style {:margin-top 8 :font-size 17}} (i18n/label :t/you-dont-have-stickers)]
    [react/touchable-opacity {:on-press #(do
@@ -57,9 +57,16 @@
   (letsubs [stickers [:stickers/recent]]
     (if (seq stickers)
       [stickers-panel stickers window-width]
-      [react/view {:style {:flex 1 :align-items :center :justify-content :center :width window-width}}
-       [vector-icons/icon :stickers-icons/stickers-big {:color colors/gray}]
-       [react/text {:style {:margin-top 8 :font-size 17}} (i18n/label :t/recently-used-stickers)]])))
+      [react/view {:style {:flex            1
+                           :align-items     :center
+                           :justify-content :center
+                           :width           window-width}}
+       [vector-icons/icon :stickers-icons/sticker-history {:width  64
+                                                           :height 64
+                                                           :color  colors/gray}]
+       [react/text {:style {:margin-top 12
+                            :font-size  17}}
+        (i18n/label :t/recently-used-stickers)]])))
 
 (defn update-scroll-position [ref installed-packs selected-pack window-width]
   (when ref
