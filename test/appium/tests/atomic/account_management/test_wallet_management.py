@@ -17,8 +17,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.recover_access(transaction_senders['A']['passphrase'])
         wallet = sign_in.wallet_button.click()
-        texts = ['This is your signing phrase', 'You should see these 3 words before signing each transaction',
-                 'If you see a different combo, cancel the transaction and logout.']
+        texts = ['This is your signing phrase', 'These three words prove that a transaction is safe.',
+                 "You should see these words before signing each transaction. If you don't, cancel and sign out."]
         for text in texts:
             if not wallet.element_by_text_part(text).is_element_displayed():
                 self.errors.append("'%s' text is not displayed" % text)

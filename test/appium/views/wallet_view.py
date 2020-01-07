@@ -103,7 +103,7 @@ class SetUpButton(BaseButton):
 class SetCurrencyButton(BaseButton):
     def __init__(self, driver):
         super(SetCurrencyButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector("Set currency")
+        self.locator = self.Locator.text_selector("Set default currency")
 
 
 class SignInPhraseText(BaseText):
@@ -124,7 +124,7 @@ class SignInPhraseText(BaseText):
 class RemindMeLaterButton(BaseButton):
     def __init__(self, driver):
         super(RemindMeLaterButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Remind me later']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Show me this again']")
 
 
 class AssetTextElement(BaseText):
@@ -194,7 +194,7 @@ class ViewInCryptoKittiesButton(BaseButton):
 class BackupRecoveryPhrase(BaseButton):
     def __init__(self, driver):
         super(BackupRecoveryPhrase, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Backup your seed phrase')
+        self.locator = self.Locator.text_selector('Back up your seed phrase')
 
     def navigate(self):
         from views.profile_view import ProfileView

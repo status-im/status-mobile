@@ -33,7 +33,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.create_user()
         sign_in_view.just_fyi("Enable mobile network to see popup and enable syncing")
         sign_in_view.toggle_mobile_data()
-        if not sign_in_view.element_by_text_part("Sync using Mobile data").is_element_displayed():
+        if not sign_in_view.element_by_text_part("Sync using mobile data?").is_element_displayed():
             self.driver.fail('No popup about Mobile data is shown')
         sign_in_view.wait_for_element_starts_with_text('Continue syncing').click()
 
