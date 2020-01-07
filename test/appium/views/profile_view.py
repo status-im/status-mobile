@@ -226,14 +226,6 @@ class RecoveryPhraseWordInput(BaseEditBox):
         super(RecoveryPhraseWordInput, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//android.widget.EditText')
 
-
-class OkGotItButton(BaseButton):
-
-    def __init__(self, driver):
-        super(OkGotItButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('OK, got it')
-
-
 class DebugModeToggle(BaseButton):
 
     def __init__(self, driver):
@@ -604,7 +596,6 @@ class ProfileView(BaseView):
         self.recovery_phrase_table = RecoveryPhraseTable(self.driver)
         self.recovery_phrase_word_number = RecoveryPhraseWordNumberText(self.driver)
         self.recovery_phrase_word_input = RecoveryPhraseWordInput(self.driver)
-        self.ok_got_it_button = OkGotItButton(self.driver)
 
         self.select_from_gallery_button = SelectFromGalleryButton(self.driver)
         self.capture_button = CaptureButton(self.driver)
