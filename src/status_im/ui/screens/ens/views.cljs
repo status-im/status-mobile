@@ -648,7 +648,7 @@
                    :content-type constants/content-type-text
                    :timestamp-str "9:41 AM"}]
       [react/view
-       [react/view {:padding-left 60}
+       [react/view {:padding-left 72}
         [message/message-author-name public-key]]
        [react/view {:flex-direction :row}
         [react/view {:padding-left 16 :padding-right 8 :padding-top 4}

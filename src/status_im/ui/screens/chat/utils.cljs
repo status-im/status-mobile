@@ -14,16 +14,28 @@
 (defn format-author [alias style name]
   (let [additional-styles (style false)]
     (if name
-      [react/text {:style (merge {:color colors/blue :font-size 13 :font-weight "500"} additional-styles)}
+      [react/text {:style (merge {:color       colors/blue
+                                  :font-size   13
+                                  :line-height 18
+                                  :font-weight "500"} additional-styles)}
        (str "@" (or (stateofus/username name) name))]
-      [react/text {:style (merge {:color colors/gray :font-size 12 :font-weight "400"} additional-styles)}
+      [react/text {:style (merge {:color       colors/gray
+                                  :font-size   12
+                                  :line-height 18
+                                  :font-weight "400"} additional-styles)}
        alias])))
 
+(def ^:private reply-symbol "↪ ")
+
 (defn format-reply-author [from alias username current-public-key style]
-  (or (and (= from current-public-key)
-           [react/text {:style (style true)}
-            (i18n/label :t/You)])
-      (format-author alias style username)))
+  (let [reply-name (or (some->> username
+                                (str "@")
+                                (str reply-symbol))
+                       (str reply-symbol alias))]
+    (or (and (= from current-public-key)
+             [react/text {:style (style true)}
+              (str reply-symbol (i18n/label :t/You))])
+        (format-author reply-name style false))))
 
 (def ^:private styling->prop
   {:bold      {:style {:font-weight "700"}}

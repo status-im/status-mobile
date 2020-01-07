@@ -50,12 +50,10 @@
     (when (or quote text)
       [react/view {:style (style/quoted-message-container outgoing)}
        [react/view {:style style/quoted-message-author-container}
-        [vector-icons/tiny-icon :tiny-icons/tiny-reply
-         {:color (if outgoing colors/white-transparent colors/gray)}]
-        (chat.utils/format-reply-author
+        [chat.utils/format-reply-author
          (or from (:from quote))
          alias ens-name current-public-key
-         (partial style/quoted-message-author outgoing))]
+         (partial style/quoted-message-author outgoing)]]
 
        [react/text {:style           (style/quoted-message-text outgoing)
                     :number-of-lines 5}
@@ -66,7 +64,7 @@
                :on-press #(re-frame/dispatch [:chat.ui/message-expand-toggled chat-id message-id])}
    (i18n/label (if expanded? :show-less :show-more))])
 
-(defn render-inline [message-text outgoing acc {:keys [type literal destination] :as node}]
+(defn render-inline [message-text outgoing acc {:keys [type literal destination]}]
   (case type
     ""
     (conj acc literal)
@@ -177,12 +175,12 @@
    {:justify-timestamp? true}])
 
 (defn emoji-message
-  [{:keys [content current-public-key alias] :as message}]
+  [{:keys [content current-public-key alias outgoing] :as message}]
   (let [response-to (:response-to content)]
     [message-view message
-     [react/view {:style (style/style-message-text false)}
+     [react/view {:style (style/style-message-text outgoing)}
       (when response-to
-        [quoted-message response-to (:quoted-message message) alias false current-public-key])
+        [quoted-message response-to (:quoted-message message) alias outgoing current-public-key])
       [react/text {:style (style/emoji-message message)}
        (:text content)]]]))
 
@@ -504,7 +502,8 @@
            from
            outgoing
            modal?
-           content] :as message} child]
+           content]
+    :as   message} child]
   [react/view (style/group-message-wrapper message)
    [react/view (style/message-body message)
     (when display-photo?
@@ -515,7 +514,8 @@
            [photos/member-photo from identicon]]])])
     [react/view (style/group-message-view outgoing display-photo?)
      (when display-username?
-       [react/touchable-opacity {:on-press #(re-frame/dispatch [:chat.ui/show-profile from])}
+       [react/touchable-opacity {:style    style/message-author-touchable
+                                 :on-press #(re-frame/dispatch [:chat.ui/show-profile from])}
         [message-author-name from alias]])
      [react/view {:style (style/timestamp-content-wrapper outgoing)}
       child]]]
