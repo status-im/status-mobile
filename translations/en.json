@@ -571,7 +571,7 @@
 	"keycard-cancel-setup-text": "This will cancel keycard setup. It's highly recommended to finish the setup in order to use keycard. Do you really want to cancel?",
 	"keycard-cancel-setup-title": "Dangerous operation",
 	"keycard-desc": "Own a Keycard? Store your keys on it; you’ll need it for transactions",
-	"keycard-has-multiaccount-on-it": "This card is out of storage space. To store new root keys on your Keycard, unlock the keys with your passcode and reset your card in Settings. If you are using a new phone or installation of Status, use "Add existing keys to"",
+	"keycard-has-multiaccount-on-it": "This card is out of storage space. To store new root keys on your Keycard, unlock the keys with your passcode and reset your card in Settings. If you are using a new phone or installation of Status, use \"Add existing keys to\"",
 	"keycard-existing-multiaccount": "You can't recover these keys because they are already on your phone",
 	"keycard-onboarding-finishing-header": "Finishing up",
 	"keycard-onboarding-intro-header": "Store your keys on Keycard",
