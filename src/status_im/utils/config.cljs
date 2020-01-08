@@ -34,6 +34,7 @@
 ;; NOTE: only disabled in releases
 (def local-notifications? (enabled? (get-config :LOCAL_NOTIFICATIONS "1")))
 (def blank-preview? (enabled? (get-config :BLANK_PREVIEW "1")))
+(def group-chat-enabled? (enabled? (get-config :GROUP_CHATS_ENABLED "0")))
 
 ;; CONFIG VALUES
 (def log-level
