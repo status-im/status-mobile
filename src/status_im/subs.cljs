@@ -84,6 +84,7 @@
 (reg-root-key-sub :ui/search :ui/search)
 (reg-root-key-sub :web3-node-version :web3-node-version)
 (reg-root-key-sub :keyboard-height :keyboard-height)
+(reg-root-key-sub :keyboard-max-height :keyboard-max-height)
 (reg-root-key-sub :sync-data :sync-data)
 (reg-root-key-sub :layout-height :layout-height)
 (reg-root-key-sub :mobile-network/remember-choice? :mobile-network/remember-choice?)
@@ -580,13 +581,37 @@
  (fn [ui-props [_ prop]]
    (get ui-props prop)))
 
+;; NOTE: The whole logic of stickers panel and input should be revised
+(re-frame/reg-sub
+ :chats/chat-panel-height
+ :<- [:keyboard-max-height]
+ (fn [kb-height]
+   (cond
+     (and platform/iphone-x? (pos? kb-height))
+     (- kb-height tabs.styles/minimized-tabs-height 34)
+
+     (pos? kb-height)
+     (- kb-height tabs.styles/minimized-tabs-height)
+
+     platform/iphone-x? 299
+
+     platform/ios? 258
+
+     :else 272)))
+
 (re-frame/reg-sub
  :chats/input-margin
  :<- [:keyboard-height]
- (fn [kb-height]
+ :<- [:chats/current-chat-ui-prop :input-bottom-sheet]
+ (fn [[kb-height input-bottom-sheet]]
    (cond
+     ;; During the transition of bottom sheet and close of keyboard happens
+     ;; The heights are summed up and input grows too much
+     (not (nil? input-bottom-sheet))
+     0
+
      (and platform/iphone-x? (> kb-height 0))
-     (- kb-height (* 2 tabs.styles/minimized-tabs-height))
+     (- kb-height tabs.styles/minimized-tabs-height 34)
 
      platform/ios?
      (+ kb-height (- (if (> kb-height 0)

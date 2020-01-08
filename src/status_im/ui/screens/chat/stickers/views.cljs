@@ -68,7 +68,7 @@
                             :font-size  17}}
         (i18n/label :t/recently-used-stickers)]])))
 
-(defn update-scroll-position [ref installed-packs selected-pack window-width]
+(defn update-scroll-position [ref installed-packs selected-pack window-width animated?]
   (when ref
     ;; bug on Android https://github.com/facebook/react-native/issues/24531
     (js/setTimeout
@@ -78,8 +78,8 @@
                  (* (inc (some #(when (= selected-pack (:id (second %))) (first %))
                                (map-indexed vector installed-packs)))
                     window-width))]
-         (.scrollTo ref #js {:x x :animated true})))
-     200)))
+         (.scrollTo ref #js {:x x :animated animated?})))
+     1)))
 
 (defn on-scroll [e installed-packs window-width]
   (let [num     (/ (.-nativeEvent.contentOffset.x e) window-width)
@@ -93,8 +93,8 @@
   (letsubs [ref   (atom nil)
             width [:dimensions/window-width]]
     {:component-will-update (fn [_ [_ installed-packs selected-pack]]
-                              (update-scroll-position @ref installed-packs selected-pack width))
-     :component-did-mount   #(update-scroll-position @ref installed-packs selected-pack width)}
+                              (update-scroll-position @ref installed-packs selected-pack width true))
+     :component-did-mount   #(update-scroll-position @ref installed-packs selected-pack width false)}
     [react/scroll-view {:style                             {:flex 1}
                         :horizontal                        true
                         :paging-enabled                    true
@@ -130,28 +130,32 @@
 
 (defview scroll-indicator []
   (letsubs [window-width [:dimensions/window-width]]
-    [react/view {:style {:margin-bottom    5 :height 2 :width indicator-width :border-radius 1
+    [react/view {:style {:height           2
+                         :width            indicator-width
+                         :border-radius    1
                          :margin-left      (+ dx (* icon-container (/ @scroll-x window-width)))
                          :background-color colors/blue}}]))
 
 (defview stickers-view []
   (letsubs [selected-pack   [:stickers/selected-pack]
             installed-packs [:stickers/installed-packs-vals]
-            bottom-anim-value  (anim/create-value (styles/stickers-panel-height))
+            panel-height [:chats/chat-panel-height]
+
+            bottom-anim-value  (anim/create-value @panel-height)
             alpha-value        (anim/create-value 0)]
     {:component-did-mount #(show-panel-anim bottom-anim-value alpha-value)}
     [react/animated-view {:style {:background-color :white
-                                  :height           (styles/stickers-panel-height)
+                                  :height           panel-height
                                   :transform        [{:translateY bottom-anim-value}]
                                   :opacity          alpha-value}}
      (cond
-       (= selected-pack :recent) [stickers-paging-panel installed-packs selected-pack]
+       (= selected-pack :recent)   [stickers-paging-panel installed-packs selected-pack]
        (not (seq installed-packs)) [no-stickers-yet-panel]
-       :else [stickers-paging-panel installed-packs selected-pack])
+       :else                       [stickers-paging-panel installed-packs selected-pack])
      [react/view {:style {:flex-direction :row :padding-horizontal 4}}
-      [pack-icon {:on-press #(do
-                               (re-frame/dispatch [:stickers/load-packs])
-                               (re-frame/dispatch [:navigate-to :stickers]))
+      [pack-icon {:on-press  #(do
+                                (re-frame/dispatch [:stickers/load-packs])
+                                (re-frame/dispatch [:navigate-to :stickers]))
                   :selected? false :background-color colors/blue}
        [vector-icons/icon :main-icons/add {:width 20 :height 20 :color colors/white}]]
       [react/view {:width 2}]
@@ -159,13 +163,13 @@
        [react/view
         [react/view {:style {:flex-direction :row}}
          [pack-icon {:id :recent :background-color colors/white}
-          [vector-icons/icon :stickers-icons/recent {:color colors/gray
-                                                     :width 44
+          [vector-icons/icon :stickers-icons/recent {:color  colors/gray
+                                                     :width  44
                                                      :height 44}]]
          (for [{:keys [id thumbnail]} installed-packs]
            ^{:key id}
-           [pack-icon {:id id
+           [pack-icon {:id               id
                        :background-color colors/white}
-            [react/image {:style {:width icon-size :height icon-size :border-radius (/ icon-size 2)}
+            [react/image {:style  {:width icon-size :height icon-size :border-radius (/ icon-size 2)}
                           :source {:uri (contenthash/url thumbnail)}}]])]
         [scroll-indicator]]]]]))
