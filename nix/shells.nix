@@ -1,13 +1,13 @@
 # This file defines custom shells as well as shortcuts
 # for accessing more nested shells.
-{ 
+{
   config ? {},
   pkgs ? import ./pkgs.nix { inherit config; }
 }:
 
 let
   # everything else we define in nix/ dir
-  targets = pkgs.callPackage ./targets.nix { };
+  targets = pkgs.callPackage ./targets.nix { inherit config; };
 
   # for calling lein targets in CI or Makefile
   leiningen-sh = pkgs.mkShell {
@@ -27,7 +27,7 @@ let
     name = "status-react-shell"; # for identifying all shells
     buildInputs = with pkgs; lib.unique ([
       # core utilities that should always be present in a shell
-      bash curl wget file unzip flock git gnumake jq ncurses 
+      bash curl wget file unzip flock git gnumake jq ncurses
       # build specific utilities
       clojure leiningen maven watchman
       # other nice to have stuff

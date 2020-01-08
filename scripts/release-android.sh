@@ -6,8 +6,13 @@ source "$_current_dir/lib/setup/path-support.sh"
 
 source_lib "platform.sh"
 
+statusGoConfig=''
+if [ -n "${STATUS_GO_SRC_OVERRIDE}" ]; then
+  statusGoConfig+="status_go.src_override=\"${STATUS_GO_SRC_OVERRIDE}\";"
+fi
+
 nixOpts=(
-  "--arg config {status_go.src_override=\"${STATUS_GO_SRC_OVERRIDE}\";}"
+  "--arg config {${statusGoConfig}}"
   "--arg env {BUILD_ENV=\"${BUILD_ENV}\";ANDROID_ABI_SPLIT=\"${ANDROID_ABI_SPLIT}\";ANDROID_ABI_INCLUDE=\"${ANDROID_ABI_INCLUDE}\";}"
   "--argstr build-type ${BUILD_TYPE}"
   "--argstr build-number ${BUILD_NUMBER}"

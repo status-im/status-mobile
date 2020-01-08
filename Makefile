@@ -276,7 +276,7 @@ lint: ##@test Run code style checks
 lint-fix: export TARGET := lein
 lint-fix: ##@test Run code style checks and fix issues
 	lein cljfmt fix
-	
+
 test: export TARGET := lein
 test: ##@test Run tests once in NodeJS
 	lein with-profile test doo node test once

@@ -1,4 +1,4 @@
-{ 
+{
   config ? {},
   pkgs ? import ./pkgs.nix { inherit config; }
 }:

@@ -1,4 +1,4 @@
-{ config, lib, stdenvNoCC, callPackage,status-go, 
+{ config, lib, stdenvNoCC, callPackage, status-go,
   localMavenRepoBuilder, composeXcodeWrapper, mkShell, mergeSh }:
 
 let
@@ -21,7 +21,7 @@ let
     fastlane
     status-go.android
     status-go.ios
-    androidPlatform 
+    androidPlatform
     iosPlatform
   ];
 

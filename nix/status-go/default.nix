@@ -131,7 +131,7 @@ let
       inherit buildInputs;
       shellHook = ''
         # These variables are used by the iOS build preparation section in nix/mobile/ios/default.nix
-        export RCTSTATUS_FILEPATH=${status-go-packages.ios}/lib/Statusgo.framework
+        export STATUS_GO_IOS_LIBDIR=${status-go-packages.ios}/lib/Statusgo.framework
       '';
     };
   };

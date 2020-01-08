@@ -1253,7 +1253,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     public void isDeviceRooted(final Callback callback) {
         callback.invoke(rootedDevice);
     }
-    
+
     @ReactMethod
     public void validateMnemonic(final String seed, final Callback callback) {
         Log.d(TAG, "validateMnemonic");

@@ -124,7 +124,7 @@ RCT_EXPORT_METHOD(initKeystore) {
                    ^(void)
                    {
                         NSString *res = StatusgoInitKeystore(keystoreDir.path);
-                        NSLog(@"StopNode result %@", res);
+                        NSLog(@"InitKeyStore result %@", res);
                    });
 }
 
@@ -434,7 +434,7 @@ RCT_EXPORT_METHOD(logout) {
     NSLog(@"Logout() method called");
 #endif
     NSString *result = StatusgoLogout();
-    
+
     NSLog(@"%@", result);
 }
 
