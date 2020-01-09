@@ -91,7 +91,7 @@
 (views/defview total-value []
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:portfolio-value]]
-    [react/view
+    [react/view {:style {:padding-horizontal 16}}
      [react/nested-text {:style {:font-size 32 :color colors/gray :font-weight "600"}}
       [{:style {:color colors/black}} portfolio-value]
       " "
@@ -157,8 +157,12 @@
 
 (views/defview accounts []
   (views/letsubs [accounts [:multiaccount/accounts]]
-    [react/scroll-view {:horizontal true}
-     [react/view {:flex-direction :row :padding-top 11 :padding-bottom 12}
+    [react/scroll-view {:horizontal                        true
+                        :shows-horizontal-scroll-indicator false}
+     [react/view {:flex-direction     :row
+                  :padding-top        11
+                  :padding-bottom     12
+                  :padding-horizontal 16}
       (for [account accounts]
         ^{:key account}
         [account-card account])
@@ -168,7 +172,7 @@
   [react/view {:flex 1}
    [react/scroll-view
     [accounts-options]
-    [react/view {:margin-top 8 :padding-horizontal 16}
+    [react/view {:margin-top 8}
      [total-value]
      [accounts]]
     [assets]
