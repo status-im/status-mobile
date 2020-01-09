@@ -300,7 +300,7 @@ class OpenInStatusButton(BaseButton):
 class OkGotItButton(BaseButton):
     def __init__(self,driver):
         super(OkGotItButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='OKay, got it']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Okay, got it']")
 
     def click(self):
         self.wait_for_element().click()
