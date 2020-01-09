@@ -140,6 +140,11 @@ pod-install: export TARGET := ios
 pod-install: ##@prepare Run 'pod install' to install podfiles and update Podfile.lock
 	cd ios && pod install; cd --
 
+update-fleets: ##@prepare Download up-to-date JSON file with current fleets state
+	curl -s https://fleets.status.im/ \
+		| jq --indent 4 --sort-keys . \
+		> resources/config/fleets.json
+
 #----------------
 # Release builds
 #----------------
