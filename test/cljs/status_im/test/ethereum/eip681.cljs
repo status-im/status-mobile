@@ -36,7 +36,10 @@
   (is (= {:address "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" :chain-id 1 :function-name "transfer" :gas "100" :function-arguments {:address "0x8e23ee67d1332ad560396262c48ffbb01f93d052" :uint256 "1"}}
          (eip681/parse-uri "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7/transfer?address=0x8e23ee67d1332ad560396262c48ffbb01f93d052&uint256=1&gas=100")))
   (is (= {:address "snt.thetoken.eth" :chain-id 1 :function-name "transfer" :gas "100" :function-arguments {:address "gimme.eth" :uint256 "1"}}
-         (eip681/parse-uri "ethereum:pay-snt.thetoken.eth/transfer?address=gimme.eth&uint256=1&gas=100"))))
+         (eip681/parse-uri "ethereum:pay-snt.thetoken.eth/transfer?address=gimme.eth&uint256=1&gas=100")))
+  (is (= {:address "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" :value "1e18" :chain-id 1} (eip681/parse-uri " ethereum:pay-0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7?value=1e18 ")))
+  (is (= {:address "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" :value "1e18" :gas "5000" :chain-id 3} (eip681/parse-uri " ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7@3?value=1e18&gas=5000 ")))
+  (is (= {:address "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" :chain-id 3} (eip681/parse-uri "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7@3 ?value=1e18&gas=5000"))))
 
 (def all-tokens
   {:mainnet {"0x744d70fdbe2ba4cf95131626614a1763df805b9e" {:address  "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
