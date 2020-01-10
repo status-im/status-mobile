@@ -9,6 +9,7 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
             [status-im.wallet.core :as wallet]
+            [status-im.ui.screens.navigation :as navigation]
             [status-im.multiaccounts.update.core :as multiaccounts.update]))
 
 (re-frame/reg-fx
@@ -165,6 +166,7 @@
                   :error (i18n/label :t/wrong-contract)})}))
 
 (fx/defn add-custom-token
+  {:events [:wallet.custom-token.ui/add-pressed]}
   [{:keys [db] :as cofx}]
   (let [{:keys [contract name symbol decimals]} (get db :wallet/custom-token-screen)
         chain-key (ethereum/chain-keyword db)
@@ -174,19 +176,27 @@
                    :symbol   symbol
                    :decimals (int decimals)
                    :color    (rand-nth colors/chat-colors)}]
-    (fx/merge {:db (assoc-in db [:wallet/all-tokens chain-key contract]
+    (fx/merge cofx
+              {:db (assoc-in db [:wallet/all-tokens chain-key contract]
                              (assoc new-token :custom? true))
                ::json-rpc/call [{:method "wallet_addCustomToken"
-                                 :params [new-token]}]}
-              (wallet/add-custom-token new-token))))
+                                 :params [new-token]
+                                 :on-success #()}]}
+              (wallet/add-custom-token new-token)
+              (navigation/navigate-back))))
 
 (fx/defn remove-custom-token
-  [{:keys [db] :as cofx} {:keys [address] :as token}]
+  {:events [:wallet.custom-token.ui/remove-pressed]}
+  [{:keys [db] :as cofx} {:keys [address] :as token} navigate-back?]
   (let [chain-key (ethereum/chain-keyword db)]
-    (fx/merge {:db (update-in db [:wallet/all-tokens chain-key] dissoc address)
+    (fx/merge cofx
+              {:db (update-in db [:wallet/all-tokens chain-key] dissoc address)
                ::json-rpc/call [{:method "wallet_deleteCustomToken"
-                                 :params [address]}]}
-              (wallet/remove-custom-token token))))
+                                 :params [address]
+                                 :on-success #()}]}
+              (wallet/remove-custom-token token)
+              (when navigate-back?
+                (navigation/navigate-back)))))
 
 (fx/defn field-is-edited
   [{:keys [db] :as cofx} field-key value]

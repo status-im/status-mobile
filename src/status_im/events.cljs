@@ -1423,21 +1423,6 @@
  (fn [cofx [_ field-key value]]
    (custom-tokens/field-is-edited cofx field-key value)))
 
-(handlers/register-handler-fx
- :wallet.custom-token.ui/add-pressed
- (fn [cofx _]
-   (fx/merge cofx
-             (custom-tokens/add-custom-token)
-             (navigation/navigate-back))))
-
-(handlers/register-handler-fx
- :wallet.custom-token.ui/remove-pressed
- (fn [cofx [_ token navigate-back?]]
-   (fx/merge cofx
-             (custom-tokens/remove-custom-token token)
-             (when navigate-back?
-               (navigation/navigate-back)))))
-
 ;; ethereum subscriptions events
 
 (handlers/register-handler-fx
