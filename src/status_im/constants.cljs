@@ -82,7 +82,8 @@
 (def default-multiaccount
   {:preview-privacy? config/blank-preview?
    :wallet/visible-tokens {:mainnet #{:SNT}}
-   :currency :usd})
+   :currency :usd
+   :log-level config/log-level-status-go})
 
 (defn default-visible-tokens [chain]
   (get-in default-multiaccount [:wallet/visible-tokens chain]))

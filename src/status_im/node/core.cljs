@@ -69,12 +69,6 @@
   [limit nodes]
   (take limit (shuffle nodes)))
 
-(defn get-log-level
-  [multiaccount-settings]
-  (or (:log-level multiaccount-settings)
-      (if utils.platform/desktop? ""
-          config/log-level-status-go)))
-
 (def default-fleets (slurp "resources/config/fleets.json"))
 
 (defn fleets [{:keys [custom-fleets]}]
