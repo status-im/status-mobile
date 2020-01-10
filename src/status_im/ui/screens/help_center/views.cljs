@@ -17,6 +17,12 @@
                  "https://status.im/docs/FAQs.html"))
     :accessories         [:chevron]}
    {:type                :small
+    :title               :t/glossary
+    :accessibility-label :glossary-button
+    :on-press
+    #(re-frame/dispatch [:navigate-to :glossary])
+    :accessories         [:chevron]}
+   {:type                :small
     :title               :t/submit-bug
     :accessibility-label :submit-bug-button
     :on-press

@@ -25,6 +25,7 @@
                      :sync-settings
                      :advanced-settings
                      :help-center
+                     :glossary
                      :about-app
                      :manage-dapps-permissions
                      :network-settings

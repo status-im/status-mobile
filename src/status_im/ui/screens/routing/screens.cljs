@@ -32,6 +32,7 @@
             [status-im.ui.screens.keycard.recovery.views :as keycard.recovery]
             [status-im.ui.screens.keycard.views :as keycard]
             [status-im.ui.screens.help-center.views :as help-center]
+            [status-im.ui.screens.glossary.view :as glossary]
             [status-im.ui.screens.home.views :as home]
             [status-im.ui.screens.intro.views :as intro]
             [status-im.ui.screens.log-level-settings.views :as log-level-settings]
@@ -164,6 +165,7 @@
    :sync-settings                                    sync-settings/sync-settings
    :advanced-settings                                advanced-settings/advanced-settings
    :help-center                                      help-center/help-center
+   :glossary                                         glossary/glossary
    :about-app                                        about-app/about-app
    :manage-dapps-permissions                         dapps-permissions/manage
    :network-settings                                 network/network-settings-view
