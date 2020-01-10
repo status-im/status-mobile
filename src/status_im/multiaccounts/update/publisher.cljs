@@ -1,6 +1,8 @@
 (ns status-im.multiaccounts.update.publisher
-  (:require [status-im.constants :as constants]
+  (:require [taoensso.timbre :as log]
+            [status-im.constants :as constants]
             [status-im.multiaccounts.update.core :as multiaccounts]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.pairing.core :as pairing]
             [status-im.transport.shh :as shh]))
 
@@ -17,21 +19,10 @@
                (pos? last-updated)
                (< publish-updates-interval
                   (- now last-updated)))
-      (let [public-keys  (multiaccounts/contact-public-keys {:db db})
-            payload      (multiaccounts/multiaccount-update-message {:db db})
-            sync-message (pairing/sync-installation-multiaccount-message {:db db})]
-        (doseq [pk public-keys]
-          (shh/send-direct-message! {:pubKey pk
-                                     :sig my-public-key
-                                     :chat constants/contact-discovery
-                                     :payload payload}
-                                    [:multiaccounts.update.callback/published]
-                                    [:multiaccounts.update.callback/failed-to-publish]
-                                    1))
-        (shh/send-direct-message! {:pubKey my-public-key
-                                   :sig my-public-key
-                                   :chat constants/contact-discovery
-                                   :payload sync-message}
-                                  [:multiaccounts.update.callback/published]
-                                  [:multiaccounts.update.callback/failed-to-publish]
-                                  1)))))
+      (let [multiaccount (:multiaccount db)
+            {:keys [name preferred-name photo-path address]} multiaccount]
+
+        (log/debug "sending contact updates")
+        (json-rpc/call {:method "shhext_sendContactUpdates"
+                        :params [(or preferred-name name) photo-path]
+                        :on-success #(log/debug "sent contact updates")})))))

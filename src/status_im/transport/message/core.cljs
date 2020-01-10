@@ -4,7 +4,10 @@
             [re-frame.core :as re-frame]
             [status-im.chat.models.message :as models.message]
             [status-im.chat.models :as models.chat]
+            [status-im.contact.core :as models.contact]
+            [status-im.pairing.core :as models.pairing]
             [status-im.data-store.messages :as data-store.messages]
+            [status-im.data-store.contacts :as data-store.contacts]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.constants :as constants]
             [status-im.utils.handlers :as handlers]
@@ -57,16 +60,32 @@
   ;; over it
   (models.chat/ensure-chat cofx (dissoc chat :unviewed-messages-count)))
 
-(fx/defn handle-message-2 [cofx message]
+(fx/defn handle-contact [cofx contact]
+  (models.contact/ensure-contact cofx contact))
+
+(fx/defn handle-message [cofx message]
   (fx/merge cofx
             (models.message/receive-one message)
             (ens/verify-names-from-message message (:from message))))
 
 (fx/defn process-response [cofx response-js]
   (let [chats (.-chats response-js)
+        contacts (.-contacts response-js)
+        installations (.-installations response-js)
         raw-messages (.-rawMessages response-js)
         messages (.-messages response-js)]
     (cond
+      (seq installations)
+      (let [installation (.pop installations)]
+        (fx/merge cofx
+                  {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (models.pairing/handle-installation (clj-bean/->clj installation))))
+
+      (seq contacts)
+      (let [contact (.pop contacts)]
+        (fx/merge cofx
+                  {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (handle-contact (-> contact (clj-bean/->clj) (data-store.contacts/<-rpc)))))
       (seq chats)
       (let [chat (.pop chats)]
         (fx/merge cofx
@@ -88,7 +107,7 @@
       (let [message (.pop messages)]
         (fx/merge cofx
                   {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
-                  (handle-message-2 (-> message (clj-bean/->clj) (data-store.messages/<-rpc))))))))
+                  (handle-message (-> message (clj-bean/->clj) (data-store.messages/<-rpc))))))))
 
 (handlers/register-handler-fx
  ::process

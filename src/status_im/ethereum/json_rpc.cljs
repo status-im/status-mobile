@@ -30,6 +30,8 @@
    "shh_generateSymKeyFromPassword" {}
    "shh_getSymKey" {}
    "shh_markTrustedPeer" {}
+   "shhext_sendPairInstallation" {}
+   "shhext_syncDevices" {}
    "shhext_requestMessages" {}
    "shhext_sendDirectMessage" {}
    "shhext_sendPublicMessage" {}
@@ -49,6 +51,8 @@
    "shhext_loadFilters" {}
    "shhext_loadFilter" {}
    "shhext_removeFilters" {}
+   "shhext_sendContactUpdate" {}
+   "shhext_sendContactUpdates" {}
    "shhext_chats" {}
    "shhext_addSystemMessages" {}
    "shhext_deleteMessagesFrom" {}

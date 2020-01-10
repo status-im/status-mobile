@@ -4,8 +4,6 @@
             [status-im.utils.platform :as platform]
             [status-im.ui.components.react :as react]
             [reagent.core :as reagent]
-            status-im.transport.impl.receive
-            status-im.transport.impl.send
             [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.utils.logging.core :as utils.logs]
             cljs.core.specs.alpha))

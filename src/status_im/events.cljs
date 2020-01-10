@@ -507,10 +507,7 @@
 (handlers/register-handler-fx
  :chat.ui/start-public-chat
  (fn [cofx [_ topic opts]]
-   (fx/merge
-    cofx
-    (chat/start-public-chat topic opts)
-    (pairing/sync-public-chat topic))))
+   (chat/start-public-chat cofx topic opts)))
 
 (handlers/register-handler-fx
  :chat.ui/remove-chat
@@ -1248,7 +1245,8 @@
 (handlers/register-handler-fx
  :pairing.ui/pair-devices-pressed
  (fn [cofx _]
-   (pairing/pair-installation cofx)))
+   (log/info "Sending pair installation")
+   (pairing/send-pair-installation cofx)))
 
 (handlers/register-handler-fx
  :pairing.ui/set-name-pressed

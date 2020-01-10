@@ -43,8 +43,6 @@
                   :on-success       on-success
                   :on-failure       on-failure}))
 
-(def contact-batch-n 4)
-
 (defn compare-installation
   "Sort installations, first by our installation-id, then on whether is
   enabled, and last on timestamp value"
@@ -66,17 +64,11 @@
   [our-installation-id installations]
   (sort (partial compare-installation our-installation-id) installations))
 
-(defn pair-installation [cofx]
-  (let [installation-id (get-in cofx [:db :multiaccount :installation-id])
-        installation-name (get-in cofx [:db :pairing/installations installation-id :name])
-        device-type     utils.platform/os]
-    (protocol/send (transport.pairing/PairInstallation. installation-id device-type installation-name nil) nil cofx)))
-
 (defn send-pair-installation
-  [cofx payload]
-  (let [current-public-key (multiaccounts.model/current-public-key cofx)]
-    {:shh/send-pairing-message {:src     current-public-key
-                                :payload payload}}))
+  [cofx]
+  {::json-rpc/call [{:method "shhext_sendPairInstallation"
+                     :params []
+                     :on-success #(log/info "sent pair installation message")}]})
 
 (defn merge-contact [local remote]
   ;;TODO we don't sync contact/blocked for now, it requires more complex handling
@@ -135,46 +127,6 @@
                 #(when-not (or (:pairing/prompt-user-pop-up db)
                                (= :installations (:view-id db)))
                    (prompt-user-on-new-installation %))))))
-
-(defn sync-installation-multiaccount-message [{:keys [db]}]
-  (let [multiaccount (-> db
-                         :multiaccount
-                         (select-keys multiaccount-mergeable-keys))]
-    (transport.pairing/SyncInstallation. {} multiaccount {})))
-
-(defn- contact->pairing [contact]
-  (cond-> (-> contact
-              (dissoc :photo-path)
-              (update :system-tags disj :contact/blocked))
-    ;; for compatibility with version < contact.v7
-    (contact.db/added? contact) (assoc :pending? false)
-    (contact.db/legacy-pending? contact) (assoc :pending? true)))
-
-(defn- contact-batch->sync-installation-message [batch]
-  (let [contacts-to-sync
-        (reduce (fn [acc {:keys [public-key system-tags] :as contact}]
-                  (assoc acc
-                         public-key
-                         (contact->pairing contact)))
-                {}
-                batch)]
-    (transport.pairing/SyncInstallation. contacts-to-sync {} {})))
-
-(defn- chats->sync-installation-messages [{:keys [db]}]
-  (->> db
-       :chats
-       vals
-       (filter :public?)
-       (filter :is-active)
-       (map #(select-keys % [:chat-id :public?]))
-       (map #(transport.pairing/SyncInstallation. {} {} %))))
-
-(defn sync-installation-messages [{:keys [db] :as cofx}]
-  (let [contacts (contact.db/get-active-contacts (:contacts/contacts db))
-        contact-batches (partition-all contact-batch-n contacts)]
-    (concat (mapv contact-batch->sync-installation-message contact-batches)
-            [(sync-installation-multiaccount-message cofx)]
-            (chats->sync-installation-messages cofx))))
 
 (fx/defn enable [{:keys [db]} installation-id]
   {:db (assoc-in db
@@ -253,116 +205,19 @@
  :pairing/get-our-installations
  get-our-installations)
 
-(fx/defn send-sync-installation
-  [cofx payload]
-  (let [current-public-key (multiaccounts.model/current-public-key cofx)]
-    {:shh/send-direct-message
-     [{:src     current-public-key
-       :dst     current-public-key
-       :payload payload}]}))
+(defn send-installation-messages [{:keys [db]}]
+  (let [multiaccount (:multiaccount db)
+        {:keys [name preferred-name photo-path]} multiaccount]
+    {::json-rpc/call [{:method "shhext_syncDevices"
+                       :params [(or preferred-name name) photo-path]
+                       :on-success #(log/debug "successfully synced devices")}]}))
 
-(fx/defn send-installation-message-fx [cofx payload]
-  (when (pairing.utils/has-paired-installations? cofx)
-    (protocol/send payload nil cofx)))
-
-(fx/defn sync-public-chat [cofx chat-id]
-  (let [sync-message (transport.pairing/SyncInstallation. {} {} {:public? true
-                                                                 :chat-id chat-id})]
-    (send-installation-message-fx cofx sync-message)))
-
-(fx/defn sync-contact
-  [cofx {:keys [public-key] :as contact}]
-  (let [sync-message (transport.pairing/SyncInstallation.
-                      {public-key (cond-> contact
-                                    ;; for compatibility with version < contact.v7
-                                    (contact.db/added? contact) (assoc :pending? false)
-                                    (contact.db/legacy-pending? contact) (assoc :pending? true))}
-                      {} {})]
-    (send-installation-message-fx cofx sync-message)))
-
-(defn send-installation-messages [cofx]
-  ;; The message needs to be broken up in chunks as we hit the whisper size limit
-  (let [sync-messages (sync-installation-messages cofx)
-        sync-messages-fx (map send-installation-message-fx sync-messages)]
-    (apply fx/merge cofx sync-messages-fx)))
-
-(defn ensure-photo-path
-  "Make sure a photo path is there, generate otherwise"
-  [contacts]
-  (reduce-kv (fn [acc k {:keys [public-key photo-path] :as v}]
-               (assoc acc k
-                      (assoc
-                       v
-                       :photo-path
-                       (if (string/blank? photo-path)
-                         (identicon/identicon public-key)
-                         photo-path))))
-             {}
-             contacts))
-
-(defn ensure-system-tags
-  "Make sure system tags is there"
-  [contacts]
-  (reduce-kv (fn [acc k {:keys [system-tags] :as v}]
-               (assoc acc k
-                      (assoc
-                       v
-                       :system-tags
-                       (if system-tags
-                         system-tags
-                         (if (and (contains? v :pending?) (not (:pending? v)))
-                           #{:contact/added}
-                           #{:contact/request-received})))))
-             {}
-             contacts))
-
-(defn handle-sync-installation
-  [{:keys [db] :as cofx} {:keys [contacts account chat]} sender]
-  (let [confirmation  (:metadata cofx)]
-    (when (= sender (multiaccounts.model/current-public-key cofx))
-      (let [new-contacts  (when (seq contacts)
-                            (vals (merge-contacts (:contacts/contacts db)
-                                                  ((comp ensure-photo-path
-                                                         ensure-system-tags) contacts))))
-            {old-name :name
-             old-photo-path :photo-path
-             old-last-updated :last-updated
-             :as multiaccount} (:multiaccount db)
-            {:keys [name photo-path last-updated]}
-            (merge-multiaccount multiaccount account)
-            contacts-fx (when new-contacts
-                          (mapv contact/upsert-contact new-contacts))]
-        (apply fx/merge
-               cofx
-               (concat
-                [{:db (-> db
-                          (assoc-in [:multiaccount :name] name)
-                          (assoc-in [:multiaccount :last-updated] last-updated)
-                          (assoc-in [:multiaccount :photo-path] photo-path))
-                  ::json-rpc/call
-                  [(when (not= old-name name)
-                     {:method "settings_saveConfig"
-                      :params [:name name]
-                      :on-success #(log/debug "handled sync of name field successfully")})
-                   (when (not= old-photo-path photo-path)
-                     {:method "settings_saveConfig"
-                      :params [:photo-path photo-path]
-                      :on-success #(log/debug "handled sync of photo-path field successfully")})
-                   (when (not= old-last-updated last-updated)
-                     {:method "settings_saveConfig"
-                      :params [:last-updated last-updated]
-                      :on-success #(log/debug "handled sync of last-updated field successfully")})]}
-                 #(when (:public? chat)
-                    (models.chat/start-public-chat % (:chat-id chat) {:dont-navigate? true}))]
-                contacts-fx))))))
-
-(defn handle-pair-installation
-  [{:keys [db] :as cofx} {:keys [name installation-id
-                                 device-type]} timestamp sender]
-  (when (and (= sender (multiaccounts.model/current-public-key cofx))
-             (not= (get-in db [:multiaccount :installation-id]) installation-id))
-    {:pairing/set-installation-metadata [[installation-id {:name name
-                                                           :deviceType device-type}]]}))
+(defn installation<-rpc [{:keys [metadata id enabled]}]
+  {:installation-id id
+   :name (:name metadata)
+   :timestamp (:timestamp metadata)
+   :device-type (:deviceType metadata)
+   :enabled? enabled})
 
 (fx/defn update-installation [{:keys [db]} installation-id metadata]
   {:db (update-in db [:pairing/installations installation-id]
@@ -371,14 +226,13 @@
                   :name (:name metadata)
                   :device-type (:deviceType metadata))})
 
+(fx/defn handle-installation [{:keys [db]} {:keys [id] :as i}]
+  {:db (assoc-in db [:pairing/installations id] (installation<-rpc i))})
+
 (fx/defn load-installations [{:keys [db]} installations]
   {:db (assoc db :pairing/installations (reduce
-                                         (fn [acc {:keys [metadata id enabled] :as i}]
+                                         (fn [acc {:keys [id] :as i}]
                                            (assoc acc id
-                                                  {:installation-id id
-                                                   :name (:name metadata)
-                                                   :timestamp (:timestamp metadata)
-                                                   :device-type (:deviceType metadata)
-                                                   :enabled? enabled}))
+                                                  (installation<-rpc i)))
                                          {}
                                          installations))})

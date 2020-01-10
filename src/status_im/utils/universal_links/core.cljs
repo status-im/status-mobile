@@ -71,10 +71,7 @@
 
 (fx/defn handle-public-chat [cofx public-chat]
   (log/info "universal-links: handling public chat" public-chat)
-  (fx/merge
-   cofx
-   (chat/start-public-chat public-chat {})
-   (pairing/sync-public-chat public-chat)))
+  (chat/start-public-chat cofx public-chat {}))
 
 (fx/defn handle-view-profile [{:keys [db] :as cofx} public-key]
   (log/info "universal-links: handling view profile" public-key)

@@ -98,8 +98,13 @@
   (let [chat (merge
               (or (get (:chats db) chat-id)
                   (create-new-chat chat-id cofx))
-              chat-props)]
-    {:db (update-in db [:chats chat-id] merge chat)}))
+              chat-props)
+        new? (not (get-in db [:chats chat-id]))
+        public? (public-chat? chat)]
+    (fx/merge cofx
+              {:db (update-in db [:chats chat-id] merge chat)}
+              (when (and public? new?)
+                (transport.filters/load-chat chat-id)))))
 
 (fx/defn upsert-chat
   "Upsert chat when not deleted"
