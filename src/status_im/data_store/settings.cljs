@@ -25,6 +25,12 @@
              {}
              custom-bootnodes))
 
+(defn rpc->stickers-packs [stickers-packs]
+  (reduce-kv (fn [acc pack-id stickers-pack]
+               (assoc acc (js/parseInt (name pack-id)) stickers-pack))
+             {}
+             stickers-packs))
+
 (defn rpc->settings [settings]
   (-> settings
       (update :dapps-address eip55/address->checksum)
@@ -32,4 +38,5 @@
       (update :networks/networks rpc->networks)
       (update :wallet/visible-tokens rpc->visible-tokens)
       (update :pinned-mailservers rpc->pinned-mailservers)
+      (update :stickers/packs-installed rpc->stickers-packs)
       (update :currency keyword)))
