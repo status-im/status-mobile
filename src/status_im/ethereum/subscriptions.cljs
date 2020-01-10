@@ -48,7 +48,7 @@
         chain (ethereum/chain-keyword db)
         chain-tokens (into {} (map (juxt :address identity)
                                    (tokens/tokens-for all-tokens chain)))]
-    {:db (update-in db [:wallet :transactions]
+    {:db (update-in db [:wallet :accounts]
                     wallet/remove-transactions-since-block block-number)
      ::transactions/get-transfers {:chain-tokens chain-tokens
                                    :from-block block-number}}))

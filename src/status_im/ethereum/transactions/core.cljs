@@ -113,8 +113,12 @@
 (fx/defn check-watched-transactions
   [{:keys [db] :as cofx}]
   (let [watched-transactions
-        (select-keys (get-in db [:wallet :transactions])
-                     (keys (get db :ethereum/watched-transactions)))]
+        (reduce-kv (fn [acc _ {:keys [transactions]}]
+                     (merge acc
+                            (select-keys transactions
+                                         (keys (get db :ethereum/watched-transactions)))))
+                   {}
+                   (get-in db [:wallet :accounts]))]
     (apply fx/merge
            cofx
            (map (fn [[_ transaction]]
@@ -150,12 +154,6 @@
                                                                                    #{}
                                                                                    transfers)))))]
     (apply fx/merge cofx effects)))
-
-(fx/defn handle-token-history
-  [{:keys [db]} transactions]
-  {:db (update-in db
-                  [:wallet :transactions]
-                  merge transactions)})
 
 (re-frame/reg-fx
  ::get-transfers

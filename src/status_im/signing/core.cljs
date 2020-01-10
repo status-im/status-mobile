@@ -96,11 +96,10 @@
                                          :cb       #(re-frame/dispatch [:signing/transaction-completed % tx-obj-to-send])}})))))
 
 (fx/defn prepare-unconfirmed-transaction
-  [{:keys [db now]} hash {:keys [value gasPrice gas data to from]} symbol]
+  [{:keys [db now]} hash {:keys [value gasPrice gas data to from]} symbol amount]
   (let [all-tokens (:wallet/all-tokens db)
-        chain      (:chain db)
-        token      (tokens/symbol->token all-tokens (keyword chain) symbol)]
-    {:db (assoc-in db [:wallet :transactions hash]
+        token      (tokens/symbol->token all-tokens (ethereum/chain-keyword db) symbol)]
+    {:db (assoc-in db [:wallet :accounts from :transactions hash]
                    {:timestamp (str now)
                     :to        to
                     :from      from
@@ -109,7 +108,9 @@
                     :data      data
                     :token     token
                     :symbol    symbol
-                    :value     (money/to-fixed (money/bignumber value))
+                    :value     (if token
+                                 (money/unit->token amount (:decimals token))
+                                 (money/to-fixed (money/bignumber value)))
                     :gas-price (money/to-fixed (money/bignumber gasPrice))
                     :gas-limit (money/to-fixed (money/bignumber gas))})}))
 
@@ -204,11 +205,11 @@
 
 (fx/defn transaction-result
   [{:keys [db] :as cofx} result tx-obj]
-  (let [{:keys [on-result symbol]} (get db :signing/tx)]
+  (let [{:keys [on-result symbol amount]} (get db :signing/tx)]
     (fx/merge cofx
               {:db                              (dissoc db :signing/tx :signing/in-progress? :signing/sign)
                :signing/show-transaction-result nil}
-              (prepare-unconfirmed-transaction result tx-obj symbol)
+              (prepare-unconfirmed-transaction result tx-obj symbol amount)
               (check-queue)
               #(when on-result
                  {:dispatch (conj on-result result)}))))

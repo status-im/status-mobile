@@ -1430,16 +1430,6 @@
  (fn [cofx [_ id handler]]
    (ethereum.subscriptions/register-subscription cofx id handler)))
 
-(handlers/register-handler-fx
- :ethereum.transactions.callback/etherscan-error
- (fn [cofx [event error]]
-   (log/info event error)))
-
-(handlers/register-handler-fx
- :ethereum.transactions.callback/fetch-token-history-success
- (fn [cofx [_ transactions]]
-   (ethereum.transactions/handle-token-history cofx transactions)))
-
 ;; wallet events
 
 (handlers/register-handler-fx
