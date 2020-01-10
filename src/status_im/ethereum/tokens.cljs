@@ -74,7 +74,7 @@
                     :decimals 18}
                    {:symbol   :MKR
                     :name     "MKR"
-                    :address  "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"
+                    :address  "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2"
                     :decimals 18}
                    {:symbol   :EOS
                     :name     "EOS"
@@ -82,7 +82,7 @@
                     :decimals 18}
                    {:symbol   :OMG
                     :name     "OMGToken"
-                    :address  "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07"
+                    :address  "0xd26114cd6ee289accf82350c8d8487fedb8a0c07"
                     :decimals 18}
                    {:symbol   :PPT
                     :name     "Populous Platform"
@@ -90,7 +90,7 @@
                     :decimals 8}
                    {:symbol   :REP
                     :name     "Reputation"
-                    :address  "0x1985365e9f78359a9B6AD760e32412f4a445E862"
+                    :address  "0x1985365e9f78359a9b6ad760e32412f4a445e862"
                     :decimals 18}
                    {:symbol   :POWR
                     :name     "PowerLedger"
@@ -98,23 +98,23 @@
                     :decimals 6}
                    {:symbol   :PAY
                     :name     "TenX Pay Token"
-                    :address  "0xB97048628DB6B661D4C2aA833e95Dbe1A905B280"
+                    :address  "0xb97048628db6b661d4c2aa833e95dbe1a905b280"
                     :decimals 18}
                    {:symbol   :VRS
                     :name     "Veros"
-                    :address  "0x92E78dAe1315067a8819EFD6dCA432de9DCdE2e9"
+                    :address  "0x92e78dae1315067a8819efd6dca432de9dcde2e9"
                     :decimals 6}
                    {:symbol   :GNT
                     :name     "Golem Network Token"
-                    :address  "0xa74476443119A942dE498590Fe1f2454d7D4aC0d"
+                    :address  "0xa74476443119a942de498590fe1f2454d7d4ac0d"
                     :decimals 18}
                    {:symbol   :SALT
                     :name     "Salt"
-                    :address  "0x4156D3342D5c385a87D264F90653733592000581"
+                    :address  "0x4156d3342d5c385a87d264f90653733592000581"
                     :decimals 8}
                    {:symbol   :BNB
                     :name     "BNB"
-                    :address  "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
+                    :address  "0xb8c77482e45f1f44de1745f52c74426c631bdd52"
                     :decimals 18}
                    {:symbol   :BAT
                     :name     "Basic Attention Token"
@@ -124,10 +124,10 @@
                     :name     "Kyber Network Crystal"
                     :address  "0xdd974d5c2e2928dea5f71b9825b8b646686bd200"
                     :decimals 18}
-                   {:symbol               :DGD
-                    :name                 "Digix DAO"
-                    :address              "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a"
-                    :decimals             9
+                   {:symbol   :DGD
+                    :name     "Digix DAO"
+                    :address  "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a"
+                    :decimals 9
                     :skip-decimals-check? true}
                    {:symbol   :AE
                     :name     "Aeternity"
@@ -175,7 +175,7 @@
                     :decimals 8}
                    {:symbol   :ICN
                     :name     "ICONOMI"
-                    :address  "0x888666CA69E0f178DED6D75b5726Cee99A87D698"
+                    :address  "0x888666ca69e0f178ded6d75b5726cee99a87d698"
                     :decimals 18}
                    {:symbol   :WTC
                     :name     "Walton Token"
@@ -195,11 +195,11 @@
                     :decimals 18}
                    {:symbol   :MTL
                     :name     "Metal"
-                    :address  "0xF433089366899D83a9f26A773D59ec7eCF30355e"
+                    :address  "0xf433089366899d83a9f26a773d59ec7ecf30355e"
                     :decimals 8}
                    {:symbol   :PPP
                     :name     "PayPie"
-                    :address  "0xc42209aCcC14029c1012fB5680D95fBd6036E2a0"
+                    :address  "0xc42209accc14029c1012fb5680d95fbd6036e2a0"
                     :decimals 18}
                    {:symbol   :LINK
                     :name     "ChainLink Token"
@@ -211,24 +211,24 @@
                     :decimals 18}
                    {:symbol   :ANT
                     :name     "Aragon Network Token"
-                    :address  "0x960b236A07cf122663c4303350609A66A7B288C0"
+                    :address  "0x960b236a07cf122663c4303350609a66a7b288c0"
                     :decimals 18}
                    {:symbol   :MGO
                     :name     "MobileGo Token"
-                    :address  "0x40395044Ac3c0C57051906dA938B54BD6557F212"
+                    :address  "0x40395044ac3c0c57051906da938b54bd6557f212"
                     :decimals 8}
                    {:symbol   :MCO
                     :name     "Monaco"
                     :address  "0xb63b606ac810a52cca15e44bb630fd42d8d1d83d"
                     :decimals 8}
-                   {:symbol               :LRC
-                    :name                 "loopring"
-                    :address              "0xEF68e7C694F40c8202821eDF525dE3782458639f"
-                    :decimals             18
+                   {:symbol   :LRC
+                    :name     "loopring"
+                    :address  "0xef68e7c694f40c8202821edf525de3782458639f"
+                    :decimals 18
                     :skip-decimals-check? true}
                    {:symbol   :ZSC
                     :name     "Zeus Shield Coin"
-                    :address  "0x7A41e0517a5ecA4FdbC7FbebA4D4c47B9fF6DC63"
+                    :address  "0x7a41e0517a5eca4fdbc7fbeba4d4c47b9ff6dc63"
                     :decimals 18}
                    {:symbol   :DATA
                     :name     "Streamr DATAcoin"
@@ -240,7 +240,7 @@
                     :decimals 18}
                    {:symbol   :WINGS
                     :name     "WINGS"
-                    :address  "0x667088b212ce3d06a1b553a7221E1fD19000d9aF"
+                    :address  "0x667088b212ce3d06a1b553a7221e1fd19000d9af"
                     :decimals 18}
                    {:symbol   :EDG
                     :name     "Edgeless"
@@ -248,7 +248,7 @@
                     :decimals 0}
                    {:symbol   :MLN
                     :name     "Melon Token"
-                    :address  "0xBEB9eF514a379B997e0798FDcC901Ee474B6D9A1"
+                    :address  "0xbeb9ef514a379b997e0798fdcc901ee474b6d9a1"
                     :decimals 18}
                    {:symbol   :MDA
                     :name     "Moeda Loyalty Points"
@@ -356,7 +356,7 @@
                     :decimals 18}
                    {:symbol   :٨
                     :name     "Dentacoin"
-                    :address  "0x08d32b0da63e2C3bcF8019c9c5d849d7a9d791e6"
+                    :address  "0x08d32b0da63e2c3bcf8019c9c5d849d7a9d791e6"
                     :decimals 0}
                    {:symbol   :EDO
                     :name     "Eidoo Token"
@@ -388,11 +388,11 @@
                     :decimals 18}
                    {:symbol   :STX
                     :name     "Stox"
-                    :address  "0x006BeA43Baa3f7A6f765F14f10A1a1b08334EF45"
+                    :address  "0x006bea43baa3f7a6f765f14f10a1a1b08334ef45"
                     :decimals 18}
                    {:symbol   :XAUR
                     :name     "Xaurum"
-                    :address  "0x4DF812F6064def1e5e029f1ca858777CC98D2D81"
+                    :address  "0x4df812f6064def1e5e029f1ca858777cc98d2d81"
                     :decimals 8}
                    {:symbol   :VIB
                     :name     "Vibe"
@@ -400,7 +400,7 @@
                     :decimals 18}
                    {:symbol   :PRG
                     :name     "PRG"
-                    :address  "0x7728dFEF5aBd468669EB7f9b48A7f70a501eD29D"
+                    :address  "0x7728dfef5abd468669eb7f9b48a7f70a501ed29d"
                     :decimals 6}
                    {:symbol   :DPY
                     :name     "Delphy Token"
@@ -420,7 +420,7 @@
                     :decimals 8}
                    {:symbol   :SPANK
                     :name     "SPANK"
-                    :address  "0x42d6622deCe394b54999Fbd73D108123806f6a18"
+                    :address  "0x42d6622dece394b54999fbd73d108123806f6a18"
                     :decimals 18}
                    {:symbol   :BRLN
                     :name     "Berlin Coin"
@@ -453,17 +453,17 @@
                    ;; app.
                    {:symbol   :Centra
                     :name     "Centra token"
-                    :address  "0x96A65609a7B84E8842732DEB08f56C3E21aC6f8a"
+                    :address  "0x96a65609a7b84e8842732deb08f56c3e21ac6f8a"
                     :decimals 18
                     :hidden?  true}
                    {:symbol   :ROL
                     :name     "DICE"
-                    :address  "0x2e071D2966Aa7D8dECB1005885bA1977D6038A65"
+                    :address  "0x2e071d2966aa7d8decb1005885ba1977d6038a65"
                     :decimals 16
                     :hidden?  true}
                    {:symbol   :ATM
                     :name     "Attention Token of Media"
-                    :address  "0x9B11EFcAAA1890f6eE52C6bB7CF8153aC5d74139"
+                    :address  "0x9b11efcaaa1890f6ee52c6bb7cf8153ac5d74139"
                     :decimals 8
                     :hidden?  true}
                    ;; NOTE(goranjovic): the following tokens are collectibles
@@ -474,7 +474,7 @@
                    {:symbol  :EMONA
                     :nft?    true
                     :name    "EtheremonAsset"
-                    :address "0xB2c0782ae4A299f7358758B2D15dA9bF29E1DD99"}
+                    :address "0xb2c0782ae4a299f7358758b2d15da9bf29e1dd99"}
                    {:symbol  :STRK
                     :nft?    true
                     :name    "CryptoStrikers"
@@ -493,7 +493,7 @@
                     :symbol   :STT
                     :decimals 18
                     ;;NOTE(goranjovic): intentionally checksummed for purposes of testing
-                    :address  "0xc55cF4B03948D7EBc8b9E8BAD92643703811d162"}
+                    :address  "0xc55cf4b03948d7ebc8b9e8bad92643703811d162"}
                    {:name     "Handy Test Token"
                     :symbol   :HND
                     :decimals 0
