@@ -71,7 +71,7 @@ def extractArchFromAPK(name) {
   if (matches.size() > 0) {
     return matches[0][1]
   }
-  if (utils.getBuildType() == 'e2e') {
+  if (utils.isE2EBuild()) {
     return 'x86'
   }
   /* non-release builds make universal APKs */

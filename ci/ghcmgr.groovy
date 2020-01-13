@@ -19,7 +19,7 @@ def buildObj(success) {
     id: env.BUILD_DISPLAY_NAME,
     commit: GIT_COMMIT.take(8),
     success: success != null ? success : true,
-    platform: env.TARGET + (utils.getBuildType() == 'e2e' ? '-e2e' : ''),
+    platform: env.TARGET + (utils.isE2EBuild() ? '-e2e' : ''),
     duration: utils.buildDuration(),
     url: currentBuild.absoluteUrl,
     pkg_url: pkg_url,

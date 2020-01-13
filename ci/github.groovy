@@ -60,7 +60,7 @@ def notifyPRFailure() {
 def notifyPRSuccess() {
   def d = ":small_blue_diamond:"
   def msg = "#### :heavy_check_mark: "
-  def type = ghcmgr.utils.getBuildType() == 'e2e' ? ' e2e' : ''
+  def type = ghcmgr.utils.isE2EBuild() ? ' e2e' : ''
   msg += "[${env.JOB_NAME}${currentBuild.displayName}](${currentBuild.absoluteUrl}) ${d} "
   msg += "${ghcmgr.utils.buildDuration()} ${d} ${GIT_COMMIT.take(8)} ${d} "
   msg += "[:package: ${env.TARGET}${type} package](${env.PKG_URL})"

@@ -31,7 +31,7 @@ def pkgFilename(type, ext, arch=null) {
 }
 
 def doGitRebase() {
-  if (getBuildType() != 'pr') {
+  if (!isPRBuild()) {
     println 'Skipping rebase due for non-PR build...'
     return
   }
@@ -93,12 +93,20 @@ def pkgFind(glob) {
   return found[0].path
 }
 
+def isPRBuild() {
+  return env.JOB_NAME.startsWith('status-react/prs')
+}
+
+def isE2EBuild() {
+  return env.JOB_NAME.contains('e2e')
+}
+
 def getBuildType() {
   def jobName = env.JOB_NAME
-  if (jobName.contains('e2e')) {
+  if (isE2EBuild()) {
       return 'e2e'
   }
-  if (jobName.startsWith('status-react/prs')) {
+  if (isPRBuild()) {
       return 'pr'
   }
   if (jobName.startsWith('status-react/nightly')) {
