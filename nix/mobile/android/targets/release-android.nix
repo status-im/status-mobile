@@ -3,11 +3,7 @@
   androidEnvShellHook, mavenAndNpmDeps,
   nodejs, openjdk, jsbundle, status-go, unzip, zlib }:
 
-{ build-number,
-  build-type, # Build type (e.g. nightly, release, e2e). Default is to use .env.nightly file
-  gradle-opts ? "",
-  keystore-file ? "", # Path to the .keystore file used to sign the package
-  secrets-file ? "", # Path to the file containing secret environment variables
+{ secrets-file ? "", # Path to the file containing secret environment variables
   watchmanSockPath ? "", # Path to the socket file exposed by an external watchman instance (workaround needed for building Android on macOS)
   env ? {} # Attribute set containing environment variables to expose to the build script
 }:
@@ -15,10 +11,14 @@
 assert (builtins.stringLength watchmanSockPath) > 0 -> stdenv.isDarwin;
 
 let
-  inherit (lib) hasAttrByPath optionalAttrs;
-  env' = env // optionalAttrs (hasAttrByPath ["status_go" "src_override"] config) {
-    STATUS_GO_SRC_OVERRIDE = config.status_go.src_override;
+  inherit (lib) attrByPath hasAttrByPath optionalAttrs;
+  env' = env // optionalAttrs (hasAttrByPath ["status-im" "status-go" "src-override"] config) {
+    STATUS_GO_SRC_OVERRIDE = config.status-im.status-go.src-override;
   };
+  inherit (config.status-im) build-type;
+  inherit (config.status-im.status-react) build-number;
+  gradle-opts = (attrByPath ["status-im" "status-react" "gradle-opts"] "" config);
+  keystore-file = (attrByPath ["status-im" "status-react" "keystore-file"] "" config); # Path to the .keystore file used to sign the package
   baseName = "release-android";
   name = "status-react-build-${baseName}";
   gradleHome = "$NIX_BUILD_TOP/.gradle";
@@ -119,7 +119,7 @@ in stdenv.mkDerivation {
     ${concatStrings (catAttrs "shellHook" [ mavenAndNpmDeps.shell status-go.shell ])}
 
     pushd $sourceRoot/android
-    ${adhocEnvVars} ./gradlew -PversionCode=${build-number} assemble${capitalizedBuildType} || exit
+    ${adhocEnvVars} ./gradlew -PversionCode=${assert build-number != ""; build-number} assemble${capitalizedBuildType} || exit
     popd > /dev/null
 
     ${unsetEnvVars}

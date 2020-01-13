@@ -36,10 +36,11 @@ def bundle() {
     /* Nix target which produces the final APKs */
     nix.build(
       attr: 'targets.mobile.android.release',
-      args: [
-        'gradle-opts': gradleOpt,
-        'build-number': utils.readBuildNumber(),
-        'build-type': btype,
+      conf: [
+        'status-im.ci': '1',
+        'status-im.build-type': btype,
+        'status-im.status-react.gradle-opts': gradleOpt,
+        'status-im.status-react.build-number': utils.readBuildNumber(),
       ],
       safeEnv: [
         'STATUS_RELEASE_KEY_ALIAS',

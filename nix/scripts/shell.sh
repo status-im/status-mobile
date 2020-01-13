@@ -51,13 +51,14 @@ if [[ "$TARGET" =~ (linux|windows|darwin|macos) ]]; then
   nix-shell ${shellArgs[@]} --run "scripts/prepare-for-desktop-platform.sh" || exit
 fi
 
-statusGoConfig=''
+config=''
 if [ -n "${STATUS_GO_SRC_OVERRIDE}" ]; then
-  statusGoConfig+="status_go.src_override=\"${STATUS_GO_SRC_OVERRIDE}\";"
+  config+="status-im.status-go.src-override=\"${STATUS_GO_SRC_OVERRIDE}\";"
 fi
+config+="status-im.build-type=\"${BUILD_TYPE}\";"
 
-if [ -n "$statusGoConfig" ]; then
-  shellArgs+=("--arg config {$statusGoConfig}")
+if [ -n "$config" ]; then
+  shellArgs+=("--arg config {$config}")
 fi
 
 # if _NIX_ATTR is specified we shouldn't use shell.nix, the path will be different

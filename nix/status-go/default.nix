@@ -12,8 +12,8 @@ let
   buildStatusGoDesktopLib = callPackage ./build-desktop-status-go.nix { inherit buildGoPackage go xcodeWrapper utils; };
   buildStatusGoMobileLib = callPackage ./build-mobile-status-go.nix { inherit buildGoPackage go gomobile xcodeWrapper utils; };
   srcData =
-    # If config.status_go.src_override is defined, instruct Nix to use that path to build status-go
-    if (attrByPath ["status_go" "src_override"] "" config) != "" then rec {
+    # If config.status-im.status-go.src-override is defined, instruct Nix to use that path to build status-go
+    if (attrByPath ["status-im" "status-go" "src-override"] "" config) != "" then rec {
         owner = "status-im";
         repo = "status-go";
         rev = "unknown";
@@ -22,7 +22,7 @@ let
         cleanVersion = rawVersion;
         goPackagePath = "github.com/${owner}/${repo}";
         src =
-          let path = traceValFn (path: "Using local ${repo} sources from ${path}\n") config.status_go.src_override;
+          let path = traceValFn (path: "Using local ${repo} sources from ${path}\n") config.status-im.status-go.src-override;
           in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
             inherit path;
             name = "${repo}-source-${shortRev}";
@@ -106,12 +106,12 @@ let
 
     android = buildStatusGoMobileLib (statusGoArgs // {
       host = mobileConfigs.android.name;
-      config = mobileConfigs.android;
+      targetConfig = mobileConfigs.android;
     });
 
     ios = buildStatusGoMobileLib (statusGoArgs // {
       host = mobileConfigs.ios.name;
-      config = mobileConfigs.ios;
+      targetConfig = mobileConfigs.ios;
     });
   };
 

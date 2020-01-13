@@ -31,6 +31,7 @@ def shell(Map opts = [:], String cmd) {
  *  - pure - Use --pure mode with Nix for more deterministic behaviour
  *  - link - Bu default build creates a `result` directory, you can turn that off
  *  - keep - List of env variables to pass through to Nix build
+ *  - conf - Map of config values to provide to --arg config
  *  - args - Map of arguments to provide to --argstr
  *  - attr - Name of attribute to use with --attr flag
  *  - sbox - List of host file paths to pass to the Nix expression
@@ -42,6 +43,7 @@ def build(Map opts = [:]) {
     link: true,
     args: ['target': env.TARGET],
     keep: [],
+    conf: [:],
     attr: null,
     sbox: [],
     safeEnv: [],
@@ -116,10 +118,15 @@ private def _getNixCommandArgs(Map opts = [:], boolean isShell) {
     envFile.deleteOnExit()
   }
 
+  def configFlag = ''
   def argsFlags = opts.args.collect { key,val -> "--argstr ${key} \'${val}\'" }
   def attrFlag = ''
   if (opts.attr != null) {
     attrFlag = "--attr '${opts.attr}'"
+  }
+  if (opts.conf != null && opts.conf != [:]) {
+    def configFlags = opts.conf.collect { key,val -> "${key}=\"${val}\";" }
+    configFlag = "--arg config \'{${configFlags.join('')}}\'"
   }
   if (opts.sbox != null && !opts.sbox.isEmpty()) {
     extraSandboxPathsFlag = "--option extra-sandbox-paths \"${opts.sbox.join(' ')}\""
@@ -128,6 +135,7 @@ private def _getNixCommandArgs(Map opts = [:], boolean isShell) {
   return [
     opts.pure ? "--pure" : "",
     opts.link ? "" : "--no-out-link",
+    configFlag,
     keepFlags.join(" "),
     argsFlags.join(" "),
     extraSandboxPathsFlag,

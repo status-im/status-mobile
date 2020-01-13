@@ -8,6 +8,26 @@ The main config file is [`nix/nix.conf`](/nix/nix.conf) and its main purpose is 
 
 __NOTE:__ If you are in Asia you might want to add the `https://nix-cache-cn.status.im/` to be first in order of `substituters`. Removing `cache.nixos.org` could also help.
 
+## Build arguments
+
+We leverage the standard nixpkgs `config` argument for our own parameterization of the builds (e.g. to pass a build number or build type). Here is a sample structure of the `config` attribute set:
+
+```nix
+config = {
+  status-im = {
+    ci = "1";                 # This flag is present when running in a CI environment
+    build-type = "pr";        # Build type (influences which .env file gets used for feature flags)
+    status-go = {
+      src-override = "$GOPATH/src/github.com/status-im/status-go";
+    };
+    status-react = {
+      build-number = "9999";  # Build number to be assigned to the app bundle
+      gradle-opts = "";       # Gradle options passed for Android builds
+    };
+  };
+};
+```
+
 ## Shell
 
 In order to access an interactive Nix shell a user should run `make shell`.

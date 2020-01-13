@@ -1,5 +1,5 @@
 {
-  config ? { }, # for passing status_go.src_override
+  config ? { status-im = { build-type = ""; }; }, # for passing build options, see nix/README.md
 }:
 
 let

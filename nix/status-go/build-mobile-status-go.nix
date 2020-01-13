@@ -5,19 +5,18 @@
 
   # mobile-only arguments
   goBuildFlags, goBuildLdFlags,
-  config } @ args':
+  targetConfig } @ args':
 
 let
   inherit (stdenv.lib) concatStringsSep makeBinPath optional;
 
-  targetConfig = config;
   buildStatusGo = callPackage ./build-status-go.nix {
     inherit buildGoPackage go xcodeWrapper utils;
   };
 
   # Remove mobile-only arguments from args
   args = removeAttrs args' [
-    "config" "goBuildFlags" "goBuildLdFlags"
+    "targetConfig" "goBuildFlags" "goBuildLdFlags"
   ];
 
   buildStatusGoMobileLib = buildStatusGo (args // {
