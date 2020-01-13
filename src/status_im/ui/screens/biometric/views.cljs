@@ -18,8 +18,9 @@
            ok-button-label cancel-button-label on-cancel on-confirm]}]
   (let [supported-biometric-auth (get-supported-biometric-auth)
         bio-type-label           (get-bio-type-label)]
-    [react/view {:margin-top  24
-                 :align-items :center}
+    [react/view {:margin-top         24
+                 :align-items        :center
+                 :padding-horizontal 24}
      [react/view {:width            32
                   :height           32
                   :background-color colors/blue-light
@@ -63,7 +64,7 @@
 
 (defn enable-biometric-popover []
   [biometric-popover
-   {:title-label       :t/biometric-enable-title
+   {:title-label       :t/biometric-secure-with
     :description-label :t/to-enable-biometric
     :ok-button-label   :t/biometric-enable-button
     :on-confirm        :biometric-logout}])
@@ -72,11 +73,9 @@
   (let [keycard-account? @(re-frame/subscribe
                            [:multiaccounts.login/keycard-account?])]
     [biometric-popover
-     {:title-label     :t/biometric-secure-with
-      :ok-button-label :t/biometric-enable-button
-      :on-confirm      :biometric/enable
-
-      :description-label
-      (if keycard-account?
-        (i18n/label :t/biometric-enable-keycard)
-        (i18n/label :t/biometric-enable))}]))
+     {:title-label       :t/biometric-secure-with
+      :ok-button-label   :t/biometric-enable-button
+      :on-confirm        :biometric/enable
+      :description-label (if keycard-account?
+                           :t/biometric-enable-keycard
+                           :t/biometric-enable)}]))
