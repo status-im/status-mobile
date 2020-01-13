@@ -204,7 +204,6 @@
          :auto-complete-type     "off"
          :auto-focus             true
          :auto-correct           false
-         :keyboard-type          :visible-password
          :default-value          ""
          :text-align             :center
          :placeholder            placeholder
