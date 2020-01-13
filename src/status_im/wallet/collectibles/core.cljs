@@ -51,30 +51,35 @@
 ;; Crypto Kitties
 (def ck :CK)
 
+;; TODO Can't maintain the order (ascending) of id's array, mapv randomises indexes and filterv results in a error
 (handlers/register-handler-fx
  :load-kitties
  (fn [{db :db} [_ ids]]
    {:db db
     :http-get-n (mapv (fn [id]
-                        {:url (str "https://api.cryptokitties.co/kitties/" id)
+                {:url (str "https://api.cryptokitties.co/kitties/" id)
                          :success-event-creator (fn [o]
                                                   [:load-collectible-success ck {id (http/parse-payload o)}])
                          :failure-event-creator (fn [o]
-                                                  [:load-collectible-failure ck {id (http/parse-payload o)}])})
-                      ids)}))
+                                                  [:load-collectible-failure ck {id (http/parse-payload o)}])
+                         :timeout-ms            10000})
+                                              ids)}))
 
-;; TODO(andrey) Each HTTP call will return up to 100 kitties. Maybe we need to implement some kind of paging later
 (defmethod load-collectibles-fx ck [_ _ items-number address _]
-  {:http-get {:url                   (str "https://api.cryptokitties.co/kitties?offset=0&limit="
-                                          items-number
+  (def metakitties [])
+  {:http-get-n (mapv (fn [offset]
+    {:url                   (str "https://api.cryptokitties.co/kitties?limit=20&offset="
+                                          offset
                                           "&owner_wallet_address="
                                           address
                                           "&parents=false")
               :success-event-creator (fn [o]
-                                       [:load-kitties (map :id (:kitties (http/parse-payload o)))])
+                                       (def metakitties (concat (map :id (:kitties (http/parse-payload o))) metakitties))
+                                       (when (= (count metakitties) items-number) [:load-kitties (sort metakitties)]))
               :failure-event-creator (fn [o]
                                        [:load-collectibles-failure (http/parse-payload o)])
-              :timeout-ms            10000}})
+              :timeout-ms            10000})
+              (range 0 items-number 20))})
 
 ;; Crypto Strikers
 (def strikers :STRK)
