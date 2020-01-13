@@ -256,8 +256,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6245)
     @marks.high
-    @marks.skip
-    # temporary skipped until tooltips will be visible in xml #9555
     def test_token_with_more_than_allowed_decimals(self):
         sender = wallet_users['C']
         sign_in_view = SignInView(self.driver)
@@ -274,23 +272,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.amount_edit_box.set_value(amount)
         error_text = 'Amount is too precise. Max number of decimals is 7.'
         if not send_transaction.element_by_text(error_text).is_element_displayed():
-            self.errors.append('Warning about too precise amount is not shown when sending a transaction')
-        send_transaction.back_button.click()
-        wallet_view.receive_transaction_button.click()
-        # temporary skipped due to 8601
-        # wallet_view.send_transaction_request.click()
-        # send_transaction.select_asset_button.click_until_presence_of_element(adi_button)
-        # adi_button.click()
-        # send_transaction.amount_edit_box.set_value(amount)
-        # error_text = 'Amount is too precise. Max number of decimals is 7.'
-        # if not send_transaction.element_by_text(error_text).is_element_displayed():
-        #     self.errors.append('Warning about too precise amount is not shown when requesting a transaction')
-        self.errors.verify_no_errors()
+            self.driver.fail('Warning about too precise amount is not shown when sending a transaction')
 
     @marks.testrail_id(5423)
     @marks.medium
-    @marks.skip
-    # TODO skip until tooltips visibility in page xml is fixed pr-9555
     def test_send_valid_amount_after_insufficient_funds_error(self):
         sender = transaction_senders['T']
         sign_in_view = SignInView(self.driver)
@@ -319,8 +304,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5471)
     @marks.medium
-    @marks.skip
-    # TODO skip until tooltips visibility in page xml is fixed pr-9555
     def test_insufficient_funds_wallet_0_balance(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -342,10 +325,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5412)
     @marks.high
-    @marks.skip
-    # TODO skip until tooltips visibility in page xml is fixed pr-9555
     def test_insufficient_funds_wallet_positive_balance(self):
-        sender = wallet_users['A']
+        sender = wallet_users['E']
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()

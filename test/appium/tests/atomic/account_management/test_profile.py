@@ -274,6 +274,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         wallet_view = profile_view.wallet_button.click()
         wallet_view.set_up_wallet()
         address = wallet_view.get_wallet_address()
+        sign_in_view.profile_button.click()
+        profile_view.logout()
         self.driver.reset()
         sign_in_view.accept_agreements()
         sign_in_view.recover_access(recovery_phrase)
