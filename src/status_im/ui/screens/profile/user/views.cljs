@@ -26,7 +26,7 @@
 (views/defview share-chat-key []
   (views/letsubs [{:keys [address ens-name]}     [:popover/popover]
                   width                          (reagent/atom nil)]
-    (let [link     (universal-links/generate-link :user :external address)]
+    (let [link (universal-links/generate-link :user :external (or ens-name address))]
       [react/view {:on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}
        [react/view {:style {:padding-top 16 :padding-horizontal 16}}
         (when @width
@@ -42,12 +42,12 @@
                                     :font-family "monospace"}
               :accessibility-label :ens-username}
              ens-name]]
-           [react/view {:height 1 :margin-top 12 :margin-horizontal -16
+           [react/view {:height           1 :margin-top 12 :margin-horizontal -16
                         :background-color colors/gray-lighter}]])
         [copyable-text/copyable-text-view
-         {:label          :t/chat-key
+         {:label           :t/chat-key
           :container-style {:margin-top 12 :margin-bottom 4}
-          :copied-text    address}
+          :copied-text     address}
          [react/text {:number-of-lines     1
                       :ellipsize-mode      :middle
                       :accessibility-label :chat-key
