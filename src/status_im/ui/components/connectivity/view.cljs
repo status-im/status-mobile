@@ -1,15 +1,17 @@
 (ns status-im.ui.components.connectivity.view
   (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
   (:require [reagent.core :as reagent]
+            [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.connectivity.styles :as styles]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.animation :as animation]
             [status-im.utils.utils :as utils]
+            [status-im.utils.datetime :as datetime]
             [status-im.utils.platform :as platform]))
 
-(def connectivity-bar-height 35)
+(def connectivity-bar-height 36)
 (def neg-connectivity-bar-height (- connectivity-bar-height))
 
 (defn easing [direction n]
@@ -68,54 +70,76 @@
 
 (def to-hide? (reagent/atom false))
 
-(defn manage-visibility [connected? anim-opacity anim-y]
+(defn manage-visibility [connected? animate? anim-opacity anim-y status-hidden]
+  "status-hidden is a per-view state, while to-hide? is a global state common to
+all connectivity views (we have at least one view in home and one in chat)"
   (if connected?
-    (when @to-hide?
-      (animation/start
-       (animation/parallel
-        [(animation/timing anim-opacity
-                           {:toValue 0
-                            :delay 800
-                            :duration 150
-                            :easing (.-ease (animation/easing))
-                            :useNativeDriver true})
-         (animation/timing anim-y
-                           {:toValue         (if platform/desktop? 0 neg-connectivity-bar-height)
-                            :delay           800
-                            :duration        150
-                            :easing          (.-ease (animation/easing))
-                            :useNativeDriver true})])
-       ;; second param of start() - a callback that fires when animation stops
-       #(reset! to-hide? false)))
+    (if animate?
+      (when (and @to-hide? (not @status-hidden))
+        (animation/start
+         (animation/parallel
+          [(animation/timing anim-opacity
+                             {:toValue 0
+                              :delay 800
+                              :duration 150
+                              :easing (.-ease (animation/easing))
+                              :useNativeDriver true})
+           (animation/timing anim-y
+                             {:toValue         (if platform/desktop? 0 neg-connectivity-bar-height)
+                              :delay           800
+                              :duration        150
+                              :easing          (.-ease (animation/easing))
+                              :useNativeDriver true})])
+         ;; second param of start() - a callback that fires when animation stops
+         #(do (reset! to-hide? false) (reset! status-hidden true))))
+      (do
+        (animation/set-value anim-opacity 0)
+        (animation/set-value anim-y (if platform/desktop? 0 neg-connectivity-bar-height))
+        (reset! to-hide? false)
+        (reset! status-hidden true)))
     ;; else
-    (animation/start
-     (animation/parallel
-      [(animation/timing anim-opacity
-                         {:toValue 1
-                          :duration 150
-                          :easing (.-ease (animation/easing))
-                          :useNativeDriver true})
-       (animation/timing anim-y
-                         {:toValue (if platform/desktop? connectivity-bar-height 0)
-                          :duration 150
-                          :easing (.-ease (animation/easing))
-                          :useNativeDriver true})])
-     ;; second param of start() - a callback that fires when animation stops
-     #(reset! to-hide? true))))
+    (if animate?
+      (when (and (not @to-hide?) @status-hidden)
+        (animation/start
+         (animation/parallel
+          [(animation/timing anim-opacity
+                             {:toValue 1
+                              :duration 150
+                              :easing (.-ease (animation/easing))
+                              :useNativeDriver true})
+           (animation/timing anim-y
+                             {:toValue (if platform/desktop? connectivity-bar-height 0)
+                              :duration 150
+                              :easing (.-ease (animation/easing))
+                              :useNativeDriver true})])
+         ;; second param of start() - a callback that fires when animation stops
+         #(do (reset! to-hide? true) (reset! status-hidden false))))
+      (do
+        (animation/set-value anim-opacity 1)
+        (animation/set-value anim-y (if platform/desktop? connectivity-bar-height 0))
+        (reset! to-hide? true)
+        (reset! status-hidden false)))))
 
 (defn connectivity-status
-  [{:keys [connected?]} anim-translate-y]
+  [{:keys [connected?]} anim-translate-y status-hidden]
   (let [anim-translate-y (or anim-translate-y (animation/create-value 0))
         anim-opacity     (animation/create-value 0)]
-    (manage-visibility connected?
-                       anim-opacity anim-translate-y)
     (reagent/create-class
-     {:component-did-update
+     {:component-did-mount
+      (fn []
+        (manage-visibility connected? false
+                           anim-opacity anim-translate-y status-hidden))
+      :should-component-update
+      ;; ignore :loading-indicator?
+      (fn [_ [_ old_p] [_ new_p]]
+        (not= (dissoc old_p :loading-indicator?)
+              (dissoc new_p :loading-indicator?)))
+      :component-did-update
       (fn [comp]
-        (manage-visibility (:connected? (reagent/props comp))
-                           anim-opacity anim-translate-y))
+        (manage-visibility (:connected? (reagent/props comp)) true
+                           anim-opacity anim-translate-y status-hidden))
       :reagent-render
-      (fn [{:keys [view-id message on-press-fn connected? connecting?] :as opts}]
+      (fn [{:keys [view-id message on-press-event connected? connecting?] :as opts}]
         [react/animated-view {:style               (styles/text-wrapper
                                                     (assoc opts
                                                            :height (if platform/desktop?
@@ -133,29 +157,94 @@
            [react/activity-indicator {:color colors/white :margin-right 6}])
          (if (= message :mobile-network)
            [react/nested-text {:style    styles/text
-                               :on-press on-press-fn}
+                               :on-press (when on-press-event #(re-frame/dispatch [on-press-event]))}
             (i18n/label :t/waiting-for-wifi) " "
             [{:style {:text-decoration-line :underline}}
              (i18n/label :t/waiting-for-wifi-change)]]
-           [react/text {:style    styles/text
-                        :on-press on-press-fn}
-            (i18n/label message)])])})))
+           (when message
+             [react/text {:style    styles/text
+                          :on-press (when on-press-event #(re-frame/dispatch [on-press-event]))}
+              (i18n/label message)]))])})))
+
+;; timer updating the enqueued status
+(def timer     (atom nil))
+
+;; connectivity status change going to be persisted to :connectivity/ui-status-properties
+(def enqueued-connectivity-status-properties     (atom nil))
+
+(defn propagate-status
+  "Smoothly propagate from :connectivity/status-properties subscription to
+:ui-status-properties db. UI components will render based on :ui-status-properties"
+  [{:keys [status-properties app-active-since ui-status-properties]}]
+  (let [;; enqueued or immediate?
+        ;; send immediately if we are transitioning to an offline state
+        enqueue?  (cond
+                    (and
+                     (or
+                      (nil? @enqueued-connectivity-status-properties)
+                      (:connected? @enqueued-connectivity-status-properties)
+                      (:connecting? @enqueued-connectivity-status-properties))
+                     (not
+                      (or (:connected? status-properties)
+                          (:connecting? status-properties))))
+                    false
+
+                    :else
+                    true)]
+    (if enqueue?
+      (when (or (and (nil? @enqueued-connectivity-status-properties)
+                     (not= status-properties ui-status-properties))
+                (and (some? @enqueued-connectivity-status-properties)
+                     (not= status-properties @enqueued-connectivity-status-properties)))
+        ;; reset queued with new state and start a timer if not yet started
+        (reset! enqueued-connectivity-status-properties status-properties)
+        (when-not @timer
+          (reset! timer (utils/set-timeout #(do
+                                              (reset! timer nil)
+                                              (when @enqueued-connectivity-status-properties
+                                                (re-frame/dispatch [:set :connectivity/ui-status-properties @enqueued-connectivity-status-properties])
+                                                (reset! enqueued-connectivity-status-properties nil)))
+
+                                           ;; if the app is in foreground for less than 5s, postpone state changes for 5s otherwise 1s
+                                           (if
+                                            (and app-active-since
+                                                 (< (- (datetime/timestamp) app-active-since)
+                                                    5000))
+                                             5000
+                                             1000)))))
+      (when (not= status-properties ui-status-properties)
+        ;; send immediately
+        (reset! enqueued-connectivity-status-properties nil)
+        (re-frame/dispatch [:set :connectivity/ui-status-properties status-properties])
+        (when @timer
+          (utils/clear-timeout @timer)
+          (reset! timer nil))))))
+
+(defn status-propagator-dummy-view
+  "this empty view is needed to react propagate status-properties to ui-status-properties"
+  [props]
+  (reagent/create-class
+   {:component-did-mount
+    #(propagate-status props)
+    :should-component-update
+    (fn [_ _ [_ props]]
+      (propagate-status props)
+      false)
+    :reagent-render
+    #()}))
 
 (defview connectivity-view [anim-translate-y]
   (letsubs [status-properties [:connectivity/status-properties]
+            app-active-since  [:app-active-since]
+            ui-status-properties  [:connectivity/ui-status-properties]
+            status-hidden (reagent/atom true)
             view-id           [:view-id]
             window-width (reagent/atom 0)]
-    {:component-did-mount
-     (fn []
-       (when anim-translate-y
-         (if (:connected? status-properties)
-           (animation/set-value anim-translate-y neg-connectivity-bar-height)
-           (animation/set-value anim-translate-y 0))))}
-    (let [{:keys [loading-indicator?]} status-properties]
+    (let [loading-indicator? (:loading-indicator? ui-status-properties)]
       [react/view {:style     {:align-items :stretch
                                :z-index     1}
                    :on-layout #(reset! window-width (-> % .-nativeEvent .-layout .-width))}
-       (when loading-indicator?
+       (when (and loading-indicator? @status-hidden)
          [loading-indicator @window-width])
        ;; This view below exists only to hide the connectivity-status bar when "connected".
        ;; Ideally connectivity-status bar would be hidden under "toolbar/toolbar",
@@ -169,10 +258,16 @@
                     :height connectivity-bar-height
                     :background-color colors/white}]
        [connectivity-status
-        (merge status-properties
+        ;on startup default connected
+        (merge (or ui-status-properties
+                   {:connected? true :message :t/connected})
                {:view-id      view-id
                 :window-width @window-width})
-        anim-translate-y]])))
+        anim-translate-y
+        status-hidden]
+       [status-propagator-dummy-view {:status-properties status-properties
+                                      :app-active-since app-active-since
+                                      :ui-status-properties ui-status-properties}]])))
 
 ;; "push?" determines whether "content" gets pushed down when disconnected
 ;; like in :home view, or stays put like in :chat view

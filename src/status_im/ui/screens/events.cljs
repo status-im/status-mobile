@@ -145,15 +145,18 @@
                            (>= (- now app-in-background-since)
                                const/ms-in-bg-for-require-bioauth))]
     (fx/merge cofx
-              {:db (assoc db :app-in-background-since nil)}
+              {:db (-> db
+                       (dissoc :app-in-background-since)
+                       (assoc :app-active-since now))}
               (mailserver/process-next-messages-request)
               (hardwallet/return-back-from-nfc-settings)
               #(when requires-bio-auth
                  (biometric/authenticate % on-biometric-auth-result authentication-options)))))
 
-(fx/defn on-going-in-background [{:keys [db now] :as cofx}]
-  (fx/merge cofx
-            {:db (assoc db :app-in-background-since now)}))
+(fx/defn on-going-in-background [{:keys [db now]}]
+  {:db (-> db
+           (dissoc :app-active-since)
+           (assoc :app-in-background-since now))})
 
 (defn app-state-change [state {:keys [db] :as cofx}]
   (let [app-coming-from-background? (= state "active")

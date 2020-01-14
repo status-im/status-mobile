@@ -21,13 +21,14 @@
 (fx/defn initialize-app-db
   "Initialize db to initial state"
   [{{:keys [view-id hardwallet initial-props desktop/desktop
-            supported-biometric-auth network/type]} :db}]
+            supported-biometric-auth network/type app-active-since]} :db now :now}]
   {:db (assoc app-db
               :initial-props initial-props
               :desktop/desktop (merge desktop (:desktop/desktop app-db))
               :network/type type
               :hardwallet (dissoc hardwallet :secrets)
               :supported-biometric-auth supported-biometric-auth
+              :app-active-since (or app-active-since now)
               :view-id view-id)})
 
 (fx/defn initialize-views

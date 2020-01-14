@@ -97,6 +97,8 @@
 (reg-root-key-sub :get-pairing-installations :pairing/installations)
 (reg-root-key-sub :tooltips :tooltips)
 (reg-root-key-sub :supported-biometric-auth :supported-biometric-auth)
+(reg-root-key-sub :app-active-since :app-active-since)
+(reg-root-key-sub :connectivity/ui-status-properties :connectivity/ui-status-properties)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network
@@ -1489,7 +1491,7 @@
 ;;TODO this subscription looks super weird huge and with dispatches?
 (re-frame/reg-sub
  :connectivity/status-properties
- :<- [:offline?]
+ :<- [:network-status]
  :<- [:disconnected?]
  :<- [:mailserver/connecting?]
  :<- [:mailserver/connection-error?]
@@ -1497,21 +1499,11 @@
  :<- [:mailserver/fetching?]
  :<- [:network/type]
  :<- [:multiaccount]
- (fn [[offline? disconnected? mailserver-connecting? mailserver-connection-error?
+ (fn [[network-status disconnected? mailserver-connecting? mailserver-connection-error?
        mailserver-request-error? mailserver-fetching? network-type multiaccount]]
-   (let [wallet-offline? (and offline?
-                              ;; There's no wallet of desktop
-                              (not platform/desktop?))
-         error-label     (cond
-                           (and wallet-offline?
-                                disconnected?)
+   (let [error-label     (cond
+                           (= network-status :offline)
                            :t/offline
-
-                           wallet-offline?
-                           :t/wallet-offline
-
-                           disconnected?
-                           :t/disconnected
 
                            mailserver-connecting?
                            :t/connecting
@@ -1526,19 +1518,23 @@
                                 (not (:syncing-on-mobile-network? multiaccount)))
                            :mobile-network
 
+                           disconnected?
+                           :t/offline
+
                            :else nil)]
      {:message            (or error-label :t/connected)
       :connected?         (and (nil? error-label) (not= :mobile-network error-label))
       :connecting?        (= error-label :t/connecting)
       :loading-indicator? mailserver-fetching?
-      :on-press-fn        #(cond
-                             mailserver-connection-error?
-                             (re-frame/dispatch [:mailserver.ui/reconnect-mailserver-pressed])
-                             mailserver-request-error?
-                             (re-frame/dispatch [:mailserver.ui/request-error-pressed])
+      :on-press-event       (cond
+                              mailserver-connection-error?
+                              :mailserver.ui/reconnect-mailserver-pressed
 
-                             (= :mobile-network error-label)
-                             (re-frame/dispatch [:mobile-network/show-offline-sheet]))})))
+                              mailserver-request-error?
+                              :mailserver.ui/request-error-pressed
+
+                              (= :mobile-network error-label)
+                              :mobile-network/show-offline-sheet)})))
 
 ;;CONTACT ==============================================================================================================
 
