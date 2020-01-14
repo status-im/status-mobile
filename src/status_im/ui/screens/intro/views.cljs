@@ -518,11 +518,12 @@
   (letsubs [wizard-state [:intro-wizard/confirm-code]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [topbar/topbar
-      (when-not (:processing? wizard-state)
-        {:navigation
+      {:navigation
+       (if (:processing? wizard-state)
+         :none
          {:icon    :main-icons/back
           :accessibility-label :back-button
-          :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}})]
+          :handler #(re-frame/dispatch [:intro-wizard/navigate-back])})}]
      [react/view {:style {:flex 1
                           :justify-content :space-between}}
       [top-bar {:step :confirm-code :encrypt-with-password? (:encrypt-with-password? wizard-state)}]
