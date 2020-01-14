@@ -1,8 +1,6 @@
 (ns status-im.ui.screens.profile.user.views
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.ethereum.stateofus :as stateofus]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.button :as button]
@@ -10,7 +8,6 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.large-toolbar.view :as large-toolbar]
-            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.list.views :as list.views]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
@@ -20,7 +17,6 @@
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.profile.user.styles :as styles]
-            [status-im.utils.identicon :as identicon]
             [status-im.utils.platform :as platform]
             [status-im.utils.config :as config]
             [status-im.utils.universal-links.core :as universal-links]
@@ -28,28 +24,24 @@
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview share-chat-key []
-  (views/letsubs [{:keys [address]}              [:popover/popover]
-                  width                          (reagent/atom nil)
-                  {:keys [names preferred-name]} [:ens.main/screen]]
-    (let [username (stateofus/username preferred-name)
-          name     (or username preferred-name)
-          link     (universal-links/generate-link :user :external address)]
+  (views/letsubs [{:keys [address ens-name]}     [:popover/popover]
+                  width                          (reagent/atom nil)]
+    (let [link     (universal-links/generate-link :user :external address)]
       [react/view {:on-layout #(reset! width (-> % .-nativeEvent .-layout .-width))}
        [react/view {:style {:padding-top 16 :padding-horizontal 16}}
         (when @width
           [qr-code-viewer/qr-code-view (- @width 32) address])
-        (when (seq names)
+        (when ens-name
           [react/view
            [copyable-text/copyable-text-view
-            {:label           :t/ens-usernames
+            {:label           :t/ens-username
              :container-style {:margin-top 12 :margin-bottom 4}
-             :copied-text     preferred-name}
+             :copied-text     ens-name}
             [react/nested-text
              {:style               {:line-height 22 :font-size 15
                                     :font-family "monospace"}
               :accessibility-label :ens-username}
-             name
-             (when username [{:style {:color colors/gray}} (str "." stateofus/domain)])]]
+             ens-name]]
            [react/view {:height 1 :margin-top 12 :margin-horizontal -16
                         :background-color colors/gray-lighter}]])
         [copyable-text/copyable-text-view
@@ -91,12 +83,15 @@
                           :text-align   :left}}
       displayed-name]]))
 
-(defn- toolbar-action-items [public-key]
+(defn- toolbar-action-items [public-key ens-name]
   [toolbar/actions
    [{:icon      :main-icons/share
      :icon-opts {:width  24
                  :height 24}
-     :handler   #(re-frame/dispatch [:show-popover {:view :share-chat-key :address public-key}])}]])
+     :handler   #(re-frame/dispatch [:show-popover
+                                     {:view :share-chat-key
+                                      :address public-key
+                                      :ens-name ens-name}])}]])
 
 (defn tribute-to-talk-item
   [opts]
@@ -205,12 +200,12 @@
     #(re-frame/dispatch [:multiaccounts.logout.ui/logout-pressed])}])
 
 (defn minimized-toolbar-handler [anim-opacity]
-  (let [{:keys [public-key]
+  (let [{:keys [public-key preferred-name]
          :as   multiaccount}         @(re-frame/subscribe [:multiaccount])]
     [large-toolbar/minimized-toolbar-handler
      (header-in-toolbar multiaccount)
      nil
-     (toolbar-action-items public-key)
+     (toolbar-action-items public-key preferred-name)
      anim-opacity]))
 
 (defn content-with-header [list-ref scroll-y]

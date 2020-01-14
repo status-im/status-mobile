@@ -53,13 +53,13 @@
                 ;                                           :content-height 150}
                 ;                                          contact])
 
-(defn render-detail [{:keys [alias public-key] :as detail}]
+(defn render-detail [{:keys [alias public-key ens-name] :as detail}]
   [list-item/list-item
    {:title    alias
     :subtitle (utils/get-shortened-address public-key)
     :icon     [chat-icon/contact-icon-contacts-tab detail]
     :accessibility-label :profile-public-key
-    :on-press #(re-frame/dispatch [:show-popover {:view :share-chat-key :address public-key}])
+    :on-press #(re-frame/dispatch [:show-popover {:view :share-chat-key :address public-key :ens-name ens-name}])
     :accessories [[icons/icon :main-icons/share styles/contact-profile-detail-share-icon]]}])
 
 (defn profile-details-list-view [contact]
@@ -132,7 +132,9 @@
                :action-separator-style styles/action-separator
                :icon-opts              styles/action-icon-opts}]
              [react/view styles/contact-profile-details-container
-              [profile-details contact]]
+              [profile-details (cond-> contact
+                                 (and ens-verified name)
+                                 (assoc :ens-name name))]]
              [block-contact-action contact]]
             generated-view (large-toolbar/generate-view
                             header-in-toolbar
