@@ -20,6 +20,7 @@
               "react-native-svg"
               "react-native-webview-bridge"
               "react-native-touch-id"
+              "react-native-video"
               "web3-utils"
               "chance"
               "emojilib"
@@ -81,6 +82,7 @@
 
  ;; Resoures
  :resource-dirs ["resources/images"
+                 "resources/videos"
                  "desktop/resources"]
 
  :figwheel-options {:nrepl-port 7888

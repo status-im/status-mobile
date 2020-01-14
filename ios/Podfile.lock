@@ -205,6 +205,11 @@ PODS:
     - React
   - react-native-splash-screen (3.2.0):
     - React
+  - react-native-video (5.0.2):
+    - React
+    - react-native-video/Video (= 5.0.2)
+  - react-native-video/Video (5.0.2):
+    - React
   - react-native-webview (6.11.1):
     - React
   - react-native-webview-bridge (0.33.17):
@@ -297,6 +302,7 @@ DEPENDENCIES:
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-shake (from `../node_modules/react-native-shake`)
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
+  - react-native-video (from `../node_modules/react-native-video`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - react-native-webview-bridge (from `../node_modules/react-native-webview-bridge`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -375,6 +381,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-shake"
   react-native-splash-screen:
     :path: "../node_modules/react-native-splash-screen"
+  react-native-video:
+    :path: "../node_modules/react-native-video"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   react-native-webview-bridge:
@@ -443,6 +451,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: d288138da2c800caa111f9352e9333f186a06ead
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
+  react-native-video: d01ed7ff1e38fa7dcc6c15c94cf505e661b7bfd0
   react-native-webview: 0658813bcc4b6c22f3cbb035a2227aa896a8cbc0
   react-native-webview-bridge: 3023f6b0e84cdf8e4a96511d2b04e73b038f95f0
   React-RCTActionSheet: 600b4d10e3aea0913b5a92256d2719c0cdd26d76

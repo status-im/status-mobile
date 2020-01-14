@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.video :as video]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -22,23 +23,24 @@
             [status-im.ui.components.button :as button])
   (:require-macros [status-im.utils.views :as views]))
 
-(defn welcome-image-wrapper []
-  (let [dimensions (reagent/atom {})]
-    (fn []
-      [react/view {:on-layout  (fn [e]
-                                 (reset! dimensions (js->clj (-> e .-nativeEvent .-layout) :keywordize-keys true)))
-                   :style {:align-items :center
-                           :justify-content :center
-                           :flex 1}}
-       (let [padding    0
-             image-size (- (min (:width @dimensions) (:height @dimensions)) padding)]
-         [react/image {:source (resources/get-image :welcome)
-                       :resize-mode :contain
-                       :style {:width image-size :height image-size}}])])))
+(defn welcome-video-wrapper []
+  [react/view {:style {:align-items     :center
+                       :justify-content :center
+                       :flex            1}}
+   [video/video {:source           (resources/get-video :welcome-video)
+                 :repeat           true
+                 :pause            false
+                 :playWhenInactive true
+                 :resize-mode      :contain
+                 :style            {:position "absolute"
+                                    :top      0
+                                    :bottom   0
+                                    :left     0
+                                    :right    0}}]])
 
 (defn welcome []
   [react/view {:style styles/welcome-view}
-   [welcome-image-wrapper]
+   [welcome-video-wrapper]
    [react/i18n-text {:style styles/welcome-text :key :welcome-to-status}]
    [react/view
     [react/i18n-text {:style styles/welcome-text-description

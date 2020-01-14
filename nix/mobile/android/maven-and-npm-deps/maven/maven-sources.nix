@@ -5213,6 +5213,21 @@ in {
       sha256 = "0vlqbcihfsgvkzsczp0h6ynz7wnf2d88kvhqfbn1hibry1y7h9wh";
     };
   };
+  "https://jcenter.bintray.com/com/yqritc/android-scalablevideoview/1.0.4/android-scalablevideoview-1.0.4" =
+  {
+    host = repositories.jcenter;
+    path =
+      "com/yqritc/android-scalablevideoview/1.0.4/android-scalablevideoview-1.0.4";
+    type = "aar";
+    pom = {
+      sha1 = "450c695ac203f62a5d9064f0264c6d174c73c943";
+      sha256 = "0ihhy4z0vqw2i1lqsz9idz1j84c6bwym7ldg7h6kdnxh7jh7w4s5";
+    };
+    jar = {
+      sha1 = "41f9ccae09aafebcc34593036243b5ac2e77ef8e";
+      sha256 = "1qzz9y9z58nynjvim1pqfkh45419pd79lvnlryqw2f515jjflm1b";
+    };
+  };
   "https://jcenter.bintray.com/commons-codec/commons-codec/1.10/commons-codec-1.10" =
   {
     host = repositories.jcenter;
