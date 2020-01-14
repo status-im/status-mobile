@@ -246,7 +246,7 @@ PODS:
     - ReactCommon/jscallinvoker (= 0.61.5)
   - RNFS (2.14.1):
     - React
-  - RNGestureHandler (1.4.1):
+  - RNGestureHandler (1.5.2):
     - React
   - RNImageCropPicker (0.25.3):
     - QBImagePickerController
@@ -456,7 +456,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: a49a1f42bf8f5acf1c3e297097517c6b3af377ad
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
   RNFS: a8fbe7060fa49157d819466404794ad9c58e58cf
-  RNGestureHandler: 4cb47a93019c1a201df2644413a0a1569a51c8aa
+  RNGestureHandler: 946a7691e41df61e2c4b1884deab41a4cdc3afff
   RNImageCropPicker: bfb3ea9c8622f290532e2fe63f369e0d5a52f597
   RNKeychain: 216f37338fcb9e5c3a2530f1e3295f737a690cb1
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
