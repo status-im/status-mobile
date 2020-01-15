@@ -827,7 +827,8 @@
 ;; on, rather then keep asking for the same data, say after n amounts of attempts
 (fx/defn handle-request-error
   [{:keys [db]} error]
-  {:db (-> db
+  {:mailserver/decrease-limit   []
+   :db (-> db
            (assoc  :mailserver/request-error error)
            (dissoc :mailserver/current-request
                    :mailserver/pending-requests))})

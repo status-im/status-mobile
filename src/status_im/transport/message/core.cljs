@@ -14,39 +14,11 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.core :as ethereum]
             [status-im.native-module.core :as status]
-            [status-im.transport.message.contact :as contact]
-            [status-im.transport.message.protocol :as protocol]
-            [status-im.transport.message.transit :as transit]
-            [status-im.transport.utils :as transport.utils]
-            [status-im.tribute-to-talk.whitelist :as whitelist]
             [status-im.ens.core :as ens]
             [cljs-bean.core :as clj-bean]
-            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]))
-
-(fx/defn handle-raw-message
-  "Receive message handles a new status-message.
-  dedup-id is passed by status-go and is used to deduplicate messages at that layer.
-  Once a message has been successfuly processed, that id needs to be sent back
-  in order to stop receiving that message"
-  [{:keys [db] :as cofx} raw-message-js]
-  (let [timestamp (.-timestamp raw-message-js)
-        sig (.-from raw-message-js)
-        payload (.-payload raw-message-js)]
-    (let [status-message (transit/deserialize payload)]
-      (when (and sig
-                 status-message)
-        (try
-          (when-let [valid-message (protocol/validate status-message)]
-            (protocol/receive
-             valid-message
-             sig
-             sig
-             timestamp
-             cofx))
-          (catch :default e nil)))))) ; ignore unknown message types
 
 (defn- js-obj->seq [obj]
   ;; Sometimes the filter will return a single object instead of a collection
@@ -91,18 +63,6 @@
         (fx/merge cofx
                   {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
                   (handle-chat (-> chat (clj-bean/->clj) (data-store.chats/<-rpc)))))
-      (seq raw-messages)
-      (let [first-filter (aget raw-messages 0)
-            messages     (.-messages first-filter)
-            first-message (.pop messages)]
-       ;; Pop the empty array
-        (when (= (.-length messages) 0)
-          (.pop raw-messages))
-        (when first-message
-          (fx/merge cofx
-                    {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
-                    (handle-raw-message first-message))))
-
       (seq messages)
       (let [message (.pop messages)]
         (fx/merge cofx

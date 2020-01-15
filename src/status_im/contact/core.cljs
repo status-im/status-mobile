@@ -10,7 +10,6 @@
    [status-im.ethereum.json-rpc :as json-rpc]
    [status-im.data-store.contacts :as contacts-store]
    [status-im.mailserver.core :as mailserver]
-   [status-im.transport.message.contact :as message.contact]
    [status-im.transport.message.protocol :as protocol]
    [status-im.tribute-to-talk.db :as tribute-to-talk]
    [status-im.tribute-to-talk.whitelist :as whitelist]

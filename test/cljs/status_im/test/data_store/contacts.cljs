@@ -14,7 +14,7 @@
                           :address "address"
                           :name "name"
                           :photoPath "photo-path"
-                          :tributeToTalk "[\"~#'\",\"tribute-to-talk\"]"
+                          :tributeToTalk "\"tribute-to-talk\""
 
                           :lastUpdated 1
                           :systemTags #{":a" ":b"}}]
@@ -29,7 +29,8 @@
                  :address "address"
                  :name "name"
                  :photoPath "photo-path"
-                 :tributeToTalk "[\"~#'\",\"tribute-to-talk\"]" :lastUpdated 1
+                 :tributeToTalk "\"tribute-to-talk\""
+                 :lastUpdated 1
                  :systemTags [":a" ":b"]}
         expected-contact {:public-key "pk"
                           :address "address"

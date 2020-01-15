@@ -14,7 +14,6 @@
             [status-im.mailserver.core :as mailserver]
             [status-im.native-module.core :as status]
             [status-im.transport.message.protocol :as protocol]
-            [status-im.transport.message.transit :as transit]
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.components.react :as react]
             [status-im.utils.clocks :as utils.clocks]

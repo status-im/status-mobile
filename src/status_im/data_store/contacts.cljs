@@ -6,20 +6,26 @@
             [taoensso.timbre :as log]
             [status-im.utils.types :as types]))
 
+(defn deserialize-tribute-to-talk [t]
+  (if (seq t)
+    (types/deserialize t)
+    {}))
+
 (defn <-rpc [contact]
   (-> contact
-      (update :tributeToTalk types/deserialize)
+      (update :tributeToTalk deserialize-tribute-to-talk)
       (update :systemTags
               #(reduce (fn [acc s]
                          (conj acc (keyword (subs s 1))))
                        #{}
-                       %)) (clojure.set/rename-keys {:id :public-key
-                                                     :photoPath :photo-path
-                                                     :tributeToTalk :tribute-to-talk
-                                                     :ensVerifiedAt :ens-verified-at
-                                                     :ensVerified :ens-verified
-                                                     :systemTags :system-tags
-                                                     :lastUpdated :last-updated})))
+                       %))
+      (clojure.set/rename-keys {:id :public-key
+                                :photoPath :photo-path
+                                :tributeToTalk :tribute-to-talk
+                                :ensVerifiedAt :ens-verified-at
+                                :ensVerified :ens-verified
+                                :systemTags :system-tags
+                                :lastUpdated :last-updated})))
 
 (defn ->rpc [contact]
   (-> contact

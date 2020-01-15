@@ -158,12 +158,6 @@
                        :fetched-network-id fetched-network-id})
           #(re-frame/dispatch [::close-app-confirmed]))))}]})
 
-(defn deserialize-config
-  [{:keys [multiaccount current-network networks]}]
-  [(types/deserialize multiaccount)
-   current-network
-   (types/deserialize networks)])
-
 (re-frame/reg-fx
  ;;TODO: this could be replaced by a single API call on status-go side
  ::initialize-wallet

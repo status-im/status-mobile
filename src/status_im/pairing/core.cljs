@@ -9,7 +9,6 @@
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.transport.message.pairing :as transport.pairing]
             [status-im.transport.message.protocol :as protocol]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.config :as config]
@@ -69,24 +68,6 @@
   {::json-rpc/call [{:method "shhext_sendPairInstallation"
                      :params []
                      :on-success #(log/info "sent pair installation message")}]})
-
-(defn merge-contact [local remote]
-  ;;TODO we don't sync contact/blocked for now, it requires more complex handling
-  (let [remove (update remote :system-tags disj :contact/blocked)
-        [old-contact new-contact] (sort-by :last-updated [remote local])]
-    (-> local
-        (merge new-contact)
-        (assoc ;; we only take system tags from the newest contact version
-         :system-tags  (:system-tags new-contact)))))
-
-(def merge-contacts (partial merge-with merge-contact))
-
-(def multiaccount-mergeable-keys [:name :photo-path :last-updated])
-
-(defn merge-multiaccount [local remote]
-  (if (> (:last-updated remote) (:last-updated local))
-    (merge local (select-keys remote multiaccount-mergeable-keys))
-    local))
 
 (fx/defn prompt-dismissed [{:keys [db]}]
   {:db (assoc-in db [:pairing/prompt-user-pop-up] false)})

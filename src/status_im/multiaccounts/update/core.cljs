@@ -1,7 +1,6 @@
 (ns status-im.multiaccounts.update.core
   (:require [status-im.contact.db :as contact.db]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.transport.message.contact :as message.contact]
             [status-im.transport.message.protocol :as protocol]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
