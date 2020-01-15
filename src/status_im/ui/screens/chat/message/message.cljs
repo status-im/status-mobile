@@ -286,12 +286,10 @@
     (i18n/label (if (or (= command-state constants/command-state-request-address-for-transaction-declined)
                         (= command-state constants/command-state-request-transaction-declined))
                   :t/transaction-declined
-                  (case direction
-                    :outgoing (case transaction-type
-                                :pending :t/status-pending
-                                :failed :t/transaction-failed
-                                :t/status-confirmed)
-                    :incoming :t/status-confirmed)))]])
+                  (case transaction-type
+                    :pending :t/status-pending
+                    :failed :t/transaction-failed
+                    :t/status-confirmed)))]])
 
 (defn- command-status-and-timestamp
   [command-state direction to timestamp-str transaction-type]

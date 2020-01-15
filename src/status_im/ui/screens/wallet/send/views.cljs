@@ -68,6 +68,7 @@
 (defn render-contact [contact from-chat?]
   (if from-chat?
     [list-item/list-item {:title (multiaccounts/displayed-name contact)
+                          :subtitle (:address contact)
                           :icon  (multiaccounts/displayed-photo contact)}]
     [list-item/list-item
      {:title       (utils/get-shortened-checksum-address

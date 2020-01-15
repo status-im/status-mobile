@@ -137,6 +137,7 @@
              :contact  (get-contact db address)
              :contract to
              :approve? (not= type :transfer)
+             :value    value
              :amount   (money/to-fixed (money/token->unit value decimals))
              :token    token
              :symbol   symbol}))))))
@@ -153,6 +154,7 @@
                {:to      to
                 :contact (get-contact db to)
                 :symbol  :ETH
+                :value   value
                 :amount  (str eth-amount)
                 :token   (tokens/asset-for (:wallet/all-tokens db) (ethereum/chain-keyword db) :ETH)}
                (not (nil? token))
@@ -182,23 +184,24 @@
                   :signing/tx tx
                   :signing/sign {:type           (if keycard-multiaccount? :keycard :password)
                                  :formatted-data (if typed? (types/json->clj data) (ethereum/hex-to-utf8 data))})}
-      (fx/merge cofx
-                {:db
-                 (assoc updated-db
-                        :signing/in-progress? true
-                        :signing/queue (drop-last queue)
-                        :signing/tx (prepare-tx updated-db tx))
-                 :dismiss-keyboard
-                 nil}
-                #(when-not gas
-                   {:db (assoc-in (:db %) [:signing/edit-fee :gas-loading?] true)
-                    :signing/update-estimated-gas {:obj           tx-obj
-                                                   :success-event :signing/update-estimated-gas-success
-                                                   :error-event :signing/update-estimated-gas-error}})
-                #(when-not gasPrice
-                   {:db (assoc-in (:db %) [:signing/edit-fee :gas-price-loading?] true)
-                    :signing/update-gas-price {:success-event :signing/update-gas-price-success
-                                               :error-event :signing/update-gas-price-error}})))))
+      (fx/merge
+       cofx
+       {:db
+        (assoc updated-db
+               :signing/in-progress? true
+               :signing/queue (drop-last queue)
+               :signing/tx (prepare-tx updated-db tx))
+        :dismiss-keyboard
+        nil}
+       #(when-not gas
+          {:db (assoc-in (:db %) [:signing/edit-fee :gas-loading?] true)
+           :signing/update-estimated-gas {:obj           tx-obj
+                                          :success-event :signing/update-estimated-gas-success
+                                          :error-event :signing/update-estimated-gas-error}})
+       #(when-not gasPrice
+          {:db (assoc-in (:db %) [:signing/edit-fee :gas-price-loading?] true)
+           :signing/update-gas-price {:success-event :signing/update-gas-price-success
+                                      :error-event :signing/update-gas-price-error}})))))
 
 (fx/defn check-queue [{:keys [db] :as cofx}]
   (let [{:signing/keys [in-progress? queue]} db]
@@ -207,17 +210,21 @@
 
 (fx/defn send-transaction-message
   {:events [::send-transaction-message]}
-  [cofx chat-id transaction-hash signature]
+  [cofx chat-id value contract transaction-hash signature]
   {::json-rpc/call [{:method "shhext_sendTransaction"
-                     :params [chat-id transaction-hash (:result (types/json->clj signature))]
-                     :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})
+                     :params [chat-id value contract transaction-hash
+                              (:result (types/json->clj signature))]
+                     :on-success
+                     #(re-frame/dispatch [:transport/message-sent % 1])}]})
 
 (fx/defn send-accept-request-transaction-message
   {:events [::send-accept-transaction-message]}
   [cofx message-id transaction-hash signature]
   {::json-rpc/call [{:method "shhext_acceptRequestTransaction"
-                     :params [transaction-hash message-id (:result (types/json->clj signature))]
-                     :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})
+                     :params [transaction-hash message-id
+                              (:result (types/json->clj signature))]
+                     :on-success
+                     #(re-frame/dispatch [:transport/message-sent % 1])}]})
 
 (fx/defn transaction-result
   [{:keys [db] :as cofx} result tx-obj]
@@ -231,25 +238,28 @@
                  {:dispatch (conj on-result result)}))))
 
 (fx/defn command-transaction-result
-  [{:keys [db] :as cofx} result hashed-password tx-obj]
-  (let [{:keys [on-result symbol amount]} (get db :signing/tx)]
-    (fx/merge cofx
-              {:db (dissoc db :signing/tx :signing/in-progress? :signing/sign)
-               :signing.fx/sign-message
-               {:params {:data     (str (get-in db [:multiaccount :public-key])
-                                        (subs result 2))
-                         :password hashed-password
-                         :account  (:from tx-obj)}
-                :on-completed
-                #(re-frame/dispatch
-                  (if (:message-id tx-obj)
-                    [::send-accept-transaction-message (:message-id tx-obj) result %]
-                    [::send-transaction-message (:chat-id tx-obj) result %]))}
-               :signing/show-transaction-result nil}
-              (prepare-unconfirmed-transaction result tx-obj symbol amount)
-              (check-queue)
-              #(when on-result
-                 {:dispatch (conj on-result result)}))))
+  [{:keys [db] :as cofx} transaction-hash hashed-password
+   {:keys [message-id chat-id from] :as tx-obj}]
+  (let [{:keys [on-result symbol amount contract value]} (get db :signing/tx)]
+    (fx/merge
+     cofx
+     {:db (dissoc db :signing/tx :signing/in-progress? :signing/sign)
+      :signing.fx/sign-message
+      {:params {:data (str (get-in db [:multiaccount :public-key])
+                           (subs transaction-hash 2))
+                :password hashed-password
+                :account from}
+       :on-completed
+       #(re-frame/dispatch
+         (if message-id
+           [::send-accept-transaction-message message-id transaction-hash %]
+           [::send-transaction-message
+            chat-id value contract transaction-hash %]))}
+      :signing/show-transaction-result nil}
+     (prepare-unconfirmed-transaction transaction-hash tx-obj symbol amount)
+     (check-queue)
+     #(when on-result
+        {:dispatch (conj on-result transaction-hash)}))))
 
 (fx/defn transaction-error
   [{:keys [db]} {:keys [code message]}]

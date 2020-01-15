@@ -23,6 +23,8 @@
             [status-im.signing.core :as signing]
             [clojure.string :as string]
             [status-im.contact.db :as contact.db]
+            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.stateofus :as stateofus]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
 
 (re-frame/reg-fx
@@ -375,21 +377,39 @@
   {:events  [:wallet.ui/sign-transaction-button-clicked-from-chat]}
   [{:keys [db] :as cofx} {:keys [to amount from token request? from-chat? gas gasPrice]}]
   (let [{:keys [symbol address]} token
+        amount-hex (str "0x" (abi-spec/number-to-hex amount))
         to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))
         from-address (:address from)
-        identity (:current-chat-id db)]
-    (fx/merge cofx
-              {:db (-> db
-                       (update-in [:chat-ui-props identity] dissoc :input-bottom-sheet)
-                       (dissoc :wallet/prepare-transaction))
-              ;;TODO from chat, send request message or if ens name sign tx and send tx message
-               ::json-rpc/call [{:method "shhext_requestAddressForTransaction"
-                                 :params [(:current-chat-id db)
-                                          from-address
-                                          amount
-                                          (when-not (= symbol :ETH)
-                                            address)]
-                                 :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})))
+        identity (:current-chat-id db)
+        db (-> db
+               (update-in [:chat-ui-props identity] dissoc :input-bottom-sheet)
+               (dissoc :wallet/prepare-transaction))]
+    (if to-norm
+      (fx/merge
+       cofx
+       {:db db}
+       (signing/sign {:tx-obj (if (= symbol :ETH)
+                                {:to    to-norm
+                                 :from  from-address
+                                 :chat-id  identity
+                                 :command? true
+                                 :value amount-hex}
+                                {:to       (ethereum/normalized-hex address)
+                                 :from     from-address
+                                 :chat-id  identity
+                                 :command? true
+                                 :data     (abi-spec/encode
+                                            "transfer(address,uint256)"
+                                            [to-norm amount-hex])})}))
+      {:db db
+       ::json-rpc/call
+       [{:method "shhext_requestAddressForTransaction"
+         :params [(:current-chat-id db)
+                  from-address
+                  amount
+                  (when-not (= symbol :ETH)
+                    address)]
+         :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})))
 
 (fx/defn request-transaction-button-clicked-from-chat
   {:events  [:wallet.ui/request-transaction-button-clicked]}
@@ -449,22 +469,21 @@
     (fx/merge cofx
               {:db (dissoc db :wallet/prepare-transaction)}
               (fn [cofx]
-                (signing/sign cofx {:tx-obj (if (= symbol :ETH)
-                                              {:to    to-norm
-                                               :from  from-address
-                                               :message-id (:id request-parameters)
-                                               :command? true
-                                               :value amount-hex}
-                                              {:to       (ethereum/normalized-hex address)
-                                               :from     from-address
-                                               :command? true
-                                               :message-id (:id request-parameters)
-                                               :data     (abi-spec/encode
-                                                          "transfer(address,uint256)"
-                                                          [to-norm amount-hex])
-                                               ;;Note: data from qr (eip681)
-                                               :gas      gas
-                                               :gasPrice gasPrice})})))))
+                (signing/sign
+                 cofx
+                 {:tx-obj (if (= symbol :ETH)
+                            {:to    to-norm
+                             :from  from-address
+                             :message-id (:id request-parameters)
+                             :command? true
+                             :value amount-hex}
+                            {:to       (ethereum/normalized-hex address)
+                             :from     from-address
+                             :command? true
+                             :message-id (:id request-parameters)
+                             :data     (abi-spec/encode
+                                        "transfer(address,uint256)"
+                                        [to-norm amount-hex])})})))))
 
 (fx/defn sign-transaction-button-clicked
   {:events  [:wallet.ui/sign-transaction-button-clicked]}
@@ -498,19 +517,16 @@
         from-address (:address from)]
     (fx/merge cofx
               {:db (dissoc db :wallet/prepare-transaction)}
-              (fn [cofx]
-                (signing/sign cofx {:tx-obj (if (= symbol :ETH)
-                                              {:to    to-norm
-                                               :from  from-address
-                                               :value amount-hex}
-                                              {:to       (ethereum/normalized-hex address)
-                                               :from     from-address
-                                               :data     (abi-spec/encode
-                                                          "transfer(address,uint256)"
-                                                          [to-norm amount-hex])
-                                               ;;Note: data from qr (eip681)
-                                               :gas      gas
-                                               :gasPrice gasPrice})})))))
+              (signing/sign
+               {:tx-obj (merge {:from  from-address}
+                               (if (= symbol :ETH)
+                                 {:to    to-norm
+                                  :value amount-hex}
+                                 {:to       (ethereum/normalized-hex address)
+                                  :from     from-address
+                                  :data     (abi-spec/encode
+                                             "transfer(address,uint256)"
+                                             [to-norm amount-hex])}))}))))
 
 (fx/defn set-and-validate-amount-request
   {:events [:wallet.request/set-and-validate-amount]}
@@ -521,24 +537,46 @@
              (assoc-in [:wallet :request-transaction :amount-text] amount)
              (assoc-in [:wallet :request-transaction :amount-error] error))}))
 
-;;TODO request isn't implemented
 (fx/defn set-symbol-request
   {:events [:wallet.request/set-symbol]}
   [{:keys [db]} symbol]
   {:db (assoc-in db [:wallet :request-transaction :symbol] symbol)})
 
+(re-frame/reg-fx
+ ::resolve-address
+ (fn [{:keys [registry ens-name cb]}]
+   (ens/get-addr registry ens-name cb)))
+
+(fx/defn on-recipient-address-resolved
+  {:events [::recipient-address-resolved]}
+  [{:keys [db]} address]
+  {:db (assoc-in db [:wallet/prepare-transaction :to :address] address)})
+
 (fx/defn prepare-transaction-from-chat
   {:events [:wallet/prepare-transaction-from-chat]}
   [{:keys [db]}]
-  (let [identity (:current-chat-id db)]
-    {:db (assoc db :wallet/prepare-transaction
-                {:from (ethereum/get-default-account (:multiaccount/accounts db))
-                 :to   (or (get-in db [:contacts/contacts identity])
-                           (-> identity
-                               contact.db/public-key->new-contact
-                               contact.db/enrich-contact))
-                 :symbol :ETH
-                 :from-chat? true})}))
+  (let [chain (ethereum/chain-keyword db)
+        identity (:current-chat-id db)
+        {:keys [ens-verified name] :as contact}
+        (or (get-in db [:contacts/contacts identity])
+            (-> identity
+                contact.db/public-key->new-contact
+                contact.db/enrich-contact))]
+    (cond-> {:db (assoc db
+                        :wallet/prepare-transaction
+                        {:from (ethereum/get-default-account
+                                (:multiaccount/accounts db))
+                         :to contact
+                         :symbol :ETH
+                         :from-chat? true})}
+      ens-verified
+      (assoc ::resolve-address
+             {:registry (get ens/ens-registries chain)
+              :ens-name (if (= (.indexOf name ".") -1)
+                          (stateofus/subdomain name)
+                          name)
+              ;;TODO handle errors and timeout for ens name resolution
+              :cb #(re-frame/dispatch [::recipient-address-resolved %])}))))
 
 (fx/defn prepare-request-transaction-from-chat
   {:events [:wallet/prepare-request-transaction-from-chat]}
