@@ -1,0 +1,10 @@
+{
+  "files.associations": {
+    "*.android": "groovy",
+    "*.ios": "groovy",
+    "*.linux": "groovy",
+    "*.macos": "groovy",
+    "*.windows": "groovy",
+    "*.nix-cache": "groovy",
+  },
+}
