@@ -63,7 +63,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     def test_mobile_data_usage_popup_stop_syncing(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
-        offline_banner_text = "History syncing offline"
+        offline_banner_text = "Offline, waiting for Wi-Fi"
 
         sign_in_view.just_fyi("Enable mobile network to see popup and stop syncing")
         sign_in_view.toggle_mobile_data()
@@ -873,8 +873,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_2_home.profile_button.click()
         if not device_2_profile.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
             self.errors.append('Profile picture was not updated after initial sync')
+        device_2_profile.home_button.click()
 
-        device_1.just_fyi('send message to group chat, edit profile details and join to new public chat')
+        device_1.just_fyi('send message to group chat, and join to new public chat')
         device_1_home = device_1_profile.get_back_to_home_view()
         device_1_public_chat = device_1_home.join_public_chat(public_chat_after_sync_name)
         device_1_public_chat.back_button.click()
@@ -882,11 +883,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_group_chat.chat_message_input.send_keys(message_after_sync)
         device_1_group_chat.send_message_button.click()
         device_1_group_chat.back_button.click()
-        device_1_profile = device_1_home.profile_button.click()
-        device_1_profile.edit_profile_picture('sauce_logo_red.png')
 
-        device_2.just_fyi('check that message in group chat is shown, profile details and public chats are synced')
-        device_2_profile.home_button.click()
+        device_2.just_fyi('check that message in group chat is shown, public chats are synced')
         if not device_2_home.element_by_text('#%s' % public_chat_after_sync_name).is_element_displayed():
             self.errors.append('Public chat "%s" doesn\'t appear on other device when devices are paired'
                                % public_chat_before_sync_name)
@@ -896,11 +894,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         if not device_2_group_chat.chat_element_by_text(message_after_sync).is_element_displayed():
             self.errors.append('"%s" message in group chat is not synced' % message_after_sync)
-
-        device_2_group_chat.get_back_to_home_view()
-        device_2_home.profile_button.click()
-        if not device_2_profile.profile_picture.is_element_image_equals_template('sauce_logo_red_profile.png'):
-            self.errors.append('Profile picture was not updated after changing when devices are paired')
 
         self.errors.verify_no_errors()
 
