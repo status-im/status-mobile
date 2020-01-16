@@ -48,7 +48,7 @@ class TestDApps(SingleDeviceTestCase):
         wallet_view.just_fyi('create new account in multiaccount')
         wallet_view.set_up_wallet()
         status_account = 'Status account'
-        account_name = 'subaccount'
+        account_name = 'Subaccount'
         wallet_view.add_account(account_name)
         address = wallet_view.get_wallet_address(account_name)
 
@@ -78,7 +78,6 @@ class TestDApps(SingleDeviceTestCase):
         if not status_test_dapp.element_by_text(account_name).is_element_displayed():
             self.errors.append("No expected account %s is shown in authorize web3 popup for wallet" % account_name)
         status_test_dapp.allow_button.click()
-        status_test_dapp.allow_button.click()
         dapp_view.profile_button.click()
         profile_view.element_by_text(test_dapp_name).click()
         for text in 'Chat key', account_name:
@@ -93,6 +92,17 @@ class TestDApps(SingleDeviceTestCase):
         if not send_transaction_view.element_by_text(address).is_element_displayed():
             self.errors.append("Wallet address %s in not shown in 'From' on Send Transaction screen" % address)
 
+        sign_in_view.just_fyi('Relogin and check multiaccount loads fine')
+        send_transaction_view.cancel_button.click()
+        sign_in_view.profile_button.click()
+        sign_in_view.get_back_to_home_view()
+        sign_in_view.relogin()
+        sign_in_view.wallet_button.click()
+        if not wallet_view.element_by_text(account_name).is_element_displayed():
+            self.errors.append("Subaccount is gone after relogin in Wallet!")
+        sign_in_view.dapp_tab_button.click()
+        if not dapp_view.element_by_text(account_name).is_element_displayed():
+            self.errors.append("Subaccount is not selected after relogin in Dapps!")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5654)

@@ -25,8 +25,8 @@ class TinyReplyIconInMessageInput(BaseElement):
 class QuoteUsernameInMessageInput(BaseText):
     def __init__(self, driver):
         super().__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.view.ViewGroup[@content-desc='tiny-reply-icon']/"
-                                                   "../android.widget.TextView[1]")
+        self.locator = self.Locator.xpath_selector("//android.view.ViewGroup[@content-desc='cancel-message-reply']/"
+                                                   "..//android.widget.TextView[1]")
 
 
 class CancelReplyButton(BaseEditBox):

@@ -144,8 +144,8 @@ class PrivacyPolicyLink(BaseButton):
         element = self.find_element()
         location = element.location
         size = element.size
-        x = int(location['x'] + size['width'] * 0.8)
-        y = int(location['y'] + size['height'] / 2)
+        x = int(location['x'] + size['width'] * 0.9)
+        y = int(location['y'] + size['height'] * 0.8)
         TouchAction(self.driver).tap(None, x, y).perform()
         self.driver.info('Tap on %s' % self.name)
         return self.navigate()

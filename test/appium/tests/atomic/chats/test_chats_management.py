@@ -234,12 +234,12 @@ class TestChatManagement(SingleDeviceTestCase):
         chat_view.just_fyi("Clear quotes from both chats")
         chat_view.cancel_reply_button.click()
 
-        if chat_view.tiny_reply_icon_in_message_input.is_element_displayed():
+        if chat_view.cancel_reply_button.is_element_displayed():
             self.errors.append("Message quote kept in public chat input after it's cancelation")
         chat_view.get_back_to_home_view(times_to_click_on_back_btn=1)
         home.get_chat_with_user(dummy_user["username"]).click()
         chat_view.cancel_reply_button.click()
-        if chat_view.tiny_reply_icon_in_message_input.is_element_displayed():
+        if chat_view.cancel_reply_button.is_element_displayed():
             self.errors.append("Message quote kept in 1-1 chat input after it's cancelation")
 
         self.errors.verify_no_errors()
@@ -482,7 +482,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1_chat = home_1.add_contact(device_2_public_key)
         device_1_chat.send_message(message_from_sender)
         device_1_chat.quote_message(message_from_sender)
-        if device_1_chat.quote_username_in_message_input.text != "You":
+        if device_1_chat.quote_username_in_message_input.text != "↪ You":
             self.errors.append("'You' is not displayed in reply quote snippet replying to own message")
         reply_to_message_from_sender = message_from_sender + " reply"
         device_1_chat.send_message(reply_to_message_from_sender)
@@ -505,7 +505,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_public_1, chat_public_2 = home_1.get_chat_view(), home_2.get_chat_view()
         chat_public_1.send_message(message_from_sender)
         chat_public_2.quote_message(message_from_sender)
-        if chat_public_2.quote_username_in_message_input.text != device_1_username:
+        if chat_public_2.quote_username_in_message_input.text != ("↪ " + device_1_username):
             self.errors.append(" %s is not displayed in reply quote snippet replying to own message " % device_1_username)
 
         device_1.just_fyi('Message receiver verifies reply is present in received message')
