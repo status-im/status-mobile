@@ -10,7 +10,6 @@
 
 ;;Contact
 
-(spec/def :contact/address (spec/nilable :global/address))
 (spec/def :contact/last-online (spec/nilable int?))
 (spec/def :contact/last-updated (spec/nilable int?))
 (spec/def :contact/name (spec/nilable string?))

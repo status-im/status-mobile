@@ -129,6 +129,7 @@
               :MaxMessageDeliveryAttempts config/max-message-delivery-attempts
               :MailServerConfirmations  config/mailserver-confirmations-enabled?
               :VerifyTransactionURL "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"
+              :VerifyENSURL "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"
               :VerifyTransactionChainID 1
               :DataSyncEnabled true
               :PFSEnabled true}

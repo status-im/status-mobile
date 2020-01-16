@@ -81,7 +81,7 @@
             {:db            (-> db
                                 (update-in [:contacts/contacts public-key] merge contact))}
             (transport.filters/load-contact contact)
-            (contacts-store/save-contact contact)))
+            #(contacts-store/save-contact % (get-in % [:db :contacts/contacts public-key]))))
 
 (fx/defn send-contact-request
   [{:keys [db] :as cofx} {:keys [public-key] :as contact}]
@@ -205,9 +205,12 @@
 
 (fx/defn name-verified
   {:events [:contacts/ens-name-verified]}
-  [{:keys [db]} public-key ens-name]
-  {:db (update-in db [:contacts/contacts public-key]
-                  merge
-                  {:name            ens-name
-                   :ens-verified-at (quot (time/timestamp) 1000)
-                   :ens-verified    true})})
+  [{:keys [db] :as cofx} public-key ens-name]
+  (fx/merge cofx
+            {:db (update-in db [:contacts/contacts public-key]
+                            merge
+                            {:name            ens-name
+                             :ens-verified-at (quot (time/timestamp) 1000)
+                             :ens-verified    true})}
+
+            (upsert-contact {:public-key public-key})))

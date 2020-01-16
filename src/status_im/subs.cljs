@@ -1631,7 +1631,9 @@
  :contacts/all-contacts-not-in-current-chat
  :<- [::query-current-chat-contacts remove]
  (fn [contacts]
-   (sort-by (comp clojure.string/lower-case :name) contacts)))
+   (->> contacts
+        (filter contact.db/added?)
+        (sort-by (comp clojure.string/lower-case multiaccounts/displayed-name)))))
 
 (re-frame/reg-sub
  :contacts/current-chat-contacts
