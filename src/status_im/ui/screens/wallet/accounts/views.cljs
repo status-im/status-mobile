@@ -160,9 +160,7 @@
     [react/scroll-view {:horizontal                        true
                         :shows-horizontal-scroll-indicator false}
      [react/view {:flex-direction     :row
-                  :padding-top        11
-                  :padding-bottom     12
-                  :padding-horizontal 16}
+                  :padding-horizontal 8}
       (for [account accounts]
         ^{:key account}
         [account-card account])
