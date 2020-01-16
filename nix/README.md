@@ -94,3 +94,10 @@ export NIX_IGNORE_SYMLINK_STORE=1
 Add it to your `.bashrc` or any other shell config file.
 
 __NOTE__: Your old `/nix` directory will end up in `/Users/Shared/Relocated Items/Security/nix` after OS upgrade.
+
+### Cache Downloads Timing Out
+
+If copying from Nix Cache times out you can adjust the timeout by changing [`nix/nix.conf`](/nix/nix.conf):
+```conf
+stalled-download-timeout = 9001
+```
