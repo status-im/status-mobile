@@ -109,7 +109,8 @@ def uploadToPlayStore(type = 'nightly') {
     nix.shell(
       "fastlane android ${type}",
       keep: ['FASTLANE_DISABLE_COLORS', 'APK_PATHS', 'GOOGLE_PLAY_JSON_KEY'],
-      attr: 'shells.fastlane'
+      attr: 'shells.fastlane',
+      pure: false
     )
   }
 }
