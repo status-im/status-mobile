@@ -119,17 +119,12 @@
                                :background-color :white
                                :flex             1}}
        (let [size (min (:width @dimensions) (:height @dimensions))]
-         (if platform/android?
-           [react/image {:source      (resources/get-image :sample-key)
-                         :resize-mode :contain
-                         :style       {:width  size
-                                       :height size}}]
-           [video/video {:source           (resources/get-video :keys-video)
-                         :repeat           true
-                         :pause            false
-                         :playWhenInactive true
-                         :resize-mode      :contain
-                         :style            {:width size :height size}}]))])))
+         [video/video {:source           (resources/get-video :keys-video)
+                       :repeat           true
+                       :pause            false
+                       :playWhenInactive true
+                       :resize-mode      :contain
+                       :style            {:width size :height size}}])])))
 
 (defn choose-key [{:keys [multiaccounts selected-id view-height]}]
   [react/view
