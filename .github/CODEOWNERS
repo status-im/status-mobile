@@ -18,9 +18,9 @@
 # precedence. When someone opens a pull request that only
 # modifies Nix files, only @js-owner and not the global
 # owner(s) will be requested for a review.
-*.nix       @PombeirP @jakubgs
-/nix        @PombeirP @jakubgs
-/.github/   @PombeirP @jakubgs
+*.nix       @jakubgs
+/nix        @jakubgs
+/.github/   @jakubgs
 
 /components @status-im/status-core-ui
 
@@ -30,6 +30,6 @@ modules/react-native-desktop*/  @vkjr
 
 /doc        @oskarth @yenda @jeluard
 
-/deployment @vkjr @PombeirP
+/deployment @vkjr
 
 /test/appium/    @antdanchenko @churik
