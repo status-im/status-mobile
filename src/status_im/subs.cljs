@@ -75,7 +75,6 @@
 (reg-root-key-sub :peers-count :peers-count)
 (reg-root-key-sub :about-app/node-info :node-info)
 (reg-root-key-sub :peers-summary :peers-summary)
-(reg-root-key-sub :tab-bar-visible? :tab-bar-visible?)
 (reg-root-key-sub :dimensions/window :dimensions/window)
 (reg-root-key-sub :initial-props :initial-props)
 (reg-root-key-sub :fleets/custom-fleets :custom-fleets)

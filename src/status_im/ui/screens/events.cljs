@@ -185,16 +185,6 @@
    {:db (assoc-in db [:animations type item-id :delete-swiped] value)}))
 
 (handlers/register-handler-fx
- :show-tab-bar
- (fn [{:keys [db]} _]
-   {:db (assoc db :tab-bar-visible? true)}))
-
-(handlers/register-handler-fx
- :hide-tab-bar
- (fn [{:keys [db]} _]
-   {:db (assoc db :tab-bar-visible? false)}))
-
-(handlers/register-handler-fx
  :update-window-dimensions
  (fn [{:keys [db]} [_ dimensions]]
    {:db (assoc db :dimensions/window (dimensions/window dimensions))}))

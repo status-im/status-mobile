@@ -55,7 +55,6 @@
                                                   :peers-count
                                                   :peers-summary
                                                   :sync-state
-                                                  :tab-bar-visible?
                                                   :view-id
                                                   :chat/cooldown-enabled?
                                                   :chat/cooldowns
