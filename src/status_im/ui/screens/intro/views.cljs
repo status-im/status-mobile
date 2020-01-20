@@ -75,7 +75,7 @@
                                :pause            false
                                :muted            true
                                :playWhenInactive true
-                               :resize-mode      :cover
+                               :resize-mode      :contain
                                :style            {:background-color :white
                                                   :width            size
                                                   :height           size}}])])
@@ -138,7 +138,7 @@
                          :pause            false
                          :muted            true
                          :playWhenInactive true
-                         :resize-mode      :cover
+                         :resize-mode      :contain
                          :style            {:width size :height size}}]))])))
 
 (defn choose-key [{:keys [multiaccounts selected-id view-height]}]
