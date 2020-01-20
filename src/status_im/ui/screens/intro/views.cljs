@@ -65,7 +65,7 @@
               [react/view {:style     {:flex 1}
                            :on-layout (fn [e]
                                         (reset! height (-> e .-nativeEvent .-layout .-height)))}
-               (if-not platform/android?
+               (if platform/android?
                  [react/image {:source     (resources/get-image (:image s))
                                :resize-mode :contain
                                :style       {:width  size
