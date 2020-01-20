@@ -16,4 +16,4 @@
                         :left         0
                         :right        0
                         :border-color :white
-                        :border-width 2}}]])
+                        :border-width 4}}]])
