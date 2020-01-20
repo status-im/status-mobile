@@ -24,6 +24,20 @@
 
 (defonce search-active? (reagent/atom false))
 
+(defn welcome-image-wrapper []
+  (let [dimensions (reagent/atom {})]
+    (fn []
+      [react/view {:on-layout  (fn [e]
+                                 (reset! dimensions (js->clj (-> e .-nativeEvent .-layout) :keywordize-keys true)))
+                   :style {:align-items :center
+                           :justify-content :center
+                           :flex 1}}
+       (let [padding    0
+             image-size (- (min (:width @dimensions) (:height @dimensions)) padding)]
+         [react/image {:source (resources/get-image :welcome)
+                       :resize-mode :contain
+                       :style {:width image-size :height image-size}}])])))
+
 (defn welcome-video-wrapper []
   [react/view {:style {:align-items     :center
                        :justify-content :center
@@ -31,6 +45,7 @@
    [video/video {:source           (resources/get-video :welcome-video)
                  :repeat           true
                  :pause            false
+                 :muted            true
                  :playWhenInactive true
                  :resize-mode      :contain
                  :style            {:position "absolute"
@@ -41,7 +56,9 @@
 
 (defn welcome []
   [react/view {:style styles/welcome-view}
-   [welcome-video-wrapper]
+   (if platform/android?
+     [welcome-image-wrapper]
+     [welcome-video-wrapper])
    [react/i18n-text {:style styles/welcome-text :key :welcome-to-status}]
    [react/view
     [react/i18n-text {:style styles/welcome-text-description

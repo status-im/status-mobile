@@ -65,14 +65,20 @@
               [react/view {:style     {:flex 1}
                            :on-layout (fn [e]
                                         (reset! height (-> e .-nativeEvent .-layout .-height)))}
-               [video/video {:source           (resources/get-video (:video s))
-                             :repeat           true
-                             :pause            false
-                             :playWhenInactive true
-                             :resize-mode      :contain
-                             :style            {:background-color :white
-                                                :width            size
-                                                :height           size}}]])
+               (if-not platform/android?
+                 [react/image {:source     (resources/get-image (:image s))
+                               :resize-mode :contain
+                               :style       {:width  size
+                                             :height size}}]
+                 [video/video {:source           (resources/get-video (:video s))
+                               :repeat           true
+                               :pause            false
+                               :muted            true
+                               :playWhenInactive true
+                               :resize-mode      :contain
+                               :style            {:background-color :white
+                                                  :width            size
+                                                  :height           size}}])])
             [react/view {:style {:padding-horizontal 16}}
              [react/i18n-text {:style styles/wizard-title :key (:title s)}]
              [react/i18n-text {:style styles/wizard-text
@@ -86,12 +92,15 @@
               window-width :width} [:dimensions/window]]
     [react/view {:style styles/intro-view}
      [intro-viewer [{:video :chat-video
+                     :image :intro1
                      :title :intro-title1
                      :text  :intro-text1}
                     {:video :wallet-video
+                     :image :intro2
                      :title :intro-title2
                      :text  :intro-text2}
                     {:video :browser-video
+                     :image :intro3
                      :title :intro-title3
                      :text  :intro-text3}] window-height window-width]
      [react/view styles/buttons-container
@@ -127,6 +136,7 @@
            [video/video {:source           (resources/get-video :keys-video)
                          :repeat           true
                          :pause            false
+                         :muted            true
                          :playWhenInactive true
                          :resize-mode      :contain
                          :style            {:width size :height size}}]))])))
