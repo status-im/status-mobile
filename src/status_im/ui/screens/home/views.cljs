@@ -35,7 +35,7 @@
        (let [padding    0
              image-size (- (min (:width @dimensions) (:height @dimensions)) padding)]
          [react/image {:source (resources/get-image :welcome)
-                       :resize-mode :contain
+                       :resize-mode :cover
                        :style {:width image-size :height image-size}}])])))
 
 (defn welcome-video-wrapper []
