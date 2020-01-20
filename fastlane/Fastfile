@@ -212,7 +212,8 @@ platform :ios do
       }
     )
     upload_to_testflight(
-      ipa: 'status_appstore/StatusIm.ipa'
+      ipa: 'status_appstore/StatusIm.ipa',
+      skip_waiting_for_build_processing: true
     )
   end
 
