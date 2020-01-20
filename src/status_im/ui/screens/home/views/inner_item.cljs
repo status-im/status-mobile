@@ -83,6 +83,7 @@
           tribute-label))
       :subtitle-row-accessory    [unviewed-indicator chat-id]
       :on-press                  #(do
+                                    (re-frame/dispatch [:dismiss-keyboard])
                                     (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
                                     (re-frame/dispatch [:chat.ui/mark-messages-seen :chat]))
       :on-long-press             #(re-frame/dispatch [:bottom-sheet/show-sheet chat-actions {:chat-id chat-id}])}]))

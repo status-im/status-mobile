@@ -1784,15 +1784,21 @@
   (let [{:keys [name random-name tags]} (val chat)]
     (into [name random-name] tags)))
 
+(defn sort-by-timestamp
+  [coll]
+  (when (not-empty coll)
+    (sort-by #(-> % second :timestamp) >
+             (into {} coll))))
+
 (defn apply-filter
   "extract-attributes-fn is a function that take an element from the collection
   and returns a vector of attributes which are strings
   apply-filter returns the elements for which at least one attribute includes
   the search-filter
-  apply-filter returns nil if the search-filter is empty or if there is no element
-  that match the filter"
+  apply-filter returns nil if there is no element that match the filter
+  apply-filter returns full collection if the search-filter is empty"
   [search-filter coll extract-attributes-fn]
-  (when (not-empty search-filter)
+  (if (not-empty search-filter)
     (let [search-filter (string/lower-case search-filter)
           results       (filter (fn [element]
                                   (some (fn [s]
@@ -1801,9 +1807,8 @@
                                                               search-filter)))
                                         (extract-attributes-fn element)))
                                 coll)]
-      (when (not-empty results)
-        (sort-by #(-> % second :timestamp) >
-                 (into {} results))))))
+      (sort-by-timestamp results))
+    (sort-by-timestamp coll)))
 
 (re-frame/reg-sub
  :search/filtered-chats
