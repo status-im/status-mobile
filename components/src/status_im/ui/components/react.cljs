@@ -319,5 +319,7 @@
    [(if (= current-view :chat-modal)
       view
       keyboard-avoiding-view)
-    {:flex 1 :flex-direction :column}
+    (merge {:flex 1 :flex-direction :column}
+           (when platform/android?
+             {:background-color :white}))
     (apply vector view styles/flex components)]])
