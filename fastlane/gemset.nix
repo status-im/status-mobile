@@ -201,10 +201,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "10chm11gr9ykh89yzxs016j96xib42hbpp3pw1al89rvrcjjh5dc";
+      sha256 = "1lz3kq21zy2pcrmq5r65x5im21f51nxyh9zmkcyafvsaqib8y775";
       type = "gem";
     };
-    version = "2.139.0";
+    version = "2.140.0";
   };
   fastlane-plugin-clean_testflight_testers = {
     groups = ["default"];
@@ -221,9 +221,11 @@
     groups = ["default"];
     platforms = [];
     source = {
-      remotes = ["https://rubygems.org"];
-      sha256 = "01zaq5ykpn8j04pfyd4p3p0dnlil3cbbzcw5hayc70dpak09cr6x";
-      type = "gem";
+      fetchSubmodules = false;
+      rev = "5a4394e311c59672608f0d72530134d08a1b0670";
+      sha256 = "0ls2wqaigk8dwjs8v4sbxih3r4wbjwyhq2hnlhbyh1kv4q05x9sh";
+      type = "git";
+      url = "https://github.com/status-im/fastlane-plugin-diawi";
     };
     version = "1.3.0";
   };
@@ -249,15 +251,15 @@
     version = "0.36.4";
   };
   google-cloud-core = {
-    dependencies = ["google-cloud-env"];
+    dependencies = ["google-cloud-env" "google-cloud-errors"];
     groups = ["default"];
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "1kw0ql11avvjbrlhclli5ffls12ch4q2bgb30gvg5nxy0wfpj5j8";
+      sha256 = "1qjn7vs8f85vxi1nkikbjfja6bv9snrj26vzscjii0cm8n4dy0i1";
       type = "gem";
     };
-    version = "1.4.1";
+    version = "1.5.0";
   };
   google-cloud-env = {
     dependencies = ["faraday"];
@@ -269,6 +271,16 @@
       type = "gem";
     };
     version = "1.3.0";
+  };
+  google-cloud-errors = {
+    groups = ["default"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "0nl08lhgjvz3g7nsarn9nnsck0k3dg8mwg4awcnklnzpvs62b4ih";
+      type = "gem";
+    };
+    version = "1.0.0";
   };
   google-cloud-storage = {
     dependencies = ["addressable" "digest-crc" "google-api-client" "google-cloud-core" "googleauth" "mini_mime"];
@@ -676,10 +688,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "08kfiniak1pvg3gn5k6snpigzvhvhyg7slmm0s2qx5zkj62c1z2w";
+      sha256 = "1pppclzq4qb26g321553nm9xqca3zgllvpwb2kqxsdadwj51s09x";
       type = "gem";
     };
-    version = "1.6.0";
+    version = "1.6.1";
   };
   word_wrap = {
     groups = ["default"];
