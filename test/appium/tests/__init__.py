@@ -32,13 +32,13 @@ unique_password = 'unique' + get_current_time()
 
 bootnode_address = "enode://a8a97f126f5e3a340cb4db28a1187c325290ec08b2c9a6b1f19845ac86c46f9fac2ba13328822590" \
                    "fd3de3acb09cc38b5a05272e583a2365ad1fa67f66c55b34@167.99.210.203:30404"
-mailserver_address = "enode://e4fc10c1f65c8aed83ac26bc1bfb21a45cc1a8550a58077c8d2de2a0e0cd18e40fd40f7e6f7d02dc" \
-                     "6cd06982b014ce88d6e468725ffe2c138e958788d0002a7f:status-offline-inbox@35.239.193.41:443"
-mailserver_central_2 = 'mail-02.gc-us-central1-a.eth.beta'
-mailserver_central_3 = 'mail-03.gc-us-central1-a.eth.beta'
-mailserver_staging_central_1 = 'mail-01.gc-us-central1-a.eth.staging'
-mailserver_staging_ams_1 = 'mail-01.do-ams3.eth.staging'
-mailserver_staging_hk = 'mail-01.ac-cn-hongkong-c.eth.staging'
+mailserver_address = "enode://ee2b53b0ace9692167a410514bca3024695dbf0e1a68e1dff9716da620efb195f04a4b9e873fb9b74ac84de80" \
+                     "1106c465b8e2b6c4f0d93b8749d1578bfcaf03e@104.197.238.144:443"
+staging_fleet = 'eth.staging'
+prod_fleet = 'eth.prod'
+mailserver_ams = 'mail-01.do-ams3'
+mailserver_hk = 'mail-01.ac-cn-hongkong-c'
+mailserver_gc = 'mail-01.gc-us-central1-a'
 mailserver_ams_01 = 'mail-01.do-ams3.eth.beta'
 camera_access_error_text = "To grant the required camera permission, please go to your system settings " \
                            "and make sure that Status > Camera is selected."

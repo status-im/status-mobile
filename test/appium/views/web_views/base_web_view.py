@@ -103,6 +103,8 @@ class BaseWebView(BaseView):
                 self.driver.fail("Page is not loaded during %s seconds" % wait_time)
 
     def open_in_webview(self):
-        self.web_view_browser.click()
+        if self.web_view_browser.is_element_displayed():
+            self.web_view_browser.click()
         if self.always_button.is_element_displayed():
             self.always_button.click()
+

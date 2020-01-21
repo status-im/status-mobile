@@ -50,6 +50,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.next_button.click()
         sign_in.confirm_your_password_input.set_value(common_password)
         sign_in.next_button.click()
+        sign_in.lets_go_button.wait_for_element(10)
         sign_in.lets_go_button.click()
         home_view = sign_in.get_home_view()
         texts = ['Chat and transact privately with friends',

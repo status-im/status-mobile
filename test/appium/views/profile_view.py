@@ -751,6 +751,9 @@ class ProfileView(BaseView):
         dapp_view.element_by_text('Ok, got it').click()
         return dapp_view
 
+    def return_mailserver_name(self, mailserver_name, fleet):
+        return mailserver_name + '.' + fleet
+
 
     @property
     def current_active_network(self):

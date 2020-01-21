@@ -153,6 +153,9 @@ class TestChatManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5757)
     @marks.critical
+    @marks.skip
+    # TODO: skipped due to issue in e2e build (emulators) only
+    # if start typing in search field - empty chat view is shown
     def test_search_chat_on_home(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
