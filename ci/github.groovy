@@ -131,17 +131,15 @@ def releaseDelete(Map args) {
 }
 
 def releaseUpload(Map args) {
-  dir(args.pkgDir) {
-    args.files.each {
-      sh """
-        github-release upload \
-          -u '${args.user}' \
-          -r '${args.repo}' \
-          -t '${args.version}' \
-          -n ${it} \
-          -f ${it}
-      """
-    }
+  args.files.each {
+    sh """
+      github-release upload \
+        -u '${args.user}' \
+        -r '${args.repo}' \
+        -t '${args.version}' \
+        -n ${it} \
+        -f ${it}
+    """
   }
 }
 
@@ -163,7 +161,6 @@ def publishRelease(Map args) {
     draft: true,
     user: 'status-im',
     repo: 'status-react',
-    pkgDir: args.pkgDir,
     files: args.files,
     version: args.version,
     branch: ghcmgr.utils.branchName(),
@@ -189,7 +186,6 @@ def publishReleaseMobile(path='pkg') {
   }
   publishRelease(
     version: ghcmgr.utils.getVersion(),
-    pkgDir: 'pkg',
     files: found.collect { it.path },
   )
 }
