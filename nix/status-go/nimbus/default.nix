@@ -23,9 +23,9 @@ let
         else fetchFromGitHub rec {
           inherit repo;
           name = "${repo}-source-${strings.substring 0 7 rev}";
-          rev = "501455b0cd2e74c451bc1743e2f1070a3fee1343";
+          rev = "73278f20d0bf27fb7c6c331b515abb765814f1cc";
           owner = "status-im";
-          sha256 = "0nxh3hh8fib3hlmvs5d67h6cq3kyap94pa9w7ixsfa5285ila17h";
+          sha256 = "0myq234zqnpmqsc2452xygnyc6sjs8x1blyrpa4bi9v2cwbyap5c";
           fetchSubmodules = true;
         };
   nimbusDeriv = import "${src}/nix/default.nix";
