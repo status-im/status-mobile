@@ -62,6 +62,11 @@ or for a one-off build:
 make release-android STATUS_GO_SRC_OVERRIDE=$GOPATH/src/github.com/status-im/status-go
 ```
 
+## Using a local Nimbus repository
+
+If you need to use a locally checked-out Nimbus repository as a dependency of status-go, you can achieve that by defining the `NIMBUS_SRC_OVERRIDE`
+environment variable, in the same way as the previous point for local status-go repositories.
+
 ## Known Issues
 
 ### MacOS 10.15 "Catalina"

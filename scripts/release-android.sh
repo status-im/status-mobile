@@ -11,6 +11,9 @@ config+="status-im.build-type=\"${BUILD_TYPE}\";"
 if [ -n "${STATUS_GO_SRC_OVERRIDE}" ]; then
   config+="status-im.status-go.src-override=\"${STATUS_GO_SRC_OVERRIDE}\";"
 fi
+if [ -n "${NIMBUS_SRC_OVERRIDE}" ]; then
+  config+="status-im.nimbus.src-override=\"${NIMBUS_SRC_OVERRIDE}\";"
+fi
 config+="status-im.status-react.build-number=\"${BUILD_NUMBER}\";"
 config+="status-im.status-react.keystore-file=\"${STORE_FILE}\";"
 nixOpts=(

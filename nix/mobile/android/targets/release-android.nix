@@ -14,6 +14,8 @@ let
   inherit (lib) attrByPath hasAttrByPath optionalAttrs;
   env' = env // optionalAttrs (hasAttrByPath ["status-im" "status-go" "src-override"] config) {
     STATUS_GO_SRC_OVERRIDE = config.status-im.status-go.src-override;
+  } // optionalAttrs (hasAttrByPath ["status-im" "nimbus" "src-override"] config) {
+    NIMBUS_SRC_OVERRIDE = config.status-im.nimbus.src-override;
   };
   inherit (config.status-im) build-type;
   inherit (config.status-im.status-react) build-number;

@@ -286,7 +286,7 @@
   - mailserver disconnected: we try to reconnect
   - mailserver connected: we mark the mailserver as trusted peer"
   [{:keys [db] :as cofx} previous-summary]
-  (when (:multiaccount db)
+  (when (and (not config/nimbus-enabled?) (:multiaccount db))
     (if (:mailserver/current-id db)
       (let [{:keys [peers-summary peers-count]} db
             {:keys [address sym-key-id] :as mailserver} (fetch-current db)
@@ -303,8 +303,8 @@
           (mark-trusted-peer cofx)
           mailserver-removed?
           (connect-to-mailserver cofx)))
-      ;; if there is no current mailserver defined,
-      ;; we set it first
+        ;; if there is no current mailserver defined,
+        ;; we set it first
       (set-current-mailserver cofx))))
 
 (defn adjust-request-for-transit-time

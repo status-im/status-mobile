@@ -320,7 +320,7 @@
  :disconnected?
  :<- [:peers-count]
  (fn [peers-count]
-   (zero? peers-count)))
+   (and (not config/nimbus-enabled?) (zero? peers-count))))
 
 (re-frame/reg-sub
  :offline?
