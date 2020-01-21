@@ -343,7 +343,6 @@ https://jcenter.bintray.com/com/sun/xml/fastinfoset/FastInfoset/1.2.13/FastInfos
 https://jcenter.bintray.com/com/tunnelvisionlabs/antlr4-annotations/4.5/antlr4-annotations-4.5
 https://jcenter.bintray.com/com/tunnelvisionlabs/antlr4-runtime/4.5/antlr4-runtime-4.5
 https://jcenter.bintray.com/com/tunnelvisionlabs/antlr4/4.5/antlr4-4.5
-https://jcenter.bintray.com/com/yqritc/android-scalablevideoview/1.0.4/android-scalablevideoview-1.0.4
 https://jcenter.bintray.com/commons-codec/commons-codec/1.10/commons-codec-1.10
 https://jcenter.bintray.com/commons-codec/commons-codec/1.4/commons-codec-1.4
 https://jcenter.bintray.com/commons-codec/commons-codec/1.6/commons-codec-1.6

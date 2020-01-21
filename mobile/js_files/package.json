@@ -41,7 +41,6 @@
     "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#v2.5.17",
     "react-native-svg": "^9.8.4",
     "react-native-touch-id": "^4.4.1",
-    "react-native-video": "^5.0.2",
     "react-native-webview": "^6.11.1",
     "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#fix/community-webview",
     "react-navigation": "^3.11.0",

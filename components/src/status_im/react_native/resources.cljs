@@ -7,6 +7,9 @@
    :analytics-image     (js/require "./resources/images/ui/analytics-image.png")
    :welcome-image       (js/require "./resources/images/ui/welcome-image.png")
    :welcome             (js/require "./resources/images/ui/welcome.jpg")
+   :intro1              (js/require "./resources/images/ui/intro1.jpg")
+   :intro2              (js/require "./resources/images/ui/intro2.jpg")
+   :intro3              (js/require "./resources/images/ui/intro3.jpg")
    :sample-key          (js/require "./resources/images/ui/sample-key.jpg")
    :lock                (js/require "./resources/images/ui/lock.png")
    :tribute-to-talk     (js/require "./resources/images/ui/tribute-to-talk.png")
@@ -32,21 +35,12 @@
    :phone-nfc-off       (js/require "./resources/images/ui/phone-nfc-off.png")
    :dapp-store          (js/require "./resources/images/ui/dapp-store.png")
    :ens-header          (js/require "./resources/images/ui/ens-header.png")
-   :new-chat-header     (js/require "./resources/images/ui/new-chat-header.png")
-   :welcome-video       (js/require "./resources/videos/welcome.mp4")
-   :browser-video       (js/require "./resources/videos/browser.mp4")
-   :wallet-video        (js/require "./resources/videos/wallet.mp4")
-   :chat-video          (js/require "./resources/videos/chat.mp4")
-   :keys-video          (js/require "./resources/videos/keys.mp4")})
+   :new-chat-header     (js/require "./resources/images/ui/new-chat-header.png")})
 
-(def loaded-assets (atom {}))
+(def loaded-images (atom {}))
 
-(defn get-asset [k]
-  (if (contains? @loaded-assets k)
-    (get @loaded-assets k)
-    (get (swap! loaded-assets assoc k
+(defn get-image [k]
+  (if (contains? @loaded-images k)
+    (get @loaded-images k)
+    (get (swap! loaded-images assoc k
                 (get ui k)) k)))
-
-(def get-image get-asset)
-
-(def get-video get-asset)

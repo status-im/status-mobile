@@ -10,8 +10,7 @@
             [status-im.utils.identicon :as identicon]
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.text-input.view :as text-input]
-            [status-im.ui.components.video :as video]
-            [status-im.react-native.resources :as resources]
+            [taoensso.timbre :as log]
             [status-im.utils.gfycat.core :as gfy]
             [status-im.ui.components.colors :as colors]
             [reagent.core :as r]
@@ -22,6 +21,7 @@
             [status-im.i18n :as i18n]
             [status-im.constants :as constants]
             [status-im.utils.config :as config]
+            [status-im.utils.platform :as platform]
             [status-im.ui.components.topbar :as topbar]))
 
 (defn dots-selector [{:keys [on-press n selected color]}]
@@ -31,105 +31,93 @@
       ^{:key i}
       [react/view {:style (styles/dot color (selected i))}]))])
 
-(defn intro-viewer [slides window-height window-width]
-  (let [scroll-x        (r/atom 0)
+(defn intro-viewer [slides window-height]
+  (let [scroll-x (r/atom 0)
         scroll-view-ref (atom nil)
-        width           (r/atom 0)
-        height          (r/atom 0)
-        bottom-margin   (if (> window-height 600) 32 16)]
+        width (r/atom 0)
+        height (r/atom 0)
+        bottom-margin (if (> window-height 600) 32 16)]
     (fn []
-      [react/view {:style     {:align-items     :center
-                               :flex            1
-                               :margin-bottom   bottom-margin
-                               :justify-content :flex-end}
+      [react/view {:style {:align-items :center
+                           :flex 1
+                           :margin-bottom bottom-margin
+                           :justify-content :flex-end}
                    :on-layout (fn [e]
                                 (reset! width (-> e .-nativeEvent .-layout .-width)))}
-       [react/scroll-view {:horizontal                        true
-                           :paging-enabled                    true
-                           :ref                               #(reset! scroll-view-ref %)
-                           :shows-vertical-scroll-indicator   false
+       [react/scroll-view {:horizontal true
+                           :paging-enabled true
+                           :ref #(reset! scroll-view-ref %)
+                           :shows-vertical-scroll-indicator false
                            :shows-horizontal-scroll-indicator false
-                           :pinch-gesture-enabled             false
-                           :on-scroll                         #(let [x (.-nativeEvent.contentOffset.x %)]
-                                                                 (reset! scroll-x x))
-                           :style                             {;:width @width
-                                                               :margin-bottom bottom-margin}}
+                           :pinch-gesture-enabled false
+                           :on-scroll #(let [x (.-nativeEvent.contentOffset.x %)]
+                                         (reset! scroll-x x))
+                           :style {;:width @width
+                                   :margin-bottom bottom-margin}}
         (doall
          (for [s slides]
            ^{:key (:title s)}
-           [react/view {:style {:flex            1
-                                :justify-content :flex-start
-                                :align-items     :center
-                                :width           window-width}}
-            (let [size (min @width @height)]
-              [react/view {:style     {:flex 1}
+           [react/view {:style {:flex 1
+                                :width @width
+                                :justify-content :flex-end
+                                :align-items :center
+                                :padding-horizontal 32}}
+            (let [margin 32
+                  size (min @width @height) #_(- (min @width @height) #_(* 2 margin))]
+              [react/view {:style {:flex 1}
                            :on-layout (fn [e]
                                         (reset! height (-> e .-nativeEvent .-layout .-height)))}
-               [video/video {:source           (resources/get-video (:video s))
-                             :repeat           true
-                             :pause            false
-                             :playWhenInactive true
-                             :resize-mode      :contain
-                             :style            {:background-color :white
-                                                :width            size
-                                                :height           size}}]])
-            [react/view {:style {:padding-horizontal 16}}
-             [react/i18n-text {:style styles/wizard-title :key (:title s)}]
-             [react/i18n-text {:style styles/wizard-text
-                               :key   (:text s)}]]]))]
+               [react/image {:source (:image s)
+                             :resize-mode :contain
+                             :style {:width size
+                                     :height size}}]])
+            [react/i18n-text {:style styles/wizard-title :key (:title s)}]
+            [react/i18n-text {:style styles/wizard-text
+                              :key   (:text s)}]]))]
        (let [selected (hash-set (quot (int @scroll-x) (int @width)))]
          [dots-selector {:selected selected :n (count slides)
-                         :color    colors/blue}])])))
+                         :color colors/blue}])])))
 
 (defview intro []
-  (letsubs  [{window-height :height
-              window-width :width} [:dimensions/window]]
+  (letsubs  [{window-height :height} [:dimensions/window]]
     [react/view {:style styles/intro-view}
-     [intro-viewer [{:video :chat-video
+     [intro-viewer [{:image (:intro1 resources/ui)
                      :title :intro-title1
-                     :text  :intro-text1}
-                    {:video :wallet-video
+                     :text :intro-text1}
+                    {:image (:intro2 resources/ui)
                      :title :intro-title2
-                     :text  :intro-text2}
-                    {:video :browser-video
+                     :text :intro-text2}
+                    {:image (:intro3 resources/ui)
                      :title :intro-title3
-                     :text  :intro-text3}] window-height window-width]
+                     :text :intro-text3}] window-height]
      [react/view styles/buttons-container
       [components.common/button {:button-style (assoc styles/bottom-button :margin-bottom 16)
                                  :on-press     #(re-frame/dispatch [:multiaccounts.create.ui/intro-wizard true])
                                  :label        (i18n/label :t/get-started)}]
       [components.common/button {:button-style (assoc styles/bottom-button :margin-bottom 24)
-                                 :on-press     #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
-                                 :label        (i18n/label :t/access-key)
-                                 :background?  false}]
+                                 :on-press    #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
+                                 :label       (i18n/label :t/access-key)
+                                 :background? false}]
       [react/nested-text
        {:style styles/welcome-text-bottom-note}
        (i18n/label :t/intro-privacy-policy-note1)
-       [{:style    (assoc styles/welcome-text-bottom-note :color colors/blue)
+       [{:style (assoc styles/welcome-text-bottom-note :color colors/blue)
          :on-press privacy-policy/open-privacy-policy-link!}
         (i18n/label :t/intro-privacy-policy-note2)]]]]))
 
 (defn generate-key []
   (let [dimensions (r/atom {})]
     (fn []
-      [react/view {:on-layout (fn [e]
-                                (reset! dimensions (js->clj (-> e .-nativeEvent .-layout) :keywordize-keys true)))
-                   :style     {:align-items      :center
-                               :justify-content  :center
-                               :background-color :white
-                               :flex             1}}
-       (let [size (min (:width @dimensions) (:height @dimensions))]
-         (if platform/android?
-           [react/image {:source      (resources/get-image :sample-key)
-                         :resize-mode :contain
-                         :style       {:width  size
-                                       :height size}}]
-           [video/video {:source           (resources/get-video :keys-video)
-                         :repeat           true
-                         :pause            false
-                         :playWhenInactive true
-                         :resize-mode      :contain
-                         :style            {:width size :height size}}]))])))
+      [react/view {:on-layout  (fn [e]
+                                 (reset! dimensions (js->clj (-> e .-nativeEvent .-layout) :keywordize-keys true)))
+                   :style {:align-items :center
+                           :justify-content :center
+                           :flex 1}}
+       (let [padding    40
+             image-size (- (min (:width @dimensions) (:height @dimensions)) padding)]
+         [react/image {:source (resources/get-image :sample-key)
+                       :resize-mode :contain
+                       :style {:width image-size :height image-size}}])])))
 
 (defn choose-key [{:keys [multiaccounts selected-id view-height]}]
   [react/view
@@ -461,7 +449,7 @@
                    :ellipsize-mode  :middle}
        (utils/get-shortened-address pubkey)]]]]])
 
-(defview wizard-generate-key [_ focused?]
+(defview wizard-generate-key []
   (letsubs [wizard-state [:intro-wizard/generate-key]]
     [react/view {:style {:flex 1}}
      [topbar/topbar
@@ -470,10 +458,9 @@
         :accessibility-label :back-button
         :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
      [react/view {:style {:flex 1
-                          :background-color :white
                           :justify-content :space-between}}
       [top-bar {:step :generate-key}]
-      [generate-key focused?]
+      [generate-key]
       [bottom-bar {:step :generate-key
                    :forward-action :intro-wizard/step-forward-pressed
                    :processing? (:processing? wizard-state)}]]]))
