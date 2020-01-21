@@ -5,6 +5,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.badge :as badge]
             [status-im.ui.components.react :as react]
@@ -55,14 +56,10 @@
           color online group-chat
           public? contact
           timestamp
-          last-message]} home-item
-        private-group?                (and group-chat (not public?))
-        public-group?                 (and group-chat public?)
-        truncated-chat-name           (utils/truncate-str chat-name 30)
-        chat-actions                  (cond
-                                        (and group-chat public?)       :public-chat-actions
-                                        (and group-chat (not public?)) :group-chat-actions
-                                        :else                          :private-chat-actions)]
+          last-message]}    home-item
+        private-group?      (and group-chat (not public?))
+        public-group?       (and group-chat public?)
+        truncated-chat-name (utils/truncate-str chat-name 30)]
     [list-item/list-item
      {:icon                      [chat-icon.screen/chat-icon-view-chat-list
                                   contact group-chat truncated-chat-name color online false]
@@ -86,4 +83,7 @@
                                     (re-frame/dispatch [:dismiss-keyboard])
                                     (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
                                     (re-frame/dispatch [:chat.ui/mark-messages-seen :chat]))
-      :on-long-press             #(re-frame/dispatch [:bottom-sheet/show-sheet chat-actions {:chat-id chat-id}])}]))
+      :on-long-press             #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                      {:content (fn []
+                                                                  [sheets/actions home-item])
+                                                       :height  256}])}]))

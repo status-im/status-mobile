@@ -401,11 +401,11 @@
 
 (handlers/register-handler-fx
  :chat.ui/clear-history-pressed
- (fn [_ _]
+ (fn [_ [_ chat-id]]
    {:ui/show-confirmation {:title               (i18n/label :t/clear-history-title)
                            :content             (i18n/label :t/clear-history-confirmation-content)
                            :confirm-button-text (i18n/label :t/clear-history-action)
-                           :on-accept           #(re-frame/dispatch [:chat.ui/clear-history])}}))
+                           :on-accept           #(re-frame/dispatch [:chat.ui/clear-history chat-id])}}))
 
 (handlers/register-handler-fx
  :chat.ui/fetch-history-pressed
@@ -513,8 +513,8 @@
 
 (handlers/register-handler-fx
  :chat.ui/clear-history
- (fn [{{:keys [current-chat-id]} :db :as cofx} _]
-   (chat/clear-history cofx current-chat-id)))
+ (fn [cofx  [_ chat-id]]
+   (chat/clear-history cofx chat-id)))
 
 (handlers/register-handler-fx
  :chat.ui/resend-message

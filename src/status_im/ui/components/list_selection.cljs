@@ -13,30 +13,11 @@
             (:url content))
     (.share react/sharing (clj->js content))))
 
-(defn- message-options [message-id text from outgoing]
-  (into
-   []
-   (concat
-    (when (and from (not outgoing))
-      [{:label  (i18n/label :t/view-profile)
-        :action #(re-frame/dispatch [:chat.ui/show-profile from])}])
-    [{:label  (i18n/label :t/message-reply)
-      :action #(re-frame/dispatch [:chat.ui/reply-to-message message-id])}
-     {:label  (i18n/label :t/sharing-copy-to-clipboard)
-      :action #(react/copy-to-clipboard text)}
-     {:label  (i18n/label :t/sharing-share)
-      :action #(open-share {:message text})}])))
-
 (defn show [options]
   (cond
     platform/ios?     (action-sheet/show options)
     platform/android? (dialog/show options)
     platform/desktop? (show-desktop-menu (->> (:options options) (remove nil?)))))
-
-(defn chat-message [message-id text from outgoing dialog-title]
-  (show {:title       dialog-title
-         :options     (message-options message-id text from outgoing)
-         :cancel-text (i18n/label :t/message-options-cancel)}))
 
 (defn- platform-web-browser []
   (if platform/ios? :t/browsing-open-in-ios-web-browser :t/browsing-open-in-android-web-browser))

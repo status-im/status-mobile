@@ -15,7 +15,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.actions :as toolbar.actions]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.screens.chat.actions :as actions]
+            [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.screens.chat.input.input :as input]
             [status-im.ui.screens.chat.message.datemark :as message-datemark]
             [status-im.ui.screens.chat.message.gap :as gap]
@@ -42,11 +42,6 @@
     [vector-icons/icon :main-icons/add
      {:color colors/blue}]
     [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]])
-
-(defn- on-options
-  [chat-id chat-name group-chat? public?]
-  (list-selection/show {:title   chat-name
-                        :options (actions/actions group-chat? chat-id public?)}))
 
 (defmulti message-row
   (fn [{{:keys [type]} :row}] type))
@@ -430,7 +425,10 @@
          [{:icon      :main-icons/more
            :icon-opts {:color               :black
                        :accessibility-label :chat-menu-button}
-           :handler   #(on-options chat-id chat-name group-chat public?)}]])]
+           :handler   #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                           {:content (fn []
+                                                       [sheets/actions current-chat])
+                                            :height  256}])}]])]
      (when-not two-pane-ui-enabled?
        [connectivity/connectivity-view anim-translate-y])
      [connectivity/connectivity-animation-wrapper

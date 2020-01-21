@@ -30,7 +30,7 @@
   {:background-color        colors/white
    :border-top-left-radius  border-radius
    :border-top-right-radius border-radius
-   :height                  (+ content-height border-radius bottom-view-height)
+   :height                  (+ content-height bottom-view-height)
    :bottom                  (- bottom-view-height)
    :align-self              :stretch
    :transform               [{:translateY bottom-value}]

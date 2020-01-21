@@ -62,20 +62,11 @@
                  (= view :add-new)
                  (merge home.sheet/add-new)
 
-                 (= view :public-chat-actions)
-                 (merge home.sheet/public-chat-actions)
-
                  (= view :keycard.login/more)
                  (merge keycard/more-sheet)
 
                  (= view :learn-more)
                  (merge about-app/learn-more)
-
-                 (= view :private-chat-actions)
-                 (merge home.sheet/private-chat-actions)
-
-                 (= view :group-chat-actions)
-                 (merge home.sheet/group-chat-actions)
 
                  (= view :recover-sheet)
                  (merge (recover.views/bottom-sheet)))

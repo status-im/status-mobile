@@ -9,13 +9,12 @@
             [status-im.ui.components.colors :as colors]
             [status-im.utils.security :as security]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.popup-menu.views :as desktop.pop-up]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.react :as react]
             [status-im.utils.money :as money]
             [status-im.ethereum.transactions.core :as transactions]
-            [status-im.ui.screens.chat.message.sheets :as sheets]
+            [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
@@ -520,40 +519,34 @@
    [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])
 
-(defn open-chat-context-menu
-  [{:keys [message-id content from outgoing]}]
-  (list-selection/chat-message message-id (:text content) from outgoing (i18n/label :t/message)))
-
-(defn open-sticker-context-menu
-  [{:keys [from outgoing]}]
-  (when (and from (not outgoing))
-    (list-selection/show
-     {:title       (i18n/label :t/message)
-      :options     [{:label  (i18n/label :t/view-profile)
-                     :action #(re-frame/dispatch [:chat.ui/show-profile from])}]
-      :cancel-text (i18n/label :t/message-options-cancel)})))
-
 (defn chat-message
-  [{:keys [outgoing group-chat modal? current-public-key content-type content] :as message}]
+  [{:keys [outgoing from group-chat modal? current-public-key content-type content] :as message}]
   (let [sticker (:sticker content)]
     [react/view
      [react/touchable-highlight
       {:on-press      (fn [arg]
                         (if (and platform/desktop? (= "right" (.-button (.-nativeEvent arg))))
-                          (open-chat-context-menu message)
+                          (re-frame/dispatch [:bottom-sheet/show-sheet
+                                              {:content (sheets/message-long-press message)
+                                               :height  192}])
                           (do
                             (when (and (= content-type constants/content-type-sticker) (:pack sticker))
                               (re-frame/dispatch [:stickers/open-sticker-pack (:pack sticker)]))
-                            (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused? true
+                            (re-frame/dispatch [:chat.ui/set-chat-ui-props {:messages-focused?  true
                                                                             :input-bottom-sheet nil}])
                             (when-not platform/desktop?
                               (react/dismiss-keyboard!)))))
        :on-long-press #(cond (or (= content-type constants/content-type-text)
                                  (= content-type constants/content-type-emoji))
-                             (open-chat-context-menu message)
+                             (re-frame/dispatch [:bottom-sheet/show-sheet
+                                                 {:content (sheets/message-long-press message)
+                                                  :height  192}])
 
-                             (= content-type constants/content-type-sticker)
-                             (open-sticker-context-menu message))}
+                             (and (= content-type constants/content-type-sticker)
+                                  from (not outgoing))
+                             (re-frame/dispatch [:bottom-sheet/show-sheet
+                                                 {:content (sheets/sticker-long-press message)
+                                                  :height  64}]))}
       [react/view {:accessibility-label :chat-item}
        (let [incoming-group (and group-chat (not outgoing))]
          [message-content message-body (merge message

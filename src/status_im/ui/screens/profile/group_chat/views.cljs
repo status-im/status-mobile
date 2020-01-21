@@ -89,7 +89,7 @@
             {:title               :t/clear-history
              :icon                :main-icons/close
              :theme               :action
-             :on-press            #(re-frame/dispatch [:chat.ui/clear-history-pressed])
+             :on-press            #(re-frame/dispatch [:chat.ui/clear-history-pressed chat-id])
              :accessibility-label :clear-history-button}]
            [list-item/list-item
             {:title               :t/delete-chat

@@ -17,20 +17,22 @@
   [{:keys [opacity new-opacity-value
            bottom new-bottom-value
            duration callback]}]
+  (when (fn? callback)
+    (js/setTimeout callback duration))
   (animation/start
    (animation/parallel
     [(animation/timing opacity
                        {:toValue         new-opacity-value
                         :duration        duration
                         :useNativeDriver true})
-     (animation/timing bottom
+     (animation/spring bottom
                        {:toValue         new-bottom-value
                         :duration        duration
-                        :useNativeDriver true})])
-   (when (fn? callback) callback)))
+                        :tension         40
+                        :friction        6
+                        :useNativeDriver true})])))
 
-(defn animate-sign-panel
-  [opacity-value bottom-value]
+(defn animate-panel-open [opacity-value bottom-value]
   (animate {:bottom            bottom-value
             :new-bottom-value  0
             :opacity           opacity-value
@@ -63,7 +65,6 @@
              :duration          cancellation-animation-duration
              :callback          #(do (reset! show-sheet? false)
                                      (animation/set-value bottom-value height)
-                                     (animation/set-value opacity-value 0)
                                      (when (fn? callback) (callback)))})))
 
 (defn- on-release
@@ -96,10 +97,12 @@
   [{:keys [opacity-value bottom-value]}]
   (reagent.core/create-class
    {:component-did-mount
-    #(animate-sign-panel opacity-value bottom-value)
+    (fn []
+      (react/dismiss-keyboard!)
+      (animate-panel-open opacity-value bottom-value))
     :reagent-render
-    (fn [{:keys [opacity-value bottom-value
-                 height content on-cancel]
+    (fn [{:keys [opacity-value bottom-value height
+                 content on-cancel disable-drag?]
           :or   {on-cancel #(re-frame/dispatch [:bottom-sheet/hide])}
           :as   opts}]
       [react/keyboard-avoiding-view {:style styles/container}
@@ -108,12 +111,11 @@
          :style    styles/container}
 
         [react/animated-view (styles/shadow opacity-value)]]
-       [react/animated-view
-        {:style (styles/content-container height bottom-value)}
-        [react/view
-         (merge
-          (pan-handlers (swipe-pan-responder opts))
-          {:style  styles/content-header})
+       [react/animated-view (merge
+                             {:style (styles/content-container height bottom-value)}
+                             (when-not disable-drag?
+                               (pan-handlers (swipe-pan-responder opts))))
+        [react/view {:style styles/content-header}
          [react/view styles/handle]]
         [react/view {:style {:flex   1
                              :height height}}

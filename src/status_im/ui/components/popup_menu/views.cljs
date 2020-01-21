@@ -21,7 +21,7 @@
           {:text (i18n/label :t/group-info)
            :on-select #(re-frame/dispatch [:show-group-chat-profile])})
         {:text (i18n/label :t/clear-history)
-         :on-select #(re-frame/dispatch [:chat.ui/clear-history-pressed])}
+         :on-select #(re-frame/dispatch [:chat.ui/clear-history-pressed chat-id])}
         {:text (i18n/label :t/fetch-history)
          :on-select #(re-frame/dispatch [:chat.ui/fetch-history-pressed chat-id])}
         #_{:text      "Fetch 48-60h"
