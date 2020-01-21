@@ -50,4 +50,4 @@
 (def pow-target (js/parseFloat (get-config :POW_TARGET "0.002")))
 (def pow-time (js/parseInt (get-config :POW_TIME "1")))
 (def max-installations 2)
-(def nimbus-enabled? (get-config :STATUS_GO_ENABLE_NIMBUS false))
+(def nimbus-enabled? (enabled? (get-config :STATUS_GO_ENABLE_NIMBUS "0")))
