@@ -181,15 +181,16 @@ def publishRelease(Map args) {
   }
 }
 
-def publishReleaseMobile() {
+def publishReleaseMobile(path='pkg') {
+  def found = findFiles(glob: "${path}/*")
+  if (found.size() == 0) {
+    sh "ls ${path}"
+    error("No file to  release in ${path}")
+  }
   publishRelease(
-    version: ghcmgr.utils.getVersion()+'-mobile',
+    version: ghcmgr.utils.getVersion(),
     pkgDir: 'pkg',
-    files: [ /* upload only mobile release files */
-      ghcmgr.utils.pkgFilename(btype, 'ipa'),
-      ghcmgr.utils.pkgFilename(btype, 'apk'),
-      ghcmgr.utils.pkgFilename(btype, 'sha256'),
-    ]
+    files: found.collect { it.path },
   )
 }
 
