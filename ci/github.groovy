@@ -185,7 +185,7 @@ def publishReleaseMobile(path='pkg') {
   def found = findFiles(glob: "${path}/*")
   if (found.size() == 0) {
     sh "ls ${path}"
-    error("No file to  release in ${path}")
+    error("No file to release in ${path}")
   }
   publishRelease(
     version: ghcmgr.utils.getVersion(),

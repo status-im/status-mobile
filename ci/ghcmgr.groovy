@@ -11,7 +11,7 @@ utils = load 'ci/utils.groovy'
 def buildObj(success) {
   def pkg_url = env.PKG_URL
   /* a bare ipa file is not installable on iOS */
-  if (env.TARGET == 'ios') {
+  if (env.TARGET == 'ios' && env.DIAWI_URL != "") {
     pkg_url = env.DIAWI_URL 
   }
   /* assemble build object valid for ghcmgr */
