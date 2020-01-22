@@ -1,11 +1,7 @@
 (ns status-im.react-native.resources)
 
 (def ui
-  {:empty-hashtags      (js/require "./resources/images/ui/empty-hashtags.png")
-   :empty-recent        (js/require "./resources/images/ui/empty-recent.png")
-   :empty-chats-header  (js/require "./resources/images/ui/empty-chats-header.png")
-   :analytics-image     (js/require "./resources/images/ui/analytics-image.png")
-   :welcome-image       (js/require "./resources/images/ui/welcome-image.png")
+  {:empty-chats-header  (js/require "./resources/images/ui/empty-chats-header.png")
    :welcome             (js/require "./resources/images/ui/welcome.jpg")
    :intro1              (js/require "./resources/images/ui/intro1.jpg")
    :intro2              (js/require "./resources/images/ui/intro2.jpg")
@@ -13,9 +9,7 @@
    :sample-key          (js/require "./resources/images/ui/sample-key.jpg")
    :lock                (js/require "./resources/images/ui/lock.png")
    :tribute-to-talk     (js/require "./resources/images/ui/tribute-to-talk.png")
-   :wallet-welcome      (js/require "./resources/images/ui/wallet-welcome.png")
    :hardwallet-card     (js/require "./resources/images/ui/hardwallet-card.png")
-   :secret-keys         (js/require "./resources/images/ui/secret-keys.png")
    :keycard-lock        (js/require "./resources/images/ui/keycard-lock.png")
    :keycard             (js/require "./resources/images/ui/keycard.png")
    :keycard-logo        (js/require "./resources/images/ui/keycard-logo.png")

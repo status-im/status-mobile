@@ -549,7 +549,7 @@
 (defn- welcome []
   [react/view {:style {:flex 1}}
    [react/scroll-view {:content-container-style {:align-items :center}}
-    [react/image {:source (:ens-header resources/ui)
+    [react/image {:source (resources/get-image :ens-header)
                   :style  {:margin-top 32}}]
     [react/text {:style {:margin-top 32 :margin-bottom 8 :typography :header}}
      (i18n/label :t/ens-get-name)]
