@@ -212,15 +212,12 @@
               (multiaccounts/switch-preview-privacy-mode-flag))))
 
 (defn get-new-auth-method [auth-method save-password?]
-  (if save-password?
+  (when save-password?
     (when-not (or (= keychain/auth-method-biometric auth-method)
                   (= keychain/auth-method-password auth-method))
       (if (= auth-method keychain/auth-method-biometric-prepare)
         keychain/auth-method-biometric
-        keychain/auth-method-password))
-    (when (and auth-method
-               (not= auth-method keychain/auth-method-none))
-      keychain/auth-method-none)))
+        keychain/auth-method-password))))
 
 (fx/defn login-only-events
   [{:keys [db] :as cofx} key-uid password save-password?]
@@ -393,7 +390,8 @@
 (fx/defn biometric-auth-done
   {:events [:biometric-auth-done]}
   [{:keys [db] :as cofx} {:keys [bioauth-success bioauth-message bioauth-code]}]
-  (let [key-uid (get-in db [:multiaccounts/login :key-uid])]
+  (let [key-uid     (get-in db [:multiaccounts/login :key-uid])
+        auth-method (get db :auth-method)]
     (log/debug "[biometric] biometric-auth-done"
                "bioauth-success" bioauth-success
                "bioauth-message" bioauth-message
@@ -401,9 +399,12 @@
     (if bioauth-success
       (get-credentials cofx key-uid)
       (fx/merge cofx
-                {:db (assoc-in db [:multiaccounts/login :save-password?] false)}
+                {:db (assoc-in db
+                               [:multiaccounts/login :save-password?]
+                               (= auth-method keychain/auth-method-biometric))}
+                (when-not (= auth-method keychain/auth-method-biometric)
+                  (keychain/save-auth-method key-uid keychain/auth-method-none))
                 (biometric/show-message bioauth-message bioauth-code)
-                (keychain/save-auth-method key-uid keychain/auth-method-none)
                 (open-login-callback nil)))))
 
 (fx/defn save-password

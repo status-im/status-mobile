@@ -54,7 +54,8 @@
             supported-biometric-auth [:supported-biometric-auth]]
     [react/keyboard-avoiding-view {:style ast/multiaccounts-view}
      [login-toolbar can-navigate-back?]
-     [react/scroll-view styles/login-view
+     [react/scroll-view {:keyboardShouldPersistTaps :always
+                         :style                     styles/login-view}
       [react/view styles/login-badge-container
        [multiaccount-login-badge multiaccount]
        [react/view {:style                       styles/password-container
@@ -72,7 +73,7 @@
                                     (re-frame/dispatch [:set-in [:multiaccounts/login :password]
                                                         (security/mask-data %)])
                                     (re-frame/dispatch [:set-in [:multiaccounts/login :error] ""]))
-            :secure-text-entry true
+            :secure-text-entry   true
             :error               (when (not-empty error) error)}]]
          (when (and supported-biometric-auth (= auth-method "biometric"))
            [react/touchable-highlight {:on-press #(re-frame/dispatch [:biometric-authenticate])}
@@ -106,9 +107,9 @@
                          (react/dismiss-keyboard!)
                          (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))}]
       [components.common/button
-       {:label     (i18n/label :t/submit)
+       {:label        (i18n/label :t/submit)
         :button-style styles/bottom-button
-        :label-style {:color (if (or (not sign-in-enabled?) processing) colors/gray colors/blue)}
-        :background? true
-        :disabled? (or (not sign-in-enabled?) processing)
-        :on-press  #(login-multiaccount @password-text-input)}]]]))
+        :label-style  {:color (if (or (not sign-in-enabled?) processing) colors/gray colors/blue)}
+        :background?  true
+        :disabled?    (or (not sign-in-enabled?) processing)
+        :on-press     #(login-multiaccount @password-text-input)}]]]))
