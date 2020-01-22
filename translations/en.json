@@ -1158,5 +1158,7 @@
 	"keycard-free-pairing-slots": "Keycard has {{n}} free pairing slots",
 	"public-chat-description": "Join public chats for your interests! Anyone can start a new one.",
 	"delete-account": "Delete account",
-	"watch-only": "Watch-only"
+	"watch-only": "Watch-only",
+	"cant-report-bug": "Can't report a bug",
+	"mail-should-be-configured": "Mail client should be configured"
 }

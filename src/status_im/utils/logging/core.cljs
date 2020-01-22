@@ -81,6 +81,12 @@
       :on-cancel           #(re-frame/dispatch
                              [:logging/dialog-canceled])}}))
 
+(handlers/register-handler-fx
+ :show-client-error
+ (fn [_ _]
+   {:utils/show-popup {:title   (i18n/label :t/cant-report-bug)
+                       :content (i18n/label :t/mail-should-be-configured)}}))
+
 (fx/defn dialog-closed
   [{:keys [db]}]
   {:db (dissoc db :logging/dialog-shown?)})
@@ -102,7 +108,8 @@
               (str "App version: " build-version)
               (str "OS: " platform/os)
               (str "Node version: " web3-node-version)
-              (str "Mailserver: " (name current-id))
+              (when current-id
+                (str "Mailserver: " (name current-id)))
               separator
               "Node Info"
               (str "id: " enode-id)
@@ -136,7 +143,9 @@
       :attachment {:path archive-path
                    :type "zip"
                    :name "status_logs.zip"}}
-     (fn [])))))
+     (fn [event]
+       (when (= event "not_available")
+         (re-frame/dispatch [:show-client-error])))))))
 
 (handlers/register-handler-fx
  :logging/dialog-canceled
