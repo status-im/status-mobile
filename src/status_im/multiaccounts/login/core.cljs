@@ -210,7 +210,6 @@
               (contact/initialize-contacts)
               (stickers/init-stickers-packs)
               (mobile-network/on-network-status-change)
-              (chaos-mode/check-chaos-mode)
               (multiaccounts/switch-preview-privacy-mode-flag))))
 
 (defn get-new-auth-method [auth-method save-password?]
@@ -272,7 +271,6 @@
                                              :mailserver-ranges {}
                                              :mailserver-topics {}
                                              :default-mailserver true})
-              (chaos-mode/check-chaos-mode)
               (multiaccounts/switch-preview-privacy-mode-flag)
               (when-not platform/desktop?
                 (initialize-wallet accounts nil)))))
