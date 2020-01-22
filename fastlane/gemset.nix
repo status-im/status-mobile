@@ -221,13 +221,11 @@
     groups = ["default"];
     platforms = [];
     source = {
-      fetchSubmodules = false;
-      rev = "5a4394e311c59672608f0d72530134d08a1b0670";
-      sha256 = "0ls2wqaigk8dwjs8v4sbxih3r4wbjwyhq2hnlhbyh1kv4q05x9sh";
-      type = "git";
-      url = "https://github.com/status-im/fastlane-plugin-diawi";
+      remotes = ["https://rubygems.org"];
+      sha256 = "11ldnpwqzs2acwnb86dnmf7wvs6356bqg0wa3fmfxpm4389iwz6g";
+      type = "gem";
     };
-    version = "1.3.0";
+    version = "1.4.0";
   };
   gh_inspector = {
     groups = ["default"];
