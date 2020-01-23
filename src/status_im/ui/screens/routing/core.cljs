@@ -99,27 +99,9 @@
   (fn [args]
     (let [params  (get-in args [:navigation :state :params])
           active? (reagent.core/atom true)]
-      (if platform/android?
-        [react/view common-styles/modal
-         [react/modal
-          {:transparent      true
-           :animation-type   :slide
-           :on-request-close (fn []
-                               (cond
-                                 (#{:wallet-send-transaction-modal
-                                    :wallet-sign-message-modal}
-                                  modal-view)
-                                 (re-frame/dispatch
-                                  [:wallet/discard-transaction-navigate-back])
-
-                                 :else
-                                 (re-frame/dispatch [:navigate-back])))}
-          [react/main-screen-modal-view modal-view
-           [component params active?]]
-          [navigation-events modal-view true active?]]]
-        [react/main-screen-modal-view modal-view
-         [component params active?]
-         [navigation-events modal-view true active?]]))))
+      [react/main-screen-modal-view modal-view
+       [component params active?]
+       [navigation-events modal-view true active?]])))
 
 (defn prepare-config [config]
   (-> config
