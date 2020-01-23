@@ -152,11 +152,9 @@
     (signing/eth-transaction-call
      cofx
      {:contract   (contracts/get-address db :status/snt)
-      :method     "approveAndCall(address,uint256,bytes)"
+      :method     "approve(address,uint256)"
       :params     [contract
-                   (money/unit->token amount 18)
-                   (abi-spec/encode "register(bytes32,address,bytes32,bytes32)"
-                                    [(ethereum/sha3 username) address x y])]
+                   (money/unit->token 0 18)]
       :on-result  [::save-username custom-domain? username]
       :on-error   [::on-registration-failure]})))
 

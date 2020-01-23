@@ -4,6 +4,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [re-frame.core :as re-frame]
+            [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]))
 
 (def min-gas-price-wei (money/bignumber 1))
@@ -115,8 +116,13 @@
 (re-frame/reg-fx
  :signing/update-estimated-gas
  (fn [{:keys [obj success-event error-event]}]
+   (log/info :estinate obj)
    (json-rpc/call
     {:method     "eth_estimateGas"
      :params     [obj]
-     :on-success #(re-frame/dispatch [success-event %])
-     :on-error #(re-frame/dispatch [error-event %])})))
+     :on-success #(do
+                    (log/info :update-estimated-gas-success %)
+                    (re-frame/dispatch [success-event %]))
+     :on-error #(do
+                  (log/info :update-estimated-gas-error %)
+                  (re-frame/dispatch [error-event %]))})))

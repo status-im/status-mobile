@@ -12,6 +12,7 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.hex :as utils.hex]
             [status-im.utils.money :as money]
+            [taoensso.timbre :as log]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]))
@@ -177,6 +178,7 @@
         keycard-multiaccount? (boolean (get-in db [:multiaccount :keycard-pairing]))
         wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])
         updated-db (if wallet-set-up-passed? db (assoc db :popover/popover {:view :signing-phrase}))]
+    (log/info :signing (prepare-tx updated-db tx))
     (if message
       {:db (assoc updated-db
                   :signing/in-progress? true
