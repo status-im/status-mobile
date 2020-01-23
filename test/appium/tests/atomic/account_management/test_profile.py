@@ -382,7 +382,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             if not profile_view.element_by_text('eth.prod').is_element_displayed():
                 self.errors.append('Fleet is not set to eth.prod')
         else:
-            for text in 'INFO', 'eth.prod':
+            for text in 'DEBUG', 'eth.prod':
                 if not profile_view.element_by_text(text).is_element_displayed():
                     self.errors.append('%s is not selected by default' % text)
         self.errors.verify_no_errors()

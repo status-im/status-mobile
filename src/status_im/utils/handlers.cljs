@@ -1,9 +1,50 @@
 (ns status-im.utils.handlers
   (:require [cljs.spec.alpha :as spec]
             [re-frame.core :as re-frame]
+            [clojure.set :as set]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
             [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.utils.config :as config]
             [taoensso.timbre :as log]))
+
+;; Taken from re-frisk https://github.com/flexsurfer/re-frisk/blob/c2783436712bdb682770d5cf741d9f2db041d8de/src/re_frisk/diff.cljs#L1
+;; clojure.data/diff is hard to work with:
+;; (diff {:a [0 1 2]} {:a [0 1]}) => ({:a [nil nil 2]} nil {:a [0 1]})
+;; (data/diff {:a [2]} {:a [1]}) => ({:a [2]} {:a [1]} nil)
+;; ... so roll our own
+
+(declare diff)
+
+(defn- mv-keys [coll]
+  (if (map? coll)
+    (keys coll)
+    (keep-indexed #(when-not (nil? %2) %1) coll)))
+
+(defn- diff-coll [a b]
+  (into {}
+        (for [key (set/union (set (mv-keys a)) (set (mv-keys b)))]
+          (let [val-a (get a key)
+                val-b (get b key)]
+            (cond
+              (= val-a val-b) nil
+              (and val-a val-b) [key (diff val-a val-b)]
+              val-a [key {:deleted val-a}]
+              val-b [key val-b])))))
+
+(defn- diff-set [a b]
+  {:deleted (set/difference a b)
+   :added (set/difference b a)})
+
+(defn- diff-rest [a b]
+  {:before a :after b})
+
+(defn diff [a b]
+  (cond
+    (= a b) nil
+    (and (map? a) (map? b)) (diff-coll a b)
+    (and (vector? a) (vector? b)) (diff-coll a b)
+    (and (set? a) (set? b)) (diff-set a b)
+    :else (diff-rest a b)))
 
 (def pre-event-callback (atom nil))
 
@@ -24,13 +65,21 @@
 (def debug-handlers-names
   "Interceptor which logs debug information to js/console for each event."
   (->interceptor
-   :id     :debug-handlers-names
-   :before (fn debug-handlers-names-before
+   :id     :handlers-names
+   :before (fn handlers-names-before
              [context]
-             (when @pre-event-callback
-               (@pre-event-callback (get-coeffect context :event)))
-             (log/debug "Handling re-frame event: " (pretty-print-event context))
-             context)))
+             (do
+               (when @pre-event-callback
+                 (@pre-event-callback (get-coeffect context :event)))
+               (log/info "Handling re-frame event: " (pretty-print-event context))
+               context))
+   :after (fn handlers-names-after
+            [context]
+            (do
+              (log/info "Handled re-frame event: " (pretty-print-event context))
+              (log/info "Diff: " (diff (get-in context [:coeffects :db])
+                                       (get-in context [:effects :db])))
+              context))))
 
 (def logged-in
   "Interceptor which stops the event chain if the user is logged out"
