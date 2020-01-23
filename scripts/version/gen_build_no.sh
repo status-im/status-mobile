@@ -23,5 +23,5 @@ else
     # Format: Year(4 digit) + Month + Day + Hour
     # Example: 2018120118
     # We limited precision to hours to avoid of mismatched numbers.
-    date '+%Y%m%d%H' | tee "${BUILD_NUMBER_FILE}"
+    date '+%Y%m%d%H%M%S' | tee "${BUILD_NUMBER_FILE}"
 fi

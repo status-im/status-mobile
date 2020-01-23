@@ -6,6 +6,8 @@ def bundle() {
   def btype = utils.getBuildType()
   /* Disable Gradle Daemon https://stackoverflow.com/questions/38710327/jenkins-builds-fail-using-the-gradle-daemon */
   def gradleOpt = "-PbuildUrl='${currentBuild.absoluteUrl}' --console plain "
+  /* Can't take more digits than unsigned int */
+  def buildNumber = utils.readBuildNumber().substring(0, 10)
   /* we don't need x86 for any builds except e2e */
   env.ANDROID_ABI_INCLUDE="armeabi-v7a;arm64-v8a"
   env.ANDROID_ABI_SPLIT="false"
@@ -40,7 +42,7 @@ def bundle() {
         'status-im.ci': '1',
         'status-im.build-type': btype,
         'status-im.status-react.gradle-opts': gradleOpt,
-        'status-im.status-react.build-number': utils.readBuildNumber(),
+        'status-im.status-react.build-number': buildNumber,
       ],
       safeEnv: [
         'STATUS_RELEASE_KEY_ALIAS',

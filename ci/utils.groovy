@@ -62,7 +62,7 @@ def readBuildNumber() {
   def number = sh(
     returnStdout: true,
     script: "${env.WORKSPACE}/scripts/version/build_no.sh"
-  ).trim().toInteger()
+  ).trim()
   return number
 }
 
