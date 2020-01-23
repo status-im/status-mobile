@@ -65,7 +65,8 @@
 (defn- header [{:keys [photo-path] :as account} photo-added?]
   [profile.components/profile-header
    {:contact                account
-    :allow-icon-change?     true
+    ;;set to true if we want to re-enable custom icon
+    :allow-icon-change?     false
     :include-remove-action?  photo-added?}])
 
 (defn- header-in-toolbar [account]
