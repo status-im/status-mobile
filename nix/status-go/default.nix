@@ -70,6 +70,12 @@ let
           gomobileTarget = "${name}/arm64";
           outputFileName = "status-go-${srcData.shortRev}-arm64.aar";
         };
+        arm = {
+          linkNimbus = enableNimbus;
+          nimbus = assert enableNimbus; nimbus.wrappers-android.arm;
+          gomobileTarget = "${name}/arm";
+          outputFileName = "status-go-${srcData.shortRev}-arm.aar";
+        };
         x86 = {
           linkNimbus = enableNimbus;
           nimbus = assert enableNimbus; nimbus.wrappers-android.x86;
