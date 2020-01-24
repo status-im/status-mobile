@@ -27,24 +27,31 @@
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
 
-(re-frame/reg-fx
- :wallet/get-balance
- (fn [{:keys [account-address on-success on-error]}]
-   (json-rpc/call
-    {:method     "eth_getBalance"
-     :params     [account-address "latest"]
-     :on-success on-success
-     :on-error   on-error})))
+(defn get-balance
+  [{:keys [address on-success on-error number-of-retries]
+    :as params
+    :or {number-of-retries 4}}]
+  (log/debug "[wallet] get-balance"
+             "address" address
+             "number-of-retries" number-of-retries)
+  (json-rpc/call
+   {:method     "eth_getBalance"
+    :params     [address "latest"]
+    :on-success on-success
+    :on-error   (fn [error]
+                  (if (zero? number-of-retries)
+                    (on-error error)
+                    (get-balance
+                     (update params :number-of-retries dec))))}))
 
 (re-frame/reg-fx
  :wallet/get-balances
  (fn [addresses]
    (doseq [address addresses]
-     (json-rpc/call
-      {:method     "eth_getBalance"
-       :params     [address "latest"]
+     (get-balance
+      {:address    address
        :on-success #(re-frame/dispatch [::update-balance-success address %])
-       :on-error    #(re-frame/dispatch [::update-balance-fail %])}))))
+       :on-error   #(re-frame/dispatch [::update-balance-fail %])}))))
 
 ;; TODO(oskarth): At some point we want to get list of relevant
 ;; assets to get prices for
@@ -175,21 +182,33 @@
     (when (not-empty balances)
       balances)))
 
+(defn get-token-balances
+  [{:keys [addresses tokens init? assets number-of-retries]
+    :as params
+    :or {number-of-retries 4}}]
+  (log/debug "[wallet] get-token-balances"
+             "addresses" addresses
+             "number-of-retries" number-of-retries)
+  (json-rpc/call
+   {:method "wallet_getTokensBalances"
+    :params [addresses (keys tokens)]
+    :on-success
+    (fn [results]
+      (when-let [balances (clean-up-results results tokens (if init? nil assets))]
+        (re-frame/dispatch (if init?
+                             ;; NOTE: when there it is not a visible
+                             ;; assets we make an initialization round
+                             [::tokens-found balances]
+                             [::update-tokens-balances-success balances]))))
+    :on-error
+    (fn [error]
+      (if (zero? number-of-retries)
+        (re-frame/dispatch [::update-token-balance-fail error])
+        (get-token-balances (update params :number-of-retries dec))))}))
+
 (re-frame/reg-fx
  :wallet/get-tokens-balances
- (fn [{:keys [addresses tokens init? assets]}]
-   (json-rpc/call
-    {:method "wallet_getTokensBalances"
-     :params [addresses (keys tokens)]
-     :on-success
-     (fn [results]
-       (when-let [balances (clean-up-results results tokens (if init? nil assets))]
-         (re-frame/dispatch (if init?
-                              ;; NOTE: when there it is not a visible
-                              ;; assets we make an initialization round
-                              [::tokens-found balances]
-                              [::update-tokens-balances-success balances]))))
-     :on-error   #(re-frame/dispatch [::update-token-balance-fail %])})))
+ get-token-balances)
 
 (defn clear-error-message [db error-type]
   (update-in db [:wallet :errors] dissoc error-type))
