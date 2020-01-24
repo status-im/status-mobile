@@ -193,21 +193,19 @@
                 (generate-mailserver-symkey mailserver)))))
 
 (fx/defn add-peer
-  [{:keys [db] :as cofx}]
+  [{:keys [db now] :as cofx}]
   (let [{:keys [address sym-key-id generating-sym-key?] :as mailserver}
         (fetch-current db)]
     (fx/merge
      cofx
-     {:db (-> db
-              (update-mailserver-state :connecting)
-              (update :mailserver/connection-checks inc))
+     {:db (assoc
+           (update-mailserver-state db :connecting)
+           :mailserver/last-connection-attempt now)
       :mailserver/add-peer address
       ;; Any message sent before this takes effect will not be marked as sent
       ;; probably we should improve the UX so that is more transparent to the
       ;; user
-      :mailserver/update-mailservers [address]
-      :utils/dispatch-later [{:ms constants/connection-timeout
-                              :dispatch [:mailserver/check-connection-timeout]}]}
+      :mailserver/update-mailservers [address]}
      (when-not (or sym-key-id generating-sym-key?)
        (generate-mailserver-symkey mailserver)))))
 
@@ -521,23 +519,20 @@
                   {:mailserver/remove-peer address}
                   (set-current-mailserver))))))
 
+(defn check-connection! []
+  (re-frame/dispatch [:mailserver/check-connection-timeout]))
+
 (fx/defn check-connection
-  "connection-checks counter is used to prevent changing
-   mailserver on flaky connections
-   if there is more than one connection check pending
-      decrement the connection check counter
-   else
-      change mailserver if mailserver is connected"
-  [{:keys [db] :as cofx}]
+  "Check connection checks that the connection is successfully connected,
+  otherwise it will try to change mailserver and connect again"
+  [{:keys [db now] :as cofx}]
   ;; check if logged into multiaccount
   (when (contains? db :multiaccount)
-    (let [connection-checks (dec (:mailserver/connection-checks db))]
-      (if (>= 0 connection-checks)
+    (let [last-connection-attempt (:mailserver/last-connection-attempt db)]
+      (when (<= (- now last-connection-attempt))
         (fx/merge cofx
-                  {:db (dissoc db :mailserver/connection-checks)}
-                  (when (= :connecting (:mailserver/state db))
-                    (change-mailserver)))
-        {:db (update db :mailserver/connection-checks dec)}))))
+                  (when (not= :connected (:mailserver/state db))
+                    (change-mailserver)))))))
 
 (fx/defn reset-request-to
   [{:keys [db]}]
