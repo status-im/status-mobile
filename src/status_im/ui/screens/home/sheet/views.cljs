@@ -15,36 +15,34 @@
   (re-frame/dispatch event))
 
 (defn add-new-view []
-  [react/view {:flex 1 :flex-direction :row}
-   [react/view {:flex 1}
-    [list-item/list-item
-     {:theme               :action
-      :title               :t/start-new-chat
-      :accessibility-label :start-1-1-chat-button
-      :icon                :main-icons/one-on-one-chat
-      :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-chat])}]
-    (when config/group-chat-enabled?
-      [list-item/list-item
-       {:theme               :action
-        :title               :t/start-group-chat
-        :accessibility-label :start-group-chat-button
-        :icon                :main-icons/group-chat
-        :on-press            #(hide-sheet-and-dispatch [:contact.ui/start-group-chat-pressed])}])
-    [list-item/list-item
-     {:theme               :action
-      :title               :t/new-public-group-chat
-      :accessibility-label :join-public-chat-button
-      :icon                :main-icons/public-chat
-      :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-public-chat])}]
-    [list-item/list-item
-     {:theme               :action
-      :title               :t/invite-friends
-      :accessibility-label :chats-menu-invite-friends-button
-      :icon                :main-icons/share
-      :on-press            #(do
-                              (re-frame/dispatch [:bottom-sheet/hide-sheet])
-                              (list-selection/open-share {:message (i18n/label :t/get-status-at)}))}]]])
+  [react/view
+   [list-item/list-item
+    {:theme               :action
+     :title               :t/start-new-chat
+     :accessibility-label :start-1-1-chat-button
+     :icon                :main-icons/one-on-one-chat
+     :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-chat])}]
+   (when config/group-chat-enabled?
+     [list-item/list-item
+      {:theme               :action
+       :title               :t/start-group-chat
+       :accessibility-label :start-group-chat-button
+       :icon                :main-icons/group-chat
+       :on-press            #(hide-sheet-and-dispatch [:contact.ui/start-group-chat-pressed])}])
+   [list-item/list-item
+    {:theme               :action
+     :title               :t/new-public-group-chat
+     :accessibility-label :join-public-chat-button
+     :icon                :main-icons/public-chat
+     :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-public-chat])}]
+   [list-item/list-item
+    {:theme               :action
+     :title               :t/invite-friends
+     :accessibility-label :chats-menu-invite-friends-button
+     :icon                :main-icons/share
+     :on-press            #(do
+                             (re-frame/dispatch [:bottom-sheet/hide-sheet])
+                             (list-selection/open-share {:message (i18n/label :t/get-status-at)}))}]])
 
 (def add-new
-  {:content        add-new-view
-   :content-height (if config/group-chat-enabled? 256 192)})
+  {:content add-new-view})

@@ -31,22 +31,8 @@
 
 (defonce initial-view-id (atom nil))
 
-(defn bottom-sheet-comp [opts height-atom]
-  ;; We compute bottom sheet height dynamically by rendering it
-  ;; on an invisible view; then, if height is already available
-  ;; (either because it is statically provided or computed),
-  ;; we render the sheet itself
-  (if (or (not @height-atom) (= 0 @height-atom))
-    [react/view {:style {:position :absolute :opacity 0}
-                 :on-layout (fn [e]
-                              (let [h (-> e .-nativeEvent .-layout .-height)]
-                                (reset! height-atom h)))}
-     (when (:content opts)
-       [(:content opts)])]
-    [bottom-sheet/bottom-sheet (assoc opts :content-height @height-atom)]))
-
-(views/defview bottom-sheet []
-  (views/letsubs [{:keys [show? view]} [:bottom-sheet]]
+(defview bottom-sheet []
+  (letsubs [{:keys [show? view]} [:bottom-sheet]]
     (let [opts (cond-> {:show?     show?
                         :on-cancel #(re-frame/dispatch [:bottom-sheet/hide])}
 
@@ -69,9 +55,8 @@
                  (merge about-app/learn-more)
 
                  (= view :recover-sheet)
-                 (merge (recover.views/bottom-sheet)))
-          height-atom (reagent/atom (if (:content-height opts) (:content-height opts) nil))]
-      [bottom-sheet-comp opts height-atom])))
+                 (merge (recover.views/bottom-sheet)))]
+      [bottom-sheet/bottom-sheet opts])))
 
 (defn reset-component-on-mount [view-id component two-pane?]
   (when (and @initial-view-id

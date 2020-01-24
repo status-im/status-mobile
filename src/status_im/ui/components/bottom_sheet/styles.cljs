@@ -1,10 +1,9 @@
 (ns status-im.ui.components.bottom-sheet.styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def border-radius 16)
-(def bottom-padding (if platform/iphone-x? 34 8))
-(def bottom-view-height 1000)
+(def vertical-padding 8)
+(def margin-top 56)
 
 (def container
   {:position        :absolute
@@ -26,16 +25,16 @@
    :background-color colors/black-transparent-40})
 
 (defn content-container
-  [content-height bottom-value]
+  [window-height content-height bottom-value]
   {:background-color        colors/white
    :border-top-left-radius  border-radius
    :border-top-right-radius border-radius
-   :height                  (+ content-height bottom-view-height)
-   :bottom                  (- bottom-view-height)
-   :align-self              :stretch
-   :transform               [{:translateY bottom-value}]
-   :justify-content         :flex-start
-   :padding-bottom          bottom-padding})
+   :height                  (+ content-height window-height)
+   :bottom                  (- window-height)
+   :transform               [{:translateY bottom-value}]})
+
+(def sheet-wrapper {:flex            1
+                    :justify-content :flex-end})
 
 (def content-header
   {:height          border-radius
@@ -48,8 +47,3 @@
    :height           4
    :background-color colors/gray-transparent-40
    :border-radius    2})
-
-(def bottom-view
-  {:background-color colors/white
-   :height           bottom-view-height
-   :align-self       :stretch})
