@@ -54,6 +54,9 @@ export NIX_IGNORE_SYMLINK_STORE=1
 export _NIX_ROOT = /opt/nix
 endif
 
+# Useful for checking if we are on NixOS
+OS_NAME = $(shell grep -oP '^NAME=\K\w(.*)' /etc/os-release)
+
 #----------------
 # Nix targets
 #----------------
@@ -80,7 +83,11 @@ nix-clean: ##@nix Remove all status-react build artifacts from /nix/store
 
 nix-purge: SHELL := /bin/sh
 nix-purge: ##@nix Completely remove the complete Nix setup
+ifeq ($(OS_NAME), NixOS)
+	$(error $(RED)You should not purge Nix files on NixOS!$(RESET))
+else
 	sudo rm -rf $(_NIX_ROOT)/* ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
+endif
 
 nix-add-gcroots: export TARGET := default
 nix-add-gcroots: ##@nix Add Nix GC roots to avoid status-react expressions being garbage collected
