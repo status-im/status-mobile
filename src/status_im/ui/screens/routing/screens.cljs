@@ -64,7 +64,8 @@
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
             [status-im.ui.screens.wallet.account.views :as wallet.account]
             [status-im.ui.screens.wallet.add-new.views :as add-account]
-            [status-im.ui.screens.wallet.account-settings.views :as account-settings]))
+            [status-im.ui.screens.wallet.account-settings.views :as account-settings]
+            [status-im.ui.screens.network-info.views :as network-info]))
 
 (def all-screens
   {:login                                            login/login
@@ -170,6 +171,7 @@
    :manage-dapps-permissions                         dapps-permissions/manage
    :network-settings                                 network/network-settings-view
    :network-details                                  network/network-details-view
+   :network-info                                     network-info/network-info
    :edit-network                                     network/edit-network-view
    :log-level-settings                               log-level-settings/log-level-settings
    :fleet-settings                                   fleet-settings/fleet-settings

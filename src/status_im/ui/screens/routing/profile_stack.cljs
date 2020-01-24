@@ -30,6 +30,7 @@
                      :manage-dapps-permissions
                      :network-settings
                      :network-details
+                     :network-info
                      :edit-network
                      :log-level-settings
                      :fleet-settings

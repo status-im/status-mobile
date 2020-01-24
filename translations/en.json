@@ -718,6 +718,7 @@
 	"network": "Network",
 	"network-chain": "Network chain",
 	"network-details": "Network details",
+	"network-info": "Network info",
 	"network-fee": "Network fee",
 	"network-id": "Network ID",
 	"network-invalid-network-id": "Specified network id doesn't correspond to network id by RPC url",
