@@ -36,16 +36,16 @@
     [list-item/list-item
      {:type                 :section-header
       :container-margin-top 24
-      :title                "Advanced"}]
+      :title                (i18n/label :t/advanced)}]
     [list-item/list-item
-     {:title       "Enter a seed phrase"
+     {:title       (i18n/label :t/enter-a-seed-phrase)
       :theme       :action
       :icon        :main-icons/add
       :accessories [:chevron]
       :disabled?   true
       :on-press    #(re-frame/dispatch [:wallet.accounts/start-adding-new-account {:type :seed}])}]
     [list-item/list-item
-     {:title       "Enter a private key"
+     {:title       (i18n/label :t/enter-a-private-key)
       :theme       :action
       :icon        :main-icons/add
       :accessories [:chevron]
@@ -69,20 +69,21 @@
                   :justify-content :space-between
                   :align-items     :center :margin-horizontal 16}
       [react/view
-       [react/text {:style {:typography :header :margin-top 16}} "Add a watch-only address"]
+       [react/text {:style {:typography :header :margin-top 16}}
+        (i18n/label :t/add-a-watch-account)]
        [react/text {:style {:color colors/gray :text-align :center :margin-vertical 16}}
-        "Enter the address to watch"]]
+        (i18n/label :t/enter-watch-account-address)]]
       [react/view {:align-items :center :flex 1 :flex-direction :row}
        [react/text-input {:auto-focus        true
                           :multiline         true
                           :text-align        :center
-                          :placeholder       "Enter address"
+                          :placeholder       (i18n/label :t/enter-address)
                           :style             {:typography :header :flex 1}
                           :on-change-text    #(re-frame/dispatch [:set-in [:add-account :address] %])}]]]
      [toolbar/toolbar
       {:show-border? true
        :right        {:type      :next
-                      :label     "Next"
+                      :label     (i18n/label :t/next)
                       :on-press  #(re-frame/dispatch [:wallet.accounts/add-watch-account])
                       :disabled? add-account-disabled?}}]]))
 
