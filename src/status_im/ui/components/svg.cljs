@@ -14,3 +14,10 @@
   (adapt-class (get-property name)))
 
 (def svgxml (get-class "SvgXml"))
+
+(def svgview (get-class "Svg"))
+
+(def circle (get-class "Circle"))
+
+(def path (get-class "Path"))
+

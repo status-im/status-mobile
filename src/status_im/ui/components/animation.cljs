@@ -78,5 +78,6 @@
 (defn easing [] js/ReactNative.Easing)
 (defn easing-in [] (.-in (easing)))
 (defn easing-out [] (.-out (easing)))
+(defn linear [] (.-linear (easing)))
 
 (defn cubic [] (.-cubic (easing)))

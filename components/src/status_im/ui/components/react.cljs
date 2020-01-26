@@ -76,6 +76,7 @@
 
 (def pan-responder (.-PanResponder js-dependencies/react-native))
 (def animated (.-Animated js-dependencies/react-native))
+(def layout-animation (.-LayoutAnimation js-dependencies/react-native))
 
 (def animated-view-class
   (reagent/adapt-react-class (.-View animated)))
@@ -103,6 +104,8 @@
       (update :style typography/get-nested-style)
       (assoc :parseBasicMarkdown true)
       (assoc :nested? true)))
+
+(def refresh-control (get-class "RefreshControl"))
 
 ;; Accessor methods for React Components
 (defn text

@@ -4,6 +4,7 @@
             [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.loading-spinner :as loading-spinner]
             [re-frame.core :as re-frame]
             [status-im.ui.screens.wallet.accounts.views :as accounts]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
@@ -121,10 +122,12 @@
          [transactions address])])))
 
 (views/defview account []
-  (views/letsubs [{:keys [name address] :as account} [:current-account]]
-    [react/view {:flex 1 :background-color colors/white}
+  (views/letsubs [{:keys [name address] :as account} [:current-account]
+                  prices-loading [:prices-loading?]]
+    [react/view {:style {:flex 1} :background-color colors/white}
      [toolbar-view name]
      [react/scroll-view
+      [loading-spinner/loading-spinner []]
       [react/view {:padding-left 16}
        [react/scroll-view {:horizontal true}
         [react/view {:flex-direction :row :padding-top 8 :padding-bottom 12}
