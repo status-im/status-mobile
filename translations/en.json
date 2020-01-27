@@ -365,7 +365,7 @@
     "ens-displayed-with": "Your messages are displayed to others with",
     "ens-get-name": "Get a universal username",
     "ens-got-it": "Ok, got it",
-    "ens-locked": "Username locked. You won’t be able to release it until 25.05.2020",
+    "ens-locked": "Username locked. You won’t be able to release it until {{date}}",
     "ens-network-restriction": "Only available on Mainnet",
     "ens-no-usernames": "You don't have any username connected",
     "ens-powered-by": "Powered by Ethereum Name Services",

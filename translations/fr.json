@@ -367,7 +367,7 @@
     "ens-displayed-with": "Vos messages sont affichés aux autres avec",
     "ens-get-name": "Obtenir un nom d'utilisateur universel",
     "ens-got-it": "Ok, j'ai compris",
-    "ens-locked": "Nom d'utilisateur verrouillé. Vous ne pourrez pas le déverrouiller avant le 25.05.2020",
+    "ens-locked": "Nom d'utilisateur verrouillé. Vous ne pourrez pas le déverrouiller avant le {{date}}",
     "ens-network-restriction": "Disponible uniquement sur Mainnet",
     "ens-no-usernames": "Vous n'avez aucun nom d'utilisateur connecté",
     "ens-powered-by": "Propulsé par Ethereum Name Services",

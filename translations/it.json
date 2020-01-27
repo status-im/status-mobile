@@ -379,7 +379,7 @@
     "ens-displayed-with": "I tuoi messaggi vengono visualizzati agli altri con",
     "ens-get-name": "Ottieni un nome utente universale",
     "ens-got-it": "Ok capito",
-    "ens-locked": "Nome utente bloccato. Non sarà possibile rilasciarlo fino al 25.05.2020",
+    "ens-locked": "Nome utente bloccato. Non sarà possibile rilasciarlo fino al {{date}}",
     "ens-name-content": "Alias personalizzato per la tua chiave di chat che puoi registrare usando Ethereum Name Service. I nomi ENS sono nomi utente decentralizzati.",
     "ens-name-title": "Nome ENS",
     "ens-network-restriction": "Disponibile solo su Mainnet",

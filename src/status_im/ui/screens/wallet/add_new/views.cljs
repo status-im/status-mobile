@@ -33,24 +33,25 @@
       :icon        :main-icons/add
       :accessories [:chevron]
       :on-press    #(re-frame/dispatch [:wallet.accounts/start-adding-new-account {:type :generate}])}]
-    [list-item/list-item
-     {:type                 :section-header
-      :container-margin-top 24
-      :title                (i18n/label :t/advanced)}]
-    [list-item/list-item
-     {:title       (i18n/label :t/enter-a-seed-phrase)
-      :theme       :action
-      :icon        :main-icons/add
-      :accessories [:chevron]
-      :disabled?   true
-      :on-press    #(re-frame/dispatch [:wallet.accounts/start-adding-new-account {:type :seed}])}]
-    [list-item/list-item
-     {:title       (i18n/label :t/enter-a-private-key)
-      :theme       :action
-      :icon        :main-icons/add
-      :accessories [:chevron]
-      :disabled?   true
-      :on-press    #(re-frame/dispatch [:wallet.accounts/start-adding-new-account {:type :key}])}]]])
+    ;;TODO: implement adding account by seedphrase and private key
+    #_[list-item/list-item
+       {:type                 :section-header
+        :container-margin-top 24
+        :title                (i18n/label :t/advanced)}]
+    #_[list-item/list-item
+       {:title       (i18n/label :t/enter-a-seed-phrase)
+        :theme       :action
+        :icon        :main-icons/add
+        :accessories [:chevron]
+        :disabled?   true
+        :on-press    #(re-frame/dispatch [:wallet.accounts/start-adding-new-account {:type :seed}])}]
+    #_[list-item/list-item
+       {:title       (i18n/label :t/enter-a-private-key)
+        :theme       :action
+        :icon        :main-icons/add
+        :accessories [:chevron]
+        :disabled?   true
+        :on-press    #(re-frame/dispatch [:wallet.accounts/start-adding-new-account {:type :key}])}]]])
 
 (def input-container
   {:flex-direction     :row

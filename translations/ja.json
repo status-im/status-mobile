@@ -339,7 +339,7 @@
     "ens-displayed-with": "あなたのメッセージは他の人に表示されます",
     "ens-get-name": "ユニバーサルユーザー名を取得",
     "ens-got-it": "わかりました",
-    "ens-locked": "ユーザー名がロックされています。あなたは25.05.2020まで手放すことはできません",
+    "ens-locked": "ユーザー名がロックされています。あなたは{{date}}まで手放すことはできません",
     "ens-network-restriction": "Mainnetまたはropstenでのみ利用可能",
     "ens-no-usernames": "接続しているユーザー名がありません",
     "ens-powered-by": "Ethereum Name Servicesを利用しています",
