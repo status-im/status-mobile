@@ -105,7 +105,7 @@ class DefaultUserNameText(BaseText):
     def __init__(self, driver):
         super(DefaultUserNameText, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            '//android.view.ViewGroup[@content-desc="edit-profile-photo-button"]/../android.widget.TextView')
+            '//android.widget.ImageView[@content-desc="chat-icon"]/../android.widget.TextView')
 
 class ENSusernames(BaseButton):
     def __init__(self, driver):
