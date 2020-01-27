@@ -372,7 +372,7 @@
     "ens-displayed-with": "귀하의 메시지가 다른 사용자에게 다음과 같이 표시됩니다",
     "ens-get-name": "사용자 이름 등록",
     "ens-got-it": "알겠습니다",
-    "ens-locked": "사용자 이름이 등록되었습니다. 2020.05.25까지 해지 할 수 없습니다.",
+    "ens-locked": "사용자 이름이 등록되었습니다. {{date}}까지 해지 할 수 없습니다.",
     "ens-name-content": "이더리움 네임 서비스(Ethereum Name Service)로 채팅키와 연결되는 커스텀 닉네임. ENS 이름은 탈중앙화된 사용자 명입니다.",
     "ens-name-title": "ENS 이름",
     "ens-network-restriction": "Mainnet에서만 사용 가능",

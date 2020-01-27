@@ -3,6 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.ens.db :as ens.db]
             [taoensso.timbre :as log]
+            [status-im.utils.datetime :as datetime]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.ethereum.abi-spec :as abi-spec]
@@ -41,6 +42,11 @@
  ::resolve-pubkey
  (fn [[registry name cb]]
    (resolver/pubkey registry name cb)))
+
+(re-frame/reg-fx
+ ::get-expiration-time
+ (fn [[registrar label-hash cb]]
+   (stateofus/get-expiration-time registrar label-hash cb)))
 
 (fx/defn set-state
   {:events [::name-resolved]}
@@ -249,15 +255,33 @@
   [{:keys [db]} username public-key]
   {:db (assoc-in db [:ens/names username :public-key] public-key)})
 
+(fx/defn store-expiration-date
+  {:events [::get-expiration-time-success]}
+  [{:keys [now db]} username timestamp]
+  {:db (-> db
+           (assoc-in [:ens/names username :expiration-date]
+                     (datetime/timestamp->year-month-day-date timestamp))
+           (assoc-in [:ens/names username :releasable?] (<= timestamp now)))})
+
 (fx/defn navigate-to-name
   {:events [::navigate-to-name]}
   [{:keys [db] :as cofx} username]
-  (let [registry (get ens/ens-registries (ethereum/chain-keyword db))]
+  (let [chain (ethereum/chain-keyword db)
+        registry (get ens/ens-registries chain)
+        registrar (get stateofus/registrars chain)]
     (fx/merge cofx
-              {::resolve-address [registry username
-                                  #(re-frame/dispatch [::address-resolved username %])]
-               ::resolve-pubkey  [registry username
-                                  #(re-frame/dispatch [::public-key-resolved username %])]}
+              {::get-expiration-time
+               [registrar
+                (-> username
+                    stateofus/username
+                    ethereum/sha3)
+                #(re-frame/dispatch [::get-expiration-time-success username %])]
+               ::resolve-address
+               [registry username
+                #(re-frame/dispatch [::address-resolved username %])]
+               ::resolve-pubkey
+               [registry username
+                #(re-frame/dispatch [::public-key-resolved username %])]}
               (navigation/navigate-to-cofx :ens-name-details username))))
 
 (fx/defn start-registration

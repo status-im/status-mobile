@@ -2007,7 +2007,7 @@
  :<- [:get-screen-params :ens-name-details]
  :<- [:ens/names]
  (fn [[name ens]]
-   (let [{:keys [address public-key]} (get ens name)
+   (let [{:keys [address public-key expiration-date releasable?]} (get ens name)
          pending? (nil? address)]
      (cond-> {:name       name
               :custom-domain? (not (string/ends-with? name ".stateofus.eth"))}
@@ -2015,7 +2015,9 @@
        (assoc :pending? true)
        (not pending?)
        (assoc :address    address
-              :public-key public-key)))))
+              :public-key public-key
+              :releasable? releasable?
+              :expiration-date expiration-date)))))
 
 (re-frame/reg-sub
  :ens.main/screen

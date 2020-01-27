@@ -349,7 +349,7 @@
     "ens-displayed-with": "您的消息会显示给其他人",
     "ens-get-name": "获取通用用户名",
     "ens-got-it": "好的, 明白了",
-    "ens-locked": "用户名已锁定。您将无法在25.05.2020之前释放它",
+    "ens-locked": "用户名已锁定。您将无法在{{date}}之前释放它",
     "ens-network-restriction": "仅适用于主网或ropsten",
     "ens-no-usernames": "您没有关联任何用户名",
     "ens-powered-by": "由以太坊名称服务提供支持",

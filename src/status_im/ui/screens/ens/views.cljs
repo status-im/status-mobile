@@ -476,8 +476,14 @@
 ;;; NAME DETAILS SCREEN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(def ^:const release-instructions-link "https://our.status.im/managing-your-ens-name-in-v1/")
+
+(defn open-release-instructions-link! []
+  (.openURL react/linking release-instructions-link))
+
 (views/defview name-details []
-  (views/letsubs [{:keys [name address custom-domain? public-key pending?]}
+  (views/letsubs [{:keys [name address custom-domain? public-key
+                          expiration-date releasable? pending?]}
                   [:ens.name/screen]]
     [react/view {:style {:flex 1}}
      [topbar/topbar {:title name}]
@@ -502,23 +508,32 @@
           [section {:title   (i18n/label :t/key)
                     :content public-key}]])
        [react/view {:style {:margin-top 16 :margin-bottom 32}}
-        [list/big-list-item {:text          (i18n/label :t/ens-remove-username)
-                             :subtext       (i18n/label :t/ens-remove-hints)
-                             :text-color    colors/gray
-                             :text-style    {:font-weight "500"}
-                             :icon          :main-icons/close
-                             :icon-color    colors/gray
-                             :hide-chevron? true}]
+        ;;TODO: re-enable once feature is developped
+        #_[list/big-list-item {:text          (i18n/label :t/ens-remove-username)
+                               :subtext       (i18n/label :t/ens-remove-hints)
+                               :text-color    colors/gray
+                               :text-style    {:font-weight "500"}
+                               :icon          :main-icons/close
+                               :icon-color    colors/gray
+                               :hide-chevron? true}]
         (when-not custom-domain?
           [react/view {:style {:margin-top 18}}
            [list/big-list-item {:text          (i18n/label :t/ens-release-username)
-                                :text-color    colors/gray
+                                :text-color    (if releasable?
+                                                 colors/blue
+                                                 colors/gray)
                                 :text-style    {:font-weight "500"}
-                                :subtext       (i18n/label :t/ens-locked)
+                                :subtext       (when (and expiration-date
+                                                          (not releasable?))
+                                                 (i18n/label :t/ens-locked
+                                                             {:date expiration-date}))
                                 :icon          :main-icons/delete
-                                :icon-color    colors/gray
-                                :active?       false
-                                :hide-chevron? true}]])]]]]))
+                                :icon-color    (if releasable?
+                                                 colors/blue
+                                                 colors/gray)
+                                :active?       releasable?
+                                :hide-chevron? true
+                                :action-fn     #(open-release-instructions-link!)}]])]]]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; WELCOME SCREEN
