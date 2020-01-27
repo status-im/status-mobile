@@ -278,19 +278,25 @@
  (fn [names]
    (verify-names (distinct names))))
 
-(defn should-be-verified? [cofx ens-name signature]
-  (and ens-name
-       (not (get-in cofx [:contacts/contacts signature :ens-verified]))
-       (not= signature (multiaccounts.model/current-public-key cofx))
-       (or (valid-custom-domain? ens-name)
-           (stateofus/valid-username? ens-name))))
+(defn should-be-verified? [{:keys [db] :as cofx} ens-name signature clock-value]
+  (let [{:keys [name ens-verified-at ens-verified]} (get-in
+                                                     db
+                                                     [:contacts/contacts signature])]
+    (and ens-name
+         ; Either we never verified it, or is a new name
+         (or (not ens-verified)
+             (not= ens-name name))
+         ; clock value must always be greater
+         (> clock-value ens-verified-at)
+         ; it's not us
+         (not= signature (multiaccounts.model/current-public-key cofx))
+         ; and it's a valid name
+         (or (valid-custom-domain? ens-name)
+             (stateofus/valid-username? ens-name)))))
 
-(fx/defn verify-names-from-message [cofx {:keys [content]} signature]
-  (when (should-be-verified? cofx (:ens-name content) signature)
+(fx/defn verify-names-from-message [cofx {:keys [content clock-value]} signature]
+  (when (should-be-verified? cofx (:ens-name content) signature clock-value)
     {::verify-names [{:name (:ens-name content)
+                      :clock clock-value
                       :publicKey (subs signature 2)}]}))
 
-(fx/defn verify-names-from-contact-request [cofx {:keys [name]} signature]
-  (when (should-be-verified? cofx name signature)
-    {::verify-names [{:name name
-                      :publicKey (subs signature 2)}]}))

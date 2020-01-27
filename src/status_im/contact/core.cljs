@@ -187,7 +187,8 @@
                      public-key (str "0x" (name public-key-keyword))
                      contact    (contact.db/public-key->contact contacts public-key)]
 
-                 (if error
+                 (if (or error
+                         (< ens-verified-at (:ens-verified-at contact)))
                    (assoc acc public-key contact)
                    (assoc acc public-key
                           (assoc contact
