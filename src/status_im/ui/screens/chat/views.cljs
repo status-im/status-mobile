@@ -312,7 +312,7 @@
    modal?]
   (letsubs [messages           [:chats/current-chat-messages-stream]
             current-public-key [:multiaccount/public-key]]
-    {:component-did-mount
+    {:component-did-update
      (fn [args]
        (when-not (:messages-initialized? (second (.-argv (.-props args))))
          (re-frame/dispatch [:chat.ui/load-more-messages]))
