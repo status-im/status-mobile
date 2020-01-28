@@ -20,7 +20,6 @@
              (let [cofx {:now  (datetime/timestamp)
                          :db   @re-frame.db/app-db}]
                (mailserver/check-connection!)
-               (multiaccounts/publish-update! cofx)
                (done-fn)))
            sync-interval-ms
            sync-timeout-ms)))

@@ -1,5 +1,6 @@
 (ns status-im.multiaccounts.update.publisher
   (:require [taoensso.timbre :as log]
+            [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.multiaccounts.update.core :as multiaccounts]
             [status-im.ethereum.json-rpc :as json-rpc]
@@ -25,4 +26,9 @@
         (log/debug "sending contact updates")
         (json-rpc/call {:method "shhext_sendContactUpdates"
                         :params [(or preferred-name name) photo-path]
-                        :on-success #(log/debug "sent contact updates")})))))
+                        :on-failure #(do
+                                       (log/warn "failed to send contact updates")
+                                       (re-frame/dispatch [:multiaccounts.update.callback/failed-to-publish]))
+                        :on-success #(do
+                                       (log/debug "sent contact updates")
+                                       (re-frame/dispatch [:multiaccounts.update.callback/published]))})))))
