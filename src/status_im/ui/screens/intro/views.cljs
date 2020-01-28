@@ -119,40 +119,40 @@
                        :resize-mode :contain
                        :style {:width image-size :height image-size}}])])))
 
-(defn choose-key [{:keys [multiaccounts selected-id view-height]}]
+(defn choose-key [{:keys [multiaccounts selected-id]}]
   [react/view
    {:style {:flex            1
             :justify-content :center}}
-   [react/view
-    {:style {:flex       1
-             :height     200
-             :max-height 338}}
-    [react/scroll-view
-     {:content-container-style {:justify-content :flex-start}}
-     (for [[acc accessibility-n] (map vector multiaccounts (range (count multiaccounts)))]
-       (let [selected? (= (:id acc) selected-id)
-             public-key (get-in acc [:derived constants/path-whisper-keyword :public-key])]
-         ^{:key public-key}
-         [react/touchable-highlight
-          {:accessibility-label (keyword (str "select-account-button-" accessibility-n))
-           :on-press #(re-frame/dispatch [:intro-wizard/on-key-selected (:id acc)])}
-          [react/view {:style (styles/list-item selected?)}
-
+   [react/scroll-view
+    {:style                   {:max-height 410}
+     :content-container-style {:justify-content :flex-start}}
+    (for [[acc accessibility-n] (map vector multiaccounts (range (count multiaccounts)))]
+      (let [selected?  (= (:id acc) selected-id)
+            public-key (get-in acc [:derived constants/path-whisper-keyword :public-key])]
+        ^{:key public-key}
+        [react/touchable-highlight
+         {:accessibility-label (keyword (str "select-account-button-" accessibility-n))
+          :on-press            #(re-frame/dispatch [:intro-wizard/on-key-selected (:id acc)])}
+         [react/view {:style (styles/list-item selected?)}
+          [react/view {:style styles/list-item-body}
            [react/image {:source      {:uri (identicon/identicon public-key)}
                          :resize-mode :cover
                          :style       styles/multiaccount-image}]
-           [react/view {:style {:margin-horizontal 16 :flex 1 :justify-content :space-between}}
-            [react/text {:style (assoc styles/wizard-text :text-align :left
-                                       :color colors/black
-                                       :font-weight "500")
-                         :number-of-lines 1
-                         :ellipsize-mode :middle}
+           [react/view {:style {:padding-horizontal 16
+                                :flex               1}}
+            [react/text {:style           (assoc styles/wizard-text :text-align :left
+                                                 :color colors/black
+                                                 :line-height 22
+                                                 :font-weight "500")
+                         :number-of-lines 2
+                         :ellipsize-mode  :middle}
              (gfy/generate-gfy public-key)]
             [react/text {:style (assoc styles/wizard-text
                                        :text-align :left
+                                       :line-height 22
                                        :font-family "monospace")}
-             (utils/get-shortened-address public-key)]]
-           [radio/radio selected?]]]))]]])
+             (utils/get-shortened-address public-key)]]]
+          [radio/radio selected?]]]))]])
 
 (defn storage-entry [{:keys [type icon icon-width icon-height
                              image image-selected image-width image-height

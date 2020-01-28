@@ -54,10 +54,16 @@
 (defn list-item [selected?]
   {:flex-direction   :row
    :align-items      :center
+   :justify-content  :space-between
    :padding-left     16
    :padding-right    10
    :background-color (if selected? colors/blue-light colors/white)
    :padding-vertical 12})
+
+(def list-item-body
+  {:flex-direction :row
+   :flex           1
+   :align-items    :flex-start})
 
 (def multiaccount-image
   {:width         40
