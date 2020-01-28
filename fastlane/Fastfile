@@ -222,9 +222,9 @@ platform :ios do
   lane :clean do
     clean_testflight_testers(
       username: ENV['FASTLANE_APPLE_ID'],
-      days_of_inactivity: 30,
-      oldest_build_allowed: 2_019_032_709
+      days_of_inactivity: 30
     )
+    # In the future we can try using 'oldest_build_allowed'
   end
 
   desc '`fastlane ios upload-diawi` - upload .ipa to diawi'
