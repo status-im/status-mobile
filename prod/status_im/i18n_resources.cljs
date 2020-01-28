@@ -1,5 +1,6 @@
 (ns status-im.i18n-resources
-  (:require [status-im.react-native.js-dependencies :as rn-dependencies]))
+  (:require [status-im.react-native.js-dependencies :as rn-dependencies]
+            [clojure.string :as string]))
 
 (def default-device-language
   (keyword (.-language rn-dependencies/react-native-languages)))
@@ -78,7 +79,9 @@
     {:en (require-translation :en)}
     (not= :en default-device-language)
     (assoc default-device-language
-           (require-translation default-device-language))))
+           (require-translation (-> (name default-device-language)
+                                    (string/replace "-" "_")
+                                    keyword)))))
 
 (defn load-language [lang]
   (let [lang-key (valid-language (keyword lang))]
