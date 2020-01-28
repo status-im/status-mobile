@@ -119,9 +119,11 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         default_username_1 = profile_1.default_username_text.text
         device_1_home = profile_1.get_back_to_home_view()
 
-        profile_1 = device_1_home.profile_button.click()
-        profile_1.edit_profile_picture('sauce_logo.png')
-        profile_1.home_button.click()
+        # Skip until edit-profile feature returned
+
+        # profile_1 = device_1_home.profile_button.click()
+        # profile_1.edit_profile_picture('sauce_logo.png')
+        # profile_1.home_button.click()
 
         device_2_public_key = device_2_home.get_public_key()
         device_2_home.home_button.click()
@@ -142,8 +144,11 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append("Default username '%s' is not shown in one-to-one chat" % default_username_1)
         device_2_chat.chat_options.click()
         device_2_chat.view_profile_button.click()
-        if not device_2_chat.contact_profile_picture.is_element_image_equals_template('sauce_logo.png'):
-            self.errors.append("Updated profile picture is not shown in one-to-one chat")
+
+        # Skip until edit-profile feature returned
+
+        # if not device_2_chat.contact_profile_picture.is_element_image_equals_template('sauce_logo.png'):
+        #     self.errors.append("Updated profile picture is not shown in one-to-one chat")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5316)
@@ -159,8 +164,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_2_public_key = device_2_home.get_public_key()
         profile_2 = device_2_home.get_profile_view()
-        file_name = 'sauce_logo.png'
-        profile_2.edit_profile_picture(file_name)
+        # TODO: skip until edit image profile is enabled
+        # file_name = 'sauce_logo.png'
+        # profile_2.edit_profile_picture(file_name)
         default_username_2 = profile_2.default_username_text.text
         profile_2.home_button.click()
 
@@ -187,8 +193,9 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append("Default username '%s' is not shown in one-to-one chat" % default_username_2)
         device_1_chat.chat_options.click()
         device_1_chat.view_profile_button.click()
-        if not device_1_chat.contact_profile_picture.is_element_image_equals_template(file_name):
-            self.errors.append("Updated profile picture is not shown in one-to-one chat")
+        # TODO: skip until edit image profile is enabled
+        # if not device_1_chat.contact_profile_picture.is_element_image_equals_template(file_name):
+        #     self.errors.append("Updated profile picture is not shown in one-to-one chat")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5373)

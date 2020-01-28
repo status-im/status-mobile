@@ -15,6 +15,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5302)
     @marks.high
+    @marks.skip
     def test_set_profile_picture(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -113,6 +114,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5454)
     @marks.critical
+    @marks.skip
     def test_user_can_remove_profile_picture(self):
         signin_view = SignInView(self.driver)
         home_view = signin_view.create_user()
@@ -829,6 +831,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5680)
     @marks.high
+    @marks.skip
+    # skip until edit userpic is enabled back
     def test_pair_devices_sync_name_photo_public_group_chats(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
