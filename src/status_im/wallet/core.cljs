@@ -39,10 +39,10 @@
     :params     [address "latest"]
     :on-success on-success
     :on-error   (fn [error]
-                  (if (zero? number-of-retries)
-                    (on-error error)
+                  (if (pos? number-of-retries)
                     (get-balance
-                     (update params :number-of-retries dec))))}))
+                     (update params :number-of-retries dec))
+                    (on-error error)))}))
 
 (re-frame/reg-fx
  :wallet/get-balances
@@ -202,9 +202,9 @@
                              [::update-tokens-balances-success balances]))))
     :on-error
     (fn [error]
-      (if (zero? number-of-retries)
-        (re-frame/dispatch [::update-token-balance-fail error])
-        (get-token-balances (update params :number-of-retries dec))))}))
+      (if (pos? number-of-retries)
+        (get-token-balances (update params :number-of-retries dec))
+        (re-frame/dispatch [::update-token-balance-fail error])))}))
 
 (re-frame/reg-fx
  :wallet/get-tokens-balances
