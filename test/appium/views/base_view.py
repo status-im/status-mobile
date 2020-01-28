@@ -316,7 +316,7 @@ class AirplaneModeButton(BaseButton):
         action = TouchAction(self.driver)
         action.press(None, 50, 0).move_to(None, 50, 300).perform()
         super(AirplaneModeButton, self).click()
-        action.press(None, 50, 900).move_to(None, 50, 0).perform()
+        self.driver.press_keycode(4)
 
 
 class BaseView(object):
@@ -370,7 +370,7 @@ class BaseView(object):
     def accept_agreements(self):
         iterations = int()
         self.close_native_device_dialog("Messages")
-        self.close_native_device_dialog("Youtube")
+        self.close_native_device_dialog("YouTube")
         while iterations <= 1 and (self.ok_button.is_element_displayed(2) or
                                    self.continue_button.is_element_displayed(2)):
             for button in self.ok_button, self.continue_button:

@@ -1,18 +1,16 @@
 (ns status-im.ui.screens.multiaccounts.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.multiaccounts.styles :as styles]
-            [status-im.utils.utils :as utils]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.screens.privacy-policy.views :as privacy-policy]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.button :as button]
+            [status-im.ui.screens.multiaccounts.sheets :as sheets]
             [status-im.react-native.resources :as resources]))
 
 (defn multiaccount-view
@@ -50,18 +48,18 @@
 (defview multiaccounts []
   (letsubs [multiaccounts [:multiaccounts/multiaccounts]]
     [react/view styles/multiaccounts-view
-     [react/text {:style {:typography :header :margin-top 24 :text-align :center}}
-      (i18n/label :t/unlock)]
+     [topbar/topbar {:show-border? true
+                     :navigation   :none
+                     :title        (i18n/label :t/your-keys)
+                     :accessories  [{:icon    :more
+                                     :accessibility-label :your-keys-more-icon
+                                     :handler #(re-frame/dispatch [:bottom-sheet/show-sheet {:content sheets/actions-sheet}])}]}]
      [react/view styles/multiaccounts-container
       [react/view styles/multiaccounts-list-container
        [list/flat-list {:data      (vals multiaccounts)
                         :key-fn    :address
                         :render-fn (fn [multiaccount] [multiaccount-view multiaccount])}]]
-      [react/view
-       [components.common/button {:on-press #(re-frame/dispatch [:multiaccounts.create.ui/intro-wizard false])
-                                  :button-style styles/bottom-button
-                                  :label    (i18n/label :t/generate-a-new-key)}]
-       [react/view styles/bottom-button-container
-        [components.common/button {:on-press    #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
-                                   :label       (i18n/label :t/access-key)
-                                   :background? false}]]]]]))
+      [react/view {:style styles/bottom-button-container}
+       [button/button {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
+                       :type     :secondary
+                       :label    (i18n/label :t/access-key)}]]]]))

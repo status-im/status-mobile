@@ -7,8 +7,6 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.text-input.view :as text-input]
-            [status-im.ui.components.toolbar.actions :as act]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.multiaccounts.login.styles :as styles]
             [status-im.ui.screens.multiaccounts.styles :as ast]

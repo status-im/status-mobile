@@ -8,7 +8,6 @@
 (def multiaccounts-container
   {:flex               1
    :margin-top         24
-   :margin-bottom      16
    :justify-content    :space-between})
 
 (def bottom-actions-container
@@ -51,5 +50,10 @@
    :flex-direction     :row})
 
 (def bottom-button-container
-  {:margin-top    14
-   :margin-bottom 6})
+  {:flex-direction     :row
+   :padding-horizontal 12
+   :padding-vertical   8
+   :border-top-width   1
+   :border-top-color   colors/gray-lighter
+   :justify-content    :center
+   :align-items        :center})

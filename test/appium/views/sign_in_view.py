@@ -79,6 +79,12 @@ class CreateMultiaccountButton(BaseButton):
             "//*[@text='Create multiaccount' or @text='Create new multiaccount']")
 
 
+class YourKeysMoreIcon(BaseButton):
+    def __init__(self, driver):
+        super(YourKeysMoreIcon, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("your-keys-more-icon")
+
+
 class GenerateKeyButton(BaseButton):
     def __init__(self, driver):
         super(GenerateKeyButton, self).__init__(driver)
@@ -88,7 +94,7 @@ class GenerateKeyButton(BaseButton):
 class GenerateNewKeyButton(BaseButton):
     def __init__(self, driver):
         super(GenerateNewKeyButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Generate keys']")
+        self.locator = self.Locator.accessibility_id('generate-a-new-key')
 
 
 class IHaveMultiaccountButton(RecoverAccessButton):
@@ -100,7 +106,7 @@ class IHaveMultiaccountButton(RecoverAccessButton):
 class AccessKeyButton(RecoverAccessButton):
     def __init__(self, driver):
         super(AccessKeyButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Access existing keys']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Access key']")
 
 
 class MaybeLaterButton(BaseButton):
@@ -174,6 +180,7 @@ class SignInView(BaseView):
         self.i_have_multiaccount_button = IHaveMultiaccountButton(self.driver)
         self.access_key_button = AccessKeyButton(self.driver)
         self.generate_key_button = GenerateKeyButton(self.driver)
+        self.your_keys_more_icon = YourKeysMoreIcon(self.driver)
         self.generate_new_key_button = GenerateNewKeyButton(self.driver)
         self.add_existing_multiaccount_button = AddExistingMultiaccountButton(self.driver)
         self.confirm_password_input = ConfirmPasswordInput(self.driver)
@@ -200,11 +207,7 @@ class SignInView(BaseView):
         return self.get_home_view()
 
     def recover_access(self, passphrase: str, password: str = common_password):
-        if self.other_multiaccounts_button.is_element_displayed():
-            self.other_multiaccounts_button.click()
-            recover_access_view = self.add_existing_multiaccount_button.click()
-        else:
-            recover_access_view = self.access_key_button.click()
+        recover_access_view = self.access_key_button.click()
         recover_access_view.enter_seed_phrase_button.click()
         recover_access_view.passphrase_input.click()
         recover_access_view.passphrase_input.set_value(passphrase)
