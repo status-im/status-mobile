@@ -31,6 +31,7 @@
    "shh_generateSymKeyFromPassword" {}
    "shh_getSymKey" {}
    "shh_markTrustedPeer" {}
+   "shhext_startMessenger" {}
    "shhext_sendPairInstallation" {}
    "shhext_syncDevices" {}
    "shhext_requestMessages" {}
