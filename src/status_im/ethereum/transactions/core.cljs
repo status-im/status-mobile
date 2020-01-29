@@ -231,26 +231,30 @@
 
 (re-frame/reg-fx
  :transactions/get-transfers
- (fn [{:keys [chain-tokens addresses before-block page-size]
+ (fn [{:keys [chain-tokens addresses before-block page-size
+              transactions-per-address]
        :as params
-       :or {page-size 0}}]
+       :or {page-size 20}}]
    {:pre [(cljs.spec.alpha/valid?
            (cljs.spec.alpha/coll-of string?)
            addresses)]}
    (log/debug "[transactions] get-transfers"
               "addresses" addresses
               "block" before-block
-              "page-size" page-size)
+              "page-size" page-size
+              "transactions-per-address" transactions-per-address)
    (when before-block
      (doseq [address addresses]
-       (json-rpc/call
-        {:method "wallet_getTransfersByAddress"
-         :params [address (encode/uint before-block) (encode/uint page-size)]
-         :on-success #(re-frame/dispatch
-                       [::new-transfers
-                        (enrich-transfers chain-tokens %)
-                        (assoc params :address address)])
-         :on-error #(re-frame/dispatch [::tx-fetching-failed address])})))))
+       (let [page-size (or (get transactions-per-address address)
+                           page-size)]
+         (json-rpc/call
+          {:method "wallet_getTransfersByAddress"
+           :params [address (encode/uint before-block) (encode/uint page-size)]
+           :on-success #(re-frame/dispatch
+                         [::new-transfers
+                          (enrich-transfers chain-tokens %)
+                          (assoc params :address address)])
+           :on-error #(re-frame/dispatch [::tx-fetching-failed address])}))))))
 
 (fx/defn initialize
   [{:keys [db]} addresses]
@@ -261,7 +265,6 @@
     {:transactions/get-transfers
      {:chain-tokens chain-tokens
       :addresses    (map eip55/address->checksum addresses)
-      :page-size    20
       :historical?  true}}))
 
 (fx/defn fetch-more-tx
@@ -282,6 +285,5 @@
       {:chain-tokens chain-tokens
        :addresses    [address]
        :before-block min-known-block
-       :page-size    20
        :historical?  true}}
      (tx-fetching-in-progress [address]))))

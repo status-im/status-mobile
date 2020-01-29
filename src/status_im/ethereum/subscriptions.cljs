@@ -25,14 +25,15 @@
   {:db (assoc-in db [:ethereum/subscriptions id] handler)})
 
 (fx/defn new-block
-  [{:keys [db] :as cofx} historical? block-number accounts]
+  [{:keys [db] :as cofx} historical? block-number accounts transactions-per-account]
   (let [{:keys [:wallet/all-tokens]} db
         chain (ethereum/chain-keyword db)
         chain-tokens (into {} (map (juxt :address identity)
                                    (tokens/tokens-for all-tokens chain)))]
     (log/debug "[wallet-subs] new-block"
                "accounts" accounts
-               "block" block-number)
+               "block" block-number
+               "transactions-per-account" transactions-per-account)
     (fx/merge cofx
               (cond-> {}
                 (not historical?)
@@ -41,10 +42,10 @@
                 ;;NOTE only get transfers if the new block contains some
                 ;;     from/to one of the multiaccount accounts
                 (not-empty accounts)
-                (assoc :transactions/get-transfers-from-block
+                (assoc :transactions/get-transfers
                        {:chain-tokens chain-tokens
                         :addresses    accounts
-                        :block        block-number
+                        :before-block block-number
                         :historical?  historical?}))
               (transactions/check-watched-transactions))))
 
@@ -91,12 +92,12 @@
       :historical?  true}}))
 
 (fx/defn new-wallet-event
-  [cofx {:keys [type blockNumber accounts] :as event}]
+  [cofx {:keys [type blockNumber accounts newTransactions] :as event}]
   (log/debug "[wallet-subs] new-wallet-event"
              "event-type" type)
   (case type
-    "newblock" (new-block cofx false blockNumber accounts)
-    "history" (new-block cofx true blockNumber accounts)
+    "newblock" (new-block cofx false blockNumber accounts newTransactions)
+    "history" (new-block cofx true blockNumber accounts nil)
     "reorg" (reorg cofx event)
     "recent-history-fetching" (recent-history-fetching-started cofx accounts)
     "recent-history-ready" (recent-history-fetching-ended cofx event)
