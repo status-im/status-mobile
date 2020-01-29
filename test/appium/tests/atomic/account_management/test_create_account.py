@@ -21,7 +21,6 @@ class TestCreateAccount(SingleDeviceTestCase):
         profile.logout()
         if sign_in.ok_button.is_element_displayed():
             sign_in.ok_button.click()
-        sign_in.back_button.click()
         sign_in.your_keys_more_icon.click()
         sign_in.generate_new_key_button.click()
         sign_in.generate_key_button.click()

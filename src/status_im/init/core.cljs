@@ -32,18 +32,24 @@
               :view-id view-id)})
 
 (fx/defn initialize-views
-  [cofx]
+  [cofx {:keys [logout?]}]
   (let [{{:multiaccounts/keys [multiaccounts] :as db} :db} cofx]
-    (if (empty? multiaccounts)
+    (cond
+      (empty? multiaccounts)
       (navigation/navigate-to-cofx cofx :intro nil)
+
+      logout?
+      (navigation/navigate-to-cofx cofx :multiaccounts nil)
+
+      :else
       (let [{:keys [key-uid public-key photo-path name]} (first (#(sort-by :last-sign-in > %) (vals multiaccounts)))]
         (multiaccounts.login/open-login cofx key-uid photo-path name public-key)))))
 
 (fx/defn initialize-multiaccounts
   {:events [::initialize-multiaccounts]}
-  [{:keys [db] :as cofx} all-multiaccounts]
+  [{:keys [db] :as cofx} all-multiaccounts {:keys [logout?]}]
   (let [multiaccounts (reduce (fn [acc {:keys [key-uid keycard-pairing]
-                                        :as multiaccount}]
+                                        :as   multiaccount}]
                                 (-> (assoc acc key-uid multiaccount)
                                     (assoc-in [key-uid :keycard-pairing]
                                               (when-not (string/blank? keycard-pairing)
@@ -52,14 +58,14 @@
                               all-multiaccounts)]
     (fx/merge cofx
               {:db (assoc db :multiaccounts/multiaccounts multiaccounts)}
-              (initialize-views))))
+              (initialize-views {:logout? logout?}))))
 
 (fx/defn start-app [cofx]
   (fx/merge cofx
             {:get-supported-biometric-auth          nil
              ::init-keystore                        nil
              ::restore-native-settings              nil
-             ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts %])
+             ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts % {:logout? false}])
              :ui/listen-to-window-dimensions-change nil
              ::network/listen-to-network-info       nil
              :hardwallet/register-card-events       nil

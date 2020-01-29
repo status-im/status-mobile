@@ -10,12 +10,18 @@ class MultiAccountButton(BaseButton):
     class Username(BaseText):
         def __init__(self, driver, locator_value):
             super(MultiAccountButton.Username, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector(locator_value + '/preceding-sibling::*[1]')
+            self.locator = self.Locator.xpath_selector(locator_value + '/android.view.ViewGroup/android.widget.TextView[1]')
 
-    def __init__(self, driver, position):
+    def __init__(self, driver, position=1):
         super(MultiAccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("(//*[contains(@text,'0x')])[%s]" % position)
+        self.locator = self.Locator.xpath_selector("//*[@content-desc='select-account-button-%s']" % position)
         self.username = self.Username(driver, self.locator.value)
+
+
+class MultiAccountOnLoginButton(BaseButton):
+    def __init__(self, driver, position=1):
+        super(MultiAccountOnLoginButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("(//*[@content-desc='chat-icon'])[%s]/.." % position)
 
 
 class PasswordInput(BaseEditBox):
@@ -189,6 +195,8 @@ class SignInView(BaseView):
         self.maybe_later_button = MaybeLaterButton(self.driver)
         self.name_input = NameInput(self.driver)
         self.other_multiaccounts_button = OtherMultiAccountsButton(self.driver)
+        self.multiaccount_button = MultiAccountButton(self.driver)
+        self.multi_account_on_login_button = MultiAccountOnLoginButton(self.driver)
         self.privacy_policy_link = PrivacyPolicyLink(self.driver)
         self.lets_go_button = LetsGoButton(self.driver)
 
@@ -223,14 +231,12 @@ class SignInView(BaseView):
         return self.get_home_view()
 
     def sign_in(self, password=common_password):
-        self.accept_agreements()
+        self.multi_account_on_login_button.click()
         self.password_input.set_value(password)
-        self.confirm()
+        self.sign_in_button.click()
         return self.get_home_view()
 
     def get_account_by_position(self, position: int):
-        if self.ok_button.is_element_displayed():
-            self.ok_button.click()
         account_button = MultiAccountButton(self.driver, position)
         if account_button.is_element_displayed():
             return account_button
