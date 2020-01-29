@@ -113,7 +113,7 @@ class ChatElement(BaseButton):
                 # TODO: commented until accessibility-id will be added back
                 # locator_str = "//*[@content-desc='unread-messages-count-text']"
                 # self.locator = self.Locator.xpath_selector(parent_locator + locator_str)
-                locator_str = "/android.view.ViewGroup[3]//android.widget.TextView"
+                locator_str = "/android.view.ViewGroup[2]//android.widget.TextView"
                 self.locator = self.Locator.xpath_selector(parent_locator + locator_str)
 
 

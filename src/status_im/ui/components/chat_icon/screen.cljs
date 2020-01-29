@@ -36,20 +36,12 @@
      [react/view online-dot-left]
      [react/view online-dot-right]]]])
 
-(defn pending-contact-badge
-  [{:keys [pending-wrapper pending-outer-circle pending-inner-circle]}]
-  [react/view pending-wrapper
-   [react/view pending-outer-circle
-    [react/view pending-inner-circle]]])
-
 (defn chat-icon-view
-  [{:keys [photo-path added?] :as contact} group-chat name _online styles & [hide-dapp?]]
+  [contact group-chat name _online styles]
   [react/view (:container styles)
    (if-not group-chat
      [photos/photo (multiaccounts/displayed-photo contact) styles]
-     [default-chat-icon name styles])
-   (when (and contact (not added?))
-     [pending-contact-badge styles])])
+     [default-chat-icon name styles])])
 
 (defn chat-icon-view-toolbar
   [contact group-chat name color online]
@@ -59,30 +51,23 @@
     :online-view            styles/online-view
     :online-dot-left        styles/online-dot-left
     :online-dot-right       styles/online-dot-right
-    :pending-wrapper        styles/pending-wrapper
-    :pending-outer-circle   styles/pending-outer-circle
-    :pending-inner-circle   styles/pending-inner-circle
     :size                   36
     :chat-icon              styles/chat-icon-chat-toolbar
     :default-chat-icon      (styles/default-chat-icon-chat-toolbar color)
     :default-chat-icon-text styles/default-chat-icon-text}])
 
 (defn chat-icon-view-chat-list
-  [contact group-chat name color online & [hide-dapp?]]
+  [contact group-chat name color online]
   [chat-icon-view contact group-chat name online
    {:container              styles/container-chat-list
     :online-view-wrapper    styles/online-view-wrapper
     :online-view            styles/online-view
     :online-dot-left        styles/online-dot-left
     :online-dot-right       styles/online-dot-right
-    :pending-wrapper        styles/pending-wrapper
-    :pending-outer-circle   styles/pending-outer-circle
-    :pending-inner-circle   styles/pending-inner-circle
     :size                   40
     :chat-icon              styles/chat-icon-chat-list
     :default-chat-icon      (styles/default-chat-icon-chat-list color)
-    :default-chat-icon-text styles/default-chat-icon-text}
-   hide-dapp?])
+    :default-chat-icon-text styles/default-chat-icon-text}])
 
 (defn custom-icon-view-list
   [name color & [size]]
