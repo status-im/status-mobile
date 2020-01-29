@@ -808,7 +808,7 @@
                        :on-success
                        #(log/debug "added mailserver-topic successfully")
                        :on-failure
-                       #(log/error "failed to delete mailserver topic" %)})
+                       #(log/error "failed to add mailserver topic" %)})
                     mailserver-topics)}
              (process-next-messages-request))))))))
 
