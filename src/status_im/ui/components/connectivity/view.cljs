@@ -9,10 +9,18 @@
             [status-im.ui.components.animation :as animation]
             [status-im.utils.utils :as utils]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [taoensso.timbre :as log]))
 
 (def connectivity-bar-height 36)
 (def neg-connectivity-bar-height (- connectivity-bar-height))
+
+;; ui-connectivity-status delays
+(def standard-delay 1000)
+(def long-delay 5000)
+
+;; millisec window from foreground\login within which use long delay
+(def timewindow-for-long-delay 5000)
 
 (defn easing [direction n]
   {:toValue         n
@@ -175,50 +183,32 @@ all connectivity views (we have at least one view in home and one in chat)"
 (defn propagate-status
   "Smoothly propagate from :connectivity/status-properties subscription to
 :ui-status-properties db. UI components will render based on :ui-status-properties"
-  [{:keys [status-properties app-active-since ui-status-properties]}]
-  (let [;; enqueued or immediate?
-        ;; send immediately if we are transitioning to an offline state
-        enqueue?  (cond
-                    (and
-                     (or
-                      (nil? @enqueued-connectivity-status-properties)
-                      (:connected? @enqueued-connectivity-status-properties)
-                      (:connecting? @enqueued-connectivity-status-properties))
-                     (not
-                      (or (:connected? status-properties)
-                          (:connecting? status-properties))))
-                    false
+  [{:keys [status-properties app-active-since logged-in-since ui-status-properties]}]
+  (when (or (and (nil? @enqueued-connectivity-status-properties)
+                 (not= status-properties ui-status-properties))
+            (and (some? @enqueued-connectivity-status-properties)
+                 (not= status-properties @enqueued-connectivity-status-properties)))
+    ;; reset queued with new state and start a timer if not yet started
+    (reset! enqueued-connectivity-status-properties status-properties)
+    (when-not @timer
+      (reset! timer (utils/set-timeout #(do
+                                          (reset! timer nil)
+                                          (when @enqueued-connectivity-status-properties
+                                            (re-frame/dispatch [:set :connectivity/ui-status-properties @enqueued-connectivity-status-properties])
+                                            (reset! enqueued-connectivity-status-properties nil)))
 
-                    :else
-                    true)]
-    (if enqueue?
-      (when (or (and (nil? @enqueued-connectivity-status-properties)
-                     (not= status-properties ui-status-properties))
-                (and (some? @enqueued-connectivity-status-properties)
-                     (not= status-properties @enqueued-connectivity-status-properties)))
-        ;; reset queued with new state and start a timer if not yet started
-        (reset! enqueued-connectivity-status-properties status-properties)
-        (when-not @timer
-          (reset! timer (utils/set-timeout #(do
-                                              (reset! timer nil)
-                                              (when @enqueued-connectivity-status-properties
-                                                (re-frame/dispatch [:set :connectivity/ui-status-properties @enqueued-connectivity-status-properties])
-                                                (reset! enqueued-connectivity-status-properties nil)))
-
-                                           ;; if the app is in foreground for less than 5s, postpone state changes for 5s otherwise 1s
-                                           (if
-                                            (and app-active-since
-                                                 (< (- (datetime/timestamp) app-active-since)
-                                                    5000))
-                                             5000
-                                             1000)))))
-      (when (not= status-properties ui-status-properties)
-        ;; send immediately
-        (reset! enqueued-connectivity-status-properties nil)
-        (re-frame/dispatch [:set :connectivity/ui-status-properties status-properties])
-        (when @timer
-          (utils/clear-timeout @timer)
-          (reset! timer nil))))))
+                                       ;; timeout choice:
+                                       ;; if the app is in foreground or logged-in for less than <timeframe>,
+                                       ;;  postpone state changes for <long> otherwise <short>
+                                       (let [ts      (max
+                                                      (or logged-in-since 0)
+                                                      (or app-active-since 0))
+                                             ts-diff (- (datetime/timestamp) ts)
+                                             timeout (if (< ts-diff timewindow-for-long-delay)
+                                                       long-delay
+                                                       standard-delay)]
+                                         (log/debug "propagate-status set-timeout: " logged-in-since app-active-since ts-diff timeout)
+                                         timeout))))))
 
 (defn status-propagator-dummy-view
   "this empty view is needed to react propagate status-properties to ui-status-properties"
@@ -236,6 +226,7 @@ all connectivity views (we have at least one view in home and one in chat)"
 (defview connectivity-view [anim-translate-y]
   (letsubs [status-properties [:connectivity/status-properties]
             app-active-since  [:app-active-since]
+            logged-in-since [:logged-in-since]
             ui-status-properties  [:connectivity/ui-status-properties]
             status-hidden (reagent/atom true)
             view-id           [:view-id]
@@ -267,6 +258,7 @@ all connectivity views (we have at least one view in home and one in chat)"
         status-hidden]
        [status-propagator-dummy-view {:status-properties status-properties
                                       :app-active-since app-active-since
+                                      :logged-in-since logged-in-since
                                       :ui-status-properties ui-status-properties}]])))
 
 ;; "push?" determines whether "content" gets pushed down when disconnected

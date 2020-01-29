@@ -282,7 +282,7 @@
   (boolean (get-in cofx [:db :hardwallet :flow])))
 
 (fx/defn multiaccount-login-success
-  [{:keys [db] :as cofx}]
+  [{:keys [db now] :as cofx}]
   (let [{:keys [key-uid password save-password? creating?]} (:multiaccounts/login db)
         recovering? (get-in db [:intro-wizard :recovering?])
         login-only? (not (or creating?
@@ -294,12 +294,13 @@
                "recovering?" recovering?)
     (fx/merge cofx
               {:db (-> db
-                       (dissoc :multiaccounts/login)
+                       (dissoc :multiaccounts/login :connectivity/ui-status-properties)
                        (update :hardwallet dissoc
                                :on-card-read
                                :card-read-in-progress?
                                :pin
-                               :multiaccount))
+                               :multiaccount)
+                       (assoc :logged-in-since now))
                ::json-rpc/call
                [{:method "web3_clientVersion"
                  :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]}

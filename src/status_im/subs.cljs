@@ -99,6 +99,7 @@
 (reg-root-key-sub :supported-biometric-auth :supported-biometric-auth)
 (reg-root-key-sub :app-active-since :app-active-since)
 (reg-root-key-sub :connectivity/ui-status-properties :connectivity/ui-status-properties)
+(reg-root-key-sub :logged-in-since :logged-in-since)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network
@@ -1574,11 +1575,12 @@
                            disconnected?
                            :t/offline
 
-                           :else nil)]
+                           :else nil)
+         connected?       (and (nil? error-label) (not= :mobile-network error-label))]
      {:message            (or error-label :t/connected)
-      :connected?         (and (nil? error-label) (not= :mobile-network error-label))
+      :connected?         connected?
       :connecting?        (= error-label :t/connecting)
-      :loading-indicator? mailserver-fetching?
+      :loading-indicator? (and mailserver-fetching? connected?)
       :on-press-event       (cond
                               mailserver-connection-error?
                               :mailserver.ui/reconnect-mailserver-pressed
