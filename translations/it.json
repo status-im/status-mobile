@@ -397,7 +397,7 @@
     "ens-show-username": "Mostra il mio nome utente ENS nelle chat",
     "ens-terms-header": "Termini di registrazione del nome",
     "ens-terms-point-1": "I fondi vengono depositati per 1 anno. Il tuo SNT sarà bloccato, ma non speso.",
-    "ens-terms-point-10": "0x314159265dd8dbb310642f98f50c066173c1259b (Registro ENS).",
+    "ens-terms-point-10": "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e (Registro ENS).",
     "ens-terms-point-2": "Dopo 1 anno, puoi rilasciare il nome e riavere il tuo deposito oppure non agire per mantenerlo.",
     "ens-terms-point-3": "Se i termini del contratto cambiano - ad es. Status effettua aggiornamenti del contratto - l'utente ha il diritto di rilasciare il nome utente indipendentemente dal tempo trascorso.",
     "ens-terms-point-4": "Il controllore del contract non può accedere ai fondi depositati. Possono solo essere spostati indietro all'indirizzo che li ha inviati.",

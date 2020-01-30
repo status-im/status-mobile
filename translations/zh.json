@@ -391,7 +391,7 @@
     "ens-show-username": "在聊天中显示我的ENS用户名",
     "ens-terms-header": "名称注册条款",
     "ens-terms-point-1": "资金存入1年。您的 snt 将被锁定, 但不会被花费。",
-    "ens-terms-point-10": "0x314159265dd8dbb310642f98f50c066173c1259b（ENS注册表）。",
+    "ens-terms-point-10": "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e（ENS注册表）。",
     "ens-terms-point-2": "1 年后,您可以释放名称并赎回您的押金,或者不采取任何措施保留该名称。",
     "ens-terms-point-3": "如果合约条款发生变化(例如,Status升级合约),用户有权释放用户名,无论持有时间长短。",
     "ens-terms-point-4": "合约控制者无法访问您缴纳的押金。它们只能原路返回发送它们的钱包地址。",
