@@ -381,7 +381,7 @@
     "ens-show-username": "Show my ENS username in chats",
     "ens-terms-header": "Terms of name registration",
     "ens-terms-point-1": "Funds are deposited for 1 year. Your SNT will be locked, but not spent.",
-    "ens-terms-point-10": "0x314159265dd8dbb310642f98f50c066173c1259b (ENS Registry).",
+    "ens-terms-point-10": "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e (ENS Registry).",
     "ens-terms-point-2": "After 1 year, you can release the name and get your deposit back, or take no action to keep the name.",
     "ens-terms-point-3": "If terms of the contract change — e.g. Status makes contract upgrades — user has the right to release the username regardless of time held.",
     "ens-terms-point-4": "The contract controller cannot access your deposited funds. They can only be moved back to the address that sent them.",
