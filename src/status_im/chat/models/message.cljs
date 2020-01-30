@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.utils.config :as config]
             [status-im.chat.db :as chat.db]
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat-loading]
@@ -208,7 +209,9 @@
 (fx/defn resend-message
   [{:keys [db] :as cofx} chat-id message-id]
   (fx/merge cofx
-            {::json-rpc/call [{:method "shhext_reSendChatMessage"
+            {::json-rpc/call [{:method (if config/waku-enabled?
+                                         "wakuext_reSendChatMessage"
+                                         "shhext_reSendChatMessage")
                                :params [message-id]
                                :on-success #(log/debug "re-sent message successfully")
                                :on-error #(log/error "failed to re-send message" %)}]}

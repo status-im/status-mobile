@@ -87,13 +87,14 @@
 
 ;; We now wait for a confirmation from the mailserver before marking the message
 ;; as sent.
-
 (defn update-mailservers! [enodes]
-  (status/update-mailservers
-   (.stringify js/JSON (clj->js enodes))
-   (handlers/response-handler
-    #(log/debug "mailserver: update-mailservers success" %)
-    #(log/error "mailserver: update-mailservers error" %))))
+  (json-rpc/call
+   {:method (if config/waku-enabled?
+              "wakuext_updateMailservers"
+              "shhext_updateMailservers")
+    :params [enodes]
+    :on-success #(log/debug "mailserver: update-mailservers success" %)
+    :on-error #(log/error "mailserver: update-mailservers error" %)}))
 
 (defn remove-peer! [enode]
   (let [args    {:jsonrpc "2.0"
@@ -147,7 +148,9 @@
 
 (defn mark-trusted-peer! [enode]
   (json-rpc/call
-   {:method "shh_markTrustedPeer"
+   {:method  (if config/waku-enabled?
+               "waku_markTrustedPeer"
+               "shh_markTrustedPeer")
     :params [enode]
     :on-success
     #(re-frame/dispatch [:mailserver.callback/mark-trusted-peer-success %])
@@ -360,7 +363,9 @@
               " cursor " cursor
               " limit " actual-limit)
     (json-rpc/call
-     {:method "shhext_requestMessages"
+     {:method (if config/waku-enabled?
+                "wakuext_requestMessages"
+                "shhext_requestMessages")
       :params [(cond-> {:topics         topics
                         :mailServerPeer address
                         :symKeyID       sym-key-id

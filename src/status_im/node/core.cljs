@@ -122,9 +122,10 @@
              :PermissionsConfig {:Enabled true}
              :MailserversConfig {:Enabled true}
              :EnableNTPSync true
-             :WhisperConfig {:Enabled true
-                             :LightClient true
-                             :MinimumPoW 0.001}
+             (if config/waku-enabled? :WakuConfig :WhisperConfig)
+             {:Enabled true
+              :LightClient true
+              :MinimumPoW 0.001}
              :ShhextConfig
              {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
               :InstallationID             installation-id

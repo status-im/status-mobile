@@ -2,6 +2,7 @@
   (:require
    [re-frame.core :as re-frame]
    [status-im.ethereum.core :as ethereum]
+   [status-im.utils.config :as config]
    [status-im.ethereum.json-rpc :as json-rpc]
    [status-im.utils.fx :as fx]))
 
@@ -23,20 +24,26 @@
   {:events [::accept-request-address-for-transaction]}
   [{:keys [db]} message-id address]
   {:db (dissoc db :commands/select-account)
-   ::json-rpc/call [{:method "shhext_acceptRequestAddressForTransaction"
+   ::json-rpc/call [{:method (if config/waku-enabled?
+                               "wakuext_acceptRequestAddressForTransaction"
+                               "shhext_acceptRequestAddressForTransaction")
                      :params [message-id address]
                      :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})
 
 (fx/defn handle-decline-request-address-for-transaction
   {:events [::decline-request-address-for-transaction]}
   [cofx message-id]
-  {::json-rpc/call [{:method "shhext_declineRequestAddressForTransaction"
+  {::json-rpc/call [{:method (if config/waku-enabled?
+                               "wakuext_declineRequestAddressForTransaction"
+                               "shhext_declineRequestAddressForTransaction")
                      :params [message-id]
                      :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})
 
 (fx/defn handle-decline-request-transaction
   {:events [::decline-request-transaction]}
   [cofx message-id]
-  {::json-rpc/call [{:method "shhext_declineRequestTransaction"
+  {::json-rpc/call [{:method (if config/waku-enabled?
+                               "wakuext_declineRequestTransaction"
+                               "shhext_declineRequestTransaction")
                      :params [message-id]
                      :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})

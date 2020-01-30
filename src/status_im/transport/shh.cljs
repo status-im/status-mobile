@@ -3,19 +3,24 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.transport.utils :as transport.utils]
+            [status-im.utils.config :as config]
             [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]))
 
 (defn generate-sym-key-from-password
   [{:keys [password on-success on-error]}]
-  (json-rpc/call {:method "shh_generateSymKeyFromPassword"
+  (json-rpc/call {:method (if config/waku-enabled?
+                            "waku_generateSymKeyFromPassword"
+                            "shh_generateSymKeyFromPassword")
                   :params [password]
                   :on-success on-success
                   :on-error on-error}))
 
 (defn get-sym-key
   [{:keys [sym-key-id on-success on-error]}]
-  (json-rpc/call {:method "shh_getSymKey"
+  (json-rpc/call {:method (if config/waku-enabled?
+                            "waku_getSymKey"
+                            "shh_getSymKey")
                   :params [sym-key-id]
                   :on-success on-success
                   :on-error on-error}))

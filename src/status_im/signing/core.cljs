@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
+            [status-im.utils.config :as config]
             [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.core :as ethereum]
@@ -211,7 +212,9 @@
 (fx/defn send-transaction-message
   {:events [::send-transaction-message]}
   [cofx chat-id value contract transaction-hash signature]
-  {::json-rpc/call [{:method "shhext_sendTransaction"
+  {::json-rpc/call [{:method (if config/waku-enabled?
+                               "wakuext_sendTransaction"
+                               "shhext_sendTransaction")
                      :params [chat-id value contract transaction-hash
                               (:result (types/json->clj signature))]
                      :on-success
@@ -220,7 +223,9 @@
 (fx/defn send-accept-request-transaction-message
   {:events [::send-accept-transaction-message]}
   [cofx message-id transaction-hash signature]
-  {::json-rpc/call [{:method "shhext_acceptRequestTransaction"
+  {::json-rpc/call [{:method (if config/waku-enabled?
+                               "wakuext_acceptRequestTransaction"
+                               "shhext_acceptRequestTransaction")
                      :params [transaction-hash message-id
                               (:result (types/json->clj signature))]
                      :on-success

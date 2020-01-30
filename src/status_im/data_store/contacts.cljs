@@ -1,6 +1,7 @@
 (ns status-im.data-store.contacts
   (:require [re-frame.core :as re-frame]
             [status-im.utils.fx :as fx]
+            [status-im.utils.config :as config]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.ethereum.json-rpc :as json-rpc]
             [taoensso.timbre :as log]
@@ -45,20 +46,26 @@
 
 (fx/defn fetch-contacts-rpc
   [cofx on-success]
-  {::json-rpc/call [{:method "shhext_contacts"
+  {::json-rpc/call [{:method (if config/waku-enabled?
+                               "wakuext_contacts"
+                               "shhext_contacts")
                      :params []
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch contacts" %)}]})
 
 (fx/defn save-contact
   [cofx {:keys [public-key] :as contact}]
-  {::json-rpc/call [{:method "shhext_saveContact"
+  {::json-rpc/call [{:method (if config/waku-enabled?
+                               "wakuext_saveContact"
+                               "shhext_saveContact")
                      :params [(->rpc contact)]
                      :on-success #(log/debug "saved contact" public-key "successfuly")
                      :on-failure #(log/error "failed to save contact" public-key %)}]})
 
 (fx/defn block [cofx contact on-success]
-  {::json-rpc/call [{:method "shhext_blockContact"
+  {::json-rpc/call [{:method (if config/waku-enabled?
+                               "wakuext_blockContact"
+                               "shhext_blockContact")
                      :params [(->rpc contact)]
                      :on-success on-success
                      :on-failure #(log/error "failed to block contact" % contact)}]})

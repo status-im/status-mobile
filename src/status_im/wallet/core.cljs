@@ -422,7 +422,9 @@
                                             [to-norm amount-hex])})}))
       {:db db
        ::json-rpc/call
-       [{:method "shhext_requestAddressForTransaction"
+       [{:method (if config/waku-enabled?
+                   "wakuext_requestAddressForTransaction"
+                   "shhext_requestAddressForTransaction")
          :params [(:current-chat-id db)
                   from-address
                   amount
@@ -441,7 +443,9 @@
               {:db (-> db
                        (update-in [:chat-ui-props identity] dissoc :input-bottom-sheet)
                        (dissoc db :wallet/prepare-transaction))
-               ::json-rpc/call [{:method "shhext_requestTransaction"
+               ::json-rpc/call [{:method (if config/waku-enabled?
+                                           "wakuext_requestTransaction"
+                                           "shhext_requestTransaction")
                                  :params [(:public-key to)
                                           amount
                                           (when-not (= symbol :ETH)

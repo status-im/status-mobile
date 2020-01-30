@@ -40,7 +40,9 @@
   initializiation is completed, otherwise we might receive messages/topics
   when the state has not been properly initialized."
   [cofx]
-  {::json-rpc/call [{:method "shhext_startMessenger"
+  {::json-rpc/call [{:method (if config/waku-enabled?
+                               "wakuext_startMessenger"
+                               "shhext_startMessenger")
                      :on-success #(do
                                     (log/debug "messenger initialized")
                                     (re-frame/dispatch [::init-whisper]))

@@ -27,10 +27,13 @@
    "eth_syncing" {}
    "net_version" {}
    "web3_clientVersion" {}
-   "shhext_post" {}
    "shh_generateSymKeyFromPassword" {}
    "shh_getSymKey" {}
    "shh_markTrustedPeer" {}
+   "waku_generateSymKeyFromPassword" {}
+   "waku_getSymKey" {}
+   "waku_markTrustedPeer" {}
+   "shhext_post" {}
    "shhext_startMessenger" {}
    "shhext_sendPairInstallation" {}
    "shhext_syncDevices" {}
@@ -68,6 +71,7 @@
    "shhext_contacts" {}
    "shhext_prepareContent" {}
    "shhext_blockContact" {}
+   "shhext_updateMailservers" {}
    ;;TODO not used anywhere?
    "shhext_deleteChat" {}
    "shhext_saveContact" {}
@@ -79,6 +83,56 @@
    "shhext_declineRequestTransaction" {}
    "shhext_sendTransaction" {}
    "shhext_acceptRequestTransaction" {}
+   "wakuext_post" {}
+   "wakuext_startMessenger" {}
+   "wakuext_sendPairInstallation" {}
+   "wakuext_syncDevices" {}
+   "wakuext_requestMessages" {}
+   "wakuext_sendDirectMessage" {}
+   "wakuext_sendPublicMessage" {}
+   "wakuext_enableInstallation" {}
+   "wakuext_disableInstallation" {}
+   "wakuext_sendChatMessage" {}
+   "wakuext_confirmJoiningGroup" {}
+   "wakuext_addAdminsToGroupChat" {}
+   "wakuext_addMembersToGroupChat" {}
+   "wakuext_removeMemberFromGroupChat" {}
+   "wakuext_leaveGroupChat" {}
+   "wakuext_changeGroupChatName" {}
+   "wakuext_createGroupChatWithMembers" {}
+   "wakuext_reSendChatMessage" {}
+   "wakuext_getOurInstallations" {}
+   "wakuext_setInstallationMetadata" {}
+   "wakuext_loadFilters" {}
+   "wakuext_loadFilter" {}
+   "wakuext_removeFilters" {}
+   "wakuext_sendContactUpdate" {}
+   "wakuext_sendContactUpdates" {}
+   "wakuext_chats" {}
+   "wakuext_addSystemMessages" {}
+   "wakuext_deleteMessagesFrom" {}
+   "wakuext_deleteMessagesByChatID" {}
+   "wakuext_deleteMessage" {}
+   "wakuext_markMessagesSeen" {}
+   "wakuext_confirmMessagesProcessedByID" {}
+   "wakuext_updateMessageOutgoingStatus" {}
+   "wakuext_chatMessages" {}
+   "wakuext_saveChat" {}
+   "wakuext_contacts" {}
+   "wakuext_prepareContent" {}
+   "wakuext_blockContact" {}
+   "wakuext_updateMailservers" {}
+   ;;TODO not used anywhere?
+   "wakuext_deleteChat" {}
+   "wakuext_saveContact" {}
+   "wakuext_verifyENSNames" {}
+   "wakuext_requestAddressForTransaction" {}
+   "wakuext_requestTransaction" {}
+   "wakuext_acceptRequestAddressForTransaction" {}
+   "wakuext_declineRequestAddressForTransaction" {}
+   "wakuext_declineRequestTransaction" {}
+   "wakuext_sendTransaction" {}
+   "wakuext_acceptRequestTransaction" {}
    "status_chats" {}
    "wallet_getTransfers" {}
    "wallet_getTokensBalances" {}

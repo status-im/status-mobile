@@ -2,6 +2,7 @@
  status-im.transport.message.protocol
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
@@ -13,7 +14,9 @@
                                       sticker
                                       content-type]
                                :as message}]
-  {::json-rpc/call [{:method "shhext_sendChatMessage"
+  {::json-rpc/call [{:method (if config/waku-enabled?
+                               "wakuext_sendChatMessage"
+                               "shhext_sendChatMessage")
                      :params [{:chatId chat-id
                                :text text
                                :responseTo response-to

@@ -196,16 +196,6 @@ RCT_EXPORT_METHOD(addPeer:(NSString *)enode
 #endif
 }
 
-//////////////////////////////////////////////////////////////////// updateMailservers
-RCT_EXPORT_METHOD(updateMailservers:(NSString *)enodes
-                  callback:(RCTResponseSenderBlock)callback) {
-  NSString* result = StatusgoUpdateMailservers(enodes);
-  callback(@[result]);
-#if DEBUG
-  NSLog(@"UpdateMailservers() method called");
-#endif
-}
-
 //////////////////////////////////////////////////////////////////// getNodesFromContract
 RCT_EXPORT_METHOD(getNodesFromContract:(NSString *)url
                                address:(NSString *) address

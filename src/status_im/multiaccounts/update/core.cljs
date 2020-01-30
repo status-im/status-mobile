@@ -1,5 +1,6 @@
 (ns status-im.multiaccounts.update.core
   (:require [status-im.contact.db :as contact.db]
+            [status-im.utils.config :as config]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.transport.message.protocol :as protocol]
             [status-im.utils.fx :as fx]
@@ -9,7 +10,9 @@
 (fx/defn send-multiaccount-update [{:keys [db]}]
   (let [multiaccount (:multiaccount db)
         {:keys [name preferred-name photo-path address]} multiaccount]
-    {::json-rpc/call [{:method "shhext_sendContactUpdates"
+    {::json-rpc/call [{:method (if config/waku-enabled?
+                                 "wakuext_sendContactUpdates"
+                                 "shhext_sendContactUpdates")
                        :params [(or preferred-name name) photo-path]
                        :on-success #(log/debug "sent contact update")}]}))
 

@@ -6,6 +6,7 @@
             [status-im.utils.datetime :as datetime]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.utils.config :as config]
             [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
@@ -292,7 +293,9 @@
             (navigation/navigate-to-cofx :ens-search {})))
 
 (defn verify-names [names]
-  (json-rpc/call {:method "shhext_verifyENSNames"
+  (json-rpc/call {:method (if config/waku-enabled?
+                            "wakuext_verifyENSNames"
+                            "shhext_verifyENSNames")
                   :params [names]
                   :on-success #(re-frame/dispatch [:contacts/ens-names-verified %])
                   :on-failure #(log/error "failed to resolve ens names" % names)}))
