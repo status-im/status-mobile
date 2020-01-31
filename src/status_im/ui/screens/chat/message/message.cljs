@@ -521,8 +521,17 @@
     [message-delivery-status message]]])
 
 (defn open-chat-context-menu
-  [{:keys [message-id content] :as message}]
-  (list-selection/chat-message message-id (:text content) (i18n/label :t/message)))
+  [{:keys [message-id content from outgoing]}]
+  (list-selection/chat-message message-id (:text content) from outgoing (i18n/label :t/message)))
+
+(defn open-sticker-context-menu
+  [{:keys [from outgoing]}]
+  (when (and from (not outgoing))
+    (list-selection/show
+     {:title       (i18n/label :t/message)
+      :options     [{:label  (i18n/label :t/view-profile)
+                     :action #(re-frame/dispatch [:chat.ui/show-profile from])}]
+      :cancel-text (i18n/label :t/message-options-cancel)})))
 
 (defn chat-message
   [{:keys [outgoing group-chat modal? current-public-key content-type content] :as message}]
@@ -539,9 +548,12 @@
                                                                             :input-bottom-sheet nil}])
                             (when-not platform/desktop?
                               (react/dismiss-keyboard!)))))
-       :on-long-press #(when (or (= content-type constants/content-type-text)
+       :on-long-press #(cond (or (= content-type constants/content-type-text)
                                  (= content-type constants/content-type-emoji))
-                         (open-chat-context-menu message))}
+                             (open-chat-context-menu message)
+
+                             (= content-type constants/content-type-sticker)
+                             (open-sticker-context-menu message))}
       [react/view {:accessibility-label :chat-item}
        (let [incoming-group (and group-chat (not outgoing))]
          [message-content message-body (merge message
