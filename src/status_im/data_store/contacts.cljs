@@ -24,6 +24,8 @@
                                 :tributeToTalk :tribute-to-talk
                                 :ensVerifiedAt :ens-verified-at
                                 :ensVerified :ens-verified
+                                :ensVerificationRetries :ens-verification-retries
+                                :lastENSClockValue :last-ens-clock-value
                                 :systemTags :system-tags
                                 :lastUpdated :last-updated})))
 
@@ -34,6 +36,8 @@
       (clojure.set/rename-keys {:public-key :id
                                 :ens-verified :ensVerified
                                 :ens-verified-at :ensVerifiedAt
+                                :last-ens-clock-value :lastENSClockValue
+                                :ens-verification-retries :ensVerificationRetries
                                 :photo-path :photoPath
                                 :tribute-to-talk :tributeToTalk
                                 :system-tags :systemTags

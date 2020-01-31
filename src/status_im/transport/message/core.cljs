@@ -36,9 +36,7 @@
   (models.contact/ensure-contact cofx contact))
 
 (fx/defn handle-message [cofx message]
-  (fx/merge cofx
-            (models.message/receive-one message)
-            (ens/verify-names-from-message message (:from message))))
+  (models.message/receive-one cofx message))
 
 (fx/defn process-response [cofx response-js]
   (let [chats (.-chats response-js)

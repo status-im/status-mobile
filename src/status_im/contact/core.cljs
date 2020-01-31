@@ -178,39 +178,15 @@
      :insert-gfycats    [[public-key [:contacts/contacts public-key :name]]
                          [public-key [:contacts/contacts public-key :alias]]]}))
 
-(defn add-ens-names [contacts names]
-  (reduce-kv (fn [acc public-key-keyword result]
-               (let [verified   (:verified result)
-                     error      (:error result)
-                     ens-name   (:name result)
-                     ens-verified-at (:verifiedAt result)
-                     public-key (str "0x" (name public-key-keyword))
-                     contact    (contact.db/public-key->contact contacts public-key)]
-
-                 (if error
-                   (assoc acc public-key contact)
-                   (assoc acc public-key
-                          (assoc contact
-                                 ;; setting the name for now as ens-verification is not enabled because of geth 1.9 upgrade
-                                 :name ens-name
-                                 :ens-verified-at ens-verified-at
-                                 :ens-verified verified)))))
-             (or contacts {})
-             names))
-
-(fx/defn names-verified
-  {:events [:contacts/ens-names-verified]}
-  [{:keys [db]} names]
-  {:db (update db :contacts/contacts add-ens-names names)})
-
 (fx/defn name-verified
   {:events [:contacts/ens-name-verified]}
-  [{:keys [db] :as cofx} public-key ens-name]
+  [{:keys [db now] :as cofx} public-key ens-name]
   (fx/merge cofx
             {:db (update-in db [:contacts/contacts public-key]
                             merge
                             {:name            ens-name
-                             :ens-verified-at (quot (time/timestamp) 1000)
+                             :last-ens-clock-value now
+                             :ens-verified-at now
                              :ens-verified    true})}
 
             (upsert-contact {:public-key public-key})))
