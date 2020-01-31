@@ -478,7 +478,7 @@
            content message-type] :as message}]
   (when (not= constants/message-type-private-group-system-message message-type)
     (case outgoing-status
-      :sending  [message-activity-indicator]
+      ;:sending  [message-activity-indicator] ;; TODO temporary for v1 because we have a few issues with the spinner
       :not-sent [message-not-sent-text chat-id message-id]
       :sent     (when first-outgoing?
                   [react/view style/delivery-view
