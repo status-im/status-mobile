@@ -183,3 +183,5 @@ status-modules/resources
 /fiddle/node_modules/
 /fiddle/target/
 /fiddle/resources/public/images/
+
+trace.edn
