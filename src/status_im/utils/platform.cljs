@@ -33,9 +33,8 @@
 
 (defn no-backup-directory []
   (cond
-    android? (str (.-DocumentDirectoryPath rn-dependencies/fs)
-                  "/../no_backup")
-    ios?          (.-LibraryDirectoryPath rn-dependencies/fs)))
+    android? "/../no_backup"
+    ios?     "/"))
 
 (defn android-version>= [v]
   (and android? (>= version v)))
