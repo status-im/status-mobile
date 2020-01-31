@@ -100,30 +100,3 @@
     (testing "the message is coming from us"
       (testing "it does not update contacts"
         (is (nil? (model/handle-contact-update {:db {:multiaccount {:public-key "me"}}} "me" 1 {})))))))
-
-(deftest add-ens-names-test
-  (with-redefs [gfycat/generate-gfy (constantly "generated")
-                identicon/identicon (constantly "generated")]
-    (testing "adding ens names"
-      (let [pk1 "048e57d37615380705cedf2eacc3543e7597eaed38c0bd0ff5b8c759406c657a29b4d6f4018ae323479dafa6bf1c821a422f2478a6759689afbca5e48fba720332"
-            pk2 "04318d20a2ca5fd0022579005ed24802e07d4ec610bede808dd13d3318af439e16d55be1a59af007a11120bd1c205861e5f53fe7b000a25e2b0d4eee7f0c5ebf7e"
-            expected {(str "0x" pk1) {:alias "generated"
-                                      :identicon "generated"
-                                      :name "name-1"
-                                      :ens-verified true
-                                      :ens-verified-at 1
-                                      :public-key (str "0x" pk1)
-                                      :system-tags #{}}
-                      (str "0x" pk2) {:alias "generated"
-                                      :name  "name-2"
-                                      :identicon "generated"
-                                      :ens-verified false
-                                      :ens-verified-at 2
-                                      :public-key (str "0x" pk2)
-                                      :system-tags #{}}}]
-        (is (= expected (model/add-ens-names {} {pk1 {:verified true
-                                                      :name "name-1"
-                                                      :verifiedAt 1}
-                                                 pk2 {:verified false
-                                                      :name "name-2"
-                                                      :verifiedAt 2}})))))))

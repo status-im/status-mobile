@@ -131,6 +131,7 @@
               :MailServerConfirmations  config/mailserver-confirmations-enabled?
               :VerifyTransactionURL "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"
               :VerifyENSURL "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"
+              :VerifyENSContractAddress "0x314159265dd8dbb310642f98f50c066173c1259b"
               :VerifyTransactionChainID 1
               :DataSyncEnabled true
               :PFSEnabled true}
