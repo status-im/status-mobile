@@ -505,47 +505,26 @@
                                         [to-norm amount-hex])})})))))
 
 (fx/defn sign-transaction-button-clicked
-  {:events  [:wallet.ui/sign-transaction-button-clicked]}
+  {:events [:wallet.ui/sign-transaction-button-clicked]}
   [{:keys [db] :as cofx} {:keys [to amount from token gas gasPrice]}]
   (let [{:keys [symbol address]} token
-        amount-hex (str "0x" (abi-spec/number-to-hex amount))
-        to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))
-        from-address (:address from)]
-    (fx/merge cofx
-              {:db (dissoc db :wallet/prepare-transaction)}
-              (fn [cofx]
-                (signing/sign cofx {:tx-obj (if (= symbol :ETH)
-                                              {:to    to-norm
-                                               :from  from-address
-                                               :value amount-hex}
-                                              {:to       (ethereum/normalized-hex address)
-                                               :from     from-address
-                                               :data     (abi-spec/encode
-                                                          "transfer(address,uint256)"
-                                                          [to-norm amount-hex])
-                                               ;;Note: data from qr (eip681)
-                                               :gas      gas
-                                               :gasPrice gasPrice})})))))
-
-(fx/defn sign-transaction-button-clicked-from-command
-  {:events  [:wallet.ui/sign-transaction-button-clicked]}
-  [{:keys [db] :as cofx} {:keys [to amount from token gas gasPrice]}]
-  (let [{:keys [symbol address]} token
-        amount-hex (str "0x" (abi-spec/number-to-hex amount))
-        to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))
+        amount-hex   (str "0x" (abi-spec/number-to-hex amount))
+        to-norm      (ethereum/normalized-hex (if (string? to) to (:address to)))
         from-address (:address from)]
     (fx/merge cofx
               {:db (dissoc db :wallet/prepare-transaction)}
               (signing/sign
-               {:tx-obj (merge {:from  from-address}
+               {:tx-obj (merge {:from     from-address
+                                ;;gas and gasPrice from qr (eip681)
+                                :gas      gas
+                                :gasPrice gasPrice}
                                (if (= symbol :ETH)
                                  {:to    to-norm
                                   :value amount-hex}
-                                 {:to       (ethereum/normalized-hex address)
-                                  :from     from-address
-                                  :data     (abi-spec/encode
-                                             "transfer(address,uint256)"
-                                             [to-norm amount-hex])}))}))))
+                                 {:to   (ethereum/normalized-hex address)
+                                  :data (abi-spec/encode
+                                         "transfer(address,uint256)"
+                                         [to-norm amount-hex])}))}))))
 
 (fx/defn set-and-validate-amount-request
   {:events [:wallet.request/set-and-validate-amount]}
