@@ -54,7 +54,7 @@
 (handlers/register-handler-fx
  :load-kitties
  (fn [{db :db} [_ ids]]
-   {:db db
+   {:db (update-in db [:collectibles] merge {ck (sorted-map-by >)})
     :http-get-n (mapv (fn [id]
                         {:url (str "https://api.cryptokitties.co/kitties/" id)
                          :success-event-creator (fn [o]
@@ -63,18 +63,19 @@
                                                   [:load-collectible-failure ck {id (http/parse-payload o)}])})
                       ids)}))
 
-;; TODO(andrey) Each HTTP call will return up to 100 kitties. Maybe we need to implement some kind of paging later
 (defmethod load-collectibles-fx ck [_ _ items-number address _]
-  {:http-get {:url                   (str "https://api.cryptokitties.co/kitties?offset=0&limit="
-                                          items-number
-                                          "&owner_wallet_address="
-                                          address
-                                          "&parents=false")
-              :success-event-creator (fn [o]
-                                       [:load-kitties (map :id (:kitties (http/parse-payload o)))])
-              :failure-event-creator (fn [o]
-                                       [:load-collectibles-failure (http/parse-payload o)])
-              :timeout-ms            10000}})
+  {:http-get-n (mapv (fn [offset]
+                       {:url (str "https://api.cryptokitties.co/kitties?limit=20&offset="
+                                  offset
+                                  "&owner_wallet_address="
+                                  address
+                                  "&parents=false")
+                        :success-event-creator (fn [o]
+                                                 [:load-kitties (map :id (:kitties (http/parse-payload o)))])
+                        :failure-event-creator (fn [o]
+                                                 [:load-collectibles-failure (http/parse-payload o)])
+                        :timeout-ms            10000})
+                     (range 0 items-number 20))}) ;; Cryptokitties API limited to 20 items per request
 
 ;; Crypto Strikers
 (def strikers :STRK)
