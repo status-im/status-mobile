@@ -7,9 +7,10 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.view :as toolbar-old]
             [status-im.ui.screens.wallet.transactions.styles :as styles]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.toolbar :as toolbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- transaction-icon
@@ -124,19 +125,12 @@
                    :margin-vertical 8}}
           [react/activity-indicator {:size :large
                                      :animating true}]]
-         [react/view
-          {:style {:flex               1
-                   :padding-horizontal 14
-                   :height             52
-                   :align-items        :center
-                   :justify-content    :center
-                   :background-color   colors/blue-light}}
-          [react/text
-           {:style {:color colors/blue}
-            :on-press (when-not fetching-more-history?
-                        #(re-frame/dispatch
-                          [:transactions/fetch-more address]))}
-           (i18n/label :t/transactions-load-more)]]))]))
+         [toolbar/toolbar
+          {:center {:label    (i18n/label :t/transactions-load-more)
+                    :type     :secondary
+                    :on-press (when-not fetching-more-history?
+                                #(re-frame/dispatch
+                                  [:transactions/fetch-more address]))}}]))]))
 
 (defn- render-item-filter [{:keys [id label checked? on-touch]}]
   [react/view {:accessibility-label :filter-item}
@@ -256,10 +250,10 @@
             [:wallet.transactions.details/screen hash address]]
     [react/view {:style components.styles/flex}
      ;;TODO options should be replaced by bottom sheet ,and topbar should be used here
-     [toolbar/toolbar {}
-      toolbar/default-nav-back
-      [toolbar/content-title (i18n/label :t/transaction-details)]
-      (when transaction [toolbar/actions (details-action hash url)])]
+     [toolbar-old/toolbar {}
+      toolbar-old/default-nav-back
+      [toolbar-old/content-title (i18n/label :t/transaction-details)]
+      (when transaction [toolbar-old/actions (details-action hash url)])]
      [react/scroll-view {:style components.styles/main-container}
       [details-header date type amount-text currency-text]
       [details-confirmations confirmations confirmations-progress (= :failed type)]
