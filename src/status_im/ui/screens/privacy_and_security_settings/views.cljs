@@ -29,18 +29,18 @@
     (when mnemonic
       [[components.common/counter {:size 22} 1]
        :chevron])}
-   {:type                    :small
-    :title                   (str (i18n/label :t/lock-app-with) " " (biometric/get-label supported-biometric-auth))
-    :container-margin-bottom 8
-    :accessibility-label     :biometric-auth-settings-switch
-    :disabled?               (not (some? supported-biometric-auth))
-    :accessories             [[react/switch
-                               {:track-color     #js {:true colors/blue :false nil}
-                                :value           (boolean biometric-auth?)
-                                :on-value-change #(re-frame/dispatch [:multiaccounts.ui/biometric-auth-switched %])
-                                :disabled        (not supported-biometric-auth)}]]
-    :on-press                #(re-frame/dispatch [:multiaccounts.ui/biometric-auth-switched
-                                                  ((complement boolean) biometric-auth?)])}
+   (when supported-biometric-auth
+     {:type                    :small
+      :title                   (str (i18n/label :t/lock-app-with) " " (biometric/get-label supported-biometric-auth))
+      :container-margin-bottom 8
+      :accessibility-label     :biometric-auth-settings-switch
+      :accessories             [[react/switch
+                                 {:track-color     #js {:true colors/blue :false nil}
+                                  :value           (boolean biometric-auth?)
+                                  :on-value-change #(re-frame/dispatch [:multiaccounts.ui/biometric-auth-switched %])
+                                  :disabled        (not supported-biometric-auth)}]]
+      :on-press                #(re-frame/dispatch [:multiaccounts.ui/biometric-auth-switched
+                                                    ((complement boolean) biometric-auth?)])})
    ;; TODO - uncomment when implemented
    ;; {:type        :small
    ;;  :title       :t/change-password

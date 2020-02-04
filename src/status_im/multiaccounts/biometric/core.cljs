@@ -101,7 +101,13 @@
 (re-frame/reg-fx
  :get-supported-biometric-auth
  (fn []
-   (get-supported #(re-frame/dispatch [:init.callback/get-supported-biometric-auth-success %]))))
+   (let [callback #(re-frame/dispatch [:init.callback/get-supported-biometric-auth-success %])]
+     ;;NOTE: if we can't save user password, we can't support biometrics
+     (keychain/can-save-user-password?
+      (fn [can-save?]
+        (if can-save?
+          (get-supported callback)
+          (callback nil)))))))
 
 (fx/defn set-supported-biometric-auth
   {:events [:init.callback/get-supported-biometric-auth-success]}
