@@ -64,6 +64,7 @@
      :method "balanceOf(address)"
      :params [address]
      :outputs ["uint256"]
+     :number-of-retries 3
      :on-success
      (fn [[count]]
        (dotimes [id count]
@@ -73,6 +74,7 @@
            :method "tokenOfOwnerByIndex(address,uint256)"
            :params [address id]
            :outputs ["uint256"]
+           :number-of-retries 3
            :on-success
            (fn [[token-id]]
              (json-rpc/eth-call
@@ -81,6 +83,7 @@
                :method "tokenPackId(uint256)"
                :params [token-id]
                :outputs ["uint256"]
+               :number-of-retries 3
                :on-success
                (fn [[pack-id]]
                  (re-frame/dispatch [:stickers/pack-owned pack-id]))}))})))})))
@@ -127,11 +130,14 @@
   (when (and id (string/starts-with? current-network "mainnet"))
     (let [pack    (or (get packs-installed id)
                       (get packs id))
-          contract-address (contracts/get-address db :status/stickers)]
+          contract-address (contracts/get-address db :status/stickers)
+          pack-contract (contracts/get-address db :status/sticker-pack)
+          address  (ethereum/default-address db)]
       (fx/merge cofx
                 (navigation/navigate-to-cofx :stickers-pack-modal {:id id})
                 #(when (and contract-address (not pack))
-                   {:stickers/pack-data-fx [contract-address id]})))))
+                   {:stickers/pack-data-fx [contract-address id]
+                    :stickers/owned-packs-fx [pack-contract address]})))))
 
 (fx/defn load-pack
   [cofx url id price]
@@ -197,10 +203,3 @@
 
 (fx/defn pack-owned [{db :db} id]
   {:db (update db :stickers/packs-owned conj id)})
-
-(fx/defn get-owned-pack
-  [{:keys [db]}]
-  (let [contract (contracts/get-address db :status/sticker-pack)
-        address  (ethereum/default-address db)]
-    (when contract
-      {:stickers/owned-packs-fx [contract address]})))

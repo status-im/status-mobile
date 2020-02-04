@@ -28,21 +28,13 @@
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
 
 (defn get-balance
-  [{:keys [address on-success on-error number-of-retries]
-    :as params
-    :or {number-of-retries 4}}]
-  (log/debug "[wallet] get-balance"
-             "address" address
-             "number-of-retries" number-of-retries)
+  [{:keys [address on-success on-error]}]
   (json-rpc/call
-   {:method     "eth_getBalance"
-    :params     [address "latest"]
-    :on-success on-success
-    :on-error   (fn [error]
-                  (if (pos? number-of-retries)
-                    (get-balance
-                     (update params :number-of-retries dec))
-                    (on-error error)))}))
+   {:method            "eth_getBalance"
+    :params            [address "latest"]
+    :on-success        on-success
+    :number-of-retries 4
+    :on-error          on-error}))
 
 (re-frame/reg-fx
  :wallet/get-balances
@@ -183,15 +175,11 @@
       balances)))
 
 (defn get-token-balances
-  [{:keys [addresses tokens init? assets number-of-retries]
-    :as params
-    :or {number-of-retries 4}}]
-  (log/debug "[wallet] get-token-balances"
-             "addresses" addresses
-             "number-of-retries" number-of-retries)
+  [{:keys [addresses tokens init? assets]}]
   (json-rpc/call
-   {:method "wallet_getTokensBalances"
-    :params [addresses (keys tokens)]
+   {:method            "wallet_getTokensBalances"
+    :params            [addresses (keys tokens)]
+    :number-of-retries 4
     :on-success
     (fn [results]
       (when-let [balances (clean-up-results results tokens (if init? nil assets))]
@@ -201,10 +189,7 @@
                              [::tokens-found balances]
                              [::update-tokens-balances-success balances]))))
     :on-error
-    (fn [error]
-      (if (pos? number-of-retries)
-        (get-token-balances (update params :number-of-retries dec))
-        (re-frame/dispatch [::update-token-balance-fail error])))}))
+    #(re-frame/dispatch [::update-token-balance-fail %])}))
 
 (re-frame/reg-fx
  :wallet/get-tokens-balances

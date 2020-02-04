@@ -168,14 +168,21 @@
    "mailservers_getChatRequestRanges" {}
    "mailservers_deleteChatRequestRange" {}})
 
+(defn on-error-retry [call-method {:keys [method number-of-retries on-error] :as arg}]
+  (if (pos? number-of-retries)
+    (fn []
+      (log/debug "[on-error-retry]" method "number-of-retries" number-of-retries)
+      (call-method (update arg :number-of-retries dec)))
+    on-error))
+
 (defn call
-  [{:keys [method params on-success on-error] :as p}]
+  [{:keys [method params on-success] :as arg}]
   (if-let [method-options (json-rpc-api method)]
     (let [{:keys [id on-result subscription?]
            :or {on-result identity
                 id        1
                 params    []}} method-options
-          on-error (or on-error
+          on-error (or (on-error-retry call arg)
                        #(log/warn :json-rpc/error method :error % :params params))]
       (if (nil? method)
         (log/error :json-rpc/method-not-found method)
@@ -191,7 +198,7 @@
          (fn [response]
            (if (string/blank? response)
              (on-error {:message "Blank response"})
-             (let [{:keys [error result] :as response2} (types/json->clj response)]
+             (let [{:keys [error result]} (types/json->clj response)]
                (if error
                  (on-error error)
                  (if subscription?
@@ -200,12 +207,13 @@
                      result on-success])
                    (on-success (on-result result))))))))))
 
-    (log/warn "method" method "not found" p)))
+    (log/warn "method" method "not found" arg)))
 
 (defn eth-call
-  [{:keys [contract method params outputs on-success on-error block]
+  [{:keys [contract method params outputs on-success block]
     :or {block "latest"
-         params []}}]
+         params []}
+    :as arg}]
   (call {:method "eth_call"
          :params [{:to contract
                    :data (abi-spec/encode method params)}
@@ -217,7 +225,7 @@
            #(on-success (abi-spec/decode % outputs))
            on-success)
          :on-error
-         on-error}))
+         (on-error-retry eth-call arg)}))
 
 ;; effects
 (re-frame/reg-fx

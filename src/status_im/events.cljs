@@ -1010,11 +1010,6 @@
    (stickers/approve-pack cofx id price)))
 
 (handlers/register-handler-fx
- :stickers/get-owned-packs
- (fn [cofx _]
-   (stickers/get-owned-pack cofx)))
-
-(handlers/register-handler-fx
  :stickers/pack-owned
  (fn [cofx [_ id]]
    (stickers/pack-owned cofx id)))
