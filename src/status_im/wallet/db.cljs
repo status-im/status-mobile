@@ -71,8 +71,15 @@
     0))
 
 (defn remove-transactions-since-block
-  [transactions block]
-  (into empty-transaction-map
-        (drop-while (fn [[k v]]
-                      (>= (int (:block v)) block))
-                    transactions)))
+  [accounts block]
+  (reduce-kv (fn [acc account-address {:keys [transactions] :as account}]
+               (assoc acc account-address
+                      (update account
+                              :transactions
+                              (fn [transactions]
+                                (into empty-transaction-map
+                                      (drop-while (fn [[k v]]
+                                                    (>= (int (:block v)) block))
+                                                  transactions))))))
+             {}
+             accounts))

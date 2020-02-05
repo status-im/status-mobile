@@ -7,7 +7,7 @@ let
     clojars = "https://repo.clojars.org";
     fabric-io = "https://maven.fabric.io/public";
     google = "https://dl.google.com/dl/android/maven2";
-    gradle = "http://repo.gradle.org/gradle/libs-releases-local";
+    gradle = "https://repo.gradle.org/gradle/libs-releases-local";
     gradlePlugins = "https://plugins.gradle.org/m2";
     java = "https://maven.java.net/content/repositories/releases";
     jcenter = "https://jcenter.bintray.com";
@@ -20,7 +20,7 @@ let
   };
 
 in {
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services-groovy/2.1/gradle-base-services-groovy-2.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services-groovy/2.1/gradle-base-services-groovy-2.1" =
   {
     host = repositories.gradle;
     path =
@@ -35,7 +35,7 @@ in {
       sha256 = "02iqr1sjhpdb6va8kfsbggmkzns9xhxrkfihz992aalazm81f612";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services-groovy/2.2.1/gradle-base-services-groovy-2.2.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services-groovy/2.2.1/gradle-base-services-groovy-2.2.1" =
   {
     host = repositories.gradle;
     path =
@@ -50,7 +50,7 @@ in {
       sha256 = "0dsd7mdlpabdxc3apazvwbcvnx6d4xrnr5syp3fbmxypvcxys8zg";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services-groovy/3.1/gradle-base-services-groovy-3.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services-groovy/3.1/gradle-base-services-groovy-3.1" =
   {
     host = repositories.gradle;
     path =
@@ -65,7 +65,7 @@ in {
       sha256 = "0pv1pqlwj8zggxybcvdna77xgc1687zgmz57k5405ffj4bixdbpg";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services/2.1/gradle-base-services-2.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services/2.1/gradle-base-services-2.1" =
   {
     host = repositories.gradle;
     path =
@@ -80,7 +80,7 @@ in {
       sha256 = "1wcifqjz7lgyi1nsjdkpbpij2rqap4bciwmqx1lw924p0355q07d";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services/2.2.1/gradle-base-services-2.2.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services/2.2.1/gradle-base-services-2.2.1" =
   {
     host = repositories.gradle;
     path =
@@ -95,7 +95,7 @@ in {
       sha256 = "0hayad4mynnv4irqabxc4j0vqk17yp5q3r9xfafisv4s0nsk4849";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services/3.1/gradle-base-services-3.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services/3.1/gradle-base-services-3.1" =
   {
     host = repositories.gradle;
     path =
@@ -110,7 +110,7 @@ in {
       sha256 = "146bvpjsw96a1m2y4v3bmsjzmhjm7bq7zlvpdzl1s8g34k0dpn83";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-core/2.1/gradle-core-2.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-core/2.1/gradle-core-2.1" =
   {
     host = repositories.gradle;
     path =
@@ -125,7 +125,7 @@ in {
       sha256 = "0mwb51jf2bcdwv6gy5sj4gcq3g81nxjb5d58wghz7l5cwjj1arr0";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-core/2.2.1/gradle-core-2.2.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-core/2.2.1/gradle-core-2.2.1" =
   {
     host = repositories.gradle;
     path =
@@ -140,7 +140,7 @@ in {
       sha256 = "1wvpwy5q2i3pvialcip7nz54rbiahq548kkpvr1p6xgn97z9ms8n";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-core/3.1/gradle-core-3.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-core/3.1/gradle-core-3.1" =
   {
     host = repositories.gradle;
     path =
@@ -155,7 +155,7 @@ in {
       sha256 = "0k925r1pqk638cia6k9qklkl8mkcfgh3l6pbbxwxmgs43f9insff";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-logging/3.1/gradle-logging-3.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-logging/3.1/gradle-logging-3.1" =
   {
     host = repositories.gradle;
     path =
@@ -170,7 +170,7 @@ in {
       sha256 = "1sllfk9rsv55cgbka4h91grn4z6sx9dijwjqrhii4cpl056dwmjj";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-messaging/2.1/gradle-messaging-2.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-messaging/2.1/gradle-messaging-2.1" =
   {
     host = repositories.gradle;
     path =
@@ -185,7 +185,7 @@ in {
       sha256 = "1w92sa0fb51sgpa50014b45lwgw4a7p6fl0qgpag2h1j0gcmlgza";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-messaging/2.2.1/gradle-messaging-2.2.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-messaging/2.2.1/gradle-messaging-2.2.1" =
   {
     host = repositories.gradle;
     path =
@@ -200,7 +200,7 @@ in {
       sha256 = "1x7vqdcjrmk279blih6sw5b5pjfsxnag1bmckxmz949isa4xay2b";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-messaging/3.1/gradle-messaging-3.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-messaging/3.1/gradle-messaging-3.1" =
   {
     host = repositories.gradle;
     path =
@@ -215,7 +215,7 @@ in {
       sha256 = "0c7q6fs8ywciif1k4gz40dm17976b8bh9hahi2r2p18j6xb5xpc9";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-resources/2.1/gradle-resources-2.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-resources/2.1/gradle-resources-2.1" =
   {
     host = repositories.gradle;
     path =
@@ -230,7 +230,7 @@ in {
       sha256 = "055iangccx3p83rsi61axggw8fzx1pyl9jk0qirclcyd8nfksjdw";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-resources/2.2.1/gradle-resources-2.2.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-resources/2.2.1/gradle-resources-2.2.1" =
   {
     host = repositories.gradle;
     path =
@@ -245,7 +245,7 @@ in {
       sha256 = "1qysny46n4g2xq5dbmlrh6c189jbd8wx7x3jn99bvk01h1lydlhy";
     };
   };
-  "http://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-resources/3.1/gradle-resources-3.1" =
+  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-resources/3.1/gradle-resources-3.1" =
   {
     host = repositories.gradle;
     path =

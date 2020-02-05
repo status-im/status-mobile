@@ -6,16 +6,15 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.chat.models :as chat]
             [status-im.constants :as constants]
-            [status-im.ethereum.eip681 :as eip681]
+            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.core :as ethereum]
             [status-im.pairing.core :as pairing]
             [status-im.utils.security :as security]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
-            [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]
             [status-im.wallet.choose-recipient.core :as choose-recipient]))
 
@@ -71,16 +70,32 @@
 
 (fx/defn handle-public-chat [cofx public-chat]
   (log/info "universal-links: handling public chat" public-chat)
-  (fx/merge
-   cofx
-   (chat/start-public-chat public-chat {})
-   (pairing/sync-public-chat public-chat)))
+  (chat/start-public-chat cofx public-chat {}))
 
-(fx/defn handle-view-profile [{:keys [db] :as cofx} public-key]
-  (log/info "universal-links: handling view profile" public-key)
-  (if (new-chat.db/own-public-key? db public-key)
+(fx/defn handle-view-profile
+  [{:keys [db] :as cofx} {:keys [public-key ens-name]}]
+  (log/info "universal-links: handling view profile" (or ens-name public-key))
+  (cond
+    (and public-key (new-chat.db/own-public-key? db public-key))
     (navigation/navigate-to-cofx cofx :my-profile nil)
-    (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key) :profile nil)))
+
+    public-key
+    (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key) :profile nil)
+
+    ens-name
+    (let [chain (ethereum/chain-keyword db)]
+      {:resolve-public-key {:chain            chain
+                            :contact-identity ens-name
+                            :cb               (fn [pub-key]
+                                                (cond
+                                                  (and pub-key (new-chat.db/own-public-key? db pub-key))
+                                                  (re-frame/dispatch [:navigate-to :my-profile])
+
+                                                  pub-key
+                                                  (re-frame/dispatch [:chat.ui/show-profile pub-key])
+
+                                                  :else
+                                                  (log/info "universal-link: no pub-key for ens-name " ens-name)))}})))
 
 (fx/defn handle-eip681 [cofx url]
   (fx/merge cofx
@@ -105,7 +120,11 @@
     (handle-public-chat cofx (match-url url public-chat-regex))
 
     (spec/valid? :global/public-key (match-url url profile-regex))
-    (handle-view-profile cofx (match-url url profile-regex))
+    (handle-view-profile cofx {:public-key (match-url url profile-regex)})
+
+    (or (ens/valid-eth-name-prefix? (match-url url profile-regex))
+        (ens/is-valid-eth-name? (match-url url profile-regex)))
+    (handle-view-profile cofx {:ens-name (match-url url profile-regex)})
 
     (match-url url browse-regex)
     (handle-browse cofx (match-url url browse-regex))

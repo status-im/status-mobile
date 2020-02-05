@@ -89,7 +89,10 @@
    (wallet/initialize-tokens custom-tokens)
    (wallet/update-balances nil)
    (wallet/update-prices)
-   (transactions/initialize)))
+   (transactions/initialize
+    (->> accounts
+         (filter :wallet)
+         (map :address)))))
 
 (fx/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
@@ -158,12 +161,6 @@
                        :fetched-network-id fetched-network-id})
           #(re-frame/dispatch [::close-app-confirmed]))))}]})
 
-(defn deserialize-config
-  [{:keys [multiaccount current-network networks]}]
-  [(types/deserialize multiaccount)
-   current-network
-   (types/deserialize networks)])
-
 (re-frame/reg-fx
  ;;TODO: this could be replaced by a single API call on status-go side
  ::initialize-wallet
@@ -181,7 +178,8 @@
                              :on-success resolve
                              :on-error reject})))]))
        (.then (fn [[accounts custom-tokens]]
-                (callback accounts custom-tokens)))
+                (callback accounts
+                          (mapv #(update % :symbol keyword) custom-tokens))))
        (.catch (fn [error]
                  (log/error "Failed to initialize wallet"))))))
 
@@ -203,7 +201,9 @@
                 (assoc ::notifications/enable nil)
                 (not platform/desktop?)
                 (assoc ::initialize-wallet
-                       #(re-frame/dispatch [::initialize-wallet %])))
+                       (fn [accounts custom-tokens]
+                         (re-frame/dispatch [::initialize-wallet
+                                             accounts custom-tokens]))))
               ;; NOTE: initializing mailserver depends on user mailserver
               ;; preference which is why we wait for config callback
               (protocol/initialize-protocol {:default-mailserver true})
@@ -213,7 +213,6 @@
               (contact/initialize-contacts)
               (stickers/init-stickers-packs)
               (mobile-network/on-network-status-change)
-              (chaos-mode/check-chaos-mode)
               (multiaccounts/switch-preview-privacy-mode-flag))))
 
 (defn get-new-auth-method [auth-method save-password?]
@@ -275,7 +274,6 @@
                                              :mailserver-ranges {}
                                              :mailserver-topics {}
                                              :default-mailserver true})
-              (chaos-mode/check-chaos-mode)
               (multiaccounts/switch-preview-privacy-mode-flag)
               (when-not platform/desktop?
                 (initialize-wallet accounts nil)))))

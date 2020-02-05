@@ -214,42 +214,6 @@
      :height        image-size
      :border-radius (/ image-size 2)}))
 
-(def pending-wrapper
-  {:position         :absolute
-   :bottom           0
-   :right            0
-   :width            12
-   :height           12
-   :border-radius    6
-   :background-color :white
-   :align-items      :center
-   :justify-content  :center})
-
-(def pending-view-menu-wrapper
-  {:position         :absolute
-   :bottom           2
-   :right            2
-   :width            12
-   :height           12
-   :border-radius    6
-   :background-color :white
-   :align-items      :center
-   :justify-content  :center})
-
-(def pending-outer-circle
-  {:background-color colors/blue
-   :width            8
-   :height           8
-   :border-radius    4
-   :align-items      :center
-   :justify-content  :center})
-
-(def pending-inner-circle
-  {:background-color :white
-   :width            4
-   :height           4
-   :border-radius    2})
-
 (defn profile-icon-mask [size]
   {:height           size
    :width            size

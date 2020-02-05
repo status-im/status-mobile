@@ -75,7 +75,6 @@
 (reg-root-key-sub :peers-count :peers-count)
 (reg-root-key-sub :about-app/node-info :node-info)
 (reg-root-key-sub :peers-summary :peers-summary)
-(reg-root-key-sub :tab-bar-visible? :tab-bar-visible?)
 (reg-root-key-sub :dimensions/window :dimensions/window)
 (reg-root-key-sub :initial-props :initial-props)
 (reg-root-key-sub :fleets/custom-fleets :custom-fleets)
@@ -85,6 +84,7 @@
 (reg-root-key-sub :ui/search :ui/search)
 (reg-root-key-sub :web3-node-version :web3-node-version)
 (reg-root-key-sub :keyboard-height :keyboard-height)
+(reg-root-key-sub :keyboard-max-height :keyboard-max-height)
 (reg-root-key-sub :sync-data :sync-data)
 (reg-root-key-sub :layout-height :layout-height)
 (reg-root-key-sub :mobile-network/remember-choice? :mobile-network/remember-choice?)
@@ -97,6 +97,8 @@
 (reg-root-key-sub :get-pairing-installations :pairing/installations)
 (reg-root-key-sub :tooltips :tooltips)
 (reg-root-key-sub :supported-biometric-auth :supported-biometric-auth)
+(reg-root-key-sub :app-active-since :app-active-since)
+(reg-root-key-sub :connectivity/ui-status-properties :connectivity/ui-status-properties)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network
@@ -165,6 +167,9 @@
 (reg-root-key-sub :wallet.transactions :wallet.transactions)
 (reg-root-key-sub :wallet/custom-token-screen :wallet/custom-token-screen)
 (reg-root-key-sub :wallet/prepare-transaction :wallet/prepare-transaction)
+
+;;commands
+(reg-root-key-sub :commands/select-account :commands/select-account)
 
 ;;ethereum
 (reg-root-key-sub :ethereum/current-block :ethereum/current-block)
@@ -315,7 +320,7 @@
  :disconnected?
  :<- [:peers-count]
  (fn [peers-count]
-   (zero? peers-count)))
+   (and (not config/nimbus-enabled?) (zero? peers-count))))
 
 (re-frame/reg-sub
  :offline?
@@ -435,6 +440,8 @@
  :<- [:ethereum/chain-keyword]
  (fn [chain-keyword]
    (tokens/native-currency chain-keyword)))
+
+(reg-root-key-sub :ethereum/current-block :ethereum/current-block)
 
 ;;MULTIACCOUNT ==============================================================================================================
 
@@ -576,13 +583,37 @@
  (fn [ui-props [_ prop]]
    (get ui-props prop)))
 
+;; NOTE: The whole logic of stickers panel and input should be revised
+(re-frame/reg-sub
+ :chats/chat-panel-height
+ :<- [:keyboard-max-height]
+ (fn [kb-height]
+   (cond
+     (and platform/iphone-x? (pos? kb-height))
+     (- kb-height tabs.styles/minimized-tabs-height 34)
+
+     (pos? kb-height)
+     (- kb-height tabs.styles/minimized-tabs-height)
+
+     platform/iphone-x? 299
+
+     platform/ios? 258
+
+     :else 272)))
+
 (re-frame/reg-sub
  :chats/input-margin
  :<- [:keyboard-height]
- (fn [kb-height]
+ :<- [:chats/current-chat-ui-prop :input-bottom-sheet]
+ (fn [[kb-height input-bottom-sheet]]
    (cond
+     ;; During the transition of bottom sheet and close of keyboard happens
+     ;; The heights are summed up and input grows too much
+     (not (nil? input-bottom-sheet))
+     0
+
      (and platform/iphone-x? (> kb-height 0))
-     (- kb-height (* 2 tabs.styles/minimized-tabs-height))
+     (- kb-height tabs.styles/minimized-tabs-height 34)
 
      platform/ios?
      (+ kb-height (- (if (> kb-height 0)
@@ -599,54 +630,55 @@
  (fn [[contacts chats multiaccount]]
    (chat.db/active-chats contacts chats multiaccount)))
 
-(defn enrich-current-one-to-one-chat
-  [{:keys [contact] :as current-chat} my-public-key ttt-settings
-   chain-keyword prices currency]
-  (let [{:keys [tribute-to-talk]} contact
-        {:keys [disabled? snt-amount message]} tribute-to-talk
-        whitelisted-by? (whitelist/whitelisted-by? contact)
-        loading?        (and (not whitelisted-by?)
-                             (not tribute-to-talk))
-        show-input?     (or whitelisted-by?
-                            disabled?)
-        token           (case chain-keyword
-                          :mainnet :SNT
-                          :STT)
-        tribute-status  (if loading?
-                          :loading
-                          (tribute-to-talk.db/tribute-status contact))
-        tribute-label   (tribute-to-talk.db/status-label tribute-status snt-amount)]
+;; TODO: this is no useful without tribute to talk
+#_(defn enrich-current-one-to-one-chat
+    [{:keys [contact] :as current-chat} my-public-key ttt-settings
+     chain-keyword prices currency]
+    (let [{:keys [tribute-to-talk]} contact
+          {:keys [disabled? snt-amount message]} tribute-to-talk
+          whitelisted-by? (whitelist/whitelisted-by? contact)
+          loading?        (and (not whitelisted-by?)
+                               (not tribute-to-talk))
+          show-input?     (or whitelisted-by?
+                              disabled?)
+          token           (case chain-keyword
+                            :mainnet :SNT
+                            :STT)
+          tribute-status  (if loading?
+                            :loading
+                            (tribute-to-talk.db/tribute-status contact))
+          tribute-label   (tribute-to-talk.db/status-label tribute-status snt-amount)]
 
-    (cond-> (assoc current-chat
-                   :tribute-to-talk/tribute-status tribute-status
-                   :tribute-to-talk/tribute-label tribute-label)
+      (cond-> (assoc current-chat
+                     :tribute-to-talk/tribute-status tribute-status
+                     :tribute-to-talk/tribute-label tribute-label)
 
-      (#{:required :pending :paid} tribute-status)
-      (assoc :tribute-to-talk/snt-amount
-             (tribute-to-talk.db/from-wei snt-amount)
-             :tribute-to-talk/message
-             message
-             :tribute-to-talk/fiat-amount   (if snt-amount
-                                              (money/fiat-amount-value
-                                               snt-amount
-                                               token
-                                               (-> currency :code keyword)
-                                               prices)
-                                              "0")
-             :tribute-to-talk/fiat-currency (:code currency)
-             :tribute-to-talk/token         (str " " (name token)))
+        (#{:required :pending :paid} tribute-status)
+        (assoc :tribute-to-talk/snt-amount
+               (tribute-to-talk.db/from-wei snt-amount)
+               :tribute-to-talk/message
+               message
+               :tribute-to-talk/fiat-amount   (if snt-amount
+                                                (money/fiat-amount-value
+                                                 snt-amount
+                                                 token
+                                                 (-> currency :code keyword)
+                                                 prices)
+                                                "0")
+               :tribute-to-talk/fiat-currency (:code currency)
+               :tribute-to-talk/token         (str " " (name token)))
 
-      (tribute-to-talk.db/enabled? ttt-settings)
-      (assoc :tribute-to-talk/received? (tribute-to-talk.db/tribute-received?
-                                         contact))
+        (tribute-to-talk.db/enabled? ttt-settings)
+        (assoc :tribute-to-talk/received? (tribute-to-talk.db/tribute-received?
+                                           contact))
 
-      (= tribute-status :required)
-      (assoc :tribute-to-talk/on-share-my-profile
-             #(re-frame/dispatch
-               [:profile/share-profile-link my-public-key]))
+        (= tribute-status :required)
+        (assoc :tribute-to-talk/on-share-my-profile
+               #(re-frame/dispatch
+                 [:profile/share-profile-link my-public-key]))
 
-      show-input?
-      (assoc :show-input? true))))
+        show-input?
+        (assoc :show-input? true))))
 
 (defn enrich-current-chat
   [{:keys [messages chat-id might-have-join-time-messages?] :as chat}
@@ -683,16 +715,8 @@
  :<- [:mailserver/ranges]
  :<- [:chats/content-layout-height]
  :<- [:chats/current-chat-ui-prop :input-height]
- :<- [:tribute-to-talk/settings]
- :<- [:ethereum/chain-keyword]
- :<- [:prices]
- :<- [:wallet/currency]
- (fn [[{:keys [group-chat
-               chat-id
-               contact
-               messages]
-        :as current-chat} my-public-key ranges height
-       input-height ttt-settings chain-keyword prices currency]]
+ (fn [[{:keys [group-chat chat-id contact messages] :as current-chat}
+       my-public-key ranges height input-height]]
    (when current-chat
      (cond-> (enrich-current-chat current-chat ranges height input-height)
        (empty? messages)
@@ -707,8 +731,14 @@
        (assoc :show-input? true)
 
        (not group-chat)
-       (enrich-current-one-to-one-chat my-public-key ttt-settings
-                                       chain-keyword prices currency)))))
+       (assoc :show-input? true)))))
+
+(re-frame/reg-sub
+ :current-chat/one-to-one-chat?
+ :<- [:chats/current-raw-chat]
+ (fn [current-chat]
+   (not (or (chat.models/group-chat? current-chat)
+            (chat.models/public-chat? current-chat)))))
 
 (re-frame/reg-sub
  :chats/current-chat-message
@@ -1125,6 +1155,13 @@
      "...")))
 
 (re-frame/reg-sub
+ :wallet/chain-tokens
+ :<- [:wallet/all-tokens]
+ :<- [:ethereum/chain-keyword]
+ (fn [[all-tokens chain]]
+   (get all-tokens chain)))
+
+(re-frame/reg-sub
  :wallet/sorted-chain-tokens
  :<- [:wallet/all-tokens]
  :<- [:ethereum/chain-keyword]
@@ -1138,6 +1175,33 @@
  (fn [[all-tokens visible-tokens]]
    (let [vt-set (set visible-tokens)]
      (group-by :custom? (map #(assoc % :checked? (boolean (get vt-set (keyword (:symbol %))))) all-tokens)))))
+
+(re-frame/reg-sub
+ :wallet/fetching-tx-history?
+ :<- [:wallet]
+ (fn [wallet [_ address]]
+   (get-in wallet [:fetching address :history?])))
+
+(re-frame/reg-sub
+ :wallet/fetching-recent-tx-history?
+ :<- [:wallet]
+ (fn [wallet [_ address]]
+   (get-in wallet [:fetching address :recent?])))
+
+(re-frame/reg-sub
+ :wallet/tx-history-fetched?
+ :<- [:wallet]
+ (fn [wallet [_ address]]
+   (get-in wallet [:fetching address :all-fetched?])))
+
+(re-frame/reg-sub
+ :wallet/etherscan-link
+ (fn [db [_ address]]
+   (let [network (:networks/current-network db)
+         link    (get-in constants/default-networks-by-id
+                         [network :etherscan-link])]
+     (when link
+       (str link address)))))
 
 (re-frame/reg-sub
  :wallet/error-message
@@ -1234,6 +1298,21 @@
    (get constants/currencies currency-id)))
 
 ;;WALLET TRANSACTIONS ==================================================================================================
+
+(re-frame/reg-sub
+ :wallet/accounts
+ :<- [:wallet]
+ (fn [wallet]
+   (get wallet :accounts)))
+
+(re-frame/reg-sub
+ :wallet/account-by-transaction-hash
+ :<- [:wallet/accounts]
+ (fn [accounts [_ hash]]
+   (some (fn [[address account]]
+           (when-let [transaction (get-in account [:transactions hash])]
+             (assoc transaction :address address)))
+         accounts)))
 
 (re-frame/reg-sub
  :wallet/transactions
@@ -1465,7 +1544,7 @@
 ;;TODO this subscription looks super weird huge and with dispatches?
 (re-frame/reg-sub
  :connectivity/status-properties
- :<- [:offline?]
+ :<- [:network-status]
  :<- [:disconnected?]
  :<- [:mailserver/connecting?]
  :<- [:mailserver/connection-error?]
@@ -1473,21 +1552,11 @@
  :<- [:mailserver/fetching?]
  :<- [:network/type]
  :<- [:multiaccount]
- (fn [[offline? disconnected? mailserver-connecting? mailserver-connection-error?
+ (fn [[network-status disconnected? mailserver-connecting? mailserver-connection-error?
        mailserver-request-error? mailserver-fetching? network-type multiaccount]]
-   (let [wallet-offline? (and offline?
-                              ;; There's no wallet of desktop
-                              (not platform/desktop?))
-         error-label     (cond
-                           (and wallet-offline?
-                                disconnected?)
+   (let [error-label     (cond
+                           (= network-status :offline)
                            :t/offline
-
-                           wallet-offline?
-                           :t/wallet-offline
-
-                           disconnected?
-                           :t/disconnected
 
                            mailserver-connecting?
                            :t/connecting
@@ -1502,19 +1571,23 @@
                                 (not (:syncing-on-mobile-network? multiaccount)))
                            :mobile-network
 
+                           disconnected?
+                           :t/offline
+
                            :else nil)]
      {:message            (or error-label :t/connected)
       :connected?         (and (nil? error-label) (not= :mobile-network error-label))
       :connecting?        (= error-label :t/connecting)
       :loading-indicator? mailserver-fetching?
-      :on-press-fn        #(cond
-                             mailserver-connection-error?
-                             (re-frame/dispatch [:mailserver.ui/reconnect-mailserver-pressed])
-                             mailserver-request-error?
-                             (re-frame/dispatch [:mailserver.ui/request-error-pressed])
+      :on-press-event       (cond
+                              mailserver-connection-error?
+                              :mailserver.ui/reconnect-mailserver-pressed
 
-                             (= :mobile-network error-label)
-                             (re-frame/dispatch [:mobile-network/show-offline-sheet]))})))
+                              mailserver-request-error?
+                              :mailserver.ui/request-error-pressed
+
+                              (= :mobile-network error-label)
+                              :mobile-network/show-offline-sheet)})))
 
 ;;CONTACT ==============================================================================================================
 
@@ -1611,7 +1684,9 @@
  :contacts/all-contacts-not-in-current-chat
  :<- [::query-current-chat-contacts remove]
  (fn [contacts]
-   (sort-by (comp clojure.string/lower-case :name) contacts)))
+   (->> contacts
+        (filter contact.db/added?)
+        (sort-by (comp clojure.string/lower-case multiaccounts/displayed-name)))))
 
 (re-frame/reg-sub
  :contacts/current-chat-contacts
@@ -1738,15 +1813,21 @@
   (let [{:keys [name random-name tags]} (val chat)]
     (into [name random-name] tags)))
 
+(defn sort-by-timestamp
+  [coll]
+  (when (not-empty coll)
+    (sort-by #(-> % second :timestamp) >
+             (into {} coll))))
+
 (defn apply-filter
   "extract-attributes-fn is a function that take an element from the collection
   and returns a vector of attributes which are strings
   apply-filter returns the elements for which at least one attribute includes
   the search-filter
-  apply-filter returns nil if the search-filter is empty or if there is no element
-  that match the filter"
+  apply-filter returns nil if there is no element that match the filter
+  apply-filter returns full collection if the search-filter is empty"
   [search-filter coll extract-attributes-fn]
-  (when (not-empty search-filter)
+  (if (not-empty search-filter)
     (let [search-filter (string/lower-case search-filter)
           results       (filter (fn [element]
                                   (some (fn [s]
@@ -1755,9 +1836,8 @@
                                                               search-filter)))
                                         (extract-attributes-fn element)))
                                 coll)]
-      (when (not-empty results)
-        (sort-by #(-> % second :timestamp) >
-                 (into {} results))))))
+      (sort-by-timestamp results))
+    (sort-by-timestamp coll)))
 
 (re-frame/reg-sub
  :search/filtered-chats
@@ -1927,7 +2007,7 @@
  :<- [:get-screen-params :ens-name-details]
  :<- [:ens/names]
  (fn [[name ens]]
-   (let [{:keys [address public-key]} (get ens name)
+   (let [{:keys [address public-key expiration-date releasable?]} (get ens name)
          pending? (nil? address)]
      (cond-> {:name       name
               :custom-domain? (not (string/ends-with? name ".stateofus.eth"))}
@@ -1935,7 +2015,9 @@
        (assoc :pending? true)
        (not pending?)
        (assoc :address    address
-              :public-key public-key)))))
+              :public-key public-key
+              :releasable? releasable?
+              :expiration-date expiration-date)))))
 
 (re-frame/reg-sub
  :ens.main/screen
@@ -2034,6 +2116,32 @@
             :balance balance
             :token (assoc token :amount (get balance (:symbol token)))
             :sign-enabled? (and to
+                                (nil? amount-error)
+                                (not (nil? amount))
+                                (not offline?))))))
+
+(re-frame/reg-sub
+ :wallet.request/prepare-transaction-with-balance
+ :<- [:wallet/prepare-transaction]
+ :<- [:wallet]
+ :<- [:offline?]
+ :<- [:wallet/all-tokens]
+ :<- [:ethereum/chain-keyword]
+ (fn [[{:keys [symbol from to amount-text] :as transaction}
+       wallet offline? all-tokens chain]]
+   (let [balance (get-in wallet [:accounts (:address from) :balance])
+         {:keys [decimals] :as token} (tokens/asset-for all-tokens chain symbol)
+         {:keys [value error]} (wallet.db/parse-amount amount-text decimals)
+         amount  (money/formatted->internal value symbol decimals)
+         {:keys [amount-error] :as transaction-new}
+         (assoc transaction
+                :amount-error error)]
+     (assoc transaction-new
+            :amount amount
+            :balance balance
+            :token (assoc token :amount (get balance (:symbol token)))
+            :sign-enabled? (and to
+                                from
                                 (nil? amount-error)
                                 (not (nil? amount))
                                 (not offline?))))))

@@ -1,5 +1,5 @@
 {
-  config ? { },      # for passing status_go.src_override
+  config ? { },      # for passing build options, see nix/README.md
   target ? "default" # see nix/shells.nix for all valid values
 }:
 

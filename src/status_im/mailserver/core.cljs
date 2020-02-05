@@ -193,21 +193,19 @@
                 (generate-mailserver-symkey mailserver)))))
 
 (fx/defn add-peer
-  [{:keys [db] :as cofx}]
+  [{:keys [db now] :as cofx}]
   (let [{:keys [address sym-key-id generating-sym-key?] :as mailserver}
         (fetch-current db)]
     (fx/merge
      cofx
-     {:db (-> db
-              (update-mailserver-state :connecting)
-              (update :mailserver/connection-checks inc))
+     {:db (assoc
+           (update-mailserver-state db :connecting)
+           :mailserver/last-connection-attempt now)
       :mailserver/add-peer address
       ;; Any message sent before this takes effect will not be marked as sent
       ;; probably we should improve the UX so that is more transparent to the
       ;; user
-      :mailserver/update-mailservers [address]
-      :utils/dispatch-later [{:ms constants/connection-timeout
-                              :dispatch [:mailserver/check-connection-timeout]}]}
+      :mailserver/update-mailservers [address]}
      (when-not (or sym-key-id generating-sym-key?)
        (generate-mailserver-symkey mailserver)))))
 
@@ -286,7 +284,7 @@
   - mailserver disconnected: we try to reconnect
   - mailserver connected: we mark the mailserver as trusted peer"
   [{:keys [db] :as cofx} previous-summary]
-  (when (:multiaccount db)
+  (when (and (not config/nimbus-enabled?) (:multiaccount db))
     (if (:mailserver/current-id db)
       (let [{:keys [peers-summary peers-count]} db
             {:keys [address sym-key-id] :as mailserver} (fetch-current db)
@@ -303,8 +301,8 @@
           (mark-trusted-peer cofx)
           mailserver-removed?
           (connect-to-mailserver cofx)))
-      ;; if there is no current mailserver defined,
-      ;; we set it first
+        ;; if there is no current mailserver defined,
+        ;; we set it first
       (set-current-mailserver cofx))))
 
 (defn adjust-request-for-transit-time
@@ -521,23 +519,20 @@
                   {:mailserver/remove-peer address}
                   (set-current-mailserver))))))
 
+(defn check-connection! []
+  (re-frame/dispatch [:mailserver/check-connection-timeout]))
+
 (fx/defn check-connection
-  "connection-checks counter is used to prevent changing
-   mailserver on flaky connections
-   if there is more than one connection check pending
-      decrement the connection check counter
-   else
-      change mailserver if mailserver is connected"
-  [{:keys [db] :as cofx}]
+  "Check connection checks that the connection is successfully connected,
+  otherwise it will try to change mailserver and connect again"
+  [{:keys [db now] :as cofx}]
   ;; check if logged into multiaccount
   (when (contains? db :multiaccount)
-    (let [connection-checks (dec (:mailserver/connection-checks db))]
-      (if (>= 0 connection-checks)
+    (let [last-connection-attempt (:mailserver/last-connection-attempt db)]
+      (when (<= (- now last-connection-attempt))
         (fx/merge cofx
-                  {:db (dissoc db :mailserver/connection-checks)}
-                  (when (= :connecting (:mailserver/state db))
-                    (change-mailserver)))
-        {:db (update db :mailserver/connection-checks dec)}))))
+                  (when (not= :connected (:mailserver/state db))
+                    (change-mailserver)))))))
 
 (fx/defn reset-request-to
   [{:keys [db]}]
@@ -813,7 +808,7 @@
                        :on-success
                        #(log/debug "added mailserver-topic successfully")
                        :on-failure
-                       #(log/error "failed to delete mailserver topic" %)})
+                       #(log/error "failed to add mailserver topic" %)})
                     mailserver-topics)}
              (process-next-messages-request))))))))
 
@@ -827,7 +822,8 @@
 ;; on, rather then keep asking for the same data, say after n amounts of attempts
 (fx/defn handle-request-error
   [{:keys [db]} error]
-  {:db (-> db
+  {:mailserver/decrease-limit   []
+   :db (-> db
            (assoc  :mailserver/request-error error)
            (dissoc :mailserver/current-request
                    :mailserver/pending-requests))})

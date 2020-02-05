@@ -105,7 +105,7 @@ class DefaultUserNameText(BaseText):
     def __init__(self, driver):
         super(DefaultUserNameText, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            '//android.view.ViewGroup[@content-desc="edit-profile-photo-button"]/../android.widget.TextView')
+            '//android.widget.ImageView[@content-desc="chat-icon"]/../android.widget.TextView')
 
 class ENSusernames(BaseButton):
     def __init__(self, driver):
@@ -197,7 +197,7 @@ class OkContinueButton(BaseButton):
 
     def __init__(self, driver):
         super(OkContinueButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Ok, continue']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Okay, continue']")
 
 
 class RecoveryPhraseTable(BaseText):
@@ -225,14 +225,6 @@ class RecoveryPhraseWordInput(BaseEditBox):
     def __init__(self, driver):
         super(RecoveryPhraseWordInput, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//android.widget.EditText')
-
-
-class OkGotItButton(BaseButton):
-
-    def __init__(self, driver):
-        super(OkGotItButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('OK, got it')
-
 
 class DebugModeToggle(BaseButton):
 
@@ -604,7 +596,6 @@ class ProfileView(BaseView):
         self.recovery_phrase_table = RecoveryPhraseTable(self.driver)
         self.recovery_phrase_word_number = RecoveryPhraseWordNumberText(self.driver)
         self.recovery_phrase_word_input = RecoveryPhraseWordInput(self.driver)
-        self.ok_got_it_button = OkGotItButton(self.driver)
 
         self.select_from_gallery_button = SelectFromGalleryButton(self.driver)
         self.capture_button = CaptureButton(self.driver)
@@ -759,6 +750,9 @@ class ProfileView(BaseView):
         dapp_view.check_ens_name.click_until_presence_of_element(self.element_by_text('Ok, got it'))
         dapp_view.element_by_text('Ok, got it').click()
         return dapp_view
+
+    def return_mailserver_name(self, mailserver_name, fleet):
+        return mailserver_name + '.' + fleet
 
 
     @property

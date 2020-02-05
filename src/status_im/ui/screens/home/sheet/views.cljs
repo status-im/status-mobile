@@ -7,7 +7,8 @@
             [status-im.ui.components.react :as react]
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.list-item.views :as list-item]))
+            [status-im.ui.components.list-item.views :as list-item]
+            [status-im.utils.config :as config]))
 
 (defn hide-sheet-and-dispatch [event]
   (re-frame/dispatch [:bottom-sheet/hide-sheet])
@@ -22,12 +23,13 @@
       :accessibility-label :start-1-1-chat-button
       :icon                :main-icons/one-on-one-chat
       :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-chat])}]
-    [list-item/list-item
-     {:theme               :action
-      :title               :t/start-group-chat
-      :accessibility-label :start-group-chat-button
-      :icon                :main-icons/group-chat
-      :on-press            #(hide-sheet-and-dispatch [:contact.ui/start-group-chat-pressed])}]
+    (when config/group-chat-enabled?
+      [list-item/list-item
+       {:theme               :action
+        :title               :t/start-group-chat
+        :accessibility-label :start-group-chat-button
+        :icon                :main-icons/group-chat
+        :on-press            #(hide-sheet-and-dispatch [:contact.ui/start-group-chat-pressed])}])
     [list-item/list-item
      {:theme               :action
       :title               :t/new-public-group-chat
@@ -102,7 +104,7 @@
 
 (def add-new
   {:content        add-new-view
-   :content-height 280})
+   :content-height (if config/group-chat-enabled? 280 220)})
 
 (def public-chat-actions
   {:content        public-chat-actions-view

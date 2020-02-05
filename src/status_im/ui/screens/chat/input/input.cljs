@@ -125,10 +125,6 @@
             current-public-key [:multiaccount/public-key]]
     [react/scroll-view {:style style/reply-message-content}
      [react/view {:style style/reply-message-to-container}
-      [vector-icons/tiny-icon :tiny-icons/tiny-reply {:container-style style/reply-icon
-                                                      :accessibility-label :tiny-reply-icon
-                                                      :width 20
-                                                      :color colors/gray}]
       (chat-utils/format-reply-author from alias ens-name current-public-key style/reply-message-author)]
      [react/text {:style (assoc (message-style/style-message-text false) :font-size 14) :number-of-lines 3} message-text]]))
 
@@ -155,6 +151,7 @@
             input-text           [:chats/current-chat-input-text]
             result-box           [:chats/current-chat-ui-prop :result-box]
             input-bottom-sheet   [:chats/current-chat-ui-prop :input-bottom-sheet]
+            one-to-one-chat?     [:current-chat/one-to-one-chat?]
             state-text           (reagent/atom "")]
     {:component-will-unmount #(when platform/desktop?
                                 (re-frame/dispatch [:chat.ui/set-chat-input-text @state-text]))
@@ -176,7 +173,7 @@
         [input-view {:single-line-input? single-line-input? :set-text set-text :state-text state-text}]
         (when (and input-text-empty? mainnet?)
           [stickers/button (= :stickers input-bottom-sheet)])
-        (when (and input-text-empty?) ;;TODO show only for 1-1 chats?
+        (when (and one-to-one-chat? input-text-empty? mainnet?)
           [extensions/button (= :extensions input-bottom-sheet)])
         (when-not input-text-empty?
           (if platform/desktop?

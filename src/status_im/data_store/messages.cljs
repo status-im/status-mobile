@@ -23,6 +23,7 @@
   (-> message
       (clojure.set/rename-keys {:id :message-id
                                 :whisperTimestamp :whisper-timestamp
+                                :commandParameters :command-parameters
                                 :messageType :message-type
                                 :localChatId :chat-id
                                 :contentType  :content-type
@@ -31,6 +32,8 @@
                                 :outgoingStatus :outgoing-status})
 
       (update :outgoing-status keyword)
+      (update :command-parameters clojure.set/rename-keys {:transactionHash :transaction-hash
+                                                           :commandState :command-state})
       (assoc :content {:chat-id (:chatId message)
                        :text (:text message)
                        :sticker (:sticker message)

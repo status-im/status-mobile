@@ -1,5 +1,6 @@
 (ns status-im.ethereum.stateofus
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [status-im.ethereum.json-rpc :as json-rpc]))
 
 (def domain "stateofus.eth")
 
@@ -24,3 +25,15 @@
   (boolean
    (and (lower-case? username)
         (re-find #"^[a-z0-9]+$" username))))
+
+(defn get-expiration-time
+  [registrar label-hash cb]
+  (json-rpc/eth-call
+   {:contract registrar
+    :method "getExpirationTime(bytes32)"
+    :params [label-hash]
+    :outputs ["uint256"]
+    :on-success
+    (fn [[release-time]]
+      ;;NOTE: returns a timestamp in s and we want ms
+      (cb (* release-time 1000)))}))

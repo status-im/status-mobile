@@ -22,6 +22,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         if sign_in.ok_button.is_element_displayed():
             sign_in.ok_button.click()
         sign_in.back_button.click()
+        sign_in.your_keys_more_icon.click()
         sign_in.generate_new_key_button.click()
         sign_in.generate_key_button.click()
         sign_in.next_button.click()
@@ -50,10 +51,11 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.next_button.click()
         sign_in.confirm_your_password_input.set_value(common_password)
         sign_in.next_button.click()
+        sign_in.lets_go_button.wait_for_element(10)
         sign_in.lets_go_button.click()
         home_view = sign_in.get_home_view()
-        texts = ['Chat and transact privately with your friends.',
-                 'Follow your interests in one of the many public chats.',
+        texts = ['Chat and transact privately with friends',
+                 'Jump into a public chat and meet new people',
                  '#status']
         for text in texts:
             if not home_view.element_by_text(text).is_element_displayed():

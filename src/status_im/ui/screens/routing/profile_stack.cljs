@@ -25,10 +25,12 @@
                      :sync-settings
                      :advanced-settings
                      :help-center
+                     :glossary
                      :about-app
                      :manage-dapps-permissions
                      :network-settings
                      :network-details
+                     :network-info
                      :edit-network
                      :log-level-settings
                      :fleet-settings

@@ -6,6 +6,8 @@ def bundle() {
   def btype = utils.getBuildType()
   /* Disable Gradle Daemon https://stackoverflow.com/questions/38710327/jenkins-builds-fail-using-the-gradle-daemon */
   def gradleOpt = "-PbuildUrl='${currentBuild.absoluteUrl}' --console plain "
+  /* Can't take more digits than unsigned int */
+  def buildNumber = utils.readBuildNumber().substring(0, 10)
   /* we don't need x86 for any builds except e2e */
   env.ANDROID_ABI_INCLUDE="armeabi-v7a;arm64-v8a"
   env.ANDROID_ABI_SPLIT="false"
@@ -36,10 +38,11 @@ def bundle() {
     /* Nix target which produces the final APKs */
     nix.build(
       attr: 'targets.mobile.android.release',
-      args: [
-        'gradle-opts': gradleOpt,
-        'build-number': utils.readBuildNumber(),
-        'build-type': btype,
+      conf: [
+        'status-im.ci': '1',
+        'status-im.build-type': btype,
+        'status-im.status-react.gradle-opts': gradleOpt,
+        'status-im.status-react.build-number': buildNumber,
       ],
       safeEnv: [
         'STATUS_RELEASE_KEY_ALIAS',
@@ -71,7 +74,7 @@ def extractArchFromAPK(name) {
   if (matches.size() > 0) {
     return matches[0][1]
   }
-  if (utils.getBuildType() == 'e2e') {
+  if (utils.isE2EBuild()) {
     return 'x86'
   }
   /* non-release builds make universal APKs */
@@ -108,7 +111,8 @@ def uploadToPlayStore(type = 'nightly') {
     nix.shell(
       "fastlane android ${type}",
       keep: ['FASTLANE_DISABLE_COLORS', 'APK_PATHS', 'GOOGLE_PLAY_JSON_KEY'],
-      attr: 'shells.fastlane'
+      attr: 'shells.fastlane',
+      pure: false
     )
   }
 }

@@ -6,7 +6,8 @@
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as utils.platform]
-            [status-im.utils.types :as types])
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log])
   (:require-macros [status-im.utils.slurp :refer [slurp]]))
 
 (defn- add-custom-bootnodes [config network all-bootnodes]
@@ -69,12 +70,6 @@
   [limit nodes]
   (take limit (shuffle nodes)))
 
-(defn get-log-level
-  [multiaccount-settings]
-  (or (:log-level multiaccount-settings)
-      (if utils.platform/desktop? ""
-          config/log-level-status-go)))
-
 (def default-fleets (slurp "resources/config/fleets.json"))
 
 (defn fleets [{:keys [custom-fleets]}]
@@ -125,15 +120,18 @@
              :BrowsersConfig {:Enabled true}
              :PermissionsConfig {:Enabled true}
              :MailserversConfig {:Enabled true}
+             :EnableNTPSync true
              :WhisperConfig           {:Enabled true
                                        :LightClient true
-                                       :MinimumPoW 0.001
-                                       :EnableNTPSync true}
+                                       :MinimumPoW 0.001}
              :ShhextConfig
              {:BackupDisabledDataDir (utils.platform/no-backup-directory)
               :InstallationID installation-id
               :MaxMessageDeliveryAttempts config/max-message-delivery-attempts
               :MailServerConfirmations  config/mailserver-confirmations-enabled?
+              :VerifyTransactionURL "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"
+              :VerifyENSURL "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"
+              :VerifyTransactionChainID 1
               :DataSyncEnabled true
               :PFSEnabled true}
              :RequireTopics (get-topics current-network)

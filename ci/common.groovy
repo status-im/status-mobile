@@ -70,7 +70,7 @@ def uploadArtifact(path) {
   def domain = 'ams3.digitaloceanspaces.com'
   def bucket = 'status-im'
   /* There's so many PR builds we need a separate bucket */
-  if (utils.getBuildType() == 'pr') {
+  if (utils.isPRBuild()) {
     bucket = 'status-im-prs'
   }
   /* WARNING: s3cmd can't guess APK MIME content-type */

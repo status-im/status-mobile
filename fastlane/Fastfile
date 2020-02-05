@@ -150,7 +150,8 @@ end
 def upload_to_diawi(source)
   diawi(
     file: source,
-    last_hope_attempts_count: 3,
+    last_hope_attempts_count: 5,
+    last_hope_attempts_backoff: 5,
     token: ENV['DIAWI_TOKEN']
   )
   # save the URL to a file for use in CI
@@ -212,7 +213,8 @@ platform :ios do
       }
     )
     upload_to_testflight(
-      ipa: 'status_appstore/StatusIm.ipa'
+      ipa: 'status_appstore/StatusIm.ipa',
+      skip_waiting_for_build_processing: true
     )
   end
 
@@ -220,9 +222,9 @@ platform :ios do
   lane :clean do
     clean_testflight_testers(
       username: ENV['FASTLANE_APPLE_ID'],
-      days_of_inactivity: 30,
-      oldest_build_allowed: 2_019_032_709
+      days_of_inactivity: 30
     )
+    # In the future we can try using 'oldest_build_allowed'
   end
 
   desc '`fastlane ios upload-diawi` - upload .ipa to diawi'

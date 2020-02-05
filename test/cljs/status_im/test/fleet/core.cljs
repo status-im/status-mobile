@@ -8,10 +8,10 @@
   (testing "not passing any extra fleet"
     (testing "it returns the default fleets"
       (is (=
-           #{:eth.beta
+           #{:eth.prod
+             :eth.beta
              :eth.staging
-             :eth.test
-             :eth.contract}
+             :eth.test}
            (into #{}
                  (keys (node/fleets {})))))))
   (testing "passing a custom fleet"

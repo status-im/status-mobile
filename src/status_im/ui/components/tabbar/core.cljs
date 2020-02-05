@@ -104,9 +104,8 @@
 
 (defn tabs-animation-wrapper-ios
   [content]
-  [react/view
+  [react/view {:style tabs.styles/title-cover-wrapper-ios}
    [react/view
-    {:style tabs.styles/title-cover-wrapper}
     content
     (when platform/iphone-x?
       [react/view
@@ -119,7 +118,7 @@
             keyboard-shown?
             (main-tab? view-id))}
    [react/view
-    {:style tabs.styles/title-cover-wrapper}
+    {:style tabs.styles/title-cover-wrapper-android}
     content]])
 
 (defn tabs-animation-wrapper [keyboard-shown? view-id tab]

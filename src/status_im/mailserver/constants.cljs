@@ -8,7 +8,7 @@
 (def maximum-number-of-attempts 2)
 (def request-timeout 30)
 (def min-limit 100)
-(def max-limit 2000)
+(def max-limit 1000)
 (def backoff-interval-ms 3000)
 (def default-limit max-limit)
 (def connection-timeout

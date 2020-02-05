@@ -5,12 +5,14 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
-(defn calculate-last-request [{:keys [discovery?]}
+(defn calculate-last-request [{:keys [negotiated?
+                                      discovery?]}
                               {:keys [previous-last-request
                                       now-s]}]
   ;; New topic, if discovery we don't fetch history
   (if (and (nil? previous-last-request)
-           discovery?)
+           (or discovery?
+               negotiated?))
     (- now-s 10)
     (max previous-last-request
          (- now-s constants/max-request-range))))
@@ -34,7 +36,7 @@
     {::json-rpc/call [{:method "mailservers_addMailserverTopic"
                        :params [mailserver-topic]
                        :on-success #(log/debug "added mailserver-topic successfully")
-                       :on-failure #(log/error "failed to delete mailserver topic" %)}]}))
+                       :on-failure #(log/error "failed to add mailserver topic" %)}]}))
 
 (defn new-chat-ids? [previous-mailserver-topic new-mailserver-topic]
   (seq (clojure.set/difference (:chat-ids new-mailserver-topic)

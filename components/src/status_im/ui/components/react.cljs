@@ -311,13 +311,12 @@
      children)))
 
 (defn main-screen-modal-view [current-view & components]
-  ;; NOTE on Android we use Modal component and it manages statusbar area by itself
-  [(if platform/ios?
-     (create-main-screen-view current-view)
-     view)
+  [(create-main-screen-view current-view)
    styles/flex
    [(if (= current-view :chat-modal)
       view
       keyboard-avoiding-view)
-    {:flex 1 :flex-direction :column}
+    (merge {:flex 1 :flex-direction :column}
+           (when platform/android?
+             {:background-color :white}))
     (apply vector view styles/flex components)]])

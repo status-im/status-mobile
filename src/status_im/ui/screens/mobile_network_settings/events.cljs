@@ -33,7 +33,8 @@
         (sheet-defaults)]
 
        logged-in?
-       [(bottom-sheet/hide-bottom-sheet)]))))
+       [(mailserver/process-next-messages-request)
+        (bottom-sheet/hide-bottom-sheet)]))))
 
 (defn apply-settings
   ([sync?] (apply-settings sync? :default))

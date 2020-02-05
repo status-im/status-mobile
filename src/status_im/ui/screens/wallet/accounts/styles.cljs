@@ -2,38 +2,31 @@
   (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.tabbar.styles :as tabs.styles]))
 
+(def card-common
+  {:margin-vertical   16
+   :margin-horizontal 8
+   :width             156
+   :height            145
+   :shadow-offset     {:width 0 :height 2}
+   :shadow-radius     8
+   :shadow-opacity    1
+   :shadow-color      "rgba(0, 9, 26, 0.12)"
+   :elevation         3
+   :border-radius     8})
+
 (defn card [color]
-  {:width            156
-   :height           145
-   :margin-right     16
-   :background-color color
-   :shadow-offset    {:width 0 :height 2}
-   :shadow-radius    8
-   :shadow-opacity   1
-   :shadow-color     "rgba(0, 9, 26, 0.12)"
-   :elevation        2
-   :border-radius    8
-   :justify-content  :space-between
-   :padding          12
-   :padding-bottom   6
-   :margin-top       5
-   :margin-bottom    5})
+  (merge card-common
+         {:background-color   color
+          :justify-content    :space-between
+          :padding-horizontal 12
+          :padding-top        12
+          :padding-bottom     6}))
 
 (def add-card
-  {:width            156
-   :height           145
-   :margin-top       5
-   :margin-right     5
-   :margin-bottom    5
-   :background-color colors/white
-   :shadow-offset    {:width 0 :height 2}
-   :shadow-radius    8
-   :shadow-opacity   1
-   :shadow-color     "rgba(0, 9, 26, 0.12)"
-   :elevation        2
-   :border-radius    8
-   :justify-content  :center
-   :align-items      :center})
+  (merge card-common
+         {:background-color colors/white
+          :justify-content  :center
+          :align-items      :center}))
 
 (def send-button-container
   {:position        :absolute

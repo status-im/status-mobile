@@ -507,10 +507,7 @@
 (handlers/register-handler-fx
  :chat.ui/start-public-chat
  (fn [cofx [_ topic opts]]
-   (fx/merge
-    cofx
-    (chat/start-public-chat topic opts)
-    (pairing/sync-public-chat topic))))
+   (chat/start-public-chat cofx topic opts)))
 
 (handlers/register-handler-fx
  :chat.ui/remove-chat
@@ -1208,12 +1205,23 @@
  :contact/qr-code-scanned
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [{:keys [db] :as cofx} [_ contact-identity _]]
-   (let [validation-result (new-chat.db/validate-pub-key db contact-identity)]
-     (if (some? validation-result)
-       {:utils/show-popup {:title (i18n/label :t/unable-to-read-this-code)
-                           :content validation-result
-                           :on-dismiss #(re-frame/dispatch [:navigate-to-clean :home])}}
-       (chat/start-chat cofx contact-identity {:navigation-reset? true})))))
+   (let [public-key?       (and (string? contact-identity)
+                                (string/starts-with? contact-identity "0x"))
+         validation-result (new-chat.db/validate-pub-key db contact-identity)]
+     (cond
+       (and public-key? (not (some? validation-result)))
+       (chat/start-chat cofx contact-identity {:navigation-reset? true})
+
+       (and (not public-key?) (string? contact-identity))
+       (let [chain (ethereum/chain-keyword db)]
+         {:resolve-public-key {:chain            chain
+                               :contact-identity contact-identity
+                               :cb               #(re-frame/dispatch [:contact/qr-code-scanned %])}})
+
+       :else
+       {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
+                           :content    validation-result
+                           :on-dismiss #(re-frame/dispatch [:navigate-to-clean :home])}}))))
 
 (handlers/register-handler-fx
  :contact.ui/start-group-chat-pressed
@@ -1248,7 +1256,8 @@
 (handlers/register-handler-fx
  :pairing.ui/pair-devices-pressed
  (fn [cofx _]
-   (pairing/pair-installation cofx)))
+   (log/info "Sending pair installation")
+   (pairing/send-pair-installation cofx)))
 
 (handlers/register-handler-fx
  :pairing.ui/set-name-pressed
@@ -1423,37 +1432,12 @@
  (fn [cofx [_ field-key value]]
    (custom-tokens/field-is-edited cofx field-key value)))
 
-(handlers/register-handler-fx
- :wallet.custom-token.ui/add-pressed
- (fn [cofx _]
-   (fx/merge cofx
-             (custom-tokens/add-custom-token)
-             (navigation/navigate-back))))
-
-(handlers/register-handler-fx
- :wallet.custom-token.ui/remove-pressed
- (fn [cofx [_ token navigate-back?]]
-   (fx/merge cofx
-             (custom-tokens/remove-custom-token token)
-             (when navigate-back?
-               (navigation/navigate-back)))))
-
 ;; ethereum subscriptions events
 
 (handlers/register-handler-fx
  :ethereum.callback/subscription-success
  (fn [cofx [_ id handler]]
    (ethereum.subscriptions/register-subscription cofx id handler)))
-
-(handlers/register-handler-fx
- :ethereum.transactions.callback/etherscan-error
- (fn [cofx [event error]]
-   (log/info event error)))
-
-(handlers/register-handler-fx
- :ethereum.transactions.callback/fetch-token-history-success
- (fn [cofx [_ transactions]]
-   (ethereum.transactions/handle-token-history cofx transactions)))
 
 ;; wallet events
 

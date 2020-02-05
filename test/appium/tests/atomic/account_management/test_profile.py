@@ -1,8 +1,8 @@
 import re
 
 from tests import marks, bootnode_address, mailserver_address, camera_access_error_text, \
-    photos_access_error_text, test_dapp_url, test_dapp_name, mailserver_staging_ams_1, mailserver_staging_central_1, \
-    mailserver_staging_hk
+    photos_access_error_text, test_dapp_url, test_dapp_name, mailserver_ams, mailserver_gc, \
+    mailserver_hk, prod_fleet, staging_fleet
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user
 from views.sign_in_view import SignInView
@@ -15,6 +15,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5302)
     @marks.high
+    @marks.skip
     def test_set_profile_picture(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -33,7 +34,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.create_user()
         sign_in_view.just_fyi("Enable mobile network to see popup and enable syncing")
         sign_in_view.toggle_mobile_data()
-        if not sign_in_view.element_by_text_part("Sync using Mobile data").is_element_displayed():
+        if not sign_in_view.element_by_text_part("Sync using mobile data?").is_element_displayed():
             self.driver.fail('No popup about Mobile data is shown')
         sign_in_view.wait_for_element_starts_with_text('Continue syncing').click()
 
@@ -63,7 +64,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     def test_mobile_data_usage_popup_stop_syncing(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
-        offline_banner_text = "History syncing offline"
+        offline_banner_text = "Offline, waiting for Wi-Fi"
 
         sign_in_view.just_fyi("Enable mobile network to see popup and stop syncing")
         sign_in_view.toggle_mobile_data()
@@ -113,6 +114,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5454)
     @marks.critical
+    @marks.skip
     def test_user_can_remove_profile_picture(self):
         signin_view = SignInView(self.driver)
         home_view = signin_view.create_user()
@@ -274,6 +276,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         wallet_view = profile_view.wallet_button.click()
         wallet_view.set_up_wallet()
         address = wallet_view.get_wallet_address()
+        sign_in_view.profile_button.click()
+        profile_view.logout()
         self.driver.reset()
         sign_in_view.accept_agreements()
         sign_in_view.recover_access(recovery_phrase)
@@ -377,10 +381,10 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             # TODO: should be edited after showing some text in setting when log in disabled
             if profile_view.log_level_setting.is_element_displayed():
                 self.errors.append('Log is not disabled')
-            if not profile_view.element_by_text('eth.staging').is_element_displayed():
-                self.errors.append('Fleet is not set to eth.staging')
+            if not profile_view.element_by_text('eth.prod').is_element_displayed():
+                self.errors.append('Fleet is not set to eth.prod')
         else:
-            for text in 'INFO', 'eth.staging':
+            for text in 'INFO', 'eth.prod':
                 if not profile_view.element_by_text(text).is_element_displayed():
                     self.errors.append('%s is not selected by default' % text)
         self.errors.verify_no_errors()
@@ -519,8 +523,10 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         profile_view.just_fyi('pin mailserver')
         profile_view.sync_settings_button.click()
+        mailserver_1 = profile_view.return_mailserver_name(mailserver_gc, prod_fleet)
+        mailserver_2 = profile_view.return_mailserver_name(mailserver_ams, prod_fleet)
         # TODO: temporary to avoid issue 9269 - should be disabled after fix
-        mailserver = mailserver_staging_central_1 if profile_view.element_by_text(mailserver_staging_ams_1).is_element_present() else mailserver_staging_ams_1
+        mailserver = mailserver_1 if profile_view.element_by_text(mailserver_2).is_element_present() else mailserver_2
         profile_view.mail_server_button.click()
         profile_view.mail_server_auto_selection_button.click()
         profile_view.element_by_text(mailserver).click()
@@ -639,8 +645,10 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.just_fyi('disable autoselection')
         profile_1.sync_settings_button.click()
         profile_1.mail_server_button.click()
+        mailserver_1 = profile_1.return_mailserver_name(mailserver_hk, prod_fleet)
+        mailserver_2 = profile_1.return_mailserver_name(mailserver_ams, prod_fleet)
         # TODO: temporary pin mailserver to avoid issue 9269 - should be disabled after fix
-        mailserver = mailserver_staging_hk if profile_1.element_by_text(mailserver_staging_ams_1).is_element_present() else mailserver_staging_ams_1
+        mailserver = mailserver_1 if profile_1.element_by_text(mailserver_2).is_element_present() else mailserver_2
         profile_1.mail_server_auto_selection_button.click()
         profile_1.element_by_text(mailserver).click()
         profile_1.confirm_button.click()
@@ -654,7 +662,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.specify_name_input.set_value(server_name)
         profile_1.mail_server_address_input.set_value(mailserver_address[:-3])
         profile_1.save_button.click()
-        if profile_1.element_by_text(mailserver_staging_ams_1).is_element_displayed():
+        if profile_1.element_by_text(mailserver_2).is_element_displayed():
             self.errors.append('could add custom mailserver with invalid address')
         profile_1.mail_server_address_input.clear()
         profile_1.mail_server_address_input.set_value(mailserver_address)
@@ -750,7 +758,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.just_fyi('check that can pick another mailserver and receive messages')
         public_chat_1.element_by_text('PICK ANOTHER').is_element_displayed(30)
         public_chat_1.element_by_text_part('PICK ANOTHER').click()
-        profile_1.element_by_text(mailserver_staging_ams_1).click()
+        mailserver = profile_1.return_mailserver_name(mailserver_ams, prod_fleet)
+        profile_1.element_by_text(mailserver).click()
         profile_1.confirm_button.click()
         profile_1.home_button.click()
         if not public_chat_1.chat_element_by_text(message).is_element_displayed(30):
@@ -822,6 +831,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5680)
     @marks.high
+    @marks.skip
+    # skip until edit userpic is enabled back
     def test_pair_devices_sync_name_photo_public_group_chats(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -871,8 +882,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_2_home.profile_button.click()
         if not device_2_profile.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
             self.errors.append('Profile picture was not updated after initial sync')
+        device_2_profile.home_button.click()
 
-        device_1.just_fyi('send message to group chat, edit profile details and join to new public chat')
+        device_1.just_fyi('send message to group chat, and join to new public chat')
         device_1_home = device_1_profile.get_back_to_home_view()
         device_1_public_chat = device_1_home.join_public_chat(public_chat_after_sync_name)
         device_1_public_chat.back_button.click()
@@ -880,11 +892,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_group_chat.chat_message_input.send_keys(message_after_sync)
         device_1_group_chat.send_message_button.click()
         device_1_group_chat.back_button.click()
-        device_1_profile = device_1_home.profile_button.click()
-        device_1_profile.edit_profile_picture('sauce_logo_red.png')
 
-        device_2.just_fyi('check that message in group chat is shown, profile details and public chats are synced')
-        device_2_profile.home_button.click()
+        device_2.just_fyi('check that message in group chat is shown, public chats are synced')
         if not device_2_home.element_by_text('#%s' % public_chat_after_sync_name).is_element_displayed():
             self.errors.append('Public chat "%s" doesn\'t appear on other device when devices are paired'
                                % public_chat_before_sync_name)
@@ -894,11 +903,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         if not device_2_group_chat.chat_element_by_text(message_after_sync).is_element_displayed():
             self.errors.append('"%s" message in group chat is not synced' % message_after_sync)
-
-        device_2_group_chat.get_back_to_home_view()
-        device_2_home.profile_button.click()
-        if not device_2_profile.profile_picture.is_element_image_equals_template('sauce_logo_red_profile.png'):
-            self.errors.append('Profile picture was not updated after changing when devices are paired')
 
         self.errors.verify_no_errors()
 

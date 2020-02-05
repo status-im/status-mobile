@@ -32,6 +32,7 @@
             [status-im.ui.screens.keycard.recovery.views :as keycard.recovery]
             [status-im.ui.screens.keycard.views :as keycard]
             [status-im.ui.screens.help-center.views :as help-center]
+            [status-im.ui.screens.glossary.view :as glossary]
             [status-im.ui.screens.home.views :as home]
             [status-im.ui.screens.intro.views :as intro]
             [status-im.ui.screens.log-level-settings.views :as log-level-settings]
@@ -63,7 +64,8 @@
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
             [status-im.ui.screens.wallet.account.views :as wallet.account]
             [status-im.ui.screens.wallet.add-new.views :as add-account]
-            [status-im.ui.screens.wallet.account-settings.views :as account-settings]))
+            [status-im.ui.screens.wallet.account-settings.views :as account-settings]
+            [status-im.ui.screens.network-info.views :as network-info]))
 
 (def all-screens
   {:login                                            login/login
@@ -164,10 +166,12 @@
    :sync-settings                                    sync-settings/sync-settings
    :advanced-settings                                advanced-settings/advanced-settings
    :help-center                                      help-center/help-center
+   :glossary                                         glossary/glossary
    :about-app                                        about-app/about-app
    :manage-dapps-permissions                         dapps-permissions/manage
    :network-settings                                 network/network-settings-view
    :network-details                                  network/network-details-view
+   :network-info                                     network-info/network-info
    :edit-network                                     network/edit-network-view
    :log-level-settings                               log-level-settings/log-level-settings
    :fleet-settings                                   fleet-settings/fleet-settings

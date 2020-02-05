@@ -19,6 +19,41 @@ class TestBrowsing(SingleDeviceTestCase):
         for wiki_text in wiki_texts:
             browsing_view.find_text_part(wiki_text, 15)
 
+    @marks.testrail_id(5395)
+    @marks.medium
+    def test_navigation_history_kept_after_relogin(self):
+        sign_in = SignInView(self.driver)
+        home_view = sign_in.create_user()
+        dapp_view = home_view.dapp_tab_button.click()
+        ru_url = 'https://status.im/ru/'
+        browsing_view = dapp_view.open_url(ru_url)
+        browsing_view.find_text_part('Частная, безопасная связь')
+
+        browsing_view.just_fyi('Navigate to get-involved and back')
+        browsing_view.element_by_text_part('Участвовать').click()
+        browsing_view.browser_previous_page_button.click()
+
+        browsing_view.just_fyi('Relogin and check that tap on "Next" navigates to get-involved')
+        browsing_view.relogin()
+        home_view.dapp_tab_button.click()
+        dapp_view.element_by_text_part(ru_url).click()
+        browsing_view.browser_next_page_button.click()
+        browsing_view.find_text_part('Сообщество с открытым исходным кодом')
+
+    @marks.testrail_id(5438)
+    @marks.medium
+    def test_browser_shows_offline_state(self):
+        sign_in = SignInView(self.driver)
+        home_view = sign_in.create_user()
+        home_view.toggle_airplane_mode()
+        dapp_view = home_view.dapp_tab_button.click()
+        browsing_view = dapp_view.open_url('status.im')
+        offline_texts = ['Unable to load page', 'ERR_INTERNET_DISCONNECTED']
+        for text in offline_texts:
+            browsing_view.find_text_part(text, 15)
+        home_view.toggle_airplane_mode()
+        browsing_view.browser_refresh_page_button.click_until_presence_of_element(browsing_view.element_by_text_part('An Open Source Community'))
+
     @marks.testrail_id(5465)
     @marks.medium
     def test_open_invalid_link(self):
@@ -83,7 +118,7 @@ class TestBrowsing(SingleDeviceTestCase):
         dapp_view.remove_browser_entry_long_press('Status - Private', clear_all=True)
         home_view.relogin()
         home_view.dapp_tab_button.click()
-        if not dapp_view.element_by_text('Browsed websites will appear here.').is_element_displayed():
+        if not dapp_view.element_by_text('Browser history will appear here').is_element_displayed():
             self.errors.append('Browser history is not empty')
 
     @marks.testrail_id(5320)

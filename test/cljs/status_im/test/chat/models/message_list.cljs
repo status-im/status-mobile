@@ -128,6 +128,12 @@
                            :timestamp 3
                            :whisper-timestamp 3}]
         current-list (s/add-many nil current-messages)]
+    (testing "removing a message"
+      (let [updated-list (-> (s/remove-message current-list {:clock-value 106
+                                                             :message-id "106"})
+                             (s/->seq))]
+        (is (= 2 (count updated-list)))
+        (is (= 103 (-> (nth updated-list 1) :clock-value)))))
     (testing "inserting a newer message"
       (let [new-message {:timestamp 12
                          :clock-value 112

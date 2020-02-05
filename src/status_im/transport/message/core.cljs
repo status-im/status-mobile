@@ -4,46 +4,21 @@
             [re-frame.core :as re-frame]
             [status-im.chat.models.message :as models.message]
             [status-im.chat.models :as models.chat]
+            [status-im.contact.core :as models.contact]
+            [status-im.pairing.core :as models.pairing]
             [status-im.data-store.messages :as data-store.messages]
+            [status-im.data-store.contacts :as data-store.contacts]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.constants :as constants]
             [status-im.utils.handlers :as handlers]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.core :as ethereum]
             [status-im.native-module.core :as status]
-            [status-im.transport.message.contact :as contact]
-            [status-im.transport.message.protocol :as protocol]
-            [status-im.transport.message.transit :as transit]
-            [status-im.transport.utils :as transport.utils]
-            [status-im.tribute-to-talk.whitelist :as whitelist]
             [status-im.ens.core :as ens]
             [cljs-bean.core :as clj-bean]
-            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]))
-
-(fx/defn handle-raw-message
-  "Receive message handles a new status-message.
-  dedup-id is passed by status-go and is used to deduplicate messages at that layer.
-  Once a message has been successfuly processed, that id needs to be sent back
-  in order to stop receiving that message"
-  [{:keys [db] :as cofx} raw-message-js]
-  (let [timestamp (.-timestamp raw-message-js)
-        sig (.-from raw-message-js)
-        payload (.-payload raw-message-js)]
-    (let [status-message (transit/deserialize payload)]
-      (when (and sig
-                 status-message)
-        (try
-          (when-let [valid-message (protocol/validate status-message)]
-            (protocol/receive
-             valid-message
-             sig
-             sig
-             timestamp
-             cofx))
-          (catch :default e nil)))))) ; ignore unknown message types
 
 (defn- js-obj->seq [obj]
   ;; Sometimes the filter will return a single object instead of a collection
@@ -57,38 +32,42 @@
   ;; over it
   (models.chat/ensure-chat cofx (dissoc chat :unviewed-messages-count)))
 
-(fx/defn handle-message-2 [cofx message]
+(fx/defn handle-contact [cofx contact]
+  (models.contact/ensure-contact cofx contact))
+
+(fx/defn handle-message [cofx message]
   (fx/merge cofx
             (models.message/receive-one message)
             (ens/verify-names-from-message message (:from message))))
 
 (fx/defn process-response [cofx response-js]
   (let [chats (.-chats response-js)
+        contacts (.-contacts response-js)
+        installations (.-installations response-js)
         raw-messages (.-rawMessages response-js)
         messages (.-messages response-js)]
     (cond
+      (seq installations)
+      (let [installation (.pop installations)]
+        (fx/merge cofx
+                  {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (models.pairing/handle-installation (clj-bean/->clj installation))))
+
+      (seq contacts)
+      (let [contact (.pop contacts)]
+        (fx/merge cofx
+                  {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (handle-contact (-> contact (clj-bean/->clj) (data-store.contacts/<-rpc)))))
       (seq chats)
       (let [chat (.pop chats)]
         (fx/merge cofx
                   {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
                   (handle-chat (-> chat (clj-bean/->clj) (data-store.chats/<-rpc)))))
-      (seq raw-messages)
-      (let [first-filter (aget raw-messages 0)
-            messages     (.-messages first-filter)
-            first-message (.pop messages)]
-       ;; Pop the empty array
-        (when (= (.-length messages) 0)
-          (.pop raw-messages))
-        (when first-message
-          (fx/merge cofx
-                    {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
-                    (handle-raw-message first-message))))
-
       (seq messages)
       (let [message (.pop messages)]
         (fx/merge cofx
                   {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
-                  (handle-message-2 (-> message (clj-bean/->clj) (data-store.messages/<-rpc))))))))
+                  (handle-message (-> message (clj-bean/->clj) (data-store.messages/<-rpc))))))))
 
 (handlers/register-handler-fx
  ::process

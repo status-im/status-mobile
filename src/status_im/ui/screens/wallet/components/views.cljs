@@ -39,8 +39,8 @@
        {:multiline           true
         :container           {:margin 16 :padding-vertical 16 :height 72}
         :style               {:text-align-vertical :top :height 42}
-        :placeholder         "0x... or username.domain.eth" ;(i18n/label :t/recipient-code)
+        :placeholder         (i18n/label :t/recipient-code-placeholder)
         :on-change-text      #(reset! content %)
         :accessibility-label :recipient-address-input}]
       [react/text {:style {:color colors/gray :margin-horizontal 16}}
-       "Enter address or username of the recepient"]]]))
+       (i18n/label :t/enter-recipient-address-or-username)]]]))

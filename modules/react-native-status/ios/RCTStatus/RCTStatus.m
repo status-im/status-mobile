@@ -124,7 +124,7 @@ RCT_EXPORT_METHOD(initKeystore) {
                    ^(void)
                    {
                         NSString *res = StatusgoInitKeystore(keystoreDir.path);
-                        NSLog(@"StopNode result %@", res);
+                        NSLog(@"InitKeyStore result %@", res);
                    });
 }
 
@@ -325,8 +325,9 @@ RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
 
     NSLog(@"after remove lightchaindata");
 
-    NSURL *absTestnetKeystoreUrl = [absTestnetFolderName URLByAppendingPathComponent:@"keystore"];
-    NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
+    NSString *keystore = @"keystore";
+    NSURL *absTestnetKeystoreUrl = [absTestnetFolderName URLByAppendingPathComponent:keystore];
+    NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:keystore];
     if([fileManager fileExistsAtPath:absTestnetKeystoreUrl.path]){
         NSLog(@"copy keystore");
         [fileManager copyItemAtPath:absTestnetKeystoreUrl.path toPath:absKeystoreUrl.path error:nil];
@@ -341,19 +342,22 @@ RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
     NSString *relativeDataDir = [configJSON objectForKey:@"DataDir"];
     NSString *absDataDir = [rootUrl.path stringByAppendingString:relativeDataDir];
     NSURL *absDataDirUrl = [NSURL fileURLWithPath:absDataDir];
-    NSURL *absLogUrl = [absDataDirUrl URLByAppendingPathComponent:@"geth.log"];
-    [configJSON setValue:absDataDirUrl.path forKey:@"DataDir"];
-    [configJSON setValue:absKeystoreUrl.path forKey:@"KeyStoreDir"];
-    [configJSON setValue:absLogUrl.path forKey:@"LogFile"];
+    NSURL *dataDirUrl = [NSURL fileURLWithPath:relativeDataDir];
+    NSURL *logUrl = [dataDirUrl URLByAppendingPathComponent:@"geth.log"];
+    [configJSON setValue:@"/keystore" forKey:@"KeyStoreDir"];
+    [configJSON setValue:@"" forKey:@"LogDir"];
+    [configJSON setValue:logUrl.path forKey:@"LogFile"];
 
     NSString *resultingConfig = [configJSON bv_jsonStringWithPrettyPrint:NO];
     NSLog(@"node config %@", resultingConfig);
 
-    if(![fileManager fileExistsAtPath:absDataDirUrl.path]) {
-        [fileManager createDirectoryAtPath:absDataDirUrl.path withIntermediateDirectories:YES attributes:nil error:nil];
+    if(![fileManager fileExistsAtPath:absDataDir]) {
+        [fileManager createDirectoryAtPath:absDataDir
+               withIntermediateDirectories:YES attributes:nil error:nil];
     }
 
-    NSLog(@"logUrlPath %@", absLogUrl.path);
+    NSLog(@"logUrlPath %@ rootDir %@", logUrl.path, rootUrl.path);
+    NSURL *absLogUrl = [absDataDirUrl URLByAppendingPathComponent:@"geth.log"];
     if(![fileManager fileExistsAtPath:absLogUrl.path]) {
         NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
         [dict setObject:[NSNumber numberWithInt:511] forKey:NSFilePosixPermissions];
@@ -434,7 +438,7 @@ RCT_EXPORT_METHOD(logout) {
     NSLog(@"Logout() method called");
 #endif
     NSString *result = StatusgoLogout();
-    
+
     NSLog(@"%@", result);
 }
 

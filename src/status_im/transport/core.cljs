@@ -2,6 +2,7 @@
  status-im.transport.core
   (:require
    [re-frame.core :as re-frame]
+   [status-im.ethereum.json-rpc :as json-rpc]
    [status-im.native-module.core :as status]
    [status-im.mailserver.core :as mailserver]
    [status-im.transport.message.core :as message]
@@ -34,15 +35,28 @@
 (fx/defn fetch-node-info-fx [cofx]
   {::fetch-node-info []})
 
+(fx/defn init-messenger
+  "We should only start receiving messages/processing topics once all the
+  initializiation is completed, otherwise we might receive messages/topics
+  when the state has not been properly initialized."
+  [cofx]
+  {::json-rpc/call [{:method "shhext_startMessenger"
+                     :on-success #(do
+                                    (log/debug "messenger initialized")
+                                    (re-frame/dispatch [::init-whisper]))
+                     :on-failure #(log/error "failed to init messenger")}]})
+
 (fx/defn init-whisper
   "Initialises whisper protocol by:
   - (optionally) initializing mailserver"
+  {:events [::init-whisper]}
   [cofx]
+  (log/debug "Initializing whisper")
   (fx/merge cofx
             (fetch-node-info-fx)
             (pairing/init)
             (publisher/start-fx)
-            (mailserver/initialize-mailserver)))
+            (when-not config/nimbus-enabled? (mailserver/initialize-mailserver))))
 
 (fx/defn stop-whisper
   "Stops whisper protocol"

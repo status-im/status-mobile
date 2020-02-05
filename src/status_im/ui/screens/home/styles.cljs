@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.home.styles
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.styles :as styles]))
+            [status-im.utils.styles :as styles]
+            [status-im.utils.platform :as platform]))
 
 (defn toolbar []
   {:background-color colors/white})
@@ -24,12 +25,17 @@
 (def search-input-height 56)
 
 (def search-container
-  {:height             search-input-height
-   :flex-direction     :row
-   :padding-horizontal 16
-   :background-color   colors/white
-   :align-items        :center
-   :justify-content    :center})
+  (merge
+   {:height             search-input-height
+    :flex-direction     :row
+    :padding-horizontal 16
+    :background-color   colors/white
+    :align-items        :center
+    :justify-content    :center}
+   (when platform/ios?
+     {:position         :absolute
+      :top              (- search-input-height)
+      :width            "100%"})))
 
 (def search-input-container
   {:background-color colors/gray-lighter

@@ -32,9 +32,10 @@
           (testing "it loads the profile"
             (let [actual (links/handle-url {:db db} "status-im://user/0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073")]
               (is (= "0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073" (get-in actual [:db :contacts/identity]))))))
-        (testing "if does nothing because the link is invalid"
-          (is (= (links/handle-url {:db db} "status-im://user/CONTACTCODE")
-                 nil)))
+        (testing "Handle a custom string as a an profile link with ens-name"
+          (is (= (get-in (links/handle-url {:db db} "status-im://user/CONTACTCODE")
+                         [:resolve-public-key :contact-identity])
+                 "CONTACTCODE")))
         (testing "a not found url"
           (testing "it does nothing"
             (is (nil? (links/handle-url {:db db} "status-im://not-existing")))))))))

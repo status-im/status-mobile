@@ -8,6 +8,26 @@ The main config file is [`nix/nix.conf`](/nix/nix.conf) and its main purpose is 
 
 __NOTE:__ If you are in Asia you might want to add the `https://nix-cache-cn.status.im/` to be first in order of `substituters`. Removing `cache.nixos.org` could also help.
 
+## Build arguments
+
+We leverage the standard nixpkgs `config` argument for our own parameterization of the builds (e.g. to pass a build number or build type). Here is a sample structure of the `config` attribute set:
+
+```nix
+config = {
+  status-im = {
+    ci = "1";                 # This flag is present when running in a CI environment
+    build-type = "pr";        # Build type (influences which .env file gets used for feature flags)
+    status-go = {
+      src-override = "$GOPATH/src/github.com/status-im/status-go";
+    };
+    status-react = {
+      build-number = "9999";  # Build number to be assigned to the app bundle
+      gradle-opts = "";       # Gradle options passed for Android builds
+    };
+  };
+};
+```
+
 ## Shell
 
 In order to access an interactive Nix shell a user should run `make shell`.
@@ -42,6 +62,11 @@ or for a one-off build:
 make release-android STATUS_GO_SRC_OVERRIDE=$GOPATH/src/github.com/status-im/status-go
 ```
 
+## Using a local Nimbus repository
+
+If you need to use a locally checked-out Nimbus repository as a dependency of status-go, you can achieve that by defining the `NIMBUS_SRC_OVERRIDE`
+environment variable, in the same way as the previous point for local status-go repositories.
+
 ## Known Issues
 
 ### MacOS 10.15 "Catalina"
@@ -74,3 +99,10 @@ export NIX_IGNORE_SYMLINK_STORE=1
 Add it to your `.bashrc` or any other shell config file.
 
 __NOTE__: Your old `/nix` directory will end up in `/Users/Shared/Relocated Items/Security/nix` after OS upgrade.
+
+### Cache Downloads Timing Out
+
+If copying from Nix Cache times out you can adjust the timeout by changing [`nix/nix.conf`](/nix/nix.conf):
+```conf
+stalled-download-timeout = 9001
+```

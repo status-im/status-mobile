@@ -68,4 +68,4 @@
                      (not initialization-complete?)
                      (assoc :initialization-protocol initialization-protocol))}
               (when initialization-complete?
-                (transport/init-whisper)))))
+                (transport/init-messenger)))))

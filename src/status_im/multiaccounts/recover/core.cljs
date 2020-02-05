@@ -256,7 +256,9 @@
   {:events [:multiaccounts.recover/enter-password-next-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:db (assoc-in db [:intro-wizard :stored-key-code] (get-in db [:intro-wizard :key-code]))}
+            {:db (-> db
+                     (assoc-in [:intro-wizard :stored-key-code] (get-in db [:intro-wizard :key-code]))
+                     (assoc-in [:intro-wizard :key-code] ""))}
             (proceed-to-password-confirm)))
 
 (fx/defn confirm-password-next-button-pressed

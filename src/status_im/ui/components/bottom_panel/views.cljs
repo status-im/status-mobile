@@ -6,6 +6,7 @@
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
+  (react/dismiss-keyboard!)
   (anim/start
    (anim/parallel
     [(anim/spring bottom-anim-value {:toValue         (- window-height)

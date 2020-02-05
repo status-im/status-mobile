@@ -39,19 +39,28 @@
             (i18n/label :members-active-none)
             (i18n/label-pluralize cnt :t/members-active))))]]))
 
+(defn- contact-indicator [{:keys [added?]}]
+  [react/view {:flex-direction :row}
+   [react/text {:style st/toolbar-subtitle}
+    (if added?
+      (i18n/label :chat-is-a-contact)
+      (i18n/label :chat-is-not-a-contact))]])
+
 (defview toolbar-content-view []
   (letsubs [{:keys [group-chat color online contacts chat-name contact
                     public? chat-id] :as chat}    [:chats/current-chat]
             sync-state                            [:sync-state]]
     (let [has-subtitle? (or group-chat (not= :done sync-state))]
       [react/view {:style st/toolbar-container}
-       [react/view {:margin-right 8}
+       [react/view {:margin-right 10}
         [chat-icon.screen/chat-icon-view-toolbar contact group-chat chat-name color online]]
        [react/view {:style st/chat-name-view}
         [react/text {:style               st/chat-name-text
                      :number-of-lines     1
                      :accessibility-label :chat-name-text}
          chat-name]
+        (when contact
+          [contact-indicator contact])
         (if group-chat
           [group-last-activity {:contacts   contacts
                                 :public?    public?

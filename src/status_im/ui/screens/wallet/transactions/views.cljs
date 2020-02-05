@@ -4,11 +4,13 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.view :as toolbar-old]
             [status-im.ui.screens.wallet.transactions.styles :as styles]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.toolbar :as toolbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- transaction-icon
@@ -71,16 +73,64 @@
                       :icon-opts (merge styles/forward
                                         {:accessibility-label :show-transaction-button})}]]]])
 
+(defn etherscan-link [address]
+  (let [link @(re-frame/subscribe [:wallet/etherscan-link address])]
+    [react/touchable-highlight
+     {:on-press #(when link
+                   (.openURL react/linking link))}
+     [react/view
+      {:style {:flex             1
+               :padding-horizontal 14
+               :flex-direction   :row
+               :align-items :center
+               :background-color colors/blue-light
+               :height           52}}
+      [vector-icons/tiny-icon
+       :tiny-icons/tiny-external
+       {:color           colors/blue
+        :container-style {:margin-right 5}}]
+      [react/text
+       {:style {:marging-left 10
+                :color colors/blue}}
+       (i18n/label :t/check-on-etherscan)]]]))
+
 (defn history-list
-  [transactions-history-sections]
-  [react/view components.styles/flex
-   [list/section-list {:sections        transactions-history-sections
-                       :key-fn          :hash
-                       :render-fn       #(render-transaction %)
-                       :empty-component
-                       [react/i18n-text {:style styles/empty-text
-                                         :key   :transactions-history-empty}]
-                       :refreshing      false}]])
+  [transactions-history-sections address]
+  (let [fetching-recent-history? @(re-frame/subscribe [:wallet/fetching-recent-tx-history? address])
+        fetching-more-history? @(re-frame/subscribe [:wallet/fetching-tx-history? address])
+        all-fetched? @(re-frame/subscribe [:wallet/tx-history-fetched? address])]
+    [react/view components.styles/flex
+     [etherscan-link address]
+     (when fetching-recent-history?
+       [react/view
+        {:style {:flex            1
+                 :height          40
+                 :margin-vertical 16}}
+        [react/activity-indicator {:size :large
+                                   :animating true}]])
+     [list/section-list
+      {:sections     transactions-history-sections
+       :key-fn       :hash
+       :render-fn    #(render-transaction %)
+       :empty-component
+       [react/i18n-text {:style styles/empty-text
+                         :key   :transactions-history-empty}]
+       :refreshing   false}]
+     (when (and (not fetching-recent-history?)
+                (not all-fetched?))
+       (if fetching-more-history?
+         [react/view
+          {:style {:flex            1
+                   :height          40
+                   :margin-vertical 8}}
+          [react/activity-indicator {:size :large
+                                     :animating true}]]
+         [toolbar/toolbar
+          {:center {:label    (i18n/label :t/transactions-load-more)
+                    :type     :secondary
+                    :on-press (when-not fetching-more-history?
+                                #(re-frame/dispatch
+                                  [:transactions/fetch-more address]))}}]))]))
 
 (defn- render-item-filter [{:keys [id label checked? on-touch]}]
   [react/view {:accessibility-label :filter-item}
@@ -200,10 +250,10 @@
             [:wallet.transactions.details/screen hash address]]
     [react/view {:style components.styles/flex}
      ;;TODO options should be replaced by bottom sheet ,and topbar should be used here
-     [toolbar/toolbar {}
-      toolbar/default-nav-back
-      [toolbar/content-title (i18n/label :t/transaction-details)]
-      (when transaction [toolbar/actions (details-action hash url)])]
+     [toolbar-old/toolbar {}
+      toolbar-old/default-nav-back
+      [toolbar-old/content-title (i18n/label :t/transaction-details)]
+      (when transaction [toolbar-old/actions (details-action hash url)])]
      [react/scroll-view {:style components.styles/main-container}
       [details-header date type amount-text currency-text]
       [details-confirmations confirmations confirmations-progress (= :failed type)]

@@ -33,6 +33,7 @@
                          :to      to
                          :contact {:address to}
                          :symbol  :ETH
+                         :value   "0x8ac7230489e80000"
                          :amount  "10"})))))
       (testing "after second transaction"
         (testing "signing still in progress"

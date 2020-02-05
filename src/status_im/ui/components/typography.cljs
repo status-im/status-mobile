@@ -54,7 +54,6 @@
    :caption       {:font-size   12}
 
    :timestamp     {:font-size      10
-                   :letter-spacing 1
                    :text-transform :uppercase}})
 
 (defn get-style

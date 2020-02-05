@@ -18,7 +18,7 @@ let
     lldbVersions = [ "3.1.4508709" ];
     cmakeVersions = [ "3.10.2" ];
     includeNDK = true;
-    ndkVersion = "21.0.5935234";
+    ndkVersion = "21.0.6113669";
     useGoogleAPIs = false;
     useGoogleTVAddOns = false;
     includeExtras = [ "extras;android;m2repository" "extras;google;m2repository" ];

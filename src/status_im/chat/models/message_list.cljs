@@ -131,19 +131,15 @@
     (.prev iter)
     e))
 
-(defn insert-message
-  "Insert a message in the list, pull it's left and right messages, calculate
-  its positional metadata, and update the left & right messages if necessary,
-  this operation is O(logN) for insertion, and O(logN) for the updates, as
-  we need to re-find (there's probably a better way)"
-  [old-message-list {:keys [key] :as prepared-message}]
-  (let [tree (.insert old-message-list prepared-message prepared-message)
-        iter (.find tree prepared-message)
+(defn update-message
+  "Update the message and siblings with positional info"
+  [tree message]
+  (let [iter (.find tree message)
         previous-message (when (.-hasPrev iter)
                            (get-prev-element iter))
         next-message     (when (.-hasNext iter)
                            (get-next-element iter))
-        message-with-pos-data (add-group-info prepared-message previous-message next-message)]
+        message-with-pos-data (add-group-info message previous-message next-message)]
     (cond->
      (.update iter message-with-pos-data)
 
@@ -155,6 +151,28 @@
            (not= :datemark (:type previous-message)))
       (-> (.find previous-message)
           (.update (update-previous-message message-with-pos-data previous-message))))))
+
+(defn remove-message
+  "Remove a message in the list"
+  [tree prepared-message]
+  (let [iter (.find tree prepared-message)]
+    (if (not iter)
+      tree
+      (let [new-tree (.remove iter)
+            next-message     (when (.-hasNext iter)
+                               (get-next-element iter))]
+        (if (not next-message)
+          new-tree
+          (update-message new-tree next-message))))))
+
+(defn insert-message
+  "Insert a message in the list, pull it's left and right messages, calculate
+  its positional metadata, and update the left & right messages if necessary,
+  this operation is O(logN) for insertion, and O(logN) for the updates, as
+  we need to re-find (there's probably a better way)"
+  [old-message-list prepared-message]
+  (let [tree (.insert old-message-list prepared-message prepared-message)]
+    (update-message tree prepared-message)))
 
 (defn add [message-list message]
   (insert-message (or message-list (dependencies/rb-tree compare-fn))

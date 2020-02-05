@@ -40,7 +40,7 @@ export REACT_SERVER_PORT ?= 5001
 # Our custom config is located in nix/nix.conf
 export NIX_CONF_DIR = $(PWD)/nix
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
-export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE
+export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE,NIMBUS_SRC_OVERRIDE
 export _NIX_ROOT = /nix
 # legacy TARGET_OS variable support
 ifdef TARGET_OS
@@ -53,6 +53,9 @@ ifeq ($(UNAME_S),Darwin)
 export NIX_IGNORE_SYMLINK_STORE=1
 export _NIX_ROOT = /opt/nix
 endif
+
+# Useful for checking if we are on NixOS
+OS_NAME = $(shell grep -oP '^NAME=\K\w(.*)' /etc/os-release)
 
 #----------------
 # Nix targets
@@ -80,7 +83,11 @@ nix-clean: ##@nix Remove all status-react build artifacts from /nix/store
 
 nix-purge: SHELL := /bin/sh
 nix-purge: ##@nix Completely remove the complete Nix setup
+ifeq ($(OS_NAME), NixOS)
+	$(error $(RED)You should not purge Nix files on NixOS!$(RESET))
+else
 	sudo rm -rf $(_NIX_ROOT)/* ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
+endif
 
 nix-add-gcroots: export TARGET := default
 nix-add-gcroots: ##@nix Add Nix GC roots to avoid status-react expressions being garbage collected
@@ -139,6 +146,11 @@ disable-githooks: ##@prepare Disables lein githooks
 pod-install: export TARGET := ios
 pod-install: ##@prepare Run 'pod install' to install podfiles and update Podfile.lock
 	cd ios && pod install; cd --
+
+update-fleets: ##@prepare Download up-to-date JSON file with current fleets state
+	curl -s https://fleets.status.im/ \
+		| jq --indent 4 --sort-keys . \
+		> resources/config/fleets.json
 
 #----------------
 # Release builds
@@ -272,6 +284,10 @@ endif
 lint: export TARGET := lein
 lint: ##@test Run code style checks
 	lein cljfmt check
+
+lint-fix: export TARGET := lein
+lint-fix: ##@test Run code style checks and fix issues
+	lein cljfmt fix
 
 test: export TARGET := lein
 test: ##@test Run tests once in NodeJS

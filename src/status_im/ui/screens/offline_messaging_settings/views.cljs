@@ -24,7 +24,8 @@
                                           #(re-frame/dispatch [:mailserver.ui/pin-pressed]))}
    [react/view {:style styles/mailserver-pinned}
     [checkbox.views/checkbox
-     {:checked? (not pinned?)
+     {:checked?        (not pinned?)
+      :style           styles/mailserver-pinned-checkbox-container
       :on-value-change (if pinned?
                          #(re-frame/dispatch [:mailserver.ui/unpin-pressed])
                          #(re-frame/dispatch [:mailserver.ui/pin-pressed]))}]

@@ -15,6 +15,13 @@
     :on-press
     #(re-frame/dispatch [:navigate-to :network-settings])
     :accessories          [network-name :chevron]}
+   {:type                 :small
+    :title                :t/network-info
+    :accessibility-label  :network-button
+    :container-margin-top 8
+    :on-press
+    #(re-frame/dispatch [:navigate-to :network-info])
+    :accessories          [:chevron]}
    ;; TODO - uncomment when implemented
    ;; {:type                :small
    ;;  :title               :t/les-ulc

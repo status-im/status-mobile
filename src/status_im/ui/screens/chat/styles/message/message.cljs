@@ -11,13 +11,6 @@
   [outgoing]
   {:color (if outgoing colors/white colors/text)})
 
-(defn message-padding-top
-  [{:keys [last-in-group? display-username?]}]
-  (if (and display-username?
-           last-in-group?)
-    6
-    2))
-
 (defn last-message-padding
   [{:keys [first? typing]}]
   (when (and first? (not typing))
@@ -25,10 +18,10 @@
 
 (defn message-body
   [{:keys [outgoing] :as message}]
-  (let [align (if outgoing :flex-end :flex-start)
+  (let [align     (if outgoing :flex-end :flex-start)
         direction (if outgoing :row-reverse :row)]
     {:flex-direction direction
-     :padding-top    (message-padding-top message)
+     :margin-top     4
      :align-self     align
      :align-items    align}))
 
@@ -46,11 +39,12 @@
 (defn message-timestamp-text
   [justify-timestamp? outgoing rtl? emoji?]
   (merge message-timestamp
-         {:color (if (and outgoing (not emoji?))
-                   colors/white-transparent-70
-                   colors/gray)}
+         {:line-height 10
+          :color       (if outgoing
+                         colors/white-transparent-70
+                         colors/gray)}
          (when justify-timestamp? {:position              :absolute
-                                   :bottom                7
+                                   :bottom                9 ; 6 Bubble bottom, 3 message baseline
                                    (if rtl? :left :right) 12})))
 
 (def message-expand-button
@@ -66,10 +60,10 @@
    :color       colors/text-gray})
 
 (defn group-message-wrapper [{:keys [outgoing] :as message}]
-  (merge {:flex-direction :column}
+  (merge {:flex-direction   :column}
          (if outgoing
-           {:margin-left 64}
-           {:margin-right 64})
+           {:margin-left 96}
+           {:margin-right 52})
          (last-message-padding message)))
 
 (defn timestamp-content-wrapper [outgoing]
@@ -79,7 +73,7 @@
   [outgoing display-photo?]
   (let [align (if outgoing :flex-end :flex-start)]
     (merge {:flex-direction :column
-            :max-width      (if platform/desktop? 500 320)
+            :flex-shrink    1
             :align-items    align}
            (if outgoing
              {:margin-right 8}
@@ -92,6 +86,10 @@
      :padding-right (if platform/desktop? 24 8)}
     {:align-self    :flex-start
      :padding-left  (if platform/desktop? 24 8)}))
+
+(def message-author-touchable
+  {:margin-left      12
+   :padding-vertical 2})
 
 (defn message-author [outgoing]
   (merge
@@ -134,25 +132,35 @@
          :line-height 22
          :margin-bottom (if collapsed? 2 0)))
 
-(styles/defn emoji-message
+(defn emoji-message
   [{:keys [incoming-group]}]
-  {:font-size 40
-   :desktop   {:line-height 46}
-   :margin-top (if incoming-group 4 0)})
+  {:font-size    28
+   :line-height  34                     ;TODO: Smaller crops the icon on the top
+   :margin-right 12
+   :margin-top   (if incoming-group 4 0)})
 
 (defn message-view
   [{:keys [content-type outgoing group-chat last-in-group?]}]
-  (merge {:padding-vertical   6
-          :padding-horizontal 12
-          :border-radius      8
-          :margin-top         (if (and last-in-group?
-                                       (or outgoing
-                                           (not group-chat)))
-                                16
-                                4)}
-         (if (= content-type constants/content-type-emoji)
-           {:flex-direction :row}
-           {:background-color (if outgoing colors/blue colors/blue-light)})))
+  (merge
+   {:border-top-left-radius     16
+    :border-top-right-radius    16
+    :border-bottom-right-radius 16
+    :border-bottom-left-radius  16
+    :padding-vertical           6
+    :padding-horizontal         12
+    :border-radius              8
+    :margin-top                 (if (and last-in-group?
+                                         (or outgoing
+                                             (not group-chat)))
+                                  16
+                                  0)}
+   (if outgoing
+     {:border-bottom-right-radius 4}
+     {:border-bottom-left-radius 4})
+
+   {:background-color (if outgoing colors/blue colors/blue-light)}
+   (when (= content-type constants/content-type-emoji)
+     {:flex-direction :row})))
 
 (def play-image
   {:width  33
@@ -175,8 +183,6 @@
    :font-weight         (if chosen? "500" "400")
    :padding-top         6
    :padding-left        12
-   :padding-right       16
-   :margin-right        12
    :text-align-vertical :center})
 
 (def message-author-name-container
@@ -203,9 +209,11 @@
 
 (defn quoted-message-author [outgoing chosen?]
   (assoc (message-author-name chosen?)
-         :padding-bottom  5
-         :padding-top     4
-         :padding-left    6
+         :padding-bottom  6
+         :padding-top     0
+         :padding-left    0
+         :line-height     18
+         :font-weight    "500"
          :color           (if outgoing
                             colors/white-transparent-70
                             colors/gray)))

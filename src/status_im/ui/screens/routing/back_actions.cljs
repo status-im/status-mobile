@@ -13,6 +13,7 @@
                    :add-new-account-pin               :default
                    :about-app                         :default
                    :help-center                       :default
+                   :glossary                          :default
                    :advanced-settings                 :default
                    :sync-settings                     :default
                    :mobile-network-settings           :default

@@ -1,14 +1,18 @@
 (ns status-im.ui.components.tooltip.styles
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.styles :as styles]))
+            [status-im.utils.styles :as styles]
+            [status-im.utils.config :as config]))
 
 (def tooltip-container
-  {:position       :absolute
-   :align-items    :center
-   :pointer-events :none
-   :left           0
-   :right          0
-   :top            0})
+  (merge
+   {:position       :absolute
+    :align-items    :center
+    :left           0
+    :right          0
+    :top            0}
+   ;;we need this for e2e tests
+   (when-not config/tooltip-events?
+     {:pointer-events :none})))
 
 (styles/def bottom-tooltip-container
   {:position    :absolute

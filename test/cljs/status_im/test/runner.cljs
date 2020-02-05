@@ -31,7 +31,6 @@
             [status-im.test.multiaccounts.recover.core]
             [status-im.test.multiaccounts.update.core]
             [status-im.test.network.core]
-            [status-im.test.pairing.core]
             [status-im.test.search.core]
             [status-im.test.sign-in.flow]
             [status-im.test.stickers.core]
@@ -103,7 +102,6 @@
  'status-im.test.multiaccounts.recover.core
  'status-im.test.multiaccounts.update.core
  'status-im.test.network.core
- 'status-im.test.pairing.core
  'status-im.test.search.core
  'status-im.test.sign-in.flow
  'status-im.test.stickers.core

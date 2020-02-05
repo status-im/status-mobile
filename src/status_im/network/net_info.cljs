@@ -23,8 +23,6 @@
   (fx/merge cofx
             {:db (assoc db :network/type network-type)
              :network/notify-status-go [network-type expensive?]}
-            (when (= "none" old-network-type)
-              (chaos-mode/check-chaos-mode))
             (mobile-network/on-network-status-change)))
 
 (fx/defn handle-network-info-change

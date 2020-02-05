@@ -1,11 +1,11 @@
-{ config, lib, stdenvNoCC, callPackage,status-go, 
+{ config, lib, stdenvNoCC, callPackage, status-go,
   localMavenRepoBuilder, composeXcodeWrapper, mkShell, mergeSh }:
 
 let
   inherit (lib) catAttrs concatStrings optional unique;
 
   xcodewrapperArgs = {
-    version = "11.2.1";
+    version = "11.3.1";
   };
   xcodeWrapper = composeXcodeWrapper xcodewrapperArgs;
   fastlane = callPackage ./fastlane { };
@@ -21,7 +21,7 @@ let
     fastlane
     status-go.android
     status-go.ios
-    androidPlatform 
+    androidPlatform
     iosPlatform
   ];
 

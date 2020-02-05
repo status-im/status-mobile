@@ -165,7 +165,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         return logFile;
     }
 
-    private String prepareLogsFile(final Context context) {
+    private File prepareLogsFile(final Context context) {
         final File logFile = getLogsFile();
 
         try {
@@ -185,7 +185,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             String gethLogFilePath = logFile.getAbsolutePath();
             Log.d(TAG, gethLogFilePath);
 
-            return gethLogFilePath;
+            return logFile;
         } catch (Exception e) {
             Log.d(TAG, "Can't create geth.log file! " + e.getMessage());
         }
@@ -193,17 +193,24 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         return null;
     }
 
-    private String updateConfig(final String jsonConfigString, final String absRootDirPath, final String absKeystoreDirPath) throws JSONException {
+    private String updateConfig(final String jsonConfigString, final String absRootDirPath, final String keystoreDirPath) throws JSONException {
         final JSONObject jsonConfig = new JSONObject(jsonConfigString);
         // retrieve parameters from app config, that will be applied onto the Go-side config later on
-        final String absDataDirPath = pathCombine(absRootDirPath, jsonConfig.getString("DataDir"));
+        final String dataDirPath = jsonConfig.getString("DataDir");
         final Boolean logEnabled = jsonConfig.getBoolean("LogEnabled");
         final Context context = this.getReactApplicationContext();
-        final String gethLogFilePath = logEnabled ? prepareLogsFile(context) : null;
+        final File gethLogFile = logEnabled ? prepareLogsFile(context) : null;
+        String gethLogDirPath = null;
+        if (gethLogFile != null) {
+            gethLogDirPath = gethLogFile.getParent();
+        }
 
-        jsonConfig.put("DataDir", absDataDirPath);
-        jsonConfig.put("KeyStoreDir", absKeystoreDirPath);
-        jsonConfig.put("LogFile", gethLogFilePath);
+        Log.d(TAG, "log dir: " + gethLogDirPath + " log name: " + gethLogFileName);
+
+        jsonConfig.put("DataDir", dataDirPath);
+        jsonConfig.put("KeyStoreDir", keystoreDirPath);
+        jsonConfig.put("LogDir", gethLogDirPath);
+        jsonConfig.put("LogFile", gethLogFileName);
 
         return jsonConfig.toString();
     }
@@ -291,7 +298,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         }
 
         try {
-            final String updatedJsonConfigString = this.updateConfig(jsonConfigString, absRootDirPath, newKeystoreDir);
+            final String updatedJsonConfigString = this.updateConfig(jsonConfigString, absRootDirPath, "/keystore");
 
             prettyPrintConfig(updatedJsonConfigString);
 
@@ -1253,7 +1260,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     public void isDeviceRooted(final Callback callback) {
         callback.invoke(rootedDevice);
     }
-    
+
     @ReactMethod
     public void validateMnemonic(final String seed, final Callback callback) {
         Log.d(TAG, "validateMnemonic");

@@ -19,7 +19,6 @@
 
 ;; initial state of app-db
 (def app-db {:keyboard-height                    0
-             :tab-bar-visible?                   true
              :navigation-stack                   '(:multiaccounts)
              :contacts/contacts                  {}
              :pairing/installations              {}
@@ -75,12 +74,14 @@
 ;;height of native keyboard if shown
 (spec/def ::keyboard-height (spec/nilable number?))
 (spec/def ::keyboard-max-height (spec/nilable number?))
-(spec/def ::tab-bar-visible? (spec/nilable boolean?))
 ;;:online - presence of internet connection in the phone
 (spec/def ::network-status (spec/nilable keyword?))
+;; ui connectivity status
+(spec/def :connectivity/ui-status-properties (spec/nilable map?))
 
 (spec/def ::app-state string?)
 (spec/def ::app-in-background-since (spec/nilable number?))
+(spec/def ::app-active-since (spec/nilable number?))
 
 ;;;;NODE
 
@@ -264,7 +265,6 @@
                                    ::webview-bridge
                                    ::keyboard-height
                                    ::keyboard-max-height
-                                   ::tab-bar-visible?
                                    ::network-status
                                    ::peers-count
                                    ::node-info
@@ -275,6 +275,7 @@
                                    ::chain
                                    ::app-state
                                    ::app-in-background-since
+                                   ::app-active-since
                                    ::hardwallet
                                    ::auth-method
                                    :multiaccount/multiaccount
@@ -301,6 +302,7 @@
                                    :chat/last-clock-value
                                    :chat/loaded-chats
                                    :chat/bot-db
+                                   :connectivity/ui-status-properties
                                    :ens/registration
                                    :wallet/wallet
                                    :prices/prices

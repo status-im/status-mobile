@@ -63,8 +63,9 @@ def uploadToDiawi() {
   withCredentials([
     string(credentialsId: 'diawi-token', variable: 'DIAWI_TOKEN'),
   ]) {
+    /* This can silently fail with 'File is not processed.' */
     nix.shell(
-      'bundle exec --gemfile=fastlane/Gemfile fastlane ios upload_diawi',
+      'bundle exec --verbose --gemfile=fastlane/Gemfile fastlane ios upload_diawi',
       keep: ['FASTLANE_DISABLE_COLORS', 'DIAWI_TOKEN'],
       attr: 'shells.fastlane'
     )

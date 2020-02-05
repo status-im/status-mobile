@@ -60,7 +60,7 @@ def notifyPRFailure() {
 def notifyPRSuccess() {
   def d = ":small_blue_diamond:"
   def msg = "#### :heavy_check_mark: "
-  def type = ghcmgr.utils.getBuildType() == 'e2e' ? ' e2e' : ''
+  def type = ghcmgr.utils.isE2EBuild() ? ' e2e' : ''
   msg += "[${env.JOB_NAME}${currentBuild.displayName}](${currentBuild.absoluteUrl}) ${d} "
   msg += "${ghcmgr.utils.buildDuration()} ${d} ${GIT_COMMIT.take(8)} ${d} "
   msg += "[:package: ${env.TARGET}${type} package](${env.PKG_URL})"
@@ -131,17 +131,15 @@ def releaseDelete(Map args) {
 }
 
 def releaseUpload(Map args) {
-  dir(args.pkgDir) {
-    args.files.each {
-      sh """
-        github-release upload \
-          -u '${args.user}' \
-          -r '${args.repo}' \
-          -t '${args.version}' \
-          -n ${it} \
-          -f ${it}
-      """
-    }
+  args.files.each {
+    sh """
+      github-release upload \
+        -u '${args.user}' \
+        -r '${args.repo}' \
+        -t '${args.version}' \
+        -n ${it} \
+        -f ${it}
+    """
   }
 }
 
@@ -163,7 +161,6 @@ def publishRelease(Map args) {
     draft: true,
     user: 'status-im',
     repo: 'status-react',
-    pkgDir: args.pkgDir,
     files: args.files,
     version: args.version,
     branch: ghcmgr.utils.branchName(),
@@ -181,15 +178,15 @@ def publishRelease(Map args) {
   }
 }
 
-def publishReleaseMobile() {
+def publishReleaseMobile(path='pkg') {
+  def found = findFiles(glob: "${path}/*")
+  if (found.size() == 0) {
+    sh "ls ${path}"
+    error("No file to release in ${path}")
+  }
   publishRelease(
-    version: ghcmgr.utils.getVersion()+'-mobile',
-    pkgDir: 'pkg',
-    files: [ /* upload only mobile release files */
-      ghcmgr.utils.pkgFilename(btype, 'ipa'),
-      ghcmgr.utils.pkgFilename(btype, 'apk'),
-      ghcmgr.utils.pkgFilename(btype, 'sha256'),
-    ]
+    version: ghcmgr.utils.getVersion(),
+    files: found.collect { it.path },
   )
 }
 

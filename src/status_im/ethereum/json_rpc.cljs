@@ -21,6 +21,7 @@
                     (update :timestamp decode/uint))}
    "eth_getTransactionByHash" {}
    "eth_getTransactionReceipt" {}
+   "eth_getBlockByNumber" {}
    "eth_newBlockFilter" {:subscription? true}
    "eth_newFilter" {:subscription? true}
    "eth_syncing" {}
@@ -30,6 +31,9 @@
    "shh_generateSymKeyFromPassword" {}
    "shh_getSymKey" {}
    "shh_markTrustedPeer" {}
+   "shhext_startMessenger" {}
+   "shhext_sendPairInstallation" {}
+   "shhext_syncDevices" {}
    "shhext_requestMessages" {}
    "shhext_sendDirectMessage" {}
    "shhext_sendPublicMessage" {}
@@ -49,6 +53,8 @@
    "shhext_loadFilters" {}
    "shhext_loadFilter" {}
    "shhext_removeFilters" {}
+   "shhext_sendContactUpdate" {}
+   "shhext_sendContactUpdates" {}
    "shhext_chats" {}
    "shhext_addSystemMessages" {}
    "shhext_deleteMessagesFrom" {}
@@ -66,9 +72,19 @@
    "shhext_deleteChat" {}
    "shhext_saveContact" {}
    "shhext_verifyENSNames" {}
+   "shhext_requestAddressForTransaction" {}
+   "shhext_requestTransaction" {}
+   "shhext_acceptRequestAddressForTransaction" {}
+   "shhext_declineRequestAddressForTransaction" {}
+   "shhext_declineRequestTransaction" {}
+   "shhext_sendTransaction" {}
+   "shhext_acceptRequestTransaction" {}
    "status_chats" {}
    "wallet_getTransfers" {}
    "wallet_getTokensBalances" {}
+   "wallet_getBlocksByAddress" {}
+   "wallet_getTransfersFromBlock" {}
+   "wallet_getTransfersByAddress" {}
    "wallet_getCustomTokens" {}
    "wallet_addCustomToken" {}
    "wallet_deleteCustomToken" {}

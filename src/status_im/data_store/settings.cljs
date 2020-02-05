@@ -21,9 +21,15 @@
 
 (defn rpc->custom-bootnodes [custom-bootnodes]
   (reduce-kv (fn [acc chain custom-bootnodes]
-               (assoc acc (str chain) custom-bootnodes))
+               (assoc acc (name chain) custom-bootnodes))
              {}
              custom-bootnodes))
+
+(defn rpc->stickers-packs [stickers-packs]
+  (reduce-kv (fn [acc pack-id stickers-pack]
+               (assoc acc (js/parseInt (name pack-id)) stickers-pack))
+             {}
+             stickers-packs))
 
 (defn rpc->settings [settings]
   (-> settings
@@ -32,4 +38,7 @@
       (update :networks/networks rpc->networks)
       (update :wallet/visible-tokens rpc->visible-tokens)
       (update :pinned-mailservers rpc->pinned-mailservers)
+      (update :stickers/packs-installed rpc->stickers-packs)
+      (update :custom-bootnodes rpc->custom-bootnodes)
+      (update :custom-bootnodes-enabled? rpc->custom-bootnodes)
       (update :currency keyword)))

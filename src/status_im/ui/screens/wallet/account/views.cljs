@@ -89,7 +89,7 @@
 (views/defview transactions [address]
   (views/letsubs [{:keys [transaction-history-sections]}
                   [:wallet.transactions.history/screen address]]
-    [history/history-list transaction-history-sections]))
+    [history/history-list transaction-history-sections address]))
 
 (views/defview assets-and-collections [address]
   (views/letsubs [{:keys [tokens nfts]} [:wallet/visible-assets-with-values address]

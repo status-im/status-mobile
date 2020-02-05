@@ -3,7 +3,7 @@ import pytest
 from support.utilities import fill_string_with_char
 from tests import marks, unique_password
 from tests.base_test_case import SingleDeviceTestCase
-from tests.users import basic_user, transaction_senders, recovery_users
+from tests.users import basic_user, transaction_senders, recovery_users, ens_user
 from views.sign_in_view import SignInView
 from views.recover_access_view import RecoverAccessView
 
@@ -113,7 +113,7 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
 
             # check behavior for popup "Custom seed phrase"
             if popup:
-                text = 'Custom seed phrase'
+                text = 'Invalid seed phrase'
                 common_password = 'qwerty'
                 if not recover_access_view.find_full_text(text):
                     self.errors.append('"%s" text is not shown' % text)
@@ -152,7 +152,7 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
     @marks.medium
     def test_special_characters_in_password_when_recover_account(self):
         sign_in = SignInView(self.driver)
-        sign_in.recover_access(passphrase=basic_user['passphrase'], password=basic_user['special_chars_password'])
+        sign_in.recover_access(passphrase=ens_user['passphrase'], password=basic_user['special_chars_password'])
         sign_in.relogin(password=basic_user['special_chars_password'])
 
     @marks.testrail_id(5455)

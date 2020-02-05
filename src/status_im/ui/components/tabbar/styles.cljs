@@ -129,20 +129,27 @@
    :position         :absolute
    :height           (- tabs-height minimized-tabs-height)
    :align-self       :stretch
-   :top              tabs-height
+   :top              0
    :right            0
    :left             0})
 
-(def title-cover-wrapper
-  {:position :absolute
-   :height   tabs-height
-   :bottom   (if platform/iphone-x? 34 0)
+(def title-cover-wrapper-ios
+  {:left             0
+   :right            0
+   :bottom           0
+   :padding-bottom   (if platform/iphone-x? 34 0)
+   :position         :absolute
+   :background-color :white})
+
+(def title-cover-wrapper-android
+  {:left     0
    :right    0
-   :left     0})
+   :bottom   0
+   :position :absolute})
 
 (defn animation-wrapper [keyboard-shown? main-tab?]
   {:height     (cond
                  keyboard-shown? 0
-                 main-tab? tabs-height
-                 :else minimized-tabs-height)
+                 main-tab?       tabs-height
+                 :else           minimized-tabs-height)
    :align-self :stretch})

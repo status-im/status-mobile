@@ -1,13 +1,15 @@
 (ns status-im.contact.core
   (:require
    [re-frame.core :as re-frame]
+   [taoensso.timbre :as log]
+   [status-im.multiaccounts.update.core :as multiaccounts.update]
    [status-im.multiaccounts.model :as multiaccounts.model]
    [status-im.transport.filters.core :as transport.filters]
    [status-im.contact.db :as contact.db]
    [status-im.ethereum.core :as ethereum]
+   [status-im.ethereum.json-rpc :as json-rpc]
    [status-im.data-store.contacts :as contacts-store]
    [status-im.mailserver.core :as mailserver]
-   [status-im.transport.message.contact :as message.contact]
    [status-im.transport.message.protocol :as protocol]
    [status-im.tribute-to-talk.db :as tribute-to-talk]
    [status-im.tribute-to-talk.whitelist :as whitelist]
@@ -19,7 +21,10 @@
 (fx/defn load-contacts
   {:events [::contacts-loaded]}
   [{:keys [db] :as cofx} all-contacts]
-  (let [contacts-list (map #(vector (:public-key %) %) all-contacts)
+  (let [contacts-list (map #(vector (:public-key %) (if (empty? (:address %))
+                                                      (dissoc % :address)
+                                                      %))
+                           all-contacts)
         contacts (into {} contacts-list)
         tr-to-talk-enabled? (-> db tribute-to-talk/get-settings tribute-to-talk/enabled?)]
     (fx/merge cofx
@@ -48,6 +53,27 @@
      :profile-image photo-path
      :address       address}))
 
+(fx/defn handle-update-from-contact-request [{:keys [db] :as cofx} {:keys [last-updated photo-path]}]
+  (when (> last-updated (get-in db [:multiaccount :last-updated]))
+    (fx/merge cofx
+              (multiaccounts.update/multiaccount-update :last-updated last-updated {:dont-sync? true})
+              (multiaccounts.update/multiaccount-update :photo-path photo-path {:dont-sync? true}))))
+
+(fx/defn ensure-contact
+  [{:keys [db] :as cofx}
+   {:keys [public-key] :as contact}]
+  (let [new? (get-in db [:contacts/contacts public-key])
+        us? (= public-key (multiaccounts.model/current-public-key cofx))]
+    (fx/merge cofx
+              {:db (-> db
+                       (update-in [:contacts/contacts public-key] merge contact))}
+
+              (cond
+                us?
+                (handle-update-from-contact-request contact)
+                new?
+                (transport.filters/load-contact contact)))))
+
 (fx/defn upsert-contact
   [{:keys [db] :as cofx}
    {:keys [public-key] :as contact}]
@@ -55,13 +81,14 @@
             {:db            (-> db
                                 (update-in [:contacts/contacts public-key] merge contact))}
             (transport.filters/load-contact contact)
-            (contacts-store/save-contact contact)))
+            #(contacts-store/save-contact % (get-in % [:db :contacts/contacts public-key]))))
 
 (fx/defn send-contact-request
   [{:keys [db] :as cofx} {:keys [public-key] :as contact}]
-  (if (contact.db/pending? contact)
-    (protocol/send (message.contact/map->ContactRequest (own-info db)) public-key cofx)
-    (protocol/send (message.contact/map->ContactRequestConfirmed (own-info db)) public-key cofx)))
+  (let [{:keys [name profile-image]} (own-info db)]
+    {::json-rpc/call [{:method "shhext_sendContactUpdate"
+                       :params [public-key name profile-image]
+                       :on-success #(log/debug "contact request sent" public-key)}]}))
 
 (fx/defn add-contact
   "Add a contact and set pending to false"
@@ -123,12 +150,10 @@
             (cond-> {:public-key   public-key
                      :photo-path   profile-image
                      :name         name
-                     :address      (or address
-                                       (:address contact)
-                                       (ethereum/public-key->address public-key))
                      :last-updated timestamp-ms
                      :system-tags  (conj (get contact :system-tags #{})
-                                         :contact/request-received)})]
+                                         :contact/request-received)}
+              address (assoc :address address))]
         (upsert-contact cofx contact-props)))))
 
 (fx/defn initialize-contacts [cofx]
@@ -180,9 +205,12 @@
 
 (fx/defn name-verified
   {:events [:contacts/ens-name-verified]}
-  [{:keys [db]} public-key ens-name]
-  {:db (update-in db [:contacts/contacts public-key]
-                  merge
-                  {:name            ens-name
-                   :ens-verified-at (quot (time/timestamp) 1000)
-                   :ens-verified    true})})
+  [{:keys [db] :as cofx} public-key ens-name]
+  (fx/merge cofx
+            {:db (update-in db [:contacts/contacts public-key]
+                            merge
+                            {:name            ens-name
+                             :ens-verified-at (quot (time/timestamp) 1000)
+                             :ens-verified    true})}
+
+            (upsert-contact {:public-key public-key})))

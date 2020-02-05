@@ -6,6 +6,7 @@
 
 (def toolbar-container
   {:flex           1
+   :align-items    :center
    :flex-direction :row})
 
 (def messages-container
@@ -39,8 +40,9 @@
    :justify-content :center})
 
 (def chat-name-text
-  {:typography :main-medium
-   :margin-top -3})
+  {:typography  :main-medium
+   :font-size   15
+   :line-height 22})
 
 (def group-icon
   {:margin-top    4
@@ -50,6 +52,7 @@
 
 (def toolbar-subtitle
   {:typography  :caption
+   :line-height 16
    :color       colors/text-gray})
 
 (def last-activity-text
