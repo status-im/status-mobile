@@ -226,6 +226,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5475)
     @marks.low
+    @marks.skip
+    # TODO: skip until profile picture change feature is enabled
     def test_change_profile_picture_several_times(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -392,6 +394,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5468)
     @marks.medium
+    @marks.skip
+    # TODO: skip until profile picture change feature is enabled
     def test_deny_camera_access_changing_profile_photo(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
@@ -408,6 +412,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5469)
     @marks.medium
+    @marks.skip
+    # TODO: skip until profile picture change feature is enabled
     def test_deny_device_storage_access_changing_profile_photo(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()

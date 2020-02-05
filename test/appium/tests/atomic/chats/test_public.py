@@ -117,7 +117,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         if home_1.home_button.counter.is_element_displayed():
             self.errors.append('New messages counter is shown on Home button for already seen message')
 
-        if chat_element.new_messages_counter.is_element_displayed():
+        if chat_element.new_messages_counter.text == '1':
             self.errors.append('New messages counter is shown on chat element for already seen message')
         self.errors.verify_no_errors()
 

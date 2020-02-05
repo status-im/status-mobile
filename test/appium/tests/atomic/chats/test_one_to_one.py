@@ -278,7 +278,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5362)
-    @marks.critical
+    @marks.medium
     def test_unread_messages_counter_1_1_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -308,7 +308,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if device_1_home.home_button.counter.is_element_displayed():
             self.errors.append('New messages counter is shown on Home button for already seen message')
 
-        if chat_element.new_messages_counter.is_element_displayed():
+        if chat_element.new_messages_counter.text == '1':
             self.errors.append('New messages counter is shown on chat element for already seen message')
         self.errors.verify_no_errors()
 
