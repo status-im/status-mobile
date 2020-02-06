@@ -88,11 +88,7 @@
                (rpc->accounts accounts))}
    (wallet/initialize-tokens custom-tokens)
    (wallet/update-balances nil)
-   (wallet/update-prices)
-   (transactions/initialize
-    (->> accounts
-         (filter :wallet)
-         (map :address)))))
+   (wallet/update-prices)))
 
 (fx/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}

@@ -90,8 +90,7 @@
        {:color           colors/blue
         :container-style {:margin-right 5}}]
       [react/text
-       {:style {:marging-left 10
-                :color colors/blue}}
+       {:style {:color colors/blue}}
        (i18n/label :t/check-on-etherscan)]]]))
 
 (defn history-list

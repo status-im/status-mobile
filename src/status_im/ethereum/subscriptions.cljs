@@ -88,7 +88,7 @@
                      []
                      accounts)
       :before-block blockNumber
-      :page-size    20
+      :limit        20
       :historical?  true}}))
 
 (fx/defn new-wallet-event
