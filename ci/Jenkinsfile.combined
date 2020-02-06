@@ -69,14 +69,13 @@ pipeline {
         switch (btype) {
           /* legacy naming, should have named it nightly.json */
           case 'nightly': cmn.updateBucketJSON(urls, 'latest.json'); break
-          case 'release': cmn.updateBucketJSON(urls, 'release.json'); break
         }
       } }
     }
     stage('Publish') {
       steps { script {
         switch (btype) {
-          //case 'nightly': build('misc/status.im'); break
+          case 'nightly': build('misc/status.im', wait: false); break
           case 'release': gh.publishReleaseMobile(); break
         }
       } }
