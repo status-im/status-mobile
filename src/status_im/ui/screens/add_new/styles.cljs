@@ -4,9 +4,9 @@
             [status-im.utils.styles :as styles]))
 
 (def new-chat-container
-  {:flex-direction   :row
-   :padding-vertical 16
-   :padding-left     16})
+  {:flex-direction :row
+   :padding-top    16
+   :padding-left   16})
 
 (def input-container
   {:flex-direction   :row

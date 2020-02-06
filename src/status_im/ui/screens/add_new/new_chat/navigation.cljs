@@ -3,4 +3,4 @@
 
 (defmethod navigation/preload-data! :new-chat
   [db _]
-  (dissoc db :contacts/new-identity :contacts/new-identity-error))
+  (dissoc db :contacts/new-identity))

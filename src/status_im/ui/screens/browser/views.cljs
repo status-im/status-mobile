@@ -56,7 +56,7 @@
    {:browser? true}
    [toolbar.view/nav-button
     (actions/close (fn []
-                     (debounce/clear)
+                     (debounce/clear :browser/navigation-state-changed)
                      (re-frame/dispatch [:navigate-back])
                      (when error?
                        (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]

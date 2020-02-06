@@ -187,7 +187,6 @@
 
 (spec/def ::db (spec/keys :opt [:contacts/contacts
                                 :contacts/new-identity
-                                :contacts/new-identity-error
                                 :contacts/identity
                                 :contacts/ui-props
                                 :contacts/list-ui-props

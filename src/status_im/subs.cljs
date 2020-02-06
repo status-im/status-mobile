@@ -156,7 +156,6 @@
 ;;contacts
 (reg-root-key-sub ::contacts :contacts/contacts)
 (reg-root-key-sub :contacts/current-contact-identity :contacts/identity)
-(reg-root-key-sub :new-identity-error :contacts/new-identity-error)
 (reg-root-key-sub :contacts/new-identity :contacts/new-identity)
 (reg-root-key-sub :group/selected-contacts :group/selected-contacts)
 ;;wallet

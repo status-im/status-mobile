@@ -6,7 +6,8 @@
             [status-im.ethereum.resolver :as resolver]
             [status-im.ui.screens.add-new.new-chat.db :as db]
             [status-im.utils.handlers :as handlers]
-            [status-im.ethereum.stateofus :as stateofus]))
+            [status-im.ethereum.stateofus :as stateofus]
+            [status-im.utils.random :as random]))
 
 (defn- ens-name-parse [contact-identity]
   (when (string? contact-identity)
@@ -22,18 +23,38 @@
          ens-name (ens-name-parse contact-identity)]
      (resolver/pubkey registry ens-name cb))))
 
+;;NOTE we want to handle only last resolve
+(def resolve-last-id (atom nil))
+
 (handlers/register-handler-fx
  :new-chat/set-new-identity
- (fn [{db :db} [_ new-identity new-ens-name]]
-   (let [is-public-key? (and (string? new-identity)
-                             (string/starts-with? new-identity "0x"))]
-     (merge {:db (assoc db
-                        :contacts/new-identity {:public-key new-identity
-                                                :ens-name   (ens-name-parse new-ens-name)}
-                        :contacts/new-identity-error (db/validate-pub-key db new-identity))}
-            (when (and (not is-public-key?)
-                       (ens/valid-eth-name-prefix? new-identity))
-              (let [chain (ethereum/chain-keyword db)]
-                {:resolve-public-key {:chain            chain
-                                      :contact-identity new-identity
-                                      :cb               #(re-frame/dispatch [:new-chat/set-new-identity % new-identity])}}))))))
+ (fn [{db :db} [_ new-identity new-ens-name id]]
+   (when (or (not id) (= id @resolve-last-id))
+     (let [is-public-key? (and (string? new-identity)
+                               (string/starts-with? new-identity "0x"))
+           is-ens? (and (not is-public-key?)
+                        (ens/valid-eth-name-prefix? new-identity))
+           error (db/validate-pub-key db new-identity)]
+       (merge {:db (assoc db
+                          :contacts/new-identity
+                          {:public-key new-identity
+                           :state (cond is-ens?
+                                        :searching
+                                        (and (string/blank? new-identity) (not new-ens-name))
+                                        :empty
+                                        error
+                                        :error
+                                        :else
+                                        :valid)
+                           :error error
+                           :ens-name   (ens-name-parse new-ens-name)})}
+              (when is-ens?
+                (reset! resolve-last-id (random/id))
+                (let [chain (ethereum/chain-keyword db)]
+                  {:resolve-public-key
+                   {:chain            chain
+                    :contact-identity new-identity
+                    :cb               #(re-frame/dispatch [:new-chat/set-new-identity
+                                                           %
+                                                           new-identity
+                                                           @resolve-last-id])}})))))))

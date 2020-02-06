@@ -864,6 +864,13 @@
  (fn [cofx [_ public-key]]
    (contact.block/unblock-contact cofx public-key)))
 
+(defn get-validation-label [value]
+  (case value
+    :invalid
+    (i18n/label :t/use-valid-contact-code)
+    :yourself
+    (i18n/label :t/can-not-add-yourself)))
+
 (handlers/register-handler-fx
  :contact/qr-code-scanned
  [(re-frame/inject-cofx :random-id-generator)]
@@ -883,7 +890,7 @@
 
        :else
        {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
-                           :content    validation-result
+                           :content    (get-validation-label validation-result)
                            :on-dismiss #(re-frame/dispatch [:navigate-to-clean :home])}}))))
 
 (handlers/register-handler-fx

@@ -101,7 +101,7 @@
     "browsing-site-blocked-title": "This site is blocked",
     "browsing-title": "Browse",
     "camera-access-error": "To grant the required camera permission, please go to your system settings and make sure that Status > Camera is selected.",
-    "can-not-add-yourself": "You can't add yourself",
+    "can-not-add-yourself": "That's you, to start a chat choose someone else",
     "cancel": "Cancel",
     "cancel-keycard-setup": "Cancel Keycard setup",
     "cannot-read-card": "Can't read card.\nPlease hold it to the back of your phone",
@@ -1088,5 +1088,6 @@
     "cant-report-bug": "Can't report a bug",
     "mail-should-be-configured": "Mail client should be configured",
     "check-on-etherscan": "Check on etherscan",
-    "transactions-load-more": "Load more"
+    "transactions-load-more": "Load more",
+    "user-not-found": "User not found"
 }
