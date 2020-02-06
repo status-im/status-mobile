@@ -57,12 +57,16 @@
                   :on-success #(re-frame/dispatch [:messages/system-messages-saved (map <-rpc %)])
                   :on-failure #(log/error "failed to save messages" %)}))
 
-(defn messages-by-chat-id-rpc [chat-id cursor limit on-success]
+(defn messages-by-chat-id-rpc [chat-id
+                               cursor
+                               limit
+                               on-success
+                               on-failure]
   {::json-rpc/call [{:method "shhext_chatMessages"
                      :params [chat-id cursor limit]
                      :on-success (fn [result]
                                    (on-success (update result :messages #(map <-rpc %))))
-                     :on-failure #(log/error "failed to get messages" %)}]})
+                     :on-failure on-failure}]})
 
 (defn mark-seen-rpc [chat-id ids]
   {::json-rpc/call [{:method "shhext_markMessagesSeen"

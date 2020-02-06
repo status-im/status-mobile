@@ -26,6 +26,8 @@
             [status-im.ui.screens.profile.tribute-to-talk.views
              :as
              tribute-to-talk.views]
+            [status-im.ui.screens.chat.state :as state]
+            [status-im.utils.debounce :as debounce]
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.chat.extensions.views :as extensions])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
@@ -307,6 +309,16 @@
 
 (defonce messages-list-ref (atom nil))
 
+(defn on-viewable-items-changed [e]
+  (reset! state/viewable-item
+          (let [element (->> (.-viewableItems e)
+                             reverse
+                             (filter (fn [e]
+                                       (= :message (:type (.-item e)))))
+                             first)]
+            (when element (.-item element))))
+  (debounce/debounce-and-dispatch [:chat.ui/message-visibility-changed e] 5000))
+
 (defview messages-view
   [{:keys [group-chat chat-id pending-invite-inviter-name contact] :as chat}
    modal?]
@@ -314,8 +326,6 @@
             current-public-key [:multiaccount/public-key]]
     {:component-did-update
      (fn [args]
-       (when-not (:messages-initialized? (second (.-argv (.-props args))))
-         (re-frame/dispatch [:chat.ui/load-more-messages]))
        (re-frame/dispatch [:chat.ui/set-chat-ui-props
                            {:messages-focused? true
                             :input-focused?    false}]))}
@@ -334,6 +344,7 @@
                                           :idx                idx
                                           :list-ref           messages-list-ref}])
            :inverted                  true
+           :onViewableItemsChanged    on-viewable-items-changed
            :onEndReached              #(re-frame/dispatch [:chat.ui/load-more-messages])
            :onScrollToIndexFailed     #()
            :keyboardShouldPersistTaps :handled}

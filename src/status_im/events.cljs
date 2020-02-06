@@ -494,10 +494,7 @@
 (handlers/register-handler-fx
  :chat.ui/load-more-messages
  (fn [cofx _]
-   (let [chat-id (get-in cofx [:db :current-chat-id])]
-     (fx/merge cofx
-               (chat.loading/load-more-messages)
-               (mailserver/load-gaps-fx chat-id)))))
+   (chat.loading/load-more-messages cofx)))
 
 (handlers/register-handler-fx
  :chat.ui/start-chat

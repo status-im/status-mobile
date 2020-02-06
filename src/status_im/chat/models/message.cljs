@@ -13,6 +13,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.mailserver.core :as mailserver]
             [status-im.native-module.core :as status]
+            [status-im.ui.screens.chat.state :as view.state]
             [status-im.transport.message.protocol :as protocol]
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.components.react :as react]
@@ -82,12 +83,6 @@
         message-to-be-removed (when replace
                                 (get-in db [:chats chat-id :messages replace]))
         prepared-message (prepare-message message chat-id current-chat?)]
-    (when (and platform/desktop?
-               (not= from current-public-key)
-               (get-in db [:multiaccount :desktop-notifications?])
-               (< (time/seconds-ago (time/to-date timestamp)) constants/one-earth-day))
-      (let [{:keys [title body prioritary?]} (build-desktop-notification cofx message)]
-        (.displayNotification react/desktop-notification title body prioritary?)))
     (fx/merge cofx
               (when message-to-be-removed
                 (hide-message chat-id message-to-be-removed))
@@ -103,28 +98,51 @@
                                   (and (not current-chat?)
                                        (not= from current-public-key))
                                   (update-in [:chats chat-id :loaded-unviewed-messages-ids]
-                                             (fnil conj #{}) message-id))})
-              (when (and platform/desktop?
-                         (not (system-message? prepared-message)))
-                (chat-model/update-dock-badge-label)))))
+                                             (fnil conj #{}) message-id))}))))
 
 (fx/defn add-received-message
   [{:keys [db] :as cofx}
-   {:keys [from message-id chat-id content] :as message}]
+   {:keys [from
+           message-id
+           chat-id
+           clock-value
+           content] :as message}]
   (let [{:keys [current-chat-id view-id]} db
+        cursor-clock-value             (get-in db [:chats current-chat-id :cursor-clock-value])
         current-chat?                  (and (or (= :chat view-id)
                                                 (= :chat-modal view-id))
                                             (= current-chat-id chat-id))]
-    (fx/merge cofx
-              (add-message {:message      message
-                            :current-chat? current-chat?}))))
+    (when (and current-chat?
+               (or (not cursor-clock-value)
+                   (<= cursor-clock-value clock-value)))
+      ;; Not in the current view, offload to db and update cursor if necessary
+      (if (or (not @view.state/viewable-item)
+              (not= current-chat-id
+                    (:chat-id @view.state/viewable-item))
+              (<= (:clock-value @view.state/viewable-item)
+                  clock-value))
+        (add-message cofx {:message      message
+                           :current-chat? current-chat?})
+        (when (and (< clock-value
+                      cursor-clock-value)
+                   (= current-chat-id
+                      (:chat-id (.-item view.state/viewable-item))))
+          {:db (assoc-in db [:chats chat-id :cursor] (chat-loading/clock-value->cursor clock-value))})))))
 
 (defn- add-to-chat?
   [{:keys [db]} {:keys [chat-id clock-value message-id from]}]
-  (let [{:keys [deleted-at-clock-value messages]}
+  (let [{:keys [cursor-clock-value deleted-at-clock-value messages]}
         (get-in db [:chats chat-id])]
     (not (or (get messages message-id)
              (>= deleted-at-clock-value clock-value)))))
+
+(fx/defn offload-message-from [{:keys [db] :as cofx} chat-id message-id]
+  (let [old-messages (get-in db [:chats chat-id :messages])]
+    (when-let [last-clock-value (get-in old-messages [message-id :clock-value])]
+      (let [new-messages (select-keys old-messages (for [[k v] old-messages :when (<= last-clock-value (:clock-value v))] k))]
+        (fx/merge cofx
+                  {:db (assoc-in db [:chats chat-id :messages] new-messages)}
+                  (rebuild-message-list chat-id))))))
 
 (defn extract-chat-id [cofx {:keys [chat-id from message-type]}]
   "Validate and return a valid chat-id"

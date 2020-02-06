@@ -158,7 +158,7 @@
       (testing "our own message"
         (is (get-in (message/receive-one cofx own-message) [:db :chats "matching" :messages "1"])))
       (testing "a message with non matching chat-id"
-        (is (get-in (message/receive-one cofx bad-chat-id-message) [:db :chats "not-matching" :messages "1"]))))))
+        (is (not (get-in (message/receive-one cofx bad-chat-id-message) [:db :chats "not-matching" :messages "1"])))))))
 
 (deftest delete-message
   (with-redefs [time/day-relative (constantly "day-relative")

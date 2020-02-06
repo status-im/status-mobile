@@ -9,6 +9,7 @@
             status-im.ui.screens.wallet.navigation
             [re-frame.core :as re-frame]
             [status-im.chat.models :as chat]
+            [status-im.chat.models.loading :as chat.loading]
             [status-im.hardwallet.core :as hardwallet]
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.recover.core :as recovery]
@@ -200,6 +201,8 @@
    (fx/merge cofx
              {:db (assoc db :view-id view-id)}
              #(case view-id
+                :chat (chat.loading/load-messages cofx)
+                :home (chat.loading/offload-all-messages cofx)
                 :keycard-settings (hardwallet/settings-screen-did-load %)
                 :reset-card (hardwallet/reset-card-screen-did-load %)
                 :enter-pin-login (hardwallet/enter-pin-screen-did-load %)
