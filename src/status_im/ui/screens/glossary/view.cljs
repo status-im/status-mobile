@@ -7,6 +7,8 @@
 
 (def messages [{:title   :t/account-title
                 :content :t/account-content}
+               {:title   :t/wallet-key-title
+                :content :t/wallet-key-content}
                {:title   :t/chat-key-title
                 :content :t/chat-key-content}
                {:title   :t/chat-name-title
@@ -18,9 +20,7 @@
                {:title   :t/peer-title
                 :content :t/peer-content}
                {:title   :t/seed-phrase-title
-                :content :t/seed-phrase-content}
-               {:title   :t/wallet-key-title
-                :content :t/wallet-key-content}])
+                :content :t/seed-phrase-content}])
 
 (defn render-section-header [{:keys [title]}]
   [react/view {:style {:position         "absolute"
