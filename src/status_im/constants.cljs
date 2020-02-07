@@ -43,6 +43,8 @@
 
 (def system "system")
 
+(def mainnet-rpc-url "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a")
+
 (def mainnet-networks
   [{:id             "mainnet_rpc",
     :etherscan-link "https://etherscan.io/address/",
@@ -50,7 +52,7 @@
     :config         {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
                      :DataDir        "/ethereum/mainnet_rpc"
                      :UpstreamConfig {:Enabled true
-                                      :URL     "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"}}}])
+                                      :URL mainnet-rpc-url}}}])
 
 (def sidechain-networks
   [{:id     "xdai_rpc",

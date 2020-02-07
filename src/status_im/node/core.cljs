@@ -7,7 +7,8 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as utils.platform]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log])
+            [taoensso.timbre :as log]
+            [status-im.ethereum.ens :as ens])
   (:require-macros [status-im.utils.slurp :refer [slurp]]))
 
 (defn- add-custom-bootnodes [config network all-bootnodes]
@@ -121,20 +122,20 @@
              :PermissionsConfig {:Enabled true}
              :MailserversConfig {:Enabled true}
              :EnableNTPSync true
-             :WhisperConfig           {:Enabled true
-                                       :LightClient true
-                                       :MinimumPoW 0.001}
+             :WhisperConfig {:Enabled true
+                             :LightClient true
+                             :MinimumPoW 0.001}
              :ShhextConfig
-             {:BackupDisabledDataDir (utils.platform/no-backup-directory)
-              :InstallationID installation-id
+             {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
+              :InstallationID             installation-id
               :MaxMessageDeliveryAttempts config/max-message-delivery-attempts
-              :MailServerConfirmations  config/mailserver-confirmations-enabled?
-              :VerifyTransactionURL "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"
-              :VerifyENSURL "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a"
-              :VerifyENSContractAddress "0x314159265dd8dbb310642f98f50c066173c1259b"
-              :VerifyTransactionChainID 1
-              :DataSyncEnabled true
-              :PFSEnabled true}
+              :MailServerConfirmations    config/mailserver-confirmations-enabled?
+              :VerifyTransactionURL       constants/mainnet-rpc-url
+              :VerifyENSURL               constants/mainnet-rpc-url
+              :VerifyENSContractAddress   (:mainnet ens/ens-registries)
+              :VerifyTransactionChainID   1
+              :DataSyncEnabled            true
+              :PFSEnabled                 true}
              :RequireTopics (get-topics current-network)
              :StatusAccountsConfig {:Enabled true})
 
