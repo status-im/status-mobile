@@ -94,8 +94,9 @@
 
 (fx/defn set-recipient
   {:events [:wallet.send/set-recipient ::recipient-address-resolved]}
-  [{:keys [db]} recipient]
-  (let [chain (ethereum/chain-keyword db)]
+  [{:keys [db]} raw-recipient]
+  (let [chain (ethereum/chain-keyword db)
+        recipient (string/trim raw-recipient)]
     (cond
       (ethereum/address? recipient)
       (let [checksum (eip55/address->checksum recipient)]
