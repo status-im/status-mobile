@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.add-new.new-chat.db
   (:require [status-im.utils.hex :as hex]
+            [status-im.ethereum.ens :as ens]
             [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]
             [cljs.spec.alpha :as spec]
@@ -11,7 +12,8 @@
 
 (defn validate-pub-key [db public-key]
   (cond
-    (not (spec/valid? :global/public-key public-key))
+    (or (not (spec/valid? :global/public-key public-key))
+        (= public-key ens/default-key))
     (i18n/label (if platform/desktop?
                   :t/use-valid-contact-code-desktop
                   :t/use-valid-contact-code))
