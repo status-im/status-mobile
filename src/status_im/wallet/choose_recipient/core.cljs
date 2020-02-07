@@ -96,7 +96,7 @@
   {:events [:wallet.send/set-recipient ::recipient-address-resolved]}
   [{:keys [db]} raw-recipient]
   (let [chain (ethereum/chain-keyword db)
-        recipient (string/trim raw-recipient)]
+        recipient (when raw-recipient (string/trim raw-recipient))]
     (cond
       (ethereum/address? recipient)
       (let [checksum (eip55/address->checksum recipient)]
