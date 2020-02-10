@@ -13,7 +13,8 @@
 
 (defn format-author [alias style name]
   (let [additional-styles (style false)]
-    (if (< (count name) 40)
+    (if (and name
+             (< (count name) 40))
       [react/text {:number-of-lines 1
                    :style (merge {:color       colors/blue
                                   :font-size   13
