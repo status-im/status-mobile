@@ -12,6 +12,7 @@
   [list.views/big-list-item
    ;;TODO this should be done in a subscription
    {:text         (multiaccounts/displayed-name contact)
+    :ellipsize-mode :middle
     :image-source (multiaccounts/displayed-photo contact)
     :action-fn    #(re-frame/dispatch [:chat.ui/show-profile public-key])}])
 

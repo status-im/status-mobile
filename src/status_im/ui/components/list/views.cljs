@@ -121,7 +121,7 @@
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn big-list-item
   [{:keys [style text text-color text-style subtext value action-fn active? destructive? hide-chevron?
-           accessory-value text-color new? activity-indicator
+           accessory-value text-color new? activity-indicator ellipsize-mode
            accessibility-label icon icon-color image-source icon-content]
     :or   {icon-color colors/blue
            text-color colors/black
@@ -160,8 +160,11 @@
         [react/text {:style styles/settings-item-subtext
                      :number-of-lines 2}
          subtext]]]
-      [react/text {:style           (merge (styles/settings-item-text text-color) text-style)
-                   :number-of-lines 1}
+      [react/text (merge
+                   {:style           (merge (styles/settings-item-text text-color) text-style)
+                    :number-of-lines 1}
+                   (when ellipsize-mode
+                     {:ellipsizeMode ellipsize-mode}))
        text])
     (when accessory-value
       [react/text {:style           styles/settings-item-value
