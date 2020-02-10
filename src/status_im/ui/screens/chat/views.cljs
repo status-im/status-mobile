@@ -335,6 +335,7 @@
                                           :list-ref           messages-list-ref}])
            :inverted                  true
            :onEndReached              #(re-frame/dispatch [:chat.ui/load-more-messages])
+           :onScrollToIndexFailed     #()
            :keyboardShouldPersistTaps :handled}
           group-header {:header [group-chat-footer chat-id]}]
       (if pending-invite-inviter-name
