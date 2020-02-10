@@ -20,7 +20,7 @@
 
 (defn existing-account?
   [root-key multiaccounts]
-  (contains? multiaccounts (:key-uid root-key)))
+  (contains? multiaccounts (:keyUid root-key)))
 
 (re-frame/reg-fx
  ::validate-mnemonic
@@ -130,7 +130,7 @@
 
 (fx/defn on-import-multiaccount-success
   {:events [::import-multiaccount-success]}
-  [{:keys [db] :as cofx} {:keys [key-uid] :as root-data} derived-data]
+  [{:keys [db] :as cofx} root-data derived-data]
   (let [multiaccounts (:multiaccounts/multiaccounts db)]
     (fx/merge
      cofx
@@ -140,7 +140,7 @@
                   :step :recovery-success
                   :forward-action :multiaccounts.recover/re-encrypt-pressed)}
      (when (existing-account? root-data multiaccounts)
-       (show-existing-multiaccount-alert key-uid))
+       (show-existing-multiaccount-alert (:keyUid root-data)))
      (navigation/navigate-to-cofx :recover-multiaccount-success nil))))
 
 (fx/defn enter-phrase-pressed
