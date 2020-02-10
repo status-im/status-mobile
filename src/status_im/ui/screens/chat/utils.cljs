@@ -15,12 +15,15 @@
   (let [additional-styles (style false)]
     (if name
       [react/text {:number-of-lines 1
+                   :ellipsizeMode :middle
                    :style (merge {:color       colors/blue
                                   :font-size   13
                                   :line-height 18
                                   :font-weight "500"} additional-styles)}
        (str "@" (or (stateofus/username name) name))]
-      [react/text {:style (merge {:color       colors/gray
+      [react/text {:number-of-lines 1
+                   :ellipsizeMode :middle
+                   :style (merge {:color       colors/gray
                                   :font-size   12
                                   :line-height 18
                                   :font-weight "400"} additional-styles)}
