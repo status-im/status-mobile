@@ -165,6 +165,8 @@
       (case state
         :too-short
         [help-message-text-element :t/ens-custom-username-hints]
+        :too-long
+        [help-message-text-element :t/ens-username-too-long]
         :invalid
         [help-message-text-element :t/ens-custom-username-hints]
         :taken
@@ -173,6 +175,8 @@
       (case state
         :too-short
         [help-message-text-element :t/ens-username-hints]
+        :too-long
+        [help-message-text-element :t/ens-username-too-long]
         :invalid
         [help-message-text-element :t/ens-username-invalid]
         :taken

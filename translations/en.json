@@ -402,6 +402,7 @@
     "ens-username-invalid": "Letters and numbers only.",
     "ens-username-owned": "✓ Username is owned by you. ",
     "ens-username-registration-confirmation": "Nice! You own {{username}} once the transaction is complete.",
+    "ens-username-too-long": "Maximum 40 characters.",
     "ens-username-you-can-follow-progress": "You can follow the progress in the Transaction History section of your wallet.",
     "ens-usernames": "ENS usernames",
     "ens-usernames-details": "Register a universal username to be easily recognized by other users",

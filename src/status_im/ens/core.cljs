@@ -179,6 +179,7 @@
   (cond
     (or (string/blank? username)
         (> 4 (count username))) :too-short
+    (> (count username) 40) :too-long
     (valid-username? custom-domain? username)
     (if (usernames (fullname custom-domain? username))
       :already-added

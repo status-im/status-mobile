@@ -2,6 +2,7 @@
   (:require [cljs.spec.alpha :as spec]))
 
 (spec/def ::state #{:too-short
+                    :too-long
                     :already-added
                     :searching
                     :invalid
