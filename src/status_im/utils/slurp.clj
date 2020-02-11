@@ -29,3 +29,8 @@
                  (reset! ~res (js/require ~(str file-name ".js"))))))))
     `(fn []
        ~(clojure.core/slurp file))))
+
+(defmacro dev-slurp [file]
+  (when-not prod?
+    (try (clojure.core/slurp file)
+         (catch Exception _ nil))))

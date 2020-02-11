@@ -185,3 +185,4 @@ status-modules/resources
 /fiddle/resources/public/images/
 
 trace.edn
+.dev-multiaccounts.json

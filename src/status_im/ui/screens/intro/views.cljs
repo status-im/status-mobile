@@ -6,8 +6,10 @@
             [status-im.privacy-policy.core :as privacy-policy]
             [status-im.utils.utils :as utils]
             [status-im.multiaccounts.create.core :refer [step-kw-to-num]]
+            [status-im.multiaccounts.dev :as multiaccounts.dev]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.utils.identicon :as identicon]
+            [status-im.ui.components.list.views :as list]
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.text-input.view :as text-input]
             [taoensso.timbre :as log]
@@ -215,7 +217,25 @@
                             :max-height 16}}]
        [storage-entry (second storage-types) selected-storage-type]]]]))
 
-(defn password-container [confirm-failure? view-width]
+(defn dev-password-button [step]
+  (when js/goog.DEBUG
+    (when-let [password (multiaccounts.dev/dev-password)]
+      (let [recovering? @(re-frame/subscribe
+                          [:intro-wizard/recover-existing-account?])]
+        [react/text
+         {:on-press
+          #(do
+             (re-frame/dispatch
+              [:intro-wizard/code-symbol-pressed password])
+             (re-frame/dispatch
+              [(if recovering?
+                 (if (= step :create-code)
+                   :multiaccounts.recover/enter-password-next-pressed
+                   :multiaccounts.recover/confirm-password-next-pressed)
+                 :intro-wizard/step-forward-pressed)]))}
+         "use dev password"]))))
+
+(defn password-container [confirm-failure? step view-width]
   (let [horizontal-margin 16]
     [react/view {:style {:flex 1
                          :justify-content :space-between
@@ -233,10 +253,11 @@
                          :placeholder ""
                          :style (styles/password-text-input (- view-width (* 2 horizontal-margin)))
                          :on-change-text #(re-frame/dispatch [:intro-wizard/code-symbol-pressed %])}]]
-     [react/text {:style (assoc styles/wizard-text :margin-bottom 16)} (i18n/label :t/password-description)]]))
+     [react/text {:style (assoc styles/wizard-text :margin-bottom 16)} (i18n/label :t/password-description)]
+     [dev-password-button step]]))
 
 (defn create-code [{:keys [confirm-failure? view-width]}]
-  [password-container confirm-failure? view-width])
+  [password-container confirm-failure? :create-code view-width])
 
 (defn confirm-code [{:keys [confirm-failure? processing? view-width]}]
   (if processing?
@@ -247,7 +268,7 @@
      [react/text {:style {:color      colors/gray
                           :margin-top 8}}
       (i18n/label :t/processing)]]
-    [password-container confirm-failure? view-width]))
+    [password-container confirm-failure? :confirm-code view-width]))
 
 (defn bottom-bar [{:keys [step weak-password? encrypt-with-password?
                           forward-action
@@ -305,13 +326,31 @@
                         processing? :t/generating-keys
                         :else :t/this-will-take-few-seconds))])])
 
+(defn dev-multiaccounts []
+  (when js/goog.DEBUG
+    [react/view
+     (let [accs
+           (map
+            (fn [[k v]]
+              {:title    (name k)
+               :subtitle v
+               :on-press #(re-frame/dispatch
+                           [:multiaccounts.recover/enter-phrase-input-changed
+                            (security/mask-data v)])})
+            (multiaccounts.dev/dev-multiaccounts))]
+       [list/flat-list
+        {:key-fn    (fn [_ i] (str i))
+         :data      accs
+         :render-fn list/flat-list-generic-render-fn}])]))
+
 (defn top-bar [{:keys [step encrypt-with-password?]}]
   (let [hide-subtitle? (or (= step :confirm-code)
                            (= step :enter-phrase)
                            (and (#{:create-code :confirm-code} step) encrypt-with-password?))]
     [react/view {:style {:margin-top   16
                          :margin-horizontal 32}}
-
+     (when (= step :enter-phrase)
+       [dev-multiaccounts])
      [react/text {:style (cond-> styles/wizard-title
                            hide-subtitle?
                            (assoc :margin-bottom 0))}

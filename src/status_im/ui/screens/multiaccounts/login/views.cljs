@@ -14,7 +14,8 @@
             [status-im.utils.security :as security]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.multiaccounts.dev :as multiaccounts.dev])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn login-toolbar [can-navigate-back?]
@@ -43,6 +44,21 @@
      name]
     [react/text {:style styles/login-badge-pubkey}
      (utils/get-shortened-address public-key)]]])
+
+(defn dev-password-button []
+  (when js/goog.DEBUG
+    (when-let [password (multiaccounts.dev/dev-password)]
+      [components.common/button
+       {:label        "dev pass"
+        :button-style styles/bottom-button
+        :label-style  {:color colors/blue}
+        :background?  true
+        :on-press
+        #(do
+           (re-frame/dispatch
+            [:set-in [:multiaccounts/login :password] password])
+           (re-frame/dispatch
+            [:multiaccounts.login.ui/password-input-submitted]))}])))
 
 (defview login []
   (letsubs [{:keys [error processing save-password?] :as multiaccount} [:multiaccounts/login]
@@ -105,6 +121,7 @@
         :on-press     #(do
                          (react/dismiss-keyboard!)
                          (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))}]
+      [dev-password-button]
       [components.common/button
        {:label     (i18n/label :t/submit)
         :button-style styles/bottom-button
