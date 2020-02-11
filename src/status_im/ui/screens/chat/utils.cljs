@@ -15,8 +15,7 @@
   (let [additional-styles (style false)]
     (if (and name
              (< (count name) 40))
-      [react/text {:number-of-lines 1
-                   :style (merge {:color       colors/blue
+      [react/text {:style (merge {:color       colors/blue
                                   :font-size   13
                                   :line-height 18
                                   :font-weight "500"} additional-styles)}
