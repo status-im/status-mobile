@@ -81,15 +81,6 @@ pipeline {
       steps {
         script {
           env.PKG_URL = cmn.utils.uploadArtifact(apk)
-          /* build type specific */
-          switch (btype) {
-            case 'release':
-              mobile.android.uploadToPlayStore(); break;
-            case 'nightly':
-              env.DIAWI_URL = mobile.android.uploadToDiawi(); break;
-            case 'e2e':
-              env.SAUCE_URL = mobile.android.uploadToSauceLabs()
-          }
         }
       }
     }
