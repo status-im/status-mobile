@@ -15,7 +15,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         sign_in_view.create_user()
         self.driver.close_app()
         chat_name = sign_in_view.get_public_chat_name()
-        deep_link = 'https://get.status.im/chat/public/%s' % chat_name
+        deep_link = 'https://join.status.im/chat/public/%s' % chat_name
         sign_in_view.open_weblink_and_login(deep_link)
         chat_view = sign_in_view.get_chat_view()
         try:
@@ -29,7 +29,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         self.driver.close_app()
-        deep_link = 'https://get.status.im/user/%s' % basic_user['public_key']
+        deep_link = 'https://join.status.im/user/%s' % basic_user['public_key']
         sign_in_view.open_weblink_and_login(deep_link)
         chat_view = sign_in_view.get_chat_view()
         for text in basic_user['username'], 'Add to contacts':
@@ -43,7 +43,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         sign_in_view.create_user()
         self.driver.close_app()
         dapp_name = test_dapp_url
-        dapp_deep_link = 'https://get.status.im/browse/%s' % dapp_name
+        dapp_deep_link = 'https://join.status.im/browse/%s' % dapp_name
         sign_in_view.open_weblink_and_login(dapp_deep_link)
         web_view = sign_in_view.get_chat_view()
         try:
@@ -58,7 +58,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(passphrase=basic_user['passphrase'])
         self.driver.close_app()
-        deep_link = 'https://get.status.im/user/%s' % basic_user['public_key']
+        deep_link = 'https://join.status.im/user/%s' % basic_user['public_key']
         sign_in_view.open_weblink_and_login(deep_link)
         profile_view = sign_in_view.get_profile_view()
         if profile_view.default_username_text.text != basic_user['username'] \
@@ -72,7 +72,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         self.driver.close_app()
-        deep_link = 'https://get.status.im/user/%s' % basic_user['public_key'][:-10]
+        deep_link = 'https://join.status.im/user/%s' % basic_user['public_key'][:-10]
         sign_in_view.open_weblink_and_login(deep_link)
         home_view = sign_in_view.get_home_view()
         home_view.plus_button.click_until_presence_of_element(home_view.start_new_chat_button)
