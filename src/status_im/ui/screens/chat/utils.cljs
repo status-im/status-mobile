@@ -20,7 +20,7 @@
                                   :font-size   13
                                   :line-height 18
                                   :font-weight "500"} additional-styles)}
-       (str "@" (or (stateofus/username name) name))]
+       (str "@" name)]
       [react/text {:number-of-lines 1
                    :ellipsizeMode :middle
                    :style (merge {:color       colors/gray
