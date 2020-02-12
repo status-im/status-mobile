@@ -1,10 +1,9 @@
 if(typeof EthereumProvider === "undefined"){
 var callbackId = 0;
 var callbacks = {};
-var currentAccountAddress;
 
-function bridgeSend(data){
-    WebViewBridge.send(JSON.stringify(data));
+bridgeSend = function (data) {
+    ReactNativeWebView.postMessage(JSON.stringify(data));
 }
 
 function sendAPIrequest(permission, params) {
@@ -58,7 +57,7 @@ function UserRejectedRequest() {
 }
 UserRejectedRequest.prototype = Object.create(Error.prototype);
 
-WebViewBridge.onMessage = function (message)
+ReactNativeWebView.onMessage = function (message)
 {
     data = JSON.parse(message);
     var id = data.messageId;
@@ -117,9 +116,9 @@ function web3Response (payload, result){
 }
 
 function getSyncResponse (payload) {
-    if (payload.method == "eth_accounts" && currentAccountAddress){
+    if (payload.method == "eth_accounts" && (typeof currentAccountAddress !== "undefined")) {
         return web3Response(payload, [currentAccountAddress])
-    } else if (payload.method == "eth_coinbase" && currentAccountAddress){
+    } else if (payload.method == "eth_coinbase" && (typeof currentAccountAddress !== "undefined")) {
         return web3Response(payload, currentAccountAddress)
     } else if (payload.method == "net_version" || payload.method == "eth_chainId"){
         return web3Response(payload, networkId)

@@ -20,7 +20,6 @@
        :DeviceEventEmitter #js {:addListener (fn [])}
        :Dimensions         #js {:get  (fn [])}})
 (def vector-icons           (fn [] #js {:default #js {}}))
-(def webview-bridge         (fn [] #js {:default #js {}}))
 (def webview                (fn [] #js {:WebView #js {}}))
 (def touchid                (fn [] #js {}))
 (def svg                    (fn [] #js {:default #js {}}))

@@ -45,6 +45,8 @@ target 'StatusIm' do
   pod 'SQLCipher', '~>3.0'
   pod 'SSZipArchive'
 
+  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
+
   target 'StatusImTests' do
     inherit! :search_paths
     # Pods for testing

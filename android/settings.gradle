@@ -1,4 +1,6 @@
 pluginManagement {
+include ':react-native-webview'
+project(':react-native-webview').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-webview/android')
   repositories {
       mavenLocal() // Let's prioritize local Maven repos so that Nix can provide them offline
       gradlePluginPortal()
@@ -16,5 +18,3 @@ include ':react-native-status'
 project(':react-native-status').projectDir = new File(rootProject.projectDir, '../modules/react-native-status/android')
 include ':react-native-status-keycard'
 project(':react-native-status-keycard').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-status-keycard/android')
-include ':react-native-webview-bridge'
-project(':react-native-webview-bridge').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-webview-bridge/android')

@@ -18,7 +18,7 @@
               "react-native-image-resizer"
               "react-native-image-crop-picker"
               "react-native-svg"
-              "react-native-webview-bridge"
+              "react-native-webview"
               "react-native-touch-id"
               "web3-utils"
               "chance"

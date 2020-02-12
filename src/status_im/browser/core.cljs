@@ -378,7 +378,6 @@
         dapp-name (if dapp? name (http/url-host url-original))]
     (cond
       (and (= type constants/history-state-changed)
-           platform/ios?
            (not= "about:blank" url))
       (fx/merge cofx
                 (update-browser-history browser url)
@@ -417,9 +416,12 @@
 (re-frame/reg-fx
  :browser/send-to-bridge
  (fn [message]
-   (let [webview @webview-ref/webview-ref]
+   (let [webview @webview-ref/webview-ref
+         msg (str "ReactNativeWebView.onMessage('"
+                  (types/clj->json message)
+                  "');")]
      (when (and message webview)
-       (.sendToBridge webview (types/clj->json message))))))
+       (.injectJavaScript webview msg)))))
 
 (re-frame/reg-fx
  :browser/call-rpc

@@ -67,7 +67,6 @@
 ;;object? doesn't work
 (spec/def ::web3 (spec/nilable any?))
 (spec/def ::web3-node-version (spec/nilable string?))
-;;object?
 
 ;;height of native keyboard if shown
 (spec/def ::keyboard-height (spec/nilable number?))

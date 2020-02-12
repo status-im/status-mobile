@@ -13,7 +13,7 @@
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar.view]
             [status-im.ui.components.tooltip.views :as tooltip]
-            [status-im.ui.components.webview-bridge :as components.webview-bridge]
+            [status-im.ui.components.webview :as components.webview]
             [status-im.ui.screens.browser.permissions.views :as permissions.views]
             [status-im.ui.screens.browser.site-blocked.views :as site-blocked.views]
             [status-im.ui.screens.browser.styles :as styles]
@@ -118,25 +118,27 @@
     (if unsafe?
       [site-blocked.views/view {:can-go-back? can-go-back?
                                 :site         browser-id}]
-      [components.webview-bridge/webview-bridge
-       {:dapp?                                 dapp?
-        :dapp-name                             name
-        :ref                                   #(reset! webview-ref/webview-ref %)
-        :source                                (when (and url (not resolving?)) {:uri url})
-        :java-script-enabled                   true
-        :bounces                               false
-        :local-storage-enabled                 true
-        :render-error                          web-view-error
-        :on-navigation-state-change            #(do
-                                                  (re-frame/dispatch [:set-in [:ens/registration :state] :searching])
-                                                  (debounce/debounce-and-dispatch
-                                                   [:browser/navigation-state-changed % error?]
-                                                   500))
-        :on-bridge-message                     #(re-frame/dispatch [:browser/bridge-message-received %])
-        :on-load                               #(re-frame/dispatch [:browser/loading-started])
-        :on-error                              #(re-frame/dispatch [:browser/error-occured])
-        :injected-on-start-loading-java-script (js-res/ethereum-provider (str network-id))
-        :injected-java-script                  (js-res/webview-js)}])]
+      [components.webview/webview
+       {:dapp?                                      dapp?
+        :dapp-name                                  name
+        :ref                                        #(reset! webview-ref/webview-ref %)
+        :source                                     (when (and url (not resolving?)) {:uri url})
+        :java-script-enabled                        true
+        :bounces                                    false
+        :local-storage-enabled                      true
+        :render-error                               web-view-error
+        :on-navigation-state-change                 #(do
+                                                       (re-frame/dispatch [:set-in [:ens/registration :state] :searching])
+                                                       (debounce/debounce-and-dispatch
+                                                        [:browser/navigation-state-changed % error?]
+                                                        500))
+                                                    ;; Extract event data here due to 
+                                                    ;; https://reactjs.org/docs/events.html#event-pooling
+        :on-message                                 #(re-frame/dispatch [:browser/bridge-message-received (.. % -nativeEvent -data)])
+        :on-load                                    #(re-frame/dispatch [:browser/loading-started])
+        :on-error                                   #(re-frame/dispatch [:browser/error-occured])
+        :injected-java-script-before-content-loaded (js-res/ethereum-provider (str network-id))
+        :injected-java-script                       (js-res/webview-js)}])]
    [navigation url-original can-go-back? can-go-forward? dapps-account]
    [permissions.views/permissions-panel [(:dapp? browser) (:dapp browser) dapps-account] show-permission]
    (when show-tooltip

@@ -284,6 +284,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-webview')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
@@ -307,7 +308,6 @@ dependencies {
     // NOTE: Uncomment if building RN from a fork
     //compile ("com.facebook.react:react-native:0.55.4") { force = true }  // From node_modules
     implementation project(':react-native-status')
-    implementation project(':react-native-webview-bridge')
     implementation project(':react-native-status-keycard')
     implementation 'com.github.status-im:function:0.0.1'
     implementation 'com.facebook.fresco:fresco:2.0.0'

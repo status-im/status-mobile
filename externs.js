@@ -563,7 +563,6 @@ var TopLevel = {
   "FlatList" : function () {},
   "warn" : function () {},
   "WebView" : function () {},
-  "WebViewBridgeModule" : function () {},
   "width" : function () {},
   "window" : function () {},
   "writeCopyTo" : function () {},
