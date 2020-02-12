@@ -61,6 +61,7 @@ class SignInButton(BaseButton):
         from views.home_view import HomeView
         return HomeView(self.driver)
 
+
 class LetsGoButton(BaseButton):
     def __init__(self, driver):
         super(LetsGoButton, self).__init__(driver)
@@ -217,8 +218,8 @@ class SignInView(BaseView):
     def recover_access(self, passphrase: str, password: str = common_password):
         recover_access_view = self.access_key_button.click()
         recover_access_view.enter_seed_phrase_button.click()
-        recover_access_view.passphrase_input.click()
-        recover_access_view.passphrase_input.set_value(passphrase)
+        recover_access_view.seedphrase_input.click()
+        recover_access_view.seedphrase_input.set_value(passphrase)
         recover_access_view.next_button.click()
         recover_access_view.reencrypt_your_key_button.click()
         recover_access_view.next_button.click()

@@ -2,7 +2,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 from tests import marks, test_dapp_url
 from tests.base_test_case import SingleDeviceTestCase
-from tests.users import basic_user
+from tests.users import basic_user, ens_user
 from views.sign_in_view import SignInView
 
 
@@ -28,13 +28,14 @@ class TestDeepLinks(SingleDeviceTestCase):
     def test_open_user_profile_using_deep_link(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
-        self.driver.close_app()
-        deep_link = 'https://join.status.im/user/%s' % basic_user['public_key']
-        sign_in_view.open_weblink_and_login(deep_link)
-        chat_view = sign_in_view.get_chat_view()
-        for text in basic_user['username'], 'Add to contacts':
-            if not chat_view.element_by_text(text).scroll_to_element(10):
-                self.driver.fail("User profile screen is not opened")
+        for user_ident in ens_user['ens'], basic_user['public_key']:
+            self.driver.close_app()
+            deep_link = 'https://get.status.im/user/%s' % user_ident
+            sign_in_view.open_weblink_and_login(deep_link)
+            chat_view = sign_in_view.get_chat_view()
+            for text in basic_user['username'], 'Add to contacts':
+                if not chat_view.element_by_text(text).scroll_to_element(10):
+                    self.driver.fail("User profile screen is not opened")
 
     @marks.testrail_id(5442)
     @marks.medium

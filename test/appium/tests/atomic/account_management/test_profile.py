@@ -2,7 +2,7 @@ import re
 
 from tests import marks, bootnode_address, mailserver_address, camera_access_error_text, \
     photos_access_error_text, test_dapp_url, test_dapp_name, mailserver_ams, mailserver_gc, \
-    mailserver_hk, prod_fleet, staging_fleet
+    mailserver_hk, prod_fleet, common_password
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user
 from views.sign_in_view import SignInView
@@ -254,12 +254,25 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.profile_button.click()
         profile_view.privacy_and_security_button.click()
         profile_view.backup_recovery_phrase_button.click()
-        profile_view.backup_recovery_phrase()
+        recovery_phrase = profile_view.backup_recovery_phrase()
         if sign_in_view.profile_button.counter.is_element_displayed():
             self.errors.append('Profile button counter is shown after recovery phrase backup')
         profile_view.backup_recovery_phrase_button.click()
         if not profile_view.backup_recovery_phrase_button.is_element_displayed():
-            self.errors.append('Back up seed phrase option is available after seed phrase backed up!')
+            self.driver.fail('Back up seed phrase option is available after seed phrase backed up!')
+        profile_view.back_button.click()
+        profile_view.logout()
+        recover_view = sign_in_view.access_key_button.click()
+        recover_view.enter_seed_phrase_button.click()
+        recover_view.seedphrase_input.click()
+        recover_view.seedphrase_input.set_value(' '.join(recovery_phrase.values()))
+        recover_view.next_button.click()
+        recover_view.element_by_text('UNLOCK').click()
+        sign_in_view.password_input.set_value(common_password)
+        chats_view = sign_in_view.sign_in_button.click()
+        chats_view.plus_button.click()
+        if not chats_view.start_new_chat_button.is_element_displayed():
+            self.errors.append("Can't proceed using account after it's re-recover twice.")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5329)
