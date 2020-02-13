@@ -51,7 +51,7 @@
              :dimensions/window                  (dimensions/window)
              :registry                           {}
              :stickers/packs-owned               #{}
-             :stickers/packs-pending            #{}
+             :stickers/packs-pending             #{}
              :hardwallet                         {:nfc-enabled?   false
                                                   :pin            {:original     []
                                                                    :confirmation []

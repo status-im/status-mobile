@@ -1369,7 +1369,7 @@
    (stickers/pending-pack cofx id)))
 
 (handlers/register-handler-fx
- :stickers/pending-timout
+ :stickers/pending-timeout
  (fn [cofx _]
    (stickers/pending-timeout cofx)))
 

@@ -21,9 +21,9 @@
       (re-frame/dispatch [:stickers/load-pack url id price]))))
 
 (re-frame/reg-fx
- :stickers/set-pending-timout-fx
+ :stickers/set-pending-timeout-fx
  (fn []
-   (utils/set-timeout #(re-frame/dispatch [:stickers/pending-timout])
+   (utils/set-timeout #(re-frame/dispatch [:stickers/pending-timeout])
                       10000)))
 
 (defn eth-call-pack-data
@@ -86,11 +86,15 @@
                  (re-frame/dispatch [:stickers/pack-owned pack-id]))}))})))})))
 
 (fx/defn init-stickers-packs
-  [{:keys [db]}]
-  (let [sticker-packs (get-in db [:multiaccount :stickers/packs-installed])]
-    {:db (assoc db
-                :stickers/packs-installed sticker-packs
-                :stickers/packs sticker-packs)}))
+  [{:keys [db] :as cofx}]
+  (let [sticker-packs (get-in db [:multiaccount :stickers/packs-installed])
+        pending-packs (get-in db [:multiaccount :stickers/packs-pending] #{})]
+    (cond-> {:db (assoc db
+                        :stickers/packs-installed sticker-packs
+                        :stickers/packs sticker-packs
+                        :stickers/packs-pending pending-packs)}
+      (not-empty pending-packs)
+      (assoc :stickers/set-pending-timeout-fx nil))))
 
 (fx/defn install-stickers-pack
   [{{:keys [multiaccount] :as db} :db :as cofx} id]
@@ -160,26 +164,36 @@
       :on-result [:stickers/pending-pack pack-id]})))
 
 (fx/defn pending-pack
-  [{:keys [db] :as cofx} id]
+  [{{:keys [multiaccount] :as db} :db :as cofx} id]
   (let [contract (contracts/get-address db :status/sticker-pack)
-        address  (ethereum/default-address db)]
+        address  (ethereum/default-address db)
+        pending (get multiaccount :stickers/packs-pending #{})]
     (when contract
       (fx/merge cofx
                 {:db (update db :stickers/packs-pending conj id)
                  :stickers/owned-packs-fx [contract address]}
+                (multiaccounts.update/multiaccount-update
+                 :stickers/packs-pending
+                 (conj pending id)
+                 {})
                 #(when (zero? (count (:stickers/packs-pending db)))
-                   {:stickers/set-pending-timout-fx nil})))))
+                   {:stickers/set-pending-timeout-fx nil})))))
 
 (fx/defn pending-timeout
-  [{{:stickers/keys [packs-pending packs-owned] :as db} :db}]
+  [{{:stickers/keys [packs-pending packs-owned] :as db} :db :as cofx}]
   (let [packs-diff (clojure.set/difference packs-pending packs-owned)
         contract   (contracts/get-address db :status/sticker-pack)
         address    (ethereum/default-address db)]
     (when contract
-      (merge {:db (assoc db :stickers/packs-pending packs-diff)}
-             (when-not (zero? (count packs-diff))
-               {:stickers/owned-packs-fx [contract address]
-                :stickers/set-pending-timout-fx nil})))))
+      (fx/merge cofx
+                (merge {:db (assoc db :stickers/packs-pending packs-diff)}
+                       (when-not (zero? (count packs-diff))
+                         {:stickers/owned-packs-fx [contract address]
+                          :stickers/set-pending-timeout-fx nil}))
+                (multiaccounts.update/multiaccount-update
+                 :stickers/packs-pending
+                 packs-diff
+                 {})))))
 
 (fx/defn pack-owned [{db :db} id]
   {:db (update db :stickers/packs-owned conj id)})
