@@ -5,8 +5,12 @@
 (defn valid-public-key? [s]
   (boolean (re-matches #"0x04[0-9a-f]{128}" s)))
 
+(defn valid-key-uid? [s]
+  (boolean (re-matches #"0x[0-9a-f]{64}" s)))
+
 (spec/def :global/not-empty-string (spec/and string? not-empty))
 (spec/def :global/public-key (spec/and :global/not-empty-string valid-public-key?))
+(spec/def :global/key-uid (spec/and :global/not-empty-string valid-key-uid?))
 (spec/def :global/address ethereum/address?)
 
 (spec/def :status/tag (spec/and :global/not-empty-string

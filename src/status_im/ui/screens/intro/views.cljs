@@ -131,7 +131,7 @@
      {:content-container-style {:justify-content :flex-start}}
      (for [[acc accessibility-n] (map vector multiaccounts (range (count multiaccounts)))]
        (let [selected? (= (:id acc) selected-id)
-             public-key (get-in acc [:derived constants/path-whisper-keyword :publicKey])]
+             public-key (get-in acc [:derived constants/path-whisper-keyword :public-key])]
          ^{:key public-key}
          [react/touchable-highlight
           {:accessibility-label (keyword (str "select-account-button-" accessibility-n))

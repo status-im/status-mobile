@@ -15,6 +15,7 @@
             status-im.browser.db
             status-im.ui.screens.add-new.new-public-chat.db
             status-im.ui.components.bottom-sheet.core
+            status-im.ui.screens.intro.db
             [status-im.wallet.db :as wallet.db]))
 
 ;; initial state of app-db
@@ -314,4 +315,5 @@
                                    ::collectibles
                                    :registry/registry
                                    ::two-pane-ui-enabled?
-                                   ::add-account]))
+                                   ::add-account
+                                   :intro-wizard/intro-wizard]))

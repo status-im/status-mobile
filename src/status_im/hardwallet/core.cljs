@@ -1846,20 +1846,20 @@
                          (assoc :intro-wizard nil))}
                 (multiaccounts.create/on-multiaccount-created
                  {:derived              {constants/path-wallet-root-keyword
-                                         {:publicKey wallet-root-public-key
+                                         {:public-key wallet-root-public-key
                                           :address (eip55/address->checksum wallet-root-address)}
                                          constants/path-whisper-keyword
-                                         {:publicKey  whisper-public-key
+                                         {:public-key  whisper-public-key
                                           :address    (eip55/address->checksum whisper-address)
                                           :name       name
                                           :photo-path photo-path}
                                          constants/path-default-wallet-keyword
-                                         {:publicKey wallet-public-key
+                                         {:public-key wallet-public-key
                                           :address   (eip55/address->checksum wallet-address)}}
                   :address              address
                   :public-key           public-key
                   :keycard-instance-uid instance-uid
-                  :keyUid               (ethereum/normalized-hex key-uid)
+                  :key-uid              (ethereum/normalized-hex key-uid)
                   :keycard-pairing      pairing
                   :keycard-paired-on    paired-on
                   :chat-key             whisper-private-key}

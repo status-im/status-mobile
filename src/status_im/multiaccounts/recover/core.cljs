@@ -19,8 +19,9 @@
             [taoensso.timbre :as log]))
 
 (defn existing-account?
-  [root-key multiaccounts]
-  (contains? multiaccounts (:keyUid root-key)))
+  [multiaccounts key-uid]
+  {:pre [(not (nil? key-uid))]}
+  (contains? multiaccounts key-uid))
 
 (re-frame/reg-fx
  ::validate-mnemonic
@@ -100,7 +101,9 @@
     passphrase
     password
     (fn [result]
-      (let [{:keys [id] :as root-data} (types/json->clj result)]
+      (let [{:keys [id] :as root-data}
+            (multiaccounts.create/normalize-multiaccount-data-keys
+             (types/json->clj result))]
         (status-im.native-module.core/multiaccount-derive-addresses
          id
          [constants/path-wallet-root
@@ -108,13 +111,16 @@
           constants/path-whisper
           constants/path-default-wallet]
          (fn [result]
-           (let [derived-data (types/json->clj result)
-                 public-key (get-in derived-data [constants/path-whisper-keyword :publicKey])]
+           (let [derived-data (multiaccounts.create/normalize-derived-data-keys
+                               (types/json->clj result))
+                 public-key (get-in derived-data [constants/path-whisper-keyword :public-key])]
              (status/gfycat-identicon-async
               public-key
               (fn [name photo-path]
-                (let [derived-whisper (derived-data constants/path-whisper-keyword)
-                      derived-data-extended (assoc-in derived-data [constants/path-whisper-keyword] (merge derived-whisper {:name name :photo-path photo-path}))]
+                (let [derived-data-extended
+                      (update derived-data
+                              constants/path-whisper-keyword
+                              merge {:name name :photo-path photo-path})]
                   (re-frame/dispatch [::import-multiaccount-success
                                       root-data derived-data-extended]))))))))))))
 
@@ -130,7 +136,7 @@
 
 (fx/defn on-import-multiaccount-success
   {:events [::import-multiaccount-success]}
-  [{:keys [db] :as cofx} root-data derived-data]
+  [{:keys [db] :as cofx} {:keys [key-uid] :as root-data} derived-data]
   (let [multiaccounts (:multiaccounts/multiaccounts db)]
     (fx/merge
      cofx
@@ -139,8 +145,8 @@
                   :derived derived-data
                   :step :recovery-success
                   :forward-action :multiaccounts.recover/re-encrypt-pressed)}
-     (when (existing-account? root-data multiaccounts)
-       (show-existing-multiaccount-alert (:keyUid root-data)))
+     (when (existing-account? multiaccounts key-uid)
+       (show-existing-multiaccount-alert key-uid))
      (navigation/navigate-to-cofx :recover-multiaccount-success nil))))
 
 (fx/defn enter-phrase-pressed

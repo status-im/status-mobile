@@ -30,7 +30,7 @@
 (spec/def :multiaccount/accounts (spec/coll-of :multiaccount/account :kind vector?))
 
 (spec/def :multiaccount/address :global/address)
-(spec/def :multiaccount/key-uid string?)
+(spec/def :multiaccount/key-uid :global/key-uid)
 (spec/def :multiaccount/name :global/not-empty-string)
 (spec/def :multiaccount/public-key :global/public-key)
 (spec/def :multiaccount/signed-up? (spec/nilable boolean?))
@@ -76,6 +76,20 @@
                                                          :multiaccount/keycard-paired-on
                                                          :multiaccount/root-address
                                                          :multiaccount/accounts]))
+;; generated multiaccounts
+(spec/def :generated-multiaccounts/id string?)
+(spec/def :generated-multiaccounts/derived-key
+  (spec/keys :req-un [:multiaccount/address
+                      :multiaccount/public-key]))
+(spec/def :generated-multiaccounts/derived
+  (spec/map-of keyword? :generated-multiaccounts/derived-key))
+(spec/def :multiaccounts/generated-multiaccount
+  (spec/keys :req-un [:multiaccount/address
+                      :multiaccount/mnemonic
+                      :multiaccount/public-key
+                      :multiaccount/key-uid
+                      :generated-multiaccounts/id]
+             :opt-un [:generated-multiaccounts/derived]))
 
 ;;used during recovering multiaccount
 (spec/def :multiaccounts/recover (spec/nilable map?))

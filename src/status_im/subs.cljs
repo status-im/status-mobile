@@ -265,7 +265,7 @@
  :intro-wizard/recovery-success
  :<- [:intro-wizard]
  (fn [wizard-state]
-   {:pubkey (get-in wizard-state [:derived constants/path-whisper-keyword :publicKey])
+   {:pubkey (get-in wizard-state [:derived constants/path-whisper-keyword :public-key])
     :name (get-in wizard-state [:derived constants/path-whisper-keyword :name])
     :photo-path (get-in wizard-state [:derived constants/path-whisper-keyword :photo-path])
     :processing? (:processing? wizard-state)}))

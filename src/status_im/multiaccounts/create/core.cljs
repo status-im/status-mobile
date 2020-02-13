@@ -51,13 +51,30 @@
   (let [{:keys [selected-id multiaccounts]} (:intro-wizard db)]
     (some #(when (= selected-id (:id %)) %) multiaccounts)))
 
+(defn normalize-derived-data-keys [derived-data]
+  (->> derived-data
+       (map (fn [[path {:keys [publicKey] :as data}]]
+              [path (cond-> (-> data
+                                (dissoc :publicKey)
+                                (assoc :public-key publicKey)))]))
+       (into {})))
+
+(defn normalize-multiaccount-data-keys
+  [{:keys [publicKey keyUid derived] :as data}]
+  (cond-> (-> data
+              (dissoc :keyUid :publicKey)
+              (assoc :key-uid keyUid
+                     :public-key publicKey))
+    derived
+    (update :derived normalize-derived-data-keys)))
+
 (fx/defn create-multiaccount
   [{:keys [db]}]
   (let [{:keys [selected-id key-code]} (:intro-wizard db)
         hashed-password (ethereum/sha3 (security/safe-unmask-data key-code))
         callback (fn [result]
-                   (let [derived-data (types/json->clj result)
-                         public-key (get-in derived-data [constants/path-whisper-keyword :publicKey])]
+                   (let [derived-data (normalize-derived-data-keys (types/json->clj result))
+                         public-key (get-in derived-data [constants/path-whisper-keyword :public-key])]
                      (status/gfycat-identicon-async
                       public-key
                       (fn [name photo-path]
@@ -191,17 +208,17 @@
 
 (defn prepare-accounts-data
   [multiaccount]
-  [(let [{:keys [publicKey address]}
+  [(let [{:keys [public-key address]}
          (get-in multiaccount [:derived constants/path-default-wallet-keyword])]
-     {:public-key publicKey
+     {:public-key public-key
       :address    (eip55/address->checksum address)
       :color      colors/blue
       :wallet     true
       :path       constants/path-default-wallet
       :name       "Status account"})
-   (let [{:keys [publicKey address name photo-path]}
+   (let [{:keys [public-key address name photo-path]}
          (get-in multiaccount [:derived constants/path-whisper-keyword])]
-     {:public-key publicKey
+     {:public-key public-key
       :address    (eip55/address->checksum address)
       :name       name
       :photo-path photo-path
@@ -227,7 +244,7 @@
 
 (fx/defn on-multiaccount-created
   [{:keys [signing-phrase random-guid-generator db] :as cofx}
-   {:keys [address chat-key keycard-instance-uid keyUid
+   {:keys [address chat-key keycard-instance-uid key-uid
            keycard-pairing keycard-paired-on mnemonic public-key]
     :as multiaccount}
    password
@@ -236,7 +253,7 @@
         multiaccount-data {:name       name
                            :address    address
                            :photo-path photo-path
-                           :key-uid    keyUid
+                           :key-uid    key-uid
                            :keycard-pairing keycard-pairing}
         keycard-multiaccount? (boolean keycard-pairing)
         eip1581-address (get-in multiaccount [:derived
@@ -247,7 +264,7 @@
                  {;; address of the master key
                   :address               address
                   ;; sha256 of master public key
-                  :key-uid               keyUid
+                  :key-uid               key-uid
                   ;; The address from which we derive any wallet
                   :wallet-root-address
                   (get-in multiaccount [:derived
@@ -274,7 +291,7 @@
                  :keycard-pairing keycard-pairing
                  :keycard-paired-on keycard-paired-on))
         db (assoc db
-                  :multiaccounts/login {:key-uid    keyUid
+                  :multiaccounts/login {:key-uid    key-uid
                                         :name       name
                                         :photo-path photo-path
                                         :password   password
@@ -311,7 +328,9 @@
     5
     12
     [constants/path-whisper constants/path-default-wallet]
-    #(re-frame/dispatch [:intro-wizard/on-keys-generated (types/json->clj %)]))))
+    #(re-frame/dispatch [:intro-wizard/on-keys-generated
+                         (mapv normalize-multiaccount-data-keys
+                               (types/json->clj %))]))))
 
 (fx/defn on-keys-generated
   {:events [:intro-wizard/on-keys-generated]}
