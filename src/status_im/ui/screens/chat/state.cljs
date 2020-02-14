@@ -2,5 +2,5 @@
 
 (defonce viewable-item (atom nil))
 
-(defn reset
-  (reset! vieweable-item nil))
+(defn reset []
+  (reset! viewable-item nil))
