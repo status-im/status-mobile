@@ -3,6 +3,7 @@
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
+            [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
@@ -169,3 +170,17 @@
                               :type       :watch
                               :color      (rand-nth colors/account-colors)})}
               (navigation/navigate-to-cofx :account-added nil))))
+
+(fx/defn view-only-qr-scanner-result
+  {:events [:wallet.add-new/qr-scanner-result]}
+  [{db :db :as cofx} data _]
+  (let [address (or (when (ethereum/address? data) data)
+                    (:address (eip681/parse-uri data)))]
+    (fx/merge cofx
+              (merge {:db (-> db
+                              (assoc-in [:add-account :scanned-address] address)
+                              (assoc-in [:add-account :address] address))}
+                     (when-not address
+                       {:utils/show-popup {:title   (i18n/label :t/error)
+                                           :content (i18n/label :t/invalid-address-qr-code)}}))
+              (navigation/navigate-back))))

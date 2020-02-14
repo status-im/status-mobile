@@ -550,6 +550,7 @@
     :intro-wizard-title4
     :intro-wizard-title5
     :intro-wizard-title6
+    :invalid-address-qr-code
     :invalid-extension
     :invalid-format
     :invalid-key-confirm

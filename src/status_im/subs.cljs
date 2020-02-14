@@ -543,6 +543,12 @@
    (or (not (ethereum/address? address))
        (some #(when (= (:address %) address) %) accounts))))
 
+(re-frame/reg-sub
+ :add-account-scanned-address
+ :<- [:add-account]
+ (fn [add-account]
+   (get add-account :scanned-address)))
+
 ;;CHAT ==============================================================================================================
 
 (re-frame/reg-sub

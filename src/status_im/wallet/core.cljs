@@ -629,6 +629,13 @@
             (bottom-sheet/hide-bottom-sheet)
             (navigation/navigate-to-cofx :qr-scanner options)))
 
+(fx/defn view-only-qr-scanner-allowed
+  {:events [:wallet.add-new/qr-scanner-allowed]}
+  [{:keys [db] :as cofx} options]
+  (fx/merge cofx
+            {:db (update-in db [:add-account] dissoc :address)}
+            (navigation/navigate-to-cofx :qr-scanner options)))
+
 (fx/defn wallet-send-set-symbol
   {:events [:wallet.send/set-symbol]}
   [{:keys [db] :as cofx} symbol]

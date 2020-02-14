@@ -11,8 +11,8 @@
             [status-im.multiaccounts.db :as multiaccounts.db]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.utils.utils :as utils.utils]))
 
 (defn add-account []
   [react/view {:flex 1}
@@ -62,10 +62,25 @@
    :padding-horizontal 16
    :background-color   colors/gray-lighter})
 
+(defn- request-camera-permissions []
+  (let [options {:handler :wallet.add-new/qr-scanner-result}]
+    (re-frame/dispatch
+     [:request-permissions
+      {:permissions [:camera]
+       :on-allowed
+       #(re-frame/dispatch [:wallet.add-new/qr-scanner-allowed options])
+       :on-denied
+       #(utils.utils/set-timeout
+         (fn []
+           (utils.utils/show-popup (i18n/label :t/error)
+                                   (i18n/label :t/camera-access-error)))
+         50)}])))
+
 (defview add-watch-account []
-  (letsubs [add-account-disabled? [:add-account-disabled?]]
+  (letsubs [add-account-disabled? [:add-account-disabled?]
+            add-account-scanned-address [:add-account-scanned-address]]
     [react/keyboard-avoiding-view {:flex 1}
-     [topbar/topbar]
+     [topbar/topbar {:accessories [{:icon :qr :handler #(request-camera-permissions)}]}]
      [react/view {:flex            1
                   :justify-content :space-between
                   :align-items     :center :margin-horizontal 16}
@@ -78,6 +93,7 @@
        [react/text-input {:auto-focus        true
                           :multiline         true
                           :text-align        :center
+                          :default-value     add-account-scanned-address
                           :placeholder       (i18n/label :t/enter-address)
                           :style             {:typography :header :flex 1}
                           :on-change-text    #(re-frame/dispatch [:set-in [:add-account :address] %])}]]]
