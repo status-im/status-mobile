@@ -27,8 +27,9 @@
    :height             52})
 
 (styles/def input
-  {:padding-horizontal 14
+  {:flex               1
+   :padding-horizontal 14
    :desktop            {:height 30
                         :width  "100%"}
    :android            {:padding 0
-                        :width  "100%"}})
+                        :width   "100%"}})
