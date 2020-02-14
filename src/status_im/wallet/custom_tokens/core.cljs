@@ -183,6 +183,7 @@
                                  :params [new-token]
                                  :on-success #()}]}
               (wallet/add-custom-token new-token)
+              (wallet/update-prices)
               (navigation/navigate-back))))
 
 (fx/defn remove-custom-token

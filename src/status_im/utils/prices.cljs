@@ -1,7 +1,8 @@
 (ns status-im.utils.prices
-  (:require [status-im.utils.http :as http]
+  (:require [clojure.string :as string]
+            [status-im.utils.http :as http]
             [status-im.utils.types :as types]
-            [status-im.utils.config :as config]))
+            [taoensso.timbre :as log]))
 
 ;; Responsible for interacting with Cryptocompare API to get current prices for
 ;; currencies and tokens.
@@ -15,7 +16,7 @@
 (def status-identifier "extraParams=Status.im")
 
 (defn- ->url-param-syms [syms]
-  ((comp (partial clojure.string/join ",") (partial map name)) syms))
+  ((comp (partial string/join ",") (partial map name)) syms))
 
 (defn- gen-price-url [fsyms tsyms chaos-mode?]
   (if chaos-mode?
@@ -40,6 +41,11 @@
                                      :last-day (:OPEN24HOUR entry)}}))}))))
 
 (defn get-prices [from to mainnet? on-success on-error chaos-mode?]
+  (log/debug "[prices] get-prices"
+             "from" from
+             "to" to
+             "mainnet?" mainnet?
+             "chaos-mode?" chaos-mode?)
   (http/get
    (gen-price-url from to chaos-mode?)
    (fn [resp] (on-success (format-price-resp resp mainnet?)))
