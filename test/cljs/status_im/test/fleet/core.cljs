@@ -9,7 +9,6 @@
     (testing "it returns the default fleets"
       (is (=
            #{:eth.prod
-             :eth.beta
              :eth.staging
              :eth.test}
            (into #{}
