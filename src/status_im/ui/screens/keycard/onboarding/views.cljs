@@ -382,7 +382,7 @@
            :container         {:background-color :white}
            :style             {:background-color :white
                                :text-align       :center
-                               :height           24
+                               :height           52
                                :typography       :header}}]
          [react/view {:margin-top 5
                       :width      250}
