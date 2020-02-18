@@ -39,7 +39,7 @@
   (if typed?
     {::hash-typed-data {:data         data
                         :on-completed #(re-frame/dispatch [:signing.keycard.callback/hash-message-completed %])}}
-    {::hash-message {:message      (ethereum/naked-address data)
+    {::hash-message {:message      data
                      :on-completed #(re-frame/dispatch [:signing.keycard.callback/hash-message-completed %])}}))
 
 (fx/defn hash-message-completed
