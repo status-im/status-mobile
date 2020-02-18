@@ -10,9 +10,7 @@
 (fx/defn send-multiaccount-update [{:keys [db]}]
   (let [multiaccount (:multiaccount db)
         {:keys [name preferred-name photo-path address]} multiaccount]
-    {::json-rpc/call [{:method (if config/waku-enabled?
-                                 "wakuext_sendContactUpdates"
-                                 "shhext_sendContactUpdates")
+    {::json-rpc/call [{:method (json-rpc/call-ext-method "sendContactUpdates")
                        :params [(or preferred-name name) photo-path]
                        :on-success #(log/debug "sent contact update")}]}))
 

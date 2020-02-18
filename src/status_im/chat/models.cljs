@@ -118,6 +118,18 @@
   [{:keys [db] :as cofx} chat-id]
   (chats-store/save-chat cofx (get-in db [:chats chat-id])))
 
+(fx/defn handle-mark-all-read-successful
+  {:events [::mark-all-read-successful]}
+  [{:keys [db] :as cofx} chat-id]
+  {:db (assoc-in db [:chats chat-id :unviewed-messages-count] 0)})
+
+(fx/defn handle-mark-all-read
+  {:events [:chat.ui/mark-all-read-pressed]}
+  [{:keys [db] :as cofx} chat-id]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "markAllRead")
+                     :params [chat-id]
+                     :on-success #(re-frame/dispatch [::mark-all-read-successful chat-id])}]})
+
 (fx/defn add-public-chat
   "Adds new public group chat to db"
   [cofx topic]

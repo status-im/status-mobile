@@ -46,26 +46,20 @@
 
 (fx/defn fetch-contacts-rpc
   [cofx on-success]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_contacts"
-                               "shhext_contacts")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "contacts")
                      :params []
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch contacts" %)}]})
 
 (fx/defn save-contact
   [cofx {:keys [public-key] :as contact}]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_saveContact"
-                               "shhext_saveContact")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "saveContact")
                      :params [(->rpc contact)]
                      :on-success #(log/debug "saved contact" public-key "successfuly")
                      :on-failure #(log/error "failed to save contact" public-key %)}]})
 
 (fx/defn block [cofx contact on-success]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_blockContact"
-                               "shhext_blockContact")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "blockContact")
                      :params [(->rpc contact)]
                      :on-success on-success
                      :on-failure #(log/error "failed to block contact" % contact)}]})

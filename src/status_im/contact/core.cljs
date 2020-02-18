@@ -86,9 +86,7 @@
 (fx/defn send-contact-request
   [{:keys [db] :as cofx} {:keys [public-key] :as contact}]
   (let [{:keys [name profile-image]} (own-info db)]
-    {::json-rpc/call [{:method (if config/waku-enabled?
-                                 "wakuext_sendContactUpdate"
-                                 "shhext_sendContactUpdate")
+    {::json-rpc/call [{:method (json-rpc/call-ext-method "sendContactUpdate")
                        :params [public-key name profile-image]
                        :on-success #(log/debug "contact request sent" public-key)}]}))
 

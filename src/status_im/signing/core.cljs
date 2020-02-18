@@ -212,9 +212,7 @@
 (fx/defn send-transaction-message
   {:events [::send-transaction-message]}
   [cofx chat-id value contract transaction-hash signature]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_sendTransaction"
-                               "shhext_sendTransaction")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "sendTransaction")
                      :params [chat-id value contract transaction-hash
                               (:result (types/json->clj signature))]
                      :on-success
@@ -223,9 +221,7 @@
 (fx/defn send-accept-request-transaction-message
   {:events [::send-accept-transaction-message]}
   [cofx message-id transaction-hash signature]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_acceptRequestTransaction"
-                               "shhext_acceptRequestTransaction")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "acceptRequestTransaction")
                      :params [transaction-hash message-id
                               (:result (types/json->clj signature))]
                      :on-success

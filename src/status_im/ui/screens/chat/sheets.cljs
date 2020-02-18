@@ -39,6 +39,12 @@
      :on-press    #(hide-sheet-and-dispatch  [:chat.ui/show-profile chat-id])}]
    [list-item/list-item
     {:theme    :action
+     :title    :t/mark-all-read
+     :accessibility-label :mark-all-read-button
+     :icon     :main-icons/check
+     :on-press #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
+   [list-item/list-item
+    {:theme    :action
      :title    :t/clear-history
      :accessibility-label :clear-history-button
      :icon     :main-icons/close
@@ -71,6 +77,12 @@
                      (list-selection/open-share {:message message}))}])
      [list-item/list-item
       {:theme    :action
+       :title    :t/mark-all-read
+       :accessibility-label :mark-all-read-button
+       :icon     :main-icons/check
+       :on-press #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
+     [list-item/list-item
+      {:theme    :action
        :title    :t/clear-history
        :accessibility-label :clear-history-button
        :icon     :main-icons/close
@@ -99,6 +111,12 @@
                    contact group-chat chat-name color online]
      :accessories [:chevron]
      :on-press    #(hide-sheet-and-dispatch [:show-group-chat-profile chat-id])}]
+   [list-item/list-item
+    {:theme    :action
+     :title    :t/mark-all-read
+     :accessibility-label :mark-all-read-button
+     :icon     :main-icons/check
+     :on-press #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
    [list-item/list-item
     {:theme    :action
      :title    :t/clear-history

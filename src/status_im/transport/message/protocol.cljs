@@ -14,9 +14,7 @@
                                       sticker
                                       content-type]
                                :as message}]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_sendChatMessage"
-                               "shhext_sendChatMessage")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "sendChatMessage")
                      :params [{:chatId chat-id
                                :text text
                                :responseTo response-to

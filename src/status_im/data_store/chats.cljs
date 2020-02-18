@@ -114,17 +114,13 @@
       (dissoc :chatType :members)))
 
 (fx/defn save-chat [cofx {:keys [chat-id] :as chat}]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_saveChat"
-                               "shhext_saveChat")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "saveChat")
                      :params [(->rpc chat)]
                      :on-success #(log/debug "saved chat" chat-id "successfuly")
                      :on-failure #(log/error "failed to save chat" chat-id %)}]})
 
 (fx/defn fetch-chats-rpc [cofx {:keys [on-success]}]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_chats"
-                               "shhext_chats")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "chats")
                      :params []
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch chats" 0 -1 %)}]})

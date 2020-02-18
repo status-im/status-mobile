@@ -20,6 +20,8 @@
         (when (and group-chat (not public?))
           {:text (i18n/label :t/group-info)
            :on-select #(re-frame/dispatch [:show-group-chat-profile])})
+        {:text (i18n/label :t/mark-all-read)
+         :on-select #(re-frame/dispatch [:chat.ui/mark-all-read-pressed chat-id])}
         {:text (i18n/label :t/clear-history)
          :on-select #(re-frame/dispatch [:chat.ui/clear-history-pressed chat-id])}
         {:text (i18n/label :t/fetch-history)

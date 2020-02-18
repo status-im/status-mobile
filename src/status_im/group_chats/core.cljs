@@ -31,9 +31,7 @@
 (fx/defn remove-member
   "Format group update message and sign membership"
   [{:keys [db] :as cofx} chat-id member]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_removeMemberFromGroupChat"
-                               "shhext_removeMemberFromGroupChat")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "removeMemberFromGroupChat")
                      :params [nil chat-id member]
                      :on-success #(re-frame/dispatch [::chat-updated %])}]})
 
@@ -76,43 +74,33 @@
 
 (fx/defn join-chat
   [cofx chat-id]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_confirmJoiningGroup"
-                               "shhext_confirmJoiningGroup")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "confirmJoiningGroup")
                      :params [chat-id]
                      :on-success #(re-frame/dispatch [::chat-updated %])}]})
 
 (fx/defn create
   [{:keys [db] :as cofx} group-name]
   (let [selected-contacts (:group/selected-contacts db)]
-    {::json-rpc/call [{:method (if config/waku-enabled?
-                                 "wakuext_createGroupChatWithMembers"
-                                 "shhext_createGroupChatWithMembers")
+    {::json-rpc/call [{:method (json-rpc/call-ext-method "createGroupChatWithMembers")
                        :params [nil group-name (into [] selected-contacts)]
                        :on-success #(re-frame/dispatch [::chat-updated %])}]}))
 
 (fx/defn make-admin
   [{:keys [db] :as cofx} chat-id member]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_addAdminsToGroupChat"
-                               "shhext_addAdminsToGroupChat")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "addAdminsToGroupChat")
                      :params [nil chat-id [member]]
                      :on-success #(re-frame/dispatch [::chat-updated %])}]})
 
 (fx/defn add-members
   "Add members to a group chat"
   [{{:keys [current-chat-id selected-participants]} :db :as cofx}]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_addMembersToGroupChat"
-                               "shhext_addMembersToGroupChat")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "addMembersToGroupChat")
                      :params [nil current-chat-id selected-participants]
                      :on-success #(re-frame/dispatch [::chat-updated %])}]})
 (fx/defn remove
   "Remove & leave chat"
   [{:keys [db] :as cofx} chat-id]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_leaveGroupChat"
-                               "shhext_leaveGroupChat")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "leaveGroupChat")
                      :params [nil chat-id]
                      :on-success #(re-frame/dispatch [::chat-updated %])}]})
 
@@ -135,9 +123,7 @@
   (let [new-name (get-in cofx [:db :group-chat-profile/profile :name])
         current-chat-id (:current-chat-id db)]
     (when (valid-name? new-name)
-      {::json-rpc/call [{:method (if config/waku-enabled?
-                                   "wakuext_changeGroupChatName"
-                                   "shhext_changeGroupChatName")
+      {::json-rpc/call [{:method (json-rpc/call-ext-method "changeGroupChatName")
                          :params [nil current-chat-id new-name]
                          :on-success #(re-frame/dispatch [::chat-updated %])}]})))
 

@@ -18,17 +18,13 @@
   (string/starts-with? k "0x"))
 
 (defn load-filters-rpc [chats on-success on-failure]
-  (json-rpc/call {:method (if config/waku-enabled?
-                            "wakuext_loadFilters"
-                            "shhext_loadFilters")
+  (json-rpc/call {:method (json-rpc/call-ext-method "loadFilters")
                   :params [chats]
                   :on-success                 on-success
                   :on-failure                 on-failure}))
 
 (defn remove-filters-rpc [chats on-success on-failure]
-  (json-rpc/call {:method (if config/waku-enabled?
-                            "wakuext_removeFilters"
-                            "shhext_removeFilters")
+  (json-rpc/call {:method (json-rpc/call-ext-method "removeFilters")
                   :params [chats]
                   :on-success                 on-success
                   :on-failure                 on-failure}))

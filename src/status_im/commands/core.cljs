@@ -24,26 +24,20 @@
   {:events [::accept-request-address-for-transaction]}
   [{:keys [db]} message-id address]
   {:db (dissoc db :commands/select-account)
-   ::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_acceptRequestAddressForTransaction"
-                               "shhext_acceptRequestAddressForTransaction")
+   ::json-rpc/call [{:method (json-rpc/call-ext-method "acceptRequestAddressForTransaction")
                      :params [message-id address]
                      :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})
 
 (fx/defn handle-decline-request-address-for-transaction
   {:events [::decline-request-address-for-transaction]}
   [cofx message-id]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_declineRequestAddressForTransaction"
-                               "shhext_declineRequestAddressForTransaction")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "declineRequestAddressForTransaction")
                      :params [message-id]
                      :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})
 
 (fx/defn handle-decline-request-transaction
   {:events [::decline-request-transaction]}
   [cofx message-id]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_declineRequestTransaction"
-                               "shhext_declineRequestTransaction")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "declineRequestTransaction")
                      :params [message-id]
                      :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})

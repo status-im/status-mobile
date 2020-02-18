@@ -25,9 +25,7 @@
             {:keys [name preferred-name photo-path address]} multiaccount]
 
         (log/debug "sending contact updates")
-        (json-rpc/call {:method (if config/waku-enabled?
-                                  "wakuext_sendContactUpdates"
-                                  "shhext_sendContactUpdates")
+        (json-rpc/call {:method (json-rpc/call-ext-method "sendContactUpdates")
                         :params [(or preferred-name name) photo-path]
                         :on-failure #(do
                                        (log/warn "failed to send contact updates")

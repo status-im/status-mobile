@@ -89,9 +89,7 @@
 ;; as sent.
 (defn update-mailservers! [enodes]
   (json-rpc/call
-   {:method (if config/waku-enabled?
-              "wakuext_updateMailservers"
-              "shhext_updateMailservers")
+   {:method (json-rpc/call-ext-method "updateMailservers")
     :params [enodes]
     :on-success #(log/debug "mailserver: update-mailservers success" %)
     :on-error #(log/error "mailserver: update-mailservers error" %)}))
@@ -363,9 +361,7 @@
               " cursor " cursor
               " limit " actual-limit)
     (json-rpc/call
-     {:method (if config/waku-enabled?
-                "wakuext_requestMessages"
-                "shhext_requestMessages")
+     {:method (json-rpc/call-ext-method "requestMessages")
       :params [(cond-> {:topics         topics
                         :mailServerPeer address
                         :symKeyID       sym-key-id

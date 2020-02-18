@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ethereum.abi-spec :as abi-spec]
+            [status-im.utils.config :as config]
             [status-im.ethereum.decode :as decode]
             [status-im.native-module.core :as status]
             [status-im.utils.money :as money]
@@ -64,6 +65,7 @@
    "shhext_deleteMessagesByChatID" {}
    "shhext_deleteMessage" {}
    "shhext_markMessagesSeen" {}
+   "shhext_markAllRead" {}
    "shhext_confirmMessagesProcessedByID" {}
    "shhext_updateMessageOutgoingStatus" {}
    "shhext_chatMessages" {}
@@ -114,6 +116,7 @@
    "wakuext_deleteMessagesByChatID" {}
    "wakuext_deleteMessage" {}
    "wakuext_markMessagesSeen" {}
+   "wakuext_markAllRead" {}
    "wakuext_confirmMessagesProcessedByID" {}
    "wakuext_updateMessageOutgoingStatus" {}
    "wakuext_chatMessages" {}
@@ -174,6 +177,11 @@
       (log/debug "[on-error-retry]" method "number-of-retries" number-of-retries)
       (call-method (update arg :number-of-retries dec)))
     on-error))
+
+(defn call-ext-method [method]
+  (if config/waku-enabled?
+    (str "wakuext_" method)
+    (str "shhext_" method)))
 
 (defn call
   [{:keys [method params on-success] :as arg}]

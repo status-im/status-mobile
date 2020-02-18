@@ -293,9 +293,7 @@
             (navigation/navigate-to-cofx :ens-search {})))
 
 (defn verify-names [names]
-  (json-rpc/call {:method (if config/waku-enabled?
-                            "wakuext_verifyENSNames"
-                            "shhext_verifyENSNames")
+  (json-rpc/call {:method (json-rpc/call-ext-method "verifyENSNames")
                   :params [names]
                   :on-success #(re-frame/dispatch [:contacts/ens-names-verified %])
                   :on-failure #(log/error "failed to resolve ens names" % names)}))

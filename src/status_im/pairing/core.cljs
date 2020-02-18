@@ -19,33 +19,25 @@
             [status-im.utils.types :as types]))
 
 (defn enable-installation-rpc [installation-id on-success on-failure]
-  (json-rpc/call {:method (if config/waku-enabled?
-                            "wakuext_enableInstallation"
-                            "shhext_enableInstallation")
+  (json-rpc/call {:method (json-rpc/call-ext-method "enableInstallation")
                   :params [installation-id]
                   :on-success on-success
                   :on-failure on-failure}))
 
 (defn disable-installation-rpc [installation-id on-success on-failure]
-  (json-rpc/call {:method (if config/waku-enabled?
-                            "wakuext_disableInstallation"
-                            "shhext_disableInstallation")
+  (json-rpc/call {:method (json-rpc/call-ext-method "disableInstallation")
                   :params [installation-id]
                   :on-success on-success
                   :on-failure on-failure}))
 
 (defn set-installation-metadata-rpc [installation-id metadata on-success on-failure]
-  (json-rpc/call {:method (if config/waku-enabled?
-                            "wakuext_setInstallationMetadata"
-                            "shhext_setInstallationMetadata")
+  (json-rpc/call {:method (json-rpc/call-ext-method "setInstallationMetadata")
                   :params                 [installation-id metadata]
                   :on-success                 on-success
                   :on-failure                 on-failure}))
 
 (defn get-our-installations-rpc [on-success on-failure]
-  (json-rpc/call {:method (if config/waku-enabled?
-                            "wakuext_getOurInstallations"
-                            "shhext_getOurInstallations")
+  (json-rpc/call {:method (json-rpc/call-ext-method "getOurInstallations")
                   :params  []
                   :on-success       on-success
                   :on-failure       on-failure}))
@@ -73,9 +65,7 @@
 
 (defn send-pair-installation
   [cofx]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_sendPairInstallation"
-                               "shhext_sendPairInstallation")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "sendPairInstallation")
                      :params []
                      :on-success #(log/info "sent pair installation message")}]})
 
@@ -199,9 +189,7 @@
 (defn send-installation-messages [{:keys [db]}]
   (let [multiaccount (:multiaccount db)
         {:keys [name preferred-name photo-path]} multiaccount]
-    {::json-rpc/call [{:method (if config/waku-enabled?
-                                 "wakuext_syncDevices"
-                                 "shhext_syncDevices")
+    {::json-rpc/call [{:method (json-rpc/call-ext-method "syncDevices")
                        :params [(or preferred-name name) photo-path]
                        :on-success #(log/debug "successfully synced devices")}]}))
 

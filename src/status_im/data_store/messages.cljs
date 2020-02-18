@@ -47,17 +47,13 @@
       (dissoc :ensName :chatId :text :rtl :responseTo :sticker :lineCount :parsedText)))
 
 (defn update-outgoing-status-rpc [message-id status]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_updateMessageOutgoingStatus"
-                               "shhext_updateMessageOutgoingStatus")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "updateMessageOutgoingStatus")
                      :params [message-id status]
                      :on-success #(log/debug "updated message outgoing stauts" message-id status)
                      :on-failure #(log/error "failed to update message outgoing status" message-id status %)}]})
 
 (defn save-system-messages-rpc [messages]
-  (json-rpc/call {:method (if config/waku-enabled?
-                            "wakuext_addSystemMessages"
-                            "shhext_addSystemMessages")
+  (json-rpc/call {:method (json-rpc/call-ext-method "addSystemMessages")
                   :params [(map ->rpc messages)]
                   :on-success #(re-frame/dispatch [:messages/system-messages-saved (map <-rpc %)])
                   :on-failure #(log/error "failed to save messages" %)}))
@@ -67,42 +63,32 @@
                                limit
                                on-success
                                on-failure]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_chatMessages"
-                               "shhext_chatMessages")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "chatMessages")
                      :params [chat-id cursor limit]
                      :on-success (fn [result]
                                    (on-success (update result :messages #(map <-rpc %))))
                      :on-failure on-failure}]})
 
 (defn mark-seen-rpc [chat-id ids]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_markMessagesSeen"
-                               "shhext_markMessagesSeen")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "markMessagesSeen")
                      :params [chat-id ids]
                      :on-success #(log/debug "successfully marked as seen")
                      :on-failure #(log/error "failed to get messages" %)}]})
 
 (defn delete-message-rpc [id]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_deleteMessage"
-                               "shhext_deleteMessage")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "deleteMessage")
                      :params [id]
                      :on-success #(log/debug "successfully deleted message" id)
                      :on-failure #(log/error "failed to delete message" % id)}]})
 
 (defn delete-messages-from-rpc [author]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_deleteMessagesFrom"
-                               "shhext_deleteMessagesFrom")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "deleteMessagesFrom")
                      :params [author]
                      :on-success #(log/debug "successfully deleted messages from" author)
                      :on-failure #(log/error "failed to delete messages from" % author)}]})
 
 (defn delete-messages-by-chat-id-rpc [chat-id]
-  {::json-rpc/call [{:method (if config/waku-enabled?
-                               "wakuext_deleteMessagesByChatID"
-                               "shhext_deleteMessagesByChatID")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "deleteMessagesByChatID")
                      :params [chat-id]
                      :on-success #(log/debug "successfully deleted messages by chat-id" chat-id)
                      :on-failure #(log/error "failed to delete messages by chat-id" % chat-id)}]})
