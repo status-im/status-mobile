@@ -4,6 +4,8 @@ set -e
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 resultPath="${GIT_ROOT}/result/"
+source "${GIT_ROOT}/scripts/colors.sh"
+source "${GIT_ROOT}/nix/scripts/source.sh"
 
 # cleanup for artifacts created during builds
 function cleanup() {
@@ -11,12 +13,12 @@ function cleanup() {
   trap - EXIT ERR INT QUIT
   # do the actual cleanup, ignore failure
   if ${GIT_ROOT}/nix/scripts/clean.sh "${nixResultPath}"; then
-    echo "Successful cleanup!"
+    echo -e "${GRN}Successful cleanup!${RST}"
   elif [[ -n "${JENKINS_URL}" ]]; then
     # in CI removing some paths can fail due to parallel builds
-    echo "Ignoring cleanup failure in CI."
+    echo -e "${YLW}Ignoring cleanup failure in CI.${RST}"
   else
-    echo "Failed cleanup!"
+    echo -e "${RED}Failed cleanup!${RST}"
     exit 1
   fi
 }
@@ -32,14 +34,11 @@ function extractResults() {
   ls -l "${resultPath}"
 }
 
-# Load Nix profile
-. ~/.nix-profile/etc/profile.d/nix.sh
-
 targetAttr="${1}"
 shift
 
 if [[ -z "${targetAttr}" ]]; then
-  echo "First argument is mandatory and has to specify the Nix attribute!"
+  echo -e "${RED}First argument is mandatory and has to specify the Nix attribute!${RST}"
   exit 1
 fi
 
@@ -68,4 +67,4 @@ nixResultPath=$(nix-build ${nixOpts[@]})
 echo "Extracting result: ${nixResultPath}"
 extractResults "${nixResultPath}"
 
-echo "SUCCESS"
+echo -e "${GRN}SUCCESS${RST}"

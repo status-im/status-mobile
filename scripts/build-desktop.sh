@@ -67,7 +67,7 @@ function init() {
     fi
   fi
 
-  if is_linux; then
+  if [[ "$OS" =~ Linux ]]; then
     rm -rf ./desktop/toolchain/
     # TODO: Use Conan for Linux and MacOS builds too
     if is_windows_target; then
@@ -267,7 +267,7 @@ function bundleLinux() {
   echo ""
 }
 
-if is_macos; then
+if [[ "$OS" =~ Darwin ]]; then
   function copyDylibNixDependenciesToPackage() {
     local dylib="$1"
     local contentsDir="$2"
@@ -441,9 +441,9 @@ function bundleMacOS() {
 }
 
 function bundle() {
-  if is_macos; then
+  if [[ "$OS" =~ Darwin ]]; then
     bundleMacOS
-  elif is_linux; then
+  elif [[ "$OS" =~ Linux ]]; then
     if is_windows_target; then
       bundleWindows
     else

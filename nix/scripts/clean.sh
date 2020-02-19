@@ -2,6 +2,9 @@
 
 set -e
 
+GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
+source "${GIT_ROOT}/nix/scripts/source.sh"
+
 function log() { echo "$@" 1>&2; }
 
 # helpers for getting related paths in Nix store
@@ -93,4 +96,4 @@ fi
 toDelete=$(printf '%s\n' "${toDelete[@]}" | sort | uniq)
 
 log "Deleting..."
-nix-store --ignore-liveness --delete ${toDelete[@]}
+nix-store --delete ${toDelete[@]}

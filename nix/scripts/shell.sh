@@ -11,28 +11,12 @@
 #     Take note that this makes Nix tools like `nix-build` unavailable in the shell.
 # - _NIX_KEEP: This variable allows specifying which env vars to keep for Nix pure shell.
 
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
+source "${GIT_ROOT}/scripts/colors.sh"
+source "${GIT_ROOT}/nix/scripts/source.sh"
 
 export TERM=xterm # fix for colors
 shift # we remove the first -c from arguments
-
-if ! command -v "nix" >/dev/null 2>&1; then
-  if [ -f ~/.nix-profile/etc/profile.d/nix.sh ]; then
-    . ~/.nix-profile/etc/profile.d/nix.sh
-  elif [ "$IN_NIX_SHELL" != 'pure' ]; then
-    echo -e "${GREEN}Setting up environment...${NC}" > /dev/stderr
-    ./scripts/setup
-
-    . ~/.nix-profile/etc/profile.d/nix.sh
-  fi
-fi
-
-if !command -v "nix" >/dev/null 2>&1; then
-  echo "Nix not available, sourcing profile failed!" > /dev/stderr
-  exit 1
-fi
 
 shellArgs=(
   "--show-trace"
@@ -41,7 +25,7 @@ shellArgs=(
 if [[ -n "${TARGET}" ]]; then
     shellArgs+=("--argstr target ${TARGET}")
 else
-    echo -e "${YELLOW}Env is missing TARGET, assuming default target.${NC} See nix/README.md for more details." 1>&2
+    echo -e "${YLW}Env is missing TARGET, assuming default target.${RST} See nix/README.md for more details." 1>&2
 fi
 
 if [[ "$TARGET" =~ (linux|windows|darwin|macos) ]]; then
@@ -74,7 +58,7 @@ fi
 # ENTER_NIX_SHELL is the fake command used when `make shell` is run.
 # It is just a special string, not a variable, and a marker to not use `--run`.
 if [[ $@ == "ENTER_NIX_SHELL" ]]; then
-  echo -e "${GREEN}Configuring ${_NIX_ATTR:-default} Nix shell for target '${TARGET:-default}'...${NC}" 1>&2
+  echo -e "${GRN}Configuring ${_NIX_ATTR:-default} Nix shell for target '${TARGET:-default}'...${RST}" 1>&2
   exec nix-shell ${shellArgs[@]} ${entryPoint}
 else
   # Not all builds are ready to be run in a pure environment
@@ -87,6 +71,6 @@ else
   if [[ -n "${_NIX_KEEP}" ]]; then
     shellArgs+=("--keep ${_NIX_KEEP//;/ --keep }")
   fi
-  echo -e "${GREEN}Configuring ${pureDesc}${_NIX_ATTR:-default} Nix shell for target '${TARGET}'...${NC}" 1>&2
+  echo -e "${GRN}Configuring ${pureDesc}${_NIX_ATTR:-default} Nix shell for target '${TARGET}'...${RST}" 1>&2
   exec nix-shell ${shellArgs[@]} --run "$@" ${entryPoint}
 fi

@@ -106,3 +106,11 @@ If copying from Nix Cache times out you can adjust the timeout by changing [`nix
 ```conf
 stalled-download-timeout = 9001
 ```
+
+### `extra-sandbox-paths` Is a Restricted Setting
+
+When building Android on NixOS you might encounter the following error:
+```
+ignoring the user-specified setting 'extra-sandbox-paths', because it is a restricted setting and you are not a trusted user
+```
+You can mitigate this by setting the [`nix.trustedUsers`](https://nixos.org/nixos/options.html#nix.trustedusers) property.

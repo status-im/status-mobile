@@ -55,7 +55,7 @@ export _NIX_ROOT = /opt/nix
 endif
 
 # Useful for checking if we are on NixOS
-OS_NAME = $(shell grep -oP '^NAME=\K\w(.*)' /etc/os-release)
+OS_NAME ?= $(shell source /etc/os-release && echo $${NAME})
 
 #----------------
 # Nix targets
@@ -91,7 +91,7 @@ endif
 
 nix-add-gcroots: export TARGET := default
 nix-add-gcroots: ##@nix Add Nix GC roots to avoid status-react expressions being garbage collected
-	scripts/add-nix-gcroots.sh
+	nix/scripts/gcroots.sh
 
 nix-update-gradle: ##@nix Update maven nix expressions based on current gradle setup
 	nix/mobile/android/maven-and-npm-deps/maven/generate-nix.sh
@@ -160,8 +160,8 @@ release: release-android release-ios ##@build build release for Android and iOS
 release-android: export TARGET ?= android
 release-android: export BUILD_ENV ?= prod
 release-android: export BUILD_TYPE ?= nightly
-release-android: export BUILD_NUMBER ?= 9999
-release-android: export STORE_FILE ?= $(HOME)/.gradle/status-im.keystore
+release-android: export BUILD_NUMBER ?= $(shell ./scripts/version/gen_build_no.sh | cut -c1-10)
+release-android: export KEYSTORE_FILE ?= $(HOME)/.gradle/status-im.keystore
 release-android: export ANDROID_ABI_SPLIT ?= false
 release-android: export ANDROID_ABI_INCLUDE ?= armeabi-v7a;arm64-v8a;x86
 release-android: ##@build build release for Android
