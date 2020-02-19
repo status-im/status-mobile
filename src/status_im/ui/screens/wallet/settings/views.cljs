@@ -7,8 +7,11 @@
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.list-item.views :as list-item]
             [reagent.core :as reagent]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.search-input.view :as search-input])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+
+(defonce search-active? (reagent/atom false))
 
 (defn toolbar []
   [topbar/topbar
@@ -70,10 +73,23 @@
   [render-token token])
 
 (defview manage-assets []
-  (letsubs [{custom-tokens true default-tokens nil} [:wallet/grouped-chain-tokens]]
+  (letsubs [{search-filter :search-filter
+             {custom-tokens true default-tokens nil} :tokens} [:wallet/filtered-grouped-chain-tokens]]
+    {:component-will-unmount #(do
+                                (re-frame/dispatch [:search/token-filter-changed nil])
+                                (reset! search-active? false))}
     [react/view (merge components.styles/flex {:background-color :white})
      [toolbar]
      [react/view {:style components.styles/flex}
+      [search-input/search-input
+       {:search-active? search-active?
+        :search-filter search-filter
+        :on-cancel #(re-frame/dispatch [:search/token-filter-changed nil])
+        :on-focus  (fn [search-filter]
+                     (when-not search-filter
+                       (re-frame/dispatch [:search/token-filter-changed ""])))
+        :on-change (fn [text]
+                     (re-frame/dispatch [:search/token-filter-changed text]))}]
       [list/section-list
        {:header
         [react/view {:margin-top 16}

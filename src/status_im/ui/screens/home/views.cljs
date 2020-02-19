@@ -18,7 +18,9 @@
             [status-im.constants :as constants]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
-            [status-im.ui.components.button :as button])
+            [status-im.ui.components.button :as button]
+            [status-im.ui.components.search-input.view :as search-input]
+            [status-im.ui.components.search-input.styles :as search-input.styles])
   (:require-macros [status-im.utils.views :as views]))
 
 (defonce search-active? (reagent/atom false))
@@ -91,50 +93,17 @@
        [home-tooltip-view])
      [react/view {:height 68 :flex 1}]]))
 
-(views/defview search-input [{:keys [on-cancel on-focus on-change]}]
-  (views/letsubs
-    [{:keys [search-filter]} [:home-items]
-     input-ref (reagent/atom nil)]
-    [react/view {:style styles/search-container}
-     [react/view {:style styles/search-input-container}
-      [icons/icon :main-icons/search {:color           colors/gray
-                                      :container-style {:margin-left  6
-                                                        :margin-right 2}}]
-      [react/text-input {:placeholder     (i18n/label :t/search)
-                         :blur-on-submit  true
-                         :multiline       false
-                         :ref             #(reset! input-ref %)
-                         :style           styles/search-input
-                         :default-value   search-filter
-                         :on-focus        #(do
-                                             (when on-focus
-                                               (on-focus search-filter))
-                                             (reset! search-active? true))
-                         :on-change       (fn [e]
-                                            (let [native-event (.-nativeEvent e)
-                                                  text         (.-text native-event)]
-                                              (when on-change
-                                                (on-change text))))}]]
-     (when @search-active?
-       [react/touchable-highlight
-        {:on-press (fn []
-                     (.clear @input-ref)
-                     (.blur @input-ref)
-                     (when on-cancel
-                       (on-cancel))
-                     (reset! search-active? false))
-         :style    {:margin-left 16}}
-        [react/text {:style {:color colors/blue}}
-         (i18n/label :t/cancel)]])]))
-
-(defn search-input-wrapper []
-  [search-input
-   {:on-cancel #(re-frame/dispatch [:search/filter-changed nil])
+(defn search-input-wrapper [search-filter]
+  [search-input/search-input
+   {:search-active? search-active?
+    :search-container-style styles/search-container
+    :search-filter search-filter
+    :on-cancel #(re-frame/dispatch [:search/home-filter-changed nil])
     :on-focus  (fn [search-filter]
                  (when-not search-filter
-                   (re-frame/dispatch [:search/filter-changed ""])))
+                   (re-frame/dispatch [:search/home-filter-changed ""])))
     :on-change (fn [text]
-                 (re-frame/dispatch [:search/filter-changed text]))}])
+                 (re-frame/dispatch [:search/home-filter-changed text]))}])
 
 (defn section-footer [{:keys [title data]}]
   (when (and @search-active? (empty? data))
@@ -151,7 +120,7 @@
 
 (views/defview home-filtered-items-list []
   (views/letsubs
-    [{:keys [chats all-home-items]} [:home-items]
+    [{:keys [chats all-home-items search-filter]} [:home-items]
      {:keys [hide-home-tooltip?]} [:multiaccount]]
     (let [list-ref (reagent/atom nil)]
       [list/section-list
@@ -164,19 +133,19 @@
          :keyboard-should-persist-taps  :always
          :ref                           #(reset! list-ref %)
          :footer                        [chat-list-footer hide-home-tooltip?]
-         :contentInset                  {:top styles/search-input-height}
+         :contentInset                  {:top search-input.styles/search-input-height}
          :render-section-header-fn      (fn [data] [react/view])
          :render-section-footer-fn      section-footer
          :render-fn                     (fn [home-item]
                                           [inner-item/home-list-item home-item])
          :header                        (when (or @search-active? (not-empty all-home-items))
-                                          [search-input-wrapper])
+                                          [search-input-wrapper search-filter])
          :on-scroll-end-drag
          (fn [e]
            (let [y (-> e .-nativeEvent .-contentOffset .-y)
                  hide-searchbar? (cond
-                                   platform/ios?     (and (neg? y) (> y (- (/ styles/search-input-height 2))))
-                                   platform/android? (and (< y styles/search-input-height) (> y (/ styles/search-input-height 2))))]
+                                   platform/ios?     (and (neg? y) (> y (- (/ search-input.styles/search-input-height 2))))
+                                   platform/android? (and (< y search-input.styles/search-input-height) (> y (/ search-input.styles/search-input-height 2))))]
              (if hide-searchbar?
                (.scrollToLocation @list-ref #js {:sectionIndex 0 :itemIndex 0}))))})])))
 

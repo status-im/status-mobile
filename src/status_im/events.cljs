@@ -1241,13 +1241,6 @@
                #(when ens-name
                   (contact/name-verified % public-key ens-name))))))
 
-;; search module
-
-(handlers/register-handler-fx
- :search/filter-changed
- (fn [cofx [_ search-filter]]
-   (search/filter-changed cofx search-filter)))
-
 ;; pairing module
 
 (handlers/register-handler-fx
