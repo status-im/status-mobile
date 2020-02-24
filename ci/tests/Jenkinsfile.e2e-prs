@@ -61,9 +61,10 @@ pipeline {
         }
 
         withCredentials([
-          string(
+          usernamePassword(
             credentialsId: 'status-im-auto-token',
-            variable: 'GIT_HUB_TOKEN'
+            usernameVariable: 'GIT_HUB_USER', /* ignored */
+            passwordVariable: 'GIT_HUB_TOKEN'
           ),
           usernamePassword(
             credentialsId:  'test-rail-api',
