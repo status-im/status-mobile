@@ -1,6 +1,5 @@
 import pytest
 
-pr = pytest.mark.pr
 testrail_case_id = pytest.mark.testrail_case_id
 testrail_id = pytest.mark.testrail_id  # atomic tests
 critical = pytest.mark.critical

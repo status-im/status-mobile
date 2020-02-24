@@ -746,43 +746,43 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.mail_server_by_name(server_name).click()
         profile_1.mail_server_connect_button.click()
         profile_1.confirm_button.click()
-        profile_1.home_button.click()
-
         if not profile_1.element_by_text_part('Error connecting').is_element_displayed(30):
             sign_in_1.driver.fail("No popup with 'Error connecting' is shown")
         profile_1.element_by_text('CANCEL').click()
 
-        home_2.just_fyi('send several messages to public channel')
-        public_chat_name = home_2.get_public_chat_name()
-        message = 'test_message'
-        public_chat_2 = home_2.join_public_chat(public_chat_name)
-        public_chat_2.chat_message_input.send_keys(message)
-        public_chat_2.send_message_button.click()
-        public_chat_2.back_button.click()
+        # TODO: blocked by 10065
+        # profile_1.home_button.click()
+        # home_2.just_fyi('send several messages to public channel')
+        # public_chat_name = home_2.get_public_chat_name()
+        # message = 'test_message'
+        # public_chat_2 = home_2.join_public_chat(public_chat_name)
+        # public_chat_2.chat_message_input.send_keys(message)
+        # public_chat_2.send_message_button.click()
+        # public_chat_2.back_button.click()
+        #
+        # profile_1.just_fyi('join same public chat and try to reconnect via "Tap to reconnect" and check "Connecting"')
+        # profile_1.home_button.click()
+        # home_1.join_public_chat(public_chat_name)
+        # public_chat_1 = home_1.get_chat_view()
+        # chat_state = 'Could not connect to mailserver. Tap to reconnect'
+        # public_chat_1.element_by_text(chat_state).click()
+        # if not public_chat_1.element_by_text_part('Connecting').is_element_displayed():
+        #     self.errors.append("Indicator doesn't show 'Connecting'")
 
-        profile_1.just_fyi('join same public chat and try to reconnect via "Tap to reconnect" and check "Connecting"')
-        profile_1.home_button.click()
-        home_1.join_public_chat(public_chat_name)
-        public_chat_1 = home_1.get_chat_view()
-        chat_state = 'Could not connect to mailserver. Tap to reconnect'
-        public_chat_1.element_by_text(chat_state).click()
-        if not public_chat_1.element_by_text_part('Connecting').is_element_displayed():
-            self.errors.append("Indicator doesn't show 'Connecting'")
-
-        profile_1.just_fyi('check that can RETRY to connect')
-        for _ in range(2):
-            public_chat_1.element_by_text('RETRY').wait_for_element(30)
-            public_chat_1.element_by_text('RETRY').click()
-
-        profile_1.just_fyi('check that can pick another mailserver and receive messages')
-        public_chat_1.element_by_text('PICK ANOTHER').is_element_displayed(30)
-        public_chat_1.element_by_text_part('PICK ANOTHER').click()
-        mailserver = profile_1.return_mailserver_name(mailserver_ams, prod_fleet)
-        profile_1.element_by_text(mailserver).click()
-        profile_1.confirm_button.click()
-        profile_1.home_button.click()
-        if not public_chat_1.chat_element_by_text(message).is_element_displayed(30):
-            self.errors.append("Chat history wasn't fetched")
+        # profile_1.just_fyi('check that can RETRY to connect')
+        # for _ in range(2):
+        #     public_chat_1.element_by_text('RETRY').wait_for_element(30)
+        #     public_chat_1.element_by_text('RETRY').click()
+        #
+        # profile_1.just_fyi('check that can pick another mailserver and receive messages')
+        # public_chat_1.element_by_text('PICK ANOTHER').is_element_displayed(30)
+        # public_chat_1.element_by_text_part('PICK ANOTHER').click()
+        # mailserver = profile_1.return_mailserver_name(mailserver_ams, prod_fleet)
+        # profile_1.element_by_text(mailserver).click()
+        # profile_1.confirm_button.click()
+        # profile_1.home_button.click()
+        # if not public_chat_1.chat_element_by_text(message).is_element_displayed(30):
+        #     self.errors.append("Chat history wasn't fetched")
 
         self.errors.verify_no_errors()
 
@@ -851,7 +851,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
     @marks.testrail_id(5680)
     @marks.high
     @marks.skip
-    # skip until edit userpic is enabled back
+    # TODO: skip until edit userpic is enabled back
     def test_pair_devices_sync_name_photo_public_group_chats(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])

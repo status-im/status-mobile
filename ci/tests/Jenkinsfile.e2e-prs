@@ -75,6 +75,10 @@ pipeline {
             usernameVariable: 'SAUCE_USERNAME',
             passwordVariable: 'SAUCE_ACCESS_KEY'
           ),
+          string(
+            credentialsId: 'etherscan-api-key',
+            variable: 'ETHERSCAN_API_KEY'
+          ),
         ]) {
           dir('test/appium/tests') {
             sh """

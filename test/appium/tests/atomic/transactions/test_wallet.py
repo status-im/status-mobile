@@ -128,7 +128,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         sign_in_view.just_fyi('Restore account with funds offline')
         sign_in_view.toggle_airplane_mode()
-        sign_in_view.access_key_button.click()
         sign_in_view.recover_access(sender['passphrase'])
         home_view = sign_in_view.get_home_view()
         wallet_view = home_view.wallet_button.click()

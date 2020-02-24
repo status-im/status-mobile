@@ -6,6 +6,7 @@ import requests
 import time
 from json import JSONDecodeError
 from decimal import Decimal
+from os import environ
 import tests
 
 
@@ -21,12 +22,18 @@ class NetworkApi(object):
         self.chat_bot_url = 'http://offsite.chat:8099'
 
     def get_transactions(self, address: str) -> List[dict]:
-        method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc' % address
-        return requests.request('GET', url=method, headers=self.headers).json()['result']
+        method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc&apikey=%s' % (address, environ.get('ETHERSCAN_API_KEY'))
+        try:
+            return requests.request('GET', url=method, headers=self.headers).json()['result']
+        except TypeError:
+            print('Check response from etherscan API. Returned values don\'t match expected')
 
     def get_token_transactions(self, address: str) -> List[dict]:
-        method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc' % address
-        return requests.request('GET', url=method, headers=self.headers).json()['result']
+        method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc&apikey=%s' % (address, environ.get('ETHERSCAN_API_KEY'))
+        try:
+            return requests.request('GET', url=method, headers=self.headers).json()['result']
+        except TypeError:
+            print('Check response from etherscan API. Returned values don\'t match expected')
 
     def is_transaction_successful(self, transaction_hash: str) -> int:
         method = self.network_url + 'module=transaction&action=getstatus&txhash=%s' % transaction_hash

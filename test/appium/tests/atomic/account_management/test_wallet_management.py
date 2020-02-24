@@ -119,6 +119,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         address = wallet.get_wallet_address()
         self.network_api.get_donate(address[2:])
         wallet.back_button.click()
+        wallet.wait_balance_is_changed()
         if not wallet.backup_recovery_phrase_warning_text.is_element_present(30):
             self.driver.fail("'Back up your seed phrase' warning is not shown on Wallet with funds")
         wallet.backup_recovery_phrase_warning_text.click()

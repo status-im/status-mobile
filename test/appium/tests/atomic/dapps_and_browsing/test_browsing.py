@@ -25,20 +25,22 @@ class TestBrowsing(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         home_view = sign_in.create_user()
         dapp_view = home_view.dapp_tab_button.click()
-        ru_url = 'https://status.im/ru/'
+        ru_url = 'https://ru.m.wikipedia.org'
         browsing_view = dapp_view.open_url(ru_url)
-        browsing_view.find_text_part('Частная, безопасная связь')
+        browsing_view.find_text_part('Добро пожаловать')
 
-        browsing_view.just_fyi('Navigate to get-involved and back')
-        browsing_view.element_by_text_part('Участвовать').click()
+        browsing_view.just_fyi('Navigate to next page and back')
+        browsing_view.element_by_text_part('свободную энциклопедию').click()
+        browsing_view.element_by_text_part('Свободный контент')
         browsing_view.browser_previous_page_button.click()
 
-        browsing_view.just_fyi('Relogin and check that tap on "Next" navigates to get-involved')
+        browsing_view.just_fyi('Relogin and check that tap on "Next" navigates to next page')
         browsing_view.relogin()
         home_view.dapp_tab_button.click()
         dapp_view.element_by_text_part(ru_url).click()
         browsing_view.browser_next_page_button.click()
-        browsing_view.find_text_part('Сообщество с открытым исходным кодом')
+        if not browsing_view.element_by_text_part('Свободный контент').is_element_displayed(20):
+            self.driver.fail("Browser history is not kept after relogin")
 
     @marks.testrail_id(5438)
     @marks.medium
@@ -137,14 +139,14 @@ class TestBrowsing(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
         daap_view = home.dapp_tab_button.click()
-        browsing_view = daap_view.open_url('status.im')
-        browsing_view.element_by_text_part('Get Involved', 'button').click()
-        browsing_view.find_text_part('An Open Source Community')
+        browsing_view = daap_view.open_url('dap.ps')
+        browsing_view.element_by_text_part('View all', 'button').click()
+        if browsing_view.element_by_text_part('View all').is_element_displayed(20):
+            self.driver.fail("Failed to access Categories using ''View all'")
         browsing_view.browser_previous_page_button.click()
-        browsing_view.find_text_part('Get Status', 15)
-
+        browsing_view.find_text_part('Categories', 15)
         browsing_view.browser_next_page_button.click()
-        browsing_view.find_text_part('An Open Source Community')
+        browsing_view.find_text_part('Exchanges', 15)
         browsing_view.back_to_home_button.click()
 
     @marks.testrail_id(5354)
@@ -160,6 +162,9 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(5785)
     @marks.critical
+    @marks.skip
+    #TODO: needs to be updated; skipped due to changing DApps in Discover, also not possible to use search
+    # (no suggestions on emulators)
     def test_can_open_dapp_from_dapp_store(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()

@@ -30,12 +30,15 @@ appium_container = AppiumContainer()
 common_password = 'qwerty'
 unique_password = 'unique' + get_current_time()
 
-bootnode_address = "enode://436cc6f674928fdc9a9f7990f2944002b685d1c37f025c1be425185b5b1f0900feaf1ccc2a6130268f9901be4a7d252f37302c8335a2c1a62736e9232691cc3a@178.128.138.128:443"
-mailserver_address = "enode://ee2b53b0ace9692167a410514bca3024695dbf0e1a68e1dff9716da620efb195f04a4b9e873fb9b74ac84de801106c465b8e2b6c4f0d93b8749d1578bfcaf03e@104.197.238.144:443"
+bootnode_address = "enode://a8a97f126f5e3a340cb4db28a1187c325290ec08b2c9a6b1f19845ac86c46f9fac2ba13328822590" \
+                   "fd3de3acb09cc38b5a05272e583a2365ad1fa67f66c55b34@167.99.210.203:30404"
+# referred to https://github.com/status-im/status-react/blob/1ea49a80fc915aa3174ecfd9649c3bab6480d30d/src/status_im/constants.cljs#L40
+mailserver_address = "enode://ee2b53b0ace9692167a410514bca3024695dbf0e1a68e1dff9716da620efb195f04a4b9e873fb9b74ac84de80" \
+                     "1106c465b8e2b6c4f0d93b8749d1578bfcaf03e:status-offline-inbox@104.197.238.144:443"
 staging_fleet = 'eth.staging'
 prod_fleet = 'eth.prod'
 mailserver_ams = 'mail-01.do-ams3'
-mailserver_hk = 'mail-01.ac-cn-hongkong-c'
+mailserver_hk = 'mail-02.ac-cn-hongkong-c'
 mailserver_gc = 'mail-01.gc-us-central1-a'
 mailserver_ams_01 = 'mail-01.do-ams3.eth.prod'
 camera_access_error_text = "To grant the required camera permission, please go to your system settings " \

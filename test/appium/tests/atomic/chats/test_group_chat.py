@@ -224,6 +224,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(4001)
     @marks.high
+    @marks.skip
+    # TODO:should be retested after fix 10054
     def test_remove_member_from_group_chat(self):
         self.create_drivers(2)
         message_for_device_2 = 'This message should not be visible for device 2'

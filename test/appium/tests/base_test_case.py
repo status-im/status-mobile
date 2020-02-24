@@ -14,7 +14,6 @@ from selenium.common.exceptions import WebDriverException
 
 from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
-from support.message_reliability_report import create_one_to_one_chat_report, create_public_chat_report
 from tests import test_suite_data, start_threads, appium_container, pytest_config_global
 
 class AbstractTestCase:
