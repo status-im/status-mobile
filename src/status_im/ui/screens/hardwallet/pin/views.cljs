@@ -10,6 +10,8 @@
             [status-im.utils.platform :as platform]
             [status-im.ui.components.topbar :as topbar]))
 
+(def ^:const default-pin-retries-number 3)
+
 (defn numpad-button [n step enabled? small-screen?]
   [react/touchable-highlight
    {:on-press #(when enabled?
@@ -102,7 +104,7 @@
           :error [react/view (styles/error-container small-screen?)
                   [react/text {:style (styles/error-text small-screen?)}
                    (i18n/label error-label)]]
-          (when retry-counter
+          (when (and retry-counter (< retry-counter default-pin-retries-number))
             [react/view {:margin-top (if (= step :puk) 24 8)}
              [react/text {:style {:text-align :center}}
               (i18n/label :t/pin-retries-left {:number retry-counter})]]))]
