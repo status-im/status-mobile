@@ -20,16 +20,17 @@ class NetworkApi(object):
         'User-Agent':"Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit\
         /537.36 (KHTML, like Gecko) Chrome\/77.0.3865.90 Safari\/537.36", }
         self.chat_bot_url = 'http://offsite.chat:8099'
+        self.api_key = environ.get('ETHERSCAN_API_KEY')
 
     def get_transactions(self, address: str) -> List[dict]:
-        method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc&apikey=%s' % (address, environ.get('ETHERSCAN_API_KEY'))
+        method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc&apikey=%s' % (address, self.api_key)
         try:
             return requests.request('GET', url=method, headers=self.headers).json()['result']
         except TypeError:
             print('Check response from etherscan API. Returned values don\'t match expected')
 
     def get_token_transactions(self, address: str) -> List[dict]:
-        method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc&apikey=%s' % (address, environ.get('ETHERSCAN_API_KEY'))
+        method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc&apikey=%s' % (address, self.api_key)
         try:
             return requests.request('GET', url=method, headers=self.headers).json()['result']
         except TypeError:
@@ -40,7 +41,7 @@ class NetworkApi(object):
         return not int(requests.request('GET', url=method, headers=self.headers).json()['result']['isError'])
 
     def get_balance(self, address):
-        method = self.network_url + 'module=account&action=balance&address=0x%s&tag=latest' % address
+        method = self.network_url + 'module=account&action=balance&address=0x%s&tag=latest&apikey=%s' % (address , self.api_key)
         for i in range(5):
             try:
                 return int(requests.request('GET', method, headers=self.headers).json()["result"])
