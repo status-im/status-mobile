@@ -82,6 +82,11 @@
                     (onboarding/proceed-with-generating-key)))
         (recovery/load-pair-screen cofx)))))
 
+(fx/defn on-register-card-events
+  {:events [:hardwallet.callback/on-register-card-events]}
+  [{:keys [db]} listeners]
+  {:db (update-in db [:hardwallet :listeners] merge listeners)})
+
 (fx/defn navigate-to-keycard-settings
   {:events [:profile.ui/keycard-settings-button-pressed]}
   [{:keys [db] :as cofx}]
@@ -301,6 +306,7 @@
 ; original - new PIN when user changes it or creates new one
 ; confirmation - confirmation for new PIN
 (fx/defn process-pin-input
+  {:events [:hardwallet/process-pin-input]}
   [{:keys [db]}]
   (let [enter-step (get-in db [:hardwallet :pin :enter-step])
         pin (get-in db [:hardwallet :pin enter-step])

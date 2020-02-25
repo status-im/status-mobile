@@ -68,6 +68,7 @@
              ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts % {:logout? false}])
              :ui/listen-to-window-dimensions-change nil
              ::network/listen-to-network-info       nil
+             :hardwallet/register-card-events       nil
              :hardwallet/check-nfc-support          nil
              :hardwallet/check-nfc-enabled          nil
              :hardwallet/retrieve-pairings          nil}

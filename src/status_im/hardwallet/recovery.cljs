@@ -147,11 +147,13 @@
     ;; if a name is still `nil` we have to generate it before multiaccount's
     ;; creation otherwise spec validation will fail
     (if (nil? name)
-      {::generate-name-and-photo whisper-public-key}
+      {:hardwallet/generate-name-and-photo
+       {:public-key whisper-public-key
+        :on-success :hardwallet/on-name-and-photo-generated}}
       (fx/merge cofx
                 {:db (-> db
                          (assoc-in [:hardwallet :setup-step] nil)
-                         (assoc :intro-wizard nil))}
+                         (dissoc :intro-wizard))}
                 (multiaccounts.create/on-multiaccount-created
                  {:derived              {constants/path-wallet-root-keyword
                                          {:public-key wallet-root-public-key
@@ -245,7 +247,7 @@
             (navigation/navigate-to-cofx :keycard-recovery-pin nil)))
 
 (fx/defn on-name-and-photo-generated
-  {:events [::on-name-and-photo-generated]
+  {:events [:hardwallet/on-name-and-photo-generated]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)
                   (re-frame/inject-cofx ::multiaccounts.create/get-signing-phrase)]}
   [{:keys [db] :as cofx} whisper-name photo-path]
