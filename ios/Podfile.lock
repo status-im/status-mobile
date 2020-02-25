@@ -244,9 +244,11 @@ PODS:
     - React-cxxreact (= 0.61.5)
     - React-jsi (= 0.61.5)
     - ReactCommon/jscallinvoker (= 0.61.5)
+  - RNCMaskedView (0.1.6):
+    - React
   - RNFS (2.14.1):
     - React
-  - RNGestureHandler (1.5.2):
+  - RNGestureHandler (1.5.3):
     - React
   - RNImageCropPicker (0.25.3):
     - QBImagePickerController
@@ -257,7 +259,9 @@ PODS:
     - React
   - RNLanguages (3.0.2):
     - React
-  - RNScreens (1.0.0-alpha.23):
+  - RNReanimated (1.7.0):
+    - React
+  - RNScreens (2.0.0-alpha.25):
     - React
   - RNSVG (9.11.1):
     - React
@@ -310,11 +314,13 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/jscallinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLanguages (from `../node_modules/react-native-languages`)
+  - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - SQLCipher (~> 3.0)
@@ -399,6 +405,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/Libraries/Vibration"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNCMaskedView:
+    :path: "../node_modules/@react-native-community/masked-view"
   RNFS:
     :path: "../node_modules/react-native-fs"
   RNGestureHandler:
@@ -409,6 +417,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-keychain"
   RNLanguages:
     :path: "../node_modules/react-native-languages"
+  RNReanimated:
+    :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSVG:
@@ -455,12 +465,14 @@ SPEC CHECKSUMS:
   React-RCTText: 9ccc88273e9a3aacff5094d2175a605efa854dbe
   React-RCTVibration: a49a1f42bf8f5acf1c3e297097517c6b3af377ad
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
+  RNCMaskedView: a88953beefbd347a29072d9eba90e42945fe291e
   RNFS: a8fbe7060fa49157d819466404794ad9c58e58cf
-  RNGestureHandler: 946a7691e41df61e2c4b1884deab41a4cdc3afff
+  RNGestureHandler: 02905abe54e1f6e59c081a10b4bd689721e17aa6
   RNImageCropPicker: bfb3ea9c8622f290532e2fe63f369e0d5a52f597
   RNKeychain: 216f37338fcb9e5c3a2530f1e3295f737a690cb1
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
-  RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
+  RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
+  RNScreens: 031d10e2b648afc9546f16b6a786d2efc6870310
   RNSVG: be27aa7c58819f97399388ae53d7fa0572f32c7f
   RSKImageCropper: a446db0e8444a036b34f3c43db01b2373baa4b2a
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990

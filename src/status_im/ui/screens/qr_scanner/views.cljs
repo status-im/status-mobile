@@ -44,13 +44,13 @@
             {:keys [height width]} [:dimensions/window]
             camera-flashlight [:wallet.send/camera-flashlight]
             opts              [:get-screen-params]]
-    [react/view {:style {:flex 1 :background-color colors/black}}
+    [react/safe-area-view {:style {:flex             1
+                                   :background-color colors/black}}
      [topbar camera-flashlight opts]
      [react/with-activity-indicator
       {}
       [camera/camera
        {:style         {:flex 1}
-        ;:torchMode     (camera/set-torch camera-flashlight)
         :captureAudio  false
         :onBarCodeRead #(when-not @read-once?
                           (reset! read-once? true)

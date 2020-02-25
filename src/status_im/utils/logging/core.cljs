@@ -49,7 +49,6 @@
                                                   :initial-props
                                                   :keyboard-height
                                                   :keyboard-max-height
-                                                  :navigation-stack
                                                   :network
                                                   :network-status
                                                   :peers-count

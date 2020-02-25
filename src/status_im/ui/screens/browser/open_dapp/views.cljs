@@ -8,7 +8,6 @@
    [status-im.ui.components.list.views :as list]
    [status-im.ui.components.common.common :as components.common]
    [status-im.ui.screens.wallet.components.views :as components]
-   [status-im.ui.components.tabbar.styles :as tabs.styles]
    [status-im.react-native.resources :as resources]
    [status-im.ui.components.list-item.views :as list-item]
    [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -70,7 +69,7 @@
     [react/view {:position           :absolute
                  :z-index            2
                  :align-items        :center
-                 :bottom             (+ 16 tabs.styles/tabs-diff)
+                 :bottom             16
                  :left               0
                  :right              0
                  :padding-horizontal 32}
@@ -106,7 +105,7 @@
         [list-header false]
         [list/flat-list {:data           browsers
                          :footer         [react/view
-                                          {:style {:height     (+ tabs.styles/tabs-diff 64)
+                                          {:style {:height     64
                                                    :align-self :stretch}}]
                          :key-fn         :browser-id
                          :end-fill-color colors/white

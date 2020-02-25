@@ -52,7 +52,8 @@
 (defn footer [syncing]
   [react/touchable-highlight {:on-press (when-not @syncing
                                           synchronize-installations!)
-                              :style main-tabs.styles/tabs-container}
+                              ;; TODO: Inspect the need of coupling with tabbar here
+                              :style    main-tabs.styles/tabs-container}
    [react/view
     {:style styles/footer-content}
     [react/text

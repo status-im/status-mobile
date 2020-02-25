@@ -1,11 +1,17 @@
 (ns status-im.ui.screens.wallet.transactions.styles
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.tabbar.styles :as tabs.styles]
+            [status-im.utils.platform :as platform]
             [status-im.utils.styles :as styles]))
+
+(def tabs-height
+  (cond
+    platform/android? 52
+    platform/ios?     52
+    platform/desktop? 36))
 
 (defn tab [active?]
   {:flex                1
-   :height              tabs.styles/tab-height
+   :height              tabs-height
    :justify-content     :center
    :align-items         :center
    :padding-bottom      (if active? 0 1)
@@ -16,7 +22,7 @@
 
 (def tabs-container
   {:flex-direction :row
-   :height         tabs.styles/tab-height})
+   :height         tabs-height})
 
 (defn tab-title
   [active?]

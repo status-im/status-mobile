@@ -60,7 +60,6 @@
 
 ;;view
 (reg-root-key-sub :view-id :view-id)
-(reg-root-key-sub :navigation-stack :navigation-stack)
 (reg-root-key-sub :screen-params :navigation/screen-params)
 (reg-root-key-sub :two-pane-ui-enabled? :two-pane-ui-enabled?)
 
@@ -191,7 +190,14 @@
 
 (reg-root-key-sub :auth-method :auth-method)
 
+(reg-root-key-sub :multiaccounts/loading :multiaccounts/loading)
+
 ;;GENERAL ==============================================================================================================
+
+(re-frame/reg-sub
+ :multiaccount/logged-in?
+ (fn [db]
+   (multiaccounts.model/logged-in? {:db db})))
 
 (re-frame/reg-sub
  :connection-stats
@@ -358,12 +364,6 @@
  :<- [:view-id]
  (fn [[params view-id-db] [_ view-id]]
    (get params (or view-id view-id-db))))
-
-(re-frame/reg-sub
- :can-navigate-back?
- :<- [:navigation-stack]
- (fn [stack]
-   (> (count stack) 1)))
 
 (re-frame/reg-sub
  :delete-swipe-position

@@ -4,8 +4,6 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
             [status-im.utils.utils :as utils]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.large-toolbar.view :as large-toolbar]
@@ -145,8 +143,6 @@
                             list-ref)]
         [react/view
          {:style
-          (merge {:flex 1}
-                 (when platform/ios?
-                   {:margin-bottom tabs.styles/tabs-diff}))}
+          (merge {:flex 1})}
          (:minimized-toolbar generated-view)
          (:content-with-header generated-view)]))))

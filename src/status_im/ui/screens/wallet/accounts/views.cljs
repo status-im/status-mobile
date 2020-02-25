@@ -9,7 +9,6 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.wallet.utils :as wallet.utils]
-            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [reagent.core :as reagent]
             [re-frame.core :as re-frame]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
@@ -83,9 +82,6 @@
     [list/flat-list {:data               tokens
                      :default-separator? false
                      :key-fn             :name
-                     :footer             [react/view
-                                          {:style {:height     tabs.styles/tabs-diff
-                                                   :align-self :stretch}}]
                      :render-fn          (render-asset (:code currency))}]))
 
 (views/defview total-value []

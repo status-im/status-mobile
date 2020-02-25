@@ -7,7 +7,7 @@
 (def tabs-height
   (cond
     platform/android? 52
-    platform/ios? 52
+    platform/ios?     52
     platform/desktop? 36))
 
 (def minimized-tabs-height 36)
@@ -16,30 +16,6 @@
 
 (def minimized-tab-ratio
   (/ minimized-tabs-height tabs-height))
-
-(def tab-height (dec tabs-height))
-
-(def tabs-container
-  {:flex-direction   :row
-   :height           tabs-height
-   :background-color colors/white
-   :border-top-width 1
-   :border-top-color colors/black-transparent})
-
-(def tab-container
-  {:height          tabs-height
-   :justify-content :center
-   :align-items     :center})
-
-(styles/defn tab-title [active?]
-  {:ios        {:font-size 11}
-   :android    {:font-size 11}
-   :desktop    {:font-size   12
-                :font-weight (if active? "600" "400")}
-   :text-align :center
-   :color      (if active?
-                 colors/blue
-                 colors/gray)})
 
 (def counter
   {:right    0
@@ -76,7 +52,7 @@
   {:flex   1
    :height tabs-height})
 
-(def new-tab-container
+(def tab-container
   {:flex            1
    :height          tabs-height
    :align-items     :center
@@ -101,72 +77,49 @@
    :align-items     :center
    :justify-content :center})
 
-(defn new-tab-title [active?]
+(defn tab-title [active?]
   {:color     (if active? colors/blue colors/gray)
    :font-size 11})
 
-(styles/def new-tabs-container
-  {:height     tabs-height
-   :align-self :stretch
-   :ios        {:background-color :white
-                :shadow-radius    4
-                :shadow-offset    {:width 0 :height -5}
-                :shadow-opacity   0.3
-                :shadow-color     "rgba(0, 9, 26, 0.12)"}
-   :desktop    {:background-color :white
-                :shadow-radius    4
-                :shadow-offset    {:width 0 :height -5}
-                :shadow-opacity   0.3
-                :shadow-color     "rgba(0, 9, 26, 0.12)"}})
+(styles/def tabs-container
+  {:height           minimized-tabs-height
+   :align-self       :stretch
+   :background-color :white
+   :ios              {:shadow-radius  4
+                      :shadow-offset  {:width 0 :height -5}
+                      :shadow-opacity 0.3
+                      :shadow-color   "rgba(0, 9, 26, 0.12)"}
+   :desktop          {:background-color :white
+                      :shadow-radius    4
+                      :shadow-offset    {:width 0 :height -5}
+                      :shadow-opacity   0.3
+                      :shadow-color     "rgba(0, 9, 26, 0.12)"}})
 
 (def tabs
-  {:height         tabs-height
-   :align-self     :stretch
-   :padding-left   8
-   :padding-right  8
-   :flex-direction :row})
+  {:align-self         :stretch
+   :padding-horizontal 8
+   :flex-direction     :row})
 
-(defn animated-container [visible? keyboard-shown?]
-  {:bottom           0
-   :left             0
-   :right            0
-   :background-color :white
-   :elevation        8
-   :position         (when (or platform/ios?
-                               keyboard-shown?)
-                       :absolute)
-   :transform        [{:translateY
-                       (animation/interpolate
-                        visible?
-                        {:inputRange  [0 1]
-                         :outputRange [tabs-height 0]})}]})
+(defn animated-container [visible?]
+  {:transform [{:translateY
+                (animation/interpolate visible?
+                                       {:inputRange  [0 1]
+                                        :outputRange [(- tabs-diff) 0]})}]})
 
-(def ios-titles-cover
+(defn ios-titles-cover [inset]
   {:background-color :white
    :position         :absolute
-   :height           (- tabs-height minimized-tabs-height)
+   :height           tabs-diff
    :align-self       :stretch
-   :top              0
+   :bottom           (- inset tabs-diff)
    :right            0
    :left             0})
 
-(def title-cover-wrapper-ios
-  {:left             0
-   :right            0
-   :bottom           0
-   :padding-bottom   (if platform/iphone-x? 34 0)
-   :position         :absolute
-   :background-color :white})
-
-(def title-cover-wrapper-android
-  {:left     0
-   :right    0
-   :bottom   0
-   :position :absolute})
-
-(defn animation-wrapper [keyboard-shown? main-tab?]
-  {:height     (cond
-                 keyboard-shown? 0
-                 main-tab?       tabs-height
-                 :else           minimized-tabs-height)
-   :align-self :stretch})
+(defn tabs-wrapper [keyboard minimized inset]
+  (merge {:padding-bottom   inset
+          :elevation        8
+          :padding-top      (if minimized 0 tabs-diff)
+          :background-color :white}
+         (when keyboard
+           {:position :absolute
+            :bottom   (- tabs-height)})))

@@ -17,14 +17,6 @@
             [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defn login-toolbar [can-navigate-back?]
-  [topbar/topbar
-   {:navigation (if can-navigate-back?
-                  {:icon                :main-icons/back
-                   :accessibility-label :back-button
-                   :handler             #(re-frame/dispatch [:navigate-reset :multiaccounts])}
-                  :none)}])
-
 (defn login-multiaccount [password-text-input]
   (.blur password-text-input)
   (re-frame/dispatch [:multiaccounts.login.ui/password-input-submitted]))
@@ -46,14 +38,13 @@
 
 (defview login []
   (letsubs [{:keys [error processing save-password?] :as multiaccount} [:multiaccounts/login]
-            can-navigate-back? [:can-navigate-back?]
             password-text-input (atom nil)
             sign-in-enabled? [:sign-in-enabled?]
             auth-method [:auth-method]
             view-id [:view-id]
             supported-biometric-auth [:supported-biometric-auth]]
     [react/keyboard-avoiding-view {:style ast/multiaccounts-view}
-     [login-toolbar can-navigate-back?]
+     [topbar/topbar {}]
      [react/scroll-view {:keyboardShouldPersistTaps :always
                          :style                     styles/login-view}
       [react/view styles/login-badge-container

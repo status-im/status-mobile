@@ -20,7 +20,7 @@
 
 (fx/defn initialize-app-db
   "Initialize db to initial state"
-  [{{:keys [view-id hardwallet initial-props desktop/desktop
+  [{{:keys [hardwallet initial-props desktop/desktop
             supported-biometric-auth network/type app-active-since]} :db now :now}]
   {:db (assoc app-db
               :initial-props initial-props
@@ -29,19 +29,12 @@
               :hardwallet (dissoc hardwallet :secrets)
               :supported-biometric-auth supported-biometric-auth
               :app-active-since (or app-active-since now)
-              :view-id view-id)})
+              :multiaccounts/loading true)})
 
 (fx/defn initialize-views
   [cofx {:keys [logout?]}]
   (let [{{:multiaccounts/keys [multiaccounts] :as db} :db} cofx]
-    (cond
-      (empty? multiaccounts)
-      (navigation/navigate-to-cofx cofx :intro nil)
-
-      logout?
-      (navigation/navigate-to-cofx cofx :multiaccounts nil)
-
-      :else
+    (when (and (seq multiaccounts) (not logout?))
       (let [{:keys [key-uid public-key photo-path name]} (first (#(sort-by :last-sign-in > %) (vals multiaccounts)))]
         (multiaccounts.login/open-login cofx key-uid photo-path name public-key)))))
 
@@ -57,7 +50,10 @@
                               {}
                               all-multiaccounts)]
     (fx/merge cofx
-              {:db (assoc db :multiaccounts/multiaccounts multiaccounts)}
+              {:db (-> db
+                       (assoc :multiaccounts/multiaccounts multiaccounts)
+                       (assoc :multiaccounts/logout? logout?)
+                       (assoc :multiaccounts/loading false))}
               (initialize-views {:logout? logout?}))))
 
 (fx/defn start-app [cofx]

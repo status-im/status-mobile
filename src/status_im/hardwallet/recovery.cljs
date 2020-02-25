@@ -186,7 +186,7 @@
                  encryption-public-key
                  {})
                 (if (= flow :import)
-                  (navigation/navigate-to-cofx :keycard-recovery-success nil)
+                  (navigation/navigate-replace-cofx :keycard-recovery-success nil)
                   (navigation/navigate-to-cofx :welcome nil))))))
 
 (fx/defn on-generate-and-load-key-success

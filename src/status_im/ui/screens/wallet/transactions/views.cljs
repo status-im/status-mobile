@@ -142,6 +142,7 @@
       [list/item-primary-only {:accessibility-label :filter-name-text}
        label]]]]])
 
+;; NOTE: Is this needed?
 (defview filter-history []
   (letsubs [{:keys [filters all-filters? on-touch-select-all]}
             [:wallet.transactions.filters/screen]]

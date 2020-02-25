@@ -3,10 +3,14 @@
             [status-im.ui.components.status-bar.styles :as styles]
             [status-im.utils.platform :as platform]))
 
+(def route->bar-type (merge {:qr-scanner {:type :black}}
+                            (when platform/ios?
+                              {:new-chat        {:type :black}
+                               :new-public-chat {:type :black}})))
+
+;; TODO: Integrate into navigation
 (defn get-config [view-id]
-  (or (get {:qr-scanner {:type :black}}
-           view-id)
-      {:type :main}))
+  (get route->bar-type view-id {:type :main}))
 
 (defn set-status-bar
   "If more than one `StatusBar` is rendered, the one which was mounted last will

@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.group.events
-  (:require [status-im.utils.handlers :as handlers]
-            [status-im.ui.screens.group.navigation]))
+  (:require [status-im.utils.handlers :as handlers]))
 
 (handlers/register-handler-fx
  :deselect-contact
@@ -21,3 +20,8 @@
  :select-participant
  (fn [{:keys [db]} [_ id]]
    {:db (update db :selected-participants conj id)}))
+
+(handlers/register-handler-fx
+ ::add-participants-toggle-list
+ (fn [{db :db}]
+   {:db (assoc db :selected-participants #{})}))

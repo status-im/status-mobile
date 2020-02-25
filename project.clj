@@ -2,6 +2,8 @@
   :url "https://github.com/status-im/status-react/"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
+  ;; NOTE: Dependecies here are used in CI, till the CI script will be updated
+  ;; all deps should be maintained in deps.edn and here.
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [org.clojure/clojurescript "1.10.520"
                   :exclusions
@@ -19,8 +21,8 @@
                  [com.taoensso/encore "2.94.0"]
                  [hickory "0.7.1"]
                  [cljs-bean "1.3.0"]
-                 [mvxcvi/alphabase "1.0.0"]
-                 [rasom/cljs-react-navigation "0.1.4"]]
+                 [binaryage/oops "0.7.0"]
+                 [mvxcvi/alphabase "1.0.0"]]
   :plugins [[rasom/lein-githooks "0.1.5"]
             [lein-cljsbuild "1.1.7"]
             [lein-re-frisk "0.5.8"]

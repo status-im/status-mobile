@@ -20,7 +20,6 @@
 
 ;; initial state of app-db
 (def app-db {:keyboard-height                    0
-             :navigation-stack                   '(:multiaccounts)
              :contacts/contacts                  {}
              :pairing/installations              {}
              :qr-codes                           {}
@@ -63,7 +62,6 @@
 
 ;;;;GLOBAL
 
-(spec/def ::was-modal? (spec/nilable boolean?))
 ;;"http://localhost:8545"
 (spec/def ::rpc-url (spec/nilable string?))
 ;;object? doesn't work
@@ -94,12 +92,6 @@
 
 ;;current view
 (spec/def :navigation/view-id (spec/nilable keyword?))
-;;modal view id
-(spec/def :navigation/modal (spec/nilable keyword?))
-;;stack of view's ids (keywords)
-(spec/def :navigation/navigation-stack (spec/nilable seq?))
-(spec/def :navigation/prev-tab-view-id (spec/nilable keyword?))
-(spec/def :navigation/prev-view-id (spec/nilable keyword?))
 ;; navigation screen params
 (spec/def :navigation.screen-params/network-details (spec/keys :req [:networks/selected-network]))
 (spec/def :navigation.screen-params/browser (spec/nilable map?))
@@ -121,7 +113,6 @@
 
 (spec/def :navigation.screen-params/collectibles-list map?)
 
-(spec/def :navigation.screen-params/selection-modal-screen map?)
 (spec/def :navigation.screen-params/manage-dapps-permissions map?)
 
 (spec/def :navigation/screen-params (spec/nilable (spec/keys :opt-un [:navigation.screen-params/network-details
@@ -131,7 +122,6 @@
                                                                       :navigation.screen-params/group-contacts
                                                                       :navigation.screen-params/edit-contact-group
                                                                       :navigation.screen-params/collectibles-list
-                                                                      :navigation.screen-params/selection-modal-screen
                                                                       :navigation.screen-params/manage-dapps-permissions])))
 
 (spec/def :desktop/desktop (spec/nilable any?))
@@ -257,7 +247,6 @@
                                 :popover/popover
                                 :wallet/sign-phrase-showed?]
                           :opt-un [::modal
-                                   ::was-modal?
                                    ::rpc-url
                                    ::tooltips
                                    ::initial-props
@@ -282,9 +271,6 @@
                                    ::auth-method
                                    :multiaccount/multiaccount
                                    :navigation/view-id
-                                   :navigation/navigation-stack
-                                   :navigation/prev-tab-view-id
-                                   :navigation/prev-view-id
                                    :chat/chats
                                    :chat/current-chat-id
                                    :chat/chat-id

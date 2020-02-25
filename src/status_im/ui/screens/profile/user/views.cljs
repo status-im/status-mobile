@@ -12,7 +12,6 @@
             [status-im.ui.components.list.views :as list.views]
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.profile.components.views :as profile.components]
@@ -210,17 +209,15 @@
      anim-opacity]))
 
 (defn content-with-header [list-ref scroll-y]
-  (let [{:keys [public-key
-                preferred-name
+  (let [{:keys [preferred-name
                 mnemonic
                 keycard-pairing
-                address
                 notifications-enabled?]
-         :as   multiaccount} @(re-frame/subscribe [:multiaccount])
+         :as   multiaccount}  @(re-frame/subscribe [:multiaccount])
         active-contacts-count @(re-frame/subscribe [:contacts/active-count])
-        tribute-to-talk @(re-frame/subscribe [:tribute-to-talk/profile])
-        registrar @(re-frame/subscribe [:ens.stateofus/registrar])
-        photo-added? @(re-frame/subscribe [:profile/photo-added?])]
+        tribute-to-talk       @(re-frame/subscribe [:tribute-to-talk/profile])
+        registrar             @(re-frame/subscribe [:ens.stateofus/registrar])
+        photo-added?          @(re-frame/subscribe [:profile/photo-added?])]
     [large-toolbar/flat-list-with-header-handler
      (header multiaccount photo-added?)
      (flat-list-content
@@ -231,15 +228,11 @@
      scroll-y]))
 
 (defn my-profile []
-  (let [list-ref (reagent/atom nil)
+  (let [list-ref     (reagent/atom nil)
         anim-opacity (animation/create-value 0)
-        scroll-y (animation/create-value 0)]
+        scroll-y     (animation/create-value 0)]
     (large-toolbar/add-listener anim-opacity scroll-y)
     (fn []
-      [react/view
-       {:style
-        (merge {:flex 1}
-               (when platform/ios?
-                 {:margin-bottom tabs.styles/tabs-diff}))}
+      [react/view {:style {:flex 1}}
        [minimized-toolbar-handler anim-opacity]
        [content-with-header list-ref scroll-y]])))

@@ -110,7 +110,7 @@
       (fx/merge cofx
                 {:db (update db :hardwallet dissoc :flow)}
                 (if (= :import flow)
-                  (navigation/navigate-to-cofx :keycard-recovery-success nil)
+                  (navigation/navigate-to-cofx :intro-stack {:screen :keycard-recovery-success})
                   (navigation/navigate-to-cofx :welcome nil))))))
 
 (fx/defn  initialize-dapp-permissions
@@ -188,10 +188,11 @@
         multiaccount (dissoc settings :networks/current-network :networks/networks)
         network-id (str (get-in networks [current-network :config :NetworkId]))]
     (fx/merge cofx
-              (cond-> {:db (assoc db
-                                  :networks/current-network current-network
-                                  :networks/networks networks
-                                  :multiaccount multiaccount)}
+              (cond-> {:db (-> db
+                               (dissoc :multiaccounts/login)
+                               (assoc :networks/current-network current-network
+                                      :networks/networks networks
+                                      :multiaccount multiaccount))}
                 (and platform/android?
                      notifications-enabled?)
                 (assoc ::notifications/enable nil)
@@ -244,7 +245,6 @@
               (when save-password?
                 (keychain/save-user-password key-uid password))
               (keychain/save-auth-method key-uid (or new-auth-method auth-method))
-              (navigation/navigate-to-cofx :home nil)
               (when platform/desktop?
                 (chat-model/update-dock-badge-label)))))
 
@@ -252,15 +252,17 @@
   [{:keys [db] :as cofx}]
   (let [{:keys [multiaccount :multiaccount/accounts]} db]
     (fx/merge cofx
-              {:db (assoc db
-                          ;;NOTE when login the filters are initialized twice
-                          ;;once for contacts and once for chats
-                          ;;when creating an account we do it only once by calling
-                          ;;load-filters directly because we don't have chats and contacts
-                          ;;later on there is a check that filters have been initialized twice
-                          ;;so here we set it at 1 already so that it passes the check once it has
-                          ;;been initialized
-                          :filters/initialized 1)
+              {:db (-> db
+                       (dissoc :multiaccounts/login)
+                       (assoc
+                         ;;NOTE when login the filters are initialized twice
+                         ;;once for contacts and once for chats
+                         ;;when creating an account we do it only once by calling
+                         ;;load-filters directly because we don't have chats and contacts
+                         ;;later on there is a check that filters have been initialized twice
+                         ;;so here we set it at 1 already so that it passes the check once it has
+                         ;;been initialized
+                        :filters/initialized 1))
                :filters/load-filters [[(:waku-enabled multiaccount) []]]}
               (finish-keycard-setup)
               (protocol/initialize-protocol {:mailservers []
@@ -277,17 +279,17 @@
 (fx/defn multiaccount-login-success
   [{:keys [db now] :as cofx}]
   (let [{:keys [key-uid password save-password? creating?]} (:multiaccounts/login db)
-        recovering? (get-in db [:intro-wizard :recovering?])
-        login-only? (not (or creating?
-                             recovering?
-                             (keycard-setup? cofx)))
-        nodes nil]
+        recovering?                                         (get-in db [:intro-wizard :recovering?])
+        login-only?                                         (not (or creating?
+                                                                     recovering?
+                                                                     (keycard-setup? cofx)))
+        nodes                                               nil]
     (log/debug "[multiaccount] multiaccount-login-success"
                "login-only?" login-only?
                "recovering?" recovering?)
     (fx/merge cofx
               {:db (-> db
-                       (dissoc :multiaccounts/login :connectivity/ui-status-properties)
+                       (dissoc :connectivity/ui-status-properties)
                        (update :hardwallet dissoc
                                :on-card-read
                                :card-read-in-progress?
@@ -295,7 +297,7 @@
                                :multiaccount)
                        (assoc :logged-in-since now))
                ::json-rpc/call
-               [{:method "web3_clientVersion"
+               [{:method     "web3_clientVersion"
                  :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]}
               ;;FIXME
               (when nodes
@@ -304,19 +306,8 @@
                 (login-only-events key-uid password save-password?)
                 (create-only-events))
               (when recovering?
-                (navigation/navigate-to-cofx :home nil)))))
-
-(fx/defn open-keycard-login
-  [{:keys [db] :as cofx}]
-  (let [navigation-stack (:navigation-stack db)]
-    (fx/merge cofx
-              {:db (-> db
-                       (assoc-in [:hardwallet :pin :enter-step] :login)
-                       (assoc-in [:hardwallet :pin :status] nil)
-                       (assoc-in [:hardwallet :pin :login] []))}
-              (if (empty? navigation-stack)
-                (navigation/navigate-to-cofx :multiaccounts nil)
-                (navigation/navigate-to-cofx :keycard-login-pin nil)))))
+                (navigation/navigate-to-cofx :tabs {:screen :chat-stack
+                                                    :params {:screen :home}})))))
 
 (fx/defn open-login
   [{:keys [db] :as cofx} key-uid photo-path name public-key]
@@ -336,7 +327,7 @@
 (fx/defn open-login-callback
   {:events [:multiaccounts.login.callback/get-user-password-success]}
   [{:keys [db] :as cofx} password]
-  (let [key-uid (get-in db [:multiaccounts/login :key-uid])
+  (let [key-uid          (get-in db [:multiaccounts/login :key-uid])
         keycard-account? (boolean (get-in db [:multiaccounts/multiaccounts
                                               key-uid
                                               :keycard-pairing]))]
@@ -346,15 +337,18 @@
        {:db (update-in db [:multiaccounts/login] assoc
                        :password password
                        :save-password? true)}
-       (navigation/navigate-to-cofx :progress nil)
+       (navigation/navigate-to-cofx :intro-stack {:screen :progress})
        login)
       (fx/merge
        cofx
        (when keycard-account?
-         {:db (assoc-in db [:hardwallet :pin :enter-step] :login)})
-       (navigation/navigate-to-cofx
-        (if keycard-account? :keycard-login-pin :login)
-        nil)))))
+         {:db (-> db
+                  (assoc-in [:hardwallet :pin :enter-step] :login)
+                  (assoc-in [:hardwallet :pin :status] nil)
+                  (assoc-in [:hardwallet :pin :login] []))})
+       (if keycard-account?
+         (navigation/navigate-to-cofx :intro-stack {:screen :keycard-login-pin})
+         (navigation/navigate-to-cofx :intro-stack {:screen :login}))))))
 
 (fx/defn get-credentials
   [{:keys [db] :as cofx} key-uid]
@@ -369,7 +363,7 @@
   "Auth method: nil - not supported, \"none\" - not selected, \"password\", \"biometric\", \"biometric-prepare\""
   {:events [:multiaccounts.login/get-auth-method-success]}
   [{:keys [db] :as cofx} auth-method]
-  (let [key-uid (get-in db [:multiaccounts/login :key-uid])
+  (let [key-uid               (get-in db [:multiaccounts/login :key-uid])
         keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts key-uid :keycard-pairing]))]
     (log/debug "[login] get-auth-method-success"
                "auth-method" auth-method
@@ -383,9 +377,7 @@
                  (get-credentials % key-uid)
 
                  ;;nil or "none" or "biometric-prepare"
-                 (if keycard-multiaccount?
-                   (open-keycard-login %)
-                   (open-login-callback % nil))))))
+                 (open-login-callback % nil)))))
 
 (fx/defn biometric-auth-done
   {:events [:biometric-auth-done]}

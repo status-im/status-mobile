@@ -4,12 +4,9 @@
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
             status-im.utils.universal-links.events
-            status-im.ui.screens.add-new.new-chat.navigation
             status-im.ui.screens.profile.events
-            status-im.ui.screens.wallet.navigation
             [re-frame.core :as re-frame]
             [status-im.chat.models :as chat]
-            [status-im.chat.models.loading :as chat.loading]
             [status-im.hardwallet.core :as hardwallet]
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.recover.core :as recovery]
@@ -194,14 +191,12 @@
  (fn [{:keys [db]} [_ enabled?]]
    {:db (assoc db :two-pane-ui-enabled? enabled?)}))
 
+;; NOTE: Will be removed with the keycard PR
 (handlers/register-handler-fx
  :screens/on-will-focus
  (fn [{:keys [db] :as cofx} [_ view-id]]
    (fx/merge cofx
-             {:db (assoc db :view-id view-id)}
              #(case view-id
-                :chat                             (chat.loading/load-messages cofx)
-                :home                             (chat.loading/offload-all-messages cofx)
                 :keycard-settings                 (hardwallet/settings-screen-did-load %)
                 :reset-card                       (hardwallet/reset-card-screen-did-load %)
                 :enter-pin-settings               (hardwallet/enter-pin-screen-did-load %)

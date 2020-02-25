@@ -246,10 +246,9 @@
 ;; KeyboardAvoidingView
 
 (defn keyboard-avoiding-view [props & children]
-  (let [view-element (if platform/ios?
-                       [keyboard-avoiding-view-class (merge {:behavior :padding} props)]
-                       [view props])]
-    (vec (concat view-element children))))
+  (into [keyboard-avoiding-view-class
+         (merge (when platform/ios? {:behavior :padding}) props)]
+        children))
 
 (defn scroll-view [props & children]
   (vec (conj children props scroll-view-class)))
@@ -271,51 +270,7 @@
            [activity-indicator {:animating true}]])
       comp)))
 
-(defn navigation-wrapper
-  "Wraps component so that it will be shown only when current-screen is one of views"
-  [{:keys [component views current-view hide?]
-    :or   {hide? false}}]
-  (let [current-view? (if (set? views)
-                        (views current-view)
-                        (= views current-view))
-
-        style (if current-view?
-                {:flex   1
-                 :zIndex 0}
-                {:opacity 0
-                 :flex    0
-                 :zIndex -1})
-
-        component' (if (fn? component) [component] component)]
-
-    (when (or (not hide?) (and hide? current-view?))
-      (if hide?
-        component'
-        [view style (if (fn? component) [component] component)]))))
-
-(defn with-empty-preview [comp]
-  [with-activity-indicator
-   {:preview [view {}]}
-   comp])
-
 (def safe-area-provider (adapt-class (object/get js-dependencies/safe-area-context "SafeAreaProvider")))
 (def safe-area-consumer (adapt-class (object/get js-dependencies/safe-area-context "SafeAreaConsumer")))
 
-(defn create-main-screen-view [current-view]
-  (fn [props & children]
-    (apply
-     vector
-     (adapt-class (object/get js-dependencies/safe-area-context "SafeAreaView"))
-     (cond-> props
-       (= current-view :qr-scanner)
-       (assoc :background-color :black))
-     children)))
-
-(defn main-screen-modal-view [current-view & components]
-  [(create-main-screen-view current-view)
-   styles/flex
-   [keyboard-avoiding-view
-    (merge {:flex 1 :flex-direction :column}
-           (when platform/android?
-             {:background-color :white}))
-    (apply vector view styles/flex components)]])
+(def safe-area-view (adapt-class (object/get js-dependencies/safe-area-context "SafeAreaView")))

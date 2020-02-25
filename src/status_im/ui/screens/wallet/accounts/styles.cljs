@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.wallet.accounts.styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.tabbar.styles :as tabs.styles]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def card-common
   {:margin-vertical   16
@@ -35,7 +34,7 @@
    :justify-content :center
    :left            0
    :right           0
-   :bottom          (+ 16 tabs.styles/tabs-diff)
+   :bottom          16
    :height          40})
 
 (def send-button

@@ -18,5 +18,5 @@
 (defn init [app-root]
   (utils.logs/init-logs)
   (error-handler/register-exception-handler!)
-  (re-frame/dispatch [:init/app-started])
+  (re-frame/dispatch-sync [:init/app-started])
   (.registerComponent react/app-registry "StatusIm" #(reagent/reactify-component app-root)))

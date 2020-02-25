@@ -34,8 +34,10 @@
               "react-native/Libraries/vendor/emitter/EventEmitter"
               "react-native-background-timer"
               "react-native-fetch-polyfill"
-              "react-navigation"
-              "react-native-navigation-twopane"
+              "@react-navigation/native"
+              "@react-navigation/stack"
+              "@react-navigation/bottom-tabs"
+              ;; "react-native-navigation-twopane"
               "hi-base32"
               "functional-red-black-tree"
               "react-native-mail"
@@ -74,9 +76,8 @@
                    "react-native-desktop-notification"
                    "react-native-desktop-gesture-handler"
                    "web3-utils"
-                   "react-navigation"
                    "functional-red-black-tree"
-                   "react-native-navigation-twopane"
+                   ;; "react-native-navigation-twopane"
                    "hi-base32"]
 
  ;; Resoures

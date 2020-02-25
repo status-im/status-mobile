@@ -296,6 +296,10 @@ dependencies {
       implementation jscFlavor
     }
 
+    // react-native-screens
+    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02'
+
     implementation 'androidx.multidex:multidex:2.0.1' // only needed if minSdkVersion is less than 21 (https://developer.android.com/studio/build/multidex)
     implementation project(':react-native-dialogs')
     // Force using exact RN version instead of relying on gradle dependency resolution

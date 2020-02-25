@@ -19,7 +19,6 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.utils.navigation :as navigation]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.multiaccounts.core :as multiaccounts]
@@ -186,10 +185,11 @@
       [react/view {:flex-direction :row :justify-content :center}
        ;;NOTE required so that the keyboards shows up when navigating
        ;;back from checkout screen
-       [:> navigation/navigation-events
-        {:on-did-focus
-         (fn []
-           (.focus @input-ref))}]
+       ;; TODO: navigation-events were deprecated
+       ;; [:> navigation/navigation-events
+       ;;  {:on-did-focus
+       ;;   (fn []
+       ;;     (.focus @input-ref))}]
        ;;NOTE setting the key as placeholder forces the component to remount
        ;;when the placeholder changes, this prevents the placeholder from
        ;;disappearing when switching between stateofus and custom domain

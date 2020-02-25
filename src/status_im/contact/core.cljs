@@ -151,7 +151,7 @@
   (contacts-store/fetch-contacts-rpc cofx #(re-frame/dispatch [::contacts-loaded %])))
 
 (fx/defn open-contact-toggle-list
-  [{:keys [db :as cofx]}]
+  [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db (assoc db
                         :group/selected-contacts #{}

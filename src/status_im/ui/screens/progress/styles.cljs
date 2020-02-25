@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.progress.styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.toolbar.styles :as toolbar.styles]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def container
   {:flex             1

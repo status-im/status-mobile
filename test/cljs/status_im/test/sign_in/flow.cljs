@@ -32,8 +32,9 @@
           efx          (login.core/multiaccount-login-success cofx)
           new-db       (:db efx)
           json-rpc     (into #{} (map :method (::json-rpc/call efx)))]
-      (testing ":accounts/login cleared."
-        (is (not (contains? new-db :multiaccounts/login))))
+      ;; TODO: Account is now cleared only after all sign in fx are executed.
+      ;; (testing ":accounts/login cleared."
+      ;;   (is (not (contains? new-db :multiaccounts/login))))
       (testing "Check the rest of effects."
         (is (json-rpc "web3_clientVersion"))))))
 

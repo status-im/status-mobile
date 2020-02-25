@@ -1,5 +1,6 @@
 https://repo.clojars.org/binaryage/devtools/0.9.10/devtools-0.9.10
 https://repo.clojars.org/binaryage/env-config/0.2.2/env-config-0.2.2
+https://repo.clojars.org/binaryage/oops/0.7.0/oops-0.7.0
 https://repo.clojars.org/clj-stacktrace/clj-stacktrace/0.2.5/clj-stacktrace-0.2.5
 https://repo.clojars.org/clj-time/clj-time/0.11.0/clj-time-0.11.0
 https://repo.clojars.org/clj-time/clj-time/0.6.0/clj-time-0.6.0
@@ -49,11 +50,9 @@ https://repo.clojars.org/meta-merge/meta-merge/1.0.0/meta-merge-1.0.0
 https://repo.clojars.org/mvxcvi/alphabase/1.0.0/alphabase-1.0.0
 https://repo.clojars.org/net/cgrand/macrovich/0.2.0/macrovich-0.2.0
 https://repo.clojars.org/quoin/quoin/0.1.2/quoin-0.1.2
-https://repo.clojars.org/rasom/cljs-react-navigation/0.1.4/cljs-react-navigation-0.1.4
 https://repo.clojars.org/rasom/lein-githooks/0.1.5/lein-githooks-0.1.5
 https://repo.clojars.org/re-com/re-com/2.1.0/re-com-2.1.0
 https://repo.clojars.org/re-frame/re-frame/0.10.1/re-frame-0.10.1
-https://repo.clojars.org/re-frame/re-frame/0.10.4/re-frame-0.10.4
 https://repo.clojars.org/re-frisk-shell/re-frisk-shell/0.5.2/re-frisk-shell-0.5.2
 https://repo.clojars.org/re-frisk-sidecar/re-frisk-sidecar/0.5.7/re-frisk-sidecar-0.5.7
 https://repo.clojars.org/re-frisk/re-frisk/0.5.4/re-frisk-0.5.4

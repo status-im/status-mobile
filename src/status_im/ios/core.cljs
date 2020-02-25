@@ -38,7 +38,6 @@
                       #(when-not (= 0 @keyboard-height)
                          (dispatch [:set :keyboard-height 0])))
         (.hide react/splash-screen)
-        (.useScreens rn-dependencies/react-native-screens)
         (.addEventListener react/app-state "change" app-state-change-handler)
         (.addEventListener rn-dependencies/react-native-languages "change" on-languages-change)
         (.addEventListener rn-dependencies/react-native-shake

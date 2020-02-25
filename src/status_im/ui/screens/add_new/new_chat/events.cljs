@@ -60,3 +60,8 @@
                                                            %
                                                            new-identity
                                                            @resolve-last-id])}})))))))
+
+(handlers/register-handler-fx
+ ::new-chat-focus
+ (fn [{:keys [db]}]
+   {:db (dissoc db :contacts/new-identity)}))

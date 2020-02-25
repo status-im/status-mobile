@@ -102,9 +102,7 @@
 
 (defn multiaccounts-screen-did-load
   [{:keys [db]}]
-  {:db (-> db
-           (assoc-in [:hardwallet :setup-step] nil)
-           (dissoc :multiaccounts/login))})
+  {:db (assoc-in db [:hardwallet :setup-step] nil)})
 
 (defn authentication-method-screen-did-load
   [{:keys [db]}]

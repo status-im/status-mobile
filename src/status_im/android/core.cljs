@@ -41,8 +41,6 @@
                         (when-not (zero? @keyboard-height)
                           (dispatch [:set :keyboard-height 0]))))
         (.hide react/splash-screen)
-        ;; TODO Temporarily comment away due to current bug https://github.com/kmagiera/react-native-screens/issues/54
-                                        ;(.useScreens rn-dependencies/react-native-screens)
         (.addEventListener react/app-state "change" app-state-change-handler)
         (.addEventListener rn-dependencies/react-native-languages "change" on-languages-change)
         (.addEventListener rn-dependencies/react-native-shake

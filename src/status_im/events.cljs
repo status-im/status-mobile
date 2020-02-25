@@ -145,18 +145,6 @@
                (update :hardwallet dissoc :application-info))}
       (multiaccounts.login/open-login key-uid photo-path name public-key)))))
 
-;; multiaccounts logout module
-
-(handlers/register-handler-fx
- :multiaccounts.logout.ui/logout-pressed
- (fn [cofx _]
-   (multiaccounts.logout/show-logout-confirmation cofx)))
-
-(handlers/register-handler-fx
- :multiaccounts.logout.ui/logout-confirmed
- (fn [cofx _]
-   (multiaccounts.logout/logout cofx)))
-
 ;; multiaccounts update module
 
 (handlers/register-handler-fx

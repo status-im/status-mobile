@@ -6,7 +6,6 @@
             [status-im.ui.screens.wallet.accounts.views :as accounts]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
             [reagent.core :as reagent]
-            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.components.list.views :as list]
             [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -105,18 +104,12 @@
          [list/flat-list {:data               tokens
                           :default-separator? false
                           :key-fn             :name
-                          :footer             [react/view
-                                               {:style {:height     tabs.styles/tabs-diff
-                                                        :align-self :stretch}}]
                           :render-fn          (accounts/render-asset (:code currency))}]
          (= tab :nft)
          (if (seq nfts)
            [list/flat-list {:data               nfts
                             :default-separator? false
                             :key-fn             :name
-                            :footer             [react/view
-                                                 {:style {:height     tabs.styles/tabs-diff
-                                                          :align-self :stretch}}]
                             :render-fn          (render-collectible address)}]
            [react/view {:align-items :center :margin-top 32}
             [react/text {:style {:color colors/gray}}
