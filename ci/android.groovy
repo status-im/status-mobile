@@ -49,12 +49,12 @@ def bundle() {
         'STATUS_RELEASE_STORE_PASSWORD',
         'STATUS_RELEASE_KEY_PASSWORD',
       ],
-      keep: [
+      keepEnv: [
         'ANDROID_ABI_SPLIT',
         'ANDROID_ABI_INCLUDE',
         'STATUS_RELEASE_STORE_FILE',
       ],
-      sbox: [
+      sandboxPaths: [
         env.STATUS_RELEASE_STORE_FILE,
       ],
       link: false
@@ -110,7 +110,7 @@ def uploadToPlayStore(type = 'nightly') {
   ]) {
     nix.shell(
       "fastlane android ${type}",
-      keep: ['FASTLANE_DISABLE_COLORS', 'APK_PATHS', 'GOOGLE_PLAY_JSON_KEY'],
+      keepEnv: ['FASTLANE_DISABLE_COLORS', 'APK_PATHS', 'GOOGLE_PLAY_JSON_KEY'],
       attr: 'shells.fastlane',
       pure: false
     )
@@ -134,7 +134,7 @@ def uploadToSauceLabs() {
   ]) {
     nix.shell(
       'fastlane android saucelabs',
-      keep: [
+      keepEnv: [
         'FASTLANE_DISABLE_COLORS', 'APK_PATHS',
         'SAUCE_ACCESS_KEY', 'SAUCE_USERNAME', 'SAUCE_LABS_NAME'
       ],
@@ -151,7 +151,7 @@ def uploadToDiawi() {
   ]) {
     nix.shell(
       'fastlane android upload_diawi',
-      keep: ['FASTLANE_DISABLE_COLORS', 'APK_PATHS', 'DIAWI_TOKEN'],
+      keepEnv: ['FASTLANE_DISABLE_COLORS', 'APK_PATHS', 'DIAWI_TOKEN'],
       attr: 'shells.fastlane',
       pure: false
     )
@@ -166,7 +166,7 @@ def coverage() {
   ]) {
     nix.shell(
       'make coverage',
-      keep: ['COVERALLS_REPO_TOKEN', 'COVERALLS_SERVICE_NAME', 'COVERALLS_SERVICE_JOB_ID']
+      keepEnv: ['COVERALLS_REPO_TOKEN', 'COVERALLS_SERVICE_NAME', 'COVERALLS_SERVICE_JOB_ID']
     )
   }
 }

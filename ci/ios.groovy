@@ -34,7 +34,7 @@ def bundle() {
   ]) {
     nix.shell(
       "bundle exec --gemfile=fastlane/Gemfile fastlane ios ${target}",
-      keep: [
+      keepEnv: [
         'FASTLANE_DISABLE_COLORS',
         'FASTLANE_PASSWORD', 'KEYCHAIN_PASSWORD',
         'MATCH_PASSWORD', 'FASTLANE_APPLE_ID',
@@ -66,7 +66,7 @@ def uploadToDiawi() {
     /* This can silently fail with 'File is not processed.' */
     nix.shell(
       'bundle exec --verbose --gemfile=fastlane/Gemfile fastlane ios upload_diawi',
-      keep: ['FASTLANE_DISABLE_COLORS', 'DIAWI_TOKEN'],
+      keepEnv: ['FASTLANE_DISABLE_COLORS', 'DIAWI_TOKEN'],
       attr: 'shells.fastlane'
     )
   }
@@ -92,7 +92,7 @@ def uploadToSauceLabs() {
   ]) {
     nix.shell(
       'bundle exec --gemfile=fastlane/Gemfile fastlane ios saucelabs',
-      keep: ['FASTLANE_DISABLE_COLORS', 'SAUCE_ACCESS_KEY', 'SAUCE_USERNAME'],
+      keepEnv: ['FASTLANE_DISABLE_COLORS', 'SAUCE_ACCESS_KEY', 'SAUCE_USERNAME'],
       attr: 'shells.fastlane'
     )
   }

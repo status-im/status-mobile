@@ -1,19 +1,20 @@
 /**
  * Arguments:
  *  - pure - Use --pure mode with Nix for more deterministic behaviour
- *  - keep - List of env variables to keep even in pure mode
  *  - args - Map of arguments to provide to --argstr
+ *  - keepEnv - List of env variables to keep even in pure mode
  **/
 def shell(Map opts = [:], String cmd) {
   def defaults = [
     pure: true,
     args: ['target': env.TARGET ? env.TARGET : 'default'],
-    keep: ['LOCALE_ARCHIVE_2_27'],
+    keepEnv: ['LOCALE_ARCHIVE_2_27'],
+    sandbox: true,
   ]
   /* merge defaults with received opts */
   opts = defaults + opts
   /* previous merge overwrites the array */
-  opts.keep = (opts.keep + defaults.keep).unique()
+  opts.keepEnv = (opts.keepEnv + defaults.keepEnv).unique()
   /* not all targets can use a pure build */
   if (env.TARGET in ['windows', 'ios']) {
     opts.pure = false
@@ -30,29 +31,31 @@ def shell(Map opts = [:], String cmd) {
  * Arguments:
  *  - pure - Use --pure mode with Nix for more deterministic behaviour
  *  - link - Bu default build creates a `result` directory, you can turn that off
- *  - keep - List of env variables to pass through to Nix build
  *  - conf - Map of config values to provide to --arg config
  *  - args - Map of arguments to provide to --argstr
  *  - attr - Name of attribute to use with --attr flag
- *  - sbox - List of host file paths to pass to the Nix expression
+ *  - keepEnv - List of env variables to pass through to Nix build
  *  - safeEnv - Name of env variables to pass securely through to Nix build (they won't get captured in Nix derivation file)
+ *  - sandbox - If build process should run inside of a sandbox
+ *  - sandboxPaths - List of file paths to make available in Nix sandbox
  **/
 def build(Map opts = [:]) {
   def defaults = [
     pure: true,
     link: true,
     args: ['target': env.TARGET],
-    keep: [],
     conf: [:],
     attr: null,
-    sbox: [],
+    keepEnv: [],
     safeEnv: [],
+    sandbox: true,
+    sandboxPaths: [],
   ]
   /* merge defaults with received opts */
   opts = defaults + opts
   /* Previous merge overwrites the array */
   opts.args = defaults.args + opts.args
-  opts.keep = (opts.keep + defaults.keep).unique()
+  opts.keepEnv = (opts.keepEnv + defaults.keepEnv).unique()
 
   def nixPath = sh(
     returnStdout: true,
@@ -92,7 +95,7 @@ private makeNixBuildEnvFile(Map opts = [:]) {
     """
 
     opts.args = opts.args + [ 'secrets-file': envFile.absolutePath ]
-    opts.sbox = opts.sbox + envFile.absolutePath
+    opts.sandboxPaths = opts.sandboxPaths + envFile.absolutePath
   }
 
   return envFile
@@ -104,12 +107,13 @@ private def _getNixCommandArgs(Map opts = [:], boolean isShell) {
   if (!isShell || opts.attr != null) {
     entryPoint = "\'${env.WORKSPACE}/default.nix\'"
   }
-  def extraSandboxPathsFlag = ''
+  /* don't let nix.conf control sandbox status */
+  def extraSandboxPathsFlag = "--option sandbox ${opts.sandbox}"
 
   if (isShell) {
-    keepFlags = opts.keep.collect { var -> "--keep ${var} " }
+    keepFlags = opts.keepEnv.collect { var -> "--keep ${var} " }
   } else {
-    def envVarsList = opts.keep.collect { var -> "${var}=\"${env[var]}\";" }
+    def envVarsList = opts.keepEnv.collect { var -> "${var}=\"${env[var]}\";" }
     keepFlags = ["--arg env \'{${envVarsList.join("")}}\'"]
 
     /* Export the environment variables we want to keep into
@@ -128,8 +132,8 @@ private def _getNixCommandArgs(Map opts = [:], boolean isShell) {
     def configFlags = opts.conf.collect { key,val -> "${key}=\"${val}\";" }
     configFlag = "--arg config \'{${configFlags.join('')}}\'"
   }
-  if (opts.sbox != null && !opts.sbox.isEmpty()) {
-    extraSandboxPathsFlag = "--option extra-sandbox-paths \"${opts.sbox.join(' ')}\""
+  if (opts.sandboxPaths != null && !opts.sandboxPaths.isEmpty()) {
+    extraSandboxPathsFlag += " --option extra-sandbox-paths \"${opts.sandboxPaths.join(' ')}\""
   }
 
   return [

@@ -44,7 +44,7 @@ pipeline {
         ]) {
           nix.shell(
             'bundle exec --gemfile=fastlane/Gemfile fastlane ios clean',
-            keep: ['FASTLANE_APPLE_ID', 'FASTLANE_PASSWORD'],
+            keepEnv: ['FASTLANE_APPLE_ID', 'FASTLANE_PASSWORD'],
             attr: 'shells.fastlane',
           )
         }

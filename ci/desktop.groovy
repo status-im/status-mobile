@@ -9,7 +9,7 @@ def buildJSBundle() {
       make jsbundle-desktop && \
       ./scripts/build-desktop.sh buildJSBundle
     ''',
-    keep: ['VERBOSE_LEVEL']
+    keepEnv: ['VERBOSE_LEVEL']
   )
 }
 
@@ -49,7 +49,7 @@ def compile() {
   }
   nix.shell(
     './scripts/build-desktop.sh compile',
-    keep: ['VERBOSE_LEVEL']
+    keepEnv: ['VERBOSE_LEVEL']
   )
 }
 
@@ -58,7 +58,7 @@ def bundleWindows(type = 'nightly') {
 
   nix.shell(
     './scripts/build-desktop.sh bundle',
-    keep: ['VERBOSE_LEVEL']
+    keepEnv: ['VERBOSE_LEVEL']
   )
   dir(packageFolder) {
     pkg = utils.pkgFilename(type, 'exe')
@@ -71,7 +71,7 @@ def bundleLinux(type = 'nightly') {
   def pkg
   nix.shell(
     './scripts/build-desktop.sh bundle',
-    keep: ['VERBOSE_LEVEL']
+    keepEnv: ['VERBOSE_LEVEL']
   )
   dir(packageFolder) {
     pkg = utils.pkgFilename(type, 'AppImage')
@@ -84,7 +84,7 @@ def bundleMacOS(type = 'nightly') {
   def pkg = utils.pkgFilename(type, 'dmg')
   nix.shell(
     './scripts/build-desktop.sh bundle',
-    keep: ['VERBOSE_LEVEL']
+    keepEnv: ['VERBOSE_LEVEL']
   )
   dir(packageFolder) {
     withCredentials([
@@ -99,7 +99,7 @@ def bundleMacOS(type = 'nightly') {
         ../scripts/sign-macos-pkg.sh ${pkg} ../deployment/macos/macos-developer-id.keychain-db.gpg
         """,
         pure: false,
-        keep: ['GPG_PASS_OUTER', 'GPG_PASS_INNER', 'KEYCHAIN_PASS']
+        keepEnv: ['GPG_PASS_OUTER', 'GPG_PASS_INNER', 'KEYCHAIN_PASS']
       )
     }
   }
