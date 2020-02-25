@@ -709,6 +709,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         chat_1.profile_button.click()
         profile_1.sync_settings_button.click()
         profile_1.mail_server_button.click()
+        profile_1.element_by_text(mailserver).scroll_to_element()
         profile_1.element_by_text(mailserver).click()
         profile_1.confirm_button.click()
         profile_1.element_by_text(server_name).click()

@@ -59,6 +59,8 @@ class TestDeepLinks(SingleDeviceTestCase):
 
     @marks.testrail_id(5780)
     @marks.medium
+    @marks.skip
+    # TODO: uncomment after https://github.com/status-im/universal-links-handler/pull/29 will be implemented in app
     def test_open_own_user_profile_using_deep_link(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(passphrase=basic_user['passphrase'])
