@@ -551,6 +551,7 @@ var TopLevel = {
   "Uri" : function () {},
   "url" : function () {},
   "Value" : function () {},
+  "ValueXY": function() {},
   "value" : function () {},
   "verify" : function () {},
   "verifyPin" : function () {},

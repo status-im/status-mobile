@@ -3,7 +3,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
-            [status-im.hardwallet.core :as hardwallet]
+            [status-im.hardwallet.recovery :as hardwallet]
             [status-im.hardwallet.nfc :as nfc]
             [status-im.i18n :as i18n]
             [status-im.utils.config :as config]

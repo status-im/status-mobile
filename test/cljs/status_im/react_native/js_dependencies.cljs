@@ -19,8 +19,11 @@
        :Animated           #js {:View     #js {}
                                 :FlatList #js {}
                                 :Text     #js {}}
+       :Easing             #js {:bezier (fn [])}
        :DeviceEventEmitter #js {:addListener (fn [])}
-       :Dimensions         #js {:get  (fn [])}})
+       :Dimensions         #js {:get (fn [])}})
+
+(set! js/ReactNative react-native)
 
 (def vector-icons           #js {:default #js {}})
 (def webview-bridge         #js {:default #js {}})

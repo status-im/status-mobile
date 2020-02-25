@@ -14,7 +14,6 @@
    :keycard-empty       "images/ui/keycard-empty.png"
    :keycard-phone       "images/ui/keycard-phone.png"
    :keycard-connection  "images/ui/keycard-connection.png"
-   :keycard-nfc-on      "images/ui/keycard-nfc-on.png"
    :keycard-wrong       "images/ui/keycard-wrong.png"
    :not-keycard         "images/ui/not-keycard.png"
    :status-logo         "images/ui/status-logo.png"

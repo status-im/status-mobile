@@ -1,6 +1,7 @@
 (ns status-im.hardwallet.common
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
             [status-im.ethereum.core :as ethereum]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.navigation :as navigation]
@@ -9,6 +10,7 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
+            [status-im.ui.components.bottom-sheet.events :as bottom-sheet]
             [status-im.utils.keychain.core :as keychain]
             [status-im.hardwallet.nfc :as nfc]))
 
@@ -155,6 +157,69 @@
   {:db (-> db
            (assoc-in [:hardwallet :on-card-read] nil)
            (assoc-in [:hardwallet :last-on-card-read] nil))})
+
+(defn keycard-sheet-content [on-cancel]
+  (fn []
+    (keycard-sheet/connect-keycard
+     {:on-cancel     #(re-frame/dispatch on-cancel)
+      :on-connect    :hardwallet.callback/on-card-connected
+      :on-disconnect :hardwallet.callback/on-card-disconnected})))
+
+(fx/defn show-pair-sheet
+  [cofx {:keys [on-cancel]
+         :or   {on-cancel [::cancel-sheet-confirm]}}]
+  (log/debug "[hardwallet] show-pair-sheet")
+  (fx/merge cofx
+            {:dismiss-keyboard true}
+            (bottom-sheet/show-bottom-sheet
+             {:view {:show-handle?      false
+                     :backdrop-dismiss? false
+                     :disable-drag?     true
+                     :content           (keycard-sheet-content on-cancel)}})))
+
+(fx/defn hide-pair-sheet
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (-> db
+                     (assoc-in [:hardwallet :card-connected?] false)
+                     (assoc-in [:hardwallet :card-read-in-progress?] false))}
+            (restore-on-card-connected)
+            (restore-on-card-read)
+            (bottom-sheet/hide-bottom-sheet)))
+
+(fx/defn clear-pin
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (update-in db
+                            [:hardwallet :pin]
+                            merge
+                            {:status       nil
+                             :login        (get-in db [:hardwallet :pin :original])
+                             :export-key   []
+                             :sign         []
+                             :puk          []
+                             :current      []
+                             :original     []
+                             :confirmation []
+                             :error-label  nil})}))
+
+(fx/defn cancel-sheet-confirm
+  {:events [::cancel-sheet-confirm
+            :hardwallet/back-button-pressed]}
+  [cofx]
+  (fx/merge cofx
+            (hide-pair-sheet)
+            (clear-pin)))
+
+(fx/defn cancel-sheet
+  {:events [::cancel-sheet]}
+  [_]
+  {:ui/show-confirmation {:title               (i18n/label :t/keycard-cancel-setup-title)
+                          :content             (i18n/label :t/keycard-cancel-setup-text)
+                          :confirm-button-text (i18n/label :t/yes)
+                          :cancel-button-text  (i18n/label :t/no)
+                          :on-accept           #(re-frame/dispatch [::cancel-sheet-confirm])
+                          :on-cancel           #()}})
 
 (fx/defn on-add-listener-to-hardware-back-button
   "Adds listener to hardware back button on Android.

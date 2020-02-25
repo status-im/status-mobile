@@ -37,23 +37,20 @@
   (doseq [event ["keyCardOnConnected" "keyCardOnDisconnected"]]
     (.removeAllListeners event-emitter event)))
 
-(defn register-card-events []
-  (log/debug "[keycard] register-card-events")
+(defn on-card-connected [callback]
   (when (and config/hardwallet-enabled?
              platform/android?)
+    (.addListener event-emitter "keyCardOnConnected" callback)))
 
-    (remove-event-listeners)
+(defn on-card-disconnected [callback]
+  (when (and config/hardwallet-enabled?
+             platform/android?)
+    (.addListener event-emitter "keyCardOnDisconnected" callback)))
 
-    (re-frame/dispatch [:hardwallet.callback/on-register-card-events
-                        {:on-card-connected
-                         (.addListener event-emitter
-                                       "keyCardOnConnected"
-                                       #(re-frame/dispatch [:hardwallet.callback/on-card-connected %]))
-
-                         :on-card-disconnected
-                         (.addListener event-emitter
-                                       "keyCardOnDisconnected"
-                                       #(re-frame/dispatch [:hardwallet.callback/on-card-disconnected %]))}])))
+(defn register-card-events []
+  (remove-event-listeners)
+  (on-card-connected #(re-frame/dispatch [:hardwallet.callback/on-card-connected %]))
+  (on-card-disconnected #(re-frame/dispatch [:hardwallet.callback/on-card-disconnected %])))
 
 (defn get-application-info [{:keys [pairing on-success]}]
   (log/debug "[keycard] get-application-info")

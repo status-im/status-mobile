@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.hardwallet.connect.subs
+(ns status-im.ui.screens.keycard.subs
   (:require [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub

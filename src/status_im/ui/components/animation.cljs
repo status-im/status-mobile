@@ -60,6 +60,9 @@
 (defn create-value [value]
   (js/ReactNative.Animated.Value. value))
 
+(defn create-value-xy [value]
+  (js/ReactNative.Animated.ValueXY. value))
+
 (defn add [anim-x anim-y]
   (js/ReactNative.Animated.add. anim-x anim-y))
 
@@ -80,3 +83,4 @@
 (defn easing-out [] (.-out (easing)))
 
 (defn cubic [] (.-cubic (easing)))
+(def bezier (.-bezier (easing)))

@@ -47,7 +47,7 @@
             [status-im.wallet.db :as wallet.db]
             [status-im.signing.gas :as signing.gas]
             [status-im.utils.gfycat.core :as gfycat]
-            status-im.ui.screens.hardwallet.connect.subs
+            status-im.ui.screens.keycard.subs
             status-im.ui.screens.hardwallet.settings.subs
             status-im.ui.screens.hardwallet.pin.subs
             status-im.ui.screens.hardwallet.setup.subs

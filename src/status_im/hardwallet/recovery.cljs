@@ -61,7 +61,7 @@
             (navigation/navigate-to-cofx :keycard-recovery-enter-mnemonic nil)))
 
 (fx/defn start-import-flow
-  {:events [:hardwallet/recover-with-keycard-pressed]}
+  {:events [::recover-with-keycard-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db                           (assoc-in db [:hardwallet :flow] :import)
@@ -149,7 +149,7 @@
     (if (nil? name)
       {:hardwallet/generate-name-and-photo
        {:public-key whisper-public-key
-        :on-success :hardwallet/on-name-and-photo-generated}}
+        :on-success ::on-name-and-photo-generated}}
       (fx/merge cofx
                 {:db (-> db
                          (assoc-in [:hardwallet :setup-step] nil)
@@ -247,7 +247,7 @@
             (navigation/navigate-to-cofx :keycard-recovery-pin nil)))
 
 (fx/defn on-name-and-photo-generated
-  {:events [:hardwallet/on-name-and-photo-generated]
+  {:events [::on-name-and-photo-generated]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)
                   (re-frame/inject-cofx ::multiaccounts.create/get-signing-phrase)]}
   [{:keys [db] :as cofx} whisper-name photo-path]

@@ -82,11 +82,6 @@
                     (onboarding/proceed-with-generating-key)))
         (recovery/load-pair-screen cofx)))))
 
-(fx/defn on-register-card-events
-  {:events [:hardwallet.callback/on-register-card-events]}
-  [{:keys [db]} listeners]
-  {:db (update-in db [:hardwallet :listeners] merge listeners)})
-
 (fx/defn navigate-to-keycard-settings
   {:events [:profile.ui/keycard-settings-button-pressed]}
   [{:keys [db] :as cofx}]
