@@ -25,6 +25,10 @@ def bundle() {
 
   /* credentials necessary to open the keystore and sign the APK */
   withCredentials([
+    file(
+      credentialsId: 'status-im.keystore',
+      variable: 'STATUS_RELEASE_STORE_FILE'
+    ),
     string(
       credentialsId: 'android-keystore-pass',
       variable: 'STATUS_RELEASE_STORE_PASSWORD'
