@@ -95,15 +95,15 @@
 (fx/defn remove-key-with-unpair
   {:events [:hardwallet/remove-key-with-unpair]}
   [{:keys [db] :as cofx}]
-  (let [pin (common/vector->string (get-in db [:hardwallet :pin :current]))
-        pairing (common/get-pairing db)
+  (let [pin             (common/vector->string (get-in db [:hardwallet :pin :current]))
+        pairing         (common/get-pairing db)
         card-connected? (get-in db [:hardwallet :card-connected?])]
     (if card-connected?
       {:hardwallet/remove-key-with-unpair {:pin     pin
                                            :pairing pairing}}
       (fx/merge cofx
                 (common/set-on-card-connected :hardwallet/remove-key-with-unpair)
-                (navigation/navigate-to-cofx :keycard-connection-lost nil)))))
+                (common/show-pair-sheet {})))))
 
 (fx/defn on-remove-key-success
   {:events [:hardwallet.callback/on-remove-key-success]}
@@ -133,7 +133,7 @@
   {:events [:hardwallet.callback/on-remove-key-error]}
   [{:keys [db] :as cofx} error]
   (log/debug "[hardwallet] remove key error" error)
-  (let [tag-was-lost? (= "Tag was lost." (:error error))]
+  (let [tag-was-lost? (common/tag-lost? (:error error))]
     (fx/merge cofx
               (if tag-was-lost?
                 (fx/merge cofx

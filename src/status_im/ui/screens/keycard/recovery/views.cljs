@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.ui.components.react :as react]
+            [status-im.hardwallet.recovery :as hardwallet.recovery]
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.ui.screens.keycard.views :as views]
             [status-im.ui.components.toolbar.view :as toolbar]
@@ -69,39 +70,6 @@
        [react/text {:style {:color colors/blue}}
         (i18n/label :t/keycard-recovery-intro-button-text)]]]]]])
 
-(defn start []
-  [react/view styles/container
-   [topbar/topbar]
-   [react/view {:flex            1
-                :flex-direction  :column
-                :justify-content :space-between
-                :align-items     :center}
-    [react/view {:flex-direction :column
-                 :align-items    :center}
-     [react/view {:margin-top 16}
-      [react/text {:style {:typography :header
-                           :text-align :center}}
-       (i18n/label :t/keycard-onboarding-start-header)]]
-     [react/view {:margin-top 16
-                  :width      311}
-      [react/text {:style {:font-size   15
-                           :line-height 22
-                           :color       colors/gray
-                           :text-align  :center}}
-       (i18n/label :t/keycard-onboarding-start-text)]]]
-    [react/view {:flex            1
-                 :flex-direction  :column
-                 :align-items     :center
-                 :justify-content :center}
-     [react/view
-      [react/image {:source      (resources/get-image :keycard-phone)
-                    :resize-mode :center
-                    :style       {:width  160
-                                  :height 170}}]]]]])
-
-(defn pairing []
-  (views/loading :t/keycard-onboarding-pairing-header))
-
 (defview pin []
   (letsubs [pin [:hardwallet/pin]
             status [:hardwallet/pin-status]
@@ -112,7 +80,7 @@
      [toolbar/toolbar
       {:transparent? true}
       [toolbar/nav-text
-       {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
+       {:handler #(re-frame/dispatch [::hardwallet.recovery/cancel-pressed])
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
       [react/text {:style {:color colors/gray}}
@@ -139,16 +107,11 @@
 (defview pair []
   (letsubs [pair-code [:hardwallet-pair-code]
             error [:hardwallet-setup-error]
-            {:keys [free-pairing-slots]} [:hardwallet-application-info]
-            width [:dimensions/window-width]
-            ref (atom nil)]
+            {:keys [free-pairing-slots]} [:hardwallet-application-info]]
     [react/view styles/container
      [toolbar/toolbar
       {:transparent? true}
-      [toolbar/nav-text
-       {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
-        :style   {:padding-left 21}}
-       (i18n/label :t/cancel)]
+      toolbar/default-nav-back
       [react/text {:style {:color colors/gray}}
        (i18n/label :t/step-i-of-n {:number 2
                                    :step   1})]]
@@ -199,9 +162,6 @@
           :label     (i18n/label :t/pair-card)
           :disabled? (empty? pair-code)
           :forward?  true}]]]]]))
-
-(defn recovering []
-  (views/loading :t/recovering-key))
 
 (defview success []
   (letsubs [address [:hardwallet-multiaccount-wallet-address]
@@ -307,7 +267,7 @@
          [react/text {:style {:color colors/blue}}
           (i18n/label :t/generate-new-key)]]]
        [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])}
+        {:on-press #(re-frame/dispatch [:navigate-back])}
         [react/text {:style {:text-align  :center
                              :padding-top 27
                              :color       colors/blue}}

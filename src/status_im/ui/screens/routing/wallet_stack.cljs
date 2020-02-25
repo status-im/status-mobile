@@ -1,5 +1,4 @@
-(ns status-im.ui.screens.routing.wallet-stack
-  (:require [status-im.utils.config :as config]))
+(ns status-im.ui.screens.routing.wallet-stack)
 
 (def wallet-stack
   {:name    :wallet-stack
@@ -15,8 +14,5 @@
                      :wallet-settings-assets
                      :wallet-add-custom-token
                      :wallet-custom-token-details
-                     :currency-settings]
-              config/hardwallet-enabled?
-              (concat [:keycard-connection-lost
-                       :keycard-processing]))
+                     :currency-settings])
    :config  {:initialRouteName :wallet}})

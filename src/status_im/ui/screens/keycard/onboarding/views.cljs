@@ -3,6 +3,7 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.ui.screens.keycard.views :as views]
+            [status-im.hardwallet.onboarding :as hardwallet.onboarding]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
@@ -98,35 +99,6 @@
          [react/text {:style {:color colors/blue}}
           (i18n/label :t/begin-set-up)]]]]]]))
 
-(defn start []
-  [react/view styles/container
-   [topbar/topbar]
-   [react/view {:flex            1
-                :flex-direction  :column
-                :justify-content :space-between
-                :align-items     :center}
-    [react/view {:flex-direction :column
-                 :align-items    :center}
-     [react/view {:margin-top 16}
-      [react/text {:style {:typography :header
-                           :text-align :center}}
-       (i18n/label :t/keycard-onboarding-start-header)]]
-     [react/view {:margin-top 16
-                  :width      311}
-      [react/text {:style {:color      colors/gray
-                           :text-align :center}}
-       (i18n/label :t/keycard-onboarding-start-text)]]]
-    [react/view {:align-items     :center
-                 :flex            1
-                 :justify-content :center}
-     [react/image {:source      (resources/get-image :keycard-phone)
-                   :resize-mode :center
-                   :style       {:width  160
-                                 :height 170}}]
-     [react/text {:style {:color      colors/gray
-                          :text-align :center}}
-      (i18n/label :t/hold-card)]]]])
-
 (defview puk-code []
   (letsubs [secrets [:hardwallet-secrets]
             steps [:hardwallet-flow-steps]
@@ -135,7 +107,7 @@
      [toolbar/toolbar
       {:transparent? true}
       [toolbar/nav-text
-       {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
+       {:handler #(re-frame/dispatch [::hardwallet.onboarding/cancel-pressed])
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
       [react/text {:style {:color colors/gray}}
@@ -219,29 +191,25 @@
           {:on-press #(re-frame/dispatch [:keycard.onboarding.puk-code.ui/next-pressed])
            :forward? true}]]]]]]))
 
-(defn preparing []
-  (views/loading :t/keycard-onboarding-preparing-header))
-
-(defn finishing []
-  (views/loading :t/keycard-onboarding-finishing-header))
-
 (defview pin []
   (letsubs [pin [:hardwallet/pin]
             enter-step [:hardwallet/pin-enter-step]
             status [:hardwallet/pin-status]
             error-label [:hardwallet/pin-error-label]
             steps [:hardwallet-flow-steps]
-            small-screen? [:dimensions/small-screen?]]
+            small-screen? [:dimensions/small-screen?]
+            setup-step [:hardwallet-setup-step]]
     [react/view styles/container
      [toolbar/toolbar
       {:transparent? true}
       [toolbar/nav-text
-       {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
+       {:handler #(re-frame/dispatch [::hardwallet.onboarding/cancel-pressed])
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
-      [react/text {:style {:color colors/gray}}
-       (i18n/label :t/step-i-of-n {:number steps
-                                   :step   1})]]
+      (when-not (= setup-step :loading-keys)
+        [react/text {:style {:color colors/gray}}
+         (i18n/label :t/step-i-of-n {:number steps
+                                     :step   1})])]
      [react/view {:flex            1
                   :flex-direction  :column
                   :justify-content :space-between
@@ -265,14 +233,15 @@
         :small-screen? small-screen?
         :error-label   error-label
         :step          enter-step}]
-      [react/view {:align-items     :center
-                   :flex-direction  :column
-                   :justify-content :center
-                   :margin-bottom   15}
-       [react/text {:style {:color              colors/gray
-                            :padding-horizontal 40
-                            :text-align         :center}}
-        (i18n/label :t/you-will-need-this-code)]]]]))
+      (when-not (= setup-step :loading-keys)
+        [react/view {:align-items     :center
+                     :flex-direction  :column
+                     :justify-content :center
+                     :margin-bottom   15}
+         [react/text {:style {:color              colors/gray
+                              :padding-horizontal 40
+                              :text-align         :center}}
+          (i18n/label :t/you-will-need-this-code)]])]]))
 
 (defview recovery-phrase []
   (letsubs [mnemonic [:hardwallet-mnemonic]]
@@ -280,7 +249,7 @@
      [toolbar/toolbar
       {:transparent? true}
       [toolbar/nav-text
-       {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
+       {:handler #(re-frame/dispatch [::hardwallet.onboarding/cancel-pressed])
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
       [react/text {:style {:color colors/gray}}
@@ -350,7 +319,7 @@
        [toolbar/toolbar
         {:transparent? true}
         [toolbar/nav-text
-         {:handler #(re-frame/dispatch [:keycard.onboarding.ui/cancel-pressed])
+         {:handler #(re-frame/dispatch [::hardwallet.onboarding/cancel-pressed])
           :style   {:padding-left 21}}
          (i18n/label :t/cancel)]
         [react/text {:style {:color colors/gray}}

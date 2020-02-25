@@ -26,12 +26,13 @@
 
 (defn card-sync-flow []
   (let [state (reagent/atom nil)]
-    (fn [{:keys [on-card-connected on-card-disconnected]}]
+    (fn [{:keys [on-card-connected connected? on-card-disconnected]}]
       (let [translation (get state->translations @state)]
         [react/view {:style styles/container-style}
          [react/view {:height        200
                       :margin-bottom 20}
           [animated-circles {:state                state
+                             :connected?           connected?
                              :on-card-disconnected on-card-disconnected
                              :on-card-connected    on-card-connected}]]
          (when translation
@@ -39,25 +40,25 @@
             {:title       (i18n/label (:title translation))
              :description (i18n/label (:description translation))}])]))))
 
-(defn connect-keycard [{:keys [on-connect on-cancel on-disconnect]}]
-  (fn []
-    [react/view {:style {:flex            1
-                         :align-items     :center
-                         :justify-content :center}}
-     (when on-cancel
-       [react/touchable-highlight
-        {:on-press on-cancel
-         :style    {:position :absolute
-                    :top      0
-                    :right    0}}
-        [react/text {:style {:line-height        22
-                             :padding-horizontal 16
-                             :color              colors/blue
-                             :text-align         :center}}
-         (i18n/label :t/cancel)]])
-     (if @(re-frame/subscribe [:hardwallet/nfc-enabled?])
-       [card-sync-flow {:on-card-disconnected
-                        #(re-frame/dispatch [on-disconnect])
-                        :on-card-connected
-                        #(re-frame/dispatch [on-connect])}]
-       [turn-nfc/turn-nfc-on])]))
+(defn connect-keycard [{:keys [on-connect on-cancel connected? on-disconnect]}]
+  [react/view {:style {:flex            1
+                       :align-items     :center
+                       :justify-content :center}}
+   (when on-cancel
+     [react/touchable-highlight
+      {:on-press on-cancel
+       :style    {:position :absolute
+                  :top      0
+                  :right    0}}
+      [react/text {:style {:line-height        22
+                           :padding-horizontal 16
+                           :color              colors/blue
+                           :text-align         :center}}
+       (i18n/label :t/cancel)]])
+   (if @(re-frame/subscribe [:hardwallet/nfc-enabled?])
+     [card-sync-flow {:connected? connected?
+                      :on-card-disconnected
+                      #(re-frame/dispatch [on-disconnect])
+                      :on-card-connected
+                      #(re-frame/dispatch [on-connect])}]
+     [turn-nfc/turn-nfc-on])])

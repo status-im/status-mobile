@@ -34,6 +34,20 @@
                          (assoc :view-id go-to-view-id)))
      ::navigate-to [go-to-view-id screen-params]}))
 
+(fx/defn navigate-replace-cofx
+  [{:keys [db]} go-to-view-id screen-params]
+  (let [view-id (:view-id db)
+        db      (cond-> (assoc db :view-id go-to-view-id)
+                  (seq screen-params)
+                  (assoc-in [:navigation/screen-params go-to-view-id]
+                            screen-params))]
+    {:db           (if (= view-id go-to-view-id)
+                     db
+                     (-> db
+                         (update :navigation-stack conj go-to-view-id)
+                         (assoc :view-id go-to-view-id)))
+     ::navigate-replace [go-to-view-id screen-params]}))
+
 (fx/defn navigate-reset
   [{:keys [db]} {:keys [index actions] :as config}]
   (let [stack (into '() (map :routeName actions))
@@ -74,11 +88,23 @@
    (log/debug :navigate-reset config)
    (navigation/navigate-reset config)))
 
+(re-frame/reg-fx
+ ::navigate-replace
+ (fn [[view-id params]]
+   (log/debug :navigate-replace view-id params)
+   (navigation/navigate-replace (name view-id) params)))
+
 (handlers/register-handler-fx
  :navigate-to
  navigation-interceptors
  (fn [cofx [_ & [go-to-view-id screen-params]]]
    (navigate-to-cofx cofx go-to-view-id screen-params)))
+
+(handlers/register-handler-fx
+ :navigate-replace
+ navigation-interceptors
+ (fn [cofx [_ & [go-to-view-id screen-params]]]
+   (navigate-replace-cofx cofx go-to-view-id screen-params)))
 
 (handlers/register-handler-fx
  :navigate-to-modal

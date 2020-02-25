@@ -11,8 +11,7 @@
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
 
 (fx/defn login-got-it-pressed
-  {:events [:keycard.login.ui/got-it-pressed
-            :keycard.login.ui/dismiss-pressed
+  {:events [:keycard.login.pin.ui/got-it-pressed
             :keycard.login.pin.ui/cancel-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
@@ -53,40 +52,46 @@
 (fx/defn login-with-keycard
   {:events [:hardwallet/login-with-keycard]}
   [{:keys [db] :as cofx}]
-  (let [application-info (get-in db [:hardwallet :application-info])
-        key-uid (get-in db [:hardwallet :application-info :key-uid])
-        multiaccount (get-in db [:multiaccounts/multiaccounts (get-in db [:multiaccounts/login :key-uid])])
-        multiaccount-key-uid (get multiaccount :key-uid)
+  (let [application-info       (get-in db [:hardwallet :application-info])
+        key-uid                (get-in db [:hardwallet :application-info :key-uid])
+        multiaccount           (get-in db [:multiaccounts/multiaccounts (get-in db [:multiaccounts/login :key-uid])])
+        multiaccount-key-uid   (get multiaccount :key-uid)
         multiaccount-mismatch? (or (nil? multiaccount)
                                    (not= multiaccount-key-uid key-uid))
-        pairing (:keycard-pairing multiaccount)]
+        pairing                (:keycard-pairing multiaccount)]
     (cond
       (empty? application-info)
-      (navigation/navigate-to-cofx cofx :not-keycard nil)
+      (fx/merge cofx
+                (common/hide-pair-sheet)
+                (navigation/navigate-to-cofx :not-keycard nil))
 
       (empty? key-uid)
-      (navigation/navigate-to-cofx cofx :keycard-blank nil)
+      (fx/merge cofx
+                (common/hide-pair-sheet)
+                (navigation/navigate-to-cofx :keycard-blank nil))
 
       multiaccount-mismatch?
-      (navigation/navigate-to-cofx cofx :keycard-wrong nil)
+      (fx/merge cofx
+                (common/hide-pair-sheet)
+                (navigation/navigate-to-cofx :keycard-wrong nil))
 
       (empty? pairing)
-      (navigation/navigate-to-cofx cofx :keycard-unpaired nil)
+      (fx/merge cofx
+                (common/hide-pair-sheet)
+                (navigation/navigate-to-cofx :keycard-unpaired nil))
 
       :else
       (common/get-keys-from-keycard cofx))))
 
 (fx/defn proceed-to-login
   [{:keys [db] :as cofx}]
-  (let [{:keys [card-connected? nfc-enabled?]} (:hardwallet db)]
-    (if nfc-enabled?
-      (fx/merge cofx
-                (common/set-on-card-connected :hardwallet/get-application-info)
-                (common/set-on-card-read :hardwallet/login-with-keycard)
-                (if card-connected?
-                  (login-with-keycard)
-                  (navigation/navigate-to-cofx :keycard-login-connect-card nil)))
-      (navigation/navigate-to-cofx cofx :keycard-nfc-on nil))))
+  (let [{:keys [card-connected?]} (:hardwallet db)]
+    (fx/merge cofx
+              (common/set-on-card-connected :hardwallet/get-application-info)
+              (common/set-on-card-read :hardwallet/login-with-keycard)
+              (if card-connected?
+                (login-with-keycard)
+                (common/show-pair-sheet {:on-cancel [::common/cancel-sheet-confirm]})))))
 
 (fx/defn on-hardwallet-keychain-keys
   {:events [:multiaccounts.login.callback/get-hardwallet-keys-success]}

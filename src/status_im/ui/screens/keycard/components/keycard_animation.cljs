@@ -265,7 +265,7 @@
                    2000)
     (animation/start connect-animation)))
 
-(defn animated-circles [{:keys [state on-card-connected on-card-disconnected]}]
+(defn animated-circles [{:keys [state connected? on-card-connected on-card-disconnected]}]
   (let [animation-small     (animation/create-value 0)
         animation-medium    (animation/create-value 0)
         animation-big       (animation/create-value 0)
@@ -300,17 +300,25 @@
                                (on-card-disconnected)
                                (on-error
                                 {:state   state
-                                 :restart on-start-animation}))]
+                                 :restart on-start-animation}))
+        listeners           (atom [])]
     (reagent/create-class
      {:component-did-mount
       (fn []
-        (keycard-nfc/remove-event-listeners)
-        (keycard-nfc/on-card-connected on-card-connected)
-        (keycard-nfc/on-card-disconnected on-error)
-        (on-start-animation))
+        (doseq [listener @listeners]
+          (keycard-nfc/remove-event-listener listener))
+
+        (reset! listeners [(keycard-nfc/on-card-connected on-card-connected)
+                           (keycard-nfc/on-card-disconnected on-error)])
+
+        (on-start-animation)
+
+        (when connected?
+          (on-card-connected)))
       :component-will-unmount
       (fn []
-        (keycard-nfc/remove-event-listeners))
+        (doseq [listener @listeners]
+          (keycard-nfc/remove-event-listener listener)))
       :render
       (fn []
         [react/view {:style {:position        :absolute

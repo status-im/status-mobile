@@ -136,9 +136,7 @@
           (minimize-bar new-view-id))))
     :reagent-render
     (fn [keyboard-shown? view-id tab]
-      (when-not (contains? #{:enter-pin-login
-                             :enter-pin-sign
-                             :enter-pin-settings} view-id)
+      (when-not (contains? #{:enter-pin-settings} view-id)
         (case platform/os
           "ios" [tabs-animation-wrapper-ios
                  [react/animated-view

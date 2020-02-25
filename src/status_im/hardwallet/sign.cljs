@@ -4,20 +4,19 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
-            [status-im.i18n :as i18n]
             [taoensso.timbre :as log]
             [status-im.hardwallet.common :as common]))
 
 (fx/defn sign
   {:events [:hardwallet/sign]}
   [{:keys [db] :as cofx}]
-  (let [card-connected? (get-in db [:hardwallet :card-connected?])
-        pairing (common/get-pairing db)
+  (let [card-connected?                   (get-in db [:hardwallet :card-connected?])
+        pairing                           (common/get-pairing db)
         multiaccount-keycard-instance-uid (get-in db [:multiaccount :keycard-instance-uid])
-        instance-uid (get-in db [:hardwallet :application-info :instance-uid])
-        keycard-match? (= multiaccount-keycard-instance-uid instance-uid)
-        hash (get-in db [:hardwallet :hash])
-        pin (common/vector->string (get-in db [:hardwallet :pin :sign]))]
+        instance-uid                      (get-in db [:hardwallet :application-info :instance-uid])
+        keycard-match?                    (= multiaccount-keycard-instance-uid instance-uid)
+        hash                              (get-in db [:hardwallet :hash])
+        pin                               (common/vector->string (get-in db [:hardwallet :pin :sign]))]
     (if (and card-connected?
              keycard-match?)
       {:db              (-> db
@@ -36,14 +35,14 @@
   {:events [:hardwallet/prepare-to-sign]}
   [{:keys [db] :as cofx}]
   (let [card-connected? (get-in db [:hardwallet :card-connected?])
-        pairing (common/get-pairing db)]
-    (if card-connected?
-      (fx/merge cofx
-                {:db (assoc-in db [:signing/sign :keycard-step] :signing)}
-                (common/get-application-info pairing :hardwallet/sign))
-      (fx/merge cofx
-                {:db (assoc-in db [:signing/sign :keycard-step] :connect)}
-                (common/set-on-card-connected :hardwallet/prepare-to-sign)))))
+        pairing         (common/get-pairing db)]
+    (fx/merge cofx
+              (if card-connected?
+                (common/get-application-info pairing :hardwallet/sign)
+                (fn [cofx]
+                  (fx/merge cofx
+                            (common/set-on-card-connected :hardwallet/prepare-to-sign)
+                            (common/show-pair-sheet {})))))))
 
 (fx/defn sign-message-completed
   [_ signature]
@@ -74,6 +73,7 @@
                        (assoc-in [:hardwallet :transaction] nil))}
               (common/clear-on-card-connected)
               (common/get-application-info (common/get-pairing db) nil)
+              (common/hide-pair-sheet)
               (if transaction
                 (send-transaction-with-signature {:transaction  (types/clj->json transaction)
                                                   :signature    signature
@@ -84,24 +84,17 @@
   {:events [:hardwallet.callback/on-sign-error]}
   [{:keys [db] :as cofx} error]
   (log/debug "[hardwallet] sign error: " error)
-  (let [tag-was-lost? (= "Tag was lost." (:error error))]
-    (fx/merge cofx
-              (when tag-was-lost?
-                (fn [{:keys [db] :as cofx}]
-                  (fx/merge cofx
-                            {:db             (-> db
-                                                 (assoc-in [:hardwallet :pin :status] nil)
-                                                 (assoc-in [:signing/sign :keycard-step] :connect))
-                             :utils/show-popup {:title   (i18n/label :t/error)
-                                                :content (i18n/label :t/cannot-read-card)}}
-                            (common/set-on-card-connected :hardwallet/prepare-to-sign))))
-              (if (re-matches common/pin-mismatch-error (:error error))
-                (fn [{:keys [db] :as cofx}]
-                  (fx/merge cofx
-                            {:db (-> db
-                                     (update-in [:hardwallet :pin] merge {:status      :error
-                                                                          :sign        []
-                                                                          :error-label :t/pin-mismatch})
-                                     (assoc-in [:signing/sign :keycard-step] :pin))}
-                            (common/get-application-info (common/get-pairing db) nil)))
-                (common/show-wrong-keycard-alert true)))))
+  (let [tag-was-lost? (common/tag-lost? (:error error))]
+    (when-not tag-was-lost?
+      (if (re-matches common/pin-mismatch-error (:error error))
+        (fx/merge cofx
+                  {:db (-> db
+                           (update-in [:hardwallet :pin] merge {:status      :error
+                                                                :sign        []
+                                                                :error-label :t/pin-mismatch})
+                           (assoc-in [:signing/sign :keycard-step] :pin))}
+                  (common/hide-pair-sheet)
+                  (common/get-application-info (common/get-pairing db) nil))
+        (fx/merge cofx
+                  (common/hide-pair-sheet)
+                  (common/show-wrong-keycard-alert true))))))

@@ -144,11 +144,7 @@
             error-label [:hardwallet/pin-error-label]]
     [react/view {:flex             1
                  :background-color colors/white}
-     [topbar/topbar
-      {:navigation
-       {:icon    :main-icons/back
-        :accessibility-label :back-button
-        :handler #(re-frame/dispatch [:hardwallet.ui/enter-pin-navigate-back-button-clicked])}}]
+     [topbar/topbar {}]
      (if (zero? pin-retry-counter)
        [pin-view {:pin               pin
                   :retry-counter     (when (< puk-retry-counter puk-retries) puk-retry-counter)

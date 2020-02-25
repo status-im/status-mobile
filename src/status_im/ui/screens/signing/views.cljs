@@ -105,31 +105,6 @@
        :status        status
        :error-label   error-label}]]))
 
-(defn- keycard-connect-view []
-  [react/view {:padding-vertical 20
-               :flex             1
-               :align-items      :center
-               :justify-content  :center}
-   [react/image {:source      (resources/get-image :keycard-phone)
-                 :resize-mode :center
-                 :style       {:width  160
-                               :height 170}}]
-   [react/view {:margin-top 10}
-    [react/text {:style {:text-align  :center
-                         :color       colors/gray}}
-     (i18n/label :t/hold-card)]]])
-
-(defn- keycard-processing-view []
-  [react/view {:flex-direction  :column
-               :flex            1
-               :justify-content :center
-               :align-items     :center}
-   [react/activity-indicator {:size      :large
-                              :animating true}]
-   [react/text {:style {:margin-top 16
-                        :color      colors/gray}}
-    (i18n/label :t/processing)]])
-
 (defn sign-with-keycard-button
   [amount-error gas-error]
   (let [disabled? (or amount-error gas-error)]
@@ -154,9 +129,7 @@
   [react/view {:height 520}
    [signing-phrase-view phrase]
    (case keycard-step
-     :pin [keycard-pin-view]
-     :connect [keycard-connect-view]
-     :signing [keycard-processing-view]
+     :pin     [keycard-pin-view]
      [react/view {:align-items :center :margin-top 16 :margin-bottom 40}
       [sign-with-keycard-button nil nil]])])
 

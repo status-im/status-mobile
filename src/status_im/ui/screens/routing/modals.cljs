@@ -4,8 +4,6 @@
   [:chat-modal
    :stickers-pack-modal
    :tribute-learn-more
-   :enter-pin-modal
-   :hardwallet-connect-modal
    :selection-modal-screen
    :wallet-transactions-filter
    :welcome

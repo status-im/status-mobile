@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.hardwallet.settings.subs
   (:require [re-frame.core :as re-frame]
-            [status-im.hardwallet.common :as common]
             [status-im.utils.datetime :as utils.datetime]))
 
 (re-frame/reg-sub
@@ -8,11 +7,6 @@
  (fn [db]
    (some-> (get-in db [:multiaccount :keycard-paired-on])
            (utils.datetime/timestamp->year-month-day-date))))
-
-(re-frame/reg-sub
- :keycard-pairing
- (fn [db]
-   (common/get-pairing db)))
 
 (re-frame/reg-sub
  :keycard-multiaccount-pairing

@@ -7,7 +7,7 @@
   [react/view
    [list-item/list-item {:theme    :action
                          :on-press #(do (re-frame/dispatch [:bottom-sheet/hide])
-                                        (re-frame/dispatch [:multiaccounts.create.ui/intro-wizard false]))
+                                        (re-frame/dispatch [:multiaccounts.create.ui/intro-wizard]))
                          :icon     :main-icons/add
                          :accessibility-label :generate-a-new-key
                          :title    :t/generate-a-new-key}]])

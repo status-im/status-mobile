@@ -15,7 +15,7 @@
                      (assoc-in [:hardwallet :setup-step] :recovery-phrase)
                      (assoc-in [:hardwallet :secrets :mnemonic] mnemonic))}
             (common/clear-on-card-connected)
-            (navigation/navigate-to-cofx :keycard-onboarding-recovery-phrase nil)))
+            (navigation/navigate-replace-cofx :keycard-onboarding-recovery-phrase nil)))
 
 (fx/defn set-mnemonic
   {:events [:test-mnemonic]}
@@ -59,7 +59,7 @@
               (common/set-on-card-connected :hardwallet/load-generating-mnemonic-screen)
               (if card-connected?
                 (common/dispatch-event :hardwallet/generate-mnemonic)
-                (navigation/navigate-to-cofx :hardwallet-connect nil)))))
+                (common/show-pair-sheet {})))))
 
 (fx/defn on-generate-mnemonic-error
   {:events [:hardwallet.callback/on-generate-mnemonic-error]}
@@ -87,4 +87,4 @@
               (common/set-on-card-connected :hardwallet/load-loading-keys-screen)
               (if card-connected?
                 (common/dispatch-event :hardwallet/generate-and-load-key)
-                (navigation/navigate-to-cofx :hardwallet-connect nil)))))
+                (common/show-pair-sheet {})))))

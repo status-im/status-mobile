@@ -29,6 +29,15 @@
       #js {:routeName (name route)
            :params    (clj->js params)}))))
 
+(defn navigate-replace [route params]
+  (when (can-be-called?)
+    (.dispatch
+     @navigator-ref
+     (.replace
+      stack-actions
+      #js {:routeName (name route)
+           :params    (clj->js params)}))))
+
 (defn- navigate [params]
   (when (can-be-called?)
     (.navigate navigation-actions (clj->js params))))

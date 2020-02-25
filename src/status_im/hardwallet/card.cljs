@@ -7,6 +7,7 @@
 
 (defonce keycard (.-default js-dependencies/status-keycard))
 (defonce event-emitter (.-DeviceEventEmitter js-dependencies/react-native))
+(defonce active-listeners (atom []))
 
 (defn- error-object->map [object]
   {:code  (.-code object)
@@ -37,6 +38,9 @@
   (doseq [event ["keyCardOnConnected" "keyCardOnDisconnected"]]
     (.removeAllListeners event-emitter event)))
 
+(defn remove-event-listener [event]
+  (.remove event))
+
 (defn on-card-connected [callback]
   (when (and config/hardwallet-enabled?
              platform/android?)
@@ -48,9 +52,11 @@
     (.addListener event-emitter "keyCardOnDisconnected" callback)))
 
 (defn register-card-events []
-  (remove-event-listeners)
-  (on-card-connected #(re-frame/dispatch [:hardwallet.callback/on-card-connected %]))
-  (on-card-disconnected #(re-frame/dispatch [:hardwallet.callback/on-card-disconnected %])))
+  (doseq [listener @active-listeners]
+    (remove-event-listener listener))
+  (reset! active-listeners
+          [(on-card-connected #(re-frame/dispatch [:hardwallet.callback/on-card-connected]))
+           (on-card-disconnected #(re-frame/dispatch [:hardwallet.callback/on-card-disconnected]))]))
 
 (defn get-application-info [{:keys [pairing on-success]}]
   (log/debug "[keycard] get-application-info")
