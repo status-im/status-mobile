@@ -92,7 +92,7 @@
                      :text :intro-text3}] window-height]
      [react/view styles/buttons-container
       [components.common/button {:button-style (assoc styles/bottom-button :margin-bottom 16)
-                                 :on-press     #(re-frame/dispatch [:multiaccounts.create.ui/intro-wizard true])
+                                 :on-press     #(re-frame/dispatch [:multiaccounts.create.ui/intro-wizard])
                                  :label        (i18n/label :t/get-started)}]
       [components.common/button {:button-style (assoc styles/bottom-button :margin-bottom 24)
                                  :on-press    #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])

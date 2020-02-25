@@ -161,7 +161,6 @@
                     :next-button-disabled?  true
                     :weak-password?         true
                     :encrypt-with-password? true
-                    :first-time-setup?      false
                     :back-action            :intro-wizard/navigate-back
                     :forward-action         :multiaccounts.recover/enter-phrase-next-pressed})
             (update :hardwallet dissoc :flow))}

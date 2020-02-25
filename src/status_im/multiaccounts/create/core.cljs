@@ -87,27 +87,26 @@
     {::store-multiaccount [selected-id hashed-password callback]}))
 
 (fx/defn prepare-intro-wizard
-  [{:keys [db] :as cofx} first-time-setup?]
+  [{:keys [db] :as cofx}]
   {:db (assoc db :intro-wizard {:step :generate-key
                                 :weak-password? true
                                 :back-action :intro-wizard/navigate-back
                                 :forward-action :intro-wizard/step-forward-pressed
-                                :encrypt-with-password? true
-                                :first-time-setup? first-time-setup?})})
+                                :encrypt-with-password? true})})
 
 (fx/defn intro-wizard
   {:events [:multiaccounts.create.ui/intro-wizard]}
-  [{:keys [db] :as cofx} first-time-setup?]
+  [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db (update db :hardwallet dissoc :flow)}
-            (prepare-intro-wizard first-time-setup?)
+            (prepare-intro-wizard)
             (navigation/navigate-to-cofx :create-multiaccount-generate-key nil)))
 
 (fx/defn get-new-key
   {:events [:multiaccounts.create.ui/get-new-key]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            (prepare-intro-wizard false)
+            (prepare-intro-wizard)
             (bottom-sheet/hide-bottom-sheet)
             (navigation/navigate-to-cofx :create-multiaccount-generate-key nil)))
 

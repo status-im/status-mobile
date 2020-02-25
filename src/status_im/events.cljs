@@ -26,7 +26,6 @@
             [status-im.ethereum.transactions.core :as ethereum.transactions]
             [status-im.fleet.core :as fleet]
             [status-im.group-chats.core :as group-chats]
-            [status-im.hardwallet.core :as hardwallet]
             [status-im.signing.keycard :as signing.keycard]
             [status-im.i18n :as i18n]
             [status-im.init.core :as init]
@@ -65,6 +64,7 @@
             [status-im.wallet.db :as wallet.db]
             [taoensso.timbre :as log]
             [status-im.utils.money :as money]
+            status-im.hardwallet.core
             status-im.popover.core))
 
 ;; init module
@@ -599,181 +599,9 @@
 ;; hardwallet module
 
 (handlers/register-handler-fx
- :hardwallet.callback/on-register-card-events
- (fn [cofx [_ listeners]]
-   (hardwallet/on-register-card-events cofx listeners)))
-
-(handlers/register-handler-fx
- :hardwallet/get-application-info
- (fn [cofx _]
-   (hardwallet/get-application-info cofx nil nil)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-get-application-info-success
- (fn [cofx [_ info on-success]]
-   (hardwallet/on-get-application-info-success cofx info on-success)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-get-application-info-error
- (fn [cofx [_ error]]
-   (hardwallet/on-get-application-info-error cofx error)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/check-nfc-support-success
- (fn [cofx [_ supported?]]
-   (hardwallet/set-nfc-supported cofx supported?)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-card-connected
- (fn [cofx [_ data]]
-   (hardwallet/on-card-connected cofx data)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-card-disconnected
- (fn [cofx [_ data]]
-   (hardwallet/on-card-disconnected cofx data)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-init-card-success
- (fn [cofx [_ secrets]]
-   (hardwallet/on-init-card-success cofx secrets)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-init-card-error
- (fn [cofx [_ error]]
-   (hardwallet/on-init-card-error cofx error)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-install-applet-and-init-card-error
- (fn [cofx [_ error]]
-   (hardwallet/on-install-applet-and-init-card-error cofx error)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-pair-success
- (fn [cofx [_ pairing]]
-   (hardwallet/on-pair-success cofx pairing)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-pair-error
- (fn [cofx [_ error]]
-   (hardwallet/on-pair-error cofx error)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-generate-mnemonic-success
- (fn [cofx [_ mnemonic]]
-   (hardwallet/on-generate-mnemonic-success cofx mnemonic)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-generate-mnemonic-error
- (fn [cofx [_ error]]
-   (hardwallet/on-generate-mnemonic-error cofx error)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-generate-and-load-key-success
- [(re-frame/inject-cofx :random-guid-generator)
-  (re-frame/inject-cofx ::multiaccounts.create/get-signing-phrase)]
- (fn [cofx [_ data]]
-   (hardwallet/on-generate-and-load-key-success cofx data)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-generate-and-load-key-error
- (fn [cofx [_ error]]
-   (hardwallet/on-generate-and-load-key-error cofx error)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-unblock-pin-success
- (fn [cofx _]
-   (hardwallet/on-unblock-pin-success cofx)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-unblock-pin-error
- (fn [cofx [_ error]]
-   (hardwallet/on-unblock-pin-error cofx error)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-verify-pin-success
- (fn [cofx _]
-   (hardwallet/on-verify-pin-success cofx)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-verify-pin-error
- (fn [cofx [_ error]]
-   (hardwallet/on-verify-pin-error cofx error)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-change-pin-success
- (fn [cofx _]
-   (hardwallet/on-change-pin-success cofx)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-change-pin-error
- (fn [cofx [_ error]]
-   (hardwallet/on-change-pin-error cofx error)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-unpair-success
- (fn [cofx _]
-   (hardwallet/on-unpair-success cofx)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-unpair-error
- (fn [cofx [_ error]]
-   (hardwallet/on-unpair-error cofx error)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-delete-success
- (fn [cofx _]
-   (hardwallet/on-delete-success cofx)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-delete-error
- (fn [cofx [_ error]]
-   (hardwallet/on-delete-error cofx error)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-remove-key-success
- (fn [cofx _]
-   (hardwallet/on-remove-key-success cofx)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-remove-key-error
- (fn [cofx [_ error]]
-   (hardwallet/on-remove-key-error cofx error)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-get-keys-success
- (fn [cofx [_ data]]
-   (hardwallet/on-get-keys-success cofx data)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-get-keys-error
- (fn [cofx [_ error]]
-   (hardwallet/on-get-keys-error cofx error)))
-
-(handlers/register-handler-fx
- :hardwallet.callback/on-sign-error
- (fn [cofx [_ error]]
-   (hardwallet/on-sign-error cofx error)))
-
-(handlers/register-handler-fx
- :hardwallet.ui/password-option-pressed
- (fn [cofx _]
-   (hardwallet/password-option-pressed cofx)))
-
-(handlers/register-handler-fx
  :hardwallet.ui/go-to-settings-button-pressed
  (fn [_ _]
    {:hardwallet/open-nfc-settings nil}))
-
-(handlers/register-handler-fx
- :hardwallet.ui/begin-setup-button-pressed
- (fn [cofx _]
-   (hardwallet/begin-setup-button-pressed cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/start-installation
- (fn [cofx _]
-   (hardwallet/start-installation cofx)))
 
 (handlers/register-handler-fx
  :hardwallet.ui/pair-card-button-pressed
@@ -786,21 +614,6 @@
    {:db (assoc-in db [:hardwallet :secrets :password] pair-code)}))
 
 (handlers/register-handler-fx
- :hardwallet.ui/pair-code-next-button-pressed
- (fn [cofx]
-   (hardwallet/pair-code-next-button-pressed cofx)))
-
-(handlers/register-handler-fx
- :hardwallet.ui/recovery-phrase-next-button-pressed
- (fn [cofx _]
-   (hardwallet/recovery-phrase-next-button-pressed cofx)))
-
-(handlers/register-handler-fx
- :hardwallet.ui/recovery-phrase-confirm-word-next-button-pressed
- (fn [cofx _]
-   (hardwallet/recovery-phrase-confirm-word cofx)))
-
-(handlers/register-handler-fx
  :hardwallet.ui/recovery-phrase-confirm-word-back-button-pressed
  (fn [{:keys [db]} _]
    {:db (assoc-in db [:hardwallet :setup-step] :recovery-phrase)}))
@@ -811,64 +624,9 @@
    {:db (assoc-in db [:hardwallet :recovery-phrase :input-word] input)}))
 
 (handlers/register-handler-fx
- :hardwallet.ui/recovery-phrase-confirm-pressed
- (fn [cofx _]
-   (hardwallet/load-loading-keys-screen cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/load-loading-keys-screen
- (fn [cofx _]
-   (hardwallet/load-loading-keys-screen cofx)))
-
-(handlers/register-handler-fx
  :hardwallet.ui/recovery-phrase-cancel-pressed
  (fn [{:keys [db]} _]
    {:db (assoc-in db [:hardwallet :setup-step] :recovery-phrase)}))
-
-(handlers/register-handler-fx
- :hardwallet/load-generating-mnemonic-screen
- (fn [cofx _]
-   (hardwallet/load-generating-mnemonic-screen cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/pair
- (fn [cofx _]
-   (hardwallet/pair cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/verify-pin
- (fn [cofx _]
-   (hardwallet/verify-pin cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/change-pin
- (fn [cofx _]
-   (hardwallet/change-pin cofx)))
-
-(handlers/register-handler-fx
- :hardwallet.ui/success-button-pressed
- (fn [cofx _]
-   (hardwallet/success-button-pressed cofx)))
-
-(handlers/register-handler-fx
- :hardwallet.ui/pin-numpad-button-pressed
- (fn [cofx [_ number step]]
-   (hardwallet/update-pin cofx number step)))
-
-(handlers/register-handler-fx
- :hardwallet.ui/enter-pin-navigate-back-button-clicked
- (fn [cofx _]
-   (hardwallet/enter-pin-navigate-back-button-clicked cofx)))
-
-(handlers/register-handler-fx
- :hardwallet.ui/hardwallet-connect-navigate-back-button-clicked
- (fn [cofx _]
-   (hardwallet/hardwallet-connect-navigate-back-button-clicked cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/process-pin-input
- (fn [cofx _]
-   (hardwallet/process-pin-input cofx)))
 
 (handlers/register-handler-fx
  :hardwallet.ui/pin-numpad-delete-button-pressed
@@ -877,96 +635,11 @@
      {:db (update-in db [:hardwallet :pin step] pop)})))
 
 (handlers/register-handler-fx
- :hardwallet.ui/card-ready-next-button-pressed
- (fn [cofx _]
-   (hardwallet/card-ready-next-button-pressed cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/proceed-to-generate-mnemonic
- (fn [cofx _]
-   (hardwallet/proceed-to-generate-mnemonic cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/generate-mnemonic
- (fn [cofx _]
-   (hardwallet/generate-mnemonic cofx)))
-
-(handlers/register-handler-fx
  :hardwallet.ui/create-pin-button-pressed
  (fn [{:keys [db]} _]
    {:db (-> db
             (assoc-in [:hardwallet :setup-step] :pin)
             (assoc-in [:hardwallet :pin :enter-step] :original))}))
-
-(handlers/register-handler-fx
- :hardwallet.ui/error-button-pressed
- (fn [cofx _]
-   (hardwallet/error-button-pressed cofx)))
-
-(handlers/register-handler-fx
- :keycard-settings.ui/change-pin-pressed
- (fn [cofx _]
-   (hardwallet/change-pin-pressed cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/proceed-to-change-pin
- (fn [cofx _]
-   (hardwallet/proceed-to-change-pin cofx)))
-
-(handlers/register-handler-fx
- :keycard-settings.ui/unpair-card-pressed
- (fn [cofx _]
-   (hardwallet/unpair-card-pressed cofx)))
-
-(handlers/register-handler-fx
- :keycard-settings.ui/unpair-card-confirmed
- (fn [cofx _]
-   (hardwallet/unpair-card-confirmed cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/unpair
- (fn [cofx _]
-   (hardwallet/unpair cofx)))
-
-(handlers/register-handler-fx
- :keycard-settings.ui/reset-card-pressed
- (fn [cofx _]
-   (hardwallet/reset-card-pressed cofx)))
-
-(handlers/register-handler-fx
- :keycard-settings.ui/reset-card-next-button-pressed
- (fn [cofx _]
-   (hardwallet/reset-card-next-button-pressed cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/proceed-to-reset-card
- (fn [cofx _]
-   (hardwallet/proceed-to-reset-card cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/unpair-and-delete
- (fn [cofx _]
-   (hardwallet/unpair-and-delete cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/remove-key-with-unpair
- (fn [cofx _]
-   (hardwallet/remove-key-with-unpair cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/navigate-to-enter-pin-screen
- (fn [cofx _]
-   (hardwallet/navigate-to-enter-pin-screen cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/navigate-to-reset-card-screen
- (fn [cofx _]
-   (hardwallet/navigate-to-reset-card-screen cofx)))
-
-(handlers/register-handler-fx
- :hardwallet/unblock-pin
- (fn [cofx _]
-   (hardwallet/unblock-pin cofx)))
 
 ;; browser module
 
@@ -1140,13 +813,6 @@
  :group-chats.ui/join-pressed
  (fn [cofx [_ chat-id]]
    (group-chats/join-chat cofx chat-id)))
-
-;; profile module
-
-(handlers/register-handler-fx
- :profile.ui/keycard-settings-button-pressed
- (fn [cofx]
-   (hardwallet/navigate-to-keycard-settings cofx)))
 
 ;; transport module
 

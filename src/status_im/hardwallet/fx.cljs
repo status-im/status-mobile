@@ -118,6 +118,7 @@
          (then #(re-frame/dispatch [:hardwallet.callback/on-retrieve-pairings-success
                                     (types/deserialize %)]))))))
 
+;; TODO: Should act differently on different views
 (re-frame/reg-fx
  :hardwallet/listen-to-hardware-back-button
  ;;NOTE: not done in view because effect should happen under different conditions and is not dependent on 
@@ -133,3 +134,12 @@
  :hardwallet/remove-listener-to-hardware-back-button
  (fn [listener]
    (.remove listener)))
+
+(re-frame/reg-fx
+ :hardwallet/generate-name-and-photo
+ (fn [{:keys [public-key on-success]}]
+   (status/gfycat-identicon-async
+    public-key
+    (fn [whisper-name photo-path]
+      (re-frame/dispatch
+       [on-success whisper-name photo-path])))))
