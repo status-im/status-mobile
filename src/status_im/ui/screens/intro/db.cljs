@@ -10,7 +10,6 @@
 (spec/def :intro-wizard/back-action keyword?)
 (spec/def :intro-wizard/weak-password? boolean?)
 (spec/def :intro-wizard/forward-action keyword?)
-(spec/def :intro-wizard/first-time-setup? boolean?)
 (spec/def :intro-wizard/step (spec/nilable keyword?))
 (spec/def :intro-wizard/root-key :multiaccounts/generated-multiaccount)
 (spec/def :intro-wizard/passphrase string?)
@@ -24,7 +23,6 @@
                       :intro-wizard/back-action
                       :intro-wizard/weak-password?
                       :intro-wizard/forward-action
-                      :intro-wizard/first-time-setup?
                       :intro-wizard/step]
              :opt-un [:intro-wizard/selected-id
                       :intro-wizard/selected-storage-type?
