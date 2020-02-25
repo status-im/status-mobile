@@ -26,7 +26,7 @@ if [[ ! -x "$(command -v git)" ]]; then
   exit 1
 fi
 
-if [[ "$(uname -v)" == *NixOS* ]]; then
+if [[ "$(source /etc/os-release && echo "${NAME}")" == *NixOS* ]]; then
   echo -e "${GRN}Already running NixOS.${RST}"
   exit
 fi
