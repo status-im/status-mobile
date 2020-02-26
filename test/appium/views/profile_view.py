@@ -736,6 +736,8 @@ class ProfileView(BaseView):
             self.element_by_text('RETRY').click()
             i += 1
             self.just_fyi("retrying to connect: %s attempt" % i)
+            # TODO: uncomment after  https://github.com/status-im/status-react/issues/9269
+            time.sleep(10)
         if i == 5:
             self.driver.fail("Failed to connect after %s attempts" % i)
 

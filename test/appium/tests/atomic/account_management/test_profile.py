@@ -689,7 +689,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.mail_server_by_name(server_name).click()
         profile_1.mail_server_connect_button.click()
         profile_1.confirm_button.click()
-        profile_1.retry_to_connect_to_mailserver()
+        if profile_1.element_by_text_part("Error connecting").is_element_displayed(40):
+            profile_1.retry_to_connect_to_mailserver()
         profile_1.get_back_to_home_view()
         profile_1.home_button.click()
 
