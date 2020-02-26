@@ -62,7 +62,6 @@
     :add-account-description
     :add-account-incorrect-password
     :add-an-account
-    :add-another-key
     :add-bootnode
     :add-contact
     :add-custom-token
@@ -78,9 +77,7 @@
     :allow
     :allowing-authorizes-this-dapp
     :already-have-asset
-    :always-allow
     :amount
-    :amount-placeholder
     :are-you-sure-description
     :are-you-sure?
     :ask-in-status
@@ -92,7 +89,6 @@
     :back-up-seed-phrase
     :back-up-your-seed-phrase
     :backup-recovery-phrase
-    :backup-your-recovery-phrase
     :balance
     :begin-set-up
     :biometric-auth-android-sensor-desc
@@ -107,7 +103,6 @@
     :biometric-auth-login-ios-fallback-label
     :biometric-auth-reason-login
     :biometric-auth-reason-verify
-    :biometric-auth-setting-label
     :blank-keycard-text
     :blank-keycard-title
     :block
@@ -140,14 +135,8 @@
     :cancel-keycard-setup
     :cannot-read-card
     :cannot-use-default-pin
-    :cant-read-card
-    :cant-read-card-error-explanation
-    :card-already-linked
     :card-is-blank
-    :card-is-empty
-    :card-is-paired
     :card-reseted
-    :card-setup-prepare-text
     :card-unpaired
     :change-fleet
     :change-log-level
@@ -177,15 +166,9 @@
     :close-app-content
     :close-app-title
     :command-button-send
-    :command-button-sent
-    :command-requesting
-    :command-sending
-    :complete-exclamation
     :complete-hardwallet-setup
     :completed
-    :completing-card-setup
     :confirm
-    :confirm-install
     :confirmations
     :confirmations-helper-text
     :connect
@@ -216,7 +199,6 @@
     :create-pin
     :create-pin-description
     :created-group-chat-description
-    :creating-your-multiaccount
     :cryptokitty-name
     :currency
     :currency-display-name-aed
@@ -306,12 +288,8 @@
     :dapp
     :dapp-would-like-to-connect-wallet
     :dapps
-    :dapps-can-access
     :dapps-permissions
     :data
-    :datasync
-    :datasync-warning-content
-    :datasync-warning-title
     :datetime-ago
     :datetime-ago-format
     :datetime-day
@@ -321,9 +299,7 @@
     :datetime-today
     :datetime-yesterday
     :decimals
-    :decryption-failed-confirm
     :decryption-failed-content
-    :decryption-failed-title
     :default
     :delete
     :delete-and-leave-group
@@ -346,9 +322,7 @@
     :desktop-alpha-release-warning
     :dev-mode
     :dev-mode-settings
-    :device-pairing
     :device-syncing
-    :device-to-device
     :devices
     :disable
     :disabled
@@ -430,7 +404,6 @@
     :ens-your-your-name
     :enter-12-words
     :enter-contact-code
-    :enter-ens-or-contact-code
     :enter-pair-code
     :enter-pair-code-description
     :enter-password
@@ -447,24 +420,11 @@
     :error-unable-to-get-prices
     :error-unable-to-get-token-balance
     :errors
-    :estimated-time
     :eth
     :ethereum-node-started-incorrectly-description
     :ethereum-node-started-incorrectly-title
     :etherscan-lookup
     :export-account
-    :extension
-    :extension-address
-    :extension-find
-    :extension-hooks-cannot-be-added
-    :extension-install-alert
-    :extension-is-already-added
-    :extension-url
-    :extensions
-    :extensions-camera-send-picture
-    :extensions-chain-id-not-found
-    :extensions-disclaimer
-    :extensions-network-not-found
     :failed
     :faq
     :fetch-history
@@ -472,7 +432,6 @@
     :find
     :finish
     :finishing-card-setup
-    :finishing-card-setup-steps
     :fleet
     :fleet-settings
     :from
@@ -519,14 +478,11 @@
     :image-source-gallery
     :image-source-make-photo
     :image-source-title
-    :importing-keycard-multiaccount
     :in-contacts
     :incoming
     :incorrect-code
     :initialization
-    :initialization-of-the-card
     :install
-    :install-the-extension
     :intro-message1
     :intro-privacy-policy-note1
     :intro-privacy-policy-note2
@@ -551,11 +507,9 @@
     :intro-wizard-title5
     :intro-wizard-title6
     :invalid-address-qr-code
-    :invalid-extension
     :invalid-format
     :invalid-key-confirm
     :invalid-key-content
-    :invalid-key-title
     :invalid-number
     :invalid-pairing-password
     :invalid-range
@@ -637,14 +591,10 @@
     :main-networks
     :main-wallet
     :mainnet-network
-    :mainnet-text
-    :maintain-card-to-phone-contact
     :make-admin
-    :maybe-later
     :members
     :members-active
     :members-active-none
-    :members-none
     :members-title
     :message
     :message-not-sent
@@ -653,9 +603,7 @@
     :message-syncing
     :messages
     :might-break
-    :migrations-erase-multiaccounts-data-button
     :migrations-failed-content
-    :migrations-failed-title
     :mobile-network-ask-me
     :mobile-network-continue-syncing
     :mobile-network-continue-syncing-details
@@ -678,9 +626,7 @@
     :multiaccounts-recover-enter-phrase-text
     :multiaccounts-recover-enter-phrase-title
     :name
-    :name-description
     :name-of-token
-    :name-placeholder
     :need-help
     :network
     :network-chain
@@ -690,7 +636,6 @@
     :network-invalid-network-id
     :network-invalid-status-code
     :network-invalid-url
-    :network-mismatch
     :network-settings
     :new
     :new-chat
@@ -701,23 +646,16 @@
     :new-network
     :new-pin-description
     :new-public-group-chat
-    :new-request
     :next
-    :next-step-entering-mnemonic
-    :next-step-generating-mnemonic
     :no
     :no-collectibles
     :no-contacts
-    :no-extension
     :no-keycard-applet-on-card
     :no-messages
-    :no-messages-yet
     :no-pairing-slots-available
-    :no-recent-chats
     :no-result
     :no-tokens-found
     :node-info
-    :node-unavailable
     :node-version
     :nonce
     :none
@@ -725,7 +663,6 @@
     :not-keycard-text
     :not-keycard-title
     :notifications
-    :notifications-new-message-body
     :notify
     :off
     :offline
@@ -742,11 +679,9 @@
     :open-nfc-settings
     :open-on-etherscan
     :optional
-    :or-choose-a-contact
     :outgoing
     :pair
     :pair-card
-    :pair-card-question
     :pair-code
     :pair-code-explanation
     :pair-this-card
@@ -765,7 +700,6 @@
     :passphrase
     :password
     :password-description
-    :password-placeholder
     :password-placeholder2
     :password_error1
     :paste
@@ -779,10 +713,8 @@
     :photos-access-error
     :pin-changed
     :pin-code
-    :pin-code-description
     :pin-mismatch
     :pin-retries-left
-    :preparing-card
     :preview-privacy
     :privacy
     :privacy-and-security
@@ -795,16 +727,13 @@
     :public-group-status
     :public-group-topic
     :public-key
-    :puk-and-pair-codes
     :puk-and-pairing-codes-displayed
     :puk-code
     :puk-code-explanation
     :puk-mismatch
-    :qr-code-public-key-hint
     :quiet-days
     :quiet-hours
     :re-encrypt-key
-    :ready-to-import-keycard-multiaccount
     :receive
     :receive-transaction
     :recent
@@ -815,20 +744,13 @@
     :recover
     :recover-key
     :recover-keycard-multiaccount-not-supported
-    :recover-multiaccount-warning
-    :recover-password-invalid
-    :recover-password-too-short
     :recover-with-keycard
     :recovering-key
     :recovery-confirm-phrase
     :recovery-phrase
-    :recovery-phrase-invalid
-    :recovery-phrase-unknown-words
-    :recovery-phrase-wrong-length
     :recovery-success-text
     :recovery-typo-dialog-description
     :recovery-typo-dialog-title
-    :remaining-steps
     :remember-me
     :remind-me-later
     :remove
@@ -838,9 +760,7 @@
     :removed
     :repeat-pin
     :report-bug-email-template
-    :request-command-payment
     :request-transaction
-    :require-my-permission
     :required-field
     :resend-message
     :reset-card
@@ -864,22 +784,15 @@
     :see-it-again
     :select-chat
     :selected
-    :selected-for-you
-    :send-command-payment
     :send-logs
     :send-logs-to
     :send-message
     :send-request
     :send-request-amount
-    :send-request-amount-invalid-number
     :send-request-amount-max-decimals
-    :send-request-amount-must-be-specified
-    :send-request-currency
-    :send-request-invalid-asset
     :send-request-unknown-token
     :send-sending-to
     :send-transaction
-    :send-transaction-request
     :sending
     :sent-at
     :set-a-topic
@@ -902,10 +815,7 @@
     :show-less
     :show-more
     :show-qr
-    :sidechain-text
     :sign-in
-    :sign-in-to-another
-    :sign-in-to-status
     :sign-message
     :sign-out
     :sign-with
@@ -914,13 +824,11 @@
     :signing
     :signing-a-message
     :signing-phrase
-    :signing-phrase-description
     :something-went-wrong
     :soon
     :specify-address
     :specify-name
     :specify-network-id
-    :specify-recipient
     :specify-rpc-url
     :start-chat
     :start-conversation
@@ -947,9 +855,7 @@
     :sync-synced
     :syncing-devices
     :tag-was-lost
-    :taking-long-hold-phone-connected
     :test-networks
-    :testnet-text
     :text-input-disabled
     :this-device
     :this-device-desc
@@ -980,7 +886,6 @@
     :transactions-history
     :transactions-history-empty
     :transactions-sign
-    :transactions-sign-transaction
     :tribute-required-by-multiaccount
     :tribute-state-paid
     :tribute-state-pending
@@ -1027,7 +932,6 @@
     :usd-currency
     :use-valid-contact-code
     :use-valid-contact-code-desktop
-    :use-valid-qr-code
     :validation-amount-invalid-number
     :validation-amount-is-too-precise
     :version
@@ -1053,7 +957,6 @@
     :wallet-invalid-address-checksum
     :wallet-invalid-chain-id
     :wallet-manage-assets
-    :wallet-offline
     :wallet-request
     :wallet-send
     :wallet-send-min-wei
@@ -1064,7 +967,6 @@
     :warning
     :warning-message
     :web-view-error
-    :web3-opt-in
     :welcome-screen-text
     :welcome-to-status
     :welcome-to-status-description
