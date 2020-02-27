@@ -119,11 +119,12 @@ class NetworkApi(object):
     def faucet_backup(self, address):
         return requests.request('GET', '%s/0x%s' % (self.faucet_backup_url, address)).json()
 
-    def get_donate(self, address, wait_time=300):
+    def get_donate(self, address, external_faucet=True, wait_time=300):
         initial_balance = self.get_balance(address)
         counter = 0
         if initial_balance < 1000000000000000000:
-            self.faucet_backup(address)
+            if external_faucet:
+                self.faucet_backup(address)
             response = self.faucet(address)
             while True:
                 if counter >= wait_time:

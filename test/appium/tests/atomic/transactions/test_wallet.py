@@ -162,13 +162,13 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.set_up_wallet()
 
         address = wallet_view.get_wallet_address()[2:]
-        self.network_api.get_donate(address)
+        self.network_api.get_donate(address, False)
         wallet_view.wait_balance_is_equal_expected_amount()
         recipient = "0x"+basic_user['address']
         sending_amount = "0.08"
         asset = 'ETHro'
         wallet_view.send_transaction(asset_name='ETH', amount=sending_amount, recipient=recipient, sign_transaction=True)
-        wallet_view.wait_balance_is_changed(asset, wallet_view.get_asset_amount_by_name(asset))
+        wallet_view.wait_balance_is_changed(asset, initial_balance="0.1")
         transactions_view = wallet_view.transaction_history_button.click()
         transactions_view.transactions_table.find_transaction(amount=sending_amount)
         transactions_view.transactions_table.find_transaction(amount="0.1")
