@@ -159,7 +159,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     private File getLogsFile() {
-        final File pubDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        final Context context = this.getReactApplicationContext();
+        // Environment.getExternalStoragePublicDirectory doesn't work as expected on Android Q
+        // https://developer.android.com/reference/android/os/Environment#getExternalStoragePublicDirectory(java.lang.String)
+        final File pubDirectory = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
         final File logFile = new File(pubDirectory, gethLogFileName);
 
         return logFile;
