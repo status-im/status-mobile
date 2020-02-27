@@ -4,6 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.data-store.mailservers :as data-store.mailservers]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.waku.core :as waku]
             [status-im.node.core :as node]
             [status-im.i18n :as i18n]
             [status-im.mailserver.constants :as constants]
@@ -87,9 +88,9 @@
 
 ;; We now wait for a confirmation from the mailserver before marking the message
 ;; as sent.
-(defn update-mailservers! [enodes]
+(defn update-mailservers! [waku-enabled? enodes]
   (json-rpc/call
-   {:method (json-rpc/call-ext-method "updateMailservers")
+   {:method (json-rpc/call-ext-method waku-enabled? "updateMailservers")
     :params [enodes]
     :on-success #(log/debug "mailserver: update-mailservers success" %)
     :on-error #(log/error "mailserver: update-mailservers error" %)}))
@@ -117,8 +118,9 @@
 
 (re-frame/reg-fx
  :mailserver/update-mailservers
- (fn [enodes]
-   (update-mailservers! enodes)))
+ (fn [[waku-enabled? enodes]]
+   (println "HERE" waku-enabled? enodes)
+   (update-mailservers! waku-enabled? enodes)))
 
 (defn decrease-limit []
   (max constants/min-limit (/ @limit 2)))
@@ -144,9 +146,9 @@
    (reset! limit (decrease-limit))
    (reset! success-counter 0)))
 
-(defn mark-trusted-peer! [enode]
+(defn mark-trusted-peer! [waku-enabled? enode]
   (json-rpc/call
-   {:method  (if config/waku-enabled?
+   {:method  (if waku-enabled?
                "waku_markTrustedPeer"
                "shh_markTrustedPeer")
     :params [enode]
@@ -157,7 +159,8 @@
 
 (re-frame/reg-fx
  :mailserver/mark-trusted-peer
- mark-trusted-peer!)
+ (fn [[waku-enabled? enode]]
+   (mark-trusted-peer! waku-enabled? enode)))
 
 (fx/defn generate-mailserver-symkey
   [{:keys [db] :as cofx} {:keys [password id] :as mailserver}]
@@ -166,7 +169,8 @@
                        :generating-sym-key?]
                    true)
      :shh/generate-sym-key-from-password
-     [{:password    password
+     [(waku/enabled? cofx)
+      {:password    password
        :on-success
        (fn [_ sym-key-id]
          (re-frame/dispatch
@@ -189,7 +193,7 @@
         (fetch-current db)]
     (fx/merge cofx
               {:db (update-mailserver-state db :added)
-               :mailserver/mark-trusted-peer address}
+               :mailserver/mark-trusted-peer [(waku/enabled? cofx) address]}
               (when-not (or sym-key-id generating-sym-key?)
                 (generate-mailserver-symkey mailserver)))))
 
@@ -206,7 +210,7 @@
       ;; Any message sent before this takes effect will not be marked as sent
       ;; probably we should improve the UX so that is more transparent to the
       ;; user
-      :mailserver/update-mailservers [address]}
+      :mailserver/update-mailservers [(waku/enabled? cofx) [address]]}
      (when-not (or sym-key-id generating-sym-key?)
        (generate-mailserver-symkey mailserver)))))
 
@@ -345,7 +349,8 @@
                        request-id)}))))
 
 (defn request-messages!
-  [{:keys [sym-key-id address]}
+  [waku-enabled?
+   {:keys [sym-key-id address]}
    {:keys [topics cursor to from force-to?] :as request}]
   ;; Add some room to from, unless we break day boundaries so that
   ;; messages that have been received after the last request are also fetched
@@ -361,7 +366,7 @@
               " cursor " cursor
               " limit " actual-limit)
     (json-rpc/call
-     {:method (json-rpc/call-ext-method "requestMessages")
+     {:method (json-rpc/call-ext-method waku-enabled? "requestMessages")
       :params [(cond-> {:topics         topics
                         :mailServerPeer address
                         :symKeyID       sym-key-id
@@ -387,8 +392,8 @@
 
 (re-frame/reg-fx
  :mailserver/request-messages
- (fn [{:keys [mailserver request]}]
-   (request-messages! mailserver request)))
+ (fn [{:keys [mailserver request waku-enabled?]}]
+   (request-messages! waku-enabled? mailserver request)))
 
 (defn get-mailserver-when-ready
   "return the mailserver if the mailserver is ready"
@@ -460,7 +465,8 @@
                       :mailserver/pending-requests (count requests)
                       :mailserver/current-request request
                       :mailserver/request-to request-to)
-           :mailserver/request-messages {:mailserver mailserver
+           :mailserver/request-messages {:waku-enabled? (waku/enabled? cofx)
+                                         :mailserver mailserver
                                          :request    request}}
           {:db (dissoc db
                        :mailserver/pending-requests
@@ -783,7 +789,8 @@
           (when-let [mailserver (get-mailserver-when-ready cofx)]
             (let [request-with-cursor (assoc request :cursor cursor)]
               {:db (assoc db :mailserver/current-request request-with-cursor)
-               :mailserver/request-messages {:mailserver mailserver
+               :mailserver/request-messages {:waku-enabled? (waku/enabled? cofx)
+                                             :mailserver mailserver
                                              :request    request-with-cursor}}))
           (let [{:keys [gap chat-id]} request]
             (fx/merge
@@ -927,8 +934,9 @@
       (not current-request)
       (-> (assoc-in [:db :mailserver/current-request] first-request)
           (assoc :mailserver/request-messages
-                 {:mailserver mailserver
-                  :request    first-request})))))
+                 {:waku-enabled? (waku/enabled? cofx)
+                  :mailserver    mailserver
+                  :request       first-request})))))
 
 (fx/defn resend-request
   [{:keys [db] :as cofx} {:keys [request-id]}]
@@ -969,8 +977,9 @@
               {:db (update-in db [:mailserver/current-request :attempts] inc)
                :mailserver/decrease-limit   []
                :mailserver/request-messages
-               {:mailserver mailserver
-                :request    (assoc request :limit (decrease-limit))}})
+               {:waku-enabled? (waku/enabled? cofx)
+                :mailserver    mailserver
+                :request       (assoc request :limit (decrease-limit))}})
 
             :else
             {:mailserver/decrease-limit []}))))))

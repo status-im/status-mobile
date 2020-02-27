@@ -24,7 +24,7 @@
                                                           "b" {:chat-id chat-id :negotiated? true}}}}
                                                    chat-id)]
           (is fx)
-          (is (= fx {:filters/remove-filters [{:chat-id chat-id :filter-id "a"}]})))))
+          (is (= fx {:filters/remove-filters [nil [{:chat-id chat-id :filter-id "a"}]]})))))
     (testing "the user is still in some group chats"
       (testing "we joined, and group chat is active it does not remove filters"
         (let [fx (transport.filters/stop-listening {:db {:multiaccount {:public-key me}
@@ -46,7 +46,7 @@
                                                          {member-1 {:chat-id member-1 :filter-id "a"}}}}
                                                    member-1)]
           (is fx)
-          (is (= fx {:filters/remove-filters [{:chat-id member-1 :filter-id "a"}]})))))
+          (is (= fx {:filters/remove-filters [nil [{:chat-id member-1 :filter-id "a"}]]})))))
     (testing "we have a 1-to-1 chat with the user"
       (testing "it does not remove filter"
         (let [fx (transport.filters/stop-listening {:db {:chats
@@ -98,19 +98,19 @@
 
 (deftest load-member
   (testing "it returns fx for a member"
-    (is (= {:filters/load-filters [{:ChatID "0xchat-id-2"
-                                    :OneToOne true
-                                    :Identity "chat-id-2"}]}
+    (is (= {:filters/load-filters [[nil [{:ChatID "0xchat-id-2"
+                                          :OneToOne true
+                                          :Identity "chat-id-2"}]]]}
            (transport.filters/load-member {:db {}} "0xchat-id-2"))))
   (testing "merging fx"
     (is (=
          {:db {}
-          :filters/load-filters [{:ChatID "0xchat-id-1"
-                                  :OneToOne true
-                                  :Identity "chat-id-1"}
-                                 {:ChatID "0xchat-id-2"
-                                  :OneToOne true
-                                  :Identity "chat-id-2"}]}
+          :filters/load-filters [[nil [{:ChatID "0xchat-id-1"
+                                        :OneToOne true
+                                        :Identity "chat-id-1"}]]
+                                 [nil [{:ChatID "0xchat-id-2"
+                                        :OneToOne true
+                                        :Identity "chat-id-2"}]]]}
          (apply fx/merge {:db {}}
                 (map transport.filters/load-member ["0xchat-id-1" "0xchat-id-2"]))))))
 

@@ -3,6 +3,7 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.transport.filters.core :as transport.filters]
             [status-im.contact.core :as contact.core]
+            [status-im.waku.core :as waku]
             [status-im.contact.db :as contact.db]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
@@ -127,7 +128,7 @@
   {:events [:chat.ui/mark-all-read-pressed
             :chat.ui/mark-public-all-read]}
   [{:keys [db] :as cofx} chat-id]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "markAllRead")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "markAllRead")
                      :params [chat-id]
                      :on-success #(re-frame/dispatch [::mark-all-read-successful chat-id])}]})
 

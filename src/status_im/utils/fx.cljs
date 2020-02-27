@@ -17,7 +17,6 @@
     :status-im.ens.core/verify-names
     :shh/send-direct-message
     :shh/remove-filter
-    :shh/generate-sym-key-from-password
     :transport/confirm-messages-processed
     :group-chats/extract-membership-signature
     :utils/dispatch-later

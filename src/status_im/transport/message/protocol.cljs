@@ -6,15 +6,17 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
-(fx/defn send-chat-message [_ {:keys [chat-id
-                                      text
-                                      response-to
-                                      ens-name
-                                      message-type
-                                      sticker
-                                      content-type]
-                               :as message}]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "sendChatMessage")
+(fx/defn send-chat-message [cofx {:keys [chat-id
+                                         text
+                                         response-to
+                                         ens-name
+                                         message-type
+                                         sticker
+                                         content-type]
+                                  :as message}]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method
+                              (get-in cofx [:db :multiaccount :waku-enabled])
+                              "sendChatMessage")
                      :params [{:chatId chat-id
                                :text text
                                :responseTo response-to

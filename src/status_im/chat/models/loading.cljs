@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.ui.screens.chat.state :as chat.state]
+            [status-im.waku.core :as waku]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.messages :as data-store.messages]
             [status-im.transport.filters.core :as filters]
@@ -140,11 +141,13 @@
       (when-not (or (get-in db [:chats current-chat-id :all-loaded?])
                     (get-in db [:chats current-chat-id :loading-messages?]))
         (let [cursor (get-in db [:chats current-chat-id :cursor])
-              load-messages-fx (data-store.messages/messages-by-chat-id-rpc current-chat-id
-                                                                            cursor
-                                                                            constants/default-number-of-messages
-                                                                            #(re-frame/dispatch [::messages-loaded current-chat-id session-id %])
-                                                                            #(re-frame/dispatch [::failed-loading-messages current-chat-id session-id %]))]
+              load-messages-fx (data-store.messages/messages-by-chat-id-rpc
+                                (waku/enabled? cofx)
+                                current-chat-id
+                                cursor
+                                constants/default-number-of-messages
+                                #(re-frame/dispatch [::messages-loaded current-chat-id session-id %])
+                                #(re-frame/dispatch [::failed-loading-messages current-chat-id session-id %]))]
           (fx/merge cofx
                     load-messages-fx
                     (mailserver/load-gaps-fx current-chat-id)))))))

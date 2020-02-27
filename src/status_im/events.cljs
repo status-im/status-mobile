@@ -30,6 +30,7 @@
             [status-im.i18n :as i18n]
             [status-im.init.core :as init]
             [status-im.log-level.core :as log-level]
+            status-im.waku.core
             [status-im.mailserver.core :as mailserver]
             [status-im.mailserver.constants :as mailserver.constants]
             [status-im.mailserver.topics :as mailserver.topics]
