@@ -2,6 +2,7 @@
   (:require [goog.object :as object]
             [re-frame.core :as re-frame]
             [status-im.data-store.messages :as messages]
+            [status-im.waku.core :as waku]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.ethereum.json-rpc :as json-rpc]
@@ -114,13 +115,13 @@
       (dissoc :chatType :members)))
 
 (fx/defn save-chat [cofx {:keys [chat-id] :as chat}]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "saveChat")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "saveChat")
                      :params [(->rpc chat)]
                      :on-success #(log/debug "saved chat" chat-id "successfuly")
                      :on-failure #(log/error "failed to save chat" chat-id %)}]})
 
 (fx/defn fetch-chats-rpc [cofx {:keys [on-success]}]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "chats")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "chats")
                      :params []
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch chats" 0 -1 %)}]})

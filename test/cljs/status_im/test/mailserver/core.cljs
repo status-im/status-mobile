@@ -625,7 +625,7 @@
       (is (= "mailserver-password"
              (-> (mailserver/connect-to-mailserver {:db db})
                  :shh/generate-sym-key-from-password
-                 first
+                 second
                  :password))))
     (let [mailserver-with-sym-key-db (assoc-in db
                                                [:mailserver/mailservers :eth.staging "mailserverid" :sym-key-id]

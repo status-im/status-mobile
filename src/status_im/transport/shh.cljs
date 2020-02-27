@@ -8,8 +8,8 @@
             [status-im.ethereum.json-rpc :as json-rpc]))
 
 (defn generate-sym-key-from-password
-  [{:keys [password on-success on-error]}]
-  (json-rpc/call {:method (if config/waku-enabled?
+  [waku-enabled? {:keys [password on-success on-error]}]
+  (json-rpc/call {:method (if waku-enabled?
                             "waku_generateSymKeyFromPassword"
                             "shh_generateSymKeyFromPassword")
                   :params [password]
@@ -17,8 +17,8 @@
                   :on-error on-error}))
 
 (defn get-sym-key
-  [{:keys [sym-key-id on-success on-error]}]
-  (json-rpc/call {:method (if config/waku-enabled?
+  [waku-enabled? {:keys [sym-key-id on-success on-error]}]
+  (json-rpc/call {:method (if waku-enabled?
                             "waku_getSymKey"
                             "shh_getSymKey")
                   :params [sym-key-id]
@@ -30,12 +30,14 @@
 
 (re-frame/reg-fx
  :shh/generate-sym-key-from-password
- (fn [args]
-   (doseq [{:keys [password on-success]} args]
-     (generate-sym-key-from-password {:password   password
-                                      :on-success (fn [sym-key-id]
-                                                    (get-sym-key {:sym-key-id sym-key-id
-                                                                  :on-success (fn [sym-key]
-                                                                                (on-success sym-key sym-key-id))
-                                                                  :on-error log-error}))
-                                      :on-error   log-error}))))
+ (fn [[waku-enabled? {:keys [password on-success]}]]
+   (generate-sym-key-from-password
+    waku-enabled?
+    {:password   password
+     :on-success (fn [sym-key-id]
+                   (get-sym-key waku-enabled?
+                                {:sym-key-id sym-key-id
+                                 :on-success (fn [sym-key]
+                                               (on-success sym-key sym-key-id))
+                                 :on-error log-error}))
+     :on-error   log-error})))

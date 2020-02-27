@@ -1096,5 +1096,7 @@
     "add-seed-account": "Add account with a seed phrase",
     "account-exists-title": "Account already exists",
     "add-private-key-account": "Add account from private key",
-    "user-not-found": "User not found"
+    "user-not-found": "User not found",
+    "waku-enabled": "Waku enabled",
+    "waku-bloom-filter-mode": "Waku bloom filter mode"
 }

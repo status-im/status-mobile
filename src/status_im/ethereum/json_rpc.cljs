@@ -178,8 +178,8 @@
       (call-method (update arg :number-of-retries dec)))
     on-error))
 
-(defn call-ext-method [method]
-  (if config/waku-enabled?
+(defn call-ext-method [waku-enabled? method]
+  (if waku-enabled?
     (str "wakuext_" method)
     (str "shhext_" method)))
 

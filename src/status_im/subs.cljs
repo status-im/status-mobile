@@ -490,6 +490,18 @@
        config/log-level-status-go)))
 
 (re-frame/reg-sub
+ :waku/enabled
+ :<- [:multiaccount]
+ (fn [multiaccount]
+   (boolean (get multiaccount :waku-enabled))))
+
+(re-frame/reg-sub
+ :waku/bloom-filter-mode
+ :<- [:multiaccount]
+ (fn [multiaccount]
+   (boolean (get multiaccount :waku-bloom-filter-mode))))
+
+(re-frame/reg-sub
  :dapps-address
  :<- [:multiaccount]
  (fn [acc]

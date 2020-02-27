@@ -1,43 +1,43 @@
-(ns status-im.pairing.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.chat.models :as models.chat]
-            [status-im.contact.core :as contact]
-            [status-im.contact.db :as contact.db]
-            [taoensso.timbre :as log]
-            [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.i18n :as i18n]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.transport.message.protocol :as protocol]
-            [status-im.ui.screens.navigation :as navigation]
-            [status-im.utils.config :as config]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.identicon :as identicon]
-            [status-im.utils.pairing :as pairing.utils]
-            [status-im.utils.platform :as utils.platform]
-            [status-im.utils.types :as types]))
+(ns status-im.pairing.core (:require [clojure.string :as string]
+                                     [re-frame.core :as re-frame]
+                                     [status-im.chat.models :as models.chat]
+                                     [status-im.waku.core :as waku]
+                                     [status-im.contact.core :as contact]
+                                     [status-im.contact.db :as contact.db]
+                                     [taoensso.timbre :as log]
+                                     [status-im.ethereum.json-rpc :as json-rpc]
+                                     [status-im.i18n :as i18n]
+                                     [status-im.multiaccounts.model :as multiaccounts.model]
+                                     [status-im.multiaccounts.update.core :as multiaccounts.update]
+                                     [status-im.transport.message.protocol :as protocol]
+                                     [status-im.ui.screens.navigation :as navigation]
+                                     [status-im.utils.config :as config]
+                                     [status-im.utils.fx :as fx]
+                                     [status-im.utils.identicon :as identicon]
+                                     [status-im.utils.pairing :as pairing.utils]
+                                     [status-im.utils.platform :as utils.platform]
+                                     [status-im.utils.types :as types]))
 
-(defn enable-installation-rpc [installation-id on-success on-failure]
-  (json-rpc/call {:method (json-rpc/call-ext-method "enableInstallation")
+(defn enable-installation-rpc [waku-enabled? installation-id on-success on-failure]
+  (json-rpc/call {:method (json-rpc/call-ext-method waku-enabled? "enableInstallation")
                   :params [installation-id]
                   :on-success on-success
                   :on-failure on-failure}))
 
-(defn disable-installation-rpc [installation-id on-success on-failure]
-  (json-rpc/call {:method (json-rpc/call-ext-method "disableInstallation")
+(defn disable-installation-rpc [waku-enabled? installation-id on-success on-failure]
+  (json-rpc/call {:method (json-rpc/call-ext-method waku-enabled? "disableInstallation")
                   :params [installation-id]
                   :on-success on-success
                   :on-failure on-failure}))
 
-(defn set-installation-metadata-rpc [installation-id metadata on-success on-failure]
-  (json-rpc/call {:method (json-rpc/call-ext-method "setInstallationMetadata")
+(defn set-installation-metadata-rpc [waku-enabled? installation-id metadata on-success on-failure]
+  (json-rpc/call {:method (json-rpc/call-ext-method waku-enabled? "setInstallationMetadata")
                   :params                 [installation-id metadata]
                   :on-success                 on-success
                   :on-failure                 on-failure}))
 
-(defn get-our-installations-rpc [on-success on-failure]
-  (json-rpc/call {:method (json-rpc/call-ext-method "getOurInstallations")
+(defn get-our-installations-rpc [waku-enabled? on-success on-failure]
+  (json-rpc/call {:method (json-rpc/call-ext-method waku-enabled? "getOurInstallations")
                   :params  []
                   :on-success       on-success
                   :on-failure       on-failure}))
@@ -65,7 +65,7 @@
 
 (defn send-pair-installation
   [cofx]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "sendPairInstallation")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "sendPairInstallation")
                      :params []
                      :on-success #(log/info "sent pair installation message")}]})
 
@@ -91,11 +91,13 @@
   "Set the name of the device"
   [{:keys [db] :as cofx} installation-name]
   (let [our-installation-id (get-in db [:multiaccount :installation-id])]
-    {:pairing/set-installation-metadata [[our-installation-id {:name installation-name
-                                                               :deviceType utils.platform/os}]]}))
+    {:pairing/set-installation-metadata [(waku/enabled? cofx)
+                                         our-installation-id
+                                         {:name installation-name
+                                          :deviceType utils.platform/os}]}))
 
 (fx/defn init [cofx]
-  {:pairing/get-our-installations nil})
+  {:pairing/get-our-installations (waku/enabled? cofx)})
 
 (defn handle-bundles-added [{:keys [db] :as cofx} bundle]
   (let [installation-id  (:installationID bundle)]
@@ -139,57 +141,64 @@
   [result]
   (re-frame/dispatch [:pairing.callback/get-our-installations-success result]))
 
-(defn enable-installation! [installation-id]
-  (enable-installation-rpc installation-id
-                           (partial handle-enable-installation-response-success installation-id)
-                           nil))
+(defn enable-installation! [waku-enabled? installation-id]
+  (enable-installation-rpc
+   waku-enabled?
+   installation-id
+   (partial handle-enable-installation-response-success installation-id)
+   nil))
 
-(defn disable-installation! [installation-id]
-  (disable-installation-rpc installation-id
-                            (partial handle-disable-installation-response-success installation-id)
-                            nil))
+(defn disable-installation! [waku-enabled? installation-id]
+  (disable-installation-rpc
+   waku-enabled?
+   installation-id
+   (partial handle-disable-installation-response-success installation-id)
+   nil))
 
-(defn set-installation-metadata! [installation-id metadata]
-  (set-installation-metadata-rpc installation-id
-                                 metadata
-                                 (partial handle-set-installation-metadata-response-success installation-id metadata)
-                                 nil))
+(defn set-installation-metadata! [waku-enabled? installation-id metadata]
+  (set-installation-metadata-rpc
+   waku-enabled?
+   installation-id
+   metadata
+   (partial handle-set-installation-metadata-response-success installation-id metadata)
+   nil))
 
-(defn get-our-installations []
-  (get-our-installations-rpc handle-get-our-installations-response-success nil))
+(defn get-our-installations [waku-enabled?]
+  (get-our-installations-rpc waku-enabled? handle-get-our-installations-response-success nil))
 
 (defn enable-fx [cofx installation-id]
   (if (< (count (filter :enabled? (vals (get-in cofx [:db :pairing/installations])))) (inc config/max-installations))
-    {:pairing/enable-installation installation-id}
+    {:pairing/enable-installation [(waku/enabled? cofx) installation-id]}
     {:utils/show-popup {:title (i18n/label :t/pairing-maximum-number-reached-title)
 
                         :content (i18n/label :t/pairing-maximum-number-reached-content)}}))
 
-(defn disable-fx [_ installation-id]
-  {:pairing/disable-installation installation-id})
+(defn disable-fx [cofx installation-id]
+  {:pairing/disable-installation [(waku/enabled? cofx) installation-id]})
 
 (re-frame/reg-fx
  :pairing/enable-installation
- enable-installation!)
+ (fn [[waku-enabled? installation-id]]
+   (enable-installation! waku-enabled? installation-id)))
 
 (re-frame/reg-fx
  :pairing/disable-installation
- disable-installation!)
+ (fn [[waku-enabled? installation-id]]
+   (disable-installation! waku-enabled? installation-id)))
 
 (re-frame/reg-fx
  :pairing/set-installation-metadata
- (fn [pairs]
-   (doseq [[installation-id metadata] pairs]
-     (set-installation-metadata! installation-id metadata))))
+ (fn [[waku-enabled? installation-id metadata]]
+   (set-installation-metadata! waku-enabled? installation-id metadata)))
 
 (re-frame/reg-fx
  :pairing/get-our-installations
  get-our-installations)
 
-(defn send-installation-messages [{:keys [db]}]
+(defn send-installation-messages [{:keys [db] :as cofx}]
   (let [multiaccount (:multiaccount db)
         {:keys [name preferred-name photo-path]} multiaccount]
-    {::json-rpc/call [{:method (json-rpc/call-ext-method "syncDevices")
+    {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "syncDevices")
                        :params [(or preferred-name name) photo-path]
                        :on-success #(log/debug "successfully synced devices")}]}))
 

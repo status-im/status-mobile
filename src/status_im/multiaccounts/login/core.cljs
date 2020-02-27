@@ -261,7 +261,7 @@
                           ;;so here we set it at 1 already so that it passes the check once it has
                           ;;been initialized
                           :filters/initialized 1)
-               :filters/load-filters []}
+               :filters/load-filters [[(:waku-enabled multiaccount) []]]}
               (finish-keycard-setup)
               (protocol/initialize-protocol {:mailservers []
                                              :mailserver-ranges {}

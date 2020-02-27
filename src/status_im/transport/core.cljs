@@ -3,6 +3,7 @@
   (:require
    [re-frame.core :as re-frame]
    [status-im.ethereum.json-rpc :as json-rpc]
+   [status-im.waku.core :as waku]
    [status-im.native-module.core :as status]
    [status-im.mailserver.core :as mailserver]
    [status-im.transport.message.core :as message]
@@ -40,7 +41,7 @@
   initializiation is completed, otherwise we might receive messages/topics
   when the state has not been properly initialized."
   [cofx]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "startMessenger")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "startMessenger")
                      :on-success #(do
                                     (log/debug "messenger initialized")
                                     (re-frame/dispatch [::init-whisper]))

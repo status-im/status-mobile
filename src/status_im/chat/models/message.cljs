@@ -4,6 +4,7 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.config :as config]
             [status-im.chat.db :as chat.db]
+            [status-im.waku.core :as waku]
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat-loading]
             [status-im.chat.models.message-list :as message-list]
@@ -209,7 +210,7 @@
 (fx/defn resend-message
   [{:keys [db] :as cofx} chat-id message-id]
   (fx/merge cofx
-            {::json-rpc/call [{:method (json-rpc/call-ext-method "reSendChatMessage")
+            {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "reSendChatMessage")
                                :params [message-id]
                                :on-success #(log/debug "re-sent message successfully")
                                :on-error #(log/error "failed to re-send message" %)}]}
@@ -229,9 +230,6 @@
   (apply fx/merge cofx (map #(add-message {:message       %
                                            :current-chat? true})
                             messages)))
-
-(fx/defn add-system-messages [cofx messages]
-  (data-store.messages/save-system-messages cofx messages))
 
 (fx/defn send-message
   [{:keys [db now] :as cofx} {:keys [chat-id] :as message}]

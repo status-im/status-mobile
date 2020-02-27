@@ -95,6 +95,7 @@
         current-fleet (get-current-fleet db)
         rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
         {:keys [installation-id log-level
+                waku-enabled waku-bloom-filter-mode
                 custom-bootnodes custom-bootnodes-enabled?]} multiaccount
         use-custom-bootnodes (get custom-bootnodes-enabled? current-network)]
     (cond-> (get-in networks [current-network :config])
@@ -122,8 +123,9 @@
              :PermissionsConfig {:Enabled true}
              :MailserversConfig {:Enabled true}
              :EnableNTPSync true
-             (if config/waku-enabled? :WakuConfig :WhisperConfig)
+             (if waku-enabled :WakuConfig :WhisperConfig)
              {:Enabled true
+              :BloomFilterMode waku-bloom-filter-mode
               :LightClient true
               :MinimumPoW 0.001}
              :ShhextConfig

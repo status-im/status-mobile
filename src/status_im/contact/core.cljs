@@ -3,6 +3,7 @@
    [re-frame.core :as re-frame]
    [taoensso.timbre :as log]
    [status-im.multiaccounts.update.core :as multiaccounts.update]
+   [status-im.waku.core :as waku]
    [status-im.multiaccounts.model :as multiaccounts.model]
    [status-im.transport.filters.core :as transport.filters]
    [status-im.contact.db :as contact.db]
@@ -76,7 +77,7 @@
 (fx/defn send-contact-request
   [{:keys [db] :as cofx} {:keys [public-key] :as contact}]
   (let [{:keys [name profile-image]} (own-info db)]
-    {::json-rpc/call [{:method (json-rpc/call-ext-method "sendContactUpdate")
+    {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "sendContactUpdate")
                        :params [public-key name profile-image]
                        :on-success #(log/debug "contact request sent" public-key)}]}))
 

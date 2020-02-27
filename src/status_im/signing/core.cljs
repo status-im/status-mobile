@@ -3,6 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.utils.config :as config]
+            [status-im.waku.core :as waku]
             [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.core :as ethereum]
@@ -212,7 +213,7 @@
 (fx/defn send-transaction-message
   {:events [::send-transaction-message]}
   [cofx chat-id value contract transaction-hash signature]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "sendTransaction")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "sendTransaction")
                      :params [chat-id value contract transaction-hash
                               (:result (types/json->clj signature))]
                      :on-success
@@ -221,7 +222,7 @@
 (fx/defn send-accept-request-transaction-message
   {:events [::send-accept-transaction-message]}
   [cofx message-id transaction-hash signature]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "acceptRequestTransaction")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "acceptRequestTransaction")
                      :params [transaction-hash message-id
                               (:result (types/json->clj signature))]
                      :on-success

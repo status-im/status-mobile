@@ -1,6 +1,7 @@
 (ns status-im.multiaccounts.update.publisher
   (:require [taoensso.timbre :as log]
             [re-frame.core :as re-frame]
+            [status-im.waku.core :as waku]
             [status-im.utils.config :as config]
             [status-im.constants :as constants]
             [status-im.multiaccounts.update.core :as multiaccounts]
@@ -11,7 +12,7 @@
 ;; Publish updates every 48 hours
 (def publish-updates-interval (* 48 60 60 1000))
 
-(defn publish-update! [{:keys [db now]}]
+(defn publish-update! [{:keys [db now] :as cofx}]
   (let [my-public-key (get-in db [:multiaccount :public-key])
         peers-count (:peers-count db)
         last-updated (get-in
@@ -25,7 +26,7 @@
             {:keys [name preferred-name photo-path address]} multiaccount]
 
         (log/debug "sending contact updates")
-        (json-rpc/call {:method (json-rpc/call-ext-method "sendContactUpdates")
+        (json-rpc/call {:method (json-rpc/call-ext-method (waku/enabled? cofx) "sendContactUpdates")
                         :params [(or preferred-name name) photo-path]
                         :on-failure #(do
                                        (log/warn "failed to send contact updates")
