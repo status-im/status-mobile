@@ -1,10 +1,11 @@
 (ns status-im.ui.components.contact.styles
   (:require [status-im.ui.components.colors :as colors]))
 
-(def contact-container-to-refactor
-  {:flex-direction :row
-   :justify-content :center
-   :align-items :center
+(def contact-container
+  {:flex-direction     :row
+   :justify-content    :center
+   :align-items        :center
+   :padding-vertical   12
    :padding-horizontal 16})
 
 (def info-container-to-refactor
@@ -17,27 +18,20 @@
   {:flex            1
    :justify-content :center})
 
-(def name-text
-  {:color     colors/text
+(defn name-text []
+  {:color     colors/gray
    :font-size 17})
 
-(def info-text
+(defn info-text []
   {:margin-top 1
    :font-size  12
-   :color      colors/text-gray})
+   :color      colors/gray})
 
 (def forward-btn
   {:opacity         0.4
    :padding         12
    :align-items     :center
    :justify-content :center})
-
-(def more-btn-container
-  {:align-items     :center
-   :justify-content :center})
-
-(def more-btn
-  {:padding 16})
 
 (def toggle-container
   {:width          56

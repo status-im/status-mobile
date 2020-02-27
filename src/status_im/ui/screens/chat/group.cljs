@@ -16,7 +16,7 @@
 (defn decline-chat [chat-id]
   [react/touchable-highlight
    {:on-press
-    #(re-frame/dispatch [:group-chats.ui/remove-chat-confirmed chat-id])}
+    #(re-frame/dispatch [:group-chats.ui/leave-chat-confirmed chat-id])}
    [react/text {:style style/decline-chat}
     (i18n/label :t/group-chat-decline-invitation)]])
 

@@ -156,7 +156,7 @@
             {:db (assoc db
                         :group/selected-contacts #{}
                         :new-chat-name "")}
-            (navigation/navigate-to-cofx :contact-toggle-list nil)))
+            (navigation/navigate-to-cofx :create-group-chat nil)))
 
 (fx/defn set-tribute
   [{:keys [db] :as cofx} public-key tribute-to-talk]

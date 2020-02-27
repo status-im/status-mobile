@@ -44,13 +44,6 @@
                     :number-of-lines 1}
         generated-name])]))
 
-(defn- group-name [name]
-  [react/view styles/profile-header-name-container
-   [react/text {:style styles/profile-name-text
-                :number-of-lines 2
-                :ellipsize-mode  :tail}
-    name]])
-
 (defn- profile-header-display [{:keys [name public-key] :as contact}
                                allow-icon-change? include-remove-action?]
   [react/view (merge styles/profile-header-display {:padding-horizontal 16})
@@ -92,10 +85,23 @@
                                         :edit?        false}])
    [names contact]])
 
-(defn group-header-display [{:keys [chat-name color]}]
+(defn group-header-display [{:keys [chat-name color contacts]}]
   [react/view (merge styles/profile-header-display {:padding-horizontal 16})
    [chat-icon.screen/profile-icon-view nil chat-name color nil 64 nil]
-   [group-name chat-name]])
+   [react/view styles/profile-header-name-container
+    [react/text {:style           styles/profile-name-text
+                 :number-of-lines 2
+                 :ellipsize-mode  :tail}
+     chat-name]
+    [react/view {:style {:flex-direction :row
+                         :align-items    :center}}
+     [vector-icons/icon :icons/tiny-group {:color           colors/gray
+                                           :width           16
+                                           :height          16
+                                           :container-style {:margin-right 4}}]
+     [react/text {:style {:line-height 22
+                          :color       colors/gray}}
+      (i18n/label :t/members-count {:count (count contacts)})]]]])
 
 (defn profile-header
   [{:keys [contact allow-icon-change? include-remove-action?]}]

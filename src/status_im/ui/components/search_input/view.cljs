@@ -1,13 +1,16 @@
 (ns status-im.ui.components.search-input.view
-  (:require [status-im.i18n :as i18n]
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
+  (:require [reagent.core :as reagent]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.search-input.styles :as styles]
             [status-im.ui.components.icons.vector-icons :as icons]))
 
-(defn search-input [_]
-  (let [input-ref (atom nil)]
-    (fn [{:keys [on-cancel on-focus on-change search-active?
+(defn search-input [{:keys [search-active?]}]
+  (let [input-ref      (atom nil)
+        search-active? (or search-active? (reagent/atom nil))]
+    (fn [{:keys [on-cancel on-focus on-change
                  search-container-style search-filter auto-focus]}]
       [react/view {:style (or search-container-style (styles/search-container))}
        [react/view {:style (styles/search-input-container)}

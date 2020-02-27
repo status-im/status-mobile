@@ -14,9 +14,9 @@
    :justify-content :center})
 
 (def profile-name-text
-  {:typography      :header
-   :line-height     28
-   :text-align      :left})
+  {:typography  :header
+   :line-height 28
+   :text-align  :left})
 
 (def profile-name-text-with-subtitle
   {:margin-vertical 5

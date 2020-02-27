@@ -100,41 +100,43 @@
        :icon     :main-icons/delete
        :on-press #(hide-sheet-and-dispatch [:chat.ui/remove-chat-pressed chat-id])}]]))
 
-(defn group-chat-actions
-  [{:keys [chat-id contact group-chat chat-name color online]}]
-  [react/view
-   [list-item/list-item
-    {:theme       :action
-     :title       [view-profile {:name   chat-name
-                                 :helper :t/group-info}]
-     :icon        [chat-icon/chat-icon-view-chat-sheet
-                   contact group-chat chat-name color online]
-     :accessories [:chevron]
-     :on-press    #(hide-sheet-and-dispatch [:show-group-chat-profile chat-id])}]
-   [list-item/list-item
-    {:theme    :action
-     :title    :t/mark-all-read
-     :accessibility-label :mark-all-read-button
-     :icon     :main-icons/check
-     :on-press #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
-   [list-item/list-item
-    {:theme    :action
-     :title    :t/clear-history
-     :accessibility-label :clear-history-button
-     :icon     :main-icons/close
-     :on-press #(hide-sheet-and-dispatch [:chat.ui/clear-history-pressed chat-id])}]
-   [list-item/list-item
-    {:theme    :action
-     :title    :t/fetch-history
-     :accessibility-label :fetch-history-button
-     :icon     :main-icons/arrow-down
-     :on-press #(hide-sheet-and-dispatch [:chat.ui/fetch-history-pressed chat-id])}]
-   [list-item/list-item
-    {:theme    :action-destructive
-     :title    :t/delete-chat
-     :accessibility-label :delete-chat-button
-     :icon     :main-icons/delete
-     :on-press #(hide-sheet-and-dispatch [:group-chats.ui/remove-chat-pressed chat-id])}]])
+(defn group-chat-actions []
+  (fn [{:keys [chat-id contact group-chat chat-name color online]}]
+    (let [joined @(re-frame/subscribe [:group-chat/chat-joined? chat-id])]
+      [react/view
+       [list-item/list-item
+        {:theme       :action
+         :title       [view-profile {:name   chat-name
+                                     :helper :t/group-info}]
+         :icon        [chat-icon/chat-icon-view-chat-sheet
+                       contact group-chat chat-name color online]
+         :accessories [:chevron]
+         :on-press    #(hide-sheet-and-dispatch [:show-group-chat-profile chat-id])}]
+       [list-item/list-item
+        {:theme               :action
+         :title               :t/mark-all-read
+         :accessibility-label :mark-all-read-button
+         :icon                :main-icons/check
+         :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
+       [list-item/list-item
+        {:theme               :action
+         :title               :t/clear-history
+         :accessibility-label :clear-history-button
+         :icon                :main-icons/close
+         :on-press            #(hide-sheet-and-dispatch [:chat.ui/clear-history-pressed chat-id])}]
+       [list-item/list-item
+        {:theme               :action
+         :title               :t/fetch-history
+         :accessibility-label :fetch-history-button
+         :icon                :main-icons/arrow-down
+         :on-press            #(hide-sheet-and-dispatch [:chat.ui/fetch-history-pressed chat-id])}]
+       (when joined
+         [list-item/list-item
+          {:theme               :action
+           :title               :t/leave-chat
+           :accessibility-label :leave-chat-button
+           :icon                :main-icons/arrow-left
+           :on-press            #(hide-sheet-and-dispatch [:group-chats.ui/leave-chat-pressed chat-id])}])])))
 
 (defn actions [{:keys [public? group-chat]
                 :as current-chat}]

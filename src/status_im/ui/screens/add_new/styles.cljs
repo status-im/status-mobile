@@ -11,8 +11,8 @@
 (defn input-container []
   {:flex-direction   :row
    :align-items      :center
+   :margin-bottom    16
    :border-radius    components.styles/border-radius
-   :height           52
    :background-color colors/gray-lighter})
 
 (defn new-chat-input-container []
@@ -28,6 +28,7 @@
 
 (styles/def input
   {:flex               1
+   :height             52
    :padding-horizontal 14
    :desktop            {:height 30
                         :width  "100%"}

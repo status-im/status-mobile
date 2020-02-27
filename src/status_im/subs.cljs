@@ -729,7 +729,8 @@
 
        (and (chat.models/group-chat? current-chat)
             (group-chats.db/joined? my-public-key current-chat))
-       (assoc :show-input? true)
+       (assoc :show-input? true
+              :joined? true)
 
        (not group-chat)
        (assoc :show-input? true)))))
@@ -892,6 +893,15 @@
  :<- [:contacts/active]
  (fn [[selected-contacts active-contacts]]
    (filter-contacts selected-contacts active-contacts)))
+
+(re-frame/reg-sub
+ :group-chat/chat-joined?
+ :<- [:multiaccount/public-key]
+ :<- [:chats/active-chats]
+ (fn [[my-public-key chats] [_ chat-id]]
+   (let [current-chat (get chats chat-id)]
+     (and (chat.models/group-chat? current-chat)
+          (group-chats.db/joined? my-public-key current-chat)))))
 
 (re-frame/reg-sub
  :chats/transaction-status
@@ -1692,8 +1702,7 @@
  :<- [:contacts/contacts]
  :<- [:multiaccount]
  (fn [[{:keys [contacts admins]} all-contacts current-multiaccount]]
-   (map #(assoc % :name (multiaccounts/displayed-name %))
-        (contact.db/get-all-contacts-in-group-chat contacts admins all-contacts current-multiaccount))))
+   (contact.db/get-all-contacts-in-group-chat contacts admins all-contacts current-multiaccount)))
 
 (re-frame/reg-sub
  :contacts/contacts-by-chat

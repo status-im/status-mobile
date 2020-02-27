@@ -27,7 +27,7 @@
 
 (defn default-browser-icon [name]
   (default-chat-icon name {:default-chat-icon (styles/default-chat-icon-chat-list colors/default-chat-color)
-                           :default-chat-icon-text styles/default-chat-icon-text}))
+                           :default-chat-icon-text (styles/default-chat-icon-text 40)}))
 
 (defn dapp-badge [{:keys [online-view-wrapper online-view online-dot-left online-dot-right]}]
   [react/view online-view-wrapper
@@ -54,7 +54,7 @@
     :size                   36
     :chat-icon              styles/chat-icon-chat-toolbar
     :default-chat-icon      (styles/default-chat-icon-chat-toolbar color)
-    :default-chat-icon-text styles/default-chat-icon-text}])
+    :default-chat-icon-text (styles/default-chat-icon-text 36)}])
 
 (defn chat-icon-view-chat-list
   [contact group-chat name color online]
@@ -67,7 +67,7 @@
     :size                   40
     :chat-icon              styles/chat-icon-chat-list
     :default-chat-icon      (styles/default-chat-icon-chat-list color)
-    :default-chat-icon-text styles/default-chat-icon-text}])
+    :default-chat-icon-text (styles/default-chat-icon-text 40)}])
 
 (defn chat-icon-view-chat-sheet
   [contact group-chat name color online]
@@ -80,13 +80,13 @@
     :size                   40
     :chat-icon              styles/chat-icon-chat-list
     :default-chat-icon      (styles/default-chat-icon-chat-list color)
-    :default-chat-icon-text styles/default-chat-icon-text}])
+    :default-chat-icon-text (styles/default-chat-icon-text 40)}])
 
 (defn custom-icon-view-list
   [name color & [size]]
   [react/view (styles/container-list-size (or size 40))
    [default-chat-icon name {:default-chat-icon      (styles/default-chat-icon-profile color (or size 40))
-                            :default-chat-icon-text styles/default-chat-icon-text}]])
+                            :default-chat-icon-text (styles/default-chat-icon-text (or size 40))}]])
 
 (defn contact-icon-view
   [{:keys [name dapp?] :as contact} {:keys [container] :as styles}]
@@ -107,7 +107,7 @@
     :size                   60
     :chat-icon              styles/chat-icon-chat-list
     :default-chat-icon      (styles/default-chat-icon-chat-list colors/default-chat-color)
-    :default-chat-icon-text styles/default-chat-icon-text}])
+    :default-chat-icon-text (styles/default-chat-icon-text 60)}])
 
 (defn contact-icon-contacts-tab [contact]
   [contact-icon-view contact
@@ -119,7 +119,7 @@
     :size                   40
     :chat-icon              styles/chat-icon-chat-list
     :default-chat-icon      (styles/default-chat-icon-chat-list colors/default-chat-color)
-    :default-chat-icon-text styles/default-chat-icon-text}])
+    :default-chat-icon-text (styles/default-chat-icon-text 40)}])
 
 (defn dapp-icon-browser [contact size]
   [contact-icon-view contact
@@ -128,7 +128,7 @@
     :size                   size
     :chat-icon              (styles/custom-size-icon size)
     :default-chat-icon      (styles/default-chat-icon-chat-list colors/default-chat-color)
-    :default-chat-icon-text styles/default-chat-icon-text}])
+    :default-chat-icon-text (styles/default-chat-icon-text size)}])
 
 (defn dapp-icon-permission [contact size]
   [contact-icon-view contact
@@ -140,7 +140,7 @@
     :size                   size
     :chat-icon              (styles/custom-size-icon size)
     :default-chat-icon      (styles/default-chat-icon-profile colors/default-chat-color size)
-    :default-chat-icon-text styles/default-chat-icon-text}])
+    :default-chat-icon-text (styles/default-chat-icon-text size)}])
 
 (defn chat-intro-icon-view [icon-text chat-id styles]
   (let [photo-path (re-frame.core/subscribe [:contacts/chat-photo chat-id])]
@@ -156,7 +156,7 @@
                        :size                   size
                        :chat-icon              styles/chat-icon-profile
                        :default-chat-icon      (styles/default-chat-icon-profile color size)
-                       :default-chat-icon-text styles/default-chat-icon-text} override-styles)]
+                       :default-chat-icon-text (styles/default-chat-icon-text size)} override-styles)]
     [react/view (:container styles)
      (when (and edit? (not platform/desktop?))
        [react/view (styles/profile-icon-mask size)])

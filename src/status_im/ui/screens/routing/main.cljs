@@ -10,16 +10,17 @@
             [status-im.ui.screens.home.views :as home]
             [status-im.ui.screens.add-new.new-chat.views :as new-chat]
             [status-im.ui.screens.add-new.new-chat.events :as new-chat.events]
-            [status-im.ui.screens.progress.views :as progress]
             [status-im.ui.screens.routing.intro-login-stack :as intro-login-stack]
             [status-im.ui.screens.routing.chat-stack :as chat-stack]
             [status-im.ui.screens.routing.wallet-stack :as wallet-stack]
             [status-im.ui.screens.wallet.events :as wallet.events]
+            [status-im.ui.screens.group.views :as group-chat]
+            [status-im.ui.screens.group.events :as group.events]
             [status-im.ui.screens.routing.profile-stack :as profile-stack]
             [status-im.ui.screens.routing.browser-stack :as browser-stack]
-            [status-im.chat.models.loading :as chat.loading]
             [status-im.ui.components.tabbar.core :as tabbar]
-            [status-im.ui.screens.routing.core :as navigation]))
+            [status-im.ui.screens.routing.core :as navigation]
+            [status-im.utils.platform :as platform]))
 
 (defonce main-stack (navigation/create-stack))
 (defonce modals-stack (navigation/create-stack))
@@ -47,8 +48,10 @@
 
 (views/defview get-main-component [_]
   (views/letsubs [logged-in? [:multiaccount/logged-in?]]
-    [main-stack {:header-mode :none
-                 :mode        :modal}
+    [main-stack (merge {:header-mode :none}
+                       ;; https://github.com/react-navigation/react-navigation/issues/6520
+                       (when platform/ios?
+                         {:mode :modal}))
      [(if logged-in?
         {:name      :tabs
          :insets    {:top false}
@@ -71,6 +74,18 @@
       {:name       :new-public-chat
        :transition :presentation-ios
        :component  new-public-chat/new-public-chat}
+      {:name       :edit-group-chat-name
+       :transition :presentation-ios
+       :insets     {:bottom true}
+       :component  group-chat/edit-group-chat-name}
+      {:name       :create-group-chat
+       :transition :presentation-ios
+       :component  chat-stack/new-group-chat}
+      {:name       :add-participants-toggle-list
+       :on-focus   [::group.events/add-participants-toggle-list]
+       :transition :presentation-ios
+       :insets     {:bottom true}
+       :component  group-chat/add-participants-toggle-list}
       {:name      :contact-code
        :component wallet.components/contact-code}
       {:name      :qr-scanner

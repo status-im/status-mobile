@@ -2,13 +2,7 @@
   (:require [status-im.chat.models :as models.chat]
             [status-im.multiaccounts.core :as multiaccounts]))
 
-(defn unwrap-events
-  "Flatten all events, denormalizing from field"
-  [all-updates]
-  (mapcat
-   (fn [{:keys [events from]}]
-     (map #(assoc % :from from) events))
-   all-updates))
+(def members-added-type 3)
 
 (defn joined?
   [public-key {:keys [members-joined] :as chat}]
@@ -19,14 +13,14 @@
   (contains? contacts my-public-key))
 
 (defn get-inviter-pk
-  [my-public-key {:keys [membership-updates]}]
-  (->> membership-updates
-       unwrap-events
+  [my-public-key {:keys [membership-update-events]}]
+  (->> membership-update-events
+       reverse
        (keep (fn [{:keys [from type members]}]
-               (when (and (= type "members-added")
+               (when (and (= type members-added-type)
                           ((set members) my-public-key))
                  from)))
-       last))
+       first))
 
 (defn get-pending-invite-inviter-name
   "when the chat is a private group chat in which the user has been

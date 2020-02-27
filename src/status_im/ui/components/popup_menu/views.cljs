@@ -32,7 +32,7 @@
            :on-select #(re-frame/dispatch [:chat.ui/fetch-history-pressed84-96 chat-id])}
         {:text (i18n/label :t/delete-chat)
          :on-select #(re-frame/dispatch [(if (and group-chat (not public?))
-                                           :group-chats.ui/remove-chat-pressed
+                                           :group-chats.ui/leave-chat-pressed
                                            :chat.ui/remove-chat-pressed)
                                          chat-id])}]
        (remove nil?)))

@@ -76,6 +76,8 @@
   (if (and platform/ios? (= transition :presentation-ios))
     (-> opts
         (update :options merge modal-presentation-ios)
+        ;; NOTE: solution till https://github.com/react-navigation/react-navigation/pull/7943 is merged
+        (update-in [:style :padding-bottom] + 10)
         (assoc-in [:insets :top] false))
     opts))
 

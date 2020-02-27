@@ -51,7 +51,8 @@
 
   Spec: https://www.figma.com/file/cb4p8AxLtTF3q1L6JYDnKN15/Index?node-id=858%3A0"
 
-  [{:keys [label type theme disabled? on-press accessibility-label style container-style] :or {type :main theme :blue}}]
+  [{:keys [label type theme disabled? on-press accessibility-label style container-style text-style]
+    :or   {type :main theme :blue}}]
   (let [label (utils.label/stringify label)]
     [react/touchable-opacity (cond-> {:on-press on-press
                                       :active-opacity 0.5
@@ -65,18 +66,19 @@
       [react/view {:flex-direction :row :align-items :center}
        (when (= type :previous)
          [vector-icons/icon :main-icons/back {:container-style {:width 24 :height 24 :margin-right 4}
-                                              :color (if disabled? colors/gray colors/blue)}])
-       [react/text {:style {:color (cond
-                                     disabled?
-                                     colors/gray
-                                     (#{:main :secondary :next :previous} type)
-                                     (case theme
-                                       :green colors/green
-                                       :red colors/red
-                                       colors/blue)
-                                     :else
-                                     "")}}
+                                              :color           (if disabled? colors/gray colors/blue)}])
+       [react/text {:style (merge {:color (cond
+                                            disabled?
+                                            colors/gray
+                                            (#{:main :secondary :next :previous} type)
+                                            (case theme
+                                              :green colors/green
+                                              :red   colors/red
+                                              colors/blue)
+                                            :else
+                                            "")}
+                                  text-style)}
         label]
        (when (= type :next)
          [vector-icons/icon :main-icons/next {:container-style {:width 24 :height 24 :margin-left 4}
-                                              :color (if disabled? colors/gray colors/blue)}])]]]))
+                                              :color           (if disabled? colors/gray colors/blue)}])]]]))
