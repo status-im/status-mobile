@@ -15,25 +15,29 @@
        :title               :t/wallet-manage-assets
        :icon                :main-icons/token
        :accessibility-label :wallet-manage-assets
-       :on-press            #(hide-sheet-and-dispatch [:navigate-to :wallet-settings-assets])}]
+       :on-press            #(hide-sheet-and-dispatch
+                              [:navigate-to :wallet-settings-assets])}]
      [list-item/list-item
       {:theme               :action
        :title               :t/set-currency
        :icon                :main-icons/language
        :accessibility-label :wallet-set-currency
-       :on-press            #(hide-sheet-and-dispatch [:navigate-to :currency-settings])}]
+       :on-press            #(hide-sheet-and-dispatch
+                              [:navigate-to :currency-settings])}]
      [list-item/list-item
       {:theme    :action
        :title    :t/view-signing
        :icon     :main-icons/info
-       :on-press #(hide-sheet-and-dispatch [:show-popover {:view :signing-phrase}])}]
+       :on-press #(hide-sheet-and-dispatch
+                   [:show-popover {:view :signing-phrase}])}]
      (when mnemonic
        [list-item/list-item
         {:theme               :action-destructive
          :title               :t/wallet-backup-recovery-title
          :icon                :main-icons/security
          :accessibility-label :wallet-backup-recovery-title
-         :on-press            #(hide-sheet-and-dispatch [:navigate-to :backup-seed])}])]))
+         :on-press            #(hide-sheet-and-dispatch
+                                [:navigate-to :backup-seed])}])]))
 
 (defn send-receive [account type]
   [react/view
@@ -43,7 +47,8 @@
        :title               :t/wallet-send
        :icon                :main-icons/send
        :accessibility-label :send-transaction-button
-       :on-press            #(hide-sheet-and-dispatch [:wallet/prepare-transaction-from-wallet account])}])
+       :on-press            #(hide-sheet-and-dispatch
+                              [:wallet/prepare-transaction-from-wallet account])}])
    [list-item/list-item
     {:theme               :action
      :title               :t/receive
@@ -56,27 +61,40 @@
 (defn add-account []
   [react/view
    [list-item/list-item
-    {:theme    :action
-     :title    :t/add-an-account
+    {:title    :t/generate-a-new-account
+     :theme    :action
      :icon     :main-icons/add
-     :on-press #(hide-sheet-and-dispatch [:navigate-to :add-new-account])}]
+     :on-press #(hide-sheet-and-dispatch
+                 [:wallet.accounts/start-adding-new-account
+                  {:type :generate}])}]
    [list-item/list-item
-    {:theme     :action
-     :title     :t/add-a-watch-account
-     :icon      :main-icons/watch
-     :on-press #(hide-sheet-and-dispatch [:wallet.accounts/start-adding-new-account {:type :watch}])}]])
+    {:theme    :action
+     :title    :t/add-a-watch-account
+     :icon     :main-icons/watch
+     :on-press #(hide-sheet-and-dispatch
+                 [:wallet.accounts/start-adding-new-account
+                  {:type :watch}])}]
+   [list-item/list-item
+    {:title    :t/enter-a-seed-phrase
+     :theme    :action
+     :icon     :main-icons/text
+     :on-press #(hide-sheet-and-dispatch
+                 [:wallet.accounts/start-adding-new-account
+                  {:type :seed}])}]
+   [list-item/list-item
+    {:title    :t/enter-a-private-key
+     :theme    :action
+     :icon     :main-icons/address
+     :on-press #(hide-sheet-and-dispatch
+                 [:wallet.accounts/start-adding-new-account
+                  {:type :key}])}]])
 
 (defn account-settings []
   [react/view
    [list-item/list-item
-    {:theme     :action
-     :title     :t/account-settings
+    {:theme               :action
+     :title               :t/account-settings
      :accessibility-label :account-settings-bottom-sheet
-     :icon      :main-icons/info
-     :on-press #(hide-sheet-and-dispatch [:navigate-to :account-settings])}]
-   ;; Commented out for v1
-   #_[list-item/list-item
-      {:theme     :action
-       :title     :t/export-account
-       :icon      :main-icons/copy
-       :disabled? true}]])
+     :icon                :main-icons/info
+     :on-press            #(hide-sheet-and-dispatch
+                            [:navigate-to :account-settings])}]])

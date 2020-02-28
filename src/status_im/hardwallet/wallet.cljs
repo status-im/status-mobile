@@ -18,13 +18,11 @@
     (if card-connected?
       (fx/merge cofx
                 {:db (assoc-in db [:hardwallet :on-export-success]
-                               #(vector :wallet.accounts/account-generated
-                                        {:name (str "Account " path-num)
-                                         ;; Strip leading 04 prefix denoting uncompressed key format
+                               #(vector :wallet.accounts/account-stored
+                                        {;; Strip leading 04 prefix denoting uncompressed key format
                                          :address (eip55/address->checksum (str "0x" (ethereum/public-key->address (subs % 2))))
                                          :public-key (str "0x" %)
-                                         :path path
-                                         :color (rand-nth colors/account-colors)}))
+                                         :path path}))
                  :hardwallet/export-key {:pin pin :pairing pairing :path path}}
                 (navigation/navigate-to-cofx :keycard-processing nil)
                 (common/set-on-card-connected :wallet.accounts/generate-new-keycard-account))

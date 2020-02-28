@@ -443,7 +443,7 @@
     "gas-price": "Gas price",
     "gas-used": "Gas used",
     "generate-a-key": "Generate keys",
-    "generate-a-new-account": "Generate keys",
+    "generate-a-new-account": "Generate an account",
     "generate-a-new-key": "Generate a new key",
     "generate-account": "Generate keys",
     "generate-new-key": "Generate keys",
@@ -1079,6 +1079,7 @@
     "select-account-dapp": "Select the account you wish to use with Dapps",
     "apply": "Apply",
     "on-status-tree": "On Status tree",
+    "off-status-tree": "Off Status tree",
     "derivation-path": "Derivation path",
     "storage": "Storage",
     "keycard-free-pairing-slots": "Keycard has {{n}} free pairing slots",
@@ -1089,5 +1090,11 @@
     "mail-should-be-configured": "Mail client should be configured",
     "check-on-etherscan": "Check on etherscan",
     "transactions-load-more": "Load more",
+    "private-key": "Private key",
+    "generate-an-account": "Generate an account",
+    "add-watch-account": "Add a watch-only account",
+    "add-seed-account": "Add account with a seed phrase",
+    "account-exists-title": "Account already exists",
+    "add-private-key-account": "Add account from private key",
     "user-not-found": "User not found"
 }

@@ -13,78 +13,228 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
-            [status-im.wallet.core :as wallet]))
+            [status-im.wallet.core :as wallet]
+            [clojure.string :as string]
+            [status-im.utils.security :as security]
+            [status-im.multiaccounts.recover.core :as recover]
+            [status-im.ethereum.mnemonic :as mnemonic]))
+
+(fx/defn start-adding-new-account
+  {:events [:wallet.accounts/start-adding-new-account]}
+  [{:keys [db] :as cofx} {:keys [type] :as add-account}]
+  (let [{:keys [latest-derived-path]} (:multiaccount db)
+        path-num (inc latest-derived-path)
+        account  (merge
+                  {:color (rand-nth colors/account-colors)}
+                  (when (= type :generate)
+                    {:name (str "Account " path-num)}))]
+    (fx/merge cofx
+              {:db (assoc db :add-account (assoc add-account :account account))}
+              (navigation/navigate-to-cofx :add-new-account nil))))
+
+(fx/defn new-account-error
+  {:events [::new-account-error]}
+  [{:keys [db]} error-key error]
+  {:db (update db :add-account merge {error-key error
+                                      :step nil})})
+
+(defn account-stored [path type]
+  (fn [result]
+    (let [{:keys [error publicKey address]} (types/json->clj result)]
+      (if error
+        (re-frame/dispatch [::new-account-error :account-error error])
+        (re-frame/dispatch [:wallet.accounts/account-stored
+                            {:address    address
+                             :public-key publicKey
+                             :type       type
+                             :path       path}])))))
+
+(def dec-pass-error "could not decrypt key with given password")
+
+(defn normalize-path [path]
+  (if (string/starts-with? path "m/")
+    (str constants/path-wallet-root
+         "/" (last (string/split path "/")))
+    path))
+
+(defn derive-and-store-account [path hashed-password type]
+  (fn [value]
+    (let [{:keys [id error]} (types/json->clj value)]
+      (if error
+        (re-frame/dispatch [::new-account-error :password-error error])
+        (status/multiaccount-derive-addresses
+         id
+         [path]
+         (fn [_]
+           (status/multiaccount-store-derived
+            id
+            [path]
+            hashed-password
+            (fn [result]
+              (let [{:keys [error] :as result} (types/json->clj result)
+                    {:keys [publicKey address]} (get result (keyword path))]
+                (if error
+                  (re-frame/dispatch [::new-account-error :account-error error])
+                  (re-frame/dispatch
+                   [:wallet.accounts/account-stored
+                    {:address    address
+                     :public-key publicKey
+                     :type       type
+                     :path       (normalize-path path)}])))))))))))
+
+(def pass-error "cannot retrieve a valid key for a given account: could not decrypt key with given password")
+
+(defn store-account [path hashed-password type]
+  (fn [value]
+    (let [{:keys [id error]} (types/json->clj value)]
+      (if error
+        (re-frame/dispatch [::new-account-error
+                            (if (= error pass-error) :password-error :account-error)
+                            error])
+        (status/multiaccount-store-account
+         id
+         hashed-password
+         (account-stored path type))))))
 
 (re-frame/reg-fx
- :list.selection/open-share
- (fn [obj]
-   (list-selection/open-share obj)))
+ ::verify-password
+ (fn [{:keys [address hashed-password]}]
+   (status/verify
+    address hashed-password
+    #(re-frame/dispatch [:wallet.accounts/add-new-account-password-verifyied % hashed-password]))))
 
 (re-frame/reg-fx
  ::generate-account
- (fn [{:keys [derivation-info hashed-password path-num]}]
+ (fn [{:keys [derivation-info hashed-password]}]
    (let [{:keys [address path]} derivation-info]
      (status/multiaccount-load-account
       address
       hashed-password
-      (fn [value]
-        (let [{:keys [id error]} (types/json->clj value)]
-          (if error
-            (re-frame/dispatch [::generate-new-account-error])
-            (status/multiaccount-derive-addresses
-             id
-             [path]
-             (fn [result]
-               (status/multiaccount-store-derived
-                id
-                [path]
-                hashed-password
-                (fn [result]
-                  (let [{:keys [publicKey address]}
-                        (get (types/json->clj result) (keyword path))]
-                    (re-frame/dispatch [:wallet.accounts/account-generated
-                                        {:name (str "Account " path-num)
-                                         :address address
-                                         :public-key publicKey
-                                         :path       (str constants/path-wallet-root "/" path-num)
-                                         :color      (rand-nth colors/account-colors)}])))))))))))))
+      (derive-and-store-account path hashed-password :generated)))))
 
-(fx/defn set-symbol-request
-  {:events [:wallet.accounts/share]}
-  [_ address]
-  {:list.selection/open-share {:message (eip55/address->checksum address)}})
+(re-frame/reg-fx
+ ::import-account-seed
+ (fn [{:keys [passphrase hashed-password]}]
+   (status/multiaccount-import-mnemonic
+    (mnemonic/sanitize-passphrase (security/unmask passphrase))
+    ""
+    (derive-and-store-account constants/path-default-wallet hashed-password :seed))))
+
+(re-frame/reg-fx
+ ::import-account-private-key
+ (fn [{:keys [private-key hashed-password]}]
+   (status/multiaccount-import-private-key
+    (string/trim (security/unmask private-key))
+    (store-account constants/path-default-wallet hashed-password :key))))
 
 (fx/defn generate-new-account
-  {:events [:wallet.accounts/generate-new-account]}
-  [{:keys [db]} password]
+  [{:keys [db]} hashed-password]
   (let [wallet-root-address (get-in db [:multiaccount :wallet-root-address])
         path-num            (inc (get-in db [:multiaccount :latest-derived-path]))]
-    (when-not (get-in db [:add-account :step])
-      {:db                (assoc-in db [:add-account :step] :generating)
-       ::generate-account {:derivation-info (if wallet-root-address
-                                              ;; Use the walllet-root-address for stored on disk keys
-                                              ;; This needs to be the RELATIVE path to the key used to derive
-                                              {:path    (str "m/" path-num)
-                                               :address wallet-root-address}
-                                              ;; Fallback on the master account for keycards, use the absolute path
-                                              {:path    (str constants/path-wallet-root "/" path-num)
-                                               :address (get-in db [:multiaccount :address])})
-                           :path-num        path-num
-                           :hashed-password (ethereum/sha3 password)}})))
+    {:db                (assoc-in db [:add-account :step] :generating)
+     ::generate-account {:derivation-info (if wallet-root-address
+                                            ;; Use the walllet-root-address for stored on disk keys
+                                            ;; This needs to be the RELATIVE path to the key used to derive
+                                            {:path    (str "m/" path-num)
+                                             :address wallet-root-address}
+                                            ;; Fallback on the master account for keycards, use the absolute path
+                                            {:path    (str constants/path-wallet-root "/" path-num)
+                                             :address (get-in db [:multiaccount :address])})
+                         :hashed-password hashed-password}}))
 
-(fx/defn generate-new-account-error
-  {:events [::generate-new-account-error]}
-  [{:keys [db]} password]
-  {:db (assoc db
-              :add-account
-              {:error (i18n/label :t/add-account-incorrect-password)})})
+(fx/defn import-new-account-seed
+  [{:keys [db]} passphrase hashed-password]
+  {:db                         (assoc-in db [:add-account :step] :generating)
+   ::recover/validate-mnemonic [(security/safe-unmask-data passphrase)
+                                #(re-frame/dispatch [:wallet.accounts/seed-validated
+                                                     % passphrase hashed-password])]})
+
+(fx/defn new-account-seed-validated
+  {:events [:wallet.accounts/seed-validated]}
+  [cofx phrase-warnings passphrase hashed-password]
+  (let [error (:error (types/json->clj phrase-warnings))]
+    (if-not (string/blank? error)
+      (new-account-error cofx :account-error error)
+      {::import-account-seed {:passphrase      passphrase
+                              :hashed-password hashed-password}})))
+
+(fx/defn import-new-account-private-key
+  [{:keys [db]} private-key hashed-password]
+  {:db                          (assoc-in db [:add-account :step] :generating)
+   ::import-account-private-key {:private-key     private-key
+                                 :hashed-password hashed-password}})
+
+(fx/defn save-new-account
+  [{:keys [db] :as cofx}]
+  (let [{:keys [latest-derived-path]} (:multiaccount db)
+        {:keys [account type]} (:add-account db)
+        accounts (:multiaccount/accounts db)
+        new-accounts (conj accounts account)]
+    (when account
+      (fx/merge cofx
+                {::json-rpc/call [{:method     "accounts_saveAccounts"
+                                   :params     [[account]]
+                                   :on-success #()}]
+                 :db (-> db
+                         (assoc :multiaccount/accounts new-accounts)
+                         (dissoc :add-account))}
+                (when (= type :generate)
+                  (multiaccounts.update/multiaccount-update
+                   :latest-derived-path (inc latest-derived-path)
+                   {}))))))
 
 (fx/defn account-generated
-  {:events [:wallet.accounts/account-generated]}
-  [{:keys [db] :as cofx} account]
-  (fx/merge cofx
-            {:db (update db :add-account assoc :account account :step :generated)}
-            (navigation/navigate-to-cofx :account-added nil)))
+  {:events [:wallet.accounts/account-stored]}
+  [{:keys [db] :as cofx} {:keys [address] :as account}]
+  (let [accounts (:multiaccount/accounts db)]
+    (if (some #(when (= (:address %) address) %) accounts)
+      (new-account-error cofx :account-error (i18n/label :t/account-exists-title))
+      (fx/merge cofx
+                {:db (update-in db [:add-account :account] merge account)}
+                (save-new-account)
+                (wallet/update-balances nil)
+                (wallet/update-prices)
+                (navigation/navigate-back)))))
+
+(fx/defn add-watch-account
+  [{:keys [db] :as cofx}]
+  (let [address (get-in db [:add-account :address])]
+    (account-generated cofx {:address (eip55/address->checksum (ethereum/normalized-hex address))
+                             :type    :watch})))
+
+(fx/defn add-new-account-password-verifyied
+  {:events [:wallet.accounts/add-new-account-password-verifyied]}
+  [{:keys [db] :as cofx} result hashed-password]
+  (let [{:keys [error]} (types/json->clj result)]
+    (if (not (string/blank? error))
+      (new-account-error cofx :password-error error)
+      (let [{:keys [type step seed private-key]} (:add-account db)]
+        (case type
+          :seed
+          (import-new-account-seed cofx seed hashed-password)
+          :key
+          (import-new-account-private-key cofx private-key hashed-password)
+          nil)))))
+
+(fx/defn add-new-account-verify-password
+  [{:keys [db]} hashed-password]
+  {:db               (assoc-in db [:add-account :step] :generating)
+   ::verify-password {:address         (get-in db [:multiaccount :wallet-root-address])
+                      :hashed-password hashed-password}})
+
+(fx/defn add-new-account
+  {:events [:wallet.accounts/add-new-account]}
+  [{:keys [db] :as cofx} hashed-password]
+  (let [{:keys [type step]} (:add-account db)]
+    (when-not step
+      (case type
+        :watch
+        (add-watch-account cofx)
+        :generate
+        (generate-new-account cofx hashed-password)
+        (:seed :key)
+        (add-new-account-verify-password cofx hashed-password)
+        nil))))
 
 (fx/defn save-account
   {:events [:wallet.accounts/save-account]}
@@ -114,63 +264,6 @@
                        (assoc-in [:wallet :accounts deleted-address] nil))}
               (navigation/navigate-to-cofx :wallet nil))))
 
-(fx/defn save-generated-account
-  {:events [:wallet.accounts/save-generated-account]}
-  [{:keys [db] :as cofx}]
-  (let [{:keys [latest-derived-path]} (:multiaccount db)
-        {:keys [account path type]} (:add-account db)
-        accounts (:multiaccount/accounts db)
-        new-accounts (conj accounts account)]
-    (when account
-      (fx/merge cofx
-                {::json-rpc/call [{:method     "accounts_saveAccounts"
-                                   :params     [[account]]
-                                   :on-success #()}]
-                 :db (-> db
-                         (assoc :multiaccount/accounts new-accounts)
-                         (dissoc :add-account))}
-                (when (= type :generate)
-                  (multiaccounts.update/multiaccount-update
-                   :latest-derived-path (inc latest-derived-path)
-                   {}))
-                (wallet/update-balances nil)
-                (navigation/navigate-to-cofx :wallet nil)))))
-
-(fx/defn start-adding-new-account
-  {:events [:wallet.accounts/start-adding-new-account]}
-  [{:keys [db] :as cofx} {:keys [type] :as add-account}]
-  (let [{:keys [keycard-pairing]} (:multiaccount db)
-        screen (case type
-                 :generate (if keycard-pairing :add-new-account-pin
-                               :add-new-account-password)
-                 :watch :add-watch-account)]
-    (fx/merge cofx
-              {:db (cond-> (assoc db :add-account add-account)
-                     keycard-pairing
-                     (assoc-in [:hardwallet :pin :enter-step] :export-key))}
-              (navigation/navigate-to-cofx screen nil))))
-
-(fx/defn enter-phrase-next-pressed
-  {:events [:wallet.accounts/enter-phrase-next-pressed]}
-  [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (-> db
-                     (dissoc :intro-wizard)
-                     (assoc-in [:add-account :seed] (get-in db [:intro-wizard :passphrase])))}
-            (navigation/navigate-to-cofx :add-new-account-password nil)))
-
-(fx/defn add-watch-account
-  {:events [:wallet.accounts/add-watch-account]}
-  [{:keys [db] :as cofx}]
-  (let [address (get-in db [:add-account :address])]
-    (fx/merge cofx
-              {:db (assoc-in db [:add-account :account]
-                             {:name       ""
-                              :address    (eip55/address->checksum (ethereum/normalized-hex address))
-                              :type       :watch
-                              :color      (rand-nth colors/account-colors)})}
-              (navigation/navigate-to-cofx :account-added nil))))
-
 (fx/defn view-only-qr-scanner-result
   {:events [:wallet.add-new/qr-scanner-result]}
   [{db :db :as cofx} data _]
@@ -184,3 +277,13 @@
                        {:utils/show-popup {:title   (i18n/label :t/error)
                                            :content (i18n/label :t/invalid-address-qr-code)}}))
               (navigation/navigate-back))))
+
+(re-frame/reg-fx
+ :list.selection/open-share
+ (fn [obj]
+   (list-selection/open-share obj)))
+
+(fx/defn wallet-accounts-share
+  {:events [:wallet.accounts/share]}
+  [_ address]
+  {:list.selection/open-share {:message (eip55/address->checksum address)}})

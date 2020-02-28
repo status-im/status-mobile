@@ -266,6 +266,16 @@ RCT_EXPORT_METHOD(multiAccountStoreDerived:(NSString *)json
     callback(@[result]);
 }
 
+//////////////////////////////////////////////////////////////////// multiAccountImportPrivateKey
+RCT_EXPORT_METHOD(multiAccountImportPrivateKey:(NSString *)json
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"MultiAccountImportPrivateKey() method called");
+#endif
+    NSString *result = StatusgoMultiAccountImportPrivateKey(json);
+    callback(@[result]);
+}
+
 //////////////////////////////////////////////////////////////////// multiAccountImportMnemonic
 RCT_EXPORT_METHOD(multiAccountImportMnemonic:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {

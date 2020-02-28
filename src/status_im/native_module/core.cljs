@@ -157,8 +157,14 @@
                                (types/clj->json {:mnemonicPhrase  mnemonic
                                                  ;;NOTE this is not the multiaccount password
                                                  :Bip39Passphrase password})
-
                                callback))
+
+(defn multiaccount-import-private-key
+  [private-key callback]
+  (log/debug "[native-module] multiaccount-import-private-key")
+  (.multiAccountImportPrivateKey (status)
+                                 (types/clj->json {:privateKey  private-key})
+                                 callback))
 
 (defn verify
   "NOTE: beware, the password has to be sha3 hashed"

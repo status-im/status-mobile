@@ -6,8 +6,6 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.button :as button]
-            [clojure.string :as string]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.copyable-text :as copyable-text]
             [reagent.core :as reagent]
@@ -32,45 +30,6 @@
       {:center {:on-press #(re-frame/dispatch [:hide-popover])
                 :label    (i18n/label :t/cancel)
                 :type     :secondary}}]]))
-
-(defview account-added []
-  (letsubs [{:keys [account]} [:add-account]]
-    [react/keyboard-avoiding-view {:flex 1}
-     [react/scroll-view {:keyboard-should-persist-taps :handled
-                         :style                        {:margin-top 70 :flex 1}}
-      [react/view {:align-items :center :padding-horizontal 40}
-       [react/view {:height           40 :width 40 :border-radius 20 :align-items :center :justify-content :center
-                    :background-color (:color account)}
-        [icons/icon :main-icons/check {:color colors/white}]]
-       [react/text {:style {:typography :header :margin-top 16}}
-        (i18n/label :t/account-added)]
-       [react/text {:style {:color colors/gray :text-align :center :margin-top 16 :line-height 22}}
-        (i18n/label :t/you-can-change-account)]]
-      [react/view {:height 52}]
-      [react/view {:margin-horizontal 16}
-       [text-input/text-input-with-label
-        {:label          (i18n/label :t/account-name)
-         :auto-focus     false
-         :default-value  (:name account)
-         :placeholder    (i18n/label :t/account-name)
-         :on-change-text #(re-frame/dispatch [:set-in [:add-account :account :name] %])}]
-       [react/text {:style {:margin-top 30}} (i18n/label :t/account-color)]
-       [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:show-popover
-                                        {:view  [colors-popover (:color account)
-                                                 (fn [new-color]
-                                                   (re-frame/dispatch [:set-in [:add-account :account :color] new-color])
-                                                   (re-frame/dispatch [:hide-popover]))]
-                                         :style {:max-height "60%"}}])}
-        [react/view {:height      52 :margin-top 12 :background-color (:color account) :border-radius 8
-                     :align-items :flex-end :justify-content :center :padding-right 12}
-         [icons/icon :main-icons/dropdown {:color colors/white}]]]]]
-     [toolbar/toolbar
-      {:show-border? true
-       :right {:type      :next
-               :label     (i18n/label :t/finish)
-               :on-press  #(re-frame/dispatch [:wallet.accounts/save-generated-account])
-               :disabled? (string/blank? (:name account))}}]]))
 
 (defn property [label value]
   [react/view {:margin-top 28}
@@ -118,6 +77,7 @@
         [property (i18n/label :t/type)
          (case type
            :watch (i18n/label :t/watch-only)
+           (:key :seed)  (i18n/label :t/off-status-tree)
            (i18n/label :t/on-status-tree))]
         [property (i18n/label :t/wallet-address)
          [copyable-text/copyable-text-view

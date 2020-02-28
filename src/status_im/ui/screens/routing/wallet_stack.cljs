@@ -6,10 +6,7 @@
    :screens (cond-> [:wallet
                      :wallet-account
                      :add-new-account
-                     :add-watch-account
-                     :add-new-account-password
                      :add-new-account-pin
-                     :account-added
                      :account-settings
                      :collectibles-list
                      :wallet-onboarding-setup

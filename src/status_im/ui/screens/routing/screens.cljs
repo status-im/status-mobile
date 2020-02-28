@@ -184,10 +184,7 @@
    :welcome                                          [:modal home/welcome]
    :keycard-welcome                                  keycard/welcome
    :add-new-account                                  add-account/add-account
-   :add-watch-account                                add-account/add-watch-account
-   :add-new-account-password                         add-account/password
    :add-new-account-pin                              add-account/pin
-   :account-added                                    account-settings/account-added
    :account-settings                                 account-settings/account-settings})
 
 (defn get-screen [screen]

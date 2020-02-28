@@ -538,15 +538,19 @@
  :add-account-disabled?
  :<- [:multiaccount/accounts]
  :<- [:add-account]
- (fn [[accounts {:keys [address]}]]
-   (or (not (ethereum/address? address))
-       (some #(when (= (:address %) address) %) accounts))))
-
-(re-frame/reg-sub
- :add-account-scanned-address
- :<- [:add-account]
- (fn [add-account]
-   (get add-account :scanned-address)))
+ (fn [[accounts {:keys [address type account seed private-key]}]]
+   (or (string/blank? (:name account))
+       (case type
+         :generate
+         false
+         :watch
+         (or (not (ethereum/address? address))
+             (some #(when (= (:address %) address) %) accounts))
+         :key
+         (string/blank? (security/safe-unmask-data private-key))
+         :seed
+         (string/blank? (security/safe-unmask-data seed))
+         false))))
 
 ;;CHAT ==============================================================================================================
 

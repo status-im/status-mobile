@@ -45,7 +45,7 @@
 (defn add-card []
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                              {:content        sheets/add-account
-                                                              :content-height 130}])}
+                                                              :content-height 260}])}
    [react/view {:style styles/add-card}
     [react/view {:width       40 :height 40 :justify-content :center :border-radius 20
                  :align-items :center :background-color colors/blue-transparent-10 :margin-bottom 8}

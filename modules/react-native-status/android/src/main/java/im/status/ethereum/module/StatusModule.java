@@ -777,6 +777,23 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void multiAccountImportPrivateKey(final String json, final Callback callback) {
+        Log.d(TAG, "multiAccountImportPrivateKey");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.multiAccountImportPrivateKey(json);
+                callback.invoke(res);
+            }
+        };
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
     public void hashTransaction(final String txArgsJSON, final Callback callback) {
         Log.d(TAG, "hashTransaction");
         if (!checkAvailability()) {
