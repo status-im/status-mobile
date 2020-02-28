@@ -173,7 +173,7 @@
         [input-view {:single-line-input? single-line-input? :set-text set-text :state-text state-text}]
         (when (and input-text-empty? mainnet?)
           [stickers/button (= :stickers input-bottom-sheet)])
-        (when (and one-to-one-chat? input-text-empty? mainnet?)
+        (when (and one-to-one-chat? input-text-empty? (or config/commands-enabled? mainnet?))
           [extensions/button (= :extensions input-bottom-sheet)])
         (when-not input-text-empty?
           (if platform/desktop?
