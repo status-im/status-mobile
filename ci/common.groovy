@@ -22,10 +22,10 @@ def updateBucketJSON(urls, fileName) {
   ]
   def filePath = "${pwd()}/pkg/${fileName}"
   /* it might not exist */
-  sh 'mkdir -p pkg'
+  sh "mkdir -p ${pwd()}/pkg"
   def contentJson = new JsonBuilder(content).toPrettyString()
-  println "${fileName}:\n${contentJson}"
-  new File(filePath).write(contentJson)
+  println "${filePath}:\n${contentJson}"
+  writeFile(file: filePath, text: contentJson)
   return uploadArtifact(filePath)
 }
 
