@@ -46,6 +46,7 @@ pipeline {
         platforms.each { os ->
           nix.build(
             attr: "targets.status-go.${os}.buildInputs",
+            sandbox: false,
             link: false
           )
         }
@@ -57,6 +58,7 @@ pipeline {
          * (e.g. maven and node repos) */
         nix.build(
           attr: 'targets.mobile.android.jsbundle',
+          sandbox: false,
           pure: false,
           link: false
         )
@@ -67,6 +69,7 @@ pipeline {
         /* build/fetch things required to build jsbundle and android */
         nix.build(
           attr: 'targets.mobile.android.buildInputs',
+          sandbox: false,
           pure: false,
           link: false
         )
@@ -77,6 +80,7 @@ pipeline {
         /* build/fetch things required to instantiate shell.nix for TARGET=all */
         nix.build(
           attr: 'shells.default.buildInputs',
+          sandbox: false,
           link: false
         )
       } }
