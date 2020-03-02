@@ -46,6 +46,23 @@
    :top      0
    :position :absolute})
 
+(def counter-public-container
+  {:right            2
+   :top              0
+   :position         :absolute
+   :border-radius    8
+   :width            16
+   :height           16
+   :justify-content  :center
+   :align-items      :center
+   :background-color :white})
+
+(def counter-public
+  {:background-color colors/blue
+   :width            12
+   :border-radius    6
+   :height           12})
+
 ;; NOTE: Extra padding to allow badge width to be up to 42 (in case of 99+)
 ;; 42 Max allowed width, 24 icon width as per spec, 16 left pos as per spec.
 (def ^:private message-counter-left (+ (/ (- 42 24) 2) 16))

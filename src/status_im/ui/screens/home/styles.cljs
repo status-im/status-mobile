@@ -23,6 +23,14 @@
    :color       colors/gray
    :desktop     {:max-height 20}})
 
+(def public-unread
+  {:background-color colors/blue
+   :border-radius    6
+   :margin-right     5
+   :margin-bottom    5
+   :width            12
+   :height           12})
+
 (def search-container
   (merge
    search-input.styles/search-container

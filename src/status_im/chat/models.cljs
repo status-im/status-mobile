@@ -124,7 +124,8 @@
   {:db (assoc-in db [:chats chat-id :unviewed-messages-count] 0)})
 
 (fx/defn handle-mark-all-read
-  {:events [:chat.ui/mark-all-read-pressed]}
+  {:events [:chat.ui/mark-all-read-pressed
+            :chat.ui/mark-public-all-read]}
   [{:keys [db] :as cofx} chat-id]
   {::json-rpc/call [{:method (json-rpc/call-ext-method "markAllRead")
                      :params [chat-id]

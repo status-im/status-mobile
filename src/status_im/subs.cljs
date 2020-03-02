@@ -847,13 +847,6 @@
        :messages))))
 
 (re-frame/reg-sub
- :chats/unviewed-messages-count
- (fn [[_ chat-id]]
-   (re-frame/subscribe [:chats/chat chat-id]))
- (fn [{:keys [unviewed-messages-count]}]
-   unviewed-messages-count))
-
-(re-frame/reg-sub
  :chats/photo-path
  :<- [:contacts/contacts]
  :<- [:multiaccount]
@@ -867,7 +860,9 @@
  :chats/unread-messages-number
  :<- [:chats/active-chats]
  (fn [chats _]
-   (apply + (map :unviewed-messages-count (vals chats)))))
+   (let [grouped-chats (group-by :public? (vals chats))]
+     {:public (apply + (map :unviewed-messages-count (get grouped-chats true)))
+      :other (apply + (map :unviewed-messages-count (get grouped-chats false)))})))
 
 (re-frame/reg-sub
  :chats/cooldown-enabled?

@@ -46,9 +46,11 @@
      (string/upper-case (time/to-short-str timestamp))]))
 
 (defview unviewed-indicator [chat-id]
-  (letsubs [unviewed-messages-count [:chats/unviewed-messages-count chat-id]]
+  (letsubs [{:keys [unviewed-messages-count public?]} [:chats/chat chat-id]]
     (when (pos? unviewed-messages-count)
-      [badge/message-counter unviewed-messages-count])))
+      (if public?
+        [react/view {:style styles/public-unread}]
+        [badge/message-counter unviewed-messages-count]))))
 
 (defn home-list-item [[_ home-item]]
   (let [{:keys
@@ -82,7 +84,9 @@
       :on-press                  #(do
                                     (re-frame/dispatch [:dismiss-keyboard])
                                     (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
-                                    (re-frame/dispatch [:chat.ui/mark-messages-seen :chat]))
+                                    (if public?
+                                      (re-frame/dispatch [:chat.ui/mark-public-all-read chat-id])
+                                      (re-frame/dispatch [:chat.ui/mark-messages-seen :chat])))
       :on-long-press             #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                       {:content (fn []
                                                                   [sheets/actions home-item])
