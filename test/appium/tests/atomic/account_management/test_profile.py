@@ -78,6 +78,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         sign_in_view.just_fyi("Start syncing in offline popup")
         sign_in_view.element_by_text("Start syncing").click()
+        sign_in_view.element_by_text_part(offline_banner_text).wait_for_invisibility_of_element(10)
         if sign_in_view.element_by_text_part(offline_banner_text).is_element_displayed():
             self.driver.fail("Popup about offline history is shown")
 

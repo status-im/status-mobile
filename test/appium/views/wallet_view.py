@@ -268,50 +268,59 @@ class AddAccountButton(BaseButton):
         self.locator = self.Locator.text_selector('Add account')
 
 
-class AddAnAccountButton(BaseButton):
+class GenerateAnAccountButton(BaseButton):
     def __init__(self, driver):
-        super(AddAnAccountButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Add an account')
+        super(GenerateAnAccountButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('add-account-sheet-generate')
 
 class AddAWatchOnlyAddressButton(BaseButton):
     def __init__(self, driver):
         super(AddAWatchOnlyAddressButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Add a watch-only address')
+        self.locator = self.Locator.accessibility_id('add-account-sheet-watch')
+
+class EnterASeedPhraseButton(BaseButton):
+    def __init__(self, driver):
+        super(EnterASeedPhraseButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('add-account-sheet-seed')
+
+class EnterAPrivateKeyButton(BaseButton):
+    def __init__(self, driver):
+        super(EnterAPrivateKeyButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('add-account-sheet-private-key')
 
 class EnterAddressInput(BaseEditBox):
     def __init__(self, driver):
         super(EnterAddressInput, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Enter address')
+        self.locator = self.Locator.accessibility_id('add-account-enter-watch-address')
+
+class EnterSeedPhraseInput(BaseEditBox):
+    def __init__(self, driver):
+        super(EnterSeedPhraseInput, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('add-account-enter-seed')
+
+class EnterPrivateKeyInput(BaseEditBox):
+    def __init__(self, driver):
+        super(EnterPrivateKeyInput, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('add-account-enter-private-key')
 
 class DeleteAccountButton(BaseButton):
     def __init__(self, driver):
         super(DeleteAccountButton, self).__init__(driver)
         self.locator = self.Locator.text_selector('Delete account')
 
-class GenerateNewAccountButton(BaseButton):
-    def __init__(self, driver):
-        super(GenerateNewAccountButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Generate keys')
 
 
 class EnterYourPasswordInput(BaseEditBox):
     def __init__(self, driver):
         super(EnterYourPasswordInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//android.widget.TextView[@text='Enter your password']/following-sibling::android.widget.EditText")
+        self.locator = self.Locator.accessibility_id('add-account-enter-password')
 
-
-class GenerateAccountButton(BaseButton):
-    def __init__(self, driver):
-        super(GenerateAccountButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Generate keys')
 
 
 class AccountNameInput(BaseEditBox):
     def __init__(self, driver):
         super(AccountNameInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Account name']"
-                                                   "/following-sibling::android.view.ViewGroup/android.widget.EditText")
+        self.locator = self.Locator.accessibility_id('add-account-enter-account-name')
 
 
 class AccountColorButton(BaseButton):
@@ -325,11 +334,11 @@ class AccountColorButton(BaseButton):
         self.driver.find_element_by_xpath(
             "//*[@text='Cancel']/../preceding-sibling::android.widget.ScrollView/*/*[%s]" % position).click()
 
-
-class FinishButton(BaseButton):
+# Add account on Generate An Account screen
+class AddAccountGenerateAnAccountButton(BaseButton):
     def __init__(self, driver):
-        super(FinishButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Finish')
+        super(AddAccountGenerateAnAccountButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('add-account-add-account-button')
 
 class AccountSettingsButton(BaseButton):
     def __init__(self, driver):
@@ -380,16 +389,18 @@ class WalletView(BaseView):
         self.view_in_cryptokitties_button = ViewInCryptoKittiesButton(self.driver)
         self.set_currency_button = SetCurrencyButton(self.driver)
         self.add_account_button = AddAccountButton(self.driver)
-        self.add_an_account_button = AddAnAccountButton(self.driver)
+        self.generate_an_account_button = GenerateAnAccountButton(self.driver)
         self.add_watch_only_address_button = AddAWatchOnlyAddressButton(self.driver)
+        self.enter_a_seed_phrase_button = EnterASeedPhraseButton(self.driver)
+        self.enter_a_private_key_button = EnterAPrivateKeyButton(self.driver)
         self.enter_address_input = EnterAddressInput(self.driver)
+        self.enter_seed_phrase_input = EnterSeedPhraseInput(self.driver)
+        self.enter_a_private_key_input = EnterPrivateKeyInput(self.driver)
         self.delete_account_button = DeleteAccountButton(self.driver)
-        self.generate_new_account_button = GenerateNewAccountButton(self.driver)
         self.enter_your_password_input = EnterYourPasswordInput(self.driver)
-        self.generate_account_button = GenerateAccountButton(self.driver)
         self.account_name_input = AccountNameInput(self.driver)
         self.account_color_button = AccountColorButton(self.driver)
-        self.finish_button = FinishButton(self.driver)
+        self.add_account_generate_account_button = AddAccountGenerateAnAccountButton(self.driver)
 
         # individual account settings
         self.account_settings_button = AccountSettingsButton(self.driver)
@@ -561,10 +572,7 @@ class WalletView(BaseView):
 
     def add_account(self, account_name: str, password: str = common_password):
         self.add_account_button.click()
-        self.add_an_account_button.click()
-        self.generate_new_account_button.click()
-        self.generate_account_button.click()
+        self.generate_an_account_button.click()
         self.enter_your_password_input.send_keys(password)
-        self.generate_account_button.click()
         self.account_name_input.send_keys(account_name)
-        self.finish_button.click()
+        self.add_account_generate_account_button.click()

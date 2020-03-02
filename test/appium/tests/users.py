@@ -44,9 +44,10 @@ wallet_users['B']['public_key'] = "0x04f3c372522a087bd6895a67b669601e6b6825b2ee7
 wallet_users['C'] = dict()
 wallet_users['C']['passphrase'] = "purchase ensure mistake crystal person similar shaft family shield clog risk market"
 wallet_users['C']['username'] = "Mellow Virtual Nubiangoat"
-wallet_users['C']['address'] = "8dce052ccda2f6f6b555759cee6957e04a6ddf5b"
+wallet_users['C']['address'] = "8DcE052cCda2F6F6B555759cEe6957e04A6dDf5B"
 wallet_users['C']['public_key'] = "0x040e562b69362e7e57492bca50b6095acfa636c48b85eef2bc0e4180b6e99fc5e73f45c3" \
                                   "40837da01728d4585695fda7f1de2ed193a1dd4080291d90812e1cae77"
+wallet_users['C']['private_key'] = '7800C28310576645BBF6BF6355F7AA4CEC659B1713AF7E7713E1A33097A3DDF6'
 
 wallet_users['D'] = dict()
 wallet_users['D']['passphrase'] = "hen mango since lottery laundry flag report whisper cycle rate festival carry"
