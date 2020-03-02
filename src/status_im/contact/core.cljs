@@ -60,19 +60,9 @@
               (multiaccounts.update/multiaccount-update :photo-path photo-path {:dont-sync? true}))))
 
 (fx/defn ensure-contact
-  [{:keys [db] :as cofx}
+  [{:keys [db]}
    {:keys [public-key] :as contact}]
-  (let [new? (get-in db [:contacts/contacts public-key])
-        us? (= public-key (multiaccounts.model/current-public-key cofx))]
-    (fx/merge cofx
-              {:db (-> db
-                       (update-in [:contacts/contacts public-key] merge contact))}
-
-              (cond
-                us?
-                (handle-update-from-contact-request contact)
-                new?
-                (transport.filters/load-contact contact)))))
+  {:db (update-in db [:contacts/contacts public-key] merge contact)})
 
 (fx/defn upsert-contact
   [{:keys [db] :as cofx}

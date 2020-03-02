@@ -1,11 +1,9 @@
 (ns status-im.ui.components.large-toolbar.view
   (:require [reagent.core :as reagent]
-            [cljs-bean.core :refer [->clj ->js]]
             [status-im.ui.components.list.views :as list.views]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.large-toolbar.styles :as styles]
-            [status-im.utils.platform :as platform]
             [status-im.ui.components.animation :as animation])
   (:require-macros [status-im.utils.views :as views]))
 

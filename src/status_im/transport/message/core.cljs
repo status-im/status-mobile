@@ -15,10 +15,10 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.native-module.core :as status]
             [status-im.ens.core :as ens]
-            [cljs-bean.core :as clj-bean]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
-            [status-im.ethereum.json-rpc :as json-rpc]))
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.utils.types :as types]))
 
 (defn- js-obj->seq [obj]
   ;; Sometimes the filter will return a single object instead of a collection
@@ -42,30 +42,31 @@
   (let [chats (.-chats response-js)
         contacts (.-contacts response-js)
         installations (.-installations response-js)
-        raw-messages (.-rawMessages response-js)
         messages (.-messages response-js)]
     (cond
       (seq installations)
       (let [installation (.pop installations)]
         (fx/merge cofx
-                  {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
-                  (models.pairing/handle-installation (clj-bean/->clj installation))))
+                  {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (models.pairing/handle-installation (types/js->clj installation))))
 
       (seq contacts)
       (let [contact (.pop contacts)]
         (fx/merge cofx
-                  {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
-                  (handle-contact (-> contact (clj-bean/->clj) (data-store.contacts/<-rpc)))))
+                  {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (handle-contact (-> contact (types/js->clj) (data-store.contacts/<-rpc)))))
+
       (seq chats)
       (let [chat (.pop chats)]
         (fx/merge cofx
-                  {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
-                  (handle-chat (-> chat (clj-bean/->clj) (data-store.chats/<-rpc)))))
+                  {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (handle-chat (-> chat (types/js->clj) (data-store.chats/<-rpc)))))
+
       (seq messages)
       (let [message (.pop messages)]
         (fx/merge cofx
-                  {:dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
-                  (handle-message (-> message (clj-bean/->clj) (data-store.messages/<-rpc))))))))
+                  {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (handle-message (-> message (types/js->clj) (data-store.messages/<-rpc))))))))
 
 (handlers/register-handler-fx
  ::process
