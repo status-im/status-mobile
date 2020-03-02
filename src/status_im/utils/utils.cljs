@@ -135,3 +135,7 @@
     (if (> (count decimal-part) places)
       (gstring/format (str "%." places "f") amount)
       (or (str amount) 0))))
+
+(defn safe-trim [s]
+  (when (string? s)
+    (string/trim s)))

@@ -7,7 +7,8 @@
             [status-im.ui.screens.add-new.new-chat.db :as db]
             [status-im.utils.handlers :as handlers]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im.utils.random :as random]))
+            [status-im.utils.random :as random]
+            [status-im.utils.utils :as utils]))
 
 (defn- ens-name-parse [contact-identity]
   (when (string? contact-identity)
@@ -28,25 +29,26 @@
 
 (handlers/register-handler-fx
  :new-chat/set-new-identity
- (fn [{db :db} [_ new-identity new-ens-name id]]
+ (fn [{db :db} [_ new-identity-raw new-ens-name id]]
    (when (or (not id) (= id @resolve-last-id))
-     (let [is-public-key? (and (string? new-identity)
+     (let [new-identity   (utils/safe-trim new-identity-raw)
+           is-public-key? (and (string? new-identity)
                                (string/starts-with? new-identity "0x"))
-           is-ens? (and (not is-public-key?)
-                        (ens/valid-eth-name-prefix? new-identity))
-           error (db/validate-pub-key db new-identity)]
+           is-ens?        (and (not is-public-key?)
+                               (ens/valid-eth-name-prefix? new-identity))
+           error          (db/validate-pub-key db new-identity)]
        (merge {:db (assoc db
                           :contacts/new-identity
                           {:public-key new-identity
-                           :state (cond is-ens?
-                                        :searching
-                                        (and (string/blank? new-identity) (not new-ens-name))
-                                        :empty
-                                        error
-                                        :error
-                                        :else
-                                        :valid)
-                           :error error
+                           :state      (cond is-ens?
+                                             :searching
+                                             (and (string/blank? new-identity) (not new-ens-name))
+                                             :empty
+                                             error
+                                             :error
+                                             :else
+                                             :valid)
+                           :error      error
                            :ens-name   (ens-name-parse new-ens-name)})}
               (when is-ens?
                 (reset! resolve-last-id (random/id))
