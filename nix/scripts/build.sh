@@ -51,18 +51,17 @@ nixOpts=(
   "--show-trace"
   "--attr ${targetAttr}"
   "${@}"
-  "default.nix"
 )
 
-# This variable allows specifying which env vars to keep for Nix pure shell
-# The separator is a semicolon
+# This variable allows specifying which env vars to keep for Nix pure shell.
+# The separator is a colon
 if [[ -n "${_NIX_KEEP}" ]]; then
-  nixOpts+=("--keep ${_NIX_KEEP//;/ --keep }")
+  nixOpts+=("--keep ${_NIX_KEEP//,/ --keep }")
 fi
 
 # Run the actual build
-echo "Running: nix-build ${nixOpts[@]}"
-nixResultPath=$(nix-build ${nixOpts[@]})
+echo "Running: nix-build ${nixOpts[@]} default.nix"
+nixResultPath=$(nix-build ${nixOpts[@]} default.nix)
 
 echo "Extracting result: ${nixResultPath}"
 extractResults "${nixResultPath}"

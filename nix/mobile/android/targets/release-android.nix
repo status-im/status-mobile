@@ -20,7 +20,8 @@ let
   inherit (config.status-im) build-type;
   inherit (config.status-im.status-react) build-number;
   gradle-opts = (attrByPath ["status-im" "status-react" "gradle-opts"] "" config);
-  keystore-file = (attrByPath ["status-im" "status-react" "keystore-file"] "" config); # Path to the .keystore file used to sign the package
+  # Path to the .keystore file used to sign the Android APK
+  keystore-file = (attrByPath ["status-im" "status-react" "keystore-file"] "" config);
   baseName = "release-android";
   name = "status-react-build-${baseName}";
   gradleHome = "$NIX_BUILD_TOP/.gradle";
@@ -48,8 +49,14 @@ in stdenv.mkDerivation {
             "modules/react-native-status/android"
             "resources"
           ];
-          dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".gradle" "build" "intermediates" "libs" "obj" ];
-          filesToInclude = [ envFileName "status-go-version.json" "VERSION" "react-native.config.js" ".watchmanconfig" ];
+          dirsToExclude = [
+            ".git" ".svn" "CVS" ".hg" ".gradle"
+            "build" "intermediates" "libs" "obj"
+          ];
+          filesToInclude = [
+            envFileName "VERSION" ".watchmanconfig"
+            "status-go-version.json" "react-native.config.js"
+          ];
           root = path;
         };
     };
@@ -69,7 +76,7 @@ in stdenv.mkDerivation {
   postUnpack = ''
     mkdir -p ${gradleHome}
 
-    ${if keystore-file != "" then "cp -a --no-preserve=ownership ${keystore-file} ${gradleHome}/; export STATUS_RELEASE_STORE_FILE=${gradleHome}/$(basename ${keystore-file})" else ""}
+    ${if keystore-file != "" then "cp -a --no-preserve=ownership ${keystore-file} ${gradleHome}/; export KEYSTORE_PATH=${gradleHome}/$(basename ${keystore-file})" else ""}
 
     # Ensure we have the right .env file
     cp -f $sourceRoot/${envFileName} $sourceRoot/.env

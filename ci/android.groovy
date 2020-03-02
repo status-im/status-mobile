@@ -27,16 +27,16 @@ def bundle() {
   withCredentials([
     file(
       credentialsId: 'status-im.keystore',
-      variable: 'STATUS_RELEASE_STORE_FILE'
+      variable: 'KEYSTORE_PATH'
     ),
     string(
       credentialsId: 'android-keystore-pass',
-      variable: 'STATUS_RELEASE_STORE_PASSWORD'
+      variable: 'KEYSTORE_PASSWORD'
     ),
     usernamePassword(
       credentialsId: 'android-keystore-key-pass',
-      usernameVariable: 'STATUS_RELEASE_KEY_ALIAS',
-      passwordVariable: 'STATUS_RELEASE_KEY_PASSWORD'
+      usernameVariable: 'KEYSTORE_ALIAS',
+      passwordVariable: 'KEYSTORE_KEY_PASSWORD'
     )
   ]) {
     /* Nix target which produces the final APKs */
@@ -49,17 +49,17 @@ def bundle() {
         'status-im.status-react.build-number': buildNumber,
       ],
       safeEnv: [
-        'STATUS_RELEASE_KEY_ALIAS',
-        'STATUS_RELEASE_STORE_PASSWORD',
-        'STATUS_RELEASE_KEY_PASSWORD',
+        'KEYSTORE_ALIAS',
+        'KEYSTORE_PASSWORD',
+        'KEYSTORE_KEY_PASSWORD',
       ],
       keepEnv: [
         'ANDROID_ABI_SPLIT',
         'ANDROID_ABI_INCLUDE',
-        'STATUS_RELEASE_STORE_FILE',
+        'KEYSTORE_PATH',
       ],
       sandboxPaths: [
-        env.STATUS_RELEASE_STORE_FILE,
+        env.KEYSTORE_PATH,
       ],
       link: false
     )

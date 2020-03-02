@@ -1,4 +1,4 @@
-{ config, lib, callPackage, mkShell, mergeSh, androidenv, flock, openjdk,
+{ config, lib, callPackage, mkShell, mergeSh, androidenv, flock, lsof, openjdk,
   status-go, localMavenRepoBuilder, projectNodePackage }:
 
 let
@@ -32,6 +32,7 @@ let
 
   buildInputs = [
     mavenAndNpmDeps.drv openjdk gradle
+    lsof  # used in start-react-native.sh
     flock # used in reset-node_modules.sh
   ];
 
@@ -45,12 +46,9 @@ in {
       inherit buildInputs;
       inputsFrom = [ release gradle ];
       shellHook = ''
-        pushd "$STATUS_REACT_HOME" > /dev/null
-        {
-          ./scripts/generate-keystore.sh
-          # check if node modules changed and if so install them
-          ./nix/mobile/reset-node_modules.sh "${mavenAndNpmDeps.drv}/project"
-        }
+        # check if node modules changed and if so install them
+        $STATUS_REACT_HOME/nix/mobile/reset-node_modules.sh \
+          "${mavenAndNpmDeps.drv}/project"
       '';
     })
     (lib.catAttrs "shell" [ status-go mavenAndNpmDeps androidEnv ]);

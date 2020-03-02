@@ -14,12 +14,17 @@ let
     buildInputs = with pkgs; [ clojure leiningen flock maven nodejs openjdk ];
   };
 
-  # for running fastlane commands alone
-  fastlane-sh = targets.mobile.fastlane.shell;
-
   # for 'make watchman-clean'
   watchman-sh = pkgs.mkShell {
     buildInputs = [ pkgs.watchman ];
+  };
+
+  # for running fastlane commands alone
+  fastlane-sh = targets.mobile.fastlane.shell;
+
+  # for 'scripts/generate-keystore.sh'
+  keytool-sh = pkgs.mkShell {
+    buildInputs = [ pkgs.openjdk8 ];
   };
 
   # the default shell that is used when target is not specified
@@ -50,6 +55,7 @@ in with pkgs; rec {
   lein = leiningen-sh;
   watchman = watchman-sh;
   fastlane = fastlane-sh;
+  keytool = keytool-sh;
   adb = targets.mobile.android.adb.shell;
   # helpers for use with target argument
   linux = targets.desktop.linux.shell;

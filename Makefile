@@ -47,15 +47,18 @@ ifdef TARGET_OS
 export TARGET ?= $(TARGET_OS)
 endif
 
+# Useful for checking if we are on NixOS
+OS_NAME := $(shell awk -F= '/^NAME/{print $2}' /etc/os-release)
+
+# Useful for Andoird release builds
+TMP_BUILD_NUMBER := $(shell ./scripts/version/gen_build_no.sh | cut -c1-10)
+
 # MacOS root is read-only, read nix/README.md for details
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
 export NIX_IGNORE_SYMLINK_STORE=1
 export _NIX_ROOT = /opt/nix
 endif
-
-# Useful for checking if we are on NixOS
-OS_NAME ?= $(shell source /etc/os-release && echo $${NAME})
 
 #----------------
 # Nix targets
@@ -152,19 +155,24 @@ update-fleets: ##@prepare Download up-to-date JSON file with current fleets stat
 		| jq --indent 4 --sort-keys . \
 		> resources/config/fleets.json
 
+keystore: export TARGET := keytool
+keystore: export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
+keystore: ##@prepare Generate a Keystore for signing Android APKs
+	@./scripts/generate-keystore.sh
+
 #----------------
 # Release builds
 #----------------
 release: release-android release-ios ##@build build release for Android and iOS
 
-release-android: export TARGET ?= android
+release-android: export TARGET := android
 release-android: export BUILD_ENV ?= prod
 release-android: export BUILD_TYPE ?= nightly
-release-android: export BUILD_NUMBER ?= $(shell ./scripts/version/gen_build_no.sh | cut -c1-10)
-release-android: export KEYSTORE_FILE ?= $(HOME)/.gradle/status-im.keystore
+release-android: export BUILD_NUMBER ?= $(TMP_BUILD_NUMBER)
+release-android: export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 release-android: export ANDROID_ABI_SPLIT ?= false
 release-android: export ANDROID_ABI_INCLUDE ?= armeabi-v7a;arm64-v8a;x86
-release-android: ##@build build release for Android
+release-android: keystore ##@build build release for Android
 	scripts/release-android.sh
 
 release-ios: export TARGET ?= ios

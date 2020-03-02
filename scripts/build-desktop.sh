@@ -2,12 +2,10 @@
 
 set -e
 
-VERBOSE_LEVEL=${VERBOSE_LEVEL:-1}
+GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
+source "${GIT_ROOT}/scripts/colors.sh"
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+VERBOSE_LEVEL=${VERBOSE_LEVEL:-1}
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 OS=$(uname -s)
 if [ -z "$TARGET" ]; then
@@ -56,13 +54,13 @@ JS_BUNDLE_PATH="$WORKFOLDER/index.desktop.bundle"
 
 function init() {
   if [ -z $STATUS_REACT_HOME ]; then
-    echo "${RED}STATUS_REACT_HOME environment variable is not defined!${NC}"
+    echo "${RED}STATUS_REACT_HOME environment variable is not defined!${RST}"
     exit 1
   fi
 
   if ! is_windows_target; then
     if [ -z $QT_PATH ]; then
-      echo "${RED}QT_PATH environment variable is not defined!${NC}"
+      echo "${RED}QT_PATH environment variable is not defined!${RST}"
       exit 1
     fi
   fi
@@ -73,7 +71,7 @@ function init() {
     if is_windows_target; then
       export PATH=$STATUS_REACT_HOME:$PATH
       if ! program_exists 'conan'; then
-        echo "${RED}Conan package manager not found. Exiting...${NC}"
+        echo "${RED}Conan package manager not found. Exiting...${RST}"
         exit 1
       fi
 
@@ -95,7 +93,7 @@ function buildJSBundle() {
   # create directory for all work related to bundling
   rm -rf $WORKFOLDER
   mkdir -p $WORKFOLDER
-  echo -e "${GREEN}Work folder created: $WORKFOLDER${NC}"
+  echo -e "${GRN}Work folder created: $WORKFOLDER${RST}"
   echo ""
 
   # from index.desktop.js create javascript bundle and resources folder
@@ -107,7 +105,7 @@ function buildJSBundle() {
     --bundle-output "$JS_BUNDLE_PATH" \
     --assets-dest "$WORKFOLDER/assets" \
     --platform desktop
-  echo -e "${GREEN}Generating done.${NC}"
+  echo -e "${GRN}Generating done.${RST}"
   echo ""
 }
 
@@ -117,7 +115,7 @@ function compile() {
   local jsPackagePath=$(joinExistingPath "$STATUS_REACT_HOME" 'desktop/js_files/package.json')
 
   jq ".=(. + {$jsBundleLine})" "$jsPackagePath" | sponge "$jsPackagePath"
-  echo -e "${YELLOW}Added 'desktopJSBundlePath' line to $jsPackagePath:${NC}"
+  echo -e "${YLW}Added 'desktopJSBundlePath' line to $jsPackagePath:${RST}"
   echo ""
 
   local EXTERNAL_MODULES_DIR="$(jq -r '.desktopExternalModules | @tsv | @text' "$jsPackagePath" | tr '\t' ';')"
@@ -132,7 +130,7 @@ function compile() {
       local bin_dirs=$(jq -r '.dependencies[0].bin_paths | .[]' toolchain/conanbuildinfo.json)
       while read -r bin_dir; do
         if [ ! -d $bin ]; then
-          echo -e "${RED}Could not find $bin_dir directory from 'toolchain/conanbuildinfo.json', aborting${NC}"
+          echo -e "${RED}Could not find $bin_dir directory from 'toolchain/conanbuildinfo.json', aborting${RST}"
           exit 1
         fi
         export PATH=$bin_dir:$PATH
@@ -157,7 +155,7 @@ function bundleWindows() {
   local version_file="${STATUS_REACT_HOME}/VERSION"
   VERSION=$(cat $version_file)
   if [ -z "$VERSION" ]; then
-    echo "${RED}Could not read version from ${version_file}!${NC}"
+    echo "${RED}Could not read version from ${version_file}!${RST}"
     exit 1
   fi
 
@@ -263,7 +261,7 @@ function bundleLinux() {
     mv -f ./Status-x86_64.AppImage ..
   popd
 
-  echo -e "${GREEN}Package ready in ./Status-x86_64.AppImage!${NC}"
+  echo -e "${GRN}Package ready in ./Status-x86_64.AppImage!${RST}"
   echo ""
 }
 
@@ -337,7 +335,7 @@ if [[ "$OS" =~ Darwin ]]; then
         local targetDepDylib=$(joinExistingPath "/System/Library/Frameworks" "${framework}.framework/${framework}")
 
         if [ ! -f "$targetDepDylib" ]; then
-          echo -e "${RED}FATAL: system framework not found: ${targetDepDylib}${NC}"
+          echo -e "${RED}FATAL: system framework not found: ${targetDepDylib}${RST}"
           exit 1
         fi
 
@@ -348,7 +346,7 @@ if [[ "$OS" =~ Darwin ]]; then
         local targetDepDylib=$(joinPath "$frameworksDir" "$(basename $depDylib)")
 
         if [ ! -f "$targetDepDylib" ]; then
-          echo -e "${RED}FATAL: macdeployqt should have copied the dependency to ${targetDepDylib}${NC}"
+          echo -e "${RED}FATAL: macdeployqt should have copied the dependency to ${targetDepDylib}${RST}"
           exit 1
         fi
 
@@ -436,7 +434,7 @@ function bundleMacOS() {
     rm -f Status.app.zip
   popd
 
-  echo -e "${GREEN}Package ready in $WORKFOLDER/Status.app!${NC}"
+  echo -e "${GRN}Package ready in $WORKFOLDER/Status.app!${RST}"
   echo ""
 }
 

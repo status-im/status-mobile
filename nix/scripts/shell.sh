@@ -67,9 +67,9 @@ else
     pureDesc='pure '
   fi
   # This variable allows specifying which env vars to keep for Nix pure shell
-  # The separator is a semicolon
+  # The separator is a colon
   if [[ -n "${_NIX_KEEP}" ]]; then
-    shellArgs+=("--keep ${_NIX_KEEP//;/ --keep }")
+    shellArgs+=("--keep ${_NIX_KEEP//,/ --keep }")
   fi
   echo -e "${GRN}Configuring ${pureDesc}${_NIX_ATTR:-default} Nix shell for target '${TARGET}'...${RST}" 1>&2
   exec nix-shell ${shellArgs[@]} --run "$@" ${entryPoint}

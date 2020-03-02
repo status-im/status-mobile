@@ -219,10 +219,10 @@ android {
         }
         release {
             /* environment variables take precedence over gradle.properties file */
-            storeFile     file(getEnvOrConfig('STATUS_RELEASE_STORE_FILE').replaceAll("~", System.properties['user.home']))
-            storePassword getEnvOrConfig('STATUS_RELEASE_STORE_PASSWORD')
-            keyAlias      getEnvOrConfig('STATUS_RELEASE_KEY_ALIAS')
-            keyPassword   getEnvOrConfig('STATUS_RELEASE_KEY_PASSWORD')
+            storeFile     file(getEnvOrConfig('KEYSTORE_PATH').replaceAll("~", System.properties['user.home']))
+            storePassword getEnvOrConfig('KEYSTORE_PASSWORD')
+            keyAlias      getEnvOrConfig('KEYSTORE_ALIAS')
+            keyPassword   getEnvOrConfig('KEYSTORE_KEY_PASSWORD')
         }
     }
     splits {
