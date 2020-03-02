@@ -49,11 +49,12 @@
 (defn common-settings [account]
   [react/view {:margin-horizontal 16 :margin-top 30}
    [text-input/text-input-with-label
-    {:label          (i18n/label :t/account-name)
-     :auto-focus     false
-     :default-value  (:name account)
-     :placeholder    (i18n/label :t/account-name)
-     :on-change-text #(re-frame/dispatch [:set-in [:add-account :account :name] %])}]
+    {:label               (i18n/label :t/account-name)
+     :auto-focus          false
+     :default-value       (:name account)
+     :accessibility-label :add-account-enter-account-name
+     :placeholder         (i18n/label :t/account-name)
+     :on-change-text      #(re-frame/dispatch [:set-in [:add-account :account :name] %])}]
    [react/text {:style {:margin-top 30}} (i18n/label :t/account-color)]
    [react/touchable-highlight
     {:on-press #(re-frame/dispatch
@@ -72,50 +73,54 @@
   [react/view {:margin-horizontal 16}
    (if (= type :watch)
      [text-input/text-input-with-label
-      {:label          (i18n/label :t/wallet-key-title)
-       :auto-focus     false
-       :default-value  scanned-address
-       :placeholder    (i18n/label :t/enter-address)
-       :on-change-text #(re-frame/dispatch [:set-in [:add-account :address] %])}]
+      {:label               (i18n/label :t/wallet-key-title)
+       :auto-focus          false
+       :default-value       scanned-address
+       :placeholder         (i18n/label :t/enter-address)
+       :accessibility-label :add-account-enter-watch-address
+       :on-change-text      #(re-frame/dispatch [:set-in [:add-account :address] %])}]
      [text-input/text-input-with-label
-      {:label             (i18n/label :t/password)
-       :parent-container  {:margin-top 30}
-       :auto-focus        false
-       :placeholder       (i18n/label :t/enter-your-password)
-       :secure-text-entry true
-       :text-content-type :none
-       :error             (when password-error (i18n/label :t/add-account-incorrect-password))
-       :on-change-text    #(do
-                             (re-frame/dispatch [:set-in [:add-account :password-error] nil])
-                             (reset! entered-password %))}])
+      {:label               (i18n/label :t/password)
+       :parent-container    {:margin-top 30}
+       :auto-focus          false
+       :placeholder         (i18n/label :t/enter-your-password)
+       :secure-text-entry   true
+       :text-content-type   :none
+       :accessibility-label :add-account-enter-password
+       :error               (when password-error (i18n/label :t/add-account-incorrect-password))
+       :on-change-text      #(do
+                               (re-frame/dispatch [:set-in [:add-account :password-error] nil])
+                               (reset! entered-password %))}])
    (when (= type :seed)
      [text-input/text-input-with-label
-      {:parent-container {:margin-top 30}
-       :label            (i18n/label :t/recovery-phrase)
-       :auto-focus       false
-       :placeholder      (i18n/label :t/multiaccounts-recover-enter-phrase-title)
-       :auto-correct     false
-       :keyboard-type    "visible-password"
-       :multiline        true
-       :style            (when platform/android?
-                           {:flex 1})
-       :height           95
-       :error            account-error
+      {:parent-container    {:margin-top 30}
+       :label               (i18n/label :t/recovery-phrase)
+       :auto-focus          false
+       :placeholder         (i18n/label :t/multiaccounts-recover-enter-phrase-title)
+       :auto-correct        false
+       :keyboard-type       "visible-password"
+       :multiline           true
+       :style               (when platform/android?
+                              {:flex 1})
+       :height              95
+       :error               account-error
+       :accessibility-label :add-account-enter-seed
        :on-change-text
        #(do
           (re-frame/dispatch [:set-in [:add-account :account-error] nil])
           (re-frame/dispatch [:set-in [:add-account :seed] (security/mask-data (string/lower-case %))]))}])
    (when (= type :key)
      [text-input/text-input-with-label
-      {:parent-container  {:margin-top 30}
-       :label             (i18n/label :t/private-key)
-       :auto-focus        false
-       :placeholder       (i18n/label :t/enter-a-private-key)
-       :auto-correct      false
-       :keyboard-type     "visible-password"
-       :error             account-error
-       :secure-text-entry true
-       :text-content-type :none
+      {:parent-container    {:margin-top 30}
+       :label               (i18n/label :t/private-key)
+       :auto-focus          false
+       :placeholder         (i18n/label :t/enter-a-private-key)
+       :auto-correct        false
+       :keyboard-type       "visible-password"
+       :error               account-error
+       :secure-text-entry   true
+       :accessibility-label :add-account-enter-private-key
+       :text-content-type   :none
        :on-change-text
        #(do
           (re-frame/dispatch [:set-in [:add-account :account-error] nil])
@@ -134,14 +139,15 @@
      [toolbar/toolbar
       {:show-border? true
        :right
-       {:type      :next
-        :label     :t/add-account
-        :on-press  #(re-frame/dispatch [:wallet.accounts/add-new-account
-                                        (ethereum/sha3 @entered-password)])
-        :disabled? (or add-account-disabled?
-                       (and
-                        (not (= type :watch))
-                        (not (spec/valid? ::multiaccounts.db/password @entered-password))))}}]]))
+       {:type                :next
+        :label               :t/add-account
+        :accessibility-label :add-account-add-account-button
+        :on-press            #(re-frame/dispatch [:wallet.accounts/add-new-account
+                                                  (ethereum/sha3 @entered-password)])
+        :disabled?           (or add-account-disabled?
+                                 (and
+                                  (not (= type :watch))
+                                  (not (spec/valid? ::multiaccounts.db/password @entered-password))))}}]]))
 
 (defview pin []
   (letsubs [pin         [:hardwallet/pin]
