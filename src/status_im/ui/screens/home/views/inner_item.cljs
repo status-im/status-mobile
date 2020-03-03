@@ -49,7 +49,8 @@
   (letsubs [{:keys [unviewed-messages-count public?]} [:chats/chat chat-id]]
     (when (pos? unviewed-messages-count)
       (if public?
-        [react/view {:style styles/public-unread}]
+        [react/view {:style styles/public-unread
+                     :accessibility-label :unviewed-messages-public}]
         [badge/message-counter unviewed-messages-count]))))
 
 (defn home-list-item [[_ home-item]]

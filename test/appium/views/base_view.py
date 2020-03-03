@@ -92,6 +92,15 @@ class TabButton(BaseButton):
 
         return Counter(self.driver, self.locator.value)
 
+    @property
+    def public_unread_messages(self):
+        class PublicChatUnreadMessages(BaseElement):
+            def __init__(self, driver):
+                super(PublicChatUnreadMessages, self).__init__(driver)
+                self.locator = self.Locator.accessibility_id('unviewed-messages-public')
+
+        return PublicChatUnreadMessages(self.driver)
+
 
 class HomeButton(TabButton):
     def __init__(self, driver):

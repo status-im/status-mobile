@@ -118,6 +118,15 @@ class ChatElement(BaseButton):
 
         return UnreadMessagesCountText(self.driver, self.locator.value)
 
+    @property
+    def new_messages_public_chat(self):
+        class UnreadMessagesPublicChat(BaseElement):
+            def __init__(self, driver):
+                super(UnreadMessagesPublicChat, self).__init__(driver)
+                self.locator = self.Locator.accessibility_id('public-unread-badge')
+
+        return UnreadMessagesPublicChat(self.driver)
+
 
 class ChatNameText(BaseText):
     def __init__(self, driver):

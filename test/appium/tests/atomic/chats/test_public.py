@@ -104,21 +104,21 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_2.chat_message_input.send_keys(message)
         chat_2.send_message_button.click()
 
-        if home_1.home_button.counter.text != '1':
-            self.errors.append('New messages counter is not shown on Home button')
+        if not home_1.home_button.public_unread_messages.is_element_displayed():
+            self.errors.append('New messages public chat badge is not shown on Home button')
 
         chat_element = home_1.get_chat_with_user('#' + chat_name)
-        if chat_element.new_messages_counter.text != '1':
-            self.errors.append('New messages counter is not shown on chat element')
+        if not chat_element.new_messages_public_chat.is_element_displayed():
+            self.errors.append('New messages counter is not shown in public chat')
 
         chat_element.click()
         home_1.get_back_to_home_view()
 
-        if home_1.home_button.counter.is_element_displayed():
-            self.errors.append('New messages counter is shown on Home button for already seen message')
+        if home_1.home_button.public_unread_messages.is_element_displayed():
+            self.errors.append('New messages public chat badge is shown on Home button')
+        if chat_element.new_messages_public_chat.is_element_displayed():
+            self.errors.append('Unread messages badge is shown in public chat while while there are no unread messages')
 
-        if chat_element.new_messages_counter.text == '1':
-            self.errors.append('New messages counter is shown on chat element for already seen message')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6202)
