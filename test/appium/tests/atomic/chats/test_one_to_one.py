@@ -170,7 +170,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         default_username_2 = profile_2.default_username_text.text
         profile_2.home_button.click()
 
-        device_1_chat = device_1_home.add_contact(device_2_public_key)
+        device_1_chat = device_1_home.add_contact(device_2_public_key + ' ')
         message = 'hello'
         device_1_chat.chat_message_input.send_keys(message)
         device_1_chat.send_message_button.click()

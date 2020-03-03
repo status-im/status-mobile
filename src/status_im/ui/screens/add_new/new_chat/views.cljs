@@ -66,7 +66,8 @@
      [topbar/topbar
       {:title       :t/new-chat
        :modal?      true
-       :accessories [{:icon    :qr
+       :accessories [{:icon                :qr
+                      :accessibility-label :scan-contact-code-button
                       :handler #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
                                                     {:title   (i18n/label :t/new-contact)
                                                      :handler :contact/qr-code-scanned}])}]}]
