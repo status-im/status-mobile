@@ -210,23 +210,26 @@
 
 (fx/defn new-transfers
   {:events [::new-transfers]}
-  [{:keys [db] :as cofx} transfers {:keys [address historical? limit]}]
+  [{:keys [db] :as cofx} transfers {:keys [address limit]}]
   (log/debug "[transfers] new-transfers"
              "address" address
              "count" (count transfers)
              "limit" limit)
   (let [checksum (eip55/address->checksum address)
+        min-known-block (or (get-min-known-block db address)
+                            (:ethereum/current-block db))
         effects (cond-> [(when (seq transfers)
                            (set-lowest-fetched-block checksum transfers))]
 
                   (seq transfers)
                   (concat (mapv add-transfer transfers))
-                  ;;NOTE: we only update the balance for new transfers and not
-                  ;; historical ones
-                  (not historical?)
+
+                  true
                   (conj (wallet/update-balances
-                         (into [] (reduce (fn [acc {:keys [address]}]
-                                            (conj acc address))
+                         (into [] (reduce (fn [acc {:keys [address block]}]
+                                            (if (> block min-known-block)
+                                              (conj acc address)
+                                              acc))
                                           #{}
                                           transfers))))
 
