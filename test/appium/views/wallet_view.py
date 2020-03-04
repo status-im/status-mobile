@@ -320,7 +320,7 @@ class EnterYourPasswordInput(BaseEditBox):
 class AccountNameInput(BaseEditBox):
     def __init__(self, driver):
         super(AccountNameInput, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('add-account-enter-account-name')
+        self.locator = self.Locator.accessibility_id('enter-account-name')
 
 
 class AccountColorButton(BaseButton):

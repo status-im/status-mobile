@@ -52,7 +52,7 @@
     {:label               (i18n/label :t/account-name)
      :auto-focus          false
      :default-value       (:name account)
-     :accessibility-label :add-account-enter-account-name
+     :accessibility-label :enter-account-name
      :placeholder         (i18n/label :t/account-name)
      :on-change-text      #(re-frame/dispatch [:set-in [:add-account :account :name] %])}]
    [react/text {:style {:margin-top 30}} (i18n/label :t/account-color)]

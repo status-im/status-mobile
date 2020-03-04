@@ -57,11 +57,12 @@
       [react/view {:padding-bottom 28 :padding-top 10}
        [react/view {:margin-horizontal 16}
         [text-input/text-input-with-label
-         {:label          (i18n/label :t/account-name)
-          :label-style    {:color colors/gray}
-          :auto-focus     false
-          :default-value  (:name account)
-          :on-change-text #(swap! new-account assoc :name %)}]
+         {:label               (i18n/label :t/account-name)
+          :label-style         {:color colors/gray}
+          :auto-focus          false
+          :default-value       (:name account)
+          :accessibility-label :enter-account-name
+          :on-change-text      #(swap! new-account assoc :name %)}]
         [react/text {:style {:margin-top 30 :color colors/gray}} (i18n/label :t/account-color)]
         [react/touchable-highlight
          {:on-press #(re-frame/dispatch [:show-popover
