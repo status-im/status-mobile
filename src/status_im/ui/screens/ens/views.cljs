@@ -24,7 +24,8 @@
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.debounce :as debounce]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.ens.styles :as styles])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- button
@@ -126,18 +127,10 @@
 
 (defn help-message-text-element
   ([label]
-   [react/text {:style {:flex 1
-                        :margin-top 16
-                        :margin-horizontal 16
-                        :font-size 14
-                        :text-align :center}}
+   [react/text {:style styles/help-message-label}
     (i18n/label label)])
   ([label second-label]
-   [react/nested-text {:style {:flex 1
-                               :margin-top 16
-                               :margin-horizontal 16
-                               :font-size 14
-                               :text-align :center}}
+   [react/nested-text {:style styles/help-message-label}
     (i18n/label label) " "
     [{:style {:font-weight "700"}}
      (i18n/label second-label)]]))
@@ -351,11 +344,9 @@
   [state]
   (case state
     :registration-failed
-    [react/view {:style {:width 40 :height 40 :border-radius 30 :background-color colors/red-light
-                         :align-items :center :justify-content :center}}
+    [react/view {:style (styles/finalized-icon-wrapper colors/red-light)}
      [vector-icons/icon :main-icons/warning {:color colors/red}]]
-    [react/view {:style {:width 40 :height 40 :border-radius 30 :background-color colors/gray-lighter
-                         :align-items :center :justify-content :center}}
+    [react/view {:style (styles/finalized-icon-wrapper colors/gray-lighter)}
      [vector-icons/icon :main-icons/check {:color colors/blue}]]))
 
 (defn- final-state-label
@@ -371,7 +362,9 @@
     (i18n/label :t/ens-saved-title)
     ;;NOTE: this state can't be reached atm
     :registration-failed
-    (i18n/label :t/ens-registration-failed-title)))
+    (i18n/label :t/ens-registration-failed-title)
+    :removed
+    (i18n/label :t/ens-removed-title)))
 
 (defn- final-state-details
   [state username]
@@ -391,7 +384,13 @@
     ;;NOTE: this state can't be reached atm
     :registration-failed
     [react/text {:style {:color colors/gray :font-size 14}}
-     (i18n/label :t/ens-registration-failed)]))
+     (i18n/label :t/ens-registration-failed)]
+    :removed
+    [react/nested-text
+     {:style {:font-size 15 :text-align :center}}
+     username
+     [{:style {:color colors/gray}}
+      (i18n/label :t/ens-removed)]]))
 
 (views/defview confirmation []
   (views/letsubs [{:keys [state username]} [:ens/confirmation-screen]]
@@ -508,14 +507,14 @@
           [section {:title   (i18n/label :t/key)
                     :content public-key}]])
        [react/view {:style {:margin-top 16 :margin-bottom 32}}
-        ;;TODO: re-enable once feature is developped
-        #_[list/big-list-item {:text          (i18n/label :t/ens-remove-username)
-                               :subtext       (i18n/label :t/ens-remove-hints)
-                               :text-color    colors/gray
-                               :text-style    {:font-weight "500"}
-                               :icon          :main-icons/close
-                               :icon-color    colors/gray
-                               :hide-chevron? true}]
+        [list/big-list-item {:text           (i18n/label :t/ens-remove-username)
+                             :subtext       (i18n/label :t/ens-remove-hints)
+                             :text-color    colors/blue
+                             :text-style    {:font-weight "500"}
+                             :icon          :main-icons/close
+                             :icon-color    colors/blue
+                             :hide-chevron? true
+                             :action-fn     #(re-frame/dispatch [::ens/remove-username name])}]
         (when-not custom-domain?
           [react/view {:style {:margin-top 18}}
            [list/big-list-item {:text          (i18n/label :t/ens-release-username)

@@ -9,6 +9,7 @@
                     :taken
                     :owned
                     :connected
-                    :connected-with-different-key})
+                    :connected-with-different-key
+                    :removed})
 
 (spec/def :ens/registration (spec/keys :opt-un [::state]))

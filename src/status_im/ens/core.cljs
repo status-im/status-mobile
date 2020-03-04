@@ -20,7 +20,6 @@
             [status-im.utils.money :as money]
             [status-im.signing.core :as signing]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [taoensso.timbre :as log]
             [status-im.utils.random :as random])
   (:refer-clojure :exclude [name]))
 
@@ -86,6 +85,23 @@
                 (multiaccounts.update/multiaccount-update
                  :preferred-name name {})))))
 
+(fx/defn remove-username
+  {:events [::remove-username]}
+  [{:keys [db] :as cofx} name]
+  (let [names  (get-in db [:multiaccount :usernames] [])
+        preferred-name  (get-in db [:multiaccount :preferred-name])
+        new-names (remove #(= name %) names)]
+    (fx/merge cofx
+              {:db (update db :ens/registration assoc
+                           :username name
+                           :state    :removed)}
+              (multiaccounts.update/multiaccount-update
+               :usernames new-names
+               {:on-success #(re-frame/dispatch [::username-removed])})
+              (when (= name preferred-name)
+                (multiaccounts.update/multiaccount-update
+                 :preferred-name (first new-names) {})))))
+
 (fx/defn on-input-submitted
   {:events [::input-submitted ::input-icon-pressed]}
   [{:keys [db] :as cofx}]
@@ -105,7 +121,7 @@
       nil)))
 
 (fx/defn username-saved
-  {:events [::username-saved]}
+  {:events [::username-saved ::username-removed]}
   [{:keys [db] :as cofx}]
   ;; we reset navigation so that navigate back doesn't return
   ;; into the registration flow
