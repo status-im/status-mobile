@@ -53,7 +53,10 @@
       (seq contacts)
       (let [contact (.pop contacts)]
         (fx/merge cofx
-                  {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  ;;TODO temporary fix for release, we have and issue with contacts updates , UI is really slow
+                  ;;we need to inspect all subsctiptions and views, but for now to temporary make it better
+                  ;; we use dispatch instead dispatch-later
+                  {:dispatch [::process response-js]}
                   (handle-contact (-> contact (types/js->clj) (data-store.contacts/<-rpc)))))
 
       (seq chats)
