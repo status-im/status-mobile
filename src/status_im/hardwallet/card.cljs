@@ -51,12 +51,24 @@
              platform/android?)
     (.addListener event-emitter "keyCardOnDisconnected" callback)))
 
+(defn on-nfc-enabled [callback]
+  (when (and config/hardwallet-enabled?
+             platform/android?)
+    (.addListener event-emitter "keyCardOnNFCEnabled" callback)))
+
+(defn on-nfc-disabled [callback]
+  (when (and config/hardwallet-enabled?
+             platform/android?)
+    (.addListener event-emitter "keyCardOnNFCDisabled" callback)))
+
 (defn register-card-events []
   (doseq [listener @active-listeners]
     (remove-event-listener listener))
   (reset! active-listeners
           [(on-card-connected #(re-frame/dispatch [:hardwallet.callback/on-card-connected]))
-           (on-card-disconnected #(re-frame/dispatch [:hardwallet.callback/on-card-disconnected]))]))
+           (on-card-disconnected #(re-frame/dispatch [:hardwallet.callback/on-card-disconnected]))
+           (on-nfc-enabled #(re-frame/dispatch [:hardwallet.callback/check-nfc-enabled-success true]))
+           (on-nfc-disabled #(re-frame/dispatch [:hardwallet.callback/check-nfc-enabled-success false]))]))
 
 (defn get-application-info [{:keys [pairing on-success]}]
   (log/debug "[keycard] get-application-info")

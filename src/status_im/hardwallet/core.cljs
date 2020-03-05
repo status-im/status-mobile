@@ -119,14 +119,9 @@
 (fx/defn on-check-nfc-enabled-success
   {:events [:hardwallet.callback/check-nfc-enabled-success]}
   [{:keys [db]} nfc-enabled?]
+  (log/debug "[hardwallet] check-nfc-enabled-success"
+             "nfc-enabled?" nfc-enabled?)
   {:db (assoc-in db [:hardwallet :nfc-enabled?] nfc-enabled?)})
-
-(fx/defn return-back-from-nfc-settings [{:keys [db]}]
-  (when (or (get-in db [:hardwallet :flow])
-            (get-in db [:hardwallet :pin :enter-step])
-            (get-in db [:hardwallet :on-card-connected])
-            (get-in db [:hardwallet :on-card-read]))
-    {:hardwallet/check-nfc-enabled nil}))
 
 (defn- proceed-to-pin-confirmation [fx]
   (assoc-in fx [:db :hardwallet :pin :enter-step] :confirmation))

@@ -150,7 +150,6 @@
                        (dissoc :app-in-background-since)
                        (assoc :app-active-since now))}
               (mailserver/process-next-messages-request)
-              (hardwallet/return-back-from-nfc-settings)
               #(when requires-bio-auth
                  (biometric/authenticate % on-biometric-auth-result authentication-options)))))
 
