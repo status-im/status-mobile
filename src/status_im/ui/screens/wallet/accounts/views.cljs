@@ -11,6 +11,8 @@
             [status-im.wallet.utils :as wallet.utils]
             [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            [status-im.ui.components.reanimated :as reanimated]
+            [oops.core :refer [oget]]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
             [status-im.ui.screens.wallet.accounts.styles :as styles]
             [status-im.utils.utils :as utils.utils]))
@@ -94,17 +96,20 @@
                      :key-fn             :name
                      :render-fn          (render-asset (:code currency) prices-loading?)}]))
 
-(views/defview total-value []
+(views/defview total-value [{:keys [y]}]
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:portfolio-value]
                   prices-loading? [:prices-loading?]]
-    [react/view {:style {:padding-horizontal 16}}
-     [react/view {:style {:flex-direction :row}}
-      (if prices-loading?
-        [react/small-loading-indicator]
-        [react/text {:style {:font-size 32 :color colors/black :font-weight "600"}} portfolio-value])
-      [react/text {:style {:font-size 32 :color colors/gray :font-weight "600"}} (str " " (:code currency))]]
-     [react/text {:style {:color colors/gray}} (i18n/label :t/wallet-total-value)]]))
+    [reanimated/view {:style (styles/value-container y)}
+     [reanimated/text {:style (styles/value-text y)}
+      portfolio-value
+      [reanimated/text {:style {:color colors/gray}}
+       (str " " (:code currency))]]
+     [reanimated/view {:style (styles/value-helper y)}
+      [react/text {:style {:color       colors/gray
+                           :font-size   15
+                           :line-height 22}}
+       (i18n/label :t/wallet-total-value)]]]))
 
 (defn- request-camera-permissions []
   (let [options {:handler :wallet.send/qr-scanner-result}]
@@ -120,39 +125,57 @@
                                    (i18n/label :t/camera-access-error)))
          50)}])))
 
-(views/defview accounts-options []
+(views/defview accounts-options [{:keys [y]}]
   (views/letsubs [{:keys [mnemonic]} [:multiaccount]
                   empty-balances?           [:empty-balances?]]
-    [react/view {:flex-direction :row :align-items :center}
-     [react/view {:flex 1 :padding-left 16}
-      (when (and mnemonic
-                 (not empty-balances?))
-        [react/touchable-highlight
-         {:on-press #(re-frame/dispatch [:navigate-to :backup-seed])}
-         [react/view {:flex-direction :row :align-items :center}
-          [react/view {:width           14 :height 14 :background-color colors/gray :border-radius 7 :align-items :center
-                       :justify-content :center :margin-right 9}
-           [react/text {:style {:color       colors/white
-                                :font-size   13
-                                :font-weight "700"}}
-            "!"]]
-          [react/text {:style               {:color colors/gray}
-                       :accessibility-label :back-up-your-seed-phrase-warning}
-           (i18n/label :t/back-up-your-seed-phrase)]]])]
-     [react/touchable-highlight
-      {:on-press #(request-camera-permissions)}
-      [react/view {:height          toolbar.styles/toolbar-height
-                   :width 24 :align-items :center
-                   :justify-content :center}
-       [icons/icon :main-icons/qr {:accessibility-label :accounts-qr-code}]]]
-     [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                      {:content        (sheets/accounts-options mnemonic)
-                                       :content-height (if mnemonic 250 190)}])}
-      [react/view {:height          toolbar.styles/toolbar-height
-                   :width toolbar.styles/toolbar-height :align-items :center
-                   :justify-content :center}
-       [icons/icon :main-icons/more {:accessibility-label :accounts-more-options}]]]]))
+    ;; TODO(Ferossgp): Use topbar component here
+    [react/safe-area-consumer
+     (fn [insets]
+       (reagent/as-element
+        [reanimated/view {:style (styles/topbar {:inset-top (oget insets "top")
+                                                 :value     y
+                                                 :offset    styles/scroll-offset})}
+         [react/view {:flex               1
+                      :height             styles/tabbar-height
+                      :padding-horizontal 8
+                      :flex-direction     :row
+                      :align-items        :center}
+          [total-value {:y y}]
+          (when (and mnemonic
+                     (not empty-balances?))
+            [reanimated/view {:style (styles/accounts-mnemonic y)}
+             [react/touchable-highlight
+              {:on-press #(re-frame/dispatch [:navigate-to :backup-seed])}
+              [react/view {:flex-direction :row :align-items :center}
+               [react/view {:width            14
+                            :height           14
+                            :background-color colors/gray
+                            :border-radius    7
+                            :align-items      :center
+                            :justify-content  :center
+                            :margin-right     9}
+                [react/text {:style {:color       colors/white
+                                     :font-size   13
+                                     :font-weight "700"}}
+                 "!"]]
+               [react/text {:style               {:color colors/gray}
+                            :accessibility-label :back-up-your-seed-phrase-warning}
+                (i18n/label :t/back-up-your-seed-phrase)]]]])]
+         [react/touchable-highlight
+          {:on-press #(request-camera-permissions)}
+          [react/view {:height             toolbar.styles/toolbar-height
+                       :padding-horizontal 8
+                       :align-items        :center
+                       :justify-content    :center}
+           [icons/icon :main-icons/qr {:accessibility-label :accounts-qr-code}]]]
+         [react/touchable-highlight
+          {:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                          {:content (sheets/accounts-options mnemonic)}])}
+          [react/view {:height             toolbar.styles/toolbar-height
+                       :padding-horizontal 8
+                       :align-items        :center
+                       :justify-content    :center}
+           [icons/icon :main-icons/more {:accessibility-label :accounts-more-options}]]]]))]))
 
 (views/defview send-button []
   (views/letsubs [account [:multiaccount/default-account]]
@@ -175,12 +198,16 @@
       [add-card]]]))
 
 (defn accounts-overview []
-  [react/view {:flex 1}
-   [react/scroll-view
-    [accounts-options]
-    [react/view {:margin-top 8}
-     [total-value]
-     [accounts]]
-    [assets]
-    [react/view {:height 68}]]
-   [send-button]])
+  (let [y         (reanimated/value 0)
+        on-scroll (reanimated/on-scroll {:y y})]
+    (fn []
+      [react/view {:flex 1}
+       [accounts-options {:y y}]
+       [reanimated/scroll-view {:on-scroll           on-scroll
+                                :style               {:padding-top styles/value-height}
+                                :scrollEventThrottle 1}
+        [react/view {:margin-top 8}
+         [accounts]]
+        [assets]
+        [react/view {:height 68}]]
+       [send-button]])))

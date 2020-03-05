@@ -19,6 +19,7 @@
   [stack {:initial-route-name :wallet
           :header-mode        :none}
    [{:name      :wallet
+     :insets    {:top false}
      :style     {:padding-bottom tabbar.styles/tabs-diff}
      :component wallet.accounts/accounts-overview}
     {:name      :wallet-account

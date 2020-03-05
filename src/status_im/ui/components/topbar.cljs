@@ -33,6 +33,7 @@
         [react/text {:style {:color colors/blue}}
          (utils.label/stringify label)])]]))
 
+;; TODO(Ferossgp): Tobbar should handle safe area
 (defn topbar [_]
   (let [title-padding (reagent/atom 16)]
     (fn [& [{:keys [title navigation accessories show-border? modal? content]}]]

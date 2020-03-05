@@ -44,6 +44,9 @@
               "react-native-shake"
               "@react-native-community/netinfo"
               "react-native-gesture-handler"
+              "react-native-reanimated"
+              "react-native-redash"
+              "react-native-haptic-feedback"
               "react-native-safe-area-context"
               "react-native-dark-mode"]
  ;; Desktop modules
