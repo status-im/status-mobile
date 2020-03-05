@@ -61,7 +61,9 @@
                        :removeEventListener identity})
 (def react #js {:useCallback nil
                 :useEffect nil
-                :useRef nil})
+                :useRef nil
+                :createRef nil
+                :Fragment identity})
 (def react-navigation-native #js {:NavigationContainer #js {}
                                   :useFocusEffect      identity
                                   :CommonActions       #js {}
@@ -70,4 +72,55 @@
                                  :TransitionPresets    #js {:ModalPresentationIOS #js {}}})
 (def react-navigation-bottom-tabs #js {:createBottomTabNavigator identity})
 
-(def react-native-gesture-handler #js {})
+(def react-native-haptic-feedback #js {:default #js {:trigger nil}})
+
+(def react-native-reanimated #js {:default      #js {:createAnimatedComponent identity
+                                                     :eq                      nil
+                                                     :greaterOrEq             nil
+                                                     :add                     nil
+                                                     :sub                     nil
+                                                     :multiply                nil
+                                                     :abs                     nil
+                                                     :min                     nil
+                                                     :max                     nil
+                                                     :neq                     nil
+                                                     :and                     nil
+                                                     :or                      nil
+                                                     :not                     nil
+                                                     :set                     nil
+                                                     :startClock              nil
+                                                     :stopClock               nil
+                                                     :Value                   nil
+                                                     :Clock                   nil
+                                                     :debug                   nil
+                                                     :log                     nil
+                                                     :event                   nil
+                                                     :cond                    nil
+                                                     :block                   nil
+                                                     :interpolate             nil
+                                                     :call                    nil
+                                                     :timing                  nil
+                                                     :onChange                nil
+                                                     :View                    #js {}
+                                                     :ScrollView              #js {}
+                                                     :Text                    #js {}
+                                                     :extrapolate             #js {:CLAMP nil}
+                                                     :Code                    #js {}}
+                                  :Easing       #js {:bezier nil
+                                                     :linear nil}
+                                  :clockRunning nil})
+(def react-native-gesture-handler #js {:default                  #js {}
+                                       :State                    #js {:BEGAN        nil
+                                                                      :ACTIVE       nil
+                                                                      :CANCELLED    nil
+                                                                      :END          nil
+                                                                      :FAILED       nil
+                                                                      :UNDETERMINED nil}
+                                       :PureNativeButton         #js {}
+                                       :TapGestureHandler        #js {}
+                                       :PanGestureHandler        #js {}
+                                       :LongPressGestureHandler  #js {}
+                                       :TouchableWithoutFeedback #js {}
+                                       :createNativeWrapper      identity})
+
+(def react-native-redash #js {:clamp nil})
