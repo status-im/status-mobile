@@ -1183,3 +1183,19 @@
  :gfycat-generated
  (fn [{:keys [db]} [_ path gfycat]]
    {:db (assoc-in db path gfycat)}))
+
+(re-frame/reg-fx
+ :get-install-referrer
+ (fn []
+   (react/get-install-referrer #(re-frame/dispatch [:install-referrer-result %]))))
+
+(handlers/register-handler-fx
+ :get-install-referrer
+ (fn [_]
+   {:get-install-referrer nil}))
+
+(handlers/register-handler-fx
+ :install-referrer-result
+ (fn [_ [_ result]]
+   {:utils/show-popup {:title   "Install referrer"
+                       :content result}}))

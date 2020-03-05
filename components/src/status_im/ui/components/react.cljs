@@ -321,3 +321,9 @@
            (when platform/android?
              {:background-color :white}))
     (apply vector view styles/flex components)]])
+
+(def rn-install-referrer (object/get js-dependencies/react-native-install-referrer "RNInstallReferrer"))
+
+(defn get-install-referrer [callback]
+ (-> (.getReferrer rn-install-referrer)
+     (.then #(callback %))))

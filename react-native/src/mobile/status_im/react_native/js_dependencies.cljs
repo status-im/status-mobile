@@ -40,3 +40,4 @@
 (def desktop-config         #js {:addEventListener (fn [])})
 (def desktop-shortcuts      #js {:addEventListener (fn [])})
 (def safe-area-context      (js/require "react-native-safe-area-context"))
+(def react-native-install-referrer  (js/require "react-native-install-referrer"))

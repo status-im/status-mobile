@@ -71,7 +71,8 @@
              :hardwallet/register-card-events       nil
              :hardwallet/check-nfc-support          nil
              :hardwallet/check-nfc-enabled          nil
-             :hardwallet/retrieve-pairings          nil}
+             :hardwallet/retrieve-pairings          nil
+             :get-install-referrer                  nil}
             (initialize-app-db)))
 
 (re-frame/reg-fx

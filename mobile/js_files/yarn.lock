@@ -4852,6 +4852,11 @@ react-native-image-crop-picker@^0.25.0:
   version "1.0.0"
   resolved "git+https://github.com/status-im/react-native-image-resizer.git#dcbe2e1c461b0dbc265435bfb873f0257c1a1c4a"
 
+react-native-install-referrer@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-install-referrer/-/react-native-install-referrer-1.0.1.tgz#a44ce5353aee503ca3d56af3d94bd445445e8611"
+  integrity sha512-eOG5YOU/CSmqgbYQkmgiCLScLB20VSu2L+1+KY7VOM8/PaE39PCPxme0FynUFjABPmeZ21FTnTqu89DeMR18jQ==
+
 "react-native-keychain@git+https://github.com/status-im/react-native-keychain.git#v.3.0.0-status":
   version "3.0.0-rc.3"
   resolved "git+https://github.com/status-im/react-native-keychain.git#43e5512cabb8ee064fd9e503be943dcf2c7d7669"

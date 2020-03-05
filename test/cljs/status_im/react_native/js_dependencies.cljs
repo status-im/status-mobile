@@ -57,3 +57,4 @@
 (def net-info  #js {})
 (def touchid  #js {})
 (def safe-area-context #js {})
+(def react-native-install-referrer  #js {})
