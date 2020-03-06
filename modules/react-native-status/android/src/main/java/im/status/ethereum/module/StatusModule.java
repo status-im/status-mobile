@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.RemoteException;
 import android.preference.PreferenceManager;
 
 import androidx.core.content.FileProvider;
@@ -31,13 +32,16 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import com.android.installreferrer.api.InstallReferrerClient;
+import com.android.installreferrer.api.InstallReferrerStateListener;
+import com.android.installreferrer.api.ReferrerDetails;
+
 import statusgo.SignalHandler;
 import statusgo.Statusgo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
-
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -1281,5 +1285,46 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
-}
 
+    @ReactMethod
+    public void getInstallReferrer(final Callback callback) {
+        try {
+            final InstallReferrerClient mReferrerClient = InstallReferrerClient.newBuilder(this.reactContext).build();
+            mReferrerClient.startConnection(new InstallReferrerStateListener() {
+                @Override
+                public void onInstallReferrerSetupFinished(int responseCode) {
+                    String result = "";
+                    switch (responseCode) {
+                        case InstallReferrerClient.InstallReferrerResponse.OK:
+                            try {
+                                ReferrerDetails response = mReferrerClient.getInstallReferrer();
+                                //jsonConfig.put("installTimestamp", String.valueOf(response.getInstallBeginTimestampSeconds()));
+                                result = response.getInstallReferrer();
+                                //jsonConfig.put("clickTimestamp", String.valueOf(response.getReferrerClickTimestampSeconds()));
+                                mReferrerClient.endConnection();
+                            } catch (Exception e) {
+                                result = "error";
+                                e.printStackTrace();
+                            }
+                            break;
+                        case InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED:
+                            result = "error";//jsonConfig.put("message", "FEATURE_NOT_SUPPORTED");
+                            break;
+                        case InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE:
+                            result = "error";//jsonConfig.put("message", "SERVICE_UNAVAILABLE");
+                            break;
+                        default:
+                            result = "error";//jsonConfig.put("message", "UNKNOWN_RESPONSE_CODE: " + responseCode);
+                    }
+                    callback.invoke(result);
+                }
+
+                @Override
+                public void onInstallReferrerServiceDisconnected() {
+                }
+            });
+        } catch (RuntimeException e) {
+            callback.invoke("error");
+        }
+    }
+}

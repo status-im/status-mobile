@@ -32,4 +32,5 @@ dependencies {
     compile 'com.github.status-im:function:0.0.1'
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation(group: 'status-im', name: 'status-go', version: getStatusGoSHA1(), ext: 'aar')
+    implementation 'com.android.installreferrer:installreferrer:1.1'
 }

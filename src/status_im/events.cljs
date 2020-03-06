@@ -65,7 +65,9 @@
             [taoensso.timbre :as log]
             [status-im.utils.money :as money]
             status-im.hardwallet.core
-            status-im.popover.core))
+            status-im.popover.core
+            [status-im.native-module.core :as status]
+            [status-im.utils.platform :as platform]))
 
 ;; init module
 (handlers/register-handler-fx
@@ -1185,3 +1187,21 @@
  :gfycat-generated
  (fn [{:keys [db]} [_ path gfycat]]
    {:db (assoc-in db path gfycat)}))
+
+(re-frame/reg-fx
+ :get-install-referrer
+ (fn []
+   (when platform/android?
+     (status/get-install-referrer
+      #(re-frame/dispatch [:install-referrer-result %])))))
+
+(handlers/register-handler-fx
+ :get-install-referrer
+ (fn [_]
+   {:get-install-referrer nil}))
+
+(handlers/register-handler-fx
+ :install-referrer-result
+ (fn [_ [_ result]]
+   {:utils/show-popup {:title   "Install referrer"
+                       :content result}}))

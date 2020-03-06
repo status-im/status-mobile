@@ -7,7 +7,7 @@ let
     clojars = "https://repo.clojars.org";
     fabric-io = "https://maven.fabric.io/public";
     google = "https://dl.google.com/dl/android/maven2";
-    gradle = "https://repo.gradle.org/gradle/libs-releases-local";
+    gradle = "http://repo.gradle.org/gradle/libs-releases-local";
     gradlePlugins = "https://plugins.gradle.org/m2";
     java = "https://maven.java.net/content/repositories/releases";
     jcenter = "https://jcenter.bintray.com";
@@ -20,246 +20,6 @@ let
   };
 
 in {
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services-groovy/2.1/gradle-base-services-groovy-2.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-base-services-groovy/2.1/gradle-base-services-groovy-2.1";
-    type = "jar";
-    pom = {
-      sha1 = "ccac73bb7184768905f402042c0d8578e9dae007";
-      sha256 = "1wqpy25wdcrywjxld13pna7npwrh6zp8rfjnzgfprb5b5jyjp510";
-    };
-    jar = {
-      sha1 = "c19534da0e1547f510fe054d2ca038a743b8ed5b";
-      sha256 = "02iqr1sjhpdb6va8kfsbggmkzns9xhxrkfihz992aalazm81f612";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services-groovy/2.2.1/gradle-base-services-groovy-2.2.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-base-services-groovy/2.2.1/gradle-base-services-groovy-2.2.1";
-    type = "jar";
-    pom = {
-      sha1 = "60afd5575c876f582bea8062d908ad32758ea811";
-      sha256 = "124idvay5l85b92r5kzm99zq3zkb00g8y6zmp49f4f989lqh29rx";
-    };
-    jar = {
-      sha1 = "5875b51c9d579de53ce05ea89ebf5a823e2fc0f6";
-      sha256 = "0dsd7mdlpabdxc3apazvwbcvnx6d4xrnr5syp3fbmxypvcxys8zg";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services-groovy/3.1/gradle-base-services-groovy-3.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-base-services-groovy/3.1/gradle-base-services-groovy-3.1";
-    type = "jar";
-    pom = {
-      sha1 = "0f59d4b3ffee0a8ae0455237c50283a1fee8f789";
-      sha256 = "1712qg4qik15fx8a7y1hwwcmrfag2d5c259lrv879xvsnvh5kh3j";
-    };
-    jar = {
-      sha1 = "61adc13a045357c99a7bc8c70ccb6955e80eda7c";
-      sha256 = "0pv1pqlwj8zggxybcvdna77xgc1687zgmz57k5405ffj4bixdbpg";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services/2.1/gradle-base-services-2.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-base-services/2.1/gradle-base-services-2.1";
-    type = "jar";
-    pom = {
-      sha1 = "e929a5ad4aa9848ebb5b3dbb2d73585b558b851f";
-      sha256 = "037dj6p24wbw5ncv9981qrkxskl98qlihsvwkvwl7h5vjqfinzvk";
-    };
-    jar = {
-      sha1 = "8078ab01c8acaf7420ee878582c1a3220677cddc";
-      sha256 = "1wcifqjz7lgyi1nsjdkpbpij2rqap4bciwmqx1lw924p0355q07d";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services/2.2.1/gradle-base-services-2.2.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-base-services/2.2.1/gradle-base-services-2.2.1";
-    type = "jar";
-    pom = {
-      sha1 = "ec4de94aa2ae0c5a42656a3df23d969524758131";
-      sha256 = "0mf3y655zxkr5l851cbd05p8brv92vk3n81fpir5y3ajc0x88n3s";
-    };
-    jar = {
-      sha1 = "9686a37f845c7b554d0b55724e21e5ff84d9e1c1";
-      sha256 = "0hayad4mynnv4irqabxc4j0vqk17yp5q3r9xfafisv4s0nsk4849";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-base-services/3.1/gradle-base-services-3.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-base-services/3.1/gradle-base-services-3.1";
-    type = "jar";
-    pom = {
-      sha1 = "9919c78117bd8fe26b67000e25f19e2dac5b423b";
-      sha256 = "19ryx76klirl8ql1kasijwsaykqv2xs70mzdcvw53sg35dhq0min";
-    };
-    jar = {
-      sha1 = "33e7db611deb096e92e5fcf9e9007a9f08002801";
-      sha256 = "146bvpjsw96a1m2y4v3bmsjzmhjm7bq7zlvpdzl1s8g34k0dpn83";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-core/2.1/gradle-core-2.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-core/2.1/gradle-core-2.1";
-    type = "jar";
-    pom = {
-      sha1 = "bf070cdb93383804cdad252089c473d5cc65dbb2";
-      sha256 = "1iraj3rvsjd5z4qb4g82za5y2p3glpkdb4070wdyr25bywk17mam";
-    };
-    jar = {
-      sha1 = "448579eb9b1ebb52ac3a099baade52876b37c1bf";
-      sha256 = "0mwb51jf2bcdwv6gy5sj4gcq3g81nxjb5d58wghz7l5cwjj1arr0";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-core/2.2.1/gradle-core-2.2.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-core/2.2.1/gradle-core-2.2.1";
-    type = "jar";
-    pom = {
-      sha1 = "518c5eb230e15e9f3d743489fbb80860e8acec62";
-      sha256 = "0llgyi9wfjhdrx005444pv9ar02bvcgdaq6gzmvyafg8jlp3m8h0";
-    };
-    jar = {
-      sha1 = "60128a00fcf9428e90d59fd65608965e84b66420";
-      sha256 = "1wvpwy5q2i3pvialcip7nz54rbiahq548kkpvr1p6xgn97z9ms8n";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-core/3.1/gradle-core-3.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-core/3.1/gradle-core-3.1";
-    type = "jar";
-    pom = {
-      sha1 = "26675e59c68aa16f5bde212c8640c41086aae4d7";
-      sha256 = "0mf0cfzlq4cakdmix7bhd0kjlj01lk0678v5w43x4viffffsj090";
-    };
-    jar = {
-      sha1 = "864f9d0156e49d1101759745f0e3ab096533ec01";
-      sha256 = "0k925r1pqk638cia6k9qklkl8mkcfgh3l6pbbxwxmgs43f9insff";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-logging/3.1/gradle-logging-3.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-logging/3.1/gradle-logging-3.1";
-    type = "jar";
-    pom = {
-      sha1 = "bfc6ca5d69246cb407120e6632a5cacfcbee3ccd";
-      sha256 = "0gjgq9gppzkvd95qxlx2ihybg66nabp2kppkl5b07yk7p1p8j7ss";
-    };
-    jar = {
-      sha1 = "1497c134a31ed4c347ba62be68c86885b64eee2c";
-      sha256 = "1sllfk9rsv55cgbka4h91grn4z6sx9dijwjqrhii4cpl056dwmjj";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-messaging/2.1/gradle-messaging-2.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-messaging/2.1/gradle-messaging-2.1";
-    type = "jar";
-    pom = {
-      sha1 = "ff10ff2518c0fe18941e93dae462be088e69e9ef";
-      sha256 = "0v7frbjfi3vmi65zm2n0p7dnyli3cbnacc9zwmhmr6c9klzxlpz1";
-    };
-    jar = {
-      sha1 = "e73cfd37ca09295dd3d106b2dc76494c90bd6fbb";
-      sha256 = "1w92sa0fb51sgpa50014b45lwgw4a7p6fl0qgpag2h1j0gcmlgza";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-messaging/2.2.1/gradle-messaging-2.2.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-messaging/2.2.1/gradle-messaging-2.2.1";
-    type = "jar";
-    pom = {
-      sha1 = "40de72142fadcd775596c620aabffaa5983b1e15";
-      sha256 = "1mhqa4hijzb66jpzljli7b937h2baa0bwyj6lwwj0pdm165mpmyr";
-    };
-    jar = {
-      sha1 = "1e1d6ef285891a40a04dfa360e3e53b43e2c1a84";
-      sha256 = "1x7vqdcjrmk279blih6sw5b5pjfsxnag1bmckxmz949isa4xay2b";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-messaging/3.1/gradle-messaging-3.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-messaging/3.1/gradle-messaging-3.1";
-    type = "jar";
-    pom = {
-      sha1 = "1a02aa908fdc0a53d016981557e651312123174d";
-      sha256 = "13iy1rghsjl1afml5h73d0w9mna51nmnwxqg9q2l1qxlj0ypyyl8";
-    };
-    jar = {
-      sha1 = "e9c31a949e904c40178e9276e0040200067fb9b7";
-      sha256 = "0c7q6fs8ywciif1k4gz40dm17976b8bh9hahi2r2p18j6xb5xpc9";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-resources/2.1/gradle-resources-2.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-resources/2.1/gradle-resources-2.1";
-    type = "jar";
-    pom = {
-      sha1 = "64da665bcaa4edad053ea03e0949f6a3e0d993c6";
-      sha256 = "0kswdhkwl32sc9w2qbpa66sbvhriiax370rbixg1zmfmzw60k5yg";
-    };
-    jar = {
-      sha1 = "4d64f1ac8b345525503ce5a46ab1e345914df583";
-      sha256 = "055iangccx3p83rsi61axggw8fzx1pyl9jk0qirclcyd8nfksjdw";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-resources/2.2.1/gradle-resources-2.2.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-resources/2.2.1/gradle-resources-2.2.1";
-    type = "jar";
-    pom = {
-      sha1 = "7d7feabef40c3ac9eb3dc4dc9d55edc879548e49";
-      sha256 = "1wz0mayzk6plh5vvsj8mvxzzn74a163m75wxbdml8llhrn62p21h";
-    };
-    jar = {
-      sha1 = "3fcd7004383a672c97346ad684dd762c547cdccb";
-      sha256 = "1qysny46n4g2xq5dbmlrh6c189jbd8wx7x3jn99bvk01h1lydlhy";
-    };
-  };
-  "https://repo.gradle.org/gradle/libs-releases-local/org/gradle/gradle-resources/3.1/gradle-resources-3.1" =
-  {
-    host = repositories.gradle;
-    path =
-      "org/gradle/gradle-resources/3.1/gradle-resources-3.1";
-    type = "jar";
-    pom = {
-      sha1 = "2354cec814a016ef061bf68deab493162332b712";
-      sha256 = "0vjy1hdw5gv26g73ck8kh87jkvi7dwczcf7y0dhrr42p9cfzdzcf";
-    };
-    jar = {
-      sha1 = "f8386a67e8e76c43adf65b1923ed26e0ec1ded2a";
-      sha256 = "0c2l6h2s4qfkn0kc07pnv5j4b8wmvbqjrg2shxbi5wsjji2f9px3";
-    };
-  };
   "https://dl.google.com/dl/android/maven2/androidx/annotation/annotation/1.0.0/annotation-1.0.0" =
   {
     host = repositories.google;
@@ -963,6 +723,21 @@ in {
     jar = {
       sha1 = "7f51b3e1636063e491131a0b0436512131cb1bdc";
       sha256 = "0c3g3wz4fbz4ay82a0w2d5yx932gf3p8m037gf21w12b4rf96978";
+    };
+  };
+  "https://dl.google.com/dl/android/maven2/com/android/installreferrer/installreferrer/1.1/installreferrer-1.1" =
+  {
+    host = repositories.google;
+    path =
+      "com/android/installreferrer/installreferrer/1.1/installreferrer-1.1";
+    type = "aar";
+    pom = {
+      sha1 = "0450c36e32b139f8ea868610668c840c1e95ca26";
+      sha256 = "1pk4wym61fqj187pwfzlmg4k3wvxrmig3q5q2nqb02wcw98w21ir";
+    };
+    jar = {
+      sha1 = "b9a9d40fa7eb65411439f4bdd687a7527b6a5fcd";
+      sha256 = "125kl9sizpcixsaxwp04r2kbmrg02m7b544r80m81pws6klqpkwk";
     };
   };
   "https://dl.google.com/dl/android/maven2/com/android/support/appcompat-v7/28.0.0/appcompat-v7-28.0.0" =
@@ -7804,62 +7579,6 @@ in {
       sha256 = "16fyyvalj6al7hxgz7w2x27xzmaw0ldc2wiax0w23ry2gzg4gjwd";
     };
   };
-  "https://repo.maven.apache.org/maven2/com/esotericsoftware/kryo/kryo/2.20/kryo-2.20" =
-  {
-    host = repositories.apache;
-    path =
-      "com/esotericsoftware/kryo/kryo/2.20/kryo-2.20";
-    type = "jar";
-    pom = {
-      sha1 = "db5822be831634cb9fc7d3ad60fc2d48e172a1a7";
-      sha256 = "1crg1d2mqqj0m8ddgfwvqpl9vjbpn30baxwi7qymfqh1haxcjzla";
-    };
-    jar = {
-      sha1 = "b596abed147c5c5b985c996094c5c1d6622dcb9f";
-      sha256 = "160ign6lynid1za6xwhi3v8f82q2jdb6snzzcw2hmn54v980ws56";
-    };
-  };
-  "https://repo.maven.apache.org/maven2/com/esotericsoftware/minlog/minlog/1.2/minlog-1.2" =
-  {
-    host = repositories.apache;
-    path =
-      "com/esotericsoftware/minlog/minlog/1.2/minlog-1.2";
-    type = "jar";
-    pom = {
-      sha1 = "67d00f6a12cac438eb96f12fa4e3b32ba452b810";
-      sha256 = "18kpysh9sc3cv7y0rdy3hxrpvnvcw27jcb1sxgyq3di96cma20dg";
-    };
-    jar = {
-      sha1 = "59bfcd171d82f9981a5e242b9e840191f650e209";
-      sha256 = "1wk09rf32radx01aspfmqfdqmna131s7ab4r3j83vl7mm0dcny56";
-    };
-  };
-  "https://repo.maven.apache.org/maven2/com/esotericsoftware/reflectasm/reflectasm/1.07/reflectasm-1.07" =
-  {
-    host = repositories.apache;
-    path =
-      "com/esotericsoftware/reflectasm/reflectasm/1.07/reflectasm-1.07";
-    type = "jar";
-    pom = {
-      sha1 = "c5da38373fa65bd2870ced97ba4d5ccc08be62de";
-      sha256 = "0phw8hmf1x87v68g39rzjbr34ci80sh5sf7m1xkdl4vhyja4nx4a";
-    };
-    jar = {
-      sha1 = "761028ef46da8ec16a16b25ce942463eb1a9f3d5";
-      sha256 = "09k06wnbsxchb9p9jv3fg4jgkzjs5l9xxfhah9bi0n7zar45b635";
-    };
-  };
-  "https://repo.maven.apache.org/maven2/com/esotericsoftware/reflectasm/reflectasm/1.07/reflectasm-1.07-shaded" =
-  {
-    host = repositories.apache;
-    path =
-      "com/esotericsoftware/reflectasm/reflectasm/1.07/reflectasm-1.07-shaded";
-    type = "jar";
-    jar = {
-      sha1 = "76f11c94a53ee975a0d9154b325c408b210155bd";
-      sha256 = "0xkwgs97pnyw2nm3d84s18dsa886azvw350izjpfsx5jnjnhx9q8";
-    };
-  };
   "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.3.0/jackson-annotations-2.3.0" =
   {
     host = repositories.apache;
@@ -8401,32 +8120,6 @@ in {
     pom = {
       sha1 = "d94d040e8ce2ae7ff75945227e262e369445f736";
       sha256 = "0a38gd0j67siikp3zabrdgfkk7afnzg30pz0yfkvqgyafdg397g0";
-    };
-  };
-  "https://repo.maven.apache.org/maven2/com/google/guava/guava-jdk5/17.0/guava-jdk5-17.0" =
-  {
-    host = repositories.apache;
-    path =
-      "com/google/guava/guava-jdk5/17.0/guava-jdk5-17.0";
-    type = "jar";
-    pom = {
-      sha1 = "41f020642c6a9151ec18736d1fa01e6606c9be6f";
-      sha256 = "0rnvlc2v46axw2wgy6g838is0jd6srpas5ycwz25pm0kg1i55hgq";
-    };
-    jar = {
-      sha1 = "463f8378feba44df7ba7cd9272d01837dad62b36";
-      sha256 = "0qbc8lg1rqs75jin0afyw9s49qfkybvmdjv8v77a7pdn8xjlbgsr";
-    };
-  };
-  "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent-jdk5/17.0/guava-parent-jdk5-17.0" =
-  {
-    host = repositories.apache;
-    path =
-      "com/google/guava/guava-parent-jdk5/17.0/guava-parent-jdk5-17.0";
-    type = "jar";
-    pom = {
-      sha1 = "955dd912f3b5bd06e6db874b4d90de333745b0fe";
-      sha256 = "0vzvn5h0yrnmis0f195ad108b1g7nglqgy0xq6rmcab34yy0d5js";
     };
   };
   "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/10.0.1/guava-parent-10.0.1" =
@@ -24174,17 +23867,6 @@ in {
       sha256 = "06520i1ygx33iv11haz7l61m1xgzzhn4c72zjjyqdxirqkqprs7d";
     };
   };
-  "https://repo.maven.apache.org/maven2/org/objenesis/objenesis-parent/1.2/objenesis-parent-1.2" =
-  {
-    host = repositories.apache;
-    path =
-      "org/objenesis/objenesis-parent/1.2/objenesis-parent-1.2";
-    type = "jar";
-    pom = {
-      sha1 = "033696ac4ff0beb9e5893567e054d8d8e5a0c825";
-      sha256 = "01whfmi39n77njfrpzx30ylcbfq6r5zkxjyby4vfrrazzslqckn8";
-    };
-  };
   "https://repo.maven.apache.org/maven2/org/objenesis/objenesis-parent/1.3/objenesis-parent-1.3" =
   {
     host = repositories.apache;
@@ -24253,21 +23935,6 @@ in {
     jar = {
       sha1 = "9b473564e792c2bdf1449da1f0b1b5bff9805704  /home/maven/repository-staging/to-ibiblio/maven2/org/objenesis/objenesis/1.0/objenesis-1.0.jar";
       sha256 = "1a4iyj3ri4arrbln3bajys08f7bb7jdijm7jha9lf9r5v5alnsf5";
-    };
-  };
-  "https://repo.maven.apache.org/maven2/org/objenesis/objenesis/1.2/objenesis-1.2" =
-  {
-    host = repositories.apache;
-    path =
-      "org/objenesis/objenesis/1.2/objenesis-1.2";
-    type = "jar";
-    pom = {
-      sha1 = "9151e3c73d379b42f879b472bc5eec0b35b1eff8";
-      sha256 = "0jmprfql0vpn2zf2ynfnwrdj72csm8i5bfshz70ih7f02l31nihx";
-    };
-    jar = {
-      sha1 = "bfcb0539a071a4c5a30690388903ac48c0667f2a";
-      sha256 = "0w5s17ynrbwy5w65pv6pip5qspljlj9vvwpdd9ybhjc1awvw4rcc";
     };
   };
   "https://repo.maven.apache.org/maven2/org/objenesis/objenesis/1.3/objenesis-1.3" =
@@ -24506,17 +24173,6 @@ in {
       sha256 = "0cdr7hlzrlwcfr9r15wmphzxaiadc27s6gb58gvz3jrlxcsv86qw";
     };
   };
-  "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-parent/4.0/asm-parent-4.0" =
-  {
-    host = repositories.apache;
-    path =
-      "org/ow2/asm/asm-parent/4.0/asm-parent-4.0";
-    type = "jar";
-    pom = {
-      sha1 = "e7bed114eb05c1759de720bb50308ef2a97c5131";
-      sha256 = "065cyifib7bjmq1cl4syg7qr4lxmkna0ma2abqf92z20xq5gwnj0";
-    };
-  };
   "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-parent/5.0.1/asm-parent-5.0.1" =
   {
     host = repositories.apache;
@@ -24581,21 +24237,6 @@ in {
     pom = {
       sha1 = "6a030ede2a62bdde4a6b23ef342994703a11ea24";
       sha256 = "053xrln1w9nj0aw23wsiqkgn8569fk6zx7mw8dns9jgcp55hc7br";
-    };
-  };
-  "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/4.0/asm-4.0" =
-  {
-    host = repositories.apache;
-    path =
-      "org/ow2/asm/asm/4.0/asm-4.0";
-    type = "jar";
-    pom = {
-      sha1 = "5e484ac83d98253bf04ce8653aa959e8f0331783";
-      sha256 = "1mw6sx3nv9rz2wvb3g5irsj794zq35x8fn6x74nv2ilyhnpfyg76";
-    };
-    jar = {
-      sha1 = "659add6efc75a4715d738e73f07505246edf4d66";
-      sha256 = "0mx9wb9b4z699hsh33zh7dwyzavk9sly179xqhjb0yx4428dwbgv";
     };
   };
   "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/5.0.2/asm-5.0.2" =
@@ -24915,21 +24556,6 @@ in {
       sha256 = "0zima9a1p07dw2yd362y701qyd063rl6n2dbfq8yw57p62890yrn";
     };
   };
-  "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.10/slf4j-api-1.7.10" =
-  {
-    host = repositories.apache;
-    path =
-      "org/slf4j/slf4j-api/1.7.10/slf4j-api-1.7.10";
-    type = "jar";
-    pom = {
-      sha1 = "e5247e58569e3386a67622e01fcbf189ea902cbf";
-      sha256 = "1c8ldjj2nvyd22xlrdainh1bs90srjrr3p9dg5s2qhk34a6mx75g";
-    };
-    jar = {
-      sha1 = "5b338f206827d88acd890739f400a9b7664e5984";
-      sha256 = "1zib4f8lj0787di7v2j04ad5w4gaxw9v31xzi494s3bl0mqf4qrq";
-    };
-  };
   "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.19/slf4j-api-1.7.19" =
   {
     host = repositories.apache;
@@ -25025,17 +24651,6 @@ in {
     pom = {
       sha1 = "50c385c4c80416a4159ff9977d576cbac9e27217";
       sha256 = "11fc0rb40w1s7v2b13gx70njzbiwmrz5bkik9y40698a5x9n583n";
-    };
-  };
-  "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-parent/1.7.10/slf4j-parent-1.7.10" =
-  {
-    host = repositories.apache;
-    path =
-      "org/slf4j/slf4j-parent/1.7.10/slf4j-parent-1.7.10";
-    type = "jar";
-    pom = {
-      sha1 = "ed97ed5a64d2851ed1709f94f66fc553d52e310a";
-      sha256 = "1kp2jy8qp7pxl5ysryblngb8w963z256ar7v4r4rpdrg33sygghs";
     };
   };
   "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-parent/1.7.19/slf4j-parent-1.7.19" =

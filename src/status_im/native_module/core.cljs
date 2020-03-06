@@ -350,3 +350,9 @@
   [mnemonic callback]
   (log/debug "[native-module] validate-mnemonic")
   (.validateMnemonic (status) mnemonic callback))
+
+(defn get-install-referrer
+  "Get install referrer"
+  [callback]
+  (log/debug "[native-module] get-install-referrer")
+  (.getInstallReferrer (status) callback))
