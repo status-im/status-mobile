@@ -139,7 +139,9 @@
          (get-in db [:multiaccounts/multiaccounts key-uid])]
      (fx/merge
       cofx
-      {:db (dissoc db :intro-wizard)}
+      {:db (-> db
+               (dissoc :intro-wizard)
+               (update :hardwallet dissoc :application-info))}
       (multiaccounts.login/open-login key-uid photo-path name public-key)))))
 
 ;; multiaccounts logout module
