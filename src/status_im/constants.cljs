@@ -104,6 +104,7 @@
   {:preview-privacy? config/blank-preview?
    :wallet/visible-tokens {:mainnet #{:SNT}}
    :currency :usd
+   :waku-enabled true
    :log-level config/log-level-status-go})
 
 (defn default-visible-tokens [chain]
