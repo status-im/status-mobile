@@ -54,7 +54,9 @@ def prep(type = 'nightly') {
     /* install ruby dependencies */
     nix.shell(
       'bundle install --gemfile=fastlane/Gemfile --quiet',
-      attr: 'shells.fastlane')
+      attr: 'shells.fastlane',
+      sandbox: false
+    )
   }
 
   if (['macos', 'linux', 'windows'].contains(env.TARGET)) {
@@ -62,7 +64,11 @@ def prep(type = 'nightly') {
     nix.shell('scripts/prepare-for-desktop-platform.sh', pure: false)
   }
   /* run script in the nix shell so that node_modules gets instantiated before attempting the copies */
-  nix.shell('scripts/copy-translations.sh chmod', attr: "shells.${env.TARGET}")
+  nix.shell(
+    'scripts/copy-translations.sh chmod',
+    attr: "shells.${env.TARGET}",
+    sandbox: false
+  )
 }
 
 def uploadArtifact(path) {
