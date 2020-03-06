@@ -1,3 +1,5 @@
+library 'status-react-jenkins@master'
+
 pipeline {
   agent { label 'linux' }
 
@@ -18,36 +20,33 @@ pipeline {
     stage('Prep') {
       steps { script {
         println "Current JOB: ${env.JOB_NAME}"
-        /* load common lib */
-        cmn = load('ci/common.groovy')
-        gh  = load('ci/github.groovy')
         /* just for a shorter access */
-        btype = cmn.utils.getBuildType()
+        btype = utils.getBuildType()
       } }
     }
     stage('Build') {
       parallel {
         stage('iOS') { steps { script {
-          ios    = cmn.ci.Build('status-react/combined/mobile-ios')
+          ios = jenkins.Build('status-react/combined/mobile-ios')
         } } }
         stage('Android') { steps { script {
-          apk    = cmn.ci.Build('status-react/combined/mobile-android')
+          apk = jenkins.Build('status-react/combined/mobile-android')
         } } }
         stage('Android e2e') { steps { script {
-          apke2e = cmn.ci.Build('status-react/combined/mobile-android-e2e')
+          apke2e = jenkins.Build('status-react/combined/mobile-android-e2e')
         } } }
       }
     }
     stage('Archive') {
       steps { script {
         sh('rm -f pkg/*')
-        cmn.ci.copyArts(ios)
-        //cmn.ci.copyArts(iose2e)
-        cmn.ci.copyArts(apk)
-        cmn.ci.copyArts(apke2e)
+        jenkins.copyArts(ios)
+        //jenkins.copyArts(iose2e)
+        jenkins.copyArts(apk)
+        jenkins.copyArts(apke2e)
         dir('pkg') {
           /* generate sha256 checksums for upload */
-          sh "sha256sum * | tee ${cmn.utils.pkgFilename(btype, 'sha256')}"
+          sh "sha256sum * | tee ${utils.pkgFilename(btype, 'sha256')}"
           archiveArtifacts('*')
         }
       } }
@@ -57,18 +56,18 @@ pipeline {
         /* object for easier URLs handling */
         urls = [
           /* mobile */
-          Apk: cmn.pkgUrl(apk), Apke2e: cmn.pkgUrl(apke2e),
-          iOS: cmn.pkgUrl(ios), /*iOSe2e: cmn.pkgUrl(iose2e),*/
-          Diawi: cmn.utils.getEnv(ios, 'DIAWI_URL'),
+          Apk: utils.pkgUrl(apk), Apke2e: utils.pkgUrl(apke2e),
+          iOS: utils.pkgUrl(ios), /*iOSe2e: utils.pkgUrl(iose2e),*/
+          Diawi: utils.utils.getEnv(ios, 'DIAWI_URL'),
           /* upload the sha256 checksums file too */
-          SHA: cmn.uploadArtifact(cmn.utils.pkgFind('sha256')),
+          SHA: s3.uploadArtifact(utils.pkgFind('sha256')),
         ]
         /* add URLs to the build description */
-        cmn.ci.setBuildDesc(urls)
+        jenkins.setBuildDesc(urls)
         /* Create JSON file with newest build URLs */
         switch (btype) {
           /* legacy naming, should have named it nightly.json */
-          case 'nightly': cmn.updateBucketJSON(urls, 'latest.json'); break
+          case 'nightly': s3.updateBucketJSON(urls, 'latest.json'); break
         }
       } }
     }
@@ -83,10 +82,11 @@ pipeline {
     stage('Run e2e') {
       when { expression { btype == 'nightly' } }
       steps { script {
-        e2eApk = cmn.utils.getEnv(apke2e, 'SAUCE_URL')
+        e2eApk = utils.getEnv(apke2e, 'SAUCE_URL')
         build(
-          job: 'end-to-end-tests/status-app-nightly', wait: false,
-          parameters: [string(name: 'APK_NAME', value: e2eApk)]
+          job: 'end-to-end-tests/status-app-nightly',
+          parameters: [string(name: 'APK_NAME', value: e2eApk)],
+          wait: false
         )
       } }
     }

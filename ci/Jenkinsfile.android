@@ -1,3 +1,5 @@
+library 'status-react-jenkins@master'
+
 pipeline {
   agent { label 'linux' }
 
@@ -40,14 +42,11 @@ pipeline {
     stage('Prep') {
       steps {
         script {
-          /* Necessary to load methods */
-          android = load 'ci/android.groovy'
-          cmn     = load 'ci/common.groovy'
-          btype   = cmn.utils.getBuildType()
+          btype = utils.getBuildType()
           print "Running ${btype} build!"
-          cmn.ci.abortPreviousRunningBuilds()
+          jenkins.abortPreviousRunningBuilds()
           /* Cleanup and Prep */
-          cmn.prep(btype)
+          commonPrep(btype)
         }
       }
     }
@@ -56,7 +55,7 @@ pipeline {
         /* Build implicit dependencies if needed (we run `lein deps :tree` but it's not really required, for this purpose)
            Implicit dependencies include building a patched node_modules, fetching maven dependencies, and anything else required.
            We do this before the parallel steps so we have a known starting situation. */
-        script { cmn.nix.shell('lein deps :tree', attr: 'shells.lein') }
+        script { nix.shell('lein deps :tree', attr: 'shells.lein') }
       }
     }
     stage('Parallel Assemble') {
@@ -64,12 +63,12 @@ pipeline {
         stage('Checks') { stages {
           stage('Lint') {
             steps {
-              script { cmn.nix.shell('lein cljfmt check', attr: 'shells.lein') }
+              script { nix.shell('lein cljfmt check', attr: 'shells.lein') }
             }
           }
           stage('Tests') {
             steps {
-              script { cmn.nix.shell('lein test-cljs', attr: 'shells.lein') }
+              script { nix.shell('lein test-cljs', attr: 'shells.lein') }
             }
           }
         } }
@@ -77,7 +76,7 @@ pipeline {
           stage('JSBundle') {
             steps {
               script {
-                cmn.nix.shell('make jsbundle-android', pure: false)
+                nix.shell('make jsbundle-android', pure: false)
               }
             }
           }
@@ -99,7 +98,7 @@ pipeline {
         stage('Upload') {
           steps {
             script {
-              def urls = apks.collect { cmn.uploadArtifact(it) }
+              def urls = apks.collect { s3.uploadArtifact(it) }
               /* return only the universal APK */
               if (urls.size() > 1) { 
                 env.PKG_URL = urls.find { it.contains('universal') }
@@ -125,8 +124,8 @@ pipeline {
     }
   }
   post {
-    success { script { load('ci/github.groovy').notifyPR(true) } }
-    failure { script { load('ci/github.groovy').notifyPR(false) } }
+    success { script { github.notifyPR(true) } }
+    failure { script { github.notifyPR(false) } }
     always { sh 'make _fix-node-perms' }
   }
 }

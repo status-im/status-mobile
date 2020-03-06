@@ -22,7 +22,7 @@ if [[ -z ${KEYSTORE_PATH} ]]; then
     KEYSTORE_PATH=$(property_gradle 'KEYSTORE_FILE')
 fi
 # Replace ~ with proper absolute path
-KEYSTORE_PATH=${KEYSTORE_FILE/#\~/$HOME}
+KEYSTORE_PATH=${KEYSTORE_PATH/#\~/$HOME}
 
 if [[ -e "${KEYSTORE_PATH}" ]]; then
     echo -e "${YLW}Keystore file already exists:${RST} ${KEYSTORE_PATH}" > /dev/stderr

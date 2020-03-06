@@ -1,3 +1,5 @@
+library 'status-react-jenkins@master'
+
 pipeline {
   agent { label params.AGENT_LABEL }
 
@@ -25,11 +27,6 @@ pipeline {
   }
 
   stages {
-    stage('Prep') {
-      steps { script {
-        nix = load('ci/nix.groovy')
-      } }
-    }
     stage('Setup') {
       steps { script {
         nix.shell('nix-env -i openssh', pure: false)

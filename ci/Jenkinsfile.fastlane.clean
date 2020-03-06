@@ -1,3 +1,5 @@
+library 'status-react-jenkins@master'
+
 pipeline {
   agent { label 'macos' }
 
@@ -26,7 +28,6 @@ pipeline {
   stages {
     stage('Prep') {
       steps { script {
-        nix = load('ci/nix.groovy')
         nix.shell(
           'bundle install --gemfile=fastlane/Gemfile',
           attr: 'shells.fastlane',

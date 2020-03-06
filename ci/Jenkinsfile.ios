@@ -1,3 +1,5 @@
+library 'status-react-jenkins@master'
+
 pipeline {
   agent { label 'macos-xcode-11.3.1' }
 
@@ -39,14 +41,11 @@ pipeline {
     stage('Prep') {
       steps {
         script {
-          /* Necessary to load methods */
-          ios   = load 'ci/ios.groovy'
-          cmn   = load 'ci/common.groovy'
-          btype = cmn.utils.getBuildType()
+          btype = utils.getBuildType()
           print "Running ${btype} build!"
-          cmn.ci.abortPreviousRunningBuilds()
+          jenkins.abortPreviousRunningBuilds()
           /* Cleanup and Prep */
-          cmn.prep(btype)
+          commonPrep(btype)
         }
       }
     }
@@ -55,19 +54,19 @@ pipeline {
         stage('Checks') { stages {
           stage('Lint') {
             steps {
-              script { cmn.nix.shell('lein cljfmt check', attr: 'shells.lein') }
+              script { nix.shell('lein cljfmt check', attr: 'shells.lein') }
             }
           }
           stage('Tests') {
             steps {
-              script { cmn.nix.shell('lein test-cljs', attr: 'shells.lein') }
+              script { nix.shell('lein test-cljs', attr: 'shells.lein') }
             }
           }
         } }
         stage('Build') { stages {
           stage('JSBundle') {
             steps {
-              script { cmn.nix.shell('make jsbundle-ios') }
+              script { nix.shell('make jsbundle-ios') }
             }
           }
           stage('Bundle') {
@@ -88,7 +87,7 @@ pipeline {
         stage('Upload') {
           steps {
             script {
-              env.PKG_URL = cmn.uploadArtifact(api)
+              env.PKG_URL = s3.uploadArtifact(api)
               /* e2e builds get tested in SauceLabs */
               if (btype == 'e2e') {
                 env.SAUCE_URL = ios.uploadToSauceLabs()
@@ -108,8 +107,8 @@ pipeline {
     }
   }
   post {
-    success { script { load('ci/github.groovy').notifyPR(true) } }
-    failure { script { load('ci/github.groovy').notifyPR(false) } }
+    success { script { github.notifyPR(true) } }
+    failure { script { github.notifyPR(false) } }
     always { sh 'make _fix-node-perms' }
   }
 }

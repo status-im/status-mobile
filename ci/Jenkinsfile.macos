@@ -1,3 +1,5 @@
+library 'status-react-jenkins@master'
+
 pipeline {
   agent { label 'macos-xcode-11.3.1' }
 
@@ -40,14 +42,11 @@ pipeline {
     stage('Prep') {
       steps {
         script {
-          /* Necessary to load methods */
-          desktop = load 'ci/desktop.groovy'
-          cmn     = load 'ci/common.groovy'
-          btype   = cmn.utils.getBuildType()
+          btype = utils.getBuildType()
           print "Running ${btype} build!"
-          cmn.ci.abortPreviousRunningBuilds()
+          jenkins.abortPreviousRunningBuilds()
           /* Cleanup and Prep */
-          cmn.prep(btype)
+          commonPrep(btype)
         }
       }
     }
@@ -56,12 +55,12 @@ pipeline {
         stage('Checks') { stages {
           stage('Lint') {
             steps {
-              script { cmn.nix.shell('lein cljfmt check', attr: 'shells.lein') }
+              script { nix.shell('lein cljfmt check', attr: 'shells.lein') }
             }
           }
           stage('Tests') {
             steps {
-              script { cmn.nix.shell('lein test-cljs', attr: 'shells.lein') }
+              script { nix.shell('lein test-cljs', attr: 'shells.lein') }
             }
           }
         } }
@@ -93,7 +92,7 @@ pipeline {
         }
         stage('Upload') {
           steps {
-            script { env.PKG_URL = cmn.uploadArtifact(dmg) }
+            script { env.PKG_URL = s3.uploadArtifact(dmg) }
           }
         }
       }
@@ -106,7 +105,7 @@ pipeline {
     }
   }
   post {
-    success { script { load('ci/github.groovy').notifyPR(true) } }
-    failure { script { load('ci/github.groovy').notifyPR(false) } }
+    success { script { github.notifyPR(true) } }
+    failure { script { github.notifyPR(false) } }
   }
 }
