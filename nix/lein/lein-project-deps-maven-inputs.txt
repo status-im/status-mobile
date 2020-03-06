@@ -1,6 +1,5 @@
 https://repo.clojars.org/binaryage/devtools/0.9.10/devtools-0.9.10
 https://repo.clojars.org/binaryage/env-config/0.2.2/env-config-0.2.2
-https://repo.clojars.org/cider/cider-nrepl/0.14.0/cider-nrepl-0.14.0
 https://repo.clojars.org/clj-stacktrace/clj-stacktrace/0.2.5/clj-stacktrace-0.2.5
 https://repo.clojars.org/clj-time/clj-time/0.11.0/clj-time-0.11.0
 https://repo.clojars.org/clj-time/clj-time/0.6.0/clj-time-0.6.0
@@ -22,7 +21,6 @@ https://repo.clojars.org/cljsjs/react/15.5.4-0/react-15.5.4-0
 https://repo.clojars.org/clout/clout/2.1.2/clout-2.1.2
 https://repo.clojars.org/com/andrewmcveigh/cljs-time/0.4.0/cljs-time-0.4.0
 https://repo.clojars.org/com/andrewmcveigh/cljs-time/0.5.2/cljs-time-0.5.2
-https://repo.clojars.org/com/jakemccrary/lein-test-refresh/0.20.0/lein-test-refresh-0.20.0
 https://repo.clojars.org/com/taoensso/encore/2.79.1/encore-2.79.1
 https://repo.clojars.org/com/taoensso/encore/2.84.2/encore-2.84.2
 https://repo.clojars.org/com/taoensso/encore/2.91.0/encore-2.91.0
@@ -43,19 +41,13 @@ https://repo.clojars.org/http-kit/http-kit/2.2.0/http-kit-2.2.0
 https://repo.clojars.org/instaparse/instaparse/1.4.0/instaparse-1.4.0
 https://repo.clojars.org/io/aviso/pretty/0.1.30/pretty-0.1.30
 https://repo.clojars.org/io/aviso/pretty/0.1.33/pretty-0.1.33
-https://repo.clojars.org/jakemcc/clojure-gntp/0.1.1/clojure-gntp-0.1.1
-https://repo.clojars.org/jonase/eastwood/0.2.5/eastwood-0.2.5
-https://repo.clojars.org/jonase/kibit/0.1.5/kibit-0.1.5
 https://repo.clojars.org/lein-cljfmt/lein-cljfmt/0.5.7/lein-cljfmt-0.5.7
 https://repo.clojars.org/lein-cljsbuild/lein-cljsbuild/1.1.7/lein-cljsbuild-1.1.7
-https://repo.clojars.org/lein-kibit/lein-kibit/0.1.5/lein-kibit-0.1.5
 https://repo.clojars.org/lein-re-frisk/lein-re-frisk/0.5.8/lein-re-frisk-0.5.8
-https://repo.clojars.org/leinjacker/leinjacker/0.4.2/leinjacker-0.4.2
 https://repo.clojars.org/medley/medley/0.8.2/medley-0.8.2
 https://repo.clojars.org/meta-merge/meta-merge/1.0.0/meta-merge-1.0.0
 https://repo.clojars.org/mvxcvi/alphabase/1.0.0/alphabase-1.0.0
 https://repo.clojars.org/net/cgrand/macrovich/0.2.0/macrovich-0.2.0
-https://repo.clojars.org/org/clojars/brenton/google-diff-match-patch/0.1/google-diff-match-patch-0.1
 https://repo.clojars.org/quoin/quoin/0.1.2/quoin-0.1.2
 https://repo.clojars.org/rasom/cljs-react-navigation/0.1.4/cljs-react-navigation-0.1.4
 https://repo.clojars.org/rasom/lein-githooks/0.1.5/lein-githooks-0.1.5
@@ -67,8 +59,6 @@ https://repo.clojars.org/re-frisk-sidecar/re-frisk-sidecar/0.5.7/re-frisk-sideca
 https://repo.clojars.org/re-frisk/re-frisk/0.5.4/re-frisk-0.5.4
 https://repo.clojars.org/reagent/reagent/0.6.0/reagent-0.6.0
 https://repo.clojars.org/reagent/reagent/0.7.0/reagent-0.7.0
-https://repo.clojars.org/refactor-nrepl/refactor-nrepl/2.3.0-SNAPSHOT/refactor-nrepl-2.3.0-20170531.195417-17
-https://repo.clojars.org/rewrite-clj/rewrite-clj/0.4.12/rewrite-clj-0.4.12
 https://repo.clojars.org/rewrite-clj/rewrite-clj/0.5.2/rewrite-clj-0.5.2
 https://repo.clojars.org/rewrite-clj/rewrite-clj/0.6.0/rewrite-clj-0.6.0
 https://repo.clojars.org/rewrite-cljs/rewrite-cljs/0.4.3/rewrite-cljs-0.4.3
@@ -198,7 +188,6 @@ https://repo1.maven.org/maven2/org/apache/commons/commons-parent/35/commons-pare
 https://repo1.maven.org/maven2/org/apache/commons/commons-parent/39/commons-parent-39
 https://repo1.maven.org/maven2/org/checkerframework/checker-qual/2.0.0/checker-qual-2.0.0
 https://repo1.maven.org/maven2/org/clojure/clojure/1.10.0/clojure-1.10.0
-https://repo1.maven.org/maven2/org/clojure/clojure/1.2.0/clojure-1.2.0
 https://repo1.maven.org/maven2/org/clojure/clojure/1.2.1/clojure-1.2.1
 https://repo1.maven.org/maven2/org/clojure/clojure/1.3.0/clojure-1.3.0
 https://repo1.maven.org/maven2/org/clojure/clojure/1.4.0/clojure-1.4.0
@@ -224,12 +213,9 @@ https://repo1.maven.org/maven2/org/clojure/clojurescript/1.9.946/clojurescript-1
 https://repo1.maven.org/maven2/org/clojure/core.async/0.2.395/core.async-0.2.395
 https://repo1.maven.org/maven2/org/clojure/core.async/0.4.474/core.async-0.4.474
 https://repo1.maven.org/maven2/org/clojure/core.cache/0.6.5/core.cache-0.6.5
-https://repo1.maven.org/maven2/org/clojure/core.contracts/0.0.1/core.contracts-0.0.1
-https://repo1.maven.org/maven2/org/clojure/core.logic/0.8.11/core.logic-0.8.11
 https://repo1.maven.org/maven2/org/clojure/core.memoize/0.5.9/core.memoize-0.5.9
 https://repo1.maven.org/maven2/org/clojure/core.specs.alpha/0.1.24/core.specs.alpha-0.1.24
 https://repo1.maven.org/maven2/org/clojure/core.specs.alpha/0.2.44/core.specs.alpha-0.2.44
-https://repo1.maven.org/maven2/org/clojure/core.unify/0.5.3/core.unify-0.5.3
 https://repo1.maven.org/maven2/org/clojure/data.json/0.2.6/data.json-0.2.6
 https://repo1.maven.org/maven2/org/clojure/data.priority-map/0.0.7/data.priority-map-0.0.7
 https://repo1.maven.org/maven2/org/clojure/google-closure-library-third-party/0.0-20140718-946a7d39/google-closure-library-third-party-0.0-20140718-946a7d39
@@ -244,7 +230,6 @@ https://repo1.maven.org/maven2/org/clojure/google-closure-library/0.0-20160609-f
 https://repo1.maven.org/maven2/org/clojure/google-closure-library/0.0-20170519-fa0499ef/google-closure-library-0.0-20170519-fa0499ef
 https://repo1.maven.org/maven2/org/clojure/google-closure-library/0.0-20170809-b9c14c6b/google-closure-library-0.0-20170809-b9c14c6b
 https://repo1.maven.org/maven2/org/clojure/google-closure-library/0.0-20190213-2033d5d9/google-closure-library-0.0-20190213-2033d5d9
-https://repo1.maven.org/maven2/org/clojure/pom.contrib/0.0.26/pom.contrib-0.0.26
 https://repo1.maven.org/maven2/org/clojure/pom.contrib/0.1.2/pom.contrib-0.1.2
 https://repo1.maven.org/maven2/org/clojure/pom.contrib/0.2.0/pom.contrib-0.2.0
 https://repo1.maven.org/maven2/org/clojure/pom.contrib/0.2.2/pom.contrib-0.2.2
@@ -253,14 +238,11 @@ https://repo1.maven.org/maven2/org/clojure/spec.alpha/0.2.176/spec.alpha-0.2.176
 https://repo1.maven.org/maven2/org/clojure/tools.analyzer.jvm/0.6.10/tools.analyzer.jvm-0.6.10
 https://repo1.maven.org/maven2/org/clojure/tools.analyzer.jvm/0.7.0/tools.analyzer.jvm-0.7.0
 https://repo1.maven.org/maven2/org/clojure/tools.analyzer/0.6.9/tools.analyzer-0.6.9
-https://repo1.maven.org/maven2/org/clojure/tools.cli/0.3.5/tools.cli-0.3.5
 https://repo1.maven.org/maven2/org/clojure/tools.logging/0.3.1/tools.logging-0.3.1
 https://repo1.maven.org/maven2/org/clojure/tools.macro/0.1.5/tools.macro-0.1.5
 https://repo1.maven.org/maven2/org/clojure/tools.namespace/0.2.11/tools.namespace-0.2.11
-https://repo1.maven.org/maven2/org/clojure/tools.nrepl/0.2.12/tools.nrepl-0.2.12
 https://repo1.maven.org/maven2/org/clojure/tools.reader/0.10.0/tools.reader-0.10.0
 https://repo1.maven.org/maven2/org/clojure/tools.reader/0.8.1/tools.reader-0.8.1
-https://repo1.maven.org/maven2/org/clojure/tools.reader/0.8.13/tools.reader-0.8.13
 https://repo1.maven.org/maven2/org/clojure/tools.reader/0.9.1/tools.reader-0.9.1
 https://repo1.maven.org/maven2/org/clojure/tools.reader/1.0.0-alpha1/tools.reader-1.0.0-alpha1
 https://repo1.maven.org/maven2/org/clojure/tools.reader/1.0.0-alpha3/tools.reader-1.0.0-alpha3
@@ -293,4 +275,3 @@ https://repo1.maven.org/maven2/org/sonatype/oss/oss-parent/4/oss-parent-4
 https://repo1.maven.org/maven2/org/sonatype/oss/oss-parent/5/oss-parent-5
 https://repo1.maven.org/maven2/org/sonatype/oss/oss-parent/7/oss-parent-7
 https://repo1.maven.org/maven2/org/sonatype/oss/oss-parent/9/oss-parent-9
-https://repo1.maven.org/maven2/org/tcrawley/dynapath/0.2.4/dynapath-0.2.4
