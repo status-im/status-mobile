@@ -116,7 +116,6 @@
     (when (and current-chat?
                (or (not cursor-clock-value)
                    (<= cursor-clock-value clock-value)))
-      ;; Not in the current view, offload to db and update cursor if necessary
       (if (or (not @view.state/viewable-item)
               (not= current-chat-id
                     (:chat-id @view.state/viewable-item))
@@ -124,10 +123,11 @@
                   clock-value))
         (add-message cofx {:message      message
                            :current-chat? current-chat?})
+        ;; Not in the current view, offload to db and update cursor if necessary
         (when (and (< clock-value
                       cursor-clock-value)
                    (= current-chat-id
-                      (:chat-id (.-item view.state/viewable-item))))
+                      (:chat-id @view.state/viewable-item)))
           {:db (assoc-in db [:chats chat-id :cursor] (chat-loading/clock-value->cursor clock-value))})))))
 
 (defn- add-to-chat?
