@@ -305,13 +305,18 @@
 (defonce messages-list-ref (atom nil))
 
 (defn on-viewable-items-changed [e]
-  (reset! state/viewable-item
-          (let [element (->> (.-viewableItems e)
-                             reverse
-                             (filter (fn [e]
-                                       (= :message (:type (.-item e)))))
-                             first)]
-            (when element (.-item element))))
+  (when @messages-list-ref
+    (reset! state/viewable-item
+            (when-let [last-visible-element (aget (.-viewableItems e) (dec (.-length (.-viewableItems e))))]
+              (let [index (.-index last-visible-element)
+                      ;; Get first not visible element, if it's a datemark/gap
+                      ;; we might unnecessarely add messages on receiving as
+                      ;; they do not have a clock value, but most of the times
+                      ;; it will be a message
+                    first-not-visible (aget (.-data (.-props @messages-list-ref)) (inc index))]
+                (when (and first-not-visible
+                           (= :message (:type first-not-visible)))
+                  first-not-visible)))))
   (debounce/debounce-and-dispatch [:chat.ui/message-visibility-changed e] 5000))
 
 (defview messages-view
