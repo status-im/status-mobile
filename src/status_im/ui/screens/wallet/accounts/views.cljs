@@ -9,6 +9,7 @@
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
+            [status-im.ui.starter-pack.view :as starter-pack]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
             [status-im.ui.screens.wallet.accounts.styles :as styles]
             [status-im.utils.utils :as utils.utils]
@@ -186,6 +187,7 @@
                               :icon                :main-icons/more
                               :accessibility-label :accounts-more-options}]}
         [accounts]
+        [starter-pack/starter-pack]
         [assets]
         [react/view {:height 68}]]
        [send-button]])))

@@ -5,6 +5,7 @@
   {:empty-chats-header (js/require "../resources/images/ui/empty-chats-header.png")
    :welcome            (js/require "../resources/images/ui/welcome.jpg")
    :welcome-dark       (js/require "../resources/images/ui/welcome-dark.jpg")
+   :starter-pack       (js/require "../resources/images/ui/starter-pack.png")
    :chat               (js/require "../resources/images/ui/chat.jpg")
    :wallet             (js/require "../resources/images/ui/wallet.jpg")
    :browser            (js/require "../resources/images/ui/browser.jpg")
