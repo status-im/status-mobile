@@ -74,8 +74,8 @@
 (fx/defn save-username
   {:events [::save-username]}
   [{:keys [db] :as cofx} custom-domain? username]
-  (let [name   (fullname custom-domain? username)
-        names  (get-in db [:multiaccount :usernames] [])
+  (let [name      (fullname custom-domain? username)
+        names     (get-in db [:multiaccount :usernames] [])
         new-names (conj names name)]
     (fx/merge cofx
               (multiaccounts.update/multiaccount-update
@@ -88,9 +88,9 @@
 (fx/defn remove-username
   {:events [::remove-username]}
   [{:keys [db] :as cofx} name]
-  (let [names  (get-in db [:multiaccount :usernames] [])
-        preferred-name  (get-in db [:multiaccount :preferred-name])
-        new-names (remove #(= name %) names)]
+  (let [names          (get-in db [:multiaccount :usernames] [])
+        preferred-name (get-in db [:multiaccount :preferred-name])
+        new-names      (remove #(= name %) names)]
     (fx/merge cofx
               {:db (update db :ens/registration assoc
                            :username name
