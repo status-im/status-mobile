@@ -248,40 +248,33 @@
 
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
-  [cofx chat-id {:keys [modal? navigation-reset?]}]
-  (cond
-    modal?
-    (fx/merge cofx
-              (navigation/navigate-to-cofx :chat-modal {})
-              (preload-chat-data chat-id))
-
-    :else
-    (fx/merge cofx
-              (navigation/navigate-to-cofx :chat {})
-              (preload-chat-data chat-id))))
+  [cofx chat-id]
+  (fx/merge cofx
+            (navigation/navigate-to-cofx :chat {})
+            (preload-chat-data chat-id)))
 
 (fx/defn start-chat
   "Start a chat, making sure it exists"
-  [{:keys [db] :as cofx} chat-id opts]
+  [{:keys [db] :as cofx} chat-id _]
   ;; don't allow to open chat with yourself
   (when (not= (multiaccounts.model/current-public-key cofx) chat-id)
     (fx/merge cofx
               (upsert-chat {:chat-id   chat-id
                             :is-active true})
               (transport.filters/load-chat chat-id)
-              (navigate-to-chat chat-id opts))))
+              (navigate-to-chat chat-id))))
 
 (fx/defn start-public-chat
   "Starts a new public chat"
-  [cofx topic {:keys [dont-navigate?] :as opts}]
+  [cofx topic {:keys [dont-navigate?]}]
   (if (active-chat? cofx topic)
     (when-not dont-navigate?
-      (navigate-to-chat cofx topic opts))
+      (navigate-to-chat cofx topic))
     (fx/merge cofx
               (add-public-chat topic)
               (transport.filters/load-chat topic)
               #(when-not dont-navigate?
-                 (navigate-to-chat % topic opts)))))
+                 (navigate-to-chat % topic)))))
 
 (fx/defn disable-chat-cooldown
   "Turns off chat cooldown (protection against message spamming)"

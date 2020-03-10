@@ -1,22 +1,12 @@
 (ns status-im.ui.screens.home.styles
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.styles :as styles]
-            [status-im.ui.components.search-input.styles :as search-input.styles]
-            [status-im.utils.platform :as platform]))
-
-(defn toolbar []
-  {:background-color colors/white})
-
-(def sync-wrapper
-  {:flex-direction :row})
-
-(def sync-info
-  {:margin-horizontal 15})
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.tabbar.styles :as tabs.styles]))
 
 (def last-message-container
   {:flex-shrink 1})
 
-(styles/def last-message-text
+(def last-message-text
   {:flex        1
    :align-self  :stretch
    :line-height 22
@@ -31,31 +21,6 @@
    :width            12
    :height           12})
 
-(def search-container
-  (merge
-   search-input.styles/search-container
-   (when platform/ios?
-     {:position         :absolute
-      :top              (- search-input.styles/search-input-height)
-      :width            "100%"})))
-
-(def filter-section-title
-  {:margin-left   16
-   :margin-top    14
-   :margin-bottom 4
-   :color         colors/gray})
-
-(def status-container
-  {:flex-direction :row
-   :top            16
-   :right          16})
-
-(def status-image
-  {:opacity      0.6
-   :margin-right 4
-   :width        16
-   :height       16})
-
 (def datetime-text
   {:color          colors/text-gray
    :font-size      10
@@ -64,34 +29,13 @@
    :align-items    :center
    :line-height    12})
 
-(styles/def new-messages-text
-  {:left       0
-   :font-size  12
-   :color      colors/blue
-   :text-align :center
-   :android    {:top 2}
-   :ios        {:top 3}
-   :desktop    {:top 3}})
-
-(def group-icon
-  {:margin-top   8
-   :margin-right 6
-   :width        14
-   :height       9
-   :tint-color   :white})
-
-(def no-chats
-  {:flex               1
-   :padding-top        16
-   :padding-horizontal 16
-   :background-color   :white})
-
 (def chat-tooltip
   {:align-items   :center
    :border-color  colors/gray-lighter
    :border-width  1
    :border-radius 16
-   :margin        16})
+   :margin        16
+   :margin-bottom 68})
 
 (def no-chats-text
   {:margin-top        50
@@ -102,9 +46,6 @@
 (def welcome-view
   {:flex            1
    :justify-content :flex-end})
-
-(def welcome-image-container
-  {:align-items :center})
 
 (def welcome-text
   {:typography :header
@@ -124,12 +65,12 @@
    :margin-horizontal 40
    :color             colors/gray})
 
-(defn action-button-container [home-width]
+(def action-button-container
   {:position    :absolute
    :z-index     2
    :align-items :center
+   :align-self  :center
    :bottom      16
-   :left        (- (/ home-width 2) 20)
    :width       40
    :height      40})
 
@@ -169,16 +110,6 @@
   {:margin-top      10
    :margin-bottom   18})
 
-(def tag-text
-  {:font-size     13
-   :font-weight   "500"
-   :line-height   20
-   :margin-left   10
-   :margin-right  10
-   :margin-top    6
-   :margin-bottom 6
-   :color         colors/blue})
-
 (def close-icon-container
   {:width            24
    :height           24
@@ -186,3 +117,10 @@
    :background-color colors/gray
    :align-items      :center
    :justify-content  :center})
+
+(def home-container
+  (merge
+   {:flex 1}
+   ;;TODO move this to navigation layer
+   (when platform/ios?
+     {:margin-bottom tabs.styles/tabs-diff})))

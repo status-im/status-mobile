@@ -1,8 +1,7 @@
 (ns status-im.ui.screens.routing.modals)
 
 (def modal-screens
-  [:chat-modal
-   :stickers-pack-modal
+  [:stickers-pack-modal
    :tribute-learn-more
    :selection-modal-screen
    :wallet-transactions-filter

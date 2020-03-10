@@ -4,7 +4,6 @@
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.common.common :as components.common]
             [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.badge :as badge]
@@ -15,7 +14,7 @@
             [status-im.utils.datetime :as time])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defn message-content-text [{:keys [content content-type] :as message}]
+(defn message-content-text [{:keys [content content-type]}]
   [react/view styles/last-message-container
    (cond
 
@@ -26,6 +25,7 @@
 
      (= constants/content-type-sticker content-type)
      [react/image {:style  {:margin 1 :width 20 :height 20}
+                   ;;TODO (perf) move to event
                    :source {:uri (contenthash/url (-> content :sticker :hash))}}]
 
      (string/blank? (:text content))
@@ -37,39 +37,40 @@
                   :number-of-lines     1
                   :ellipsize-mode      :tail
                   :accessibility-label :chat-message-text}
-      (string/trim-newline (:text content))])])
+      ;;TODO (perf) move to event
+      (-> (:text content)
+          (subs 0 40)
+          (string/trim-newline))])])
 
 (defn message-timestamp [timestamp]
   (when timestamp
     [react/text {:style               styles/datetime-text
                  :accessibility-label :last-message-time-text}
+     ;;TODO (perf) move to event
      (string/upper-case (time/to-short-str timestamp))]))
 
-(defview unviewed-indicator [chat-id]
-  (letsubs [{:keys [unviewed-messages-count public?]} [:chats/chat chat-id]]
-    (when (pos? unviewed-messages-count)
-      (if public?
-        [react/view {:style styles/public-unread
-                     :accessibility-label :unviewed-messages-public}]
-        [badge/message-counter unviewed-messages-count]))))
+(defn unviewed-indicator [{:keys [unviewed-messages-count public?]}]
+  (when (pos? unviewed-messages-count)
+    (if public?
+      [react/view {:style               styles/public-unread
+                   :accessibility-label :unviewed-messages-public}]
+      [badge/message-counter unviewed-messages-count])))
 
 (defn home-list-item [[_ home-item]]
-  (let [{:keys
-         [chat-id chat-name
-          color online group-chat
-          public? contact
-          timestamp
-          last-message]}    home-item
+  (let [{:keys [chat-id chat-name color online group-chat
+                public? contact timestamp last-message]}
+        home-item
         private-group?      (and group-chat (not public?))
         public-group?       (and group-chat public?)
+        ;;TODO (perf) move to event
         truncated-chat-name (utils/truncate-str chat-name 30)]
     [list-item/list-item
      {:icon                      [chat-icon.screen/chat-icon-view-chat-list
                                   contact group-chat truncated-chat-name color online false]
       :title-prefix              (cond
                                    private-group? :main-icons/tiny-group
-                                   public-group?  :main-icons/tiny-public
-                                   :else          nil)
+                                   public-group? :main-icons/tiny-public
+                                   :else nil)
       :title                     truncated-chat-name
       :title-accessibility-label :chat-name-text
       :title-row-accessory       [message-timestamp (if (pos? (:whisper-timestamp last-message))
@@ -81,7 +82,7 @@
           [message-content-text {:content      (:content last-message)
                                  :content-type (:content-type last-message)}]
           tribute-label))
-      :subtitle-row-accessory    [unviewed-indicator chat-id]
+      :subtitle-row-accessory    [unviewed-indicator home-item]
       :on-press                  #(do
                                     (re-frame/dispatch [:dismiss-keyboard])
                                     (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])

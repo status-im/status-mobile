@@ -35,7 +35,7 @@
 
 (defn topbar [_]
   (let [title-padding (reagent/atom 16)]
-    (fn [& [{:keys [title navigation accessories show-border? modal?]}]]
+    (fn [& [{:keys [title navigation accessories show-border? modal? content]}]]
       (let [navigation (or navigation (default-navigation modal?))]
         [react/view (cond-> {:height 56 :align-items :center :flex-direction :row}
                       show-border?
@@ -49,8 +49,12 @@
             (for [value accessories]
               ^{:key value}
               [button value false])])
+         (when content
+           [react/view {:position :absolute :left @title-padding :right @title-padding
+                        :top 0 :bottom 0}
+            content])
          (when title
            [react/view {:position :absolute :left @title-padding :right @title-padding
-                        :top      0 :bottom 0 :align-items :center :justify-content :center}
+                        :top 0 :bottom 0 :align-items :center :justify-content :center}
             [react/text {:style {:typography :title-bold :text-align :center} :number-of-lines 2}
              (utils.label/stringify title)]])]))))

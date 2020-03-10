@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.chat.input.send-button
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
             [status-im.ui.screens.chat.styles.input.send-button :as style]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]))

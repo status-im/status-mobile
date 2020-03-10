@@ -110,8 +110,7 @@
            content] :as message}]
   (let [{:keys [current-chat-id view-id]} db
         cursor-clock-value             (get-in db [:chats current-chat-id :cursor-clock-value])
-        current-chat?                  (and (or (= :chat view-id)
-                                                (= :chat-modal view-id))
+        current-chat?                  (and (= :chat view-id)
                                             (= current-chat-id chat-id))]
     (when (and current-chat?
                (or (not cursor-clock-value)
@@ -165,8 +164,7 @@
                                      message-id] :as message}]
   (when-not (= message-type constants/message-type-private-group-system-message)
     (let [{:keys [current-chat-id view-id]} db
-          chat-view?         (or (= :chat view-id)
-                                 (= :chat-modal view-id))
+          chat-view?         (= :chat view-id)
           current-count (get-in db [:chats chat-id :unviewed-messages-count])]
       (cond
         (= from (multiaccounts.model/current-public-key cofx))

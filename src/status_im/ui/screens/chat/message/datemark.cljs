@@ -5,17 +5,10 @@
             [status-im.ui.screens.chat.styles.message.datemark :as style]))
 
 (defn chat-datemark [value]
-  [react/view style/datemark-wrapper
-   [react/view style/datemark
-    [react/text {:style style/datemark-text}
-     (string/capitalize value)]]])
-
-(defn chat-datemark-mobile [value]
   [react/touchable-without-feedback
    {:on-press (fn [_]
                 (re-frame/dispatch
-                 [:chat.ui/set-chat-ui-props {:messages-focused? true
-                                              :input-bottom-sheet    nil}])
+                 [:chat.ui/set-chat-ui-props {:input-bottom-sheet nil}])
                 (react/dismiss-keyboard!))}
    [react/view style/datemark-mobile
     [react/text {:style style/datemark-text}

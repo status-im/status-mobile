@@ -199,28 +199,6 @@
            (when header            {:ListHeaderComponent (reagent/as-element header)})
            (when footer            {:ListFooterComponent (reagent/as-element footer)}))))
 
-;; Workaround an issue in reagent that does not consider JS array as JS value
-;; This forces clj <-> js serialization and breaks clj semantic
-;; See https://github.com/reagent-project/reagent/issues/335
-
-(deftype Item [value]
-  IEncodeJS
-  (-clj->js [x] (.-value x))
-  (-key->js [x] (.-value x))
-  IEncodeClojure
-  (-js->clj [x _] (.-value x)))
-
-(defn- to-js-array
-  "Converts a collection to a JS array (but leave content as is)"
-  [coll]
-  (let [arr (array)]
-    (doseq [x coll]
-      (.push arr x))
-    arr))
-
-(defn- wrap-data [o]
-  (Item. (to-js-array o)))
-
 (defn flat-list
   "A wrapper for FlatList.
    See https://facebook.github.io/react-native/docs/flatlist.html"
@@ -232,7 +210,7 @@
      [class
       (merge (base-list-props props)
              props
-             {:data (wrap-data data)})])))
+             {:data (to-array data)})])))
 
 (defn flat-list-generic-render-fn
   "A generic status-react specific `render-fn` for `list-item`.
@@ -262,7 +240,7 @@
    (if-let [f (:render-fn props)]
      (assoc (dissoc props :render-fn) :renderItem (wrap-render-fn f))
      props)
-   :data wrap-data))
+   :data to-array))
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn section-list
   "A wrapper for SectionList.

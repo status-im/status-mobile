@@ -1,12 +1,8 @@
 (ns status-im.ui.screens.home.sheet.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
-            [status-im.utils.universal-links.core :as universal-links]
-            [status-im.utils.platform :as platform]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.utils.config :as config]))
 

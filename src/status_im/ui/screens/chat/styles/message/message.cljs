@@ -47,29 +47,20 @@
                                    :bottom                9 ; 6 Bubble bottom, 3 message baseline
                                    (if rtl? :left :right) 12})))
 
-(def message-expand-button
-  {:color         colors/gray
-   :font-size     12
-   :opacity       0.7
-   :margin-bottom 20})
-
 (def selected-message
   {:margin-top  18
    :margin-left 40
    :font-size   12
    :color       colors/text-gray})
 
-(defn group-message-wrapper [{:keys [outgoing] :as message}]
+(defn message-wrapper [{:keys [outgoing] :as message}]
   (merge {:flex-direction   :column}
          (if outgoing
            {:margin-left 96}
            {:margin-right 52})
          (last-message-padding message)))
 
-(defn timestamp-content-wrapper [outgoing]
-  {:flex-direction (if outgoing :row-reverse :row)})
-
-(defn group-message-view
+(defn message-author-wrapper
   [outgoing display-photo?]
   (let [align (if outgoing :flex-end :flex-start)]
     (merge {:flex-direction :column
@@ -91,7 +82,7 @@
   {:margin-left      12
    :padding-vertical 2})
 
-(defn message-author [outgoing]
+(defn message-author-userpic [outgoing]
   (merge
    {:width      (+ 16 photos/default-size) ;; 16 is for the padding
     :align-self :flex-end}
@@ -100,18 +91,15 @@
      {:padding-horizontal 8
       :padding-right 8})))
 
-(def delivery-view
-  {:flex-direction :row
-   :margin-top     2})
-
 (def delivery-text
   {:color       colors/gray
+   :margin-top  2
    :font-size   12})
 
 (def not-sent-view
-  (assoc delivery-view
-         :margin-bottom 2
-         :padding-top 2))
+  {:flex-direction :row
+   :margin-bottom  2
+   :padding-top    2})
 
 (def not-sent-text
   (assoc delivery-text

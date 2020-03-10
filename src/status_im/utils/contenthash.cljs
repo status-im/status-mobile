@@ -55,11 +55,13 @@
                            hex/decode
                            b58/encode))})))
 
-(defn url [hex]
+(defn url-fn [hex]
   (let [{:keys [namespace hash]} (decode (ethereum/normalized-hex hex))]
     (case namespace
       :ipfs (str "https://ipfs.infura.io/ipfs/" hash)
       "")))
+
+(def url (memoize url-fn))
 
 (fx/defn cat
   [cofx {:keys [contenthash on-success on-failure]}]

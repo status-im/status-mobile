@@ -65,7 +65,7 @@
                            (data-store.messages/<-rpc %))
                          messages)
         navigate-fx #(if (get-in % [:db :chats chat-id :is-active])
-                       (models.chat/navigate-to-chat % chat-id {:navigation-reset? true})
+                       (models.chat/navigate-to-chat % chat-id)
                        (navigation/navigate-to-cofx % :home {}))]
 
     (apply fx/merge cofx (concat [chat-fx]

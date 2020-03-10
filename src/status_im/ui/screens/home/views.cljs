@@ -7,37 +7,31 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.home.styles :as styles]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.components.animation :as animation]
-            [status-im.constants :as constants]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
             [status-im.ui.components.button :as button]
             [status-im.ui.components.search-input.view :as search-input]
-            [status-im.ui.components.search-input.styles :as search-input.styles])
+            [cljs-bean.core :as bean]
+            [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :as views]))
-
-(defonce search-active? (reagent/atom false))
 
 (defn welcome-image-wrapper []
   (let [dimensions (reagent/atom {})]
     (fn []
-      [react/view {:on-layout  (fn [e]
-                                 (reset! dimensions (js->clj (-> e .-nativeEvent .-layout) :keywordize-keys true)))
-                   :style {:align-items :center
-                           :justify-content :center
-                           :flex 1}}
+      [react/view {:on-layout (fn [e]
+                                (reset! dimensions (bean/->clj (-> e .-nativeEvent .-layout))))
+                   :style     {:align-items     :center
+                               :justify-content :center
+                               :flex            1}}
        (let [padding    0
              image-size (- (min (:width @dimensions) (:height @dimensions)) padding)]
-         [react/image {:source (resources/get-image :welcome)
+         [react/image {:source      (resources/get-image :welcome)
                        :resize-mode :contain
-                       :style {:width image-size :height image-size}}])])))
+                       :style       {:width image-size :height image-size}}])])))
 
 (defn welcome []
   [react/view {:style styles/welcome-view}
@@ -47,9 +41,9 @@
     [react/i18n-text {:style styles/welcome-text-description
                       :key   :welcome-to-status-description}]]
    [react/view {:align-items :center :margin-bottom 50}
-    [components.common/button {:on-press #(re-frame/dispatch [:navigate-back])
+    [components.common/button {:on-press            #(re-frame/dispatch [:navigate-back])
                                :accessibility-label :lets-go-button
-                               :label    (i18n/label :t/lets-go)}]]])
+                               :label               (i18n/label :t/lets-go)}]]])
 
 (defn home-tooltip-view []
   [react/view styles/chat-tooltip
@@ -86,121 +80,56 @@
   [react/view {:style {:flex 1 :flex-direction :row :align-items :center :justify-content :center}}
    [react/i18n-text {:style styles/welcome-blank-text :key :welcome-blank-message}]])
 
-(defn chat-list-footer [hide-home-tooltip?]
-  (let [show-tooltip? (and (not hide-home-tooltip?) (not @search-active?))]
-    [react/view
-     (when show-tooltip?
-       [home-tooltip-view])
-     [react/view {:height 68 :flex 1}]]))
+(defonce search-active? (reagent/atom false))
 
 (defn search-input-wrapper [search-filter]
   [search-input/search-input
-   {:search-active? search-active?
-    :search-container-style styles/search-container
-    :search-filter search-filter
-    :on-cancel #(re-frame/dispatch [:search/home-filter-changed nil])
-    :on-focus  (fn [search-filter]
-                 (when-not search-filter
-                   (re-frame/dispatch [:search/home-filter-changed ""])))
-    :on-change (fn [text]
-                 (re-frame/dispatch [:search/home-filter-changed text]))}])
+   {:search-active?         search-active?
+    :search-filter          search-filter
+    :on-cancel              #(re-frame/dispatch [:search/home-filter-changed nil])
+    :on-focus               (fn [search-filter]
+                              (when-not search-filter
+                                (re-frame/dispatch [:search/home-filter-changed ""])))
+    :on-change              (fn [text]
+                              (re-frame/dispatch [:search/home-filter-changed text]))}])
 
-(defn section-footer [{:keys [title data]}]
-  (when (and @search-active? (empty? data))
-    [list/big-list-item
-     {:text          (i18n/label :t/no-result)
-      :text-color    colors/gray
-      :hide-chevron? true
-      :action-fn     #()
-      :icon          (case title
-                       "messages" :main-icons/one-on-one-chat
-                       "browser" :main-icons/browser
-                       "chats" :main-icons/message)
-      :icon-color    colors/gray}]))
+(views/defview chats-list []
+  (views/letsubs [loading? [:chats/loading?]
+                  {:keys [chats all-home-items search-filter]} [:home-items]
+                  {:keys [hide-home-tooltip?]} [:multiaccount]]
+    (if loading?
+      [react/activity-indicator {:flex 1 :animating true}]
+      (if (and (empty? all-home-items) hide-home-tooltip? (not @search-active?))
+        [welcome-blank-page]
+        (let [data (if @search-active? chats all-home-items)]
+          [list/flat-list
+           {:key-fn                         first
+            :keyboard-should-persist-taps   :always
+            :data                           data
+            :render-fn                      inner-item/home-list-item
+            :header                         (when (or (not-empty data) @search-active?)
+                                              [search-input-wrapper search-filter])
+            :footer                         (if (and (not hide-home-tooltip?) (not @search-active?))
+                                              [home-tooltip-view]
+                                              [react/view {:height 68}])}])))))
 
-(views/defview home-filtered-items-list []
-  (views/letsubs
-    [{:keys [chats all-home-items search-filter]} [:home-items]
-     {:keys [hide-home-tooltip?]} [:multiaccount]]
-    (let [list-ref (reagent/atom nil)]
-      [list/section-list
-       (merge
-        {:sections                     [{:title :t/chats
-                                         :data (if @search-active? chats all-home-items)}]
-         :key-fn                        first
-          ;; true by default on iOS
-         :stickySectionHeadersEnabled   false
-         :keyboard-should-persist-taps  :always
-         :ref                           #(reset! list-ref %)
-         :footer                        [chat-list-footer hide-home-tooltip?]
-         :contentInset                  {:top search-input.styles/search-input-height}
-         :render-section-header-fn      (fn [data] [react/view])
-         :render-section-footer-fn      section-footer
-         :render-fn                     (fn [home-item]
-                                          [inner-item/home-list-item home-item])
-         :header                        (when (or @search-active? (not-empty all-home-items))
-                                          [search-input-wrapper search-filter])
-         :on-scroll-end-drag
-         (fn [e]
-           (let [y (-> e .-nativeEvent .-contentOffset .-y)
-                 hide-searchbar? (cond
-                                   platform/ios?     (and (neg? y) (> y (- (/ search-input.styles/search-input-height 2))))
-                                   platform/android? (and (< y search-input.styles/search-input-height) (> y (/ search-input.styles/search-input-height 2))))]
-             (if hide-searchbar?
-               (.scrollToLocation @list-ref #js {:sectionIndex 0 :itemIndex 0}))))})])))
-
-(views/defview home-action-button [home-width]
+(views/defview plus-button []
   (views/letsubs [logging-in? [:multiaccounts/login]]
-    [react/view (styles/action-button-container home-width)
-     [react/touchable-highlight {:accessibility-label :new-chat-button
-                                 :on-press            (when-not logging-in? #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))}
+    [react/view styles/action-button-container
+     [react/touchable-highlight
+      {:accessibility-label :new-chat-button
+       :on-press            (when-not logging-in?
+                              #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))}
       [react/view styles/action-button
        (if logging-in?
          [react/activity-indicator {:color     :white
                                     :animating true}]
          [icons/icon :main-icons/add {:color :white}])]]]))
 
-(views/defview home [loading?]
-  (views/letsubs
-    [anim-translate-y (animation/create-value connectivity/neg-connectivity-bar-height)
-     {:keys [all-home-items]} [:home-items]
-     {:keys [hide-home-tooltip?]} [:multiaccount]
-     window-width [:dimensions/window-width]
-     two-pane-ui-enabled? [:two-pane-ui-enabled?]]
-    (let [home-width (if (> window-width constants/two-pane-min-width)
-                       (max constants/left-pane-min-width (/ window-width 3))
-                       window-width)]
-      [react/view (merge {:flex 1
-                          :width home-width}
-                         (when platform/ios?
-                           {:margin-bottom tabs.styles/tabs-diff})
-                         (when two-pane-ui-enabled?
-                           {:border-right-width 1 :border-right-color colors/gray-lighter}))
-       [react/keyboard-avoiding-view {:style     {:flex 1}
-                                      :on-layout (fn [e]
-                                                   (re-frame/dispatch
-                                                    [:set-once :content-layout-height
-                                                     (-> e .-nativeEvent .-layout .-height)]))}
-        [toolbar/toolbar {:style {:z-index 2}} nil [toolbar/content-title (i18n/label :t/chat)]]
-        ;; toolbar, connectivity-view, cannectivity-animation-wrapper are expected
-        ;; to be next to each other as siblings for them to work effctively.
-        ;; les-debug-info being here could disrupt that. Assuming its purpose is
-        ;; debug only, commenting it out for now.
-        ;; [les-debug-info]
-        [connectivity/connectivity-view anim-translate-y]
-        [connectivity/connectivity-animation-wrapper
-         {}
-         anim-translate-y
-         true
-         (if loading?
-           [react/activity-indicator {:flex      1
-                                      :animating true}]
-           [react/view {:flex 1}
-            (if (and (empty? all-home-items) hide-home-tooltip? (not @search-active?))
-              [welcome-blank-page]
-              [home-filtered-items-list])])]
-        [home-action-button home-width]]])))
-
-(views/defview home-wrapper []
-  (views/letsubs [loading? [:chats/loading?]]
-    [home loading?]))
+(defn home []
+  [react/keyboard-avoiding-view {:style styles/home-container}
+   [connectivity/connectivity
+    [topbar/topbar {:title        :t/chat :navigation :none
+                    :show-border? true}]
+    [chats-list]]
+   [plus-button]])

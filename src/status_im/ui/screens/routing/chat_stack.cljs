@@ -4,7 +4,6 @@
   {:name    :chat-stack
    :screens [:home
              :chat
-             :select-chat
              :profile
              :take-picture
              :new-group
@@ -13,5 +12,4 @@
              :group-chat-profile
              :stickers
              :stickers-pack]
-   :config  {:initialRouteName :home
-             :emptyRightPaneName :select-chat}})
+   :config  {:initialRouteName :home}})

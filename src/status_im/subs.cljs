@@ -86,10 +86,8 @@
 (reg-root-key-sub :keyboard-height :keyboard-height)
 (reg-root-key-sub :keyboard-max-height :keyboard-max-height)
 (reg-root-key-sub :sync-data :sync-data)
-(reg-root-key-sub :layout-height :layout-height)
 (reg-root-key-sub :mobile-network/remember-choice? :mobile-network/remember-choice?)
 (reg-root-key-sub :qr-modal :qr-modal)
-(reg-root-key-sub :content-layout-height :content-layout-height)
 (reg-root-key-sub :bootnodes/manage :bootnodes/manage)
 (reg-root-key-sub :networks/current-network :networks/current-network)
 (reg-root-key-sub :networks/networks :networks/networks)
@@ -567,32 +565,6 @@
    (get chats chat-id)))
 
 (re-frame/reg-sub
- :chats/content-layout-height
- :<- [:content-layout-height]
- :<- [:chats/current-chat-ui-prop :input-height]
- :<- [:chats/current-chat-ui-prop :input-focused?]
- :<- [:keyboard-height]
- :<- [:chats/current-chat-ui-prop :input-bottom-sheet]
- (fn [[home-content-layout-height input-height input-focused? kheight stickers?]]
-   (- (+ home-content-layout-height tabs.styles/tabs-height)
-      (if platform/iphone-x?
-        (* 2 toolbar.styles/toolbar-height)
-        toolbar.styles/toolbar-height)
-      (if input-height input-height 0)
-      (if stickers?
-        (stickers.styles/stickers-panel-height)
-        kheight)
-      (if input-focused?
-        (cond
-          platform/iphone-x? 0
-          platform/ios? tabs.styles/tabs-diff
-          :else 0)
-        (cond
-          platform/iphone-x? (* 2 tabs.styles/minimized-tabs-height)
-          platform/ios? tabs.styles/tabs-height
-          :else tabs.styles/minimized-tabs-height)))))
-
-(re-frame/reg-sub
  :chats/current-chat-ui-props
  :<- [::chat-ui-props]
  :<- [:chats/current-chat-id]
@@ -703,11 +675,8 @@
         (assoc :show-input? true))))
 
 (defn enrich-current-chat
-  [{:keys [messages chat-id might-have-join-time-messages?] :as chat}
-   ranges height input-height]
+  [{:keys [messages chat-id might-have-join-time-messages?] :as chat} ranges]
   (assoc chat
-         :height height
-         :input-height input-height
          :range
          (get ranges chat-id)
          :intro-status
@@ -735,12 +704,10 @@
  :<- [:chats/current-raw-chat]
  :<- [:multiaccount/public-key]
  :<- [:mailserver/ranges]
- :<- [:chats/content-layout-height]
- :<- [:chats/current-chat-ui-prop :input-height]
- (fn [[{:keys [group-chat chat-id contact messages] :as current-chat}
-       my-public-key ranges height input-height]]
+ (fn [[{:keys [group-chat chat-id messages] :as current-chat}
+       my-public-key ranges]]
    (when current-chat
-     (cond-> (enrich-current-chat current-chat ranges height input-height)
+     (cond-> (enrich-current-chat current-chat ranges)
        (empty? messages)
        (assoc :universal-link
               (links/generate-link :public-chat :external chat-id))
@@ -830,6 +797,7 @@
  :<- [:chats/all-loaded?]
  :<- [:chats/public?]
  (fn [[message-list messages messages-gaps range all-loaded? public?]]
+   ;;TODO (perf) we need to move all these to status-go
    (-> (models.message-list/->seq message-list)
        (chat.db/add-datemarks)
        (hydrate-messages messages)
@@ -851,7 +819,7 @@
  :<- [:contacts/contacts]
  :<- [:multiaccount]
  (fn [[contacts multiaccount] [_ id]]
-   (multiaccounts/displayed-photo (or (contacts id)
+   (multiaccounts/displayed-photo (or (get contacts id)
                                       (when (= id (:public-key multiaccount))
                                         multiaccount)
                                       (contact.db/public-key->new-contact id)))))

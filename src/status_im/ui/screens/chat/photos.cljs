@@ -1,15 +1,11 @@
 (ns status-im.ui.screens.chat.photos
-  (:require [clojure.string :as string]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.react :as react]
+  (:require [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as style]
             [status-im.ui.screens.profile.db :as profile.db]
-            [status-im.utils.identicon :as identicon]
             [status-im.utils.image :as utils.image])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defn photo [photo-path {:keys [size
-                                accessibility-label]}]
+(defn photo [photo-path {:keys [size accessibility-label]}]
   (let [identicon? (when photo-path (profile.db/base64-png? photo-path))]
     [react/view {:style (style/photo-container size)}
      [react/image {:source              (utils.image/source photo-path)
@@ -24,3 +20,12 @@
     (photo (or photo-path identicon)
            {:accessibility-label :member-photo
             :size                (or size style/default-size)})))
+
+(defn member-identicon [identicon]
+  (let [size style/default-size]
+    [react/view {:style (style/photo-container size)}
+     [react/image {:source              {:uri identicon}
+                   :style               (style/photo size)
+                   :resize-mode         :cover
+                   :accessibility-label :member-photo}]
+     [react/view {:style (style/photo-border size)}]]))

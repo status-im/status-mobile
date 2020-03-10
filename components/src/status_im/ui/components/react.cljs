@@ -314,9 +314,7 @@
 (defn main-screen-modal-view [current-view & components]
   [(create-main-screen-view current-view)
    styles/flex
-   [(if (= current-view :chat-modal)
-      view
-      keyboard-avoiding-view)
+   [keyboard-avoiding-view
     (merge {:flex 1 :flex-direction :column}
            (when platform/android?
              {:background-color :white}))

@@ -490,8 +490,8 @@
 
 (handlers/register-handler-fx
  :chat.ui/navigate-to-chat
- (fn [cofx [_ chat-id opts]]
-   (chat/navigate-to-chat cofx chat-id opts)))
+ (fn [cofx [_ chat-id _]]
+   (chat/navigate-to-chat cofx chat-id)))
 
 (handlers/register-handler-fx
  :chat.ui/load-more-messages

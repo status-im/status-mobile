@@ -9,15 +9,11 @@
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.chat.utils :as chat-utils]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.utils.platform :as platform]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.utils :as utils]
             [status-im.utils.config :as config]
-            [taoensso.timbre :as log]
             [status-im.ui.screens.chat.stickers.views :as stickers]
             [status-im.ui.screens.chat.extensions.views :as extensions]))
 
@@ -32,10 +28,7 @@
        :default-value          (or input-text "")
        :editable               (not cooldown-enabled?)
        :blur-on-submit         false
-       :on-focus               #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused?    true
-                                                                                :input-bottom-sheet nil
-                                                                                :messages-focused? false}])
-       :on-blur                #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused? false}])
+       :on-focus               #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet nil}])
        :on-submit-editing      #(when single-line-input?
                                   (re-frame/dispatch [:chat.ui/send-current-message]))
        :on-layout              #(set-container-width-fn (.-width (.-layout (.-nativeEvent %))))
@@ -63,10 +56,7 @@
        :default-value          @state-text
        :editable               (not cooldown-enabled?)
        :blur-on-submit         false
-       :on-focus               #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused?    true
-                                                                                :input-bottom-sheet nil
-                                                                                :messages-focused? false}])
-       :on-blur                #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-focused? false}])
+       :on-focus               #(re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet nil}])
        :submit-shortcut        {:key "Enter"}
        :on-submit-editing      #(do
                                   (.clear @inp-ref)
@@ -162,12 +152,7 @@
           input-text-empty? (if platform/desktop?
                               (string/blank? state-text)
                               (string/blank? input-text))]
-      [react/view {:style     (style/root margin)
-                   :on-layout #(let [h (-> (.-nativeEvent %)
-                                           (.-layout)
-                                           (.-height))]
-                                 (when (> h 0)
-                                   (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-height h}])))}
+      [react/view {:style     (style/root margin)}
        [reply-message-view]
        [react/view {:style style/input-container}
         [input-view {:single-line-input? single-line-input? :set-text set-text :state-text state-text}]

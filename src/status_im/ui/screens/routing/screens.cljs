@@ -99,9 +99,8 @@
    :keycard-unpaired                                 keycard/unpaired
    :keycard-login-pin                                keycard/login-pin
    :not-keycard                                      keycard/not-keycard
-   :home                                             home/home-wrapper
+   :home                                             home/home
    :chat                                             chat/chat
-   :select-chat                                      chat/select-chat
    :profile                                          profile.contact/profile
    :new-chat                                         [:modal new-chat/new-chat]
    :qr-scanner                                       [:modal qr-scanner/qr-scanner]
@@ -116,7 +115,6 @@
    :stickers-pack                                    stickers/pack
    :stickers-pack-modal                              [:modal stickers/pack-modal]
    :tribute-learn-more                               [:modal tr-to-talk/learn-more]
-   :chat-modal                                       [:modal chat/chat-modal]
    :wallet                                           wallet.accounts/accounts-overview
    :wallet-account                                   wallet.account/account
    :collectibles-list                                collectibles/collectibles-list

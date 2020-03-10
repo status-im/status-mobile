@@ -1,10 +1,8 @@
 (ns status-im.ui.screens.chat.toolbar-content
-  (:require [cljs-time.core :as t]
-            [status-im.i18n :as i18n]
+  (:require [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.styles.main :as st]
-            [status-im.utils.datetime :as time])
+            [status-im.ui.screens.chat.styles.main :as st])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- in-progress-text [{:keys [highestBlock currentBlock startBlock]}]
@@ -47,9 +45,9 @@
       (i18n/label :chat-is-not-a-contact))]])
 
 (defview toolbar-content-view []
-  (letsubs [{:keys [group-chat color online contacts chat-name contact
-                    public? chat-id] :as chat}    [:chats/current-chat]
-            sync-state                            [:sync-state]]
+  (letsubs [{:keys [group-chat color online contacts chat-name contact public?]}
+            [:chats/current-chat]
+            sync-state [:sync-state]]
     (let [has-subtitle? (or group-chat (not= :done sync-state))]
       [react/view {:style st/toolbar-container}
        [react/view {:margin-right 10}
