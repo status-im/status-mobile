@@ -504,7 +504,7 @@
     "image-source-title": "사진 편집",
     "in-contacts": "연락처에 등록됨",
     "incoming": "입금",
-    "incoming-transaction": " 입금 트랜잭션",
+    "incoming-transaction": "입금 트랜잭션",
     "incorrect-code": [
         "str",
         "잘못된 코드입니다. 다시 입력해 주세요"
@@ -1027,6 +1027,8 @@
     "waiting-for-wifi": "오프라인, 와이파이 대기 중",
     "waiting-for-wifi-change": "변경",
     "waiting-to-sign": "거래 서명 대기중...",
+    "waku-bloom-filter-mode": "와쿠 블룸 필터 모드",
+    "waku-enabled": "와쿠 사용",
     "wallet": "지갑",
     "wallet-address": "지갑 주소",
     "wallet-asset": "자산",
