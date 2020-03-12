@@ -52,22 +52,27 @@
   {:events       [::store-multiaccount-success]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)
                   (re-frame/inject-cofx ::multiaccounts.create/get-signing-phrase)]}
-  [{:keys [db] :as cofx} password]
-  (let [{:keys [key-uid] :as multiaccount} (get-in db [:intro-wizard :root-key])
-        keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts key-uid :keycard-pairing]))]
-    (if keycard-multiaccount?
-      ;; trying to recover multiaccount created with keycard
-      {:db        (-> db
-                      (update :intro-wizard assoc
-                              :processing? false
-                              :passphrase-error :recover-keycard-multiaccount-not-supported)
-                      (update :intro-wizard dissoc
-                              :passphrase-valid?))}
-      (let [multiaccount (assoc multiaccount :derived (get-in db [:intro-wizard :derived]))]
-        (multiaccounts.create/on-multiaccount-created cofx
-                                                      multiaccount
-                                                      password
-                                                      {})))))
+  [{:keys [db] :as cofx} result password]
+  (let [{:keys [error]} (types/json->clj result)]
+    (if error
+      {:utils/show-popup {:title      (i18n/label :t/multiaccount-exists-title)
+                          :content    (i18n/label :t/multiaccount-exists-title)
+                          :on-dismiss #(re-frame/dispatch [:navigate-to :multiaccounts])}}
+      (let [{:keys [key-uid] :as multiaccount} (get-in db [:intro-wizard :root-key])
+            keycard-multiaccount? (boolean (get-in db [:multiaccounts/multiaccounts key-uid :keycard-pairing]))]
+        (if keycard-multiaccount?
+          ;; trying to recover multiaccount created with keycard
+          {:db        (-> db
+                          (update :intro-wizard assoc
+                                  :processing? false
+                                  :passphrase-error :recover-keycard-multiaccount-not-supported)
+                          (update :intro-wizard dissoc
+                                  :passphrase-valid?))}
+          (let [multiaccount (assoc multiaccount :derived (get-in db [:intro-wizard :derived]))]
+            (multiaccounts.create/on-multiaccount-created cofx
+                                                          multiaccount
+                                                          password
+                                                          {})))))))
 
 (fx/defn store-multiaccount
   {:events [::recover-multiaccount-confirmed]}
@@ -75,7 +80,7 @@
   (let [password (get-in db [:intro-wizard :key-code])
         {:keys [root-key]} (:intro-wizard db)
         {:keys [id]} root-key
-        callback #(re-frame/dispatch [::store-multiaccount-success password])
+        callback #(re-frame/dispatch [::store-multiaccount-success % password])
         hashed-password (ethereum/sha3 (security/safe-unmask-data password))]
     {:db (assoc-in db [:intro-wizard :processing?] true)
      ::multiaccounts.create/store-multiaccount [id hashed-password callback]}))
