@@ -98,7 +98,8 @@
                   {:keys [chats all-home-items search-filter]} [:home-items]
                   {:keys [hide-home-tooltip?]} [:multiaccount]]
     (if loading?
-      [react/activity-indicator {:flex 1 :animating true}]
+      [react/view {:flex 1 :align-items :center :justify-content :center}
+       [react/activity-indicator {:animating true}]]
       (if (and (empty? all-home-items) hide-home-tooltip? (not @search-active?))
         [welcome-blank-page]
         (let [data (if @search-active? chats all-home-items)]
