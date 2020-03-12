@@ -10,6 +10,7 @@
             [status-im.ui.screens.profile.user.views :as profile.user]
             ["react-native" :refer (BackHandler)]
             [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]
+            [status-im.ui.starter-pack.popover :as starter-pack]
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.biometric.views :as biometric]
             [status-im.ui.components.colors :as colors]))
@@ -136,6 +137,9 @@
 
                    (= :transaction-data view)
                    [signing/transaction-data]
+
+                   (= :starter-pack-success view)
+                   [starter-pack/success-popover]
 
                    :else
                    [view])]]]]])))})))

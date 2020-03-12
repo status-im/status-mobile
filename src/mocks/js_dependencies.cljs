@@ -161,6 +161,13 @@
 
 (def react-native-redash #js {:clamp nil})
 
+(def react-native-iap #js {:default                #js {:initConnection  identity
+                                                        :requestPurchase identity
+                                                        :getProducts     identity}
+                           :purchaseUpdatedListener identity
+                           :purchaseErrorListener  identity
+                           :finishTransaction      identity})
+
 (def react-native-languages
   (clj->js {:default {:language "en",
                       :addEventListener (fn []),
@@ -186,6 +193,7 @@
     "react-native-touch-id" touchid
     "@react-native-community/netinfo" net-info
     "react-native-dialogs" dialogs
+    "react-native-iap" react-native-iap
     "react-native" react-native
     "react-native-fs" fs
     "react-native-mail" react-native-mail

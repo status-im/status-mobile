@@ -3006,6 +3006,11 @@ domutils@^1.7.0:
     dom-serializer "0"
     domelementtype "1"
 
+dooboolab-welcome@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/dooboolab-welcome/-/dooboolab-welcome-1.1.1.tgz#ca2184f6e1f568865d707a6ce3bda7e003550f54"
+  integrity sha512-tQ/9NBCGnalHwKOBjDqTD4t4wQpDfSSbxQGctzkzaLHR3AhN0wCBkIs05JciVtvl/jfLZ+DgAndktAMk3Bu7Vw==
+
 ecc-jsbn@~0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/ecc-jsbn/-/ecc-jsbn-0.1.2.tgz#3a83a904e54353287874c564b7549386849a98c9"
@@ -6504,6 +6509,13 @@ react-native-haptic-feedback@^1.9.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.9.0.tgz#7d62c54536f04dd5d8f1c2bb8ee444009f2294b9"
   integrity sha512-tIRbq8k7HK9AoyvXrOHUEFmJd65ZAh1HP9mDyD/gDisG1ApY4Im9UKn0q0of9z7s8AJY3sZA9GMuSKdSBGdKKQ==
+
+react-native-iap@^4.4.2:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/react-native-iap/-/react-native-iap-4.4.2.tgz#3460fcc3166a1218b8bfe6022c0a053acd767246"
+  integrity sha512-uia29mVN0eoZjXQ6xPz1QEOwXJaqxk9uzEhEz7PUzI6GctRvmptg95Hilqo05yLXIEvWciMQYn32VIMXZ+Zf8A==
+  dependencies:
+    dooboolab-welcome "^1.1.1"
 
 react-native-image-crop-picker@^0.25.0:
   version "0.25.3"
