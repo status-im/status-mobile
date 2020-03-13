@@ -18,12 +18,12 @@ source "${GIT_ROOT}/nix/scripts/source.sh"
 export TERM=xterm # fix for colors
 shift # we remove the first -c from arguments
 
-shellArgs=(
+nixArgs=(
   "--show-trace"
 )
 
 if [[ -n "${TARGET}" ]]; then
-    shellArgs+=("--argstr target ${TARGET}")
+    nixArgs+=("--argstr target ${TARGET}")
 else
     echo -e "${YLW}Env is missing TARGET, assuming default target.${RST} See nix/README.md for more details." 1>&2
 fi
@@ -32,7 +32,7 @@ if [[ "$TARGET" =~ (linux|windows|darwin|macos) ]]; then
   # This is a dirty workaround because 'yarn install' is an impure operation,
   # so we need to call it from an impure shell.
   # Hopefully we'll be able to fix this later on with something like yarn2nix
-  nix-shell ${shellArgs[@]} --run "scripts/prepare-for-desktop-platform.sh" || exit
+  nix-shell ${nixArgs[@]} --run "scripts/prepare-for-desktop-platform.sh" || exit
 fi
 
 config=''
@@ -45,13 +45,13 @@ fi
 config+="status-im.build-type=\"${BUILD_TYPE}\";"
 
 if [ -n "$config" ]; then
-  shellArgs+=("--arg config {$config}")
+  nixArgs+=("--arg config {$config}")
 fi
 
 # if _NIX_ATTR is specified we shouldn't use shell.nix, the path will be different
 entryPoint="shell.nix"
 if [ -n "${_NIX_ATTR}" ]; then
-  shellArgs+=("--attr ${_NIX_ATTR}")
+  nixArgs+=("--attr ${_NIX_ATTR}")
   entryPoint="default.nix"
 fi
 
@@ -59,18 +59,18 @@ fi
 # It is just a special string, not a variable, and a marker to not use `--run`.
 if [[ $@ == "ENTER_NIX_SHELL" ]]; then
   echo -e "${GRN}Configuring ${_NIX_ATTR:-default} Nix shell for target '${TARGET:-default}'...${RST}" 1>&2
-  exec nix-shell ${shellArgs[@]} ${entryPoint}
+  exec nix-shell ${nixArgs[@]} ${entryPoint}
 else
   # Not all builds are ready to be run in a pure environment
   if [[ -n "${_NIX_PURE}" ]]; then
-    shellArgs+=("--pure")
+    nixArgs+=("--pure")
     pureDesc='pure '
   fi
   # This variable allows specifying which env vars to keep for Nix pure shell
   # The separator is a colon
   if [[ -n "${_NIX_KEEP}" ]]; then
-    shellArgs+=("--keep ${_NIX_KEEP//,/ --keep }")
+    nixArgs+=("--keep ${_NIX_KEEP//,/ --keep }")
   fi
   echo -e "${GRN}Configuring ${pureDesc}${_NIX_ATTR:-default} Nix shell for target '${TARGET}'...${RST}" 1>&2
-  exec nix-shell ${shellArgs[@]} --run "$@" ${entryPoint}
+  exec nix-shell ${nixArgs[@]} --run "$@" ${entryPoint}
 fi

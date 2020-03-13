@@ -16,6 +16,13 @@ function must_get_env() {
   exit 1
 }
 
+function append_env_export() {
+  ENV_VAR_NAME=${1}
+  if [[ -n "${!ENV_VAR_NAME}" ]]; then
+    echo "export ${ENV_VAR_NAME}=\"${!ENV_VAR_NAME}\";" >> "${SECRETS_FILE_PATH}"
+  fi
+}
+
 config=''
 if [ -n "${STATUS_GO_SRC_OVERRIDE}" ]; then
   config+="status-im.status-go.src-override=\"${STATUS_GO_SRC_OVERRIDE}\";"
@@ -26,9 +33,17 @@ fi
 config+="status-im.build-type=\"$(must_get_env BUILD_TYPE)\";"
 config+="status-im.status-react.build-number=\"$(must_get_env BUILD_NUMBER)\";"
 config+="status-im.status-react.keystore-file=\"$(must_get_env KEYSTORE_PATH)\";"
-nixOpts=(
-  "--arg config {${config}}"
-  "--arg env {BUILD_ENV=\"${BUILD_ENV}\";ANDROID_ABI_SPLIT=\"${ANDROID_ABI_SPLIT}\";ANDROID_ABI_INCLUDE=\"${ANDROID_ABI_INCLUDE}\";}"
+nixOpts=()
+
+# Secrets like this can't be passed via args or they end up in derivation
+SECRETS_FILE_PATH=$(mktemp)
+chmod 644 ${SECRETS_FILE_PATH}
+trap "rm -f ${SECRETS_FILE_PATH}" EXIT
+append_env_export 'KEYSTORE_PASSWORD'
+append_env_export 'KEYSTORE_ALIAS'
+append_env_export 'KEYSTORE_KEY_PASSWORD'
+nixOpts+=(
+  "--argstr" "secrets-file" "${SECRETS_FILE_PATH}"
 )
 
 if [[ "$OS" =~ Darwin ]]; then
@@ -37,13 +52,19 @@ if [[ "$OS" =~ Darwin ]]; then
   # we start an ad-hoc nix-shell that imports the packages from nix/nixpkgs-bootstrap.
   WATCHMAN_SOCKFILE=$(watchman get-sockname --no-pretty | jq -r .sockname)
   nixOpts+=(
-    "--argstr watchmanSockPath ${WATCHMAN_SOCKFILE}"
-    "--option extra-sandbox-paths ${KEYSTORE_PATH};${WATCHMAN_SOCKFILE}"
+    " --argstr" "watchmanSockPath" "${WATCHMAN_SOCKFILE}"
+    " --option" "extra-sandbox-paths" "${KEYSTORE_PATH} ${SECRETS_FILE_PATH} ${WATCHMAN_SOCKFILE}"
   )
 else
+  echo wtf
   nixOpts+=(
-    "--option extra-sandbox-paths ${KEYSTORE_PATH}"
+    "--option" "extra-sandbox-paths" "${KEYSTORE_PATH} ${SECRETS_FILE_PATH}"
   )
 fi
+
+nixOpts+=(
+  "--arg" "config" "{${config}}"
+  "--arg" "env" "{BUILD_ENV=\"${BUILD_ENV}\";ANDROID_ABI_SPLIT=\"${ANDROID_ABI_SPLIT}\";ANDROID_ABI_INCLUDE=\"${ANDROID_ABI_INCLUDE}\";}"
+)
 
 ${GIT_ROOT}/nix/scripts/build.sh targets.mobile.android.release "${nixOpts[@]}"

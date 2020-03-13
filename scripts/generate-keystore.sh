@@ -9,19 +9,25 @@ function property() {
     grep "${2}" "${1}" | cut -d'=' -f2
 }
 
-function property_gradle() {
+function gradle_property() {
     property ${GIT_ROOT}/android/gradle.properties ${1}
 }
 
-KEYSTORE_PASSWORD=$(property_gradle 'KEYSTORE_PASSWORD')
-KEYSTORE_ALIAS=$(property_gradle 'KEYSTORE_ALIAS')
-KEYSTORE_KEY_PASSWORD=$(property_gradle 'KEYSTORE_KEY_PASSWORD')
+function env_var_or_gradle_prop() {
+    VAR_NAME="${1}"
+    if [[ -n "${!VAR_NAME}" ]]; then
+        echo "${!VAR_NAME}"
+    else
+        gradle_property "${VAR_NAME}"
+    fi
+}
 
-# Allow Makefile modify Keystore path if necessary
-if [[ -z ${KEYSTORE_PATH} ]]; then
-    KEYSTORE_PATH=$(property_gradle 'KEYSTORE_FILE')
-fi
-# Replace ~ with proper absolute path
+KEYSTORE_PASSWORD=$(env_var_or_gradle_prop 'KEYSTORE_PASSWORD')
+KEYSTORE_ALIAS=$(env_var_or_gradle_prop 'KEYSTORE_ALIAS')
+KEYSTORE_KEY_PASSWORD=$(env_var_or_gradle_prop 'KEYSTORE_KEY_PASSWORD')
+KEYSTORE_PATH=$(env_var_or_gradle_prop 'KEYSTORE_PATH')
+
+# Use absolute path for Keystore
 KEYSTORE_PATH=${KEYSTORE_PATH/#\~/$HOME}
 
 if [[ -e "${KEYSTORE_PATH}" ]]; then
@@ -30,7 +36,7 @@ if [[ -e "${KEYSTORE_PATH}" ]]; then
     exit 0
 fi
 
-KEYSTORE_DIR=$(dirname "${S/TATUS_RELEASE_STORE_FILE}")
+KEYSTORE_DIR=$(dirname "${KEYSTORE_PATH}")
 [[ -d $KEYSTORE_DIR ]] || mkdir -p $KEYSTORE_DIR
 
 echo -e "${GRN}Generating keystore...${RST}" > /dev/stderr
