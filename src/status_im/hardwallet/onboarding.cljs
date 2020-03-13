@@ -38,26 +38,24 @@
 
 (fx/defn load-preparing-screen
   {:events [:hardwallet/load-preparing-screen]}
-  [{:keys [db] :as cofx}]
-  (let [card-connected? (get-in db [:hardwallet :card-connected?])]
-    (fx/merge cofx
-              {:db (assoc-in db [:hardwallet :setup-step] :preparing)}
-              (common/set-on-card-connected :hardwallet/load-preparing-screen)
-              (if card-connected?
-                (start-installation)
-                (common/show-pair-sheet {:on-cancel [::cancel-pressed]})))))
+  [cofx]
+  (common/show-connection-sheet
+   cofx
+   {:sheet-options     {:on-cancel [::cancel-pressed]}
+    :on-card-connected :hardwallet/load-preparing-screen
+    :handler           start-installation}))
 
 (fx/defn load-pairing-screen
   {:events [:hardwallet/load-pairing-screen
             :keycard.onboarding.puk-code.ui/confirm-pressed]}
   [{:keys [db] :as cofx}]
-  (let [card-connected? (get-in db [:hardwallet :card-connected?])]
-    (fx/merge cofx
-              {:db (assoc-in db [:hardwallet :setup-step] :pairing)}
-              (common/set-on-card-connected :hardwallet/load-pairing-screen)
-              (if card-connected?
-                (common/dispatch-event :hardwallet/pair)
-                (common/show-pair-sheet {:on-cancel [::cancel-pressed]})))))
+  (fx/merge
+   cofx
+   {:db (assoc-in db [:hardwallet :setup-step] :pairing)}
+   (common/show-connection-sheet
+    {:sheet-options     {:on-cancel [::cancel-pressed]}
+     :on-card-connected :hardwallet/load-pairing-screen
+     :handler           (common/dispatch-event :hardwallet/pair)})))
 
 (fx/defn puk-code-next-pressed
   {:events [:keycard.onboarding.puk-code.ui/next-pressed]}
@@ -73,13 +71,13 @@
   {:events [:keycard.onboarding.recovery-phrase-confirm-word2.ui/next-pressed
             :hardwallet/load-finishing-screen]}
   [{:keys [db] :as cofx}]
-  (let [card-connected? (get-in db [:hardwallet :card-connected?])]
-    (fx/merge cofx
-              {:db (assoc-in db [:hardwallet :setup-step] :loading-keys)}
-              (common/set-on-card-connected :hardwallet/load-finishing-screen)
-              (if card-connected?
-                (common/dispatch-event :hardwallet/generate-and-load-key)
-                (common/show-pair-sheet {:on-cancel [::cancel-pressed]})))))
+  (fx/merge
+   cofx
+   {:db (assoc-in db [:hardwallet :setup-step] :loading-keys)}
+   (common/show-connection-sheet
+    {:sheet-options     {:on-cancel [::cancel-pressed]}
+     :on-card-connected :hardwallet/load-finishing-screen
+     :handler           (common/dispatch-event :hardwallet/generate-and-load-key)})))
 
 (fx/defn recovery-phrase-learn-more-pressed
   {:events [:keycard.onboarding.recovery-phrase.ui/learn-more-pressed]}
@@ -254,7 +252,7 @@
                                                     (assoc-in [:hardwallet :card-state] :init)
                                                     (assoc-in [:hardwallet :setup-step] :secret-keys)
                                                     (update-in [:hardwallet :secrets] merge secrets'))}
-              (common/hide-pair-sheet)
+              (common/hide-connection-sheet)
               (common/listen-to-hardware-back-button)
               (navigation/navigate-replace-cofx :keycard-onboarding-puk-code nil))))
 
@@ -288,17 +286,19 @@
 (fx/defn begin-setup-pressed
   {:events [:keycard.onboarding.intro.ui/begin-setup-pressed]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (-> db
-                     (update :hardwallet
-                             dissoc :secrets :card-state :multiaccount-wallet-address
-                             :multiaccount-whisper-public-key
-                             :application-info)
-                     (assoc-in [:hardwallet :setup-step] :begin)
-                     (assoc-in [:hardwallet :pin :on-verified] nil))}
-            (common/set-on-card-connected :hardwallet/get-application-info)
-            (common/set-on-card-read :hardwallet/check-card-state)
-            (common/show-pair-sheet {})))
+  (fx/merge
+   cofx
+   {:db (-> db
+            (update :hardwallet
+                    dissoc :secrets :card-state :multiaccount-wallet-address
+                    :multiaccount-whisper-public-key
+                    :application-info)
+            (assoc-in [:hardwallet :setup-step] :begin)
+            (assoc-in [:hardwallet :pin :on-verified] nil))}
+   (common/show-connection-sheet
+    {:on-card-connected :hardwallet/get-application-info
+     :on-card-read      :hardwallet/check-card-state
+     :handler           (common/get-application-info nil :hardwallet/check-card-state)})))
 
 (fx/defn cancel-confirm
   {:events [::cancel-confirm]}

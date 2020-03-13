@@ -140,7 +140,7 @@
                                                                                          :puk          []
                                                                                          :puk-restore? true
                                                                                          :error-label  nil}))}
-              (common/hide-pair-sheet)
+              (common/hide-connection-sheet)
               (navigation/navigate-to-cofx :enter-pin-settings nil))))
 
 (fx/defn on-unblock-pin-error
@@ -156,7 +156,7 @@
                                                                                           :error-label :t/puk-mismatch
                                                                                           :enter-step  :puk
                                                                                           :puk         []})}
-                (common/hide-pair-sheet)))))
+                (common/hide-connection-sheet)))))
 
 (fx/defn dispatch-on-verified-event
   [{:keys [db]} event]
@@ -177,7 +177,7 @@
               ;; now for simplicity do not hide bottom sheet when generating key
               ;; but should be refactored.
               (when-not (= on-verified :hardwallet/generate-and-load-key)
-                (common/hide-pair-sheet))
+                (common/hide-connection-sheet))
               (when-not (contains? #{:hardwallet/unpair
                                      :hardwallet/generate-and-load-key
                                      :hardwallet/remove-key-with-unpair
@@ -204,7 +204,7 @@
                                                                :confirmation []
                                                                :sign         []
                                                                :error-label  :t/pin-mismatch})}
-                  (common/hide-pair-sheet)
+                  (common/hide-connection-sheet)
                   (when-not setup?
                     (if exporting?
                       (navigation/navigate-back)
@@ -212,39 +212,41 @@
                   (common/get-application-info (common/get-pairing db) nil))
 
         (fx/merge cofx
-                  (common/hide-pair-sheet)
+                  (common/hide-connection-sheet)
                   (common/show-wrong-keycard-alert true))))))
 
 (fx/defn verify-pin
   {:events [:hardwallet/verify-pin]}
-  [{:keys [db] :as cofx}]
-  (let [pin             (common/vector->string (get-in db [:hardwallet :pin :current]))
-        pairing         (common/get-pairing db)
-        card-connected? (get-in db [:hardwallet :card-connected?])]
-    (if card-connected?
-      (fx/merge cofx
-                {:db                    (assoc-in db [:hardwallet :pin :status] :verifying)
-                 :hardwallet/verify-pin {:pin     pin
-                                         :pairing pairing}})
-      (fx/merge cofx
-                (common/set-on-card-connected :hardwallet/verify-pin)
-                (common/show-pair-sheet {})))))
+  [cofx]
+  (common/show-connection-sheet
+   cofx
+   {:on-card-connected :hardwallet/verify-pin
+    :handler
+    (fn [{:keys [db] :as cofx}]
+      (let [pin     (common/vector->string (get-in db [:hardwallet :pin :current]))
+            pairing (common/get-pairing db)]
+        (fx/merge
+         cofx
+         {:db                    (assoc-in db [:hardwallet :pin :status] :verifying)
+          :hardwallet/verify-pin {:pin     pin
+                                  :pairing pairing}})))}))
 
 (fx/defn unblock-pin
   {:events [:hardwallet/unblock-pin]}
-  [{:keys [db] :as cofx}]
-  (let [puk (common/vector->string (get-in db [:hardwallet :pin :puk]))
-        key-uid (get-in db [:hardwallet :application-info :key-uid])
-        card-connected? (get-in db [:hardwallet :card-connected?])
-        pairing (common/get-pairing db key-uid)]
-    (if card-connected?
-      {:db                     (assoc-in db [:hardwallet :pin :status] :verifying)
-       :hardwallet/unblock-pin {:puk     puk
-                                :new-pin common/default-pin
-                                :pairing pairing}}
-      (fx/merge cofx
-                (common/set-on-card-connected :hardwallet/unblock-pin)
-                (common/show-pair-sheet {})))))
+  [cofx]
+  (common/show-connection-sheet
+   cofx
+   {:on-card-connected :hardwallet/unblock-pin
+    :handler
+    (fn [{:keys [db]}]
+      (let [puk     (common/vector->string (get-in db [:hardwallet :pin :puk]))
+            key-uid (get-in db [:hardwallet :application-info :key-uid])
+            pairing (common/get-pairing db key-uid)]
+        {:db (assoc-in db [:hardwallet :pin :status] :verifying)
+         :hardwallet/unblock-pin
+         {:puk     puk
+          :new-pin common/default-pin
+          :pairing pairing}}))}))
 
 (def pin-code-length 6)
 (def puk-code-length 12)
@@ -377,7 +379,7 @@
                                                 (assoc-in [:hardwallet :setup-step] next-step)
                                                 (assoc-in [:hardwallet :secrets :pairing] pairing)
                                                 (assoc-in [:hardwallet :secrets :paired-on] paired-on))}
-              (common/hide-pair-sheet)
+              (common/hide-connection-sheet)
               (when multiaccount
                 (set-multiaccount-pairing multiaccount pairing paired-on))
               (when (= flow :login)
@@ -405,7 +407,7 @@
                 (common/set-on-card-connected (if (= setup-step :pairing)
                                                 :hardwallet/load-pairing-screen
                                                 :hardwallet/pair))
-                (common/hide-pair-sheet)
+                (common/hide-connection-sheet)
                 (when (= flow :import)
                   (navigation/navigate-to-cofx :keycard-recovery-pair nil))
                 (when (not= setup-step :enter-pair-code)
@@ -444,7 +446,7 @@
     (fx/merge cofx
               {:db (assoc-in db [:hardwallet :card-state] card-state)}
               (set-setup-step card-state)
-              (common/hide-pair-sheet)
+              (common/hide-connection-sheet)
 
               (when (and flow
                          (= card-state :init))
@@ -485,7 +487,7 @@
 (fx/defn on-card-disconnected
   {:events [:hardwallet.callback/on-card-disconnected]}
   [{:keys [db]} _]
-  (log/debug "[hardwallet] card disconnected ")
+  (log/debug "[hardwallet] card disconnected")
   {:db (assoc-in db [:hardwallet :card-connected?] false)})
 
 (fx/defn on-register-card-events

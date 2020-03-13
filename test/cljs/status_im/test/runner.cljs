@@ -21,6 +21,7 @@
             [status-im.test.ethereum.stateofus]
             [status-im.test.fleet.core]
             [status-im.test.hardwallet.core]
+            [status-im.test.hardwallet.common]
             [status-im.test.i18n]
             [status-im.test.mailserver.core]
             [status-im.test.mailserver.topics]
@@ -92,6 +93,7 @@
  'status-im.test.ethereum.stateofus
  'status-im.test.fleet.core
  'status-im.test.hardwallet.core
+ 'status-im.test.hardwallet.common
  'status-im.test.i18n
  'status-im.test.mailserver.core
  'status-im.test.mailserver.topics

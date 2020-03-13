@@ -24,14 +24,14 @@
                                                                  :sign         []
                                                                  :export-key   []
                                                                  :error-label  :t/pin-mismatch})}
-                    (common/hide-pair-sheet)
+                    (common/hide-connection-sheet)
                     (common/get-application-info (common/get-pairing db) nil))
 
           :else
           (fx/merge cofx
                     (common/show-wrong-keycard-alert true)
                     (common/clear-pin)
-                    (common/hide-pair-sheet)))))
+                    (common/hide-connection-sheet)))))
 
 (fx/defn on-export-key-success
   {:events [:hardwallet.callback/on-export-key-success]}
@@ -40,4 +40,4 @@
     (fx/merge cofx
               {:dispatch (callback-fn pubkey)}
               (common/clear-pin)
-              (common/hide-pair-sheet))))
+              (common/hide-connection-sheet))))

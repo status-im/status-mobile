@@ -310,7 +310,7 @@
                        (assoc-in [:hardwallet :pin :status] nil)
                        (dissoc :signing/tx :signing/in-progress? :signing/sign))}
               (check-queue)
-              (hardwallet.common/hide-pair-sheet)
+              (hardwallet.common/hide-connection-sheet)
               (hardwallet.common/clear-pin)
               #(when on-error
                  {:dispatch (conj on-error "transaction was cancelled by user")}))))

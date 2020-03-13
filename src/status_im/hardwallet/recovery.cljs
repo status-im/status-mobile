@@ -18,14 +18,12 @@
 
 (fx/defn pair
   {:events [:hardwallet/pair]}
-  [{:keys [db] :as cofx}]
-  (let [{:keys [password]} (get-in cofx [:db :hardwallet :secrets])
-        card-connected?    (get-in db [:hardwallet :card-connected?])]
-    (fx/merge cofx
-              (common/set-on-card-connected :hardwallet/pair)
-              (if card-connected?
-                (pair* password)
-                (common/show-pair-sheet {})))))
+  [cofx]
+  (let [{:keys [password]} (get-in cofx [:db :hardwallet :secrets])]
+    (common/show-connection-sheet
+     cofx
+     {:on-card-connected :hardwallet/pair
+      :handler           (pair* password)})))
 
 (fx/defn pair-code-next-button-pressed
   {:events [:keycard.onboarding.pair.ui/input-submitted
@@ -100,17 +98,20 @@
 (fx/defn begin-setup-pressed
   {:events [:keycard.recovery.intro.ui/begin-recovery-pressed]}
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (-> db
-                     (update :hardwallet
-                             dissoc :secrets :card-state :multiaccount-wallet-address
-                             :multiaccount-whisper-public-key
-                             :application-info)
-                     (assoc-in [:hardwallet :setup-step] :begin)
-                     (assoc-in [:hardwallet :pin :on-verified] nil))}
-            (common/set-on-card-connected :hardwallet/get-application-info)
-            (common/set-on-card-read :hardwallet/check-card-state)
-            (common/show-pair-sheet {:on-cancel [::cancel-pressed]})))
+  (fx/merge
+   cofx
+   {:db (-> db
+            (update :hardwallet
+                    dissoc :secrets :card-state :multiaccount-wallet-address
+                    :multiaccount-whisper-public-key
+                    :application-info)
+            (assoc-in [:hardwallet :setup-step] :begin)
+            (assoc-in [:hardwallet :pin :on-verified] nil))}
+   (common/show-connection-sheet
+    {:on-card-connected :hardwallet/get-application-info
+     :on-card-read      :hardwallet/check-card-state
+     :sheet-options     {:on-cancel [::cancel-pressed]}
+     :handler           (common/get-application-info nil :hardwallet/check-card-state)})))
 
 (fx/defn recovery-success-finish-pressed
   {:events [:keycard.recovery.success/finish-pressed]}
@@ -215,7 +216,7 @@
                        (assoc :multiaccounts/new-installation-id (random-guid-generator))
                        (update-in [:hardwallet :secrets] dissoc :mnemonic))}
               (common/remove-listener-to-hardware-back-button)
-              (common/hide-pair-sheet)
+              (common/hide-connection-sheet)
               (create-keycard-multiaccount))))
 
 (fx/defn on-generate-and-load-key-error
@@ -247,13 +248,11 @@
 
 (fx/defn load-recovering-key-screen
   {:events [:hardwallet/load-recovering-key-screen]}
-  [{:keys [db] :as cofx}]
-  (let [card-connected? (get-in db [:hardwallet :card-connected?])]
-    (fx/merge cofx
-              (common/set-on-card-connected :hardwallet/load-recovering-key-screen)
-              (if card-connected?
-                (common/dispatch-event :hardwallet/import-multiaccount)
-                (common/show-pair-sheet {})))))
+  [cofx]
+  (common/show-connection-sheet
+   cofx
+   {:on-card-connected :hardwallet/load-recovering-key-screen
+    :handler           (common/dispatch-event :hardwallet/import-multiaccount)}))
 
 (fx/defn on-name-and-photo-generated
   {:events [::on-name-and-photo-generated]

@@ -5,7 +5,8 @@
             [status-im.ui.components.animation :as animation]
             [status-im.hardwallet.card :as keycard-nfc]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [taoensso.timbre :as log]))
 
 (defn circle [{:keys [animation-value color size]}]
   [react/animated-view

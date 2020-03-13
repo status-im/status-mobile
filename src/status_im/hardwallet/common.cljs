@@ -104,6 +104,7 @@
 
 (fx/defn set-on-card-connected
   [{:keys [db]} on-connect]
+  (log/debug "[hardwallet] set-on-card-connected" on-connect)
   {:db (-> db
            (assoc-in [:hardwallet :on-card-connected] on-connect)
            (assoc-in [:hardwallet :last-on-card-connected] nil))})
@@ -111,6 +112,7 @@
 (fx/defn stash-on-card-connected
   [{:keys [db]}]
   (let [on-connect (get-in db [:hardwallet :on-card-connected])]
+    (log/debug "[hardwallet] stash-on-card-connected" on-connect)
     {:db (-> db
              (assoc-in [:hardwallet :last-on-card-connected] on-connect)
              (assoc-in [:hardwallet :on-card-connected] nil))}))
@@ -120,18 +122,21 @@
   (let [on-connect (or
                     (get-in db [:hardwallet :on-card-connected])
                     (get-in db [:hardwallet :last-on-card-connected]))]
+    (log/debug "[hardwallet] restore-on-card-connected" on-connect)
     {:db (-> db
              (assoc-in [:hardwallet :on-card-connected] on-connect)
              (assoc-in [:hardwallet :last-on-card-connect] nil))}))
 
 (fx/defn clear-on-card-connected
   [{:keys [db]}]
+  (log/debug "[hardwallet] clear-on-card-connected")
   {:db (-> db
            (assoc-in [:hardwallet :on-card-connected] nil)
            (assoc-in [:hardwallet :last-on-card-connected] nil))})
 
 (fx/defn set-on-card-read
   [{:keys [db]} on-connect]
+  (log/debug "[hardwallet] set-on-card-read" on-connect)
   {:db (-> db
            (assoc-in [:hardwallet :on-card-read] on-connect)
            (assoc-in [:hardwallet :last-on-card-read] nil))})
@@ -139,6 +144,7 @@
 (fx/defn stash-on-card-read
   [{:keys [db]}]
   (let [on-connect (get-in db [:hardwallet :on-card-read])]
+    (log/debug "[hardwallet] stash-on-card-read" on-connect)
     {:db (-> db
              (assoc-in [:hardwallet :last-on-card-read] on-connect)
              (assoc-in [:hardwallet :on-card-read] nil))}))
@@ -148,12 +154,14 @@
   (let [on-connect (or
                     (get-in db [:hardwallet :on-card-read])
                     (get-in db [:hardwallet :last-on-card-read]))]
+    (log/debug "[hardwallet] restore-on-card-read" on-connect)
     {:db (-> db
              (assoc-in [:hardwallet :on-card-read] on-connect)
              (assoc-in [:hardwallet :last-on-card-connect] nil))}))
 
 (fx/defn clear-on-card-read
   [{:keys [db]}]
+  (log/debug "[hardwallet] clear-on-card-read")
   {:db (-> db
            (assoc-in [:hardwallet :on-card-read] nil)
            (assoc-in [:hardwallet :last-on-card-read] nil))})
@@ -166,26 +174,36 @@
       :on-connect    ::on-card-connected
       :on-disconnect ::on-card-disconnected})))
 
-(fx/defn show-pair-sheet
-  [cofx {:keys [on-cancel]
-         :or   {on-cancel [::cancel-sheet-confirm]}}]
-  (log/debug "[hardwallet] show-pair-sheet")
-  (let [connected? (get-in cofx [:db :hardwallet :card-connected?])]
-    (fx/merge cofx
-              {:dismiss-keyboard true}
-              (bottom-sheet/show-bottom-sheet
-               {:view {:show-handle?      false
-                       :backdrop-dismiss? false
-                       :disable-drag?     true
-                       :content           (keycard-sheet-content on-cancel
-                                                                 connected?)}}))))
+(fx/defn show-connection-sheet
+  [{:keys [db] :as cofx} {:keys [on-card-connected on-card-read handler]
+                          {:keys [on-cancel]
+                           :or   {on-cancel [::cancel-sheet-confirm]}}
+                          :sheet-options}]
+  (assert (keyword? on-card-connected))
+  (assert (fn? handler))
+  (let [connected? (get-in db [:hardwallet :card-connected?])]
+    (log/debug "[hardwallet] show-sheet-with-connection-check"
+               "card-connected?" connected?)
+    (fx/merge
+     cofx
+     {:dismiss-keyboard true}
+     (bottom-sheet/show-bottom-sheet
+      {:view {:show-handle?      false
+              :backdrop-dismiss? false
+              :disable-drag?     true
+              :content           (keycard-sheet-content on-cancel connected?)}})
+     (when on-card-read
+       (set-on-card-read on-card-read))
+     (set-on-card-connected on-card-connected)
+     (when connected?
+       (stash-on-card-connected))
+     (when connected?
+       handler))))
 
-(fx/defn hide-pair-sheet
+(fx/defn hide-connection-sheet
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:db (-> db
-                     (assoc-in [:hardwallet :card-connected?] false)
-                     (assoc-in [:hardwallet :card-read-in-progress?] false))}
+            {:db (assoc-in db [:hardwallet :card-read-in-progress?] false)}
             (restore-on-card-connected)
             (restore-on-card-read)
             (bottom-sheet/hide-bottom-sheet)))
@@ -211,7 +229,7 @@
             :hardwallet/back-button-pressed]}
   [cofx]
   (fx/merge cofx
-            (hide-pair-sheet)
+            (hide-connection-sheet)
             (clear-pin)))
 
 (fx/defn cancel-sheet
@@ -320,7 +338,7 @@
                 (keychain/save-hardwallet-keys key-uid encryption-public-key whisper-private-key))
               (clear-on-card-connected)
               (clear-on-card-read)
-              (hide-pair-sheet))))
+              (hide-connection-sheet))))
 
 (fx/defn on-get-keys-error
   {:events [:hardwallet.callback/on-get-keys-error]}
@@ -338,7 +356,7 @@
                                                                                             :login               []
                                                                                             :import-multiaccount []
                                                                                             :error-label         :t/pin-mismatch})}
-                  (hide-pair-sheet)
+                  (hide-connection-sheet)
                   (when (= flow :import)
                     (navigation/navigate-to-cofx :keycard-recovery-pin nil)))
         (show-wrong-keycard-alert true)))))
@@ -350,6 +368,8 @@
   [{:keys [db]} pairing on-card-read]
   (let [key-uid  (get-in db [:hardwallet :application-info :key-uid])
         pairing' (or pairing (some->> key-uid (get-pairing db)))]
+    (log/debug "[hardwallet] get-application-info"
+               "pairing" pairing')
     {:hardwallet/get-application-info {:pairing    pairing'
                                        :on-success on-card-read}}))
 
@@ -410,7 +430,6 @@
 (fx/defn on-card-connected
   {:events [::on-card-connected]}
   [{:keys [db] :as cofx} _]
-  (log/debug "[hardwallet] card connected")
   (let [instance-uid              (get-in db [:hardwallet :application-info :instance-uid])
         key-uid                   (get-in db [:hardwallet :application-info :key-uid])
         should-read-instance-uid? (nil? instance-uid)
@@ -419,23 +438,23 @@
                                     should-read-instance-uid? :hardwallet/get-application-info
                                     :else                     (get-in db [:hardwallet :on-card-read]))
         pairing                   (get-pairing db key-uid)]
-    (log/debug "[hardwallet] on-card-connected"
-               "on-card-connected" on-card-connected
+    (log/debug "[hardwallet] on-card-connected" on-card-connected
                "on-card-read" on-card-read)
-    (fx/merge cofx
-              {:db (-> db
-                       (assoc-in [:hardwallet :card-read-in-progress?] (boolean on-card-read)))}
-              (when on-card-connected
-                (dispatch-event on-card-connected))
-              (stash-on-card-connected)
-              (when (and on-card-read
-                         (nil? on-card-connected))
-                (get-application-info pairing on-card-read)))))
+    (when on-card-connected
+      (fx/merge cofx
+                {:db (-> db
+                         (assoc-in [:hardwallet :card-read-in-progress?] (boolean on-card-read)))}
+                (when on-card-connected
+                  (dispatch-event on-card-connected))
+                (stash-on-card-connected)
+                (when (and on-card-read
+                           (nil? on-card-connected))
+                  (get-application-info pairing on-card-read))))))
 
 (fx/defn on-card-disconnected
   {:events [::on-card-disconnected]}
   [{:keys [db] :as cofx} _]
-  (log/debug "[hardwallet] card disconnected ")
+  (log/debug "[hardwallet] card disconnected")
   (fx/merge cofx
             {:db (-> db
                      (assoc-in [:hardwallet :card-read-in-progress?] false))}

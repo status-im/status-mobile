@@ -62,36 +62,36 @@
     (cond
       (empty? application-info)
       (fx/merge cofx
-                (common/hide-pair-sheet)
+                (common/hide-connection-sheet)
                 (navigation/navigate-to-cofx :not-keycard nil))
 
       (empty? key-uid)
       (fx/merge cofx
-                (common/hide-pair-sheet)
+                (common/hide-connection-sheet)
                 (navigation/navigate-to-cofx :keycard-blank nil))
 
       multiaccount-mismatch?
       (fx/merge cofx
-                (common/hide-pair-sheet)
+                (common/hide-connection-sheet)
                 (navigation/navigate-to-cofx :keycard-wrong nil))
 
       (empty? pairing)
       (fx/merge cofx
-                (common/hide-pair-sheet)
+                (common/hide-connection-sheet)
                 (navigation/navigate-to-cofx :keycard-unpaired nil))
 
       :else
       (common/get-keys-from-keycard cofx))))
 
 (fx/defn proceed-to-login
-  [{:keys [db] :as cofx}]
-  (let [{:keys [card-connected?]} (:hardwallet db)]
-    (fx/merge cofx
-              (common/set-on-card-connected :hardwallet/get-application-info)
-              (common/set-on-card-read :hardwallet/login-with-keycard)
-              (if card-connected?
-                (login-with-keycard)
-                (common/show-pair-sheet {:on-cancel [::common/cancel-sheet-confirm]})))))
+  [cofx]
+  (log/debug "[hardwallet] proceed-to-login")
+  (common/show-connection-sheet
+   cofx
+   {:sheet-options     {:on-cancel [::common/cancel-sheet-confirm]}
+    :on-card-connected :hardwallet/get-application-info
+    :on-card-read      :hardwallet/login-with-keycard
+    :handler           (common/get-application-info nil :hardwallet/login-with-keycard)}))
 
 (fx/defn on-hardwallet-keychain-keys
   {:events [:multiaccounts.login.callback/get-hardwallet-keys-success]}

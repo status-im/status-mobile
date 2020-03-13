@@ -34,15 +34,11 @@
 (fx/defn prepare-to-sign
   {:events [:hardwallet/prepare-to-sign]}
   [{:keys [db] :as cofx}]
-  (let [card-connected? (get-in db [:hardwallet :card-connected?])
-        pairing         (common/get-pairing db)]
-    (fx/merge cofx
-              (if card-connected?
-                (common/get-application-info pairing :hardwallet/sign)
-                (fn [cofx]
-                  (fx/merge cofx
-                            (common/set-on-card-connected :hardwallet/prepare-to-sign)
-                            (common/show-pair-sheet {})))))))
+  (let [pairing (common/get-pairing db)]
+    (common/show-connection-sheet
+     cofx
+     {:on-card-connected :hardwallet/prepare-to-sign
+      :handler           (common/get-application-info pairing :hardwallet/sign)})))
 
 (fx/defn sign-message-completed
   [_ signature]
@@ -73,7 +69,7 @@
                        (assoc-in [:hardwallet :transaction] nil))}
               (common/clear-on-card-connected)
               (common/get-application-info (common/get-pairing db) nil)
-              (common/hide-pair-sheet)
+              (common/hide-connection-sheet)
               (if transaction
                 (send-transaction-with-signature {:transaction  (types/clj->json transaction)
                                                   :signature    signature
@@ -93,8 +89,8 @@
                                                                 :sign        []
                                                                 :error-label :t/pin-mismatch})
                            (assoc-in [:signing/sign :keycard-step] :pin))}
-                  (common/hide-pair-sheet)
+                  (common/hide-connection-sheet)
                   (common/get-application-info (common/get-pairing db) nil))
         (fx/merge cofx
-                  (common/hide-pair-sheet)
+                  (common/hide-connection-sheet)
                   (common/show-wrong-keycard-alert true))))))

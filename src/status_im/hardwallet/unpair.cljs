@@ -94,16 +94,17 @@
 
 (fx/defn remove-key-with-unpair
   {:events [:hardwallet/remove-key-with-unpair]}
-  [{:keys [db] :as cofx}]
-  (let [pin             (common/vector->string (get-in db [:hardwallet :pin :current]))
-        pairing         (common/get-pairing db)
-        card-connected? (get-in db [:hardwallet :card-connected?])]
-    (if card-connected?
-      {:hardwallet/remove-key-with-unpair {:pin     pin
-                                           :pairing pairing}}
-      (fx/merge cofx
-                (common/set-on-card-connected :hardwallet/remove-key-with-unpair)
-                (common/show-pair-sheet {})))))
+  [cofx]
+  (common/show-connection-sheet
+   cofx
+   {:on-card-connected :hardwallet/remove-key-with-unpair
+    :handler
+    (fn [{:keys [db]}]
+      (let [pin     (common/vector->string (get-in db [:hardwallet :pin :current]))
+            pairing (common/get-pairing db)]
+        {:hardwallet/remove-key-with-unpair
+         {:pin     pin
+          :pairing pairing}}))}))
 
 (fx/defn on-remove-key-success
   {:events [:hardwallet.callback/on-remove-key-success]}

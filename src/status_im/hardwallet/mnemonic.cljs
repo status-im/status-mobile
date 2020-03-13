@@ -53,13 +53,12 @@
 (fx/defn load-generating-mnemonic-screen
   {:events [:hardwallet/load-generating-mnemonic-screen]}
   [{:keys [db] :as cofx}]
-  (let [card-connected? (get-in db [:hardwallet :card-connected?])]
-    (fx/merge cofx
-              {:db (assoc-in db [:hardwallet :setup-step] :generating-mnemonic)}
-              (common/set-on-card-connected :hardwallet/load-generating-mnemonic-screen)
-              (if card-connected?
-                (common/dispatch-event :hardwallet/generate-mnemonic)
-                (common/show-pair-sheet {})))))
+  (fx/merge
+   cofx
+   {:db (assoc-in db [:hardwallet :setup-step] :generating-mnemonic)}
+   (common/show-connection-sheet
+    {:on-card-connected :hardwallet/load-generating-mnemonic-screen
+     :handler           (common/dispatch-event :hardwallet/generate-mnemonic)})))
 
 (fx/defn on-generate-mnemonic-error
   {:events [:hardwallet.callback/on-generate-mnemonic-error]}
@@ -81,10 +80,9 @@
   {:events [:hardwallet.ui/recovery-phrase-confirm-pressed
             :hardwallet/load-loading-keys-screen]}
   [{:keys [db] :as cofx}]
-  (let [card-connected? (get-in db [:hardwallet :card-connected?])]
-    (fx/merge cofx
-              {:db (assoc-in db [:hardwallet :setup-step] :loading-keys)}
-              (common/set-on-card-connected :hardwallet/load-loading-keys-screen)
-              (if card-connected?
-                (common/dispatch-event :hardwallet/generate-and-load-key)
-                (common/show-pair-sheet {})))))
+  (fx/merge
+   cofx
+   {:db (assoc-in db [:hardwallet :setup-step] :loading-keys)}
+   (common/show-connection-sheet
+    {:on-card-connected :hardwallet/load-loading-keys-screen
+     :handler           (common/dispatch-event :hardwallet/generate-and-load-key)})))

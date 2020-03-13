@@ -37,7 +37,7 @@
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             (common/clear-pin)
-            (common/hide-pair-sheet)
+            (common/hide-connection-sheet)
             (if (get-in db [:hardwallet :pin :puk-restore?])
               (navigation/navigate-to-cofx :multiaccounts nil)
               (navigation/navigate-to-cofx :keycard-settings nil))))
@@ -45,22 +45,30 @@
 (fx/defn change-pin
   {:events [:hardwallet/change-pin]}
   [{:keys [db] :as cofx}]
-  (let [pairing         (common/get-pairing db)
-        new-pin         (common/vector->string (get-in db [:hardwallet :pin :original]))
-        current-pin     (common/vector->string (get-in db [:hardwallet :pin :current]))
-        setup-step      (get-in db [:hardwallet :setup-step])
-        card-connected? (get-in db [:hardwallet :card-connected?])]
+  (let [setup-step (get-in db [:hardwallet :setup-step])]
+    (log/debug "[hardwallet] change-pin"
+               "setup-step" setup-step)
     (if (= setup-step :pin)
       (onboarding/load-preparing-screen cofx)
-      (if card-connected?
-        (fx/merge cofx
-                  {:db                    (assoc-in db [:hardwallet :pin :status] :verifying)
-                   :hardwallet/change-pin {:new-pin     new-pin
-                                           :current-pin current-pin
-                                           :pairing     pairing}})
-        (fx/merge cofx
-                  (common/set-on-card-connected :hardwallet/change-pin)
-                  (common/show-pair-sheet {:on-cancel [::on-cancel]}))))))
+      (common/show-connection-sheet
+       cofx
+       {:sheet-options     {:on-cancel [::on-cancel]}
+        :on-card-connected :hardwallet/change-pin
+        :handler
+        (fn [{:keys [db] :as cofx}]
+          (let [pairing     (common/get-pairing db)
+                new-pin     (common/vector->string
+                             (get-in db [:hardwallet :pin :original]))
+                current-pin (common/vector->string
+                             (get-in db [:hardwallet :pin :current]))]
+            (fx/merge
+             cofx
+             {:db (assoc-in db [:hardwallet :pin :status] :verifying)
+
+              :hardwallet/change-pin
+              {:new-pin     new-pin
+               :current-pin current-pin
+               :pairing     pairing}})))}))))
 
 (fx/defn on-change-pin-success
   {:events [:hardwallet.callback/on-change-pin-success]}
@@ -74,7 +82,7 @@
                                                                   :error-label  nil})
                :utils/show-popup {:title   ""
                                   :content (i18n/label :t/pin-changed)}}
-              (common/hide-pair-sheet)
+              (common/hide-connection-sheet)
               (if puk-restore?
                 (navigation/navigate-to-cofx :multiaccounts nil)
                 (navigation/navigate-to-cofx :keycard-settings nil))
