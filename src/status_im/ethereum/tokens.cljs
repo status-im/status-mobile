@@ -124,6 +124,10 @@
                     :name     "Kyber Network Crystal"
                     :address  "0xdd974d5c2e2928dea5f71b9825b8b646686bd200"
                     :decimals 18}
+                   {:symbol   :BTU
+                    :name     "BTU Protocol"
+                    :address  "0xb683D83a532e2Cb7DFa5275eED3698436371cc9f"
+                    :decimals 18}
                    {:symbol   :DGD
                     :name     "Digix DAO"
                     :address  "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a"
