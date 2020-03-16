@@ -17,7 +17,7 @@
 (fx/defn success-buy
   {:events [::success-buy]}
   [cofx]
-  (fx/merge
+  (fx/merge cofx
    ;; TODO: Wait for tx to be mined, on success refresh wallet
-   (close-starter-pack)
-   (popover/show-popover {:view :starter-pack-success})))
+            (close-starter-pack)
+            (popover/show-popover {:view :starter-pack-success})))

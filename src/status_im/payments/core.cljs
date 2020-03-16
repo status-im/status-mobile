@@ -42,11 +42,12 @@
 (re-frame/reg-fx
  ::init-connection
  (fn []
+   ;; NOTE: Consume all items so we can retest it many times
+   (ocall js-dependencies/react-native-iap "consumeAllItemsAndroid")
    (-> (init-connection)
        (.then #(re-frame/dispatch [:set-in [:iap/payment :can-make-payment] %]))
        (.catch (fn [e]
-                 (re-frame/dispatch [::on-error (oget e "message")])
-                 (log/error "PAYMENT ERROR:" (js->clj e)))))))
+                 (log/error "INIT PAYMENT ERROR:" (js->clj e)))))))
 
 (re-frame/reg-sub
  ::can-make-payment
@@ -64,12 +65,8 @@
 (re-frame/reg-fx
  ::request-purchase
  (fn [sku]
-   (let [start-purchase (fn []
-                          (-> (request-purchase sku  false)
-                              (.catch (fn [e]
-                                        (re-frame/dispatch [::on-error (oget e "message")])
-                                        (log/warn "REQUEST PAYMENT ERROR:" (js->clj e))))))]
-     (get-product sku start-purchase))))
+   ;; NOTE: Should call firstly get-products then show button with request-purchase
+   (request-purchase sku false)))
 
 (handlers/register-handler-fx
  ::request-payment
@@ -87,12 +84,15 @@
 
 (re-frame/reg-fx
  ::call-payment-gateway
- (fn [_ [_ {:keys [purchase-data on-success]}]]
-   (prn purchase-data)))
+ (fn [{:keys [purchase on-success]}]
+   ;; NOTE: Imitate success til backend is ready
+   (re-frame/dispatch [::gateway-on-success purchase on-success])))
 
 (fx/defn gateway-success
   {:events [::gateway-on-success]}
-  [cofx opts])
+  [cofx purchase on-success]
+  {::confirm-purchase purchase
+   :dispatch          [on-success]})
 
 (fx/defn gateway-error
   {:events [::gateway-on-error]}

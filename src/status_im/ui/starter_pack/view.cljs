@@ -14,14 +14,20 @@
             [status-im.react-native.resources :as resources]))
 
 ;; TODO: Show starter pack only on mainnet?
+;; TODO: Show if it is not buyed already
 (defview starter-pack []
   (letsubs [starter-pack-state [::sp/starter-pack-state]
             can-pay            [::payment/can-make-payment]
             listeners          (reagent/atom nil)
-            product-to-buy "android.test.canceled"]
+            purchased (reagent/atom nil)
+            canceled (reagent/atom nil)
+            unavailable (reagent/atom nil)
+            product-to-buy "android.test.purchased"]
     {:component-did-mount
      (fn []
-       (payment/get-product product-to-buy prn)
+       (payment/get-product "android.test.purchased" #(reset! purchased %))
+       (payment/get-product "android.test.canceled" #(reset! canceled %))
+       (payment/get-product "android.test.item_unavailable" #(reset! unavailable %))
        (reset! listeners (payment/purchase-listeners ::sp/success-buy)))
      :component-will-unmount
      (fn []
@@ -56,13 +62,35 @@
           [react/view {:style styles/close-icon-container}
            [icons/icon :main-icons/close {:color colors/white}]]]]]
        [react/view {:style {:padding 8}}
-
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [::payment/request-payment product-to-buy])}
-         [react/view {:style {:background-color "black"
-                              :height           44
-                              :border-radius    8
-                              :align-items      :center
-                              :justify-content  :center
-                              :flex             1}}
-          [react/text {:style {:color "white"}}
-           "Here PAY button"]]]]])))
+        (when @purchased
+          [react/touchable-highlight {:on-press #(re-frame/dispatch [::payment/request-payment "android.test.purchased"])}
+           [react/view {:style {:background-color "black"
+                                :height           44
+                                :border-radius    8
+                                :align-items      :center
+                                :justify-content  :center
+                                :flex             1}}
+            [react/text {:style {:color "white"}}
+             "Here PAY purchased"]]])
+        (when @canceled
+          [react/touchable-highlight {:on-press #(re-frame/dispatch [::payment/request-payment "android.test.canceled"])}
+           [react/view {:style {:background-color "black"
+                                :height           44
+                                :margin-top       8
+                                :border-radius    8
+                                :align-items      :center
+                                :justify-content  :center
+                                :flex             1}}
+            [react/text {:style {:color "white"}}
+             "Here PAY canceled"]]])
+        (when @unavailable
+          [react/touchable-highlight {:on-press #(re-frame/dispatch [::payment/request-payment "android.test.item_unavailable"])}
+           [react/view {:style {:background-color "black"
+                                :height           44
+                                :margin-top       8
+                                :border-radius    8
+                                :align-items      :center
+                                :justify-content  :center
+                                :flex             1}}
+            [react/text {:style {:color "white"}}
+             "Here PAY unavailable"]]])]])))
