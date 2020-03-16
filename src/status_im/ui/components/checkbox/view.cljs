@@ -20,5 +20,5 @@
    (if checked?
      [icons/tiny-icon
       :tiny-icons/tiny-check {:container-style (styles/icon-check-container true)
-                              :color colors/white}]
+                              :color colors/white-persist}]
      [react/view {:style  (styles/icon-check-container false)}])])

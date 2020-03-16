@@ -8,7 +8,8 @@
             [status-im.ui.components.list-item.views :as list-item]
             [reagent.core :as reagent]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.search-input.view :as search-input])
+            [status-im.ui.components.search-input.view :as search-input]
+            [status-im.ui.components.colors :as colors])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defonce search-active? (reagent/atom false))
@@ -78,7 +79,7 @@
     {:component-will-unmount #(do
                                 (re-frame/dispatch [:search/token-filter-changed nil])
                                 (reset! search-active? false))}
-    [react/view (merge components.styles/flex {:background-color :white})
+    [react/view (merge components.styles/flex {:background-color colors/white})
      [toolbar]
      [react/view {:style components.styles/flex}
       [search-input/search-input

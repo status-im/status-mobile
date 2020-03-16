@@ -179,6 +179,9 @@
        (.catch (fn [error]
                  (log/error "Failed to initialize wallet"))))))
 
+(fx/defn initialize-appearance [cofx]
+  {::multiaccounts/switch-theme (get-in cofx [:db :multiaccount :appearance])})
+
 (fx/defn get-settings-callback
   {:events [::get-settings-callback]}
   [{:keys [db] :as cofx} settings]
@@ -201,6 +204,7 @@
                        (fn [accounts custom-tokens]
                          (re-frame/dispatch [::initialize-wallet
                                              accounts custom-tokens]))))
+              (initialize-appearance)
               ;; NOTE: initializing mailserver depends on user mailserver
               ;; preference which is why we wait for config callback
               (protocol/initialize-protocol {:default-mailserver true})

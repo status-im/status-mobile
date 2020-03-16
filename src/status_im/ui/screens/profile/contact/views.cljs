@@ -122,13 +122,15 @@
                                            (and ens-verified name)
                                            (assoc :usernames [name])))
             content
-            [[list/action-list (actions contact)
-              {:container-style        styles/action-container
-               :action-style           styles/action
-               :action-label-style     styles/action-label
-               :action-subtext-style   styles/action-subtext
-               :action-separator-style styles/action-separator
-               :icon-opts              styles/action-icon-opts}]
+            [[react/view {:padding-top 12}
+              (for [{:keys [label subtext accessibility-label icon action disabled?]} (actions contact)]
+                [list-item/list-item {:theme :action
+                                      :title label
+                                      :subtitle subtext
+                                      :icon icon
+                                      :accessibility-label accessibility-label
+                                      :disabled? disabled?
+                                      :on-press action}])]
              [react/view styles/contact-profile-details-container
               [profile-details (cond-> contact
                                  (and ens-verified name)

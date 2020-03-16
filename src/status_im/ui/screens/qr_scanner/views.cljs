@@ -12,19 +12,19 @@
   [topbar/toolbar
    {:transparent? true}
    [topbar/nav-text
-    {:style   {:color colors/white :margin-left 16}
+    {:style   {:color colors/white-persist :margin-left 16}
      :handler #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-cancel opts])}
     (i18n/label :t/cancel)]
-   [topbar/content-title {:color :white}
+   [topbar/content-title {:color colors/white-persist}
     (or title (i18n/label :t/scan-qr))]
    #_[topbar/actions [{:icon      (if (= :on camera-flashlight)
                                     :main-icons/flash-active
                                     :main-icons/flash-inactive)
-                       :icon-opts {:color :white}
+                       :icon-opts {:color colors/white}
                        :handler   #(re-frame/dispatch [:wallet/toggle-flashlight])}]]])
 
 (defn corner [border1 border2 corner]
-  [react/view (assoc {:border-color :white :width 60 :height 60} border1 5 border2 5 corner 32)])
+  [react/view (assoc {:border-color colors/white-persist :width 60 :height 60} border1 5 border2 5 corner 32)])
 
 (defn- viewfinder [size]
   [react/view {:style styles/viewfinder-port}
@@ -45,7 +45,7 @@
             camera-flashlight [:wallet.send/camera-flashlight]
             opts              [:get-screen-params]]
     [react/safe-area-view {:style {:flex             1
-                                   :background-color colors/black}}
+                                   :background-color colors/black-persist}}
      [topbar camera-flashlight opts]
      [react/with-activity-indicator
       {}

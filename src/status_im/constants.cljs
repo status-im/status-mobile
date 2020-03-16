@@ -105,6 +105,7 @@
   {:preview-privacy? config/blank-preview?
    :wallet/visible-tokens {:mainnet #{:SNT}}
    :currency :usd
+   :appearance 0
    :log-level config/log-level-status-go})
 
 (defn default-visible-tokens [chain]

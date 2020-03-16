@@ -1,6 +1,7 @@
 (ns status-im.ui.components.toolbar.actions
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.toolbar.styles :as styles]))
+            [status-im.ui.components.toolbar.styles :as styles]
+            [status-im.ui.components.colors :as colors]))
 
 (defn add [illuminated? handler]
   {:icon      :main-icons/add
@@ -28,7 +29,7 @@
 
 (defn back-white [handler]
   {:icon                :main-icons/back
-   :icon-opts           {:color :white}
+   :icon-opts           {:color colors/white}
    :handler             handler
    :accessibility-label :back-button})
 
@@ -42,10 +43,10 @@
 
 (defn close-white [handler]
   {:icon      :main-icons/close
-   :icon-opts {:color :white}
+   :icon-opts {:color colors/white}
    :handler   handler})
 
 (defn list-white [handler]
   {:icon      :main-icons/two-arrows
-   :icon-opts {:color :white}
+   :icon-opts {:color colors/white}
    :handler   handler})

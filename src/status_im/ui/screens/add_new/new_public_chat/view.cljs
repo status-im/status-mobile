@@ -24,7 +24,7 @@
 
 (defn- chat-name-input [topic error]
   [react/view
-   [react/view add-new.styles/input-container
+   [react/view (add-new.styles/input-container)
     [react/text {:style styles/topic-hash} "#"]
     [react/view common.styles/flex
      [text-input.view/text-input-with-label

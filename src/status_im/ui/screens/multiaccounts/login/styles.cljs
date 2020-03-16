@@ -24,7 +24,7 @@
    :align-self         :center
    :flex-direction     :row})
 
-(def bottom-button-container
+(defn bottom-button-container []
   {:flex-direction     :row
    :padding-horizontal 12
    :padding-vertical   8

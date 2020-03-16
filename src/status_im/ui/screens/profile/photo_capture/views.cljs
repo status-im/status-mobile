@@ -8,7 +8,8 @@
             [status-im.utils.image-processing :as image-processing]
             [taoensso.timbre :as log]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.colors :as colors]))
 
 (defn image-captured [data]
   (let [path       (.-uri data)
@@ -39,4 +40,4 @@
                                                      (.then image-captured)
                                                      (.catch #(log/debug "Error capturing image: " %)))))}
         [react/view
-         [icons/icon :main-icons/camera {:color :white}]]]]]]))
+         [icons/icon :main-icons/camera {:color colors/white}]]]]]]))

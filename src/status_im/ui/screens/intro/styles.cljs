@@ -105,7 +105,7 @@
   {:margin-bottom 24
    :margin-top    16})
 
-(def bottom-arrow
+(defn bottom-arrow []
   {:flex-direction   :row
    :justify-content  :flex-end
    :align-self       :stretch

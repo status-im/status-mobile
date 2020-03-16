@@ -12,6 +12,6 @@
    :width            window-width})
 
 (def text
-  {:color     :white
+  {:color     colors/white
    :font-size 14
    :top       8})

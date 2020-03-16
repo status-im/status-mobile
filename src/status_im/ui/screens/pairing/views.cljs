@@ -191,7 +191,7 @@
   (views/letsubs [installations [:pairing/installations]]
     [react/view {:flex 1}
      [topbar/topbar {:title :t/devices}]
-     [react/scroll-view {:style {:background-color :white}}
+     [react/scroll-view
       (if (string/blank? (-> installations first :name))
         [edit-installation-name]
         [react/view

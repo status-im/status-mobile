@@ -30,8 +30,8 @@
                 network-activity-indicator-visible
                 translucent]}
         (case type
-          :black styles/status-bar-black
-          styles/status-bar-default)]
+          :black (styles/status-bar-black)
+          (styles/status-bar-default))]
     (when bar-style
       (.setBarStyle react/status-bar-class (clj->js bar-style)) true)
     (when (and background-color platform/android?)

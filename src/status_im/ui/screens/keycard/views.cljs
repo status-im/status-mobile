@@ -275,7 +275,7 @@
                        :position         :absolute
                        :right            0
                        :bottom           0
-                       :background-color :white
+                       :background-color colors/white
                        :border-width     1
                        :border-color     colors/black-transparent}
            [react/image {:source (resources/get-image :keycard-key)

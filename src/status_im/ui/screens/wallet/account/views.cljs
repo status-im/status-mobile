@@ -32,8 +32,8 @@
   [react/touchable-highlight {:on-press handler :style {:flex 1}}
    [react/view {:flex 1 :align-items :center :justify-content :center}
     [react/view {:flex-direction :row :align-items :center}
-     [icons/icon icon {:color colors/white}]
-     [react/text {:style {:margin-left 8 :color colors/white}} label]]]])
+     [icons/icon icon {:color colors/white-persist}]
+     [react/text {:style {:margin-left 8 :color colors/white-persist}} label]]]])
 
 (views/defview account-card [{:keys [address color type] :as account}]
   (views/letsubs [currency        [:wallet/currency]
@@ -41,32 +41,32 @@
                   window-width    [:dimensions/window-width]]
     [react/view {:style (styles/card window-width color)}
      [react/view {:padding 16 :padding-bottom 12 :flex 1 :justify-content :space-between}
-      [react/nested-text {:style {:color       colors/white-transparent :line-height 38
+      [react/nested-text {:style {:color       colors/white-transparent-persist :line-height 38
                                   :font-weight "600" :font-size 32}}
-       [{:style {:color colors/white}} portfolio-value]
+       [{:style {:color colors/white-persist}} portfolio-value]
        " "
        (:code currency)]
       [react/text {:number-of-lines 1 :ellipsize-mode :middle
                    :style           {:width (/ window-width 3)
                                      :line-height 22 :font-size 13
                                      :font-family "monospace"
-                                     :color colors/white-transparent-70}}
+                                     :color colors/white-transparent-70-persist}}
        (ethereum/normalized-hex address)]]
      [react/view {:position :absolute :top 12 :right 12}
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-popover {:view :share-account :address address}])}
-       [icons/icon :main-icons/share {:color colors/white
+       [icons/icon :main-icons/share {:color colors/white-persist
                                       :accessibility-label :share-wallet-address-icon}]]]
      [react/view {:height                     52 :background-color colors/black-transparent-20
                   :border-bottom-right-radius 8 :border-bottom-left-radius 8 :flex-direction :row}
       (if (= type :watch)
         [react/view {:flex 1 :align-items :center :justify-content :center}
-         [react/text {:style {:margin-left 8 :color colors/white}}
+         [react/text {:style {:margin-left 8 :color colors/white-persist}}
           (i18n/label :t/watch-only)]]
         [button
          (i18n/label :t/wallet-send)
          :main-icons/send
          #(re-frame/dispatch [:wallet/prepare-transaction-from-wallet account])])
-      [react/view {:style styles/divider}]
+      [react/view {:style (styles/divider)}]
       [button
        (i18n/label :t/receive)
        :main-icons/receive

@@ -19,7 +19,7 @@
    :margin-bottom   19})
 
 (def message
-  {:background-color        :white
+  {:background-color        colors/white
    :border-top-right-radius 16
    :border-top-left-radius  16
    :padding-bottom          40})
@@ -34,8 +34,8 @@
    :border-width      1
    :padding           8})
 
-(def sheet
-  {:background-color        :white
+(defn sheet []
+  {:background-color        colors/white
    :border-top-right-radius 16
    :border-top-left-radius  16
    :padding-bottom          40})

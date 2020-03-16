@@ -29,7 +29,7 @@
 
 (defn toolbar-content [url url-original {:keys [secure?]} url-editing?]
   (let [url-text (atom url)]
-    [react/view styles/toolbar-content
+    [react/view (styles/toolbar-content)
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/lock-pressed secure?])}
       (if secure?
         [icons/tiny-icon :tiny-icons/tiny-lock {:color colors/green}]
@@ -75,7 +75,7 @@
 (views/defview navigation [url can-go-back? can-go-forward? dapps-account]
   (views/letsubs [height [:dimensions/window-height]
                   accounts [:accounts-without-watch-only]]
-    [react/view styles/navbar
+    [react/view (styles/navbar)
      [react/touchable-highlight {:on-press            #(re-frame/dispatch [:browser.ui/previous-page-button-pressed])
                                  :disabled            (not can-go-back?)
                                  :style               (when-not can-go-back? styles/disabled-button)

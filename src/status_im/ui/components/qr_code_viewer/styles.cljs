@@ -14,7 +14,7 @@
    :width            width
    :height           width
    :padding-horizontal 16
-   :background-color colors/white
+   :background-color colors/white-persist
    :border-color     colors/black-transparent
    :align-items      :center
    :justify-content  :center

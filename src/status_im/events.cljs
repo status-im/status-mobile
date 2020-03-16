@@ -1174,3 +1174,10 @@
  :gfycat-generated
  (fn [{:keys [db]} [_ path gfycat]]
    {:db (assoc-in db path gfycat)}))
+
+(handlers/register-handler-fx
+ :system-theme-mode-changed
+ (fn [{:keys [db]} [_ theme]]
+   (let [cur-theme (get-in db [:multiaccount :appearance])]
+     (when (or (nil? cur-theme) (zero?  cur-theme))
+       {::multiaccounts/switch-theme (if (= :dark theme) 2 1)}))))

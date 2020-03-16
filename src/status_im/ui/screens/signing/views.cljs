@@ -242,7 +242,7 @@
                   mainnet?              [:mainnet?]]
     (let [display-symbol     (wallet.utils/display-symbol token)
           fee-display-symbol (wallet.utils/display-symbol (tokens/native-currency chain))]
-      [react/view styles/sheet
+      [react/view (styles/sheet)
        [header sign tx display-symbol fee fee-display-symbol]
        [separator]
        (if sign

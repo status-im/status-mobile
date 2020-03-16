@@ -48,7 +48,7 @@
    :right            16
    :height           height})
 
-(def add-contact
+(defn add-contact []
   {:flex-direction      :row
    :align-items         :center
    :justify-content     :center
@@ -95,7 +95,7 @@
    :opacity     0.8
    :line-height 72})
 
-(def intro-header-chat-name
+(defn intro-header-chat-name []
   {:font-size         22
    :font-weight       "700"
    :line-height       28

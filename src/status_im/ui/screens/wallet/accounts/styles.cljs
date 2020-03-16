@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.accounts.styles
   (:require [status-im.ui.components.colors :as colors]))
 
-(def card-common
+(defn card-common []
   {:margin-vertical   16
    :margin-horizontal 8
    :width             156
@@ -9,20 +9,22 @@
    :shadow-offset     {:width 0 :height 2}
    :shadow-radius     8
    :shadow-opacity    1
-   :shadow-color      "rgba(0, 9, 26, 0.12)"
+   :shadow-color      (if (colors/dark?)
+                        "rgba(0, 0, 0, 0.75)"
+                        "rgba(0, 9, 26, 0.12)")
    :elevation         3
    :border-radius     8})
 
 (defn card [color]
-  (merge card-common
+  (merge (card-common)
          {:background-color   color
           :justify-content    :space-between
           :padding-horizontal 12
           :padding-top        12
           :padding-bottom     6}))
 
-(def add-card
-  (merge card-common
+(defn add-card []
+  (merge (card-common)
          {:background-color colors/white
           :justify-content  :center
           :align-items      :center}))
@@ -37,7 +39,7 @@
    :bottom          16
    :height          40})
 
-(def send-button
+(defn send-button []
   {:width            40
    :height           40
    :background-color colors/blue
@@ -47,5 +49,7 @@
    :shadow-offset    {:width 0 :height 1}
    :shadow-radius    6
    :shadow-opacity   1
-   :shadow-color     "rgba(0, 12, 63, 0.2)"
+   :shadow-color     (if (colors/dark?)
+                       "rgba(0, 0, 0, 0.75)"
+                       "rgba(0, 12, 63, 0.2)")
    :elevation        2})

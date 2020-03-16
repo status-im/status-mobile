@@ -22,7 +22,7 @@
    :right            0
    :bottom           0
    :opacity          opacity-value
-   :background-color colors/black-transparent-40})
+   :background-color colors/black-transparent-40-persist})
 
 (defn content-container
   [window-height content-height bottom-value]

@@ -34,8 +34,7 @@
    :margin-left      16})
 
 (def contact-profile-details-container
-  {:padding-top      26
-   :background-color colors/white})
+  {:padding-top      26})
 
 (def contact-profile-detail-share-icon
   {:color colors/gray-transparent-40})

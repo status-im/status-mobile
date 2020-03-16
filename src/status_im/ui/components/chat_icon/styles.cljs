@@ -104,7 +104,7 @@
    :width            17
    :height           17
    :border-radius    11
-   :background-color :white})
+   :background-color colors/white})
 
 (def online-view-menu-wrapper
   {:position         :absolute
@@ -113,7 +113,7 @@
    :width            16
    :height           16
    :border-radius    8
-   :background-color :white})
+   :background-color colors/white})
 
 (def online-view
   {:position         :absolute
@@ -219,7 +219,7 @@
    :width            size
    :position         :absolute
    :z-index          1
-   :background-color :black
+   :background-color colors/black
    :opacity          0.4
    :border-radius    50})
 
@@ -232,5 +232,5 @@
    :justify-content :center})
 
 (def profile-icon-edit-text
-  {:color            :white
+  {:color            colors/white
    :background-color :transparent})

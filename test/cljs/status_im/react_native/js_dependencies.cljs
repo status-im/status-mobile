@@ -55,6 +55,7 @@
 (def net-info  #js {})
 (def touchid  #js {})
 (def safe-area-context #js {})
+(def react-native-dark-mode #js {"eventEmitter" {} "initialMode" {}})
 
 (def back-handler #js {:addEventListener identity
                        :removeEventListener identity})

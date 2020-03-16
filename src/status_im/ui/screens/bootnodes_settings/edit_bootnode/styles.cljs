@@ -41,7 +41,7 @@
    :ios              {:opacity 0.9}})
 
 (def button-label
-  {:color     colors/white
+  {:color     colors/white-persist
    :font-size 17})
 
 (def delete-button
@@ -49,6 +49,4 @@
          :background-color colors/red))
 
 (def container
-  (merge
-   components.styles/flex
-   {:background-color colors/white}))
+  components.styles/flex)

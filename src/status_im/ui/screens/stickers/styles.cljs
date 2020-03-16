@@ -2,8 +2,7 @@
   (:require [status-im.ui.components.colors :as colors]))
 
 (def screen
-  {:flex             1
-   :background-color colors/white})
+  {:flex             1})
 
 (defn sticker-image [sticker-icon-size]
   {:margin        16

@@ -348,8 +348,8 @@
            :placeholder       nil
            :auto-correct      false
            :keyboard-type     "visible-password"
-           :container         {:background-color :white}
-           :style             {:background-color :white
+           :container         {:background-color colors/white}
+           :style             {:background-color colors/white
                                :text-align       :center
                                :height           52
                                :typography       :header}}]

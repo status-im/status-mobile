@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.multiaccounts.styles
-  (:require [status-im.ui.components.styles :as common]
-            [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def multiaccounts-view
   {:flex 1})
@@ -16,7 +15,7 @@
 (def multiaccount-image-size 40)
 
 (def multiaccount-title-text
-  {:color     :black
+  {:color     colors/black
    :font-size 17})
 
 (def multiaccounts-list-container
@@ -24,8 +23,7 @@
    :padding-bottom 8})
 
 (def multiaccount-view
-  {:background-color   :white
-   :flex-direction     :row
+  {:flex-direction     :row
    :align-items        :center
    :padding-horizontal 16
    :height             64})
@@ -49,7 +47,7 @@
    :align-self         :center
    :flex-direction     :row})
 
-(def bottom-button-container
+(defn bottom-button-container []
   {:flex-direction     :row
    :padding-horizontal 12
    :padding-vertical   8

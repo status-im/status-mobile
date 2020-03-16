@@ -4,15 +4,13 @@
             [status-im.utils.styles :as styles]))
 
 (def wrapper
-  {:flex             1
-   :background-color :white})
+  {:flex             1})
 
 (def log-level-item-inner
   {:padding-horizontal 16})
 
 (styles/def log-level-item
   {:flex-direction     :row
-   :background-color   :white
    :align-items        :center
    :padding-horizontal 16
    :ios                {:height 64}
@@ -20,11 +18,6 @@
 
 (def log-level-item-name-text
   {:typography :title})
-
-(def log-level-item-connected-text
-  {:color      colors/gray
-   :font-size  14
-   :margin-top 6})
 
 (defn log-level-icon-container [current?]
   {:width            40
@@ -38,4 +31,4 @@
 
 (defn log-level-icon [current?]
   (hash-map (if platform/desktop? :tint-color :color)
-            (if current? :white :gray)))
+            (if current? colors/white-persist colors/gray)))

@@ -22,7 +22,7 @@
    :top      0
    :position :absolute})
 
-(def counter-public-container
+(defn counter-public-container []
   {:right            2
    :top              0
    :position         :absolute
@@ -31,7 +31,7 @@
    :height           16
    :justify-content  :center
    :align-items      :center
-   :background-color :white})
+   :background-color colors/white})
 
 (def counter-public
   {:background-color colors/blue
@@ -86,7 +86,9 @@
    :shadow-radius    4
    :shadow-offset    {:width 0 :height -5}
    :shadow-opacity   0.3
-   :shadow-color     "rgba(0, 9, 26, 0.12)"
+   :shadow-color     (if (colors/dark?)
+                       "rgba(0, 0, 0, 0.75)"
+                       "rgba(0, 9, 26, 0.12)")
    :elevation 8
    :background-color :white
    :position         :absolute
@@ -100,7 +102,7 @@
                                                :outputRange [0 tabs-diff]})}]})
 
 (defn ios-titles-cover [inset]
-  {:background-color :white
+  {:background-color colors/white
    :position         :absolute
    :height           tabs-diff
    :align-self       :stretch

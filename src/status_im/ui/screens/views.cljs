@@ -23,7 +23,8 @@
             status-im.ui.screens.wallet.collectibles.cryptostrikers.views
             status-im.ui.screens.wallet.collectibles.cryptokitties.views
             status-im.ui.screens.wallet.collectibles.superrare.views
-            status-im.ui.screens.wallet.collectibles.kudos.views))
+            status-im.ui.screens.wallet.collectibles.kudos.views
+            [status-im.ui.components.colors :as colors]))
 
 (defview bottom-sheet []
   (letsubs [{:keys [show? view]} [:bottom-sheet]]
@@ -106,8 +107,9 @@
       :reagent-render
       (fn []
         [react/safe-area-provider
+         ^{:key @colors/theme}
          [react/view {:flex             1
-                      :background-color :black}
+                      :background-color colors/black-persist}
           [navigation/navigation-container
            (merge {:ref               (fn [r]
                                         (navigation/set-navigator-ref r))

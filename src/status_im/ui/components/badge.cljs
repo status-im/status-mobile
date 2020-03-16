@@ -13,7 +13,7 @@
                 :align-items      :center})
    [react/text {:style {:typography  :caption
                         :font-weight "500"
-                        :color       colors/white}}
+                        :color       colors/white-persist}}
     label]])
 
 (defn message-counter [value & [small?]]

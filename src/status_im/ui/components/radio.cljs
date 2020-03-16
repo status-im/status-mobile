@@ -7,4 +7,4 @@
                        :background-color (if selected? colors/blue colors/gray-lighter)}}
    (when selected?
      [react/view {:style {:width 12 :height 12 :border-radius 6
-                          :background-color colors/white}}])])
+                          :background-color colors/white-persist}}])])

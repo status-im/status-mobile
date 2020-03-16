@@ -4,12 +4,11 @@
 
 (def wrapper
   {:flex             1
-   :background-color :white})
+   :background-color colors/white})
 
 (styles/def currency-item
   {:flex-direction     :row
    :justify-content    :space-between
-   :background-color   :white
    :align-items        :center
    :padding-horizontal 16
    :ios                {:height 64}

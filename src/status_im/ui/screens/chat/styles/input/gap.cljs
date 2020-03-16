@@ -10,8 +10,7 @@
    :justify-content     :center
    :border-color        colors/black-transparent
    :border-top-width    1
-   :border-bottom-width 1
-   :background-color    :white})
+   :border-bottom-width 1})
 
 (def label-container
   {:flex            1

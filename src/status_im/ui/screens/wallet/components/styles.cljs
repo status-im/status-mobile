@@ -5,6 +5,6 @@
   {:flex             1
    :background-color colors/white})
 
-(def separator
+(defn separator []
   {:height           1
    :background-color colors/gray-lighter})

@@ -42,7 +42,7 @@
                         :content-height 128}]))
     :title         name
     :subtitle      (or url :t/dapp)
-    :icon          [react/view styles/browser-icon-container
+    :icon          [react/view (styles/browser-icon-container)
                     [vector-icons/icon :main-icons/browser {:color colors/gray}]]}])
 
 (def dapp-image-data {:image (resources/get-image :dapp-store) :width 768 :height 333})
@@ -51,7 +51,7 @@
 (defn list-header [empty?]
   [react/view (when empty? {:flex 1})
    [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/open-url "https://dap.ps"])}
-    [react/view styles/dapp-store-container
+    [react/view (styles/dapp-store-container)
      [dapp-image nil dapp-image-data]
      [react/text {:style styles/open-dapp-store} (i18n/label :t/open-dapp-store)]
      [react/text {:style {:color colors/blue :font-size 13 :line-height 22}} "https://dap.ps ->"]]]
@@ -79,12 +79,13 @@
                                                  {:content        (accounts/accounts-list accounts dapps-account)
                                                   :content-height (/ height 2)}])}
       [react/view (styles/dapps-account color)
-       [icons/icon :main-icons/account {:color colors/white}]
+       [icons/icon :main-icons/account {:color colors/white-persist}]
        [react/view {:flex-shrink 1}
         [react/text {:numberOfLines 1
-                     :style         {:margin-horizontal 6 :color :white :typography :main-medium}}
+                     :style         {:margin-horizontal 6 :color colors/white-persist
+                                     :typography :main-medium}}
          name]]
-       [icons/icon :main-icons/dropdown {:color colors/white-transparent}]]]]))
+       [icons/icon :main-icons/dropdown {:color colors/white-transparent-persist}]]]]))
 
 (views/defview open-dapp []
   (views/letsubs [browsers [:browser/browsers-vals]
@@ -95,7 +96,7 @@
                         :placeholder         (i18n/label :t/enter-url)
                         :auto-capitalize     :none
                         :auto-correct        false
-                        :style               styles/input
+                        :style               (styles/input)
                         :accessibility-label :dapp-url-input
                         :return-key-type     :go}]
      [components/separator]

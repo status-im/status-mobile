@@ -103,7 +103,7 @@
              [chat-icon.screen/custom-icon-view-list (:name dapps-account) (:color dapps-account)]
              [react/view styles/permissions-panel-wallet-icon-container
               (when icon
-                [icons/icon icon {:color :white}])])]
+                [icons/icon icon {:color colors/white}])])]
           [react/text {:style styles/permissions-panel-title-label :number-of-lines 2}
            (str "\"" dapp-name "\" " title)]
           (when (= :wallet type)

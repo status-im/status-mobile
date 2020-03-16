@@ -38,3 +38,4 @@
 (def async-storage          #js {})
 (def back-handler           #js {:addEventListener (fn [])})
 (def safe-area-context      #js {})
+(def react-native-dark-mode #js {})

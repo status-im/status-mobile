@@ -144,7 +144,7 @@
             bottom-anim-value  (anim/create-value @panel-height)
             alpha-value        (anim/create-value 0)]
     {:component-did-mount #(show-panel-anim bottom-anim-value alpha-value)}
-    [react/animated-view {:style {:background-color :white
+    [react/animated-view {:style {:background-color colors/white
                                   :height           panel-height
                                   :transform        [{:translateY bottom-anim-value}]
                                   :opacity          alpha-value}}
@@ -157,7 +157,7 @@
                                 (re-frame/dispatch [:stickers/load-packs])
                                 (re-frame/dispatch [:navigate-to :stickers]))
                   :selected? false :background-color colors/blue}
-       [vector-icons/icon :main-icons/add {:width 20 :height 20 :color colors/white}]]
+       [vector-icons/icon :main-icons/add {:width 20 :height 20 :color colors/white-persist}]]
       [react/view {:width 2}]
       [react/scroll-view {:horizontal true :style {:padding-left 2}}
        [react/view

@@ -4,15 +4,13 @@
             [status-im.utils.styles :as styles]))
 
 (def wrapper
-  {:flex             1
-   :background-color :white})
+  {:flex             1})
 
 (def mailserver-item-inner
   {:padding-horizontal 16})
 
 (styles/defn mailserver-item [pinned?]
   {:flex-direction     :row
-   :background-color   :white
    :align-items        :center
    :opacity            (if pinned?
                          1
@@ -36,7 +34,7 @@
 
 (defn mailserver-icon [connected?]
   (hash-map (if platform/desktop? :tint-color :color)
-            (if connected? :white :gray)))
+            (if connected? colors/white-persist colors/gray)))
 
 (def mailserver-pinned
   {:padding-horizontal 16

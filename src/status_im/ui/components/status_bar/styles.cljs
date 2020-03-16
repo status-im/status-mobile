@@ -8,12 +8,16 @@
    :translucent      translucent?
    :bar-style        bar-style})
 
-(styles/def status-bar-default
-  {:ios     (create-status-bar-style {:background-color colors/white
-                                      :bar-style        "dark-content"})
-   :android (create-status-bar-style {:translucent?     true
-                                      :bar-style        "dark-content"})})
+(styles/defn status-bar-default []
+  {:ios     (create-status-bar-style (when-not (colors/dark?)
+                                       {:bar-style "dark-content"}))
+   :android (create-status-bar-style (if (colors/dark?)
+                                       {:translucent? true}
+                                       {:translucent? true
+                                        :bar-style "dark-content"}))})
 
-(styles/def status-bar-black
-  {:ios     (create-status-bar-style {:background-color colors/transparent})
-   :android (create-status-bar-style {:background-color colors/black})})
+(styles/defn status-bar-black []
+  {:ios     (create-status-bar-style nil)
+   :android (create-status-bar-style (if (colors/dark?)
+                                       {:translucent? true}
+                                       {:background-color colors/black}))})

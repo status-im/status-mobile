@@ -7,12 +7,13 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.colors :as colors])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- network-icon [connected? size]
   [react/view (styles/network-icon connected? size)
-   [vector-icons/icon :main-icons/network {:color (if connected? :white :gray)}]])
+   [vector-icons/icon :main-icons/network {:color (if connected? colors/white-persist colors/gray)}]])
 
 (defn network-badge [& [{:keys [name connected?]}]]
   [react/view styles/network-badge

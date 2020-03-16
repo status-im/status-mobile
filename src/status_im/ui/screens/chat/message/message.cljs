@@ -24,12 +24,11 @@
 (defn message-timestamp
   ([message]
    [message-timestamp message false])
-  ([{:keys [timestamp-str outgoing content content-type]} justify-timestamp?]
+  ([{:keys [timestamp-str outgoing content]} justify-timestamp?]
    [react/text {:style (style/message-timestamp-text
                         justify-timestamp?
                         outgoing
-                        (:rtl? content)
-                        (= content-type constants/content-type-emoji))} timestamp-str]))
+                        (:rtl? content))} timestamp-str]))
 
 (defn message-bubble-wrapper
   [message message-content appender]
@@ -60,7 +59,7 @@
     (conj acc literal)
 
     "code"
-    (conj acc [react/text-class style/inline-code-style literal])
+    (conj acc [react/text-class (style/inline-code-style) literal])
 
     "emph"
     (conj acc [react/text-class (style/emph-style outgoing) literal])
@@ -72,7 +71,7 @@
     (conj acc
           [react/text-class
            {:style
-            {:color (if outgoing colors/white colors/blue)
+            {:color (if outgoing colors/white-persist colors/blue)
              :text-decoration-line :underline}
             :on-press
             #(when (and (security/safe-link? destination)
@@ -93,7 +92,7 @@
                             #(re-frame/dispatch [:chat.ui/start-chat literal {:navigation-reset? true}]))}
                [mention-element literal]]) "status-tag"
     (conj acc [react/text-class
-               {:style {:color (if outgoing colors/white colors/blue)
+               {:style {:color (if outgoing colors/white-persist colors/blue)
                         :text-decoration-line :underline}
                 :on-press
                 #(re-frame/dispatch
@@ -105,10 +104,10 @@
 
 (defview message-content-status [{:keys [content content-type]}]
   [react/view style/status-container
-   [react/text {:style style/status-text}
+   [react/text {:style (style/status-text)}
     (reduce
      (fn [acc e] (render-inline (:text content) false content-type acc e))
-     [react/text-class {:style style/status-text}]
+     [react/text-class {:style (style/status-text)}]
      (-> content :parsed-text peek :children))]])
 
 (defn render-block [{:keys [content outgoing content-type]} acc

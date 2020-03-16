@@ -46,6 +46,5 @@
                                        vals
                                        (sort #(compare (:code %1) (:code %2))))
                        :key-fn    :code
-                       :separator (profile.components/settings-item-separator)
                        :render-fn (render-currency currency-id)
                        :keyboardShouldPersistTaps :always}]]]))

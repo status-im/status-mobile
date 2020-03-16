@@ -89,7 +89,7 @@
        [react/view styles/processing-view
         [react/activity-indicator {:animating true}]
         [react/i18n-text {:style styles/processing :key :processing}]])
-     [react/view {:style styles/bottom-button-container}
+     [react/view {:style (styles/bottom-button-container)}
       [components.common/button
        {:label        (i18n/label :t/access-key)
         :button-style styles/bottom-button

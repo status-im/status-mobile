@@ -46,7 +46,7 @@
    {:on-press
     #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
     :accessibility-label :add-to-contacts-button}
-   [react/view {:style style/add-contact}
+   [react/view {:style (style/add-contact)}
     [vector-icons/icon :main-icons/add
      {:color colors/blue}]
     [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]])
@@ -84,7 +84,7 @@
            :default-chat-icon-text style/intro-header-icon-text
            :size                   120}]]
         ;; Chat title section
-        [react/text {:style style/intro-header-chat-name}
+        [react/text {:style (style/intro-header-chat-name)}
          (if group-chat chat-name intro-name)]
         ;; Description section
         (if group-chat
@@ -120,18 +120,17 @@
       :footer                       [chat-intro-header-container chat (empty? messages)]
       :data                         messages
       :inverted                     true
-      :render-fn                    (fn [{:keys [outgoing] :as message} idx]
-                                      (let [type (:type message)]
-                                        (if (= type :datemark)
-                                          [message-datemark/chat-datemark (:value message)]
-                                          (if (= type :gap)
-                                            [gap/gap message idx messages-list-ref]
-                                            ; message content
-                                            [message/chat-message
-                                             (assoc message
-                                                    :incoming-group (and group-chat (not outgoing))
-                                                    :group-chat group-chat
-                                                    :current-public-key current-public-key)]))))
+      :render-fn                    (fn [{:keys [outgoing type] :as message} idx]
+                                      (if (= type :datemark)
+                                        [message-datemark/chat-datemark (:value message)]
+                                        (if (= type :gap)
+                                          [gap/gap message idx messages-list-ref]
+                                          ; message content
+                                          [message/chat-message
+                                           (assoc message
+                                                  :incoming-group (and group-chat (not outgoing))
+                                                  :group-chat group-chat
+                                                  :current-public-key current-public-key)])))
       :on-viewable-items-changed    on-viewable-items-changed
       :on-end-reached               #(re-frame/dispatch [:chat.ui/load-more-messages])
       :on-scroll-to-index-failed    #() ;;don't remove this

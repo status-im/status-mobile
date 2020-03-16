@@ -1,8 +1,9 @@
-(ns status-im.ui.screens.profile.photo-capture.styles)
+(ns status-im.ui.screens.profile.photo-capture.styles
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def container
   {:flex             1
-   :background-color :white})
+   :background-color colors/white})
 
 (def button-container
   {:align-items :center})

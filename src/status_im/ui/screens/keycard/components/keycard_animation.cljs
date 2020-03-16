@@ -39,7 +39,7 @@
             :elevation        8
             :shadow-opacity   0.1
             :shadow-color     "gba(0, 9, 26, 0.12)"
-            :background-color :white
+            :background-color colors/white
             :opacity          anim
             :transform        [{:scale (animation/interpolate
                                         anim
@@ -80,16 +80,16 @@
      :chip-color "#F0CC73"}
     (:connected :processing)
     {:card-color colors/blue
-     :key-color  :white
-     :chip-color :white}
+     :key-color  colors/white
+     :chip-color colors/white}
     :success
     {:card-color colors/green
-     :key-color  :white
-     :chip-color :white}
+     :key-color  colors/white
+     :chip-color colors/white}
     :error
     {:card-color colors/red
-     :key-color  :white
-     :chip-color :white}
+     :key-color  colors/white
+     :chip-color colors/white}
     nil))
 
 (defn card [{:keys [card-scale state indicator-value animation-value]}]

@@ -119,7 +119,6 @@
 (re-frame/reg-fx
  :mailserver/update-mailservers
  (fn [[waku-enabled? enodes]]
-   (println "HERE" waku-enabled? enodes)
    (update-mailservers! waku-enabled? enodes)))
 
 (defn decrease-limit []

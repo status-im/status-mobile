@@ -145,6 +145,11 @@
     [(when mnemonic
        [components.common/counter {:size 22} 1]) :chevron]
     :on-press            #(re-frame/dispatch [:navigate-to :privacy-and-security])}
+   {:icon                :main-icons/appearance
+    :title               :t/appearance
+    :accessibility-label :appearance-settings-button
+    :accessories         [:chevron]
+    :on-press            #(re-frame/dispatch [:navigate-to :appearance])}
    (when (and platform/android?
               config/local-notifications?)
      {:icon                :main-icons/notification

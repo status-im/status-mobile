@@ -6,7 +6,8 @@
    [taoensso.timbre :as log]
    [status-im.utils.platform :as platform]
    [oops.core :refer [ocall oget]]
-   [status-im.react-native.js-dependencies :as js-dependencies]))
+   [status-im.react-native.js-dependencies :as js-dependencies]
+   [status-im.ui.components.colors :as colors]))
 
 (defonce native js-dependencies/react-navigation-native)
 (defonce stack  js-dependencies/react-navigation-stack)
@@ -47,7 +48,7 @@
 
 (defn wrapped-screen-style [{:keys [insets style]} insets-obj]
   (merge
-   {:background-color :white
+   {:background-color colors/white
     :flex             1}
    style
    (when (get insets :bottom)

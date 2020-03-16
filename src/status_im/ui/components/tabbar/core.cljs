@@ -84,7 +84,7 @@
                                     tabs.styles/counter)}
                [badge/message-counter (or (:other count) count) true]]
               (pos? (:public count))
-              [react/view {:style tabs.styles/counter-public-container}
+              [react/view {:style (tabs.styles/counter-public-container)}
                [react/view {:style               tabs.styles/counter-public
                             :accessibility-label :public-unread-badge}]]))]
          (when-not platform/desktop?

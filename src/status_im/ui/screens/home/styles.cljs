@@ -29,7 +29,7 @@
    :align-items    :center
    :line-height    12})
 
-(def chat-tooltip
+(defn chat-tooltip []
   {:align-items   :center
    :border-color  colors/gray-lighter
    :border-width  1
@@ -74,7 +74,7 @@
    :width       40
    :height      40})
 
-(def action-button
+(defn action-button []
   {:width            40
    :height           40
    :background-color colors/blue
@@ -84,14 +84,16 @@
    :shadow-offset    {:width 0 :height 1}
    :shadow-radius    6
    :shadow-opacity   1
-   :shadow-color     "rgba(0, 12, 63, 0.2)"
+   :shadow-color     (if (colors/dark?)
+                       "rgba(0, 0, 0, 0.75)"
+                       "rgba(0, 12, 63, 0.2)")
    :elevation        2})
 
 (def empty-chats-header-container
   {:align-items     :center
    :justify-content :center})
 
-(def hr-wrapper
+(defn hr-wrapper []
   {:position         :absolute
    :width            "100%"
    :height           1
@@ -99,7 +101,7 @@
    :border-top-width 1
    :border-color     colors/gray-lighter})
 
-(def or-text
+(defn or-text []
   {:width            40
    :background-color colors/white
    :font-size        12
@@ -110,7 +112,7 @@
   {:margin-top      10
    :margin-bottom   18})
 
-(def close-icon-container
+(defn close-icon-container []
   {:width            24
    :height           24
    :border-radius    12

@@ -2,7 +2,8 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.animation :as anim]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [status-im.ui.components.colors :as colors]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -56,10 +57,10 @@
                                (when @current-obj
                                  [react/keyboard-avoiding-view {:style {:position :absolute :top 0 :bottom 0 :left 0 :right 0}}
                                   [react/view {:flex 1}
-                                   [react/animated-view {:flex 1 :background-color :black :opacity alpha-value}]
+                                   [react/animated-view {:flex 1 :background-color colors/black-persist :opacity alpha-value}]
                                    [react/animated-view {:style {:position  :absolute
                                                                  :transform [{:translateY bottom-anim-value}]
-                                                                 :bottom 0 :left 0 :right 0}}
+                                                                 :bottom    0 :left 0 :right 0}}
                                     [react/view {:flex 1}
                                      [render @current-obj]]]]]))})))
 

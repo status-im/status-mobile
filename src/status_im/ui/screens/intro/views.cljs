@@ -81,13 +81,13 @@
 (defview intro []
   (letsubs  [{window-height :height} [:dimensions/window]]
     [react/view {:style styles/intro-view}
-     [intro-viewer [{:image (:intro1 resources/ui)
+     [intro-viewer [{:image (resources/get-theme-image :chat)
                      :title :intro-title1
                      :text :intro-text1}
-                    {:image (:intro2 resources/ui)
+                    {:image (resources/get-theme-image :wallet)
                      :title :intro-title2
                      :text :intro-text2}
-                    {:image (:intro3 resources/ui)
+                    {:image (resources/get-theme-image :browser)
                      :title :intro-title3
                      :text :intro-text3}] window-height]
      [react/view styles/buttons-container
@@ -115,7 +115,7 @@
                            :flex 1}}
        (let [padding    40
              image-size (- (min (:width @dimensions) (:height @dimensions)) padding)]
-         [react/image {:source (resources/get-image :sample-key)
+         [react/image {:source (resources/get-theme-image :keys)
                        :resize-mode :contain
                        :style {:width image-size :height image-size}}])])))
 
@@ -289,7 +289,7 @@
                                     :background? false}]
 
          :else
-         [react/view {:style styles/bottom-arrow}
+         [react/view {:style (styles/bottom-arrow)}
           [react/view {:style {:margin-right 10}}
            [components.common/bottom-button {:on-press  #(re-frame/dispatch [forward-action])
                                              :accessibility-label :onboarding-next-button
@@ -363,11 +363,11 @@
                            :align-self :stretch
                            :justify-content :center
                            :align-items :center}
-     :container           {:background-color :white
+     :container           {:background-color colors/white
                            :flex 1
                            :justify-content :center
                            :align-items :center}
-     :style               (merge {:background-color    :white
+     :style               (merge {:background-color    colors/white
                                   :text-align          :center
                                   :text-align-vertical :center
                                   :min-width 40

@@ -70,7 +70,7 @@
       (when (not public?)
         (if pending-invite-inviter-name
           [react/nested-text {:style style/intro-header-description}
-           [{:style {:color :black}} pending-invite-inviter-name]
+           [{:style {:color colors/black}} pending-invite-inviter-name]
            (i18n/label :t/join-group-chat-description
                        {:username   ""
                         :group-name chat-name})]
@@ -79,7 +79,7 @@
              (i18n/label :t/joined-group-chat-description
                          {:username   ""
                           :group-name chat-name})
-             [{:style {:color :black}} inviter-name]]
+             [{:style {:color colors/black}} inviter-name]]
             [react/text {:style style/intro-header-description}
              (i18n/label :t/created-group-chat-description
                          {:group-name chat-name})]))))))

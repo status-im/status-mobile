@@ -3,7 +3,7 @@
             [status-im.ui.components.colors :as colors]))
 
 (def default-font-family "Inter")
-(def default-style
+(defn default-style []
   {:color       colors/black
    :font-weight "400"
    :font-size   15})
@@ -61,7 +61,7 @@
   {:pre [(or (nil? typography) (contains? typography-styles typography))]}
   (let [{:keys [font-weight font-style font-size line-height]
          :as style}
-        (merge default-style
+        (merge (default-style)
                (get typography-styles
                     typography)
                (dissoc style :typography :nested?))]

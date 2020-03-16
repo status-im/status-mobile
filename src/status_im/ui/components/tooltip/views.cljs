@@ -9,7 +9,7 @@
             [reagent.core :as reagent]))
 
 (views/defview tooltip [label & [{:keys [bottom-value color font-size container-style]
-                                  :or {bottom-value 30 color :white font-size 15}}]]
+                                  :or {bottom-value 30 color colors/white font-size 15}}]]
   (views/letsubs [bottom-anim-value (animation/create-value bottom-value)
                   opacity-value     (animation/create-value 0)]
     {:component-did-mount (animations/animate-tooltip bottom-value bottom-anim-value opacity-value -10)}

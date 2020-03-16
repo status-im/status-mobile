@@ -4,23 +4,16 @@
             [status-im.utils.styles :as styles]))
 
 (def wrapper
-  {:flex             1
-   :background-color :white})
-
-(def installation-item-inner
-  {:flex           1
-   :flex-direction :row})
+  {:flex             1})
 
 (styles/def installation-item
   {:flex-direction   :row
-   :background-color :white
    :align-items      :center
    :ios              {:height 64}
    :android          {:height 56}})
 
 (def installation-list
-  {:background-color   :white
-   :padding-horizontal 16
+  {:padding-horizontal 16
    :flex               1})
 
 (def edit-installation
@@ -37,8 +30,7 @@
 (def pair-this-device
   {:height             80
    :padding-horizontal 16
-   :padding-top        12
-   :background-color   :white})
+   :padding-top        12})
 
 (def info-section
   {:padding-horizontal 16

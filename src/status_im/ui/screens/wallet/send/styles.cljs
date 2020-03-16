@@ -1,7 +1,8 @@
-(ns status-im.ui.screens.wallet.send.styles)
+(ns status-im.ui.screens.wallet.send.styles
+  (:require [status-im.ui.components.colors :as colors]))
 
 (defn sheet [small-screen?]
-  {:background-color        :white
+  {:background-color        colors/white
    :border-top-right-radius 16
    :border-top-left-radius  16
    :padding-bottom          (if small-screen? 40 60)})

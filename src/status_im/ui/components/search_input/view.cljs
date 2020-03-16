@@ -9,8 +9,8 @@
   (let [input-ref (atom nil)]
     (fn [{:keys [on-cancel on-focus on-change search-active?
                  search-container-style search-filter auto-focus]}]
-      [react/view {:style (or search-container-style styles/search-container)}
-       [react/view {:style styles/search-input-container}
+      [react/view {:style (or search-container-style (styles/search-container))}
+       [react/view {:style (styles/search-input-container)}
         [icons/icon :main-icons/search {:color           colors/gray
                                         :container-style {:margin-left  6
                                                           :margin-right 2}}]

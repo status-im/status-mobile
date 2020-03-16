@@ -27,25 +27,28 @@
                                            :content-height 130}])}
      [react/view {:style (styles/card color)}
       [react/view {:flex-direction :row :align-items :center :justify-content :space-between}
-       [react/nested-text {:style {:color colors/white-transparent :font-weight "500" :flex-shrink 1}}
-        [{:style {:color colors/white}} portfolio-value]
+       [react/nested-text {:style {:color colors/white-transparent-persist
+                                   :font-weight "500" :flex-shrink 1}}
+        [{:style {:color colors/white-persist}} portfolio-value]
         " "
         (:code currency)]
-       [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-popover {:view :share-account :address address}])}
-        [icons/icon :main-icons/share {:color colors/white}]]]
+       [react/touchable-highlight
+        {:on-press #(re-frame/dispatch [:show-popover
+                                        {:view :share-account :address address}])}
+        [icons/icon :main-icons/share {:color colors/white-persist}]]]
       [react/view
-       [react/text {:style {:color colors/white :font-weight "500" :line-height 22}} name]
+       [react/text {:style {:color colors/white-persist :font-weight "500" :line-height 22}} name]
        [react/text {:number-of-lines 1 :ellipsize-mode :middle
                     :style {:line-height 22 :font-size 13
                             :font-family "monospace"
-                            :color colors/white-transparent-70}}
+                            :color colors/white-transparent-70-persist}}
         address]]]]))
 
 (defn add-card []
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                              {:content        sheets/add-account
                                                               :content-height 260}])}
-   [react/view {:style styles/add-card}
+   [react/view {:style (styles/add-card)}
     [react/view {:width       40 :height 40 :justify-content :center :border-radius 20
                  :align-items :center :background-color colors/blue-transparent-10 :margin-bottom 8}
      [icons/icon :main-icons/add {:color colors/blue}]]
@@ -142,14 +145,14 @@
                    :justify-content :center}
        [icons/icon :main-icons/more {:accessibility-label :accounts-more-options}]]]]))
 
-(views/defview  send-button []
+(views/defview send-button []
   (views/letsubs [account [:multiaccount/default-account]]
     [react/view styles/send-button-container
      [react/touchable-highlight
       {:accessibility-label :send-transaction-button
        :on-press            #(re-frame/dispatch [:wallet/prepare-transaction-from-wallet account])}
-      [react/view styles/send-button
-       [icons/icon :main-icons/send {:color :white}]]]]))
+      [react/view (styles/send-button)
+       [icons/icon :main-icons/send {:color colors/white-persist}]]]]))
 
 (views/defview accounts []
   (views/letsubs [accounts [:multiaccount/accounts]]

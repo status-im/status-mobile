@@ -215,7 +215,7 @@
                    (case direction
                      :outgoing :border-bottom-right-radius
                      :incoming :border-bottom-left-radius) 4
-                   :background-color                       :white}
+                   :background-color                       colors/white}
        [react/text {:style {:font-size   13
                             :line-height 18
                             :font-weight "500"

@@ -10,7 +10,8 @@
             [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]
             [status-im.react-native.js-dependencies :as js-dependencies]
-            [status-im.ui.screens.biometric.views :as biometric]))
+            [status-im.ui.screens.biometric.views :as biometric]
+            [status-im.ui.components.colors :as colors]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -88,7 +89,7 @@
           (let [{:keys [view style]} @current-popover]
             [react/view {:position :absolute :top 0 :bottom 0 :left 0 :right 0}
              [react/animated-view
-              {:style {:flex 1 :background-color :black :opacity alpha-value}}]
+              {:style {:flex 1 :background-color colors/black-persist :opacity alpha-value}}]
              [react/animated-view {:style
                                    {:position  :absolute
                                     :height    window-height
@@ -98,7 +99,7 @@
               [react/touchable-highlight
                {:style    {:flex 1 :align-items :center :justify-content :center}
                 :on-press request-close}
-               [react/view (merge {:background-color :white
+               [react/view (merge {:background-color colors/white
                                    :border-radius    16
                                    :margin           32
                                    :shadow-offset    {:width 0 :height 2}

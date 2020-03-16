@@ -143,8 +143,8 @@
          :auto-focus        true
          :on-submit-editing #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-submitted])
          :placeholder       nil
-         :container         {:background-color :white}
-         :style             {:background-color :white
+         :container         {:background-color colors/white}
+         :style             {:background-color colors/white
                              :height           24
                              :typography       :header}}]
        [react/view {:margin-top 5

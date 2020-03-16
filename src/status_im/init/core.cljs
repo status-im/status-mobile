@@ -5,10 +5,11 @@
             [status-im.network.net-info :as network]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.screens.db :refer [app-db]]
-            [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as platform]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im.utils.theme :as theme]
+            [status-im.ui.components.colors :as colors]))
 
 (defn restore-native-settings! []
   (when platform/desktop?
@@ -62,6 +63,7 @@
 (fx/defn start-app [cofx]
   (fx/merge cofx
             {:get-supported-biometric-auth          nil
+             ::init-theme                           nil
              ::init-keystore                        nil
              ::restore-native-settings              nil
              ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts % {:logout? false}])
@@ -86,3 +88,10 @@
  ::init-keystore
  (fn []
    (status/init-keystore)))
+
+(re-frame/reg-fx
+ ::init-theme
+ (fn []
+   (theme/add-mode-change-listener #(re-frame/dispatch [:system-theme-mode-changed %]))
+   (when (theme/is-dark-mode)
+     (colors/set-theme :dark))))

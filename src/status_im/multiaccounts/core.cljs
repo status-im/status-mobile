@@ -1,19 +1,15 @@
 (ns status-im.multiaccounts.core
   (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as native-module]
             [status-im.notifications.core :as notifications]
-            [status-im.utils.build :as build]
-            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.utils.theme :as theme]))
 
 (defn displayed-name
   "Use preferred name, name or alias in that order"
@@ -102,3 +98,18 @@
   [{:keys [db]}]
   (let [private? (get-in db [:multiaccount :preview-privacy?])]
     {::blank-preview-flag-changed private?}))
+
+(re-frame/reg-fx
+ ::switch-theme
+ (fn [theme]
+   (colors/set-theme
+    (if (or (= 2 theme) (and (= 0 theme) (theme/is-dark-mode)))
+      :dark
+      :light))))
+
+(fx/defn switch-appearance
+  {:events [:multiaccounts.ui/appearance-switched]}
+  [cofx theme]
+  (fx/merge cofx
+            {::switch-theme theme}
+            (multiaccounts.update/multiaccount-update :appearance theme {})))

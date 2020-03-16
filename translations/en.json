@@ -1098,5 +1098,10 @@
     "add-private-key-account": "Add account from private key",
     "user-not-found": "User not found",
     "waku-enabled": "Waku enabled",
-    "waku-bloom-filter-mode": "Waku bloom filter mode"
+    "waku-bloom-filter-mode": "Waku bloom filter mode",
+    "appearance": "Appearance",
+    "preference": "Preference",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
 }

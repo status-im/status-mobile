@@ -15,6 +15,7 @@
       :active colors/blue
       :white colors/white
       :red colors/red
+      :none nil
       colors/black)
     (string? color)
     color
@@ -44,7 +45,7 @@
                             resize-mode
                             (assoc :resize-mode resize-mode)
 
-                            color
+                            :always
                             (assoc :tint-color (match-color color)))
                   :source (icon-source name)}]]))
 

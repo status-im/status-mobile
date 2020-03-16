@@ -9,7 +9,7 @@
 
 (def search-input-height 56)
 
-(def search-container
+(defn search-container []
   {:height             search-input-height
    :flex-direction     :row
    :padding-horizontal 16
@@ -17,7 +17,7 @@
    :align-items        :center
    :justify-content    :center})
 
-(def search-input-container
+(defn search-input-container []
   {:background-color colors/gray-lighter
    :flex             1
    :flex-direction   :row

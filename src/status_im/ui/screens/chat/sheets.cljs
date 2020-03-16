@@ -20,7 +20,7 @@
    [react/text {:style {:font-weight "500"
                         :line-height 22
                         :font-size   15
-                        :color       :black}}
+                        :color       colors/black}}
     name]
    [react/text {:style {:line-height 22
                         :font-size   15

@@ -33,7 +33,7 @@
 
 (def transactions
   {:flex             1
-   :background-color :white})
+   :background-color colors/white})
 
 (def forward
   {:color colors/gray})
@@ -203,4 +203,4 @@
 
 (def transactions-view
   {:flex             1
-   :background-color :white})
+   :background-color colors/white})

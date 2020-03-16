@@ -34,7 +34,7 @@
                (i18n/label :t/connect)]]
              [react/i18n-text {:style st/connect-button-description
                                :key   :connecting-requires-login}]]])
-         [react/view st/network-config-container
+         [react/view (st/network-config-container)
           [react/text {:style               st/network-config-text
                        :accessibility-label :network-details-text}
            config]]]

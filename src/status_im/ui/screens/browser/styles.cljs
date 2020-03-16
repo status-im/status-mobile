@@ -18,8 +18,8 @@
    :ios     {:margin-top 4}
    :android {:font-size 13}})
 
-(def navbar
-  {:background-color   :white
+(defn navbar []
+  {:background-color   colors/white
    :height             51
    :flex-direction     :row
    :align-items        :center
@@ -52,7 +52,7 @@
 (def web-view-error-text
   {:color colors/gray})
 
-(def toolbar-content
+(defn toolbar-content []
   {:flex-direction     :row
    :flex               1
    :border-radius      8
@@ -105,7 +105,7 @@
    :left                    0
    :bottom                  0
    :align-items             :center
-   :background-color        :white
+   :background-color        colors/white
    :border-top-left-radius  8
    :border-top-right-radius 8})
 

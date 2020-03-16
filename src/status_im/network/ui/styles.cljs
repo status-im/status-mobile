@@ -4,8 +4,7 @@
             [status-im.utils.styles :as styles]))
 
 (def wrapper
-  {:flex             1
-   :background-color :white})
+  {:flex             1})
 
 (def badge-name-text
   {:font-size 17})
@@ -31,7 +30,7 @@
    :ios              {:opacity 0.9}})
 
 (def connect-button-label
-  {:color     colors/white
+  {:color     colors/white-persist
    :font-size 17})
 
 (def connect-button-description
@@ -39,7 +38,7 @@
    :margin-top 8
    :height     20})
 
-(styles/def network-config-container
+(styles/defn network-config-container []
   {:height            160
    :margin-top        8
    :padding-top       16
@@ -95,7 +94,6 @@
 
 (styles/def network-item
   {:flex-direction     :row
-   :background-color   :white
    :align-items        :center
    :padding-horizontal 16
    :ios                {:height 64}
@@ -115,11 +113,10 @@
    :margin-vertical   15})
 
 (def delete-button
-  {:background-color colors/white})
+  {:background-color colors/white-persist})
 
 (def delete-button-text
   {:color colors/red})
 
 (def container
-  (merge components.styles/flex
-         {:background-color colors/white}))
+  components.styles/flex)

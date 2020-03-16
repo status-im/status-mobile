@@ -12,7 +12,7 @@
   (:require-macros [status-im.utils.views :as views]))
 
 (defn separator []
-  [react/view styles/separator])
+  [react/view (styles/separator)])
 
 (defn- recipient-topbar [content]
   [topbar/toolbar {:transparent? true}

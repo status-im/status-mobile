@@ -15,5 +15,5 @@
    :margin-top  16
    :height      22})
 
-(def datemark-text
+(defn datemark-text []
   {:color colors/gray})

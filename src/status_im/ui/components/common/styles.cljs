@@ -34,6 +34,7 @@
 (defn logo [icon-size]
   {:width  icon-size
    :height icon-size
+   :color :none
    :container-style {}})
 
 (def bottom-button
@@ -66,7 +67,7 @@
 (defn counter-label [size]
   {:font-size  (inc (/ size 2))
    :typography :main-medium
-   :color      colors/white
+   :color      colors/white-persist
    :text-align :center})
 
 (def image-contain

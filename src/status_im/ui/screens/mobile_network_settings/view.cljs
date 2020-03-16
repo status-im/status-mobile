@@ -12,7 +12,7 @@
 
 (defn settings-separator []
   [react/view
-   {:style styles/settings-separator}])
+   {:style (styles/settings-separator)}])
 
 (views/defview mobile-network-settings []
   (views/letsubs
@@ -21,8 +21,6 @@
      [:multiaccount]]
     [react/view {:style styles/container}
      [topbar/topbar {:title :t/mobile-network-settings}]
-     (when platform/ios?
-       [settings-separator])
      [react/view {:style styles/switch-container}
       [profile.components/settings-switch-item
        {:label-kw  :t/mobile-network-use-mobile

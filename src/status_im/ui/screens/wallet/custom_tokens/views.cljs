@@ -24,7 +24,7 @@
 (defview add-custom-token []
   (letsubs [{:keys [contract name symbol balance decimals in-progress? error error-name error-symbol]}
             [:wallet/custom-token-screen]]
-    [react/keyboard-avoiding-view {:flex 1 :background-color :white}
+    [react/keyboard-avoiding-view {:flex 1 :background-color colors/white}
      [topbar/topbar {:title :t/add-custom-token}]
      [react/scroll-view {:keyboard-should-persist-taps :handled :style {:flex 1 :margin-top 8 :padding-horizontal 16}}
       [react/view {:style {:flex-direction :row :justify-content :space-between :padding-vertical 10}}
@@ -103,7 +103,7 @@
 (defview custom-token-details []
   (letsubs [{:keys [address name symbol decimals custom?] :as token}
             [:get-screen-params]]
-    [react/keyboard-avoiding-view {:flex 1 :background-color :white}
+    [react/keyboard-avoiding-view {:flex 1 :background-color colors/white}
      [topbar/topbar {:title name}]
      [react/scroll-view {:keyboard-should-persist-taps :handled
                          :style {:flex 1 :margin-top 8}}

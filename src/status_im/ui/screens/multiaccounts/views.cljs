@@ -37,7 +37,7 @@
                    :width            32
                    :height           32
                    :border-radius    24
-                   :background-color :white
+                   :background-color colors/white
                    :border-width     1
                    :border-color     colors/black-transparent}
        [react/image {:source (resources/get-image :keycard-key)
@@ -59,7 +59,7 @@
        [list/flat-list {:data      (vals multiaccounts)
                         :key-fn    :address
                         :render-fn (fn [multiaccount] [multiaccount-view multiaccount])}]]
-      [react/view {:style styles/bottom-button-container}
+      [react/view {:style (styles/bottom-button-container)}
        [button/button {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
                        :type     :secondary
                        :label    (i18n/label :t/access-key)}]]]]))

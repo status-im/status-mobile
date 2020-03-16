@@ -171,7 +171,8 @@
   [text {:style  style} (i18n/label key)])
 
 (defn icon
-  ([n] (icon n styles/icon-default))
+  ([n] (icon n {:width  24
+                :height 24}))
   ([n style]
    [image {:source     {:uri (keyword (str "icon_" (name n)))}
            :resizeMode "contain"

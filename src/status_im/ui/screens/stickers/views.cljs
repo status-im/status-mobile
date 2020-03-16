@@ -19,7 +19,7 @@
 
 (defn- installed-icon []
   [react/view styles/installed-icon
-   [icons/icon :main-icons/check {:color colors/white :height 20 :width 20}]])
+   [icons/icon :main-icons/check {:color colors/white-persist :height 20 :width 20}]])
 
 (defview price-badge [price id owned? pending]
   (letsubs [chain   [:ethereum/chain-keyword]
@@ -34,11 +34,11 @@
                                                    :else (re-frame/dispatch [:stickers/buy-pack id price]))}
        [react/view (styles/price-badge (and (not (or owned? (zero? price))) (or no-snt? not-enough-snt?)))
         (when (and (not (zero? price)) (not owned?))
-          [icons/tiny-icon :tiny-icons/tiny-snt {:color colors/white :container-style {:margin-right 6}}])
+          [icons/tiny-icon :tiny-icons/tiny-snt {:color colors/white-persist :container-style {:margin-right 6}}])
         (if pending
           [react/activity-indicator {:animating true
-                                     :color     colors/white}]
-          [react/text {:style {:color colors/white}
+                                     :color     colors/white-persist}]
+          [react/text {:style {:color colors/white-persist}
                        :accessibility-label :sticker-pack-price}
            (cond owned? (i18n/label :t/install)
                  (zero? price) (i18n/label :t/free)

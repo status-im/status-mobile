@@ -258,46 +258,7 @@
           {:sections            (clj->js (map wrap-per-section-render-fn sections))
            :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)
            :style               style})])
-;;TODO DEPRECATED, use status-im.ui.components.list-item.views
-(defn render-action [{:keys [label subtext accessibility-label icon action disabled?]}
-                     {:keys [action-style action-label-style action-subtext-style icon-opts]}]
-  [react/touchable-highlight {:on-press action}
-   [react/view {:accessibility-label accessibility-label}
-    [item
-     (when icon
-       [item-icon {:icon      icon
-                   :style     (merge styles/action
-                                     action-style
-                                     (when disabled? styles/action-disabled))
-                   :icon-opts (merge {:color :white}
-                                     icon-opts
-                                     (when disabled? {:color colors/gray}))}])
-     (if-not subtext
-       [item-primary-only {:style (merge styles/action-label
-                                         (action-label-style false)
-                                         (when disabled? styles/action-label-disabled))}
-        label]
-       [item-content
-        [item-primary {:style (merge styles/action-label
-                                     (action-label-style true)
-                                     (when disabled? styles/action-label-disabled))}
-         label]
-        [item-secondary {:style (merge styles/action-label
-                                       action-subtext-style
-                                       (when disabled? styles/action-label-disabled))}
-         subtext]])
 
-     item-icon-forward]]])
-;;TODO DEPRECATED, use status-im.ui.components.list-item.views
-(defn action-list [actions {:keys [container-style action-separator-style] :as styles}]
-  [react/view (merge styles/action-list container-style)
-   [flat-list
-    {:separator (when platform/ios?
-                  [react/view (merge styles/action-separator
-                                     action-separator-style)])
-     :data      actions
-     :key-fn    (fn [_ i] (str i))
-     :render-fn #(render-action % styles)}]])
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn list-with-label [{:keys [style]} label list]
   [react/view (merge styles/list-with-label-wrapper style)

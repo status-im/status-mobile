@@ -11,5 +11,5 @@
                  [:chat.ui/set-chat-ui-props {:input-bottom-sheet nil}])
                 (react/dismiss-keyboard!))}
    [react/view style/datemark-mobile
-    [react/text {:style style/datemark-text}
+    [react/text {:style (style/datemark-text)}
      (string/capitalize value)]]])

@@ -235,7 +235,7 @@ all connectivity views (we have at least one view in home and one in chat)"
     (let [loading-indicator? (:loading-indicator? ui-status-properties)]
       [react/view {:style     {:flex 1}
                    :on-layout #(reset! window-width (-> % .-nativeEvent .-layout .-width))}
-       [react/view {:style {:z-index 2 :background-color :white}}
+       [react/view {:style {:z-index 2 :background-color colors/white}}
         header
         [react/view
          (when (and loading-indicator? @status-hidden)

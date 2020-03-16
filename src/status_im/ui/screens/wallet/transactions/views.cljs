@@ -153,7 +153,7 @@
                      :accessories [{:label   :t/transactions-filter-select-all
                                     :handler on-touch-select-all}]}]
      [react/view
-      {:style (merge {:background-color :white} components.styles/flex)}
+      {:style (merge {:background-color colors/white} components.styles/flex)}
       [list/section-list {:sections [{:title
                                       (i18n/label :t/type)
                                       :key       :type
@@ -254,7 +254,7 @@
       toolbar-old/default-nav-back
       [toolbar-old/content-title (i18n/label :t/transaction-details)]
       (when transaction [toolbar-old/actions (details-action hash url)])]
-     [react/scroll-view {:style components.styles/main-container}
+     [react/scroll-view {:style components.styles/flex}
       [details-header date type amount-text currency-text]
       [details-confirmations confirmations confirmations-progress (= :failed type)]
       [react/view {:style styles/details-separator}]

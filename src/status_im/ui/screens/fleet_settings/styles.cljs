@@ -4,15 +4,13 @@
             [status-im.utils.styles :as styles]))
 
 (def wrapper
-  {:flex             1
-   :background-color :white})
+  {:flex             1})
 
 (def fleet-item-inner
   {:padding-horizontal 16})
 
 (styles/def fleet-item
   {:flex-direction     :row
-   :background-color   :white
    :align-items        :center
    :padding-horizontal 16
    :ios                {:height 64}
@@ -38,4 +36,4 @@
 
 (defn fleet-icon [current?]
   (hash-map (if platform/desktop? :tint-color :color)
-            (if current? :white :gray)))
+            (if current? colors/white-persist colors/gray)))

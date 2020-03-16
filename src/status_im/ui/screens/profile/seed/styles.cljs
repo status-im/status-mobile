@@ -61,7 +61,6 @@
    :margin-bottom    16
    :flex-direction   :row
    :border-radius    8
-   :background-color colors/white
    :border-width     1
    :border-color     colors/gray-lighter})
 
@@ -99,7 +98,7 @@
    :justify-content :center})
 
 (def ok-icon
-  {:color  :white
+  {:color  colors/white
    :width  41
    :height 41})
 

@@ -211,7 +211,7 @@
          (get-in multiaccount [:derived constants/path-default-wallet-keyword])]
      {:public-key public-key
       :address    (eip55/address->checksum address)
-      :color      colors/blue
+      :color      colors/blue-persist
       :wallet     true
       :path       constants/path-default-wallet
       :name       "Status account"})

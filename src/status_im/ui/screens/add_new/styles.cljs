@@ -8,16 +8,16 @@
    :padding-top    16
    :padding-left   16})
 
-(def input-container
+(defn input-container []
   {:flex-direction   :row
    :align-items      :center
    :border-radius    components.styles/border-radius
    :height           52
    :background-color colors/gray-lighter})
 
-(def new-chat-input-container
+(defn new-chat-input-container []
   (merge
-   input-container
+   (input-container)
    {:flex 1}))
 
 (def button-container

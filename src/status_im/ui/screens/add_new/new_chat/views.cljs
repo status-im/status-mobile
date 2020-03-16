@@ -41,16 +41,16 @@
   (case state
     :searching
     [icon-wrapper colors/gray
-     [react/activity-indicator {:color colors/white}]]
+     [react/activity-indicator {:color colors/white-persist}]]
 
     :valid
     [react/touchable-highlight
      {:on-press #(debounce/dispatch-and-chill [:contact.ui/contact-code-submitted] 3000)}
      [icon-wrapper colors/blue
-      [vector-icons/icon :main-icons/arrow-right {:color colors/white}]]]
+      [vector-icons/icon :main-icons/arrow-right {:color colors/white-persist}]]]
 
     [icon-wrapper colors/gray
-     [vector-icons/icon :main-icons/arrow-right {:color colors/white}]]))
+     [vector-icons/icon :main-icons/arrow-right {:color colors/white-persist}]]))
 
 (defn get-validation-label [value]
   (case value
@@ -72,7 +72,7 @@
                                                     {:title   (i18n/label :t/new-contact)
                                                      :handler :contact/qr-code-scanned}])}]}]
      [react/view add-new.styles/new-chat-container
-      [react/view add-new.styles/new-chat-input-container
+      [react/view (add-new.styles/new-chat-input-container)
        [react/text-input
         {:on-change-text
          #(do

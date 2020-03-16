@@ -53,7 +53,7 @@
     [react/view {:flex 1}
      [topbar/topbar {:title :t/reset-card}]
      [react/view {:flex             1
-                  :background-color :white}
+                  :background-color colors/white}
       [react/view {:margin-top  71
                    :flex        1
                    :align-items :center}
@@ -90,7 +90,7 @@
     [react/view {:flex 1}
      [topbar/topbar {:title :t/status-keycard}]
      [react/view {:flex             1
-                  :background-color :white}
+                  :background-color colors/white}
       [react/view {:margin-top  47
                    :flex        1
                    :align-items :center}

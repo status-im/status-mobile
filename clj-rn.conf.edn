@@ -44,7 +44,8 @@
               "react-native-shake"
               "@react-native-community/netinfo"
               "react-native-gesture-handler"
-              "react-native-safe-area-context"]
+              "react-native-safe-area-context"
+              "react-native-dark-mode"]
  ;; Desktop modules
  :desktop-modules ["buffer"
                    "bignumber.js"

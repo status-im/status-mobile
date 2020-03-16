@@ -29,7 +29,7 @@
                                :flex            1}}
        (let [padding    0
              image-size (- (min (:width @dimensions) (:height @dimensions)) padding)]
-         [react/image {:source      (resources/get-image :welcome)
+         [react/image {:source      (resources/get-theme-image :welcome)
                        :resize-mode :contain
                        :style       {:width image-size :height image-size}}])])))
 
@@ -46,27 +46,29 @@
                                :label               (i18n/label :t/lets-go)}]]])
 
 (defn home-tooltip-view []
-  [react/view styles/chat-tooltip
+  [react/view (styles/chat-tooltip)
    [react/view {:style {:flex-direction :row}}
     [react/view {:flex 1}
      [react/view {:style styles/empty-chats-header-container}
-      [react/image {:source (resources/get-image :empty-chats-header)
-                    :style  {:width 60 :height 50 :position :absolute :top -6}}]]
+      [react/view {:style {:width 66 :position :absolute :top -6 :background-color colors/white
+                           :align-items :center}}
+       [react/image {:source (resources/get-image :empty-chats-header)
+                     :style  {:width 50 :height 50}}]]]
      [react/touchable-highlight
       {:style               {:position :absolute :right 0 :top 0
                              :width    44 :height 44 :align-items :center :justify-content :center}
        :on-press            #(re-frame/dispatch [:multiaccounts.ui/hide-home-tooltip])
        :accessibility-label :hide-home-button}
-      [react/view {:style styles/close-icon-container}
-       [icons/icon :main-icons/close {:color colors/white}]]]]]
+      [react/view {:style (styles/close-icon-container)}
+       [icons/icon :main-icons/close {:color colors/white-persist}]]]]]
    [react/i18n-text {:style styles/no-chats-text :key :chat-and-transact}]
    [react/view {:align-items :center :margin-top 16}
     [button/button {:label               :t/invite-friends
                     :on-press            #(list-selection/open-share {:message (i18n/label :t/get-status-at)})
                     :accessibility-label :invite-friends-button}]]
    [react/view {:align-items :center :margin-top 16}
-    [react/view {:style styles/hr-wrapper}]
-    [react/i18n-text {:style styles/or-text :key :or}]]
+    [react/view {:style (styles/hr-wrapper)}]
+    [react/i18n-text {:style (styles/or-text) :key :or}]]
    [react/view {:margin-top 16}
     [react/i18n-text {:style {:margin-horizontal 16
                               :text-align        :center}
@@ -121,11 +123,11 @@
       {:accessibility-label :new-chat-button
        :on-press            (when-not logging-in?
                               #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))}
-      [react/view styles/action-button
+      [react/view (styles/action-button)
        (if logging-in?
-         [react/activity-indicator {:color     :white
+         [react/activity-indicator {:color     colors/white-persist
                                     :animating true}]
-         [icons/icon :main-icons/add {:color :white}])]]]))
+         [icons/icon :main-icons/add {:color colors/white-persist}])]]]))
 
 (defn home []
   [react/keyboard-avoiding-view {:style styles/home-container}

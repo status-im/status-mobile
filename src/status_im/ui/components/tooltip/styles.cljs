@@ -40,7 +40,9 @@
    :shadow-radius      12
    :shadow-offset      {:width 0 :height 4}
    :shadow-opacity     0.16
-   :shadow-color       "rgba(0, 34, 51)"})
+   :shadow-color       (if (colors/dark?)
+                         "rgba(0, 0, 0, 0.75)"
+                         "rgba(0, 34, 51)")})
 
 (def bottom-tooltip-text-container
   {:flex-direction     :row

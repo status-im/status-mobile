@@ -9,7 +9,7 @@
 
 (defn style-message-text
   [outgoing]
-  {:color (if outgoing colors/white colors/text)})
+  {:color (if outgoing colors/white-persist colors/text)})
 
 (defn last-message-padding
   [{:keys [first? typing]}]
@@ -45,11 +45,11 @@
                   colors/blue-light)))
 
 (defn message-timestamp-text
-  [justify-timestamp? outgoing rtl? emoji?]
+  [justify-timestamp? outgoing rtl?]
   (merge message-timestamp
          {:line-height 10
           :color       (if outgoing
-                         colors/white-transparent-70
+                         colors/white-transparent-70-persist
                          colors/gray)}
          (when justify-timestamp? {:position              :absolute
                                    :bottom                9 ; 6 Bubble bottom, 3 message baseline
@@ -172,7 +172,7 @@
 (def status-container
   {:padding-horizontal 5})
 
-(def status-text
+(defn status-text []
   {:margin-top  9
    :font-size   14
    :color       colors/gray})
@@ -218,28 +218,28 @@
          :line-height     18
          :font-weight    "500"
          :color           (if outgoing
-                            colors/white-transparent-70
+                            colors/white-transparent-70-persist
                             colors/gray)))
 
 (defn quoted-message-text [outgoing]
   {:font-size 14
    :color (if outgoing
-            colors/white-transparent-70
+            colors/white-transparent-70-persist
             colors/gray)})
 
 ;; Markdown styles
 
-(def default-text-style
+(defn default-text-style []
   {:max-font-size-multiplier react/max-font-size-multiplier
-   :style (assoc typography/default-style
+   :style (assoc (typography/default-style)
                  :line-height 22)})
 
-(def outgoing-text-style
-  (update default-text-style :style
-          assoc :color colors/white))
+(defn outgoing-text-style []
+  (update (default-text-style) :style
+          assoc :color colors/white-persist))
 
-(def system-text-style
-  (update default-text-style :style assoc
+(defn system-text-style []
+  (update (default-text-style) :style assoc
           :color colors/gray
           :line-height 20
           :font-size 14
@@ -248,45 +248,45 @@
 
 (defn text-style [outgoing content-type]
   (cond
-    (= content-type constants/content-type-system-text) system-text-style
-    outgoing outgoing-text-style
-    :else default-text-style))
+    (= content-type constants/content-type-system-text) (system-text-style)
+    outgoing (outgoing-text-style)
+    :else (default-text-style)))
 
-(def emph-text-style
-  (update default-text-style :style
+(defn emph-text-style []
+  (update (default-text-style) :style
           assoc :font-style :italic))
 
-(def outgoing-emph-text-style
-  (update emph-text-style :style
-          assoc :color colors/white))
+(defn outgoing-emph-text-style []
+  (update (emph-text-style) :style
+          assoc :color colors/white-persist))
 
 (defn emph-style [outgoing]
   (if outgoing
-    outgoing-emph-text-style
-    emph-text-style))
+    (outgoing-emph-text-style)
+    (emph-text-style)))
 
-(def strong-text-style
-  (update default-text-style :style
+(defn strong-text-style []
+  (update (default-text-style) :style
           assoc :font-weight "700"))
 
-(def outgoing-strong-text-style
-  (update strong-text-style :style
-          assoc :color colors/white))
+(defn outgoing-strong-text-style []
+  (update (strong-text-style) :style
+          assoc :color colors/white-persist))
 
 (defn strong-style [outgoing]
   (if outgoing
-    outgoing-strong-text-style
-    strong-text-style))
+    (outgoing-strong-text-style)
+    (strong-text-style)))
 
 (def monospace-fonts (if platform/ios? "Courier" "monospace"))
 
 (def code-block-background "#2E386B")
 
-(def inline-code-style
-  (update default-text-style :style
+(defn inline-code-style []
+  (update (default-text-style) :style
           assoc
           :font-family monospace-fonts
-          :color colors/white
+          :color colors/white-persist
           :background-color code-block-background))
 
 (def codeblock-style {:style {:padding 10
@@ -294,7 +294,7 @@
                               :border-radius 4}})
 
 (def codeblock-text-style
-  (update default-text-style :style
+  (update (default-text-style) :style
           assoc
           :font-family monospace-fonts
           :color colors/white))
@@ -315,7 +315,7 @@
     default-blockquote-style))
 
 (def default-blockquote-text-style
-  (update default-text-style :style
+  (update (default-text-style) :style
           assoc
           :line-height 19
           :font-size 14
@@ -324,7 +324,7 @@
 (def outgoing-blockquote-text-style
   (update default-blockquote-text-style :style
           assoc
-          :color colors/white-transparent-70))
+          :color colors/white-transparent-70-persist))
 
 (defn blockquote-text-style [outgoing]
   (if outgoing

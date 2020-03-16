@@ -87,7 +87,7 @@
       (:taken :error)
       :main-icons/cancel
       :main-icons/username)
-    {:color colors/white}]])
+    {:color colors/white-persist}]])
 
 (defn- toolbar []
   [topbar/topbar {:title :t/ens-your-username}])
@@ -112,16 +112,16 @@
   (case state
     :searching
     [icon-wrapper colors/gray
-     [react/activity-indicator {:color colors/white}]]
+     [react/activity-indicator {:color colors/white-persist}]]
 
     (:available :connected :connected-with-different-key :owned)
     [react/touchable-highlight
      {:on-press #(debounce/dispatch-and-chill [::ens/input-icon-pressed] 3000)}
      [icon-wrapper colors/blue
-      [vector-icons/icon :main-icons/arrow-right {:color colors/white}]]]
+      [vector-icons/icon :main-icons/arrow-right {:color colors/white-persist}]]]
 
     [icon-wrapper colors/gray
-     [vector-icons/icon :main-icons/arrow-right {:color colors/white}]]))
+     [vector-icons/icon :main-icons/arrow-right {:color colors/white-persist}]]))
 
 (defn help-message-text-element
   ([label]
@@ -279,7 +279,6 @@
 (defn- registration-bottom-bar
   [checked? amount-label]
   [react/view {:style {:height           60
-                       :background-color colors/white
                        :border-top-width 1
                        :border-top-color colors/gray-lighter}}
    [react/view {:style {:margin-horizontal 16
@@ -565,7 +564,7 @@
 (defn- welcome []
   [react/view {:style {:flex 1}}
    [react/scroll-view {:content-container-style {:align-items :center}}
-    [react/image {:source (resources/get-image :ens-header)
+    [react/image {:source (resources/get-theme-image :ens-header)
                   :style  {:margin-top 32}}]
     [react/text {:style {:margin-top 32 :margin-bottom 8 :typography :header}}
      (i18n/label :t/ens-get-name)]

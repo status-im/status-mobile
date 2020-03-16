@@ -20,7 +20,7 @@
             [status-im.ui.screens.group.styles :as styles]))
 
 (views/defview group-name-view [new-group-name]
-  [react/view add-new.styles/input-container
+  [react/view (add-new.styles/input-container)
    [react/text-input
     {:auto-focus          true
      :on-change-text      #(re-frame/dispatch [:set :new-chat-name %])
