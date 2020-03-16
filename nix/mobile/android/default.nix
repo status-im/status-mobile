@@ -53,7 +53,7 @@ in {
     })
     (lib.catAttrs "shell" [ status-go mavenAndNpmDeps androidEnv ]);
 
-  adb = {
+  env = {
     shell = mkShell {
       buildInputs = [ androidEnv.drv ];
       inherit (androidEnv.shell) shellHook;

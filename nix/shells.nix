@@ -56,7 +56,7 @@ in with pkgs; rec {
   watchman = watchman-sh;
   fastlane = fastlane-sh;
   keytool = keytool-sh;
-  adb = targets.mobile.android.adb.shell;
+  android-env = targets.mobile.android.env.shell;
   # helpers for use with target argument
   linux = targets.desktop.linux.shell;
   macos = targets.desktop.macos.shell;

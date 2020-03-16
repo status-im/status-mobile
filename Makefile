@@ -326,7 +326,7 @@ react-native-ios: export _NIX_PURE ?= true
 react-native-ios: ##@other Start react native packager for Android client
 	@scripts/start-react-native.sh
 
-geth-connect: export TARGET := adb
+geth-connect: export TARGET := android-env
 geth-connect: ##@other Connect to Geth on the device
 	adb forward tcp:8545 tcp:8545 && \
 	build/bin/geth attach http://localhost:8545
@@ -335,22 +335,22 @@ android-clean: ##@prepare Clean Gradle state
 	git clean -dxf -f ./android/app/build
 	[ -d android/.gradle ] && cd android && ./gradlew clean
 
-android-ports: export TARGET := adb
+android-ports: export TARGET := android-env
 android-ports: ##@other Add proxies to Android Device/Simulator
 	adb reverse tcp:8081 tcp:8081 && \
 	adb reverse tcp:3449 tcp:3449 && \
 	adb reverse tcp:4567 tcp:4567 && \
 	adb forward tcp:5561 tcp:5561
 
-android-devices: export TARGET := adb
+android-devices: export TARGET := android-env
 android-devices: ##@other Invoke adb devices
 	adb devices
 
-android-logcat: export TARGET := adb
+android-logcat: export TARGET := android-env
 android-logcat: ##@other Read status-react logs from Android phone using adb
 	adb logcat | grep -e RNBootstrap -e ReactNativeJS -e ReactNative -e StatusModule -e StatusNativeLogs -e 'F DEBUG   :' -e 'Go      :' -e 'GoLog   :' -e 'libc    :'
 
-android-install: export TARGET := adb
+android-install: export TARGET := android-env
 android-install: export BUILD_TYPE ?= release
 android-install:
 	adb install result/app-$(BUILD_TYPE).apk
