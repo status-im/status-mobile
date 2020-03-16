@@ -41,13 +41,16 @@
 (fx/defn offload-all-messages
   [{:keys [db] :as cofx}]
   (when-let [current-chat-id (:current-chat-id db)]
-    {:db (update-in db [:chats current-chat-id]
+    {:db
+     (-> db
+         (dissoc :loaded-chat-id)
+         (update-in [:chats current-chat-id]
                     assoc
                     :all-loaded? false
                     :cursor nil
                     :messages-initialized? false
                     :messages {}
-                    :message-list nil)}))
+                    :message-list nil))}))
 
 (fx/defn handle-chat-visibility-changed
   {:events [:chat.ui/message-visibility-changed]}
@@ -155,10 +158,18 @@
 (fx/defn load-messages
   [{:keys [db now] :as cofx}]
   (when-let [current-chat-id (:current-chat-id db)]
-    (when-not (get-in db [:chats current-chat-id :messages-initialized?])
-      ; reset chat viewable-items state
-      (chat.state/reset)
-      (fx/merge cofx
-                {:db (assoc-in db [:chats current-chat-id :messages-initialized?] now)}
-                (load-more-messages)))))
+    (if-not (get-in db [:chats current-chat-id :messages-initialized?])
+      (do
+       ; reset chat viewable-items state
+        (chat.state/reset)
+        (fx/merge cofx
+                  {:db (-> db
+                          ;; We keep track of whether there's a loaded chat
+                          ;; which will be reset only if we hit home
+                           (assoc :loaded-chat-id current-chat-id)
+                           (assoc-in [:chats current-chat-id :messages-initialized?] now))}
+                  (chat-model/mark-messages-seen current-chat-id)
+                  (load-more-messages)))
+      ;; We mark messages as seen in case we received them while on a different tab
+      (chat-model/mark-messages-seen cofx current-chat-id))))
 

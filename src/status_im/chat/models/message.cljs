@@ -80,11 +80,11 @@
 (fx/defn add-message
   [{:keys [db] :as cofx}
    {{:keys [chat-id message-id replace timestamp from] :as message} :message
-    :keys [current-chat?]}]
+    :keys [seen-by-user?]}]
   (let [current-public-key (multiaccounts.model/current-public-key cofx)
         message-to-be-removed (when replace
                                 (get-in db [:chats chat-id :messages replace]))
-        prepared-message (prepare-message message chat-id current-chat?)]
+        prepared-message (prepare-message message chat-id seen-by-user?)]
     (fx/merge cofx
               (when message-to-be-removed
                 (hide-message chat-id message-to-be-removed))
@@ -97,7 +97,7 @@
                                      (update-in [:chats chat-id :messages] assoc message-id prepared-message)
                                      (update-in [:chats chat-id :message-list] message-list/add prepared-message))
 
-                                  (and (not current-chat?)
+                                  (and (not seen-by-user?)
                                        (not= from current-public-key))
                                   (update-in [:chats chat-id :loaded-unviewed-messages-ids]
                                              (fnil conj #{}) message-id))}))))
@@ -109,10 +109,11 @@
            chat-id
            clock-value
            content] :as message}]
-  (let [{:keys [current-chat-id view-id]} db
+  (let [{:keys [loaded-chat-id
+                view-id
+                current-chat-id]} db
         cursor-clock-value             (get-in db [:chats current-chat-id :cursor-clock-value])
-        current-chat?                  (and (= :chat view-id)
-                                            (= current-chat-id chat-id))]
+        current-chat?                  (= chat-id loaded-chat-id)]
     (when (and current-chat?
                (or (not cursor-clock-value)
                    (<= cursor-clock-value clock-value)))
@@ -122,7 +123,8 @@
               (<= (:clock-value @view.state/viewable-item)
                   clock-value))
         (add-message cofx {:message      message
-                           :current-chat? current-chat?})
+                           :seen-by-user? (and current-chat?
+                                               (= view-id :chat))})
         ;; Not in the current view, offload to db and update cursor if necessary
         (when (and (< clock-value
                       cursor-clock-value)
@@ -226,7 +228,7 @@
   {:events [:messages/system-messages-saved]}
   [cofx messages]
   (apply fx/merge cofx (map #(add-message {:message       %
-                                           :current-chat? true})
+                                           :seen-by-user? true})
                             messages)))
 
 (fx/defn send-message

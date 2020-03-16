@@ -45,6 +45,7 @@
 (deftest add-own-received-message
   (let [db {:multiaccount {:public-key "me"}
             :view-id :chat
+            :loaded-chat-id "chat-id"
             :current-chat-id "chat-id"
             :chats {"chat-id" {:messages {}}}}]
     (testing "a message coming from you!"
@@ -66,6 +67,7 @@
   (let [cofx                 {:db {:chats {"chat-id" {:contacts #{"present"}
                                                       :members-joined #{"a"}}}
                                    :multiaccount {:public-key "a"}
+                                   :loaded-chat-id "chat-id"
                                    :current-chat-id "chat-id"
                                    :view-id :chat}}
         cofx-without-member  (update-in cofx [:db :chats "chat-id" :members-joined] disj "a")
@@ -102,6 +104,7 @@
 (deftest receive-public-chats
   (let [cofx                 {:db {:chats {"chat-id" {:public? true}}
                                    :multiaccount {:public-key "a"}
+                                   :loaded-chat-id "chat-id"
                                    :current-chat-id "chat-id"
                                    :view-id :chat}}
         valid-message        {:chat-id     "chat-id"
@@ -130,6 +133,7 @@
     (let [cofx                 {:db {:chats {"matching" {}}
                                      :multiaccount {:public-key "me"}
                                      :current-chat-id "matching"
+                                     :loaded-chat-id "matching"
                                      :view-id :chat}}
           valid-message        {:chat-id     "matching"
                                 :from        "matching"
