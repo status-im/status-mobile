@@ -371,7 +371,8 @@
     (i18n/label :t/ens-saved-title)
     ;;NOTE: this state can't be reached atm
     :registration-failed
-    (i18n/label :t/ens-registration-failed-title)))
+    (i18n/label :t/ens-registration-failed-title)
+    nil))
 
 (defn- final-state-details
   [state username]
@@ -391,7 +392,8 @@
     ;;NOTE: this state can't be reached atm
     :registration-failed
     [react/text {:style {:color colors/gray :font-size 14}}
-     (i18n/label :t/ens-registration-failed)]))
+     (i18n/label :t/ens-registration-failed)]
+    nil))
 
 (views/defview confirmation []
   (views/letsubs [{:keys [state username]} [:ens/confirmation-screen]]

@@ -32,6 +32,7 @@
               :multiaccounts/loading true)})
 
 (fx/defn initialize-views
+  {:events [::initialize-view]}
   [cofx {:keys [logout?]}]
   (let [{{:multiaccounts/keys [multiaccounts] :as db} :db} cofx]
     (when (and (seq multiaccounts) (not logout?))
@@ -50,11 +51,13 @@
                               {}
                               all-multiaccounts)]
     (fx/merge cofx
-              {:db (-> db
-                       (assoc :multiaccounts/multiaccounts multiaccounts)
-                       (assoc :multiaccounts/logout? logout?)
-                       (assoc :multiaccounts/loading false))}
-              (initialize-views {:logout? logout?}))))
+              {:db             (-> db
+                                   (assoc :multiaccounts/multiaccounts multiaccounts)
+                                   (assoc :multiaccounts/logout? logout?)
+                                   (assoc :multiaccounts/loading false))
+               ;; NOTE: Try to dispatch later navigation because of that https://github.com/react-navigation/react-navigation/issues/6879
+               :dispatch-later [{:dispatch [::initialize-view {:logout? logout?}]
+                                 :ms       100}]})))
 
 (fx/defn start-app [cofx]
   (fx/merge cofx

@@ -39,7 +39,6 @@
       {:name      :login
        :component login/login}
       {:name      :create-multiaccount-generate-key
-       :options   {:stackPresentation "modal"}
        :component intro/wizard-generate-key}
       {:name         :create-multiaccount-choose-key
        :back-handler :noop

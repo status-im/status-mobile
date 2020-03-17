@@ -594,14 +594,14 @@ class BaseView(object):
 
     def get_back_to_home_view(self, times_to_click_on_back_btn=5):
         counter = 0
-        from views.home_view import PlusButton
-        while not PlusButton(self.driver).is_element_displayed(2):
+        while BackButton(self.driver).is_element_displayed(2):
             try:
                 if counter >= times_to_click_on_back_btn:
                     break
                 self.back_button.click()
-            except (NoSuchElementException, TimeoutException):
                 counter += 1
+            except (NoSuchElementException, TimeoutException):
+                continue
         return self.home_button.click()
 
     def relogin(self, password=common_password):

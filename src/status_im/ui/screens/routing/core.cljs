@@ -126,6 +126,4 @@
 (defn navigate-replace [route params]
   (when (can-be-called?)
     (ocall @navigator-ref "dispatch"
-           (ocall stack-actions "replace"
-                  #js {:name   (name route)
-                       :params (clj->js params)}))))
+           (ocall stack-actions "replace" (name route) (clj->js params)))))

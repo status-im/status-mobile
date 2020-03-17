@@ -120,7 +120,4 @@
 
 (def home-container
   (merge
-   {:flex 1}
-   ;;TODO move this to navigation layer
-   (when platform/ios?
-     {:margin-bottom tabs.styles/tabs-diff})))
+   {:flex 1}))

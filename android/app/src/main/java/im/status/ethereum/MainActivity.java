@@ -117,7 +117,8 @@ public class MainActivity extends ReactFragmentActivity
 
         setSecureFlag();
         SplashScreen.show(this, true);
-        super.onCreate(savedInstanceState);
+        // NOTE: Try to not restore the state https://github.com/software-mansion/react-native-screens/issues/17
+        super.onCreate(null);
 
         if (!shouldShowRootedNotification()) {
             configureStatus();
