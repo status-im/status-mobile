@@ -473,38 +473,6 @@ class ChatView(BaseView):
         self.profile_block_contact = ProfileBlockContactButton(self.driver)
         self.profile_add_to_contacts = ProfileAddToContactsButton(self.driver)
 
-    def wait_for_syncing_complete(self):
-        self.driver.info('Waiting for syncing complete:')
-        while True:
-            try:
-                sync = self.find_text_part('Syncing', 10)
-                self.driver.info(sync.text)
-            except TimeoutException:
-                break
-
-    def wait_for_message_in_one_to_one_chat(self, expected_message: str, errors: list, wait_time: int = 20):
-        try:
-            element = ChatElementByText(self.driver, expected_message)
-            element.wait_for_element(wait_time)
-        except TimeoutException:
-            errors.append('Message with text "%s" was not received' % expected_message)
-
-    def wait_for_messages(self, username: str, expected_messages: list, errors: list, wait_time: int = 30):
-        expected_messages = expected_messages if type(expected_messages) == list else [expected_messages]
-        repeat = 0
-        received_messages = list()
-        while repeat <= wait_time:
-            for message in expected_messages:
-                if self.element_starts_with_text(message, 'text').is_element_present(1):
-                    received_messages.append(message)
-            if not set(expected_messages) - set(received_messages):
-                break
-            time.sleep(3)
-            repeat += 3
-        if set(expected_messages) - set(received_messages):
-            errors.append('Not received messages from user %s: "%s"' % (username, ', '.join(
-                [i for i in list(set(expected_messages) - set(received_messages))])))
-
     def send_funds_to_request(self, amount, sender_password=common_password, wallet_set_up=False):
         gas_popup = self.element_by_text_part('Specify amount')
         send_request_button = self.chat_element_by_text(amount).send_request_button

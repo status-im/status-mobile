@@ -43,6 +43,10 @@ class AllowButton(BaseButton):
         except NoSuchElementException:
             pass
 
+class SearchEditBox(BaseEditBox):
+    def __init__(self, driver):
+        super(SearchEditBox, self).__init__(driver)
+        self.locator = self.Locator.text_selector("Search or type web address")
 
 class DenyButton(BaseButton):
     def __init__(self, driver):
@@ -305,6 +309,11 @@ class OpenInStatusButton(BaseButton):
         self.swipe_to_web_element()
         self.wait_for_element().click()
 
+class StatusInBackgroundButton(BaseButton):
+    def __init__(self, driver):
+        super(StatusInBackgroundButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[contains(@content-desc,"Status")]')
+
 
 class OkGotItButton(BaseButton):
     def __init__(self,driver):
@@ -360,8 +369,11 @@ class BaseView(object):
         self.ok_got_it_button = OkGotItButton(self.driver)
         self.progress_bar = ProgressBar(self.driver)
         self.cross_icon_iside_welcome_screen_button = CrossIconInWelcomeScreen(self.driver)
+        self.status_in_background_button = StatusInBackgroundButton(self.driver)
+
 
         # external browser
+        self.search_in_google_edit_box = SearchEditBox(self.driver)
         self.open_in_status_button = OpenInStatusButton(self.driver)
 
         self.apps_button = AppsButton(self.driver)
@@ -615,7 +627,7 @@ class BaseView(object):
 
     def share_via_messenger(self):
         self.element_by_text('Messages').click()
-        self.element_by_text('NEW MESSAGE').click()
+        self.element_by_text('New message').click()
         self.send_as_keyevent('+0100100101')
         self.confirm()
 
@@ -652,7 +664,7 @@ class BaseView(object):
 
     def toggle_mobile_data(self):
         self.driver.start_activity(app_package='com.android.settings', app_activity='.Settings')
-        network_and_internet = self.element_by_text('Network & Internet')
+        network_and_internet = self.element_by_text('Network & internet')
         network_and_internet.wait_for_visibility_of_element()
         network_and_internet.click()
         toggle = self.element_by_accessibility_id('Wi‑Fi')
@@ -664,7 +676,13 @@ class BaseView(object):
 
     def open_universal_web_link(self, deep_link):
         start_web_browser(self.driver)
-        self.send_as_keyevent(deep_link)
+        self.search_in_google_edit_box.send_keys(deep_link)
         self.confirm()
         self.open_in_status_button.click()
+
+    # Method-helper
+    def write_page_source_to_file(self, full_path_to_file):
+        string_source = self.driver.page_source
+        source = open(full_path_to_file, "a+")
+        source.write(string_source)
 

@@ -21,6 +21,10 @@ class DeleteChatButton(BaseButton):
         super(DeleteChatButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id("delete-chat-button")
 
+class ClearHistoryButton(BaseButton):
+    def __init__(self, driver):
+        super(ClearHistoryButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("clear-history-button")
 
 class StartNewChatButton(BaseButton):
     def __init__(self, driver):
@@ -161,6 +165,7 @@ class HomeView(BaseView):
         self.invite_friends_button = InviteFriendsButton(self.driver)
         self.chats_menu_invite_friends_button = ChatsMenuInviteFriendsButton(self.driver)
         self.delete_chat_button = DeleteChatButton(self.driver)
+        self.clear_history_button = ClearHistoryButton(self.driver)
 
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing complete:')
@@ -171,7 +176,7 @@ class HomeView(BaseView):
             except TimeoutException:
                 break
 
-    def get_chat_with_user(self, username):
+    def get_chat(self, username):
         return ChatElement(self.driver, username[:25])
 
     def add_contact(self, public_key, add_in_contacts=True):
@@ -228,6 +233,13 @@ class HomeView(BaseView):
         return status_test_dapp
 
     def delete_chat_long_press(self, username):
-        self.get_chat_with_user(username).long_press_element()
+        self.get_chat(username).long_press_element()
         self.delete_chat_button.click()
         self.delete_button.click()
+
+    def clear_chat_long_press(self, username):
+        self.get_chat(username).long_press_element()
+        self.clear_history_button.click()
+        from views.chat_view import ClearButton
+        self.clear_button = ClearButton(self.driver)
+        self.clear_button.click()

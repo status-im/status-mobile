@@ -116,6 +116,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     @marks.testrail_id(5454)
     @marks.critical
     @marks.skip
+    # TODO: waiting for better times - no profile picture for now
     def test_user_can_remove_profile_picture(self):
         signin_view = SignInView(self.driver)
         home_view = signin_view.create_user()
@@ -183,10 +184,10 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         address = wallet.address_text.text
         share_view = home.get_send_transaction_view()
         share_view.share_button.click()
-        share_view.element_by_text('Copy to clipboard').click()
+        share_view.element_by_text('Copy').click()
         wallet.get_back_to_home_view()
         wallet.home_button.click()
-        home.get_chat_with_user(transaction_senders['M']['username']).click()
+        home.get_chat(transaction_senders['M']['username']).click()
         chat.chat_message_input.click()
         chat.paste_text()
         if chat.chat_message_input.text != address:
@@ -633,7 +634,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys(message)
         chat_1.send_message_button.click()
         profile_2.home_button.click()
-        chat_2 = home_2.get_chat_with_user(username_1).click()
+        chat_2 = home_2.get_chat(username_1).click()
         chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
         chat_2.add_to_contacts.click()
 
@@ -644,7 +645,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.enable_bootnodes.click()
         sign_in_1.sign_in()
 
-        home_1.get_chat_with_user(username_2).click()
+        home_1.get_chat(username_2).click()
         message_1 = 'new message'
         chat_1.chat_message_input.send_keys(message_1)
         chat_1.send_message_button.click()
@@ -700,7 +701,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         message = 'test message'
         chat_1.chat_message_input.send_keys(message)
         chat_1.send_message_button.click()
-        chat_2 = home_2.get_chat_with_user(username_1).click()
+        chat_2 = home_2.get_chat(username_1).click()
         chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
         message_1 = 'new message'
         chat_2.chat_message_input.send_keys(message_1)
@@ -792,7 +793,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5762)
     @marks.high
-    def test_pair_devices_sync_one_to_one_contacts(self):
+    def test_pair_devices_sync_one_to_one_contacts_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         device_1_home = device_1.create_user()
@@ -808,11 +809,18 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_2_name = 'device_%s' % device_2.driver.number
         message_before_sync = 'sent before sync'
         message_after_sync = 'sent after sync'
+        public_chat_before_sync = 'before-pairing'
+        public_chat_after_sync = 'after-pairing'
+
 
         device_1.just_fyi('add contact, start 1-1 chat with basic user')
         device_1_chat = device_1_home.add_contact(basic_user['public_key'])
         device_1_chat.chat_message_input.send_keys(message_before_sync)
         device_1_chat.send_message_button.click()
+
+        device_1.just_fyi('join public chat')
+        device_1_chat.get_back_to_home_view()
+        device_1_public_chat = device_1_home.join_public_chat(public_chat_before_sync)
 
         device_2.just_fyi('go to profile > Devices, set device name, discover device 2 to device 1')
         device_2_home = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
@@ -832,23 +840,37 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('"%s" is not found in Contacts after initial sync' % basic_user['username'])
 
         device_1.just_fyi('send message to 1-1 chat with basic user and add another contact')
-        device_1_chat.get_back_to_home_view()
+        device_1_profile.home_button.click()
+        device_1_public_chat.back_button.click()
+        device_1_home.get_chat(basic_user['username']).click()
         device_1_chat.chat_message_input.send_keys(message_after_sync)
         device_1_chat.send_message_button.click()
         device_1_chat.back_button.click()
         device_1_home.add_contact(transaction_senders['A']['public_key'])
 
-        device_2.just_fyi('check that messages appeared in 1-1 chat and new contacts are synced')
-        if not device_2_profile.element_by_text(transaction_senders['A']['username']):
+        device_2.just_fyi('check that messages appeared in 1-1 chat, public chats and new contacts are synced')
+        if not device_2_profile.element_by_text(transaction_senders['A']['username']).is_element_displayed(30):
             self.errors.append(
                 '"%s" is not found in Contacts after adding when devices are paired' % transaction_senders['A'][
                     'username'])
-        device_2_profile.get_back_to_home_view()
-        chat = device_2_home.get_chat_with_user(basic_user['username']).click()
+
+        device_2_profile.home_button.click()
+        if not device_2_home.element_by_text_part(public_chat_before_sync).is_element_displayed():
+            self.errors.append(
+                '"%s" is not found in Home after initial sync when devices are paired' % public_chat_before_sync)
+        chat = device_2_home.get_chat(basic_user['username']).click()
         if chat.chat_element_by_text(message_before_sync).is_element_displayed():
             self.errors.append('"%s" message sent before pairing is synced' % message_before_sync)
         if not chat.chat_element_by_text(message_after_sync).is_element_displayed():
             self.errors.append('"%s" message in 1-1 is not synced' % message_after_sync)
+
+        device_1.just_fyi('add new public chat and check that it will be synced with device2')
+        device_1_chat.get_back_to_home_view()
+        device_1_home.join_public_chat(public_chat_after_sync)
+        device_2_home = chat.get_back_to_home_view()
+        if not device_2_home.element_by_text_part(public_chat_after_sync).is_element_displayed(20):
+            self.errors.append(
+                '"%s" public chat is not synced after adding when devices are paired' % public_chat_after_sync)
 
         self.errors.verify_no_errors()
 
@@ -971,7 +993,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('ENS username is not shown in ENS usernames Chat Settings after enabling')
         profile_1.back_button.click()
         profile_1.home_button.click()
-        home_1.get_chat_with_user('#' + chat_name).click()
+        home_1.get_chat('#' + chat_name).click()
         message_text_2 = 'message test text 1'
         chat_1.send_message(message_text_2)
         if not chat_2.wait_for_element_starts_with_text('@' + user_1['ens']):

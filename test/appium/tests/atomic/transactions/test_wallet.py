@@ -586,10 +586,10 @@ class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
         send_transaction.sign_transaction()
 
         wallet_1.home_button.click()
-        home_1.get_chat_with_user(recipient['username']).click()
+        home_1.get_chat(recipient['username']).click()
         if not chat_1.chat_element_by_text(amount).is_element_displayed():
             self.errors.append('Transaction message is not shown in 1-1 chat for the sender')
-        chat_2 = home_2.get_chat_with_user(sender['username']).click()
+        chat_2 = home_2.get_chat(sender['username']).click()
         if not chat_2.chat_element_by_text(amount).is_element_displayed():
             self.errors.append('Transaction message is not shown in 1-1 chat for the recipient')
         self.errors.verify_no_errors()

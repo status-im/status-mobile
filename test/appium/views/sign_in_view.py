@@ -232,6 +232,7 @@ class SignInView(BaseView):
         return self.get_home_view()
 
     def sign_in(self, password=common_password):
+        self.multi_account_on_login_button.wait_for_visibility_of_element(5)
         self.multi_account_on_login_button.click()
         self.password_input.set_value(password)
         self.sign_in_button.click()

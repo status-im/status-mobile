@@ -45,7 +45,7 @@ def create_new_group_chat(device_1_home, device_2_home, chat_name):
     device_1_chat = device_1_home.create_group_chat([device_2_default_username], chat_name)
 
     device_2_home.just_fyi('navigate to group chat')
-    device_2_chat = device_2_home.get_chat_with_user(chat_name).click()
+    device_2_chat = device_2_home.get_chat(chat_name).click()
 
     return device_1_chat, device_2_chat
 
@@ -114,7 +114,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1_chat, device_2_chat = create_and_join_group_chat(device_1_home, device_2_home, chat_name)
 
         # device 2: delete group chat
-        device_2_chat = device_2_home.get_chat_with_user(chat_name).click()
+        device_2_chat = device_2_home.get_chat(chat_name).click()
         device_2_chat.delete_chat()
 
         # device 1: check system messages in the group chat
@@ -183,7 +183,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1_chat.add_members_to_group_chat([device_2_default_username])
 
         # device 2: open the chat
-        device_2_chat = device_2_home.get_chat_with_user(chat_name).click()
+        device_2_chat = device_2_home.get_chat(chat_name).click()
         device_2_chat.join_chat_button.click()
 
         # device 1: send a message that should be visible for device 2

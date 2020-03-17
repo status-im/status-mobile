@@ -32,7 +32,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat.chat_message_input.send_keys(message)
         device_1_chat.send_message_button.click()
 
-        device_2_chat = device_2_home.get_chat_with_user(default_username_1).click()
+        device_2_chat = device_2_home.get_chat(default_username_1).click()
         device_2_chat.chat_element_by_text(message).wait_for_visibility_of_element()
 
     @marks.testrail_id(5310)
@@ -58,7 +58,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         home_1.toggle_airplane_mode()  # turning on WiFi connection on primary device
 
         home_1.connection_status.wait_for_invisibility_of_element(30)
-        chat_element = home_1.get_chat_with_user(username_2)
+        chat_element = home_1.get_chat(username_2)
         chat_element.wait_for_visibility_of_element(30)
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element(2)
@@ -95,7 +95,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys(message)
         chat_1.send_message_button.click()
 
-        chat_2 = home_2.get_chat_with_user(default_username_1).click()
+        chat_2 = home_2.get_chat(default_username_1).click()
         chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
 
         public_chat_name = home_1.get_public_chat_name()
@@ -133,7 +133,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat.chat_message_input.send_keys(message)
         device_1_chat.send_message_button.click()
 
-        chat_element = device_2_home.get_chat_with_user(default_username_1)
+        chat_element = device_2_home.get_chat(default_username_1)
         chat_element.wait_for_visibility_of_element()
         device_2_chat = chat_element.click()
         if not device_2_chat.chat_element_by_text(message).is_element_displayed():
@@ -175,7 +175,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_chat.chat_message_input.send_keys(message)
         device_1_chat.send_message_button.click()
 
-        chat_element = device_2_home.get_chat_with_user(default_username_1)
+        chat_element = device_2_home.get_chat(default_username_1)
         chat_element.wait_for_visibility_of_element()
         device_2_chat = chat_element.click()
         if not device_2_chat.chat_element_by_text(message).is_element_displayed():
@@ -216,7 +216,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys(url_message)
         chat_1.send_message_button.click()
         chat_1.get_back_to_home_view()
-        chat_2 = home_2.get_chat_with_user(default_username_1).click()
+        chat_2 = home_2.get_chat(default_username_1).click()
         chat_2.element_starts_with_text(url_message, 'button').click()
         web_view = chat_2.open_in_status_button.click()
         try:
@@ -238,29 +238,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             web_view.find_full_text('Private, Secure Communication')
         except TimeoutException:
             self.errors.append('Device 1: URL was not opened from 1-1 chat')
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5326)
-    @marks.critical
-    def test_offline_status(self):
-        self.create_drivers(1)
-        sign_in = SignInView(self.drivers[0])
-        home_view = sign_in.create_user()
-
-        home_view.airplane_mode_button.click()
-
-        chat = home_view.add_contact(transaction_senders['C']['public_key'])
-        chat.element_by_text('Offline').wait_for_visibility_of_element(15)
-        if chat.connection_status.text != 'Offline':
-            self.errors.append('Offline status is not shown in 1-1 chat')
-        chat.get_back_to_home_view()
-
-        if home_view.connection_status.text != 'Offline':
-            self.errors.append('Offline status is not shown in home screen')
-
-        public_chat = home_view.join_public_chat(home_view.get_public_chat_name())
-        if public_chat.connection_status.text != 'Offline':
-            self.errors.append('Offline status is not shown in a public chat')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5374)
@@ -298,7 +275,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if device_1_home.home_button.counter.text != '1':
             self.errors.append('New messages counter is not shown on Home button')
 
-        chat_element = device_1_home.get_chat_with_user(default_username_2)
+        chat_element = device_1_home.get_chat(default_username_2)
         if chat_element.new_messages_counter.text != '1':
             self.errors.append('New messages counter is not shown on chat element')
 
@@ -328,7 +305,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2_chat = device_2_home.add_contact(device_1_public_key)
         device_2_chat.chat_message_input.send_keys('test message')
         device_2_chat.send_message_button.click()
-        device_1_chat = device_1_home.get_chat_with_user(default_username_2).click()
+        device_1_chat = device_1_home.get_chat(default_username_2).click()
 
         markdown = {
             'bold text in asterics' : '**',
@@ -395,7 +372,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if device_1_chat.chat_element_by_text(message).member_photo.is_element_displayed():
             self.errors.append('Member photo is displayed in 1-1 chat for the sender')
 
-        device_2_chat = device_2_home.get_chat_with_user(default_username_1).click()
+        device_2_chat = device_2_home.get_chat(default_username_1).click()
         if not device_2_chat.chat_element_by_text(message).contains_text(sent_time):
             self.errors.append('Timestamp is not displayed in 1-1 chat for the recipient')
         if device_2_chat.chat_element_by_text(message).member_photo.is_element_displayed():
@@ -483,7 +460,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         # the new messages is equal to user-selected
         # wallet1.send_transaction(asset_name='ETHro', recipient=recipient['username'], amount=send_amount)
         # wallet1.get_back_to_home_view()
-        # device1_chat = device1['home_view'].get_chat_with_user(recipient['username']).click()
+        # device1_chat = device1['home_view'].get_chat(recipient['username']).click()
         #
         # sent_message = device1_chat.chat_element_by_text(send_amount)
         # received_message = device2_chat.chat_element_by_text(send_amount)
@@ -622,7 +599,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         wallet_view.set_currency(user_currency)
         wallet_view.get_back_to_home_view()
 
-        chat = home_view.get_chat_with_user(recipient_user_name).click()
+        chat = home_view.get_chat(recipient_user_name).click()
 
         # Check whether the fiat currency value of the messages sent is not changed to user-selected
         send_message = chat.chat_element_by_text(send_amount)
@@ -662,7 +639,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         # wallet.receive_transaction(asset_name='STT', recipient=recipient_user_name, amount=request_amount)
         #
         # wallet.get_back_to_home_view()
-        # chat = home_view.get_chat_with_user(recipient_user_name).click()
+        # chat = home_view.get_chat(recipient_user_name).click()
         #
         # send_message = chat.chat_element_by_text(send_amount)
         # if not send_message.is_element_displayed() and not send_message.contains_text(user_currency):
@@ -691,7 +668,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat.get_back_to_home_view()
         profile = home.profile_button.click()
         profile.switch_network('Mainnet with upstream RPC')
-        home.get_chat_with_user('#' + chat_name).click()
+        home.get_chat('#' + chat_name).click()
 
         sign_in.just_fyi('install free sticker pack and use it in public chat')
         chat.show_stickers_button.click()
@@ -742,3 +719,26 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat = home.add_contact(ens_user['ens'])
         if not chat.element_by_text("@" + ens_user['ens']).is_element_displayed():
             self.driver.fail('Wrong user is resolved from username when starting 1-1 chat.')
+
+    @marks.testrail_id(5326)
+    @marks.critical
+    def test_offline_status(self):
+        sign_in = SignInView(self.driver)
+        home_view = sign_in.create_user()
+
+        home_view.airplane_mode_button.click()
+
+        chat = home_view.add_contact(transaction_senders['C']['public_key'])
+        chat.element_by_text('Offline').wait_for_visibility_of_element(15)
+        if chat.connection_status.text != 'Offline':
+            self.errors.append('Offline status is not shown in 1-1 chat')
+        chat.get_back_to_home_view()
+
+        if home_view.connection_status.text != 'Offline':
+            self.errors.append('Offline status is not shown in home screen')
+
+        public_chat = home_view.join_public_chat(home_view.get_public_chat_name())
+        if public_chat.connection_status.text != 'Offline':
+            self.errors.append('Offline status is not shown in a public chat')
+        self.errors.verify_no_errors()
+

@@ -107,7 +107,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         if not home_1.home_button.public_unread_messages.is_element_displayed():
             self.errors.append('New messages public chat badge is not shown on Home button')
 
-        chat_element = home_1.get_chat_with_user('#' + chat_name)
+        chat_element = home_1.get_chat('#' + chat_name)
         if not chat_element.new_messages_public_chat.is_element_displayed():
             self.errors.append('New messages counter is not shown in public chat')
 

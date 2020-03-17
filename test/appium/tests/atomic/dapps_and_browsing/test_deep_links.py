@@ -10,8 +10,6 @@ class TestDeepLinks(SingleDeviceTestCase):
 
     @marks.testrail_id(5396)
     @marks.high
-    @marks.skip
-    # TODO: uncomment after https://github.com/status-im/status-react/issues/10083 will be implemented in app
     def test_open_public_chat_using_deep_link(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -28,13 +26,13 @@ class TestDeepLinks(SingleDeviceTestCase):
     @marks.testrail_id(5441)
     @marks.medium
     @marks.skip
-    # TODO: uncomment after https://github.com/status-im/status-react/issues/10083 will be implemented in app
+    # TODO: skipped because universal links won't work in emulators regardless of OS version
     def test_open_user_profile_using_deep_link(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         for user_ident in ens_user['ens'], basic_user['public_key']:
             self.driver.close_app()
-            deep_link = 'https://get.status.im/user/%s' % user_ident
+            deep_link = 'https://join.status.im/user/%s' % user_ident
             sign_in_view.open_weblink_and_login(deep_link)
             chat_view = sign_in_view.get_chat_view()
             for text in basic_user['username'], 'Add to contacts':
@@ -44,7 +42,7 @@ class TestDeepLinks(SingleDeviceTestCase):
     @marks.testrail_id(5442)
     @marks.medium
     @marks.skip
-    # TODO: uncomment after https://github.com/status-im/status-react/issues/10083 will be implemented in app
+    # TODO: skipped because universal links won't work in emulators regardless of OS version
     def test_open_dapp_using_deep_link(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -62,7 +60,7 @@ class TestDeepLinks(SingleDeviceTestCase):
     @marks.testrail_id(5780)
     @marks.medium
     @marks.skip
-    # TODO: uncomment after https://github.com/status-im/status-react/issues/10083 will be implemented in app
+    # TODO: skipped because universal links won't work in emulators regardless of OS version
     def test_open_own_user_profile_using_deep_link(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(passphrase=basic_user['passphrase'])
@@ -78,7 +76,7 @@ class TestDeepLinks(SingleDeviceTestCase):
     @marks.testrail_id(5781)
     @marks.medium
     @marks.skip
-    # TODO: uncomment after https://github.com/status-im/status-react/issues/10083 will be implemented in app
+    # TODO: skipped because universal links won't work in emulators regardless of OS version
     def test_deep_link_with_invalid_user_public_key(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()

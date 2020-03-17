@@ -154,18 +154,6 @@ class TestTransactionDApp(SingleDeviceTestCase):
         if values_in_logcat:
             self.driver.fail(values_in_logcat)
 
-    @marks.testrail_id(5355)
-    @marks.medium
-    def test_onboarding_screen_when_requesting_tokens_for_new_account(self):
-        signin_view = SignInView(self.driver)
-        home_view = signin_view.create_user()
-        status_test_dapp = home_view.open_status_test_dapp()
-        status_test_dapp.wait_for_d_aap_to_load()
-        status_test_dapp.assets_button.click()
-        send_transaction_view = status_test_dapp.request_stt_button.click()
-        if not send_transaction_view.onboarding_message.is_element_displayed():
-            self.driver.fail('It seems onboarding screen is not shown.')
-
     @marks.testrail_id(5677)
     @marks.high
     def test_onboarding_screen_when_requesting_tokens_for_recovered_account(self):
@@ -177,29 +165,6 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view = status_test_dapp.request_stt_button.click()
         if not send_transaction_view.onboarding_message.is_element_displayed():
             self.driver.fail('It seems onboarding screen is not shown.')
-
-    @marks.testrail_id(5380)
-    @marks.high
-    def test_user_can_complete_tx_to_dapp_when_onboarding_via_dapp_completed(self):
-        user = transaction_recipients['G']
-        signin_view = SignInView(self.driver)
-        home_view = signin_view.recover_access(passphrase=user['passphrase'])
-        status_test_dapp = home_view.open_status_test_dapp()
-        status_test_dapp.wait_for_d_aap_to_load()
-        status_test_dapp.assets_button.click()
-
-        send_transaction_view = status_test_dapp.request_stt_button.click()
-        if not send_transaction_view.onboarding_message.is_element_displayed():
-            self.driver.fail('It seems onborading screen is not shown.')
-        send_transaction_view.complete_onboarding()
-
-        if not send_transaction_view.sign_with_password.is_element_displayed():
-            self.driver.fail('It seems transaction sign screen is not shown.')
-
-        send_transaction_view.sign_transaction()
-
-        if not status_test_dapp.assets_button.is_element_displayed():
-            self.driver.fail('It seems users was not redirected to Status DAPP screen.')
 
     @marks.testrail_id(5685)
     @marks.medium

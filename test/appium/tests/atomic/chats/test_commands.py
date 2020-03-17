@@ -41,7 +41,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         if status_text_1 != 'Sent':
             self.errors.append("Message about sent funds has status '%s' instead of 'Sent'" % status_text_1)
 
-        device_2_chat = device_2_home.get_chat_with_user(sender['username']).click()
+        device_2_chat = device_2_home.get_chat(sender['username']).click()
         chat_element_1 = device_2_chat.chat_element_by_text(amount_1)
         try:
             chat_element_1.wait_for_visibility_of_element(120)
@@ -60,7 +60,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         if status_text_2 != 'Sent':
             self.errors.append("Request funds message has status '%s' instead of 'Sent'" % status_text_2)
 
-        device_2_home.get_chat_with_user(sender['username']).click()
+        device_2_home.get_chat(sender['username']).click()
         chat_element_2 = device_2_chat.chat_element_by_text(amount_2)
         try:
             chat_element_2.wait_for_visibility_of_element(120)
@@ -116,7 +116,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         if not chat_1.chat_element_by_text(amount).is_element_displayed():
             self.errors.append('Message with the sent amount is not shown for the sender')
-        chat_2 = home_2.get_chat_with_user(sender['username']).click()
+        chat_2 = home_2.get_chat(sender['username']).click()
         if not chat_2.chat_element_by_text(amount).is_element_displayed():
             self.errors.append('Message with the sent amount is not shown for the recipient')
 
@@ -151,7 +151,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         amount = chat_2.get_unique_amount()
         chat_2.request_transaction_in_1_1_chat('ETHro', amount)
 
-        chat_1 = home_1.get_chat_with_user(recipient['username']).click()
+        chat_1 = home_1.get_chat(recipient['username']).click()
         chat_1.send_funds_to_request(amount=amount)
 
         if not chat_1.chat_element_by_text(amount).is_element_displayed():
@@ -202,7 +202,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         sender_button.click()
         wallet_1.send_request_button.click()
 
-        chat_2 = home_2.get_chat_with_user(default_username_1).click()
+        chat_2 = home_2.get_chat(default_username_1).click()
         chat_element = chat_2.chat_element_by_text(amount)
         try:
             chat_element.wait_for_visibility_of_element(120)
@@ -267,7 +267,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         message_1 = chat_1.chat_element_by_text(amount)
         if not message_1.is_element_displayed() or not message_1.contains_text('STT'):
             self.errors.append('Message with the sent amount is not shown for the sender')
-        chat_2 = home_2.get_chat_with_user(sender['username']).click()
+        chat_2 = home_2.get_chat(sender['username']).click()
         message_2 = chat_2.chat_element_by_text(amount)
         if not message_2.is_element_displayed() or not message_2.contains_text('STT'):
             self.errors.append('Message with the sent amount is not shown for the recipient')
@@ -299,7 +299,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         amount = chat_2.get_unique_amount()
         chat_2.request_transaction_in_1_1_chat('STT', amount)
 
-        chat_1 = home_1.get_chat_with_user(recipient['username']).click()
+        chat_1 = home_1.get_chat(recipient['username']).click()
         chat_1.send_funds_to_request(amount=amount)
 
         message_1 = chat_1.chat_element_by_text(amount)
@@ -334,7 +334,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         amount = chat_1.get_unique_amount()
         chat_1.send_transaction_in_1_1_chat('ETHro', amount)
 
-        chat_2 = home_2.get_chat_with_user(sender['username']).click()
+        chat_2 = home_2.get_chat(sender['username']).click()
         self.network_api.wait_for_confirmation_of_transaction(recipient['address'], amount)
         if not chat_2.chat_element_by_text(amount).contains_text('Confirmed', 60):
             chat_2.driver.fail('Status "Confirmed" is not shown under transaction for the recipient')
