@@ -40,7 +40,7 @@
     "react-native-navigation-twopane": "git+https://github.com/status-im/react-native-navigation-twopane.git#v0.0.2-status",
     "react-native-reanimated": "^1.7.0",
     "react-native-safe-area-context": "^0.7.3",
-    "react-native-screens": "^2.0.0-alpha.25",
+    "react-native-screens": "^2.3.0",
     "react-native-shake": "^3.3.1",
     "react-native-splash-screen": "^3.2.0",
     "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#v2.5.20",

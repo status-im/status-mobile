@@ -199,7 +199,7 @@ PODS:
     - React
   - react-native-netinfo (4.4.0):
     - React
-  - react-native-safe-area-context (0.6.0):
+  - react-native-safe-area-context (0.7.3):
     - React
   - react-native-shake (3.4.0):
     - React
@@ -261,7 +261,7 @@ PODS:
     - React
   - RNReanimated (1.7.0):
     - React
-  - RNScreens (2.0.0-alpha.25):
+  - RNScreens (2.3.0):
     - React
   - RNSVG (9.11.1):
     - React
@@ -450,7 +450,7 @@ SPEC CHECKSUMS:
   react-native-image-resizer: 4516052af6ae0248caf4ccf356caecefe60072d7
   react-native-mail: 7e37dfbe93ff0d4c7df346b738854dbed533e86f
   react-native-netinfo: 6bb847e64f45a2d69c6173741111cfd95c669301
-  react-native-safe-area-context: d288138da2c800caa111f9352e9333f186a06ead
+  react-native-safe-area-context: e200d4433aba6b7e60b52da5f37af11f7a0b0392
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-webview: 0658813bcc4b6c22f3cbb035a2227aa896a8cbc0
@@ -472,7 +472,7 @@ SPEC CHECKSUMS:
   RNKeychain: 216f37338fcb9e5c3a2530f1e3295f737a690cb1
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
-  RNScreens: 031d10e2b648afc9546f16b6a786d2efc6870310
+  RNScreens: 03bf608b92ac0acf323f47d8f5b63a8f829340c8
   RNSVG: be27aa7c58819f97399388ae53d7fa0572f32c7f
   RSKImageCropper: a446db0e8444a036b34f3c43db01b2373baa4b2a
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990

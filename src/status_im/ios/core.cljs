@@ -6,6 +6,7 @@
             status-im.ui.screens.events
             status-im.subs
             [status-im.react-native.js-dependencies :as rn-dependencies]
+            [oops.core :refer [ocall]]
             [status-im.ui.screens.views :as views]
             [status-im.ui.components.react :as react]
             [status-im.core :as core]
@@ -52,5 +53,6 @@
       :reagent-render views/main})))
 
 (defn init []
+  (ocall rn-dependencies/react-native-screens "enableScreens")
   (core/init app-root)
   (snoopy/subscribe!))

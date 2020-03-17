@@ -9,6 +9,7 @@
             [status-im.ui.components.react :as react]
             [status-im.native-module.core :as status]
             [status-im.core :as core]
+            [oops.core :refer [ocall]]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.utils.snoopy :as snoopy]
             [status-im.i18n :as i18n]
@@ -56,5 +57,6 @@
 
 (defn init []
   (status/set-soft-input-mode status/adjust-resize)
+  (ocall rn-dependencies/react-native-screens "enableScreens")
   (core/init app-root)
   (snoopy/subscribe!))
