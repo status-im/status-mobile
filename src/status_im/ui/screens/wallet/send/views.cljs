@@ -18,7 +18,8 @@
             [status-im.ui.screens.wallet.send.sheets :as sheets]
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.utils.utils :as utils]
-            [status-im.ui.components.button :as button]))
+            [status-im.ui.components.button :as button]
+            [status-im.ethereum.core :as ethereum]))
 
 (defn header [{:keys [label small-screen? on-cancel]}]
   [react/view (styles/header small-screen?)
@@ -89,7 +90,8 @@
                   [:wallet.send/prepare-transaction-with-balance]
                   window-height [:dimensions/window-height]
                   keyboard-height [:keyboard-height]]
-    (let [small-screen? (< (- window-height keyboard-height) 450)]
+    (let [small-screen? (< (- window-height keyboard-height) 450)
+          to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))]
       [react/view {:style (styles/sheet small-screen?)}
        [header {:small-screen? small-screen?
                 :on-cancel #(re-frame/dispatch [:wallet/cancel-transaction-command])}]
@@ -130,7 +132,7 @@
          [render-contact to from-chat?]]]
        [toolbar/toolbar
         {:center
-         {:label               :t/wallet-send
+         {:label               (if (and (not request?) from-chat? (not to-norm)) :t/wallet-send :t/next)
           :accessibility-label :send-transaction-bottom-sheet
           :disabled?           (not sign-enabled?)
           :on-press            #(re-frame/dispatch
