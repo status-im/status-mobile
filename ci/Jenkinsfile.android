@@ -73,13 +73,6 @@ pipeline {
           }
         } }
         stage('Build') { stages {
-          stage('JSBundle') {
-            steps {
-              script {
-                nix.shell('make jsbundle-android', pure: false)
-              }
-            }
-          }
           stage('Bundle') {
             steps {
               script { apks = android.bundle() }
