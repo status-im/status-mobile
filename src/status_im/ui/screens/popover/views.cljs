@@ -4,10 +4,12 @@
             [reagent.core :as reagent]
             [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]
+            [status-im.utils.platform :as platform]
             [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
             [status-im.ui.screens.wallet.request.views :as request]
             [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]
+            [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.ui.screens.biometric.views :as biometric]))
 
 (defn hide-panel-anim
@@ -35,7 +37,29 @@
         alpha-value       (anim/create-value 0)
         clear-timeout     (atom nil)
         current-popover   (reagent/atom nil)
-        update?           (reagent/atom nil)]
+        update?           (reagent/atom nil)
+        request-close     (fn []
+                            (reset! clear-timeout
+                                    (js/setTimeout
+                                     #(do (reset! current-popover nil)
+                                          (re-frame/dispatch [:hide-popover])) 200))
+                            (hide-panel-anim
+                             bottom-anim-value alpha-value (- window-height))
+                            true)
+        on-show           (fn []
+                            (show-panel-anim bottom-anim-value alpha-value)
+                            (when platform/android?
+                              (.removeEventListener js-dependencies/back-handler
+                                                    "hardwareBackPress"
+                                                    request-close)
+                              (.addEventListener js-dependencies/back-handler
+                                                 "hardwareBackPress"
+                                                 request-close)))
+        on-hide           (fn []
+                            (when platform/android?
+                              (.removeEventListener js-dependencies/back-handler
+                                                    "hardwareBackPress"
+                                                    request-close)))]
     (reagent/create-class
      {:component-will-update
       (fn [_ [_ popover _]]
@@ -43,7 +67,7 @@
         (cond
           @update?
           (do (reset! update? false)
-              (show-panel-anim bottom-anim-value alpha-value))
+              (on-show))
 
           (and @current-popover popover)
           (do (reset! update? true)
@@ -52,10 +76,12 @@
 
           popover
           (do (reset! current-popover popover)
-              (show-panel-anim bottom-anim-value alpha-value))
+              (on-show))
 
           :else
-          (reset! current-popover nil)))
+          (do (reset! current-popover nil)
+              (on-hide))))
+      :component-will-unmount on-hide
       :reagent-render
       (fn []
         (when @current-popover
@@ -71,13 +97,7 @@
                                     :transform [{:translateY bottom-anim-value}]}}
               [react/touchable-highlight
                {:style    {:flex 1 :align-items :center :justify-content :center}
-                :on-press (fn []
-                            (reset! clear-timeout
-                                    (js/setTimeout
-                                     #(do (reset! current-popover nil)
-                                          (re-frame/dispatch [:hide-popover])) 200))
-                            (hide-panel-anim
-                             bottom-anim-value alpha-value (- window-height)))}
+                :on-press request-close}
                [react/view (merge {:background-color :white
                                    :border-radius    16
                                    :margin           32

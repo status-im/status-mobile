@@ -2,6 +2,8 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.bottom-sheet.styles :as styles]
+            [status-im.react-native.js-dependencies :as js-dependencies]
+            [status-im.utils.platform :as platform]
             [reagent.core :as reagent]
             [re-frame.core :as re-frame]))
 
@@ -116,12 +118,14 @@
         bottom-value     (animation/create-value window-height)
         content-height   (reagent/atom (* 0.4 window-height))
         internal-visible (reagent/atom false)
-        external-visible (reagent/atom false)]
+        external-visible (reagent/atom false)
+        back-listener    (reagent/atom nil)]
     (fn [{:keys [content on-cancel disable-drag? show-handle? show?
-                 backdrop-dismiss? safe-area window-height]
-          :or   {show-handle?      true
-                 backdrop-dismiss? true
-                 on-cancel         #(re-frame/dispatch [:bottom-sheet/hide])}}]
+                 backdrop-dismiss? safe-area window-height back-button-cancel]
+          :or   {show-handle?       true
+                 backdrop-dismiss?  true
+                 back-button-cancel true
+                 on-cancel          #(re-frame/dispatch [:bottom-sheet/hide])}}]
       (let [height       (+ @content-height
                             styles/border-radius)
             max-height   (- window-height
@@ -129,19 +133,30 @@
                             styles/margin-top)
             sheet-height (min max-height height)
             close-sheet  (fn []
+                           (when (and platform/android? @back-listener)
+                             (.remove @back-listener)
+                             (reset! back-listener nil))
                            (on-close {:opacity-value opacity-value
                                       :bottom-value  bottom-value
                                       :height        height
                                       :internal-atom internal-visible
-                                      :on-cancel     on-cancel}))]
+                                      :on-cancel     on-cancel}))
+            handle-back  (fn []
+                           (when back-button-cancel
+                             (close-sheet))
+                           true)]
         (when-not (= @external-visible show?)
           (reset! external-visible show?)
           (cond
             (true? show?)
-            (on-open {:bottom-value  bottom-value
-                      :opacity-value opacity-value
-                      :internal-atom internal-visible
-                      :height        height})
+            (do (on-open {:bottom-value  bottom-value
+                          :opacity-value opacity-value
+                          :internal-atom internal-visible
+                          :height        height})
+                (when platform/android?
+                  (reset! back-listener (.addEventListener js-dependencies/back-handler
+                                                           "hardwareBackPress"
+                                                           handle-back))))
 
             (false? show?)
             (close-sheet)))
