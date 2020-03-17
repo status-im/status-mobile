@@ -315,7 +315,7 @@
 
       (and (= enter-step :export-key)
            (= pin-code-length numbers-entered))
-      (wallet/generate-new-keycard-account)
+      (wallet/hide-pin-sheet)
 
       (and (= enter-step :sign)
            (= pin-code-length numbers-entered))

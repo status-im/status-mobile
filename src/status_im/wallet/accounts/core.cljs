@@ -17,7 +17,8 @@
             [clojure.string :as string]
             [status-im.utils.security :as security]
             [status-im.multiaccounts.recover.core :as recover]
-            [status-im.ethereum.mnemonic :as mnemonic]))
+            [status-im.ethereum.mnemonic :as mnemonic]
+            [taoensso.timbre :as log]))
 
 (fx/defn start-adding-new-account
   {:events [:wallet.accounts/start-adding-new-account]}
@@ -226,6 +227,9 @@
   {:events [:wallet.accounts/add-new-account]}
   [{:keys [db] :as cofx} hashed-password]
   (let [{:keys [type step]} (:add-account db)]
+    (log/debug "[wallet] add-new-account"
+               "type" type
+               "step" step)
     (when-not step
       (case type
         :watch

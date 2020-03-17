@@ -17,7 +17,8 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.security :as security]
             [clojure.string :as string]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [taoensso.timbre :as log]))
 
 (defn- request-camera-permissions []
   (let [options {:handler :wallet.add-new/qr-scanner-result}]
@@ -126,35 +127,16 @@
           (re-frame/dispatch [:set-in [:add-account :account-error] nil])
           (re-frame/dispatch [:set-in [:add-account :private-key] (security/mask-data %)]))}])])
 
-(defview add-account []
-  (letsubs [{:keys [type account] :as add-account} [:add-account]
-            add-account-disabled? [:add-account-disabled?]
-            entered-password      (reagent/atom "")]
-    [react/keyboard-avoiding-view {:style {:flex 1}}
-     [add-account-topbar type]
-     [react/scroll-view {:keyboard-should-persist-taps :handled
-                         :style                        {:flex 1}}
-      [settings add-account entered-password]
-      [common-settings account]]
-     [toolbar/toolbar
-      {:show-border? true
-       :right
-       {:type                :next
-        :label               :t/add-account
-        :accessibility-label :add-account-add-account-button
-        :on-press            #(re-frame/dispatch [:wallet.accounts/add-new-account
-                                                  (ethereum/sha3 @entered-password)])
-        :disabled?           (or add-account-disabled?
-                                 (and
-                                  (not (= type :watch))
-                                  (not (spec/valid? ::multiaccounts.db/password @entered-password))))}}]]))
-
 (defview pin []
   (letsubs [pin         [:hardwallet/pin]
             status      [:hardwallet/pin-status]
             error-label [:hardwallet/pin-error-label]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
-     [topbar/topbar]
+     [topbar/topbar
+      {:navigation :none
+       :accessories
+       [{:label   :t/cancel
+         :handler #(re-frame/dispatch [:bottom-sheet/hide])}]}]
      [pin.views/pin-view
       {:pin               pin
        :status            status
@@ -162,3 +144,38 @@
        :description-label :t/current-pin-description
        :error-label       error-label
        :step              :export-key}]]))
+
+(defview add-account []
+  (letsubs [{:keys [type account] :as add-account} [:add-account]
+            add-account-disabled? [:add-account-disabled?]
+            entered-password      (reagent/atom "")
+            keycard?              [:keycard-multiaccount?]]
+    [react/keyboard-avoiding-view {:style {:flex 1}}
+     [add-account-topbar type]
+     [react/scroll-view {:keyboard-should-persist-taps :handled
+                         :style                        {:flex 1}}
+      (when-not keycard?
+        [settings add-account entered-password])
+      [common-settings account]]
+     [toolbar/toolbar
+      {:show-border? true
+       :right
+       {:type                :next
+        :label               :t/add-account
+        :accessibility-label :add-account-add-account-button
+        :on-press
+        (if keycard?
+          #(re-frame/dispatch [:hardwallet/new-account-pin-sheet
+                               {:view {:content pin
+                                       :height  256}}])
+          #(re-frame/dispatch [:wallet.accounts/add-new-account
+                               (ethereum/sha3 @entered-password)]))
+        :disabled?
+        (or add-account-disabled?
+            (and
+             (not (= type :watch))
+             (and
+              (not keycard?)
+              (not (spec/valid? ::multiaccounts.db/password
+                                @entered-password)))))}}]]))
+

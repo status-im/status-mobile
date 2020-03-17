@@ -461,3 +461,5 @@
             (restore-on-card-connected)
             (restore-on-card-read)))
 
+(defn keycard-multiaccount? [db]
+  (boolean (get-in db [:multiaccount :keycard-pairing])))

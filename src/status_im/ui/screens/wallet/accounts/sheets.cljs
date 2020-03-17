@@ -59,39 +59,42 @@
                                             :address (:address account)}])}]])
 
 (defn add-account []
-  [react/view
-   [list-item/list-item
-    {:title               :t/generate-a-new-account
-     :theme               :action
-     :icon                :main-icons/add
-     :accessibility-label :add-account-sheet-generate
-     :on-press            #(hide-sheet-and-dispatch
-                            [:wallet.accounts/start-adding-new-account
-                             {:type :generate}])}]
-   [list-item/list-item
-    {:theme               :action
-     :title               :t/add-a-watch-account
-     :icon                :main-icons/watch
-     :accessibility-label :add-account-sheet-watch
-     :on-press            #(hide-sheet-and-dispatch
-                            [:wallet.accounts/start-adding-new-account
-                             {:type :watch}])}]
-   [list-item/list-item
-    {:title               :t/enter-a-seed-phrase
-     :theme               :action
-     :icon                :main-icons/text
-     :accessibility-label :add-account-sheet-seed
-     :on-press            #(hide-sheet-and-dispatch
-                            [:wallet.accounts/start-adding-new-account
-                             {:type :seed}])}]
-   [list-item/list-item
-    {:title               :t/enter-a-private-key
-     :theme               :action
-     :icon                :main-icons/address
-     :accessibility-label :add-account-sheet-private-key
-     :on-press            #(hide-sheet-and-dispatch
-                            [:wallet.accounts/start-adding-new-account
-                             {:type :key}])}]])
+  (let [keycard? @(re-frame/subscribe [:keycard-multiaccount?])]
+    [react/view
+     [list-item/list-item
+      {:title               :t/generate-a-new-account
+       :theme               :action
+       :icon                :main-icons/add
+       :accessibility-label :add-account-sheet-generate
+       :on-press            #(hide-sheet-and-dispatch
+                              [:wallet.accounts/start-adding-new-account
+                               {:type :generate}])}]
+     [list-item/list-item
+      {:theme               :action
+       :title               :t/add-a-watch-account
+       :icon                :main-icons/watch
+       :accessibility-label :add-account-sheet-watch
+       :on-press            #(hide-sheet-and-dispatch
+                              [:wallet.accounts/start-adding-new-account
+                               {:type :watch}])}]
+     (when-not keycard?
+       [list-item/list-item
+        {:title               :t/enter-a-seed-phrase
+         :theme               :action
+         :icon                :main-icons/text
+         :accessibility-label :add-account-sheet-seed
+         :on-press            #(hide-sheet-and-dispatch
+                                [:wallet.accounts/start-adding-new-account
+                                 {:type :seed}])}])
+     (when-not keycard?
+       [list-item/list-item
+        {:title               :t/enter-a-private-key
+         :theme               :action
+         :icon                :main-icons/address
+         :accessibility-label :add-account-sheet-private-key
+         :on-press            #(hide-sheet-and-dispatch
+                                [:wallet.accounts/start-adding-new-account
+                                 {:type :key}])}])]))
 
 (defn account-settings []
   [react/view
