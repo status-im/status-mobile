@@ -78,7 +78,7 @@
 (handlers/register-handler-fx
  ::handle-purchase
  (fn [_ [_ on-success purchase-data]]
-   ;; TODO: add wallet address to request
+   ;; invite_code, cid, chat_key, type, semver
    {::call-payment-gateway {:purchase   purchase-data
                             :on-success on-success}}))
 
