@@ -250,8 +250,8 @@ android {
         }
         pr {
             initWith release
-            applicationIdSuffix ".pr"
-            versionNameSuffix   ".pr"
+            applicationIdSuffix ".pr2"
+            versionNameSuffix   ".pr2"
             debuggable          false
             matchingFallbacks = ["release"]
             // necessary to make react-native-config's code generation work
