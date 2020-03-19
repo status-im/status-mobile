@@ -40,7 +40,8 @@
 
 (defview account-settings []
   (letsubs [{:keys [address color path type] :as account} [:multiaccount/current-account]
-            new-account (reagent/atom nil)]
+            new-account (reagent/atom nil)
+            keycard? [:keycard-multiaccount?]]
     [react/keyboard-avoiding-view {:flex 1}
      [topbar/topbar
       (cond-> {:title :t/account-settings}
@@ -90,7 +91,10 @@
             {:copied-text path}
             [react/text {:style {:margin-top 6 :font-family "monospace"}} path]]])
         (when-not (= type :watch)
-          [property (i18n/label :t/storage) (i18n/label :t/this-device)])]
+          [property (i18n/label :t/storage)
+           (i18n/label (if keycard?
+                         :t/keycard
+                         :t/this-device))])]
        (when (= type :watch)
          [react/view
           [react/view {:margin-bottom 8 :margin-top 28 :height 1 :background-color colors/gray-lighter}]
