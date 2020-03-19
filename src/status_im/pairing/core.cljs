@@ -66,7 +66,7 @@
 (defn send-pair-installation
   [cofx]
   {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "createABunchOfChats")
-                     :params []
+                     :params [nil]
                      :on-failure #(log/error "could not send")
                      :on-success #(log/info "sent pair installation message")}]})
 
