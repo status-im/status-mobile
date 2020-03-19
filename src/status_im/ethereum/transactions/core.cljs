@@ -227,7 +227,7 @@
                   true
                   (conj (wallet/update-balances
                          (into [] (reduce (fn [acc {:keys [address block]}]
-                                            (if (> block min-known-block)
+                                            (if (>= block min-known-block)
                                               (conj acc address)
                                               acc))
                                           #{}
