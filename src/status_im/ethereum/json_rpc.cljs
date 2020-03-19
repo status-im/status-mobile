@@ -36,6 +36,7 @@
    "shhext_leaveGroupChat" {}
    "shhext_changeGroupChatName" {}
    "shhext_createGroupChatWithMembers" {}
+   "shhext_createABunchOfChats" {}
    "shhext_reSendChatMessage" {}
    "shhext_getOurInstallations" {}
    "shhext_setInstallationMetadata" {}
@@ -73,6 +74,7 @@
    "wakuext_post" {}
    "wakuext_startMessenger" {}
    "wakuext_sendPairInstallation" {}
+   "wakuext_createABunchOfChats" {}
    "wakuext_syncDevices" {}
    "wakuext_requestMessages" {}
    "wakuext_sendDirectMessage" {}
