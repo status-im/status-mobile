@@ -140,6 +140,7 @@ class TestBrowsing(SingleDeviceTestCase):
         home = sign_in.create_user()
         daap_view = home.dapp_tab_button.click()
         browsing_view = daap_view.open_url('dap.ps')
+        browsing_view.wait_for_element_starts_with_text('View all', 30)
         browsing_view.element_by_text_part('View all', 'button').click()
         if browsing_view.element_by_text_part('View all').is_element_displayed(20):
             self.driver.fail("Failed to access Categories using ''View all'")

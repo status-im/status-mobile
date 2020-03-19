@@ -314,7 +314,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         home.invite_friends_button.click()
         home.share_via_messenger()
         home.find_text_part("Get Status at http://status.im")
-        home.click_system_back_button(2)
+        home.click_system_back_button()
         home.plus_button.click()
         home.chats_menu_invite_friends_button.click()
         home.share_via_messenger()

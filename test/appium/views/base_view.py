@@ -676,7 +676,7 @@ class BaseView(object):
 
     def open_universal_web_link(self, deep_link):
         start_web_browser(self.driver)
-        self.search_in_google_edit_box.send_keys(deep_link)
+        self.search_in_google_edit_box.set_value(deep_link)
         self.confirm()
         self.open_in_status_button.click()
 

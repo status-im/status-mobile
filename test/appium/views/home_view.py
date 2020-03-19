@@ -69,6 +69,12 @@ class ChatsMenuInviteFriendsButton(BaseButton):
         super(ChatsMenuInviteFriendsButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('chats-menu-invite-friends-button')
 
+class UserNameBelowNewChatButton(BaseButton):
+    def __init__(self, driver, username_part):
+        super(UserNameBelowNewChatButton, self).__init__(driver)
+        self.username = username_part
+        self.locator = self.Locator.xpath_selector(
+            "//*[@content-desc='enter-contact-code-input']/../..//*[starts-with(@text,'%s')]" % self.username)
 
 class ChatElement(BaseButton):
     def __init__(self, driver, username_part):
@@ -178,6 +184,11 @@ class HomeView(BaseView):
 
     def get_chat(self, username):
         return ChatElement(self.driver, username[:25])
+
+    def get_username_below_start_new_chat_button(self, username_part):
+        return UserNameBelowNewChatButton(self.driver, username_part)
+
+
 
     def add_contact(self, public_key, add_in_contacts=True):
         self.plus_button.click_until_presence_of_element(self.start_new_chat_button)

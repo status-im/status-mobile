@@ -10,6 +10,8 @@ class TestDeepLinks(SingleDeviceTestCase):
 
     @marks.testrail_id(5396)
     @marks.high
+    @marks.skip
+    # TODO: skipped because universal links won't work in emulators regardless of OS version
     def test_open_public_chat_using_deep_link(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()

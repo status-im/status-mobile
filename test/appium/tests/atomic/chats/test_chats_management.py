@@ -16,7 +16,7 @@ class TestChatManagement(SingleDeviceTestCase):
         home = sign_in.create_user()
         chat = home.add_contact(basic_user['public_key'])
 
-        one_to_one, public, group = basic_user['username'], '#public', 'group'
+        one_to_one, public, group = basic_user['username'], '#public-clear-options', 'group'
         message = 'test message'
         chat.get_back_to_home_view()
 
@@ -56,7 +56,7 @@ class TestChatManagement(SingleDeviceTestCase):
         home = sign_in.create_user()
         chat = home.add_contact(basic_user['public_key'])
 
-        one_to_one, public, group = basic_user['username'], '#public', 'group'
+        one_to_one, public, group = basic_user['username'], '#public-clear-long-press', 'group'
         message = 'test message'
         chat.get_back_to_home_view()
 
@@ -95,7 +95,7 @@ class TestChatManagement(SingleDeviceTestCase):
         home = sign_in.create_user()
         chat = home.add_contact(basic_user['public_key'])
 
-        one_to_one, public, group = basic_user['username'], '#public', 'group'
+        one_to_one, public, group = basic_user['username'], '#public-delete-long-press', 'group'
         chat.get_back_to_home_view()
 
         home.create_group_chat([basic_user['username']], group)
@@ -147,7 +147,7 @@ class TestChatManagement(SingleDeviceTestCase):
         home = sign_in.create_user()
         chat = home.add_contact(basic_user['public_key'])
 
-        one_to_one, public, group = basic_user['username'], '#public', 'group'
+        one_to_one, public, group = basic_user['username'], '#public-delete-options', 'group'
         chat.get_back_to_home_view()
 
         home.create_group_chat([basic_user['username']], group)
@@ -363,16 +363,15 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         # TODO: next line is added temporary to avoid navigation issue #7437 - should be deleted after fix
         home_1.profile_button.click()
         if profile_1.element_by_text(username).is_element_displayed():
-            profile_1.driver.fail('List of contacts in profile contains removed user')
+            self.errors.append('List of contacts in profile contains removed user')
         profile_1.home_button.click()
         if not chat_1.add_to_contacts.is_element_displayed():
             self.errors.append('"Add to contacts" button is not shown in 1-1 after removing user from contacts')
         home_1.get_back_to_home_view()
         home_1.plus_button.click()
         home_1.start_new_chat_button.click()
-        if home_1.element_by_text(username).is_element_displayed():
-            home_1.driver.fail('List of contacts below "Start new chat" contains removed user')
-
+        if home_1.get_username_below_start_new_chat_button(username).is_element_displayed():
+            self.errors.append('List of contacts below "Start new chat" contains removed user')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5786)
