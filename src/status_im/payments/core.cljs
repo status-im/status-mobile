@@ -6,6 +6,10 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [oops.core :refer [oget ocall]]
+            [status-im.signing.core :as signing]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.utils.types :as types]
+            [status-im.utils.build :as build]
             ["react-native-iap" :as react-native-iap]))
 
 (def payment-gateway "")
@@ -75,18 +79,41 @@
 
 ;; Gateway handling
 
-(handlers/register-handler-fx
- ::handle-purchase
- (fn [_ [_ on-success purchase-data]]
-   ;; invite_code, cid, chat_key, type, semver
-   {::call-payment-gateway {:purchase   purchase-data
-                            :on-success on-success}}))
+(fx/defn handle-purchase
+  {:events [::handle-purchase]}
+  [{:keys [db] :as cofx} on-success purchase-data]
+  (let [message  {:invite_code nil
+                  :cid         nil
+                  :type        "purchase"
+                  :chat_key    (get-in db [:multiaccount :public-key])
+                  :semver      build/version
+                  :platform    platform/os
+                  :receipt     purchase-data}
+        address  (ethereum/default-address db)
+        msg      (types/clj->json message)
+        msg-hash (ethereum/sha3 msg)]
+    (signing/sign cofx
+                  {:message   {:address address
+                               :data    msg-hash
+                               :typed?  false}
+                   :on-result [::call-payment-gateway
+                               {:purchse    nil
+                                :address    address
+                                :message    msg
+                                :on-success on-success}]})))
 
-(re-frame/reg-fx
- ::call-payment-gateway
- (fn [{:keys [purchase on-success]}]
-   ;; NOTE: Imitate success til backend is ready
-   (re-frame/dispatch [::gateway-on-success purchase on-success])))
+(fx/defn call-payment-gateway
+  {:events [::call-payment-gateway]}
+  [cofx {:keys [purchase address message on-success]} sig]
+  (let [payload {:address address
+                 :msg     message
+                 :sig     sig
+                 :version 2}]
+    {:http-post {:url                   payment-gateway
+                 :data                  (types/clj->json payload)
+                 :response-validator    (fn [] false)
+                 :success-event-creator (fn [r] [::gateway-on-success purchase on-success r])
+                 :failure-event-creator (fn [e] [::gateway-on-error e])}}))
 
 (fx/defn gateway-success
   {:events [::gateway-on-success]}
