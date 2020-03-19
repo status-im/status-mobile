@@ -14,7 +14,7 @@
 
 (def confirmations-count-threshold 12)
 
-(def etherscan-supported? #{:testnet :mainnet :rinkeby})
+(def etherscan-supported? #{})
 
 (let [network->subdomain {:testnet "ropsten" :rinkeby "rinkeby"}]
   (defn get-transaction-details-url [chain hash]

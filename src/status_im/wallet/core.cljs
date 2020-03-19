@@ -50,13 +50,7 @@
 ;; assets to get prices for
 (re-frame/reg-fx
  :wallet/get-prices
- (fn [{:keys [from to mainnet? success-event error-event chaos-mode?]}]
-   (prices/get-prices from
-                      to
-                      mainnet?
-                      #(re-frame/dispatch [success-event %])
-                      #(re-frame/dispatch [error-event %])
-                      chaos-mode?)))
+ (constantly nil))
 
 (defn assoc-error-message [db error-type err]
   (assoc-in db [:wallet :errors error-type] (or err :unknown-error)))

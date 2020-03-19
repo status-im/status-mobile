@@ -11,21 +11,6 @@
 
 (def json-rpc-api
   {"eth_call" {}
-   "eth_getBalance"
-   {:on-result money/bignumber}
-   "eth_estimateGas"
-   {:on-result #(money/bignumber (int (* % 1.2)))}
-   "eth_gasPrice"
-   {:on-result money/bignumber}
-   "eth_getBlockByHash"
-   {:on-result #(-> (update % :number decode/uint)
-                    (update :timestamp decode/uint))}
-   "eth_getTransactionByHash" {}
-   "eth_getTransactionReceipt" {}
-   "eth_getBlockByNumber" {}
-   "eth_newBlockFilter" {:subscription? true}
-   "eth_newFilter" {:subscription? true}
-   "eth_syncing" {}
    "net_version" {}
    "web3_clientVersion" {}
    "shh_generateSymKeyFromPassword" {}
@@ -137,14 +122,6 @@
    "wakuext_sendTransaction" {}
    "wakuext_acceptRequestTransaction" {}
    "status_chats" {}
-   "wallet_getTransfers" {}
-   "wallet_getTokensBalances" {}
-   "wallet_getBlocksByAddress" {}
-   "wallet_getTransfersFromBlock" {}
-   "wallet_getTransfersByAddress" {}
-   "wallet_getCustomTokens" {}
-   "wallet_addCustomToken" {}
-   "wallet_deleteCustomToken" {}
    "browsers_getBrowsers" {}
    "browsers_addBrowser" {}
    "browsers_deleteBrowser" {}
