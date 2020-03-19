@@ -188,10 +188,11 @@
      cofx
      {:dismiss-keyboard true}
      (bottom-sheet/show-bottom-sheet
-      {:view {:show-handle?      false
-              :backdrop-dismiss? false
-              :disable-drag?     true
-              :content           (keycard-sheet-content on-cancel connected?)}})
+      {:view {:show-handle?       false
+              :backdrop-dismiss?  false
+              :disable-drag?      true
+              :back-button-cancel false
+              :content            (keycard-sheet-content on-cancel connected?)}})
      (when on-card-read
        (set-on-card-read on-card-read))
      (set-on-card-connected on-card-connected)
