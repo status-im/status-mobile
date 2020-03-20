@@ -189,13 +189,12 @@
                                  :formatted-data (if typed? (types/json->clj data) (ethereum/hex-to-utf8 data))})}
       (fx/merge
        cofx
-       {:db
-        (assoc updated-db
-               :signing/in-progress? true
-               :signing/queue (drop-last queue)
-               :signing/tx (prepare-tx updated-db tx))
-        :dismiss-keyboard
-        nil}
+       {:db               (assoc updated-db
+                                 :signing/in-progress? true
+                                 :signing/queue (drop-last queue)
+                                 :signing/tx (prepare-tx updated-db tx))
+        :dismiss-keyboard nil
+        :dispatch         [:wallet.ui/pull-to-refresh]} ;;TODO fix for v.1.2
        #(when-not gas
           {:db (assoc-in (:db %) [:signing/edit-fee :gas-loading?] true)
            :signing/update-estimated-gas {:obj           tx-obj
