@@ -15,7 +15,7 @@
 (def tabs-diff (- tabs-height minimized-tabs-height))
 
 (def minimized-tab-ratio
-  (/ minimized-tabs-height tabs-height))
+  (/ tabs-height  minimized-tabs-height))
 
 (def counter
   {:right    0
@@ -81,30 +81,23 @@
   {:color     (if active? colors/blue colors/gray)
    :font-size 11})
 
-(styles/def tabs-container
-  {:height           minimized-tabs-height
-   :align-self       :stretch
+(defn animated-container [visible? inset]
+  {:flex-direction   :row
+   :shadow-radius    4
+   :shadow-offset    {:width 0 :height -5}
+   :shadow-opacity   0.3
+   :shadow-color     "rgba(0, 9, 26, 0.12)"
+   :elevation 8
    :background-color :white
-   :ios              {:shadow-radius  4
-                      :shadow-offset  {:width 0 :height -5}
-                      :shadow-opacity 0.3
-                      :shadow-color   "rgba(0, 9, 26, 0.12)"}
-   :desktop          {:background-color :white
-                      :shadow-radius    4
-                      :shadow-offset    {:width 0 :height -5}
-                      :shadow-opacity   0.3
-                      :shadow-color     "rgba(0, 9, 26, 0.12)"}})
-
-(def tabs
-  {:align-self         :stretch
-   :padding-horizontal 8
-   :flex-direction     :row})
-
-(defn animated-container [visible?]
-  {:transform [{:translateY
-                (animation/interpolate visible?
-                                       {:inputRange  [0 1]
-                                        :outputRange [(- tabs-diff) 0]})}]})
+   :position         :absolute
+   :left             0
+   :right            0
+   :height           tabs-height
+   :bottom           inset
+   :transform        [{:translateY
+                       (animation/interpolate visible?
+                                              {:inputRange  [0 1]
+                                               :outputRange [0 tabs-diff]})}]})
 
 (defn ios-titles-cover [inset]
   {:background-color :white
@@ -115,11 +108,18 @@
    :right            0
    :left             0})
 
-(defn tabs-wrapper [keyboard minimized inset]
-  (merge {:padding-bottom   inset
-          :elevation        8
-          :padding-top      (if minimized 0 tabs-diff)
-          :background-color :white}
+(defn tabs-wrapper [keyboard visible]
+  (merge {:padding-horizontal 8
+          :elevation          8
+          :left               0
+          :right              0
+          :bottom             0
+          :transform          [{:translateY
+                                (animation/interpolate visible
+                                                       {:inputRange  [0 1]
+                                                        :outputRange [0 tabs-height]})}]}
          (when keyboard
-           {:position :absolute
-            :bottom   (- tabs-height)})))
+           {:position :absolute})))
+
+(defn space-handler [inset]
+  {:height (+ inset minimized-tabs-height)})

@@ -4,7 +4,6 @@
             [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.tabbar.styles :as main-tabs.styles]
             [status-im.ui.components.styles :as components.styles]
             [status-im.constants :as constants]
             [status-im.utils.platform :as utils.platform]
@@ -112,7 +111,12 @@
        :label    :t/invite-friends}])])
 
 (views/defview bottom-container [{:keys [on-press disabled label accessibility-label]}]
-  [react/view {:style main-tabs.styles/tabs-container}
+  [react/view {:style {:height         52
+                       :elevation      8
+                       :shadow-radius  4
+                       :shadow-offset  {:width 0 :height -5}
+                       :shadow-opacity 0.3
+                       :shadow-color   "rgba(0, 9, 26, 0.12)"}}
    [react/view {:style components.styles/flex}]
    [react/view {:style styles/bottom-container}
     [components.common/bottom-button

@@ -35,6 +35,7 @@
             [status-im.ui.screens.profile.tribute-to-talk.views :as tr-to-talk]
             [status-im.ui.screens.hardwallet.pin.views :as hardwallet.pin]
             [status-im.ui.screens.hardwallet.settings.views :as hardwallet.settings]
+            [status-im.ui.components.tabbar.styles :as tabbar.styles]
             [status-im.ui.screens.routing.core :as navigation]))
 
 (defonce stack (navigation/create-stack))
@@ -43,6 +44,7 @@
   [stack {:initial-route-name :my-profile
           :header-mode        :none}
    [{:name      :my-profile
+     :style     {:padding-bottom tabbar.styles/tabs-diff}
      :component profile.user/my-profile}
     {:name      :contacts-list
      :component contacts-list/contacts-list}

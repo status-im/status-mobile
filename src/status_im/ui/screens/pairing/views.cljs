@@ -4,7 +4,6 @@
             [status-im.i18n :as i18n]
             [reagent.core :as reagent]
             [clojure.string :as string]
-            [status-im.ui.components.tabbar.styles :as main-tabs.styles]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.utils.platform :as utils.platform]
@@ -52,8 +51,12 @@
 (defn footer [syncing]
   [react/touchable-highlight {:on-press (when-not @syncing
                                           synchronize-installations!)
-                              ;; TODO: Inspect the need of coupling with tabbar here
-                              :style    main-tabs.styles/tabs-container}
+                              :style    {:height         52
+                                         :elevation      8
+                                         :shadow-radius  4
+                                         :shadow-offset  {:width 0 :height -5}
+                                         :shadow-opacity 0.3
+                                         :shadow-color   "rgba(0, 9, 26, 0.12)"}}
    [react/view
     {:style styles/footer-content}
     [react/text
