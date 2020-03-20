@@ -13,7 +13,8 @@
             [status-im.utils.core :as utils.core]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.topbar :as topbar]
+            [reagent.core :as reagent]))
 
 (defn welcome []
   [react/view {:flex            1
@@ -217,6 +218,20 @@
        [react/text {:style {:color colors/blue}}
         (i18n/label :t/ok-got-it)]]]]]])
 
+(defn photo [_ _]
+  (reagent/create-class
+   {:should-component-update
+    (fn [_ [_ old-account] [_ new-account]]
+      (and (not (nil? new-account))
+           (and (not (:photo-path old-account))
+                (nil? (:photo-path new-account)))))
+
+    :reagent-render
+    (fn [account small-screen?]
+      ;;TODO this should be done in a subscription
+      [photos/photo (multiaccounts/displayed-photo account)
+       {:size (if small-screen? 45 61)}])}))
+
 (defview login-pin []
   (letsubs [pin [:hardwallet/pin]
             enter-step [:hardwallet/pin-enter-step]
@@ -251,8 +266,7 @@
                       :height          (if small-screen? 50 69)
                       :justify-content :center
                       :align-items     :center}
-          ;;TODO this should be done in a subscription
-          [photos/photo (multiaccounts/displayed-photo account) {:size (if small-screen? 45 61)}]
+          [photo account small-screen?]
           [react/view {:justify-content  :center
                        :align-items      :center
                        :width            (if small-screen? 18 24)
