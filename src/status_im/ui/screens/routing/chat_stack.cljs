@@ -7,6 +7,7 @@
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.ui.screens.group.events :as group.events]
+            [status-im.ui.components.tabbar.styles :as tabbar.styles]
             [status-im.ui.screens.stickers.views :as stickers]))
 
 (defonce stack (navigation/create-stack))
@@ -16,6 +17,7 @@
           :header-mode        :none}
    [{:name      :home
      :on-focus  [::chat.loading/offload-all-messages]
+     :style     {:padding-bottom tabbar.styles/tabs-diff}
      :component home/home}
     {:name      :chat
      :on-focus  [::chat.loading/load-messages]

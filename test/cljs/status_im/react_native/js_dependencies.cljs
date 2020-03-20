@@ -67,3 +67,5 @@
 (def react-navigation-stack #js {:createStackNavigator identity
                                  :TransitionPresets    #js {:ModalPresentationIOS #js {}}})
 (def react-navigation-bottom-tabs #js {:createBottomTabNavigator identity})
+
+(def react-native-gesture-handler #js {})

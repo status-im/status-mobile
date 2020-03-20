@@ -11,19 +11,17 @@
    [status-im.i18n :as i18n]
    [re-frame.core :as re-frame]))
 
-(defonce visible? (animation/create-value 0))
-
-(defonce minimized-state (reagent/atom nil))
+(defonce visible-native (animation/create-value 0))
 (defonce last-to-value (atom 1))
 
 (defn animate
-  ([visible duration to]
-   (animate visible duration to nil))
-  ([visible duration to callback]
+  ([visible-native duration to]
+   (animate visible-native duration to nil))
+  ([visible-native duration to callback]
    (when (not= to @last-to-value)
      (reset! last-to-value to)
      (animation/start
-      (animation/timing visible
+      (animation/timing visible-native
                         {:toValue         to
                          :duration        duration
                          :easing          (animation/cubic)
@@ -37,12 +35,8 @@
 
 (defn minimize-bar [route-name]
   (if (main-tab? route-name)
-    (do
-      (reset! minimized-state false)
-      (animate visible? 150 0))
-    (do
-      (reset! minimized-state true)
-      (animate visible? 150 1))))
+    (animate visible-native 150 0)
+    (animate visible-native 150 1)))
 
 (def tabs-list-data
   (->>
@@ -73,31 +67,35 @@
   (fn [{:keys [icon label active? nav-stack on-press
                accessibility-label count-subscription]}]
     (let [count (when count-subscription @(re-frame/subscribe [count-subscription]))]
-      [react/touchable-highlight {:style               tabs.styles/touchable-container
-                                  :on-press            on-press
-                                  :accessibility-label accessibility-label}
-       [react/view {:style tabs.styles/tab-container}
-        [react/view {:style tabs.styles/icon-container}
-         [vector-icons/icon icon (tabs.styles/icon active?)]
-         (when count
-           (cond
-             (or (pos? count) (pos? (:other count)))
-             [react/view {:style (if (= nav-stack :chat-stack)
-                                   tabs.styles/message-counter
-                                   tabs.styles/counter)}
-              [badge/message-counter (or (:other count) count) true]]
-             (pos? (:public count))
-             [react/view {:style tabs.styles/counter-public-container}
-              [react/view {:style tabs.styles/counter-public
-                           :accessibility-label :public-unread-badge}]]))]
-        (when-not platform/desktop?
-          [react/view {:style tabs.styles/tab-title-container}
-           [react/text {:style (tabs.styles/tab-title active?)}
-            label]])]])))
+      [react/view {:style tabs.styles/touchable-container}
+       [react/touchable-without-feedback-gesture
+        {:style               {:height "100%"
+                               :width  "100%"}
+         :on-press            on-press
+         :accessibility-label accessibility-label}
+        [react/view {:style tabs.styles/tab-container}
+         [react/view {:style tabs.styles/icon-container}
+          [vector-icons/icon icon (tabs.styles/icon active?)]
+          (when count
+            (cond
+              (or (pos? count) (pos? (:other count)))
+              [react/view {:style (if (= nav-stack :chat-stack)
+                                    tabs.styles/message-counter
+                                    tabs.styles/counter)}
+               [badge/message-counter (or (:other count) count) true]]
+              (pos? (:public count))
+              [react/view {:style tabs.styles/counter-public-container}
+               [react/view {:style               tabs.styles/counter-public
+                            :accessibility-label :public-unread-badge}]]))]
+         (when-not platform/desktop?
+           [react/view {:style tabs.styles/tab-title-container}
+            [react/text {:style (tabs.styles/tab-title active?)}
+             label]])]]])))
 
 (defn tabs []
-  (let [listeners       (atom [])
-        keyboard-shown? (reagent/atom false)]
+  (let [listeners        (atom [])
+        keyboard-shown?  (reagent/atom false)
+        keyboard-visible (animation/create-value 0)]
     (reagent/create-class
      {:component-did-mount
       (fn []
@@ -106,10 +104,20 @@
            listeners
            [(.addListener react/keyboard  "keyboardDidShow"
                           (fn []
-                            (reset! keyboard-shown? true)))
+                            (reset! keyboard-shown? true)
+                            (reagent/flush)
+                            (animation/start
+                             (animation/timing keyboard-visible
+                                               {:toValue  1
+                                                :duration 200}))))
             (.addListener react/keyboard  "keyboardDidHide"
                           (fn []
-                            (reset! keyboard-shown? false)))])))
+                            (animation/start
+                             (animation/timing keyboard-visible
+                                               {:toValue  0
+                                                :duration 200})
+                             #(do (reset! keyboard-shown? false)
+                                  (reagent/flush)))))])))
       :component-will-unmount
       (fn []
         (when (not-empty @listeners)
@@ -118,25 +126,24 @@
               (.remove listener)))))
       :reagent-render
       (fn [{:keys [navigate index inset]}]
-        [react/animated-view {:style (tabs.styles/tabs-wrapper @keyboard-shown? @minimized-state inset)}
-         [react/animated-view {:style (tabs.styles/animated-container visible?)}
-          [react/view
-           {:style tabs.styles/tabs-container}
-           [react/view {:style tabs.styles/tabs}
-            (for [[route-index
-                   {:keys [nav-stack accessibility-label count-subscription content]}]
-                  tabs-list-data
-
-                  :let [{:keys [icon title]} content]]
-              ^{:key nav-stack}
-              [tab
-               {:icon                icon
-                :label               title
-                :on-press            #(navigate (name nav-stack))
-                :accessibility-label accessibility-label
-                :count-subscription  count-subscription
-                :active?             (= (str index) (str route-index))
-                :nav-stack           nav-stack}])]]]
+        [react/animated-view {:style          (tabs.styles/tabs-wrapper @keyboard-shown? keyboard-visible)
+                              :pointer-events (if @keyboard-shown? "none" "auto")}
+         [react/animated-view {:style          (tabs.styles/space-handler inset)
+                               :pointer-events "none"}]
+         [react/animated-view {:style (tabs.styles/animated-container visible-native inset)}
+          (for [[route-index
+                 {:keys [nav-stack accessibility-label count-subscription content]}]
+                tabs-list-data
+                :let [{:keys [icon title]} content]]
+            ^{:key nav-stack}
+            [tab
+             {:icon                icon
+              :label               title
+              :on-press            #(navigate (name nav-stack))
+              :accessibility-label accessibility-label
+              :count-subscription  count-subscription
+              :active?             (= (str index) (str route-index))
+              :nav-stack           nav-stack}])]
          [react/view
           {:style (tabs.styles/ios-titles-cover inset)}]])})))
 

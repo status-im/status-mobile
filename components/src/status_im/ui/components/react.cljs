@@ -274,3 +274,6 @@
 (def safe-area-consumer (adapt-class (object/get js-dependencies/safe-area-context "SafeAreaConsumer")))
 
 (def safe-area-view (adapt-class (object/get js-dependencies/safe-area-context "SafeAreaView")))
+
+
+(def touchable-without-feedback-gesture (adapt-class (object/get js-dependencies/react-native-gesture-handler "TouchableWithoutFeedback")))

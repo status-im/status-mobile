@@ -10,6 +10,7 @@
             [status-im.ui.screens.wallet.add-new.views :as add-account]
             [status-im.ui.screens.wallet.account-settings.views :as account-settings]
             [status-im.ui.screens.wallet.events :as wallet.events]
+            [status-im.ui.components.tabbar.styles :as tabbar.styles]
             [status-im.ui.screens.routing.core :as navigation]))
 
 (defonce stack (navigation/create-stack))
@@ -18,6 +19,7 @@
   [stack {:initial-route-name :wallet
           :header-mode        :none}
    [{:name      :wallet
+     :style     {:padding-bottom tabbar.styles/tabs-diff}
      :component wallet.accounts/accounts-overview}
     {:name      :wallet-account
      :component wallet.account/account}

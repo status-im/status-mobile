@@ -45,14 +45,19 @@
           (remove-back-handler-listener "hardwareBackPress" on-back-press))))
     #js [])))
 
-(defn wrapped-screen-style [{:keys [insets]} insets-obj]
+(defn wrapped-screen-style [{:keys [insets style]} insets-obj]
   (merge
    {:background-color :white
     :flex             1}
+   style
    (when (get insets :bottom)
-     {:padding-bottom (oget insets-obj "bottom")})
+     {:padding-bottom (+ (oget insets-obj "bottom")
+                         (get style :padding-bottom)
+                         (get style :padding-vertical))})
    (when (get insets :top true)
-     {:padding-top (oget insets-obj "top")})))
+     {:padding-top (+ (oget insets-obj "top")
+                      (get style :padding-top)
+                      (get style :padding-vertical))})))
 
 (defn presentation-type [{:keys [transition] :as opts}]
   (if (and platform/ios? (= transition :presentation-ios))
