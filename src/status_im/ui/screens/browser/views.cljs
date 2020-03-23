@@ -21,12 +21,13 @@
             [status-im.utils.js-resources :as js-res]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.screens.browser.accounts :as accounts]
-            [status-im.utils.debounce :as debounce])
+            [status-im.utils.debounce :as debounce]
+            [status-im.browser.webview-ref :as webview-ref])
   (:require-macros
    [status-im.utils.slurp :refer [slurp]]
    [status-im.utils.views :as views]))
 
-(defn toolbar-content [url url-original {:keys [secure?]} url-editing? webview]
+(defn toolbar-content [url url-original {:keys [secure?]} url-editing?]
   (let [url-text (atom url)]
     [react/view styles/toolbar-content
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/lock-pressed secure?])}
@@ -47,11 +48,11 @@
        [react/touchable-highlight {:style    styles/url-text-container
                                    :on-press #(re-frame/dispatch [:browser.ui/url-input-pressed])}
         [react/text (http/url-host url-original)]])
-     [react/touchable-highlight {:on-press #(.reload @webview)
+     [react/touchable-highlight {:on-press #(.reload @webview-ref/webview-ref)
                                  :accessibility-label :refresh-page-button}
       [icons/icon :main-icons/refresh]]]))
 
-(defn toolbar [error? url url-original browser browser-id url-editing? webview]
+(defn toolbar [error? url url-original browser browser-id url-editing?]
   [toolbar.view/toolbar
    {:browser? true}
    [toolbar.view/nav-button
@@ -60,7 +61,7 @@
                      (re-frame/dispatch [:navigate-back])
                      (when error?
                        (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
-   [toolbar-content url url-original browser url-editing? webview]])
+   [toolbar-content url url-original browser url-editing?]])
 
 (defn- web-view-error [_ code desc]
   (reagent/as-element
@@ -120,9 +121,7 @@
       [components.webview-bridge/webview-bridge
        {:dapp?                                 dapp?
         :dapp-name                             name
-        :ref                                   #(do
-                                                  (reset! webview %)
-                                                  (re-frame/dispatch [:set :webview-bridge %]))
+        :ref                                   #(reset! webview-ref/webview-ref %)
         :source                                (when (and url (not resolving?)) {:uri url})
         :java-script-enabled                   true
         :bounces                               false
@@ -148,8 +147,7 @@
       #(re-frame/dispatch [:browser.ui/close-tooltip-pressed])])])
 
 (views/defview browser []
-  (views/letsubs [webview (atom nil)
-                  window-width [:dimensions/window-width]
+  (views/letsubs [window-width [:dimensions/window-width]
                   {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
                   {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:browser/options]
                   dapps-account [:dapps-account]
@@ -158,12 +156,11 @@
           can-go-forward? (browser/can-go-forward? browser)
           url-original    (browser/get-current-url browser)]
       [react/view {:style styles/browser}
-       [toolbar error? url url-original browser browser-id url-editing? webview]
+       [toolbar error? url url-original browser browser-id url-editing?]
        [react/view
         (when loading?
           [connectivity/loading-indicator window-width])]
-       [browser-component {:webview         webview
-                           :dapp?           dapp?
+       [browser-component {:dapp?           dapp?
                            :error?          error?
                            :url             url
                            :url-original    url-original

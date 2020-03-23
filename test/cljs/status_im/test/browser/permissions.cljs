@@ -21,7 +21,7 @@
                                                                          :host       dapp-name
                                                                          :messageId  0
                                                                          :permission "FAKE_PERMISSION"}))]
-        (is (not (get-in result-ask [:browser/send-to-bridge :message :isAllowed])))))
+        (is (not (get-in result-ask [:browser/send-to-bridge :isAllowed])))))
 
     (testing "receiving a supported permission"
       (let [result-ask (browser/process-bridge-message cofx
@@ -35,7 +35,7 @@
 
         (testing "then user accepts the supported permission"
           (let [accept-result (permissions/allow-permission {:db (:db result-ask)})]
-            (is (= (get-in accept-result [:browser/send-to-bridge :message])
+            (is (= (get accept-result :browser/send-to-bridge)
                    {:type       "api-response"
                     :messageId  1
                     :isAllowed  true
@@ -52,8 +52,7 @@
                                                                                        :host       dapp-name
                                                                                        :messageId  2
                                                                                        :permission "contact-code"}))]
-                (is (= (get-in result-ask-again
-                               [:browser/send-to-bridge :message])
+                (is (= (get result-ask-again :browser/send-to-bridge)
                        {:type       "api-response"
                         :isAllowed  true
                         :messageId  2
@@ -71,8 +70,7 @@
                 (is (= (get-in result-ask2 [:db :dapps/permissions])
                        {"test.com" {:dapp "test.com", :permissions ["contact-code"]}})
                     "there should only be permissions for dapp-name at that point")
-                (is (nil? (get-in result-ask2
-                                  [:browser/send-to-bridge :message]))
+                (is (nil? (get result-ask2 :browser/send-to-bridge))
                     "no message should be sent to the bridge")
 
                 (testing "then user accepts permission for dapp-name2"
@@ -81,8 +79,7 @@
                            {"test.com"  {:dapp "test.com" :permissions ["contact-code"]}
                             "test2.org" {:dapp "test2.org" :permissions ["contact-code"]}})
                         "there should be permissions for both dapps now")
-                    (is (= (get-in accept-result2
-                                   [:browser/send-to-bridge :message])
+                    (is (= (get accept-result2 :browser/send-to-bridge)
                            {:type       "api-response"
                             :isAllowed  true
                             :messageId  3

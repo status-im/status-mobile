@@ -23,7 +23,8 @@
             [taoensso.timbre :as log]
             [status-im.signing.core :as signing]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
+            [status-im.browser.webview-ref :as webview-ref]))
 
 (fx/defn update-browser-option
   [{:keys [db]} option-key option-value]
@@ -283,24 +284,22 @@
 
 (fx/defn web3-error-callback
   {:events [:browser.dapp/transaction-on-error]}
-  [{{:keys [webview-bridge]} :db} message-id message]
+  [cofx message-id message]
   {:browser/send-to-bridge
-   {:message {:type      constants/web3-send-async-callback
-              :messageId message-id
-              :error     message}
-    :webview webview-bridge}})
+   {:type      constants/web3-send-async-callback
+    :messageId message-id
+    :error     message}})
 
 (fx/defn dapp-complete-transaction
   {:events [:browser.dapp/transaction-on-result]}
-  [{{:keys [webview-bridge]} :db} message-id id result]
+  [cofx message-id id result]
   ;;TODO check and test id
   {:browser/send-to-bridge
-   {:message {:type      constants/web3-send-async-callback
-              :messageId message-id
-              :result    {:jsonrpc "2.0"
-                          :id      (int id)
-                          :result  result}}
-    :webview webview-bridge}})
+   {:type      constants/web3-send-async-callback
+    :messageId message-id
+    :result    {:jsonrpc "2.0"
+                :id      (int id)
+                :result  result}}})
 
 (defn normalize-sign-message-params
   "NOTE (andrey) we need this function, because params may be mixed up"
@@ -315,8 +314,7 @@
 
 (fx/defn send-to-bridge
   [cofx message]
-  {:browser/send-to-bridge {:message message
-                            :webview (get-in cofx [:db :webview-bridge])}})
+  {:browser/send-to-bridge message})
 
 (fx/defn web3-send-async
   [cofx {:keys [method params id] :as payload} message-id]
@@ -418,9 +416,10 @@
 
 (re-frame/reg-fx
  :browser/send-to-bridge
- (fn [{:keys [message webview]}]
-   (when (and message webview)
-     (.sendToBridge webview (types/clj->json message)))))
+ (fn [message]
+   (let [webview @webview-ref/webview-ref]
+     (when (and message webview)
+       (.sendToBridge webview (types/clj->json message))))))
 
 (re-frame/reg-fx
  :browser/call-rpc
