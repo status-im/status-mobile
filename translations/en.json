@@ -1070,7 +1070,6 @@
     "your-recovery-phrase-description": "This is your seed phrase. You use it to prove that this is your wallet. You only get to see it once! Write it on paper and keep it in a secure place. You will need it if you lose or reinstall your wallet.",
     "custom-seed-phrase": "Invalid seed phrase",
     "custom-seed-phrase-text-1": "This seed phrase doesn't match our supported dictionary. Check for misspelled words.",
-    "custom-seed-phrase-text-2": "",
     "to-enable-biometric": "To enable {{bio-type-label}}, your must save your password on the unlock screen",
     "ok-save-pass": "OK, save password",
     "lock-app-with": "Lock app with",
