@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.progress.styles
   (:require [status-im.ui.components.colors :as colors]))
 
-(def container
+(defn container []
   {:flex             1
    :align-items      :center
    :justify-content  :center

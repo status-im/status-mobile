@@ -6,5 +6,5 @@
 
 ;; a simple view with animated progress indicator in its center
 (defview progress [_]
-  [react/keyboard-avoiding-view {:style styles/container}
+  [react/keyboard-avoiding-view {:style (styles/container)}
    [components/activity-indicator {:animating true}]])

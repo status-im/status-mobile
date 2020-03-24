@@ -90,7 +90,7 @@
                        "rgba(0, 0, 0, 0.75)"
                        "rgba(0, 9, 26, 0.12)")
    :elevation 8
-   :background-color :white
+   :background-color colors/white
    :position         :absolute
    :left             0
    :right            0

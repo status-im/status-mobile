@@ -17,19 +17,18 @@
 (defview collectibles-list []
   (letsubs [{:keys [name symbol]} [:get-screen-params]
             collectibles [:screen-collectibles]]
-    [react/view styles/container
-     [react/view {:style component.styles/flex}
-      [topbar/topbar {:title name}]
-      (cond
-        (nil? collectibles)
-        [react/view {:style styles/loading-indicator}
-         [react/activity-indicator {:animating true :size :large :color colors/blue}]]
-        (seq collectibles)
-        [list/flat-list {:data      collectibles
-                         :key-fn    (comp str :id)
-                         :render-fn #(render-collectible symbol %)}]
-        :else
-        ;; Should never happen. Less confusing to debug new NFT support.
-        [react/view {:style styles/loading-indicator}
-         [react/text (i18n/label :t/error)]])]]))
+    [react/view {:style component.styles/flex}
+     [topbar/topbar {:title name}]
+     (cond
+       (nil? collectibles)
+       [react/view {:style styles/loading-indicator}
+        [react/activity-indicator {:animating true :size :large :color colors/blue}]]
+       (seq collectibles)
+       [list/flat-list {:data      collectibles
+                        :key-fn    (comp str :id)
+                        :render-fn #(render-collectible symbol %)}]
+       :else
+       ;; Should never happen. Less confusing to debug new NFT support.
+       [react/view {:style styles/loading-indicator}
+        [react/text (i18n/label :t/error)]])]))
 

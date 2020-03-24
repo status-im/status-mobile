@@ -108,6 +108,17 @@ public class MainActivity extends ReactFragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
+            case Configuration.UI_MODE_NIGHT_YES:
+                setTheme(R.style.DarkTheme);
+
+                break;
+            case Configuration.UI_MODE_NIGHT_NO:
+                setTheme(R.style.LightTheme);
+                break;
+            default:
+                setTheme(R.style.LightTheme);
+        }
         // Make sure we get an Alert for every uncaught exceptions
         registerUncaughtExceptionHandler(MainActivity.this);
 

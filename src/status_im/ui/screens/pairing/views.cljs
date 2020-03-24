@@ -51,12 +51,7 @@
 (defn footer [syncing]
   [react/touchable-highlight {:on-press (when-not @syncing
                                           synchronize-installations!)
-                              :style    {:height         52
-                                         :elevation      8
-                                         :shadow-radius  4
-                                         :shadow-offset  {:width 0 :height -5}
-                                         :shadow-opacity 0.3
-                                         :shadow-color   "rgba(0, 9, 26, 0.12)"}}
+                              :style    {:height         52}}
    [react/view
     {:style styles/footer-content}
     [react/text

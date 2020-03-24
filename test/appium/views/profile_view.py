@@ -462,7 +462,11 @@ class ContinueButton(BaseButton):
 class SyncSettingsButton(BaseButton):
     def __init__(self, driver):
         super(SyncSettingsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@content-desc="sync-settings-button"]')
+        self.locator = self.Locator.accessibility_id('sync-settings-button')
+
+    def click(self):
+        self.scroll_to_element().click()
+        self.driver.info('Tap on %s' % self.name)
 
 
 class GoToPairingSettingsButton(BaseButton):
@@ -528,13 +532,13 @@ class UseMobileDataToggle(BaseButton):
     def __init__(self, driver):
         super(UseMobileDataToggle, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            "//*[@text='Use mobile data']/../*[name()='android.widget.Switch']")
+            "//*[@text='Use mobile data']/following-sibling::android.widget.Switch[1]")
 
 class AskMeWhenOnMobileNetworkToggle(BaseButton):
     def __init__(self, driver):
         super(AskMeWhenOnMobileNetworkToggle, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            "//*[@text='Ask me when on mobile network']/../*[name()='android.widget.Switch']")
+            "//*[@text='Ask me when on mobile network']/following-sibling::android.widget.Switch[1]")
 
 class ENSUsernameInChatSettings(BaseElement):
     def __init__(self, driver):

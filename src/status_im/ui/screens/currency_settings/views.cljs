@@ -32,7 +32,7 @@
                                 (reset! search-active? false))}
     [react/view {:flex 1}
      [topbar/topbar {:title :t/main-currency}]
-     [react/view styles/wrapper
+     [react/view {:flex 1}
       [search-input/search-input
        {:search-active? search-active?
         :search-filter search-filter

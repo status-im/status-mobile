@@ -93,9 +93,9 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.sync_settings_button.click()
         profile_view.element_by_text('Mobile data').click()
 
-        if profile_view.use_mobile_data.attribute_value("checked"):
+        if profile_view.use_mobile_data.text != 'OFF':
             self.errors.append("Mobile data is enabled by default")
-        if not profile_view.ask_me_when_on_mobile_network.attribute_value("checked"):
+        if profile_view.ask_me_when_on_mobile_network.text != "ON":
             self.errors.append("'Ask me when on mobile network' is not enabled by default")
 
         sign_in_view.just_fyi("Disable 'ask me when on mobile network' and check that it is not shown")

@@ -1,6 +1,5 @@
 (ns status-im.ui.components.text-input.styles
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as p]
             [status-im.utils.styles :as styles]))
 
 (defn label [editable label-style]
@@ -30,6 +29,8 @@
    :container-style {:shadow-offset    {:width 0 :height 1}
                      :shadow-radius    6
                      :shadow-opacity   1
-                     :shadow-color     colors/gray
+                     :shadow-color     (if (colors/dark?)
+                                         "rgba(0, 0, 0, 0.75)"
+                                         "rgba(0, 34, 51)")
                      :elevation        2}
    :font-size    12})
