@@ -1,7 +1,7 @@
-import pytest
 from _pytest.outcomes import Failed
 from decimal import Decimal as d
 from selenium.common.exceptions import TimeoutException
+import time
 
 from tests import marks, unique_password
 from tests.users import transaction_senders, basic_user, transaction_recipients
@@ -75,10 +75,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.errors.append('Request funds message was not received')
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5306)
+    @marks.testrail_id(6253)
     @marks.critical
-    @marks.skip
-    # TODO: temporary skipped due to 8601
     def test_send_eth_in_1_1_chat(self):
         recipient = transaction_recipients['A']
         sender = transaction_senders['A']
@@ -90,43 +88,76 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         wallet_1.set_up_wallet()
         wallet_1.home_button.click()
         wallet_2.set_up_wallet()
-        init_balance = wallet_2.get_asset_amount_by_name('ETHro')
         wallet_2.home_button.click()
 
         chat_1 = home_1.add_contact(recipient['public_key'])
         amount = chat_1.get_unique_amount()
+
+        home_1.just_fyi('Send %s ETH in 1-1 chat and check it for sender and receiver: Address requested' % amount)
         chat_1.commands_button.click()
-        chat_1.send_command.click()
-        chat_1.asset_by_name('ETHro').click()
-        chat_1.send_as_keyevent(amount)
-        send_transaction_view = chat_1.get_send_transaction_view()
-        chat_1.send_message_button.click_until_presence_of_element(send_transaction_view.sign_with_password)
+        send_transaction = chat_1.send_command.click()
+        if not send_transaction.get_username_in_transaction_bottom_sheet_button(recipient['username']).is_element_displayed():
+            self.driver.fail('%s is not shown in "Send Transaction" bottom sheet' % recipient['username'])
+        send_transaction.get_username_in_transaction_bottom_sheet_button(recipient['username']).click()
+        if send_transaction.scan_qr_code_button.is_element_displayed():
+            self.driver.fail('Recipient is editable in bootom sheet when send ETH from 1-1 chat')
+        send_transaction.amount_edit_box.set_value(amount)
+        send_transaction.confirm()
+        send_transaction.sign_transaction_button.click()
+        chat_1_sender_message = chat_1.chat_element_by_text('↑ Outgoing transaction')
+        if not chat_1_sender_message.is_element_displayed():
+            self.driver.fail('No message is shown after sending ETH in 1-1 chat for sender')
+        if chat_1_sender_message.transaction_status.text != 'Address requested':
+            self.errors.append('Wrong state is shown for outgoing transaction: "Address requested" is expected, in fact'
+                               ' %s ' % chat_1_sender_message.transaction_status.text)
 
-        send_transaction_view.network_fee_button.click()
-        gas_limit = '25000'
-        send_transaction_view.gas_limit_input.clear()
-        send_transaction_view.gas_limit_input.set_value(gas_limit)
-        gas_price = str(round(float(send_transaction_view.gas_price_input.text)) + 10)
-        send_transaction_view.gas_price_input.clear()
-        send_transaction_view.gas_price_input.set_value(gas_price)
-        if send_transaction_view.total_fee_input.text != '%s ETHro' % (d(gas_limit) * d(gas_price) / d(1000000000)):
-            self.errors.append('Gas limit and/or gas price fields were not edited')
-        send_transaction_view.update_fee_button.click()
-        send_transaction_view.sign_transaction()
-
-        if not chat_1.chat_element_by_text(amount).is_element_displayed():
-            self.errors.append('Message with the sent amount is not shown for the sender')
         chat_2 = home_2.get_chat(sender['username']).click()
-        if not chat_2.chat_element_by_text(amount).is_element_displayed():
-            self.errors.append('Message with the sent amount is not shown for the recipient')
+        chat_2_receiver_message = chat_2.chat_element_by_text('↓ Incoming transaction')
+        timestamp_sender = chat_1_sender_message.timestamp_message.text
+        if not chat_2_receiver_message.is_element_displayed():
+            self.driver.fail('No message about incoming transaction in 1-1 chat is shown for receiver')
+        if chat_2_receiver_message.transaction_status.text != 'Address requested':
+            self.errors.append('Wrong state is shown for incoming transaction: "Address requested" is expected, in fact'
+                               ' %s' % chat_2_receiver_message.transaction_status.text)
 
-        chat_2.get_back_to_home_view()
-        home_2.wallet_button.click()
-        try:
-            wallet_2.wait_balance_is_equal_expected_amount('ETHro', expected_balance=init_balance + float(amount))
-            self.network_api.find_transaction_by_unique_amount(recipient['address'], amount)
-        except Failed as e:
-            self.errors.append(e.msg)
+        home_2.just_fyi('Accept and share address for sender and receiver')
+        for text in ('Accept and share address', 'Decline'):
+            if not chat_2_receiver_message.contains_text(text):
+                self.driver.fail("Transaction message doesn't contain required option %s" % text)
+        select_account_bottom_sheet = chat_2_receiver_message.accept_and_share_address.click()
+        if not select_account_bottom_sheet.get_account_in_select_account_bottom_sheet_button('Status').is_element_displayed():
+            self.errors.append('Not expected value in "From" in "Select account": "Status" is expected')
+        select_account_bottom_sheet.select_button.click()
+        if chat_2_receiver_message.transaction_status.text != "Shared 'Status account'":
+            self.errors.append('Wrong state is shown for incoming transaction: "Shared \'Status account\' is expected, '
+                               'in fact  %s ' %  chat_2_receiver_message.transaction_status.text)
+        if chat_1_sender_message.transaction_status.text != 'Address request accepted':
+            self.errors.append('Wrong state is shown for outgoing transaction: "Address request accepted" is expected, '
+                               'in fact %s ' % chat_1_sender_message.transaction_status.text)
+
+        home_1.just_fyi("Sign and send transaction and check that timestamp on message is updated")
+        time.sleep(40)
+        send_message = chat_1_sender_message.sign_and_send.click()
+        send_message.next_button.click()
+        send_message.sign_transaction()
+        if chat_1_sender_message.transaction_status.text != 'Pending':
+            self.errors.append('Wrong state is shown for outgoing transaction: "Pending" is expected, in fact'
+                               ' %s ' % chat_1_sender_message.transaction_status.text)
+        updated_timestamp_sender = chat_1_sender_message.timestamp_message.text
+        if updated_timestamp_sender == timestamp_sender:
+            self.errors.append("Timestamp of message is not updated after signing transaction")
+
+        chat_1.wallet_button.click()
+        wallet_1.accounts_status_account.click()
+        transactions_view = wallet_1.transaction_history_button.click()
+        transactions_view.transactions_table.find_transaction(amount=amount)
+        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
+        wallet_1.home_button.click()
+
+        home_1.just_fyi("Check 'Confirmed' state for sender")
+        if chat_1_sender_message.transaction_status.text != 'Confirmed':
+            self.errors.append('Wrong state is shown for outgoing transaction: "Confirmed" is expected, in fact'
+                               ' %s ' % chat_1_sender_message.transaction_status.text)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5318)

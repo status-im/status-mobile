@@ -73,7 +73,11 @@ class TransactionPopupText(BaseText):
 class SendCommand(BaseButton):
     def __init__(self, driver):
         super(SendCommand, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('send-button')
+        self.locator = self.Locator.text_selector('Send transaction')
+
+    def navigate(self):
+        from views.send_transaction_view import SendTransactionView
+        return SendTransactionView(self.driver)
 
     def click(self):
         self.wait_for_element().click()
@@ -211,7 +215,7 @@ class OpenInStatusButton(BaseButton):
 class CommandsButton(BaseButton):
     def __init__(self, driver):
         super(CommandsButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('chat-commands-button')
+        self.locator = self.Locator.accessibility_id('show-extensions-icon')
 
 
 class ShowStickersButton(BaseButton):
@@ -320,6 +324,16 @@ class ChatElementByText(BaseText):
         return StatusText(self.driver, self.locator.value).wait_for_element(10)
 
     @property
+    def timestamp_message(self):
+        class TimeStampText(BaseText):
+            def __init__(self, driver, parent_locator: str):
+                super(TimeStampText, self).__init__(driver)
+                text = "//*[1]/*[1]/*[6]"
+                self.locator = self.Locator.xpath_selector(parent_locator + text)
+
+        return TimeStampText(self.driver, self.locator.value)
+
+    @property
     def progress_bar(self):
         return ProgressBar(self.driver, self.locator.value)
 
@@ -350,11 +364,58 @@ class ChatElementByText(BaseText):
 
         return SendRequestButton(self.driver, self.locator.value)
 
+    @property
+    def transaction_status(self):
+        class TransactionStatus(BaseText):
+            def __init__(self, driver, parent_locator):
+                super(TransactionStatus, self).__init__(driver)
+                self.locator = self.Locator.xpath_selector(parent_locator + "/*[1]/*[1]/*[5]/android.widget.TextView")
+
+        return TransactionStatus(self.driver, self.locator.value)
+
     def contains_text(self, text, wait_time=5) -> bool:
         element = BaseText(self.driver)
         element.locator = element.Locator.xpath_selector(
             self.locator.value + "//android.view.ViewGroup//android.widget.TextView[contains(@text,'%s')]" % text)
         return element.is_element_displayed(wait_time)
+
+    @property
+    def accept_and_share_address(self):
+        class AcceptAndShareAddress(BaseButton):
+            def __init__(self, driver, parent_locator):
+                super(AcceptAndShareAddress, self).__init__(driver)
+                self.locator = self.Locator.xpath_selector(parent_locator + "//*[@text='Accept and share address']")
+
+            def navigate(self):
+                from views.send_transaction_view import SendTransactionView
+                return SendTransactionView(self.driver)
+
+            def click(self):
+                self.wait_for_element().click()
+                self.driver.info('Tap on %s' % self.name)
+                return self.navigate()
+
+        return AcceptAndShareAddress(self.driver, self.locator.value)
+
+    @property
+    def sign_and_send(self):
+        class SignAndSend(BaseButton):
+            def __init__(self, driver, parent_locator):
+                super(SignAndSend, self).__init__(driver)
+                self.locator = self.Locator.xpath_selector(parent_locator + "//*[@text='Sign and send']")
+
+            def navigate(self):
+                from views.send_transaction_view import SendTransactionView
+                return SendTransactionView(self.driver)
+
+            def click(self):
+                self.wait_for_element().click()
+                self.driver.info('Tap on %s' % self.name)
+                return self.navigate()
+
+        return SignAndSend(self.driver, self.locator.value)
+
+
 
     @property
     def replied_message_text(self):

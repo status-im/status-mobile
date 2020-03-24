@@ -204,6 +204,26 @@ class SignButton(BaseButton):
         super(SignButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="Sign"]')
 
+# Elements for commands in 1-1 chat
+class UserNameInSendTransactionBottomSheet(BaseButton):
+    def __init__(self, driver, username_part):
+        super(UserNameInSendTransactionBottomSheet, self).__init__(driver)
+        self.username = username_part
+        self.locator = self.Locator.xpath_selector(
+            "//*[@content-desc='amount-input']/..//*[starts-with(@text,'%s')]" % self.username)
+
+class AccountNameInSelectAccountBottomSheet(BaseButton):
+    def __init__(self, driver, account_part):
+        super(AccountNameInSelectAccountBottomSheet, self).__init__(driver)
+        self.username = account_part
+        self.locator = self.Locator.xpath_selector(
+            "//*[@text='Select account']/..//*[starts-with(@text,'%s')]" % self.username)
+
+class SelectButton(BaseButton):
+
+    def __init__(self, driver):
+        super(SelectButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('select-account-bottom-sheet')
 
 class SendTransactionView(BaseView):
     def __init__(self, driver):
@@ -245,6 +265,9 @@ class SendTransactionView(BaseView):
         self.onboarding_message = OnboardingMessage(self.driver)
         self.validation_warnings = ValidationWarnings(self.driver)
 
+        # Elements for commands in 1-1 chat
+        self.select_button = SelectButton(self.driver)
+
     def complete_onboarding(self):
         if self.onboarding_message.is_element_displayed():
             from views.wallet_view import WalletView
@@ -263,4 +286,10 @@ class SendTransactionView(BaseView):
 
     def get_formatted_recipient_address(self, address):
         return address[:6] + '…' + address[-4:]
+
+    def get_username_in_transaction_bottom_sheet_button(self, username_part):
+        return UserNameInSendTransactionBottomSheet(self.driver, username_part)
+
+    def get_account_in_select_account_bottom_sheet_button(self, account_name):
+        return AccountNameInSelectAccountBottomSheet(self.driver, account_name)
 
