@@ -32,9 +32,7 @@
       {:style {:color       colors/gray
                :text-align  :center
                :line-height 22}}
-      (i18n/label :t/custom-seed-phrase-text-1)
-      [{:style {:color colors/black}}
-       (i18n/label :t/custom-seed-phrase-text-2)]]]
+      (i18n/label :t/custom-seed-phrase-text-1)]]
     [react/view {:margin-vertical 24
                  :align-items     :center}
      [button/button {:on-press            #(re-frame/dispatch [:hide-popover])
