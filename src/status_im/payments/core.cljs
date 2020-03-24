@@ -4,9 +4,10 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.http :as http]
             [status-im.utils.fx :as fx]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.waku.core :as waku]
             [taoensso.timbre :as log]
             [oops.core :refer [oget ocall]]
-            [status-im.signing.core :as signing]
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.types :as types]
             [status-im.utils.build :as build]
@@ -92,15 +93,14 @@
         address  (ethereum/default-address db)
         msg      (types/clj->json message)
         msg-hash (ethereum/sha3 msg)]
-    (signing/sign cofx
-                  {:message   {:address address
-                               :data    msg-hash
-                               :typed?  false}
-                   :on-result [::call-payment-gateway
-                               {:purchse    nil
-                                :address    address
-                                :message    msg
-                                :on-success on-success}]})))
+    {::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) "signMessageWithChatKey")
+                       :params     [msg-hash]
+                       :on-error   #(re-frame/dispatch [::on-error "Sign message error"])
+                       :on-success #(re-frame/dispatch [::call-payment-gateway
+                                                        {:purchse    purchase-data
+                                                         :address    address
+                                                         :message    msg
+                                                         :on-success on-success} %])}]}))
 
 (fx/defn call-payment-gateway
   {:events [::call-payment-gateway]}
