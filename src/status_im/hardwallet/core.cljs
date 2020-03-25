@@ -171,6 +171,7 @@
               {:db (update-in db [:hardwallet :pin] merge {:status      nil
                                                            :error-label nil})}
               (common/clear-on-card-connected)
+              (common/clear-on-card-read)
               ;; TODO(Ferossgp): Each pin input should handle this event on it's own,
               ;; now for simplicity do not hide bottom sheet when generating key
               ;; but should be refactored.
@@ -179,7 +180,8 @@
               (when-not (contains? #{:hardwallet/unpair
                                      :hardwallet/generate-and-load-key
                                      :hardwallet/remove-key-with-unpair
-                                     :hardwallet/unpair-and-delete} on-verified)
+                                     :hardwallet/unpair-and-delete
+                                     :hardwallet/generate-mnemonic} on-verified)
                 (common/get-application-info pairing nil))
               (when on-verified
                 (dispatch-on-verified-event on-verified)))))

@@ -72,6 +72,7 @@
 (fx/defn proceed-to-generate-mnemonic
   {:events [:hardwallet/proceed-to-generate-mnemonic]}
   [{:keys [db] :as cofx}]
+  (log/debug "[hardwallet] proceed-to-generate-mnemonic")
   (if (= (get-in db [:hardwallet :flow]) :create)
     (load-generating-mnemonic-screen cofx)
     {:db (assoc-in db [:hardwallet :setup-step] :recovery-phrase)}))

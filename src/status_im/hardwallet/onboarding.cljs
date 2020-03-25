@@ -218,6 +218,7 @@
 (fx/defn card-ready-next-button-pressed
   {:events [:hardwallet.ui/card-ready-next-button-pressed]}
   [{:keys [db] :as cofx}]
+  (log/debug "[hardwallet] card-ready-next-button-pressed")
   (let [pin (get-in db [:hardwallet :secrets :pin])
         pin-already-set? (boolean pin)]
     (if pin-already-set?
