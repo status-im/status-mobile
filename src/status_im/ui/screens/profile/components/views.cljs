@@ -29,61 +29,68 @@
            props)]])
 
 (defn- names [{:keys [usernames name public-key] :as contact}]
-  (let [generated-name (when public-key (gfy/generate-gfy public-key))
-        with-subtitle? (seq usernames)]
-    [react/view (if with-subtitle? styles/profile-header-name-container-with-subtitle
-                    styles/profile-header-name-container)
-     [react/text {:style (if with-subtitle? styles/profile-name-text-with-subtitle
-                             styles/profile-name-text)
+  (let [generated-name (when public-key (gfy/generate-gfy public-key))]
+    [react/view styles/profile-header-name-container-with-subtitle
+     [react/text {:style styles/profile-name-text-with-subtitle
                   :number-of-lines 2
                   :ellipsize-mode  :tail}
-
       (multiaccounts/displayed-name contact)]
-     (when with-subtitle?
-       [react/text {:style           styles/profile-three-words
-                    :number-of-lines 1}
-        generated-name])]))
+     [react/text {:style styles/profile-three-words
+                  :number-of-lines 1}
+      (if (seq usernames)
+        generated-name
+        public-key)]]))
 
-(defn- profile-header-display [{:keys [name public-key] :as contact}
-                               allow-icon-change? include-remove-action?]
-  [react/view (merge styles/profile-header-display {:padding-horizontal 16})
-   (if allow-icon-change?
-     [react/view {:align-items     :center
-                  :align-self      :stretch
-                  :justify-content :center}
-      [react/touchable-highlight
-       {:accessibility-label :edit-profile-photo-button
-        :on-press
-        #(re-frame/dispatch
-          [:bottom-sheet/show-sheet
-           {:content        (sheets/profile-icon-actions include-remove-action?)
-            :content-height (if include-remove-action? 192 128)}])}
-       [react/view
-        [react/view {:background-color colors/white
-                     :border-radius    15
-                     :width            30
-                     :height           30
-                     :justify-content  :center
-                     :align-items      :center
-                     :position         :absolute
-                     :z-index          1
-                     :top              -5
-                     :right            -5}
-         [react/view {:background-color colors/blue
-                      :border-radius    12
-                      :width            24
-                      :height           24
+(defn chat-key-popover [public-key ens-name]
+  (re-frame/dispatch [:show-popover
+                      {:view :share-chat-key
+                       :address public-key
+                       :ens-name ens-name}]))
+
+(defn- profile-header-display
+  [{:keys [name public-key preferred-name ens-name] :as contact}
+   allow-icon-change? include-remove-action?]
+  [react/touchable-opacity
+   {:on-press #(chat-key-popover public-key (or ens-name
+                                                preferred-name))}
+   [react/view (merge styles/profile-header-display {:padding-horizontal 16})
+    (if allow-icon-change?
+      [react/view {:align-items     :center
+                   :align-self      :stretch
+                   :justify-content :center}
+       [react/touchable-highlight
+        {:accessibility-label :edit-profile-photo-button
+         :on-press
+         #(re-frame/dispatch
+           [:bottom-sheet/show-sheet
+            {:content        (sheets/profile-icon-actions include-remove-action?)
+             :content-height (if include-remove-action? 192 128)}])}
+        [react/view
+         [react/view {:background-color colors/white
+                      :border-radius    15
+                      :width            30
+                      :height           30
                       :justify-content  :center
-                      :align-items      :center}
-          [vector-icons/icon :tiny-edit {:color  colors/white
-                                         :width  16
-                                         :height 16}]]]
-        [chat-icon.screen/my-profile-icon {:multiaccount contact
-                                           :edit?        false}]]]]
-     ;; else
-     [chat-icon.screen/my-profile-icon {:multiaccount contact
-                                        :edit?        false}])
-   [names contact]])
+                      :align-items      :center
+                      :position         :absolute
+                      :z-index          1
+                      :top              -5
+                      :right            -5}
+          [react/view {:background-color colors/blue
+                       :border-radius    12
+                       :width            24
+                       :height           24
+                       :justify-content  :center
+                       :align-items      :center}
+           [vector-icons/icon :tiny-edit {:color  colors/white
+                                          :width  16
+                                          :height 16}]]]
+         [chat-icon.screen/my-profile-icon {:multiaccount contact
+                                            :edit?        false}]]]]
+      ;; else
+      [chat-icon.screen/my-profile-icon {:multiaccount contact
+                                         :edit?        false}])
+    [names contact]]])
 
 (defn group-header-display [{:keys [chat-name color contacts]}]
   [react/view (merge styles/profile-header-display {:padding-horizontal 16})

@@ -61,37 +61,37 @@
                                         ;:icon                :main-icons/link
           :accessibility-label :share-my-contact-code-button}]]])))
 
-(defn- header [{:keys [photo-path] :as account} photo-added?]
+(defn- header [{:keys [photo-path public-key ens-name] :as account} photo-added?]
   [profile.components/profile-header
    {:contact                account
     ;;set to true if we want to re-enable custom icon
     :allow-icon-change?     false
     :include-remove-action?  photo-added?}])
 
-(defn- header-in-toolbar [account]
+(defn- header-in-toolbar [{:keys [public-key preferred-name] :as account}]
   (let [displayed-name (multiaccounts/displayed-name account)]
-    [react/view {:flex           1
-                 :flex-direction :row
-                 :align-items    :center
-                 :align-self     :stretch}
-     ;;TODO this should be done in a subscription
-     [photos/photo (multiaccounts/displayed-photo account) {:size 40}]
-     [react/text {:style {:typography   :title-bold
-                          :line-height  21
-                          :margin-right 40
-                          :margin-left  16
-                          :text-align   :left}}
-      displayed-name]]))
+    [react/touchable-opacity
+     {:on-press #(profile.components/chat-key-popover public-key preferred-name)
+      :style {:flex 1}}
+     [react/view {:style {:flex           1
+                          :flex-direction :row
+                          :align-items    :center
+                          :align-self     :stretch}}
+      ;;TODO this should be done in a subscription
+      [photos/photo (multiaccounts/displayed-photo account) {:size 40}]
+      [react/text {:style {:typography   :title-bold
+                           :line-height  21
+                           :margin-right 40
+                           :margin-left  16
+                           :text-align   :left}}
+       displayed-name]]]))
 
-(defn- toolbar-action-items [public-key ens-name]
+(defn- toolbar-action-items [public-key preferred-name]
   [toolbar/actions
    [{:icon      :main-icons/share
      :icon-opts {:width  24
                  :height 24}
-     :handler   #(re-frame/dispatch [:show-popover
-                                     {:view :share-chat-key
-                                      :address public-key
-                                      :ens-name ens-name}])}]])
+     :handler #(profile.components/chat-key-popover public-key preferred-name)}]])
 
 (defn tribute-to-talk-item
   [opts]

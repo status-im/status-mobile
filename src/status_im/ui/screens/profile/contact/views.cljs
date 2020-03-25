@@ -89,12 +89,13 @@
       (i18n/label :t/unblock-contact)
       (i18n/label :t/block-contact))]])
 
-(defn- header-in-toolbar [account]
+(defn- header-in-toolbar [{:keys [public-key ens-name] :as account}]
   (let [displayed-name (multiaccounts/displayed-name account)]
-    [react/view {:flex           1
-                 :flex-direction :row
-                 :align-items    :center
-                 :align-self     :stretch}
+    [react/touchable-opacity {:on-press #(profile.components/chat-key-popover public-key ens-name)
+                              :style {:flex           1
+                                      :flex-direction :row
+                                      :align-items    :center
+                                      :align-self     :stretch}}
      ;;TODO this should be done in a subscription
      [photos/photo (multiaccounts/displayed-photo account)
       {:size 40}]
@@ -112,15 +113,25 @@
     :allow-icon-change?     false
     :include-remove-action? false}])
 
+(defn- toolbar-action-items [public-key ens-name]
+  [toolbar/actions
+   [{:icon      :main-icons/share
+     :icon-opts {:width  24
+                 :height 24}
+     :handler #(profile.components/chat-key-popover public-key ens-name)}]])
+
 ;;TO-DO Rework generate-view to use 3 functions from large-toolbar
 (views/defview profile []
   (views/letsubs [list-ref (reagent/atom nil)
-                  {:keys [ens-verified name] :as contact}  [:contacts/current-contact]]
+                  {:keys [ens-verified name public-key] :as contact}  [:contacts/current-contact]]
     (when contact
-      (let [header-in-toolbar    (header-in-toolbar contact)
-            header               (header (cond-> contact
-                                           (and ens-verified name)
-                                           (assoc :usernames [name])))
+      (let [ens-name (when (and ens-verified name) name)
+            contact (cond-> contact
+                      ens-name
+                      (assoc :usernames [ens-name]
+                             :ens-name ens-name))
+            header-in-toolbar    (header-in-toolbar contact)
+            header               (header contact)
             content
             [[react/view {:padding-top 12}
               (for [{:keys [label subtext accessibility-label icon action disabled?]} (actions contact)]
@@ -132,14 +143,12 @@
                                       :disabled? disabled?
                                       :on-press action}])]
              [react/view styles/contact-profile-details-container
-              [profile-details (cond-> contact
-                                 (and ens-verified name)
-                                 (assoc :ens-name name))]]
+              [profile-details contact]]
              [block-contact-action contact]]
             generated-view (large-toolbar/generate-view
                             header-in-toolbar
                             toolbar/default-nav-back
-                            nil
+                            (toolbar-action-items public-key ens-name)
                             header
                             content
                             list-ref)]
