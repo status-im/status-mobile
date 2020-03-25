@@ -75,7 +75,7 @@ pipeline {
       steps { script {
         switch (btype) {
           case 'nightly': build(job: 'misc/status.im', wait: false); break
-          case 'release': gh.publishReleaseMobile(); break
+          case 'release': github.publishReleaseMobile(); break
         }
       } }
     }
