@@ -34,7 +34,7 @@
    {:method            "eth_getBalance"
     :params            [address "latest"]
     :on-success        on-success
-    :number-of-retries 4
+    :number-of-retries 50
     :on-error          on-error}))
 
 (re-frame/reg-fx
@@ -180,7 +180,7 @@
   (json-rpc/call
    {:method            "wallet_getTokensBalances"
     :params            [addresses (keys tokens)]
-    :number-of-retries 4
+    :number-of-retries 50
     :on-success
     (fn [results]
       (when-let [balances (clean-up-results results tokens (if init? nil assets))]

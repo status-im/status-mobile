@@ -7,7 +7,8 @@
             [status-im.native-module.core :as status]
             [status-im.utils.money :as money]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.utils :as utils]))
 
 (def json-rpc-api
   {"eth_call" {}
@@ -171,11 +172,20 @@
    "mailservers_getChatRequestRanges" {}
    "mailservers_deleteChatRequestRange" {}})
 
-(defn on-error-retry [call-method {:keys [method number-of-retries on-error] :as arg}]
+(defn on-error-retry
+  [call-method {:keys [method number-of-retries delay on-error] :as arg}]
   (if (pos? number-of-retries)
     (fn []
-      (log/debug "[on-error-retry]" method "number-of-retries" number-of-retries)
-      (call-method (update arg :number-of-retries dec)))
+      (let [updated-delay (if delay
+                            (min 2000 (* 2 delay))
+                            50)]
+        (log/debug "[on-error-retry]" method
+                   "number-of-retries" number-of-retries
+                   "delay" delay)
+        (utils/set-timeout #(call-method (-> arg
+                                             (update :number-of-retries dec)
+                                             (assoc :delay updated-delay)))
+                           updated-delay)))
     on-error))
 
 (defn call-ext-method [waku-enabled? method]
