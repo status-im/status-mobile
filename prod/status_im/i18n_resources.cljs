@@ -66,7 +66,7 @@
 (defn valid-language [lang]
   (if (contains? prod-translations lang)
     lang
-    (let [short-lang (keyword (subs (name lang) 0 2))]
+    (let [short-lang (keyword (first (string/split (name lang) #"_")))]
       (when (contains? prod-translations short-lang)
         short-lang))))
 
