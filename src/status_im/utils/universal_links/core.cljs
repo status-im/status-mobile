@@ -21,6 +21,7 @@
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link
 
+(def private-chat-regex #".*/chat/private/(.*)$")
 (def public-chat-regex #"(?:https?://join\.)?status[.-]im(?::/)?/(?:chat/public/([a-z0-9\-]+)$|([a-z0-9\-]+))$")
 (def profile-regex #"(?:https?://join\.)?status[.-]im(?::/)?/(?:u/(0x.*)$|u/(.*)$|user/(.*))$")
 (def browse-regex #"(?:https?://join\.)?status[.-]im(?::/)?/(?:b/(.*)$|browse/(.*))$")
@@ -30,6 +31,7 @@
               :internal "status-im:/"})
 
 (def links {:public-chat "%s/%s"
+            :private-chat "%s/p/%s"
             :user        "%s/u/%s"
             :browse      "%s/b/%s"})
 
@@ -70,6 +72,10 @@
   (log/info "universal-links: handling browse" url)
   (when (security/safe-link? url)
     {:browser/show-browser-selection url}))
+
+(fx/defn handle-private-chat [cofx chat-id]
+  (log/info "universal-links: handling private chat" chat-id)
+  (chat/start-chat cofx chat-id {}))
 
 (fx/defn handle-public-chat [cofx public-chat]
   (log/info "universal-links: handling public chat" public-chat)
@@ -119,6 +125,9 @@
   "Match a url against a list of routes and handle accordingly"
   [cofx url]
   (cond
+
+    (match-url url private-chat-regex)
+    (handle-private-chat cofx (match-url url private-chat-regex))
 
     (spec/valid? :global/public-key (match-url url profile-regex))
     (handle-view-profile cofx {:public-key (match-url url profile-regex)})

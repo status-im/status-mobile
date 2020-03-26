@@ -69,6 +69,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private ReactApplicationContext reactContext;
     private boolean rootedDevice;
     private NewMessageSignalHandler newMessageSignalHandler;
+    private boolean background;
 
     StatusModule(ReactApplicationContext reactContext, boolean rootedDevice) {
         super(reactContext);
@@ -85,17 +86,18 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @Override
     public void onHostResume() {  // Activity `onResume`
         module = this;
+        this.background = false;
         Statusgo.setMobileSignalHandler(this);
     }
 
     @Override
     public void onHostPause() {
+        this.background = true;
     }
 
     @Override
     public void onHostDestroy() {
-        Intent intent = new Intent(getReactApplicationContext(), ForegroundService.class);
-        getReactApplicationContext().stopService(intent);
+        Log.d(TAG, "******************* ON HOST DESTROY *************************");
     }
 
     @ReactMethod
@@ -145,7 +147,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             Log.d(TAG, "Signal event: " + jsonEventString);
             // NOTE: the newMessageSignalHandler is only instanciated if the user
             // enabled notifications in the app
-            if (newMessageSignalHandler != null) {
+            if (this.background && newMessageSignalHandler != null) {
                 if (eventType.equals("messages.new")) {
                     newMessageSignalHandler.handleNewMessageSignal(jsonEvent);
                 }
