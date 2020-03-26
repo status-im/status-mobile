@@ -1,6 +1,7 @@
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimaryDark">?attr/backgroundColor</item>
+        <item name="colorControlActivated">#ffffff</item>
         <item name="android:windowBackground">?attr/backgroundColor</item>
         <item name="android:forceDarkAllowed">true</item>
     </style>
