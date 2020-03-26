@@ -57,7 +57,16 @@ pipeline {
         stage('Checks') { stages {
           stage('Lint') {
             steps {
-              script { nix.shell('lein cljfmt check', attr: 'shells.lein') }
+              script {
+                /* We want the build result to be uploaded */
+                catchError(
+                  message: 'Linting check failed!',
+                  buildResult: 'FAILURE',
+                  stageResult: 'FAILURE'
+                ) {
+                  nix.shell('lein cljfmt check', attr: 'shells.lein')
+                }
+              }
             }
           }
           stage('Tests') {
