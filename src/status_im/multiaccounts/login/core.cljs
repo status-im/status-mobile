@@ -24,7 +24,6 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
-            [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.utils :as utils]
             [status-im.wallet.core :as wallet]
             [taoensso.timbre :as log]
@@ -208,7 +207,6 @@
               ;; NOTE: initializing mailserver depends on user mailserver
               ;; preference which is why we wait for config callback
               (protocol/initialize-protocol {:default-mailserver true})
-              (universal-links/process-stored-event)
               (check-network-version network-id)
               (chat.loading/initialize-chats)
               (contact/initialize-contacts)

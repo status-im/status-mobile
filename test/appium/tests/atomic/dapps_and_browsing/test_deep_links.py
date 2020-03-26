@@ -10,14 +10,12 @@ class TestDeepLinks(SingleDeviceTestCase):
 
     @marks.testrail_id(5396)
     @marks.high
-    @marks.skip
-    # TODO: skipped because universal links won't work in emulators regardless of OS version
     def test_open_public_chat_using_deep_link(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         self.driver.close_app()
         chat_name = sign_in_view.get_public_chat_name()
-        deep_link = 'https://join.status.im/chat/public/%s' % chat_name
+        deep_link = 'https://join.status.im/%s' % chat_name
         sign_in_view.open_weblink_and_login(deep_link)
         chat_view = sign_in_view.get_chat_view()
         try:
@@ -27,30 +25,28 @@ class TestDeepLinks(SingleDeviceTestCase):
 
     @marks.testrail_id(5441)
     @marks.medium
-    @marks.skip
-    # TODO: skipped because universal links won't work in emulators regardless of OS version
     def test_open_user_profile_using_deep_link(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
-        for user_ident in ens_user['ens'], basic_user['public_key']:
+        profile = sign_in_view.profile_button.click()
+        profile.switch_network('Mainnet with upstream RPC')
+        for user_ident in ens_user['ens'], ens_user['ens_another_domain'], ens_user['public_key'],:
             self.driver.close_app()
-            deep_link = 'https://join.status.im/user/%s' % user_ident
+            deep_link = 'https://join.status.im/u/%s' % user_ident
             sign_in_view.open_weblink_and_login(deep_link)
             chat_view = sign_in_view.get_chat_view()
-            for text in basic_user['username'], 'Add to contacts':
+            for text in ens_user['username'], 'Add to contacts':
                 if not chat_view.element_by_text(text).scroll_to_element(10):
                     self.driver.fail("User profile screen is not opened")
 
     @marks.testrail_id(5442)
     @marks.medium
-    @marks.skip
-    # TODO: skipped because universal links won't work in emulators regardless of OS version
     def test_open_dapp_using_deep_link(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         self.driver.close_app()
         dapp_name = test_dapp_url
-        dapp_deep_link = 'https://join.status.im/browse/%s' % dapp_name
+        dapp_deep_link = 'https://join.status.im/b/%s' % dapp_name
         sign_in_view.open_weblink_and_login(dapp_deep_link)
         web_view = sign_in_view.get_chat_view()
         try:
@@ -61,13 +57,11 @@ class TestDeepLinks(SingleDeviceTestCase):
 
     @marks.testrail_id(5780)
     @marks.medium
-    @marks.skip
-    # TODO: skipped because universal links won't work in emulators regardless of OS version
     def test_open_own_user_profile_using_deep_link(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(passphrase=basic_user['passphrase'])
         self.driver.close_app()
-        deep_link = 'https://join.status.im/user/%s' % basic_user['public_key']
+        deep_link = 'https://join.status.im/u/%s' % basic_user['public_key']
         sign_in_view.open_weblink_and_login(deep_link)
         profile_view = sign_in_view.get_profile_view()
         if profile_view.default_username_text.text != basic_user['username'] \
@@ -77,13 +71,11 @@ class TestDeepLinks(SingleDeviceTestCase):
 
     @marks.testrail_id(5781)
     @marks.medium
-    @marks.skip
-    # TODO: skipped because universal links won't work in emulators regardless of OS version
     def test_deep_link_with_invalid_user_public_key(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         self.driver.close_app()
-        deep_link = 'https://join.status.im/user/%s' % basic_user['public_key'][:-10]
+        deep_link = 'https://join.status.im/u/%s' % basic_user['public_key'][:-10]
         sign_in_view.open_weblink_and_login(deep_link)
         home_view = sign_in_view.get_home_view()
         home_view.plus_button.click_until_presence_of_element(home_view.start_new_chat_button)

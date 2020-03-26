@@ -248,4 +248,5 @@ class SignInView(BaseView):
 
     def open_weblink_and_login(self, url_weblink):
         self.open_universal_web_link(url_weblink)
+        self.rooted_device_continue()
         self.sign_in()

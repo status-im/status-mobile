@@ -31,6 +31,7 @@
             [status-im.init.core :as init]
             [status-im.log-level.core :as log-level]
             status-im.waku.core
+            [status-im.utils.universal-links.core :as universal-links]
             [status-im.mailserver.core :as mailserver]
             [status-im.mailserver.constants :as mailserver.constants]
             [status-im.mailserver.topics :as mailserver.topics]
@@ -144,6 +145,11 @@
                (dissoc :intro-wizard)
                (update :hardwallet dissoc :application-info))}
       (multiaccounts.login/open-login key-uid photo-path name public-key)))))
+
+(handlers/register-handler-fx
+ :login/filters-initialized
+ (fn [cofx]
+   (universal-links/process-stored-event cofx)))
 
 ;; multiaccounts update module
 

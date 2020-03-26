@@ -43,10 +43,12 @@ class AllowButton(BaseButton):
         except NoSuchElementException:
             pass
 
+
 class SearchEditBox(BaseEditBox):
     def __init__(self, driver):
         super(SearchEditBox, self).__init__(driver)
         self.locator = self.Locator.text_selector("Search or type web address")
+
 
 class DenyButton(BaseButton):
     def __init__(self, driver):
@@ -402,6 +404,13 @@ class BaseView(object):
                     pass
             iterations += 1
 
+    def rooted_device_continue(self):
+        try:
+            self.continue_button.wait_for_element(3)
+            self.continue_button.click()
+        except (NoSuchElementException, TimeoutException):
+            pass
+
     def close_native_device_dialog(self, alert_text_part):
         element = self.element_by_text_part(alert_text_part)
         if element.is_element_present(1):
@@ -673,12 +682,9 @@ class BaseView(object):
         self.driver.back()
         self.driver.back()
 
-
     def open_universal_web_link(self, deep_link):
         start_web_browser(self.driver)
-        self.search_in_google_edit_box.set_value(deep_link)
-        self.confirm()
-        self.open_in_status_button.click()
+        self.driver.get(deep_link)
 
     # Method-helper
     def write_page_source_to_file(self, full_path_to_file):

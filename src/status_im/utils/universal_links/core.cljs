@@ -21,17 +21,17 @@
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link
 
-(def public-chat-regex #".*/chat/public/(.*)$")
-(def profile-regex #".*/user/(.*)$")
-(def browse-regex #".*/browse/(.*)$")
+(def public-chat-regex #"(?:https?://join\.)?status[.-]im(?::/)?/(?:chat/public/([a-z0-9\-]+)$|([a-z0-9\-]+))$")
+(def profile-regex #"(?:https?://join\.)?status[.-]im(?::/)?/(?:u/(0x.*)$|u/(.*)$|user/(.*))$")
+(def browse-regex #"(?:https?://join\.)?status[.-]im(?::/)?/(?:b/(.*)$|browse/(.*))$")
 
 ;; domains should be without the trailing slash
 (def domains {:external "https://join.status.im"
               :internal "status-im:/"})
 
-(def links {:public-chat "%s/chat/public/%s"
-            :user        "%s/user/%s"
-            :browse      "%s/browse/%s"})
+(def links {:public-chat "%s/%s"
+            :user        "%s/u/%s"
+            :browse      "%s/b/%s"})
 
 (defn generate-link [link-type domain-type param]
   (gstring/format (get links link-type)
@@ -41,7 +41,10 @@
 (defn match-url [url regex]
   (some->> url
            (re-matches regex)
-           peek))
+           rest
+           reverse
+           (remove nil?)
+           first))
 
 (defn is-request-url? [url]
   (string/starts-with? url "ethereum:"))
@@ -116,8 +119,6 @@
   "Match a url against a list of routes and handle accordingly"
   [cofx url]
   (cond
-    (match-url url public-chat-regex)
-    (handle-public-chat cofx (match-url url public-chat-regex))
 
     (spec/valid? :global/public-key (match-url url profile-regex))
     (handle-view-profile cofx {:public-key (match-url url profile-regex)})
@@ -131,6 +132,10 @@
 
     (is-request-url? url)
     (handle-eip681 cofx url)
+
+    ;; This needs to stay last, as it's a bit of a catch-all regex
+    (match-url url public-chat-regex)
+    (handle-public-chat cofx (match-url url public-chat-regex))
 
     :else (handle-not-found url)))
 

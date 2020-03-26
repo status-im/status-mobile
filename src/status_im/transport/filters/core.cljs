@@ -206,12 +206,16 @@
    :discovery? discovery
    :topic topic})
 
-(fx/defn set-filters-initialized [{:keys [db]}]
-  {:db (update db :filters/initialized inc)})
-
 ;; We check that both chats & contacts have been initialized
 (defn filters-initialized? [db]
   (>= (:filters/initialized db) 2))
+
+(fx/defn set-filters-initialized [{:keys [db] :as cofx}]
+  (fx/merge
+   cofx
+   {:db (update db :filters/initialized inc)}
+   #(when (filters-initialized? (:db %))
+      {:dispatch [:login/filters-initialized]})))
 
 (fx/defn handle-filters-added
   "Called every time we load a filter from statusgo, either from explicit call

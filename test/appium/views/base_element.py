@@ -184,7 +184,7 @@ class BaseElement(object):
         width, height = size['width'], size['height']
         self.driver.swipe(start_x=x + width * 0.75, start_y=y + height / 2, end_x=x, end_y=y + height / 2)
 
-    def swipe_to_web_element(self, depth=400):
+    def swipe_to_web_element(self, depth=700):
         element = self.find_element()
         location = element.location
         x, y = location['x'], location['y']
