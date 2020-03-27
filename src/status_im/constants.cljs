@@ -106,6 +106,7 @@
    :wallet/visible-tokens {:mainnet #{:SNT}}
    :currency :usd
    :appearance 0
+   :waku-enabled true
    :log-level config/log-level-status-go})
 
 (defn default-visible-tokens [chain]
