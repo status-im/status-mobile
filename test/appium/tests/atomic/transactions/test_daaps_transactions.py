@@ -79,6 +79,8 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(5743)
     @marks.high
+    @marks.skip
+    # TODO: blocked by 10203
     def test_send_two_transactions_in_batch_in_dapp(self):
         sender = transaction_senders['W']
         sign_in_view = SignInView(self.driver)

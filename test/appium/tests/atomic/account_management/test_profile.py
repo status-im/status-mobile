@@ -394,16 +394,9 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
         profile_view.advanced_button.click()
-        if 'release' in str(pytest_config_global['apk']):
-            # TODO: should be edited after showing some text in setting when log in disabled
-            if profile_view.log_level_setting.is_element_displayed():
-                self.errors.append('Log is not disabled')
-            if not profile_view.element_by_text('eth.prod').is_element_displayed():
-                self.errors.append('Fleet is not set to eth.prod')
-        else:
-            for text in 'INFO', 'eth.prod':
-                if not profile_view.element_by_text(text).is_element_displayed():
-                    self.errors.append('%s is not selected by default' % text)
+        for text in 'INFO', 'eth.prod':
+            if not profile_view.element_by_text(text).is_element_displayed():
+                self.errors.append('%s is not selected by default' % text)
         self.errors.verify_no_errors()
 
 
@@ -849,10 +842,11 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_home.add_contact(transaction_senders['A']['public_key'])
 
         device_2.just_fyi('check that messages appeared in 1-1 chat, public chats and new contacts are synced')
-        if not device_2_profile.element_by_text(transaction_senders['A']['username']).is_element_displayed(30):
-            self.errors.append(
-                '"%s" is not found in Contacts after adding when devices are paired' % transaction_senders['A'][
-                    'username'])
+        # TODO: blocked by 9805
+        # if not device_2_profile.element_by_text(transaction_senders['A']['username']).is_element_displayed(60):
+        #     self.errors.append(
+        #         '"%s" is not found in Contacts after adding when devices are paired' % transaction_senders['A'][
+        #             'username'])
 
         device_2_profile.home_button.click()
         if not device_2_home.element_by_text_part(public_chat_before_sync).is_element_displayed():
