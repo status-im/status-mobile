@@ -44,20 +44,13 @@ in stdenv.mkDerivation {
       filter =
         # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
         mkFilter {
-          dirRootsToInclude = [
-            "mobile/js_files"
-            "modules/react-native-status/android"
-            "resources"
-          ];
-          dirsToExclude = [
-            ".git" ".svn" "CVS" ".hg" ".gradle"
-            "build" "intermediates" "libs" "obj"
-          ];
-          filesToInclude = [
+          root = path;
+          include = [
+            "mobile/js_files.*" "resources.*"
+            "modules/react-native-status/android.*"
             envFileName "VERSION" ".watchmanconfig"
             "status-go-version.json" "react-native.config.js"
           ];
-          root = path;
         };
     };
   nativeBuildInputs = [ bash gradle unzip ] ++ lib.optionals stdenv.isDarwin [ file gnumake patchedWatchman ];

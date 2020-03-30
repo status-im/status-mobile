@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euf pipefail
+set -ef pipefail
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 source "${GIT_ROOT}/scripts/colors.sh"

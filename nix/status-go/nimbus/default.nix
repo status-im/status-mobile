@@ -12,10 +12,11 @@ let
     filter =
       # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
       mkFilter {
-        dirRootsToInclude = [ "nix" "wrappers" "vendor" ];
-        dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".vscode" ".dependabot" ".github" "examples" "docs" ];
-        filesToInclude = [ "Makefile" "nim.cfg" "nimbus.nimble" "default.nix" ];
         root = path;
+        include = [
+          "nix.*" "wrappers.*" "vendor.*"
+          "Makefile" "nim.cfg" "nimbus.nimble" "default.nix"
+        ];
       };
   };
 

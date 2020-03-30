@@ -12,15 +12,16 @@ let
 
   src =
     let path = ./../../..;
-    in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
+    # We use builtins.path so that we can name the resulting derivation,
+    # otherwise the name would be taken from the checkout directory, which is outside of our control
+    in builtins.path {
       inherit path;
       name = "status-react-source-npm-deps";
       filter =
-        # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
+        # Keep this filter as restrictive as possible in order to avoid 
+        # unnecessary rebuilds and limit closure size
         mkFilter {
-          dirRootsToInclude = [ "mobile/js_files" ];
-          dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ];
-          filesToInclude = [ ".babelrc" ];
+          include = [ ".babelrc" "mobile/js_files.*" ];
           root = path;
         };
     };

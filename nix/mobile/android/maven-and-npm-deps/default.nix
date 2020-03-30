@@ -37,14 +37,14 @@ let
             filter =
               # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
               mkFilter {
-                dirRootsToInclude = [
-                  "android" "mobile/js_files" "resources"
-                  "translations" "status-modules"
-                ];
-                dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".gradle" "build" "intermediates" "libs" "obj" ];
-                filesToInclude = [ ".babelrc" ];
-                filesToExclude = [ "VERSION" "android/gradlew" ];
                 root = path;
+                include = [
+                  "android/.*" "translations/.*" "status-modules/.*"
+                  "resources/.*" "mobile/js_files/.*" ".babelrc"
+                ];
+                exclude = [
+                  ".*.keystore" "node_modules"
+                ];
               };
           };
         phases = [ "unpackPhase" "patchPhase" "installPhase" "fixupPhase" ];

@@ -1,56 +1,66 @@
 # This file is an example of the syntax required to call a Nix function
 # and serves to test mkFilter.nix.
 # 
-# nix-instantiate --strict --json --eval ./mkFilter_test.nix
+# nix-instantiate --strict --json --eval ./mkFilter_test.nix | jq
 # [
 #   {
-#     "expected": true,
-#     "path": "/home/pedro/src/github.com/status-im/status-react/android/1",
-#     "result": true
+#     "pass": true,
+#     "path": "/ABS/PATH/android/subdir",
 #   },
 #   {
-#     "expected": true,
-#     "path": "/home/pedro/src/github.com/status-im/status-react/ios",
-#     "result": false
+#     "pass": true,
+#     "path": "/ABS/PATH/ios",
 #   }
+#   ...
 # ]
 
-{ pkgs ? import <nixpkgs> { },
-  lib ? pkgs.stdenv.lib }:
-
 let
+  pkgs = import <nixpkgs> { };
+  lib = pkgs.stdenv.lib;
   mkFilter = pkgs.callPackage ./mkFilter.nix { inherit lib; };
-  absPath = "/ABS/PROJECT/PATH";
+  absPath = "/ABS/PATH";
   filter = mkFilter {
-    dirRootsToInclude = [ "android" ];
-    # dirsToExclude ? [],  # Base names of directories to exclude
-    # filesToInclude ? [], # Relative path of files to include
-    # filesToExclude ? [], # Relative path of files to exclude
     root = absPath;
+    include = [ "android" ".*included.*" "sub/folder/.*" ];
+    exclude = [ ".*excluded.*" ];
   };
   tests = [
-    {
-      a = {
-        path = "${absPath}/android/1";
-        type = "directory";
-      };
-      e = true;
-    }
-    {
-      a = {
-        path = "${absPath}/ios";
-        type = "directory";
-      };
-      e = false;
-    }
+    { path = "/WRONG/ABS/PATH"; type = "directory";
+      expected = false; }
+    { path = "${absPath}/.git"; type = "directory";
+      expected = false; }
+    { path = "${absPath}/included"; type = "file";
+      expected = true; }
+    { path = "${absPath}/android/included"; type = "directory";
+      expected = true; }
+    { path = "${absPath}/sub"; type = "file";
+      expected = true; }
+    { path = "${absPath}/sub/folder"; type = "file";
+      expected = true; }
+    { path = "${absPath}/sub/folder/file"; type = "file";
+      expected = true; }
+    { path = "${absPath}/sub/folder/xyz/file"; type = "file";
+      expected = true; }
+    { path = "${absPath}/android/sub/included"; type = "directory";
+      expected = true; }
+    { path = "${absPath}/android/included/excluded"; type = "directory";
+      expected = false; }
+    { path = "${absPath}/android/excluded"; type = "directory";
+      expected = false; }
+    { path = "${absPath}/ios/included"; type = "directory";
+      expected = true; }
+    { path = "${absPath}/ios/subfile"; type = "file";
+      expected = false; }
   ];
-  boolToString = b: if b then "true" else "false";
-
+  # make paths absolute
+  testsAbs = builtins.map (
+    t: t // { path = "${absPath}/${t.path}"; }
+  ) tests;
 in builtins.map (
     t: let
-      rval = (filter t.a.path t.a.type);
+      rval = (filter t.path t.type);
     in {
-      path = t.a.path;
-      pass = t.e == rval;
+      path = t.path;
+      pass = t.expected == rval;
     }
   ) tests

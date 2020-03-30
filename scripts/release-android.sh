@@ -56,7 +56,6 @@ if [[ "$OS" =~ Darwin ]]; then
     " --option" "extra-sandbox-paths" "${KEYSTORE_PATH} ${SECRETS_FILE_PATH} ${WATCHMAN_SOCKFILE}"
   )
 else
-  echo wtf
   nixOpts+=(
     "--option" "extra-sandbox-paths" "${KEYSTORE_PATH} ${SECRETS_FILE_PATH}"
   )

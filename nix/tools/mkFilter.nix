@@ -1,44 +1,59 @@
 { lib }:
 
-# This Nix expression allows filtering a local directory by specifying dirRootsToInclude, dirsToExclude and filesToInclude.
-# It also filters out symlinks to result folders created by nix-build, as well as backup/swap/generated files
+# This Nix expression allows filtering a local directory by
+# specifying dirRootsToInclude, dirsToExclude and filesToInclude.
+# It also filters out symlinks to result folders created by nix-build,
+# as well as backup/swap/generated files.
 
 let
   inherit (lib)
-    any compare compareLists elem elemAt hasPrefix length min splitString take;
-
-  isPathAllowed = allowedPath: path:
-    let
-      count = min (length allowedPathElements) (length pathElements);
-      pathElements = splitString "/" path;
-      allowedPathElements = splitString "/" allowedPath;
-      pathElementsSubset = take count pathElements;
-      allowedPathElementsSubset = take count allowedPathElements;
-    in (compareLists compare allowedPathElementsSubset pathElementsSubset) == 0;
+    any range flatten length sublist cleanSourceFilter 
+    splitString hasPrefix removePrefix concatStringsSep;
+  inherit (builtins) map match;
 
   mkFilter = {
-    dirRootsToInclude, # Relative paths of directories to include
-    dirsToExclude ? [ ], # Base names of directories to exclude
-    filesToInclude ? [ ], # Relative path of files to include
-    filesToExclude ? [ ], # Relative path of files to exclude
-    root }:
+    # primary path under which all files are included, unless excluded
+    root,
+    # list of regex expressions to match files to include/exclude
+    include ? [ ], exclude ? [ ], # has precedence over include
+    }:
     let
-      allPathRootsAllowed = (length dirRootsToInclude) == 0;
-      # this removes superfluous slashes from the path
+      # removes superfluous slashes from the path
       cleanRoot = "${toString (/. + root)}/";
-    in
-      path: type:
-      let
-        baseName = baseNameOf (toString path);
-        subpath = elemAt (splitString cleanRoot path) 1;
-        spdir = elemAt (splitString "/" subpath) 0;
+    in path: type:
+    let
+      # unpack path: "x/y/.*" => ["x" "x/y" "x/y/.*"]
+      unpackPath = path:
+        let
+          tokens = splitString "/" path;
+          perms = range 1 (length tokens);
+          subPaths = builtins.map (x: sublist 0 x tokens) perms;
+        in builtins.map (x: concatStringsSep "/" x) subPaths;
+      # accept subdirs from regexes
+      includeSubdirs = regexes: flatten (map unpackPath regexes);
+      # checks all regexes in a list against str
+      matchesRegexes = str: regexes: (map (r: (match r str)) regexes);
+      # match returns empty list on match
+      isMatch = x: x == [ ];
+      # path relative to search root
+      relPath = removePrefix cleanRoot path;
+      # check if any of the regexes match the relative path
+      checkRegexes = regexes: any isMatch (matchesRegexes relPath regexes);
 
-      in lib.cleanSourceFilter path type && (
-        (type != "directory" && (elem spdir filesToInclude) && !(elem spdir filesToExclude)) ||
-        # check if any part of the directory path is described in dirRootsToInclude
-        ((allPathRootsAllowed || (any (dirRootToInclude: isPathAllowed dirRootToInclude subpath) dirRootsToInclude)) && ! (
-          # Filter out version control software files/directories
-          (type == "directory" && (elem baseName dirsToExclude))
-      )));
+      # main check methods
+      isRootSubdir = hasPrefix cleanRoot path;
+      isIncluded = checkRegexes (includeSubdirs include);
+      isExcluded = checkRegexes exclude;
+      isSCV = !cleanSourceFilter path type;
+
+    in
+      if !isRootSubdir then
+        # everything outside of root is excluded
+        false
+      else if isExcluded || isSCV then
+        # isExcluded has precedence over isIncluded
+        false
+      else
+        isIncluded;
 
 in mkFilter

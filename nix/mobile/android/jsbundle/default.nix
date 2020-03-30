@@ -20,12 +20,22 @@ in stdenv.mkDerivation {
       filter =
         # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
         mkFilter {
-          dirRootsToInclude = [ 
-            "components/src" "react-native/src/cljsjs" "react-native/src/mobile" "src" "env/prod" "prod" # Taken from project.clj :profiles :prod :cljsbuild :builds :android :source-paths
-            "resources" "status-modules/cljs" "status-modules/resources" "scripts/version"
+          include = [ 
+            "src/.*" "prod/.*" "env/prod/.*"
+            "components/src/.*" 
+            "react-native/src" 
+            "react-native/src/cljsjs/.*"
+            "react-native/src/mobile/.*"
+            "status-modules/cljs/.*"
+            "status-modules/resources/.*"
+            "build.clj" "externs.js"
+            "project.clj" "prepare-modules.js"
+            "resources/js/.*"
+            "resources/config/.*"
           ];
-          dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".gradle" "build" "intermediates" "libs" "obj" ];
-          filesToInclude = [ "build.clj" "externs.js" "project.clj" "prepare-modules.js" "VERSION" "BUILD_NUMBER"];
+          exclude = [
+            "resources/images/.*"
+          ];
           root = path;
         };
     };
