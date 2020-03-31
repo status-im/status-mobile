@@ -2,6 +2,8 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.button :as button]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.colors :as colors]
             [status-im.react-native.resources :as resources]))
 
 (defn perk [{:keys [image name value]}]
@@ -31,15 +33,14 @@
                           :typography    :title-bold
                           :text-align    :center
                           :margin-bottom 8}}
-      "You purchased the Crypto Starter Pack"]
+      (i18n/label :t/starter-pack-success-title)]
      [react/text {:style {:font-size   15
                           :text-align  :center
                           :line-height 22}}
-      "Once the transaction is complete, Status account will be credited with the purchased assets. This might take a minute."]]
-
+      (i18n/label :t/starter-pack-success-description)]]
     [react/view {:style {:border-radius      8
                          :border-width       1
-                         :border-color       "#EEF2F5"
+                         :border-color       colors/gray-lighter
                          :width              "100%"
                          :padding-vertical   8
                          :padding-horizontal 12}}
@@ -51,7 +52,7 @@
             :value "0.0014"}]
      [perk {:image :tozemoon-asset
             :name  "Tozemoon"
-            :value "20 sticker"}]]
+            :value "20 stickers"}]]
     [react/view {:style {:margin-vertical 8}}
      [button/button {:on-press #(re-frame/dispatch [:hide-popover])
                      :label    :t/ok-got-it}]]]])

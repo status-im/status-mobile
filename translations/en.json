@@ -544,6 +544,8 @@
     "starter-pack-title": "Crypto starter pack",
     "starter-pack-description": "Spend {{price}} and get the Tozemoon Sticker Pack and {{crypto} {{crypto-currency}}!",
     "buy-starter-pack": "Buy for {{price}}",
+    "starter-pack-success-title": "You purchased the Crypto Starter Pack",
+    "starter-pack-success-description": "Once the transaction is complete, Status account will be credited with the purchased assets. This might take a minute.",
     "key": "Key",
     "keycard": "Keycard",
     "keycard-applet-install-instructions": "To install the applet please follow the instructions on https://github.com/status-im/keycard-cli#keycard-applet-installation",
