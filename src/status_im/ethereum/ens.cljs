@@ -97,6 +97,24 @@
     (fn [[name]]
       (cb name))}))
 
+(defn cleanup-hash [raw-hash]
+  ;; NOTE: it would be better if our abi-spec/decode was able to do that
+  (let [;; ignore hex prefix
+        [_ raw-hash-rest] (split-at 2 raw-hash)
+        ;; the first field gives us the length of the next one in hex and has
+        ;; a length of 32 bytes
+        ;; 1 byte is 2 chars here
+        [next-field-length-hex raw-hash-rest] (split-at 64 raw-hash-rest)
+        next-field-length (* ^number (abi-spec/hex-to-number (string/join next-field-length-hex)) 2)
+        ;; we get the next field which is the length of the hash and is
+        ;; expected to be 32 bytes as well
+        [hash-field-length-hex raw-hash-rest]  (split-at next-field-length
+                                                         raw-hash-rest)
+        hash-field-length (* ^number (abi-spec/hex-to-number (string/join hash-field-length-hex)) 2)
+        ;; we get the hash
+        [hash _] (split-at hash-field-length raw-hash-rest)]
+    (str "0x" (string/join hash))))
+
 (defn contenthash
   [resolver ens-name cb]
   (json-rpc/eth-call
@@ -106,21 +124,7 @@
     :on-success
     (fn [raw-hash]
       ;; NOTE: it would be better if our abi-spec/decode was able to do that
-      (let [;; ignore hex prefix
-            [_ raw-hash-rest] (split-at 2 raw-hash)
-            ;; the first field gives us the length of the next one in hex and has
-            ;; a length of 32 bytes
-            ;; 1 byte is 2 chars here
-            [next-field-length-hex raw-hash-rest] (split-at 64 raw-hash-rest)
-            next-field-length (* ^number (abi-spec/hex-to-number (string/join next-field-length-hex)) 2)
-            ;; we get the next field which is the length of the hash and is
-            ;; expected to be 32 bytes as well
-            [hash-field-length-hex raw-hash-rest]  (split-at next-field-length
-                                                             raw-hash-rest)
-            hash-field-length (* ^number (abi-spec/hex-to-number (string/join hash-field-length-hex)) 2)
-            ;; we get the hash
-            [hash _] (split-at hash-field-length raw-hash-rest)]
-        (cb (string/join "0x" hash))))}))
+      (cb (cleanup-hash raw-hash)))}))
 
 (defn content
   [resolver ens-name cb]
