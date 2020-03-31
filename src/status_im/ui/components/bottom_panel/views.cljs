@@ -3,10 +3,25 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.animation :as anim]
             [reagent.core :as reagent]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.react-native.js-dependencies :as js-dependencies]))
+
+(def back-listener (atom nil))
+
+(defn remove-back-listener []
+  (when @back-listener
+    (.remove @back-listener)
+    (reset! back-listener nil)))
+
+(defn add-back-listener []
+  (remove-back-listener)
+  (reset! back-listener (.addEventListener js-dependencies/back-handler
+                                           "hardwareBackPress"
+                                           (fn [] true))))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
+  (remove-back-listener)
   (react/dismiss-keyboard!)
   (anim/start
    (anim/parallel
@@ -18,6 +33,7 @@
 
 (defn show-panel-anim
   [bottom-anim-value alpha-value]
+  (add-back-listener)
   (anim/start
    (anim/parallel
     [(anim/spring bottom-anim-value {:toValue         40
