@@ -38,14 +38,15 @@
 (views/defview account-card [{:keys [address color type] :as account}]
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:account-portfolio-value address]
-                  window-width    [:dimensions/window-width]]
+                  window-width    [:dimensions/window-width]
+                  prices-loading? [:prices-loading?]]
     [react/view {:style (styles/card window-width color)}
      [react/view {:padding 16 :padding-bottom 12 :flex 1 :justify-content :space-between}
-      [react/nested-text {:style {:color       colors/white-transparent-persist :line-height 38
-                                  :font-weight "600" :font-size 32}}
-       [{:style {:color colors/white-persist}} portfolio-value]
-       " "
-       (:code currency)]
+      [react/view {:style {:flex-direction :row}}
+       (if prices-loading?
+         [react/small-loading-indicator :colors/white-persist]
+         [react/text {:style {:font-size 32 :color colors/white-persist :font-weight "600"}} portfolio-value])
+       [react/text {:style {:font-size 32 :color colors/white-transparent-persist :font-weight "600"}} (str " " (:code currency))]]
       [react/text {:number-of-lines 1 :ellipsize-mode :middle
                    :style           {:width (/ window-width 3)
                                      :line-height 22 :font-size 13
@@ -92,7 +93,8 @@
 
 (views/defview assets-and-collections [address]
   (views/letsubs [{:keys [tokens nfts]} [:wallet/visible-assets-with-values address]
-                  currency [:wallet/currency]]
+                  currency [:wallet/currency]
+                  prices-loading? [:prices-loading?]]
     (let [{:keys [tab]} @state]
       [react/view {:flex 1}
        [react/view {:flex-direction :row :margin-bottom 8 :padding-horizontal 4}
@@ -104,7 +106,7 @@
          [list/flat-list {:data               tokens
                           :default-separator? false
                           :key-fn             :name
-                          :render-fn          (accounts/render-asset (:code currency))}]
+                          :render-fn          (accounts/render-asset (:code currency) prices-loading?)}]
          (= tab :nft)
          (if (seq nfts)
            [list/flat-list {:data               nfts

@@ -11,12 +11,14 @@
 
 (views/defview assets [address]
   (views/letsubs [{:keys [tokens]} [:wallet/visible-assets-with-values address]
-                  currency [:wallet/currency]]
+                  currency [:wallet/currency]
+                  prices-loading? [:prices-loading?]]
     [list/flat-list
      {:data      tokens
       :key-fn    (comp str :symbol)
       :render-fn (wallet.accounts/render-asset
                   (:code currency)
+                  prices-loading?
                   #(re-frame/dispatch [:wallet.send/set-symbol (:symbol %)]))}]))
 
 (defn render-account [field event]

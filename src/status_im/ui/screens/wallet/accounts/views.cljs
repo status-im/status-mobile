@@ -19,7 +19,8 @@
 
 (views/defview account-card [{:keys [name color address type] :as account}]
   (views/letsubs [currency        [:wallet/currency]
-                  portfolio-value [:account-portfolio-value address]]
+                  portfolio-value [:account-portfolio-value address]
+                  prices-loading? [:prices-loading?]]
     [react/touchable-highlight
      {:on-press      #(re-frame/dispatch [:navigate-to :wallet-account account])
       :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
@@ -27,11 +28,11 @@
                                            :content-height 130}])}
      [react/view {:style (styles/card color)}
       [react/view {:flex-direction :row :align-items :center :justify-content :space-between}
-       [react/nested-text {:style {:color colors/white-transparent-persist
-                                   :font-weight "500" :flex-shrink 1}}
-        [{:style {:color colors/white-persist}} portfolio-value]
-        " "
-        (:code currency)]
+       [react/view {:style {:flex-direction :row}}
+        (if prices-loading?
+          [react/small-loading-indicator :colors/white-persist]
+          [react/text {:style {:color colors/white-persist :font-weight "500"}} portfolio-value])
+        [react/text {:style {:color colors/white-transparent-persist :font-weight "500"}} (str " " (:code currency))]]
        [react/touchable-highlight
         {:on-press #(re-frame/dispatch [:show-popover
                                         {:view :share-account :address address}])}
@@ -65,14 +66,18 @@
    (when active?
      [react/view {:width 24 :height 3 :border-radius 4 :background-color colors/blue}])])
 
-(defn render-asset [currency & [on-press]]
+(defn render-asset [currency prices-loading? & [on-press]]
   (fn [{:keys [icon decimals amount color value] :as token}]
     [list-item/list-item
      (cond-> {:title-prefix         (wallet.utils/format-amount amount decimals)
               :title                (wallet.utils/display-symbol token)
               :title-color-override colors/gray
               :accessibility-label (str (:symbol token)  "-asset-value")
-              :subtitle             (str (if value value 0) " " currency)
+              :subtitle             [react/view {:style {:flex-direction :row :line-height 22}}
+                                     (if prices-loading?
+                                       [react/small-loading-indicator]
+                                       [react/text {:style {:color colors/gray}} (if value value 0)])
+                                     [react/text {:style {:color colors/gray}} (str " " currency)]]
               :icon                 (if icon
                                       [list/item-image icon]
                                       [chat-icon/custom-icon-view-list (:name token) color])}
@@ -81,20 +86,23 @@
 
 (views/defview assets []
   (views/letsubs [{:keys [tokens nfts]} [:wallet/all-visible-assets-with-values]
-                  currency [:wallet/currency]]
+                  currency [:wallet/currency]
+                  prices-loading? [:prices-loading?]]
     [list/flat-list {:data               tokens
                      :default-separator? false
                      :key-fn             :name
-                     :render-fn          (render-asset (:code currency))}]))
+                     :render-fn          (render-asset (:code currency) prices-loading?)}]))
 
 (views/defview total-value []
   (views/letsubs [currency        [:wallet/currency]
-                  portfolio-value [:portfolio-value]]
+                  portfolio-value [:portfolio-value]
+                  prices-loading? [:prices-loading?]]
     [react/view {:style {:padding-horizontal 16}}
-     [react/nested-text {:style {:font-size 32 :color colors/gray :font-weight "600"}}
-      [{:style {:color colors/black}} portfolio-value]
-      " "
-      (:code currency)]
+     [react/view {:style {:flex-direction :row}}
+      (if prices-loading?
+        [react/small-loading-indicator]
+        [react/text {:style {:font-size 32 :color colors/black :font-weight "600"}} portfolio-value])
+      [react/text {:style {:font-size 32 :color colors/gray :font-weight "600"}} (str " " (:code currency))]]
      [react/text {:style {:color colors/gray}} (i18n/label :t/wallet-total-value)]]))
 
 (defn- request-camera-permissions []

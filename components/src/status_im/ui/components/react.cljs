@@ -70,6 +70,11 @@
 (defn activity-indicator [props]
   [activity-indicator-class props])
 
+(defn small-loading-indicator [color]
+  [activity-indicator {:color   (if color color :colors/gray)
+                       :ios     {:size :small}
+                       :android {:size :16}}])
+
 (def modal (get-class "Modal"))
 
 (def pan-responder (.-PanResponder js-dependencies/react-native))

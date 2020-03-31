@@ -221,7 +221,7 @@ class AccountElementButton(BaseButton):
 
     def color_matches(self, expected_color_image_name: str):
         amount_text = BaseText(self.driver)
-        amount_text.locator = amount_text.Locator.xpath_selector(self.locator.value + "//*[@text='0 USD']")
+        amount_text.locator = amount_text.Locator.xpath_selector(self.locator.value + "//*[@text=' USD']")
         return amount_text.is_element_image_equals_template(expected_color_image_name)
 
 

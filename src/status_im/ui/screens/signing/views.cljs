@@ -174,32 +174,24 @@
         [react/text (or formatted-data "")]]]
       [password-view sign]]]))
 
-(defn amount-item [prices wallet-currency amount amount-error display-symbol fee-display-symbol]
+(defn amount-item [prices wallet-currency amount amount-error display-symbol fee-display-symbol prices-loading?]
   (let [converted-value (* amount (get-in prices [(keyword display-symbol) (keyword (:code wallet-currency)) :price]))]
     [list-item/list-item
      {:type  :small
       :title :t/send-request-amount
       :error amount-error
-      :accessories [[react/nested-text {:style {:color colors/gray}}
-                     [{:style {:color colors/black}} (utils/format-decimals amount 6)]
-                     " "
-                     (or display-symbol fee-display-symbol)
-                     " • "
-                     [{:style {:color colors/black}}
-                      (if converted-value
-                        (i18n/format-currency converted-value (:code wallet-currency))
-                        [react/activity-indicator {:color   :colors/gray
-                                                   :ios   {:size  :small}
-                                                   :android {:size :16}}])]
-                     " "
-                     (str (:code wallet-currency))]]}]))
+      :accessories [[react/view {:style {:flex-direction :row}}
+                     [react/nested-text {:style {:color colors/gray}}
+                      [{:style {:color colors/black}} (utils/format-decimals amount 6)]
+                      " "
+                      (or display-symbol fee-display-symbol)
+                      " • "]
+                     (if prices-loading?
+                       [react/small-loading-indicator]
+                       [react/text {:style {:color colors/black}} (i18n/format-currency converted-value (:code wallet-currency))])
+                     [react/text {:style {:color colors/gray}} (str " " (:code wallet-currency))]]]}]))
 
-(defn loading-indicator []
-  [react/activity-indicator {:color   :colors/gray
-                             :ios   {:size  :small}
-                             :android {:size :16}}])
-
-(views/defview fee-item [prices wallet-currency fee-display-symbol fee gas-error]
+(views/defview fee-item [prices wallet-currency fee-display-symbol fee gas-error prices-loading?]
   (views/letsubs [{:keys [gas-price-loading? gas-loading?]} [:signing/edit-fee]]
     (let [converted-fee-value (* fee (get-in prices [(keyword fee-display-symbol) (keyword (:code wallet-currency)) :price]))]
       [list-item/list-item
@@ -208,16 +200,17 @@
         :error       (when-not (or gas-price-loading? gas-loading?) gas-error)
         :disabled?   (or gas-price-loading? gas-loading?)
         :accessories (if (or gas-price-loading? gas-loading?)
-                       [[loading-indicator]]
-                       [[react/nested-text {:style {:color colors/gray}}
-                         [{:style {:color colors/black}} (utils/format-decimals fee 6)]
-                         " "
-                         fee-display-symbol
-                         " • "
-                         [{:style {:color colors/black}}
-                          (i18n/format-currency converted-fee-value (:code wallet-currency))]
-                         " "
-                         (str (:code wallet-currency))]
+                       [[react/small-loading-indicator]]
+                       [[react/view {:style {:flex-direction :row}}
+                         [react/nested-text {:style {:color colors/gray}}
+                          [{:style {:color colors/black}} (utils/format-decimals fee 6)]
+                          " "
+                          fee-display-symbol
+                          " • "]
+                         (if prices-loading?
+                           [react/small-loading-indicator]
+                           [react/text {:style {:color colors/black}} (i18n/format-currency converted-fee-value (:code wallet-currency))])
+                         [react/text {:style {:color colors/gray}} (str " " (:code wallet-currency))]]
                         :chevron])
         :on-press    #(re-frame/dispatch
                        [:signing.ui/open-fee-sheet
@@ -239,7 +232,8 @@
                   keycard-multiaccount? [:keycard-multiaccount?]
                   prices                [:prices]
                   wallet-currency       [:wallet/currency]
-                  mainnet?              [:mainnet?]]
+                  mainnet?              [:mainnet?]
+                  prices-loading?       [:prices-loading?]]
     (let [display-symbol     (wallet.utils/display-symbol token)
           fee-display-symbol (wallet.utils/display-symbol (tokens/native-currency chain))]
       [react/view (styles/sheet)
@@ -258,9 +252,9 @@
           [contact-item (i18n/label :t/to) contact]
           [separator]
           [token-item token display-symbol]
-          [amount-item prices wallet-currency amount amount-error display-symbol fee-display-symbol]
+          [amount-item prices wallet-currency amount amount-error display-symbol fee-display-symbol prices-loading?]
           [separator]
-          [fee-item prices wallet-currency fee-display-symbol fee gas-error]
+          [fee-item prices wallet-currency fee-display-symbol fee gas-error prices-loading?]
           [react/view {:align-items :center :margin-top 16 :margin-bottom 40}
            (if keycard-multiaccount?
              [sign-with-keycard-button amount-error gas-error]
