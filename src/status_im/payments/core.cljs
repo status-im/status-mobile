@@ -91,10 +91,9 @@
                   :semver      build/version
                   :platform    platform/os
                   :receipt     purchase-data}
-        msg      (types/clj->json message)
-        msg-hash (ethereum/sha3 msg)]
+        msg      (types/clj->json message)]
     {::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) "signMessageWithChatKey")
-                       :params     [msg-hash]
+                       :params     [msg]
                        :on-error   #(re-frame/dispatch [::on-error "Sign message error"])
                        :on-success #(re-frame/dispatch [::call-payment-gateway
                                                         {:purchse    purchase-data
