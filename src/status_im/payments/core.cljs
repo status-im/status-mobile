@@ -83,14 +83,14 @@
 (fx/defn handle-purchase
   {:events [::handle-purchase]}
   [{:keys [db] :as cofx} on-success purchase-data]
-  (let [message  {:invite_code nil
+  (let [address  (ethereum/default-address db)
+        message  {:invite_code nil
                   :cid         nil
                   :type        "purchase"
-                  :chat_key    (get-in db [:multiaccount :public-key])
+                  :address     address
                   :semver      build/version
                   :platform    platform/os
                   :receipt     purchase-data}
-        address  (ethereum/default-address db)
         msg      (types/clj->json message)
         msg-hash (ethereum/sha3 msg)]
     {::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) "signMessageWithChatKey")
@@ -98,30 +98,32 @@
                        :on-error   #(re-frame/dispatch [::on-error "Sign message error"])
                        :on-success #(re-frame/dispatch [::call-payment-gateway
                                                         {:purchse    purchase-data
-                                                         :address    address
+                                                         :chat-key    (get-in db [:multiaccount :public-key])
                                                          :message    msg
                                                          :on-success on-success} %])}]}))
 
 (fx/defn call-payment-gateway
   {:events [::call-payment-gateway]}
-  [cofx {:keys [purchase address message on-success]} sig]
-  (let [payload {:address address
-                 :msg     message
-                 :sig     sig
-                 :version 2}]
+  [cofx {:keys [purchase chat-key message on-success]} sig]
+  (let [payload {:chat_key chat-key
+                 :msg      message
+                 :sig      sig
+                 :version  2}]
+    (prn (types/clj->json payload))
     {:http-post {:url                   payment-gateway
+                 :opts                  {:headers {"Content-Type" "application/json"}}
                  :data                  (types/clj->json payload)
-                 :response-validator    (fn [] false)
                  :success-event-creator (fn [r] [::gateway-on-success purchase on-success r])
                  :failure-event-creator (fn [e] [::gateway-on-error e])}}))
 
 (fx/defn gateway-success
   {:events [::gateway-on-success]}
-  [cofx purchase on-success]
+  [cofx purchase on-success opts]
   {::confirm-purchase purchase
-   :dispatch          [on-success]})
+   :dispatch          [on-success opts]})
 
 (fx/defn gateway-error
   {:events [::gateway-on-error]}
   [cofx opts]
+  (prn opts)
   (handle-error cofx "Backend error"))
