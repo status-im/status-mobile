@@ -18,6 +18,7 @@
 
 (def use-focus-effect (oget native "useFocusEffect"))
 (def use-callback (oget js-dependencies/react "useCallback"))
+(def use-effect (oget js-dependencies/react "useEffect"))
 
 (def add-back-handler-listener (oget js-dependencies/back-handler "addEventListener"))
 (def remove-back-handler-listener (oget js-dependencies/back-handler "removeEventListener"))
@@ -46,6 +47,17 @@
           (remove-back-handler-listener "hardwareBackPress" on-back-press))))
     #js [])))
 
+(defn handle-on-screen-blur [navigation]
+  (use-effect
+   (fn []
+     (ocall navigation "addListener" "blur"
+            (fn []
+              ;; Reset currently mounted text inputs to their default values
+              ;; on navigating away; this is a privacy measure
+              (doseq [[text-input default-value] @react/text-input-refs]
+                (.setNativeProps text-input (clj->js {:text default-value}))))))
+   #js [navigation]))
+
 (defn wrapped-screen-style [{:keys [insets style]} insets-obj]
   (merge
    {:background-color colors/white
@@ -70,6 +82,8 @@
 (defn wrap-screen [{:keys [component] :as options}]
   (assoc options :component
          (fn [props]
+           (handle-on-screen-blur
+            (oget props "navigation"))
            (handle-on-screen-focus options)
            (let [props'   (js->clj props :keywordize-keys true)
                  focused? (oget props "navigation" "isFocused")]

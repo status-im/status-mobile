@@ -59,7 +59,9 @@
 
 (def back-handler #js {:addEventListener identity
                        :removeEventListener identity})
-(def react #js {:useCallback nil})
+(def react #js {:useCallback nil
+                :useEffect nil
+                :useRef nil})
 (def react-navigation-native #js {:NavigationContainer #js {}
                                   :useFocusEffect      identity
                                   :CommonActions       #js {}
