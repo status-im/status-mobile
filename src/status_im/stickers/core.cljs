@@ -15,10 +15,10 @@
             [status-im.utils.utils :as utils]))
 
 (defn pack-data-callback
-  [id]
+  [id on-success-load]
   (fn [[_ _ _ _ price contenthash]]
     (when-let [url (contenthash/url contenthash)]
-      (re-frame/dispatch [:stickers/load-pack url id price]))))
+      (re-frame/dispatch [:stickers/load-pack url id price on-success-load]))))
 
 (re-frame/reg-fx
  :stickers/set-pending-timeout-fx
@@ -27,20 +27,22 @@
                       10000)))
 
 (defn eth-call-pack-data
-  [contract id]
-  (json-rpc/eth-call
-   {:contract contract
-    ;; Returns vector of pack data parameters by pack id:
-    ;; [category owner mintable timestamp price contenthash]
-    :method "getPackData(uint256)"
-    :params [id]
-    :outputs ["bytes4[]" "address" "bool" "uint256" "uint256" "bytes"]
-    :on-success (pack-data-callback id)}))
+  ([contract id]
+   (eth-call-pack-data contract id nil))
+  ([contract id on-success-load]
+   (json-rpc/eth-call
+    {:contract contract
+     ;; Returns vector of pack data parameters by pack id:
+     ;; [category owner mintable timestamp price contenthash]
+     :method "getPackData(uint256)"
+     :params [id]
+     :outputs ["bytes4[]" "address" "bool" "uint256" "uint256" "bytes"]
+     :on-success (pack-data-callback id on-success-load)})))
 
 (re-frame/reg-fx
  :stickers/pack-data-fx
- (fn [[contract id]]
-   (eth-call-pack-data contract id)))
+ (fn [[contract id on-success-load]]
+   (eth-call-pack-data contract id on-success-load)))
 
 (re-frame/reg-fx
  :stickers/load-packs-fx
@@ -116,14 +118,20 @@
   (contains? sticker :hash))
 
 (fx/defn load-sticker-pack-success
-  [{:keys [db] :as cofx} edn-string id price]
+  {:events [:stickers/load-sticker-pack-success]}
+  [{:keys [db] :as cofx} edn-string id price on-success-load]
   (let [{:keys [stickers] :as pack} (assoc (get (edn/read-string edn-string) 'meta)
                                            :id id :price price)]
     (fx/merge cofx
-              {:db (cond-> db
-                     (and (seq stickers)
-                          (every? valid-sticker? stickers))
-                     (assoc-in [:stickers/packs id] pack))})))
+              {:db       (cond-> db
+                           (and (seq stickers)
+                                (every? valid-sticker? stickers))
+                           (assoc-in [:stickers/packs id] pack))}
+              (fn [_]
+                (when (and (seq stickers)
+                           (every? valid-sticker? stickers)
+                           (vector? on-success-load))
+                  {:dispatch on-success-load})))))
 
 (fx/defn open-sticker-pack
   [{{:stickers/keys [packs packs-installed] :networks/keys [current-network] :as db} :db :as cofx} id]
@@ -140,11 +148,12 @@
                     :stickers/owned-packs-fx [pack-contract address]})))))
 
 (fx/defn load-pack
-  [cofx url id price]
+  {:events [:stickers/load-pack]}
+  [cofx url id price on-success-load]
   {:http-get {:url url
               :success-event-creator
               (fn [o]
-                [:stickers/load-sticker-pack-success o id price])}})
+                [:stickers/load-sticker-pack-success o id price on-success-load])}})
 
 (fx/defn load-packs
   [{:keys [db]}]

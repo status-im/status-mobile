@@ -962,11 +962,6 @@
              (multiaccounts.update/send-multiaccount-update))))
 
 (handlers/register-handler-fx
- :stickers/load-sticker-pack-success
- (fn [cofx [_ edn-string id price]]
-   (stickers/load-sticker-pack-success cofx edn-string id price)))
-
-(handlers/register-handler-fx
  :stickers/install-pack
  (fn [cofx [_ id]]
    (stickers/install-stickers-pack cofx id)))
@@ -975,11 +970,6 @@
  :stickers/load-packs
  (fn [cofx _]
    (stickers/load-packs cofx)))
-
-(handlers/register-handler-fx
- :stickers/load-pack
- (fn [cofx [_ url id price]]
-   (stickers/load-pack cofx url id price)))
 
 (handlers/register-handler-fx
  :stickers/select-pack
