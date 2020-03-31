@@ -286,5 +286,8 @@
                 [react/image {:style  {:margin 10 :width 140 :height 140}
                               ;;TODO (perf) move to event
                               :source {:uri (contenthash/url (-> content :sticker :hash))}}]
-                [message-bubble-wrapper message
-                 [react/text (str "Unhandled content-type " content-type)]]))))]])))
+                (if (= content-type constants/content-type-image)
+                  [react/image {:style {:margin-vertical 10 :width 140 :height 140 :border-radius 8}
+                                :source {:uri (str "https://ipfs.infura.io/ipfs/" (:hash content))}}]
+                  [message-bubble-wrapper message
+                   [react/text (str "Unhandled content-type " content-type)]])))))]])))
