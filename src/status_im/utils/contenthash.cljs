@@ -32,10 +32,9 @@
     (cond
       (and (string/starts-with? hex "0xe40101"))
       ;; content type can be 2 or 4 bytes
-      ;; we expect 1b20 (hash algorithm and hash length 64)
+      ;; we expect 1b20 (hash algorithm keccak256 and hash length 64)
       ;; before the hash so we split the contenthash there
       (when-let [hash (second (string/split hex "1b20"))]
-        (when (= 0x20 (count hash)))
         {:namespace :swarm
          :hash hash})
       (and (= 78 (count hex))
