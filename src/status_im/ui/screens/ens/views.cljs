@@ -258,23 +258,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn- agreement [checked contract]
-  [react/view {:flex-direction :row
-               :margin-left 26 ;; 10 for checkbox + 16
-               :margin-right 16
-               :margin-top 14
-               :align-items :flex-start
+  [react/view {:flex-direction  :row
+               :margin-left     26                          ;; 10 for checkbox + 16
+               :margin-right    16
+               :margin-top      14
+               :align-items     :flex-start
                :justify-content :center}
    [checkbox/checkbox {:checked?        @checked
                        :style           {:padding 0}
                        :on-value-change #(reset! checked %)}]
-   [react/view {:style {:padding-left 10}}
-    [react/view {:style {:flex-direction :row}}
-     [react/text
-      (i18n/label :t/ens-agree-to)]
-     [link {:on-press #(re-frame/dispatch [:navigate-to :ens-terms {:contract contract}])}
-      (i18n/label :t/ens-terms-registration)]]
-    [react/text
-     (i18n/label :t/ens-understand)]]])
+   [react/nested-text {:style {:margin-left 10}}
+    (i18n/label :t/ens-agree-to)
+    [{:style    {:color colors/blue}
+      :on-press #(re-frame/dispatch [:navigate-to :ens-terms {:contract contract}])}
+     (i18n/label :t/ens-terms-registration)]
+    "\n"
+    (i18n/label :t/ens-understand)]])
 
 (defn- registration-bottom-bar
   [checked? amount-label]
