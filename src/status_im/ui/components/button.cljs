@@ -16,8 +16,8 @@
      (= :previous type)
      {:padding-right 20 :padding-left 12}
      :else nil)
-   {:height 44 :border-radius 8
-    :align-items :center :justify-content :center
+   {:height           44      :border-radius   8
+    :align-items      :center :justify-content :center
     :background-color (cond
                         (#{:secondary :next :previous} type)
                         ""
@@ -25,8 +25,9 @@
                         colors/gray-transparent-10
                         (= type :main)
                         (case theme
-                          :red colors/red-transparent-10
-                          :green colors/green-transparent-10
+                          :main-blue colors/blue
+                          :red       colors/red-transparent-10
+                          :green     colors/green-transparent-10
                           colors/blue-transparent-10)
                         :else
                         "")}))
@@ -67,17 +68,17 @@
        (when (= type :previous)
          [vector-icons/icon :main-icons/back {:container-style {:width 24 :height 24 :margin-right 4}
                                               :color           (if disabled? colors/gray colors/blue)}])
-       [react/text {:style (merge {:color (cond
-                                            disabled?
-                                            colors/gray
-                                            (#{:main :secondary :next :previous} type)
-                                            (case theme
-                                              :green colors/green
-                                              :red   colors/red
-                                              colors/blue)
-                                            :else
-                                            "")}
-                                  text-style)}
+       [react/text {:style {:color (cond
+                                     disabled?
+                                     colors/gray
+                                     (#{:main :secondary :next :previous} type)
+                                     (case theme
+                                       :green     colors/green
+                                       :red       colors/red
+                                       :main-blue colors/white
+                                       colors/blue)
+                                     :else
+                                     "")}}
         label]
        (when (= type :next)
          [vector-icons/icon :main-icons/next {:container-style {:width 24 :height 24 :margin-left 4}

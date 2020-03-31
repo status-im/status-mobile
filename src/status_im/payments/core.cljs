@@ -13,7 +13,7 @@
             [status-im.utils.build :as build]
             ["react-native-iap" :as react-native-iap]))
 
-(def payment-gateway "")
+(def payment-gateway "http://c60e4bc2.ngrok.io/events/")
 
 (def rn-iap (oget react-native-iap "default"))
 (def purchase-updated-listener (oget react-native-iap "purchaseUpdatedListener"))
@@ -25,7 +25,7 @@
 
 (defn get-product [sku on-success]
   (-> (get-products (clj->js [sku]))
-      (.then on-success)
+      (.then (comp on-success js->clj))
       (.catch #(log/warn "GET PRODUCTS ERROR:" (js->clj %)))))
 
 (defn clear-purchase-listeners [active-listeners]

@@ -5,41 +5,40 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.button :as button]
-            [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.components.colors :as colors]
             [status-im.payments.core :as payment]
             [status-im.ui.starter-pack.events :as sp]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.list.views :as list]
             [status-im.ethereum.tokens :as tokens]
+            [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]))
 
 ;; TODO: Show starter pack only on mainnet?
 ;; TODO: Show if it is not buyed already
+
 (defview starter-pack []
   (letsubs [starter-pack-state [::sp/starter-pack-state]
             can-pay            [::payment/can-make-payment]
             listeners          (reagent/atom nil)
-            purchased (reagent/atom nil)
-            canceled (reagent/atom nil)
-            unavailable (reagent/atom nil)
-            product-to-buy "android.test.purchased"]
+            product (reagent/atom nil)
+            price (reagent/cursor product [0 "localizedPrice"])
+            product-to-buy "starterpack.0"]
     {:component-did-mount
      (fn []
-       (payment/get-product "android.test.purchased" #(reset! purchased %))
-       (payment/get-product "android.test.canceled" #(reset! canceled %))
-       (payment/get-product "android.test.item_unavailable" #(reset! unavailable %))
+       (payment/get-product product-to-buy #(reset! product %))
        (reset! listeners (payment/purchase-listeners ::sp/success-buy)))
      :component-will-unmount
      (fn []
        (when @listeners
          (payment/clear-purchase-listeners @listeners)
          (reset! listeners nil)))}
-    (when (and (= :visible starter-pack-state) can-pay)
+    (when (and (= :visible starter-pack-state) can-pay @product)
       [react/view {:style {:padding             8
-                           :background-color    "#ECEFFC"
+                           :background-color    colors/blue-light
                            :border-top-width    1
                            :border-bottom-width 1
-                           :border-color        "rgba(67, 96, 223, 0.1)"}}
+                           :border-color        (colors/alpha colors/blue 0.1)}}
        [react/view {:style {:flex-direction :row}}
         [react/view {:style {}}
          [react/image {:source (resources/get-image :starter-pack)
@@ -50,47 +49,28 @@
          [react/text {:style {:line-height 24
                               :font-size   17
                               :font-weight "500"}}
-          "Crypto Starter Pack"]
+          (i18n/label :t/starter-pack-title)]
          [react/text {:style {:font-size   15
                               :line-height 22}}
-          "Spend $5 and get the Tozemoon Sticker Pack and 300 SNT!"]]
+          (i18n/label :t/starter-pack-description {:price           @price
+                                                   :crypto          "300"
+                                                   :crypto-currency "SNT"})]]
         [react/view
          [react/touchable-highlight
           {:on-press            #(re-frame/dispatch [::sp/close-starter-pack])
            :style               {:padding 8}
            :accessibility-label :hide-home-button}
-          [react/view {:style styles/close-icon-container}
+          [react/view {:style {:width            24
+                               :height           24
+                               :border-radius    12
+                               :background-color colors/gray
+                               :align-items      :center
+                               :justify-content  :center}}
            [icons/icon :main-icons/close {:color colors/white}]]]]]
-       [react/view {:style {:padding 8}}
-        (when @purchased
-          [react/touchable-highlight {:on-press #(re-frame/dispatch [::payment/request-payment "android.test.purchased"])}
-           [react/view {:style {:background-color "black"
-                                :height           44
-                                :border-radius    8
-                                :align-items      :center
-                                :justify-content  :center
-                                :flex             1}}
-            [react/text {:style {:color "white"}}
-             "Here PAY purchased"]]])
-        (when @canceled
-          [react/touchable-highlight {:on-press #(re-frame/dispatch [::payment/request-payment "android.test.canceled"])}
-           [react/view {:style {:background-color "black"
-                                :height           44
-                                :margin-top       8
-                                :border-radius    8
-                                :align-items      :center
-                                :justify-content  :center
-                                :flex             1}}
-            [react/text {:style {:color "white"}}
-             "Here PAY canceled"]]])
-        (when @unavailable
-          [react/touchable-highlight {:on-press #(re-frame/dispatch [::payment/request-payment "android.test.item_unavailable"])}
-           [react/view {:style {:background-color "black"
-                                :height           44
-                                :margin-top       8
-                                :border-radius    8
-                                :align-items      :center
-                                :justify-content  :center
-                                :flex             1}}
-            [react/text {:style {:color "white"}}
-             "Here PAY unavailable"]]])]])))
+       [react/view {:style {:padding         8
+                            :flex-direction  :row
+                            :justify-content :center
+                            :align-items     :center}}
+        [button/button {:on-press #(re-frame/dispatch [::payment/request-payment product-to-buy])
+                        :theme    :main-blue
+                        :label    (i18n/label :t/buy-starter-pack {:price @price})}]]])))
