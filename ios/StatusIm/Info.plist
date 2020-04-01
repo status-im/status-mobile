@@ -76,9 +76,7 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Please allow Status to use your phone camera</string>
-	<key>NSContactsUsageDescription</key>
-	<string>We need to access your contacts</string>
+	<string>The app uses your camera to scan QR codes.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Location access is required for some DApps to function properly.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
