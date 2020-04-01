@@ -19,6 +19,8 @@
 
 (defview starter-pack []
   (letsubs [starter-pack-state [::sp/starter-pack-state]
+            starter-pack-eligible [::sp/starter-pack-eligible]
+            starter-pack-amount [::sp/starter-pack-amount]
             can-pay            [::payment/can-make-payment]
             listeners          (reagent/atom nil)
             product (reagent/atom nil)
@@ -26,6 +28,8 @@
             product-to-buy "starterpack.0"]
     {:component-did-mount
      (fn []
+       (re-frame/dispatch [::sp/eligible])
+       (re-frame/dispatch [::sp/check-amount])
        (payment/get-product product-to-buy #(reset! product %))
        (reset! listeners (payment/purchase-listeners ::sp/success-buy)))
      :component-will-unmount
@@ -33,7 +37,10 @@
        (when @listeners
          (payment/clear-purchase-listeners @listeners)
          (reset! listeners nil)))}
-    (when (and (= :visible starter-pack-state) can-pay @product)
+    (when (and (= :visible starter-pack-state)
+               starter-pack-eligible
+               can-pay
+               @price)
       [react/view {:style {:padding             8
                            :background-color    colors/blue-light
                            :border-top-width    1

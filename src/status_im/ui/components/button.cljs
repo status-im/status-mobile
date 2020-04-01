@@ -75,7 +75,7 @@
                                      (case theme
                                        :green     colors/green
                                        :red       colors/red
-                                       :main-blue colors/white
+                                       :main-blue colors/white-persist
                                        colors/blue)
                                      :else
                                      "")}}

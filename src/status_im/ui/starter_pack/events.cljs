@@ -4,14 +4,27 @@
             [status-im.utils.fx :as fx]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.contracts :as contracts]
+            [status-im.ethereum.core :as ethereum]
             [status-im.stickers.core :as stickers]
             [status-im.ethereum.transactions.core :as transaction]
             [status-im.utils.handlers :as handlers]))
+
+(def tozemoon-id 0)
 
 (re-frame/reg-sub
  ::starter-pack-state
  (fn [db]
    (get-in db [:iap/payment :starter-pack])))
+
+(re-frame/reg-sub
+ ::starter-pack-eligible
+ (fn [db]
+   (get-in db [:starter-pack :eligible])))
+
+(re-frame/reg-sub
+ ::starter-pack-amount
+ (fn [db]
+   (get-in db [:starter-pack :pack])))
 
 (fx/defn close-starter-pack
   {:events [::close-starter-pack]}
@@ -21,8 +34,8 @@
 (fx/defn success-buy
   {:events [::success-buy]}
   [{:keys [db] :as cofx} opts]
-  (let [transaction "from-backend"]
-    (prn opts)
+  (let [transaction (get opts "tx")]
+    (prn transaction)
     (fx/merge cofx
               (transaction/watch-transaction transaction
                                              {:trigger-fn (constantly true)
@@ -32,8 +45,30 @@
               (close-starter-pack)
               (popover/show-popover {:view :starter-pack-success}))))
 
+(fx/defn starter-pack-eligible
+  {:events [::starter-pack-eligible]}
+  [{:keys [db]} response]
+  {:db (cond-> db
+         (seq response)
+         (assoc-in [:starter-pack :eligible] (first response)))})
 
-(def tozemoon-id 0)
+(fx/defn starter-pack-amount
+  {:events [::starter-pack-amount]}
+  [{:keys [db]} response]
+  {:db (cond-> db
+         (seq response)
+         (assoc-in [:starter-pack :pack] response))})
+
+(fx/defn check-eligible
+  {:events [::eligible]}
+  [{:keys [db]}]
+  (let [contract (contracts/get-address db :status/starter-pack)
+        address  (ethereum/default-address db)]
+    {::json-rpc/eth-call [{:contract   contract
+                           :method     "eligible(address)"
+                           :params     [address]
+                           :outputs    ["bool"]
+                           :on-success #(re-frame/dispatch [::starter-pack-eligible %])}]}))
 
 (fx/defn success-received
   {:events [::success-received]}
@@ -43,3 +78,12 @@
         on-success-load [:stickers/install-pack id]]
     ;; TODO: Notify user that tx was mined
     {:stickers/pack-data-fx [contract id on-success-load]}))
+
+(fx/defn check-amount
+  {:events [::check-amount]}
+  [{:keys [db]}]
+  (let [contract (contracts/get-address db :status/starter-pack)]
+    {::json-rpc/eth-call [{:contract   contract
+                           :method     "pack()"
+                           :outputs    ["address" "uint256"]
+                           :on-success #(re-frame/dispatch [::starter-pack-amount %])}]}))

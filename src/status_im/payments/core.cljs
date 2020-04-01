@@ -62,7 +62,7 @@
 (re-frame/reg-fx
  ::confirm-purchase
  (fn [purchase]
-   (-> (finish-transaction purchase)
+   (-> (finish-transaction purchase false)
        (.catch (fn [e]
                  (re-frame/dispatch [::on-error (oget e "message")])
                  (log/warn "FINISH PAYMENT ERROR:" (js->clj e)))))))
@@ -96,7 +96,7 @@
                        :params     [msg]
                        :on-error   #(re-frame/dispatch [::on-error "Sign message error"])
                        :on-success #(re-frame/dispatch [::call-payment-gateway
-                                                        {:purchse    purchase-data
+                                                        {:purchase    purchase-data
                                                          :chat-key    (get-in db [:multiaccount :public-key])
                                                          :message    msg
                                                          :on-success on-success} %])}]}))
@@ -108,7 +108,6 @@
                  :msg      message
                  :sig      sig
                  :version  2}]
-    (prn (types/clj->json payload))
     {:http-post {:url                   payment-gateway
                  :opts                  {:headers {"Content-Type" "application/json"}}
                  :data                  (types/clj->json payload)
@@ -118,8 +117,9 @@
 (fx/defn gateway-success
   {:events [::gateway-on-success]}
   [cofx purchase on-success opts]
-  {::confirm-purchase purchase
-   :dispatch          [on-success opts]})
+  (let [response (types/json->clj (get opts :response-body))]
+    {::confirm-purchase purchase
+     :dispatch          [on-success response]}))
 
 (fx/defn gateway-error
   {:events [::gateway-on-error]}
