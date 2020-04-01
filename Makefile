@@ -269,7 +269,7 @@ _run-%:
 	npx react-native run-$(SYSTEM)
 
 # TODO: Migrate this to a Nix recipe, much the same way as nix/mobile/android/targets/release-android.nix
-run-android: export TARGET := default
+run-android: export TARGET := android
 run-android: ##@run Run Android build
 	npx react-native run-android --appIdSuffix debug
 
