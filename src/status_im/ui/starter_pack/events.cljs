@@ -13,7 +13,6 @@
 
 (def tozemoon-id 0)
 
-
 (re-frame/reg-sub
  ::starter-pack-state
  (fn [db]

@@ -108,7 +108,7 @@
                  :msg      message
                  :sig      sig
                  :version  2}]
-    {:http-post {:url                   payment-gateway
+    {:http-post {:url                   (get-in cofx [:db :payment-gateway])
                  :opts                  {:headers {"Content-Type" "application/json"}}
                  :data                  (types/clj->json payload)
                  :success-event-creator (fn [r] [::gateway-on-success purchase on-success r])

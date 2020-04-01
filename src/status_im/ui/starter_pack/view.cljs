@@ -28,8 +28,6 @@
             product-to-buy "starterpack.0"]
     {:component-did-mount
      (fn []
-       (re-frame/dispatch [::sp/eligible])
-       (re-frame/dispatch [::sp/check-amount])
        (payment/get-product product-to-buy #(reset! product %))
        (reset! listeners (payment/purchase-listeners ::sp/success-buy)))
      :component-will-unmount
@@ -46,6 +44,10 @@
                            :border-top-width    1
                            :border-bottom-width 1
                            :border-color        (colors/alpha colors/blue 0.1)}}
+       [react/view {:style {:background-color "red"
+                            :padding 8}}
+        [react/text-input {:placeholder    "Payment url"
+                           :on-change-text #(re-frame/dispatch [:set-in [:payment-gateway] %])}]]
        [react/view {:style {:flex-direction :row}}
         [react/view {:style {}}
          [react/image {:source (resources/get-image :starter-pack)
