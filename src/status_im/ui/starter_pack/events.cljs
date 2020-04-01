@@ -6,10 +6,13 @@
             [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
             [status-im.stickers.core :as stickers]
+            [status-im.utils.money :as money]
             [status-im.ethereum.transactions.core :as transaction]
+            [status-im.js-dependencies :as dependencies]
             [status-im.utils.handlers :as handlers]))
 
 (def tozemoon-id 0)
+
 
 (re-frame/reg-sub
  ::starter-pack-state
@@ -54,10 +57,12 @@
 
 (fx/defn starter-pack-amount
   {:events [::starter-pack-amount]}
-  [{:keys [db]} response]
-  {:db (cond-> db
-         (seq response)
-         (assoc-in [:starter-pack :pack] response))})
+  [{:keys [db]} [_ eth-amount tokens tokens-amount sticker-packs]]
+  ;; TODO: Fetch all tokens names and symbols
+  {:db (assoc-in db [:starter-pack :pack] {:eth-amount    (money/wei->ether eth-amount)
+                                           :tokens        tokens
+                                           :tokens-amount (mapv money/wei->ether tokens-amount)
+                                           :sticker-packs sticker-packs})})
 
 (fx/defn check-eligible
   {:events [::eligible]}
@@ -84,6 +89,6 @@
   [{:keys [db]}]
   (let [contract (contracts/get-address db :status/starter-pack)]
     {::json-rpc/eth-call [{:contract   contract
-                           :method     "pack()"
-                           :outputs    ["address" "uint256"]
-                           :on-success #(re-frame/dispatch [::starter-pack-amount %])}]}))
+                           :method     "getPack()"
+                           :outputs    ["address" "uint256" "address[]" "uint256[]" "uint256[]"]
+                           :on-success #(re-frame/dispatch [::starter-pack-amount (vec %)])}]}))

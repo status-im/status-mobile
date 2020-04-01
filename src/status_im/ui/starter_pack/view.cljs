@@ -60,7 +60,7 @@
          [react/text {:style {:font-size   15
                               :line-height 22}}
           (i18n/label :t/starter-pack-description {:price           @price
-                                                   :crypto          "300"
+                                                   :crypto          (get-in starter-pack-amount [:tokens-amount 0])
                                                    :crypto-currency "SNT"})]]
         [react/view
          [react/touchable-highlight
