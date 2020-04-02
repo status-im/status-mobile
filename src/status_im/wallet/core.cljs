@@ -437,15 +437,14 @@
 
 (fx/defn accept-request-transaction-button-clicked-from-command
   {:events  [:wallet.ui/accept-request-transaction-button-clicked-from-command]}
-  [{:keys [db] :as cofx} chat-id {:keys [address value from id contract] :as request-parameters}]
+  [{:keys [db]} chat-id {:keys [value contract] :as request-parameters}]
   (let [identity (:current-chat-id db)
         all-tokens (:wallet/all-tokens db)
         current-network-string  (:networks/current-network db)
-        prices (:prices db)
         all-networks (:networks/networks db)
         current-network (get all-networks current-network-string)
         chain (ethereum/network->chain-keyword current-network)
-        {:keys [symbol icon decimals] :as token}
+        {:keys [symbol decimals]}
         (if (seq contract)
           (get (get all-tokens chain) contract)
           (tokens/native-currency chain))
@@ -465,8 +464,8 @@
 
 (fx/defn sign-transaction-button-clicked-from-request
   {:events  [:wallet.ui/sign-transaction-button-clicked-from-request]}
-  [{:keys [db] :as cofx} {:keys [to amount from token gas gasPrice]}]
-  (let [{:keys [request-parameters]} (:wallet/prepare-transaction db)
+  [{:keys [db] :as cofx} {:keys [amount from token]}]
+  (let [{:keys [request-parameters chat-id]} (:wallet/prepare-transaction db)
         {:keys [symbol address]} token
         amount-hex (str "0x" (abi-spec/number-to-hex amount))
         to-norm (:address request-parameters)
@@ -480,12 +479,14 @@
                             {:to    to-norm
                              :from  from-address
                              :message-id (:id request-parameters)
+                             :chat-id chat-id
                              :command? true
                              :value amount-hex}
                             {:to       (ethereum/normalized-hex address)
                              :from     from-address
                              :command? true
                              :message-id (:id request-parameters)
+                             :chat-id chat-id
                              :data     (abi-spec/encode
                                         "transfer(address,uint256)"
                                         [to-norm amount-hex])})})))))

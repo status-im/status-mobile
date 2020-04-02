@@ -175,13 +175,14 @@
 (defn on-error-retry
   [call-method {:keys [method number-of-retries delay on-error] :as arg}]
   (if (pos? number-of-retries)
-    (fn []
+    (fn [error]
       (let [updated-delay (if delay
                             (min 2000 (* 2 delay))
                             50)]
         (log/debug "[on-error-retry]" method
                    "number-of-retries" number-of-retries
-                   "delay" delay)
+                   "delay" delay
+                   "error" error)
         (utils/set-timeout #(call-method (-> arg
                                              (update :number-of-retries dec)
                                              (assoc :delay updated-delay)))

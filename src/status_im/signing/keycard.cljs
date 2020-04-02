@@ -4,7 +4,8 @@
             [status-im.native-module.core :as status]
             [status-im.utils.types :as types]
             [status-im.ethereum.abi-spec :as abi-spec]
-            [status-im.ethereum.core :as ethereum]))
+            [status-im.ethereum.core :as ethereum]
+            [taoensso.timbre :as log]))
 
 (re-frame/reg-fx
  ::hash-transaction
@@ -23,24 +24,31 @@
 
 (defn prepare-transaction
   [{:keys [gas gasPrice data nonce tx-obj]}]
-  (let [{:keys [from to value]} tx-obj]
-    (cond-> {:from     from
-             :to       to
-             :value    value
-             :gas      (str "0x" (abi-spec/number-to-hex gas))
-             :gasPrice (str "0x" (abi-spec/number-to-hex gasPrice))}
+  (let [{:keys [from to value chat-id message-id command?]} tx-obj]
+    (cond-> {:from       from
+             :to         to
+             :value      value
+             :gas        (str "0x" (abi-spec/number-to-hex gas))
+             :gasPrice   (str "0x" (abi-spec/number-to-hex gasPrice))
+             :chat-id    chat-id
+             :message-id message-id
+             :command?   command?}
       data
       (assoc :data data)
       nonce
       (assoc :nonce nonce))))
 
 (fx/defn hash-message
-  [_ {:keys [data typed?]}]
+  [_ {:keys [data typed? on-completed]}]
   (if typed?
-    {::hash-typed-data {:data         data
-                        :on-completed #(re-frame/dispatch [:signing.keycard.callback/hash-message-completed %])}}
-    {::hash-message {:message      data
-                     :on-completed #(re-frame/dispatch [:signing.keycard.callback/hash-message-completed %])}}))
+    {::hash-typed-data
+     {:data         data
+      :on-completed
+      (or on-completed #(re-frame/dispatch [:signing.keycard.callback/hash-message-completed %]))}}
+    {::hash-message
+     {:message      data
+      :on-completed
+      (or on-completed #(re-frame/dispatch [:signing.keycard.callback/hash-message-completed %]))}}))
 
 (fx/defn hash-message-completed
   {:events [:signing.keycard.callback/hash-message-completed]}
@@ -51,15 +59,20 @@
 
 (fx/defn hash-transaction
   [{:keys [db]}]
-  {::hash-transaction {:transaction  (prepare-transaction (:signing/tx db))
-                       :on-completed #(re-frame/dispatch [:signing.keycard.callback/hash-transaction-completed %])}})
+  (let [tx (prepare-transaction (:signing/tx db))]
+    (log/debug "hash-transaction" tx)
+    {::hash-transaction
+     {:transaction  tx
+      :on-completed #(re-frame/dispatch
+                      [:signing.keycard.callback/hash-transaction-completed tx %])}}))
 
 (fx/defn hash-transaction-completed
   {:events [:signing.keycard.callback/hash-transaction-completed]}
-  [{:keys [db]} result]
+  [{:keys [db]} original-tx result]
   (let [{:keys [transaction hash]} (:result (types/json->clj result))]
     {:db (-> db
-             (assoc-in [:hardwallet :transaction] transaction)
+             (assoc-in [:hardwallet :transaction]
+                       (merge original-tx transaction))
              (assoc-in [:hardwallet :hash] hash))}))
 
 (fx/defn sign-with-keycard

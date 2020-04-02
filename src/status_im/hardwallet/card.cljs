@@ -402,7 +402,7 @@
        (re-frame/dispatch [:hardwallet.callback/on-get-keys-error
                            (error-object->map response)]))})))
 
-(defn sign [args]
+(defn sign [{:keys [on-success on-failure] :as args}]
   (log/info "[keycard] sign" args)
   (keycard/sign
    card
@@ -411,12 +411,15 @@
     {:on-success
      (fn [response]
        (log/info "[keycard response succ] sign" (js->clj response :keywordize-keys true))
-       (re-frame/dispatch [:hardwallet.callback/on-sign-success
-                           response]))
+       (if on-success
+         (on-success response)
+         (re-frame/dispatch [:hardwallet.callback/on-sign-success response])))
      :on-failure
      (fn [response]
        (log/info "[keycard response fail] sign"
                  (error-object->map response))
-       (re-frame/dispatch
-        [:hardwallet.callback/on-sign-error
-         (error-object->map response)]))})))
+       (if on-failure
+         (on-failure response)
+         (re-frame/dispatch
+          [:hardwallet.callback/on-sign-error
+           (error-object->map response)])))})))

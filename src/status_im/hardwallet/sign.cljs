@@ -31,6 +31,49 @@
                 (when-not keycard-match?
                   (common/show-wrong-keycard-alert card-connected?))))))
 
+(fx/defn sign-message
+  {:events [:hardwallet/sign-message]}
+  [{:keys [db] :as cofx} params result]
+  (let [{:keys [result error]} (types/json->clj result)
+        on-success #(re-frame/dispatch [:hardwallet/on-sign-message-success params %])
+        hash (ethereum/naked-address result)
+        card-connected?                   (get-in db [:hardwallet :card-connected?])
+        pairing                           (common/get-pairing db)
+        multiaccount-keycard-instance-uid (get-in db [:multiaccount :keycard-instance-uid])
+        instance-uid                      (get-in db [:hardwallet :application-info :instance-uid])
+        keycard-match?                    (= multiaccount-keycard-instance-uid instance-uid)
+        pin                               (common/vector->string (get-in db [:hardwallet :pin :sign]))]
+    (if (and card-connected?
+             keycard-match?)
+      {:db              (-> db
+                            (assoc-in [:hardwallet :card-read-in-progress?] true)
+                            (assoc-in [:hardwallet :pin :status] :verifying))
+       :hardwallet/sign {:hash       (ethereum/naked-address hash)
+                         :pairing    pairing
+                         :pin        pin
+                         :on-success on-success}}
+      (fx/merge cofx
+                {:db (assoc-in db [:signing/sign :keycard-step] :signing)}
+                (common/set-on-card-connected :hardwallet/sign)
+                (when-not keycard-match?
+                  (common/show-wrong-keycard-alert card-connected?))))))
+
+(fx/defn on-sign-message-success
+  {:events [:hardwallet/on-sign-message-success]}
+  [{:keys [db] :as cofx} {:keys [tx-hash message-id chat-id value contract]} signature]
+  (fx/merge
+   cofx
+   {:dispatch
+    (if message-id
+      [:sign/send-accept-transaction-message message-id tx-hash signature]
+      [:sign/send-transaction-message chat-id value contract tx-hash signature])
+    :db (-> db
+            (assoc-in [:hardwallet :pin :sign] [])
+            (assoc-in [:hardwallet :pin :status] nil))}
+   (common/clear-on-card-connected)
+   (common/get-application-info (common/get-pairing db) nil)
+   (common/hide-connection-sheet)))
+
 (fx/defn prepare-to-sign
   {:events [:hardwallet/prepare-to-sign]}
   [{:keys [db] :as cofx}]
@@ -60,16 +103,22 @@
   [{:keys [db] :as cofx} signature]
   (log/debug "[hardwallet] sign success: " signature)
   (let [transaction (get-in db [:hardwallet :transaction])
-        tx-obj      (select-keys transaction [:from :to :value :gas :gasPrice])]
+        tx-obj      (select-keys transaction [:from :to :value :gas :gasPrice :command? :chat-id :message-id])
+        command?    (:command? transaction)]
     (fx/merge cofx
               {:db (-> db
-                       (assoc-in [:hardwallet :pin :sign] [])
-                       (assoc-in [:hardwallet :pin :status] nil)
                        (assoc-in [:hardwallet :hash] nil)
                        (assoc-in [:hardwallet :transaction] nil))}
-              (common/clear-on-card-connected)
-              (common/get-application-info (common/get-pairing db) nil)
-              (common/hide-connection-sheet)
+              (when-not command?
+                (fn [{:keys [db] :as cofx}]
+                  (fx/merge
+                   cofx
+                   {:db (-> db
+                            (assoc-in [:hardwallet :pin :sign] [])
+                            (assoc-in [:hardwallet :pin :status] nil))}
+                   (common/clear-on-card-connected)
+                   (common/get-application-info (common/get-pairing db) nil)
+                   (common/hide-connection-sheet))))
               (if transaction
                 (send-transaction-with-signature {:transaction  (types/clj->json transaction)
                                                   :signature    signature
