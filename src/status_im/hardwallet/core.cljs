@@ -156,10 +156,10 @@
                                                                                           :puk         []})}
                 (common/hide-connection-sheet)))))
 
-(fx/defn dispatch-on-verified-event
-  [{:keys [db]} event]
-  {:dispatch [event]
-   :db       (assoc-in db [:hardwallet :pin :on-verified] nil)})
+(fx/defn clear-on-verify-handlers
+  [{:keys [db]}]
+  {:db (update-in db [:hardwallet :pin]
+                  dissoc :on-verified-failure :on-verified)})
 
 (fx/defn on-verify-pin-success
   {:events [:hardwallet.callback/on-verify-pin-success]}
@@ -181,55 +181,51 @@
                                      :hardwallet/generate-and-load-key
                                      :hardwallet/remove-key-with-unpair
                                      :hardwallet/unpair-and-delete
-                                     :hardwallet/generate-mnemonic} on-verified)
+                                     :hardwallet/generate-mnemonic
+                                     :wallet.accounts/generate-new-keycard-account} on-verified)
                 (common/get-application-info pairing nil))
               (when on-verified
-                (dispatch-on-verified-event on-verified)))))
+                (common/dispatch-event on-verified))
+              (clear-on-verify-handlers))))
 
 (fx/defn on-verify-pin-error
   {:events [:hardwallet.callback/on-verify-pin-error]}
   [{:keys [db] :as cofx} error]
-  (let [tag-was-lost? (common/tag-lost? (:error error))
-        setup?        (boolean (get-in db [:hardwallet :setup-step]))
-        exporting?    (get-in db [:hardwallet :on-export-success])]
+  (let [tag-was-lost?       (common/tag-lost? (:error error))
+        setup?              (boolean (get-in db [:hardwallet :setup-step]))
+        on-verified-failure (get-in db [:hardwallet :pin :on-verified-failure])
+        exporting?          (get-in db [:hardwallet :on-export-success])]
     (log/debug "[hardwallet] verify pin error" error)
     (when-not tag-was-lost?
       (if (re-matches common/pin-mismatch-error (:error error))
         (fx/merge cofx
-                  {:db (update-in db [:hardwallet :pin] merge {:status       :error
-                                                               :enter-step   :current
-                                                               :puk          []
-                                                               :current      []
-                                                               :original     []
-                                                               :confirmation []
-                                                               :sign         []
-                                                               :error-label  :t/pin-mismatch})}
+                  {:db (update-in db [:hardwallet :pin]
+                                  merge
+                                  {:status       :error
+                                   :enter-step   :current
+                                   :puk          []
+                                   :current      []
+                                   :original     []
+                                   :confirmation []
+                                   :sign         []
+                                   :error-label  :t/pin-mismatch})}
                   (common/hide-connection-sheet)
-                  (when-not setup?
+                  (when (and (not setup?)
+                             (not on-verified-failure))
                     (if exporting?
                       (navigation/navigate-back)
                       (navigation/navigate-to-cofx :enter-pin-settings nil)))
-                  (common/get-application-info (common/get-pairing db) nil))
+                  (common/get-application-info (common/get-pairing db) nil)
+                  (when on-verified-failure
+                    (fn [_] {:utils/dispatch-later
+                             [{:dispatch [on-verified-failure]
+                               :ms 200}]}))
+                  (clear-on-verify-handlers))
 
         (fx/merge cofx
                   (common/hide-connection-sheet)
-                  (common/show-wrong-keycard-alert true))))))
-
-(fx/defn verify-pin
-  {:events [:hardwallet/verify-pin]}
-  [cofx]
-  (common/show-connection-sheet
-   cofx
-   {:on-card-connected :hardwallet/verify-pin
-    :handler
-    (fn [{:keys [db] :as cofx}]
-      (let [pin     (common/vector->string (get-in db [:hardwallet :pin :current]))
-            pairing (common/get-pairing db)]
-        (fx/merge
-         cofx
-         {:db                    (assoc-in db [:hardwallet :pin :status] :verifying)
-          :hardwallet/verify-pin {:pin     pin
-                                  :pairing pairing}})))}))
+                  (common/show-wrong-keycard-alert true)
+                  (clear-on-verify-handlers))))))
 
 (fx/defn unblock-pin
   {:events [:hardwallet/unblock-pin]}
@@ -313,7 +309,7 @@
 
       (and (= enter-step :current)
            (= pin-code-length numbers-entered))
-      (verify-pin)
+      (common/verify-pin :current)
 
       (and (= enter-step :export-key)
            (= pin-code-length numbers-entered))

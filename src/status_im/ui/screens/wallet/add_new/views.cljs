@@ -17,8 +17,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.security :as security]
             [clojure.string :as string]
-            [status-im.utils.platform :as platform]
-            [taoensso.timbre :as log]))
+            [status-im.utils.platform :as platform]))
 
 (defn- request-camera-permissions []
   (let [options {:handler :wallet.add-new/qr-scanner-result}]

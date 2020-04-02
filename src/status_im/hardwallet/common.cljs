@@ -464,3 +464,23 @@
 
 (defn keycard-multiaccount? [db]
   (boolean (get-in db [:multiaccount :keycard-pairing])))
+
+(fx/defn verify-pin
+  {:events [:hardwallet/verify-pin]}
+  [{:keys [db] :as cofx} {:keys [pin-step on-card-connected on-failure on-success]}]
+  (fx/merge
+   cofx
+   {:db (update-in db [:hardwallet :pin] assoc
+                   :on-verified on-success
+                   :on-verified-failure on-failure)}
+   (show-connection-sheet
+    {:on-card-connected (or on-card-connected :hardwallet/verify-pin)
+     :handler
+     (fn [{:keys [db] :as cofx}]
+       (let [pin     (vector->string (get-in db [:hardwallet :pin pin-step]))
+             pairing (get-pairing db)]
+         (fx/merge
+          cofx
+          {:db                    (assoc-in db [:hardwallet :pin :status] :verifying)
+           :hardwallet/verify-pin {:pin        pin
+                                   :pairing    pairing}})))})))
