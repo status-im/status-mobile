@@ -120,8 +120,7 @@ transaction_senders['D']['public_key'] = "0x044764a9ba22bb4ae355619ca3824ee66b9f
                                          "d0dd570471986c229c077c8053ee47784416eb6604d52e41f8f9d566ef8"
 
 transaction_senders['E'] = dict()
-transaction_senders['E']['passphrase'] = \
-    "sea ill guard bounce gesture tomato walnut fitness plastic affair oven transfer"
+transaction_senders['E']['passphrase'] = "sea ill guard bounce gesture tomato walnut fitness plastic affair oven transfer"
 transaction_senders['E']['username'] = "Fatal Metallic Imperialeagle"
 transaction_senders['E']['address'] = "f7cb60839c0de25e37be0391c33bb34a8f0f8414"
 transaction_senders['E']['public_key'] = "0x04db6128352e5c2d05ee5a6556848453cf3a7af34e94b3e20a302de684e9906461e38adf" \
@@ -154,14 +153,6 @@ transaction_senders['I']['username'] = "Finished Infatuated Whiteeye"
 transaction_senders['I']['address'] = "0887afe0ee3e1b195f596350bb04bba034514af9"
 transaction_senders['I']['public_key'] = "0x04e61e616f881383e807cd1fb714fa2e06b5ad1cb6cd7b97a9265da2ad9a133ee750954a" \
                                          "6c4da3635f2e406b310f6e294ca94ea3a686287a1276e4e86612886f8e"
-
-transaction_senders['J'] = dict()
-transaction_senders['J']['passphrase'] = "shrug during breeze mercy install net reopen uniform atom guilt sadness elite"
-transaction_senders['J']['username'] = "Outrageous Knotty Shearwater"
-transaction_senders['J']['address'] = "ad0f319ca0cfa051f625ad1a3fc6bf0cbad45b24"
-transaction_senders['J']['public_key'] = "0x04fedbb6114918babbdabdc7bd5cb5f3aaa13f4bd5df5c27c2b2adfc91dffae15f75bf9f" \
-                                         "0e9bb747ef1996b63260f40dee1e00f62b061d95c6878b8c5ecfb33835"
-
 transaction_senders['K'] = dict()
 transaction_senders['K']['passphrase'] = "fly west avoid depend tape direct foster off cry crucial blame elegant"
 transaction_senders['K']['username'] = "Decimal Healthy Harpyeagle"

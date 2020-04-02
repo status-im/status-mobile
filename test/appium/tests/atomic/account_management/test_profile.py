@@ -507,6 +507,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5428)
     @marks.low
+    @marks.skip
+    # TODO: skipped because of 10265
     def test_version_format(self):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()

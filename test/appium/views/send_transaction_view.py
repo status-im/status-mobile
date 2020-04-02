@@ -152,6 +152,11 @@ class TotalFeeInput(BaseText):
         super(TotalFeeInput, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Total Fee']/following-sibling::android.widget.TextView")
 
+class ETHroAssetButtonInSelectAssetBottomSheet(BaseButton):
+    def __init__(self, driver):
+        super(ETHroAssetButtonInSelectAssetBottomSheet, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('(//*[@content-desc=":ETH-asset-value"])[2]')
+
 
 class UpdateFeeButton(BaseButton):
     def __init__(self, driver):
@@ -225,6 +230,12 @@ class SelectButton(BaseButton):
         super(SelectButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('select-account-bottom-sheet')
 
+class RequestTransactionButtonBottomSheet(BaseButton):
+
+    def __init__(self, driver):
+        super(RequestTransactionButtonBottomSheet, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('request-transaction-bottom-sheet')
+
 class SendTransactionView(BaseView):
     def __init__(self, driver):
         super(SendTransactionView, self).__init__(driver)
@@ -264,9 +275,11 @@ class SendTransactionView(BaseView):
 
         self.onboarding_message = OnboardingMessage(self.driver)
         self.validation_warnings = ValidationWarnings(self.driver)
+        self.eth_asset_in_select_asset_bottom_sheet_button = ETHroAssetButtonInSelectAssetBottomSheet(self.driver)
 
         # Elements for commands in 1-1 chat
         self.select_button = SelectButton(self.driver)
+        self.request_transaction_button = RequestTransactionButtonBottomSheet(self.driver)
 
     def complete_onboarding(self):
         if self.onboarding_message.is_element_displayed():

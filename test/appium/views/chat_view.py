@@ -88,7 +88,11 @@ class SendCommand(BaseButton):
 class RequestCommand(BaseButton):
     def __init__(self, driver):
         super(RequestCommand, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('request-button')
+        self.locator = self.Locator.text_selector('Request transaction')
+
+    def navigate(self):
+        from views.send_transaction_view import SendTransactionView
+        return SendTransactionView(self.driver)
 
     def click(self):
         self.wait_for_element().click()
@@ -398,6 +402,20 @@ class ChatElementByText(BaseText):
         return AcceptAndShareAddress(self.driver, self.locator.value)
 
     @property
+    def decline_transaction(self):
+        class DeclineTransaction(BaseButton):
+            def __init__(self, driver, parent_locator):
+                super(DeclineTransaction, self).__init__(driver)
+                self.locator = self.Locator.xpath_selector(parent_locator + "//*[@text='Decline']")
+
+            def click(self):
+                self.wait_for_element().click()
+                self.driver.info('Tap on %s' % self.name)
+                return self.navigate()
+
+        return DeclineTransaction(self.driver, self.locator.value)
+
+    @property
     def sign_and_send(self):
         class SignAndSend(BaseButton):
             def __init__(self, driver, parent_locator):
@@ -564,27 +582,6 @@ class ChatView(BaseView):
         self.clear_history_button.click()
         self.clear_button.click()
         self.back_button.click()
-
-    def send_transaction_in_1_1_chat(self, asset, amount, password=common_password, wallet_set_up=False, **kwargs):
-        self.commands_button.click()
-        self.send_command.click()
-        self.asset_by_name(asset).click()
-        self.send_as_keyevent(amount)
-        send_transaction_view = self.get_send_transaction_view()
-        if wallet_set_up:
-            wallet_view = self.get_wallet_view()
-            self.send_message_button.click_until_presence_of_element(wallet_view.sign_in_phrase)
-            wallet_view.done_button.click()
-            wallet_view.yes_button.click()
-        else:
-            self.send_message_button.click_until_presence_of_element(send_transaction_view.sign_with_password)
-        if kwargs.get('sign_transaction', True):
-            send_transaction_view.sign_transaction(password)
-            chat_elem = self.chat_element_by_text(amount)
-            chat_elem.wait_for_visibility_of_element()
-            chat_elem.progress_bar.wait_for_invisibility_of_element(20)
-            if chat_elem.status.text not in ('Sent', 'Delivered', 'Seen'):
-                self.driver.fail('Sent transaction message was not sent')
 
     def send_transaction_in_group_chat(self, amount, password, recipient):
         self.commands_button.click()

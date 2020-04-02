@@ -78,7 +78,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.accounts_status_account.click()
         send_transaction = wallet_view.send_transaction_button.click()
         stt_button = send_transaction.asset_by_name('STT')
-        send_transaction.select_asset_button.click_until_presence_of_element(stt_button, 5)
+        send_transaction.select_asset_button.click_until_presence_of_element(send_transaction.eth_asset_in_select_asset_bottom_sheet_button, 5)
         stt_button.click()
         send_transaction.amount_edit_box.click()
         amount = send_transaction.get_unique_amount()
@@ -239,7 +239,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.accounts_status_account.click()
         send_transaction = wallet_view.send_transaction_button.click()
         adi_button = send_transaction.asset_by_name('ADI')
-        send_transaction.select_asset_button.click_until_presence_of_element(adi_button)
+        send_transaction.select_asset_button.click_until_presence_of_element(send_transaction.eth_asset_in_select_asset_bottom_sheet_button)
         adi_button.click()
         send_transaction.amount_edit_box.click()
         amount = '0.0%s' % str(random.randint(10000, 99999)) + '1'
@@ -264,7 +264,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.accounts_status_account.click()
         send_transaction = wallet_view.send_transaction_button.click()
         adi_button = send_transaction.asset_by_name('ADI')
-        send_transaction.select_asset_button.click_until_presence_of_element(adi_button)
+        send_transaction.select_asset_button.click_until_presence_of_element(send_transaction.eth_asset_in_select_asset_bottom_sheet_button)
         adi_button.click()
         send_transaction.amount_edit_box.click()
         amount = '0.0%s' % str(random.randint(100000, 999999)) + '1'
