@@ -24,7 +24,9 @@
             status-im.ui.screens.wallet.collectibles.cryptokitties.views
             status-im.ui.screens.wallet.collectibles.superrare.views
             status-im.ui.screens.wallet.collectibles.kudos.views
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.hardwallet.test-menu :as hardwallet.test-menu]
+            [status-im.utils.config :as config]))
 
 (defview bottom-sheet []
   (letsubs [{:keys [show? view]} [:bottom-sheet]]
@@ -124,4 +126,6 @@
           [wallet/select-account]
           [signing/signing]
           [bottom-sheet]
-          [popover/popover]]])})))
+          [popover/popover]
+          (when config/keycard-test-menu-enabled?
+            [hardwallet.test-menu/test-menu])]])})))

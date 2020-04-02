@@ -39,6 +39,7 @@
 (def nimbus-enabled? (enabled? (get-config :STATUS_GO_ENABLE_NIMBUS "0")))
 (def waku-enabled? (enabled? (get-config :WAKU_ENABLED "0")))
 (def commands-enabled? (enabled? (get-config :COMMANDS_ENABLED "0")))
+(def keycard-test-menu-enabled? (enabled? (get-config :KEYCARD_TEST_MENU "0")))
 
 ;; CONFIG VALUES
 (def log-level
