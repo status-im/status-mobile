@@ -31,7 +31,8 @@
        [react/view {:style {:flex-direction :row}}
         (if prices-loading?
           [react/small-loading-indicator :colors/white-persist]
-          [react/text {:style {:color colors/white-persist :font-weight "500"}} portfolio-value])
+          [react/text {:style                   {:color colors/white-persist :font-weight "500"}
+                       :accessibility-label     "account-total-value"} portfolio-value])
         [react/text {:style {:color colors/white-transparent-persist :font-weight "500"}} (str " " (:code currency))]]
        [react/touchable-highlight
         {:on-press #(re-frame/dispatch [:show-popover

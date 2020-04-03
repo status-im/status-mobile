@@ -224,6 +224,12 @@ class AccountElementButton(BaseButton):
         amount_text.locator = amount_text.Locator.xpath_selector(self.locator.value + "//*[@text=' USD']")
         return amount_text.is_element_image_equals_template(expected_color_image_name)
 
+class StatusAccountTotalValueText(BaseText):
+    def __init__(self, driver):
+        super(StatusAccountTotalValueText, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('account-total-value')
+
+
 
 class SendTransactionButton(BaseButton):
 
@@ -382,6 +388,7 @@ class WalletView(BaseView):
         self.add_custom_token_button = AddCustomTokenButton(self.driver)
 
         # elements for multiaccount
+
         self.multiaccount_more_options = MultiaccountMoreOptions(self.driver)
         self.accounts_status_account = AccountElementButton(self.driver, account_name="Status account")
         self.collectibles_button = CollectiblesButton(self.driver)
@@ -401,6 +408,7 @@ class WalletView(BaseView):
         self.account_name_input = AccountNameInput(self.driver)
         self.account_color_button = AccountColorButton(self.driver)
         self.add_account_generate_account_button = AddAccountGenerateAnAccountButton(self.driver)
+        self.status_account_total_usd_value = StatusAccountTotalValueText(self.driver)
 
         # individual account settings
         self.account_settings_button = AccountSettingsButton(self.driver)

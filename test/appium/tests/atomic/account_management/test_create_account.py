@@ -1,4 +1,3 @@
-import pytest
 import random
 
 from tests import marks, common_password, get_current_time, unique_password

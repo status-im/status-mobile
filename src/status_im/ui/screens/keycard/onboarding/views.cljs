@@ -96,7 +96,8 @@
                      :width            133
                      :height           44
                      :border-radius    10}
-         [react/text {:style {:color colors/blue}}
+         [react/text {:style                {:color colors/blue}
+                      :accessibility-label  :begin-set-up}
           (i18n/label :t/begin-set-up)]]]]]]))
 
 (defview puk-code []
@@ -110,7 +111,8 @@
        {:handler #(re-frame/dispatch [::hardwallet.onboarding/cancel-pressed])
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
-      [react/text {:style {:color colors/gray}}
+      [react/text {:style               {:color colors/gray}
+                   :accessibility-label :cancel-keycard-setup}
        (i18n/label :t/step-i-of-n {:step   "2"
                                    :number steps})]]
      [react/scroll-view {:content-container-style {:flex-grow       1
@@ -145,10 +147,11 @@
              (i18n/label :t/puk-code)]]
            [react/view {:justify-content :flex-start
                         :flex            1}
-            [react/text {:style {:typography  :header
-                                 :font-family "monospace"
-                                 :text-align  :center
-                                 :color       colors/blue}}
+            [react/text {:style              {:typography  :header
+                                              :font-family "monospace"
+                                              :text-align  :center
+                                              :color       colors/blue}
+                         :accessibility-label :puk-code}
              puk-code]]]]
          [react/view {:margin-top 16}
           [react/text {:style {:color colors/gray}}
@@ -172,10 +175,11 @@
              (i18n/label :t/pair-code)]]
            [react/view {:justify-content :flex-start
                         :flex            1}
-            [react/text {:style {:typography  :header
-                                 :text-align  :center
-                                 :font-family "monospace"
-                                 :color       colors/blue}}
+            [react/text {:style               {:typography  :header
+                                               :text-align  :center
+                                               :font-family "monospace"
+                                               :color       colors/blue}
+                         :accessibility-label :pair-code}
              (:password secrets)]]]]
          [react/view {:margin-top 16}
           [react/text {:style {:color colors/gray}}
@@ -293,7 +297,7 @@
                           :margin-left        12}
               [react/text {:style {:color colors/gray}}
                (str (inc i) ". ")]
-              [react/text
+              [react/text {:accessibility-label  (str "word" i)}
                word]])])]
        [react/view {:margin-top 24}
         [react/text {:style {:text-align :center}}
@@ -320,6 +324,7 @@
         {:transparent? true}
         [toolbar/nav-text
          {:handler #(re-frame/dispatch [::hardwallet.onboarding/cancel-pressed])
+          :accessibility-label :cancel-keycard-setup
           :style   {:padding-left 21}}
          (i18n/label :t/cancel)]
         [react/text {:style {:color colors/gray}}
@@ -336,23 +341,26 @@
            (i18n/label :t/keycard-recovery-phrase-confirm-header)]]
          [react/view {:margin-top  16
                       :align-items :center}
-          [react/text {:style {:typography :header
-                               :color      colors/gray
-                               :text-align :center}}
+          [react/text {:style               {:typography :header
+                                             :color      colors/gray
+                                             :text-align :center}
+                       :accessibility-label :word-number}
+
            (i18n/label :t/word-n {:number (inc idx)})]]]
         [react/view
          [text-input/text-input-with-label
-          {:on-change-text    #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/input-changed %])
-           :auto-focus        true
-           :on-submit-editing #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/input-submitted])
-           :placeholder       nil
-           :auto-correct      false
-           :keyboard-type     "visible-password"
-           :container         {:background-color colors/white}
-           :style             {:background-color colors/white
-                               :text-align       :center
-                               :height           52
-                               :typography       :header}}]
+          {:on-change-text      #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/input-changed %])
+           :auto-focus          true
+           :on-submit-editing   #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/input-submitted])
+           :placeholder         nil
+           :auto-correct        false
+           :keyboard-type       "visible-password"
+           :accessibility-label :enter-word
+           :container           {:background-color colors/white}
+           :style               {:background-color colors/white
+                                 :text-align       :center
+                                 :height           52
+                                 :typography       :header}}]
          [react/view {:margin-top 5
                       :width      250}
           [tooltip/tooltip error]]]
@@ -368,7 +376,8 @@
             :label    (i18n/label :t/back)}]]
          [react/view {:margin-right 20}
           [components.common/bottom-button
-           {:on-press  #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed])
-            :label     (i18n/label :t/next)
-            :disabled? (empty? input-word)
-            :forward?  true}]]]]])))
+           {:on-press            #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed])
+            :label               (i18n/label :t/next)
+            :accessibility-label :next
+            :disabled?            (empty? input-word)
+            :forward?             true}]]]]])))

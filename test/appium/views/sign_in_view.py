@@ -5,7 +5,6 @@ from tests import common_password
 from views.base_element import BaseButton, BaseEditBox, BaseText
 from views.base_view import BaseView
 
-
 class MultiAccountButton(BaseButton):
     class Username(BaseText):
         def __init__(self, driver, locator_value):
@@ -77,6 +76,21 @@ class RecoverAccessButton(BaseButton):
     def navigate(self):
         from views.recover_access_view import RecoverAccessView
         return RecoverAccessView(self.driver)
+
+class KeycardKeyStorageButton(BaseButton):
+
+    def __init__(self, driver):
+        super(KeycardKeyStorageButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("select-storage-:advanced")
+
+    def navigate(self):
+        from views.keycard_view import KeycardView
+        return KeycardView(self.driver)
+
+    def click(self):
+        self.scroll_to_element().click()
+        return self.navigate()
+
 
 
 class CreateMultiaccountButton(BaseButton):
@@ -200,16 +214,30 @@ class SignInView(BaseView):
         self.multi_account_on_login_button = MultiAccountOnLoginButton(self.driver)
         self.privacy_policy_link = PrivacyPolicyLink(self.driver)
         self.lets_go_button = LetsGoButton(self.driver)
+        self.keycard_storage_button = KeycardKeyStorageButton(self.driver)
 
-    def create_user(self, password=common_password):
+    def create_user(self, password=common_password, keycard=False):
         self.get_started_button.click()
         self.generate_key_button.click()
         self.next_button.click()
-        self.next_button.click()
-        self.create_password_input.set_value(password)
-        self.next_button.click()
-        self.confirm_your_password_input.set_value(password)
-        self.next_button.click()
+        if keycard:
+            keycard_flow = self.keycard_storage_button.click()
+            self.next_button.click()
+            keycard_flow.begin_setup_button.click()
+            keycard_flow.connect_card_button.click()
+            keycard_flow.enter_default_pin()
+            keycard_flow.enter_default_pin()
+            self.next_button.scroll_to_element()
+            self.next_button.wait_for_visibility_of_element(20)
+            self.next_button.click()
+            self.yes_button.click()
+            keycard_flow.backup_seed_phrase()
+        else:
+            self.next_button.click()
+            self.create_password_input.set_value(password)
+            self.next_button.click()
+            self.confirm_your_password_input.set_value(password)
+            self.next_button.click()
         self.lets_go_button.wait_for_visibility_of_element(30)
         self.lets_go_button.click_until_absense_of_element(self.lets_go_button)
         self.profile_button.wait_for_visibility_of_element(30)
@@ -231,11 +259,17 @@ class SignInView(BaseView):
         self.profile_button.wait_for_visibility_of_element(30)
         return self.get_home_view()
 
-    def sign_in(self, password=common_password):
+    def sign_in(self, password=common_password, keycard=False):
         self.multi_account_on_login_button.wait_for_visibility_of_element(5)
         self.multi_account_on_login_button.click()
-        self.password_input.set_value(password)
-        self.sign_in_button.click()
+        if keycard:
+            from views.keycard_view import KeycardView
+            keycard_view = KeycardView(self.driver)
+            keycard_view.enter_default_pin()
+            keycard_view.connect_card_button.click()
+        else:
+            self.password_input.set_value(password)
+            self.sign_in_button.click()
         return self.get_home_view()
 
     def get_account_by_position(self, position: int):

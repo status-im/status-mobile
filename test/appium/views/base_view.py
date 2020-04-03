@@ -243,7 +243,7 @@ class DiscardButton(BaseButton):
 class ConfirmButton(BaseButton):
     def __init__(self, driver):
         super(ConfirmButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='CONFIRM']")
+        self.locator = self.Locator.xpath_selector("//*[@text='CONFIRM' or @text='Confirm']")
 
 
 class ProgressBar(BaseElement):
