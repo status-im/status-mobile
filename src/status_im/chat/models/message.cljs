@@ -104,33 +104,32 @@
 
 (fx/defn add-received-message
   [{:keys [db] :as cofx}
-   {:keys [from
-           message-id
-           chat-id
-           clock-value
-           content] :as message}]
+   {:keys [chat-id
+           clock-value] :as message}]
   (let [{:keys [loaded-chat-id
                 view-id
                 current-chat-id]} db
         cursor-clock-value             (get-in db [:chats current-chat-id :cursor-clock-value])
         current-chat?                  (= chat-id loaded-chat-id)]
-    (when (and current-chat?
-               (or (not cursor-clock-value)
-                   (<= cursor-clock-value clock-value)))
-      (if (or (not @view.state/viewable-item)
-              (not= current-chat-id
-                    (:chat-id @view.state/viewable-item))
-              (<= (:clock-value @view.state/viewable-item)
+    (when current-chat?
+      ;; If we don't have any hidden message or the hidden message is before
+      ;; this one, we add the message to the UI
+      (if (or (not @view.state/first-not-visible-item)
+              (<= (:clock-value @view.state/first-not-visible-item)
                   clock-value))
         (add-message cofx {:message      message
                            :seen-by-user? (and current-chat?
                                                (= view-id :chat))})
-        ;; Not in the current view, offload to db and update cursor if necessary
-        (when (and (< clock-value
-                      cursor-clock-value)
-                   (= current-chat-id
-                      (:chat-id @view.state/viewable-item)))
-          {:db (assoc-in db [:chats chat-id :cursor] (chat-loading/clock-value->cursor clock-value))})))))
+        ;; Not in the current view, set all-loaded to false
+        ;; and offload to db and update cursor if necessary
+        {:db (cond-> db
+               (>= clock-value
+                   cursor-clock-value)
+               (update-in [:chats chat-id] assoc
+                          :cursor (chat-loading/clock-value->cursor clock-value)
+                          :cursor-clock-value clock-value)
+               :always
+               (assoc-in [:chats chat-id :all-loaded?] false))}))))
 
 (defn- add-to-chat?
   [{:keys [db]} {:keys [chat-id clock-value message-id from]}]

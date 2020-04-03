@@ -162,7 +162,7 @@
   (when-let [current-chat-id (:current-chat-id db)]
     (if-not (get-in db [:chats current-chat-id :messages-initialized?])
       (do
-       ; reset chat viewable-items state
+       ; reset chat first-not-visible-items state
         (chat.state/reset)
         (fx/merge cofx
                   {:db (-> db

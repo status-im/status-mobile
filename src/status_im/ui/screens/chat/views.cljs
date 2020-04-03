@@ -95,7 +95,7 @@
 
 (defn on-viewable-items-changed [e]
   (when @messages-list-ref
-    (reset! state/viewable-item
+    (reset! state/first-not-visible-item
             (when-let [last-visible-element (aget (.-viewableItems e) (dec (.-length (.-viewableItems e))))]
               (let [index             (.-index last-visible-element)
                     ;; Get first not visible element, if it's a datemark/gap

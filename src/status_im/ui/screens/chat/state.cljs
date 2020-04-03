@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.chat.state)
 
-(defonce viewable-item (atom nil))
+(defonce first-not-visible-item (atom nil))
 
 (defn reset []
-  (reset! viewable-item nil))
+  (reset! first-not-visible-item nil))
