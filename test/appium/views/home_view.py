@@ -133,7 +133,7 @@ class ChatElement(BaseButton):
         class UnreadMessagesPublicChat(BaseElement):
             def __init__(self, driver):
                 super(UnreadMessagesPublicChat, self).__init__(driver)
-                self.locator = self.Locator.accessibility_id('public-unread-badge')
+                self.locator = self.Locator.accessibility_id('unviewed-messages-public')
 
         return UnreadMessagesPublicChat(self.driver)
 

@@ -59,12 +59,15 @@ class TestCreateAccount(SingleDeviceTestCase):
         for text in texts:
             if not home_view.element_by_text(text).is_element_displayed():
                 self.errors.append("'%s' text is not shown" % text)
+        sign_in.element_by_text("#status").click()
+        sign_in.back_button.click()
         profile_view = home_view.profile_button.click()
         shown_username = profile_view.default_username_text.text
         if shown_username != username:
             self.errors.append("Default username '%s' doesn't match '%s'" % (shown_username, username))
         profile_view.home_button.click()
-        profile_view.cross_icon_iside_welcome_screen_button.click()
+        home_view.cross_icon_iside_welcome_screen_button.click()
+        home_view.delete_chat_long_press("#status")
         if home_view.element_by_text(texts[0]).is_element_displayed():
             self.errors.append("'%s' text is shown, but welcome view was closed" % texts[0])
         home_view.relogin()

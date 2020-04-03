@@ -103,7 +103,7 @@ class TabButton(BaseButton):
         class PublicChatUnreadMessages(BaseElement):
             def __init__(self, driver):
                 super(PublicChatUnreadMessages, self).__init__(driver)
-                self.locator = self.Locator.accessibility_id('unviewed-messages-public')
+                self.locator = self.Locator.accessibility_id('public-unread-badge')
 
         return PublicChatUnreadMessages(self.driver)
 

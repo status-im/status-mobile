@@ -155,6 +155,24 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('Reply message was not received by the sender')
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(6275)
+    @marks.medium
+    def test_public_chat_messaging(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+        public_chat_name = home_1.get_public_chat_name()
+        chat_1, chat_2 = home_1.join_public_chat(public_chat_name), home_2.join_public_chat(public_chat_name)
+
+        browser = device_1.dapp_tab_button.click()
+        message = 'hello'
+        chat_2.send_message(message)
+
+        if home_1.home_button.public_unread_messages.is_element_displayed():
+            device_1.home_button.click_until_absense_of_element(browser.enter_url_editbox)
+        if not chat_1.chat_element_by_text(message).is_element_displayed():
+            self.driver.fail("No message if it received while another tab opened")
+
 
 @marks.chat
 class TestPublicChatSingleDevice(SingleDeviceTestCase):
