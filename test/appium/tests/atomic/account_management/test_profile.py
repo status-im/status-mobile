@@ -671,10 +671,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.just_fyi('add custom mailserver (check address/name validation) and connect to it')
         profile_1.plus_button.click()
         server_name = 'test'
-        # TODO: blocked due to issue 7333
-        # profile_1.save_button.click()
-        # if profile_1.element_by_text(mailserver_staging_ams_1).is_element_displayed():
-        #     self.errors.append('Could add custom mailserver with empty address and name')
+        profile_1.save_button.click()
+        if profile_1.element_by_text(mailserver_ams).is_element_displayed():
+            self.errors.append('Could add custom mailserver with empty address and name')
         profile_1.specify_name_input.set_value(server_name)
         profile_1.mail_server_address_input.set_value(mailserver_address[:-3])
         profile_1.save_button.click()

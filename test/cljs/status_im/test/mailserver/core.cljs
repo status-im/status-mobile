@@ -1,5 +1,6 @@
 (ns status-im.test.mailserver.core
   (:require [cljs.test :refer-macros [deftest is testing]]
+            [clojure.string :as string]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.transport.utils :as utils]
             [status-im.mailserver.core :as mailserver]
@@ -287,14 +288,14 @@
   (testing "new mailserver"
     (let [cofx {:random-id-generator (constantly "random-id")
                 :db {:mailserver.edit/mailserver {:name {:value "test-name"}
-                                                  :url  {:value "enode://test-id:test-password@url:port"}}
+                                                  :url  {:value valid-enode-url}}
 
                      :mailserver/mailservers {}}}
           actual (mailserver/upsert cofx)]
 
       (testing "it adds the enode to mailserver/mailservers"
-        (is (= {:eth.staging {:randomid {:password "test-password"
-                                         :address "enode://test-id@url:port"
+        (is (= {:eth.staging {:randomid {:password password
+                                         :address valid-enode-address
                                          :name "test-name"
                                          :id :randomid
                                          :user-defined true}}}
@@ -305,21 +306,22 @@
       (testing "it stores it in the db"
         (is (= 1 (count (::json-rpc/call actual)))))))
   (testing "existing mailserver"
-    (let [cofx {:random-id-generator (constantly "random-id")
+    (let [new-enode-url (string/replace valid-enode-url "password" "new-password")
+          cofx {:random-id-generator (constantly "random-id")
                 :db {:mailserver.edit/mailserver {:id   {:value  :a}
                                                   :name {:value "new-name"}
-                                                  :url  {:value "enode://new-id:new-password@url:port"}}
+                                                  :url  {:value new-enode-url}}
 
                      :mailserver/mailservers {:eth.staging {:a {:id      :a
                                                                 :name    "old-name"
-                                                                :address "enode://old-id:old-password@url:port"}}}}}
+                                                                :address valid-enode-address}}}}}
           actual (mailserver/upsert cofx)]
       (testing "it navigates back"
         (is (= [:navigate-back]
                (:dispatch actual))))
       (testing "it updates the enode to mailserver/mailservers"
         (is (= {:eth.staging {:a {:password "new-password"
-                                  :address "enode://new-id@url:port"
+                                  :address valid-enode-address
                                   :name "new-name"
                                   :id :a
                                   :user-defined true}}}

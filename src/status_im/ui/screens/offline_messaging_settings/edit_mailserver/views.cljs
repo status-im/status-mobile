@@ -48,7 +48,9 @@
     (let [url          (get-in mailserver [:url :value])
           id           (get-in mailserver [:id :value])
           name         (get-in mailserver [:name :value])
-          is-valid?    (empty? validation-errors)
+          is-valid?    (and (not (string/blank? url))
+                            (not (string/blank? name))
+                            (empty? validation-errors))
           invalid-url? (contains? validation-errors :url)]
       [react/view components.styles/flex
        [react/keyboard-avoiding-view components.styles/flex

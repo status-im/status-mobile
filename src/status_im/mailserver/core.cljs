@@ -1055,30 +1055,34 @@
 (fx/defn upsert
   [{{:mailserver.edit/keys [mailserver] :keys [multiaccount] :as db} :db
     random-id-generator :random-id-generator :as cofx}]
+
   (let [{:keys [name url id]} mailserver
-        current-fleet (node/current-fleet-key db)
-        mailserver (build
-                    (or (:value id)
-                        (keyword (string/replace (random-id-generator) "-" "")))
-                    (:value name)
-                    (:value url))
-        current (connected? db (:id mailserver))]
-    {:db (-> db
-             (dissoc :mailserver.edit/mailserver)
-             (assoc-in [:mailserver/mailservers current-fleet (:id mailserver)]
-                       mailserver))
-     ::json-rpc/call
-     [{:method "mailservers_addMailserver"
-       :params [(mailserver->rpc mailserver current-fleet)]
-       :on-success (fn []
-                     ;; we naively logout if the user is connected to
-                     ;; the edited mailserver
-                     (when current
-                       (re-frame/dispatch
-                        [:multiaccounts.logout.ui/logout-confirmed]))
-                     (log/debug "saved mailserver" id "successfuly"))
-       :on-failure #(log/error "failed to save mailserver" id %)}]
-     :dispatch [:navigate-back]}))
+        current-fleet (node/current-fleet-key db)]
+    (when (and (not (string/blank? (:value name)))
+               (valid-enode-url? (:value url)))
+
+      (let [mailserver (build
+                        (or (:value id)
+                            (keyword (string/replace (random-id-generator) "-" "")))
+                        (:value name)
+                        (:value url))
+            current (connected? db (:id mailserver))]
+        {:db (-> db
+                 (dissoc :mailserver.edit/mailserver)
+                 (assoc-in [:mailserver/mailservers current-fleet (:id mailserver)]
+                           mailserver))
+         ::json-rpc/call
+         [{:method "mailservers_addMailserver"
+           :params [(mailserver->rpc mailserver current-fleet)]
+           :on-success (fn []
+                         ;; we naively logout if the user is connected to
+                         ;; the edited mailserver
+                         (when current
+                           (re-frame/dispatch
+                            [:multiaccounts.logout.ui/logout-confirmed]))
+                         (log/debug "saved mailserver" id "successfuly"))
+           :on-failure #(log/error "failed to save mailserver" id %)}]
+         :dispatch [:navigate-back]}))))
 
 (defn can-delete?
   [db id]
