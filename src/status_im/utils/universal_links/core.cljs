@@ -102,8 +102,8 @@
 
 (fx/defn handle-eip681 [cofx url]
   (fx/merge cofx
-            (choose-recipient/resolve-ens-addresses url)
-            (navigation/navigate-to-cofx  :wallet nil)))
+            (choose-recipient/parse-eip681-uri-and-resolve-ens url)
+            (navigation/navigate-to-cofx :wallet nil)))
 
 (defn handle-not-found [full-url]
   (log/info "universal-links: no handler for " full-url))

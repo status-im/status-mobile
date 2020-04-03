@@ -1119,17 +1119,20 @@
                  acc)) 0 balance))
 
 (re-frame/reg-sub
+ :wallet/token->decimals
+ :<- [:wallet/all-tokens]
+ (fn [all-tokens]
+   (into {} (map #(vector (:symbol %) (:decimals %)) (vals all-tokens)))))
+
+(re-frame/reg-sub
  :portfolio-value
  :<- [:balances]
  :<- [:prices]
  :<- [:wallet/currency]
- :<- [:ethereum/chain-keyword]
- :<- [:wallet/all-tokens]
- (fn [[balances prices currency chain all-tokens]]
+ :<- [:wallet/token->decimals]
+ (fn [[balances prices currency token->decimals]]
    (if (and balances prices)
-     (let [assets              (tokens/tokens-for all-tokens chain)
-           token->decimals     (into {} (map #(vector (:symbol %) (:decimals %)) assets))
-           currency-key        (-> currency :code keyword)
+     (let [currency-key        (-> currency :code keyword)
            balance-total-value (apply + (map #(get-balance-total-value % prices currency-key token->decimals) balances))]
        (if (pos? balance-total-value)
          (-> balance-total-value
@@ -1145,13 +1148,10 @@
    [(re-frame/subscribe [:balance address])
     (re-frame/subscribe [:prices])
     (re-frame/subscribe [:wallet/currency])
-    (re-frame/subscribe [:ethereum/chain-keyword])
-    (re-frame/subscribe [:wallet/all-tokens])])
- (fn [[balance prices currency chain all-tokens]]
+    (re-frame/subscribe [:wallet/token->decimals])])
+ (fn [[balance prices currency token->decimals]]
    (if (and balance prices)
-     (let [assets              (tokens/tokens-for all-tokens chain)
-           token->decimals     (into {} (map #(vector (:symbol %) (:decimals %)) assets))
-           currency-key        (-> currency :code keyword)
+     (let [currency-key        (-> currency :code keyword)
            balance-total-value (get-balance-total-value balance prices currency-key token->decimals)]
        (if (pos? balance-total-value)
          (-> balance-total-value
@@ -1162,22 +1162,14 @@
      "...")))
 
 (re-frame/reg-sub
- :wallet/chain-tokens
+ :wallet/sorted-tokens
  :<- [:wallet/all-tokens]
- :<- [:ethereum/chain-keyword]
- (fn [[all-tokens chain]]
-   (get all-tokens chain)))
-
-(re-frame/reg-sub
- :wallet/sorted-chain-tokens
- :<- [:wallet/all-tokens]
- :<- [:ethereum/chain-keyword]
- (fn [[all-tokens chain]]
-   (tokens/sorted-tokens-for all-tokens chain)))
+ (fn [all-tokens]
+   (tokens/sorted-tokens-for all-tokens)))
 
 (re-frame/reg-sub
  :wallet/grouped-chain-tokens
- :<- [:wallet/sorted-chain-tokens]
+ :<- [:wallet/sorted-tokens]
  :<- [:wallet/visible-tokens-symbols]
  (fn [[all-tokens visible-tokens]]
    (let [vt-set (set visible-tokens)]
@@ -1228,10 +1220,9 @@
  :wallet/visible-assets
  :<- [:ethereum/chain-keyword]
  :<- [:wallet/visible-tokens-symbols]
- :<- [:wallet/all-tokens]
- (fn [[chain visible-tokens-symbols all-tokens]]
-   (conj (filter #(contains? visible-tokens-symbols (:symbol %))
-                 (tokens/sorted-tokens-for all-tokens chain))
+ :<- [:wallet/sorted-tokens]
+ (fn [[chain visible-tokens-symbols all-tokens-sorted]]
+   (conj (filter #(contains? visible-tokens-symbols (:symbol %)) all-tokens-sorted)
          (tokens/native-currency chain))))
 
 (re-frame/reg-sub

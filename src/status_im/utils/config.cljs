@@ -40,6 +40,7 @@
 (def waku-enabled? (enabled? (get-config :WAKU_ENABLED "0")))
 (def commands-enabled? (enabled? (get-config :COMMANDS_ENABLED "0")))
 (def keycard-test-menu-enabled? (enabled? (get-config :KEYCARD_TEST_MENU "0")))
+(def qr-test-menu-enabled? (enabled? (get-config :QR_READ_TEST_MENU "0")))
 
 ;; CONFIG VALUES
 (def log-level

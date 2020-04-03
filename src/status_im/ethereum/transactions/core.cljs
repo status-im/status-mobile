@@ -275,20 +275,13 @@
 (fx/defn fetch-more-tx
   {:events [:transactions/fetch-more]}
   [{:keys [db] :as cofx} address]
-  (let [all-tokens   (:wallet/all-tokens db)
-        chain        (ethereum/chain-keyword db)
-        chain-tokens (into
-                      {}
-                      (map (juxt :address identity)
-                           (tokens/tokens-for
-                            all-tokens chain)))
-        min-known-block (or (get-min-known-block db address)
+  (let [min-known-block (or (get-min-known-block db address)
                             (:ethereum/current-block db))
         min-block-transfers-count (or (min-block-transfers-count db address) 0)]
     (fx/merge
      cofx
      {:transactions/get-transfers
-      {:chain-tokens          chain-tokens
+      {:chain-tokens          (:wallet/all-tokens db)
        :addresses             [address]
        :before-block          min-known-block
        :historical?           true

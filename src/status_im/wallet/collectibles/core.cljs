@@ -19,8 +19,8 @@
 
 (defmulti load-collectibles-fx (fn [_ symbol _ _ _] symbol))
 
-(defmethod load-collectibles-fx :default [all-tokens symbol items-number address chain]
-  {:load-collectibles-fx [all-tokens symbol items-number address chain]})
+(defmethod load-collectibles-fx :default [all-tokens symbol items-number address]
+  {:load-collectibles-fx [all-tokens symbol items-number address]})
 
 (defn load-token [i items-number contract address symbol]
   (when (< i items-number)
@@ -31,21 +31,18 @@
 
 (re-frame/reg-fx
  :load-collectibles-fx
- (fn [[all-tokens symbol items-number address chain]]
-   (let [contract (:address (tokens/symbol->token all-tokens chain symbol))]
+ (fn [[all-tokens symbol items-number address]]
+   (let [contract (:address (tokens/symbol->token all-tokens symbol))]
      (load-token 0 items-number contract address symbol))))
 
 (handlers/register-handler-fx
  :show-collectibles-list
  (fn [{:keys [db]} [_ {:keys [symbol amount] :as collectible} address]]
-   (let [{:networks/keys [current-network networks]} db
-         chain               (ethereum/chain-id->chain-keyword
-                              (get-in networks [current-network :config :NetworkId]))
-         all-tokens          (:wallet/all-tokens db)
+   (let [all-tokens          (:wallet/all-tokens db)
          items-number        (money/to-number amount)
          loaded-items-number (count (get-in db [:collectibles symbol]))]
      (merge (when (not= items-number loaded-items-number)
-              (load-collectibles-fx all-tokens symbol items-number address chain))
+              (load-collectibles-fx all-tokens symbol items-number address))
             {:dispatch [:navigate-to :collectibles-list collectible]}))))
 
 ;; Crypto Kitties
@@ -101,16 +98,12 @@
 (def kudos :KDO)
 
 (defmethod load-collectible-fx kudos [{db :db} symbol id]
-  (let [{:networks/keys [current-network networks]} db
-        chain-id   (get-in networks [current-network :config :NetworkId])
-        all-tokens (:wallet/all-tokens db)]
-    {:erc721-token-uri [all-tokens symbol id chain-id]}))
+  {:erc721-token-uri [(:wallet/all-tokens db) symbol id]})
 
 (re-frame/reg-fx
  :erc721-token-uri
- (fn [[all-tokens symbol tokenId chain-id]]
-   (let [chain (ethereum/chain-id->chain-keyword chain-id)
-         contract (:address (tokens/symbol->token all-tokens chain symbol))]
+ (fn [[all-tokens symbol tokenId]]
+   (let [contract (:address (tokens/symbol->token all-tokens symbol))]
      (erc721/token-uri contract
                        tokenId
                        #(re-frame/dispatch [:token-uri-success

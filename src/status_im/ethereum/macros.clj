@@ -27,7 +27,10 @@
   "In react-native arguments to require must be static strings.
    Resolve all icons at compilation time so no variable is used."
   [network tokens]
-  (mapv #(assoc-in % [:icon :source] (token->icon network %)) tokens))
+  (mapv #(-> %
+             (assoc-in [:icon :source] (token->icon network %))
+             (update :address string/lower-case))
+        tokens))
 
 (defn network->icon [network]
   (let [s     (str "./resources/images/tokens/" (name network) "/0-native.png")

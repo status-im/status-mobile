@@ -271,8 +271,7 @@
 (fx/defn view-only-qr-scanner-result
   {:events [:wallet.add-new/qr-scanner-result]}
   [{db :db :as cofx} data _]
-  (let [address (or (when (ethereum/address? data) data)
-                    (:address (eip681/parse-uri data)))]
+  (let [address (:address (eip681/parse-uri data))]
     (fx/merge cofx
               (merge {:db (-> db
                               (assoc-in [:add-account :scanned-address] address)

@@ -543,35 +543,24 @@
 
    :custom []})
 
-;; TODO all these should be improved, we don't need to recalculate this each time, it can be done only once
-(defn tokens-for
-  "makes sure all addresses are lower-case
-   TODO: token list should be speced and not accept non-lower-cased addresses"
-  [all-tokens chain]
-  (mapv #(update % :address string/lower-case) (vals (get all-tokens chain))))
+(defn nfts-for [all-tokens]
+  (filter :nft? (vals all-tokens)))
 
-(defn nfts-for [all-tokens chain]
-  (filter :nft? (tokens-for all-tokens chain)))
-
-(defn token-for [chain all-tokens token]
-  (some #(when (= token (name (:symbol %))) %) (tokens-for all-tokens chain)))
-
-(defn sorted-tokens-for [all-tokens chain]
-  (->> (tokens-for all-tokens chain)
+(defn sorted-tokens-for [all-tokens]
+  (->> (vals all-tokens)
        (filter #(not (:hidden? %)))
        (sort #(compare (string/lower-case (:name %1))
                        (string/lower-case (:name %2))))))
 
-(defn symbol->token [all-tokens chain symbol]
-  (some #(when (= symbol (:symbol %)) %) (tokens-for all-tokens chain)))
+(defn symbol->token [all-tokens symbol]
+  (some #(when (= symbol (:symbol %)) %) (vals all-tokens)))
 
-(defn address->token [all-tokens chain address]
-  (some #(when (= (string/lower-case address)
-                  (string/lower-case (:address %))) %) (tokens-for all-tokens chain)))
+(defn address->token [all-tokens address]
+  (get all-tokens (string/lower-case address)))
 
 (defn asset-for [all-tokens chain symbol]
   (let [native-coin (native-currency chain)]
     (if (or (= (:symbol-display native-coin) symbol)
             (= (:symbol native-coin) symbol))
       native-coin
-      (symbol->token all-tokens chain symbol))))
+      (symbol->token all-tokens symbol))))

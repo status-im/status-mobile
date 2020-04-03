@@ -200,9 +200,9 @@
   (update-in db [:wallet :errors] dissoc error-type))
 
 (defn tokens-symbols
-  [visible-token-symbols all-tokens chain]
+  [visible-token-symbols all-tokens]
   (set/difference (set visible-token-symbols)
-                  (set (map :symbol (tokens/nfts-for all-tokens chain)))))
+                  (set (map :symbol (tokens/nfts-for all-tokens)))))
 
 (defn rpc->token [tokens]
   (reduce (fn [acc {:keys [address] :as token}]
@@ -213,21 +213,14 @@
           tokens))
 
 (fx/defn initialize-tokens
-  [{:keys [db] :as cofx} custom-tokens]
-  (let [chain         (ethereum/chain-keyword db)
-        custom-tokens {chain (rpc->token custom-tokens)}
-        ;;TODO why do we need all tokens ? chain can be changed only through relogin
-        all-tokens    (merge-with
-                       merge
-                       (utils.core/map-values #(utils.core/index-by :address %)
-                                              tokens/all-default-tokens)
-                       custom-tokens)]
-    (fx/merge
-     cofx
-     (merge
-      {:db (assoc db :wallet/all-tokens all-tokens)}
-      (when config/erc20-contract-warnings-enabled?
-        {:wallet/validate-tokens (get tokens/all-default-tokens chain)})))))
+  [{:keys [db]} custom-tokens]
+  (let [default-tokens (utils.core/index-by :address (get tokens/all-default-tokens
+                                                          (ethereum/chain-keyword db)))
+        all-tokens     (merge default-tokens (rpc->token custom-tokens))]
+    (merge
+     {:db (assoc db :wallet/all-tokens all-tokens)}
+     (when config/erc20-contract-warnings-enabled?
+       {:wallet/validate-tokens default-tokens}))))
 
 (fx/defn update-balances
   [{{:keys [network-status :wallet/all-tokens
@@ -239,7 +232,7 @@
         assets    (get visible-tokens chain)
         init?     (or (empty? assets)
                       (= assets (constants/default-visible-tokens chain)))
-        tokens    (->> (tokens/tokens-for all-tokens chain)
+        tokens    (->> (vals all-tokens)
                        (remove #(or (:hidden? %)
                                     ;;if not init remove not visible tokens
                                     (and (not init?)
@@ -269,7 +262,7 @@
   (let [chain       (ethereum/chain-keyword db)
         mainnet?    (= :mainnet chain)
         assets      (get visible-tokens chain #{})
-        tokens      (tokens-symbols assets all-tokens chain)
+        tokens      (tokens-symbols assets all-tokens)
         currency    (get constants/currencies currency)]
     (when (not= network-status :offline)
       {:wallet/get-prices
@@ -446,7 +439,7 @@
         chain (ethereum/network->chain-keyword current-network)
         {:keys [symbol decimals]}
         (if (seq contract)
-          (get (get all-tokens chain) contract)
+          (get all-tokens contract)
           (tokens/native-currency chain))
         amount-text (str (money/internal->formatted value symbol decimals))]
     {:db (assoc db :wallet/prepare-transaction
@@ -608,7 +601,8 @@
   {:events [:wallet.send/qr-scanner-allowed]}
   [{:keys [db] :as cofx} options]
   (fx/merge cofx
-            {:db (assoc-in db [:wallet/prepare-transaction :modal-opened?] true)}
+            (when (:modal-opened? options)
+              {:db (assoc-in db [:wallet/prepare-transaction :modal-opened?] true)})
             (bottom-sheet/hide-bottom-sheet)
             (navigation/navigate-to-cofx :qr-scanner options)))
 

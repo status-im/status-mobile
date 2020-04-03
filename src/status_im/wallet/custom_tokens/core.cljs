@@ -85,10 +85,9 @@
                          (string/trim %)]))))
 
 (defn field-exists?
-  [{:wallet/keys [all-tokens] :as db} field-key field-value]
-  (let [chain-key (ethereum/chain-keyword db)]
-    (some #(= field-value (get % field-key))
-          (vals (get all-tokens chain-key)))))
+  [{:wallet/keys [all-tokens]} field-key field-value]
+  (some #(= field-value (get % field-key))
+        (vals all-tokens)))
 
 (fx/defn total-supply-result
   [{:keys [db]} contract total-supply]
@@ -100,10 +99,8 @@
                         :error (i18n/label :t/wrong-contract)})}))
 
 (defn token-in-list?
-  [{:wallet/keys [all-tokens] :as db} contract]
-  (let [chain-key (ethereum/chain-keyword db)
-        addresses (set (map string/lower-case (keys (get all-tokens chain-key))))]
-    (not (nil? (get addresses (string/lower-case contract))))))
+  [{:wallet/keys [all-tokens]} contract]
+  (not (nil? (get all-tokens (string/lower-case contract)))))
 
 (fx/defn contract-address-is-changed
   [{:keys [db]} contract]
@@ -177,7 +174,7 @@
                    :decimals (int decimals)
                    :color    (rand-nth colors/chat-colors)}]
     (fx/merge cofx
-              {:db (assoc-in db [:wallet/all-tokens chain-key contract]
+              {:db (assoc-in db [:wallet/all-tokens contract]
                              (assoc new-token :custom? true))
                ::json-rpc/call [{:method "wallet_addCustomToken"
                                  :params [new-token]
@@ -191,7 +188,7 @@
   [{:keys [db] :as cofx} {:keys [address] :as token} navigate-back?]
   (let [chain-key (ethereum/chain-keyword db)]
     (fx/merge cofx
-              {:db (update-in db [:wallet/all-tokens chain-key] dissoc address)
+              {:db (update db :wallet/all-tokens dissoc address)
                ::json-rpc/call [{:method "wallet_deleteCustomToken"
                                  :params [address]
                                  :on-success #()}]}

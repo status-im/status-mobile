@@ -106,8 +106,7 @@
 
 (fx/defn prepare-unconfirmed-transaction
   [{:keys [db now]} hash {:keys [value gasPrice gas data to from]} symbol amount]
-  (let [all-tokens (:wallet/all-tokens db)
-        token      (tokens/symbol->token all-tokens (ethereum/chain-keyword db) symbol)]
+  (let [token (tokens/symbol->token (:wallet/all-tokens db) symbol)]
     {:db (assoc-in db [:wallet :accounts from :transactions hash]
                    {:timestamp (str now)
                     :to        to
@@ -133,7 +132,7 @@
     :approve-and-call))
 
 (defn get-transfer-token [db to data]
-  (let [{:keys [symbol decimals] :as token} (tokens/address->token (:wallet/all-tokens db) (ethereum/chain-keyword db) to)]
+  (let [{:keys [symbol decimals] :as token} (tokens/address->token (:wallet/all-tokens db) to)]
     (when (and token data (string? data))
       (when-let [type (get-method-type data)]
         (let [[address value _] (abi-spec/decode

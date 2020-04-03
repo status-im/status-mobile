@@ -37,7 +37,8 @@
 
 (defn- request-camera-permissions []
   (let [options {:handler        :wallet.send/qr-scanner-result
-                 :cancel-handler :wallet.send/qr-scanner-cancel}]
+                 :cancel-handler :wallet.send/qr-scanner-cancel
+                 :modal-opened?  true}]
     (re-frame/dispatch
      [:request-permissions
       {:permissions [:camera]

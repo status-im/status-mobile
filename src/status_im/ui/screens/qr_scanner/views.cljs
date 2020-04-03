@@ -6,7 +6,9 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.view :as topbar]
             [status-im.ui.screens.qr-scanner.styles :as styles]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.utils.config :as config]
+            [status-im.ui.components.button :as button]))
 
 (defn- topbar [camera-flashlight {:keys [title] :as opts}]
   [topbar/toolbar
@@ -22,6 +24,25 @@
                                     :main-icons/flash-inactive)
                        :icon-opts {:color colors/white}
                        :handler   #(re-frame/dispatch [:wallet/toggle-flashlight])}]]])
+
+(defn qr-test-view [opts]
+  (let [text-value (atom "")]
+    [react/safe-area-view {:style {:flex             1
+                                   :background-color colors/black-persist}}
+     [topbar nil opts]
+     [react/view {:flex            1
+                  :align-items     :center
+                  :justify-content :center}
+      [react/text-input {:multiline      true
+                         :style {:color colors/white-persist}
+                         :on-change-text #(reset! text-value %)}]
+      [react/view {:flex-direction :row}
+       [button/button
+        {:label    "Cancel"
+         :on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-cancel opts])}]
+       [button/button
+        {:label    "OK"
+         :on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success opts @text-value])}]]]]))
 
 (defn corner [border1 border2 corner]
   [react/view (assoc {:border-color colors/white-persist :width 60 :height 60} border1 5 border2 5 corner 32)])
@@ -44,15 +65,17 @@
             {:keys [height width]} [:dimensions/window]
             camera-flashlight [:wallet.send/camera-flashlight]
             opts              [:get-screen-params]]
-    [react/safe-area-view {:style {:flex             1
-                                   :background-color colors/black-persist}}
-     [topbar camera-flashlight opts]
-     [react/with-activity-indicator
-      {}
-      [camera/camera
-       {:style         {:flex 1}
-        :captureAudio  false
-        :onBarCodeRead #(when-not @read-once?
-                          (reset! read-once? true)
-                          (on-barcode-read opts %))}]]
-     [viewfinder (int (* 2 (/ (min height width) 3)))]]))
+    (if config/qr-test-menu-enabled?
+      [qr-test-view opts]
+      [react/safe-area-view {:style {:flex             1
+                                     :background-color colors/black-persist}}
+       [topbar camera-flashlight opts]
+       [react/with-activity-indicator
+        {}
+        [camera/camera
+         {:style         {:flex 1}
+          :captureAudio  false
+          :onBarCodeRead #(when-not @read-once?
+                            (reset! read-once? true)
+                            (on-barcode-read opts %))}]]
+       [viewfinder (int (* 2 (/ (min height width) 3)))]])))

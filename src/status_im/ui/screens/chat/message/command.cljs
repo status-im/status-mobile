@@ -146,7 +146,7 @@
   [contract value]
   (let [{:keys [symbol icon decimals color] :as token}
         (if (seq contract)
-          (get @(re-frame/subscribe [:wallet/chain-tokens])
+          (get @(re-frame/subscribe [:wallet/all-tokens])
                contract
                transactions/default-erc20-token)
           @(re-frame/subscribe [:ethereum/native-currency]))
