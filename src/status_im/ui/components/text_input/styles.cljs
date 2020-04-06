@@ -10,8 +10,7 @@
 
 (defn input-container [height editable]
   (merge
-   {:padding          16
-    :justify-content  :center
+   {:justify-content  :center
     :height           (or height 52)
     :border-radius    8
     :background-color (when editable colors/gray-lighter)}
@@ -20,7 +19,11 @@
       :border-width 1})))
 
 (styles/def input
-  {:padding             0
+  {:padding             16
+   :border-radius       8
+   :font-size           15
+   :line-height         22
+   :flex                1
    :text-align-vertical :center
    :desktop             {:height 52}})
 

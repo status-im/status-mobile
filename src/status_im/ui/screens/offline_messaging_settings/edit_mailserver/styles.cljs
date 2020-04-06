@@ -9,19 +9,15 @@
    :margin-vertical   15})
 
 (def input-container
-  {:flex-direction    :row
-   :align-items       :center
-   :justify-content   :space-between
-   :border-radius     components.styles/border-radius
-   :height            52
-   :margin-top        15})
-
-(styles/def input
-  {:flex    1
-   :android {:padding 0}})
+  {:flex-direction  :row
+   :align-items     :center
+   :justify-content :space-between
+   :border-radius   components.styles/border-radius
+   :height          52
+   :margin-bottom   15})
 
 (def qr-code
-  {:margin-right 14})
+  {:padding 16})
 
 (def bottom-container
   {:flex-direction    :row

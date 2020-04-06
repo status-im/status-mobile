@@ -345,7 +345,7 @@
 (defn enter-phrase [{:keys [processing?
                             passphrase-word-count
                             next-button-disabled?
-                            passphrase-error] :as wizard-state}]
+                            passphrase-error]}]
   [react/keyboard-avoiding-view {:flex             1
                                  :justify-content  :flex-start
                                  :background-color colors/white}
@@ -359,51 +359,49 @@
      :multiline           true
      :auto-correct        false
      :keyboard-type       "visible-password"
-     :parent-container    {:flex 1
-                           :align-self :stretch
-                           :justify-content :center
-                           :align-items :center}
-     :container           {:background-color colors/white
-                           :flex 1
-                           :justify-content :center
-                           :align-items :center}
-     :style               (merge {:background-color    colors/white
-                                  :text-align          :center
-                                  :text-align-vertical :center
-                                  :min-width 40
-                                  :font-size        16
-                                  :font-weight      "700"}
-                                 (when platform/android?
-                                   {:flex 1}))}]
+     :parent-container    {:flex            1
+                           :justify-content :center}
+     :container           (merge {:background-color colors/white
+                                  :flex             1
+                                  :justify-content  :center
+                                  :min-height       90}
+                                 (when platform/ios?
+                                   {:max-height 150}))
+     :style               {:background-color    colors/white
+                           :text-align          :center
+                           :text-align-vertical :center
+                           :min-width           40
+                           :font-size           16
+                           :font-weight         "700"}}]
    [react/view {:align-items :center}
     (if passphrase-word-count
       [react/view {:flex-direction :row
-                   :margin-bottom 4
-                   :min-height 24
-                   :max-height 24
+                   :margin-bottom  4
+                   :min-height     24
+                   :max-height     24
                    :align-items    :center}
-       [react/nested-text {:style {:font-size    14
+       [react/nested-text {:style {:font-size     14
                                    :padding-right 4
-                                   :text-align   :center
-                                   :color        colors/gray}}
+                                   :text-align    :center
+                                   :color         colors/gray}}
         (str (i18n/label  :t/word-count) ": ")
-        [{:style {:font-weight       "500"
-                  :color              colors/black}}
+        [{:style {:font-weight "500"
+                  :color       colors/black}}
          (i18n/label-pluralize passphrase-word-count :t/words-n)]]
        (when-not next-button-disabled?
          [react/view {:style {:background-color colors/green-transparent-10
-                              :border-radius 12
-                              :width 24
-                              :justify-content :center
-                              :align-items :center
-                              :height 24}}
+                              :border-radius    12
+                              :width            24
+                              :justify-content  :center
+                              :align-items      :center
+                              :height           24}}
           [vector-icons/tiny-icon :tiny-icons/tiny-check {:color colors/green}]])]
       [react/view {:align-self :stretch :margin-bottom 4
-                   :max-height 24 :min-height 24}])
-    [react/text {:style {:color      colors/gray
-                         :font-size  14
+                   :max-height 24       :min-height    24}])
+    [react/text {:style {:color         colors/gray
+                         :font-size     14
                          :margin-bottom 8
-                         :text-align :center}}
+                         :text-align    :center}}
      (i18n/label :t/multiaccounts-recover-enter-phrase-text)]]
    (when processing?
      [react/view {:flex 1 :align-items :center}

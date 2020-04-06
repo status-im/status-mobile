@@ -60,7 +60,6 @@
           [text-input/text-input-with-label
            {:label           (i18n/label :t/name)
             :placeholder     (i18n/label :t/specify-name)
-            :style           styles/input
             :container       styles/input-container
             :default-value   name
             :on-change-text  #(re-frame/dispatch [:mailserver.ui/input-changed :name %])
@@ -71,7 +70,6 @@
             {:label          (i18n/label :t/mailserver-address)
              :placeholder    (i18n/label :t/mailserver-format)
              :content        qr-code
-             :style          styles/input
              :container      styles/input-container
              :default-value  url
              :on-change-text #(re-frame/dispatch [:mailserver.ui/input-changed :url %])}]

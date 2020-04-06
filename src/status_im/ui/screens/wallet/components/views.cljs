@@ -34,13 +34,16 @@
   (views/letsubs [content (reagent/atom nil)]
     [react/view {:flex 1}
      [recipient-topbar @content]
-     [react/view
+     [react/view {:padding-horizontal 16
+                  :padding-vertical   24
+                  :flex               1}
       [text-input/text-input-with-label
        {:multiline           true
-        :container           {:margin 16 :padding-vertical 16 :height 72}
-        :style               {:text-align-vertical :top :height 42}
+        :container           {:height           98
+                              :padding-vertical 8}
         :placeholder         (i18n/label :t/recipient-code-placeholder)
         :on-change-text      #(reset! content %)
         :accessibility-label :recipient-address-input}]
-      [react/text {:style {:color colors/gray :margin-horizontal 16}}
+      [react/text {:style {:color           colors/gray
+                           :margin-vertical 16}}
        (i18n/label :t/enter-recipient-address-or-username)]]]))
