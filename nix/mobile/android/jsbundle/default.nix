@@ -30,11 +30,11 @@ in stdenv.mkDerivation {
             "status-modules/resources/.*"
             "build.clj" "externs.js"
             "project.clj" "prepare-modules.js"
-            "resources/js/.*"
-            "resources/config/.*"
+            # lein jsbundle stat's images to check if they exist
+            "resources/.*"
           ];
           exclude = [
-            "resources/images/.*"
+            "resources/fonts/.*"
           ];
           root = path;
         };

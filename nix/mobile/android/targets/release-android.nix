@@ -46,7 +46,7 @@ in stdenv.mkDerivation {
         mkFilter {
           root = path;
           include = [
-            "mobile/js_files.*" "resources.*"
+            "mobile/js_files.*" "resources/.*"
             "modules/react-native-status/android.*"
             envFileName "VERSION" ".watchmanconfig"
             "status-go-version.json" "react-native.config.js"
