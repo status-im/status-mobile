@@ -23,13 +23,18 @@
    :android     {:top 30}})
 
 (defn tooltip-animated [bottom-value opacity-value]
-  {:position    :absolute
-   :align-items :center
-   :left        0
-   :right       0
-   :bottom      0
-   :transform   [{:translateY bottom-value}]
-   :opacity     opacity-value})
+  (cond-> {:position    :absolute
+           :align-items :center
+           :left        0
+           :right       0
+           :bottom      0
+           :transform   [{:translateY bottom-value}]
+           :opacity     opacity-value}
+
+    ;;we need this for e2e tests
+    config/tooltip-events?
+    (assoc :margin-top -20
+           :position :relative)))
 
 (defn tooltip-text-container [color]
   {:padding-horizontal 16

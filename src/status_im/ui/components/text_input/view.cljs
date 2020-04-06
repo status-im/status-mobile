@@ -15,8 +15,8 @@
       merged-styles)))
 
 (defn text-input-with-label
-  [{:keys [label content error style height container label-style
-           parent-container bottom-value text editable keyboard-type]
+  [{:keys [label content error style height container accessibility-label
+           label-style parent-container bottom-value text editable keyboard-type]
     :as props
     :or {editable true}}]
   [react/view {:style parent-container}
@@ -40,7 +40,10 @@
         {:value text}))]
     (when content content)]
    (when error
-     [tooltip/tooltip error (styles/error
-                             (cond bottom-value bottom-value
-                                   label 20
-                                   :else 0))])])
+     [tooltip/tooltip error
+      (styles/error
+       (cond bottom-value bottom-value
+             label 20
+             :else 0))
+      (when accessibility-label
+        (str (name accessibility-label) "-error"))])])
