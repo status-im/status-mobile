@@ -64,17 +64,19 @@
   {:db (assoc-in db [:chats chat-id :message-list]
                  (message-list/add-many nil (vals (get-in db [:chats chat-id :messages]))))})
 
+(fx/defn hidden-message-marked-as-seen
+  {:events [::hidden-message-marked-as-seen]}
+  [{:keys [db] :as cofx} chat-id _ hidden-message-count]
+  (when (= 1 hidden-message-count)
+    {:db (update-in db [:chats chat-id]
+                    update
+                    :unviewed-messages-count dec)}))
 (fx/defn hide-message
   "Hide chat message, rebuild message-list"
   [{:keys [db] :as cofx} chat-id {:keys [seen message-id]}]
   (fx/merge cofx
-            {:db            (update-in db [:chats chat-id :messages] dissoc message-id)}
-            #(when (not seen)
-               (fx/merge %
-                         {:db (update-in db [:chats chat-id]
-                                         update
-                                         :unviewed-messages-count dec)}
-                         (data-store.messages/mark-messages-seen chat-id [message-id])))
+            {:db (update-in db [:chats chat-id :messages] dissoc message-id)}
+            (data-store.messages/mark-messages-seen chat-id [message-id] #(re-frame/dispatch [::hidden-message-marked-as-seen %1 %2 %3]))
             (rebuild-message-list chat-id)))
 
 (fx/defn add-message
@@ -175,7 +177,7 @@
 
         (and chat-view? (= current-chat-id chat-id))
         (fx/merge cofx
-                  (data-store.messages/mark-messages-seen current-chat-id [message-id]))
+                  (data-store.messages/mark-messages-seen current-chat-id [message-id] nil))
 
         :else
         {:db (update-in db [:chats chat-id]

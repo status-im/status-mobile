@@ -228,7 +228,7 @@
                                                     true))
                                         db
                                         loaded-unviewed-ids)}
-                (messages-store/mark-messages-seen chat-id loaded-unviewed-ids)
+                (messages-store/mark-messages-seen chat-id loaded-unviewed-ids nil)
                 (update-chats-unviewed-messages-count {:chat-id chat-id})
                 (when platform/desktop?
                   (update-dock-badge-label))))))

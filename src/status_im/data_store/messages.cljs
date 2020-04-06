@@ -65,10 +65,12 @@
                                    (on-success (update result :messages #(map <-rpc %))))
                      :on-failure on-failure}]})
 
-(defn mark-seen-rpc [waku-enabled? chat-id ids]
+(defn mark-seen-rpc [waku-enabled? chat-id ids on-success]
   {::json-rpc/call [{:method (json-rpc/call-ext-method waku-enabled? "markMessagesSeen")
                      :params [chat-id ids]
-                     :on-success #(log/debug "successfully marked as seen")
+                     :on-success #(do
+                                    (log/debug "successfully marked as seen" %)
+                                    (when on-success (on-success chat-id ids %)))
                      :on-failure #(log/error "failed to get messages" %)}]})
 
 (defn delete-message-rpc [waku-enabled? id]
@@ -95,8 +97,8 @@
 (fx/defn delete-messages-from [cofx author]
   (delete-messages-from-rpc (waku/enabled? cofx) author))
 
-(fx/defn mark-messages-seen [cofx chat-id ids]
-  (mark-seen-rpc (waku/enabled? cofx) chat-id ids))
+(fx/defn mark-messages-seen [cofx chat-id ids on-success]
+  (mark-seen-rpc (waku/enabled? cofx) chat-id ids on-success))
 
 (fx/defn update-outgoing-status [cofx message-id status]
   (update-outgoing-status-rpc (waku/enabled? cofx) message-id status))
