@@ -81,10 +81,7 @@ class KeycardView(BaseView):
     def get_required_word_number(self):
         description = WordNumberText(self.driver)
         full_text = description.text
-        if ("11" in full_text) or ("12" in full_text):
-            word_number = full_text[-2:]
-        else:
-            word_number = full_text[-1]
+        word_number = ''.join(i for i in full_text if i.isdigit())
         return word_number
 
     def backup_seed_phrase(self):

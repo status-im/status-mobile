@@ -368,6 +368,9 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         base_web_view.open_in_webview()
         base_web_view.find_full_text('Frequently Asked Questions')
         base_web_view.click_system_back_button()
+        profile_view.submit_bug_button.click()
+        base_web_view.find_full_text('Welcome to Gmail')
+        base_web_view.click_system_back_button()
         profile_view.request_a_feature_button.click()
         profile_view.find_full_text('#status')
 

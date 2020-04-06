@@ -20,7 +20,8 @@ RERUN_ERRORS = [
     "http.client.RemoteDisconnected: Remote end closed connection without response",
     "[Errno 110] Connection timed out",
     "replacement transaction underpriced",
-    "StaleElementReferenceException"
+    "StaleElementReferenceException",
+    "No System TLS"
 ]
 
 

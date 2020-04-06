@@ -16,15 +16,18 @@ class PlusButton(BaseButton):
         super(PlusButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id("new-chat-button")
 
+
 class DeleteChatButton(BaseButton):
     def __init__(self, driver):
         super(DeleteChatButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id("delete-chat-button")
 
+
 class ClearHistoryButton(BaseButton):
     def __init__(self, driver):
         super(ClearHistoryButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id("clear-history-button")
+
 
 class StartNewChatButton(BaseButton):
     def __init__(self, driver):
@@ -69,12 +72,14 @@ class ChatsMenuInviteFriendsButton(BaseButton):
         super(ChatsMenuInviteFriendsButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('chats-menu-invite-friends-button')
 
+
 class UserNameBelowNewChatButton(BaseButton):
     def __init__(self, driver, username_part):
         super(UserNameBelowNewChatButton, self).__init__(driver)
         self.username = username_part
         self.locator = self.Locator.xpath_selector(
             "//*[@content-desc='enter-contact-code-input']/../..//*[starts-with(@text,'%s')]" % self.username)
+
 
 class ChatElement(BaseButton):
     def __init__(self, driver, username_part):
@@ -138,6 +143,12 @@ class ChatElement(BaseButton):
         return UnreadMessagesPublicChat(self.driver)
 
 
+class MarkAllMessagesAsReadButton(BaseButton):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.accessibility_id('mark-all-read-button')
+
+
 class ChatNameText(BaseText):
     def __init__(self, driver):
         super(ChatNameText, self).__init__(driver)
@@ -172,6 +183,7 @@ class HomeView(BaseView):
         self.chats_menu_invite_friends_button = ChatsMenuInviteFriendsButton(self.driver)
         self.delete_chat_button = DeleteChatButton(self.driver)
         self.clear_history_button = ClearHistoryButton(self.driver)
+        self.mark_all_messages_as_read_button = MarkAllMessagesAsReadButton(self.driver)
 
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing complete:')
@@ -187,8 +199,6 @@ class HomeView(BaseView):
 
     def get_username_below_start_new_chat_button(self, username_part):
         return UserNameBelowNewChatButton(self.driver, username_part)
-
-
 
     def add_contact(self, public_key, add_in_contacts=True):
         self.plus_button.click_until_presence_of_element(self.start_new_chat_button)

@@ -121,6 +121,36 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(6270)
+    @marks.medium
+    def test_mark_all_messages_as_read_public_chat(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        home_1, home_2 = device_1.create_user(), device_2.create_user()
+        chat_name = home_1.get_public_chat_name()
+        chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
+        home_1.get_back_to_home_view()
+        message = 'test message'
+        chat_2.chat_message_input.send_keys(message)
+        chat_2.send_message_button.click()
+
+        if not home_1.home_button.public_unread_messages.is_element_displayed():
+            self.errors.append('New messages public chat badge is not shown on Home button')
+        chat_element = home_1.get_chat('#' + chat_name)
+        if not chat_element.new_messages_public_chat.is_element_displayed():
+            self.errors.append('New messages counter is not shown in public chat')
+
+        chat_element.long_press_element()
+        home_1.mark_all_messages_as_read_button.click()
+        home_1.get_back_to_home_view()
+
+        if home_1.home_button.public_unread_messages.is_element_displayed():
+            self.errors.append('New messages public chat badge is shown on Home button')
+        if chat_element.new_messages_public_chat.is_element_displayed():
+            self.errors.append('Unread messages badge is shown in public chat while while there are no unread messages')
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(6202)
     @marks.low
     def test_emoji_messages_long_press(self):
