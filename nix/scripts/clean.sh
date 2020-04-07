@@ -89,7 +89,7 @@ if [[ -n "${nixResultPath}" ]]; then
     toDelete=$(findByResult "${nixResultPath}")
 else 
     # use regular expression that should match all status-react build artifacts
-    toDelete=$(findByRegex '.*-status-react-(shell|source|build|patched-npm-gradle-modules).*')
+    toDelete=$(findByRegex '.*-status-(react|go)-(shell|source|build|patched-npm-gradle-modules).*')
 fi
 
 # remove duplicates and return
