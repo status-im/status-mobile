@@ -233,19 +233,38 @@
                 (when platform/desktop?
                   (update-dock-badge-label))))))
 
+(fx/defn offload-all-messages
+  {:events [::offload-all-messages]}
+  [{:keys [db] :as cofx}]
+  (when-let [current-chat-id (:current-chat-id db)]
+    {:db
+     (-> db
+         (dissoc :loaded-chat-id)
+         (update-in [:chats current-chat-id]
+                    assoc
+                    :all-loaded? false
+                    :cursor nil
+                    :messages-initialized? false
+                    :messages {}
+                    :message-list nil))}))
+
 (fx/defn preload-chat-data
   "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
   [{:keys [db] :as cofx} chat-id]
-  (fx/merge cofx
-            {:db (assoc db :current-chat-id chat-id)}
-            ;; Group chat don't need this to load as all the loading of topics
-            ;; happens on membership changes
-            (when-not (group-chat? cofx chat-id)
-              (transport.filters/load-chat chat-id))
-            (when platform/desktop?
-              (mark-messages-seen chat-id))
-            (when (and (one-to-one-chat? cofx chat-id) (not (contact.db/contact-exists? db chat-id)))
-              (contact.core/create-contact chat-id))))
+  (let [old-current-chat-id (:current-chat-id db)]
+    (fx/merge cofx
+              (when-not (= old-current-chat-id chat-id)
+                (offload-all-messages))
+              (fn [{:keys [db]}]
+                {:db (assoc db :current-chat-id chat-id)})
+              ;; Group chat don't need this to load as all the loading of topics
+              ;; happens on membership changes
+              (when-not (group-chat? cofx chat-id)
+                (transport.filters/load-chat chat-id))
+              (when platform/desktop?
+                (mark-messages-seen chat-id))
+              (when (and (one-to-one-chat? cofx chat-id) (not (contact.db/contact-exists? db chat-id)))
+                (contact.core/create-contact chat-id)))))
 
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"

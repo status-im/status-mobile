@@ -6,6 +6,7 @@
             [status-im.ui.screens.group.views :as group]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.chat.models.loading :as chat.loading]
+            [status-im.chat.models :as chat.models]
             [status-im.ui.screens.group.events :as group.events]
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
             [status-im.ui.screens.stickers.views :as stickers]))
@@ -16,7 +17,7 @@
   [stack {:initial-route-name :home
           :header-mode        :none}
    [{:name      :home
-     :on-focus  [::chat.loading/offload-all-messages]
+     :on-focus  [::chat.models/offload-all-messages]
      :style     {:padding-bottom tabbar.styles/tabs-diff}
      :component home/home}
     {:name      :chat

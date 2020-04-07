@@ -6,6 +6,7 @@
             status-im.utils.universal-links.events
             status-im.ui.screens.profile.events
             [re-frame.core :as re-frame]
+            [status-im.chat.models.loading :as chat.loading]
             [status-im.chat.models :as chat]
             [status-im.hardwallet.core :as hardwallet]
             [status-im.mailserver.core :as mailserver]
@@ -203,5 +204,9 @@
                 :keycard-login-pin                (hardwallet/enter-pin-screen-did-load %)
                 :add-new-account-pin              (hardwallet/enter-pin-screen-did-load %)
                 :hardwallet-authentication-method (hardwallet/authentication-method-screen-did-load %)
+                ;; We need this as if you click on universal-links you transition
+                ;; from chat to chat, and therefore we won't be loading new
+                ;; messages
+                :chat                             (chat.loading/load-messages %)
                 :multiaccounts                    (hardwallet/multiaccounts-screen-did-load %)
                 nil))))

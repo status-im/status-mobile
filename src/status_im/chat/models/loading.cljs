@@ -38,21 +38,6 @@
                           :chats/loading? false)}
               (filters/load-filters))))
 
-(fx/defn offload-all-messages
-  {:events [::offload-all-messages]}
-  [{:keys [db] :as cofx}]
-  (when-let [current-chat-id (:current-chat-id db)]
-    {:db
-     (-> db
-         (dissoc :loaded-chat-id)
-         (update-in [:chats current-chat-id]
-                    assoc
-                    :all-loaded? false
-                    :cursor nil
-                    :messages-initialized? false
-                    :messages {}
-                    :message-list nil))}))
-
 (fx/defn handle-chat-visibility-changed
   {:events [:chat.ui/message-visibility-changed]}
   [{:keys [db] :as cofx} event]
