@@ -32,10 +32,13 @@ let
             filter =
               # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
               mkFilter {
-                dirRootsToInclude = [];
-                dirsToExclude = [ ".git" ".svn" "CVS" ".hg" ".vscode" ".dependabot" ".github" ".ethereumtest" "build" ];
-                filesToInclude = [ "Makefile" "go.mod" "go.sum" "VERSION" ];
                 root = path;
+                include = [ ".*" ];
+                exclude = [
+                  ".*/[.]git.*" ".*[.]md" ".*[.]yml"
+                  ".*/.*_test.go$" "_assets/.*" "build/.*"
+                  ".*/.*LICENSE.*" ".*/CONTRIB.*" ".*/AUTHOR.*"
+                ];
               };
           };
     } else
