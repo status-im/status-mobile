@@ -293,9 +293,8 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.driver.fail('Account is added without password')
         wallet_view.enter_your_password_input.send_keys('000000')
         wallet_view.add_account_generate_account_button.click()
-        # TODO: blocked due to #8567
-        # if not wallet_view.element_by_text_part('Password seems to be incorrect').is_element_displayed():
-        #     self.driver.fail("Incorrect password validation is not performed")
+        if not wallet_view.element_by_text_part('Password seems to be incorrect').is_element_displayed():
+             self.driver.fail("Incorrect password validation is not performed")
         wallet_view.enter_your_password_input.clear()
         wallet_view.enter_your_password_input.send_keys(common_password)
         wallet_view.add_account_generate_account_button.click()

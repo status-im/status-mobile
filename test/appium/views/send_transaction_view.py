@@ -127,8 +127,7 @@ class TransactionFeeButton(BaseButton):
 class TransactionFeeTotalValue(BaseText):
     def __init__(self, driver):
         super(TransactionFeeTotalValue, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Network fee']"
-                                                   "/following-sibling::android.widget.TextView")
+        self.locator = self.Locator.xpath_selector("//*[@text='Total Fee']//following::android.widget.TextView[1]")
 
 
 class GasLimitInput(BaseEditBox):
@@ -295,7 +294,10 @@ class SendTransactionView(BaseView):
         self.ok_button.click()
 
     def get_transaction_fee_total(self):
-        return self.transaction_fee_total_value.text.split()[0]
+        self.network_fee_button.click_until_presence_of_element(self.gas_limit_input)
+        fee_value = self.transaction_fee_total_value.text.split()[0]
+        self.update_fee_button.click()
+        return fee_value
 
     def get_formatted_recipient_address(self, address):
         return address[:6] + '…' + address[-4:]

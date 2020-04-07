@@ -27,8 +27,6 @@ class TestSignIn(SingleDeviceTestCase):
 
     @marks.testrail_id(5463)
     @marks.medium
-    @marks.skip
-    # TODO: e2e blocker: 8567 (should be enabled after fix)
     def test_login_with_incorrect_password(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
@@ -36,6 +34,7 @@ class TestSignIn(SingleDeviceTestCase):
         profile.logout()
         if sign_in.ok_button.is_element_displayed():
             sign_in.ok_button.click()
+        sign_in.multi_account_on_login_button.click()
         sign_in.password_input.set_value(common_password + '1')
         sign_in.sign_in_button.click()
         sign_in.find_full_text("Wrong password")

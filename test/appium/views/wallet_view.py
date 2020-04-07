@@ -509,9 +509,9 @@ class WalletView(BaseView):
     def send_transaction(self, **kwargs):
         send_transaction_view = self.send_transaction_button.click()
         send_transaction_view.select_asset_button.click()
-        asset_name = kwargs.get('asset_name', 'ETHro').upper()
+        asset_name = kwargs.get('asset_name', 'ETH').upper()
         asset_button = send_transaction_view.asset_by_name(asset_name)
-        send_transaction_view.select_asset_button.click_until_presence_of_element(asset_button)
+        send_transaction_view.select_asset_button.click_until_presence_of_element(send_transaction_view.eth_asset_in_select_asset_bottom_sheet_button)
         asset_button.click()
         send_transaction_view.amount_edit_box.click()
 
