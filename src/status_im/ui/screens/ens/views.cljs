@@ -361,10 +361,10 @@
   (case state
     :available
     (i18n/label :t/ens-username-registration-confirmation
-                {:username (stateofus/subdomain username)})
+                {:username (stateofus/username-with-domain username)})
     :connected-with-different-key
     (i18n/label :t/ens-username-connection-confirmation
-                {:username (stateofus/subdomain username)})
+                {:username (stateofus/username-with-domain username)})
     :connected
     (i18n/label :t/ens-saved-title)
     ;;NOTE: this state can't be reached atm
@@ -384,7 +384,7 @@
     :connected
     [react/nested-text
      {:style {:font-size 15 :text-align :center}}
-     (stateofus/subdomain username)
+     (stateofus/username-with-domain username)
      [{:style {:color colors/gray}}
       (i18n/label :t/ens-saved)]]
     ;;NOTE: this state can't be reached atm
