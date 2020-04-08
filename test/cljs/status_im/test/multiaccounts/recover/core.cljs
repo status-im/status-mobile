@@ -9,7 +9,7 @@
 
 
 (deftest check-phrase-warnings
-  (is (= :required-field (models/check-phrase-warnings ""))))
+  (is (= :t/required-field (models/check-phrase-warnings ""))))
 
 ;;;; handlers
 

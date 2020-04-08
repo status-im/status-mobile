@@ -14,7 +14,7 @@
 (spec/def :intro-wizard/root-key :multiaccounts/generated-multiaccount)
 (spec/def :intro-wizard/passphrase string?)
 (spec/def :intro-wizard/recovering? boolean?)
-(spec/def :intro-wizard/passphrase-word-count int?)
+(spec/def :intro-wizard/passphrase-word-count (spec/nilable int?))
 (spec/def :intro-wizard/derived :generated-multiaccounts/derived)
 (spec/def :intro-wizard/next-button-disabled? boolean?)
 

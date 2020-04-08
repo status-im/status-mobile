@@ -29,7 +29,7 @@
    (status/validate-mnemonic passphrase callback)))
 
 (defn check-phrase-warnings [recovery-phrase]
-  (cond (string/blank? recovery-phrase) :required-field))
+  (cond (string/blank? recovery-phrase) :t/required-field))
 
 (fx/defn set-phrase
   {:events [:multiaccounts.recover/passphrase-input-changed]}
