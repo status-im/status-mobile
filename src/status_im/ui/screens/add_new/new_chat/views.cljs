@@ -88,6 +88,7 @@
          ;; in onWillBlur navigation event handler
          :preserve-input?     true
          :accessibility-label :enter-contact-code-input
+         :auto-capitalize :none
          :return-key-type     :go}]]
       [react/view {:width 16}]
       [input-icon state]]
