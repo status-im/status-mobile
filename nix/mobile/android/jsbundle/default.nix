@@ -3,7 +3,7 @@
 #
 
 { target-os ? "android",
-  stdenv, mkFilter, clojure, leiningen, nodejs,
+  stdenv, mkFilter, clojure, leiningen, nodejs, bash, git,
   leinProjectDeps, localMavenRepoBuilder, projectNodePackage }:
 
 let
@@ -20,7 +20,12 @@ in stdenv.mkDerivation {
       filter =
         # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
         mkFilter {
+          root = path;
+          ignoreVCS = false;
           include = [ 
+            "VERSION" "BUILD_NUMBER" "scripts/version/.*"
+            # I want to avoid including the whole .git directory
+            ".git/HEAD" ".git/objects" ".git/refs/heads/.*"
             "src/.*" "prod/.*" "env/prod/.*"
             "components/src/.*" 
             "react-native/src" 
@@ -36,10 +41,9 @@ in stdenv.mkDerivation {
           exclude = [
             "resources/fonts/.*"
           ];
-          root = path;
         };
     };
-  buildInputs = [ clojure leiningen nodejs ];
+  buildInputs = [ clojure leiningen nodejs bash git ];
 
   LEIN_OFFLINE = "y";
 

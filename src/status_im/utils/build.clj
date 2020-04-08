@@ -28,7 +28,7 @@
 
 (defmacro get-current-sha []
   "fetches the latest commit sha from the current branch"
-  (-> (shell/sh "bash" "-c" "git describe --always")
+  (-> (shell/sh "git" "rev-parse" "--short" "HEAD")
       :out
       (string/replace "\n" "")))
 
@@ -37,6 +37,6 @@
         version-file      (io/file version-file-path)]
     (if (.exists version-file)
       (string/trim (slurp version-file-path))
-      (-> (shell/sh "bash" "-c" "git describe --always")
+      (-> (shell/sh "git" "rev-parse" "--short" "HEAD")
           :out
           (string/replace "\n" "")))))

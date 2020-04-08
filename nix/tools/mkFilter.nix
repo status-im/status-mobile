@@ -15,8 +15,11 @@ let
     # primary path under which all files are included, unless excluded
     root,
     # list of regex expressions to match files to include/exclude
-    include ? [ ], exclude ? [ ], # has precedence over include
-    }:
+    include ? [ ],
+    exclude ? [ ], # has precedence over include
+    # by default we ignore Version Control System files
+    ignoreVCS ? true,
+  }:
     let
       # removes superfluous slashes from the path
       cleanRoot = "${toString (/. + root)}/";
@@ -44,13 +47,13 @@ let
       isRootSubdir = hasPrefix cleanRoot path;
       isIncluded = checkRegexes (includeSubdirs include);
       isExcluded = checkRegexes exclude;
-      isSCV = !cleanSourceFilter path type;
+      isVCS = ignoreVCS && !cleanSourceFilter path type;
 
     in
       if !isRootSubdir then
         # everything outside of root is excluded
         false
-      else if isExcluded || isSCV then
+      else if isExcluded || isVCS then
         # isExcluded has precedence over isIncluded
         false
       else
