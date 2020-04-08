@@ -133,12 +133,15 @@
                :always
                (assoc-in [:chats chat-id :all-loaded?] false))}))))
 
-(defn- add-to-chat?
+(defn- message-loaded?
+  [{:keys [db]} {:keys [chat-id message-id]}]
+  (get-in db [:chats chat-id :messages message-id]))
+
+(defn- earlier-than-deleted-at?
   [{:keys [db]} {:keys [chat-id clock-value message-id from]}]
-  (let [{:keys [cursor-clock-value deleted-at-clock-value messages]}
+  (let [{:keys [deleted-at-clock-value]}
         (get-in db [:chats chat-id])]
-    (not (or (get messages message-id)
-             (>= deleted-at-clock-value clock-value)))))
+    (>= deleted-at-clock-value clock-value)))
 
 (fx/defn offload-message-from [{:keys [db] :as cofx} chat-id message-id]
   (let [old-messages (get-in db [:chats chat-id :messages])]
@@ -185,16 +188,21 @@
                         :unviewed-messages-count (inc current-count))}))))
 
 (fx/defn receive-one
-  [cofx message]
+  [{:keys [db] :as cofx} {:keys [message-id] :as message}]
   (when-let [chat-id (extract-chat-id cofx message)]
     (let [message-with-chat-id (assoc message :chat-id chat-id)]
-      (when (add-to-chat? cofx message-with-chat-id)
-        (fx/merge cofx
-                  (add-received-message message-with-chat-id)
-                  (update-unviewed-count message-with-chat-id)
-                  (chat-model/join-time-messages-checked chat-id)
-                  (when platform/desktop?
-                    (chat-model/update-dock-badge-label)))))))
+      (when-not (earlier-than-deleted-at? cofx message-with-chat-id)
+        (if (message-loaded? cofx message-with-chat-id)
+          ;; If the message is already loaded, it means it's an update, that
+          ;; happens when a message that was missing a reply had the reply
+          ;; coming through, in which case we just insert the new message
+          {:db (assoc-in db [:chats chat-id :messages message-id] message-with-chat-id)}
+          (fx/merge cofx
+                    (add-received-message message-with-chat-id)
+                    (update-unviewed-count message-with-chat-id)
+                    (chat-model/join-time-messages-checked chat-id)
+                    (when platform/desktop?
+                      (chat-model/update-dock-badge-label))))))))
 
 ;;;; Send message
 
@@ -224,13 +232,6 @@
             {:db            (update-in db [:chats chat-id :messages] dissoc message-id)}
             (data-store.messages/delete-message message-id)
             (rebuild-message-list chat-id)))
-
-(fx/defn handle-saved-system-messages
-  {:events [:messages/system-messages-saved]}
-  [cofx messages]
-  (apply fx/merge cofx (map #(add-message {:message       %
-                                           :seen-by-user? true})
-                            messages)))
 
 (fx/defn send-message
   [{:keys [db now] :as cofx} {:keys [chat-id] :as message}]

@@ -39,19 +39,19 @@
 
 (defview quoted-message
   [message-id {:keys [from text]} outgoing current-public-key]
-  (letsubs [{:keys [quote ens-name alias]}
-            [:messages/quote-info message-id]]
-    (when (or quote text)
-      [react/view {:style (style/quoted-message-container outgoing)}
-       [react/view {:style style/quoted-message-author-container}
-        [chat.utils/format-reply-author
-         (or from (:from quote))
-         alias ens-name current-public-key
-         (partial style/quoted-message-author outgoing)]]
+  (letsubs [{:keys [ens-name alias]} [:contacts/contact-name-by-identity from]]
+    [react/view {:style (style/quoted-message-container outgoing)}
+     [react/view {:style style/quoted-message-author-container}
+      [chat.utils/format-reply-author
+       from
+       alias
+       ens-name
+       current-public-key
+       (partial style/quoted-message-author outgoing)]]
 
-       [react/text {:style           (style/quoted-message-text outgoing)
-                    :number-of-lines 5}
-        (or text (:text quote))]])))
+     [react/text {:style           (style/quoted-message-text outgoing)
+                  :number-of-lines 5}
+      text]]))
 
 (defn render-inline [message-text outgoing content-type acc {:keys [type literal destination]}]
   (case type
@@ -154,7 +154,7 @@
   [message-bubble-wrapper message
    (let [response-to (:response-to content)]
      [react/view
-      (when (seq response-to)
+      (when (and (seq response-to) (:quoted-message message))
         [quoted-message response-to (:quoted-message message) outgoing current-public-key])
       [render-parsed-text-with-timestamp message (:parsed-text content)]])
    [message-timestamp message true]])

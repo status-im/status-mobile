@@ -88,37 +88,38 @@
               (is (= cursor-clock-value (get-in result [:db :chats chat-id :cursor-clock-value])))
               (is (= cursor (get-in result [:db :chats chat-id :cursor]))))))))))
 
-(deftest add-to-chat?
-  (testing "it returns true when it's not in loaded message"
-    (is (message/add-to-chat? {:db {:chats {"a" {}}}}
-                              {:message-id "message-id"
-                               :from "a"
-                               :clock-value 1
-                               :chat-id "a"})))
-  (testing "it returns false when it's already in the loaded message"
-    (is (not (message/add-to-chat? {:db {:chats {"a" {:messages {"message-id" {}}}}}}
-                                   {:message-id "message-id"
-                                    :from "a"
-                                    :clock-value 1
-                                    :chat-id "a"}))))
-  (testing "it returns false when the clock-value is the same as the deleted-clock-value in chat"
-    (is (not (message/add-to-chat? {:db {:chats {"a" {:deleted-at-clock-value 1}}}}
-                                   {:message-id "message-id"
-                                    :from "a"
-                                    :clock-value 1
-                                    :chat-id "a"}))))
-  (testing "it returns true when the clock-value is greater than the deleted-clock-value in chat"
-    (is (message/add-to-chat? {:db {:chats {"a" {:deleted-at-clock-value 1}}}}
-                              {:message-id "message-id"
-                               :from "a"
-                               :clock-value 2
-                               :chat-id "a"})))
-  (testing "it returns false when the clock-value is less than the deleted-clock-value in chat"
-    (is (not (message/add-to-chat? {:db {:chats {"a" {:deleted-at-clock-value 1}}}}
-                                   {:message-id "message-id"
-                                    :from "a"
-                                    :clock-value 0
-                                    :chat-id "a"})))))
+(deftest message-loaded?
+  (testing "it returns false when it's not in loaded message"
+    (is (not (message/message-loaded? {:db {:chats {"a" {}}}}
+                                      {:message-id "message-id"
+                                       :from "a"
+                                       :clock-value 1
+                                       :chat-id "a"}))))
+  (testing "it returns true when it's already in the loaded message"
+    (is (message/message-loaded? {:db {:chats {"a" {:messages {"message-id" {}}}}}}
+                                 {:message-id "message-id"
+                                  :from "a"
+                                  :clock-value 1
+                                  :chat-id "a"}))))
+(deftest earlier-than-deleted-at?
+  (testing "it returns true when the clock-value is the same as the deleted-clock-value in chat"
+    (is (message/earlier-than-deleted-at? {:db {:chats {"a" {:deleted-at-clock-value 1}}}}
+                                          {:message-id "message-id"
+                                           :from "a"
+                                           :clock-value 1
+                                           :chat-id "a"})))
+  (testing "it returns false when the clock-value is greater than the deleted-clock-value in chat"
+    (is (not (message/earlier-than-deleted-at? {:db {:chats {"a" {:deleted-at-clock-value 1}}}}
+                                               {:message-id "message-id"
+                                                :from "a"
+                                                :clock-value 2
+                                                :chat-id "a"}))))
+  (testing "it returns true when the clock-value is less than the deleted-clock-value in chat"
+    (is (message/earlier-than-deleted-at? {:db {:chats {"a" {:deleted-at-clock-value 1}}}}
+                                          {:message-id "message-id"
+                                           :from "a"
+                                           :clock-value 0
+                                           :chat-id "a"}))))
 
 (deftest add-own-received-message
   (let [db {:multiaccount {:public-key "me"}
