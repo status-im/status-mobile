@@ -237,7 +237,6 @@
             enter-step [:hardwallet/pin-enter-step]
             status [:hardwallet/pin-status]
             error-label [:hardwallet/pin-error-label]
-            multiple-multiaccounts? [:multiple-multiaccounts?]
             {:keys [key-uid name] :as account} [:multiaccounts/login]
             small-screen? [:dimensions/small-screen?]
             retry-counter [:hardwallet/retry-counter]]

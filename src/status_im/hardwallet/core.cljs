@@ -287,7 +287,8 @@
         pin (get-in db [:hardwallet :pin enter-step])
         numbers-entered (count pin)]
     (log/debug "[hardwallet] process-pin-input"
-               "enter-step" enter-step)
+               "enter-step" enter-step
+               "numbers-entered" numbers-entered)
     (cond-> {:db (assoc-in db [:hardwallet :pin :status] nil)}
 
       (and (= enter-step :login)
@@ -309,7 +310,7 @@
 
       (and (= enter-step :current)
            (= pin-code-length numbers-entered))
-      (common/verify-pin :current)
+      (common/verify-pin {:pin-step :current})
 
       (and (= enter-step :export-key)
            (= pin-code-length numbers-entered))
