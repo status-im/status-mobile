@@ -75,50 +75,50 @@
           true
           true))))
   (testing "simple case with gap"
-    (is (= '({:whisper-timestamp 40
+    (is (= '({:whisper-timestamp 40000
               :message-id        :m4
-              :timestamp         40}
+              :timestamp         40000}
              {:type  :gap
               :value ":gapid1"
               :gaps  {:ids [:gapid1]}}
-             {:whisper-timestamp 30
-              :timestamp         30
+             {:whisper-timestamp 30000
+              :timestamp         30000
               :message-id        :m3}
              {:value             "today"
               :type              :datemark
-              :whisper-timestamp 30
-              :timestamp         30}
-             {:whisper-timestamp 20
-              :timestamp         20
+              :whisper-timestamp 30000
+              :timestamp         30000}
+             {:whisper-timestamp 20000
+              :timestamp         20000
               :message-id        :m2}
-             {:whisper-timestamp 10
-              :timestamp         10
+             {:whisper-timestamp 10000
+              :timestamp         10000
               :message-id        :m1}
              {:value             "yesterday"
               :type              :datemark
-              :whisper-timestamp 10
-              :timestamp         10})
+              :whisper-timestamp 10000
+              :timestamp         10000})
            (db/add-gaps
             [{:message-id        :m4
-              :whisper-timestamp 40
-              :timestamp         40}
+              :whisper-timestamp 40000
+              :timestamp         40000}
              {:message-id        :m3
-              :whisper-timestamp 30
-              :timestamp         30}
+              :whisper-timestamp 30000
+              :timestamp         30000}
              {:type :datemark
               :value "today"
-              :whisper-timestamp 30
-              :timestamp 30}
+              :whisper-timestamp 30000
+              :timestamp 30000}
              {:message-id        :m2
-              :whisper-timestamp 20
-              :timestamp         20}
+              :whisper-timestamp 20000
+              :timestamp         20000}
              {:message-id        :m1
-              :whisper-timestamp 10
-              :timestamp         10}
+              :whisper-timestamp 10000
+              :timestamp         10000}
              {:type :datemark
               :value "yesterday"
-              :whisper-timestamp 10
-              :timestamp 10}]
+              :whisper-timestamp 10000
+              :timestamp 10000}]
             [{:from 25
               :to   30
               :id   :gapid1}]
@@ -129,47 +129,47 @@
     (is (= '({:type  :gap
               :value ":gapid1"
               :gaps  {:ids (:gapid1)}}
-             {:whisper-timestamp 40
+             {:whisper-timestamp 40000
               :message-id        :m4
-              :timestamp         40}
-             {:whisper-timestamp 30
+              :timestamp         40000}
+             {:whisper-timestamp 30000
               :message-id        :m3
-              :timestamp         30}
+              :timestamp         30000}
              {:value             "today"
               :type              :datemark
-              :whisper-timestamp 30
-              :timestamp         30}
-             {:whisper-timestamp 20
+              :whisper-timestamp 30000
+              :timestamp         30000}
+             {:whisper-timestamp 20000
               :message-id        :m2
-              :timestamp         20}
-             {:whisper-timestamp 10
+              :timestamp         20000}
+             {:whisper-timestamp 10000
               :message-id        :m1
-              :timestamp         10}
+              :timestamp         10000}
              {:value             "yesterday"
               :type              :datemark
-              :whisper-timestamp 10
-              :timestamp         10})
+              :whisper-timestamp 10000
+              :timestamp         10000})
            (db/add-gaps
             [{:message-id        :m4
-              :whisper-timestamp 40
-              :timestamp         40}
+              :whisper-timestamp 40000
+              :timestamp         40000}
              {:message-id        :m3
-              :whisper-timestamp 30
-              :timestamp         30}
+              :whisper-timestamp 30000
+              :timestamp         30000}
              {:type :datemark
               :value "today"
-              :whisper-timestamp 30
-              :timestamp         30}
+              :whisper-timestamp 30000
+              :timestamp         30000}
              {:message-id        :m2
-              :whisper-timestamp 20
-              :timestamp         20}
+              :whisper-timestamp 20000
+              :timestamp         20000}
              {:message-id        :m1
-              :whisper-timestamp 10
-              :timestamp         10}
+              :whisper-timestamp 10000
+              :timestamp         10000}
              {:type :datemark
               :value "yesterday"
-              :whisper-timestamp 10
-              :timestamp         10}]
+              :whisper-timestamp 10000
+              :timestamp         10000}]
             [{:from 100
               :to   110
               :id   :gapid1}]

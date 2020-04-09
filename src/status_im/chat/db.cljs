@@ -106,21 +106,23 @@
                                   120000)]
     (reduce
      (fn [acc {:keys [from to id]}]
-       (if (and next-message
-                (not ignore-next-message?)
-                (or
-                 (and (nil? previous-timestamp)
-                      (< from next-whisper-timestamp))
-                 (and
-                  (< previous-timestamp from)
-                  (< to next-whisper-timestamp))
-                 (and
-                  (< from previous-timestamp)
-                  (< to next-whisper-timestamp))))
-         (-> acc
-             (update :gaps-number inc)
-             (update-in [:gap :ids] conj id))
-         (reduced acc)))
+       (let [from-ms (* from 1000)
+             to-ms (* to 1000)]
+         (if (and next-message
+                  (not ignore-next-message?)
+                  (or
+                   (and (nil? previous-timestamp)
+                        (< from-ms next-whisper-timestamp))
+                   (and
+                    (< previous-timestamp from-ms)
+                    (< to-ms next-whisper-timestamp))
+                   (and
+                    (< from-ms previous-timestamp)
+                    (< to-ms next-whisper-timestamp))))
+           (-> acc
+               (update :gaps-number inc)
+               (update-in [:gap :ids] conj id))
+           (reduced acc))))
      {:gaps-number 0
       :gap         nil}
      gaps)))
