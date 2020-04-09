@@ -39,19 +39,3 @@
 (def multiaccount-badge-pub-key-text
   {:font-family "monospace"
    :color       colors/gray})
-
-(def bottom-button
-  {:padding-horizontal 24
-   :justify-content    :center
-   :align-items        :center
-   :align-self         :center
-   :flex-direction     :row})
-
-(defn bottom-button-container []
-  {:flex-direction     :row
-   :padding-horizontal 12
-   :padding-vertical   8
-   :border-top-width   1
-   :border-top-color   colors/gray-lighter
-   :justify-content    :center
-   :align-items        :center})

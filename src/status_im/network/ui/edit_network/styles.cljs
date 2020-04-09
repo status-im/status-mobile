@@ -14,9 +14,8 @@
    :align-items    :center})
 
 (def bottom-container
-  {:flex-direction    :row
-   :margin-horizontal 12
-   :margin-vertical   15})
+  {:flex-direction   :row
+   :padding-vertical 4})
 
 (def container
   styles/flex)

@@ -6,7 +6,7 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.topbar :as topbar]))
 
 (defn- action-row [{:keys [icon label on-press color-theme]}]
@@ -41,12 +41,12 @@
                                 :size      :large}]]))
 
 (defn- reset-card-next-button [disabled?]
-  [react/view {:margin-right  18
-               :margin-bottom 15}
-   [components.common/bottom-button
-    {:on-press   #(re-frame/dispatch [:keycard-settings.ui/reset-card-next-button-pressed])
-     :disabled?  disabled?
-     :forward?   true}]])
+  [react/view {:margin-right  6
+               :margin-bottom 8}
+   [button/button
+    {:on-press  #(re-frame/dispatch [:keycard-settings.ui/reset-card-next-button-pressed])
+     :disabled? disabled?
+     :type      :next}]])
 
 (defview reset-card []
   (letsubs [disabled? [:keycard-reset-card-disabled?]]

@@ -5,6 +5,7 @@
             [status-im.ui.components.toolbar.styles :as toolbar.styles]
             [status-im.ui.components.colors :as colors]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.button.animated :as animated.button]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list-item.views :as list-item]
@@ -157,7 +158,7 @@
 (views/defview send-button []
   (views/letsubs [account [:multiaccount/default-account]]
     [react/view styles/send-button-container
-     [react/touchable-highlight
+     [animated.button/button
       {:accessibility-label :send-transaction-button
        :on-press            #(re-frame/dispatch [:wallet/prepare-transaction-from-wallet account])}
       [react/view (styles/send-button)

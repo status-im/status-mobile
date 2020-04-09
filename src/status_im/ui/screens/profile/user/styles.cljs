@@ -18,7 +18,8 @@
 
 (def share-link-button
   {:margin-top    12
-   :margin-bottom 8})
+   :margin-horizontal 16
+   :margin-bottom 16})
 
 (def advanced-button
   {:margin-top    16

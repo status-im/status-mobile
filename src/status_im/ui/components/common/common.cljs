@@ -20,42 +20,6 @@
 (defn list-separator []
   [separator styles/list-separator])
 
-;;TODO DEPRECATED, use status-im.ui.components.button
-(defn bottom-button [{:keys [accessibility-label
-                             label
-                             disabled?
-                             on-press
-                             forward?
-                             back?]}]
-  (let [color (if disabled? colors/gray colors/blue)]
-    [react/touchable-highlight {:on-press on-press :disabled disabled?}
-     [react/view styles/bottom-button
-      (when back?
-        [vector-icons/icon :main-icons/back {:color           color
-                                             :container-style {:align-self :baseline}}])
-      [react/text {:style               {:color color}
-                   :accessibility-label accessibility-label}
-       (or label (i18n/label :t/next))]
-      (when forward?
-        [vector-icons/icon :main-icons/next {:color color}])]]))
-
-;;TODO DEPRECATED, use status-im.ui.components.button
-(defn button [{:keys [on-press label background? button-style label-style disabled? accessibility-label] :or {background? true disabled? false}}]
-  [react/touchable-highlight {:style    (styles/button button-style background? disabled?)
-                              :on-press on-press
-                              :accessibility-label accessibility-label
-                              :disabled disabled?}
-   [react/text {:style (merge styles/button-label label-style)}
-    label]])
-
-;;TODO DEPRECATED, use status-im.ui.components.button
-;;TODO implement :red type if needed
-(defn red-button [props]
-  [react/view {:align-items :center}
-   [button (merge props
-                  {:label-style  {:color colors/red :font-size 15}
-                   :button-style {:padding-horizontal 32 :background-color colors/red-light}})]])
-
 ;;TODO DEPRECATED, use status-im.ui.components.badge
 (defn counter
   ([value] (counter nil value))

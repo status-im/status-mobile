@@ -8,7 +8,7 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.utils.platform :as utils.platform]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.checkbox.view :as checkbox.views]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -154,7 +154,7 @@
     [react/view
      [react/text (i18n/label :t/pairing-please-set-a-name)]]
     [text-input/text-input-with-label
-     {:placeholder     (i18n/label :t/specify-name)
+     {:placeholder         (i18n/label :t/specify-name)
       :style               styles/input
       :accessibility-label :device-name
       :container           styles/input-container
@@ -163,9 +163,9 @@
       :auto-focus          true}]]
    [react/view styles/bottom-container
     [react/view components.styles/flex]
-    [components.common/bottom-button
-     {:forward?  true
-      :label     (i18n/label :t/continue)
+    [button/button
+     {:type      :next
+      :label     :t/continue
       :disabled? (string/blank? @installation-name)
       :on-press  #(do
                     (re-frame/dispatch [:pairing.ui/set-name-pressed @installation-name])

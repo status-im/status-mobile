@@ -26,10 +26,10 @@
    [react/view {:flex 1}
     [react/text {:style (merge {:typography :title-bold} (when small-screen? {:font-size 15}))}
      (i18n/label (or label :t/send-transaction))]]
-   [button/button {:type            :secondary
-                   :container-style {:padding-horizontal 24}
-                   :label           (i18n/label :t/cancel)
-                   :on-press        on-cancel}]])
+   [button/button {:type     :secondary
+                   :style    {:padding-horizontal 24}
+                   :label    (i18n/label :t/cancel)
+                   :on-press on-cancel}]])
 
 (defn asset-selector [{:keys [request? token from]}]
   (let [{:keys [name icon color]} token]

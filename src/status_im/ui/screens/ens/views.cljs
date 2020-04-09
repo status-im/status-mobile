@@ -17,6 +17,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.button :as button]
             [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.components.list-item.views :as list-item]
@@ -28,13 +29,13 @@
 
 (defn- button
   [{:keys [on-press] :as m} label]
-  [components.common/button (merge {:button-style {:margin-vertical    8
-                                                   :padding-horizontal 32
-                                                   :justify-content    :center
-                                                   :align-items        :center}
-                                    :on-press     on-press
-                                    :label        label}
-                                   m)])
+  [button/button (merge {:style    {:margin-vertical    8
+                                    :padding-horizontal 32
+                                    :justify-content    :center
+                                    :align-items        :center}
+                         :on-press on-press
+                         :label    label}
+                        m)])
 
 (defn- link
   [{:keys [on-press]} label]

@@ -2,8 +2,8 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [status-im.ui.screens.hardwallet.pin.numpad-button :refer [numpad-button numpad-delete]]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.hardwallet.pin.styles :as styles]
             [status-im.ui.components.checkbox.view :as checkbox]
@@ -11,14 +11,6 @@
             [status-im.ui.components.topbar :as topbar]))
 
 (def ^:const default-pin-retries-number 3)
-
-(defn numpad-button [n step enabled? small-screen?]
-  [react/touchable-highlight
-   {:on-press #(when enabled?
-                 (re-frame/dispatch [:hardwallet.ui/pin-numpad-button-pressed n step]))}
-   [react/view (styles/numpad-button small-screen?)
-    [react/text {:style styles/numpad-button-text}
-     n]]])
 
 (defn numpad-row [[a b c] step enabled? small-screen?]
   [react/view (styles/numpad-row-container small-screen?)
@@ -34,11 +26,7 @@
    [react/view (styles/numpad-row-container small-screen?)
     [react/view (styles/numpad-empty-button small-screen?)]
     [numpad-button 0 step enabled? small-screen?]
-    [react/touchable-highlight
-     {:on-press #(when enabled?
-                   (re-frame/dispatch [:hardwallet.ui/pin-numpad-delete-button-pressed step]))}
-     [react/view (styles/numpad-delete-button small-screen?)
-      [vector-icons/icon :main-icons/backspace {:color colors/blue}]]]]])
+    [numpad-delete step enabled? small-screen?]]])
 
 (defn pin-indicator [pressed? status]
   [react/view (styles/pin-indicator pressed? status)])

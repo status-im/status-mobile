@@ -100,15 +100,3 @@
 
 (def disabled-bottom-button-text
   {:color colors/gray-transparent-40})
-
-(def bottom-button-container
-  {:margin-bottom 24
-   :margin-top    16})
-
-(defn bottom-arrow []
-  {:flex-direction   :row
-   :justify-content  :flex-end
-   :align-self       :stretch
-   :padding-top      16
-   :border-top-width 1
-   :border-top-color colors/gray-lighter})

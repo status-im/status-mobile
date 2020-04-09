@@ -6,12 +6,11 @@
             [status-im.ui.components.colors :as colors]
             [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.common.common :as components.common]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.common.styles :as components.common.styles]
             [clojure.string :as string]
             [status-im.utils.config :as config]
@@ -40,15 +39,15 @@
                                                 :justify-content :center}}
    (when-not platform/desktop?
      [react/image {:source (resources/get-image :lock)
-                   :style styles/intro-image}])
+                   :style  styles/intro-image}])
    [react/i18n-text {:style styles/intro-text
                      :key   :your-data-belongs-to-you}]
    [react/i18n-text {:style styles/intro-description
                      :key   :your-data-belongs-to-you-description}]
-   [components.common/button
-    {:button-style styles/intro-button
-     :on-press     #(re-frame/dispatch [:set-in [:my-profile/seed :step] :12-words])
-     :label        (i18n/label :t/ok-continue)}]])
+   [button/button
+    {:style    styles/intro-button
+     :on-press #(re-frame/dispatch [:set-in [:my-profile/seed :step] :12-words])
+     :label    (i18n/label :t/ok-continue)}]])
 
 (defn six-words [words]
   [react/view {:style styles/six-words-container}
@@ -70,7 +69,7 @@
      [react/text {:style styles/twelve-words-label}
       (i18n/label :t/your-recovery-phrase)]
      [react/view {:style styles/twelve-words-columns
-                  :ref (partial reset! ref)}
+                  :ref   (partial reset! ref)}
       [six-words (subvec mnemonic-vec 0 6)]
       [react/view {:style styles/twelve-words-columns-separator}]
       [six-words (subvec mnemonic-vec 6 12)]]
@@ -78,8 +77,9 @@
       (i18n/label :t/your-recovery-phrase-description)]
      [react/view styles/twelve-words-spacer]
      [react/view styles/twelve-words-button-container
-      [components.common/bottom-button
-       {:forward? true
+      [button/button
+       {:type     :next
+        :label    :t/next
         :on-press #(re-frame/dispatch [:my-profile/enter-two-random-words])}]]]))
 
 (defview input [error next-handler]
@@ -121,9 +121,11 @@
     (i18n/label :t/word-n-description {:number (inc idx)})]
    [react/view styles/twelve-words-spacer]
    [react/view styles/twelve-words-button-container
-    [components.common/bottom-button
-     {:forward?  (not= :second-word step)
-      :label     (when (= :second-word step) (i18n/label :t/done))
+    [button/button
+     {:type      (if (= :second-word step) :secondary :next)
+      :label     (if (= :second-word step)
+                   :t/done
+                   :t/next)
       :disabled? (string/blank? entered-word)
       :on-press  (next-handler word entered-word step)}]]])
 
@@ -136,9 +138,9 @@
     (i18n/label :t/you-are-all-set)]
    [react/text {:style styles/finish-description}
     (i18n/label :t/you-are-all-set-description)]
-   [components.common/button {:button-style styles/finish-button
-                              :on-press     #(re-frame/dispatch [:navigate-back])
-                              :label        (i18n/label :t/ok-got-it)}]])
+   [button/button {:style    styles/finish-button
+                   :on-press #(re-frame/dispatch [:navigate-back])
+                   :label    :t/ok-got-it}]])
 
 (defview backup-seed []
   (letsubs [current-multiaccount [:multiaccount]

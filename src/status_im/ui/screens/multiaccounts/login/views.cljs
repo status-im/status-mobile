@@ -3,8 +3,7 @@
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.checkbox.view :as checkbox]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.screens.chat.photos :as photos]
@@ -14,6 +13,7 @@
             [status-im.utils.security :as security]
             [status-im.utils.utils :as utils]
             [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -89,18 +89,15 @@
        [react/view styles/processing-view
         [react/activity-indicator {:animating true}]
         [react/i18n-text {:style styles/processing :key :processing}]])
-     [react/view {:style (styles/bottom-button-container)}
-      [components.common/button
-       {:label        (i18n/label :t/access-key)
-        :button-style styles/bottom-button
-        :background?  false
-        :on-press     #(do
-                         (react/dismiss-keyboard!)
-                         (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))}]
-      [components.common/button
-       {:label        (i18n/label :t/submit)
-        :button-style styles/bottom-button
-        :label-style  {:color (if (or (not sign-in-enabled?) processing) colors/gray colors/blue)}
-        :background?  true
-        :disabled?    (or (not sign-in-enabled?) processing)
-        :on-press     #(login-multiaccount @password-text-input)}]]]))
+     [toolbar/toolbar
+      ;; TODO: Margins are not correct
+      {:show-border? true
+       :size         :large
+       :left         {:label    :t/access-key
+                      :type     :secondary
+                      :on-press #(do
+                                   (react/dismiss-keyboard!)
+                                   (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))}
+       :right        {:label     :t/submit
+                      :disabled? (or (not sign-in-enabled?) processing)
+                      :on-press  #(login-multiaccount @password-text-input)}}]]))

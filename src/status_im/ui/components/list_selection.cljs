@@ -1,5 +1,6 @@
 (ns status-im.ui.components.list-selection
   (:require [re-frame.core :as re-frame]
+            [status-im.utils.handlers :as handlers]
             [status-im.i18n :as i18n]
             [status-im.ui.components.action-sheet :as action-sheet]
             [status-im.ui.components.dialog :as dialog]
@@ -8,10 +9,20 @@
             [status-im.utils.http :as http]
             [status-im.ui.components.popup-menu.views :refer [show-desktop-menu]]))
 
+(re-frame/reg-fx
+ ::open-share
+ (fn [content]
+   (.share react/sharing (clj->js content))))
+
+(handlers/register-handler-fx
+ ::open-share
+ (fn [_ [_ content]]
+   {::open-share content}))
+
 (defn open-share [content]
   (when (or (:message content)
             (:url content))
-    (.share react/sharing (clj->js content))))
+    (re-frame/dispatch [::open-share content])))
 
 (defn show [options]
   (cond

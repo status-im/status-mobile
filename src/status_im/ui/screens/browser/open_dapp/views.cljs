@@ -11,6 +11,7 @@
    [status-im.react-native.resources :as resources]
    [status-im.ui.components.list-item.views :as list-item]
    [status-im.ui.components.icons.vector-icons :as vector-icons]
+   [status-im.ui.components.button.animated :as animated.button]
    [status-im.ui.components.icons.vector-icons :as icons]
    [status-im.ui.screens.browser.accounts :as accounts])
   (:require-macros [status-im.utils.views :as views]))
@@ -73,7 +74,7 @@
                  :left               0
                  :right              0
                  :padding-horizontal 32}
-     [react/touchable-highlight
+     [animated.button/button
       {:accessibility-label :select-account
        :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                  {:content        (accounts/accounts-list accounts dapps-account)

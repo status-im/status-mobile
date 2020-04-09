@@ -69,8 +69,8 @@
                                   contact group-chat truncated-chat-name color online false]
       :title-prefix              (cond
                                    private-group? :main-icons/tiny-group
-                                   public-group? :main-icons/tiny-public
-                                   :else nil)
+                                   public-group?  :main-icons/tiny-public
+                                   :else          nil)
       :title                     truncated-chat-name
       :title-accessibility-label :chat-name-text
       :title-row-accessory       [message-timestamp (if (pos? (:whisper-timestamp last-message))
@@ -83,6 +83,7 @@
                                  :content-type (:content-type last-message)}]
           tribute-label))
       :subtitle-row-accessory    [unviewed-indicator home-item]
+      :animated?                 true
       :on-press                  #(do
                                     (re-frame/dispatch [:dismiss-keyboard])
                                     (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])

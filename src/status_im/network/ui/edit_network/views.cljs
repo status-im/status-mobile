@@ -5,7 +5,7 @@
    [status-im.ui.components.react :as react]
    [status-im.i18n :as i18n]
    [status-im.ui.components.styles :as components.styles]
-   [status-im.ui.components.common.common :as components.common]
+   [status-im.ui.components.button :as button]
    [status-im.ui.components.toolbar.view :as toolbar]
    [status-im.ui.components.list.views :as list]
    [status-im.ui.components.text-input.view :as text-input]
@@ -62,8 +62,8 @@
               :on-change-text #(re-frame/dispatch [::network/input-changed :network-id %])}])]]
         [react/view styles/bottom-container
          [react/view components.styles/flex]
-         [components.common/bottom-button
-          {:forward?  true
-           :label     (i18n/label :t/save)
+         [button/button
+          {:type      :next
+           :label     :t/save
            :disabled? (not is-valid?)
            :on-press  #(re-frame/dispatch [::network/save-network-pressed])}]]]])))

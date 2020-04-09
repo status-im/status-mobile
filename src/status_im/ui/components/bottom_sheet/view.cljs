@@ -43,7 +43,7 @@
               (animation/set-value bottom-value dy)
               (animation/set-value opacity-value opacity))
             (neg? dy)
-            (animation/set-value bottom-value dy)))))
+            (animation/set-value bottom-value (/ dy 2))))))
 
 (defn- cancelled? [height dy vy]
   (or

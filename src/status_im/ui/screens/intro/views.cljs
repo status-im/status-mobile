@@ -10,18 +10,17 @@
             [status-im.utils.identicon :as identicon]
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.text-input.view :as text-input]
-            [taoensso.timbre :as log]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.utils.gfycat.core :as gfy]
             [status-im.ui.components.colors :as colors]
             [reagent.core :as r]
-            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.button :as button]
             [status-im.ui.screens.intro.styles :as styles]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.i18n :as i18n]
             [status-im.constants :as constants]
             [status-im.utils.config :as config]
-            [status-im.utils.platform :as platform]
             [status-im.ui.components.topbar :as topbar]))
 
 (defn dots-selector [{:keys [on-press n selected color]}]
@@ -89,19 +88,19 @@
                      :text :intro-text2}
                     {:image (resources/get-theme-image :browser)
                      :title :intro-title3
-                     :text :intro-text3}] window-height]
+                     :text  :intro-text3}] window-height]
      [react/view styles/buttons-container
-      [components.common/button {:button-style (assoc styles/bottom-button :margin-bottom 16)
-                                 :on-press     #(re-frame/dispatch [:multiaccounts.create.ui/intro-wizard])
-                                 :label        (i18n/label :t/get-started)}]
-      [components.common/button {:button-style (assoc styles/bottom-button :margin-bottom 24)
-                                 :on-press    #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
-                                 :label       (i18n/label :t/access-key)
-                                 :background? false}]
+      [button/button {:button-style (assoc styles/bottom-button :margin-bottom 16)
+                      :on-press     #(re-frame/dispatch [:multiaccounts.create.ui/intro-wizard])
+                      :label        :t/get-started}]
+      [button/button {:style    (assoc styles/bottom-button :margin-bottom 24)
+                      :on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
+                      :label    :t/access-key
+                      :type     :secondary}]
       [react/nested-text
        {:style styles/welcome-text-bottom-note}
        (i18n/label :t/intro-privacy-policy-note1)
-       [{:style (assoc styles/welcome-text-bottom-note :color colors/blue)
+       [{:style    (assoc styles/welcome-text-bottom-note :color colors/blue)
          :on-press privacy-policy/open-privacy-policy-link!}
         (i18n/label :t/intro-privacy-policy-note2)]]]]))
 
@@ -252,58 +251,51 @@
 (defn bottom-bar [{:keys [step weak-password? encrypt-with-password?
                           forward-action
                           next-button-disabled?
-                          processing? existing-account?] :as wizard-state}]
-  [react/view {:style {:margin-bottom (if (or (#{:choose-key :select-key-storage
-                                                 :enter-phrase :recovery-success} step)
-                                              (and (#{:create-code :confirm-code} step)
-                                                   encrypt-with-password?))
-                                        20
-                                        32)
-                       :align-items :center}}
+                          processing? existing-account?]
+                   :as   wizard-state}]
+  [react/view {:style {:align-items :center}}
    (cond (and (#{:generate-key :recovery-success} step) processing?)
-         [react/view {:min-height 46 :max-height 46 :align-self :stretch}
+         [react/view {:min-height 46 :max-height 46 :align-self :stretch :margin-bottom 16}
           [react/activity-indicator {:animating true
                                      :size      :large}]]
          (#{:generate-key :recovery-success} step)
          (let [label-kw (case step
-                          :generate-key :generate-a-key
-                          :recovery-success :re-encrypt-key
+                          :generate-key     :t/generate-a-key
+                          :recovery-success :t/re-encrypt-key
                           :intro-wizard-title6)]
-           [react/view {:min-height 46 :max-height 46}
-            [components.common/button
-             {:button-style        (if existing-account?
-                                     styles/disabled-bottom-button
-                                     styles/bottom-button)
-              :on-press            (when-not existing-account?
-                                     #(re-frame/dispatch [forward-action]))
+           [react/view {:min-height 46 :max-height 46 :margin-bottom 16}
+            [button/button
+             {:style               styles/bottom-button
+              :disabled?           existing-account?
+              :on-press            #(re-frame/dispatch [forward-action])
               :accessibility-label :onboarding-next-button
-              :label               (i18n/label label-kw)
-              :label-style         (when existing-account?
-                                     styles/disabled-bottom-button-text)}]])
+              :label               label-kw}]])
          (and (#{:create-code :confirm-code} step)
               (not encrypt-with-password?))
-         [components.common/button {:button-style styles/bottom-button
-                                    :label (i18n/label :t/encrypt-with-password)
-                                    :accessibility-label :encrypt-with-password-button
-                                    :on-press #(re-frame/dispatch [:intro-wizard/on-encrypt-with-password-pressed])
-                                    :background? false}]
+         [react/view {:margin-bottom 16}
+          [button/button {:style               styles/bottom-button
+                          :label               :t/encrypt-with-password
+                          :accessibility-label :encrypt-with-password-button
+                          :on-press            #(re-frame/dispatch [:intro-wizard/on-encrypt-with-password-pressed])
+                          :type                :secondary}]]
 
          :else
-         [react/view {:style (styles/bottom-arrow)}
-          [react/view {:style {:margin-right 10}}
-           [components.common/bottom-button {:on-press  #(re-frame/dispatch [forward-action])
-                                             :accessibility-label :onboarding-next-button
-                                             :disabled? (or processing?
-                                                            (and (= step :create-code) weak-password?)
-                                                            (and (= step :enter-phrase) next-button-disabled?))
-                                             :forward? true}]]])
+         [toolbar/toolbar
+          {:show-border? true
+           :right        {:on-press            #(re-frame/dispatch [forward-action])
+                          :label               :t/next
+                          :accessibility-label :onboarding-next-button
+                          :disabled?           (or processing?
+                                                   (and (= step :create-code) weak-password?)
+                                                   (and (= step :enter-phrase) next-button-disabled?))
+                          :type                :next}}])
 
    (when (or (= :generate-key step) (and processing? (= :recovery-success step)))
-     [react/text {:style (assoc styles/wizard-text :margin-top 20)}
+     [react/text {:style (assoc styles/wizard-text :margin-top 20 :margin-bottom 16)}
       (i18n/label (cond (= :recovery-success step)
                         :t/processing
                         processing? :t/generating-keys
-                        :else :t/this-will-take-few-seconds))])])
+                        :else       :t/this-will-take-few-seconds))])])
 
 (defn top-bar [{:keys [step encrypt-with-password?]}]
   (let [hide-subtitle? (or (= step :confirm-code)
@@ -454,16 +446,16 @@
     [react/view {:style {:flex 1}}
      [topbar/topbar
       {:navigation
-       {:icon    :main-icons/back
+       {:icon                :main-icons/back
         :accessibility-label :back-button
-        :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
-     [react/view {:style {:flex 1
+        :handler             #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
+     [react/view {:style {:flex            1
                           :justify-content :space-between}}
       [top-bar {:step :generate-key}]
       [generate-key]
-      [bottom-bar {:step :generate-key
+      [bottom-bar {:step           :generate-key
                    :forward-action :intro-wizard/step-forward-pressed
-                   :processing? (:processing? wizard-state)}]]]))
+                   :processing?    (:processing? wizard-state)}]]]))
 
 (defview wizard-choose-key []
   (letsubs [wizard-state [:intro-wizard/choose-key]]

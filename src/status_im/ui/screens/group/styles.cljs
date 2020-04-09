@@ -30,8 +30,9 @@
    :margin-horizontal 17})
 
 (def bottom-container
-  {:padding-horizontal 12
-   :padding-vertical   15})
+  {:align-items     :center
+   :justify-content :center
+   :height          "100%"})
 
 (def toolbar-header-container
   {:align-items :center})

@@ -4,7 +4,7 @@
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.actions :as actions]
@@ -339,29 +339,28 @@
           [react/text {:style styles/step-n}
            (if (= step :finish)
              (i18n/label (case state
-                           :completed :t/completed
-                           :pending :t/pending
-                           :signing :t/signing
+                           :completed          :t/completed
+                           :pending            :t/pending
+                           :signing            :t/signing
                            :transaction-failed :t/transaction-failed
-                           :disabled :t/disabled))
-             (i18n/label :t/step-i-of-n {:step ((steps-numbers editing?) step)
+                           :disabled           :t/disabled))
+             (i18n/label :t/step-i-of-n {:step   ((steps-numbers editing?) step)
                                          :number (if editing? 2 3)}))])
         (when (= step :learn-more)
           [react/text {:style styles/step-n}
            (i18n/label :t/learn-more)])]]
 
       (case step
-        :intro                [intro]
-        :set-snt-amount       [set-snt-amount snt-amount]
-        :edit                 [edit snt-amount fiat-value]
-        :learn-more           [learn-more step]
-        :finish               [finish snt-amount state])
+        :intro          [intro]
+        :set-snt-amount [set-snt-amount snt-amount]
+        :edit           [edit snt-amount fiat-value]
+        :learn-more     [learn-more step]
+        :finish         [finish snt-amount state])
 
       (when-not (#{:learn-more :edit} step)
         [react/view {:style styles/bottom-toolbar}
-         [components.common/button {:button-style styles/intro-button
-                                    :disabled?    disable-button?
-                                    :label-style  (when disable-button? {:color colors/gray})
-                                    :on-press     #(re-frame/dispatch
-                                                    [:tribute-to-talk.ui/step-forward-pressed])
-                                    :label        (i18n/label (step-forward-label step))}]])]]))
+         [button/button {:style     styles/intro-button
+                         :disabled? disable-button?
+                         :on-press  #(re-frame/dispatch
+                                      [:tribute-to-talk.ui/step-forward-pressed])
+                         :label     (step-forward-label step)}]])]]))

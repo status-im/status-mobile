@@ -8,6 +8,7 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.dapps-permissions.styles :as styles]
             [status-im.constants :as constants]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.topbar :as topbar]))
@@ -49,5 +50,6 @@
        :key-fn    (fn [_ i] (str i))
        :render-fn list/flat-list-generic-render-fn}]
      [react/view {:padding-vertical 16}
-      [components.common/red-button {:label    (i18n/label :t/revoke-access)
-                                     :on-press #(re-frame/dispatch [:dapps/revoke-access dapp])}]]]))
+      [button/button {:label    :t/revoke-access
+                      :theme    :red
+                      :on-press #(re-frame/dispatch [:dapps/revoke-access dapp])}]]]))

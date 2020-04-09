@@ -10,6 +10,7 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.button :as button]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.multiaccounts.sheets :as sheets]
             [status-im.react-native.resources :as resources]))
 
@@ -51,15 +52,16 @@
      [topbar/topbar {:show-border? true
                      :navigation   :none
                      :title        (i18n/label :t/your-keys)
-                     :accessories  [{:icon    :more
+                     :accessories  [{:icon                :more
                                      :accessibility-label :your-keys-more-icon
-                                     :handler #(re-frame/dispatch [:bottom-sheet/show-sheet {:content sheets/actions-sheet}])}]}]
+                                     :handler             #(re-frame/dispatch [:bottom-sheet/show-sheet {:content sheets/actions-sheet}])}]}]
      [react/view styles/multiaccounts-container
       [react/view styles/multiaccounts-list-container
        [list/flat-list {:data      (vals multiaccounts)
                         :key-fn    :address
                         :render-fn (fn [multiaccount] [multiaccount-view multiaccount])}]]
-      [react/view {:style (styles/bottom-button-container)}
-       [button/button {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
-                       :type     :secondary
-                       :label    (i18n/label :t/access-key)}]]]]))
+      [toolbar/toolbar {:show-border? true
+                        :size         :large
+                        :center       {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
+                                       :type     :secondary
+                                       :label    (i18n/label :t/access-key)}}]]]))

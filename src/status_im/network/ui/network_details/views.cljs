@@ -5,7 +5,7 @@
             [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.button :as button]
             [status-im.network.ui.styles :as st]
             [status-im.network.core :as network]
             [status-im.network.ui.views :as network-settings]
@@ -41,7 +41,8 @@
         (when custom?
           [react/view st/bottom-container
            [react/view components.styles/flex
-            [components.common/button {:label        (i18n/label :t/delete)
-                                       :button-style st/delete-button
-                                       :label-style  st/delete-button-text
-                                       :on-press     #(re-frame/dispatch [::network/delete-network-pressed id])}]]])]])))
+            [button/button {:label       :t/delete
+                            :style       st/delete-button
+                            ;; TODO: Inspect style of label
+                            :label-style st/delete-button-text
+                            :on-press    #(re-frame/dispatch [::network/delete-network-pressed id])}]]])]])))

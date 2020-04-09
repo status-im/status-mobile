@@ -10,7 +10,7 @@
             [status-im.ui.components.contact.contact :refer [toggle-contact-view]]
             [status-im.ui.components.button :as button]
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.toolbar.view :as toolbar]
@@ -119,8 +119,8 @@
                        :shadow-color   "rgba(0, 9, 26, 0.12)"}}
    [react/view {:style components.styles/flex}]
    [react/view {:style styles/bottom-container}
-    [components.common/bottom-button
-     {:forward?            true
+    [button/button
+     {:type                :next
       :accessibility-label (or accessibility-label :next-button)
       :label               label
       :disabled?           disabled
@@ -141,7 +141,7 @@
        [no-contacts])
      [bottom-container {:on-press #(re-frame/dispatch [:navigate-to :new-group])
                         :disabled (zero? selected-contacts-count)
-                        :label (i18n/label :t/next)}]]))
+                        :label    :t/next}]]))
 
 ;; Set name of new group-chat
 (views/defview new-group []
@@ -167,7 +167,7 @@
                           :enable-empty-sections        true}]]]
        [bottom-container {:on-press #(re-frame/dispatch [:group-chats.ui/create-pressed group-name])
                           :disabled (string/blank? group-name)
-                          :label (i18n/label :t/create-group-chat)
+                          :label :t/create-group-chat
                           :accessibility-label :create-group-chat-button}]])))
 
 ;; Add participants to existing group chat
@@ -188,4 +188,4 @@
        [bottom-container {:on-press
                           #(re-frame/dispatch [:group-chats.ui/add-members-pressed])
                           :disabled (zero? selected-contacts-count)
-                          :label (i18n/label :t/add)}]])))
+                          :label :t/add}]])))

@@ -5,12 +5,13 @@
             [status-im.ui.screens.keycard.views :as views]
             [status-im.hardwallet.onboarding :as hardwallet.onboarding]
             [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar :as bottom-toolbar]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.button :as button]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.tooltip.views :as tooltip]
@@ -147,10 +148,10 @@
              (i18n/label :t/puk-code)]]
            [react/view {:justify-content :flex-start
                         :flex            1}
-            [react/text {:style              {:typography  :header
-                                              :font-family "monospace"
-                                              :text-align  :center
-                                              :color       colors/blue}
+            [react/text {:style               {:typography  :header
+                                               :font-family "monospace"
+                                               :text-align  :center
+                                               :color       colors/blue}
                          :accessibility-label :puk-code}
              puk-code]]]]
          [react/view {:margin-top 16}
@@ -184,16 +185,10 @@
          [react/view {:margin-top 16}
           [react/text {:style {:color colors/gray}}
            (i18n/label :t/pair-code-explanation)]]]]
-       [react/view {:flex-direction  :row
-                    :justify-content :space-between
-                    :align-items     :center
-                    :width           "100%"
-                    :height          86}
-        [react/view components.styles/flex]
-        [react/view {:margin-right 20}
-         [components.common/bottom-button
-          {:on-press #(re-frame/dispatch [:keycard.onboarding.puk-code.ui/next-pressed])
-           :forward? true}]]]]]]))
+       [bottom-toolbar/toolbar
+        {:right {:type     :next
+                 :label    :t/next
+                 :on-press #(re-frame/dispatch [:keycard.onboarding.puk-code.ui/next-pressed])}}]]]]))
 
 (defview pin []
   (letsubs [pin [:hardwallet/pin]
@@ -302,17 +297,10 @@
        [react/view {:margin-top 24}
         [react/text {:style {:text-align :center}}
          (i18n/label :t/keycard-onboarding-recovery-phrase-description)]]]
-      [react/view {:flex-direction  :row
-                   :justify-content :space-between
-                   :align-items     :center
-                   :width           "100%"
-                   :height          86}
-       [react/view components.styles/flex]
-       [react/view {:margin-right 20}
-        [components.common/bottom-button
-         {:on-press #(re-frame/dispatch [:keycard.onboarding.recovery-phrase.ui/next-pressed])
-          :label    (i18n/label :t/confirm)
-          :forward? true}]]]]]))
+      [bottom-toolbar/toolbar
+       {:right {:on-press #(re-frame/dispatch [:keycard.onboarding.recovery-phrase.ui/next-pressed])
+                :label    :t/confirm
+                :type     :next}}]]]))
 
 (defview recovery-phrase-confirm-word []
   (letsubs [word [:hardwallet-recovery-phrase-word]
@@ -323,9 +311,9 @@
        [toolbar/toolbar
         {:transparent? true}
         [toolbar/nav-text
-         {:handler #(re-frame/dispatch [::hardwallet.onboarding/cancel-pressed])
+         {:handler             #(re-frame/dispatch [::hardwallet.onboarding/cancel-pressed])
           :accessibility-label :cancel-keycard-setup
-          :style   {:padding-left 21}}
+          :style               {:padding-left 21}}
          (i18n/label :t/cancel)]
         [react/text {:style {:color colors/gray}}
          (i18n/label :t/step-i-of-n {:step 3 :number 3})]]
@@ -364,20 +352,12 @@
          [react/view {:margin-top 5
                       :width      250}
           [tooltip/tooltip error]]]
-        [react/view {:flex-direction  :row
-                     :justify-content :space-between
-                     :align-items     :center
-                     :width           "100%"
-                     :height          86}
-         [react/view {:margin-left 20}
-          [components.common/bottom-button
-           {:on-press #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/back-pressed])
-            :back?    true
-            :label    (i18n/label :t/back)}]]
-         [react/view {:margin-right 20}
-          [components.common/bottom-button
-           {:on-press            #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed])
-            :label               (i18n/label :t/next)
-            :accessibility-label :next
-            :disabled?            (empty? input-word)
-            :forward?             true}]]]]])))
+        [bottom-toolbar/toolbar
+         {:left  {:on-press #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/back-pressed])
+                  :type     :previous
+                  :label    :t/back}
+          :right {:on-press            #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed])
+                  :label               :t/next
+                  :accessibility-label :next
+                  :disabled?           (empty? input-word)
+                  :type                :next}}]]])))

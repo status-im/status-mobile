@@ -74,7 +74,7 @@
    :align-items       :center
    :justify-content   :center
    :flex-direction    :row
-   :border-radius     50
+   :border-radius     (/ (if small-screen? 50 64) 2)
    :background-color  colors/blue-light})
 
 (defn numpad-delete-button [small-screen?]

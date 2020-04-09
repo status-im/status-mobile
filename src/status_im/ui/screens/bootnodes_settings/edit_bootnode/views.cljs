@@ -6,7 +6,7 @@
    [status-im.i18n :as i18n]
    [status-im.utils.utils :as utils]
    [status-im.ui.components.styles :as components.styles]
-   [status-im.ui.components.common.common :as components.common]
+   [status-im.ui.components.button :as button]
    [status-im.ui.components.colors :as colors]
    [status-im.ui.components.icons.vector-icons :as vector-icons]
    [status-im.ui.components.toolbar.view :as toolbar]
@@ -47,13 +47,13 @@
         [react/scroll-view {:keyboard-should-persist-taps :handled}
          [react/view styles/edit-bootnode-view
           [text-input/text-input-with-label
-           {:label           (i18n/label :t/name)
-            :placeholder     (i18n/label :t/specify-name)
-            :style           styles/input
-            :container       styles/input-container
-            :default-value   name
-            :on-change-text  #(re-frame/dispatch [:bootnodes.ui/input-changed :name %])
-            :auto-focus      true}]
+           {:label          (i18n/label :t/name)
+            :placeholder    (i18n/label :t/specify-name)
+            :style          styles/input
+            :container      styles/input-container
+            :default-value  name
+            :on-change-text #(re-frame/dispatch [:bootnodes.ui/input-changed :name %])
+            :auto-focus     true}]
           [react/view
            {:flex 1}
            [text-input/text-input-with-label
@@ -75,8 +75,8 @@
             [delete-button id])]]
         [react/view styles/bottom-container
          [react/view components.styles/flex]
-         [components.common/bottom-button
-          {:forward?  true
-           :label     (i18n/label :t/save)
+         [button/button
+          {:type      :next
+           :label     :t/save
            :disabled? (not is-valid?)
            :on-press  #(re-frame/dispatch [:bootnodes.ui/save-pressed])}]]]])))
