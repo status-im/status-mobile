@@ -216,8 +216,12 @@
                   :name (:name metadata)
                   :device-type (:deviceType metadata))})
 
-(fx/defn handle-installation [{:keys [db]} {:keys [id] :as i}]
-  {:db (assoc-in db [:pairing/installations id] (installation<-rpc i))})
+(fx/defn handle-installations [{:keys [db]} installations]
+  {:db (update db :pairing/installations #(reduce
+                                           (fn [acc {:keys [id] :as i}]
+                                             (update acc id merge (installation<-rpc i)))
+                                           %
+                                           installations))})
 
 (fx/defn load-installations [{:keys [db]} installations]
   {:db (assoc db :pairing/installations (reduce

@@ -60,10 +60,13 @@
               (multiaccounts.update/multiaccount-update :last-updated last-updated {:dont-sync? true})
               (multiaccounts.update/multiaccount-update :photo-path photo-path {:dont-sync? true}))))
 
-(fx/defn ensure-contact
-  [{:keys [db]}
-   {:keys [public-key] :as contact}]
-  {:db (update-in db [:contacts/contacts public-key] merge contact)})
+(fx/defn ensure-contacts
+  [{:keys [db]} contacts]
+  {:db (update db :contacts/contacts
+               #(reduce (fn [acc {:keys [public-key] :as contact}]
+                          (update acc public-key merge contact))
+                        %
+                        contacts))})
 
 (fx/defn upsert-contact
   [{:keys [db] :as cofx}

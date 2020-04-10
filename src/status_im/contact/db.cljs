@@ -167,18 +167,28 @@
   ([db public-key]
    (active? (get-in db [:contacts/contacts public-key]))))
 
+;;TODO TTT
+#_(defn enrich-ttt-contact
+    [{:keys [system-tags tribute-to-talk] :as contact}]
+    (let [tribute (:snt-amount tribute-to-talk)
+          tribute-status (tribute-to-talk.db/tribute-status contact)
+          tribute-label (tribute-to-talk.db/status-label tribute-status tribute)]
+      (-> contact
+          (assoc-in [:tribute-to-talk :tribute-status] tribute-status)
+          (assoc-in [:tribute-to-talk :tribute-label] tribute-label)
+          (assoc :pending? (pending? contact)
+                 :blocked? (blocked? contact)
+                 :active? (active? contact)
+                 :added? (contains? system-tags :contact/added)))))
+
 (defn enrich-contact
-  [{:keys [system-tags tribute-to-talk] :as contact}]
-  (let [tribute (:snt-amount tribute-to-talk)
-        tribute-status (tribute-to-talk.db/tribute-status contact)
-        tribute-label (tribute-to-talk.db/status-label tribute-status tribute)]
-    (-> contact
-        (assoc-in [:tribute-to-talk :tribute-status] tribute-status)
-        (assoc-in [:tribute-to-talk :tribute-label] tribute-label)
-        (assoc :pending? (pending? contact)
-               :blocked? (blocked? contact)
-               :active? (active? contact)
-               :added? (contains? system-tags :contact/added)))))
+  [{:keys [system-tags] :as contact}]
+  (-> contact
+      (dissoc :ens-verified-at :ens-verification-retries)
+      (assoc :pending? (pending? contact)
+             :blocked? (blocked? contact)
+             :active? (active? contact)
+             :added? (contains? system-tags :contact/added))))
 
 (defn enrich-contacts
   [contacts]

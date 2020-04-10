@@ -273,6 +273,13 @@
     (let [chat (get-in db [:chats chat-id])]
       (load-filter-fx (waku/enabled? cofx) (->filter-request chat)))))
 
+(fx/defn load-chats
+  "Check if a filter already exists for that chat, otherw load the filter"
+  [{:keys [db] :as cofx} chats]
+  (let [chats (filter #(chat-loaded? db (:chat-id %)) chats)]
+    (when (and (filters-initialized? db) (seq chats))
+      (load-filter-fx (waku/enabled? cofx) (chats->filter-requests chats)))))
+
 (fx/defn load-contact
   "Check if we already have a filter for that contact, otherwise load the filter
   if the contact has been added"

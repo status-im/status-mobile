@@ -1,23 +1,14 @@
 (ns ^{:doc "Definition of the StatusMessage protocol"}
  status-im.transport.message.core
-  (:require [goog.object :as o]
-            [re-frame.core :as re-frame]
-            [status-im.chat.models.message :as models.message]
+  (:require [status-im.chat.models.message :as models.message]
             [status-im.chat.models :as models.chat]
             [status-im.contact.core :as models.contact]
             [status-im.pairing.core :as models.pairing]
             [status-im.data-store.messages :as data-store.messages]
             [status-im.data-store.contacts :as data-store.contacts]
             [status-im.data-store.chats :as data-store.chats]
-            [status-im.constants :as constants]
             [status-im.utils.handlers :as handlers]
-            [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.native-module.core :as status]
-            [status-im.ens.core :as ens]
             [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.types :as types]))
 
 (defn- js-obj->seq [obj]
@@ -27,13 +18,11 @@
       (aget obj i))
     [obj]))
 
-(fx/defn handle-chat [cofx chat]
-  ;; :unviewed-messages-count is managed by status-react, so we don't copy
-  ;; over it
-  (models.chat/ensure-chat cofx (dissoc chat :unviewed-messages-count)))
+(fx/defn handle-chats [cofx chats]
+  (models.chat/ensure-chats cofx chats))
 
-(fx/defn handle-contact [cofx contact]
-  (models.contact/ensure-contact cofx contact))
+(fx/defn handle-contacts [cofx contacts]
+  (models.contact/ensure-contacts cofx contacts))
 
 (fx/defn handle-message [cofx message]
   (models.message/receive-one cofx message))
@@ -45,25 +34,28 @@
         messages (.-messages response-js)]
     (cond
       (seq installations)
-      (let [installation (.pop installations)]
+      (let [installations-clj (types/js->clj installations)]
+        (js-delete response-js "installations")
         (fx/merge cofx
                   {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
-                  (models.pairing/handle-installation (types/js->clj installation))))
+                  (models.pairing/handle-installations installations-clj)))
 
       (seq contacts)
-      (let [contact (.pop contacts)]
-        (fx/merge cofx
-                  ;;TODO temporary fix for release, we have and issue with contacts updates , UI is really slow
-                  ;;we need to inspect all subsctiptions and views, but for now to temporary make it better
-                  ;; we use dispatch instead dispatch-later
-                  {:dispatch [::process response-js]}
-                  (handle-contact (-> contact (types/js->clj) (data-store.contacts/<-rpc)))))
-
-      (seq chats)
-      (let [chat (.pop chats)]
+      (let [contacts-clj (types/js->clj contacts)]
+        (js-delete response-js "contacts")
         (fx/merge cofx
                   {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
-                  (handle-chat (-> chat (types/js->clj) (data-store.chats/<-rpc)))))
+                  (handle-contacts (map data-store.contacts/<-rpc contacts-clj))))
+
+      (seq chats)
+      (let [chats-clj (types/js->clj chats)]
+        (js-delete response-js "chats")
+        (fx/merge cofx
+                  {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (handle-chats (map #(-> %
+                                          (data-store.chats/<-rpc)
+                                          (dissoc :unviewed-messages-count))
+                                     chats-clj))))
 
       (seq messages)
       (let [message (.pop messages)]

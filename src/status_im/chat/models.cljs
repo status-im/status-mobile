@@ -63,6 +63,11 @@
   [{:keys [current-chat-id] :as db} ui-element]
   (update-in db [:chat-ui-props current-chat-id ui-element] not))
 
+(defn dissoc-join-time-fields [db chat-id]
+  (update-in db [:chats chat-id] dissoc
+             :join-time-mail-request-id
+             :might-have-join-time-messages?))
+
 (fx/defn join-time-messages-checked
   "The key :might-have-join-time-messages? in public chats signals that
   the public chat is freshly (re)created and requests for messages to the
@@ -74,11 +79,15 @@
   public chat is not fresh anymore."
   [{:keys [db] :as cofx} chat-id]
   (when (:might-have-join-time-messages? (get-chat cofx chat-id))
-    {:db (update-in db
-                    [:chats chat-id]
-                    dissoc
-                    :join-time-mail-request-id
-                    :might-have-join-time-messages?)}))
+    {:db (dissoc-join-time-fields db chat-id)}))
+
+(fx/defn join-time-messages-checked-for-chats
+  [{:keys [db]} chat-ids]
+  {:db (reduce #(if (:might-have-join-time-messages? (get-chat {:db %1} %2))
+                  (dissoc-join-time-fields %1 %2)
+                  %1)
+               db
+               chat-ids)})
 
 (defn- create-new-chat
   [chat-id {:keys [db now]}]
@@ -106,6 +115,30 @@
               {:db (update-in db [:chats chat-id] merge chat)}
               (when (and public? new?)
                 (transport.filters/load-chat chat-id)))))
+
+(defn map-chats [{:keys [db] :as cofx}]
+  (fn [val]
+    (merge
+     (or (get (:chats db) (:chat-id val))
+         (create-new-chat (:chat-id val) cofx))
+     val)))
+
+(defn filter-chats [db]
+  (fn [val]
+    (and (not (get-in db [:chats (:chat-id val)])) (:public? val))))
+
+(fx/defn ensure-chats
+  "Add chats to db and update"
+  [{:keys [db] :as cofx} chats]
+  (let [chats (map (map-chats cofx) chats)
+        filtered-chats (filter (filter-chats db) chats)]
+    (fx/merge cofx
+              {:db (update db :chats #(reduce
+                                       (fn [acc {:keys [chat-id] :as chat}]
+                                         (update acc chat-id merge chat))
+                                       %
+                                       chats))}
+              (transport.filters/load-chats filtered-chats))))
 
 (fx/defn upsert-chat
   "Upsert chat when not deleted"
