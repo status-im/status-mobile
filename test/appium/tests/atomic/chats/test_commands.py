@@ -137,28 +137,35 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(6263)
     @marks.critical
     def test_request_and_receive_stt_in_1_1_chat_offline(self):
-        recipient = transaction_recipients['C']
         sender = transaction_senders['C']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1 = device_1.recover_access(passphrase=recipient['passphrase'])
-        home_2 = device_2.recover_access(passphrase=sender['passphrase'])
-        wallet_1, wallet_2 = home_1.wallet_button.click(), home_2.wallet_button.click()
+
+        device_1.just_fyi('Grab user data for transactions and public chat, set up wallets')
+        home_1 = device_1.create_user()
+        recipient_public_key, recipient_username = home_1.get_public_key_and_username(return_username=True)
+        wallet_1 = home_1.wallet_button.click()
         wallet_1.set_up_wallet()
+        recipient_address = wallet_1.get_wallet_address()
+        wallet_1.back_button.click()
+        wallet_1.select_asset('STT')
         wallet_1.home_button.click()
+
+        home_2 = device_2.recover_access(passphrase=sender['passphrase'])
+        wallet_2 = home_2.wallet_button.click()
         wallet_2.set_up_wallet()
-
-        chat_1 = home_1.add_contact(sender['public_key'])
-        chat_1.send_message("Hey there!")
-        amount = chat_1.get_unique_amount()
-        asset_name = 'STT'
-
         wallet_2.home_button.click()
-        chat_element = home_2.get_chat(recipient['username'])
-        chat_element.wait_for_visibility_of_element(30)
-        chat_2 = chat_element.click()
+
+        device_2.just_fyi('Add recipient to contact and send 1 message')
+        chat_2 = home_2.add_contact(recipient_public_key)
+        chat_2.send_message("Hey there!")
+        amount = chat_2.get_unique_amount()
+        asset_name = 'STT'
         profile_2 = wallet_2.profile_button.click()
         profile_2.logout()
+        chat_element = home_1.get_chat(sender['username'])
+        chat_element.wait_for_visibility_of_element(30)
+        chat_1 = chat_element.click()
 
         home_1.just_fyi('Request %s STT in 1-1 chat and check it is visible for sender and receiver' % amount)
         chat_1.commands_button.click()
@@ -171,15 +178,15 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         request_transaction.request_transaction_button.click()
         chat_1_request_message = chat_1.chat_element_by_text('↓ Incoming transaction')
         if not chat_1_request_message.is_element_displayed():
-             self.driver.fail('No incoming transaction in 1-1 chat is shown for recipient after requesting STT')
+            self.driver.fail('No incoming transaction in 1-1 chat is shown for recipient after requesting STT')
 
         home_2.just_fyi('Check that transaction message is fetched from offline and sign transaction')
         device_2.sign_in()
         home_2.connection_status.wait_for_invisibility_of_element(30)
-        home_2.get_chat(recipient['username']).click()
+        home_2.get_chat(recipient_username).click()
         chat_2_sender_message = chat_2.chat_element_by_text('↑ Outgoing transaction')
         if not chat_2_sender_message.is_element_displayed():
-             self.driver.fail('No outgoing transaction in 1-1 chat is shown for sender after requesting STT')
+                self.driver.fail('No outgoing transaction in 1-1 chat is shown for sender after requesting STT')
         if chat_2_sender_message.transaction_status.text != 'Address received':
             self.errors.append('Wrong state is shown for outgoing transaction: "Address request accepted" is expected, '
                                'in fact %s ' % chat_2_sender_message.transaction_status.text)
@@ -191,12 +198,12 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_2.toggle_airplane_mode()
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15, token=True)
         chat_2.toggle_airplane_mode()
-        home_1.connection_status.wait_for_invisibility_of_element(30)
+        chat_2.connection_status.wait_for_invisibility_of_element(30)
         if chat_2_sender_message.transaction_status.text != 'Confirmed':
             self.errors.append('Wrong state is shown for outgoing transaction: "Confirmed" is expected, in fact'
                                ' %s ' % chat_2_sender_message.transaction_status.text)
         try:
-            self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True)
+            self.network_api.find_transaction_by_unique_amount(recipient_address[2:], amount, token=True)
         except Failed as e:
             self.errors.append(e.msg)
         self.errors.verify_no_errors()
@@ -250,7 +257,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
                                    ' %s ' % status)
 
         self.errors.verify_no_errors()
-
 
 
 @marks.chat

@@ -49,7 +49,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
                                "syncing' selected!")
 
         sign_in_view.just_fyi("Check that can join public chat and send message")
-        chat_name = sign_in_view.get_public_chat_name()
+        chat_name = sign_in_view.get_random_chat_name()
         home = profile_view.get_back_to_home_view()
         chat = home.join_public_chat(chat_name)
         message = 'test message'
@@ -289,7 +289,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         recovery_phrase = " ".join(profile_view.get_recovery_phrase().values())
         profile_view.back_button.click()
         profile_view.back_button.click()
-        public_key = profile_view.get_public_key()
+        public_key = profile_view.get_public_key_and_username()
         wallet_view = profile_view.wallet_button.click()
         wallet_view.set_up_wallet()
         address = wallet_view.get_wallet_address()
@@ -303,7 +303,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if wallet_view.get_wallet_address() != address:
             self.driver.fail("Seed phrase displayed in new accounts for back up does not recover respective address")
         profile_view = wallet_view.profile_button.click()
-        if profile_view.get_public_key() != public_key:
+        if profile_view.get_public_key_and_username() != public_key:
             self.driver.fail("Seed phrase displayed in new accounts for back up does not recover respective public key")
 
     @marks.testrail_id(5433)
@@ -510,8 +510,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5428)
     @marks.low
-    @marks.skip
-    # TODO: skipped because of 10265
     def test_version_format(self):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()
@@ -526,7 +524,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.app_version_text.click()
         profile_view.back_button.click()
         profile_view.home_button.click()
-        chat = home_view.join_public_chat(home_view.get_public_chat_name())
+        chat = home_view.join_public_chat(home_view.get_random_chat_name())
         message_input = chat.chat_message_input
         message_input.paste_text_from_clipboard()
         if message_input.text != app_version:
@@ -614,7 +612,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user()
-        public_key = home_2.get_public_key()
+        public_key = home_2.get_public_key_and_username()
 
         profile_1, profile_2 = home_1.profile_button.click(), home_2.profile_button.click()
         username_1, username_2 = profile_1.default_username_text.text, profile_2.default_username_text.text
@@ -655,7 +653,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user()
-        public_key = home_2.get_public_key()
+        public_key = home_2.get_public_key_and_username()
         home_2.get_back_to_home_view()
 
         profile_1 = home_1.profile_button.click()
@@ -755,7 +753,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         # TODO: blocked by 10065
         # profile_1.home_button.click()
         # home_2.just_fyi('send several messages to public channel')
-        # public_chat_name = home_2.get_public_chat_name()
+        # public_chat_name = home_2.get_random_chat_name()
         # message = 'test_message'
         # public_chat_2 = home_2.join_public_chat(public_chat_name)
         # public_chat_2.chat_message_input.send_keys(message)
@@ -889,9 +887,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_profile.get_back_to_home_view()
         device_1_name = 'device_%s' % device_1.driver.number
         device_2_name = 'device_%s' % device_2.driver.number
-        public_chat_before_sync_name = 'b-public-%s' % device_1_home.get_public_chat_name()
-        public_chat_after_sync_name = 'a-public-%s' % device_1_home.get_public_chat_name()
-        group_chat_name = 'group-%s' % device_1_home.get_public_chat_name()
+        public_chat_before_sync_name = 'b-public-%s' % device_1_home.get_random_chat_name()
+        public_chat_after_sync_name = 'a-public-%s' % device_1_home.get_random_chat_name()
+        group_chat_name = 'group-%s' % device_1_home.get_random_chat_name()
         message_after_sync = 'sent after sync'
 
         device_1.just_fyi('join public chat, create group chat, edit user picture')
@@ -981,7 +979,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.home_button.click()
 
         home_2.just_fyi('joining same public chat, set ENS name and check it in chat from device2')
-        chat_name = home_1.get_public_chat_name()
+        chat_name = home_1.get_random_chat_name()
         chat_2 = home_2.join_public_chat(chat_name)
         chat_1 = home_1.join_public_chat(chat_name)
         chat_1.get_back_to_home_view()

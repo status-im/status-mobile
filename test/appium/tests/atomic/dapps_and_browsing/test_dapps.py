@@ -111,7 +111,7 @@ class TestDApps(SingleDeviceTestCase):
         user = basic_user
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(passphrase=user['passphrase'])
-        chat = home_view.join_public_chat(home_view.get_public_chat_name())
+        chat = home_view.join_public_chat(home_view.get_random_chat_name())
         chat.back_button.click()
         status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()

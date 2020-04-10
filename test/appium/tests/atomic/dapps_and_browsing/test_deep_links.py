@@ -14,7 +14,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         self.driver.close_app()
-        chat_name = sign_in_view.get_public_chat_name()
+        chat_name = sign_in_view.get_random_chat_name()
         deep_link = 'https://join.status.im/%s' % chat_name
         sign_in_view.open_weblink_and_login(deep_link)
         chat_view = sign_in_view.get_chat_view()

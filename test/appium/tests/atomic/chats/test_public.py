@@ -23,7 +23,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         profile_1 = home_1.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
         profile_1.home_button.click()
-        public_key_2 = home_2.get_public_key()
+        public_key_2 = home_2.get_public_key_and_username()
         home_2.home_button.click()
 
         home_1.add_contact(public_key_2)
@@ -42,7 +42,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         status_chat.get_back_to_home_view()
 
 
-        public_chat_name = home_1.get_public_chat_name()
+        public_chat_name = home_1.get_random_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(public_chat_name), home_2.join_public_chat(public_chat_name)
 
         message = 'hello'
@@ -59,7 +59,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
     def test_public_chat_clear_history(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        chat_name = device_1.get_public_chat_name()
+        chat_name = device_1.get_random_chat_name()
         for sign_in in device_1, device_2:
             home = sign_in.create_user()
             home.join_public_chat(chat_name)
@@ -96,7 +96,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()
 
-        chat_name = home_1.get_public_chat_name()
+        chat_name = home_1.get_random_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
         home_1.get_back_to_home_view()
 
@@ -127,7 +127,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()
-        chat_name = home_1.get_public_chat_name()
+        chat_name = home_1.get_random_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
         home_1.get_back_to_home_view()
         message = 'test message'
@@ -158,7 +158,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()
 
-        chat_name = home_1.get_public_chat_name()
+        chat_name = home_1.get_random_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
@@ -191,7 +191,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()
-        public_chat_name = home_1.get_public_chat_name()
+        public_chat_name = home_1.get_random_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(public_chat_name), home_2.join_public_chat(public_chat_name)
 
         browser = device_1.dapp_tab_button.click()

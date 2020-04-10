@@ -15,7 +15,7 @@ class TestCreateAccount(SingleDeviceTestCase):
     def test_switch_users_and_add_new_account(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
-        public_key = sign_in.get_public_key()
+        public_key = sign_in.get_public_key_and_username()
         profile = sign_in.get_profile_view()
         profile.logout()
         if sign_in.ok_button.is_element_displayed():
@@ -31,7 +31,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.next_button.click()
         sign_in.lets_go_button.click()
 
-        if sign_in.get_public_key() == public_key:
+        if sign_in.get_public_key_and_username() == public_key:
             self.driver.fail('New account was not created')
 
     @marks.testrail_id(5379)

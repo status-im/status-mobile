@@ -1,6 +1,6 @@
 import time
 
-from tests import marks, camera_access_error_text, get_current_time
+from tests import marks, camera_access_error_text
 from tests.users import basic_user, dummy_user
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -110,7 +110,7 @@ class TestChatManagement(SingleDeviceTestCase):
             chat.send_message_button.click()
             chat.get_back_to_home_view()
             chat.just_fyi('Deleting %s chat' % chat_name)
-            home.delete_chat_long_press(chat_name)
+            home.leave_chat_long_press(chat_name) if chat_name == group else home.delete_chat_long_press(chat_name)
         home.relogin()
         for chat_name in one_to_one, public, group:
             if home.get_chat(chat_name).is_element_displayed():
@@ -123,7 +123,7 @@ class TestChatManagement(SingleDeviceTestCase):
         home = sign_in.create_user()
         public_key = basic_user['public_key']
 
-        chat = home.join_public_chat(home.get_public_chat_name())
+        chat = home.join_public_chat(home.get_random_chat_name())
         chat.chat_message_input.send_keys(public_key)
         chat.send_message_button.click()
         chat.chat_element_by_text(public_key).long_press_element()
@@ -161,7 +161,7 @@ class TestChatManagement(SingleDeviceTestCase):
             chat.chat_message_input.send_keys('test message')
             chat.send_message_button.click()
             chat.just_fyi('Deleting %s chat' % chat_name)
-            chat.delete_chat()
+            chat.leave_chat() if chat_name == group else chat.delete_chat()
             chat.get_back_to_home_view()
         for chat_name in one_to_one, public, group:
             if home.get_chat(chat_name).is_element_displayed():
@@ -211,7 +211,7 @@ class TestChatManagement(SingleDeviceTestCase):
         home = sign_in.create_user()
         search_list = list()
 
-        chat_name = home.get_public_chat_name()
+        chat_name = home.get_random_chat_name()
         search_list.append(chat_name)
         public_chat = home.join_public_chat(chat_name)
         public_chat.get_back_to_home_view()
@@ -281,7 +281,7 @@ class TestChatManagement(SingleDeviceTestCase):
         chat_view.get_back_to_home_view(times_to_click_on_back_btn=1)
 
         chat_view.just_fyi("Send and quote message in public chat")
-        public_chat_name = home.get_public_chat_name()
+        public_chat_name = home.get_random_chat_name()
         home.join_public_chat(public_chat_name)
         chat_view.send_message(message_to_quote_public)
         chat_view.quote_message(message_to_quote_public)
@@ -385,7 +385,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         home_1, home_2 = device_1.create_user(), device_2.create_user()
 
         device_1.just_fyi('both devices joining the same public chat and send messages')
-        chat_name = device_1.get_public_chat_name()
+        chat_name = device_1.get_random_chat_name()
         for home in home_1, home_2:
             home.join_public_chat(chat_name)
         chat_public_1, chat_public_2 = home_1.get_chat_view(), home_2.get_chat_view()
@@ -430,13 +430,13 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         message_after_block_2 = "After block from %s" % device_2.driver.number
         home_1, home_2 = device_1.create_user(), device_2.create_user()
         profile_1 = home_1.profile_button.click()
-        device_2_public_key = home_2.get_public_key()
+        device_2_public_key = home_2.get_public_key_and_username()
         home_2.get_back_to_home_view()
         default_username_1 = profile_1.default_username_text.text
         profile_1.get_back_to_home_view()
 
         device_1.just_fyi('both devices joining the same public chat and send messages')
-        chat_name = device_1.get_public_chat_name()
+        chat_name = device_1.get_random_chat_name()
         for home in home_1, home_2:
             home.join_public_chat(chat_name)
         chat_public_1, chat_public_2 = home_1.get_chat_view(), home_2.get_chat_view()
@@ -527,7 +527,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         home_1, home_2 = device_1.create_user(), device_2.create_user()
 
         device_1.just_fyi('Both devices join to 1-1 chat')
-        device_2_public_key = home_2.get_public_key()
+        device_2_public_key = home_2.get_public_key_and_username()
         device_1_profile = home_1.profile_button.click()
         device_1_username = device_1_profile.default_username_text.text
         home_1.home_button.click()
@@ -553,7 +553,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_2_chat.back_button.click()
 
         device_1.just_fyi('both devices joining the same public chat and send messages')
-        chat_name = device_1.get_public_chat_name()
+        chat_name = device_1.get_random_chat_name()
         for home in home_1, home_2:
             home.join_public_chat(chat_name)
         chat_public_1, chat_public_2 = home_1.get_chat_view(), home_2.get_chat_view()

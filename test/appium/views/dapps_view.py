@@ -106,7 +106,6 @@ class DappsView(BaseView):
         self.always_allow_radio_button = AlwaysAllowRadioButton(self.driver)
         self.close_web3_permissions_window_button = CrossCloseWeb3PermissionButton(self.driver)
 
-
     def open_url(self, url):
         self.enter_url_editbox.click()
         self.enter_url_editbox.send_keys(url)

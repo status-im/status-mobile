@@ -258,6 +258,12 @@ class HomeView(BaseView):
         self.delete_chat_button.click()
         self.delete_button.click()
 
+    def leave_chat_long_press(self, username):
+        self.get_chat(username).long_press_element()
+        from views.chat_view import LeaveChatButton, LeaveButton
+        LeaveChatButton(self.driver).click()
+        LeaveButton(self.driver).click()
+
     def clear_chat_long_press(self, username):
         self.get_chat(username).long_press_element()
         self.clear_history_button.click()

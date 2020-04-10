@@ -23,7 +23,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         profile_1 = device_1_home.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
         device_1_home = profile_1.get_back_to_home_view()
-        device_2_public_key = device_2_home.get_public_key()
+        device_2_public_key = device_2_home.get_public_key_and_username()
         device_2_home.home_button.click()
 
         device_1_chat = device_1_home.add_contact(device_2_public_key)
@@ -41,7 +41,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user()
-        public_key_1 = home_1.get_public_key()
+        public_key_1 = home_1.get_public_key_and_username()
         home_1.home_button.click()
 
         home_1.toggle_airplane_mode()  # airplane mode on primary device
@@ -86,7 +86,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         profile_1 = home_1.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
         home_1 = profile_1.get_back_to_home_view()
-        public_key_2 = home_2.get_public_key()
+        public_key_2 = home_2.get_public_key_and_username()
         profile_2 = home_2.get_profile_view()
         profile_2.switch_network('Mainnet with upstream RPC')
 
@@ -98,7 +98,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2 = home_2.get_chat(default_username_1).click()
         chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
 
-        public_chat_name = home_1.get_public_chat_name()
+        public_chat_name = home_1.get_random_chat_name()
         chat_1.get_back_to_home_view()
         home_1.join_public_chat(public_chat_name)
         chat_2.get_back_to_home_view()
@@ -125,7 +125,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         # profile_1.edit_profile_picture('sauce_logo.png')
         # profile_1.home_button.click()
 
-        device_2_public_key = device_2_home.get_public_key()
+        device_2_public_key = device_2_home.get_public_key_and_username()
         device_2_home.home_button.click()
 
         device_1_chat = device_1_home.add_contact(device_2_public_key)
@@ -162,7 +162,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         default_username_1 = profile_1.default_username_text.text
         device_1_home = profile_1.get_back_to_home_view()
 
-        device_2_public_key = device_2_home.get_public_key()
+        device_2_public_key = device_2_home.get_public_key_and_username()
         profile_2 = device_2_home.get_profile_view()
         # TODO: skip until edit image profile is enabled
         # file_name = 'sauce_logo.png'
@@ -208,7 +208,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         profile_1 = home_1.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
         home_1 = profile_1.get_back_to_home_view()
-        public_key_2 = home_2.get_public_key()
+        public_key_2 = home_2.get_public_key_and_username()
         home_2.home_button.click()
 
         chat_1 = home_1.add_contact(public_key_2)
@@ -263,7 +263,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         profile_2 = device_2_home.profile_button.click()
         default_username_2 = profile_2.default_username_text.text
         device_2_home = profile_2.get_back_to_home_view()
-        device_1_public_key = device_1_home.get_public_key()
+        device_1_public_key = device_1_home.get_public_key_and_username()
         device_1_home.home_button.click()
 
         device_2_chat = device_2_home.add_contact(device_1_public_key)
@@ -299,7 +299,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         profile_2 = device_2_home.profile_button.click()
         default_username_2 = profile_2.default_username_text.text
         device_2_home = profile_2.get_back_to_home_view()
-        device_1_public_key = device_1_home.get_public_key()
+        device_1_public_key = device_1_home.get_public_key_and_username()
         device_1_home.home_button.click()
 
         device_2_chat = device_2_home.add_contact(device_1_public_key)
@@ -330,7 +330,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_1_chat.get_back_to_home_view()
         device_2_chat.get_back_to_home_view()
-        chat_name = device_1_home.get_public_chat_name()
+        chat_name = device_1_home.get_random_chat_name()
         device_1_home.join_public_chat(chat_name)
         device_2_home.join_public_chat(chat_name)
 
@@ -353,7 +353,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         device_1_home, device_2_home = sign_in_1.create_user(), sign_in_2.create_user()
-        device_2_public_key = device_2_home.get_public_key()
+        device_2_public_key = device_2_home.get_public_key_and_username()
         device_2_home.home_button.click()
         device_1_profile = device_1_home.profile_button.click()
         default_username_1 = device_1_profile.default_username_text.text
@@ -382,7 +382,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         #     chat.verify_message_is_under_today_text(message, self.errors)
 
         device_1_chat.just_fyi('check user picture and timestamps in chat for sender and recipient in public chat')
-        chat_name = device_1_home.get_public_chat_name()
+        chat_name = device_1_home.get_random_chat_name()
         for chat in device_1_chat, device_2_chat:
             home_view = chat.get_back_to_home_view()
             home_view.join_public_chat(chat_name)
@@ -402,74 +402,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         # TODO: disabled due to issue 'yesterday' is shown, can't emulate manually
         # for chat in device_1_chat, device_2_chat:
         #     chat.verify_message_is_under_today_text(message, self.errors)
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5405)
-    @marks.high
-    @marks.skip
-    # TODO: temporary skipped due to 8601
-    def test_fiat_value_is_correctly_calculated_on_recipient_side(self):
-        sender = transaction_senders['Y']
-        recipient = transaction_recipients['I']
-
-        self.create_drivers(2)
-        signin_view1, signin_view2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_view1, home_view2 = signin_view1.recover_access(sender['passphrase']), signin_view2.recover_access(
-            recipient['passphrase'])
-
-        devices = [
-            {'home_view': home_view1, 'currency': 'AUD'},
-            {'home_view': home_view2, 'currency': 'EUR'},
-        ]
-
-        # changing currency for both devices
-        for device in devices:
-            wallet_view = device['home_view'].wallet_button.click()
-            wallet_view.set_up_wallet()
-            wallet_view.set_currency(device['currency'])
-            wallet_view.get_back_to_home_view()
-
-        device1 = devices[0]
-        device2 = devices[1]
-
-        # setting up device1 wallet
-        # wallet1 = device1['home_view'].wallet_button.click()
-        # wallet1.get_back_to_home_view()
-
-        # sending ETH to device2 in 1*1 chat
-        device1_chat = device1['home_view'].add_contact(recipient['public_key'])
-        send_amount = device1_chat.get_unique_amount()
-        device1_chat.send_transaction_in_1_1_chat('ETHro', send_amount)
-
-        sent_message = device1_chat.chat_element_by_text(send_amount)
-        if not sent_message.is_element_displayed() and not sent_message.contains_text(device1['currency']):
-            self.errors.append('Wrong currency fiat value while sending ETH in 1*1 chat.')
-
-        device2_chat = device2['home_view'].get_chat_with_user(sender['username']).click()
-        received_message = device2_chat.chat_element_by_text(send_amount)
-        if not received_message.is_element_displayed() and not received_message.contains_text(device2['currency']):
-            self.errors.append('Wrong currency fiat value while receiving ETH in 1*1 chat.')
-
-        # Currently disabled because sending / requesting funds from wallet is not shown in chat
-        # device1_chat.get_back_to_home_view()
-        # wallet1 = device1['home_view'].wallet_button.click()
-        # send_amount = device1_chat.get_unique_amount()
-
-        # Send and request some ETH from wallet and check whether the fiat currency value of
-        # the new messages is equal to user-selected
-        # wallet1.send_transaction(asset_name='ETHro', recipient=recipient['username'], amount=send_amount)
-        # wallet1.get_back_to_home_view()
-        # device1_chat = device1['home_view'].get_chat(recipient['username']).click()
-        #
-        # sent_message = device1_chat.chat_element_by_text(send_amount)
-        # received_message = device2_chat.chat_element_by_text(send_amount)
-        #
-        # if not sent_message.is_element_displayed() and not sent_message.contains_text(device1['currency']):
-        #     self.errors.append('Wrong currency fiat value while sending ETH from wallet.')
-        #
-        # if not received_message.is_element_displayed() and not sent_message.contains_text(device2['currency']):
-        #     self.errors.append('Wrong currency fiat value while receiving ETH sent via wallet.')
 
         self.errors.verify_no_errors()
 
@@ -541,7 +473,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
 
-        home.join_public_chat(home.get_public_chat_name())
+        home.join_public_chat(home.get_random_chat_name())
         chat = sign_in.get_chat_view()
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
@@ -560,96 +492,6 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             self.errors.append('Message with emoji was not sent in 1-1 chat')
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5393)
-    @marks.high
-    @marks.skip
-    # TODO: temporary skipped due to 8601
-    def test_that_fiat_value_is_correct_for_token_transactions(self):
-        sender_passphrase = transaction_senders['X']['passphrase']
-        recipient_public_key = transaction_recipients['H']['public_key']
-        recipient_user_name = transaction_recipients['H']['username']
-        default_currency = 'USD'
-        user_currency = 'EUR'
-        sigin_view = SignInView(self.driver)
-        home_view = sigin_view.recover_access(sender_passphrase)
-        wallet = home_view.wallet_button.click()
-        wallet.set_up_wallet()
-
-        wallet.get_back_to_home_view()
-
-        chat = home_view.add_contact(recipient_public_key)
-        send_amount, request_amount = [chat.get_unique_amount() for _ in range(2)]
-        # Send and request some tokens in 1x1 chat and check whether the fiat currency value of the messages is equal
-        # to default
-        chat.send_transaction_in_1_1_chat('STT', send_amount)
-        chat.request_transaction_in_1_1_chat('STT', request_amount)
-
-        send_message = chat.chat_element_by_text(send_amount)
-        if not send_message.is_element_displayed() and not send_message.contains_text(default_currency):
-            self.errors.append('Wrong fiat value while sending assets in 1-1 chat with default currency.')
-
-        request_message = chat.chat_element_by_text(request_amount)
-        if not request_message.is_element_displayed() and not request_message.contains_text(default_currency):
-            self.errors.append('Wrong fiat value while requesting assets in 1-1 chat with default currency.')
-
-        chat.get_back_to_home_view()
-
-        # Switch default currency to user-selected
-        wallet_view = sigin_view.wallet_button.click()
-        wallet_view.set_currency(user_currency)
-        wallet_view.get_back_to_home_view()
-
-        chat = home_view.get_chat(recipient_user_name).click()
-
-        # Check whether the fiat currency value of the messages sent is not changed to user-selected
-        send_message = chat.chat_element_by_text(send_amount)
-        if not send_message.is_element_displayed() and not send_message.contains_text(default_currency):
-            self.errors.append('Wrong fiat value while sending assets in 1-1 chat with default currency.')
-
-        request_message = chat.chat_element_by_text(request_amount)
-        if not request_message.is_element_displayed() and not request_message.contains_text(default_currency):
-            self.errors.append('Wrong fiat value while requesting assets in 1-1 chat with default currency.')
-
-        # Send and request some tokens in 1x1 chat and check whether the fiat currency value of
-        # the new messages is equal to user-selected
-        send_amount, request_amount = [chat.get_unique_amount() for _ in range(2)]
-        chat.send_transaction_in_1_1_chat('STT', send_amount)
-        chat.request_transaction_in_1_1_chat('STT', request_amount)
-
-        send_message = chat.chat_element_by_text(send_amount)
-        if not send_message.is_element_displayed() and not send_message.contains_text(user_currency):
-            self.errors.append('Wrong fiat value while sending assets in 1-1 chat with user selected currency.')
-
-        request_message = chat.chat_element_by_text(request_amount)
-        if not request_message.is_element_displayed() and not request_message.contains_text(user_currency):
-            self.errors.append('Wrong fiat value while requesting assets in 1-1 chat with user selected currency.')
-
-        # disabled since after merge https://github.com/status-im/status-react/pull/8425 no messages are shown
-        # in 1-1 chat after sending from wallet
-
-        # chat.get_back_to_home_view()
-        #
-        # wallet = home_view.wallet_button.click()
-        # send_amount, request_amount = [chat.get_unique_amount() for _ in range(2)]
-
-        # Send and request some tokens from wallet and check whether the fiat currency value of
-        # the new messages is equal to user-selected
-        #
-        # wallet.send_transaction(asset_name='STT', recipient=recipient_user_name, amount=send_amount)
-        # wallet.receive_transaction(asset_name='STT', recipient=recipient_user_name, amount=request_amount)
-        #
-        # wallet.get_back_to_home_view()
-        # chat = home_view.get_chat(recipient_user_name).click()
-        #
-        # send_message = chat.chat_element_by_text(send_amount)
-        # if not send_message.is_element_displayed() and not send_message.contains_text(user_currency):
-        #     self.errors.append('Wrong fiat value while sending assets from wallet with user selected currency.')
-        #
-        # request_message = chat.chat_element_by_text(request_amount)
-        # if not request_message.is_element_displayed() and not request_message.contains_text(user_currency):
-        #     self.errors.append('Wrong fiat value while requesting assets from wallet with user selected currency.')
-
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(5782)
     @marks.critical
@@ -658,7 +500,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         home = sign_in.create_user()
 
         sign_in.just_fyi('join public chat and check that stickers are not available on Ropsten')
-        chat_name = home.get_public_chat_name()
+        chat_name = home.get_random_chat_name()
         home.join_public_chat(chat_name)
         chat = sign_in.get_chat_view()
         if chat.show_stickers_button.is_element_displayed():
@@ -696,7 +538,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         profile_view.switch_network('Mainnet with upstream RPC')
 
         sign_in_view.just_fyi('join to public chat, buy and install stickers')
-        chat = home_view.join_public_chat(home_view.get_public_chat_name())
+        chat = home_view.join_public_chat(home_view.get_random_chat_name())
         chat.show_stickers_button.click()
         chat.get_stickers.click()
         chat.install_sticker_pack_by_name('Tozemoon')
@@ -737,7 +579,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         if home_view.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in home screen')
 
-        public_chat = home_view.join_public_chat(home_view.get_public_chat_name())
+        public_chat = home_view.join_public_chat(home_view.get_random_chat_name())
         if public_chat.connection_status.text != 'Offline':
             self.errors.append('Offline status is not shown in a public chat')
         self.errors.verify_no_errors()

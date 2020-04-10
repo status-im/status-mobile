@@ -18,7 +18,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         wallet_view.set_up_wallet()
         if wallet_view.status_account_total_usd_value.text != '0':
             self.errors.append("Account USD value is not 0, it is %s" % wallet_view.status_account_total_usd_value.text)
-        public_key = sign_in.get_public_key()
+        public_key = sign_in.get_public_key_and_username()
         profile = sign_in.get_profile_view()
         default_username = profile.default_username_text.text
         profile.logout()

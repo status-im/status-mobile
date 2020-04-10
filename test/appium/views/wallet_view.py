@@ -437,7 +437,6 @@ class WalletView(BaseView):
         else:
             self.driver.info('Current USD balance %s is ok' % usd)
 
-
     def wait_balance_is_equal_expected_amount(self, asset ='ETHro', expected_balance=0.1, wait_time=300):
         counter = 0
         while True:
@@ -469,8 +468,7 @@ class WalletView(BaseView):
                 self.driver.info('Waiting %s seconds for %s to display asset' % (counter, asset))
             else:
                 self.driver.info('Balance is updated!')
-                return
-
+                return self
 
     def get_sign_in_phrase(self):
         return ' '.join([element.text for element in self.sign_in_phrase.find_elements()])

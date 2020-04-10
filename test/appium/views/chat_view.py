@@ -1,4 +1,3 @@
-import time
 from datetime import datetime
 import dateutil.parser
 
@@ -63,13 +62,6 @@ class UserNameText(BaseText):
         self.locator = \
             self.Locator.accessibility_id('chat-name-text')
 
-
-class TransactionPopupText(BaseText):
-    def __init__(self, driver):
-        super(TransactionPopupText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Specify amount']")
-
-
 class SendCommand(BaseButton):
     def __init__(self, driver):
         super(SendCommand, self).__init__(driver)
@@ -98,12 +90,6 @@ class RequestCommand(BaseButton):
         self.wait_for_element().click()
         self.driver.info('Tap on %s' % self.name)
         return self.navigate()
-
-
-class AssetCommand(BaseButton):
-    def __init__(self, driver, asset):
-        super(AssetCommand, self).__init__(driver)
-        self.locator = self.Locator.text_selector(asset)
 
 
 class ChatMenuButton(BaseButton):
@@ -145,11 +131,15 @@ class GroupInfoButton(BaseButton):
     def navigate(self):
         return GroupChatInfoView(self.driver)
 
+    def click(self):
+        self.wait_for_element().click()
+        return self.navigate()
+
 
 class LeaveChatButton(BaseButton):
     def __init__(self, driver):
         super(LeaveChatButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="Leave public chat"]')
+        self.locator = self.Locator.accessibility_id('leave-chat-button')
 
 
 class ClearButton(BaseButton):
@@ -192,18 +182,6 @@ class RemoveButton(BaseButton):
     def __init__(self, driver):
         super(RemoveButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Remove']")
-
-
-class FirstRecipient(BaseButton):
-    def __init__(self, driver):
-        super(FirstRecipient, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('contact-item')
-
-
-class MoreUsersButton(BaseButton):
-    def __init__(self, driver):
-        super(MoreUsersButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[contains(@text, 'MORE')]")
 
 
 class OpenInStatusButton(BaseButton):
@@ -291,13 +269,13 @@ class DeclineChatButton(BaseButton):
 class RemoveFromChatButton(BaseButton):
     def __init__(self, driver):
         super(RemoveFromChatButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="Remove from chat"]')
+        self.locator = self.Locator.accessibility_id('remove-from-chat')
 
 
 class MakeAdminButton(BaseButton):
     def __init__(self, driver):
         super(MakeAdminButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="Make admin"]')
+        self.locator = self.Locator.accessibility_id('make-admin')
 
 
 class ChatElementByText(BaseText):
@@ -433,8 +411,6 @@ class ChatElementByText(BaseText):
 
         return SignAndSend(self.driver, self.locator.value)
 
-
-
     @property
     def replied_message_text(self):
         class RepliedMessageText(BaseText):
@@ -481,8 +457,44 @@ class HistoryTimeMarker(BaseText):
 class UsernameOptions(BaseButton):
     def __init__(self, driver, username):
         super(UsernameOptions, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='%s']/..//*[@content-desc='options']" % username)
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']/..//*[@content-desc='menu-option']" % username)
 
+    def navigate(self):
+        return ChatView(self.driver)
+
+    def click(self):
+        self.wait_for_element().click()
+        return self.navigate()
+
+
+class UserNameInGroupInfo(BaseButton):
+    def __init__(self, driver, username):
+        super(UserNameInGroupInfo, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']" % username)
+
+
+class AdminUser(BaseButton):
+    def __init__(self, driver, username):
+        super(AdminUser, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']/..//*[@text='Admin']" % username)
+
+
+class EditGroupChatButton(BaseButton):
+    def __init__(self, driver):
+        super(EditGroupChatButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("edit-button")
+
+
+class EditGroupChatEditBox(BaseEditBox):
+    def __init__(self, driver):
+        super(EditGroupChatEditBox, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("new-chat-name")
+
+
+class DoneButton(BaseButton):
+    def __init__(self, driver):
+        super(DoneButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("done")
 
 class GroupChatInfoView(BaseView):
     def __init__(self, driver):
@@ -491,6 +503,14 @@ class GroupChatInfoView(BaseView):
 
     def get_username_options(self, username: str):
         return UsernameOptions(self.driver, username)
+
+    def user_admin(self, username: str):
+        return AdminUser(self.driver, username)
+
+    def get_user_from_group_info(self, username: str):
+        return UserNameInGroupInfo(self.driver, username)
+
+
 
 
 class ChatView(BaseView):
@@ -533,14 +553,14 @@ class ChatView(BaseView):
         self.decline_invitation_button = DeclineChatButton(self.driver)
         self.remove_user_button = RemoveFromChatButton(self.driver)
         self.make_admin_button = MakeAdminButton(self.driver)
+        self.edit_group_chat_name_button = EditGroupChatButton(self.driver)
+        self.edit_group_chat_name_edit_box = EditGroupChatEditBox(self.driver)
+        self.done_button = DoneButton(self.driver)
 
         self.chat_settings = ChatSettings(self.driver)
         self.view_profile_button = ViewProfileButton(self.driver)
-        self.more_users_button = MoreUsersButton(self.driver)
         self.user_options = UserOptions(self.driver)
         self.remove_button = RemoveButton(self.driver)
-
-        self.first_recipient_button = FirstRecipient(self.driver)
 
         self.open_in_status_button = OpenInStatusButton(self.driver)
 
@@ -552,36 +572,34 @@ class ChatView(BaseView):
         self.profile_block_contact = ProfileBlockContactButton(self.driver)
         self.profile_add_to_contacts = ProfileAddToContactsButton(self.driver)
 
-    def send_funds_to_request(self, amount, sender_password=common_password, wallet_set_up=False):
-        gas_popup = self.element_by_text_part('Specify amount')
-        send_request_button = self.chat_element_by_text(amount).send_request_button
-        send_request_button.click_until_presence_of_element(gas_popup)
-        send_transaction = self.get_send_transaction_view()
-        if wallet_set_up:
-            wallet_view = self.get_wallet_view()
-            self.send_message_button.click_until_presence_of_element(wallet_view.sign_in_phrase)
-            wallet_view.done_button.click()
-            wallet_view.yes_button.click()
-        else:
-            self.send_message_button.click_until_presence_of_element(send_transaction.sign_with_password)
-        send_transaction.sign_transaction(sender_password)
-
     def delete_chat(self):
         self.chat_options.click()
         self.delete_chat_button.click()
         self.delete_button.click()
+
+    def leave_chat(self):
+        self.chat_options.click()
+        self.leave_chat_button.click()
+        self.leave_button.click()
 
     def clear_history(self):
         self.chat_options.click()
         self.clear_history_button.click()
         self.clear_button.click()
 
-    def clear_history_via_group_info(self):
+
+    def leave_chat_via_group_info(self):
         self.chat_options.click()
         self.group_info.click()
-        self.clear_history_button.click()
-        self.clear_button.click()
-        self.back_button.click()
+        self.leave_chat_button.click()
+        self.leave_button.click()
+
+    def rename_chat_via_group_info(self, new_chat_name):
+        self.chat_options.click()
+        self.group_info.click()
+        self.edit_group_chat_name_button.click()
+        self.edit_group_chat_name_edit_box.set_value(new_chat_name)
+        self.done_button.click()
 
     def send_transaction_in_group_chat(self, amount, password, recipient):
         self.commands_button.click()
@@ -662,3 +680,32 @@ class ChatView(BaseView):
         timestamp = datetime.strptime("%s:%s" % (sent_time_object.hour, sent_time_object.minute), '%H:%M').strftime("%I:%M %p")
         timestamp = timestamp[1:] if timestamp[0] == '0' else timestamp
         return timestamp
+
+    # Group chat system messages
+    @staticmethod
+    def leave_system_message(username):
+        return "%s left the group" % username
+
+    @staticmethod
+    def has_been_made_admin_system_message(admin, new_admin):
+        return "%s has made %s admin" % (admin, new_admin)
+
+    @staticmethod
+    def create_system_message(admin, chat_name):
+        return '%s created the group %s' % (admin, chat_name)
+
+    @staticmethod
+    def invite_system_message(admin, invited_user):
+        return '%s has invited %s' % (admin, invited_user)
+
+    @staticmethod
+    def join_system_message(username):
+        return '%s joined the group' % username
+
+    @staticmethod
+    def create_for_admin_system_message(chat_name):
+        return 'You created the group %s' % chat_name
+
+    @staticmethod
+    def changed_group_name_system_message(admin, chat_name):
+        return "%s changed the group's name to %s" % (admin, chat_name)

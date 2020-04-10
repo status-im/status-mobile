@@ -586,7 +586,7 @@ class BaseView(object):
         return '0.00%s' % datetime.now().strftime('%-d%-H%-M%-S').strip('0')
 
     @staticmethod
-    def get_public_chat_name():
+    def get_random_chat_name():
         return ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
 
     def get_text_from_qr(self):
@@ -626,13 +626,15 @@ class BaseView(object):
     def close_share_popup(self):
         TouchAction(self.driver).tap(None, 255, 104, 1).perform()
 
-    def get_public_key(self):
+    def get_public_key_and_username(self, return_username=False):
         profile_view = self.profile_button.click()
+        default_username = profile_view.default_username_text.text
         profile_view.share_my_profile_button.click()
         profile_view.public_key_text.wait_for_visibility_of_element()
         public_key = profile_view.public_key_text.text
         self.close_share_popup()
-        return public_key
+        user_data = (public_key, default_username) if return_username else public_key
+        return user_data
 
     def share_via_messenger(self):
         self.element_by_text('Messages').click()

@@ -73,7 +73,7 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
             },
         ]
 
-        # check that seed phrase is required (can't be empty)
+        recover_access_view.just_fyi("check that seed phrase is required (can't be empty)")
         recover_access_view.enter_seed_phrase_button.click()
         recover_access_view.next_button.click()
         if recover_access_view.reencrypt_your_key_button.is_element_displayed():
@@ -93,11 +93,11 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
 
             recover_access_view.send_as_keyevent(phrase)
 
-            # TODO: uncomment after 8567 fix
-            #if msg and not elm.is_element_displayed():
+            # TODO: still disabled because tooltips are not visible
+            # if msg and not elm.is_element_displayed():
             #     self.errors.append('"{}" message is not shown'.format(msg))
 
-            # check that words count is shown
+            recover_access_view.just_fyi('check that words count is shown')
             if words_count == 1:
                 if not signin_view.element_by_text('%s word' % words_count):
                     self.errors.append('"%s word" is not shown ' % words_count)
@@ -105,16 +105,15 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
                 if not signin_view.element_by_text('%s words' % words_count):
                     self.errors.append('"%s words" is not shown ' % words_count)
 
-            # check that "Next" is disabled unless we use allowed count of words
+            recover_access_view.just_fyi('check that "Next" is disabled unless we use allowed count of words')
             if words_count != 12 or 15 or 18 or 21 or 24:
                 recover_access_view.next_button.click()
                 if recover_access_view.reencrypt_your_key_button.is_element_displayed():
                     self.errors.append("Possible to create account with wrong count (%s) of words" % words_count)
 
-            # check behavior for popup "Custom seed phrase"
+            recover_access_view.just_fyi('check behavior for popup "Custom seed phrase"')
             if popup:
                 text = 'Invalid seed phrase'
-                common_password = 'qwerty'
                 if not recover_access_view.find_full_text(text):
                     self.errors.append('"%s" text is not shown' % text)
                 recover_access_view.cancel_custom_seed_phrase_button.click()
@@ -144,7 +143,7 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
         signin_view.recover_access(capitalized_passphrase)
         profile_view = signin_view.profile_button.click()
         username = profile_view.default_username_text.text
-        public_key = signin_view.get_public_key()
+        public_key = signin_view.get_public_key_and_username()
         if username != user['username'] or public_key != user['public_key']:
             self.driver.fail('Incorrect user was recovered')
 

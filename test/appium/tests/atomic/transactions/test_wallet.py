@@ -11,35 +11,6 @@ from views.sign_in_view import SignInView
 @marks.transaction
 class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
-    @marks.testrail_id(5307)
-    @marks.critical
-    @marks.skip
-    # TODO: temporary skipped due to 8601
-    def test_send_eth_from_wallet_to_contact(self):
-        recipient = basic_user
-        sender = transaction_senders['N']
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'])
-        home_view = sign_in_view.get_home_view()
-        home_view.add_contact(recipient['public_key'])
-        home_view.get_back_to_home_view()
-        wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.accounts_status_account.click()
-        send_transaction = wallet_view.send_transaction_button.click()
-        send_transaction.amount_edit_box.click()
-        transaction_amount = send_transaction.get_unique_amount()
-        send_transaction.amount_edit_box.set_value(transaction_amount)
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.recent_recipients_button.click()
-        recent_recipient = send_transaction.element_by_text(recipient['username'])
-        send_transaction.recent_recipients_button.click_until_presence_of_element(recent_recipient)
-        recent_recipient.click()
-        send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction()
-        self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
-
     @marks.testrail_id(5308)
     @marks.critical
     def test_send_eth_from_wallet_to_address(self):
@@ -550,46 +521,4 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         if not account_button.color_matches('multi_account_color.png'):
             self.driver.fail('Account color does not match expected')
 
-        self.errors.verify_no_errors()
-
-
-@marks.transaction
-class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
-
-    @marks.testrail_id(5378)
-    @marks.skip
-    @marks.high
-    # TODO: temporary skipped due to 8601
-    def test_transaction_message_sending_from_wallet(self):
-        recipient = transaction_recipients['E']
-        sender = transaction_senders['V']
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1 = device_1.recover_access(passphrase=sender['passphrase'])
-        home_2 = device_2.recover_access(passphrase=recipient['passphrase'])
-
-        chat_1 = home_1.add_contact(recipient['public_key'])
-        chat_1.get_back_to_home_view()
-
-        wallet_1 = home_1.wallet_button.click()
-        wallet_1.set_up_wallet()
-        wallet_1.accounts_status_account.click()
-        send_transaction = wallet_1.send_transaction_button.click()
-        send_transaction.amount_edit_box.click()
-        amount = send_transaction.get_unique_amount()
-        send_transaction.amount_edit_box.set_value(amount)
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.recent_recipients_button.click()
-        send_transaction.element_by_text_part(recipient['username']).click()
-        send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction()
-
-        wallet_1.home_button.click()
-        home_1.get_chat(recipient['username']).click()
-        if not chat_1.chat_element_by_text(amount).is_element_displayed():
-            self.errors.append('Transaction message is not shown in 1-1 chat for the sender')
-        chat_2 = home_2.get_chat(sender['username']).click()
-        if not chat_2.chat_element_by_text(amount).is_element_displayed():
-            self.errors.append('Transaction message is not shown in 1-1 chat for the recipient')
         self.errors.verify_no_errors()
