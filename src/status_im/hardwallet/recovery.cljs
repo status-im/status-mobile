@@ -210,7 +210,8 @@
                                      (update :instance-uid #(get-in db [:hardwallet :multiaccount :instance-uid] %))))
                        (assoc-in [:hardwallet :multiaccount-wallet-address] (:wallet-address account-data))
                        (assoc-in [:hardwallet :multiaccount-whisper-public-key] (:whisper-public-key account-data))
-                       (assoc-in [:hardwallet :application-info :key-uid] (:key-uid account-data))
+                       (assoc-in [:hardwallet :application-info :key-uid]
+                                 (ethereum/normalized-hex (:key-uid account-data)))
                        (update :hardwallet dissoc :recovery-phrase)
                        (update-in [:hardwallet :secrets] dissoc :pin :puk :password)
                        (assoc :multiaccounts/new-installation-id (random-guid-generator))
