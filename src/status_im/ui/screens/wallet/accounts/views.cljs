@@ -1,21 +1,21 @@
 (ns status-im.ui.screens.wallet.accounts.views
-  (:require-macros [status-im.utils.views :as views])
-  (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.toolbar.styles :as toolbar.styles]
-            [status-im.ui.components.colors :as colors]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.list-item.views :as list-item]
-            [status-im.wallet.utils :as wallet.utils]
-            [reagent.core :as reagent]
+  (:require [oops.core :refer [oget]]
+            [quo.animated :as reanimated]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.reanimated :as reanimated]
-            [oops.core :refer [oget]]
+            [reagent.core :as reagent]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.list-item.views :as list-item]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.toolbar.styles :as toolbar.styles]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
             [status-im.ui.screens.wallet.accounts.styles :as styles]
-            [status-im.utils.utils :as utils.utils]))
+            [status-im.utils.utils :as utils.utils]
+            [status-im.wallet.utils :as wallet.utils])
+  (:require-macros [status-im.utils.views :as views]))
 
 (def state (reagent/atom {:tab :assets}))
 

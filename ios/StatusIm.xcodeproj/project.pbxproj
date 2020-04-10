@@ -90,6 +90,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = StatusIm/main.m; sourceTree = "<group>"; };
 		1426DF592BA248FC81D955CB /* Inter-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Regular.otf"; path = "../resources/fonts/Inter-Regular.otf"; sourceTree = "<group>"; };
 		38A44830EC5708E89387F641 /* Pods-StatusIm.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StatusIm.release.xcconfig"; path = "Pods/Target Support Files/Pods-StatusIm/Pods-StatusIm.release.xcconfig"; sourceTree = "<group>"; };
+		3A0B103024581B74004B0F23 /* InterStatus-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "InterStatus-Regular.otf"; path = "../resources/fonts/InterStatus-Regular.otf"; sourceTree = "<group>"; };
 		439B6B4B407A4E2AACAFE5BE /* RCTStatus.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTStatus.xcodeproj; path = "../modules/react-native-status/ios/RCTStatus/RCTStatus.xcodeproj"; sourceTree = "<group>"; };
 		4C16DE0B1F89508700AA10DB /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		4E586E1B0E544F64AA9F5BD1 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -180,6 +181,7 @@
 				CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */,
 				B321D25F4493470980039457 /* Inter-BoldItalic.otf */,
 				B07176ACDAA1422E8F0A3D6B /* Inter-Italic.otf */,
+				3A0B103024581B74004B0F23 /* InterStatus-Regular.otf */,
 				B2A38FC3D3954DE7B2B171F8 /* Inter-Medium.otf */,
 				C6B1215047604CD59A4C74D6 /* Inter-MediumItalic.otf */,
 				1426DF592BA248FC81D955CB /* Inter-Regular.otf */,

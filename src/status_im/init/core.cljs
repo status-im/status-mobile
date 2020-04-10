@@ -1,15 +1,16 @@
 (ns status-im.init.core
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [quo.theme :as quo-theme]
+            [re-frame.core :as re-frame]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.native-module.core :as status]
             [status-im.network.net-info :as network]
             [status-im.react-native.js-dependencies :as rn-dependencies]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.db :refer [app-db]]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as platform]
-            [clojure.string :as string]
-            [status-im.utils.theme :as theme]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.utils.theme :as theme]))
 
 (defn restore-native-settings! []
   (when platform/desktop?
@@ -95,4 +96,5 @@
  (fn []
    (theme/add-mode-change-listener #(re-frame/dispatch [:system-theme-mode-changed %]))
    (when (theme/is-dark-mode)
+     (quo-theme/set-theme :dark)
      (colors/set-theme :dark))))

@@ -1,16 +1,15 @@
 (ns status-im.ui.components.tabbar.core
-  (:require
-   [status-im.ui.components.animation :as animation]
-   [status-im.ui.components.reanimated :as reanimated]
-   [status-im.ui.components.tabbar.styles :as tabs.styles]
-   [reagent.core :as reagent]
-   [oops.core :refer [oget]]
-   [status-im.ui.components.react :as react]
-   [status-im.utils.platform :as platform]
-   [status-im.ui.components.icons.vector-icons :as vector-icons]
-   [status-im.ui.components.badge :as badge]
-   [status-im.i18n :as i18n]
-   [re-frame.core :as re-frame]))
+  (:require [oops.core :refer [oget]]
+            [quo.gesture-handler :as gesture-handler]
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.animation :as animation]
+            [status-im.ui.components.badge :as badge]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.tabbar.styles :as tabs.styles]
+            [status-im.utils.platform :as platform]))
 
 (defonce visible-native (animation/create-value 0))
 (defonce last-to-value (atom 1))
@@ -69,7 +68,7 @@
                accessibility-label count-subscription]}]
     (let [count (when count-subscription @(re-frame/subscribe [count-subscription]))]
       [react/view {:style tabs.styles/touchable-container}
-       [reanimated/touchable-without-feedback
+       [gesture-handler/touchable-without-feedback
         {:style               {:height "100%"
                                :width  "100%"}
          :on-press            on-press
