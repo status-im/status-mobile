@@ -5,7 +5,7 @@
 (def default-device-language
   (keyword (.-language rn-dependencies/react-native-languages)))
 
-(def languages [:ar :en :es :es_419 :fil :fr :id :in :it :ko :zh :zh_Hant :zh_TW])
+(def languages [:ar :en :es :es_419 :fil :fr :id :in :it :ko :ru :zh :zh_Hant :zh_TW])
 
 (defonce loaded-languages
   (atom
@@ -23,6 +23,7 @@
       :in         (js/require "status-modules/translations/id.json")
       :it         (js/require "status-modules/translations/it.json")
       :ko         (js/require "status-modules/translations/ko.json")
+      :ru         (js/require "status-modules/translations/ru.json")
       :zh         (js/require "status-modules/translations/zh.json")
       :zh_Hant    (js/require "status-modules/translations/zh_TW.json")
       :zh_TW      (js/require "status-modules/translations/zh_TW.json")})
