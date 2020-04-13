@@ -286,14 +286,7 @@
                                        :font-weight "500"}
                      :number-of-lines 1
                      :ellipsize-mode  :middle}
-         name]
-        [react/text {:style           {:text-align  :center
-                                       :margin-top  4
-                                       :color       colors/gray
-                                       :font-family "monospace"}
-                     :number-of-lines 1
-                     :ellipsize-mode  :middle}
-         (utils.core/truncate-str key-uid 14 true)]]]
+         name]]]
       [pin.views/pin-view
        {:pin                     pin
         :retry-counter           retry-counter
