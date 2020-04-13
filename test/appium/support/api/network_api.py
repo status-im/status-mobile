@@ -22,19 +22,24 @@ class NetworkApi(object):
         self.chat_bot_url = 'http://offsite.chat:8099'
         self.api_key = environ.get('ETHERSCAN_API_KEY')
 
+    def log(self, text: str):
+
+        tests.test_suite_data.current_test.testruns[-1].steps.append(text)
+        logging.info(text)
+
     def get_transactions(self, address: str) -> List[dict]:
         method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc&apikey=%s' % (address, self.api_key)
         try:
             return requests.request('GET', url=method, headers=self.headers).json()['result']
-        except TypeError:
-            print('Check response from etherscan API. Returned values don\'t match expected')
+        except TypeError as e:
+            self.log("Check response from etherscan API. Returned values do not match expected. %s" % e)
 
     def get_token_transactions(self, address: str) -> List[dict]:
         method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc&apikey=%s' % (address, self.api_key)
         try:
             return requests.request('GET', url=method, headers=self.headers).json()['result']
-        except TypeError:
-            print('Check response from etherscan API. Returned values don\'t match expected')
+        except TypeError as e:
+            self.log("Check response from etherscan API. Returned values do not match expected. %s" % e)
 
     def is_transaction_successful(self, transaction_hash: str) -> int:
         method = self.network_url + 'module=transaction&action=getstatus&txhash=%s' % transaction_hash
@@ -75,16 +80,21 @@ class NetworkApi(object):
                         transactions = self.get_token_transactions(address)
                     else:
                         transactions = self.get_transactions(address)
-                except JSONDecodeError:
+                except JSONDecodeError as e:
+                    self.log(str(e))
                     continue
-                logging.info('Looking for a transaction with unique amount %s in list of transactions, address is %s' %
+                self.log('Looking for a transaction with unique amount %s in list of transactions, address is %s' %
                              (amount, address))
-                for transaction in transactions:
-                    if float(int(transaction['value']) / 10 ** decimals) == float(amount):
-                        logging.info(
-                            'Transaction with unique amount %s is found in list of transactions, address is %s' %
-                            (amount, address))
-                        return transaction
+                try:
+                    for transaction in transactions:
+                        if float(int(transaction['value']) / 10 ** decimals) == float(amount):
+                            self.log(
+                                'Transaction with unique amount %s is found in list of transactions, address is %s' %
+                                (amount, address))
+                            return transaction
+                except TypeError as e:
+                    self.log("Failed iterate transactions " + str(e))
+                    continue
 
     def wait_for_confirmation_of_transaction(self, address, amount, confirmations=12, token=False):
         start_time = time.time()
@@ -103,9 +113,9 @@ class NetworkApi(object):
             elif initial_balance == self.get_balance(recipient_address):
                 counter += 10
                 time.sleep(10)
-                logging.info('Waiting %s seconds for funds' % counter)
+                self.log('Waiting %s seconds for funds' % counter)
             else:
-                logging.info('Transaction is received')
+                self.log('Transaction is received')
                 return
 
     def verify_balance_is(self, expected_balance: int, recipient_address: str, errors: list):
@@ -132,9 +142,9 @@ class NetworkApi(object):
                 elif self.get_balance(address) == initial_balance:
                     counter += 10
                     time.sleep(10)
-                    logging.info('Waiting %s seconds for donation' % counter)
+                    self.log('Waiting %s seconds for donation' % counter)
                 else:
-                    logging.info('Got %s for %s' % (response["amount_eth"], address))
+                    self.log('Got %s for %s' % (response["amount_eth"], address))
                     return
 
     def start_chat_bot(self, chat_name: str, messages_number: int, interval: int = 1) -> list:
