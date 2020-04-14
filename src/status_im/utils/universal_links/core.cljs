@@ -183,9 +183,13 @@
   and handles incoming url if the app has been started by clicking on a link"
   []
   (log/debug "universal-links: initializing")
-  (.. react/linking
-      (getInitialURL)
-      (then dispatch-url))
+  ;;NOTE: https://github.com/facebook/react-native/issues/15961
+  ;; workaround for getInitialURL returning null when opening the
+  ;; app from a universal link after closing it with the back button
+  (js/setTimeout #(.. react/linking
+                      (getInitialURL)
+                      (then dispatch-url))
+                 200)
   (.. react/linking
       (addEventListener "url" url-event-listener)))
 
