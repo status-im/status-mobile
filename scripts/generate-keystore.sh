@@ -31,7 +31,7 @@ KEYSTORE_PATH=$(env_var_or_gradle_prop 'KEYSTORE_PATH')
 KEYSTORE_PATH=${KEYSTORE_PATH/#\~/$HOME}
 
 if [[ -e "${KEYSTORE_PATH}" ]]; then
-    echo -e "${YLW}Keystore file already exists:${RST} ${KEYSTORE_PATH}" > /dev/stderr
+    echo -e "${YLW}Keystore file already exists:${RST} ${KEYSTORE_PATH}" >&2
     echo "${KEYSTORE_PATH}"
     exit 0
 fi
@@ -39,7 +39,7 @@ fi
 KEYSTORE_DIR=$(dirname "${KEYSTORE_PATH}")
 [[ -d $KEYSTORE_DIR ]] || mkdir -p $KEYSTORE_DIR
 
-echo -e "${GRN}Generating keystore...${RST}" > /dev/stderr
+echo -e "${GRN}Generating keystore...${RST}" >&2
 
 keytool -genkey -v \
     -keyalg RSA \

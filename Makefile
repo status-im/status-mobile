@@ -48,7 +48,7 @@ export TARGET ?= $(TARGET_OS)
 endif
 
 # Useful for checking if we are on NixOS
-OS_NAME := $(shell awk -F= '/^NAME/{print $2}' /etc/os-release)
+OS_NAME := $(shell [ -f /etc/os-release ] && awk -F= '/^NAME/{print $2}' /etc/os-release)
 
 # Useful for Andoird release builds
 TMP_BUILD_NUMBER := $(shell ./scripts/version/gen_build_no.sh | cut -c1-10)

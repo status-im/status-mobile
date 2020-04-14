@@ -46,14 +46,14 @@ nixOpts+=(
   "--argstr" "secrets-file" "${SECRETS_FILE_PATH}"
 )
 
-if [[ "$OS" =~ Darwin ]]; then
+if [[ "$(uname -s)" =~ Darwin ]]; then
   # Start a watchman instance if not started already and store its socket path.
   # In order to get access to the right versions of watchman and jq,
   # we start an ad-hoc nix-shell that imports the packages from nix/nixpkgs-bootstrap.
   WATCHMAN_SOCKFILE=$(watchman get-sockname --no-pretty | jq -r .sockname)
   nixOpts+=(
-    " --argstr" "watchmanSockPath" "${WATCHMAN_SOCKFILE}"
-    " --option" "extra-sandbox-paths" "${KEYSTORE_PATH} ${SECRETS_FILE_PATH} ${WATCHMAN_SOCKFILE}"
+    "--argstr" "watchmanSockPath" "${WATCHMAN_SOCKFILE}"
+    "--option" "extra-sandbox-paths" "${KEYSTORE_PATH} ${SECRETS_FILE_PATH} ${WATCHMAN_SOCKFILE}"
   )
 else
   nixOpts+=(
