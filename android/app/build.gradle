@@ -313,22 +313,34 @@ dependencies {
     implementation 'com.facebook.fresco:animated-gif:2.0.0'
 }
 
-// Run this once to be able to run the application with BUCK
-// puts all compile dependencies into folder libs for BUCK to use
-
-task hemroidBuild(type: Exec) {
+def getLocalNDKDir = { ->
     def rootDir = project.rootDir
     def localProperties = new File(rootDir, "local.properties")
-
-    def ndkDir = System.env.ANDROID_NDK
-    if (localProperties.exists()) {
-        Properties properties = new Properties()
-        localProperties.withInputStream { instr ->
-            properties.load(instr)
-        }
-        ndkDir = properties.getProperty('ndk.dir')
+    if (!localProperties.exists()) {
+        return null
     }
-    executable "$ndkDir/ndk-build"
+    Properties properties = new Properties()
+    localProperties.withInputStream { instr ->
+        properties.load(instr)
+    }
+    return properties.getProperty('ndk.dir')
+}
+
+// Run this once to be able to run the application with BUCK
+// puts all compile dependencies into folder libs for BUCK to use
+task hemroidBuild(type: Exec) {
+    def localNdkDir = getLocalNDKDir()
+    def ndkDir = System.env.ANDROID_NDK
+    if (localNdkDir != null) {
+        ndkDir = localNdkDir 
+    }
+
+    def execPath = "$ndkDir/ndk-build"
+    def exec = new File(execPath)
+    if (!exec.exists()) {
+        throw new GradleException("No ndk-build binary found!")
+    }
+    executable execPath
 }
 
 preBuild.dependsOn hemroidBuild
