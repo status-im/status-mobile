@@ -301,7 +301,9 @@
   (let [{:keys [result error]} (types/json->clj result)
         on-result (get-in db [:signing/tx :on-result])]
     (if error
-      {:db (update db :signing/sign assoc :error (i18n/label :t/wrong-password) :in-progress? false)}
+      {:db (update db :signing/sign assoc
+                   :error (if (= 5 (:code error)) (i18n/label :t/wrong-password) (:message error))
+                   :in-progress? false)}
       (fx/merge cofx
                 {:db (dissoc db :signing/tx :signing/in-progress? :signing/sign)}
                 (check-queue)
