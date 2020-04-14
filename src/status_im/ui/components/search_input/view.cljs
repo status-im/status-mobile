@@ -25,7 +25,7 @@
                            :default-value   search-filter
                            :auto-focus      auto-focus
                            :auto-correct    false
-                           :auto-capitalize false
+                           :auto-capitalize :none
                            :on-focus        #(do
                                                (when on-focus
                                                  (on-focus search-filter))
