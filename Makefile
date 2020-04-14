@@ -16,7 +16,7 @@ RESET  := $(shell tput -Txterm sgr0)
 HELP_FUN = \
 		   %help; \
 		   while(<>) { push @{$$help{$$2 // 'options'}}, [$$1, $$3] if /^([a-zA-Z\-]+)\s*:.*\#\#(?:@([a-zA-Z\-]+))?\s(.*)$$/ }; \
-		   print "Usage: make [target]\n\n"; \
+		   print "Usage: make [target]\n\nSee STARTING_GUIDE.md for more info.\n\n"; \
 		   for (sort keys %help) { \
 			   print "${WHITE}$$_:${RESET}\n"; \
 			   for (@{$$help{$$_}}) { \
@@ -230,7 +230,7 @@ jsbundle-desktop: ##@jsbundle Compile JavaScript and Clojure into index.desktop.
 	node prepare-modules.js
 
 #--------------
-# REPL
+# Clojure REPL
 # -------------
 
 _watch-%: ##@watch Start development for device
@@ -239,22 +239,18 @@ _watch-%: ##@watch Start development for device
 	clj -R:dev build.clj watch --platform $(SYSTEM) --$(SYSTEM)-device $(DEVICE)
 
 watch-ios-real: export TARGET := ios
-watch-ios-real: _watch-ios-real ##@watch Start development for iOS real device
-
+watch-ios-real: _watch-ios-real
 watch-ios-simulator: export TARGET := ios
-watch-ios-simulator: _watch-ios-simulator ##@watch Start development for iOS simulator
-
+watch-ios-simulator: _watch-ios-simulator
 watch-android-real: export TARGET := android
-watch-android-real: _watch-android-real ##@watch Start development for Android real device
-
+watch-android-real: _watch-android-real
 watch-android-avd: export TARGET := android
-watch-android-avd: _watch-android-avd ##@watch Start development for Android AVD
-
+watch-android-avd: _watch-android-avd
 watch-android-genymotion: export TARGET ?= android
-watch-android-genymotion: _watch-android-genymotion ##@watch Start development for Android Genymotion
+watch-android-genymotion: _watch-android-genymotion
 
 watch-desktop: export TARGET ?= $(HOST_OS)
-watch-desktop: ##@watch Start development for Desktop
+watch-desktop:
 	clj -R:dev build.clj watch --platform desktop
 
 desktop-server: export TARGET ?= $(HOST_OS)
@@ -262,15 +258,15 @@ desktop-server:
 	node ubuntu-server.js
 
 #--------------
-# Run
-# -------------
+# Run React-Native app
+#--------------
 _run-%:
 	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
 	npx react-native run-$(SYSTEM)
 
 # TODO: Migrate this to a Nix recipe, much the same way as nix/mobile/android/targets/release-android.nix
 run-android: export TARGET := android
-run-android: ##@run Run Android build
+run-android: ##@run Build Android APK and start it on the device
 	npx react-native run-android --appIdSuffix debug
 
 run-desktop: export TARGET ?= $(HOST_OS)
@@ -278,7 +274,7 @@ run-desktop: _run-desktop ##@run Run Desktop build
 
 SIMULATOR=
 run-ios: export TARGET := ios
-run-ios: ##@run Run iOS build
+run-ios: ##@run Build iOS app and start it in a simulator/device
 ifneq ("$(SIMULATOR)", "")
 	npx react-native run-ios --simulator="$(SIMULATOR)"
 else
@@ -377,13 +373,19 @@ _startdev-%:
 
 startdev-android-avd: export TARGET = android
 startdev-android-avd: _startdev-android-avd
+startdev-android-avd:  ##@startdev Compile Clojure for Android AVD
 startdev-android-genymotion: export TARGET = android
 startdev-android-genymotion: _startdev-android-genymotion
+startdev-android-genymotion: ##@startdev Compile Clojure for Genymotion
 startdev-android-real: export TARGET = android
 startdev-android-real: _startdev-android-real
-startdev-desktop: export TARGET ?= $(HOST_OS)
-startdev-desktop: _startdev-desktop
+startdev-android-real: ##@startdev Compile Clojure for Android real device
 startdev-ios-real: export TARGET = ios
 startdev-ios-real: _startdev-ios-real
+startdev-ios-real: ##@startdev Compile Clojure for iOS device
 startdev-ios-simulator: export TARGET = ios
 startdev-ios-simulator: _startdev-ios-simulator
+startdev-ios-simulator: ##@startdev Compile Clojure for iOS simulator
+
+startdev-desktop: export TARGET ?= $(HOST_OS)
+startdev-desktop: _startdev-desktop

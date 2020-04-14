@@ -17,6 +17,17 @@ make release-ios
 ```
 For more `make` targets run `make help`.
 
+# Development
+
+There are three steps necessary to start development, in this case for Android:
+
+1. `make startdev-android-real` - Compiles Clojure into JavaScript for real device
+2. `make react-native-android` - Watches JavaScript code and updates the App
+3. `make run-android` - Builds the Android app and starts it on the device
+
+The first two will continue watching for changes and keep re-building the app.
+The last one will exit once the app is up and ready.
+
 # Manual Steps
 
 There are a few manual steps you might want to do in order to start contributing.
