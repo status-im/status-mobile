@@ -561,38 +561,40 @@
     content]])
 
 (defn- welcome []
-  [react/view {:style {:flex 1}}
-   [react/scroll-view {:content-container-style {:align-items :center}}
-    [react/image {:source (resources/get-theme-image :ens-header)
-                  :style  {:margin-top 32}}]
-    [react/text {:style {:margin-top 32 :margin-bottom 8 :typography :header}}
-     (i18n/label :t/ens-get-name)]
-    [react/text {:style {:margin-top 8 :margin-bottom 24 :color colors/gray :font-size 15 :margin-horizontal 16
-                         :text-align :center}}
-     (i18n/label :t/ens-welcome-hints)]
-    [welcome-item {:icon-label "1" :title (i18n/label :t/ens-welcome-point-1-title)}
-     [react/view {:flex-direction :row}
-      [react/nested-text
-       {:style {:color colors/gray}}
-       (i18n/label :t/ens-welcome-point-1)
-       [{:style {:text-decoration-line :underline :color colors/black}}
-        (stateofus/subdomain "myname")]]]]
-    [welcome-item {:icon-label "2" :title (i18n/label :t/ens-welcome-point-2-title)}
-     [react/text {:style {:color colors/gray}}
-      (i18n/label :t/ens-welcome-point-2)]]
-    [welcome-item {:icon-label "3" :title (i18n/label :t/ens-welcome-point-3-title)}
-     [react/text {:style {:color colors/gray}}
-      (i18n/label :t/ens-welcome-point-3)]]
-    [welcome-item {:icon-label "@" :title (i18n/label :t/ens-welcome-point-4-title)}
-     [react/text {:style {:color colors/gray}}
-      (i18n/label :t/ens-welcome-point-4)]]
-    [react/text {:style {:margin-top 16 :text-align :center :color colors/gray :typography :caption :padding-bottom 96}}
-     (i18n/label :t/ens-powered-by)]]
-   [react/view {:align-items :center :background-color colors/white
-                :position :absolute :left 0 :right 0 :bottom 0
-                :border-top-width 1 :border-top-color colors/gray-lighter}
-    [button {:on-press #(re-frame/dispatch [::ens/get-started-pressed])
-             :label    (i18n/label :t/get-started)}]]])
+  (let [name (:name @(re-frame/subscribe [:multiaccount]))]
+    [react/view {:style {:flex 1}}
+     [react/scroll-view {:content-container-style {:align-items :center}}
+      [react/image {:source (resources/get-theme-image :ens-header)
+                    :style  {:margin-top 32}}]
+      [react/text {:style {:margin-top 32 :margin-bottom 8 :typography :header}}
+       (i18n/label :t/ens-get-name)]
+      [react/text {:style {:margin-top 8 :margin-bottom 24 :color colors/gray :font-size 15 :margin-horizontal 16
+                           :text-align :center}}
+       (i18n/label :t/ens-welcome-hints)]
+      [welcome-item {:icon-label "1" :title (i18n/label :t/ens-welcome-point-customize-title)}
+       [react/view {:flex-direction :row}
+        [react/text
+         {:style {:color colors/gray}}
+         (i18n/label :t/ens-welcome-point-customize {:name name})]]]
+      [welcome-item {:icon-label "2" :title (i18n/label :t/ens-welcome-point-simplify-title)}
+       [react/text {:style {:color colors/gray}}
+        (i18n/label :t/ens-welcome-point-simplify)]]
+      [welcome-item {:icon-label "3" :title (i18n/label :t/ens-welcome-point-receive-title)}
+       [react/text {:style {:color colors/gray}}
+        (i18n/label :t/ens-welcome-point-receive)]]
+      [welcome-item {:icon-label "4" :title (i18n/label :t/ens-welcome-point-register-title)}
+       [react/text {:style {:color colors/gray}}
+        (i18n/label :t/ens-welcome-point-register)]]
+      [welcome-item {:icon-label "@" :title (i18n/label :t/ens-welcome-point-verify-title)}
+       [react/text {:style {:color colors/gray}}
+        (i18n/label :t/ens-welcome-point-verify)]]
+      [react/text {:style {:margin-top 16 :text-align :center :color colors/gray :typography :caption :padding-bottom 96}}
+       (i18n/label :t/ens-powered-by)]]
+     [react/view {:align-items :center :background-color colors/white
+                  :position :absolute :left 0 :right 0 :bottom 0
+                  :border-top-width 1 :border-top-color colors/gray-lighter}
+      [button {:on-press #(re-frame/dispatch [::ens/get-started-pressed])
+               :label    (i18n/label :t/get-started)}]]]))
 
 (defn- name-item [{:keys [name action]}]
   (let [stateofus-username (stateofus/username name)

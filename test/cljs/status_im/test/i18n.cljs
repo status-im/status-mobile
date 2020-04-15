@@ -391,14 +391,16 @@
     :ens-want-custom-domain
     :ens-want-domain
     :ens-welcome-hints
-    :ens-welcome-point-1
-    :ens-welcome-point-1-title
-    :ens-welcome-point-2
-    :ens-welcome-point-2-title
-    :ens-welcome-point-3
-    :ens-welcome-point-3-title
-    :ens-welcome-point-4
-    :ens-welcome-point-4-title
+    :ens-welcome-point-customize
+    :ens-welcome-point-customize-title
+    :ens-welcome-point-simplify
+    :ens-welcome-point-simplify-title
+    :ens-welcome-point-receive
+    :ens-welcome-point-receive-title
+    :ens-welcome-point-register
+    :ens-welcome-point-register-title
+    :ens-welcome-point-verify
+    :ens-welcome-point-verify-title
     :ens-your-username
     :ens-your-usernames
     :ens-your-your-name
