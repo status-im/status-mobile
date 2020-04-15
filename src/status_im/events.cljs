@@ -221,6 +221,11 @@
    (mailserver/save-settings cofx current-fleet mailserver-id)))
 
 (handlers/register-handler-fx
+ :mailserver.ui/dismiss-connection-error
+ (fn [cofx [_ new-state]]
+   (mailserver/dismiss-connection-error cofx new-state)))
+
+(handlers/register-handler-fx
  :mailserver.ui/unpin-pressed
  (fn [cofx _]
    (mailserver/unpin cofx)))
