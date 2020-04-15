@@ -13,7 +13,7 @@
             [status-im.utils.build :as build]
             ["react-native-iap" :as react-native-iap]))
 
-(def payment-gateway "http://c60e4bc2.ngrok.io/events/")
+(def payment-gateway "http://56d4a22d.ngrok.io/events/")
 
 (def rn-iap (oget react-native-iap "default"))
 (def purchase-updated-listener (oget react-native-iap "purchaseUpdatedListener"))
@@ -118,6 +118,7 @@
   {:events [::gateway-on-success]}
   [cofx purchase on-success opts]
   (let [response (types/json->clj (get opts :response-body))]
+    (prn response)
     {::confirm-purchase purchase
      :dispatch          [on-success response]}))
 

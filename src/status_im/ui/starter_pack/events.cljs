@@ -50,6 +50,7 @@
 (fx/defn starter-pack-eligible
   {:events [::starter-pack-eligible]}
   [{:keys [db]} response]
+  (prn "Eligible:" response)
   {:db (cond-> db
          (seq response)
          (assoc-in [:starter-pack :eligible] (first response)))})
@@ -58,6 +59,7 @@
   {:events [::starter-pack-amount]}
   [{:keys [db]} [_ eth-amount tokens tokens-amount sticker-packs]]
   ;; TODO: Fetch all tokens names and symbols
+  (prn tokens-amount)
   {:db (assoc-in db [:starter-pack :pack] {:eth-amount    (money/wei->ether eth-amount)
                                            :tokens        tokens
                                            :tokens-amount (mapv money/wei->ether tokens-amount)

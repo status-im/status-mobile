@@ -18,7 +18,7 @@
                            :height       20
                            :margin-right 6}}]
     [react/text {:style {:font-size 13}} name]]
-   [react/text {:style {:font-size 13}} value]])
+   [react/text {:style {:font-size 13}} (str value)]])
 
 (defn success-popover []
   (fn []
