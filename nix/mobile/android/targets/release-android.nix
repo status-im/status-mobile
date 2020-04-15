@@ -120,6 +120,9 @@ in stdenv.mkDerivation {
     ${androidEnvShellHook}
     ${concatStrings (catAttrs "shellHook" [ mavenAndNpmDeps.shell status-go.shell ])}
 
+    # fix permissions so gradle can create directories
+    chmod -R +w $sourceRoot/android
+
     pushd $sourceRoot/android
     ${adhocEnvVars} ./gradlew -PversionCode=${assert build-number != ""; build-number} assemble${capitalizedBuildType} || exit
     popd > /dev/null
