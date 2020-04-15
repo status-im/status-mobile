@@ -13,14 +13,12 @@ class SendRequestButton(BaseButton):
 
 
 class ChooseRecipientButton(BaseButton):
-
     def __init__(self, driver):
         super(ChooseRecipientButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('choose-recipient-button')
 
 
 class TransactionHistoryButton(BaseButton):
-
     def __init__(self, driver):
         super(TransactionHistoryButton, self).__init__(driver)
         self.locator = self.Locator.text_selector("History")
@@ -35,6 +33,16 @@ class ChooseFromContactsButton(BaseButton):
         super(ChooseFromContactsButton, self).__init__(driver)
         self.locator = self.Locator.text_selector("Choose From Contacts")
 
+
+class ScanQRButton(BaseButton):
+    def __init__(self, driver):
+        super(ScanQRButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("accounts-qr-code")
+
+class EnterQRcodeEditBox(BaseEditBox):
+    def __init__(self, driver):
+        super(EnterQRcodeEditBox, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Type a message...')
 
 class AssetText(BaseText):
     def __init__(self, driver, asset):
@@ -103,7 +111,7 @@ class SetUpButton(BaseButton):
 class SetCurrencyButton(BaseButton):
     def __init__(self, driver):
         super(SetCurrencyButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector("Set default currency")
+        self.locator = self.Locator.text_selector("Set currency")
 
 
 class SignInPhraseText(BaseText):
@@ -409,6 +417,8 @@ class WalletView(BaseView):
         self.account_color_button = AccountColorButton(self.driver)
         self.add_account_generate_account_button = AddAccountGenerateAnAccountButton(self.driver)
         self.status_account_total_usd_value = StatusAccountTotalValueText(self.driver)
+        self.scan_qr_button = ScanQRButton(self.driver)
+        self.enter_qr_edit_box = EnterQRcodeEditBox(self.driver)
 
         # individual account settings
         self.account_settings_button = AccountSettingsButton(self.driver)

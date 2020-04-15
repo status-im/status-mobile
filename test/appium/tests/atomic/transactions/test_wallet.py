@@ -5,6 +5,7 @@ from support.utilities import get_merged_txs_list
 from tests import marks, unique_password, common_password
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, wallet_users, transaction_recipients
+from views.send_transaction_view import SendTransactionView
 from views.sign_in_view import SignInView
 
 
@@ -520,5 +521,104 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             self.driver.fail('Account name was not changed')
         if not account_button.color_matches('multi_account_color.png'):
             self.driver.fail('Account color does not match expected')
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6282)
+    @marks.medium
+    def test_can_scan_eip_681_links(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(transaction_senders['C']['passphrase'])
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        send_transaction_view = SendTransactionView(self.driver)
+        url_data = {
+            'ens_for_receiver': {
+                'url': 'ethereum:0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=nastya.stateofus.eth&uint256=1e-1',
+                'data':{
+                    'asset': 'STT',
+                    'amount': '0.1',
+                    'address': '0x58d8…F2ff',
+                },
+            },
+            'gas_settings': {
+                'url': 'ethereum:0x3d597789ea16054a084ac84ce87f50df9198f415@3?value=1e16&gasPrice=1000000000&gasLimit=100000',
+                'data': {
+                    'amount': '0.01',
+                    'asset': 'ETHro',
+                    'address': '0x3D59…F415',
+                    'gas_limit': '100000',
+                    'gas_price': '1',
+                },
+            },
+            'payment_link': {
+                'url': 'ethereum:pay-0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=0x3d597789ea16054a084ac84ce87f50df9198f415&uint256=1e1',
+                'data': {
+                    'amount': '10',
+                    'asset': 'STT',
+                    'address': '0x3D59…F415',
+                },
+            },
+            'validation_amount_too_presize': {
+                'url': 'ethereum:0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA&uint256=1e-19',
+                'data': {
+                    'amount': '1e-19',
+                    'asset': 'STT',
+                    'address': '0x1018…82FA',
+
+                },
+                'send_transaction_validation_error': 'Amount is too precise',
+            },
+            'validation_amount_too_big': {
+                'url': 'ethereum:0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA@3?value=1e25',
+                'data': {
+                    'amount': '10000000',
+                    'asset': 'ETHro',
+                    'address': '0x1018…82FA',
+
+                },
+                'send_transaction_validation_error': 'Insufficient funds',
+            },
+            'validation_wrong_chain_id': {
+                'url': 'ethereum:0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA?value=1e17',
+                'error': 'Network does not match',
+                'data': {
+                    'amount': '0.1',
+                    'asset': 'ETHro',
+                    'address': '0x1018…82FA',
+                },
+            },
+            'validation_wrong_address': {
+                'url': 'ethereum:0x744d70fdbe2ba4cf95131626614a1763df805b9e@3/transfer?address=blablabla&uint256=1e10',
+                'error': 'Invalid address',
+            },
+        }
+
+        for key in url_data:
+            wallet_view.just_fyi('Checking %s case' % key)
+            wallet_view.scan_qr_button.click()
+            if wallet_view.allow_button.is_element_displayed():
+                wallet_view.allow_button.click()
+            wallet_view.enter_qr_edit_box.set_value(url_data[key]['url'])
+            wallet_view.ok_button.click()
+            if url_data[key].get('error'):
+                if not wallet_view.element_by_text_part(url_data[key]['error']).is_element_displayed():
+                    self.errors.append('Expected error %s is not shown' % url_data[key]['error'])
+                wallet_view.ok_button.click()
+            if url_data[key].get('data'):
+                if 'gas' in key:
+                    actual_data = send_transaction_view.get_values_from_send_transaction_bottom_sheet(gas=True)
+                else:
+                    actual_data = send_transaction_view.get_values_from_send_transaction_bottom_sheet()
+                difference_in_data = url_data[key]['data'].items() - actual_data.items()
+                if difference_in_data:
+                    self.errors.append(
+                        'In %s case returned value does not match expected in %s' % (key, repr(difference_in_data)))
+                if url_data[key].get('send_transaction_validation_error'):
+                    error = url_data[key]['send_transaction_validation_error']
+                    if not wallet_view.element_by_text_part(error).is_element_displayed():
+                        self.errors.append(
+                            'Expected error %s is not shown' % error)
+                send_transaction_view.cancel_button.click()
 
         self.errors.verify_no_errors()

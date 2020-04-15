@@ -252,18 +252,22 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
         chat_view = home.add_contact(basic_user["public_key"], add_in_contacts=False)
+
+        chat_view.just_fyi('Block user not added as contact from chat view')
         chat_view.chat_options.click()
         chat_view.view_profile_button.click()
         chat_view.block_contact()
+
+        chat_view.just_fyi('Unblock user not added as contact from chat view')
         profile = sign_in.profile_button.click()
         profile.contacts_button.click()
         profile.blocked_users_button.click()
         profile.element_by_text(basic_user["username"]).click()
         chat_view.unblock_contact_button.click()
-        chat_view.back_button.click()
-        home.plus_button.click()
-        home.start_new_chat_button.click()
-        if home.element_by_text(basic_user["username"]).is_element_displayed():
+
+        profile.just_fyi('Navigating to contact list and check that user is not in list')
+        profile.back_button.click(2)
+        if profile.element_by_text(basic_user["username"]).is_element_displayed():
             self.driver.fail("Unblocked user not added previously in contact list added in contacts!")
 
     @marks.testrail_id(5496)
@@ -319,7 +323,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_2.send_message_button.click()
         chat_2.driver.quit()
 
-        device_1.just_fyi('tap on userpic and check redirect to user profile')
+        device_1.just_fyi('Tap on userpic and check redirect to user profile')
         chat_element = chat_1.chat_element_by_text(message)
         chat_element.find_element()
         username = chat_element.username.text
@@ -332,17 +336,18 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             if not element.scroll_to_element():
                 self.errors.append('%s is not visible' % element.name)
 
-        device_1.just_fyi('add user to contacts, check contact list in Profile and below "Start new chat"')
+        device_1.just_fyi('Add user to contacts, check contact list in Profile')
         chat_1.add_to_contacts.click()
         if not chat_1.remove_from_contacts.is_element_displayed():
             self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
+        chat_1.get_back_to_home_view()
         profile_1 = chat_1.profile_button.click()
         userprofile = profile_1.open_contact_from_profile(username)
         if not userprofile.remove_from_contacts.is_element_displayed():
             self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
+        profile_1.get_back_to_home_view()
 
-        profile_1.home_button.click()
-        chat_1.get_back_to_home_view()
+        device_1.just_fyi('Check that user is added to contacts below "Start new chat" and you redirected to 1-1 on tap')
         home_1.plus_button.click()
         home_1.start_new_chat_button.click()
         if not home_1.element_by_text(username).is_element_displayed():
@@ -353,15 +358,15 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         if chat_1.add_to_contacts.is_element_displayed():
             self.errors.append('"Add to contacts" button is shown in 1-1 after adding user to contacts from profile')
 
-        device_1.just_fyi('remove user from contacts')
+        device_1.just_fyi('Remove user from contacts')
         chat_1.profile_button.click()
-        profile_1.element_by_text(username).click()
+        userprofile = profile_1.open_contact_from_profile(username)
         userprofile.remove_from_contacts.click()
         if userprofile.remove_from_contacts.is_element_displayed():
             self.errors.append("'Remove from contacts' is not changed to 'Add to contacts'")
+
+        device_1.just_fyi('Check that user is removed from contact list in profile')
         userprofile.back_button.click()
-        # TODO: next line is added temporary to avoid navigation issue #7437 - should be deleted after fix
-        home_1.profile_button.click()
         if profile_1.element_by_text(username).is_element_displayed():
             self.errors.append('List of contacts in profile contains removed user')
         profile_1.home_button.click()

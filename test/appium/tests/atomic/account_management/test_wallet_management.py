@@ -17,14 +17,18 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.recover_access(transaction_senders['A']['passphrase'])
         wallet = sign_in.wallet_button.click()
-        texts = ['This is your signing phrase', 'These three words prove that a transaction is safe.',
-                 "You should see these words before signing each transaction. If you don't, cancel and sign out."]
+        texts = ['This is your signing phrase',
+                 'You should see these 3 words before signing each transaction',
+                 'If you see a different combination, cancel the transaction and sign out']
+        wallet.just_fyi('Check tests in set up wallet popup')
         for text in texts:
             if not wallet.element_by_text_part(text).is_element_displayed():
                 self.errors.append("'%s' text is not displayed" % text)
         phrase = wallet.sign_in_phrase.list
         if len(phrase) != 3:
             self.errors.append('Transaction phrase length is %s' % len(phrase))
+
+        wallet.just_fyi('Check popup will reappear if tap on "Remind me later"')
         wallet.remind_me_later_button.click()
         wallet.accounts_status_account.click()
         send_transaction = wallet.send_transaction_button.click()

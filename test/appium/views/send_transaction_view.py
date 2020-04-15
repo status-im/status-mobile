@@ -101,6 +101,16 @@ class SelectAssetButton(BaseButton):
         super(SelectAssetButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('choose-asset-button')
 
+class AssetText(BaseText):
+    def __init__(self, driver):
+        super(AssetText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="choose-asset-button"]//android.widget.TextView')
+
+class RecipientText(BaseText):
+    def __init__(self, driver):
+        super(RecipientText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="choose-recipient-button"]//android.widget.TextView')
+
 
 class ErrorDialog(BaseView):
     def __init__(self, driver):
@@ -267,6 +277,8 @@ class SendTransactionView(BaseView):
         self.got_it_button = GotItButton(self.driver)
 
         self.select_asset_button = SelectAssetButton(self.driver)
+        self.asset_text = AssetText(self.driver)
+        self.recipient_text = RecipientText(self.driver)
 
         self.error_dialog = ErrorDialog(self.driver)
 
@@ -308,3 +320,16 @@ class SendTransactionView(BaseView):
     def get_account_in_select_account_bottom_sheet_button(self, account_name):
         return AccountNameInSelectAccountBottomSheet(self.driver, account_name)
 
+    def get_values_from_send_transaction_bottom_sheet(self, gas=False):
+        data = {
+            'amount': self.amount_edit_box.text,
+            'asset': self.asset_text.text,
+            'address':  self.recipient_text.text
+        }
+        if gas:
+            self.sign_transaction_button.click_until_presence_of_element(self.sign_with_password)
+            self.network_fee_button.click_until_presence_of_element(self.gas_limit_input)
+            data['gas_limit'] = self.gas_limit_input.text
+            data['gas_price'] = self.gas_price_input.text
+            self.cancel_button.click()
+        return data
