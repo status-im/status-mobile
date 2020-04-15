@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.qr-scanner.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
+            [clojure.string :as string]
             [status-im.i18n :as i18n]
             [status-im.ui.components.camera :as camera]
             [status-im.ui.components.react :as react]
@@ -42,7 +43,7 @@
          :on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-cancel opts])}]
        [button/button
         {:label    "OK"
-         :on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success opts @text-value])}]]]]))
+         :on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success opts (when-let [text @text-value] (string/trim text))])}]]]]))
 
 (defn corner [border1 border2 corner]
   [react/view (assoc {:border-color colors/white-persist :width 60 :height 60} border1 5 border2 5 corner 32)])

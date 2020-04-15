@@ -1,6 +1,7 @@
 (ns status-im.ui.components.camera
   (:require [goog.object :as object]
             [reagent.core :as reagent]
+            [clojure.string :as string]
             [clojure.walk :as walk]
             [status-im.react-native.js-dependencies :as js-dependencies]
             [status-im.utils.platform :as platform]))
@@ -34,4 +35,5 @@
   (reagent/create-element default-camera (clj->js (merge {:inverted true} props))))
 
 (defn get-qr-code-data [code]
-  (.-data code))
+  (when-let [data (.-data code)]
+    (string/trim data)))
