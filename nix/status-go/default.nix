@@ -1,4 +1,4 @@
-{ config, stdenv, callPackage, mkShell, mergeSh, buildGoPackage, go,
+{ config, stdenv, callPackage, mkShell, mergeSh,
   fetchFromGitHub, mkFilter, openjdk, androidPkgs, xcodeWrapper }:
 
 let
@@ -10,10 +10,10 @@ let
   envFlags = callPackage ../tools/envParser.nix { };
   enableNimbus = (attrByPath ["STATUS_GO_ENABLE_NIMBUS"] "0" envFlags) != "0";
   utils = callPackage ./utils.nix { inherit xcodeWrapper; };
-  gomobile = callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit xcodeWrapper utils buildGoPackage; };
+  gomobile = callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit xcodeWrapper utils; };
   nimbus = if enableNimbus then callPackage ./nimbus { } else { wrappers-android = { }; };
-  buildStatusGoDesktopLib = callPackage ./build-desktop-status-go.nix { inherit buildGoPackage go xcodeWrapper utils; };
-  buildStatusGoMobileLib = callPackage ./build-mobile-status-go.nix { inherit buildGoPackage go gomobile xcodeWrapper utils androidPkgs; };
+  buildStatusGoDesktopLib = callPackage ./build-desktop-status-go.nix { inherit xcodeWrapper utils; };
+  buildStatusGoMobileLib = callPackage ./build-mobile-status-go.nix { inherit gomobile xcodeWrapper utils androidPkgs; };
   srcData =
     # If config.status-im.status-go.src-override is defined, instruct Nix to use that path to build status-go
     if (attrByPath ["status-im" "status-go" "src-override"] "" config) != "" then rec {

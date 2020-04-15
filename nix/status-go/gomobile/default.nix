@@ -1,6 +1,5 @@
-{ stdenv, callPackage, utils, fetchgit,
-  buildGoPackage, glibc, ncurses5, zlib, makeWrapper, patchelf,
-  platform-tools, xcodeWrapper
+{ stdenv, callPackage, utils, fetchgit, buildGoPackage,
+  ncurses5, zlib, makeWrapper, patchelf, platform-tools, xcodeWrapper
 }:
 
 let
@@ -8,12 +7,13 @@ let
   inherit (stdenv.lib) optional optionalString strings;
 in buildGoPackage rec {
   pname = "gomobile";
-  version = "20190719-${strings.substring 0 7 rev}";
-  rev = "d2bd2a29d028cb94031e5e81788b19b371d00eb8";
-  sha256 = "1nv6vvhnjr01nx9y06q46ww87dppdwpbqrlsfg1xf2587wxl8xiv";
+  version = "20200329-${strings.substring 0 7 rev}";
+  rev = "4c31acba000778d337c0e4f32091cc923b3363d2";
+  sha256 = "0k42pn6fq886k9hn85wbgg4h4y1myj7niw0746sn50zfbrmy3s2c";
 
   goPackagePath = "golang.org/x/mobile";
   subPackages = [ "bind" "cmd/gobind" "cmd/gomobile" ];
+  goDeps = ./deps.nix;
 
   buildInputs = [ makeWrapper ]
     ++ optional isDarwin xcodeWrapper;
@@ -67,6 +67,7 @@ in buildGoPackage rec {
 
   src = fetchgit {
     inherit rev sha256;
+    name = "gomobile";
     url = "https://go.googlesource.com/mobile";
   };
 

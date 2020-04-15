@@ -1,8 +1,8 @@
-{ config, lib, callPackage, mkShell, mergeSh, androidenv, flock, lsof, openjdk,
+{ config, lib, callPackage, mkShell, mergeSh, androidenv, flock, lsof, openjdk, gradle_5,
   status-go, localMavenRepoBuilder, projectNodePackage }:
 
 let
-  gradle = callPackage ./gradle.nix { };
+  gradle = gradle_5; # Currently 5.6.4
   androidEnv = callPackage ./android-env.nix { };
   leinProjectDeps = import ../../lein/lein-project-deps.nix { };
 

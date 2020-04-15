@@ -3,19 +3,26 @@
 { config ? { } }:
 
 let
-  inherit (import <nixpkgs> { }) fetchFromGitHub;
-  nixpkgsSrc = {
+  inherit (import <nixpkgs> { }) fetchFromGitHub lib;
+
+  # For testing local version of nixpkgs
+  #nixpkgsSrc = (import <nixpkgs> { }).lib.cleanSource "/home/jakubgs/work/nixpkgs";
+
+  nixpkgsSrc = fetchFromGitHub {
     name = "nixpkgs-source";
     owner = "status-im";
     repo = "nixpkgs";
-    rev = "6b866d0e1aa66962a63fceb99210276696e5cccc";
-    sha256 = "0507cbrvp7m36z86kbgh617cc96j8jk74kvjflxsjz2f196z070p";
+    rev = "6dacca5eb43a8bfb02fb09331df607d4465a28e9";
+    sha256 = "0whwzll9lvrq4gg5j838skg7fqpvb55w4z7y44pzib32k613y2qn";
     # To get the compressed Nix sha256, use:
     # nix-prefetch-url --unpack https://github.com/${ORG}/nixpkgs/archive/${REV}.tar.gz
     # The last line will be the hash.
   };
+
   defaultConfig = {
     android_sdk.accept_license = true;
+    # Android Env still needs old OpenSSL
+    permittedInsecurePackages = [ "openssl-1.0.2u" ];
     # Override some package versions
     packageOverrides = pkgs: rec {
       # utilities
@@ -24,15 +31,15 @@ let
       mergeSh = import ./tools/mergeSh.nix { inherit (pkgs.stdenv) lib; };
 
       # custom packages
+      openjdk = pkgs.openjdk8_headless;
       nodejs = pkgs.nodejs-10_x;
       yarn = pkgs.yarn.override { inherit nodejs; };
-      clojure = pkgs.clojure.overrideAttrs (old: rec { version = "1.10.0.411"; });
-      go = pkgs.callPackage ./patched-go { baseGo = pkgs.go_1_13; };
+      go = pkgs.callPackage ./patched-go { baseGo = pkgs.go_1_14; };
 
       # custom builders
-      buildGoPackage = pkgs.buildGoPackage.override { inherit go; };
+      buildGoPackage = pkgs.buildGo114Package.override { inherit go; };
     };
   };
-  pkgs = (import (fetchFromGitHub nixpkgsSrc)) { config = defaultConfig // config; };
+  pkgs = (import nixpkgsSrc) { config = defaultConfig // config; };
 in
   pkgs
