@@ -159,11 +159,12 @@
            (assoc-in [:hardwallet :on-card-read] nil)
            (assoc-in [:hardwallet :last-on-card-read] nil))})
 
-(defn keycard-sheet-content [on-cancel connected?]
+(defn keycard-sheet-content [on-cancel connected? params]
   (fn []
     (keycard-sheet/connect-keycard
      {:on-cancel     #(re-frame/dispatch on-cancel)
       :connected?    connected?
+      :params        params
       :on-connect    ::on-card-connected
       :on-disconnect ::on-card-disconnected})))
 
@@ -185,7 +186,7 @@
               :backdrop-dismiss?  false
               :disable-drag?      true
               :back-button-cancel false
-              :content            (keycard-sheet-content on-cancel connected?)}})
+              :content            (keycard-sheet-content on-cancel connected? nil)}})
      (when on-card-read
        (set-on-card-read on-card-read))
      (set-on-card-connected on-card-connected)

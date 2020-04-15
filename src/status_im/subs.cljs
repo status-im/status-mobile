@@ -169,6 +169,7 @@
 (reg-root-key-sub :ens/names :ens/names)
 
 ;;signing
+(reg-root-key-sub :signing/sign :signing/sign)
 (reg-root-key-sub :signing/tx :signing/tx)
 (reg-root-key-sub :signing/edit-fee :signing/edit-fee)
 
@@ -2030,19 +2031,24 @@
    signing-phrase))
 
 (re-frame/reg-sub
- :signing/sign
- (fn [db]
-   (let [sign (:signing/sign db)]
-     (if (= :pinless (:type sign))
-       (let [message (get-in sign [:formatted-data :message])]
-         (if (and (:amount message) (:currency message))
-           (assoc sign :fiat-amount
-                  (money/fiat-amount-value (:amount message)
-                                           (:currency message)
-                                           :USD (:prices db))
-                  :fiat-currency "USD")
-           sign))
-       sign))))
+ :signing/sign-message
+ :<- [:signing/sign]
+ :<- [:multiaccount/accounts]
+ :<- [:prices]
+ (fn [[sign wallet-accounts prices]]
+   (if (= :pinless (:type sign))
+     (let [message (get-in sign [:formatted-data :message])
+           wallet-acc (some #(when (= (:address %) (:receiver message)) %) wallet-accounts)]
+       (cond-> sign
+         (and (:amount message) (:currency message))
+         (assoc :fiat-amount
+                (money/fiat-amount-value (:amount message)
+                                         (:currency message)
+                                         :USD prices)
+                :fiat-currency "USD")
+         (and (:receiver message) wallet-acc)
+         (assoc :account wallet-acc)))
+     sign)))
 
 (defn- too-precise-amount?
   "Checks if number has any extra digit beyond the allowed number of decimals.
