@@ -5,7 +5,7 @@ let
   inherit (lib) catAttrs concatStrings optional unique;
 
   xcodewrapperArgs = {
-    version = "11.3.1";
+    version = "11.4";
   };
   xcodeWrapper = composeXcodeWrapper xcodewrapperArgs;
   fastlane = callPackage ./fastlane { };
