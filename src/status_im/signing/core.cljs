@@ -157,7 +157,7 @@
          (if (nil? to)
            {:contact {:name (i18n/label :t/new-contract)}}
            (let [eth-value  (when value (money/bignumber value))
-                 eth-amount (when eth-value (money/to-number (money/wei->ether eth-value)))
+                 eth-amount (when eth-value (money/to-fixed (money/wei->ether eth-value)))
                  token      (get-transfer-token db to data)]
              (cond
                (and eth-amount (or (not (zero? eth-amount)) (nil? data)))

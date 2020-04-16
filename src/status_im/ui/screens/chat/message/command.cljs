@@ -174,7 +174,7 @@
       [react/text {:style {:margin-bottom 2
                            :font-size 20
                            :line-height 24}}
-       (str amount " " (name symbol))]
+       (str (money/to-fixed amount) " " (name symbol))]
       [react/text {:style {:font-size 12
                            :line-height 16
                            :color colors/gray}}
