@@ -4,19 +4,16 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.constants :as constants]
             [status-im.waku.core :as waku]
-            [status-im.chat.models.message :as chat.message]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.tokens :as tokens]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.wallet.utils :as wallet.utils]
             [status-im.utils.config :as config]
             [status-im.utils.core :as utils.core]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
-            [status-im.utils.prices :as prices]
             [status-im.utils.utils :as utils.utils]
             [taoensso.timbre :as log]
             [status-im.wallet.db :as wallet.db]
@@ -26,7 +23,8 @@
             [status-im.contact.db :as contact.db]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
+            [status-im.wallet.prices :as prices]))
 
 (defn get-balance
   [{:keys [address on-success on-error]}]
@@ -46,28 +44,8 @@
        :on-success #(re-frame/dispatch [::update-balance-success address %])
        :on-error   #(re-frame/dispatch [::update-balance-fail %])}))))
 
-;; TODO(oskarth): At some point we want to get list of relevant
-;; assets to get prices for
-(re-frame/reg-fx
- :wallet/get-prices
- (fn [{:keys [from to mainnet? success-event error-event chaos-mode?]}]
-   (prices/get-prices from
-                      to
-                      mainnet?
-                      #(re-frame/dispatch [success-event %])
-                      #(re-frame/dispatch [error-event %])
-                      chaos-mode?)))
-
 (defn assoc-error-message [db error-type err]
   (assoc-in db [:wallet :errors error-type] (or err :unknown-error)))
-
-(fx/defn on-update-prices-fail
-  {:events [::update-prices-fail]}
-  [{:keys [db]} err]
-  (log/debug "Unable to get prices: " err)
-  {:db (-> db
-           (assoc-error-message :prices-update :error-unable-to-get-prices)
-           (assoc :prices-loading? false))})
 
 (fx/defn on-update-balance-fail
   {:events [::update-balance-fail]}
@@ -196,14 +174,6 @@
  :wallet/get-tokens-balances
  get-token-balances)
 
-(defn clear-error-message [db error-type]
-  (update-in db [:wallet :errors] dissoc error-type))
-
-(defn tokens-symbols
-  [visible-token-symbols all-tokens]
-  (set/difference (set visible-token-symbols)
-                  (set (map :symbol (tokens/nfts-for all-tokens)))))
-
 (defn rpc->token [tokens]
   (reduce (fn [acc {:keys [address] :as token}]
             (assoc acc
@@ -248,51 +218,18 @@
                                      :tokens    tokens
                                      :assets    assets
                                      :init?     init?}
-        :db                         (clear-error-message db :balance-update)}
+        :db                         (prices/clear-error-message db :balance-update)}
        (when-not assets
          (multiaccounts.update/multiaccount-update
           :wallet/visible-tokens (assoc visible-tokens chain (or (constants/default-visible-tokens chain)
                                                                  #{}))
           {}))))))
 
-(fx/defn update-prices
-  [{{:keys [network-status :wallet/all-tokens]
-     {:keys [address currency chaos-mode? :wallet/visible-tokens]
-      :or {currency :usd}} :multiaccount :as db} :db}]
-  (let [chain       (ethereum/chain-keyword db)
-        mainnet?    (= :mainnet chain)
-        assets      (get visible-tokens chain #{})
-        tokens      (tokens-symbols assets all-tokens)
-        currency    (get constants/currencies currency)]
-    (when (not= network-status :offline)
-      {:wallet/get-prices
-       {:from          (if mainnet?
-                         (conj tokens "ETH")
-                         [(-> (tokens/native-currency chain)
-                              (wallet.utils/exchange-symbol))])
-        :to            [(:code currency)]
-        :mainnet?      mainnet?
-        :success-event ::update-prices-success
-        :error-event   ::update-prices-fail
-        :chaos-mode?   chaos-mode?}
-
-       :db
-       (-> db
-           (clear-error-message :prices-update)
-           (assoc :prices-loading? true))})))
-
 (defn- set-checked [tokens-id token-id checked?]
   (let [tokens-id (or tokens-id #{})]
     (if checked?
       (conj tokens-id token-id)
       (disj tokens-id token-id))))
-
-(fx/defn on-update-prices-success
-  {:events [::update-prices-success]}
-  [{:keys [db]} prices]
-  {:db (assoc db
-              :prices prices
-              :prices-loading? false)})
 
 (fx/defn update-balance
   {:events [::update-balance-success]}
@@ -349,7 +286,7 @@
                                              chain-visible-tokens)
                {})
               (update-tokens-balances balances)
-              (update-prices))))
+              (prices/update-prices))))
 
 (fx/defn add-custom-token
   [{:keys [db] :as cofx} {:keys [symbol]}]

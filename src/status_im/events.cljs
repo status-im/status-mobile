@@ -1081,11 +1081,6 @@
 ;; wallet events
 
 (handlers/register-handler-fx
- :wallet.ui/pull-to-refresh
- (fn [cofx _]
-   (wallet/update-prices cofx)))
-
-(handlers/register-handler-fx
  :wallet.transactions/add-filter
  (fn [{:keys [db]} [_ id]]
    {:db (update-in db [:wallet :filters] conj id)}))
