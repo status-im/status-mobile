@@ -957,6 +957,7 @@
     "type": "Type",
     "transactions-history": "Transaction history",
     "transactions-history-empty": "No transactions in your history yet",
+    "transactions-history-loading": "Loading transaction history. This might take a while.",
     "transactions-sign": "Sign",
     "tribute-required-by-multiaccount": "{{multiaccount-name}} requires SNT to start a chat.",
     "tribute-state-paid": "Tribute paid",

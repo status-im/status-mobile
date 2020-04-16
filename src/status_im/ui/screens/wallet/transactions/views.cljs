@@ -113,7 +113,9 @@
        :render-fn    #(render-transaction %)
        :empty-component
        [react/i18n-text {:style styles/empty-text
-                         :key   :transactions-history-empty}]
+                         :key   (if (or fetching-recent-history? fetching-more-history?)
+                                  :transactions-history-loading
+                                  :transactions-history-empty)}]
        :refreshing   false}]
      (when (and (not fetching-recent-history?)
                 (not all-fetched?))
