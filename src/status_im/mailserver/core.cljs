@@ -529,13 +529,13 @@
              ;; instead of using pos?
              (not (zero? (:peers-count db))))
     (if-let [preferred-mailserver (preferred-mailserver-id db)]
-      (let [error-dismissed (connection-error-dismissed db)
+      (let [error-dismissed? (connection-error-dismissed db)
             current-fleet (node/current-fleet-key db)]
         ;; Error connecting to the mail server
         {:db
          (update-mailserver-state db :error)
          :ui/show-confirmation
-         (when-not error-dismissed
+         (when-not error-dismissed?
            {:title               (i18n/label :t/mailserver-error-title)
             :content             (i18n/label :t/mailserver-error-content)
             :confirm-button-text (i18n/label :t/mailserver-pick-another)
@@ -1179,12 +1179,12 @@
         mailserver-id (:mailserver/current-id db)
         pinned-mailservers (get-in db [:multiaccount :pinned-mailservers])]
     (fx/merge cofx
-      (multiaccounts.update/multiaccount-update
-        :pinned-mailservers (assoc pinned-mailservers
-                              current-fleet
-                              mailserver-id)
-        {})
-      (dismiss-connection-error false))))
+              (multiaccounts.update/multiaccount-update
+               :pinned-mailservers (assoc pinned-mailservers
+                                          current-fleet
+                                          mailserver-id)
+               {})
+              (dismiss-connection-error false))))
 
 (fx/defn load-gaps-fx [{:keys [db] :as cofx} chat-id]
   (when-not (get-in db [:gaps-loaded? chat-id])
