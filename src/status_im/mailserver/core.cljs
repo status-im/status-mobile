@@ -510,23 +510,23 @@
         ;; Error connecting to the mail server
         {:db
          (update-mailserver-state db :error)}
-        (let [error-dismissed (connection-error-dismissed db)]
+        (let [error-dismissed? (connection-error-dismissed db)]
           ;; Only show the error popup if it was not dismissed previously
-          (when-not error-dismissed
+          (when-not error-dismissed?
             {:ui/show-confirmation
              {:title               (i18n/label :t/mailserver-error-title)
               :content             (i18n/label :t/mailserver-error-content)
               :confirm-button-text (i18n/label :t/mailserver-pick-another)
               :on-cancel           #(re-frame/dispatch [:mailserver.ui/dismiss-connection-error true])
               :on-accept           #(re-frame/dispatch
-                                      [:navigate-to (if platform/desktop?
-                                                      :advanced-settings
-                                                      :offline-messaging-settings)])
+                                     [:navigate-to (if platform/desktop?
+                                                     :advanced-settings
+                                                     :offline-messaging-settings)])
               :extra-options       [{:text    (i18n/label :t/mailserver-retry)
                                      :onPress #(re-frame/dispatch
-                                                 [:mailserver.ui/connect-confirmed
-                                                  current-fleet
-                                                  preferred-mailserver])
+                                                [:mailserver.ui/connect-confirmed
+                                                 current-fleet
+                                                 preferred-mailserver])
                                      :style   "default"}]}})))
       (let [{:keys [address]} (fetch-current db)]
         (fx/merge cofx
@@ -1175,12 +1175,12 @@
         mailserver-id (:mailserver/current-id db)
         pinned-mailservers (get-in db [:multiaccount :pinned-mailservers])]
     (fx/merge cofx
-      (multiaccounts.update/multiaccount-update
-        :pinned-mailservers (assoc pinned-mailservers
-                              current-fleet
-                              mailserver-id)
-        {})
-      #(re-frame/dispatch [:mailserver.ui/dismiss-connection-error false]))))
+              (multiaccounts.update/multiaccount-update
+               :pinned-mailservers (assoc pinned-mailservers
+                                          current-fleet
+                                          mailserver-id)
+               {})
+              #(re-frame/dispatch [:mailserver.ui/dismiss-connection-error false]))))
 
 (fx/defn load-gaps-fx [{:keys [db] :as cofx} chat-id]
   (when-not (get-in db [:chats chat-id :gaps-loaded?])
