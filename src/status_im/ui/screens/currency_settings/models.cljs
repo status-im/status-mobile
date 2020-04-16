@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.currency-settings.models
   (:require [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.utils.fx :as fx]
-            [status-im.wallet.core :as wallet]))
+            [status-im.wallet.prices :as prices]))
 
 (defn get-currency [db]
   (get-in db [:multiaccount :currency] :usd))
@@ -12,4 +12,4 @@
             (multiaccounts.update/multiaccount-update
              :currency currency
              {})
-            (wallet/update-prices)))
+            (prices/update-prices)))

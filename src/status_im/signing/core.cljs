@@ -22,7 +22,8 @@
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]
-            [re-frame.core :as re-frame.core]))
+            [re-frame.core :as re-frame.core]
+            [status-im.wallet.prices :as prices]))
 
 (re-frame/reg-fx
  :signing/send-transaction-fx
@@ -206,8 +207,8 @@
                                  :signing/in-progress? true
                                  :signing/queue (drop-last queue)
                                  :signing/tx (prepare-tx updated-db tx))
-        :dismiss-keyboard nil
-        :dispatch         [:wallet.ui/pull-to-refresh]} ;;TODO fix for v.1.2
+        :dismiss-keyboard nil}
+       (prices/update-prices)
        #(when-not gas
           {:db (assoc-in (:db %) [:signing/edit-fee :gas-loading?] true)
            :signing/update-estimated-gas {:obj           tx-obj

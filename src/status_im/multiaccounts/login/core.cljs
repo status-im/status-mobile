@@ -34,7 +34,8 @@
             [status-im.popover.core :as popover]
             [status-im.hardwallet.nfc :as nfc]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.data-store.settings :as data-store.settings]))
+            [status-im.data-store.settings :as data-store.settings]
+            [status-im.wallet.prices :as prices]))
 
 (def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
 (def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
@@ -87,7 +88,7 @@
                (rpc->accounts accounts))}
    (wallet/initialize-tokens custom-tokens)
    (wallet/update-balances nil)
-   (wallet/update-prices)))
+   (prices/update-prices)))
 
 (fx/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
