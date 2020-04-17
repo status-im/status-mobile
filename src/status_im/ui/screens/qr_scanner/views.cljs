@@ -39,10 +39,10 @@
                          :on-change-text #(reset! text-value %)}]
       [react/view {:flex-direction :row}
        [button/button
-        {:label    "Cancel"
+        {:label    (i18n/label :t/cancel)
          :on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-cancel opts])}]
        [button/button
-        {:label    "OK"
+        {:label    (i18n/label :t/ok)
          :on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success opts (when-let [text @text-value] (string/trim text))])}]]]]))
 
 (defn corner [border1 border2 corner]

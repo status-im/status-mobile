@@ -52,9 +52,9 @@
 
 (defn get-label [supported-biometric-auth]
   (case supported-biometric-auth
-    :fingerprint "Fingerprint"
-    :FaceID "Face ID"
-    "Touch ID"))
+    :fingerprint (i18n/label :t/biometric-auth-fingerprint)
+    :FaceID (i18n/label :t/biometric-auth-face-id)
+    (i18n/label :t/biometric-auth-touch-id)))
 
 (defn- get-error-message
   "must return an error message for the user"

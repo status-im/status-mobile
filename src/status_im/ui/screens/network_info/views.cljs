@@ -7,6 +7,7 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.decode :as decode]
             [status-im.ethereum.abi-spec :as abi-spec]
+            [status-im.i18n :as i18n]
             [status-im.utils.datetime :as time]))
 
 (defn get-block [block callback]
@@ -44,7 +45,7 @@
        (if-not @latest-block
          [react/text
           {:on-press on-press}
-          "PRESS TO REFRESH"]
+          (i18n/label :t/network-info-press-to-refresh)]
          [react/text
           {:on-press on-press}
           (let [latest-block-number
@@ -58,25 +59,25 @@
 
                 last-loaded-block-timestamp
                 (decode/uint (:timestamp @last-loaded-block))]
-            (str "Latest block number: "
+            (str (i18n/label :t/network-info-latest-block-number)
                  latest-block-number
                  "\n"
-                 "Latest block time: "
+                 (i18n/label :t/network-info-latest-block-time)
                  (to-date latest-block-timestamp)
                  "\n"
-                 "Last loaded block: "
+                 (i18n/label :t/network-info-last-loaded-block)
                  last-loaded-block-number
                  "\n"
-                 "Last loaded block time: "
+                 (i18n/label :t/network-info-last-loaded-block-time)
                  (to-date last-loaded-block-timestamp)
                  "\n"
-                 "Seconds diff: " (- latest-block-timestamp
-                                     last-loaded-block-timestamp)
+                 (i18n/label :t/network-info-seconds-diff) (- latest-block-timestamp
+                                                              last-loaded-block-timestamp)
                  "\n"
-                 "Blocks diff: " (- latest-block-number
-                                    last-loaded-block-number)
+                 (i18n/label :t/network-info-blocks-diff) (- latest-block-number
+                                                             last-loaded-block-number)
                  "\n"
-                 "PRESS TO REFRESH"))])])))
+                 (i18n/label :t/network-info-press-to-refresh)))])])))
 
 (defn network-info []
   [react/view components.styles/flex

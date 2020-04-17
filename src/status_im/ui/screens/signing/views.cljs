@@ -220,7 +220,7 @@
                                  :padding-horizontal 16
                                  :padding-vertical   10
                                  :margin-vertical    14}}
-      [transaction-data-item {:label "Label"
+      [transaction-data-item {:label (i18n/label :t/label)
                               :data  formatted-data}]]
      [separator]
      [react/view {:style {:margin-horizontal 8
