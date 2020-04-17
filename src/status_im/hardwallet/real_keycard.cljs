@@ -177,12 +177,17 @@
         (catch on-failure))))
 
 (defn sign
-  [{:keys [pairing pin hash on-success on-failure]}]
+  [{:keys [pairing pin path hash on-success on-failure]}]
   (when (and pairing pin hash)
-    (.. status-keycard
-        (sign pairing pin hash)
-        (then on-success)
-        (catch on-failure))))
+    (if path
+      (.. status-keycard
+          (signWithPath pairing pin path hash)
+          (then on-success)
+          (catch on-failure))
+      (.. status-keycard
+          (sign pairing pin hash)
+          (then on-success)
+          (catch on-failure)))))
 
 (defn sign-typed-data
   [{:keys [hash on-success on-failure]}]

@@ -490,6 +490,7 @@ var TopLevel = {
   "showActionSheetWithOptions" : function () {},
   "showPicker" : function () {},
   "sign" : function () {},
+  "signWithPath" : function () {},
   "signGroupMembership" : function () {},
   "signMessage" : function () {},
   "signPinless" : function () {},

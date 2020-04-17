@@ -13,13 +13,21 @@
 (fx/defn sign
   {:events [:hardwallet/sign]}
   [{:keys [db] :as cofx}]
-  (let [card-connected?                   (get-in db [:hardwallet :card-connected?])
-        pairing                           (common/get-pairing db)
-        multiaccount-keycard-instance-uid (get-in db [:multiaccount :keycard-instance-uid])
-        instance-uid                      (get-in db [:hardwallet :application-info :instance-uid])
-        keycard-match?                    (= multiaccount-keycard-instance-uid instance-uid)
-        hash                              (get-in db [:hardwallet :hash])
-        pin                               (common/vector->string (get-in db [:hardwallet :pin :sign]))]
+  (log/debug "FOOOOO sign keke" (:signing/tx db))
+  (let [card-connected?      (get-in db [:hardwallet :card-connected?])
+        pairing              (common/get-pairing db)
+        keycard-instance-uid (get-in db [:multiaccount :keycard-instance-uid])
+        instance-uid         (get-in db [:hardwallet :application-info :instance-uid])
+        keycard-match?       (= keycard-instance-uid instance-uid)
+        hash                 (get-in db [:hardwallet :hash])
+        pin                  (common/vector->string (get-in db [:hardwallet :pin :sign]))
+        from                 (get-in db [:signing/tx :from :address])
+        path                 (reduce
+                              (fn [_ {:keys [address path]}]
+                                (when (= from address)
+                                  (reduced path)))
+                              nil
+                              (:multiaccount/accounts db))]
     (if (and card-connected?
              keycard-match?)
       {:db              (-> db
@@ -27,7 +35,8 @@
                             (assoc-in [:hardwallet :pin :status] :verifying))
        :hardwallet/sign {:hash    (ethereum/naked-address hash)
                          :pairing pairing
-                         :pin     pin}}
+                         :pin     pin
+                         :path    path}}
       (fx/merge cofx
                 {:db (assoc-in db [:signing/sign :keycard-step] :signing)}
                 (common/set-on-card-connected :hardwallet/sign)
