@@ -274,7 +274,7 @@
                                  :on-success #()}]
                :db (-> db
                        (assoc :multiaccount/accounts new-accounts)
-                       (assoc-in [:wallet :accounts deleted-address] nil))}
+                       (update-in [:wallet :accounts] dissoc deleted-address))}
               (navigation/navigate-to-cofx :wallet nil))))
 
 (fx/defn view-only-qr-scanner-result
