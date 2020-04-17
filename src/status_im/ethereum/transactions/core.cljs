@@ -4,6 +4,7 @@
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.encode :as encode]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.ens.core :as ens]
             [status-im.utils.fx :as fx]
             [status-im.wallet.core :as wallet]
             [taoensso.timbre :as log]
@@ -205,8 +206,7 @@
   [{:keys [db]} address]
   {:db (assoc-in db [:wallet :fetching address :all-fetched?] true)})
 
-(fx/defn new-transfers
-  {:events [::new-transfers]}
+(fx/defn handle-new-transfer
   [{:keys [db] :as cofx} transfers {:keys [address limit]}]
   (log/debug "[transfers] new-transfers"
              "address" address
@@ -233,6 +233,38 @@
                   (< (count transfers) limit)
                   (conj (tx-history-end-reached checksum)))]
     (apply fx/merge cofx (tx-fetching-ended [checksum]) effects)))
+
+(fx/defn check-ens-transactions
+  [{:keys [db] :as cofx} transfers]
+  (let [set-of-transactions-hash (reduce (fn [acc {:keys [hash]}] (conj acc hash)) #{} transfers)
+        registrations (filter
+                       (fn [[hash {:keys [state]}]]
+                         (and
+                          (or (= state :dismissed) (= state :submitted))
+                          (contains? set-of-transactions-hash hash)))
+                       (get db :ens/registrations))
+        fxs (map (fn [[hash {:keys [username custom-domain?]}]]
+                   (let [transfer (first (filter (fn [transfer] (let [transfer-hash (get transfer :hash)] (= transfer-hash hash))) transfers))
+                         type (get transfer :type)
+                         transaction-success (get transfer :transfer)]
+                     (cond
+                       (= transaction-success true)
+                       (fx/merge cofx
+                                 (ens/clear-ens-registration hash)
+                                 (ens/save-username custom-domain? username false))
+                       (= type :failed)
+                       (ens/update-ens-tx-state :failure username custom-domain? hash)
+                       :else
+                       nil)))
+                 registrations)]
+    (apply fx/merge cofx fxs)))
+
+(fx/defn new-transfers
+  {:events [::new-transfers]}
+  [cofx transfers params]
+  (fx/merge cofx
+            (handle-new-transfer transfers params)
+            (check-ens-transactions transfers)))
 
 (fx/defn tx-fetching-failed
   {:events [::tx-fetching-failed]}

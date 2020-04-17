@@ -597,12 +597,14 @@
       [button {:on-press #(re-frame/dispatch [::ens/get-started-pressed])
                :label    (i18n/label :t/get-started)}]]]))
 
-(defn- name-item [{:keys [name action]}]
+(defn- name-item [{:keys [name action subtitle]}]
   (let [stateofus-username (stateofus/username name)
         s                  (or stateofus-username name)]
     [list-item/list-item
      {:title       s
-      :subtitle    (when stateofus-username stateofus/domain)
+      :subtitle    (if subtitle
+                     subtitle
+                     (when stateofus-username stateofus/domain))
       :on-press    action
       :icon        :main-icons/username}]))
 
@@ -627,12 +629,25 @@
              [name-item {:name name :hide-chevron? true :action action}]]
             [radio/radio (= name preferred-name)]]]))]]]])
 
+(views/defview in-progress-registrations [registrations]
+  [react/view {:style {:margin-top 8}}
+   (for [[hash {:keys [state username]}] registrations
+         :when (or (= state :submitted) (= state :failure))]
+     ^{:key hash}
+     [name-item {:name username
+                 :action (when-not (= state :submitted)
+                           #(re-frame/dispatch [:clear-ens-registration hash]))
+                 :subtitle (case state
+                             :submitted (i18n/label :t/ens-registration-in-progress)
+                             :failure (i18n/label :t/ens-registration-failure)
+                             nil)}])])
+
 (views/defview my-name []
   (views/letsubs [contact-name [:multiaccount/preferred-name]]
     (when-not (string/blank? contact-name)
       (chat.utils/format-author (str "@" contact-name) message.style/message-author-name-container))))
 
-(defn- registered [names {:keys [preferred-name] :as account} _]
+(views/defview registered [names {:keys [preferred-name] :as account} _ registrations]
   [react/view {:style {:flex 1}}
    [react/scroll-view
     [react/view {:style {:margin-top 8}}
@@ -644,12 +659,15 @@
     [react/view {:style {:margin-top 22 :margin-bottom 8}}
      [react/text {:style {:color colors/gray :margin-horizontal 16}}
       (i18n/label :t/ens-your-usernames)]
+     (when registrations
+       [in-progress-registrations registrations])
      (if (seq names)
        [react/view {:style {:margin-top 8}}
         (for [name names]
           ^{:key name}
           [name-item {:name name :action #(re-frame/dispatch [::ens/navigate-to-name name])}])]
-       [react/text {:style {:color colors/gray :font-size 15}}
+       [react/text {:style {:color colors/gray :font-size 15
+                            :margin-horizontal 16}}
         (i18n/label :t/ens-no-usernames)])]
     [react/view {:style {:padding-vertical 22 :border-color colors/gray-lighter :border-top-width 1}}
      (when (> (count names) 1)
@@ -678,9 +696,9 @@
         [message/text-message message]]])]])
 
 (views/defview main []
-  (views/letsubs [{:keys [names multiaccount show?]} [:ens.main/screen]]
+  (views/letsubs [{:keys [names multiaccount show? registrations]} [:ens.main/screen]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [topbar/topbar {:title :t/ens-usernames}]
-     (if (seq names)
-       [registered names multiaccount show?]
+     (if (or (seq names) registrations)
+       [registered names multiaccount show? registrations]
        [welcome])]))

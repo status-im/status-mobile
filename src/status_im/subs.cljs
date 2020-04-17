@@ -166,6 +166,7 @@
 
 ;;ens
 (reg-root-key-sub :ens/registration :ens/registration)
+(reg-root-key-sub :ens/registrations :ens/registrations)
 (reg-root-key-sub :ens/names :ens/names)
 
 ;;signing
@@ -2024,10 +2025,12 @@
  :<- [:multiaccount/usernames]
  :<- [:multiaccount]
  :<- [:ens/preferred-name]
- (fn [[names multiaccount preferred-name]]
-   {:names          names
-    :multiaccount   multiaccount
-    :preferred-name preferred-name}))
+ :<- [:ens/registrations]
+ (fn [[names multiaccount preferred-name registrations]]
+   {:names             names
+    :multiaccount      multiaccount
+    :preferred-name    preferred-name
+    :registrations registrations}))
 
 ;;SIGNING =============================================================================================================
 
