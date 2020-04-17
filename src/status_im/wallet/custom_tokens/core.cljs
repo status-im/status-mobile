@@ -10,8 +10,7 @@
             [status-im.utils.money :as money]
             [status-im.wallet.core :as wallet]
             [status-im.ui.screens.navigation :as navigation]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.wallet.prices :as prices]))
+            [status-im.multiaccounts.update.core :as multiaccounts.update]))
 
 (re-frame/reg-fx
  :wallet.custom-token/get-decimals
@@ -181,7 +180,7 @@
                                  :params [new-token]
                                  :on-success #()}]}
               (wallet/add-custom-token new-token)
-              (prices/update-prices)
+              (wallet/update-prices)
               (navigation/navigate-back))))
 
 (fx/defn remove-custom-token

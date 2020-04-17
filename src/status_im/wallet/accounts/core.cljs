@@ -18,8 +18,7 @@
             [status-im.utils.security :as security]
             [status-im.multiaccounts.recover.core :as recover]
             [status-im.ethereum.mnemonic :as mnemonic]
-            [taoensso.timbre :as log]
-            [status-im.wallet.prices :as prices]))
+            [taoensso.timbre :as log]))
 
 (fx/defn start-adding-new-account
   {:events [:wallet.accounts/start-adding-new-account]}
@@ -195,7 +194,7 @@
                 {:db (update-in db [:add-account :account] merge account)}
                 (save-new-account)
                 (wallet/update-balances nil)
-                (prices/update-prices)
+                (wallet/update-prices)
                 (navigation/navigate-back)))))
 
 (fx/defn add-watch-account
