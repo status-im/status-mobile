@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Looper;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 import androidx.core.app.ActivityCompat;
 import android.util.Log;
@@ -32,6 +33,10 @@ import org.devio.rn.splashscreen.SplashScreen;
 
 import java.util.Properties;
 import im.status.ethereum.module.StatusThreadPoolExecutor;
+import android.view.View;
+
+import static android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
+
 
 public class MainActivity extends ReactFragmentActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback{
@@ -105,19 +110,27 @@ public class MainActivity extends ReactFragmentActivity
         }
     }
 
+    static final String darkNavbarBackground = "#141414";
+    static final String lightNavbarBackground = "#ffffff";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        int flags = getWindow().getDecorView().getSystemUiVisibility();
+        flags = flags | FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
         switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
             case Configuration.UI_MODE_NIGHT_YES:
+                flags = flags | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+                flags = flags | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                getWindow().getDecorView().setSystemUiVisibility(flags); 
                 setTheme(R.style.DarkTheme);
-
-                break;
-            case Configuration.UI_MODE_NIGHT_NO:
-                setTheme(R.style.LightTheme);
+                getWindow().setNavigationBarColor(Color.parseColor(darkNavbarBackground));
                 break;
             default:
+                flags = flags ^ View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+                flags = flags ^ View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                getWindow().getDecorView().setSystemUiVisibility(flags); 
                 setTheme(R.style.LightTheme);
+                getWindow().setNavigationBarColor(Color.parseColor(lightNavbarBackground));
         }
         // Make sure we get an Alert for every uncaught exceptions
         registerUncaughtExceptionHandler(MainActivity.this);

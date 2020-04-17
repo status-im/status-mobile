@@ -6,8 +6,6 @@
         <item name="android:windowBackground">?attr/backgroundColor</item>
         <item name="android:textColor">?attr/textColor</item>
         <item name="android:forceDarkAllowed">true</item>
-        <item name="android:navigationBarColor">?attr/backgroundColor</item>
-        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="LightTheme" parent="AppTheme">

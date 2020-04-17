@@ -56,6 +56,7 @@
 (def touchid  #js {})
 (def safe-area-context #js {})
 (def react-native-dark-mode #js {"eventEmitter" {} "initialMode" {}})
+(def react-native-navbar-color #js {})
 
 (def back-handler #js {:addEventListener identity
                        :removeEventListener identity})

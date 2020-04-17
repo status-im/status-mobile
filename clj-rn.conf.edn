@@ -45,7 +45,8 @@
               "@react-native-community/netinfo"
               "react-native-gesture-handler"
               "react-native-safe-area-context"
-              "react-native-dark-mode"]
+              "react-native-dark-mode",
+              "react-native-navbar-color"]
  ;; Desktop modules
  :desktop-modules ["buffer"
                    "bignumber.js"

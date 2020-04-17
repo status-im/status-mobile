@@ -46,3 +46,4 @@
 (def desktop-config #js {})
 (def react-native-mail (fn [] #js {:mail #js {}}))
 (def react-native-navigation-twopane  #js {})
+(def react-native-navbar-color #js {})

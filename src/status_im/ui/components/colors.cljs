@@ -1,5 +1,6 @@
 (ns status-im.ui.components.colors
   (:require [clojure.string :as string]
+            [status-im.react-native.js-dependencies :as rn-dependencies]
             [reagent.core :as reagent]))
 
 (defn alpha [hex opacity]
@@ -108,6 +109,7 @@
 (defn set-theme [type]
   (when-not (= type @theme)
     (let [colors (get themes type)]
+      (.setColor rn-dependencies/react-native-navbar-color (:white colors) (not dark?))
       (set! white (:white colors))
       (set! black (:black colors))
       (set! gray-lighter (:gray-lighter colors))

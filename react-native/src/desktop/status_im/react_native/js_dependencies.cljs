@@ -39,3 +39,4 @@
 (def back-handler           #js {:addEventListener (fn [])})
 (def safe-area-context      #js {})
 (def react-native-dark-mode #js {})
+(def react-native-navbar-color #js {})

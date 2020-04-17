@@ -39,6 +39,7 @@
 (def desktop-shortcuts      #js {:addEventListener (fn [])})
 (def safe-area-context      (js/require "react-native-safe-area-context"))
 (def react-native-dark-mode (js/require "react-native-dark-mode"))
+(def react-native-navbar-color (js/require "react-native-navbar-color"))
 
 (def react-navigation-native      (js/require "@react-navigation/native"))
 (def react-navigation-stack       (js/require "@react-navigation/stack"))
