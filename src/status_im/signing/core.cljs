@@ -335,7 +335,9 @@
   {:events       [:signing/transaction-completed]
    :interceptors [(re-frame/inject-cofx :random-id-generator)]}
   [cofx response tx-obj hashed-password]
-  (let [cofx-in-progress-false (assoc-in cofx [:db :signing/in-progress?] false)
+  (let [cofx-in-progress-false (-> cofx
+                                   (assoc-in [:db :signing/in-progress?] false)
+                                   (assoc-in [:db :signing/sign :in-progress?] false))
         {:keys [result error]} (types/json->clj response)]
     (log/debug "transaction-completed" error tx-obj)
     (if error
