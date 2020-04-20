@@ -263,7 +263,7 @@
                   small-screen? [:dimensions/small-screen?]]
     (if (= type :pinless)
       [signature-request sign small-screen?]
-      [react/view styles/message
+      [react/view (styles/message)
        [react/view styles/message-header
         [react/text {:style {:typography :title-bold}} (i18n/label :t/signing-a-message)]
         [react/touchable-highlight {:on-press #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}

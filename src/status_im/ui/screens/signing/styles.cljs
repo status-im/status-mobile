@@ -18,7 +18,7 @@
    :padding-right   24
    :margin-bottom   19})
 
-(def message
+(defn message []
   {:background-color        colors/white
    :border-top-right-radius 16
    :border-top-left-radius  16
