@@ -23,34 +23,31 @@
   (dispatch [:shake-event]))
 
 (defn app-root [props]
-  (let [keyboard-height (subscribe [:keyboard-height])]
-    (reagent/create-class
-     {:component-did-mount
-      (fn [this]
-        (.addListener react/keyboard
-                      "keyboardWillShow"
-                      (fn [e]
-                        (let [h (.. e -endCoordinates -height)]
-                          (when-not (= h @keyboard-height)
-                            (dispatch [:set :keyboard-height h])
-                            (dispatch [:set :keyboard-max-height h])))))
-        (.addListener react/keyboard
-                      "keyboardWillHide"
-                      #(when-not (= 0 @keyboard-height)
-                         (dispatch [:set :keyboard-height 0])))
-        (.hide react/splash-screen)
-        (.addEventListener react/app-state "change" app-state-change-handler)
-        (.addEventListener rn-dependencies/react-native-languages "change" on-languages-change)
-        (.addEventListener rn-dependencies/react-native-shake
-                           "ShakeEvent"
-                           on-shake)
-        (dispatch [:set-initial-props (reagent/props this)]))
-      :component-will-unmount
-      (fn []
-        (.removeEventListener react/app-state "change" app-state-change-handler)
-        (.removeEventListener rn-dependencies/react-native-languages "change" on-languages-change))
-      :display-name "root"
-      :reagent-render views/main})))
+  (reagent/create-class
+   {:component-did-mount
+    (fn [this]
+      (.addListener react/keyboard
+                    "keyboardWillShow"
+                    (fn [e]
+                      (let [h (.. e -endCoordinates -height)]
+                        (dispatch [:set :keyboard-height h])
+                        (dispatch [:set :keyboard-max-height h]))))
+      (.addListener react/keyboard
+                    "keyboardWillHide"
+                    #(dispatch [:set :keyboard-height 0]))
+      (.hide react/splash-screen)
+      (.addEventListener react/app-state "change" app-state-change-handler)
+      (.addEventListener rn-dependencies/react-native-languages "change" on-languages-change)
+      (.addEventListener rn-dependencies/react-native-shake
+                         "ShakeEvent"
+                         on-shake)
+      (dispatch [:set-initial-props (reagent/props this)]))
+    :component-will-unmount
+    (fn []
+      (.removeEventListener react/app-state "change" app-state-change-handler)
+      (.removeEventListener rn-dependencies/react-native-languages "change" on-languages-change))
+    :display-name "root"
+    :reagent-render views/main}))
 
 (defn init []
   (ocall rn-dependencies/react-native-screens "enableScreens")

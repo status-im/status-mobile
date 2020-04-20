@@ -1,8 +1,7 @@
 (ns ^:figwheel-no-load env.desktop.main
   (:require [reagent.core :as r]
-            [re-frisk-remote.core :as rr]
+            [re-frisk-remote.core :as re-frisk]
             [status-im.desktop.core :as core]
-            [status-im.utils.handlers :as utils.handlers]
             [figwheel.client :as figwheel]
             [env.config :as conf]
             [env.utils]))
@@ -22,7 +21,6 @@
                  :heads-up-display false
                  :jsload-callback  #(swap! cnt inc)})
 
-(utils.handlers/add-pre-event-callback rr/pre-event-callback)
+(re-frisk/enable {:host (env.utils/re-frisk-url (:desktop conf/figwheel-urls))})
 
-(rr/enable-re-frisk-remote! {:host (env.utils/re-frisk-url (:desktop conf/figwheel-urls))
-                             :on-init core/init})
+(core/init)

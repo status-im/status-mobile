@@ -242,13 +242,13 @@
 
 (defmethod task "watch" [[_ & args]]
   (with-namespaces [[hawk.core :as hawk]
-                    [re-frisk-sidecar.core :as rfs]
+                    [re-frisk-remote.core :as re-frisk]
                     [figwheel-sidecar.repl-api :as ra]
                     [clj-rn.core :as clj-rn]
                     [clj-rn.main :as main]]
     (let [options (main/parse-cli-options args main/watch-task-options)]
       (clj-rn/watch (assoc options :start-cljs-repl false))
-      (rfs/-main)
+      (re-frisk/start)
       (hawk/watch! [{:paths ["resources"] :handler hawk-handler-resources}
                     {:paths ["translations"] :handler hawk-handler-translations}])
       (when (:start-cljs-repl options) (ra/cljs-repl)))))

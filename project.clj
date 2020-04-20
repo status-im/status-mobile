@@ -25,7 +25,6 @@
                  [mvxcvi/alphabase "1.0.0"]]
   :plugins [[rasom/lein-githooks "0.1.5"]
             [lein-cljsbuild "1.1.7"]
-            [lein-re-frisk "0.5.8"]
             [lein-cljfmt "0.5.7"]]
   :githooks {:auto-install true
              :pre-commit   ["lein cljfmt check src/status_im/core.cljs $(git diff --diff-filter=d --cached --name-only src test/cljs)"]}
@@ -73,13 +72,6 @@
                                                         :optimizations :none}}}}
                         :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
                                        :timeout          240000}}
-             :figwheel [:dev
-                        {:dependencies [[figwheel-sidecar "0.5.18"]
-                                        [re-frisk-remote "0.5.5"]
-                                        [re-frisk-sidecar "0.5.7"]
-                                        [day8.re-frame/tracing "0.5.0"]
-                                        [hawk "0.2.11"]]
-                         :source-paths ["src" "env/dev" "react-native/src/cljsjs" "components/src" "dev"]}]
              :test     {:dependencies [[com.taoensso/tufte "2.1.0"]
                                        [day8.re-frame/test "0.1.5"]]
                         :plugins      [[lein-doo "0.1.9"]]

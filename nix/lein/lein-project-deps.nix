@@ -20,21 +20,6 @@ let
   };
 
 in {
-  "https://repo.clojars.org/binaryage/devtools/0.9.10/devtools-0.9.10" =
-  {
-    host = repositories.clojars;
-    path =
-      "binaryage/devtools/0.9.10/devtools-0.9.10";
-    type = "jar";
-    pom = {
-      sha1 = "faad859cbbc8d004b1fbceb634db246cc52b18f7";
-      sha256 = "166nv38z5y2hifh1jjnybzfsfi6d7wsc0sdz7sflwwwjwlvnwnpy";
-    };
-    jar = {
-      sha1 = "7a340dde53603f246ceb79081e0ca70c0ed5d996";
-      sha256 = "05xlaf8pf5xvqaaxjwcmmfm1q8fq8fiz1hwlwnwfkmnryib19syp";
-    };
-  };
   "https://repo.clojars.org/binaryage/env-config/0.2.2/env-config-0.2.2" =
   {
     host = repositories.clojars;
@@ -78,51 +63,6 @@ in {
     jar = {
       sha1 = "1d811ed4a7eeee8ffe08e140eddb38429f4e6cdd";
       sha256 = "1h4wc8iw87cqp20l1wfkh7kxa1ik64ybdw5zh97wxhcsa7bchhzg";
-    };
-  };
-  "https://repo.clojars.org/clj-time/clj-time/0.11.0/clj-time-0.11.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "clj-time/clj-time/0.11.0/clj-time-0.11.0";
-    type = "jar";
-    pom = {
-      sha1 = "7659f6919759c1c7a41eddd09fe108d39656d965";
-      sha256 = "0yaibpy2caf3dj9z23f0acd2ai245zhhibsifm2058nj2mkpzd0a";
-    };
-    jar = {
-      sha1 = "04461c7c89d96d32cf25f6674576f62aecf2ab05";
-      sha256 = "0x3sxp5b7dsq5qbsbkhjazk2fzg6iyddwk3p7v4fr063nhlgwx2s";
-    };
-  };
-  "https://repo.clojars.org/clj-time/clj-time/0.6.0/clj-time-0.6.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "clj-time/clj-time/0.6.0/clj-time-0.6.0";
-    type = "jar";
-    pom = {
-      sha1 = "09b7a8e6f0b71ba43ac66c07910c03e5dac10eb3";
-      sha256 = "1jpmdc889mfj22mwga5bl8hxfqnsbv0151qcgbszjnknx35bsm4l";
-    };
-    jar = {
-      sha1 = "a922fbc265cf1e8fc01f811b6f7e106f85172cc3";
-      sha256 = "1bipx3rdm473v7v03qxjqqvshbikj5786w1x9sd1in3wjfb115cf";
-    };
-  };
-  "https://repo.clojars.org/clj-time/clj-time/0.9.0/clj-time-0.9.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "clj-time/clj-time/0.9.0/clj-time-0.9.0";
-    type = "jar";
-    pom = {
-      sha1 = "bc847a283f8f95ae32c5e5679ef6a3a96d7da595";
-      sha256 = "033cynzp6yll05byhz9p0q7zwfii7b074a5qbv56278gxyrp8bmf";
-    };
-    jar = {
-      sha1 = "e276b52745750ae4548cd7239cd9a4f338843dd7";
-      sha256 = "0mknvi2sn6i7pbn81xyvrbf9xbi65ymv4aavyw24hd4yniim0sbq";
     };
   };
   "https://repo.clojars.org/cljfmt/cljfmt/0.5.7/cljfmt-0.5.7" =
@@ -170,81 +110,6 @@ in {
       sha256 = "0xj9k8n3b31aavlf3fdrbqjflkdmqlvl34fz7s1iv8ff0kvb3aa6";
     };
   };
-  "https://repo.clojars.org/cljsjs/create-react-class/15.5.3-0/create-react-class-15.5.3-0" =
-  {
-    host = repositories.clojars;
-    path =
-      "cljsjs/create-react-class/15.5.3-0/create-react-class-15.5.3-0";
-    type = "jar";
-    pom = {
-      sha1 = "e5573c52881879c656158b260d7c58ae32d74095";
-      sha256 = "04ig36rbznyn77nzfliklvnh7l0k4sf11c4ihdyi0jj2vmq4malb";
-    };
-    jar = {
-      sha1 = "2e22539e6c2cef6aae9b3df7f05e55c59ad92102";
-      sha256 = "1mvzyg2cwzq5an6h17qn0wad2vl70cn0mszds7kvsin920mf9rzy";
-    };
-  };
-  "https://repo.clojars.org/cljsjs/highlight/9.6.0-0/highlight-9.6.0-0" =
-  {
-    host = repositories.clojars;
-    path =
-      "cljsjs/highlight/9.6.0-0/highlight-9.6.0-0";
-    type = "jar";
-    pom = {
-      sha1 = "d625f79b4598015cba3f2db3f34aa13ade142e22";
-      sha256 = "0pkfxmqy2vq0y2wqjagp2y1wysrd9vxp81q5vj5851v04qd2izx0";
-    };
-    jar = {
-      sha1 = "bae98bcc3b252f6894f3f3ba74a3b335a91faf53";
-      sha256 = "12f7ng70xlacznv8c3i3sh0dpz41aal5y270bsj5qjxh1y00mqpc";
-    };
-  };
-  "https://repo.clojars.org/cljsjs/prop-types/15.6.0-0/prop-types-15.6.0-0" =
-  {
-    host = repositories.clojars;
-    path =
-      "cljsjs/prop-types/15.6.0-0/prop-types-15.6.0-0";
-    type = "jar";
-    pom = {
-      sha1 = "91b9fb5b780b66fedc42be8be477206c97ad3709";
-      sha256 = "0q674ybnkkmfzvzaciy5kg7jlnwwz36aaq65r8vz0k3qwxs957cd";
-    };
-    jar = {
-      sha1 = "9ed805014d0aae261b389721e76facecef72a970";
-      sha256 = "1sc7a517avw464nabmnqcwhf8vja28j01nhxamscy8lgb2mahkdl";
-    };
-  };
-  "https://repo.clojars.org/cljsjs/react-dom-server/15.2.1-0/react-dom-server-15.2.1-0" =
-  {
-    host = repositories.clojars;
-    path =
-      "cljsjs/react-dom-server/15.2.1-0/react-dom-server-15.2.1-0";
-    type = "jar";
-    pom = {
-      sha1 = "47054f02ecfa8c80404de01e253de975dece45f6";
-      sha256 = "1vm9wgzjp8mimgjjfazr68p22nj1vdsnqq6rxrsw9s5gz0rmg6a3";
-    };
-    jar = {
-      sha1 = "d7b36527ad1d47113b83d0714636ffbca6cdb63e";
-      sha256 = "0j778j1gxn7j8ih497r7k6mwdych4p9li8ag6abig8lmk0bfpb5i";
-    };
-  };
-  "https://repo.clojars.org/cljsjs/react-dom-server/15.5.4-0/react-dom-server-15.5.4-0" =
-  {
-    host = repositories.clojars;
-    path =
-      "cljsjs/react-dom-server/15.5.4-0/react-dom-server-15.5.4-0";
-    type = "jar";
-    pom = {
-      sha1 = "5ab1fe74d65fb0573b32abcf853bb8fadfb19d6e";
-      sha256 = "001jks8kqbnj0dzx1x6qjgrsggp0hc8iibg3k68jjhxxphplcfbz";
-    };
-    jar = {
-      sha1 = "c9e320aa9b53a37c100f966d18f58802ed56a0d4";
-      sha256 = "0av92sbdwadig50b1ljxy7n3rvpk2hy3c67rh57vqfc4jids6ank";
-    };
-  };
   "https://repo.clojars.org/cljsjs/react-dom-server/16.13.0-0/react-dom-server-16.13.0-0" =
   {
     host = repositories.clojars;
@@ -258,36 +123,6 @@ in {
     jar = {
       sha1 = "4d400ae4f66687286170eb691aa8e642fe87aa47";
       sha256 = "0fzwd6hfb2rx85pr6fsr2r4x76a90wgnjgnv23jzfn1vw6znch07";
-    };
-  };
-  "https://repo.clojars.org/cljsjs/react-dom/15.2.1-0/react-dom-15.2.1-0" =
-  {
-    host = repositories.clojars;
-    path =
-      "cljsjs/react-dom/15.2.1-0/react-dom-15.2.1-0";
-    type = "jar";
-    pom = {
-      sha1 = "637a50afa14d06c647f94a90b73fffca98a34aba";
-      sha256 = "199nynjdvm2p789y7ms88y5plba9lp2nhx18xg63wy6g235r00f3";
-    };
-    jar = {
-      sha1 = "3983d1efcf168959e9575f1a64882d173a442a25";
-      sha256 = "18dvzga66fnxhn5x9clqpmfhknm7h7jpn2xj5dh1slv4k2z9dhq8";
-    };
-  };
-  "https://repo.clojars.org/cljsjs/react-dom/15.5.4-0/react-dom-15.5.4-0" =
-  {
-    host = repositories.clojars;
-    path =
-      "cljsjs/react-dom/15.5.4-0/react-dom-15.5.4-0";
-    type = "jar";
-    pom = {
-      sha1 = "4942103fbc65a2fb595d44b0f03e725bc5933815";
-      sha256 = "1d9l3zyaic0kx5pa85zhbw9k137ldp5adqaj137x7hxr7j0rpnbb";
-    };
-    jar = {
-      sha1 = "a07113da072d94d9a6c15cc7ae8307950bcaeb1f";
-      sha256 = "1qn5ycr9vsbbvq06clliwf89sk2838q6i86k35k2ghvvjwiwaxwl";
     };
   };
   "https://repo.clojars.org/cljsjs/react-dom/16.13.0-0/react-dom-16.13.0-0" =
@@ -305,66 +140,6 @@ in {
       sha256 = "10d9l42v7g78gpv6xklydywlpbvpxiky6gw1w3hnzrlqgbd40ip1";
     };
   };
-  "https://repo.clojars.org/cljsjs/react-flip-move/2.9.17-0/react-flip-move-2.9.17-0" =
-  {
-    host = repositories.clojars;
-    path =
-      "cljsjs/react-flip-move/2.9.17-0/react-flip-move-2.9.17-0";
-    type = "jar";
-    pom = {
-      sha1 = "099f6ebffe903c5eecd8e89a3de31d236f35cc8a";
-      sha256 = "03yjx0j8hsf91psmisqxjzjh72jfzfx46cx0l6d5sbjbbk2454f3";
-    };
-    jar = {
-      sha1 = "28d60228d98d349104ae677d690fe8ed5f6212e9";
-      sha256 = "0iwq6dwdyjaf6vhviv0vnyps5vly14vk5zcgkwx7z4hd0q4r5vhm";
-    };
-  };
-  "https://repo.clojars.org/cljsjs/react-highlight/1.0.7-1/react-highlight-1.0.7-1" =
-  {
-    host = repositories.clojars;
-    path =
-      "cljsjs/react-highlight/1.0.7-1/react-highlight-1.0.7-1";
-    type = "jar";
-    pom = {
-      sha1 = "b226fa8557474d2696dab1d82c6fa35a8e9a748a";
-      sha256 = "11snz3jn3salyn989gm00zq8s4fwskjrg31c63c21rb05b5wdvpr";
-    };
-    jar = {
-      sha1 = "1ca27cb92428584b96929e92175874b6cfc6baa6";
-      sha256 = "1ppylfkkxxnpqb6khd6nj3dn8l0kwk671k11ncw3j6ncmn7ysxfr";
-    };
-  };
-  "https://repo.clojars.org/cljsjs/react/15.2.1-0/react-15.2.1-0" =
-  {
-    host = repositories.clojars;
-    path =
-      "cljsjs/react/15.2.1-0/react-15.2.1-0";
-    type = "jar";
-    pom = {
-      sha1 = "2f3e6f6fdee7f18d845cec629f42d52cede174db";
-      sha256 = "0k0b180rfz44mxs8gaaz1bkvx76lksls2hd6sxndj9vxg709fdqb";
-    };
-    jar = {
-      sha1 = "1eec9152ffaef3610623f81b7838dc0bb0a10d25";
-      sha256 = "1v41lbaxwb9pvr1cxkw6hs8c40ga4x115jw4d97qi0rjj4lf1grq";
-    };
-  };
-  "https://repo.clojars.org/cljsjs/react/15.5.4-0/react-15.5.4-0" =
-  {
-    host = repositories.clojars;
-    path =
-      "cljsjs/react/15.5.4-0/react-15.5.4-0";
-    type = "jar";
-    pom = {
-      sha1 = "7f8a71d7e3f56c6adfef75dc013ae3593386e135";
-      sha256 = "0y96ndrsyv7il926n53znsqkglm6f7b3ck361wivbr1p55vsh8v5";
-    };
-    jar = {
-      sha1 = "1e9d79309e0aaa2c5da4470daab66776e74610e0";
-      sha256 = "18p6bdmv09rkf9dg396770fb8h889132963233bd8bc2fs3knv6c";
-    };
-  };
   "https://repo.clojars.org/cljsjs/react/16.13.0-0/react-16.13.0-0" =
   {
     host = repositories.clojars;
@@ -380,36 +155,6 @@ in {
       sha256 = "1dp4pi9jphncifa56kqj6sri8vwl62ia1xy3ii70fba1mdjij63s";
     };
   };
-  "https://repo.clojars.org/clout/clout/2.1.2/clout-2.1.2" =
-  {
-    host = repositories.clojars;
-    path =
-      "clout/clout/2.1.2/clout-2.1.2";
-    type = "jar";
-    pom = {
-      sha1 = "2c8aec1449373bfc2e7651b454104e4dc8d70168";
-      sha256 = "1kphwll940nz53cjnfc9jlwxzbd0dkpzjfs5jaxrl4q95l0d845x";
-    };
-    jar = {
-      sha1 = "87cc1bd24ec39a8572e66103039955d7570ce077";
-      sha256 = "1y3pp542ml5za3iyc5szqh2xn65dqmd8d6621mznmzg8bng1yscx";
-    };
-  };
-  "https://repo.clojars.org/com/andrewmcveigh/cljs-time/0.4.0/cljs-time-0.4.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "com/andrewmcveigh/cljs-time/0.4.0/cljs-time-0.4.0";
-    type = "jar";
-    pom = {
-      sha1 = "7c88ae083dbbd6f3e331453995b3e929cf4039ae";
-      sha256 = "0ifj0kfvldy2ryk22v1mb739ijhzh1hmpnavkanhv2b3affdfvbv";
-    };
-    jar = {
-      sha1 = "5bd82832d01d7377fe0506d3773474c9a7718989";
-      sha256 = "11gcnxsqi1f2lj0k8jc3la117qi2v1blf54xx1w3yfq7qb4yc73k";
-    };
-  };
   "https://repo.clojars.org/com/andrewmcveigh/cljs-time/0.5.2/cljs-time-0.5.2" =
   {
     host = repositories.clojars;
@@ -423,36 +168,6 @@ in {
     jar = {
       sha1 = "7d4274be169f54a03d4afcc40ea95f40d44ca0a2";
       sha256 = "061cjh2a6qpkib5v5mdrsbwhvcbqvh1igvp3b7jhcfj05pgplm1x";
-    };
-  };
-  "https://repo.clojars.org/com/taoensso/encore/2.79.1/encore-2.79.1" =
-  {
-    host = repositories.clojars;
-    path =
-      "com/taoensso/encore/2.79.1/encore-2.79.1";
-    type = "jar";
-    pom = {
-      sha1 = "fba62b0e3f1c9db8bdf19da316b53fe8e236c27f";
-      sha256 = "1xffbp873vnhjad04lrc0gkrkmgyh8gcaqqzi03an6x7hbxpmvgp";
-    };
-    jar = {
-      sha1 = "82316444a66ea47642c6cca7800074eb468fe7f0";
-      sha256 = "1afd604khns0rwb3xwxdfnl1ql8yzzsjm4rlq4id2f6awjrzxkm3";
-    };
-  };
-  "https://repo.clojars.org/com/taoensso/encore/2.84.2/encore-2.84.2" =
-  {
-    host = repositories.clojars;
-    path =
-      "com/taoensso/encore/2.84.2/encore-2.84.2";
-    type = "jar";
-    pom = {
-      sha1 = "e9919d6d9fd8ee31da73b60f462651865e3064e1";
-      sha256 = "0aga6s6d79lv62dhxjz87n3mbnz3hay75j7dfj266ip4hgnasvx1";
-    };
-    jar = {
-      sha1 = "443bfd382a5d87662a6f06db4cc8af4dfff50401";
-      sha256 = "12f6fw32y4sj8k65qcnds30syklp96h6q179hq3l5dfnxd3yj46j";
     };
   };
   "https://repo.clojars.org/com/taoensso/encore/2.91.0/encore-2.91.0" =
@@ -485,66 +200,6 @@ in {
       sha256 = "172f96w54311ckj6grs9kz0ddxgdqgdngqmzjg77qw5r3rsixyyh";
     };
   };
-  "https://repo.clojars.org/com/taoensso/sente/1.11.0/sente-1.11.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "com/taoensso/sente/1.11.0/sente-1.11.0";
-    type = "jar";
-    pom = {
-      sha1 = "64d73d8eed84074079d4a151575a78315a5045a7";
-      sha256 = "07rkp2kimq5azpq88zfpvgzja8qcbi655a7s707hyhpvxkm29lkg";
-    };
-    jar = {
-      sha1 = "697acd708293e43d320f3048cdc0dfb46ddfecb1";
-      sha256 = "02zlz3axsgh4x55hjz6gyabf9sxg28hywjs7q2n3cn6r98wivaz9";
-    };
-  };
-  "https://repo.clojars.org/com/taoensso/timbre/4.7.4/timbre-4.7.4" =
-  {
-    host = repositories.clojars;
-    path =
-      "com/taoensso/timbre/4.7.4/timbre-4.7.4";
-    type = "jar";
-    pom = {
-      sha1 = "35b6fe994c66dcdbb16e0d5cd4fd92073a57ec50";
-      sha256 = "165dz5mr8an8msc9hqgx79x8knkm57c685bc03b3sljr1x3b6j33";
-    };
-    jar = {
-      sha1 = "f3da3c2bdfc6f8db97004481dc340c41934c2082";
-      sha256 = "1dzkqaj29ssspkphmnjqmnhq8w0pbfyh6i5fmpdk6ld93x6xnqam";
-    };
-  };
-  "https://repo.clojars.org/com/taoensso/truss/1.3.5/truss-1.3.5" =
-  {
-    host = repositories.clojars;
-    path =
-      "com/taoensso/truss/1.3.5/truss-1.3.5";
-    type = "jar";
-    pom = {
-      sha1 = "9f45822ed0f8d1730b9165f2790659000e68c674";
-      sha256 = "0n6p5hh7dj8jliqncp7ssymwygyyp6j9v8npvs777caa5n9idd9k";
-    };
-    jar = {
-      sha1 = "0f20a23062a6edcbd07b8d71363e6423abcfb742";
-      sha256 = "0gpbpx65hkym6nz7x64nlqci9q6xrhfks8ik8rcrmcphy1khkqbr";
-    };
-  };
-  "https://repo.clojars.org/com/taoensso/truss/1.3.6/truss-1.3.6" =
-  {
-    host = repositories.clojars;
-    path =
-      "com/taoensso/truss/1.3.6/truss-1.3.6";
-    type = "jar";
-    pom = {
-      sha1 = "addac012d81021995b31d6053bb4cfbb4f06f764";
-      sha256 = "1ksknhx101vrzir6r7mmxq46w82zck9gp7idyhl8x91xmzh1jng2";
-    };
-    jar = {
-      sha1 = "c8f5ca5834f407b535d02813c6d2ba66b95da23b";
-      sha256 = "18jwpm98vvijwvkz5wq44la2f4q23xfjh8lc36gc0p34snxr9r8y";
-    };
-  };
   "https://repo.clojars.org/com/taoensso/truss/1.5.0/truss-1.5.0" =
   {
     host = repositories.clojars;
@@ -558,66 +213,6 @@ in {
     jar = {
       sha1 = "ef3f595da76cbcbe40124ee0a858b7ca635d30f2";
       sha256 = "1a49slgn2py6mxghwmq70nm9k4s27kmvp3cgnv6v2fi5zvkphwrs";
-    };
-  };
-  "https://repo.clojars.org/compojure/compojure/1.5.2/compojure-1.5.2" =
-  {
-    host = repositories.clojars;
-    path =
-      "compojure/compojure/1.5.2/compojure-1.5.2";
-    type = "jar";
-    pom = {
-      sha1 = "9e8da477b6682094d56802cb155291a2acb829bd";
-      sha256 = "036z64iprypccz03iq7lqxvw99xjh4xlsfmfwbs37pmhfnfmbdnx";
-    };
-    jar = {
-      sha1 = "0b5258d0616ffc5f64c2b6d95f09de56d24df439";
-      sha256 = "1s2k05lwnlm9a66mxnsss437i9gp70dny8y2rlfkl090s6mdqsaf";
-    };
-  };
-  "https://repo.clojars.org/crypto-equality/crypto-equality/1.0.0/crypto-equality-1.0.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "crypto-equality/crypto-equality/1.0.0/crypto-equality-1.0.0";
-    type = "jar";
-    pom = {
-      sha1 = "6b025f8fe474fb3a379230bcfe34b4766d00e051";
-      sha256 = "0k7rdh1jrbd45igvx45747krdiv4s5bd8viqk83ng802rgw8x8aw";
-    };
-    jar = {
-      sha1 = "6728b7a444008fe576167fcadb92fea23bb17d42";
-      sha256 = "1y9q8v245n4v3h6sh92a1rlf9rvi7j1akvb0cf47cgg6q60rrlbx";
-    };
-  };
-  "https://repo.clojars.org/crypto-random/crypto-random/1.2.0/crypto-random-1.2.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "crypto-random/crypto-random/1.2.0/crypto-random-1.2.0";
-    type = "jar";
-    pom = {
-      sha1 = "0cd21fd6f8b7f20a614580e0271474e94b8e8863";
-      sha256 = "19cczijlkg4zk4r4wgvp27j3wahvwgj0ci8pbqhg3gmjri56396d";
-    };
-    jar = {
-      sha1 = "cd5ed1fa18919cc13f5ab5feabdff21cc4b0faf6";
-      sha256 = "024dkz5vg6w0q4llw26v35mraai8x8hp0nii2c99szshn6pd0549";
-    };
-  };
-  "https://repo.clojars.org/day8/re-frame/re-frame-10x/0.3.2/re-frame-10x-0.3.2" =
-  {
-    host = repositories.clojars;
-    path =
-      "day8/re-frame/re-frame-10x/0.3.2/re-frame-10x-0.3.2";
-    type = "jar";
-    pom = {
-      sha1 = "c3b6f9825d063dd0ca67620a7b7e66dd46b608a4";
-      sha256 = "0m66q3b4jlbv9ig0v5cb8sfk3rwqgszsc2c8f5pi6q29yp7vvhy8";
-    };
-    jar = {
-      sha1 = "f215b20ed042cec2dcb9170e4a4170d9e3a0ae65";
-      sha256 = "1vgjyq2nd8183qfi11am4d2c9ka99gnh4fhpgrxplx5x5g0339a9";
     };
   };
   "https://repo.clojars.org/fs/fs/1.1.2/fs-1.1.2" =
@@ -635,21 +230,6 @@ in {
       sha256 = "1bd1yhmz16ja09r0j3g33dq5xzc9gsa0cbi2m5whv0bk1jafz36k";
     };
   };
-  "https://repo.clojars.org/hiccup/hiccup/1.0.5/hiccup-1.0.5" =
-  {
-    host = repositories.clojars;
-    path =
-      "hiccup/hiccup/1.0.5/hiccup-1.0.5";
-    type = "jar";
-    pom = {
-      sha1 = "ad8dca6233e4c76cfa408a6857c0fcf9b4939b0f";
-      sha256 = "0lp5q11li5wsr6gw70h801wklcqqcxcw54cpxabj4prbzva5jq1q";
-    };
-    jar = {
-      sha1 = "75940a400111bbb8f80e43325e23100b6e2227bc";
-      sha256 = "1z07dh3qg9zzcwa8x31mnqxnkfsf2sbv315n43kxmnv1fkjagm0g";
-    };
-  };
   "https://repo.clojars.org/hickory/hickory/0.7.1/hickory-0.7.1" =
   {
     host = repositories.clojars;
@@ -663,51 +243,6 @@ in {
     jar = {
       sha1 = "d9e6114592c434ca1df6022bbf4d5e97714666ee";
       sha256 = "021ag1b00821ma6mfl66ljyza1avjlpcld0zhnz1gvppwm5974xz";
-    };
-  };
-  "https://repo.clojars.org/http-kit/http-kit/2.2.0/http-kit-2.2.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "http-kit/http-kit/2.2.0/http-kit-2.2.0";
-    type = "jar";
-    pom = {
-      sha1 = "2ae358658936ae7d1bf5b929503e607d60c7d94c";
-      sha256 = "1p8kmih1x4fm21haacz80f5as52lg3q8i02n8qzh709iwx7za5xa";
-    };
-    jar = {
-      sha1 = "70b17515f43a0e74937cdc0dea270d4ef13c7f32";
-      sha256 = "1nnvadcqc7mabyp0gp2kbic85ipnxx499w36984is3ajw8k2c47p";
-    };
-  };
-  "https://repo.clojars.org/instaparse/instaparse/1.4.0/instaparse-1.4.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "instaparse/instaparse/1.4.0/instaparse-1.4.0";
-    type = "jar";
-    pom = {
-      sha1 = "55e534aa45dc4b6a84fce2c2ea342c66070d7c2b";
-      sha256 = "0pjdm2js7rjgsbq6byrdbf8bqca66dg736jvw9imc3dzz9mvy4f6";
-    };
-    jar = {
-      sha1 = "ade13d743d1ec8a6c5103fd0f5701b0f997e2cc4";
-      sha256 = "188325lqyc6p9fmrcsx5vwp4cydnaxf32034jqf2ch29mnax1gvh";
-    };
-  };
-  "https://repo.clojars.org/io/aviso/pretty/0.1.30/pretty-0.1.30" =
-  {
-    host = repositories.clojars;
-    path =
-      "io/aviso/pretty/0.1.30/pretty-0.1.30";
-    type = "jar";
-    pom = {
-      sha1 = "e4ca5c261e2736e7df75106f044b54ce87cfcff0";
-      sha256 = "0zfr4xyapzbajrzyqd0gbsf2qxbhy4blqfg4l6bcwr562sab8w36";
-    };
-    jar = {
-      sha1 = "80485ee4337502fc5380e95b3b9536623bc1bd2d";
-      sha256 = "17yi35nd4qwb16n1llgdcknppc4axr5gngg3v8valpdk8qcf3pmh";
     };
   };
   "https://repo.clojars.org/io/aviso/pretty/0.1.33/pretty-0.1.33" =
@@ -755,36 +290,6 @@ in {
       sha256 = "0ihj2dd3lpz3banpqm0pgcj8sd5wywkjy7mxyjyckgb6g48ahf3l";
     };
   };
-  "https://repo.clojars.org/lein-re-frisk/lein-re-frisk/0.5.8/lein-re-frisk-0.5.8" =
-  {
-    host = repositories.clojars;
-    path =
-      "lein-re-frisk/lein-re-frisk/0.5.8/lein-re-frisk-0.5.8";
-    type = "jar";
-    pom = {
-      sha1 = "cc1915dac89ccd05359c408699b9abeeb4cca094";
-      sha256 = "0kdhxk8pd94f6gb79ib26xizzgz9fmfq9vh3s71qcg29m1r41948";
-    };
-    jar = {
-      sha1 = "ab348771c3fb23c75ab225053338acdc04a91a3f";
-      sha256 = "1is7bk4fy3gfz6rl9xws9c20a2aaxqcfig6i9nv31rs2q9ll1fw6";
-    };
-  };
-  "https://repo.clojars.org/medley/medley/0.8.2/medley-0.8.2" =
-  {
-    host = repositories.clojars;
-    path =
-      "medley/medley/0.8.2/medley-0.8.2";
-    type = "jar";
-    pom = {
-      sha1 = "f59de194201b5e90166571ce4b3db1774fb576f4";
-      sha256 = "1vhy2634m07a2asz354sds2i7g6gwm8bxfpsmp8dfbr4226hi4m3";
-    };
-    jar = {
-      sha1 = "0c05ef36ae49925af44c781108ecf8b704a83a8f";
-      sha256 = "1hf1jd60jshd1p8yknfnimfsbiz9x1kg8x1gb6939xxx6sk953c8";
-    };
-  };
   "https://repo.clojars.org/meta-merge/meta-merge/1.0.0/meta-merge-1.0.0" =
   {
     host = repositories.clojars;
@@ -813,21 +318,6 @@ in {
     jar = {
       sha1 = "008785c0ff977d8132af4aaa931d88ffc44fca03";
       sha256 = "1g395and521h2q370vh7w0psx63a1zb5f2rcrafqgzw5s3nwlm4q";
-    };
-  };
-  "https://repo.clojars.org/net/cgrand/macrovich/0.2.0/macrovich-0.2.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "net/cgrand/macrovich/0.2.0/macrovich-0.2.0";
-    type = "jar";
-    pom = {
-      sha1 = "09d3f0c99504388c80484a949b216105664cfce3";
-      sha256 = "1p5ly7ks8nlxqf4p0i4wvjfj49sm7hz1jl5i5nc9sclwr6zp15kq";
-    };
-    jar = {
-      sha1 = "a1638e75e55b1ed3aa63398e4f10e0222d311e9e";
-      sha256 = "0xffg2cydhr9k548w9w6ii6hkw7adicxr6i5s3wa77iz6c95j1za";
     };
   };
   "https://repo.clojars.org/net/cgrand/macrovich/0.2.1/macrovich-0.2.1" =
@@ -875,36 +365,6 @@ in {
       sha256 = "0jg72qqzfi7qf2yzwisjpbcw4a68lq7j5nra9zgjqw1h3nanwsgi";
     };
   };
-  "https://repo.clojars.org/re-com/re-com/2.1.0/re-com-2.1.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "re-com/re-com/2.1.0/re-com-2.1.0";
-    type = "jar";
-    pom = {
-      sha1 = "ce5f4fa769c8ab312d1bb8a3c52cb0c6deae1ee4";
-      sha256 = "1rm8n0nx7a2q31qw9ay6sfj8n06cn0565lh7r2fj5z1czbx9clhi";
-    };
-    jar = {
-      sha1 = "081a88f9d0022df608ba5fc504080a2f05dbce40";
-      sha256 = "1ffn63mnsyvllv97pns71r7ky1pjsml193ry6ai9ag8plj4wg51m";
-    };
-  };
-  "https://repo.clojars.org/re-frame/re-frame/0.10.1/re-frame-0.10.1" =
-  {
-    host = repositories.clojars;
-    path =
-      "re-frame/re-frame/0.10.1/re-frame-0.10.1";
-    type = "jar";
-    pom = {
-      sha1 = "612e08afe9100f6e6610c56bc841a4cc1bd803e2";
-      sha256 = "1lfr3p5dvr8vniwf44xgmsjlb1wnw92cf22cnxb1i8zwybl4vj9j";
-    };
-    jar = {
-      sha1 = "b0f2e1af4132dce56395da1eabac52ba2b9df264";
-      sha256 = "0qb4dmyk10hcc88sl14jxq2s0yifrc0x71fxy76w2iqlql03ri6w";
-    };
-  };
   "https://repo.clojars.org/re-frame/re-frame/0.12.0/re-frame-0.12.0" =
   {
     host = repositories.clojars;
@@ -920,51 +380,6 @@ in {
       sha256 = "1m5sjskgjx028s1zpa631bp52y9hjn8l1nr8hrwiwdh09i2kpnk2";
     };
   };
-  "https://repo.clojars.org/re-frisk-shell/re-frisk-shell/0.5.2/re-frisk-shell-0.5.2" =
-  {
-    host = repositories.clojars;
-    path =
-      "re-frisk-shell/re-frisk-shell/0.5.2/re-frisk-shell-0.5.2";
-    type = "jar";
-    pom = {
-      sha1 = "d27ccc127b72d7ad427508685d1844895d8e16e1";
-      sha256 = "1rxyy1lx9iv3mzns0pws6rvz3xl9n21pd1qvqcrjnddvq6ljrn21";
-    };
-    jar = {
-      sha1 = "d0a05e08e9f50425b2d099184625cc3cc819a60e";
-      sha256 = "1chmj5ixql2lbjx56cz2qdvrz1xzvvn7p4f19m2jk8j9wc3zzq0m";
-    };
-  };
-  "https://repo.clojars.org/re-frisk-sidecar/re-frisk-sidecar/0.5.7/re-frisk-sidecar-0.5.7" =
-  {
-    host = repositories.clojars;
-    path =
-      "re-frisk-sidecar/re-frisk-sidecar/0.5.7/re-frisk-sidecar-0.5.7";
-    type = "jar";
-    pom = {
-      sha1 = "681bffb59922db7403b4d0113c38146cf0580fc2";
-      sha256 = "15ym9fblhbvligxrxkd3gy1l1qcxdqnlmxypb02vc6gxfz44gyrv";
-    };
-    jar = {
-      sha1 = "a8ea46ac510802038288e8c92f170a9cea23df8e";
-      sha256 = "1ijmyj8m1n189szrdppmhkrhi62r07gkwgrxc7yynv72gnc4vwmb";
-    };
-  };
-  "https://repo.clojars.org/re-frisk/re-frisk/0.5.4/re-frisk-0.5.4" =
-  {
-    host = repositories.clojars;
-    path =
-      "re-frisk/re-frisk/0.5.4/re-frisk-0.5.4";
-    type = "jar";
-    pom = {
-      sha1 = "7b314a9821899d674abd923f0419002c63bd47f2";
-      sha256 = "0i7h75a0ccy4i3s6s3c0acwabksly8c02ys53979q50mc4qacqf9";
-    };
-    jar = {
-      sha1 = "a7fe2c5fe6939bb78599c4c46493c7a62d7c7d48";
-      sha256 = "1bxrvx0v5fhn7m1qhd3b5s2rq5v34sgwpp0ad7c7ijmfdjsrrafr";
-    };
-  };
   "https://repo.clojars.org/reagent/reagent/0.10.0/reagent-0.10.0" =
   {
     host = repositories.clojars;
@@ -978,21 +393,6 @@ in {
     jar = {
       sha1 = "1a88fae22cd0f7f66bb181aa520da264a82f6942";
       sha256 = "0vdvm75rpcq9kx2sp0jd2lsa70fv2xymy1g55ss972s85p5j50bm";
-    };
-  };
-  "https://repo.clojars.org/reagent/reagent/0.6.0/reagent-0.6.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "reagent/reagent/0.6.0/reagent-0.6.0";
-    type = "jar";
-    pom = {
-      sha1 = "f1e00f7b084fd59167fa99077296bd4284161aac";
-      sha256 = "124kijrmwsr8mypwqx8g0d2sdk1w97jb4w1civpzza1s4n1idjg3";
-    };
-    jar = {
-      sha1 = "d9e8e4fae72c65d8df23ed8687864f5a90965c45";
-      sha256 = "0nrc4sxicgm29ah8dcdp99bh9vsxgq6pk917cnn7qw4l8m412c57";
     };
   };
   "https://repo.clojars.org/reagent/reagent/0.7.0/reagent-0.7.0" =
@@ -1025,21 +425,6 @@ in {
       sha256 = "1fm9bkd3wiqxalldqdfwh5n5cvlichp5an355c0lnkhi5l1hpfvl";
     };
   };
-  "https://repo.clojars.org/rewrite-clj/rewrite-clj/0.6.0/rewrite-clj-0.6.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "rewrite-clj/rewrite-clj/0.6.0/rewrite-clj-0.6.0";
-    type = "jar";
-    pom = {
-      sha1 = "fe825525b460e8502d615872588992cfb64f7d30";
-      sha256 = "0ca3nbmipmm77h20db2h4q5x7qs2kckz1086z9crz3zwsb67cxy2";
-    };
-    jar = {
-      sha1 = "e7a747f74be82855afe7114d4178384b50165237";
-      sha256 = "173wdcs6ksv4hzl3nnnsdw58lh1acrni4iz0gafjmydkzji4jiqz";
-    };
-  };
   "https://repo.clojars.org/rewrite-cljs/rewrite-cljs/0.4.3/rewrite-cljs-0.4.3" =
   {
     host = repositories.clojars;
@@ -1053,186 +438,6 @@ in {
     jar = {
       sha1 = "eddfed4a28f3865322e479ba77e84985421466bd";
       sha256 = "0gqsj9y66ssxm7qbgqps9548gvrmzdpd16zh6gr6jppqwxgwvawv";
-    };
-  };
-  "https://repo.clojars.org/rewrite-cljs/rewrite-cljs/0.4.4/rewrite-cljs-0.4.4" =
-  {
-    host = repositories.clojars;
-    path =
-      "rewrite-cljs/rewrite-cljs/0.4.4/rewrite-cljs-0.4.4";
-    type = "jar";
-    pom = {
-      sha1 = "4e7a2542517a5b0231631305461603605bea1592";
-      sha256 = "050imgkzw5q7200klwrkd4v32xxy1f4aghs8g4ma5dbg4rl4pgcd";
-    };
-    jar = {
-      sha1 = "dd14a371d0d09eedccb39f01e3edabefb2d1e64f";
-      sha256 = "0hb07wg71i2bjn8wzs8q6w1nb3jb2s36nhr9kv9mc0gyrr6im244";
-    };
-  };
-  "https://repo.clojars.org/ring-cors/ring-cors/0.1.8/ring-cors-0.1.8" =
-  {
-    host = repositories.clojars;
-    path =
-      "ring-cors/ring-cors/0.1.8/ring-cors-0.1.8";
-    type = "jar";
-    pom = {
-      sha1 = "b59382655c98377c9280fe227c442e2705088ad8";
-      sha256 = "0qpagym9im5fjx1jmwc56abz4a9fpy7w4m0isv2lcbczy3g29k8i";
-    };
-    jar = {
-      sha1 = "4788dcaca6b2429bf823c1235dbb44cd5689584a";
-      sha256 = "1382hxpgfpjdn0lcgq512yvbvq661skwd7lrakpnq9zs827jq9mc";
-    };
-  };
-  "https://repo.clojars.org/ring/ring-anti-forgery/1.0.0/ring-anti-forgery-1.0.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "ring/ring-anti-forgery/1.0.0/ring-anti-forgery-1.0.0";
-    type = "jar";
-    pom = {
-      sha1 = "4fb60d8eff3aa5fa61353ebcdf766951313137af";
-      sha256 = "1wkwby0na28gmvwdkbkk0nmysfs14s1lzwam02sz3kyjx1yg62am";
-    };
-    jar = {
-      sha1 = "0bc44369a5e3fec2f7d6eda0a5968cc452f1d5ce";
-      sha256 = "08ps755n16yk788k2vy92dg4agvbh6f89riwnd1frwl7dznc67lc";
-    };
-  };
-  "https://repo.clojars.org/ring/ring-codec/1.0.0/ring-codec-1.0.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "ring/ring-codec/1.0.0/ring-codec-1.0.0";
-    type = "jar";
-    pom = {
-      sha1 = "14a3c9e2541d4e03ed3158ffdcb9119417751f1e";
-      sha256 = "0saaz8dq3zps5c2z8x24hqm3650kbj1455y8pbg4z8vh04rlcx2a";
-    };
-    jar = {
-      sha1 = "e2e0be35ee22202a6da3769b606c485e4154f6e9";
-      sha256 = "0kw0l3ggvp4fknm28zvz2hbyrz7s28qlk7q2xbdg65s40cqs26q4";
-    };
-  };
-  "https://repo.clojars.org/ring/ring-codec/1.0.1/ring-codec-1.0.1" =
-  {
-    host = repositories.clojars;
-    path =
-      "ring/ring-codec/1.0.1/ring-codec-1.0.1";
-    type = "jar";
-    pom = {
-      sha1 = "86c782a6276b50d0be94ee057d03e92df87a3cc4";
-      sha256 = "1wax9nw26g79561llavn6b96gpqf97kl2n910afb0z88y9400k9r";
-    };
-    jar = {
-      sha1 = "521dbb3c2dec06909072248785a5b040bfb378be";
-      sha256 = "192lnnla7rc1wyg4gwq9fadg1j40baqzfyvc57yjcdx77k0si4sv";
-    };
-  };
-  "https://repo.clojars.org/ring/ring-core/1.3.0-RC1/ring-core-1.3.0-RC1" =
-  {
-    host = repositories.clojars;
-    path =
-      "ring/ring-core/1.3.0-RC1/ring-core-1.3.0-RC1";
-    type = "jar";
-    pom = {
-      sha1 = "0551907b083b658304fdae8193acdc9fa3e14b5c";
-      sha256 = "1rag22wjb7hgbw3prpc62xmhhvqhghkc936f9nlp22ahcylyxx4r";
-    };
-    jar = {
-      sha1 = "f03e35b7fde3d2912a99a6815cc2cad53951f478";
-      sha256 = "1ssz5g82yvcraqaysxh4r0kqs6dhg3xf4bkdk8z6hw8nc3mljf1l";
-    };
-  };
-  "https://repo.clojars.org/ring/ring-core/1.3.2/ring-core-1.3.2" =
-  {
-    host = repositories.clojars;
-    path =
-      "ring/ring-core/1.3.2/ring-core-1.3.2";
-    type = "jar";
-    pom = {
-      sha1 = "e4e65fd352eb8c263e9ea328e8f1ea389d8474e4";
-      sha256 = "0wcky7gkary0vkzf6knw14gd9czmmxwshzl00z2ymq2bsrzxriyk";
-    };
-    jar = {
-      sha1 = "125f8c05b4768d16e5da46dc8fb62b0e77e1289d";
-      sha256 = "1b8aq9dl4z11fgld6y1b79v5a0js963c32xcamjv729hpsn9k0wm";
-    };
-  };
-  "https://repo.clojars.org/ring/ring-core/1.4.0/ring-core-1.4.0" =
-  {
-    host = repositories.clojars;
-    path =
-      "ring/ring-core/1.4.0/ring-core-1.4.0";
-    type = "jar";
-    pom = {
-      sha1 = "b61b28707ea64a60542a89eaef7dabcfe4438a22";
-      sha256 = "0iffny7wjbqpwr61hnzgg8v91lf69wgc9qhnxg25jf18frl8cz9x";
-    };
-    jar = {
-      sha1 = "6ac9a134048f031e7067bf834ab9085a0c840386";
-      sha256 = "0l23bcil5hms1npm8wb3yll9i9flvw333kzrx4faxjk5y5cj8ldf";
-    };
-  };
-  "https://repo.clojars.org/ring/ring-core/1.5.1/ring-core-1.5.1" =
-  {
-    host = repositories.clojars;
-    path =
-      "ring/ring-core/1.5.1/ring-core-1.5.1";
-    type = "jar";
-    pom = {
-      sha1 = "24f0400b10ca4ca9cbac9ba58a576e4f93948220";
-      sha256 = "0790s4b1bccf7hbw5mmw797bgsggc0v3wigx0fkwnx0236hisbxb";
-    };
-    jar = {
-      sha1 = "4c7a99d821c93c2c38caeb74fdc2a1973551ed88";
-      sha256 = "0ajrf2fkhdlyiv8y58l2z7g617mxbcx2yknwclk6c6q3a60ci9gv";
-    };
-  };
-  "https://repo.clojars.org/ring/ring-defaults/0.1.5/ring-defaults-0.1.5" =
-  {
-    host = repositories.clojars;
-    path =
-      "ring/ring-defaults/0.1.5/ring-defaults-0.1.5";
-    type = "jar";
-    pom = {
-      sha1 = "472e3f4c23e881f6642217be22f90f2afc05f675";
-      sha256 = "0jcxd3cxgq2jw0xnv2f4zlgk82d6jz7pdh4hqjjz8p818m106bf1";
-    };
-    jar = {
-      sha1 = "f50937815f88423a35780d9d7c62f729afc1a16d";
-      sha256 = "0cf9pny0npsgzv3swifvrhb858jiax6yc1xdd6i92yh1m02x7gj0";
-    };
-  };
-  "https://repo.clojars.org/ring/ring-headers/0.1.3/ring-headers-0.1.3" =
-  {
-    host = repositories.clojars;
-    path =
-      "ring/ring-headers/0.1.3/ring-headers-0.1.3";
-    type = "jar";
-    pom = {
-      sha1 = "dd1845641fa07ae18b4478ad697d53a8615b24d7";
-      sha256 = "1z2a04hkxy0gmwbgyjzm0j187p1s1128n8kc2ai5myyxkrw1cppl";
-    };
-    jar = {
-      sha1 = "2a3e05706b6a6c834e96047a2d4b63b1ebb15fef";
-      sha256 = "0p6mia366ky1n3zc3xa9m45vjg9mc7r6wij71n9zg5w51b33nb0l";
-    };
-  };
-  "https://repo.clojars.org/ring/ring-ssl/0.2.1/ring-ssl-0.2.1" =
-  {
-    host = repositories.clojars;
-    path =
-      "ring/ring-ssl/0.2.1/ring-ssl-0.2.1";
-    type = "jar";
-    pom = {
-      sha1 = "130da83f25c5350e7e46d16eaf5c0f2158dc7cd9";
-      sha256 = "1kkm2xjm8swkjf5rnnvi93xqfpkldqxhp8vnhyh6nr1ryhdjmhad";
-    };
-    jar = {
-      sha1 = "2e1ed5a4dae78ad35b1decaf486ea557e36f1218";
-      sha256 = "0aiid67a7zl75xspx9naincb1ig8822ypdza2vpx18dmvc2pmfi3";
     };
   };
   "https://repo.clojars.org/status-im/timbre/4.10.0-2-status/timbre-4.10.0-2-status" =
@@ -1263,21 +468,6 @@ in {
     jar = {
       sha1 = "09af0b348e6253dcf9fd567d0d22ffebdea46176";
       sha256 = "1qg2iyblykfkzmplc2c46916b9m0h5ad6lxmvrk5qn3pdxqr8vw0";
-    };
-  };
-  "https://repo.clojars.org/zprint/zprint/0.4.7/zprint-0.4.7" =
-  {
-    host = repositories.clojars;
-    path =
-      "zprint/zprint/0.4.7/zprint-0.4.7";
-    type = "jar";
-    pom = {
-      sha1 = "5e996cdc0b07ce2d08bfd8a357dbd03ddb3b6a49";
-      sha256 = "1kyhpl76870qvy56c4i7rxqwf6m1zjahpd4wcrdqh80b65k0wjmy";
-    };
-    jar = {
-      sha1 = "2ab68369b812a69d8b2257223c06168e883f33a4";
-      sha256 = "1a667jc2q8jcchmnlwz31kngnlcjy4y4q9cf6ng7jlrb3lv74v0j";
     };
   };
   "https://repo1.maven.org/maven2/args4j/args4j-site/2.0.26/args4j-site-2.0.26" =
@@ -1332,21 +522,6 @@ in {
       sha256 = "1mlyqrqyhijwkjx4sv2zfn2ciqfwpc08qq8w55rcxb941fxfmpci";
     };
   };
-  "https://repo1.maven.org/maven2/com/cognitect/transit-clj/0.8.290/transit-clj-0.8.290" =
-  {
-    host = repositories.maven;
-    path =
-      "com/cognitect/transit-clj/0.8.290/transit-clj-0.8.290";
-    type = "jar";
-    pom = {
-      sha1 = "2fac6a71e7a3bd058e5e7e41a5ead985ae25cc57";
-      sha256 = "0ywqmz7a4ws1nq18caqhbi3s50pid5x3fds74sxm1m4laasy1zvi";
-    };
-    jar = {
-      sha1 = "98034fc3bfe005d9085aeb6622d2e404cb299ab1";
-      sha256 = "0kj9p9fdwwbsjwwyb9cqy32r9c0drbf2fk9qijzms5g3i5bxhma3";
-    };
-  };
   "https://repo1.maven.org/maven2/com/cognitect/transit-clj/0.8.309/transit-clj-0.8.309" =
   {
     host = repositories.maven;
@@ -1362,51 +537,6 @@ in {
       sha256 = "02p1ahm699gxddxg2avggxfs588n85cl4p29qqg0ks6n1cxiwv5c";
     };
   };
-  "https://repo1.maven.org/maven2/com/cognitect/transit-cljs/0.8.239/transit-cljs-0.8.239" =
-  {
-    host = repositories.maven;
-    path =
-      "com/cognitect/transit-cljs/0.8.239/transit-cljs-0.8.239";
-    type = "jar";
-    pom = {
-      sha1 = "76942fcfb8ced2b603a1400c8d0c12d5d0f8679a";
-      sha256 = "04qd273hp7nla443pybfxvnqhprsnj7zlyb7aby09spw1wfdjd8n";
-    };
-    jar = {
-      sha1 = "5a87b70e33a74c91ece000bac49a5262b267a9a3";
-      sha256 = "1i7my330yzzh4q65lys91gz2z0nl091yk9arq3wbkbwf6zys3xw4";
-    };
-  };
-  "https://repo1.maven.org/maven2/com/cognitect/transit-cljs/0.8.243/transit-cljs-0.8.243" =
-  {
-    host = repositories.maven;
-    path =
-      "com/cognitect/transit-cljs/0.8.243/transit-cljs-0.8.243";
-    type = "jar";
-    pom = {
-      sha1 = "3e1e5ef28c2b4e745f9c235844cd2208007a3aa3";
-      sha256 = "1x6dydi84pfkidg55mk27cy4mirivjd9jv5hq9ldzs5hvz1647s4";
-    };
-    jar = {
-      sha1 = "f12c4742ea130e6d51530eded1b7001686b72393";
-      sha256 = "0khdh2fmi4yi01g94sknswrnh12cllx03p3cvwzx69zvm5d27qnr";
-    };
-  };
-  "https://repo1.maven.org/maven2/com/cognitect/transit-java/0.8.316/transit-java-0.8.316" =
-  {
-    host = repositories.maven;
-    path =
-      "com/cognitect/transit-java/0.8.316/transit-java-0.8.316";
-    type = "jar";
-    pom = {
-      sha1 = "52d95d29e6265c0cc0406d7fc78847d6c6f57de9";
-      sha256 = "0axk11kfk6l3dph30jwfc6rf2wmydyr12gansrfrr4f0hsd9sw0g";
-    };
-    jar = {
-      sha1 = "2b1bbf183373cc61f4e5fa6aba25df8902ac31a9";
-      sha256 = "0ay3dnd5ijw8mwh9n051b8z190xxk884rz446b3lxxlahd3wmh5z";
-    };
-  };
   "https://repo1.maven.org/maven2/com/cognitect/transit-java/0.8.332/transit-java-0.8.332" =
   {
     host = repositories.maven;
@@ -1420,36 +550,6 @@ in {
     jar = {
       sha1 = "f76e5dced124be411e246e61c33db10b3005b881";
       sha256 = "02y1hi3pqjwxh4gk723lhbyrzfa7l78s09b4qhrhqg8mvigsbdla";
-    };
-  };
-  "https://repo1.maven.org/maven2/com/cognitect/transit-js/0.8.846/transit-js-0.8.846" =
-  {
-    host = repositories.maven;
-    path =
-      "com/cognitect/transit-js/0.8.846/transit-js-0.8.846";
-    type = "jar";
-    pom = {
-      sha1 = "8ef0fbb4e15dd33a6f262e8cdc481f0f635592d3";
-      sha256 = "1r7991ljrh75f8622433sga70x8swcznycl2sczdqklg9iajqlhn";
-    };
-    jar = {
-      sha1 = "bc6e908a4a3ec8818b3de924cd3dce433dd3411f";
-      sha256 = "01937017b9m3dw6s10drj2s76597ayjxdyvd102gnxmb031gynha";
-    };
-  };
-  "https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.3.2/jackson-core-2.3.2" =
-  {
-    host = repositories.maven;
-    path =
-      "com/fasterxml/jackson/core/jackson-core/2.3.2/jackson-core-2.3.2";
-    type = "jar";
-    pom = {
-      sha1 = "a417e0d13dcdba4779b135f2870d1ad552c4269c";
-      sha256 = "0rkdm6ccw39cwr0j2fs1y785p5rpfxc59pd90qwmbzwhfgc2pc1d";
-    };
-    jar = {
-      sha1 = "559b70ac8a0d5cad611da4223137a920147201ba";
-      sha256 = "1nkk5cqxhnpcrzfgyr4iq6p1v97180n6r10q58gpwmazn90rlb38";
     };
   };
   "https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.8.7/jackson-core-2.8.7" =
@@ -1476,17 +576,6 @@ in {
     pom = {
       sha1 = "d020f5b079a7c1608b08f4f9bd76f73cb9b3a1be";
       sha256 = "0n4kppglr435ilgk3vxh3f58hsabw45nq8i8jz4c4a9s3969jl9v";
-    };
-  };
-  "https://repo1.maven.org/maven2/com/fasterxml/oss-parent/12/oss-parent-12" =
-  {
-    host = repositories.maven;
-    path =
-      "com/fasterxml/oss-parent/12/oss-parent-12";
-    type = "jar";
-    pom = {
-      sha1 = "28d822058fb576f203afc098822f2db5d1537055";
-      sha256 = "1vl124pr7dr3vgl0sbcnyd6k44d0a77ik85gg8cggv9mvbb70w56";
     };
   };
   "https://repo1.maven.org/maven2/com/fasterxml/oss-parent/27/oss-parent-27" =
@@ -1835,21 +924,6 @@ in {
       sha256 = "08l32yy6szkl1zl0gksmb2rh8sigmxjfpvh5vz0r0wl6kqiscnss";
     };
   };
-  "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-externs/v20160315/closure-compiler-externs-v20160315" =
-  {
-    host = repositories.maven;
-    path =
-      "com/google/javascript/closure-compiler-externs/v20160315/closure-compiler-externs-v20160315";
-    type = "jar";
-    pom = {
-      sha1 = "b40f548c427d1d777b9bd2f57d2960b0c3d1f83c";
-      sha256 = "07r382l38an2swq8lgg75156473xjmcwzzcgj1klkmca236rmhz7";
-    };
-    jar = {
-      sha1 = "a0c252a8fced5f0a542302e3f03066c8144d7371";
-      sha256 = "1k5vhvwxv4r9xzddq8k53fnxc5jvm3naw8sbnm383yh0sk9rm2l5";
-    };
-  };
   "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-externs/v20160911/closure-compiler-externs-v20160911" =
   {
     host = repositories.maven;
@@ -1863,21 +937,6 @@ in {
     jar = {
       sha1 = "3186e2c9a2018bb49547947d2919b0e6998a1fe2";
       sha256 = "1dq7jg1cjx5f8d9rs72s5sc2rg2lslram9zp1nm9dxjpvfx47ihp";
-    };
-  };
-  "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-externs/v20161201/closure-compiler-externs-v20161201" =
-  {
-    host = repositories.maven;
-    path =
-      "com/google/javascript/closure-compiler-externs/v20161201/closure-compiler-externs-v20161201";
-    type = "jar";
-    pom = {
-      sha1 = "37cba1929efb9009806f9cc4bfafaa91fb896571";
-      sha256 = "1gwi3kwqvzxd5phbgndlxbqvk5r4jznpv6y26p1rc735fqll4zwq";
-    };
-    jar = {
-      sha1 = "23e7bb971e7cf38d3752deb4dc3bbd0cf6b63b09";
-      sha256 = "1hxngr7gw8g8jqg7p4bp87r9jmhqr4rajfjmkggl6n0g5s19vvbr";
     };
   };
   "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-externs/v20170521/closure-compiler-externs-v20170521" =
@@ -1895,21 +954,6 @@ in {
       sha256 = "13yy2h4f9wbhilqw2sd7q3mgqmrpnlmwwhfg9nchkkz72rp5va97";
     };
   };
-  "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-externs/v20170910/closure-compiler-externs-v20170910" =
-  {
-    host = repositories.maven;
-    path =
-      "com/google/javascript/closure-compiler-externs/v20170910/closure-compiler-externs-v20170910";
-    type = "jar";
-    pom = {
-      sha1 = "97087bb1a327dea2f8a962d365d27b62a6a94cb4";
-      sha256 = "0pyhn6cx7gs68q0xrhl5zc9v7v6sqvya173dqjrqw77piib54p8x";
-    };
-    jar = {
-      sha1 = "036e801a929fcd121d212093923daf34986f5572";
-      sha256 = "17bf60322dcqmbay2nqhnan1mjpvy7m916jh6z79h175qifslg0i";
-    };
-  };
   "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-externs/v20190325/closure-compiler-externs-v20190325" =
   {
     host = repositories.maven;
@@ -1925,17 +969,6 @@ in {
       sha256 = "0qnymibhmb76c5crm3yz71j5gmsjh041bj7mv4a1qsc4p5v7zh54";
     };
   };
-  "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-main/v20160315/closure-compiler-main-v20160315" =
-  {
-    host = repositories.maven;
-    path =
-      "com/google/javascript/closure-compiler-main/v20160315/closure-compiler-main-v20160315";
-    type = "jar";
-    pom = {
-      sha1 = "6bc18a4da9ebe0aa4ea851588ccc7e0f47577465";
-      sha256 = "11w8hmzqh31x1w0lx0ipd5cam6mg50x3zr2h5yhsmsyyfcrbz9ag";
-    };
-  };
   "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-main/v20160911/closure-compiler-main-v20160911" =
   {
     host = repositories.maven;
@@ -1947,17 +980,6 @@ in {
       sha256 = "0bzzwassbwfqpqjvnggn26r53mg9ayw0w8paj4vbd9mqq1b1qg41";
     };
   };
-  "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-main/v20161201/closure-compiler-main-v20161201" =
-  {
-    host = repositories.maven;
-    path =
-      "com/google/javascript/closure-compiler-main/v20161201/closure-compiler-main-v20161201";
-    type = "jar";
-    pom = {
-      sha1 = "0ce70935397889e8569212c1928044d222e0be69";
-      sha256 = "0nv5f2314xb4np0bij2p24szwkb2pzq0r1b40h5dbxxhr4yjayzd";
-    };
-  };
   "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-main/v20170521/closure-compiler-main-v20170521" =
   {
     host = repositories.maven;
@@ -1967,17 +989,6 @@ in {
     pom = {
       sha1 = "497c375aa4ea7deebab96e993b659a6b62926e41";
       sha256 = "0c9daw25c559h68vhfxjnk5gbv1z8yqx230r6q3ziff0fcpsc85q";
-    };
-  };
-  "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-main/v20170910/closure-compiler-main-v20170910" =
-  {
-    host = repositories.maven;
-    path =
-      "com/google/javascript/closure-compiler-main/v20170910/closure-compiler-main-v20170910";
-    type = "jar";
-    pom = {
-      sha1 = "2176204e185097354469b09a8f3a4cea4d4b9adb";
-      sha256 = "0w38w2cls4n09lbdk64bxks5iyj15hf5bfwh9clgzg4s6iysp7nf";
     };
   };
   "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-main/v20190325/closure-compiler-main-v20190325" =
@@ -2013,17 +1024,6 @@ in {
       sha256 = "1ji6lzs7bxcgdhdcyx2vlh84mzshfdlpm0nc6gmkqm7xf96i7k92";
     };
   };
-  "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-parent/v20160315/closure-compiler-parent-v20160315" =
-  {
-    host = repositories.maven;
-    path =
-      "com/google/javascript/closure-compiler-parent/v20160315/closure-compiler-parent-v20160315";
-    type = "jar";
-    pom = {
-      sha1 = "dd2772e970f3a3faa9289a5c9a74789043674b3e";
-      sha256 = "1qa9m69rkwpl2jgk5bhgybxlkdvq8gfqbp5r5wzrzjckpvspkigy";
-    };
-  };
   "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-parent/v20160911/closure-compiler-parent-v20160911" =
   {
     host = repositories.maven;
@@ -2033,17 +1033,6 @@ in {
     pom = {
       sha1 = "103384ce0cf44301a5e85b262ae7807142427b3e";
       sha256 = "0wmanmgpdl7p0bkbli4yn5pxz2w8jpljh0w84acn4f421nyd8cjg";
-    };
-  };
-  "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-parent/v20161201/closure-compiler-parent-v20161201" =
-  {
-    host = repositories.maven;
-    path =
-      "com/google/javascript/closure-compiler-parent/v20161201/closure-compiler-parent-v20161201";
-    type = "jar";
-    pom = {
-      sha1 = "7312e83e799476444fe8ea24b2af2716b8cc3bdb";
-      sha256 = "0x9jld0q0mk9ygcwwwjnyjcc7d48mk3j4sg65vrk9cdplnwdl090";
     };
   };
   "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-parent/v20170521/closure-compiler-parent-v20170521" =
@@ -2057,17 +1046,6 @@ in {
       sha256 = "0s6860ypm0m34qg0fbs5b2mg6zj5ff3sfs900l7n4n06dk1854qy";
     };
   };
-  "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-parent/v20170910/closure-compiler-parent-v20170910" =
-  {
-    host = repositories.maven;
-    path =
-      "com/google/javascript/closure-compiler-parent/v20170910/closure-compiler-parent-v20170910";
-    type = "jar";
-    pom = {
-      sha1 = "9f71bfc345b1325a7ddfdd2aae9db3766346d5de";
-      sha256 = "1bq809m7y243wk7rp89bdbni38k55209f8q2982lzg70dh3r7sz4";
-    };
-  };
   "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-parent/v20190325/closure-compiler-parent-v20190325" =
   {
     host = repositories.maven;
@@ -2077,21 +1055,6 @@ in {
     pom = {
       sha1 = "ab85e2babd5e00155da30883acbbf2d1e4f28b38";
       sha256 = "1kp3w6rw13avpsnkgg2d8k245yg9k9sf1hckdd8hidrzpv0v1qgz";
-    };
-  };
-  "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-unshaded/v20160315/closure-compiler-unshaded-v20160315" =
-  {
-    host = repositories.maven;
-    path =
-      "com/google/javascript/closure-compiler-unshaded/v20160315/closure-compiler-unshaded-v20160315";
-    type = "jar";
-    pom = {
-      sha1 = "2c20d72c65ccb84e972eedd308661f353ede1276";
-      sha256 = "0m4ka5w010wcw9mdbv8wihq6li9pqzh6jl2j0591ydy7a1651v3d";
-    };
-    jar = {
-      sha1 = "b99f14cd8301202bb5c9f4f965a81eefc6186123";
-      sha256 = "0y8p4zbm4q3n9hdas396dkgs2lfdnd9fxz37lhvqnafbalnxnddq";
     };
   };
   "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-unshaded/v20160911/closure-compiler-unshaded-v20160911" =
@@ -2109,21 +1072,6 @@ in {
       sha256 = "0s1d1cdb596gh1qzhqzp8i0r1mmmsp98cfajmsm5nljlyi5kd11a";
     };
   };
-  "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-unshaded/v20161201/closure-compiler-unshaded-v20161201" =
-  {
-    host = repositories.maven;
-    path =
-      "com/google/javascript/closure-compiler-unshaded/v20161201/closure-compiler-unshaded-v20161201";
-    type = "jar";
-    pom = {
-      sha1 = "b1614670f469d24335b06956e301b9272ebe4d0b";
-      sha256 = "0kx4m1ryxaj1a4zvnshkqf5niw1xgm7pqqr7z61b230j3mapms9w";
-    };
-    jar = {
-      sha1 = "fb618dd6bc063b08a18a034d8debb32e434a7aca";
-      sha256 = "12v79lnihk1rbyb7pvkif0mycijpb45sj4h53fwvz2sdj13m14vn";
-    };
-  };
   "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-unshaded/v20170521/closure-compiler-unshaded-v20170521" =
   {
     host = repositories.maven;
@@ -2137,21 +1085,6 @@ in {
     jar = {
       sha1 = "8987aa201a79141369f8bfba77492093512f9dc4";
       sha256 = "1186iddh57ayy6x0r4zxjzj3w8f7vn2m132kc7bj1z8mf93337i6";
-    };
-  };
-  "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-unshaded/v20170910/closure-compiler-unshaded-v20170910" =
-  {
-    host = repositories.maven;
-    path =
-      "com/google/javascript/closure-compiler-unshaded/v20170910/closure-compiler-unshaded-v20170910";
-    type = "jar";
-    pom = {
-      sha1 = "c6cd1a48c0443dab9572dc080a52df124f4a6d2b";
-      sha256 = "1zsmfdwn7pr2ih7ra9g0w1i3rgazlzalh2fgv8nllkjf2hcck1zq";
-    };
-    jar = {
-      sha1 = "5834db471c5ffbb24edd2cf9df966d496c4163cd";
-      sha256 = "1zzljsjflfmq3gyd4rn7pnss6q1pibkzlcn6mdccr42s9hhykslz";
     };
   };
   "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler-unshaded/v20190325/closure-compiler-unshaded-v20190325" =
@@ -2197,21 +1130,6 @@ in {
     jar = {
       sha1 = "b5cd14a356cd9079791ba10b6d9623ef4ae4df6e";
       sha256 = "1wjnps06m015l1pzzzg9jmcvwz6dpjccz1c1ljbcbil9br4kprmv";
-    };
-  };
-  "https://repo1.maven.org/maven2/com/google/javascript/closure-compiler/v20160315/closure-compiler-v20160315" =
-  {
-    host = repositories.maven;
-    path =
-      "com/google/javascript/closure-compiler/v20160315/closure-compiler-v20160315";
-    type = "jar";
-    pom = {
-      sha1 = "afd289b46d627cdcc9c547ee564ace96faf864e6";
-      sha256 = "0wzmrnbw9nf7snybkzjrmjn2hz0bnqvkfl1ww0aa3w8r9qbcvjhf";
-    };
-    jar = {
-      sha1 = "f5b1a03f83a014e545db60a795fcf94db14a5ba2";
-      sha256 = "1b327vhrgkmszqra1cg4n10mndxla5b6ln3i30ayxnn7wmkwblrq";
     };
   };
   "https://repo1.maven.org/maven2/com/google/jsinterop/jsinterop-annotations/1.0.0/jsinterop-annotations-1.0.0" =
@@ -2337,21 +1255,6 @@ in {
       sha256 = "170rflxnqnah0265ik2aylmxkshyqbf2zas9bp2l32xqj9l6jsaf";
     };
   };
-  "https://repo1.maven.org/maven2/com/yahoo/platform/yui/yuicompressor/2.4.8/yuicompressor-2.4.8" =
-  {
-    host = repositories.maven;
-    path =
-      "com/yahoo/platform/yui/yuicompressor/2.4.8/yuicompressor-2.4.8";
-    type = "jar";
-    pom = {
-      sha1 = "99adc60ea87c167300edc7abb931d29980ab519e";
-      sha256 = "15xkp1rsha6s5v39myfjdjig5jpbljph1n3crwvzysxqbh91iz2c";
-    };
-    jar = {
-      sha1 = "900a7296bb52d740418d53274c1ecac5c83c760e";
-      sha256 = "1lhkv2s2m05r611j9lhh38s0dpdng9pllvqxhh4ssk54w4ppq3cq";
-    };
-  };
   "https://repo1.maven.org/maven2/commons-codec/commons-codec/1.10/commons-codec-1.10" =
   {
     host = repositories.maven;
@@ -2365,156 +1268,6 @@ in {
     jar = {
       sha1 = "4b95f4897fa13f2cd904aee711aeafc0c5295cd8";
       sha256 = "0scm6321zz76dc3bs8sy2qyami755lz4lq5455gl67bi9slxyha2";
-    };
-  };
-  "https://repo1.maven.org/maven2/commons-codec/commons-codec/1.6/commons-codec-1.6" =
-  {
-    host = repositories.maven;
-    path =
-      "commons-codec/commons-codec/1.6/commons-codec-1.6";
-    type = "jar";
-    pom = {
-      sha1 = "9499f0c87ab43a74c456b9847acbcb5e67fe9f32";
-      sha256 = "1298qykf61rrg2p3jnschq659ycqwkryp528v49vi9pkzz9kavm0";
-    };
-    jar = {
-      sha1 = "b7f0fc8f61ecadeb3695f0b9464755eee44374d4";
-      sha256 = "11ix43vckkj5mbv9ccnv4vf745s8sgpkdms07syi854f3fa4xcsl";
-    };
-  };
-  "https://repo1.maven.org/maven2/commons-fileupload/commons-fileupload/1.3.1/commons-fileupload-1.3.1" =
-  {
-    host = repositories.maven;
-    path =
-      "commons-fileupload/commons-fileupload/1.3.1/commons-fileupload-1.3.1";
-    type = "jar";
-    pom = {
-      sha1 = "909928bd37f1bf2accb0ec2c37252a540671b332";
-      sha256 = "02ifkikqil550ldrhh2ngx7cmd25izs3n2lnjq68i84vnjlr1yi6";
-    };
-    jar = {
-      sha1 = "c621b54583719ac0310404463d6d99db27e1052c";
-      sha256 = "0cp59c2802j63fq5gmncx3jhb1yhxyb0dz9xzda11yb2dn333bpl";
-    };
-  };
-  "https://repo1.maven.org/maven2/commons-fileupload/commons-fileupload/1.3/commons-fileupload-1.3" =
-  {
-    host = repositories.maven;
-    path =
-      "commons-fileupload/commons-fileupload/1.3/commons-fileupload-1.3";
-    type = "jar";
-    pom = {
-      sha1 = "509f46dd8f9482f08f953da7a3f479c020e645e8";
-      sha256 = "0yhw41b32gryv10ymxnh93w30ihvkwc6ip64c8inikjmbj461alz";
-    };
-    jar = {
-      sha1 = "c89e540e4a12cb034fb973e12135839b5de9a87e";
-      sha256 = "1zj92isxrsdq8njcwdkbmrvwz7i15hl15z6101kpr1pk1y1kzsmw";
-    };
-  };
-  "https://repo1.maven.org/maven2/commons-io/commons-io/2.2/commons-io-2.2" =
-  {
-    host = repositories.maven;
-    path =
-      "commons-io/commons-io/2.2/commons-io-2.2";
-    type = "jar";
-    pom = {
-      sha1 = "1ef24807b2eaf9d51b5587710878146d630cc855";
-      sha256 = "1iqjx1a0cifhbkxma8ihq2vpq7v38cwrpccw5alk2hx9vk11s8kc";
-    };
-    jar = {
-      sha1 = "83b5b8a7ba1c08f9e8c8ff2373724e33d3c1e22a";
-      sha256 = "11xsj9bmhwgxa9k62i9x8sjiyiv69h2y87sr6qblhbd826yn0pv7";
-    };
-  };
-  "https://repo1.maven.org/maven2/commons-io/commons-io/2.4/commons-io-2.4" =
-  {
-    host = repositories.maven;
-    path =
-      "commons-io/commons-io/2.4/commons-io-2.4";
-    type = "jar";
-    pom = {
-      sha1 = "9ece23effe8bce3904f3797a76b1ba6ab681e1b9  ./commons-io-2.4.pom";
-      sha256 = "1wiikf78kr9k4pk68hb9jb9whrv19w8ir2kgxckad3wrrx3dvddj";
-    };
-    jar = {
-      sha1 = "b1b6ea3b7e4aa4f492509a4952029cd8e48019ad  ./commons-io-2.4.jar";
-      sha256 = "108mw2v8ncig29kjvzh8wi76plr01f4x5l3b1929xk5a7vf42snc";
-    };
-  };
-  "https://repo1.maven.org/maven2/commons-io/commons-io/2.5/commons-io-2.5" =
-  {
-    host = repositories.maven;
-    path =
-      "commons-io/commons-io/2.5/commons-io-2.5";
-    type = "jar";
-    pom = {
-      sha1 = "7e39112810f6096061c43504188d18edc7d7eece";
-      sha256 = "0c7cpx1i07v15ps6yn0k6h7h14h8ciqnjlkqa2rarmy7ifcv5sr8";
-    };
-    jar = {
-      sha1 = "2852e6e05fbb95076fc091f6d1780f1f8fe35e0f";
-      sha256 = "0x1la4i7s3l8q763csfrw4b8gl5vzj79h7fb1ih6hj93ils1h151";
-    };
-  };
-  "https://repo1.maven.org/maven2/javax/servlet/servlet-api/2.5/servlet-api-2.5" =
-  {
-    host = repositories.maven;
-    path =
-      "javax/servlet/servlet-api/2.5/servlet-api-2.5";
-    type = "jar";
-    pom = {
-      sha1 = "a159fa05cce714c83deff647655dd53db064b21c";
-      sha256 = "07ma7yabvz3jkbxjm87wxdzljsf6hxqahv3a5ljk516dyc31axv9";
-    };
-    jar = {
-      sha1 = "5959582d97d8b61f4d154ca9e495aafd16726e34";
-      sha256 = "1p6lk86qwrr8k2pgjs3pmfh44h9ff05ckcvgnsnyxykh18vfln66";
-    };
-  };
-  "https://repo1.maven.org/maven2/joda-time/joda-time/2.2/joda-time-2.2" =
-  {
-    host = repositories.maven;
-    path =
-      "joda-time/joda-time/2.2/joda-time-2.2";
-    type = "jar";
-    pom = {
-      sha1 = "2e415bc8611ca1755fa5ca464c316c15b6aea0a6";
-      sha256 = "1f3r7vlf8fpafkrq2689f7b6ls2hq4gv38f7rcpy69fch1kfyibv";
-    };
-    jar = {
-      sha1 = "a5f29a7acaddea3f4af307e8cf2d0cc82645fd7d";
-      sha256 = "1bs0fa9344a264a3nj2wpkw18vgbvqccvr17bgg5n6gp66hkq675";
-    };
-  };
-  "https://repo1.maven.org/maven2/joda-time/joda-time/2.6/joda-time-2.6" =
-  {
-    host = repositories.maven;
-    path =
-      "joda-time/joda-time/2.6/joda-time-2.6";
-    type = "jar";
-    pom = {
-      sha1 = "87180d615f58fe64ce46d7929844d36e8ac54519";
-      sha256 = "0ag462rpk67b01p0am6pmbj4dlp6yvjz409pi3ga0cjpyq1zimz6";
-    };
-    jar = {
-      sha1 = "5015880733b0bc0ce813a3ed5601064c1d413671";
-      sha256 = "0s5ifaf51plllrr4bpfxr0zda7vi7hhp92gq5lhr7gxk2afz8waq";
-    };
-  };
-  "https://repo1.maven.org/maven2/joda-time/joda-time/2.8.2/joda-time-2.8.2" =
-  {
-    host = repositories.maven;
-    path =
-      "joda-time/joda-time/2.8.2/joda-time-2.8.2";
-    type = "jar";
-    pom = {
-      sha1 = "f8df631ef5c18b7bc8560f7afb897cc6d9166067";
-      sha256 = "07gbl2hnm1b8kk4gyjvch01r6kbcrjv1my2m421w6yiw6vd91kc1";
-    };
-    jar = {
-      sha1 = "d27c24204c5e507b16fec01006b3d0f1ec42aed4";
-      sha256 = "1js2kk0x5p3z7hqpnfb2p9x44gyj4mc16g69pi4pwsqf9ixsqwbw";
     };
   };
   "https://repo1.maven.org/maven2/junit/junit/4.10/junit-4.10" =
@@ -2532,17 +1285,6 @@ in {
       sha256 = "0nppn3pgsyh7py465nk6fxi0s0w7pciqfnq5i3mgd1hb3v54g9rn";
     };
   };
-  "https://repo1.maven.org/maven2/org/apache/apache/13/apache-13" =
-  {
-    host = repositories.maven;
-    path =
-      "org/apache/apache/13/apache-13";
-    type = "jar";
-    pom = {
-      sha1 = "15aff1faaec4963617f07dbe8e603f0adabc3a12";
-      sha256 = "07c4yg52q1qiz2b982pcsiwf9ahmpil4jy7lpqvi5m0z6sq3slgz";
-    };
-  };
   "https://repo1.maven.org/maven2/org/apache/apache/15/apache-15" =
   {
     host = repositories.maven;
@@ -2552,17 +1294,6 @@ in {
     pom = {
       sha1 = "95c70374817194cabfeec410fe70c3a6b832bafe";
       sha256 = "156lk89x31r2d6ljpwl1lvrl0sxgkd70wj6bq18b8rxcg7wz5hin";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/apache/apache/16/apache-16" =
-  {
-    host = repositories.maven;
-    path =
-      "org/apache/apache/16/apache-16";
-    type = "jar";
-    pom = {
-      sha1 = "8a90e31780e5cd0685ccaf25836c66e3b4e163b7";
-      sha256 = "03m4fjgg98zcyjlsp64z21lyiszhwyg43ys7mabk1jynswpzz1cz";
     };
   };
   "https://repo1.maven.org/maven2/org/apache/apache/9/apache-9" =
@@ -2602,50 +1333,6 @@ in {
       sha256 = "1frwdic537d95l0ikgkvfpb4wjfjx2h5h211zysdsyhawdamx37v";
     };
   };
-  "https://repo1.maven.org/maven2/org/apache/commons/commons-parent/24/commons-parent-24" =
-  {
-    host = repositories.maven;
-    path =
-      "org/apache/commons/commons-parent/24/commons-parent-24";
-    type = "jar";
-    pom = {
-      sha1 = "dbb7913f93b279ef889f6bad288b82dae58df237";
-      sha256 = "1k9wf5mfj0wjnqy1bfpzc4whp4mqziw0hnwgimzzamp9nlh2hfda";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/apache/commons/commons-parent/25/commons-parent-25" =
-  {
-    host = repositories.maven;
-    path =
-      "org/apache/commons/commons-parent/25/commons-parent-25";
-    type = "jar";
-    pom = {
-      sha1 = "67b84199ca4acf0d8fbc5256d90b80f746737e94";
-      sha256 = "1flhjyg2b14ch0wvsbimqli7vmpxim8yg54h6xkni1rf8i8fcyj6";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/apache/commons/commons-parent/28/commons-parent-28" =
-  {
-    host = repositories.maven;
-    path =
-      "org/apache/commons/commons-parent/28/commons-parent-28";
-    type = "jar";
-    pom = {
-      sha1 = "9ff25b2866ef063a8828ba67d1e35c78f73e830a";
-      sha256 = "1iw6zsx6j4hbfmmcrin10cpz7p2644i6vn8cwsfvc85ix1l3lwql";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/apache/commons/commons-parent/32/commons-parent-32" =
-  {
-    host = repositories.maven;
-    path =
-      "org/apache/commons/commons-parent/32/commons-parent-32";
-    type = "jar";
-    pom = {
-      sha1 = "0e51c4223003c2c7c63f38d7b8823e40eb06bd1f";
-      sha256 = "1s2bdgr10jshy5v0bs03c2d7hw3qxyfkf5fl90hh7x1gifpmilp4";
-    };
-  };
   "https://repo1.maven.org/maven2/org/apache/commons/commons-parent/35/commons-parent-35" =
   {
     host = repositories.maven;
@@ -2655,17 +1342,6 @@ in {
     pom = {
       sha1 = "d88c24ebb385e5404f34573f24362b17434e3f33";
       sha256 = "16p48k5ly6yli1wlzb5qcipwd0lzhsnbrjr1vk4x9v1nhfms363h";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/apache/commons/commons-parent/39/commons-parent-39" =
-  {
-    host = repositories.maven;
-    path =
-      "org/apache/commons/commons-parent/39/commons-parent-39";
-    type = "jar";
-    pom = {
-      sha1 = "4bc32d3cda9f07814c548492af7bf19b21798d46";
-      sha256 = "19qxlq7zcvf8cw2hyrcb5d6b9cbbd6ccwnahv2v3wp1al3hjgkc7";
     };
   };
   "https://repo1.maven.org/maven2/org/checkerframework/checker-qual/2.0.0/checker-qual-2.0.0" =
@@ -2711,21 +1387,6 @@ in {
     jar = {
       sha1 = "a1e6b92ce9b1bfc5d181867a45da8a38a6077662";
       sha256 = "06nj99mi0092qhv32ipk0nws4sdhnc890xx4gsgabllyzn8zkxnl";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/clojure/clojure/1.2.1/clojure-1.2.1" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/clojure/1.2.1/clojure-1.2.1";
-    type = "jar";
-    pom = {
-      sha1 = "32b3723f4cabed2a5f07fac20987444ffab3f8de";
-      sha256 = "13xwzwb7znc3paqybwrj2bw6r1ph0jfjwps7farj2ycj3psyq1ps";
-    };
-    jar = {
-      sha1 = "be088d20c078ce48d42afba05984f1ef7c02142b";
-      sha256 = "1c1z38adk8ivzh2ys7wm59zgl01nr86vw4ic5s5i7y9d98jm725k";
     };
   };
   "https://repo1.maven.org/maven2/org/clojure/clojure/1.3.0/clojure-1.3.0" =
@@ -2788,21 +1449,6 @@ in {
       sha256 = "078mrlsqgapvqwbp0yncjqilphsq7g366j3fck0bz8fyfzwq9h84";
     };
   };
-  "https://repo1.maven.org/maven2/org/clojure/clojure/1.6.0/clojure-1.6.0" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/clojure/1.6.0/clojure-1.6.0";
-    type = "jar";
-    pom = {
-      sha1 = "83ab644d3709f459d5b14f1b136a882be388308d";
-      sha256 = "1dczr48jg70skp41hgknqn4ghwasz3w78g1ac4n1ldrd6a8m14yd";
-    };
-    jar = {
-      sha1 = "1d95fb21562fa9d6df138a568ba5cab3e1dd3c98";
-      sha256 = "01xbjcjij0npjrylm525qgggk1jbcp3hq04qg7z4pr1l9w8d5yhv";
-    };
-  };
   "https://repo1.maven.org/maven2/org/clojure/clojure/1.7.0-beta1/clojure-1.7.0-beta1" =
   {
     host = repositories.maven;
@@ -2846,36 +1492,6 @@ in {
     jar = {
       sha1 = "313066c972b6b00f390674bf0e9f732c07f205a4";
       sha256 = "1a30sdpn1rr50w7qfz6pn3z5i43fjq3z9qm1aa4cd9piwhgpy6h6";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/clojure/clojure/1.9.0-RC1/clojure-1.9.0-RC1" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/clojure/1.9.0-RC1/clojure-1.9.0-RC1";
-    type = "jar";
-    pom = {
-      sha1 = "7682cc0ecdcc0bf3f6e46d8e83f5385e3411469f";
-      sha256 = "1mswh0xsnzal2ig3hbkv1q4vf67kia8q5iy9k9w0vz4j4m5yiid3";
-    };
-    jar = {
-      sha1 = "2835312f2017ac57a7a9fb6133b662323238bcae";
-      sha256 = "01nnfjsbfssvm0i7ka33qmsgxl4j5lnbrsycgpd926w3c5dz35kz";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/clojure/clojure/1.9.0/clojure-1.9.0" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/clojure/1.9.0/clojure-1.9.0";
-    type = "jar";
-    pom = {
-      sha1 = "3e3c74ab40e039ca235d2ace901932dcda5a704d";
-      sha256 = "02zwmxzkkx8pfbrj087fxz7y0r58kn59d79n1q0m5zgad2h6yzi8";
-    };
-    jar = {
-      sha1 = "09ee19f88152373323b8af7be35de5aa6c0c4b2b";
-      sha256 = "1ys39qjbkl5jlqwzqxppiilaph56jw4jq46w93xlfg3nwrhq44kp";
     };
   };
   "https://repo1.maven.org/maven2/org/clojure/clojurescript/0.0-3211/clojurescript-0.0-3211" =
@@ -2923,36 +1539,6 @@ in {
       sha256 = "0z531izb085jnhiklmr8favvs154dnls5g3jm1nl1c99jd4b4g3g";
     };
   };
-  "https://repo1.maven.org/maven2/org/clojure/clojurescript/1.8.51/clojurescript-1.8.51" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/clojurescript/1.8.51/clojurescript-1.8.51";
-    type = "jar";
-    pom = {
-      sha1 = "85523561fb8f5d9c8691daffcc09458ec0a01473";
-      sha256 = "1ydbjqd3aqdz24iyd95fdzlfbm67kl4c4yrmgr6xnj0n2kryxkk1";
-    };
-    jar = {
-      sha1 = "b128c65e1be02a0a98f4803f70d03167ab07c319";
-      sha256 = "088mk2zd5v3z075l3zcqqxhlrblsi33jn912krhi800x8yyz7vr9";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/clojure/clojurescript/1.9.227/clojurescript-1.9.227" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/clojurescript/1.9.227/clojurescript-1.9.227";
-    type = "jar";
-    pom = {
-      sha1 = "513f5358e7204dd1d244616909c9a6f3ddb7e5fc";
-      sha256 = "001z1cjqglpfl2ycvf7gdhah2bf0qzl43gx9vmkb9am541hgk9pd";
-    };
-    jar = {
-      sha1 = "81d7d6cfee94bb88d84e8b98441b6d7bc5962fb1";
-      sha256 = "0130iwhgxvp8mbkh5qsm306yi12r2ayqvxkl8b6b69qbj02gmqgr";
-    };
-  };
   "https://repo1.maven.org/maven2/org/clojure/clojurescript/1.9.293/clojurescript-1.9.293" =
   {
     host = repositories.maven;
@@ -2968,21 +1554,6 @@ in {
       sha256 = "0blzqzdm7l9jsalz6ph8csdx287i1v3vmj684ffdfdaw38l6nriq";
     };
   };
-  "https://repo1.maven.org/maven2/org/clojure/clojurescript/1.9.456/clojurescript-1.9.456" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/clojurescript/1.9.456/clojurescript-1.9.456";
-    type = "jar";
-    pom = {
-      sha1 = "d380ad9375b3ba8552af12bf023f9ffd3436ef57";
-      sha256 = "15493ifppdp1f4761akdr13r3y683qj8dsvr5qjffvyg389gs3cj";
-    };
-    jar = {
-      sha1 = "9121b5e0aebef6f12bf4418aa7dc262b7fdbefa0";
-      sha256 = "1gcvaf8ddskq6c5fwd00i1gjmdclqds9gpn3chfpdx75g1z0n9l0";
-    };
-  };
   "https://repo1.maven.org/maven2/org/clojure/clojurescript/1.9.655/clojurescript-1.9.655" =
   {
     host = repositories.maven;
@@ -2996,51 +1567,6 @@ in {
     jar = {
       sha1 = "7886fa49bdc8a886f0a6ba6790f04d5139a2cf38";
       sha256 = "0w62l7i875zim6ac5b0vhy98lgkkjj5jwfa5cjzvlyrz2j9ivld7";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/clojure/clojurescript/1.9.671/clojurescript-1.9.671" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/clojurescript/1.9.671/clojurescript-1.9.671";
-    type = "jar";
-    pom = {
-      sha1 = "e2ca1afbcb3028209abd2d3fa6110ce1fa1386a4";
-      sha256 = "1f38q8f8cqhybpak123mvqqnyxchpr0pf8874mmqgxhic8dwxs4i";
-    };
-    jar = {
-      sha1 = "2518612b7250b24b31189f5b8611c7314d259eb4";
-      sha256 = "03sai76bg4k7djb2sz4vrac4gxzparl5awvsrrpzqh8sbjdm094a";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/clojure/clojurescript/1.9.946/clojurescript-1.9.946" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/clojurescript/1.9.946/clojurescript-1.9.946";
-    type = "jar";
-    pom = {
-      sha1 = "82cb71f93078b686e943ff70afbf8df267351056";
-      sha256 = "14as8d95phfg1550w0afkpfxm7bzd5slj7jhvld11yi5j867kin8";
-    };
-    jar = {
-      sha1 = "af6809922c421d9f1a5449a6b63976cef57a0fab";
-      sha256 = "0l2fil6kzdfnf9ijq2jh80xvjn7ifphldfxcr9qpb68mwamdxy1d";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/clojure/core.async/0.2.395/core.async-0.2.395" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/core.async/0.2.395/core.async-0.2.395";
-    type = "jar";
-    pom = {
-      sha1 = "04cee222183ff365cc2f9b7c8d20dc420cd2e35c";
-      sha256 = "02a23maa317wc8xmxzsp4wpcvfzli8ya278cmq6qdan9akm8n2ha";
-    };
-    jar = {
-      sha1 = "3be789e66490ff8afdfc04ea089c9c188acc1d41";
-      sha256 = "13f2kkax847wx0lv96yzka7ws4zy6k4xi18k642f5swd4mgcsr96";
     };
   };
   "https://repo1.maven.org/maven2/org/clojure/core.async/0.4.474/core.async-0.4.474" =
@@ -3086,21 +1612,6 @@ in {
     jar = {
       sha1 = "cb8bd16034be49ecb95eb29d06a314294949674a";
       sha256 = "1dqi2q6g1p2kf2ypqx22dgrscvkad98fv4ijf00cxfn4wvp7hykr";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/clojure/core.specs.alpha/0.1.24/core.specs.alpha-0.1.24" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/core.specs.alpha/0.1.24/core.specs.alpha-0.1.24";
-    type = "jar";
-    pom = {
-      sha1 = "c5b244a512c1a9bf3a5a87213c3895ef120523b2";
-      sha256 = "0ncziyhfcxvc7100yvy3gymp3kb1638ry4imgccv68mqxgwifryk";
-    };
-    jar = {
-      sha1 = "2637e33f693f51267f04e63f2acfb5d182e7bf56";
-      sha256 = "1v9njdmrcw2rhp7nhyz3ql490g89k44l3v1ly56q1whbsmqpc7zn";
     };
   };
   "https://repo1.maven.org/maven2/org/clojure/core.specs.alpha/0.2.44/core.specs.alpha-0.2.44" =
@@ -3208,21 +1719,6 @@ in {
       sha256 = "1vnpwkk5k89m6lyjs3k6hkks8b26j2gsfafq0f0f7dv7waj2rnjb";
     };
   };
-  "https://repo1.maven.org/maven2/org/clojure/google-closure-library-third-party/0.0-20170809-b9c14c6b/google-closure-library-third-party-0.0-20170809-b9c14c6b" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/google-closure-library-third-party/0.0-20170809-b9c14c6b/google-closure-library-third-party-0.0-20170809-b9c14c6b";
-    type = "jar";
-    pom = {
-      sha1 = "163c139e32ad9310b7275f38bedc839b18e2e37d";
-      sha256 = "026fsb2d9mh4n5sklmdj0p4ada2l2pi0pab4f5qzr70g2dywdzky";
-    };
-    jar = {
-      sha1 = "3b04b25e2136e180a6163742b10be419e50f2253";
-      sha256 = "1bijdqi621y01fq6app5lcck934vqqxajg44qs6xr2k9ar5237l2";
-    };
-  };
   "https://repo1.maven.org/maven2/org/clojure/google-closure-library-third-party/0.0-20190213-2033d5d9/google-closure-library-third-party-0.0-20190213-2033d5d9" =
   {
     host = repositories.maven;
@@ -3298,21 +1794,6 @@ in {
       sha256 = "00yxra6506kp58x86a88jn9sy4dr8w974daa7xrni5whafyyrgn0";
     };
   };
-  "https://repo1.maven.org/maven2/org/clojure/google-closure-library/0.0-20170809-b9c14c6b/google-closure-library-0.0-20170809-b9c14c6b" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/google-closure-library/0.0-20170809-b9c14c6b/google-closure-library-0.0-20170809-b9c14c6b";
-    type = "jar";
-    pom = {
-      sha1 = "510dfb3555ebbda9f8f08a05f93a71be2a96888b";
-      sha256 = "09p3a4y462a4nqi58hklbm1xzcxi61snynqldiqak2c6m8rw0awn";
-    };
-    jar = {
-      sha1 = "620e5075dd3d8f12742a47fc80eaf4c6682b4343";
-      sha256 = "02glny62gdqq7bf8xzfvkd7wm9idjpqix4zf2pnqpbp3bxdx3jc1";
-    };
-  };
   "https://repo1.maven.org/maven2/org/clojure/google-closure-library/0.0-20190213-2033d5d9/google-closure-library-0.0-20190213-2033d5d9" =
   {
     host = repositories.maven;
@@ -3361,21 +1842,6 @@ in {
       sha256 = "08q3q72iwh37cv6aafp47ybxxr77gg2zq9ndah3y7hy595y25sp0";
     };
   };
-  "https://repo1.maven.org/maven2/org/clojure/spec.alpha/0.1.143/spec.alpha-0.1.143" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/spec.alpha/0.1.143/spec.alpha-0.1.143";
-    type = "jar";
-    pom = {
-      sha1 = "76846d4f1b140051033526f8d4024b6093127908";
-      sha256 = "0ars06jzlkwf6jf587j0n14r6cmjjsmj1ghsp45982lf58lzlb88";
-    };
-    jar = {
-      sha1 = "54057fc4330a7b439127effafa92d1bfeefc23f5";
-      sha256 = "1030vxlj4k66639pv751vql8a27w7691nx68wjck7h2350q3cyab";
-    };
-  };
   "https://repo1.maven.org/maven2/org/clojure/spec.alpha/0.2.176/spec.alpha-0.2.176" =
   {
     host = repositories.maven;
@@ -3389,21 +1855,6 @@ in {
     jar = {
       sha1 = "cd2d5b03d2ff95a958cb075201b89d28a7dea626";
       sha256 = "1i3chggca910ln6h59ns17p454rpw55ffl6hgymx5p9lzzn9ckpw";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/clojure/tools.analyzer.jvm/0.6.10/tools.analyzer.jvm-0.6.10" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/tools.analyzer.jvm/0.6.10/tools.analyzer.jvm-0.6.10";
-    type = "jar";
-    pom = {
-      sha1 = "d70a7e011fc7dbfb8f0f302573694fbe1b240dad";
-      sha256 = "0a3xq8bqdldjwhvsyj0x4yqa0k4mq3isvqbyk1lb5ikddwxxsry6";
-    };
-    jar = {
-      sha1 = "7ce0847f43ad8615f45248b52a6a91ec2bd4e8bc";
-      sha256 = "0bi4bvw5na8inhvvrnibxsys4h37s09vfjfc8rk6dhaa2daj2jhz";
     };
   };
   "https://repo1.maven.org/maven2/org/clojure/tools.analyzer.jvm/0.7.0/tools.analyzer.jvm-0.7.0" =
@@ -3436,21 +1887,6 @@ in {
       sha256 = "1cs6l541bpipwyd3mzm7xi0qw67hxniv4kacsb7c639jn75nbydk";
     };
   };
-  "https://repo1.maven.org/maven2/org/clojure/tools.logging/0.3.1/tools.logging-0.3.1" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/tools.logging/0.3.1/tools.logging-0.3.1";
-    type = "jar";
-    pom = {
-      sha1 = "6ea27e8be5731cb2eeaaa4e32f0f4e5e74d97d18";
-      sha256 = "1qj9m2sm6mgc2zkc9c5r05sdqchxcq9snpky70fbym98qvmch8hb";
-    };
-    jar = {
-      sha1 = "d8342cb0b6825cd12115cc1a9ccef988484478b2";
-      sha256 = "0727j7861m2b8z7d55a863d8mnlb28cz6850rv2s2cvs95fv4mzx";
-    };
-  };
   "https://repo1.maven.org/maven2/org/clojure/tools.logging/0.4.1/tools.logging-0.4.1" =
   {
     host = repositories.maven;
@@ -3464,21 +1900,6 @@ in {
     jar = {
       sha1 = "991bebc6e3633b85091ae929d62c116a2584aee7";
       sha256 = "001sx1ddgx0ys0z1qphzpxjf2w35rikrfjc0h5bvvqbw8ra0vvja";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/clojure/tools.macro/0.1.5/tools.macro-0.1.5" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/tools.macro/0.1.5/tools.macro-0.1.5";
-    type = "jar";
-    pom = {
-      sha1 = "6a01a15b02728d2aab47c2cc07b05b07d4003b95";
-      sha256 = "0cfv243i97r38kay3rmwf9j2gk9f646bifgsl4byi3m5gps98q3h";
-    };
-    jar = {
-      sha1 = "925e200c906052e462e34a2c7e78a48ffec1dec4";
-      sha256 = "0j428ic8aazgv9s27820ybnsmgwfv7j8ywpkxs72dych9hlxf517";
     };
   };
   "https://repo1.maven.org/maven2/org/clojure/tools.namespace/0.2.11/tools.namespace-0.2.11" =
@@ -3509,21 +1930,6 @@ in {
     jar = {
       sha1 = "33f708ca897d542008ab2bd0d35a27a6d160a1fc";
       sha256 = "04m8lcfkkcqbqn8bpjsg0p188jf56v9r73jxqg2csrzg6warmnip";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/clojure/tools.reader/0.8.1/tools.reader-0.8.1" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/tools.reader/0.8.1/tools.reader-0.8.1";
-    type = "jar";
-    pom = {
-      sha1 = "f412585e545c3b76fe4571167ed1eb841bd41a25";
-      sha256 = "092q2ld391y5km260xyhglmnpw0bakm5ihxz539yn05gp6wp2fq9";
-    };
-    jar = {
-      sha1 = "0b2b847c94d445828517eb580da50851bb9a4beb";
-      sha256 = "1336j5qyk235v28nsacyr6hdi453wdy5sm40km7n4465359537p8";
     };
   };
   "https://repo1.maven.org/maven2/org/clojure/tools.reader/0.9.1/tools.reader-0.9.1" =
@@ -3586,36 +1992,6 @@ in {
       sha256 = "1ib07xdjc0s9509j2hxclrr5b1xdj28ypdas6scz1mvjamp5zwgp";
     };
   };
-  "https://repo1.maven.org/maven2/org/clojure/tools.reader/1.0.0-beta1/tools.reader-1.0.0-beta1" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/tools.reader/1.0.0-beta1/tools.reader-1.0.0-beta1";
-    type = "jar";
-    pom = {
-      sha1 = "284a03266395f698bf9e5cf821d5e74fdb79d42b";
-      sha256 = "0w9rn2i1g80s919fj29wrw2qfcz8fmnlb8gmapj834cyl1j03293";
-    };
-    jar = {
-      sha1 = "b96817bae210ce94af1f0ce53c32dc6eade12b92";
-      sha256 = "0ydij59ja5msw123mbd9d3yyjclnqlsh7ndahjc9i7hwdpf0prlz";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/clojure/tools.reader/1.0.0-beta2/tools.reader-1.0.0-beta2" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/tools.reader/1.0.0-beta2/tools.reader-1.0.0-beta2";
-    type = "jar";
-    pom = {
-      sha1 = "fba15d44f9d85812cddcdfd803833769bbbdeace";
-      sha256 = "00cl2nc7yq06m91a04adzcj91h5l00zq9rzl1xgmw744w3nz1402";
-    };
-    jar = {
-      sha1 = "9cdd45fb7994f3e3f377d31260506e51ddf81714";
-      sha256 = "0aifps2llap51gpq8484i6mc33rxl9c1jnsvhs055zaqpplfziq2";
-    };
-  };
   "https://repo1.maven.org/maven2/org/clojure/tools.reader/1.0.0-beta3/tools.reader-1.0.0-beta3" =
   {
     host = repositories.maven;
@@ -3674,21 +2050,6 @@ in {
     jar = {
       sha1 = "78fd57f3f979d32d0299dacb1f9461017caa3bb4";
       sha256 = "0sd75sgwxci248msszj0rqb9jmqmdd63cla8f9iqnqrq136h8gn2";
-    };
-  };
-  "https://repo1.maven.org/maven2/org/clojure/tools.reader/1.1.0/tools.reader-1.1.0" =
-  {
-    host = repositories.maven;
-    path =
-      "org/clojure/tools.reader/1.1.0/tools.reader-1.1.0";
-    type = "jar";
-    pom = {
-      sha1 = "fdf8b86fc4a24034bb2706ce21da2691782c260d";
-      sha256 = "0c9mmr912s538h7hyk40bzd2ffcariqpliphxzh9b2sxh1mrbaln";
-    };
-    jar = {
-      sha1 = "4232617f12e3180cc280c9a5e8e85dd650fcb858";
-      sha256 = "1k1hphipl6r482v9g5lj7k7hk805a7dygbzqn8b3pw4n007im9lg";
     };
   };
   "https://repo1.maven.org/maven2/org/clojure/tools.reader/1.2.1/tools.reader-1.2.1" =

@@ -2,10 +2,9 @@
   (:require [reagent.core :as r]
             [status-im.android.core :as core]
             [figwheel.client :as figwheel]
-            [re-frisk-remote.core :as rr]
+            [re-frisk-remote.core :as re-frisk]
             [env.config :as conf]
             [env.utils]
-            [status-im.utils.handlers :as utils.handlers]
             [re-frame.interop :as interop]
             [reagent.impl.batching :as batching]))
 
@@ -27,7 +26,6 @@
                  :heads-up-display false
                  :jsload-callback  #(swap! cnt inc)})
 
-(utils.handlers/add-pre-event-callback rr/pre-event-callback)
+(re-frisk/enable {:host (env.utils/re-frisk-url (:android conf/figwheel-urls))})
 
-(rr/enable-re-frisk-remote! {:host (env.utils/re-frisk-url (:android conf/figwheel-urls))
-                             :on-init core/init})
+(core/init)

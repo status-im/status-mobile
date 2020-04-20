@@ -204,9 +204,8 @@
                 [content]]]]]]])))))
 
 (defn bottom-sheet [props]
-  [react/safe-area-consumer
-   (fn [insets]
-     (reagent/as-element
-      [bottom-sheet-view (assoc props
-                                :window-height @(re-frame/subscribe [:dimensions/window-height])
-                                :safe-area (js->clj insets :keywordize-keys true))]))])
+  (let [props (assoc props :window-height @(re-frame/subscribe [:dimensions/window-height]))]
+    [react/safe-area-consumer
+     (fn [insets]
+       (reagent/as-element
+        [bottom-sheet-view (assoc props :safe-area (js->clj insets :keywordize-keys true))]))]))
