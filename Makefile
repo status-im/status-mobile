@@ -327,9 +327,10 @@ geth-connect: ##@other Connect to Geth on the device
 	adb forward tcp:8545 tcp:8545 && \
 	build/bin/geth attach http://localhost:8545
 
+android-clean: export TARGET := android
 android-clean: ##@prepare Clean Gradle state
 	git clean -dxf -f ./android/app/build
-	[ -d android/.gradle ] && cd android && ./gradlew clean
+	[[ -d android/.gradle ]] && cd android && ./gradlew clean
 
 android-ports: export TARGET := android-env
 android-ports: ##@other Add proxies to Android Device/Simulator
@@ -348,7 +349,7 @@ android-logcat: ##@other Read status-react logs from Android phone using adb
 
 android-install: export TARGET := android-env
 android-install: export BUILD_TYPE ?= release
-android-install:
+android-install: ##@other Install APK on device using adb
 	adb install result/app-$(BUILD_TYPE).apk
 
 _list: SHELL := /bin/sh
