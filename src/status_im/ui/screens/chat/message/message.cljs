@@ -170,8 +170,8 @@
   (let [response-to (:response-to content)]
     [message-bubble-wrapper message
      [react/view {:style (style/style-message-text outgoing)}
-      (when response-to
-        [quoted-message response-to (:quoted-message message) alias outgoing current-public-key])
+      (when (and (seq response-to) (:quoted-message message))
+        [quoted-message response-to (:quoted-message message) outgoing current-public-key])
       [react/text {:style (style/emoji-message message)}
        (:text content)]]
      [message-timestamp message]]))
