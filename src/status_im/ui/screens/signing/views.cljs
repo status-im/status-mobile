@@ -84,10 +84,10 @@
        [{:style {:color colors/black}} (displayed-name contact)]]
       [react/text {:style {:margin-top 6 :color colors/gray}}
        (str fee " " fee-display-symbol " " (string/lower-case (i18n/label :t/network-fee)))])]
-   [button/button (merge {:type :secondary
-                          :container-style {:padding-horizontal 24}
-                          :label (i18n/label :t/cancel)}
-                         (when-not in-progress? {:on-press #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}))]])
+   [button/button {:type :secondary
+                   :container-style {:padding-horizontal 24}
+                   :label (i18n/label :t/cancel)
+                   :on-press #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}]])
 
 (views/defview keycard-pin-view []
   (views/letsubs [pin [:hardwallet/pin]
