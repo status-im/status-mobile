@@ -104,7 +104,7 @@
          {:style               {:font-size (if small-screen? 24 38)
                                 :color (if amount-error colors/red colors/black)
                                 :flex-shrink 1}
-          :keyboard-type       :numeric
+          :keyboard-type       :decimal-pad
           :accessibility-label :amount-input
           :default-value       amount-text
           :editable            (not request?)
@@ -163,7 +163,7 @@
          {:style               {:font-size (if small-screen? 24 38)
                                 :color (when amount-error colors/red)
                                 :flex-shrink 1}
-          :keyboard-type       :numeric
+          :keyboard-type       :decimal-pad
           :accessibility-label :amount-input
           :default-value       amount-text
           :auto-focus          true
