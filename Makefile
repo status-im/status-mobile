@@ -41,14 +41,10 @@ export REACT_SERVER_PORT ?= 5001
 export NIX_CONF_DIR = $(PWD)/nix
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
 export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE,NIMBUS_SRC_OVERRIDE
-export _NIX_ROOT = /nix
 # legacy TARGET_OS variable support
 ifdef TARGET_OS
 export TARGET ?= $(TARGET_OS)
 endif
-
-# Useful for checking if we are on NixOS
-OS_NAME := $(shell [ -f /etc/os-release ] && awk -F= '/^NAME/{print $2}' /etc/os-release)
 
 # Useful for Andoird release builds
 TMP_BUILD_NUMBER := $(shell ./scripts/version/gen_build_no.sh | cut -c1-10)
@@ -57,7 +53,6 @@ TMP_BUILD_NUMBER := $(shell ./scripts/version/gen_build_no.sh | cut -c1-10)
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
 export NIX_IGNORE_SYMLINK_STORE=1
-export _NIX_ROOT = /opt/nix
 endif
 
 #----------------
@@ -78,19 +73,17 @@ else
 	@echo "${YELLOW}Nix shell is already active$(RESET)"
 endif
 
+nix-gc: export TARGET := default
 nix-gc: ##@nix Garbage collect all packages older than 20 days from /nix/store
 	nix-collect-garbage --delete-old --delete-older-than 20d
 
+nix-clean: export TARGET := default
 nix-clean: ##@nix Remove all status-react build artifacts from /nix/store
 	nix/scripts/clean.sh
 
 nix-purge: SHELL := /bin/sh
-nix-purge: ##@nix Completely remove the complete Nix setup
-ifeq ($(OS_NAME), NixOS)
-	$(error $(RED)You should not purge Nix files on NixOS!$(RESET))
-else
-	sudo rm -rf $(_NIX_ROOT)/* ~/.nix-profile ~/.nix-defexpr ~/.nix-channels ~/.cache/nix ~/.status .nix-gcroots
-endif
+nix-purge: ##@nix Completely remove Nix setup, including /nix directory
+	nix/scripts/purge.sh
 
 nix-add-gcroots: export TARGET := default
 nix-add-gcroots: ##@nix Add Nix GC roots to avoid status-react expressions being garbage collected

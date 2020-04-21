@@ -15,14 +15,14 @@ function install_nix() {
   if [ $? -eq 0 ]; then
     echo -e "${GRN}The Nix package manager was successfully installed.${RST}"
   else
-    echo -e "${RED}Failed to install Nix package manager!${RST}" > /dev/stderr
-    echo "Please see: https://nixos.org/nix/manual/#chap-installation" > /dev/stderr
+    echo -e "${RED}Failed to install Nix package manager!${RST}" >&2
+    echo "Please see: https://nixos.org/nix/manual/#chap-installation" >&2
     exit 1
   fi
 }
 
 if [[ ! -x "$(command -v git)" ]]; then
-  echo -e "${RED}The 'curl' utility is required for Nix installation.${RST}" > /dev/stderr
+  echo -e "${RED}The 'curl' utility is required for Nix installation.${RST}" >&2
   exit 1
 fi
 
