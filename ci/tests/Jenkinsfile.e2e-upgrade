@@ -5,12 +5,16 @@ pipeline {
   parameters {
     string(
       name: 'NETWORK',
-      description: 'Name of test network to use.',
+      description: 'Name of test network to use',
       defaultValue: 'ropsten',
     )
     string(
       name: 'APK_NAME',
-      description: 'Filename of APK uploaded to SauceLabs.',
+      description: 'Filename of APK uploaded to SauceLabs (base for upgrade, usually release build)',
+    )
+     string(
+      name: 'APK_NAME_UPGRADE',
+      description: 'Filename of APK of upgraded application (installed on top of base)',
     )
   }
 
@@ -47,12 +51,12 @@ pipeline {
         ]) {
           dir('test/appium/tests') {
             sh """
-              python3 -m pytest -m testrail_id \
-                -m "not upgrade" \
+              python3 -m pytest -m upgrade \
                 -n24 --rerun_count=2 \
                 --testrail_report=True \
                 --network=${params.NETWORK} \
-                --apk=${params.APK_NAME}
+                --apk=${params.APK_NAME} \
+                --apk_upgrade=${params.APK_NAME_UPGRADE}
             """
           }
         }

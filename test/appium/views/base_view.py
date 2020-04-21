@@ -1,7 +1,6 @@
 import time
 
 import base64
-import pytest
 import random
 import re
 import string
@@ -14,7 +13,7 @@ from io import BytesIO
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 
 from support.device_apps import start_web_browser
-from tests import common_password
+from tests import common_password, pytest_config_global
 from views.base_element import BaseButton, BaseElement, BaseEditBox, BaseText
 
 
@@ -687,6 +686,10 @@ class BaseView(object):
     def open_universal_web_link(self, deep_link):
         start_web_browser(self.driver)
         self.driver.get(deep_link)
+
+    def upgrade_app(self):
+        self.driver.install_app(pytest_config_global['apk_upgrade'], replace=True)
+        self.driver.info('Upgrading apk to apk_upgrade')
 
     # Method-helper
     def write_page_source_to_file(self, full_path_to_file):

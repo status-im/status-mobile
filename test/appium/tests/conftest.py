@@ -67,6 +67,11 @@ def pytest_addoption(parser):
                      metavar="NAME",
                      default=None,
                      help="only run tests matching the environment NAME.")
+    parser.addoption("--apk_upgrade",
+                     action="store",
+                     metavar="NAME",
+                     default=None,
+                     help='Url or local path to apk for upgrade')
 
     # chat bot
 

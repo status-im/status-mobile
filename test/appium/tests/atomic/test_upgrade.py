@@ -1,33 +1,25 @@
-import pytest
-from tests import marks, pytest_config_global
+from tests import marks
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
-
+@marks.all
+@marks.upgrade
 class TestUpgradeApplication(SingleDeviceTestCase):
 
-    def setup_method(self, method, **kwargs):
-        super(TestUpgradeApplication, self).setup_method(method, app='sauce-storage:app-release.apk')
-        self.apk_name = ([i for i in [i for i in pytest_config_global['apk'].split('/') if '.apk' in i]])[0]
-
-    @marks.testrail_id(5713)
-    @marks.upgrade
-    @marks.skip
-    # skipped as no support for upgrade now
+    @marks.testrail_id(6284)
     def test_apk_upgrade(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
         profile = home.profile_button.click()
-        about = profile.about_button.click()
-        old_version = about.version.text
+        profile.about_button.click()
+        old_version = profile.app_version_text.text
+        profile.upgrade_app()
 
-        profile.driver.install_app('https://status-im.ams3.digitaloceanspaces.com/' +
-                                   self.apk_name, replace=True)
         sign_in.driver.launch_app()
         home = sign_in.sign_in()
 
         profile = home.profile_button.click()
-        about = profile.about_button.click()
-        new_version = about.version.text
-        print(new_version, old_version)
+        profile.about_button.click()
+        new_version = profile.app_version_text.text
+        print('Upgraded app version is %s vs base version is %s ' % (new_version, old_version))
         assert new_version != old_version
