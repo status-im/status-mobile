@@ -41,10 +41,6 @@ export REACT_SERVER_PORT ?= 5001
 export NIX_CONF_DIR = $(PWD)/nix
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
 export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE,NIMBUS_SRC_OVERRIDE
-# legacy TARGET_OS variable support
-ifdef TARGET_OS
-export TARGET ?= $(TARGET_OS)
-endif
 
 # Useful for Andoird release builds
 TMP_BUILD_NUMBER := $(shell ./scripts/version/gen_build_no.sh | cut -c1-10)
