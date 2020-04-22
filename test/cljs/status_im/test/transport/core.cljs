@@ -67,7 +67,6 @@
       (let [cofx (message/set-message-envelope-hash initial-cofx chat-id message-id :message-type 1)]
         (testing "it sets the message-infos"
           (is (= {:chat-id chat-id
-                  :message-id message-id
                   :message-type :message-type}
                  (get-in cofx [:db :transport/message-envelopes message-id]))))
         (testing "the message is sent"
@@ -75,7 +74,6 @@
                  (get-in
                   (message/update-envelope-status cofx message-id :sent)
                   [:db :chats chat-id :messages message-id :outgoing-status]))))
-
         (testing "the message is not sent"
           (is (= :not-sent
                  (get-in
@@ -102,6 +100,22 @@
                     (message/update-envelope-status message-id :sent))]
           (testing "it removes the confirmations"
             (is (not (get-in cofx [:db :transport/message-ids->confirmations message-id]))))
+          (testing "the message is sent"
+            (is (= :sent
+                   (get-in
+                    cofx
+                    [:db :chats chat-id :messages message-id :outgoing-status]))))))
+      (testing "order of events is reversed"
+        (let [cofx (fx/merge
+                    initial-cofx
+                    (message/update-envelope-status message-id :sent)
+                    (message/update-envelope-status message-id :sent)
+                    (message/update-envelope-status message-id :sent)
+                    (message/set-message-envelope-hash chat-id message-id :message-type 3))]
+          (testing "it removes the confirmations"
+            (is (not (get-in cofx [:db :transport/message-confirmations message-id])))
+            (is (not (get-in cofx [:db :transport/message-ids->confirmations message-id]))))
+
           (testing "the message is sent"
             (is (= :sent
                    (get-in

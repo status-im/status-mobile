@@ -95,37 +95,37 @@
                        confirmations)}))))
 
 (fx/defn update-envelope-status
-  [{:keys [db] :as cofx} envelope-hash status]
-  (let [{:keys [chat-id message-type message-id]}
-        (get-in db [:transport/message-envelopes envelope-hash])]
-    (case message-type
-      :contact-message
-      (when (= :sent status)
-        (remove-hash cofx envelope-hash))
-
-      (when-let [{:keys [from]} (get-in db [:chats chat-id :messages message-id])]
-        (check-confirmations cofx status chat-id message-id)))))
+  [{:keys [db] :as cofx} message-id status]
+  (if-let [{:keys [chat-id]}
+           (get-in db [:transport/message-envelopes message-id])]
+    (when-let [{:keys [from]} (get-in db [:chats chat-id :messages message-id])]
+      (check-confirmations cofx status chat-id message-id))
+    ;; We don't have a message-envelope for this, might be that the confirmation
+    ;; came too early
+    {:db (update-in db [:transport/message-confirmations message-id] conj status)}))
 
 (fx/defn update-envelopes-status
-  [{:keys [db] :as cofx} envelope-hashes status]
-  (apply fx/merge cofx (map #(update-envelope-status % status) envelope-hashes)))
-
-(fx/defn set-contact-message-envelope-hash
-  [{:keys [db] :as cofx} chat-id envelope-hash]
-  {:db (assoc-in db [:transport/message-envelopes envelope-hash]
-                 {:chat-id      chat-id
-                  :message-type :contact-message})})
+  [{:keys [db] :as cofx} message-id status]
+  (apply fx/merge cofx (map #(update-envelope-status % status) message-id)))
 
 (fx/defn set-message-envelope-hash
   "message-type is used for tracking"
   [{:keys [db] :as cofx} chat-id message-id message-type messages-count]
-  {:db (-> db
-           (assoc-in [:transport/message-envelopes message-id]
-                     {:chat-id      chat-id
-                      :message-id   message-id
-                      :message-type message-type})
-           (update-in [:transport/message-ids->confirmations message-id]
-                      #(or % {:pending-confirmations messages-count})))})
+  ;; Check first if the confirmation has already arrived
+  (let [statuses (get-in db [:transport/message-confirmations message-id])
+        check-confirmations-fx (map
+                                #(check-confirmations % chat-id message-id)
+                                statuses)
+
+        add-envelope-data (fn [{:keys [db]}]
+                            {:db (-> db
+                                     (update :transport/message-confirmations dissoc message-id)
+                                     (assoc-in [:transport/message-envelopes message-id]
+                                               {:chat-id      chat-id
+                                                :message-type message-type})
+                                     (update-in [:transport/message-ids->confirmations message-id]
+                                                #(or % {:pending-confirmations messages-count})))})]
+    (apply fx/merge cofx (conj check-confirmations-fx add-envelope-data))))
 
 (defn- own-info [db]
   (let [{:keys [name photo-path address]} (:multiaccount db)]
