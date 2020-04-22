@@ -195,7 +195,7 @@
                    :signing/sign {:type           (cond pinless? :pinless
                                                         keycard-multiaccount? :keycard
                                                         :else :password)
-                                  :formatted-data (if typed? (types/json->clj data) (ethereum/hex-to-utf8 data))
+                                  :formatted-data (if typed? (types/json->clj data) (ethereum/hex->text data))
                                   :keycard-step (when pinless? :connect)})}
        (when pinless?
          (signing.keycard/hash-message {:data data

@@ -138,3 +138,13 @@
                          nil)]
     (when normalized-key
       (subs (sha3 normalized-key) 26))))
+
+(def ^:const bytes32-length 66) ; length of '0x' + 64 hex values. (a 32bytes value has 64 nibbles)
+
+(defn hex->text
+  "Converts a hexstring to UTF8 text. If the data received is 32 bytes long, 
+   return the value unconverted"
+  [data]
+  (if (= bytes32-length (count (normalized-hex data)))
+    data ; Assume it's a bytes32
+    (hex-to-utf8 data)))
