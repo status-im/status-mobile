@@ -150,8 +150,8 @@ end
 def upload_to_diawi(source)
   diawi(
     file: source,
-    last_hope_attempts_count: 5,
-    last_hope_attempts_backoff: 5,
+    timeout: 120,
+    check_status_delay: 5,
     token: ENV['DIAWI_TOKEN']
   )
   # save the URL to a file for use in CI
