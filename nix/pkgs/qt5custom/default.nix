@@ -4,8 +4,8 @@
 qt5.env "qt-status-${qt5.qtbase.version}" (with qt5; [
   qtbase
   qtsvg
-  qtwebengine
-  qtwebview
+  # qtwebengine
+  # qtwebview
   qtdeclarative
   qtquickcontrols2
 ])

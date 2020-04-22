@@ -49,7 +49,7 @@
   ;; > you might choose kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly.
   ;; That is exactly what we use there.
   ;; Note that the password won't be stored if the device isn't locked by a passcode.
-  #js {:accessible (enum-val "ACCESSIBLE" "WHEN_PASSCODE_SET_THIS_DEVICE_ONLY")})
+  nil) ;#js {:accessible (enum-val "ACCESSIBLE" "WHEN_PASSCODE_SET_THIS_DEVICE_ONLY")})
 
 (def keychain-secure-hardware
   ;; (Android) Requires storing the encryption key for the entry in secure hardware

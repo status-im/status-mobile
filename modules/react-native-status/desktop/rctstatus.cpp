@@ -101,20 +101,12 @@ QString RCTStatus::prepareDirAndUpdateConfig(QString configString) {
   if (!relativeDataDirPath.startsWith("/"))
     relativeDataDirPath.prepend("/");
 
-  QString rootDirPath = getDataStoragePath();
-  QDir rootDir(rootDirPath);
-  QString absDataDirPath = rootDirPath + relativeDataDirPath;
-  QDir dataDir(absDataDirPath);
-  if (!dataDir.exists()) {
-    dataDir.mkpath(".");
-  }
+  configJSON["DataDir"] = relativeDataDirPath;
+  configJSON["KeyStoreDir"] = "keystore";
+  configJSON["LogDir"] = relativeDataDirPath;
+  configJSON["LogFile"] = "geth.log";
 
-  d_gethLogFilePath = dataDir.absoluteFilePath("geth.log");
-  configJSON["DataDir"] = absDataDirPath;
-  configJSON["KeyStoreDir"] = rootDir.absoluteFilePath("keystore");
-  configJSON["LogFile"] = d_gethLogFilePath;
-
-  shhextConfig["BackupDisabledDataDir"] = rootDirPath;
+  shhextConfig["BackupDisabledDataDir"] = relativeDataDirPath;
 
   configJSON["ShhExtConfig"] = shhextConfig;
 
@@ -140,8 +132,8 @@ void RCTStatus::prepareDirAndUpdateConfig(QString configString,
 
 void RCTStatus::initKeystore() {
   qCInfo(RCTSTATUS) << "::initKeystore call";
-  QString rootDir = getDataStoragePath();
-  const char *result = InitKeystore(rootDir.toUtf8().data());
+  QString keystoreDir = getDataStoragePath() + "/keystore";
+  const char *result = InitKeystore(keystoreDir.toUtf8().data());
   logStatusGoResult("::initKeystore InitKeystore", result);
 }
 
@@ -267,20 +259,22 @@ void RCTStatus::addPeer(QString enode, double callbackId) {
       enode, callbackId);
 }
 
-void RCTStatus::saveAccountAndLogin(QString accountData, QString password,
-                                    QString config, QString subAccountsData) {
+void RCTStatus::saveAccountAndLogin(QString multiaccountData, QString password,
+                                    QString settings, QString config, 
+                                    QString accountsData) {
 
   Q_D(RCTStatus);
   QString finalConfig = prepareDirAndUpdateConfig(config);
   QtConcurrent::run(
-      [&](QString accountData, QString password, QString finalConfig,
-          QString subAccountsData) {
+      [&](QString multiaccountData, QString password, QString settings, QString finalConfig,
+          QString accountsData) {
         const char *result = SaveAccountAndLogin(
-            accountData.toUtf8().data(), password.toUtf8().data(),
-            finalConfig.toUtf8().data(), subAccountsData.toUtf8().data());
+            multiaccountData.toUtf8().data(), password.toUtf8().data(),
+            settings.toUtf8().data(),
+            finalConfig.toUtf8().data(), accountsData.toUtf8().data());
         logStatusGoResult("::saveAccountAndLogin", result);
       },
-      accountData, password, finalConfig, subAccountsData);
+      multiaccountData, password, settings, finalConfig, accountsData);
 }
 
 // void RCTStatus::saveAccountAndLoginWithKeycard(QString accountData,
@@ -340,6 +334,7 @@ void RCTStatus::openAccounts(double callbackId) {
   QtConcurrent::run(
       [&](double callbackId) {
         QString rootDir = getDataStoragePath();
+        qCInfo(RCTSTATUS) << "openAccounts dir" << rootDir;
         const char *result = OpenAccounts(rootDir.toUtf8().data());
         logStatusGoResult("::openAccounts", result);
         d->bridge->invokePromiseCallback(callbackId, QVariantList{result});

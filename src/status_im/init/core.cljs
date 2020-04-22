@@ -81,7 +81,7 @@
 (re-frame/reg-fx
  ::init-theme
  (fn []
-   (theme/add-mode-change-listener #(re-frame/dispatch [:system-theme-mode-changed %]))
-   (when (theme/is-dark-mode)
+   #_(theme/add-mode-change-listener #(re-frame/dispatch [:system-theme-mode-changed %]))
+   #_(when (theme/is-dark-mode)
      (quo-theme/set-theme :dark)
      (colors/set-theme :dark))))

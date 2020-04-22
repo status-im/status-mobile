@@ -26,6 +26,9 @@ HELP_FUN = \
 			   print "\n"; \
 		   }
 HOST_OS := $(shell uname | tr '[:upper:]' '[:lower:]')
+ifeq ($(HOST_OS),darwin)
+	HOST_OS=macos
+endif
 
 # This can come from Jenkins
 ifndef BUILD_TAG
@@ -219,7 +222,8 @@ run-clojure: ##@run Watch for and build Clojure changes for mobile
 
 run-clojure-desktop: export TARGET ?= $(HOST_OS)
 run-clojure-desktop: #@run Watch for and build Clojure changes for desktop
-	clj -R:dev build.clj watch --platform desktop
+	yarn shadow-cljs watch desktop
+	#clj -R:dev build.clj watch --platform desktop
 
 run-metro: export TARGET := default
 run-metro: ##@run Start Metro to build React Native changes

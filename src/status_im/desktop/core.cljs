@@ -10,7 +10,7 @@
             [status-im.utils.error-handler :as error-handler]
             [status-im.utils.logging.core :as utils.logs]
             [status-im.ui.screens.desktop.views :as desktop-views]
-            [status-im.desktop.deep-links :as deep-links]
+            ;[status-im.desktop.deep-links :as deep-links]
             [status-im.utils.config :as config]))
 
 (def app-registry (.-AppRegistry rn))
@@ -34,7 +34,7 @@
      {:component-did-mount (fn [this]
                              (re-frame/dispatch [:set-initial-props (reagent/props this)])
                                         ;(shortcuts/register-default-shortcuts)
-                             (deep-links/add-event-listener))
+                             #_(deep-links/add-event-listener))
       :reagent-render      (fn [_]
                              desktop-views/main)})))
 
