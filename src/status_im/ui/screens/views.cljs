@@ -115,7 +115,7 @@
          ^{:key @colors/theme}
          [react/view {:flex             1
                       :background-color colors/black-persist}
-          [navigation/navigation-container
+          #_[navigation/navigation-container
            (merge {:ref               (fn [r]
                                         (navigation/set-navigator-ref r))
                    :onStateChange     on-state-change

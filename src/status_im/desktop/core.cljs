@@ -4,6 +4,7 @@
             status-im.utils.db
             status-im.ui.screens.db
             status-im.ui.screens.events
+            [taoensso.timbre :as log]
             status-im.subs
             [status-im.ui.screens.views :as views]
             [status-im.ui.components.react :as react]
@@ -17,7 +18,10 @@
   (re-frame/dispatch [:app-state-change state]))
 
 (defn app-root [props]
-  (if config/mobile-ui-for-desktop?
+  (log/info "#desktop app-root")
+  [react/view
+   [react/text "###Desktop is back!!!!111111"]]
+  #_(if config/mobile-ui-for-desktop?
     (reagent/create-class
      {:component-did-mount
       (fn [this]

@@ -69,7 +69,7 @@ import_qt_modules()
 # APPLICATION_MAIN_CPP_PATH contains absolute path to generated template copy of main.cpp for application executable
 get_filename_component(APPLICATION_MAIN_CPP_PATH main.cpp ABSOLUTE)
 
-set(REACTQT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../node_modules/react-native/React)
+set(REACTQT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../node_modules/react-native-desktop-qt/React)
 include_directories(${REACTQT_DIR}/Layout)
 add_subdirectory(${REACTQT_DIR}Qt/runtime/src ${CMAKE_CURRENT_BINARY_DIR}/lib)
 add_subdirectory(${REACTQT_DIR}Qt/application/src ${CMAKE_CURRENT_BINARY_DIR}/bin)

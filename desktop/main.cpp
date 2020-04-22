@@ -2,7 +2,7 @@
  * Copyright (C) 2016, Canonical Ltd.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+  This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -26,7 +26,7 @@
 #include "rootview.h"
 #include "utilities.h"
 
-#include "exceptionglobalhandler.h"
+/* #include "exceptionglobalhandler.h" */
 
 #include "appconfig.h"
 Q_DECLARE_LOGGING_CATEGORY(JSSERVER)
@@ -61,6 +61,8 @@ class ReactNativeProperties : public QObject {
       QString pluginsPath READ pluginsPath WRITE setPluginsPath NOTIFY pluginsPathChanged)
   Q_PROPERTY(
       QString executor READ executor WRITE setExecutor NOTIFY executorChanged)
+    Q_PROPERTY(
+      QString jsExecutor READ jsExecutor WRITE setJsExecutor NOTIFY jsExecutorChanged)
   Q_PROPERTY(
       QVariantMap initialProps READ initialProps WRITE setInitialProps NOTIFY initialPropsChanged)
 public:
@@ -95,6 +97,17 @@ public:
     m_executor = executor;
     Q_EMIT executorChanged();
   }
+
+  QString jsExecutor() const {
+      return m_jsExecutor;
+  }
+  void setJsExecutor(const QString& jsexecutor) {
+      if (m_jsExecutor == jsexecutor)
+          return;
+      m_jsExecutor = jsexecutor;
+      Q_EMIT jsExecutorChanged();
+  }
+
   QVariantMap initialProps() const { return m_initialProps; }
   void setInitialProps(const QVariantMap &initialProps) {
     if (m_initialProps == initialProps)
@@ -140,6 +153,7 @@ Q_SIGNALS:
   void codeLocationChanged();
   void pluginsPathChanged();
   void executorChanged();
+  void jsExecutorChanged();
   void initialPropsChanged();
 
 private:
@@ -148,13 +162,15 @@ private:
   QString m_packagerPort = "8081";
   QString m_localSource;
   QString m_packagerTemplate =
-      "http://%1:%2/index.desktop.bundle?platform=desktop&dev=true";
+      "http://%1:%2/index.desktop.bundle?platform=desktop-qt&dev=true";
   QUrl m_codeLocation;
   QString m_pluginsPath;
 #ifdef BUILD_FOR_BUNDLE
   QString m_executor = "RemoteServerConnection";
+  QString m_jsExecutor = "RemoteServerConnection";
 #else
-  QString m_executor = "LocalServerConnection";
+  QString m_executor = "NodeJsExecutor";
+  QString m_jsExecutor = "NodeJsExecutor";
 #endif
   QVariantMap m_initialProps;
 };
@@ -237,9 +253,9 @@ int main(int argc, char **argv) {
   dataStoragePath = "";
 #endif
 
-  ExceptionGlobalHandler exceptionHandler(
-      appPath + QDir::separator() + CRASH_REPORT_EXECUTABLE,
-      exceptionPostHandledCallback, dataStoragePath);
+  /* ExceptionGlobalHandler exceptionHandler( */
+  /*     appPath + QDir::separator() + CRASH_REPORT_EXECUTABLE, */
+  /*     exceptionPostHandledCallback, dataStoragePath); */
 
   Q_INIT_RESOURCE(react_resources);
 

@@ -13,19 +13,19 @@
 (defonce stack  js-dependencies/react-navigation-stack)
 (defonce bottom-tabs js-dependencies/react-navigation-bottom-tabs)
 
-(def navigation-container (reagent/adapt-react-class
+(def navigation-container nil #_(reagent/adapt-react-class
                            (oget native "NavigationContainer")))
 
-(def use-focus-effect (oget native "useFocusEffect"))
-(def use-callback (oget js-dependencies/react "useCallback"))
-(def use-effect (oget js-dependencies/react "useEffect"))
+(def use-focus-effect nil #_(oget native "useFocusEffect"))
+(def use-callback nil #_(oget js-dependencies/react "useCallback"))
+(def use-effect nil #_(oget js-dependencies/react "useEffect"))
 
-(def add-back-handler-listener (oget js-dependencies/back-handler "addEventListener"))
-(def remove-back-handler-listener (oget js-dependencies/back-handler "removeEventListener"))
+(def add-back-handler-listener nil #_(oget js-dependencies/back-handler "addEventListener"))
+(def remove-back-handler-listener nil #_(oget js-dependencies/back-handler "removeEventListener"))
 
-(def transition-presets (oget stack "TransitionPresets"))
+(def transition-presets nil #_(oget stack "TransitionPresets"))
 
-(def modal-presentation-ios (merge (js->clj (oget transition-presets "ModalPresentationIOS"))
+(def modal-presentation-ios nil #_(merge (js->clj (oget transition-presets "ModalPresentationIOS"))
                                    {:gestureEnabled     true
                                     :cardOverlayEnabled true}))
 
@@ -84,9 +84,9 @@
 (defn wrap-screen [{:keys [component] :as options}]
   (assoc options :component
          (fn [props]
-           (handle-on-screen-blur
+           #_(handle-on-screen-blur
             (oget props "navigation"))
-           (handle-on-screen-focus options)
+           #_(handle-on-screen-focus options)
            (let [props'   (js->clj props :keywordize-keys true)
                  focused? (oget props "navigation" "isFocused")]
              (reagent/as-element
@@ -109,15 +109,15 @@
             (mapv screen children)))))
 
 (defn create-stack []
-  (let [nav-obj (ocall stack "createStackNavigator")]
+  #_(let [nav-obj (ocall stack "createStackNavigator")]
     (get-navigator nav-obj)))
 
 (defn create-bottom-tabs []
-  (let [nav-obj (ocall bottom-tabs "createBottomTabNavigator")]
+  #_(let [nav-obj (ocall bottom-tabs "createBottomTabNavigator")]
     (get-navigator nav-obj)))
 
-(def common-actions (oget native "CommonActions"))
-(def stack-actions (oget native "StackActions"))
+(def common-actions #_(oget native "CommonActions"))
+(def stack-actions #_(oget native "StackActions"))
 
 (defonce navigator-ref (reagent/atom nil))
 

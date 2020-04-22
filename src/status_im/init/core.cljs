@@ -64,9 +64,9 @@
   (fx/merge cofx
             {:get-supported-biometric-auth          nil
              ::init-theme                           nil
-             ::init-keystore                        nil
+             ;::init-keystore                        nil
              ::restore-native-settings              nil
-             ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts % {:logout? false}])
+             ;::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts % {:logout? false}])
              :ui/listen-to-window-dimensions-change nil
              ::network/listen-to-network-info       nil
              :hardwallet/register-card-events       nil
@@ -92,6 +92,6 @@
 (re-frame/reg-fx
  ::init-theme
  (fn []
-   (theme/add-mode-change-listener #(re-frame/dispatch [:system-theme-mode-changed %]))
-   (when (theme/is-dark-mode)
+   #_(theme/add-mode-change-listener #(re-frame/dispatch [:system-theme-mode-changed %]))
+   #_(when (theme/is-dark-mode)
      (colors/set-theme :dark))))
