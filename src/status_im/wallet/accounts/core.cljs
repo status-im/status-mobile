@@ -59,7 +59,7 @@
          "/" (last (string/split path "/")))
     path))
 
-(defn derive-and-store-account [path hashed-password type]
+(defn derive-and-store-account [path hashed-password type accounts]
   (fn [value]
     (let [{:keys [id error]} (types/json->clj value)]
       (if error
@@ -67,22 +67,25 @@
         (status/multiaccount-derive-addresses
          id
          [path]
-         (fn [_]
-           (status/multiaccount-store-derived
-            id
-            [path]
-            hashed-password
-            (fn [result]
-              (let [{:keys [error] :as result} (types/json->clj result)
-                    {:keys [publicKey address]} (get result (keyword path))]
-                (if error
-                  (re-frame/dispatch [::new-account-error :account-error error])
-                  (re-frame/dispatch
-                   [:wallet.accounts/account-stored
-                    {:address    address
-                     :public-key publicKey
-                     :type       type
-                     :path       (normalize-path path)}])))))))))))
+         (fn [derived]
+           (let [derived-address (get-in (types/json->clj derived) [(keyword path) :address])]
+             (if (some #(= derived-address (get % :address)) accounts)
+               (re-frame/dispatch [::new-account-error :account-error (i18n/label :t/account-exists-title)])
+               (status/multiaccount-store-derived
+                id
+                [path]
+                hashed-password
+                (fn [result]
+                  (let [{:keys [error] :as result} (types/json->clj result)
+                        {:keys [publicKey address]} (get result (keyword path))]
+                    (if error
+                      (re-frame/dispatch [::new-account-error :account-error error])
+                      (re-frame/dispatch
+                       [:wallet.accounts/account-stored
+                        {:address    address
+                         :public-key publicKey
+                         :type       type
+                         :path       (normalize-path path)}])))))))))))))
 
 (def pass-error "cannot retrieve a valid key for a given account: could not decrypt key with given password")
 
@@ -107,20 +110,20 @@
 
 (re-frame/reg-fx
  ::generate-account
- (fn [{:keys [derivation-info hashed-password]}]
+ (fn [{:keys [derivation-info hashed-password accounts]}]
    (let [{:keys [address path]} derivation-info]
      (status/multiaccount-load-account
       address
       hashed-password
-      (derive-and-store-account path hashed-password :generated)))))
+      (derive-and-store-account path hashed-password :generated accounts)))))
 
 (re-frame/reg-fx
  ::import-account-seed
- (fn [{:keys [passphrase hashed-password]}]
+ (fn [{:keys [passphrase hashed-password accounts]}]
    (status/multiaccount-import-mnemonic
     (mnemonic/sanitize-passphrase (security/unmask passphrase))
     ""
-    (derive-and-store-account constants/path-default-wallet hashed-password :seed))))
+    (derive-and-store-account constants/path-default-wallet hashed-password :seed accounts))))
 
 (re-frame/reg-fx
  ::import-account-private-key
@@ -132,7 +135,8 @@
 (fx/defn generate-new-account
   [{:keys [db]} hashed-password]
   (let [wallet-root-address (get-in db [:multiaccount :wallet-root-address])
-        path-num            (inc (get-in db [:multiaccount :latest-derived-path]))]
+        path-num            (inc (get-in db [:multiaccount :latest-derived-path]))
+        accounts            (:multiaccount/accounts db)]
     {:db                (assoc-in db [:add-account :step] :generating)
      ::generate-account {:derivation-info (if wallet-root-address
                                             ;; Use the walllet-root-address for stored on disk keys
@@ -142,7 +146,8 @@
                                             ;; Fallback on the master account for keycards, use the absolute path
                                             {:path    (str constants/path-wallet-root "/" path-num)
                                              :address (get-in db [:multiaccount :address])})
-                         :hashed-password hashed-password}}))
+                         :hashed-password hashed-password
+                         :accounts accounts}}))
 
 (fx/defn import-new-account-seed
   [{:keys [db]} passphrase hashed-password]
@@ -157,8 +162,11 @@
   (let [error (:error (types/json->clj phrase-warnings))]
     (if-not (string/blank? error)
       (new-account-error cofx :account-error error)
-      {::import-account-seed {:passphrase      passphrase
-                              :hashed-password hashed-password}})))
+      (let [{:keys [db]} cofx
+            accounts (:multiaccount/accounts db)]
+        {::import-account-seed {:passphrase      passphrase
+                                :hashed-password hashed-password
+                                :accounts        accounts}}))))
 
 (fx/defn import-new-account-private-key
   [{:keys [db]} private-key hashed-password]
