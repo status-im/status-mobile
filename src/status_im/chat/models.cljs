@@ -10,17 +10,15 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
-            [status-im.transport.message.protocol :as transport.protocol]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.utils.clocks :as utils.clocks]
-            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
-            [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [status-im.chat.models.message-seen :as message-seen]
+            [status-im.chat.models.loading :as loading]))
 
 (defn- get-chat [cofx chat-id]
   (get-in cofx [:db :chats chat-id]))
@@ -218,54 +216,6 @@
             (when (not (= (:view-id db) :home))
               (navigation/navigate-to-cofx :home {}))))
 
-(defn- unread-messages-number [chats]
-  (apply + (map :unviewed-messages-count chats)))
-
-(fx/defn update-dock-badge-label
-  [cofx]
-  (let [chats (get-in cofx [:db :chats])
-        active-chats (filter :is-active (vals chats))
-        private-chats (filter (complement :public?) active-chats)
-        public-chats (filter :public? active-chats)
-        private-chats-unread-count (unread-messages-number private-chats)
-        public-chats-unread-count (unread-messages-number public-chats)
-        label (cond
-                (pos? private-chats-unread-count) private-chats-unread-count
-                (pos? public-chats-unread-count) "•"
-                :else nil)]
-    {:set-dock-badge-label label}))
-
-(defn subtract-seen-messages
-  [old-count new-seen-messages-ids]
-  (max 0 (- old-count (count new-seen-messages-ids))))
-
-(fx/defn update-chats-unviewed-messages-count
-  [{:keys [db] :as cofx} {:keys [chat-id loaded-unviewed-messages-ids]}]
-  (let [{:keys [loaded-unviewed-messages-ids unviewed-messages-count]}
-        (get-in db [:chats chat-id])]
-    {:db (update-in db [:chats chat-id] assoc
-                    :unviewed-messages-count      (subtract-seen-messages
-                                                   unviewed-messages-count
-                                                   loaded-unviewed-messages-ids)
-                    :loaded-unviewed-messages-ids #{})}))
-
-(fx/defn mark-messages-seen
-  "Marks all unviewed loaded messages as seen in particular chat"
-  [{:keys [db] :as cofx} chat-id]
-  (let [loaded-unviewed-ids (get-in db [:chats chat-id :loaded-unviewed-messages-ids])]
-    (when (seq loaded-unviewed-ids)
-      (fx/merge cofx
-                {:db            (reduce (fn [acc message-id]
-                                          (assoc-in acc [:chats chat-id :messages
-                                                         message-id :seen]
-                                                    true))
-                                        db
-                                        loaded-unviewed-ids)}
-                (messages-store/mark-messages-seen chat-id loaded-unviewed-ids nil)
-                (update-chats-unviewed-messages-count {:chat-id chat-id})
-                (when platform/desktop?
-                  (update-dock-badge-label))))))
-
 (fx/defn offload-all-messages
   {:events [::offload-all-messages]}
   [{:keys [db] :as cofx}]
@@ -295,16 +245,17 @@
               (when-not (group-chat? cofx chat-id)
                 (transport.filters/load-chat chat-id))
               (when platform/desktop?
-                (mark-messages-seen chat-id))
+                (message-seen/mark-messages-seen chat-id))
               (when (and (one-to-one-chat? cofx chat-id) (not (contact.db/contact-exists? db chat-id)))
-                (contact.core/create-contact chat-id)))))
+                (contact.core/create-contact chat-id))
+              (loading/load-messages))))
 
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
   [cofx chat-id]
   (fx/merge cofx
-            (navigation/navigate-to-cofx :chat {})
-            (preload-chat-data chat-id)))
+            (preload-chat-data chat-id)
+            (navigation/navigate-to-cofx :chat {})))
 
 (fx/defn start-chat
   "Start a chat, making sure it exists"

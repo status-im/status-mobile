@@ -1,13 +1,9 @@
 (ns status-im.multiaccounts.login.core
   (:require [re-frame.core :as re-frame]
-            [status-im.chaos-mode.core :as chaos-mode]
-            [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat.loading]
-            [status-im.constants :as constants]
             [status-im.contact.core :as contact]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
@@ -32,10 +28,10 @@
             [status-im.utils.identicon :as identicon]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.popover.core :as popover]
-            [status-im.hardwallet.nfc :as nfc]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.data-store.settings :as data-store.settings]
-            [status-im.wallet.prices :as prices]))
+            [status-im.wallet.prices :as prices]
+            [status-im.chat.models.message-seen :as message-seen]))
 
 (def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
 (def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
@@ -249,7 +245,7 @@
                 (keychain/save-user-password key-uid password))
               (keychain/save-auth-method key-uid (or new-auth-method auth-method))
               (when platform/desktop?
-                (chat-model/update-dock-badge-label)))))
+                (message-seen/update-dock-badge-label)))))
 
 (fx/defn create-only-events
   [{:keys [db] :as cofx}]

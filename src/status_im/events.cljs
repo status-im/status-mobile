@@ -66,6 +66,7 @@
             [status-im.wallet.db :as wallet.db]
             [taoensso.timbre :as log]
             [status-im.utils.money :as money]
+            [status-im.chat.models.message-seen :as message-seen]
             status-im.hardwallet.core
             status-im.popover.core))
 
@@ -555,7 +556,7 @@
 (defn- mark-messages-seen
   [{:keys [db] :as cofx}]
   (let [{:keys [current-chat-id]} db]
-    (chat/mark-messages-seen cofx current-chat-id)))
+    (message-seen/mark-messages-seen cofx current-chat-id)))
 
 (handlers/register-handler-fx
  :chat.ui/mark-messages-seen

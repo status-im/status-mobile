@@ -1,6 +1,5 @@
 (ns status-im.chat.db
   (:require [clojure.set :as clojure.set]
-            [clojure.string :as string]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.contact.db :as contact.db]
             [status-im.group-chats.db :as group-chats.db]

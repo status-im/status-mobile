@@ -6,14 +6,11 @@
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.messages :as data-store.messages]
             [status-im.transport.filters.core :as filters]
-            [status-im.chat.models :as chat-model]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.mailserver.core :as mailserver]
-            [status-im.utils.config :as config]
-            [status-im.utils.datetime :as time]
             [status-im.utils.fx :as fx]
             [status-im.chat.models.message-list :as message-list]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.chat.models.message-seen :as message-seen]))
 
 (defn cursor->clock-value [cursor]
   (js/parseInt (.substring cursor 51 64)))
@@ -121,7 +118,7 @@
                          (assoc-in [:chats current-chat-id :cursor] cursor)
                          (assoc-in [:chats current-chat-id :all-loaded?]
                                    (empty? cursor)))}
-                (chat-model/mark-messages-seen current-chat-id)))))
+                (message-seen/mark-messages-seen current-chat-id)))))
 
 (fx/defn load-more-messages
   [{:keys [db] :as cofx}]
@@ -142,7 +139,6 @@
                     (mailserver/load-gaps-fx current-chat-id)))))))
 
 (fx/defn load-messages
-  {:events [::load-messages]}
   [{:keys [db now] :as cofx}]
   (when-let [current-chat-id (:current-chat-id db)]
     (if-not (get-in db [:chats current-chat-id :messages-initialized?])
@@ -155,8 +151,7 @@
                           ;; which will be reset only if we hit home
                            (assoc :loaded-chat-id current-chat-id)
                            (assoc-in [:chats current-chat-id :messages-initialized?] now))}
-                  (chat-model/mark-messages-seen current-chat-id)
+                  (message-seen/mark-messages-seen current-chat-id)
                   (load-more-messages)))
       ;; We mark messages as seen in case we received them while on a different tab
-      (chat-model/mark-messages-seen cofx current-chat-id))))
-
+      (message-seen/mark-messages-seen cofx current-chat-id))))

@@ -22,7 +22,6 @@
      :style     {:padding-bottom tabbar.styles/tabs-diff}
      :component home/home}
     {:name      :chat
-     :on-focus  [::chat.loading/load-messages]
      :component chat/chat}
     {:name      :profile
      :component profile.contact/profile}
