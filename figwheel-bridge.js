@@ -158,20 +158,18 @@ function importJs(src, success, error) {
     }
 }
 
-var oldRequire;
 function interceptRequire() {
-    oldRequire = window.require;
+    var oldRequire = window.require;
     console.info("Shimming require");
     window.require = function (id) {
         console.info("Requiring: " + id);
         if (externalModules[id]) {
             return externalModules[id];
         }
-      console.info("Before oldRequire: " + id);
-      console.info("Before oldRequire 1: " + oldRequire);
         return oldRequire(id);
     };
 }
+
 
 function serverBaseUrl(host) {
     return "http://" + host + ":" + config.serverPort
