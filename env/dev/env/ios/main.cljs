@@ -5,7 +5,12 @@
             [status-im.utils.handlers :as utils.handlers]
             [figwheel.client :as figwheel]
             [env.config :as conf]
-            [env.utils]))
+            [env.utils]
+            [re-frame.interop :as interop]
+            [reagent.impl.batching :as batching]))
+
+(set! interop/next-tick js/setTimeout)
+(set! batching/fake-raf #(js/setTimeout % 0))
 
 (enable-console-print!)
 

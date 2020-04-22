@@ -15,7 +15,7 @@
                  [org.clojure/google-closure-library "0.0-20190213-2033d5d9"]
                  [org.clojure/core.async "0.4.474"]
                  [reagent "0.7.0" :exclusions [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server cljsjs/create-react-class]]
-                 [status-im/re-frame "0.10.5"]
+                 [re-frame "0.12.0"]
                  [com.andrewmcveigh/cljs-time "0.5.2"]
                  [status-im/timbre "4.10.0-2-status"]
                  [com.taoensso/encore "2.94.0"]

@@ -4,9 +4,7 @@
          org.clojure/core.async      {:mvn/version "0.4.474"}
          reagent                     {:mvn/version "0.7.0"
                                       :exclusions  [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server cljsjs/create-react-class]}
-         re-frame                    {:git/url       "https://github.com/status-im/re-frame"
-                                      :sha           "b0d3b0f016f217c6a397a54e5eba9486471fb172"
-                                      :deps/manifest :deps}
+         re-frame                    {:mvn/version "0.12.0"}
          com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
          binaryage/oops              {:mvn/version "0.7.0"}
          status-im/timbre            {:mvn/version "4.10.0-2-status"}

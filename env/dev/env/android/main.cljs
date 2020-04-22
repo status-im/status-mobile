@@ -5,7 +5,12 @@
             [re-frisk-remote.core :as rr]
             [env.config :as conf]
             [env.utils]
-            [status-im.utils.handlers :as utils.handlers]))
+            [status-im.utils.handlers :as utils.handlers]
+            [re-frame.interop :as interop]
+            [reagent.impl.batching :as batching]))
+
+(set! interop/next-tick js/setTimeout)
+(set! batching/fake-raf #(js/setTimeout % 0))
 
 (enable-console-print!)
 
