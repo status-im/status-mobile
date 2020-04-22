@@ -813,15 +813,12 @@
 (handlers/register-handler-fx
  :transport/message-sent
  (fn [cofx [_ response messages-count]]
-   (let [{:keys [localChatId id messageType]} (-> response :messages first)]
-     (fx/merge cofx
-               (handle-update response)
-               (transport.message/set-message-envelope-hash localChatId id messageType messages-count)))))
-
-(handlers/register-handler-fx
- :transport/contact-message-sent
- (fn [cofx [_ chat-id envelope-hash]]
-   (transport.message/set-contact-message-envelope-hash cofx chat-id envelope-hash)))
+   (let [set-hash-fxs (map (fn [{:keys [localChatId id messageType]}]
+                             (transport.message/set-message-envelope-hash localChatId id messageType messages-count))
+                           (:messages response))]
+     (apply fx/merge cofx
+            (conj set-hash-fxs
+                  (handle-update response))))))
 
 (handlers/register-handler-fx
  :transport.callback/node-info-fetched
