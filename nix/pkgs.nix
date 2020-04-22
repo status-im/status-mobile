@@ -32,7 +32,7 @@ let
 
       # custom packages
       openjdk = pkgs.openjdk8_headless;
-      nodejs = pkgs.nodejs-10_x;
+      nodejs = pkgs.nodejs-12_x;
       yarn = pkgs.yarn.override { inherit nodejs; };
       go = pkgs.callPackage ./patched-go { baseGo = pkgs.go_1_14; };
 
