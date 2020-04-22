@@ -1,4 +1,4 @@
-{ importJSON, fetchFromGitHub, pkgs, nodejs, yarn }:
+{ lib, fetchFromGitHub, pkgs, nodejs, yarn }:
 
 let
   yarn2nix = import (fetchFromGitHub {
@@ -10,7 +10,7 @@ let
   }) { inherit pkgs nodejs yarn; };
   yarnLock = ../../mobile/js_files/yarn.lock;
   packageJSON = ../../mobile/js_files/package.json;
-  packageJSONContent = importJSON packageJSON;
+  packageJSONContent = lib.importJSON packageJSON;
 
   # Create a yarn package for our project that contains all the dependecies, so that we have a
   # known good node_modules folder that we can use later on

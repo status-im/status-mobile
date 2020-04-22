@@ -1,5 +1,5 @@
 { stdenv, callPackage, utils, fetchgit, buildGoPackage,
-  ncurses5, zlib, makeWrapper, patchelf, platform-tools, xcodeWrapper
+  ncurses5, zlib, makeWrapper, patchelf, androidPkgs, xcodeWrapper
 }:
 
 let
@@ -24,7 +24,7 @@ in buildGoPackage rec {
   patches = [ ./resolve-nix-android-sdk.patch ];
 
   postPatch = ''
-    substituteInPlace cmd/gomobile/install.go --replace "\`adb\`" "\`${platform-tools}/bin/adb\`"
+    substituteInPlace cmd/gomobile/install.go --replace "\`adb\`" "\`${androidPkgs}/bin/adb\`"
     
     # Prevent a non-deterministic temporary directory from polluting the resulting object files
     substituteInPlace cmd/gomobile/env.go \

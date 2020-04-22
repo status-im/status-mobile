@@ -7,7 +7,7 @@
   hostSystem } @ args':
 
 let
-  buildStatusGo = callPackage ./build-status-go.nix {
+  buildStatusGo = callPackage ../build.nix {
     inherit buildGoPackage go xcodeWrapper utils;
   };
 

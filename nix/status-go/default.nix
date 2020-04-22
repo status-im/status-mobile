@@ -1,5 +1,5 @@
 { config, stdenv, callPackage, mkShell, mergeSh,
-  fetchFromGitHub, mkFilter, openjdk, androidPkgs, xcodeWrapper }:
+  fetchFromGitHub, mkFilter, openjdk, androidPkgs }:
 
 let
   inherit (stdenv.lib)
@@ -9,11 +9,21 @@ let
 
   envFlags = callPackage ../tools/envParser.nix { };
   enableNimbus = (attrByPath ["STATUS_GO_ENABLE_NIMBUS"] "0" envFlags) != "0";
-  utils = callPackage ./utils.nix { inherit xcodeWrapper; };
-  gomobile = callPackage ./gomobile { inherit (androidPkgs) platform-tools; inherit xcodeWrapper utils; };
-  nimbus = if enableNimbus then callPackage ./nimbus { } else { wrappers-android = { }; };
-  buildStatusGoDesktopLib = callPackage ./build-desktop-status-go.nix { inherit xcodeWrapper utils; };
-  buildStatusGoMobileLib = callPackage ./build-mobile-status-go.nix { inherit gomobile xcodeWrapper utils androidPkgs; };
+  utils = callPackage ./utils.nix { };
+
+  gomobile = callPackage ./gomobile { inherit utils; };
+
+  nimbus =
+    if enableNimbus then callPackage ./nimbus { }
+    else { wrappers-android = { }; };
+
+  buildStatusGoDesktopLib = callPackage ./desktop {
+    inherit utils;
+  };
+  buildStatusGoMobileLib = callPackage ./mobile {
+    inherit gomobile utils androidPkgs;
+  };
+
   srcData =
     # If config.status-im.status-go.src-override is defined, instruct Nix to use that path to build status-go
     if (attrByPath ["status-im" "status-go" "src-override"] "" config) != "" then rec {
@@ -60,8 +70,8 @@ let
     android = rec {
       name = "android";
       envVars = [
-        "ANDROID_HOME=${androidPkgs.androidsdk}/libexec/android-sdk"
-        "ANDROID_NDK_HOME=${androidPkgs.ndk-bundle}/libexec/android-sdk/ndk-bundle"
+        "ANDROID_HOME=${androidPkgs}"
+        "ANDROID_NDK_HOME=${androidPkgs}/ndk-bundle"
         "PATH=${makeBinPath [ openjdk ]}:$PATH"
       ];
       gomobileExtraFlags = [ "-androidapi 23" ];

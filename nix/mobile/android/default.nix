@@ -1,9 +1,8 @@
-{ config, lib, callPackage, mkShell, mergeSh, androidenv, flock, lsof, openjdk, gradle_5,
-  status-go, localMavenRepoBuilder, projectNodePackage }:
+{ config, lib, callPackage, mkShell, mergeSh, flock, lsof, openjdk, gradle_5,
+  status-go, localMavenRepoBuilder, projectNodePackage, androidPkgs, androidShell }:
 
 let
   gradle = gradle_5; # Currently 5.6.4
-  androidEnv = callPackage ./android-env.nix { };
   leinProjectDeps = import ../../lein/lein-project-deps.nix { };
 
   # Import a jsbundle compiled out of clojure codebase
@@ -22,12 +21,10 @@ let
   # TARGETS
   release = callPackage ./targets/release-android.nix {
     inherit config gradle mavenAndNpmDeps jsbundle status-go watchmanFactory;
-    androidEnvShellHook = androidEnv.shell.shellHook;
   };
 
   generate-maven-and-npm-deps-shell = callPackage ./maven-and-npm-deps/maven/shell.nix {
     inherit gradle projectNodePackage status-go;
-    androidEnvShellHook = androidEnv.shell.shellHook;
   };
 
   buildInputs = [
@@ -39,24 +36,23 @@ let
 in {
   # TARGETS
   inherit release jsbundle generate-maven-and-npm-deps-shell buildInputs;
-  inherit (androidEnv) androidComposition;
 
   shell = mergeSh
     (mkShell {
       inherit buildInputs;
       inputsFrom = [ release gradle ];
       shellHook = ''
+        export ANDROID_SDK_ROOT="${androidPkgs}"
+        export ANDROID_NDK_ROOT="${androidPkgs}/ndk-bundle"
+
         # check if node modules changed and if so install them
         $STATUS_REACT_HOME/nix/mobile/reset-node_modules.sh \
           "${mavenAndNpmDeps.drv}/project"
       '';
     })
-    (lib.catAttrs "shell" [ status-go mavenAndNpmDeps androidEnv ]);
+    (lib.catAttrs "shell" [ status-go mavenAndNpmDeps androidShell ]);
 
   env = {
-    shell = mkShell {
-      buildInputs = [ androidEnv.drv ];
-      inherit (androidEnv.shell) shellHook;
-    };
+    shell = androidShell;
   };
 }

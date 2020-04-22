@@ -10,7 +10,7 @@
 let
   inherit (stdenv.lib) concatStringsSep makeBinPath optional optionals;
 
-  buildStatusGo = callPackage ./build-status-go.nix {
+  buildStatusGo = callPackage ../build.nix {
     inherit buildGoPackage go xcodeWrapper utils;
   };
 

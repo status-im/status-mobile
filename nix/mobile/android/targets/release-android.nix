@@ -1,6 +1,6 @@
 { stdenv, lib, config, callPackage,
   mkFilter, bash, file, gnumake, watchmanFactory, gradle,
-  androidEnvShellHook, mavenAndNpmDeps,
+  androidPkgs, mavenAndNpmDeps,
   nodejs, openjdk, jsbundle, status-go, unzip, zlib }:
 
 { secrets-file ? "", # Path to the file containing secret environment variables
@@ -111,13 +111,15 @@ in stdenv.mkDerivation {
       adhocEnvVars = optionalString stdenv.isLinux "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${makeLibraryPath [ zlib ]}";
       capitalizedBuildType = toUpper (substring 0 1 buildType) + substring 1 (-1) buildType;
     in ''
+    export ANDROID_SDK_ROOT="${androidPkgs}"
+    export ANDROID_NDK_ROOT="${androidPkgs}/ndk-bundle"
+
     export STATUS_REACT_HOME=$PWD
     export HOME=$sourceRoot
 
     ${exportEnvVars}
     ${if secrets-file != "" then "source ${secrets-file}" else ""}
 
-    ${androidEnvShellHook}
     ${concatStrings (catAttrs "shellHook" [ mavenAndNpmDeps.shell status-go.shell ])}
 
     # fix permissions so gradle can create directories

@@ -25,16 +25,24 @@ let
     permittedInsecurePackages = [ "openssl-1.0.2u" ];
     # Override some package versions
     packageOverrides = pkgs: rec {
+      inherit (pkgs) callPackage stdenv stdenvNoCC xcodeenv;
+ 
       # utilities
-      mkFilter = import ./tools/mkFilter.nix { inherit (pkgs.stdenv) lib; };
-      mkShell = import ./tools/mkShell.nix { inherit pkgs; stdenv = pkgs.stdenvNoCC; };
-      mergeSh = import ./tools/mergeSh.nix { inherit (pkgs.stdenv) lib; };
+      mkFilter = import ./tools/mkFilter.nix { inherit (stdenv) lib; };
+      mkShell = import ./tools/mkShell.nix { inherit pkgs; stdenv = stdenvNoCC; };
+      mergeSh = import ./tools/mergeSh.nix { inherit (stdenv) lib; };
+
+      # android environement
+      androidEnvCustom = callPackage ./mobile/android/sdk { };
+      androidPkgs = androidEnvCustom.licensedPkgs;
+      androidShell = androidEnvCustom.shell;
 
       # custom packages
+      xcodeWrapper = xcodeenv.composeXcodeWrapper { version = "11.4.1"; };
       openjdk = pkgs.openjdk8_headless;
       nodejs = pkgs.nodejs-12_x;
       yarn = pkgs.yarn.override { inherit nodejs; };
-      go = pkgs.callPackage ./patched-go { baseGo = pkgs.go_1_14; };
+      go = callPackage ./patched-go { baseGo = pkgs.go_1_14; };
 
       # custom builders
       buildGoPackage = pkgs.buildGo114Package.override { inherit go; };

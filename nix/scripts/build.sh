@@ -23,7 +23,9 @@ function cleanup() {
   fi
 }
 
-trap cleanup EXIT ERR INT QUIT
+if [[ -z "${_NIX_NO_CLEAN}" ]]; then
+    trap cleanup EXIT ERR INT QUIT
+fi
 
 # build output will end up under /nix, we have to extract it
 function extractResults() {
