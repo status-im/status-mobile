@@ -41,7 +41,7 @@
           :border-radius 32}))
 
 (defn default-chat-icon-text [size]
-  {:color       (colors/alpha colors/white 0.7)
+  {:color       colors/white-transparent-70-persist
    :font-weight "700"
    :font-size   (/ size 2)
    :line-height size})

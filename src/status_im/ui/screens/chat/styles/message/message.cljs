@@ -299,34 +299,34 @@
           :font-family monospace-fonts
           :color colors/white))
 
-(def default-blockquote-style
+(defn default-blockquote-style []
   {:style {:border-left-width 2
            :padding-left 3
            :border-left-color colors/gray-transparent-40}})
 
-(def outgoing-blockquote-style
-  (update default-blockquote-style :style
+(defn outgoing-blockquote-style []
+  (update (default-blockquote-style) :style
           assoc
-          :border-left-color colors/white-transparent))
+          :border-left-color colors/white-transparent-70-persist))
 
 (defn blockquote-style [outgoing]
   (if outgoing
-    outgoing-blockquote-style
-    default-blockquote-style))
+    (outgoing-blockquote-style)
+    (default-blockquote-style)))
 
-(def default-blockquote-text-style
+(defn default-blockquote-text-style []
   (update (default-text-style) :style
           assoc
           :line-height 19
           :font-size 14
           :color colors/black-transparent-50))
 
-(def outgoing-blockquote-text-style
-  (update default-blockquote-text-style :style
+(defn outgoing-blockquote-text-style []
+  (update (default-blockquote-text-style) :style
           assoc
           :color colors/white-transparent-70-persist))
 
 (defn blockquote-text-style [outgoing]
   (if outgoing
-    outgoing-blockquote-text-style
-    default-blockquote-text-style))
+    (outgoing-blockquote-text-style)
+    (default-blockquote-text-style)))
