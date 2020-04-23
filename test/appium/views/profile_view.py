@@ -104,8 +104,7 @@ class ConfirmLogoutButton(BaseButton):
 class DefaultUserNameText(BaseText):
     def __init__(self, driver):
         super(DefaultUserNameText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            '//android.widget.ImageView[@content-desc="chat-icon"]/../android.widget.TextView')
+        self.locator = self.Locator.accessibility_id('default-username')
 
 class ENSusernames(BaseButton):
     def __init__(self, driver):

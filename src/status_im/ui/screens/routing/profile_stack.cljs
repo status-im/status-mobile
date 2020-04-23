@@ -47,6 +47,7 @@
   [stack {:initial-route-name :my-profile
           :header-mode        :none}
    [{:name      :my-profile
+     :insets    {:top false}
      :style     {:padding-bottom tabbar.styles/tabs-diff}
      :component profile.user/my-profile}
     {:name      :contacts-list
@@ -66,6 +67,7 @@
     {:name      :blocked-users-list
      :component contacts-list/blocked-users-list}
     {:name      :profile
+     :insets    {:top false}
      :component profile.contact/profile}
     {:name      :profile-photo-capture
      :component photo-capture/profile-photo-capture}

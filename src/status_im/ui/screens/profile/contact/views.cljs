@@ -6,15 +6,14 @@
             [status-im.utils.utils :as utils]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.large-toolbar.view :as large-toolbar]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.profile.contact.styles :as styles]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.screens.profile.components.sheets :as sheets]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.multiaccounts.core :as multiaccounts])
+            [status-im.ui.components.profile-header.view :as profile-header]
+            [status-im.utils.gfycat.core :as gfy]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [quo.core :as quo])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn actions
@@ -89,71 +88,44 @@
       (i18n/label :t/unblock-contact)
       (i18n/label :t/block-contact))]])
 
-(defn- header-in-toolbar [{:keys [public-key ens-name] :as account}]
-  (let [displayed-name (multiaccounts/displayed-name account)]
-    [react/touchable-opacity {:on-press #(profile.components/chat-key-popover public-key ens-name)
-                              :style {:flex           1
-                                      :flex-direction :row
-                                      :align-items    :center
-                                      :align-self     :stretch}}
-     ;;TODO this should be done in a subscription
-     [photos/photo (multiaccounts/displayed-photo account)
-      {:size 40}]
-     [react/text {:style {:typography   :title-bold
-                          :line-height  21
-                          :margin-right 40
-                          :margin-left  16
-                          :text-align   :left}
-                  :accessibility-label :account-name}
-      displayed-name]]))
-
-(defn- header [account]
-  [profile.components/profile-header
-   {:contact                account
-    :allow-icon-change?     false
-    :include-remove-action? false}])
-
-(defn- toolbar-action-items [public-key ens-name]
-  [toolbar/actions
-   [{:icon      :main-icons/share
-     :icon-opts {:width  24
-                 :height 24}
-     :handler #(profile.components/chat-key-popover public-key ens-name)}]])
-
-;;TO-DO Rework generate-view to use 3 functions from large-toolbar
 (views/defview profile []
-  (views/letsubs [list-ref (reagent/atom nil)
-                  {:keys [ens-verified name public-key] :as contact}  [:contacts/current-contact]]
-    (when contact
-      (let [ens-name (when (and ens-verified name) name)
-            contact (cond-> contact
-                      ens-name
-                      (assoc :usernames [ens-name]
-                             :ens-name ens-name))
-            header-in-toolbar    (header-in-toolbar contact)
-            header               (header contact)
-            content
-            [[react/view {:padding-top 12}
-              (for [{:keys [label subtext accessibility-label icon action disabled?]} (actions contact)]
-                [list-item/list-item {:theme :action
-                                      :title label
-                                      :subtitle subtext
-                                      :icon icon
-                                      :accessibility-label accessibility-label
-                                      :disabled? disabled?
-                                      :on-press action}])]
-             [react/view styles/contact-profile-details-container
-              [profile-details contact]]
-             [block-contact-action contact]]
-            generated-view (large-toolbar/generate-view
-                            header-in-toolbar
-                            toolbar/default-nav-back
-                            (toolbar-action-items public-key ens-name)
-                            header
-                            content
-                            list-ref)]
+  (views/letsubs [{:keys [ens-verified name public-key]
+                   :as   contact}  [:contacts/current-contact]]
+    (let [on-share #(re-frame/dispatch [:show-popover (merge
+                                                       {:view    :share-chat-key
+                                                        :address public-key}
+                                                       (when (and ens-verified name)
+                                                         {:ens-name name}))])]
+      (when contact
         [react/view
          {:style
           (merge {:flex 1})}
-         (:minimized-toolbar generated-view)
-         (:content-with-header generated-view)]))))
+         [quo/animated-header
+          {:use-insets        true
+           :right-accessories [{:icon     :main-icons/share
+                                :on-press on-share}]
+           :left-accessories  [{:icon                :main-icons/back
+                                :accessibility-label :back-button
+                                :on-press            #(re-frame/dispatch [:navigate-back])}]
+           :extended-header   (profile-header/extended-header
+                               {:on-press on-share
+                                :title    (multiaccounts/displayed-name contact)
+                                :photo    (multiaccounts/displayed-photo contact)
+                                :subtitle (if (and ens-verified public-key)
+                                            (gfy/generate-gfy public-key)
+                                            public-key)})}
+
+          [react/view {:padding-top 12}
+           (for [{:keys [label subtext accessibility-label icon action disabled?]} (actions contact)]
+             [list-item/list-item {:theme               :action
+                                   :title               label
+                                   :subtitle            subtext
+                                   :icon                icon
+                                   :accessibility-label accessibility-label
+                                   :disabled?           disabled?
+                                   :on-press            action}])]
+          [react/view styles/contact-profile-details-container
+           [profile-details (cond-> contact
+                              (and ens-verified name)
+                              (assoc :ens-name name))]]
+          [block-contact-action contact]]]))))

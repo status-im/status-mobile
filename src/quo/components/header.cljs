@@ -46,11 +46,7 @@
 
 (defn title-style [{:keys [left right]} title-align]
   (merge
-   {:position        :absolute
-    :justify-content :center
-    :top             0
-    :bottom          0}
-   (:tiny spacing/padding-horizontal)
+   absolute-fill
    (case title-align
      :left {:left  (:width left)
             :right (:width right)}
@@ -67,7 +63,7 @@
    (:tiny spacing/padding-horizontal)))
 
 (def header-action-placeholder
-  {:width (:tiny spacing/spacing)})
+  {:width (:base spacing/spacing)})
 
 (def header-icon-touchable
   (merge

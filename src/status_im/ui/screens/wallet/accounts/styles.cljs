@@ -1,72 +1,29 @@
 (ns status-im.ui.screens.wallet.accounts.styles
-  (:require [quo.animated :as reanimated]
-            [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]))
+  (:require [quo.animated :as animated]
+            [status-im.ui.components.colors :as colors]))
 
-(def ^:const tabbar-height 56)
-;; TODO(Ferossgp): get layout size of total-value
-(def ^:const value-height (+ 40 22 8))
-(def ^:const scroll-offset value-height)
-(def ^:const minimized-value-line-height 28)
+(defn container [{:keys [minimized]}]
+  (when-not minimized
+    {:padding-bottom     8
+     :padding-horizontal 16}))
 
-(defn topbar [{:keys [value offset inset-top]}]
-  (merge
-   {:flex-direction     :row
-    :padding-horizontal 8
-    :background-color   colors/white
-    :padding-top        inset-top}
-   (when platform/android?
-     {:elevation (reanimated/interpolate
-                  value
-                  {:inputRange  [0 offset]
-                   :outputRange [0 4]
-                   :extrapolate (:clamp reanimated/extrapolate)})})
-   (when platform/ios?
-     {:shadow-opacity (reanimated/interpolate
-                       value
-                       {:inputRange  [0 offset]
-                        :outputRange [0 1]
-                        :extrapolate (:clamp reanimated/extrapolate)})
-      :shadow-radius  16
-      :z-index        2
-      :shadow-color   (if (colors/dark?)
-                        "rgba(0, 0, 0, 0.75)"
-                        "rgba(0, 9, 26, 0.12)")
-      :shadow-offset  {:width 0 :height 4}})))
+(defn value-container [{:keys [minimized animation]}]
+  (when minimized
+    {:opacity animation}))
 
-(defn value-container [y]
-  {:position  :absolute
-   :left      8
-   :top       0
-   :transform [{:translateY
-                (reanimated/interpolate
-                 y
-                 {:inputRange       [0 scroll-offset]
-                  :outputRange      [scroll-offset
-                                     (/ (- tabbar-height
-                                           minimized-value-line-height) 2)]
-                  :extrapolateRight (:clamp reanimated/extrapolate)})}]})
+(defn value-text [{:keys [minimized]}]
+  {:font-size   (if minimized 20 32)
+   :line-height 40
+   :color       colors/black})
 
-(defn value-text [y]
-  {:font-size   (reanimated/interpolate
-                 y
-                 {:inputRange  [0 scroll-offset]
-                  :outputRange [32 20]
-                  :extrapolate (:clamp reanimated/extrapolate)})
-   :color       colors/black
-   :font-weight "600"})
-
-(defn value-helper [y]
-  {:opacity (reanimated/interpolate y
-                                    {:inputRange  [0 scroll-offset]
-                                     :outputRange [1 0]})})
-
-(defn accounts-mnemonic [y]
-  {:flex            1
+(defn accounts-mnemonic [{:keys [animation]}]
+  {:opacity         (animated/b-interpolate animation 1 0)
+   :flex            1
    :justify-content :center
-   :opacity         (reanimated/interpolate y
-                                            {:inputRange  [0 scroll-offset]
-                                             :outputRange [1 0]})})
+   :position        :absolute
+   :top             0
+   :bottom          0
+   :left            0})
 
 (defn card-common []
   {:margin-vertical   16

@@ -22,8 +22,10 @@
     {:name      :chat
      :component chat/chat}
     {:name      :profile
+     :insets    {:top false}
      :component profile.contact/profile}
     {:name      :group-chat-profile
+     :insets    {:top false}
      :component profile.group-chat/group-chat-profile}
     {:name      :stickers
      :component stickers/packs}
