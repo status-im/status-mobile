@@ -43,10 +43,6 @@
  card/pair)
 
 (re-frame/reg-fx
- :hardwallet/generate-mnemonic
- card/generate-mnemonic)
-
-(re-frame/reg-fx
  :hardwallet/generate-and-load-key
  card/generate-and-load-key)
 

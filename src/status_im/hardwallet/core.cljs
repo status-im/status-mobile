@@ -62,7 +62,7 @@
                   {:db (update-in db [:hardwallet :secrets] merge pairing-data)}
                   (common/listen-to-hardware-back-button)
                   (when (= flow :create)
-                    (mnemonic/proceed-with-generating-mnemonic))
+                    (mnemonic/set-mnemonic))
                   (when (= flow :recovery)
                     (onboarding/proceed-with-generating-key)))
         (recovery/load-pair-screen cofx)))))
@@ -181,7 +181,6 @@
                                      :hardwallet/generate-and-load-key
                                      :hardwallet/remove-key-with-unpair
                                      :hardwallet/unpair-and-delete
-                                     :hardwallet/generate-mnemonic
                                      :wallet.accounts/generate-new-keycard-account} on-verified)
                 (common/get-application-info pairing nil))
               (when on-verified

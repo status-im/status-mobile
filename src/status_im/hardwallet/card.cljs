@@ -171,26 +171,6 @@
        (re-frame/dispatch
         [:hardwallet.callback/on-pair-error (error-object->map response)]))})))
 
-(defn generate-mnemonic [args]
-  (log/info "[keycard] generate-mnemonic" args)
-  (keycard/generate-mnemonic
-   card
-   (merge
-    args
-    {:on-success
-     (fn [response]
-       (log/info "[keycard response succ] generate-mnemonic"
-                 (js->clj response :keywordize-keys true))
-       (re-frame/dispatch
-        [:hardwallet.callback/on-generate-mnemonic-success response]))
-     :on-failure
-     (fn [response]
-       (log/info "[keycard response fail] generate-mnemonic"
-                 (error-object->map response))
-       (re-frame/dispatch
-        [:hardwallet.callback/on-generate-mnemonic-error
-         (error-object->map response)]))})))
-
 (defn generate-and-load-key [args]
   (log/info "[keycard] generate-and-load-key" args)
   (keycard/generate-and-load-key

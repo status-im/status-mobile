@@ -85,14 +85,6 @@
         (then on-success)
         (catch on-failure))))
 
-(defn generate-mnemonic
-  [{:keys [pairing words on-success on-failure]}]
-  (when pairing
-    (.. status-keycard
-        (generateMnemonic pairing words)
-        (then on-success)
-        (catch on-failure))))
-
 (defn generate-and-load-key
   [{:keys [mnemonic pairing pin on-success on-failure]}]
   (when pairing
@@ -227,8 +219,6 @@
     (install-applet-and-init-card args))
   (keycard/pair [this args]
     (pair args))
-  (keycard/generate-mnemonic [this args]
-    (generate-mnemonic args))
   (keycard/generate-and-load-key [this args]
     (generate-and-load-key args))
   (keycard/unblock-pin [this args]

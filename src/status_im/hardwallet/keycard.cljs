@@ -15,7 +15,6 @@
   (init-card [this args])
   (install-applet-and-init-card [this args])
   (pair [this args])
-  (generate-mnemonic [this args])
   (generate-and-load-key [this args])
   (unblock-pin [this args])
   (verify-pin [this args])

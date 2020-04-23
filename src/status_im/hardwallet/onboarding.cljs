@@ -215,24 +215,6 @@
         (show-recover-confirmation))
       {:db (assoc-in db [:hardwallet :recovery-phrase :confirm-error] (i18n/label :t/wrong-word))})))
 
-(fx/defn card-ready-next-button-pressed
-  {:events [:hardwallet.ui/card-ready-next-button-pressed]}
-  [{:keys [db] :as cofx}]
-  (log/debug "[hardwallet] card-ready-next-button-pressed")
-  (let [pin (get-in db [:hardwallet :secrets :pin])
-        pin-already-set? (boolean pin)]
-    (if pin-already-set?
-      (if (= (get-in db [:hardwallet :flow]) :create)
-        (mnemonic/load-generating-mnemonic-screen cofx)
-        {:db (assoc-in db [:hardwallet :setup-step] :recovery-phrase)})
-      (fx/merge cofx
-                {:db (-> db
-                         (assoc-in [:hardwallet :setup-step] :pin)
-                         (assoc-in [:hardwallet :pin :enter-step] :current)
-                         (assoc-in [:hardwallet :pin :on-verified] :hardwallet/proceed-to-generate-mnemonic)
-                         (assoc-in [:hardwallet :pin :current] [])
-                         (assoc-in [:hardwallet :pin :original] nil))}))))
-
 (fx/defn recovery-phrase-next-button-pressed
   [{:keys [db] :as cofx}]
   (if (= (get-in db [:hardwallet :flow]) :create)

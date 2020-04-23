@@ -86,8 +86,6 @@
   (when (= password kk1-password)
     (later #(on-success kk1-pair))))
 
-(defn generate-mnemonic [args])
-
 (defn generate-and-load-key [{:keys [pin pairing on-success]}]
   (when (and (= pin (get @state :pin))
              (= pairing kk1-pair))
@@ -152,8 +150,6 @@
     (install-applet-and-init-card args))
   (keycard/pair [this args]
     (pair args))
-  (keycard/generate-mnemonic [this args]
-    (generate-mnemonic args))
   (keycard/generate-and-load-key [this args]
     (generate-and-load-key args))
   (keycard/unblock-pin [this args]
