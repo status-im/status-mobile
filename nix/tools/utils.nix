@@ -1,9 +1,14 @@
 { xcodeWrapper, lib }:
 
+#
+# This is a collection of various utilities used throught this repo.
+#
+
 let
   RED = "\\033[0;31m";
   GREEN = "\\033[0;32m";
   NC = "\\033[0m";
+
   _xcodeToolsTest = ''
     xcode=0
     iPhoneSDK=0
@@ -18,6 +23,7 @@ let
     export SELECTED=$iPhoneSDK; ${_xcodeToolReportScript "iPhone SDK"}
   '';
   _xcodeVersion = builtins.replaceStrings ["xcode-wrapper-"] [""] xcodeWrapper.name;
+
   enforceXCodeAvailable = ''
     ${_xcodeToolsTest}
     if [ $xcode -eq 0 ]; then
@@ -26,6 +32,7 @@ let
       exit 1
     fi
   '';
+
   enforceiPhoneSDKAvailable = ''
     ${_xcodeToolsTest}
     if [ $iPhoneSDK -eq 0 ]; then

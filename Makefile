@@ -202,6 +202,22 @@ jsbundle-ios: ##@jsbundle Compile JavaScript and Clojure into index.ios.js
 	yarn shadow-cljs release ios
 
 #--------------
+# status-go lib
+# -------------
+
+status-go-desktop: SHELL := /bin/sh
+status-go-desktop: ##@status-go Compile status-go for desktop app
+	nix/scripts/build.sh targets.status-go.desktop
+
+status-go-android: SHELL := /bin/sh
+status-go-android: ##@status-go Compile status-go for Android app
+	nix/scripts/build.sh targets.status-go.mobile.android
+
+status-go-ios: SHELL := /bin/sh
+status-go-ios: ##@status-go Compile status-go for iOS app
+	nix/scripts/build.sh targets.status-go.mobile.ios
+
+#--------------
 # Clojure REPL
 # -------------
 
@@ -259,16 +275,15 @@ endif
 
 lint: export TARGET := clojure
 lint: ##@test Run code style checks
-	# yarn clj-kondo --confg .clj-kondo/config.edn --lint src
 	clojure -Sdeps '{:deps {cljfmt {:mvn/version "0.6.7"}}}' \
-	-m cljfmt.main check src \
-	--indents indentation.edn
+		-m cljfmt.main check src \
+		--indents indentation.edn
 
 lint-fix: export TARGET := clojure
 lint-fix: ##@test Run code style checks and fix issues
 	clojure -Sdeps '{:deps {cljfmt {:mvn/version "0.6.7"}}}' \
-	-m cljfmt.main fix src \
-	--indents indentation.edn
+		-m cljfmt.main fix src \
+		--indents indentation.edn
 
 test: export TARGET := clojure
 test: ##@test Run tests once in NodeJS

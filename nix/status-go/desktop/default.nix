@@ -1,50 +1,60 @@
-{ stdenv, utils, callPackage, buildGoPackage, go, xcodeWrapper }:
-
-{ owner, repo, rev, cleanVersion, goPackagePath, src, host,
-  # desktop-only arguments
-  goBuildFlags, goBuildLdFlags,
-  outputFileName,
-  hostSystem } @ args':
+{ lib, stdenv, utils, go, buildGoPackage
+# object with source attributes
+, meta , source
+, goBuildFlags
+, goBuildLdFlags
+, outputFileName ? "libstatus.a" }:
 
 let
-  buildStatusGo = callPackage ../build.nix {
-    inherit buildGoPackage go xcodeWrapper utils;
-  };
+  inherit (lib) concatStringsSep optionalString concatMapStrings;
 
-  # Remove desktop-only arguments from args
-  args = removeAttrs args' [
-    "goBuildFlags" "goBuildLdFlags" "outputFileName" "hostSystem"
-  ];
+  removeReferences = [ go ];
+  removeExpr = refs: ''remove-references-to ${concatMapStrings (ref: " -t ${ref}") refs}'';
 
-  buildStatusGoDesktopLib = buildStatusGo (args // {
-    buildMessage = "Building desktop library";
-    #GOOS=windows GOARCH=amd64 CGO_ENABLED=1 go build ${goBuildFlags} -buildmode=c-archive -o $out/${outputFileName} ./lib
-    buildPhase =
-      let
-        CGO_LDFLAGS = stdenv.lib.concatStringsSep " " goBuildLdFlags;
-      in ''
-      pushd "$NIX_BUILD_TOP/go/src/${goPackagePath}" >/dev/null
+  hostSystem = stdenv.hostPlatform.system;
 
-      export GO111MODULE=off
+in buildGoPackage {
+  pname = source.repo;
+  version = "${source.cleanVersion}-${source.shortRev}";
 
-      go build -o $out/${outputFileName} \
-          ${goBuildFlags} \
-          -buildmode=c-archive \
-          -ldflags='${CGO_LDFLAGS}' \
-          ./lib
+  inherit meta;
+  inherit (source) src goPackagePath;
 
-      popd >/dev/null
-    '';
+  # Fixes Cgo related build failures (see https://github.com/NixOS/nixpkgs/issues/25959 )
+  hardeningDisable = [ "fortify" ];
 
-    installPhase = ''
-      mkdir -p $out/lib/${hostSystem} $out/include
-      mv $out/${outputFileName} $out/lib/${hostSystem}
-      mv $out/libstatus.h $out/include
-    '';
+  # Ensure XCode is present, instead of failing at the end of the build
+  preConfigure = optionalString stdenv.isDarwin utils.enforceXCodeAvailable;
 
-    outputs = [ "out" ];
+  buildMessage = "Building desktop library";
 
-    meta = { platforms = with stdenv.lib.platforms; linux ++ darwin; };
-  });
+  #GOOS=windows GOARCH=amd64 CGO_ENABLED=1 go build ${goBuildFlags} -buildmode=c-archive -o $out/${outputFileName} ./lib
+  buildPhase = let
+    CGO_LDFLAGS = concatStringsSep " " goBuildLdFlags;
+  in ''
+    pushd "$NIX_BUILD_TOP/go/src/${source.goPackagePath}" >/dev/null
 
-in buildStatusGoDesktopLib
+    export GO111MODULE=off
+
+    go build -o $out/${outputFileName} \
+        ${concatStringsSep " " goBuildFlags} \
+        -buildmode=c-archive \
+        -ldflags='${CGO_LDFLAGS}' \
+        ./lib
+
+    popd >/dev/null
+  '';
+
+  # replace hardcoded paths to go package in /nix/store, otherwise Nix will fail the build
+  fixupPhase = ''
+    find $out -type f -exec ${removeExpr removeReferences} '{}' + || true
+  '';
+
+  installPhase = ''
+    mkdir -p $out/lib/${hostSystem} $out/include
+    mv $out/${outputFileName} $out/lib/${hostSystem}
+    mv $out/libstatus.h $out/include
+  '';
+
+  outputs = [ "out" ];
+}

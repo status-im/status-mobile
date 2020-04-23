@@ -9,6 +9,7 @@ There are four main folders in the `nix` directory:
 * `nix/scripts` - Bash scripts for easier usage of Nix
 * `nix/pkgs` - Packages we add to or modify in `nixpkgs`
 * `nix/deps` - Project dependencies managed by Nix
+* `nix/lib` - Our tools we merge into `pkgs.lib`
 * `nix/tools` - Various tools used by our derivations and shells
 * `nix/status-go` - Derivations for building [`status-go`](https://github.com/status-im/status-go) repo
 
@@ -16,11 +17,14 @@ There are four main folders in the `nix` directory:
 
 There are a few main files that define the whole build environment:
 
+* `nix/nix.conf` - Binary cache configuration
 * `nix/default.nix` - Entrypoint for both shells and targets
 * `nix/shells.nix` - Definition of Nix shells used in builds
 * `nix/targets.nix` - Hierarchy of main build targets
 * `nix/pkgs.nix` - Definition of a custom `nixpkgs` repo
 * `nix/overlay.nix` - Overrides for `nixpkgs`, custom packages
+
+The `default.nix` and `shell.nix` files at th repo root are just a gateway into the `nix` subfolder.
 
 # Start
 
@@ -49,11 +53,11 @@ nix-build \
   --show-trace \
   --attr targets.mobile.android.release \
   --argstr secrets-file '/tmp/tmp-status-react-559a3a441/tmp.xAnrPuNtAP' \
-  --option extra-sandbox-paths '/home/sochan/.gradle/status-im.keystore /tmp/tmp-status-react-559a3a441/tmp.xAnrPuNtAP' \
+  --option extra-sandbox-paths '/home/joe/.gradle/status-im.keystore /tmp/tmp-status-react-559a3a441/tmp.xAnrPuNtAP' \
   --arg config '{ \
     status-im.build-type="nightly";
     status-im.build-number="2020022418";
-    status-im.android.keystore-file="/home/sochan/.gradle/status-im.keystore";
+    status-im.android.keystore-path="/home/joe/.gradle/status-im.keystore";
     status-im.android.abi-split="false";
     status-im.android.abi-include="armeabi-v7a;arm64-v8a;x86";
   }' \

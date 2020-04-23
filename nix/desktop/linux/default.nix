@@ -1,30 +1,30 @@
-{ stdenv, mkShell, callPackage,
-  appimagekit, patchelf, qt5, status-go, baseImageFactory }:
+{ lib, stdenv, mkShell, callPackage
+# pkgs
+, appimagekit, linuxdeployqt, patchelf, qt5custom
+# custom arguments
+, status-go, baseImageFactory }:
 
-with stdenv;
-
-assert isLinux;
+assert lib.assertMsg stdenv.isLinux "Building Linux app can work only on Linux!";
 
 let
   inherit (lib) concatStrings catAttrs;
   baseImage = baseImageFactory "linux";
-  appimagekit = callPackage ./appimagekit { };
-  linuxdeployqt = callPackage ./linuxdeployqt { inherit appimagekit; };
 
 in rec {
   buildInputs = [
     appimagekit
     linuxdeployqt
     patchelf
-    qt5.full
-  ] ++ status-go.buildInputs;
+    qt5custom
+  ];
 
   shell = mkShell {
     inherit buildInputs;
-    shellHook = concatStrings (catAttrs "shellHook" [ baseImage status-go ]) + ''
-      export QT_PATH="${qt5.full}"
-      export QT_BASEBIN_PATH="${qt5.qtbase.bin}"
-      export PATH="${qt5.full}/bin:$PATH"
+    inputsFrom = [ baseImage status-go ];
+    shellHook = ''
+      export QT_PATH="${qt5custom}"
+      export QT_BASEBIN_PATH="${qt5custom}/bin"
+      export PATH="$QT_BASEBIN_PATH:$PATH"
     '';
   };
 }

@@ -1,12 +1,12 @@
-{ stdenv, mkShell, conan, nsis, go, baseImageFactory }:
+{ stdenv, lib, mkShell, conan, nsis, go, baseImageFactory }:
 
-assert stdenv.isLinux;
+assert lib.assertMsg stdenv.isLinux "Building Windows app can work only on Linux!";
 
 let
   baseImage = baseImageFactory "windows";
 
 in rec {
-  buildInputs = stdenv.lib.optionals stdenv.isLinux [
+  buildInputs = lib.optionals stdenv.isLinux [
     conan
     nsis
     baseImage

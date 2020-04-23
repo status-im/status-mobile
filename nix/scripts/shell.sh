@@ -26,12 +26,12 @@ fi
 entryPoint="default.nix"
 nixArgs+=("--attr shells.${TARGET}")
 
-
 if [[ "$TARGET" =~ (linux|windows|darwin|macos) ]]; then
   # This is a dirty workaround because 'yarn install' is an impure operation,
   # so we need to call it from an impure shell.
   # Hopefully we'll be able to fix this later on with something like yarn2nix
-  nix-shell ${nixArgs[@]} --run "scripts/prepare-for-desktop-platform.sh" || exit
+  # TODO: Manage node dependencies for desktop with yarn2nix
+  nix-shell ${nixArgs[@]} --run "scripts/prepare-for-desktop-platform.sh" default.nix || exit
 fi
 
 config=''

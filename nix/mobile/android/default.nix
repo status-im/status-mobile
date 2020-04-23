@@ -50,9 +50,5 @@ in {
           "${mavenAndNpmDeps.drv}/project"
       '';
     })
-    [ status-go.shell mavenAndNpmDeps.shell androidShell ];
-
-  env = {
-    shell = androidShell;
-  };
+    [ mavenAndNpmDeps.shell androidShell ];
 }

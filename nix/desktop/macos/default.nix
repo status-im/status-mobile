@@ -1,32 +1,32 @@
 { stdenv, lib, callPackage, mkShell,
-  gnupg22, darwin, qt5, status-go, baseImageFactory }:
+  gnupg22, darwin, qt5custom, status-go, baseImageFactory }:
 
-with darwin.apple_sdk.frameworks;
+assert lib.assertMsg stdenv.isDarwin "Building MacOS app can work only on MacOS!";
 
-assert stdenv.isDarwin;
 let
   inherit (lib) concatStrings catAttrs;
+  inherit (darwin.apple_sdk.frameworks)
+    AppKit Cocoa Foundation OpenGL CoreFoundation;
+
   baseImage = baseImageFactory "macos";
 
-in rec {
-  buildInputs = [
-    gnupg22
-    baseImage
-    qt5.full
-    AppKit
-    Cocoa
-    darwin.cf-private
-    Foundation
-    OpenGL
-  ] ++ status-go.buildInputs;
-
+in {
   shell = mkShell {
-    inherit buildInputs;
-    shellHook = baseImage.shellHook + ''
+    buildInputs = [
+      gnupg22 baseImage qt5custom
+      darwin.cf-private
+      AppKit Cocoa Foundation OpenGL
+    ];
+
+    inputsFrom = [
+      status-go baseImage
+    ];
+
+    shellHook = ''
       export NIX_TARGET_LDFLAGS="-F${CoreFoundation}/Library/Frameworks -framework CoreFoundation $NIX_TARGET_LDFLAGS"
-      export QT_PATH="${qt5.full}"
-      export QT_BASEBIN_PATH="${qt5.qtbase.bin}"
-      export PATH="${qt5.full}/bin:$PATH"
+      export QT_PATH="${qt5custom}"
+      export QT_BASEBIN_PATH="${qt5custom}/bin"
+      export PATH="$QT_BASEBIN_PATH/bin:$PATH"
     '';
   };
 }

@@ -1,9 +1,9 @@
-{ lib }:
-
 # This Nix expression allows filtering a local directory by
 # specifying dirRootsToInclude, dirsToExclude and filesToInclude.
 # It also filters out symlinks to result folders created by nix-build,
 # as well as backup/swap/generated files.
+
+{ lib }:
 
 let
   inherit (lib)

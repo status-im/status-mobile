@@ -1,39 +1,49 @@
-{ stdenv, mkShell, callPackage, status-go,
-  cmake, extra-cmake-modules, file, moreutils, go, darwin, nodejs }:
+{ stdenv, lib, pkgs, mkShell, callPackage
+, status-go, qtkeychain-src  }:
 
 let
-  inherit (stdenv.lib) catAttrs concatStrings optional unique;
+  inherit (stdenv) isLinux isDarwin;
+  inherit (lib) mapAttrs catAttrs optional unique mergeSh;
 
-  baseImageFactory = callPackage ./base-image { inherit stdenv; };
-  snoreNotifySources = callPackage ./cmake/snorenotify { };
-  qtkeychainSources = callPackage ./cmake/qtkeychain { };
+  # utilities
+  baseImageFactory = callPackage ./base-image { };
 
   # main targets
-  linux = callPackage ./linux { inherit stdenv status-go baseImageFactory; };
-  macos = callPackage ./macos { inherit stdenv status-go darwin baseImageFactory; };
-  windows = callPackage ./windows { inherit stdenv go baseImageFactory; };
+  linux = callPackage ./linux { inherit status-go baseImageFactory; };
+  macos = callPackage ./macos { inherit status-go baseImageFactory; };
+  windows = callPackage ./windows { inherit baseImageFactory; };
 
   selectedSources =
-    optional stdenv.isLinux linux ++
-    optional stdenv.isLinux windows ++
-    optional stdenv.isDarwin macos;
+    optional isLinux linux ++
+    optional isLinux windows ++
+    optional isDarwin macos;
 
-in rec {
-  inherit linux macos windows;
+  # default shell for desktop builds
+  default = mkShell {
+    buildInputs = with pkgs; unique ([
+      file moreutils cmake
+      extra-cmake-modules
+      qtkeychain-src
+    ] ++ (catAttrs "buildInputs" selectedSources));
 
-  buildInputs = unique ([
-    cmake
-    extra-cmake-modules
-    file
-    moreutils
-    snoreNotifySources
-    qtkeychainSources
-  ] ++ catAttrs "buildInputs" selectedSources);
+    inputsFrom = [ status-go.desktop ]
+      ++ (catAttrs "shell" selectedSources);
 
-  shell = mkShell {
-    inherit buildInputs;
-    shellHook = concatStrings (catAttrs "shellHook" (
-      selectedSources ++ [ snoreNotifySources qtkeychainSources ]
-    ));
+    # These variables are used by the Status Desktop CMake build script in:
+    # - modules/react-native-status/desktop/CMakeLists.txt
+    shellHook = ''
+      export STATUS_GO_DESKTOP_INCLUDEDIR=${status-go.desktop}/include
+      export STATUS_GO_DESKTOP_LIBDIR=${status-go.desktop}/lib
+      # QT Keychain library sources
+      export QTKEYCHAIN_SOURCES="${qtkeychain-src}/src"
+    '';
   };
+
+  # for merging default shell
+  mergeDefaultShell = (key: val: { shell = mergeSh default [ val.shell ]; });
+
+in {
+  shell = default;
 }
+  # merge default shell with platform sub-shells
+  // mapAttrs mergeDefaultShell { inherit linux windows macos; }

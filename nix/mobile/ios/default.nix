@@ -33,7 +33,7 @@ let
   };
 
 in {
-  inherit buildInputs pod-shell;
+  inherit buildInputs pod-shell status-go-shell;
 
   shell = lib.mergeSh localShell [
     fastlane.shell status-go-shell pod-shell

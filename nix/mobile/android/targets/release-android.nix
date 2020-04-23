@@ -1,5 +1,7 @@
-{ stdenv, lib, config, callPackage, bash, file, gnumake, watchmanFactory, gradle
-, androidPkgs, mavenAndNpmDeps, nodejs, openjdk, jsbundle, status-go, unzip, zlib }:
+{ stdenv, lib, config, callPackage,
+  bash, file, gnumake, watchmanFactory, gradle,
+  androidPkgs, mavenAndNpmDeps,
+  nodejs, openjdk, jsbundle, status-go, unzip, zlib }:
 
 {
   buildEnv ? "prod", # Value for BUILD_ENV checked by Clojure code at compile time
@@ -10,26 +12,20 @@
 assert (lib.stringLength watchmanSockPath) > 0 -> stdenv.isDarwin;
 
 let
-  inherit (lib)
-    toLower splitString optionalString
-    attrByPath hasAttrByPath optionalAttrs;
-
-  # helper for getting config values
-  safeGetConfig = name: default:
-    let path = [ "status-im" ] ++ (splitString "." name);
-    in attrByPath path default config;
+  inherit (lib) toLower optionalString getConfig;
 
   # custom env variables derived from config
   env = {
-    ANDROID_ABI_SPLIT = safeGetConfig "android.abi-split" false;
-    ANDROID_ABI_INCLUDE = safeGetConfig "android.abi-include" "armeabi-v7a;arm64-v8a;x86";
-    STATUS_GO_SRC_OVERRIDE = safeGetConfig "nimbus.src-override" null;
+    ANDROID_ABI_SPLIT = getConfig "android.abi-split" "false";
+    ANDROID_ABI_INCLUDE = getConfig "android.abi-include" "armeabi-v7a;arm64-v8a;x86";
+    STATUS_GO_SRC_OVERRIDE = getConfig "nimbus.src-override" null;
   };
 
-  buildType = safeGetConfig "build-type" "prod";
-  buildNumber = safeGetConfig "build-number" "9999";
-  gradleOpts = safeGetConfig "android.gradle-opts" "";
-  keystorePath = safeGetConfig "android.keystore-path" "";
+  buildType = getConfig "build-type" "prod";
+  buildNumber = getConfig "build-number" 9999;
+  gradleOpts = getConfig "android.gradle-opts" null;
+  keystorePath = getConfig "android.keystore-path" null;
+
   # Keep the same keystore path for determinism
   keystoreLocal = "${gradleHome}/status-im.keystore";
 
@@ -90,7 +86,7 @@ in stdenv.mkDerivation rec {
 
     runHook postUnpack
   '';
-  postUnpack = assert lib.assertMsg (keystorePath != "") "keystore-file has to be set!"; ''
+  postUnpack = assert lib.assertMsg (keystorePath != null) "keystore-file has to be set!"; ''
     mkdir -p ${gradleHome}
 
     # WARNING: Renaming the keystore will cause 'Keystore was tampered with' error
@@ -123,14 +119,14 @@ in stdenv.mkDerivation rec {
     substituteInPlace $sourceRoot/android/gradlew \
       --replace \
         'exec gradle' \
-        "exec gradle -Dmaven.repo.local='${localMavenRepo}' --offline ${gradleOpts}"
+        "exec gradle -Dmaven.repo.local='${localMavenRepo}' --offline ${toString gradleOpts}"
 
     set $prevSet
   '';
   buildPhase = let
     inherit (lib)
       stringLength optionalString substring
-      concatStrings concatStringsSep
+      toInt concatStrings concatStringsSep
       catAttrs mapAttrsToList makeLibraryPath;
 
     # Take the env attribute set and build a couple of scripts
@@ -140,7 +136,7 @@ in stdenv.mkDerivation rec {
     adhocEnvVars = optionalString stdenv.isLinux
       "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${makeLibraryPath [ zlib ]}";
   in 
-    assert stringLength env.ANDROID_ABI_SPLIT > 0;
+    assert env.ANDROID_ABI_SPLIT != null && env.ANDROID_ABI_SPLIT != "";
     assert stringLength env.ANDROID_ABI_INCLUDE > 0;
   ''
     export ANDROID_SDK_ROOT="${androidPkgs}"
@@ -151,16 +147,19 @@ in stdenv.mkDerivation rec {
     export STATUS_REACT_HOME=$PWD
     export HOME=$sourceRoot
 
+    # Used by the Android Gradle build script in android/build.gradle
+    export STATUS_GO_ANDROID_LIBDIR=${status-go}
+
     ${exportEnvVars}
     ${optionalString (secretsFile != "") "source ${secretsFile}"}
 
-    ${concatStrings (catAttrs "shellHook" [ mavenAndNpmDeps.shell status-go.shell ])}
+    ${concatStrings (catAttrs "shellHook" [ mavenAndNpmDeps.shell ])}
 
     # fix permissions so gradle can create directories
     chmod -R +w $sourceRoot/android
 
     pushd $sourceRoot/android
-    ${adhocEnvVars} ./gradlew -PversionCode=${buildNumber} assemble${gradleBuildType} || exit
+    ${adhocEnvVars} ./gradlew -PversionCode=${toString buildNumber} assemble${gradleBuildType} || exit
     popd > /dev/null
   '';
   doCheck = true;

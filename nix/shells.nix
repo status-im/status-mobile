@@ -65,19 +65,20 @@ let
       buildInputs = [ pkgs.openjdk8 ];
     };
 
-    # for targets that need 'adb'
-    android-env = targets.mobile.android.env.shell;
+    # for targets that need 'adb' and other SDK/NDK tools
+    android-env = pkgs.androidShell;
 
     # helpers for use with target argument
+    ios = targets.mobile.ios.shell;
+    android = targets.mobile.android.shell;
+    desktop = targets.desktop.shell;
     linux = targets.desktop.linux.shell;
     macos = targets.desktop.macos.shell;
-    windows = targets.desktop.windows.shell;
-    android = targets.mobile.android.shell;
-    ios = targets.mobile.ios.shell;
+    windows = targets.desktop.macos.shell;
   };
 
   # for merging the default shell with others
-  mergeDefaultShell = (name: value: lib.mergeSh default [ value ]);
+  mergeDefaultShell = (key: val: lib.mergeSh default [ val ]);
 
 # values here can be selected using `nix-shell --attr shells.$TARGET default.nix`
 # the nix/scripts/shell.sh wrapper does this for us and expects TARGET to be set
