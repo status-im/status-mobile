@@ -136,6 +136,10 @@
       :on-scroll-to-index-failed    #() ;;don't remove this
       :keyboard-should-persist-taps :handled}]))
 
+(defview empty-bottom-sheet []
+  (letsubs [input-bottom-sheet [:chats/empty-chat-panel-height]]
+    [react/view {:height input-bottom-sheet}]))
+
 (defview bottom-sheet []
   (letsubs [input-bottom-sheet [:chats/current-chat-ui-prop :input-bottom-sheet]]
     (case input-bottom-sheet
@@ -143,7 +147,7 @@
       [stickers/stickers-view]
       :extensions
       [extensions/extensions-view]
-      nil)))
+      [empty-bottom-sheet])))
 
 (defview chat []
   (letsubs [{:keys [chat-id show-input? group-chat contact] :as current-chat}

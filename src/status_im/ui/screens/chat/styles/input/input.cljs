@@ -8,26 +8,25 @@
 (def border-height 1)
 (def max-input-height (* 5 min-input-height))
 
-(defn root [margin-bottom]
+(defn root []
   {:background-color colors/white
-   :margin-bottom    margin-bottom
    :flex-direction   :column
    :border-top-width border-height
    :border-top-color colors/gray-lighter})
 
 (def reply-message
-  {:flex-direction :row
-   :align-items    :flex-start
+  {:flex-direction  :row
+   :align-items     :flex-start
    :justify-content :space-between
-   :padding-top    8
-   :padding-bottom 8
-   :padding-right  8
-   :padding-left   8})
+   :padding-top     8
+   :padding-bottom  8
+   :padding-right   8
+   :padding-left    8})
 
 (def reply-message-content
   {:flex-direction :column
    :padding-left   8
-   :padding-right 8
+   :padding-right  8
    :max-height     140})
 
 (defn reply-message-author [chosen?]
@@ -45,46 +44,40 @@
   {:flex-direction :column-reverse})
 
 (def reply-message-to-container
-  {:flex-direction :row
-   :height 18
-   :padding-top 0
-   :padding-bottom 0
-   :padding-right 8
+  {:flex-direction  :row
+   :height          18
+   :padding-top     0
+   :padding-bottom  0
+   :padding-right   8
    :justify-content :flex-start})
 
 (def reply-icon
-  {:width 20
-   :margin-top 1
+  {:width         20
+   :margin-top    1
    :margin-bottom 1
-   :margin-right 0})
+   :margin-right  0})
 
 (def cancel-reply-highlight
   {:align-self :flex-start
-   :width 19
-   :height   19})
+   :width      19
+   :height     19})
 
 (def cancel-reply-container
   {:flex-direction  :row
    :justify-content :flex-end
-   :height "100%"})
+   :height          "100%"})
 
 (def cancel-reply-icon
   {:background-color colors/gray
-   :width 21
-   :height 21
-   :align-items :center
-   :justify-content :center
+   :width            21
+   :height           21
+   :align-items      :center
+   :justify-content  :center
    :border-radius    12})
 
 (def input-container
-  {:flex-direction   :row
-   :align-items      :flex-end
-   :padding-left     14})
-
-(def input-root
-  {:padding-top    padding-vertical
-   :padding-bottom padding-vertical
-   :flex           1})
+  {:flex-direction :row
+   :align-items    :flex-end})
 
 (def input-animated
   {:align-items    :flex-start
@@ -93,16 +86,13 @@
    :min-height     min-input-height
    :max-height     max-input-height})
 
-(styles/defn input-view [single-line-input?]
-  {:flex           1
-   :padding-top    9
-   :padding-bottom 5
-   :padding-right  12
-   :min-height     min-input-height
-   :max-height     (if single-line-input?
-                     min-input-height
-                     max-input-height)
-   :android        {:padding-top 3}})
+(def input-view
+  {:flex               1
+   :padding-top        12
+   :padding-bottom     15
+   :padding-horizontal 12
+   :min-height         min-input-height
+   :max-height         max-input-height})
 
 (def invisible-input-text
   {:position         :absolute

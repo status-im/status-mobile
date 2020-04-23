@@ -30,11 +30,11 @@
                     "keyboardWillShow"
                     (fn [e]
                       (let [h (.. e -endCoordinates -height)]
-                        (dispatch [:set :keyboard-height h])
-                        (dispatch [:set :keyboard-max-height h]))))
+                        (dispatch-sync [:set :keyboard-height h])
+                        (dispatch-sync [:set :keyboard-max-height h]))))
       (.addListener react/keyboard
                     "keyboardWillHide"
-                    #(dispatch [:set :keyboard-height 0]))
+                    #(dispatch-sync [:set :keyboard-height 0]))
       (.hide react/splash-screen)
       (.addEventListener react/app-state "change" app-state-change-handler)
       (.addEventListener rn-dependencies/react-native-languages "change" on-languages-change)

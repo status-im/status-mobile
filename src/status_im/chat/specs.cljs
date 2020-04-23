@@ -17,6 +17,7 @@
 (s/def :chat/loaded-chats (s/nilable seq?))
 (s/def :chat/bot-db (s/nilable map?))
 (s/def :chat/cooldowns (s/nilable number?))                       ; number of cooldowns given for spamming send button
+(s/def :chat/inputs (s/nilable map?))
 (s/def :chat/cooldown-enabled? (s/nilable boolean?))
 (s/def :chat/last-outgoing-message-sent-at (s/nilable number?))
 (s/def :chat/spam-messages-frequency (s/nilable number?))         ; number of consecutive spam messages sent

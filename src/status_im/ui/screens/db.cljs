@@ -42,6 +42,7 @@
              :mailserver/topics                  {}
              :mailserver/pending-requests        0
              :chat/cooldowns                     0
+             :chat/inputs                        {}
              :chat/cooldown-enabled?             false
              :chat/last-outgoing-message-sent-at 0
              :chat/spam-messages-frequency       0
@@ -203,6 +204,7 @@
                                 :browser/options
                                 :navigation/screen-params
                                 :chat/cooldowns
+                                :chat/inputs
                                 :chat/cooldown-enabled?
                                 :chat/last-outgoing-message-sent-at
                                 :chat/spam-messages-frequency

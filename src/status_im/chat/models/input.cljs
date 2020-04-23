@@ -27,7 +27,7 @@
   "Set input text for current-chat. Takes db and input text and cofx
   as arguments and returns new fx. Always clear all validation messages."
   [{{:keys [current-chat-id] :as db} :db} new-input]
-  {:db (assoc-in db [:chats current-chat-id :input-text] (text->emoji new-input))})
+  {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))})
 
 (defn- start-cooldown [{:keys [db]} cooldowns]
   {:dispatch-later        [{:dispatch [:chat/disable-cooldown]
@@ -67,6 +67,12 @@
   (when-let [cmp-ref (get-in chat-ui-props [current-chat-id ref])]
     {::focus-rn-component cmp-ref}))
 
+(fx/defn chat-input-clear
+  "Returns fx for focusing on active chat input reference"
+  [{{:keys [current-chat-id chat-ui-props]} :db} ref]
+  (when-let [cmp-ref (get-in chat-ui-props [current-chat-id ref])]
+    {::clear-rn-component cmp-ref}))
+
 (fx/defn reply-to-message
   "Sets reference to previous chat message and focuses on input"
   [{:keys [db] :as cofx} message-id]
@@ -103,6 +109,7 @@
                                             :response-to message-id
                                             :ens-name preferred-name})
                 (set-chat-input-text nil)
+                (chat-input-clear :input-ref)
                 (process-cooldown)))))
 
 (fx/defn send-sticker-fx
@@ -117,15 +124,15 @@
 (fx/defn send-current-message
   "Sends message from current chat input"
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
-  (let [{:keys [input-text]} (get-in db [:chats current-chat-id])]
+  (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])]
     (plain-text-message-fx input-text current-chat-id cofx)))
 
 (fx/defn send-transaction-result
   {:events [:chat/send-transaction-result]}
-  [cofx chat-id params result]
+  [cofx chat-id params result])
   ;;TODO: should be implemented on status-go side
   ;;see https://github.com/status-im/team-core/blob/6c3d67d8e8bd8500abe52dab06a59e976ec942d2/rfc-001.md#status-gostatus-react-interface
-)
+
 
 ;; effects
 
@@ -136,3 +143,11 @@
      (.focus ref)
      (catch :default e
        (log/debug "Cannot focus the reference")))))
+
+(re-frame/reg-fx
+ ::clear-rn-component
+ (fn [ref]
+   (try
+     (.clear ref)
+     (catch :default e
+       (log/debug "Cannot clear the reference")))))

@@ -137,12 +137,11 @@
                          :background-color colors/blue}}]))
 
 (defview stickers-view []
-  (letsubs [selected-pack   [:stickers/selected-pack]
-            installed-packs [:stickers/installed-packs-vals]
-            panel-height [:chats/chat-panel-height]
-
-            bottom-anim-value  (anim/create-value @panel-height)
-            alpha-value        (anim/create-value 0)]
+  (letsubs [selected-pack     [:stickers/selected-pack]
+            installed-packs   [:stickers/installed-packs-vals]
+            panel-height      [:chats/chat-panel-height]
+            bottom-anim-value (anim/create-value @panel-height)
+            alpha-value       (anim/create-value 0)]
     {:component-did-mount #(show-panel-anim bottom-anim-value alpha-value)}
     [react/animated-view {:style {:background-color colors/white
                                   :height           panel-height
