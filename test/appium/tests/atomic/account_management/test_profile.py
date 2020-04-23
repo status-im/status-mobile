@@ -224,6 +224,11 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append('No ENS name is shown in own profile after adding')
         if not dapp_view.element_by_text('%s.stateofus.eth' % ens_user['ens']).is_element_displayed():
             self.errors.append('No ENS name is shown in own profile after adding')
+        profile.share_my_profile_button.click()
+        if profile.ens_name_in_share_chat_key_text.text != '%s.stateofus.eth' % ens_user['ens']:
+            self.errors.append('No ENS name is shown on tapping on share icon in Profile')
+        profile.close_share_popup()
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5475)
@@ -606,8 +611,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5432)
     @marks.medium
-    @marks.skip
-    # TODO: e2e blocker 9135: no force-logout after enabling bootnode (enable after fix)
     def test_custom_bootnodes(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -616,15 +619,25 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         profile_1, profile_2 = home_1.profile_button.click(), home_2.profile_button.click()
         username_1, username_2 = profile_1.default_username_text.text, profile_2.default_username_text.text
+
+        profile_1.just_fyi('Add custom bootnode, enable bootnodes and check validation')
         profile_1.advanced_button.click()
         profile_1.bootnodes_button.click()
-        profile_1.plus_button.click()
+        profile_1.add_bootnode_button.click()
         profile_1.specify_name_input.set_value('test')
+        profile_1.bootnode_address_input.set_value('invalid_bootnode_address')
+        if not profile_1.element_by_text_part('Invalid format').is_element_displayed():
+             self.errors.append('Validation message about invalid format of bootnode is not shown')
+        profile_1.save_button.click()
+        if profile_1.add_bootnode_button.is_element_displayed():
+             self.errors.append('User was navigated to another screen when tapped on disabled "Save" button')
+        profile_1.bootnode_address_input.clear()
         profile_1.bootnode_address_input.set_value(bootnode_address)
         profile_1.save_button.click()
         profile_1.enable_bootnodes.click()
-        sign_in_1.sign_in()
+        profile_1.home_button.click()
 
+        profile_1.just_fyi('Add contact and send first message')
         chat_1 = home_1.add_contact(public_key)
         message = 'test message'
         chat_1.chat_message_input.send_keys(message)
@@ -634,18 +647,20 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
         chat_2.add_to_contacts.click()
 
-        chat_1.get_back_to_home_view()
-        home_1.profile_button.click()
-        profile_1.advanced_button.click()
-        profile_1.bootnodes_button.click()
+        profile_1.just_fyi('Disable custom bootnodes')
+        chat_1.profile_button.click()
         profile_1.enable_bootnodes.click()
-        sign_in_1.sign_in()
+        profile_1.home_button.click()
 
+        profile_1.just_fyi('Send message and check that it is received after disabling bootnodes')
         home_1.get_chat(username_2).click()
         message_1 = 'new message'
         chat_1.chat_message_input.send_keys(message_1)
         chat_1.send_message_button.click()
-        chat_2.chat_element_by_text(message_1).wait_for_visibility_of_element()
+        for chat in chat_1, chat_2:
+            if not chat.chat_element_by_text(message_1).is_element_displayed():
+                self.errors.append('Message was not received after enabling bootnodes!')
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5436)
     @marks.medium

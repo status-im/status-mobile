@@ -164,7 +164,7 @@ class ChatUrlText(BaseText):
 class SearchChatInput(BaseEditBox):
     def __init__(self, driver):
         super().__init__(driver)
-        self.locator = self.Locator.xpath_selector('//android.widget.EditText')
+        self.locator = self.Locator.text_selector('Search')
 
 
 class HomeView(BaseView):

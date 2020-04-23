@@ -377,7 +377,7 @@
     "ens-release-username": "Nom d'utilisateur libre",
     "ens-remove-hints": "La suppression séparera le nom d'utilisateur de votre clé.",
     "ens-remove-username": "Supprimer le nom d'utilisateur",
-    "ens-saved": "est maintenant connecté avec votre code de contact et peut être utilisé sur Status.",
+    "ens-saved": " est maintenant connecté avec votre code de contact et peut être utilisé sur Status.",
     "ens-saved-title": "Nom d'utilisateur ajouté",
     "ens-show-username": "Afficher mon nom d'utilisateur ENS dans les chats",
     "ens-terms-header": "Conditions d'enregistrement des noms",

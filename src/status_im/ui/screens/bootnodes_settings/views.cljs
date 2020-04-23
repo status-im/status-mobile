@@ -24,8 +24,9 @@
                   bootnodes         [:custom-bootnodes/network-bootnodes]]
     [react/view {:flex 1}
      [topbar/topbar {:title       :t/bootnodes-settings
-                     :accessories [{:icon    :main-icons/add
-                                    :handler #(navigate-to-add-bootnode nil)}]}]
+                     :accessories [{:icon                :main-icons/add
+                                    :accessibility-label :add-bootnode
+                                    :handler             #(navigate-to-add-bootnode nil)}]}]
      [react/view styles/switch-container
       [profile.components/settings-switch-item
        {:label-kw  :t/bootnodes-enabled

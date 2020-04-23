@@ -260,6 +260,7 @@ class SignInView(BaseView):
         return self.get_home_view()
 
     def sign_in(self, password=common_password, keycard=False):
+        self.rooted_device_continue()
         self.multi_account_on_login_button.wait_for_visibility_of_element(5)
         self.multi_account_on_login_button.click()
         if keycard:
@@ -282,5 +283,4 @@ class SignInView(BaseView):
 
     def open_weblink_and_login(self, url_weblink):
         self.open_universal_web_link(url_weblink)
-        self.rooted_device_continue()
         self.sign_in()

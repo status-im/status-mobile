@@ -35,8 +35,15 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         request_transaction.request_transaction_button.click()
         chat_2_request_message = chat_2.chat_element_by_text('↓ Incoming transaction')
 
+        chat_2_request_message.long_press_element()
+        if chat_2.reply_message_button.is_element_displayed():
+            self.errors.append('Reply is available on long-tap on Incoming transaction message!')
+
         chat_1 = home_1.get_chat(device_2_username).click()
         chat_1_sender_message = chat_1.chat_element_by_text('↑ Outgoing transaction')
+        chat_1_sender_message.long_press_element()
+        if chat_1.reply_message_button.is_element_displayed():
+            self.errors.append('Reply is available on long-tap on Outgoing transaction message!')
         send_message = chat_1_sender_message.sign_and_send.click()
         send_message.next_button.click()
         send_message.sign_transaction()

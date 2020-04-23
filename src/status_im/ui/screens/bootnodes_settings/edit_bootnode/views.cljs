@@ -47,23 +47,25 @@
         [react/scroll-view {:keyboard-should-persist-taps :handled}
          [react/view styles/edit-bootnode-view
           [text-input/text-input-with-label
-           {:label           (i18n/label :t/name)
-            :placeholder     (i18n/label :t/specify-name)
-            :style           styles/input
-            :container       styles/input-container
-            :default-value   name
-            :on-change-text  #(re-frame/dispatch [:bootnodes.ui/input-changed :name %])
-            :auto-focus      true}]
+           {:label               (i18n/label :t/name)
+            :placeholder         (i18n/label :t/specify-name)
+            :accessibility-label :bootnode-name
+            :style               styles/input
+            :container           styles/input-container
+            :default-value       name
+            :on-change-text      #(re-frame/dispatch [:bootnodes.ui/input-changed :name %])
+            :auto-focus           true}]
           [react/view
            {:flex 1}
            [text-input/text-input-with-label
             (merge
-             {:label          (i18n/label :t/bootnode-address)
-              :placeholder    (i18n/label :t/bootnode-format)
-              :style          styles/input
-              :container      styles/input-container
-              :default-value  url
-              :on-change-text #(re-frame/dispatch [:bootnodes.ui/input-changed :url %])}
+             {:label               (i18n/label :t/bootnode-address)
+              :placeholder         (i18n/label :t/bootnode-format)
+              :style               styles/input
+              :accessibility-label :bootnode-address
+              :container           styles/input-container
+              :default-value       url
+              :on-change-text      #(re-frame/dispatch [:bootnodes.ui/input-changed :url %])}
              (when-not platform/desktop? {:content qr-code}))]
            (when (and (not (string/blank? url)) invalid-url?)
              [tooltip/tooltip (i18n/label :t/invalid-format
