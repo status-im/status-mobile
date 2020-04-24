@@ -50,7 +50,7 @@ in {
           "${mavenAndNpmDeps.drv}/project"
       '';
     })
-    (lib.catAttrs "shell" [ status-go mavenAndNpmDeps androidShell ]);
+    [ status-go.shell mavenAndNpmDeps.shell androidShell ];
 
   env = {
     shell = androidShell;
