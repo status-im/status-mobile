@@ -27,4 +27,6 @@
   (unpair-and-delete [this args])
   (get-keys [this args])
   (sign [this args])
-  (sign-typed-data [this args]))
+  (sign-typed-data [this args])
+  (save-multiaccount-and-login [this args])
+  (login [this args]))

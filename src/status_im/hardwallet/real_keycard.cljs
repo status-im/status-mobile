@@ -1,6 +1,8 @@
 (ns status-im.hardwallet.real-keycard
   (:require [status-im.react-native.js-dependencies :as js-dependencies]
-            [status-im.hardwallet.keycard :as keycard]))
+            [status-im.hardwallet.keycard :as keycard]
+            [status-im.native-module.core :as status]
+            [status-im.utils.types :as types]))
 
 (defonce status-keycard (.-default js-dependencies/status-keycard))
 (defonce event-emitter (.-DeviceEventEmitter js-dependencies/react-native))
@@ -189,6 +191,19 @@
         (then on-success)
         (catch on-failure))))
 
+(defn save-multiaccount-and-login
+  [{:keys [multiaccount-data password settings node-config accounts-data chat-key]}]
+  (status/save-multiaccount-and-login-with-keycard
+   (types/clj->json multiaccount-data)
+   password
+   (types/clj->json settings)
+   node-config
+   (types/clj->json accounts-data)
+   chat-key))
+
+(defn login [args]
+  (status/login-with-keycard args))
+
 (defrecord RealKeycard []
   keycard/Keycard
   (keycard/check-nfc-support [this args]
@@ -244,4 +259,8 @@
   (keycard/sign [this args]
     (sign args))
   (keycard/sign-typed-data [this args]
-    (sign-typed-data args)))
+    (sign-typed-data args))
+  (keycard/save-multiaccount-and-login [this args]
+    (save-multiaccount-and-login args))
+  (keycard/login [this args]
+    (login args)))

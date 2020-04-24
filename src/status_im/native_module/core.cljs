@@ -52,7 +52,7 @@
   (.saveAccountAndLogin
    (status) multiaccount-data hashed-password settings config accounts-data))
 
-(defn save-account-and-login-with-keycard
+(defn save-multiaccount-and-login-with-keycard
   "NOTE: chat-key is a whisper private key sent from keycard"
   [multiaccount-data password settings config accounts-data chat-key]
   (log/debug "[native-module] save-account-and-login-with-keycard")

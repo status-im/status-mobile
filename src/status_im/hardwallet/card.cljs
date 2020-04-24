@@ -440,3 +440,9 @@
       (re-frame/dispatch
        [:hardwallet.callback/on-sign-error
         (error-object->map response)]))}))
+
+(defn save-multiaccount-and-login [args]
+  (keycard/save-multiaccount-and-login card args))
+
+(defn login [args]
+  (keycard/login card args))

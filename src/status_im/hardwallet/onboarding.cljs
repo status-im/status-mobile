@@ -252,19 +252,28 @@
 (fx/defn generate-and-load-key
   {:events [:hardwallet/generate-and-load-key]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [mnemonic pairing pin]}      (get-in db [:hardwallet :secrets])
-        {:keys [selected-id multiaccounts]} (:intro-wizard db)
-        user-selected-mnemonic              (->> multiaccounts
-                                                 (filter #(= (:id %) selected-id))
-                                                 first
-                                                 :mnemonic)
-        recovery-mnemonic                   (get-in db [:intro-wizard :passphrase])
-        mnemonic'                           (or user-selected-mnemonic mnemonic recovery-mnemonic)
-        pin'                                (or pin (common/vector->string (get-in db [:hardwallet :pin :current])))]
+  (let [{:keys [pairing pin]}
+        (get-in db [:hardwallet :secrets])
+
+        {:keys [selected-id multiaccounts]}
+        (:intro-wizard db)
+
+        multiaccount      (or (->> multiaccounts
+                                   (filter #(= (:id %) selected-id))
+                                   first)
+                              (assoc (get-in db [:intro-wizard :root-key])
+                                     :derived
+                                     (get-in db [:intro-wizard :derived])))
+        recovery-mnemonic (get-in db [:intro-wizard :passphrase])
+        mnemonic          (or (:mnemonic multiaccount)
+                              recovery-mnemonic)
+        pin'              (or pin (common/vector->string (get-in db [:hardwallet :pin :current])))]
     (fx/merge cofx
-              {:hardwallet/generate-and-load-key {:mnemonic mnemonic'
-                                                  :pairing  pairing
-                                                  :pin      pin'}})))
+              {:hardwallet/generate-and-load-key
+               {:mnemonic     mnemonic
+                :pairing      pairing
+                :pin          pin'
+                :multiaccount multiaccount}})))
 
 (fx/defn begin-setup-pressed
   {:events [:keycard.onboarding.intro.ui/begin-setup-pressed]}

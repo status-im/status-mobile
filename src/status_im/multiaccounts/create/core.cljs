@@ -224,14 +224,9 @@
       :path       constants/path-whisper
       :chat       true})])
 
-(fx/defn save-account-and-login-with-keycard
-  [_ multiaccount-data password settings node-config accounts-data chat-key]
-  {::save-account-and-login-with-keycard [(types/clj->json multiaccount-data)
-                                          password
-                                          (types/clj->json settings)
-                                          node-config
-                                          (types/clj->json accounts-data)
-                                          chat-key]})
+(fx/defn save-multiaccount-and-login-with-keycard
+  [_ args]
+  {:hardwallet/save-multiaccount-and-login args})
 
 (fx/defn save-account-and-login
   [_ multiaccount-data password settings node-config accounts-data]
@@ -306,12 +301,13 @@
     (fx/merge cofx
               {:db db}
               (if keycard-multiaccount?
-                (save-account-and-login-with-keycard multiaccount-data
-                                                     password
-                                                     settings
-                                                     (node/get-new-config db)
-                                                     accounts-data
-                                                     chat-key)
+                (save-multiaccount-and-login-with-keycard
+                 {:multiaccount-data multiaccount-data
+                  :password          password
+                  :settings          settings
+                  :node-config       (node/get-new-config db)
+                  :accounts-data     accounts-data
+                  :chat-key          chat-key})
                 (save-account-and-login multiaccount-data
                                         (ethereum/sha3 (security/safe-unmask-data password))
                                         settings
@@ -420,12 +416,3 @@
                                   settings
                                   config
                                   accounts-data)))
-(re-frame/reg-fx
- ::save-account-and-login-with-keycard
- (fn [[multiaccount-data password settings config accounts-data chat-key]]
-   (status/save-account-and-login-with-keycard multiaccount-data
-                                               (security/safe-unmask-data password)
-                                               settings
-                                               config
-                                               accounts-data
-                                               chat-key)))

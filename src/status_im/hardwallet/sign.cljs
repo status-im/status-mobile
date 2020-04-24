@@ -13,7 +13,6 @@
 (fx/defn sign
   {:events [:hardwallet/sign]}
   [{:keys [db] :as cofx}]
-  (log/debug "FOOOOO sign keke" (:signing/tx db))
   (let [card-connected?      (get-in db [:hardwallet :card-connected?])
         pairing              (common/get-pairing db)
         keycard-instance-uid (get-in db [:multiaccount :keycard-instance-uid])

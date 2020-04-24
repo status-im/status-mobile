@@ -1,6 +1,12 @@
 (ns status-im.hardwallet.simulated-keycard
   (:require [status-im.hardwallet.keycard :as keycard]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.constants :as constants]
+            [taoensso.timbre :as log]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.native-module.core :as status]
+            [status-im.utils.types :as types]
+            [re-frame.db :as re-frame.db]))
 
 (def initial-state
   {:card-connected?  false
@@ -12,6 +18,18 @@
   (swap! state assoc :card-connected? true)
   (doseq [callback (vals (get @state :on-card-connected))]
     (callback)))
+
+(defn connect-selected-card []
+  (swap! state assoc :application-info
+         {:free-pairing-slots     5
+          :app-version            "2.2"
+          :secure-channel-pub-key "04c3071768912a515c00aeab7ceb8a5bfda91d036f4a4e60b7944cee3ca7fb67b6d118e8df1e2480b87fd636c6615253245bbbc93a6a407f155f2c58f76c96ef0e",
+          :instance-uid           "9c3f27ee5dfc39c2b14f4d6d3379cd68"
+          :paired?                true
+          :has-master-key?        true
+          :initialized?           true
+          :key-uid                (get-in @re-frame.db/app-db [:multiaccounts/login :key-uid])})
+  (connect-card))
 
 (defn disconnect-card []
   (swap! state assoc :card-connected? false)
@@ -86,23 +104,35 @@
   (when (= password kk1-password)
     (later #(on-success kk1-pair))))
 
-(defn generate-and-load-key [{:keys [pin pairing on-success]}]
+(defn generate-and-load-key
+  [{:keys [pin pairing on-success multiaccount]}]
   (when (and (= pin (get @state :pin))
              (= pairing kk1-pair))
-    (later
-     #(on-success
-       {:key-uid                "08f1e42f076b956715dac6b93ad1282e435be877a90c9353f6c6dfe455474047"
-        :encryption-public-key  "04a15b33d5c76ff72c3b3863fe2cb2b45c25f87c6accc96fa95457845e3f69ba5fc2d835351d17b5031e1723513824612003facb98f508af2866382ed996125b4d"
-        :address                "f75457177cd2b7bdc407a6c4881eb490f66ca3c2"
-        :whisper-public-key     "04d25f563a8a2897a7025a1f022eee78ba7c0e182aae04ab640bc9e118698734257647e18cb6c95f825e6d03d8e3550178b13a30dceba722be7c8fcd0adecc0fa9"
-        :instance-uid           "1b360b10a9a68b7d494e8f059059f118"
-        :wallet-root-public-key "0463187f5c917eef481e04af704c14e57a9e8596516f0ec10a4556561ad49b5aa249976ec545d37d04f4d4c7d1c0d9a2141dc61e458b09631d25fa7858c6323ea3"
-        :wallet-root-address    "e034a084d2282e265f83e3fdfa48b42c3d53312a"
-        :whisper-address        "87f1c9bbe1c907143413cf018caad355dde16b3c"
-        :public-key             "04035d4efe4e96f8fa0e49a94433c972e510f0c8698348b4e1acd3b4d3083c61283b932ec54dd9512566931b26627a5d3122a916577459b7926fce6a278055f899"
-        :whisper-private-key    "34bc7d0c258c4f2ac1dac4fd6c55c9478bac1f4a9d8b9f1152c8551ab7187b43"
-        :wallet-address         "c8435ef92bbb76bc1861833713e202e18ebd4601"
-        :wallet-public-key      "044887a5a2599d722aa1af8cda800a17415d3a071c4706e111ad05465c3bf10fcb6f92c8d74df994160e0ba4aeff71f7a6d256cf36ce8cff3d313b8a0709404886"}))))
+    (let [{:keys [id address public-key derived key-uid]}
+          multiaccount
+          whisper (get derived constants/path-whisper-keyword)
+          wallet  (get derived constants/path-default-wallet-keyword)
+          password (ethereum/sha3 pin)]
+      (status/multiaccount-store-derived
+       id
+       [constants/path-wallet-root
+        constants/path-eip1581
+        constants/path-whisper
+        constants/path-default-wallet]
+       password
+       #(on-success
+         {:key-uid                key-uid
+          :encryption-public-key  (ethereum/sha3 pin)
+          :address                address
+          :whisper-public-key     (:public-key whisper)
+          :instance-uid           "1b360b10a9a68b7d494e8f059059f118"
+          :wallet-root-public-key "0463187f5c917eef481e04af704c14e57a9e8596516f0ec10a4556561ad49b5aa249976ec545d37d04f4d4c7d1c0d9a2141dc61e458b09631d25fa7858c6323ea3"
+          :wallet-root-address    "e034a084d2282e265f83e3fdfa48b42c3d53312a"
+          :whisper-address        (:address whisper)
+          :public-key             public-key
+          :whisper-private-key    "34bc7d0c258c4f2ac1dac4fd6c55c9478bac1f4a9d8b9f1152c8551ab7187b43"
+          :wallet-address         (:address wallet)
+          :wallet-public-key      (:public-key wallet)})))))
 
 (defn unblock-pin [args])
 
@@ -118,9 +148,27 @@
 (defn remove-key-with-unpair [args])
 (defn export-key [args])
 (defn unpair-and-delete [args])
-(defn get-keys [args])
+(defn get-keys [{:keys [on-success pin]}]
+  ;;TODO(rasom): verify password before callback
+  (later
+   #(on-success
+     {:key-uid               (get-in @state [:application-info :key-uid])
+      :encryption-public-key (ethereum/sha3 pin)})))
+
 (defn sign [args])
 (defn sign-typed-data [args])
+
+(defn save-multiaccount-and-login
+  [{:keys [multiaccount-data password settings node-config accounts-data]}]
+  (status/save-account-and-login
+   (types/clj->json multiaccount-data)
+   password
+   (types/clj->json settings)
+   node-config
+   (types/clj->json accounts-data)))
+
+(defn login [{:keys [multiaccount-data password]}]
+  (status/login multiaccount-data password))
 
 (defrecord SimulatedKeycard []
   keycard/Keycard
@@ -173,4 +221,8 @@
   (keycard/get-keys [this args]
     (get-keys args))
   (keycard/sign [this args]
-    (sign args)))
+    (sign args))
+  (keycard/save-multiaccount-and-login [this args]
+    (save-multiaccount-and-login args))
+  (keycard/login [this args]
+    (login args)))

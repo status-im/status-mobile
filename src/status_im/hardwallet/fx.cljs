@@ -96,7 +96,7 @@
 
 (re-frame/reg-fx
  :hardwallet/login-with-keycard
- status/login-with-keycard)
+ card/login)
 
 (re-frame/reg-fx
  :send-transaction-with-signature
@@ -143,3 +143,7 @@
     (fn [whisper-name photo-path]
       (re-frame/dispatch
        [on-success whisper-name photo-path])))))
+
+(re-frame/reg-fx
+ :hardwallet/save-multiaccount-and-login
+ card/save-multiaccount-and-login)
