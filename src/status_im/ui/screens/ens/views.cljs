@@ -295,7 +295,7 @@
        (i18n/label :t/ens-deposit)]]]
     [button {:disabled?    (not @checked?)
              :label-style  (when (not @checked?) {:color colors/gray})
-             :on-press     #(re-frame/dispatch [::ens/register-name-pressed])}
+             :on-press     #(debounce/dispatch-and-chill [::ens/register-name-pressed] 2000)}
      (i18n/label :t/ens-register)]]])
 
 (defn- registration
