@@ -82,7 +82,7 @@
                                        [react/text {:style {:color colors/gray}} (if value value 0)])
                                      [react/text {:style {:color colors/gray}} (str " " currency)]]
               :icon                 (if icon
-                                      [list/item-image icon]
+                                      [list/item-token-icon icon]
                                       [chat-icon/custom-icon-view-list (:name token) color])}
        on-press
        (assoc :on-press #(on-press token)))]))

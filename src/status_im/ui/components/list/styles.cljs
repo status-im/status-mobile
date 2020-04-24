@@ -39,6 +39,11 @@
   {:width         image-size
    :height        image-size})
 
+(def item-token-icon
+  {:border-radius 50
+   :border-color  "rgba(0,0,0,0.1)"
+   :border-width  1})
+
 (def big-item-image
   {:width         image-size
    :height        image-size

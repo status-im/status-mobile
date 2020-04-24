@@ -44,8 +44,8 @@
                                         :margin-left    16}
                   :accessibility-label :choose-asset-button}
       (if icon
-        [list/item-image (assoc icon :style {:background-color colors/gray-lighter
-                                             :border-radius    50} :image-style {:width 32 :height 32})]
+        [list/item-token-icon (assoc icon :style {:background-color colors/gray-lighter
+                                                  :border-radius    50} :image-style {:width 32 :height 32})]
         [chat-icon/custom-icon-view-list name color 32])
       [react/text {:style {:margin-left 8}}
        (wallet.utils/display-symbol token)]

@@ -67,6 +67,11 @@
   [react/view {:style style}
    [react/image {:source (if (fn? source) (source) source)
                  :style  (merge styles/item-image image-style)}]])
+(defn item-token-icon
+  [{:keys [source style image-style]}]
+  (item-image {:source      source
+               :style       style
+               :image-style (merge image-style styles/item-token-icon)}))
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn item-primary
   ([s] (item-primary nil s))
