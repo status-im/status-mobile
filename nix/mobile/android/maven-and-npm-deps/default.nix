@@ -5,7 +5,7 @@
 
 { stdenv, lib, callPackage, mkShell,
   gradle, bash, file, nodejs, zlib,
-  projectNodePackage, localMavenRepoBuilder, mkFilter }:
+  projectNodePackage, localMavenRepoBuilder }:
 
 let
   mavenLocalRepo = callPackage ./maven { inherit localMavenRepoBuilder stdenv; };
@@ -36,7 +36,7 @@ let
             name = "status-react-source-gradle-install";
             filter =
               # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
-              mkFilter {
+              lib.mkFilter {
                 root = path;
                 include = [
                   "android/.*" "translations/.*" "status-modules/.*"

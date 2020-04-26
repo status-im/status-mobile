@@ -3,7 +3,7 @@
 #
 
 { target-os ? "android",
-  stdenv, mkFilter, clojure, leiningen, nodejs, bash, git,
+  stdenv, lib, clojure, leiningen, nodejs, bash, git,
   leinProjectDeps, localMavenRepoBuilder, projectNodePackage }:
 
 let
@@ -19,7 +19,7 @@ in stdenv.mkDerivation {
       name = "status-react-source-jsbundle";
       filter =
         # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
-        mkFilter {
+        lib.mkFilter {
           root = path;
           ignoreVCS = false;
           include = [ 

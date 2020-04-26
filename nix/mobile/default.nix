@@ -1,5 +1,5 @@
 { config, lib, stdenvNoCC, callPackage, mkShell,
-  status-go, mergeSh, xcodeWrapper }:
+  status-go, xcodeWrapper }:
 
 let
   inherit (lib) catAttrs concatStrings optional unique;
@@ -31,7 +31,7 @@ let
 in {
   buildInputs = unique (catAttrs "buildInputs" selectedSources);
 
-  shell = mergeSh (mkShell {}) (catAttrs "shell" selectedSources);
+  shell = lib.mergeSh (mkShell {}) (catAttrs "shell" selectedSources);
 
   # TARGETS
   inherit android ios fastlane;

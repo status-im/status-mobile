@@ -31,8 +31,10 @@ if [ -n "${NIMBUS_SRC_OVERRIDE}" ]; then
   config+="status-im.nimbus.src-override=\"${NIMBUS_SRC_OVERRIDE}\";"
 fi
 config+="status-im.build-type=\"$(must_get_env BUILD_TYPE)\";"
-config+="status-im.status-react.build-number=\"$(must_get_env BUILD_NUMBER)\";"
-config+="status-im.status-react.keystore-file=\"$(must_get_env KEYSTORE_PATH)\";"
+config+="status-im.build-number=\"$(must_get_env BUILD_NUMBER)\";"
+config+="status-im.android.keystore-path=\"$(must_get_env KEYSTORE_PATH)\";"
+config+="status-im.android.abi-split=\"$(must_get_env ANDROID_ABI_SPLIT)\";"
+config+="status-im.android.abi-include=\"$(must_get_env ANDROID_ABI_INCLUDE)\";"
 nixOpts=()
 
 # Secrets like this can't be passed via args or they end up in derivation
@@ -42,9 +44,8 @@ trap "rm -f ${SECRETS_FILE_PATH}" EXIT
 append_env_export 'KEYSTORE_PASSWORD'
 append_env_export 'KEYSTORE_ALIAS'
 append_env_export 'KEYSTORE_KEY_PASSWORD'
-nixOpts+=(
-  "--argstr" "secrets-file" "${SECRETS_FILE_PATH}"
-)
+nixOpts+=("--argstr" "secretsFile" "${SECRETS_FILE_PATH}")
+nixOpts+=("--argstr" "buildEnv" "$(must_get_env BUILD_ENV)")
 
 if [[ "$(uname -s)" =~ Darwin ]]; then
   # Start a watchman instance if not started already and store its socket path.
@@ -61,9 +62,6 @@ else
   )
 fi
 
-nixOpts+=(
-  "--arg" "config" "{${config}}"
-  "--arg" "env" "{BUILD_ENV=\"${BUILD_ENV}\";ANDROID_ABI_SPLIT=\"${ANDROID_ABI_SPLIT}\";ANDROID_ABI_INCLUDE=\"${ANDROID_ABI_INCLUDE}\";}"
-)
+nixOpts+=("--arg" "config" "{${config}}")
 
 ${GIT_ROOT}/nix/scripts/build.sh targets.mobile.android.release "${nixOpts[@]}"

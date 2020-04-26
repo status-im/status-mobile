@@ -1,4 +1,4 @@
-{ mkShell, mergeSh, status-go }:
+{ lib, mkShell, status-go }:
 
 let
   shell = mkShell {
@@ -28,4 +28,4 @@ let
     '';
   };
 in
-  mergeSh status-go.shell [ shell ]
+  lib.mergeSh status-go.shell [ shell ]

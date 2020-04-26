@@ -1,5 +1,6 @@
 { stdenv, utils, callPackage,
-  buildGoPackage, go, gomobile, androidPkgs, openjdk, unzip, zip, xcodeWrapper }:
+  buildGoPackage, go, gomobile, androidPkgs,
+  openjdk, unzip, zip, xcodeWrapper }:
 
 { owner, repo, rev, cleanVersion, goPackagePath, src, host,
 

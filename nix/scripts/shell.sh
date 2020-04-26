@@ -3,10 +3,7 @@
 #
 # This script is used by the Makefile to have an implicit nix-shell.
 # The following environment variables modify the script behavior:
-# - TARGET: This attribute is passed as `targets` arg to Nix, limiting the scope
-#     of the Nix expressions.
-# - _NIX_ATTR: Used to specify an attribute set from inside the expression in `default.nix`.
-#     This allows for drilling down into a specific attribute in Nix expressions.
+# - TARGET: This attribute is passed via --attr to Nix, defining the scope.
 # - _NIX_PURE: This variable allows for making the shell pure with the use of --pure.
 #     Take note that this makes Nix tools like `nix-build` unavailable in the shell.
 # - _NIX_KEEP: This variable allows specifying which env vars to keep for Nix pure shell.
@@ -22,11 +19,13 @@ nixArgs=(
   "--show-trace"
 )
 
-if [[ -n "${TARGET}" ]]; then
-    nixArgs+=("--argstr target ${TARGET}")
-else
-    echo -e "${YLW}Env is missing TARGET, assuming default target.${RST} See nix/README.md for more details." 1>&2
+if [[ -z "${TARGET}" ]]; then
+    TARGET="default"
+    echo -e "${YLW}Missing TARGET, assuming default target.${RST} See nix/README.md for more details." 1>&2
 fi
+entryPoint="default.nix"
+nixArgs+=("--attr shells.${TARGET}")
+
 
 if [[ "$TARGET" =~ (linux|windows|darwin|macos) ]]; then
   # This is a dirty workaround because 'yarn install' is an impure operation,
@@ -48,29 +47,24 @@ if [ -n "$config" ]; then
   nixArgs+=("--arg config {$config}")
 fi
 
-# if _NIX_ATTR is specified we shouldn't use shell.nix, the path will be different
-entryPoint="shell.nix"
-if [ -n "${_NIX_ATTR}" ]; then
-  nixArgs+=("--attr ${_NIX_ATTR}")
-  entryPoint="default.nix"
+# This variable allows specifying which env vars to keep for Nix pure shell
+# The separator is a colon
+if [[ -n "${_NIX_KEEP}" ]]; then
+  nixArgs+=("--keep ${_NIX_KEEP//,/ --keep }")
 fi
+
+# Not all builds are ready to be run in a pure environment
+if [[ -n "${_NIX_PURE}" ]]; then
+  nixArgs+=("--pure")
+  pureDesc='pure '
+fi
+
+echo -e "${GRN}Configuring ${pureDesc}Nix shell for target '${TARGET}'...${RST}" 1>&2
 
 # ENTER_NIX_SHELL is the fake command used when `make shell` is run.
 # It is just a special string, not a variable, and a marker to not use `--run`.
-if [[ $@ == "ENTER_NIX_SHELL" ]]; then
-  echo -e "${GRN}Configuring ${_NIX_ATTR:-default} Nix shell for target '${TARGET:-default}'...${RST}" 1>&2
+if [[ "${@}" == "ENTER_NIX_SHELL" ]]; then
   exec nix-shell ${nixArgs[@]} ${entryPoint}
 else
-  # Not all builds are ready to be run in a pure environment
-  if [[ -n "${_NIX_PURE}" ]]; then
-    nixArgs+=("--pure")
-    pureDesc='pure '
-  fi
-  # This variable allows specifying which env vars to keep for Nix pure shell
-  # The separator is a colon
-  if [[ -n "${_NIX_KEEP}" ]]; then
-    nixArgs+=("--keep ${_NIX_KEEP//,/ --keep }")
-  fi
-  echo -e "${GRN}Configuring ${pureDesc}${_NIX_ATTR:-default} Nix shell for target '${TARGET}'...${RST}" 1>&2
   exec nix-shell ${nixArgs[@]} --run "$@" ${entryPoint}
 fi

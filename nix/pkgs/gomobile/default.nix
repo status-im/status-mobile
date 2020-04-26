@@ -1,4 +1,4 @@
-{ stdenv, callPackage, utils, fetchgit, buildGoPackage,
+{ stdenv, utils, callPackage, fetchgit, buildGoPackage,
   ncurses5, zlib, makeWrapper, patchelf, androidPkgs, xcodeWrapper
 }:
 

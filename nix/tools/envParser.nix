@@ -29,8 +29,8 @@ let
   envFileName =
     if build-type == "release" then ../../.env.release else
     if build-type == "nightly" then ../../.env.nightly else
-    if build-type == "e2e" then ../../.env.e2e else
-    if ci then ../../.env.jenkins else ../../.env;
+    if build-type == "e2e"     then ../../.env.e2e else
+    if build-type == "pr"      then ../../.env.jenkins else ../../.env;
   flags = readFlagsFromFile envFileName; # TODO: Simplify this path search with lib.locateDominatingFile
 
 in flags

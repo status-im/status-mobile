@@ -69,6 +69,10 @@ else
 	@echo "${YELLOW}Nix shell is already active$(RESET)"
 endif
 
+nix-repl: SHELL := /bin/sh
+nix-repl: ##@nix Start an interactive Nix REPL
+	nix repl default.nix
+
 nix-gc: export TARGET := default
 nix-gc: ##@nix Garbage collect all packages older than 20 days from /nix/store
 	nix-collect-garbage --delete-old --delete-older-than 20d

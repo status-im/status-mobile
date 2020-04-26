@@ -1,5 +1,5 @@
-{ config, stdenv, callPackage, mkShell, mergeSh,
-  fetchFromGitHub, mkFilter, openjdk, androidPkgs }:
+{ config, lib, utils, stdenv, callPackage, mkShell,
+  fetchFromGitHub, openjdk, androidPkgs }:
 
 let
   inherit (stdenv.lib)
@@ -9,20 +9,13 @@ let
 
   envFlags = callPackage ../tools/envParser.nix { };
   enableNimbus = (attrByPath ["STATUS_GO_ENABLE_NIMBUS"] "0" envFlags) != "0";
-  utils = callPackage ./utils.nix { };
-
-  gomobile = callPackage ./gomobile { inherit utils; };
 
   nimbus =
     if enableNimbus then callPackage ./nimbus { }
     else { wrappers-android = { }; };
 
-  buildStatusGoDesktopLib = callPackage ./desktop {
-    inherit utils;
-  };
-  buildStatusGoMobileLib = callPackage ./mobile {
-    inherit gomobile utils androidPkgs;
-  };
+  buildStatusGoDesktopLib = callPackage ./desktop { };
+  buildStatusGoMobileLib = callPackage ./mobile { };
 
   srcData =
     # If config.status-im.status-go.src-override is defined, instruct Nix to use that path to build status-go
@@ -41,7 +34,7 @@ let
             name = "${repo}-source-${shortRev}";
             filter =
               # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
-              mkFilter {
+              lib.mkFilter {
                 root = path;
                 include = [ ".*" ];
                 exclude = [
@@ -193,7 +186,7 @@ let
   platforms = [ android ios desktop ];
 
 in {
-  shell = mergeSh mkShell {} (catAttrs "shell" platforms);
+  shell = lib.mergeSh mkShell {} (catAttrs "shell" platforms);
 
   # CHILD DERIVATIONS
   inherit android ios desktop;
