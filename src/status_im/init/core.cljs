@@ -35,9 +35,10 @@
 (fx/defn initialize-views
   {:events [::initialize-view]}
   [cofx {:keys [logout?]}]
-  (let [{{:multiaccounts/keys [multiaccounts] :as db} :db} cofx]
+  (let [{{:multiaccounts/keys [multiaccounts]} :db} cofx]
     (when (and (seq multiaccounts) (not logout?))
-      (let [{:keys [key-uid public-key photo-path name]} (first (#(sort-by :last-sign-in > %) (vals multiaccounts)))]
+      (let [{:keys [key-uid public-key photo-path name]}
+            (first (sort-by :timestamp > (vals multiaccounts)))]
         (multiaccounts.login/open-login cofx key-uid photo-path name public-key)))))
 
 (fx/defn initialize-multiaccounts
