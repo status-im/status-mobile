@@ -487,8 +487,7 @@
  :log-level/current-log-level
  :<- [:multiaccount]
  (fn [multiaccount]
-   (or (get multiaccount :log-level)
-       config/log-level-status-go)))
+   (get multiaccount :log-level)))
 
 (re-frame/reg-sub
  :waku/enabled

@@ -25,6 +25,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.keychain.core :as keychain]
+            [status-im.utils.logging.core :as logging]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
@@ -210,6 +211,7 @@
               (contact/initialize-contacts)
               (stickers/init-stickers-packs)
               (mobile-network/on-network-status-change)
+              (logging/set-log-level multiaccount)
               (multiaccounts/switch-preview-privacy-mode-flag))))
 
 (defn get-new-auth-method [auth-method save-password?]
@@ -270,6 +272,7 @@
                                              :mailserver-topics {}
                                              :default-mailserver true})
               (multiaccounts/switch-preview-privacy-mode-flag)
+              (logging/set-log-level multiaccount)
               (when-not platform/desktop?
                 (initialize-wallet accounts nil)))))
 

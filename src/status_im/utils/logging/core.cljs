@@ -42,6 +42,21 @@
     (get-js-logs)
     #(re-frame/dispatch [callback-handler %]))))
 
+(re-frame/reg-fx
+ :logs/set-level
+ (fn [log-level]
+   (log/set-level! log-level)))
+
+(fx/defn set-log-level
+  [{:keys [db]}  multiaccount]
+  (let [log-level (if-let [level (get multiaccount :log-level)]
+                    (if (clojure.string/blank? level) "ERROR" level)
+                    config/log-level-status-go)]
+    {:db (assoc-in db [:multiaccount :log-level] log-level)
+     :logs/set-level (-> log-level
+                         clojure.string/lower-case
+                         keyword)}))
+
 (fx/defn send-logs
   [{:keys [db]}]
   ;; TODO: Add message explaining db export
