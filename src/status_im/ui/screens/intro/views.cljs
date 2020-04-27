@@ -34,6 +34,9 @@
         scroll-view-ref (atom nil)
         width (r/atom 0)
         height (r/atom 0)
+        text-height (r/atom 0)
+        text-temp-height (atom 0)
+        text-temp-timer (atom nil)
         bottom-margin (if (> window-height 600) 32 16)]
     (fn []
       [react/view {:style {:align-items :center
@@ -50,8 +53,7 @@
                            :pinch-gesture-enabled false
                            :on-scroll #(let [^js x (.-nativeEvent.contentOffset.x ^js %)]
                                          (reset! scroll-x x))
-                           :style {;:width @width
-                                   :margin-bottom bottom-margin}}
+                           :style {:margin-bottom bottom-margin}}
         (doall
          (for [s slides]
            ^{:key (:title s)}
@@ -60,17 +62,28 @@
                                 :justify-content :flex-end
                                 :align-items :center
                                 :padding-horizontal 32}}
-            (let [size (min @width @height) #_(- (min @width @height) #_(* 2 margin))]
+            (let [size (min @width @height)]
               [react/view {:style {:flex 1}
                            :on-layout (fn [^js e]
-                                        (reset! height (-> e .-nativeEvent .-layout .-height)))}
+                                        (let [new-height (-> e .-nativeEvent .-layout .-height)]
+                                          (swap! height #(if (pos? %) (min % new-height) new-height))))}
                [react/image {:source (:image s)
                              :resize-mode :contain
                              :style {:width size
                                      :height size}}]])
             [react/i18n-text {:style styles/wizard-title :key (:title s)}]
-            [react/i18n-text {:style styles/wizard-text
-                              :key   (:text s)}]]))]
+            [react/text {:style (styles/wizard-text @text-height)
+                         :on-layout
+                         (fn [^js e]
+                           (let [new-height (-> e .-nativeEvent .-layout .-height)]
+                             (when (and (not= new-height @text-temp-height)
+                                        (not (zero? new-height))
+                                        (< new-height 200))
+                               (swap! text-temp-height #(if (pos? %) (max % new-height) new-height))
+                               (when @text-temp-timer (js/clearTimeout @text-temp-timer))
+                               (reset! text-temp-timer
+                                       (js/setTimeout #(reset! text-height @text-temp-height) 500)))))}
+             (i18n/label (:text s))]]))]
        (let [selected (hash-set (quot (int @scroll-x) (int @width)))]
          [dots-selector {:selected selected :n (count slides)
                          :color colors/blue}])])))

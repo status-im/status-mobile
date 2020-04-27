@@ -29,9 +29,11 @@
    :text-align    :center
    :margin-bottom 16})
 
-(def wizard-text
-  {:color       colors/gray
-   :text-align  :center})
+(defn wizard-text [height]
+  (merge {:color      colors/gray
+          :text-align :center}
+         (when-not (zero? height)
+           {:height height})))
 
 (def welcome-text-bottom-note
   {:typography  :caption
