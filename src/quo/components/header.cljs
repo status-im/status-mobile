@@ -86,7 +86,7 @@
                    (when accessibility-label
                      {:accessibility-label accessibility-label}))
     (cond
-      icon  [icons/icon icon]
+      icon  [icons/icon icon {:color (:icon-01 @colors/theme)}]
       label [text/text {:color :link} label])]])
 
 (defn header-actions [{:keys [accessories component]}]
@@ -102,12 +102,12 @@
      [rn/view {:style header-action-placeholder}])])
 
 (defn header-title [{:keys [title subtitle component title-align]}]
-  [react/fragment
+  [:<>
    (cond
      component component
 
      (and title subtitle)
-     [react/fragment
+     [:<>
       [text/text {:weight          :medium
                   :number-of-lines 1}
        title]

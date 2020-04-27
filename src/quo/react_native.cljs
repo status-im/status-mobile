@@ -11,6 +11,45 @@
 (def text (reagent/adapt-react-class (.-Text ^js rn)))
 
 (def scroll-view (reagent/adapt-react-class (.-ScrollView ^js rn)))
+(def modal (reagent/adapt-react-class (.-Modal ^js rn)))
 
 (def touchable-opacity (reagent/adapt-react-class (.-TouchableOpacity ^js rn)))
 (def touchable-highlight (reagent/adapt-react-class (.-TouchableHighlight ^js rn)))
+
+(def text-input (reagent/adapt-react-class  (.-TextInput ^js rn)))
+
+(def ui-manager  (.-UIManager ^js rn))
+
+(def layout-animation (.-LayoutAnimation ^js rn))
+(def configure-next (.-configureNext ^js layout-animation))
+(def layout-animation-presets {:ease-in-ease-out (-> ^js layout-animation .-Presets .-easeInEaseOut)
+                               :linear           (-> ^js layout-animation .-Presets .-linear)
+                               :spring           (-> ^js layout-animation .-Presets .-spring)})
+
+(def switch (reagent/adapt-react-class (.-Switch ^js rn)))
+
+;; Flat-list
+(def ^:private rn-flat-list (reagent/adapt-react-class (.-FlatList ^js rn)))
+
+(defn- wrap-render-fn [f]
+  (fn [data]
+    (reagent/as-element (f (.-item data) (.-index data) (.-separators data)))))
+
+(defn- wrap-key-fn [f]
+  (fn [data index]
+    {:post [(some? %)]}
+    (f data index)))
+
+(defn- base-list-props
+  [{:keys [key-fn render-fn empty-component header footer separator data] :as props}]
+  (merge {:data (to-array data)}
+         (when key-fn            {:keyExtractor (wrap-key-fn key-fn)})
+         (when render-fn         {:renderItem (wrap-render-fn render-fn)})
+         (when separator         {:ItemSeparatorComponent (fn [] (reagent/as-element separator))})
+         (when empty-component   {:ListEmptyComponent (fn [] (reagent/as-element empty-component))})
+         (when header            {:ListHeaderComponent (reagent/as-element header)})
+         (when footer            {:ListFooterComponent (reagent/as-element footer)})
+         (dissoc props :data :header :footer :empty-component :separator :render-fn :key-fn)))
+
+(defn flat-list [props]
+  [rn-flat-list (base-list-props props)])

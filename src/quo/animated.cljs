@@ -28,8 +28,12 @@
 (def set (oget animated "set"))
 (def start-clock (oget animated "startClock"))
 (def stop-clock (oget animated "stopClock"))
+(def clock-running clockRunning)
 (def bezier (.-bezier ^js Easing))
 (def linear (.-linear ^js Easing))
+
+(def easings {:ease-in  (bezier 0.42 0 1 1)
+              :ease-out (bezier 0 0 0.58 1)})
 
 (defn set-value [anim val]
   (ocall anim "setValue" val))
@@ -111,3 +115,9 @@
 
 (defn on-scroll [opts]
   (ocall redash "onScrollEvent" (clj->js opts)))
+
+(defn b-interpolate [anim-value a b]
+  (ocall redash "bInterpolate" anim-value a b))
+
+(defn loop* [opts]
+  (ocall redash "loop" (clj->js opts)))

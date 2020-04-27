@@ -2,26 +2,62 @@
   (:require [oops.core :refer [ocall]]
             [quo.previews.header :as header]
             [quo.previews.text :as text]
+            [quo.previews.text-input :as text-input]
+            [quo.previews.tooltip :as tooltip]
             [quo.react-native :as rn]
+            [quo.core :as quo]
             [reagent.core :as reagent]
+            [quo.design-system.colors :as colors]
+            [quo.theme :as theme]
             [status-im.ui.screens.routing.core :as navigation]))
 
 (def screens [{:name      :texts
                :insets    {:top false}
                :component text/preview-text}
+              {:name      :tooltip
+               :insets    {:top false}
+               :component tooltip/preview-tooltip}
+              {:name      :text-input
+               :insets    {:top false}
+               :component text-input/preview-text}
               {:name      :headers
                :insets    {:top false}
                :component header/preview-header}])
 
+(defn theme-switcher []
+  [rn/view {:style {:flex-direction   :row
+                    :margin-vertical  8
+                    :border-radius    4
+                    :background-color (:ui-01 @colors/theme)
+                    :border-width     1
+                    :border-color     (:ui-02 @colors/theme)}}
+   [rn/touchable-opacity {:style    {:padding         8
+                                     :flex            1
+                                     :justify-content :center
+                                     :align-items     :center}
+                          :on-press #(theme/set-theme :light)}
+    [quo/text "Set light theme"]]
+   [rn/view {:width            1
+             :margin-vertical  4
+             :background-color (:ui-02 @colors/theme)}]
+   [rn/touchable-opacity {:style    {:padding         8
+                                     :flex            1
+                                     :justify-content :center
+                                     :align-items     :center}
+                          :on-press #(theme/set-theme :dark)}
+    [quo/text "Set dark theme"]]])
+
 (defn main-screen []
   [rn/scroll-view {:flex               1
                    :padding-vertical   8
-                   :padding-horizontal 16}
+                   :padding-horizontal 16
+                   :background-color   (:ui-background @colors/theme)}
+   [theme-switcher]
    [rn/view
     (for [{:keys [name]} screens]
       [rn/touchable-opacity {:on-press #(navigation/navigate-to name nil)}
        [rn/view {:style {:padding-vertical 8}}
-        [rn/text (str "Preview " name)]]])]])
+        [quo/text (str "Preview " name)]]])]])
 
 (defonce navigation-state (atom nil))
 

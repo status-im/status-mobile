@@ -5,19 +5,16 @@
             [quo.react-native :as rn]
             [reagent.core :as reagent]))
 
-(defn text-style [{:keys [size align weight color style]
-                   :or   {size   :base
-                          weight :regular
-                          align  :auto
-                          color  :main}}]
-  (merge (case weight
+(defn text-style [{:keys [size align weight color style]}]
+  ;; NOTE(Ferossgo): or in destructoring will keep nil as a value
+  (merge (case (or weight :regular)
            :regular   typography/font-regular
            :medium    typography/font-medium
            :semi-bold typography/font-semi-bold
            :bold      typography/font-bold
            :monospace typography/monospace
            :inherit   nil)
-         (case color
+         (case (or color :main)
            :main              {:color (:text-01 @colors/theme)}
            :secondary         {:color (:text-02 @colors/theme)}
            :secondary-inverse {:color (:text-03 @colors/theme)}
@@ -25,7 +22,7 @@
            :positive          {:color (:positive-01 @colors/theme)}
            :negative          {:color (:negative-01 @colors/theme)}
            :inherit           nil)
-         (case size
+         (case (or size :base)
            :tiny     typography/tiny
            :small    typography/small
            :base     typography/base
@@ -33,7 +30,7 @@
            :x-large  typography/x-large
            :xx-large typography/xx-large
            :inherit  nil)
-         {:text-align align}
+         {:text-align (or align :auto)}
          style))
 
 (defn text []
