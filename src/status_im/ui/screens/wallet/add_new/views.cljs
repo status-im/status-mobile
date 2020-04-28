@@ -153,7 +153,8 @@
      [add-account-topbar type]
      [react/scroll-view {:keyboard-should-persist-taps :handled
                          :style                        {:flex 1}}
-      (when-not keycard?
+      (when (or (not keycard?)
+                (= type :watch))
         [settings add-account entered-password])
       [common-settings account]]
      [toolbar/toolbar
