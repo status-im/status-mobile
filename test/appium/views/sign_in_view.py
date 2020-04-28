@@ -222,15 +222,7 @@ class SignInView(BaseView):
         self.next_button.click()
         if keycard:
             keycard_flow = self.keycard_storage_button.click()
-            self.next_button.click()
-            keycard_flow.begin_setup_button.click()
-            keycard_flow.connect_card_button.click()
-            keycard_flow.enter_default_pin()
-            keycard_flow.enter_default_pin()
-            self.next_button.scroll_to_element()
-            self.next_button.wait_for_visibility_of_element(20)
-            self.next_button.click()
-            self.yes_button.click()
+            keycard_flow.confirm_pin_and_proceed()
             keycard_flow.backup_seed_phrase()
         else:
             self.next_button.click()
@@ -243,18 +235,23 @@ class SignInView(BaseView):
         self.profile_button.wait_for_visibility_of_element(30)
         return self.get_home_view()
 
-    def recover_access(self, passphrase: str, password: str = common_password):
+    def recover_access(self, passphrase: str, password: str = common_password, keycard=False):
         recover_access_view = self.access_key_button.click()
         recover_access_view.enter_seed_phrase_button.click()
         recover_access_view.seedphrase_input.click()
         recover_access_view.seedphrase_input.set_value(passphrase)
         recover_access_view.next_button.click()
         recover_access_view.reencrypt_your_key_button.click()
-        recover_access_view.next_button.click()
-        recover_access_view.create_password_input.set_value(password)
-        recover_access_view.next_button.click()
-        recover_access_view.confirm_your_password_input.set_value(password)
-        recover_access_view.next_button.click_until_presence_of_element(self.lets_go_button)
+        if keycard:
+            keycard_flow = self.keycard_storage_button.click()
+            keycard_flow.confirm_pin_and_proceed()
+            self.lets_go_button.wait_for_visibility_of_element(30)
+        else:
+            recover_access_view.next_button.click()
+            recover_access_view.create_password_input.set_value(password)
+            recover_access_view.next_button.click()
+            recover_access_view.confirm_your_password_input.set_value(password)
+            recover_access_view.next_button.click_until_presence_of_element(self.lets_go_button)
         self.lets_go_button.click()
         self.profile_button.wait_for_visibility_of_element(30)
         return self.get_home_view()

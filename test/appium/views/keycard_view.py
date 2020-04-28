@@ -24,6 +24,11 @@ class ConnectCardButton(BaseButton):
         super(ConnectCardButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id("connect-card")
 
+class ConnectSelectedCardButton(BaseButton):
+    def __init__(self, driver):
+        super(ConnectSelectedCardButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("connect-selected-card")
+
 
 class DisconnectCardButton(BaseButton):
     def __init__(self, driver):
@@ -61,6 +66,7 @@ class KeycardView(BaseView):
         self.connect_card_button = ConnectCardButton(self.driver)
         self.disconnect_card_button = DisconnectCardButton(self.driver)
         self.reset_card_state_button = ResetCardButton(self.driver)
+        self.connect_selected_card_button = ConnectSelectedCardButton(self.driver)
 
         #keyboard
         self.one_button = OnePinKeyboardButton(self.driver)
@@ -95,3 +101,14 @@ class KeycardView(BaseView):
             number = self.get_required_word_number()
             self.confirm_seed_phrase_edit_box.set_value(recovery_phrase[number])
             self.next_button.click()
+
+    def confirm_pin_and_proceed(self):
+        self.next_button.click()
+        self.begin_setup_button.click()
+        self.connect_card_button.click()
+        self.enter_default_pin()
+        self.enter_default_pin()
+        self.next_button.scroll_to_element()
+        self.next_button.wait_for_visibility_of_element(20)
+        self.next_button.click()
+        self.yes_button.click()
