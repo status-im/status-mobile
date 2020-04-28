@@ -46,8 +46,9 @@ public:
   Q_INVOKABLE void login(QString accountData, QString password);
   //  Q_INVOKABLE void loginWithKeycard(QString accountData, QString password,
   //                                    QString chatKey);
-  Q_INVOKABLE void saveAccountAndLogin(QString accountData, QString password,
-                                       QString config, QString subAccountsData);
+  Q_INVOKABLE void saveAccountAndLogin(QString multiaccountData, QString password,
+                                       QString settings,
+                                       QString config, QString accountsData);
   //  Q_INVOKABLE void saveAccountAndLoginWithKeycard(QString accountData,
   //                                                  QString password,
   //                                                  QString config,

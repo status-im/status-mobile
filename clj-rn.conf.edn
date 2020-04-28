@@ -63,6 +63,7 @@
                    "emojilib"
                    "eth-phishing-detect"
                    "react-native-config"
+                   "react-native-keychain"
                    "rn-snoopy"
                    "rn-snoopy/stream/bars"
                    "rn-snoopy/stream/filter"

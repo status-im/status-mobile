@@ -2,7 +2,7 @@
 
 (def config                 (js/require "react-native-config"))
 (def fs                     (js/require "react-native-fs"))
-(def keychain               #js {})
+(def keychain               (js/require "react-native-keychain"))
 (def qr-code                (js/require "qrcode"))
 (def react-native           (js/require "react-native"))
 (def webview-bridge         #js {})

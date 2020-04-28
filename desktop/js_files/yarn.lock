@@ -5643,6 +5643,10 @@ react-native-image-resizer@^1.1.0:
   resolved "https://registry.yarnpkg.com/react-native-image-resizer/-/react-native-image-resizer-1.2.1.tgz#3dd706576f49f4f62efab8bc0e6498927068d621"
   integrity sha512-2H+mTCsFKUufy83u1vJKff6Wj3T6FQTo2vvdQuxD9XHai5ZcHO2oCMkFhQm8EhNd2Pc1ongrqs9i1OP/En/p3A==
 
+"react-native-keychain@git+https://github.com/status-im/react-native-keychain#v.3.0.0-4-status":
+  version "3.0.0-rc.3"
+  resolved "git+https://github.com/status-im/react-native-keychain#5895bafa11e734325eaaffd56dda8ca50bfc5275"
+
 "react-native-languages@git+https://github.com/status-im/react-native-languages.git#v0.1.1-status":
   version "3.0.2"
   resolved "git+https://github.com/status-im/react-native-languages.git#60338ff3040b8af68d33233aebeb36db4d31aed0"
