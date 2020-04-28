@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet.account.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.animation :as animation]))
 
 (defn card [window-width color]
   {:width            (- window-width 30)
@@ -25,3 +26,19 @@
    :shadow-color     (if (colors/dark?)
                        "rgba(0, 0, 0, 0.75)"
                        "rgba(0, 9, 26, 0.12)")})
+
+(defn bottom-send-recv-buttons-raise [anim-y]
+  (animation/timing
+   anim-y
+   {:toValue 0
+    :duration 200
+    :easing (.-ease ^js (animation/easing))
+    :useNativeDriver true}))
+
+(defn bottom-send-recv-buttons-lower [anim-y y]
+  (animation/timing
+   anim-y
+   {:toValue y
+    :duration 200
+    :easing (.-ease ^js (animation/easing))
+    :useNativeDriver true}))

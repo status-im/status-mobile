@@ -68,8 +68,14 @@
 (def animated-flat-list-class
   (reagent/adapt-react-class (.-FlatList ^js animated)))
 
+(def animated-scroll-view-class
+  (reagent/adapt-react-class (.-ScrollView ^js animated)))
+
 (defn animated-view [props & content]
   (vec (conj content props animated-view-class)))
+
+(defn animated-scroll-view [props & children]
+  (vec (conj children props animated-scroll-view-class)))
 
 (def dimensions (.-Dimensions react-native))
 (def keyboard (.-Keyboard react-native))

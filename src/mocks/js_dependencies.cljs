@@ -42,6 +42,7 @@
                                   :ValueXY (fn [])
                                   :View      {}
                                   :FlatList  {}
+                                  :ScrollView  {}
                                   :Text      {}}
             :Easing              {:bezier (fn [])
                                   :poly (fn [])
