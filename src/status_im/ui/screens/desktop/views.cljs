@@ -28,7 +28,8 @@
                      (.setValue rn-dependencies/desktop-config "desktop-alpha-warning-shown-for-version" version)
                      (utils/show-popup nil (i18n/label :desktop-alpha-release-warning)))))}
 
-    (let [component (case view-id
+    (let [view-id (or view-id :intro) ;; TODO some default value
+          component (case view-id
                       :intro intro.views/intro
                       :multiaccounts multiaccounts.views/multiaccounts
                       :new-group  new-group
