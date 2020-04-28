@@ -29,7 +29,7 @@
 ;; TODO(Ferossgp):  Add two-pane navigator on chat-stack
 (defn tabs []
   [bottom-tabs {:initial-route-name :chat-stack
-                :lazy               false
+                :lazy               true
                 :header-mode        :none
                 :tab-bar            tabbar/tabbar}
    [{:name      :chat-stack

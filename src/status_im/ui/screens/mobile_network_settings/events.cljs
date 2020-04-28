@@ -90,7 +90,8 @@
    (fx/merge
     cofx
     (bottom-sheet/hide-bottom-sheet)
-    (navigation/navigate-to-cofx :mobile-network-settings {}))))
+    (navigation/navigate-to-cofx :profile-stack {:screen  :mobile-network-settings
+                                                 :initial false}))))
 
 ;;:mobile-network-offline
 

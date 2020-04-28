@@ -267,7 +267,8 @@
       (fx/merge cofx
                 {:db (assoc db :browser/options
                             {:browser-id (:browser-id browser)})}
-                (navigation/navigate-to-cofx :browser nil)
+                (navigation/navigate-to-cofx :browser-stack {:screen :browser
+                                                             :initial false})
                 (update-browser browser)
                 (resolve-url nil)))))
 

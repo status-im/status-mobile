@@ -12,14 +12,14 @@
 
 (fx/defn navigate-to-cofx
   [{:keys [db]} go-to-view-id screen-params]
-  (let [db      (cond-> (assoc db :view-id go-to-view-id)
-
-                  ;; TODO: Inspect the need of screen-params
-                  (seq screen-params)
-                  (assoc-in [:navigation/screen-params go-to-view-id]
-                            screen-params))]
-    {:db           db
-     ::navigate-to [go-to-view-id screen-params]}))
+  {:db
+   (cond-> (assoc db :view-id go-to-view-id)
+     ;; TODO: Inspect the need of screen-params
+     (and (seq screen-params) (:screen screen-params) (:params screen-params))
+     (assoc-in [:navigation/screen-params (:screen screen-params)] (:params screen-params))
+     (seq screen-params)
+     (assoc-in [:navigation/screen-params go-to-view-id] screen-params))
+   ::navigate-to [go-to-view-id screen-params]})
 
 (fx/defn navigate-replace-cofx
   [{:keys [db]} go-to-view-id screen-params]

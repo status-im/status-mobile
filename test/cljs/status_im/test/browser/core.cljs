@@ -3,12 +3,6 @@
             [status-im.browser.core :as browser]
             [status-im.utils.http :as http]))
 
-(defn has-navigated-to-browser? [result]
-  (and (= (get result :status-im.ui.screens.navigation/navigate-to)
-          [:browser nil])
-       (= (get-in result [:db :view-id])
-          :browser)))
-
 (defn has-wrong-properties?
   [result dapp-url expected-browser]
   (let [browser (get-in result [:db :browser/browsers dapp-url])]
@@ -33,8 +27,6 @@
             dapp1-id (get-dapp-id result-open dapp1-url)]
         (is (= dapp1-id (get-in result-open [:db :browser/options :browser-id]))
             "browser-id should be dapp1-url")
-        (is (has-navigated-to-browser? result-open)
-            "should navigate to :browser")
         (is (not (has-wrong-properties? result-open
                                         dapp1-id
                                         {:browser-id dapp1-id
@@ -52,8 +44,6 @@
                 dapp2-id (get-dapp-id result-open-2 dapp2-url)]
             (is (= dapp2-id (get-in result-open-2 [:db :browser/options :browser-id]))
                 "browser-id should be dapp2 host")
-            (is (has-navigated-to-browser? result-open-2)
-                "should navigate to :browser")
             (is (not (has-wrong-properties? result-open-2
                                             dapp2-id
                                             {:browser-id dapp2-id
