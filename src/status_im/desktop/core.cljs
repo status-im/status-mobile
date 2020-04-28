@@ -18,27 +18,24 @@
   (re-frame/dispatch [:app-state-change state]))
 
 (defn app-root [props]
-  (log/info "#desktop app-root")
-  [react/view
-   [react/text "###Desktop is back!!!!111111"]]
-  #_(if config/mobile-ui-for-desktop?
+  (if config/mobile-ui-for-desktop?
     (reagent/create-class
-     {:component-did-mount
-      (fn [this]
-        (.addEventListener react/app-state "change" app-state-change-handler)
-        (re-frame/dispatch [:set-initial-props (reagent/props this)]))
-      :component-will-unmount
-      (fn []
-        (.removeEventListener react/app-state "change" app-state-change-handler))
-      :display-name "root"
-      :reagent-render views/main})
+      {:component-did-mount
+       (fn [this]
+         (.addEventListener react/app-state "change" app-state-change-handler)
+         (re-frame/dispatch [:set-initial-props (reagent/props this)]))
+       :component-will-unmount
+       (fn []
+         (.removeEventListener react/app-state "change" app-state-change-handler))
+       :display-name "root"
+       :reagent-render views/main})
     (reagent/create-class
-     {:component-did-mount (fn [this]
-                             (re-frame/dispatch [:set-initial-props (reagent/props this)])
-                             ;(shortcuts/register-default-shortcuts)
-                             (deep-links/add-event-listener))
-      :reagent-render      (fn [props]
-                             desktop-views/main)})))
+      {:component-did-mount (fn [this]
+                              (re-frame/dispatch [:set-initial-props (reagent/props this)])
+                              ;(shortcuts/register-default-shortcuts)
+                              (deep-links/add-event-listener))
+       :reagent-render      (fn [props]
+                              desktop-views/main)})))
 
 (defn init []
   (core/init app-root))

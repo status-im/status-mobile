@@ -30,7 +30,6 @@
 (def snoopy-buffer          #js {})
 (def react-native-screens   #js {})
 (def background-timer       #js {:setTimeout (fn [cb ms] (js/setTimeout cb ms))})
-(def react-navigation       #js {} #_(js/require "react-navigation"))
 (def react-native-navigation-twopane  #js {} #_(js/require "react-native-navigation-twopane"))
 (def react-native-shake     #js {})
 (def net-info               #js {:default #js {}})
