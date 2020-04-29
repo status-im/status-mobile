@@ -471,10 +471,13 @@
   (let [on-success (or on-success
                        (get-in db [:hardwallet :pin :on-verified]))
         on-failure (or on-failure
-                       (get-in db [:hardwallet :pin :on-verified-failure]))]
+                       (get-in db [:hardwallet :pin :on-verified-failure]))
+        pin-step   (or pin-step
+                       (get-in db [:hardwallet :pin :step]))]
     (fx/merge
      cofx
      {:db (update-in db [:hardwallet :pin] assoc
+                     :step pin-step
                      :on-verified on-success
                      :on-verified-failure on-failure)}
      (show-connection-sheet
@@ -486,5 +489,5 @@
            (fx/merge
             cofx
             {:db                    (assoc-in db [:hardwallet :pin :status] :verifying)
-             :hardwallet/verify-pin {:pin        pin
-                                     :pairing    pairing}})))}))))
+             :hardwallet/verify-pin {:pin     pin
+                                     :pairing pairing}})))}))))
