@@ -164,7 +164,6 @@
 (spec/def :stickers/recent (spec/nilable vector?))
 (spec/def :wallet/custom-token-screen (spec/nilable map?))
 
-(spec/def :signing/in-progress? (spec/nilable boolean?))
 (spec/def :signing/queue (spec/nilable any?))
 (spec/def :signing/tx (spec/nilable map?))
 (spec/def :signing/sign (spec/nilable map?))
@@ -239,7 +238,6 @@
                                 :bottom-sheet/options
                                 :wallet/custom-token-screen
                                 :wallet/prepare-transaction
-                                :signing/in-progress?
                                 :signing/queue
                                 :signing/sign
                                 :signing/tx

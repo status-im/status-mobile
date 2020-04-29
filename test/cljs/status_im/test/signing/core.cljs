@@ -20,7 +20,7 @@
           sign-second (signing/sign sign-first second-tx)]
       (testing "after fist transaction"
         (testing "signing in progress"
-          (is (get-in sign-first [:db :signing/in-progress?])))
+          (is (get-in sign-first [:db :signing/tx])))
         (testing "qieue is empty"
           (is (= (get-in sign-first [:db :signing/queue]) '())))
         (testing "first tx object is parsed"
@@ -37,15 +37,15 @@
                          :amount  "10"})))))
       (testing "after second transaction"
         (testing "signing still in progress"
-          (is (get-in sign-second [:db :signing/in-progress?])))
+          (is (get-in sign-second [:db :signing/tx])))
         (testing "queue is not empty, second tx in queue"
           (is (= (get-in sign-second [:db :signing/queue]) (list second-tx))))
         (testing "check queue does nothing"
           (is (not (signing/check-queue sign-second))))
-        (let [first-discarded (signing/check-queue (update sign-second :db dissoc :signing/in-progress? :signing/tx))]
+        (let [first-discarded (signing/check-queue (update sign-second :db dissoc :signing/tx))]
           (testing "after first transaction discarded"
             (testing "signing still in progress"
-              (is (get-in first-discarded [:db :signing/in-progress?])))
+              (is (get-in first-discarded [:db :signing/tx])))
             (testing "qieue is empty"
               (is (= (get-in first-discarded [:db :signing/queue]) '())))
             (testing "second tx object is parsed"

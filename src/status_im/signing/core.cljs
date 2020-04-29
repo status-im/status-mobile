@@ -191,7 +191,6 @@
       (fx/merge
        cofx
        {:db (assoc updated-db
-                   :signing/in-progress? true
                    :signing/queue (drop-last queue)
                    :signing/tx tx
                    :signing/sign {:type           (cond pinless? :pinless
@@ -206,7 +205,6 @@
       (fx/merge
        cofx
        {:db               (assoc updated-db
-                                 :signing/in-progress? true
                                  :signing/queue (drop-last queue)
                                  :signing/tx (prepare-tx updated-db tx))
         :dismiss-keyboard nil}
@@ -222,8 +220,8 @@
                                       :error-event :signing/update-gas-price-error}})))))
 
 (fx/defn check-queue [{:keys [db] :as cofx}]
-  (let [{:signing/keys [in-progress? queue]} db]
-    (when (and (not in-progress?) (seq queue))
+  (let [{:signing/keys [tx queue]} db]
+    (when (and (not tx) (seq queue))
       (show-sign cofx))))
 
 (fx/defn send-transaction-message
@@ -250,7 +248,7 @@
   [{:keys [db] :as cofx} result tx-obj]
   (let [{:keys [on-result symbol amount]} (get db :signing/tx)]
     (fx/merge cofx
-              {:db (dissoc db :signing/tx :signing/in-progress? :signing/sign)
+              {:db (dissoc db :signing/tx :signing/sign)
                :signing/show-transaction-result nil}
               (prepare-unconfirmed-transaction result tx-obj symbol amount)
               (check-queue)
@@ -265,7 +263,7 @@
                   (subs transaction-hash 2))]
     (fx/merge
      cofx
-     {:db (dissoc db :signing/tx :signing/in-progress? :signing/sign)}
+     {:db (dissoc db :signing/tx :signing/sign)}
      (if (hardwallet.common/keycard-multiaccount? db)
        (signing.keycard/hash-message
         {:data data
@@ -303,7 +301,7 @@
     (if (= code constants/send-transaction-err-decrypt)
       ;;wrong password
       {:db (assoc-in db [:signing/sign :error] (i18n/label :t/wrong-password))}
-      (merge {:db                             (dissoc db :signing/tx :signing/in-progress? :signing/sign)
+      (merge {:db                             (dissoc db :signing/tx :signing/sign)
               :signing/show-transaction-error message}
              (when on-error
                {:dispatch (conj on-error message)})))))
@@ -312,7 +310,7 @@
   {:events [:signing/dissoc-entries-and-check-queue]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:db (dissoc db :signing/tx :signing/in-progress? :signing/sign)}
+            {:db (dissoc db :signing/tx :signing/sign)}
             check-queue))
 
 (fx/defn sign-message-completed
@@ -321,9 +319,11 @@
   (let [{:keys [result error]} (types/json->clj result)
         on-result (get-in db [:signing/tx :on-result])]
     (if error
-      {:db (-> db
-               (assoc-in [:signing/sign :error] (if (= 5 (:code error)) (i18n/label :t/wrong-password) (:message error)))
-               (assoc :signing/in-progress? false))}
+      {:db (update db :signing/sign
+                   assoc :error  (if (= 5 (:code error))
+                                   (i18n/label :t/wrong-password)
+                                   (:message error))
+                   :in-progress? false)}
       (fx/merge cofx
                 (when-not (= (-> db :signing/sign :type) :pinless)
                   (dissoc-signing-db-entries-and-check-queue))
@@ -337,9 +337,7 @@
   {:events       [:signing/transaction-completed]
    :interceptors [(re-frame/inject-cofx :random-id-generator)]}
   [cofx response tx-obj hashed-password]
-  (let [cofx-in-progress-false (-> cofx
-                                   (assoc-in [:db :signing/in-progress?] false)
-                                   (assoc-in [:db :signing/sign :in-progress?] false))
+  (let [cofx-in-progress-false (assoc-in cofx [:db :signing/sign :in-progress?] false)
         {:keys [result error]} (types/json->clj response)]
     (log/debug "transaction-completed" error tx-obj)
     (if error
@@ -356,7 +354,7 @@
     (fx/merge cofx
               {:db (-> db
                        (assoc-in [:hardwallet :pin :status] nil)
-                       (dissoc :signing/tx :signing/in-progress? :signing/sign))}
+                       (dissoc :signing/tx :signing/sign))}
               (check-queue)
               (hardwallet.common/hide-connection-sheet)
               (hardwallet.common/clear-pin)
