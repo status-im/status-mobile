@@ -1,83 +1,7 @@
 (ns status-im.utils.handlers
-  (:require [cljs.spec.alpha :as spec]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
-            [status-im.multiaccounts.model :as multiaccounts.model]
             [taoensso.timbre :as log]))
-
-(defn- pretty-print-event [ctx]
-  (let [[first _] (get-coeffect ctx :event)]
-    first))
-
-(def debug-handlers-names
-  "Interceptor which logs debug information to js/console for each event."
-  (->interceptor
-   :id     :debug-handlers-names
-   :before (fn debug-handlers-names-before
-             [context]
-             (log/debug "Handling re-frame event: " (pretty-print-event context))
-             context)))
-
-(def logged-in
-  "Interceptor which stops the event chain if the user is logged out"
-  (->interceptor
-   :id     :logged-in
-   :before (fn logged-in-before
-             [context]
-             (when (multiaccounts.model/logged-in? (:coeffects context))
-               context))))
-
-(defn- check-spec-msg-path-problem [problem]
-  (str "Spec: " (-> problem :via last) "\n"
-       "Predicate: " (subs (str (:pred problem)) 0 50)))
-
-(defn- check-spec-msg-path-problems [path path-problems]
-  (str "Key path: " path "\n"
-       "Val: " (pr-str (-> path-problems first :val)) "\n\n"
-       "Number of problems: " (count path-problems) "\n\n"
-       (->> path-problems
-            (map check-spec-msg-path-problem)
-            (interpose "\n\n")
-            (apply str))))
-
-(defn- check-spec-msg [event-id db]
-  (let [explain-data (spec/explain-data :status-im.ui.screens.db/db db)
-        problems     (::spec/problems explain-data)
-        db-root-keys (->> problems (map (comp first :in)) set)
-        heading      #(str "\n\n------\n" % "\n------\n\n")
-        msg          (str "re-frame db spec check failed."
-                          (heading "SUMMARY")
-                          "After event id: " event-id "\n"
-                          "Number of problems: " (count problems) "\n\n"
-                          "Failing root db keys:\n"
-                          (->> db-root-keys (interpose "\n") (apply str))
-                          (heading "PROBLEMS")
-                          (->> problems
-                               (group-by :in)
-                               (map (fn [[path path-problems]]
-                                      (check-spec-msg-path-problems path path-problems)))
-                               (interpose "\n\n-----\n\n")
-                               (apply str)))]
-    msg))
-
-(def check-spec
-  "throw an exception if db doesn't match the spec"
-  (->interceptor
-   :id check-spec
-   :after
-   (fn check-handler
-     [context]
-     (let [new-db   (get-effect context :db)
-           event-id (-> (get-coeffect context :event) first)]
-       (when (and new-db (not (spec/valid? :status-im.ui.screens.db/db new-db)))
-         (throw (ex-info (check-spec-msg event-id new-db) {})))
-       context))))
-
-(def default-interceptors
-  [debug-handlers-names
-   (when js/goog.DEBUG
-     check-spec)
-   (re-frame/inject-cofx :now)])
 
 (defn- parse-json
   ;; NOTE(dmitryn) Expects JSON response like:
@@ -107,8 +31,24 @@
        (error-fn error)
        (success-fn result)))))
 
+(defn- pretty-print-event [ctx]
+  (let [[first _] (get-coeffect ctx :event)]
+    first))
+
+(def debug-handlers-names
+  "Interceptor which logs debug information to js/console for each event."
+  (->interceptor
+   :id     :debug-handlers-names
+   :before (fn debug-handlers-names-before
+             [context]
+             (log/debug "Handling re-frame event: " (pretty-print-event context))
+             context)))
+
 (defn register-handler-fx
   ([name handler]
    (register-handler-fx name nil handler))
   ([name interceptors handler]
-   (re-frame/reg-event-fx name [default-interceptors interceptors] handler)))
+   (re-frame/reg-event-fx
+    name
+    [debug-handlers-names (re-frame/inject-cofx :now) interceptors]
+    handler)))

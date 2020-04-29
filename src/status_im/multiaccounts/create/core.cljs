@@ -12,7 +12,7 @@
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
@@ -21,7 +21,8 @@
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
+            [status-im.constants :as const]))
 
 (def step-kw-to-num
   {:generate-key         1

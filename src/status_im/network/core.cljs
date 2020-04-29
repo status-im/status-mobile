@@ -5,7 +5,7 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
             [status-im.node.core :as node]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.http :as http]
             [status-im.utils.types :as types]))

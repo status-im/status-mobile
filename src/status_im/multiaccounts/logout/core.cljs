@@ -6,7 +6,7 @@
             [status-im.native-module.core :as status]
             [status-im.transport.core :as transport]
             [status-im.utils.fx :as fx]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.keychain.core :as keychain]))
 
 (fx/defn logout-method

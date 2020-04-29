@@ -8,7 +8,7 @@
             [status-im.utils.config :as config]
             [status-im.constants :as constants]
             [status-im.chat.models.message-content :as message-content]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.messages :as data-store.messages]
             [status-im.multiaccounts.core :as multiaccounts]

@@ -1,5 +1,5 @@
 (ns status-im.hardwallet.recovery
-  (:require [status-im.ui.screens.navigation :as navigation]
+  (:require [status-im.navigation :as navigation]
             [status-im.utils.datetime :as utils.datetime]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.utils.fx :as fx]
@@ -186,7 +186,7 @@
                  encryption-public-key
                  {})
                 (if (= flow :import)
-                  (navigation/navigate-replace-cofx :keycard-recovery-success nil)
+                  (navigation/navigate-replace :keycard-recovery-success nil)
                   (navigation/navigate-to-cofx :welcome nil))))))
 
 (fx/defn on-generate-and-load-key-success

@@ -6,9 +6,9 @@
             [status-im.ui.components.react :as react]
             [reagent.core :as reagent]
             status-im.utils.db
-            status-im.ui.screens.db
-            status-im.ui.screens.events
+            status-im.db
             status-im.subs
+            status-im.events
             ["react-native-languages" :default react-native-languages]
             ["react-native-shake" :as react-native-shake]
             ["react-native-screens" :refer (enableScreens)]

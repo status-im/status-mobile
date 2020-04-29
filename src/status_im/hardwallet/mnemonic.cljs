@@ -1,5 +1,5 @@
 (ns status-im.hardwallet.mnemonic
-  (:require [status-im.ui.screens.navigation :as navigation]
+  (:require [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.hardwallet.common :as common]
@@ -21,7 +21,7 @@
               (assoc-in [:hardwallet :setup-step] :recovery-phrase)
               (assoc-in [:hardwallet :secrets :mnemonic] mnemonic))}
      (common/clear-on-card-connected)
-     (navigation/navigate-replace-cofx :keycard-onboarding-recovery-phrase nil))))
+     (navigation/navigate-replace :keycard-onboarding-recovery-phrase nil))))
 
 (fx/defn load-loading-keys-screen
   {:events [:hardwallet.ui/recovery-phrase-confirm-pressed

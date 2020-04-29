@@ -10,7 +10,7 @@
                                      [status-im.multiaccounts.model :as multiaccounts.model]
                                      [status-im.multiaccounts.update.core :as multiaccounts.update]
                                      [status-im.transport.message.protocol :as protocol]
-                                     [status-im.ui.screens.navigation :as navigation]
+                                     [status-im.navigation :as navigation]
                                      [status-im.utils.config :as config]
                                      [status-im.utils.fx :as fx]
                                      [status-im.utils.identicon :as identicon]

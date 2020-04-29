@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.hardwallet.common :as common]
             [status-im.hardwallet.mnemonic :as mnemonic]
@@ -158,7 +158,7 @@
       (if (= (:view-id db) :keycard-onboarding-recovery-phrase-confirm-word1)
         (fx/merge cofx
                   (recovery-phrase-next-word)
-                  (navigation/navigate-replace-cofx :keycard-onboarding-recovery-phrase-confirm-word2 nil))
+                  (navigation/navigate-replace :keycard-onboarding-recovery-phrase-confirm-word2 nil))
         (proceed-with-generating-key cofx))
       {:db (assoc-in db [:hardwallet :recovery-phrase :confirm-error] (i18n/label :t/wrong-word))})))
 
@@ -237,7 +237,7 @@
                                                     (update-in [:hardwallet :secrets] merge secrets'))}
               (common/hide-connection-sheet)
               (common/listen-to-hardware-back-button)
-              (navigation/navigate-replace-cofx :keycard-onboarding-puk-code nil))))
+              (navigation/navigate-replace :keycard-onboarding-puk-code nil))))
 
 (fx/defn on-install-applet-and-init-card-error
   {:events [:hardwallet.callback/on-install-applet-and-init-card-error

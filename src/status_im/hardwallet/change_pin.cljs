@@ -1,6 +1,6 @@
 (ns status-im.hardwallet.change-pin
   (:require [status-im.i18n :as i18n]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.hardwallet.onboarding :as onboarding]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]

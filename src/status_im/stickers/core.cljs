@@ -6,7 +6,7 @@
             [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
             [status-im.signing.core :as signing]

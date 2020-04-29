@@ -8,7 +8,7 @@
             [status-im.i18n :as i18n]
             [status-im.utils.money :as money]
             [status-im.utils.fx :as fx]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [clojure.string :as string]
             [status-im.ethereum.stateofus :as stateofus]))
 

@@ -10,7 +10,7 @@
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.fx :as fx]
             [status-im.utils.http :as http]

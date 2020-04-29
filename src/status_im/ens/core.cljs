@@ -1,12 +1,8 @@
 (ns status-im.ens.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.ens.db :as ens.db]
-            [taoensso.timbre :as log]
             [status-im.utils.datetime :as datetime]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.utils.config :as config]
             [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
@@ -14,13 +10,11 @@
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.resolver :as resolver]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.money :as money]
             [status-im.signing.core :as signing]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [taoensso.timbre :as log]
             [status-im.utils.random :as random])
   (:refer-clojure :exclude [name]))
 

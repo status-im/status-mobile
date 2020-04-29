@@ -9,7 +9,7 @@
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]))
 
 (fx/defn remove-current-chat-id

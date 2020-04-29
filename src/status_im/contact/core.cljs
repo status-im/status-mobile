@@ -14,7 +14,7 @@
    [status-im.transport.message.protocol :as protocol]
    [status-im.tribute-to-talk.db :as tribute-to-talk]
    [status-im.tribute-to-talk.whitelist :as whitelist]
-   [status-im.ui.screens.navigation :as navigation]
+   [status-im.navigation :as navigation]
    [status-im.utils.config :as config]
    [status-im.utils.fx :as fx]
    [status-im.utils.datetime :as time]))

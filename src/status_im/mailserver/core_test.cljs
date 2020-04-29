@@ -147,7 +147,7 @@
                  (-> actual :db :mailserver.edit/mailserver))))
         (testing "it navigates to edit-mailserver view"
           (is (= [:edit-mailserver nil]
-                 (:status-im.ui.screens.navigation/navigate-to actual))))))
+                 (:status-im.navigation/navigate-to actual))))))
     (testing "when an id is given"
       (testing "when the mailserver is in the list"
         (let [actual (mailserver/edit cofx "a")]
@@ -161,7 +161,7 @@
                    (-> actual :db :mailserver.edit/mailserver))))
           (testing "it navigates to edit-mailserver view"
             (is (= [:edit-mailserver nil]
-                   (:status-im.ui.screens.navigation/navigate-to actual))))))
+                   (:status-im.navigation/navigate-to actual))))))
       (testing "when the mailserver is not in the list"
         (let [actual (mailserver/edit cofx "not-existing")]
           (testing "it populates the fields with the correct values"
@@ -174,7 +174,7 @@
                    (-> actual :db :mailserver.edit/mailserver))))
           (testing "it navigates to edit-mailserver view"
             (is (= [:edit-mailserver nil]
-                   (:status-im.ui.screens.navigation/navigate-to actual)))))))))
+                   (:status-im.navigation/navigate-to actual)))))))))
 
 (deftest connected-mailserver
   (testing "it returns true when set in mailserver/current-id"

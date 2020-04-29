@@ -3,7 +3,7 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.multiaccounts.logout.core :as multiaccounts.logout]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.hardwallet.common :as common]))

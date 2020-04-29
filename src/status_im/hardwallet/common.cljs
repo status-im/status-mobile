@@ -4,7 +4,7 @@
             [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
             [status-im.ethereum.core :as ethereum]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as platform]

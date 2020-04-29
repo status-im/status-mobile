@@ -1,11 +1,9 @@
 (ns status-im.subs-test
   (:require [cljs.test :refer [deftest is testing]]
             reagent.core
-            [re-frame.core :as re-frame]
             [day8.re-frame.test :refer [run-test-sync]]
-            status-im.ui.screens.db
+            status-im.db
             status-im.subs
-            [status-im.ui.screens.events :as events]
             [status-im.subs :as subs]))
 
 (def transactions [{:timestamp "1505912551000"}

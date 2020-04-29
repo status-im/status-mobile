@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.chat.models.message :as models.message]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.handlers :as handlers]
             [status-im.data-store.chats :as chats-store]
             [status-im.utils.fx :as fx]))

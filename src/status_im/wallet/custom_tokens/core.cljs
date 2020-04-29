@@ -9,7 +9,7 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
             [status-im.wallet.core :as wallet]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.wallet.prices :as prices]))
 
 (re-frame/reg-fx

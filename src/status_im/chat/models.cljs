@@ -12,7 +12,7 @@
             [status-im.mailserver.core :as mailserver]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as platform]

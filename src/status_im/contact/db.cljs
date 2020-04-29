@@ -1,65 +1,9 @@
 (ns status-im.contact.db
-  (:require [cljs.spec.alpha :as spec]
-            [clojure.set :as cset]
+  (:require [clojure.set :as cset]
             [status-im.ethereum.core :as ethereum]
-            [status-im.tribute-to-talk.db :as tribute-to-talk.db]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
             status-im.utils.db))
-
-;;;; DB
-
-;;Contact
-
-(spec/def :contact/last-online (spec/nilable int?))
-(spec/def :contact/last-updated (spec/nilable int?))
-(spec/def :contact/name (spec/nilable string?))
-(spec/def :contact/ens-verified (spec/nilable boolean?))
-(spec/def :contact/ens-verified-at (spec/nilable int?))
-(spec/def :contact/public-key :global/not-empty-string)
-(spec/def :contact/photo-path (spec/nilable string?))
-
-;; contact/blocked: the user is blocked
-;; contact/added: the user was added to the contacts and a contact request was sent
-;; contact/request-received: the user sent a contact request
-(spec/def :contact/system-tags (spec/coll-of keyword? :kind set?))
-(spec/def :contact/tags (spec/coll-of string? :kind set?))
-(spec/def :contact/tribute (spec/nilable int?))
-(spec/def :contact/tribute-transaction (spec/nilable string?))
-
-(spec/def :contact/contact (spec/keys  :req-un [:contact/public-key
-                                                :contact/system-tags]
-                                       :opt-un [:contact/name
-                                                :contact/address
-                                                :contact/photo-path
-                                                :contact/last-online
-                                                :contact/last-updated
-                                                :contact/tags
-                                                :contact/tribute
-                                                :contact/tribute-transaction]))
-
-;;Contact list ui props
-(spec/def :contact-list-ui/edit? boolean?)
-
-;;Contacts ui props
-(spec/def :contacts-ui/edit? boolean?)
-
-(spec/def :contacts/contacts (spec/nilable (spec/map-of :global/not-empty-string :contact/contact)))
-;;public key of new contact during adding this new contact
-(spec/def :contacts/new-identity (spec/nilable map?))
-;;on showing this contact's profile (andrey: better to move into profile ns)
-(spec/def :contacts/identity (spec/nilable :global/not-empty-string))
-(spec/def :contacts/list-ui-props (spec/nilable (spec/keys :opt-un [:contact-list-ui/edit?])))
-(spec/def :contacts/ui-props (spec/nilable (spec/keys :opt-un [:contacts-ui/edit?])))
-;;used in modal list (for example for wallet)
-(spec/def :contacts/click-handler (spec/nilable fn?))
-;;used in modal list (for example for wallet)
-(spec/def :contacts/click-action (spec/nilable #{:send :request}))
-;;used in modal list (for example for wallet)
-(spec/def :contacts/click-params (spec/nilable map?))
-
-(spec/def :contact/new-tag string?)
-(spec/def :ui/contact (spec/keys :opt [:contact/new-tag]))
 
 (defn public-key->new-contact [public-key]
   (let [alias (gfycat/generate-gfy public-key)]

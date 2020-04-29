@@ -6,7 +6,7 @@
             [status-im.native-module.core :as status]
             [status-im.network.net-info :as network]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.screens.db :refer [app-db]]
+            [status-im.db :refer [app-db]]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as platform]
             [status-im.utils.theme :as theme]))

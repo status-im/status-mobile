@@ -16,7 +16,7 @@
             [status-im.ui.screens.mobile-network-settings.utils
              :as
              mobile-network-utils]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]

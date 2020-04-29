@@ -2,7 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.ui.screens.profile.models :as profile.models]
-            [status-im.ui.screens.profile.navigation]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.identicon :as identicon]

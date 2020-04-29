@@ -2,8 +2,6 @@
   (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
             status-im.utils.db
-            status-im.ui.screens.db
-            status-im.ui.screens.events
             status-im.subs
             [status-im.ui.screens.views :as views]
             [status-im.ui.components.react :as react]

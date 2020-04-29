@@ -1,7 +1,7 @@
 (ns status-im.hardwallet.core
   (:require [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.datetime :as utils.datetime]
             [status-im.utils.fx :as fx]
             [status-im.hardwallet.login :as login]
@@ -47,7 +47,7 @@
                                                    :import-multiaccount []
                                                    :current             []}))}
             (common/listen-to-hardware-back-button)
-            (navigation/navigate-replace-cofx :keycard-recovery-pin nil)))
+            (navigation/navigate-replace :keycard-recovery-pin nil)))
 
 (fx/defn proceed-setup-with-initialized-card
   [{:keys [db] :as cofx} flow instance-uid]

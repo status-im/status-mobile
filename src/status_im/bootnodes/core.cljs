@@ -4,7 +4,7 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.i18n :as i18n]
 
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]))
 
 (def address-regex #"enode://[a-zA-Z0-9]+:?(.*)\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")

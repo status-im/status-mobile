@@ -3,7 +3,6 @@
             [clojure.string :as clojure.string]
             [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.profile.navigation]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.chat.models :as chat-models]
             [status-im.utils.image-processing :as image-processing]

@@ -10,7 +10,7 @@
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.tribute-to-talk.db :as tribute-to-talk.db]
             [status-im.tribute-to-talk.whitelist :as whitelist]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
             [taoensso.timbre :as log]

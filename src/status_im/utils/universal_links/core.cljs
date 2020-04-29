@@ -12,7 +12,7 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
-            [status-im.ui.screens.navigation :as navigation]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.wallet.choose-recipient.core :as choose-recipient]))
