@@ -107,8 +107,10 @@
                                          :cb       #(re-frame/dispatch [:signing/transaction-completed % tx-obj-to-send hashed-password])}})))))
 
 (fx/defn prepare-unconfirmed-transaction
-  [{:keys [db now]} hash {:keys [value gasPrice gas data to from]} symbol amount]
-  (let [token (tokens/symbol->token (:wallet/all-tokens db) symbol)]
+  [{:keys [db now]} hash {:keys [value gasPrice gas data to from] :as tx} symbol amount]
+  (log/debug "[signing] prepare-unconfirmed-transaction")
+  (let [token (tokens/symbol->token (:wallet/all-tokens db) symbol)
+        from  (eip55/address->checksum from)]
     {:db (assoc-in db [:wallet :accounts from :transactions hash]
                    {:timestamp (str now)
                     :to        to
