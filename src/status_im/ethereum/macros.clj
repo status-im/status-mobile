@@ -4,13 +4,14 @@
 
 (defn token-icon-path
   [network symbol]
-  (let [s     (str "../resources/images/tokens/" (name network) "/" (name symbol) ".png")
+  (let [s     (str "./resources/images/tokens/" (name network) "/" (name symbol) ".png")
+        s-js  (str "." s)
         image (gensym)]
     (if (.exists (io/file s))
       `(let [~image (atom nil)]
          (fn []
            (or @~image
-               (reset! ~image (js/require ~s)))))
+               (reset! ~image (js/require ~s-js)))))
       `(let [~image (atom nil)]
          (fn []
            (or

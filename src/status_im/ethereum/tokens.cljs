@@ -3,9 +3,6 @@
   (:require-macros
    [status-im.ethereum.macros :as ethereum.macros :refer [resolve-icons]]))
 
-(defn- asset-border [color]
-  {:border-color color :border-width 1 :border-radius 32})
-
 (def default-native-currency
   (memoize
    (fn []
@@ -18,8 +15,7 @@
   (ethereum.macros/resolve-native-currency-icons
    {:mainnet {:name     "Ether"
               :symbol   :ETH
-              :decimals 18
-              :icon     {:style (asset-border "#628fe333")}}
+              :decimals 18}
     :testnet {:name           "Ropsten Ether"
               :symbol         :ETH
               :symbol-display :ETHro
@@ -128,10 +124,10 @@
                     :name     "BTU Protocol"
                     :address  "0xb683D83a532e2Cb7DFa5275eED3698436371cc9f"
                     :decimals 18}
-                   {:symbol   :DGD
-                    :name     "Digix DAO"
-                    :address  "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a"
-                    :decimals 9
+                   {:symbol               :DGD
+                    :name                 "Digix DAO"
+                    :address              "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a"
+                    :decimals             9
                     :skip-decimals-check? true}
                    {:symbol   :AE
                     :name     "Aeternity"
@@ -225,10 +221,10 @@
                     :name     "Monaco"
                     :address  "0xb63b606ac810a52cca15e44bb630fd42d8d1d83d"
                     :decimals 8}
-                   {:symbol   :LRC
-                    :name     "loopring"
-                    :address  "0xef68e7c694f40c8202821edf525de3782458639f"
-                    :decimals 18
+                   {:symbol               :LRC
+                    :name                 "loopring"
+                    :address              "0xef68e7c694f40c8202821edf525de3782458639f"
+                    :decimals             18
                     :skip-decimals-check? true}
                    {:symbol   :ZSC
                     :name     "Zeus Shield Coin"
@@ -490,7 +486,251 @@
                    {:symbol  :KDO
                     :nft?    true
                     :name    "KudosToken"
-                    :address "0x2aea4add166ebf38b63d09a75de1a7b94aa24163"}])
+                    :address "0x2aea4add166ebf38b63d09a75de1a7b94aa24163"}
+                   {:address  "0x99ea4dB9EE77ACD40B119BD1dC4E33e1C070b80d"
+                    :decimals 18
+                    :symbol   :QSP
+                    :name     "Quantstamp Token"}
+                   {:address  "0x80fB784B7eD66730e8b1DBd9820aFD29931aab03"
+                    :decimals 18
+                    :symbol   :LEND
+                    :name     "EHTLend"}
+                   {:address  "0xA15C7Ebe1f07CaF6bFF097D8a589fb8AC49Ae5B3"
+                    :decimals 18
+                    :symbol   :NPXS
+                    :name     "Pundi X Token"}
+                   {:address  "0xA4e8C3Ec456107eA67d3075bF9e3DF3A75823DB0"
+                    :decimals 18
+                    :symbol   :LOOM
+                    :name     "Loom Network"}
+                   {:address  "0x0e0989b1f9B8A38983c2BA8053269Ca62Ec9B195"
+                    :decimals 8
+                    :symbol   :POE
+                    :name     "Po.et Tokens"}
+                   {:address  "0x5732046A883704404F284Ce41FfADd5b007FD668"
+                    :decimals 18
+                    :symbol   :BLZ
+                    :name     "Bluzelle"}
+                   {:address  "0xFA1a856Cfa3409CFa145Fa4e20Eb270dF3EB21ab"
+                    :decimals 18
+                    :symbol   :IOST
+                    :name     "IOSToken"}
+                   {:address  "0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671"
+                    :decimals 18
+                    :symbol   :NMR
+                    :name     "Numerai"}
+                   {:address  "0x8E870D67F660D95d5be530380D0eC0bd388289E1"
+                    :decimals 18
+                    :symbol   :PAX
+                    :name     "Paxos Standard (PAX)"}
+                   {:address  "0x08d32b0da63e2C3bcF8019c9c5d849d7a9d791e6"
+                    :decimals 0
+                    :symbol   :DCN
+                    :name     "Dentacoin"}
+                   {:address  "0xEA26c4aC16D4a5A106820BC8AEE85fd0b7b2b664"
+                    :decimals 18
+                    :symbol   :QKC
+                    :name     "QuarkChain"}
+                   {:address  "0x45804880De22913dAFE09f4980848ECE6EcbAf78"
+                    :decimals 18
+                    :symbol   :PAXG
+                    :name     "Paxos Gold"}
+                   {:address  "0x865ec58b06bF6305B886793AA20A2da31D034E68"
+                    :decimals 18
+                    :symbol   :MOC
+                    :name     "Moss Coin"}
+                   {:address  "0x408e41876cCCDC0F92210600ef50372656052a38"
+                    :decimals 18
+                    :symbol   :REN
+                    :name     "Republic Token"}
+                   {:address  "0x607F4C5BB672230e8672085532f7e901544a7375"
+                    :decimals 9
+                    :symbol   :RLC
+                    :name     "IEx.ec"}
+                   {:address  "0x8400D94A5cb0fa0D041a3788e395285d61c9ee5e"
+                    :decimals 8
+                    :symbol   :UBT
+                    :name     "Unibright"}
+                   {:address  "0x4f3AfEC4E5a3F2A6a1A411DEF7D7dFe50eE057bF"
+                    :decimals 9
+                    :symbol   :DGX
+                    :name     "Digix Gold Token"}
+                   {:address  "0xEA38eAa3C86c8F9B751533Ba2E562deb9acDED40"
+                    :decimals 18
+                    :symbol   :FUEL
+                    :name     "Etherparty FUEL"}
+                   {:address  "0x00000100F2A2bd000715001920eB70D229700085"
+                    :decimals 18
+                    :symbol   :TCAD
+                    :name     "TrueCAD"}
+                   {:address  "0x6710c63432A2De02954fc0f851db07146a6c0312"
+                    :decimals 18
+                    :symbol   :MFG
+                    :name     "SyncFab Smart Manufacturing Blockchain"}
+                   {:address  "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf"
+                    :decimals 18
+                    :symbol   :GEN
+                    :name     "DAOstack"}
+                   {:address  "0x0E8d6b471e332F140e7d9dbB99E5E3822F728DA6"
+                    :decimals 18
+                    :symbol   :ABYSS
+                    :name     "The Abyss"}
+                   {:address  "0xB62132e35a6c13ee1EE0f84dC5d40bad8d815206"
+                    :decimals 18
+                    :symbol   :NEXO
+                    :name     "Nexo"}
+                   {:address  "0x0000000000085d4780B73119b644AE5ecd22b376"
+                    :decimals 18
+                    :symbol   :TUSD
+                    :name     "TrueUSD"}
+                   {:address  "0xD0a4b8946Cb52f0661273bfbC6fD0E0C75Fc6433"
+                    :decimals 18
+                    :symbol   :STORM
+                    :name     "Storm Token"}
+                   {:address  "0xaF4DcE16Da2877f8c9e00544c93B62Ac40631F16"
+                    :decimals 5
+                    :symbol   :MTH
+                    :name     "Monetha"}
+                   {:address  "0x00000000441378008EA67F4284A57932B1c000a5"
+                    :decimals 18
+                    :symbol   :TGBP
+                    :name     "TrueGBP"}
+                   {:address  "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e"
+                    :decimals 18
+                    :symbol   :ELF
+                    :name     "ELF Token"}
+                   {:address  "0x9992eC3cF6A55b00978cdDF2b27BC6882d88D1eC"
+                    :decimals 18
+                    :symbol   :POLY
+                    :name     "Polymath Network"}
+                   {:address  "0x20F7A3DdF244dc9299975b4Da1C39F8D5D75f05A"
+                    :decimals 6
+                    :symbol   :SPN
+                    :name     "Sapien"}
+                   {:address  "0x1a7a8BD9106F2B8D977E08582DC7d24c723ab0DB"
+                    :decimals 18
+                    :symbol   :APPC
+                    :name     "AppCoins"}
+                   {:address  "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+                    :decimals 6
+                    :symbol   :USDT
+                    :name     "USD Tether (erc20)"}
+                   {:address  "0xa3d58c4E56fedCae3a7c43A725aeE9A71F0ece4e"
+                    :decimals 18
+                    :symbol   :MET
+                    :name     "Metronome"}
+                   {:address  "0x6f259637dcD74C767781E37Bc6133cd6A68aa161"
+                    :decimals 18
+                    :symbol   :HT
+                    :name     "Huobi Token"}
+                   {:address  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+                    :decimals 18
+                    :symbol   :WETH
+                    :name     "WETH"}
+                   {:address  "0x8f3470A7388c05eE4e7AF3d01D8C722b0FF52374"
+                    :decimals 18
+                    :symbol   :VERI
+                    :name     "Veritaseum"}
+                   {:address  "0x00006100F7090010005F1bd7aE6122c3C2CF0090"
+                    :decimals 18
+                    :symbol   :TAUD
+                    :name     "TrueAUD"}
+                   {:address  "0x66497A283E0a007bA3974e837784C6AE323447de"
+                    :decimals 18
+                    :symbol   :PT
+                    :name     "PornToken"}
+                   {:address  "0xB24754bE79281553dc1adC160ddF5Cd9b74361a4"
+                    :decimals 9
+                    :symbol   :XRL
+                    :name     "XRL"}
+                   {:address  "0xC011A72400E58ecD99Ee497CF89E3775d4bd732F"
+                    :decimals 18
+                    :symbol   :SNX
+                    :name     "Synthetix Network Token"}
+                   {:address  "0x07e3c70653548B04f0A75970C1F81B4CBbFB606f"
+                    :decimals 18
+                    :symbol   :DLT
+                    :name     "Agrello"}
+                   {:address  "0x8207c1FfC5B6804F6024322CcF34F29c3541Ae26"
+                    :decimals 18
+                    :symbol   :OGN
+                    :name     "OriginToken"}
+                   {:address  "0x554C20B7c486beeE439277b4540A434566dC4C02"
+                    :decimals 18
+                    :symbol   :HST
+                    :name     "Decision Token"}
+                   {:address  "0x286BDA1413a2Df81731D4930ce2F862a35A609fE"
+                    :decimals 18
+                    :symbol   :WABI
+                    :name     "Tael"}
+                   {:address  "0xE5a3229CCb22b6484594973A03a3851dCd948756"
+                    :decimals 18
+                    :symbol   :RAE
+                    :name     "RAE Token"}
+                   {:address  "0x24692791Bc444c5Cd0b81e3CBCaba4b04Acd1F3B"
+                    :decimals 18
+                    :symbol   :UKG
+                    :name     "UnikoinGold"}
+                   {:address  "0xD46bA6D942050d489DBd938a2C909A5d5039A161"
+                    :decimals 9
+                    :symbol   :AMPL
+                    :name     "Ampleforth"}
+                   {:address  "0xA4Bdb11dc0a2bEC88d24A3aa1E6Bb17201112eBe"
+                    :decimals 6
+                    :symbol   :USDS
+                    :name     "StableUSD"}
+                   {:address  "0xB98d4C97425d9908E66E53A6fDf673ACcA0BE986"
+                    :decimals 18
+                    :symbol   :ABT
+                    :name     "ArcBlock Token"}
+                   {:address  "0x81c9151de0C8bafCd325a57E3dB5a5dF1CEBf79c"
+                    :decimals 18
+                    :symbol   :DAT
+                    :name     "Datum Token"}
+                   {:address  "0xa6a840E50bCaa50dA017b91A0D86B8b2d41156EE"
+                    :decimals 18
+                    :symbol   :EKO
+                    :name     "EchoLink"}
+                   {:address  "0x2C4e8f2D746113d0696cE89B35F0d8bF88E0AEcA"
+                    :decimals 18
+                    :symbol   :OST
+                    :name     "Simple Token 'OST'"}
+                   {:address  "0xc92D6E3E64302C59d734f3292E2A13A13D7E1817"
+                    :decimals 8
+                    :symbol   :FXC
+                    :name     "FUTURAX"}
+                   {:address  "0x4a57E687b9126435a9B19E4A802113e266AdeBde"
+                    :decimals 18
+                    :symbol   :FXC
+                    :name     "Flexacoin"}
+                   {:address  "0xC86D054809623432210c107af2e3F619DcFbf652"
+                    :decimals 18
+                    :symbol   :UPP
+                    :name     "Sentinel Protocol"}
+                   {:address  "0x5Af2Be193a6ABCa9c8817001F45744777Db30756"
+                    :decimals 8
+                    :symbol   :BQX
+                    :name     "Bitquence"}
+                   {:address  "0x69b148395ce0015c13e36bffbad63f49ef874e03"
+                    :symbol   :DTA
+                    :name     "Data"
+                    :decimals 18}
+                   {:address  "0x57ab1e02fee23774580c119740129eac7081e9d3"
+                    :symbol   :SUSD
+                    :name     "Synth sUSD"
+                    :decimals 18}
+                   {:address  "0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643"
+                    :symbol   :CDAI
+                    :name     "Compound Dai"
+                    :decimals 8}
+                   {:address  "0xba11d00c5f74255f56a5e366f4f77f5a186d7f55"
+                    :symbol   :BAND
+                    :name     "BandToken"
+                    :decimals 18}
+                   {:address  "0xa7fc5d2453e3f68af0cc1b78bcfee94a1b293650"
+                    :symbol   :SPIKE
+                    :name     "Spiking"
+                    :decimals 10}])
    :testnet
    (resolve-icons :testnet
                   [{:name     "Status Test Token"
@@ -525,10 +765,10 @@
                     :symbol   :MOKSHA
                     :decimals 18
                     :address  "0x6ba7dc8dd10880ab83041e60c4ede52bb607864b"}
-                   {:symbol   :KDO
-                    :nft?     true
-                    :name     "KudosToken"
-                    :address  "0x93bb0afbd0627bbd3a6c72bc318341d3a22e254a"}
+                   {:symbol  :KDO
+                    :nft?    true
+                    :name    "KudosToken"
+                    :address "0x93bb0afbd0627bbd3a6c72bc318341d3a22e254a"}
                    {:symbol   :WIBB
                     :name     "WIBB"
                     :address  "0x7d4ccf6af2f0fdad48ee7958bcc28bdef7b732c7"
