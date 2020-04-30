@@ -54,6 +54,10 @@ class DenyButton(BaseButton):
         super(DenyButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Deny' or @text='DENY']")
 
+class CancelButton(BaseButton):
+    def __init__(self, driver):
+        super(CancelButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Cancel' or @text='CANCEL']")
 
 class DeleteButton(BaseButton):
     def __init__(self, driver):
@@ -371,6 +375,7 @@ class BaseView(object):
         self.progress_bar = ProgressBar(self.driver)
         self.cross_icon_iside_welcome_screen_button = CrossIconInWelcomeScreen(self.driver)
         self.status_in_background_button = StatusInBackgroundButton(self.driver)
+        self.cancel_button = CancelButton(self.driver)
 
 
         # external browser

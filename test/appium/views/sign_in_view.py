@@ -35,6 +35,11 @@ class RecoverAccountPasswordInput(BaseEditBox):
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Password']"
                                                    "/following-sibling::android.view.ViewGroup/android.widget.EditText")
 
+class FirstKeyForChatText(BaseText):
+    def __init__(self, driver):
+        super(FirstKeyForChatText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="select-account-button-0"]//android.widget.TextView[1]')
+
 
 class CreatePasswordInput(BaseEditBox):
     def __init__(self, driver):
@@ -215,6 +220,7 @@ class SignInView(BaseView):
         self.privacy_policy_link = PrivacyPolicyLink(self.driver)
         self.lets_go_button = LetsGoButton(self.driver)
         self.keycard_storage_button = KeycardKeyStorageButton(self.driver)
+        self.first_username_on_choose_chat_name = FirstKeyForChatText(self.driver)
 
     def create_user(self, password=common_password, keycard=False):
         self.get_started_button.click()
