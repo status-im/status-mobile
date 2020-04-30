@@ -132,8 +132,8 @@ void RCTStatus::prepareDirAndUpdateConfig(QString configString,
 
 void RCTStatus::initKeystore() {
   qCInfo(RCTSTATUS) << "::initKeystore call";
-  QString rootDir = getDataStoragePath();
-  const char *result = InitKeystore(rootDir.toUtf8().data());
+  QString keystoreDir = getDataStoragePath() + "/keystore";
+  const char *result = InitKeystore(keystoreDir.toUtf8().data());
   logStatusGoResult("::initKeystore InitKeystore", result);
 }
 
