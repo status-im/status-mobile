@@ -70,8 +70,7 @@
           ;; produced by the target :mocks below and redefines node require
           ;; function to use the mocks instead of the rn libraries
           :test
-          {:ns-regexp     "status-im.test."
-           :output-to     "target/test/test.js"
+          {:output-to     "target/test/test.js"
            :output-dir    "target/test"
            :optimizations :simple
            :target        :node-test
