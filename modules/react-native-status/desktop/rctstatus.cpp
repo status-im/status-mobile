@@ -101,20 +101,12 @@ QString RCTStatus::prepareDirAndUpdateConfig(QString configString) {
   if (!relativeDataDirPath.startsWith("/"))
     relativeDataDirPath.prepend("/");
 
-  QString rootDirPath = getDataStoragePath();
-  QDir rootDir(rootDirPath);
-  QString absDataDirPath = rootDirPath + relativeDataDirPath;
-  QDir dataDir(absDataDirPath);
-  if (!dataDir.exists()) {
-    dataDir.mkpath(".");
-  }
+  configJSON["DataDir"] = relativeDataDirPath;
+  configJSON["KeyStoreDir"] = "keystore";
+  configJSON["LogDir"] = relativeDataDirPath;
+  configJSON["LogFile"] = "geth.log";
 
-  d_gethLogFilePath = dataDir.absoluteFilePath("geth.log");
-  configJSON["DataDir"] = absDataDirPath;
-  configJSON["KeyStoreDir"] = rootDir.absoluteFilePath("keystore");
-  configJSON["LogFile"] = d_gethLogFilePath;
-
-  shhextConfig["BackupDisabledDataDir"] = rootDirPath;
+  shhextConfig["BackupDisabledDataDir"] = relativeDataDirPath;
 
   configJSON["ShhExtConfig"] = shhextConfig;
 
