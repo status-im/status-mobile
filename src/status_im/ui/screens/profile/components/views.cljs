@@ -100,13 +100,6 @@
 
 ;; settings items elements
 
-(defn settings-item-separator []
-  [common/separator styles/settings-item-separator])
-
-(defn settings-title [title]
-  [react/text {:style styles/settings-title}
-   title])
-
 (defn settings-item
   [{:keys [item-text label-kw value action-fn active? destructive? hide-arrow?
            accessibility-label icon icon-content]

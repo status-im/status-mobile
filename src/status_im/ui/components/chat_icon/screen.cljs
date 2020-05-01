@@ -25,10 +25,6 @@
                            (second name)
                            (first name)))]]))
 
-(defn default-browser-icon [name]
-  (default-chat-icon name {:default-chat-icon (styles/default-chat-icon-chat-list colors/default-chat-color)
-                           :default-chat-icon-text (styles/default-chat-icon-text 40)}))
-
 (defn dapp-badge [{:keys [online-view-wrapper online-view online-dot-left online-dot-right]}]
   [react/view online-view-wrapper
    [react/view online-view
@@ -97,18 +93,6 @@
    (when dapp?
      [dapp-badge styles])])
 
-(defn contact-icon-view-chat [contact]
-  [contact-icon-view contact
-   {:container              styles/container-chat-list
-    :online-view-wrapper    styles/online-view-wrapper
-    :online-view            styles/online-view
-    :online-dot-left        styles/online-dot-left
-    :online-dot-right       styles/online-dot-right
-    :size                   60
-    :chat-icon              styles/chat-icon-chat-list
-    :default-chat-icon      (styles/default-chat-icon-chat-list colors/default-chat-color)
-    :default-chat-icon-text (styles/default-chat-icon-text 60)}])
-
 (defn contact-icon-contacts-tab [contact]
   [contact-icon-view contact
    {:container              styles/container-chat-list
@@ -120,15 +104,6 @@
     :chat-icon              styles/chat-icon-chat-list
     :default-chat-icon      (styles/default-chat-icon-chat-list colors/default-chat-color)
     :default-chat-icon-text (styles/default-chat-icon-text 40)}])
-
-(defn dapp-icon-browser [contact size]
-  [contact-icon-view contact
-   {:container              {:width size :height size :top 3 :margin-left 2}
-    :online-view-wrapper    styles/online-view-wrapper
-    :size                   size
-    :chat-icon              (styles/custom-size-icon size)
-    :default-chat-icon      (styles/default-chat-icon-chat-list colors/default-chat-color)
-    :default-chat-icon-text (styles/default-chat-icon-text size)}])
 
 (defn dapp-icon-permission [contact size]
   [contact-icon-view contact
@@ -171,17 +146,6 @@
                         edit?        :edit?}]
   (let [color colors/default-chat-color
         size  64]
-    [profile-icon-view
-     (multiaccounts/displayed-photo multiaccount)
-     (multiaccounts/displayed-name multiaccount)
-     color
-     edit?
-     size {}]))
-
-(defn my-profile-header-icon [{multiaccount :multiaccount
-                               edit?        :edit?}]
-  (let [color colors/default-chat-color
-        size  40]
     [profile-icon-view
      (multiaccounts/displayed-photo multiaccount)
      (multiaccounts/displayed-name multiaccount)

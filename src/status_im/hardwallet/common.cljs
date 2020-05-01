@@ -28,11 +28,6 @@
   [v]
   (apply str v))
 
-(defn hardwallet-supported? []
-  (and config/hardwallet-enabled?
-       platform/android?
-       (nfc/nfc-supported?)))
-
 (defn get-card-state
   [{:keys [has-master-key?
            applet-installed?

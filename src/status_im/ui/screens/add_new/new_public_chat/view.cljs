@@ -43,11 +43,6 @@
    (when error
      [tooltip/tooltip error styles/tooltip])])
 
-(defn- public-chat-icon [topic]
-  [react/view styles/public-chat-icon
-   [react/text {:style styles/public-chat-icon-symbol}
-    (first topic)]])
-
 (defn render-topic [topic]
   ^{:key topic}
   [react/touchable-highlight {:on-press            #(start-chat topic)

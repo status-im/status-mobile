@@ -58,15 +58,6 @@
   (boolean
    (re-matches constants/regx-deep-link url)))
 
-(defn open! [url]
-  (log/info "universal-links:  opening " url)
-  (if-let [dapp-url (match-url url browse-regex)]
-    (when (security/safe-link? url)
-      (list-selection/browse-dapp dapp-url))
-    ;; We need to dispatch here, we can't openURL directly
-    ;; as it is opened in safari on iOS
-    (re-frame/dispatch [:handle-universal-link url])))
-
 (fx/defn handle-browse [cofx url]
   (log/info "universal-links: handling browse" url)
   (when (security/safe-link? url)

@@ -21,7 +21,6 @@
             [status-im.utils.platform :as platform]))
 
 (defonce main-stack (navigation/create-stack))
-(defonce modals-stack (navigation/create-stack))
 (defonce bottom-tabs (navigation/create-bottom-tabs))
 
 ;; TODO(Ferossgp):  Add two-pane navigator on chat-stack

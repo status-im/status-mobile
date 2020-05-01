@@ -98,13 +98,6 @@
   {:typography :main-medium
    :color      colors/gray})
 
-(def edit-view-message-container
-  {:border-radius       8
-   :background-color    colors/blue-light
-   :margin-horizontal   72
-   :padding-horizontal  12
-   :padding-vertical    8})
-
 (def finish-label
   {:typography :header
    :text-align :center})
@@ -201,13 +194,6 @@
    :padding           8
    :width             238
    :border-color      colors/gray-lighter})
-
-(defn chat-bubble [tribute-sender?]
-  {:background-color   (if tribute-sender? colors/blue-light colors/blue)
-   :padding-horizontal 12
-   :padding-vertical   6
-   :margin-top         4
-   :border-radius      8})
 
 (def pay-to-chat-bubble
   {:background-color   colors/blue-light

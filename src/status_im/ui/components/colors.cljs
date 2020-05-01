@@ -27,9 +27,6 @@
 
 (def themes {:dark dark :light light})
 
-;; TRANSPARENT
-(def transparent "transparent")
-
 ;; WHITE
 (def white (:white light))
 (def white-persist (:white light))                          ;; this doesn't with theme

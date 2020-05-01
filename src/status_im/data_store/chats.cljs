@@ -11,14 +11,6 @@
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.core :as utils]))
 
-(defn remove-empty-vals
-  "Remove key/value when empty seq or nil"
-  [e]
-  (into {} (remove (fn [[_ v]]
-                     (or (nil? v)
-                         (and (coll? v)
-                              (empty? v)))) e)))
-
 (def one-to-one-chat-type 1)
 (def public-chat-type 2)
 (def private-group-chat-type 3)
@@ -32,9 +24,6 @@
     (mapv
      #(vector % (get event %))
      (sort (keys event))))))
-
-; Build an event id from a message
-(def event-id (comp ethereum/sha3 event->string))
 
 (defn type->rpc [{:keys [public? group-chat] :as chat}]
   (assoc chat :chatType (cond

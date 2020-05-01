@@ -6,7 +6,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.utils.security :as security]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.popup-menu.views :as desktop.pop-up]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.screens.chat.photos :as photos]

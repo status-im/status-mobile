@@ -4,20 +4,6 @@
 
 (def browser {:flex 1})
 
-(styles/def dapp-name
-  {:flex            1
-   :justify-content :center
-   :margin-left     12
-   :android         {:padding-bottom 6}})
-
-(def dapp-name-text
-  {:font-size 16})
-
-(styles/def dapp-text
-  {:color   colors/gray
-   :ios     {:margin-top 4}
-   :android {:font-size 13}})
-
 (defn navbar []
   {:background-color   colors/white
    :height             51
@@ -30,18 +16,6 @@
 
 (def disabled-button
   {:opacity 0.4})
-
-(def forward-button
-  {:margin-left 72})
-
-(def share-button
-  {:margin-right 72})
-
-(def background
-  {:flex             1
-   :background-color colors/gray-lighter
-   :align-items      :center
-   :justify-content  :center})
 
 (def web-view-error
   {:flex             1

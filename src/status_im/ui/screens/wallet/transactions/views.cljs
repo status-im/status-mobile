@@ -133,36 +133,7 @@
                                 #(re-frame/dispatch
                                   [:transactions/fetch-more address]))}}]))]))
 
-(defn- render-item-filter [{:keys [id label checked? on-touch]}]
-  [react/view {:accessibility-label :filter-item}
-   [list/list-item-with-checkbox
-    {:checked?        checked?
-     :on-value-change on-touch}
-    [list/item
-     [list/item-icon (transaction-type->icon id)]
-     [list/item-content
-      [list/item-primary-only {:accessibility-label :filter-name-text}
-       label]]]]])
-
 ;; NOTE: Is this needed?
-(defview filter-history []
-  (letsubs [{:keys [filters on-touch-select-all]}
-            [:wallet.transactions.filters/screen]]
-    [react/view styles/filter-container
-     [topbar/topbar {:title       :t/transactions-filter-title
-                     :navigation  {:label   (i18n/label :t/done)
-                                   :handler #(re-frame/dispatch [:navigate-back])}
-                     :accessories [{:label   :t/transactions-filter-select-all
-                                    :handler on-touch-select-all}]}]
-     [react/view
-      {:style (merge {:background-color colors/white} components.styles/flex)}
-      [list/section-list {:sections [{:title
-                                      (i18n/label :t/type)
-                                      :key       :type
-                                      :render-fn render-item-filter
-                                      :data filters}]
-                          :key-fn   :id}]]]))
-
 (defn details-header
   [date type amount-text currency-text]
   [react/view {:style styles/details-header}

@@ -9,8 +9,6 @@
 (def webview-class
   (reagent/adapt-react-class rn-webview))
 
-(defn module [] (.-WebViewModule ^js (.-NativeModules react-native)))
-
 (defn webview [{:keys [dapp? dapp-name] :as opts}]
   (if (and config/cached-webviews-enabled? platform/android? dapp?)
     (reagent.core/create-class

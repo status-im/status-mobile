@@ -11,13 +11,6 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]))
 
-(defn- js-obj->seq [^js obj]
-  ;; Sometimes the filter will return a single object instead of a collection
-  (if (array? obj)
-    (for [i (range (.-length obj))]
-      (aget obj i))
-    [obj]))
-
 (fx/defn handle-chats [cofx chats]
   (models.chat/ensure-chats cofx chats))
 
@@ -126,9 +119,3 @@
                                      (update-in [:transport/message-ids->confirmations message-id]
                                                 #(or % {:pending-confirmations messages-count})))})]
     (apply fx/merge cofx (conj check-confirmations-fx add-envelope-data))))
-
-(defn- own-info [db]
-  (let [{:keys [name photo-path address]} (:multiaccount db)]
-    {:name          name
-     :profile-image photo-path
-     :address       address}))

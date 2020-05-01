@@ -53,9 +53,6 @@
    :align-items      :center
    :justify-content  :center})
 
-(def installation-status
-  {:color colors/gray})
-
 (def pairing-actions-text
   {:flex        1
    :margin-left 16})

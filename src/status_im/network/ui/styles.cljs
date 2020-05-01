@@ -13,9 +13,6 @@
   {:color   colors/gray
    :ios     {:margin-top 5}})
 
-(def paste-json-text-input
-  {:font-size 17})
-
 (def connect-button-container
   {:margin-top        8
    :margin-bottom     16
@@ -53,30 +50,6 @@
   {:font-size   17
    :ios         {:opacity 0.8}
    :android     {:opacity 0.4}})
-
-(def edit-button-container
-  {:align-items       :center
-   :margin-vertical   16
-   :margin-horizontal 16})
-
-(styles/def edit-button
-  {:height           52
-   :align-items      :center
-   :justify-content  :center
-   :background-color colors/blue
-   :border-radius    8
-   :ios              {:width 343}
-   :android          {:width 328}})
-
-(def edit-button-label
-  {:color     colors/blue
-   :font-size 17})
-
-(def edit-button-description
-  {:text-align :center
-   :color      colors/gray
-   :margin-top 8
-   :font-size  14})
 
 (defn network-icon [connected? size]
   {:width            size

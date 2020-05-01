@@ -20,12 +20,6 @@
    (input-container)
    {:flex 1}))
 
-(def button-container
-  {:justify-content    :center
-   :border-radius      components.styles/border-radius
-   :padding-horizontal 16
-   :height             52})
-
 (styles/def input
   {:flex               1
    :height             52

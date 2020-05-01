@@ -51,8 +51,6 @@
                              :type       type
                              :path       path}])))))
 
-(def dec-pass-error "could not decrypt key with given password")
-
 (defn normalize-path [path]
   (if (string/starts-with? path "m/")
     (str constants/path-wallet-root

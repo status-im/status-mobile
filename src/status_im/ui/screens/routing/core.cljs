@@ -12,8 +12,6 @@
             ["@react-navigation/bottom-tabs" :refer (createBottomTabNavigator)]
             [oops.core :refer [ocall oget]]))
 
-(defonce native react-navigation)
-
 (def navigation-container (reagent/adapt-react-class NavigationContainer))
 
 (def use-focus-effect useFocusEffect)

@@ -99,18 +99,6 @@
 (fx/defn init [cofx]
   {:pairing/get-our-installations (waku/enabled? cofx)})
 
-(defn handle-bundles-added [{:keys [db] :as cofx} bundle]
-  (let [installation-id  (:installationID bundle)]
-    (when
-     (and (= (:identity bundle)
-             (multiaccounts.model/current-public-key cofx))
-          (not= (get-in db [:multiaccount :installation-id]) installation-id))
-      (fx/merge cofx
-                (init)
-                #(when-not (or (:pairing/prompt-user-pop-up db)
-                               (= :installations (:view-id db)))
-                   (prompt-user-on-new-installation %))))))
-
 (fx/defn enable [{:keys [db]} installation-id]
   {:db (assoc-in db
                  [:pairing/installations installation-id :enabled?]

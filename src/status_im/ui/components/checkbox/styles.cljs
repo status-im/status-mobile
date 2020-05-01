@@ -11,7 +11,3 @@
    :border-radius   2
    :width           18
    :height          18})
-
-(def check-icon
-  {:width  16
-   :height 16})

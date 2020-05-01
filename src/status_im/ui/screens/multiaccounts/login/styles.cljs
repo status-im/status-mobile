@@ -54,13 +54,6 @@
    :android    {:margin-top  11
                 :padding-top 13}})
 
-(def save-password-unavailable
-  {:margin-top 8
-   :width "100%"
-   :text-align :center
-   :flex-direction :row
-   :align-items :center})
-
 (def save-password-unavailable-android
   {:margin-top 8
    :width "100%"

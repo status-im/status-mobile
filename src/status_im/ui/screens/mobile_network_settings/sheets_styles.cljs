@@ -19,16 +19,6 @@
   {:color       colors/gray
    :text-align  :center})
 
-(def network-icon
-  {:title-color     :blue
-   :icon-color      :blue
-   :icon-background :blue-light})
-
-(def cancel-icon
-  {:title-color     :red
-   :icon-color      :red
-   :icon-background :red-light})
-
 (def separator
   {:background-color colors/gray-lighter
    :margin-left      72

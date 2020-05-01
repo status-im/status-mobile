@@ -118,23 +118,6 @@
 (def pin-retries 3)
 (def puk-retries 5)
 
-(defview create-pin []
-  (letsubs [pin [:hardwallet/pin]
-            step [:hardwallet/pin-enter-step]
-            status [:hardwallet/pin-status]
-            error-label [:hardwallet/pin-error-label]]
-    [pin-view {:pin               pin
-               :title-label       (case step
-                                    :confirmation :t/repeat-pin
-                                    :current :t/current-pin
-                                    :t/create-a-pin)
-               :description-label (case step
-                                    :current :t/current-pin-description
-                                    :t/create-pin-description)
-               :step              step
-               :status            status
-               :error-label       error-label}]))
-
 (defview enter-pin []
   (letsubs [pin [:hardwallet/pin]
             step [:hardwallet/pin-enter-step]

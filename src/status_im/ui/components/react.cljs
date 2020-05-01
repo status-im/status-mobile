@@ -31,9 +31,6 @@
 (def text-class (reagent/adapt-react-class (.-Text react-native)))
 (def text-input-class (reagent/adapt-react-class (.-TextInput react-native)))
 (def image-class (reagent/adapt-react-class (.-Image react-native)))
-(def picker-class (reagent/adapt-react-class (.-Picker react-native)))
-(def picker-item-class (reagent/adapt-react-class (.-Item (.-Picker react-native))))
-
 (defn valid-source? [source]
   (or (not (map? source))
       (not (contains? source :uri))
@@ -61,8 +58,6 @@
   [activity-indicator {:color   (if color color :colors/gray)
                        :ios     {:size :small}
                        :android {:size :16}}])
-
-(def modal (reagent/adapt-react-class (.-Modal react-native)))
 
 (def pan-responder (.-PanResponder react-native))
 (def animated (.-Animated react-native))
@@ -162,14 +157,6 @@
   [{:keys [style key]}]
   [text {:style  style} (i18n/label key)])
 
-(defn icon
-  ([n] (icon n {:width  24
-                :height 24}))
-  ([n style]
-   [image {:source     {:uri (keyword (str "icon_" (name n)))}
-           :resizeMode "contain"
-           :style      style}]))
-
 (defn touchable-opacity [props content]
   [touchable-opacity-class props content])
 
@@ -185,20 +172,6 @@
 
 (defn get-dimensions [name]
   (js->clj (.get ^js dimensions name) :keywordize-keys true))
-
-(defn list-item [component]
-  (reagent/as-element component))
-
-(defn value->picker-item [{:keys [value label]}]
-  [picker-item-class {:value (or value "") :label (or label value "")}])
-
-(defn picker [{:keys [style on-change selected enabled data]}]
-  (into
-   [picker-class (merge (when style {:style style})
-                        (when enabled {:enabled enabled})
-                        (when on-change {:on-value-change on-change})
-                        (when selected {:selected-value selected}))]
-   (map value->picker-item data)))
 
 ;; Image picker
 (defn show-access-error [o]
@@ -258,5 +231,3 @@
 (def safe-area-consumer (reagent/adapt-react-class SafeAreaConsumer))
 
 (def safe-area-view (reagent/adapt-react-class SafeAreaView))
-
-(def touchable-without-feedback-gesture (reagent/adapt-react-class TouchableWithoutFeedback))

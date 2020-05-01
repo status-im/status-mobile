@@ -5,13 +5,6 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [taoensso.timbre :as log]))
 
-(defn side-effect!
-  "Middleware for handlers that will not affect db."
-  [handler]
-  (fn [db params]
-    (handler db params)
-    db))
-
 (defn- pretty-print-event [ctx]
   (let [[first _] (get-coeffect ctx :event)]
     first))

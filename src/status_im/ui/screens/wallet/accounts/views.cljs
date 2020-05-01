@@ -17,8 +17,6 @@
             [status-im.wallet.utils :as wallet.utils])
   (:require-macros [status-im.utils.views :as views]))
 
-(def state (reagent/atom {:tab :assets}))
-
 (views/defview account-card [{:keys [name color address type] :as account}]
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:account-portfolio-value address]

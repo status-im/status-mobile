@@ -9,15 +9,6 @@
   (is (= (u/truncate-str "Long string" 11) "Long string")) ; threshold is the same as string length
   (is (= (u/truncate-str "Long string" 20) "Long string"))) ; threshold is more then string length
 
-(deftest unread-messages-count-test
-  (is (= (uu/unread-messages-count 2) "2"))
-  (is (= (uu/unread-messages-count 12) "12"))
-  (is (= (uu/unread-messages-count 400) "400"))
-  (is (= (uu/unread-messages-count 1220) "1K+"))
-  (is (= (uu/unread-messages-count 4353) "4K+"))
-  (is (= (uu/unread-messages-count 4999) "4K+"))
-  (is (= (uu/unread-messages-count 11000) "10K+")))
-
 (deftest clean-text-test
   (is (= (u/clean-text "Hello! \n\r") "Hello!")
       (= (u/clean-text "Hello!") "Hello!")))

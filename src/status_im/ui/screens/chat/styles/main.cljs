@@ -25,29 +25,8 @@
    :margin-top 4
    :color      colors/text-gray})
 
-(def overlay-highlight
-  {:flex 1})
-
 ;; this map looks a bit strange
 ;; but this way of setting elevation seems to be the only way to set z-index (in RN 0.30)
-(def bottom-info-overlay
-  {:position         :absolute
-   :top              -16
-   :bottom           -16
-   :left             -16
-   :right            -16
-   :background-color "#00000055"
-   :elevation        8})
-
-(defn bottom-info-container [height]
-  {:background-color colors/white
-   :elevation        2
-   :position         :absolute
-   :bottom           16
-   :left             16
-   :right            16
-   :height           height})
-
 (defn add-contact []
   {:flex-direction      :row
    :align-items         :center

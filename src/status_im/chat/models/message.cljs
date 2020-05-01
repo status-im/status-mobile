@@ -29,27 +29,6 @@
           (:line-count content)))
     (assoc :should-collapse? true)))
 
-(defn system-message? [{:keys [message-type]}]
-  (= constants/message-type-private-group-system-message message-type))
-
-(defn build-desktop-notification
-  [{:keys [db] :as cofx} {:keys [chat-id timestamp content from] :as message}]
-  (let [{:keys [group-chat] :as chat} (get-in db [:chats chat-id])
-        contact-name (get-in db [:contacts/contacts from :name]
-                             (:name (contact.db/public-key->new-contact from)))
-        chat-name        (if group-chat
-                           (chat.db/group-chat-name chat)
-                           contact-name)
-        ;; contact name and chat-name are the same in 1-1 chats
-        shown-chat-name   (when group-chat chat-name)
-        timestamp'        (when-not (< (time/seconds-ago (time/to-date timestamp)) 15)
-                            (str " @ " (time/to-short-str timestamp)))
-        body-first-line   (when (or shown-chat-name timestamp')
-                            (str shown-chat-name timestamp' ":\n"))]
-    {:title       contact-name
-     :body        (str body-first-line (:text content))
-     :prioritary? (not (chat-model/multi-user-chat? cofx chat-id))}))
-
 (fx/defn rebuild-message-list
   [{:keys [db]} chat-id]
   {:db (assoc-in db [:chats chat-id :message-list]

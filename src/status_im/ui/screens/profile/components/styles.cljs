@@ -8,10 +8,6 @@
    :justify-content :flex-start
    :align-items     :center})
 
-(def profile-header-edit
-  {:flex-direction  :column
-   :justify-content :center})
-
 (def profile-name-text
   {:typography  :header
    :line-height 28
@@ -40,9 +36,6 @@
    :margin-left     16})
 
 ;; settings items elements
-
-(def settings-item-separator
-  {:margin-left 16})
 
 (def settings-item
   {:padding-left   16
@@ -82,16 +75,7 @@
    :padding-right 10
    :color         colors/gray})
 
-(def settings-title
-  {:color         colors/gray
-   :margin-left   16
-   :margin-top    18
-   :font-size     14})
-
 ;; shared profile styles
-
-(def modal-menu
-  {:align-items :center})
 
 (def profile
   {:flex           1

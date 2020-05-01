@@ -16,10 +16,6 @@
   [react/view (merge styles/separator-wrapper wrapper-style)
    [react/view (merge styles/separator style)]])
 
-;;TODO DEPRECATED, use status-im.ui.components.list-item.views
-(defn list-separator []
-  [separator styles/list-separator])
-
 ;;TODO DEPRECATED, use status-im.ui.components.button
 (defn bottom-button [{:keys [accessibility-label
                              label

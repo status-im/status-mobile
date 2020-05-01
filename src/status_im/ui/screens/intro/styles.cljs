@@ -6,10 +6,6 @@
    :justify-content    :flex-end
    :margin-bottom      12})
 
-(def intro-logo-container
-  {:align-items     :center
-   :justify-content :center})
-
 (defn dot-selector [n]
   (let [diameter 6
         interval 10]
@@ -28,10 +24,6 @@
    :height           6
    :border-radius    3})
 
-(def welcome-image-container
-  {:align-items :center
-   :margin-top  42})
-
 (def wizard-title
   {:typography    :header
    :text-align    :center
@@ -39,11 +31,6 @@
 
 (def wizard-text
   {:color       colors/gray
-   :text-align  :center})
-
-(def welcome-text
-  {:typography  :header
-   :margin-top  32
    :text-align  :center})
 
 (def welcome-text-bottom-note
@@ -72,15 +59,6 @@
    :border-width  1
    :border-color  colors/black-transparent})
 
-(def welcome-text-description
-  {:margin-top        8
-   :text-align        :center
-   :margin-horizontal 32
-   :color             colors/gray})
-
-(def intro-logo
-  {:size 111})
-
 (defn password-text-input [width]
   {:typography :header
    :width      width})
@@ -100,10 +78,6 @@
 
 (def disabled-bottom-button-text
   {:color colors/gray-transparent-40})
-
-(def bottom-button-container
-  {:margin-bottom 24
-   :margin-top    16})
 
 (defn bottom-arrow []
   {:flex-direction   :row

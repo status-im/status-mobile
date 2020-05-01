@@ -2,10 +2,6 @@
   (:require [status-im.ui.components.colors :as colors]
             [status-im.utils.styles :as styles]))
 
-(def container
-  {:flex             1
-   :background-color colors/white})
-
 (styles/def pin-container
   {:flex            1
    :flex-direction  :column
@@ -87,6 +83,3 @@
 (def numpad-button-text
   {:font-size 22
    :color     colors/blue})
-
-(def numpad-empty-button-text
-  {:color colors/white})

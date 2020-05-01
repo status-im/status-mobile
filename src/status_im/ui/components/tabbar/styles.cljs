@@ -14,9 +14,6 @@
 
 (def tabs-diff (- tabs-height minimized-tabs-height))
 
-(def minimized-tab-ratio
-  (/ tabs-height  minimized-tabs-height))
-
 (def counter
   {:right    0
    :top      0

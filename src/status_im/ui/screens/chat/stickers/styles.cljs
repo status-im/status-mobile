@@ -12,9 +12,3 @@
    :border-radius     (/ icon-size 2)
    :align-items       :center
    :justify-content   :center})
-
-(defn stickers-panel-height []
-  (cond
-    platform/iphone-x? 299
-    platform/ios? 258
-    :else 272))

@@ -38,20 +38,10 @@
                                   props)
      text]]))
 
-(defn nav-clear-text
-  ([text] (nav-clear-text nil text))
-  ([props text]
-   (nav-text (merge props styles/item-text-white-background) text)))
-
-(def nav-back-home [nav-button actions/home-back])
 (def default-nav-back [nav-button actions/default-back])
 (def default-nav-close [nav-button actions/default-close])
 
 ;; Content
-
-(defn content-wrapper [content]
-  [react/view {:style {:flex 1}}
-   content])
 
 (defn content-title
   ([title] (content-title nil title))

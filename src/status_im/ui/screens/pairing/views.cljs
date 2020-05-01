@@ -74,20 +74,6 @@
      [react/view
       [react/text (i18n/label :t/pair-this-device-description)]]]]])
 
-(defn sync-devices []
-  [react/touchable-highlight {:on-press synchronize-installations!
-                              :style styles/pair-this-device}
-   [react/view {:style styles/pair-this-device-actions}
-    [react/view
-     [react/view (styles/pairing-button true)
-      [icons/icon :main-icons/wnode (icon-style (styles/pairing-button-icon true))]]]
-    [react/view {:style styles/pairing-actions-text}
-     [react/view
-      [react/text {:style styles/pair-this-device-title}
-       (if @syncing
-         (i18n/label :t/syncing-devices)
-         (i18n/label :t/sync-all-devices))]]]]])
-
 (defn your-device [{:keys [installation-id name device-type]}]
   [react/view {:style styles/installation-item}
    [react/view {:style (styles/pairing-button true)}

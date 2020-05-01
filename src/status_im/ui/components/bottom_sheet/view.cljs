@@ -50,18 +50,6 @@
    (<= min-velocity vy)
    (> (* cancellation-coefficient height) (- height dy))))
 
-(defn- cancel
-  ([opts] (cancel opts nil))
-  ([{:keys [height bottom-value show-sheet? opacity-value]} callback]
-   (animate {:bottom            bottom-value
-             :new-bottom-value  height
-             :opacity           opacity-value
-             :new-opacity-value 0
-             :duration          cancellation-animation-duration
-             :callback          #(do (reset! show-sheet? false)
-                                     (animation/set-value bottom-value height)
-                                     (when (fn? callback) (callback)))})))
-
 (defn- on-release
   [{:keys [height bottom-value close-sheet opacity-value]}]
   (fn [_ state]

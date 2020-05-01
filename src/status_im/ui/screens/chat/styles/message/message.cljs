@@ -55,12 +55,6 @@
                                    :bottom                9 ; 6 Bubble bottom, 3 message baseline
                                    (if rtl? :left :right) 12})))
 
-(def selected-message
-  {:margin-top  18
-   :margin-left 40
-   :font-size   12
-   :color       colors/text-gray})
-
 (defn message-wrapper-base [message]
   (merge {:flex-direction   :column}
          (last-message-padding message)))
@@ -125,12 +119,6 @@
 (def message-activity-indicator
   {:padding-top 4})
 
-(defn text-message
-  [collapsed? outgoing]
-  (assoc (style-message-text outgoing)
-         :line-height 22
-         :margin-bottom (if collapsed? 2 0)))
-
 (defn emoji-message
   [{:keys [incoming-group]}]
   {:font-size    28
@@ -165,10 +153,6 @@
    (when (= content-type constants/content-type-emoji)
      {:flex-direction :row})))
 
-(def play-image
-  {:width  33
-   :height 33})
-
 (def status-container
   {:padding-horizontal 5})
 
@@ -176,10 +160,6 @@
   {:margin-top  9
    :font-size   14
    :color       colors/gray})
-
-(defn message-container [window-width]
-  {:position :absolute
-   :width    window-width})
 
 (defn message-author-name [chosen?]
   {:font-size           (if chosen? 13 12)

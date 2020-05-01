@@ -114,11 +114,6 @@
          [react/view {:style (merge style styles/item-checkbox)}
           [radio/radio (:checked? props)]])])
 
-(def item-icon-forward
-  [item-icon {:icon      :main-icons/next
-              :style     {:width 12}
-              :icon-opts {:color colors/white}}])
-
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn big-list-item
   [{:keys [style text text-color text-style subtext value action-fn active? destructive? hide-chevron?
@@ -183,10 +178,6 @@
 (def base-separator [react/view styles/base-separator])
 
 (def default-separator [react/view styles/separator])
-
-(def default-header [react/view styles/list-header-footer-spacing])
-
-(def default-footer [react/view styles/list-header-footer-spacing])
 
 (defn- base-list-props
   [{:keys [key-fn render-fn empty-component header footer separator default-separator?]}]
@@ -259,10 +250,3 @@
           {:sections            (clj->js (map wrap-per-section-render-fn sections))
            :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)
            :style               style})])
-
-;;TODO DEPRECATED, use status-im.ui.components.list-item.views
-(defn list-with-label [{:keys [style]} label list]
-  [react/view (merge styles/list-with-label-wrapper style)
-   [react/text {:style styles/label}
-    label]
-   list])

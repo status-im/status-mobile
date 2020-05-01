@@ -16,30 +16,6 @@
             [status-im.ui.components.topbar :as topbar]
             [reagent.core :as reagent]))
 
-(defn welcome []
-  [react/view {:flex            1
-               :justify-content :space-between
-               :align-items     :center
-               :flex-direction  :column}
-   [react/view]
-   [react/view {:align-items :center}
-    [react/image {:source      (resources/get-image :status-logo)
-                  :resize-mode :center
-                  :style       {:width  64
-                                :height 64}}]
-    [react/view {:margin-top 24}
-     [react/i18n-text {:style {:typography :header
-                               :text-align :center}
-                       :key   :welcome-to-status}]]
-    [react/view {:margin-top 16}
-     [react/i18n-text {:style {:text-align        :center
-                               :margin-horizontal 39
-                               :color             colors/gray}
-                       :key   :welcome-screen-text}]]]
-   [react/view {:align-items :center :margin-bottom 52}
-    [react/activity-indicator {:size      :large
-                               :animating true}]]])
-
 ;; NOTE(Ferossgp): Seems like it should be in popover
 (defn blank []
   [react/view {:flex             1

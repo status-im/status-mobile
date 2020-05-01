@@ -42,10 +42,6 @@
   (seq (clojure.set/difference (:chat-ids new-mailserver-topic)
                                (:chat-ids previous-mailserver-topic))))
 
-(defn new-filter-ids? [previous-mailserver-topic new-mailserver-topic]
-  (seq (clojure.set/difference (:chat-ids new-mailserver-topic)
-                               (:chat-ids previous-mailserver-topic))))
-
 (defn merge-topic
   "Calculate last-request and merge chat-ids keeping the old ones and new ones"
   [old-mailserver-topic

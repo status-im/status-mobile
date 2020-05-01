@@ -10,28 +10,6 @@
   (re-frame/dispatch [:bottom-sheet/hide-sheet])
   (re-frame/dispatch event))
 
-(views/defview add-contact []
-  (views/letsubs [{:keys [public-key]} [:bottom-sheet/options]]
-    [react/view
-     [react/text {:style styles/sheet-text}
-      (i18n/label :t/add-to-contacts-text)]
-     [list-item/list-item
-      {:theme               :action
-       :title               :t/add-to-contacts
-       :icon                :main-icons/add-contact
-       :on-press            #(hide-sheet-and-dispatch [:contact.ui/add-to-contact-pressed public-key])}]]))
-
-(views/defview remove-contact []
-  (views/letsubs [contact [:bottom-sheet/options]]
-    [react/view
-     [react/text {:style styles/sheet-text}
-      (i18n/label :t/remove-from-contacts-text)]
-     [list-item/list-item
-      {:theme               :action-destructive
-       :title               :t/remove-from-contacts
-       :icon                :main-icons/remove-contact
-       :on-press            #(hide-sheet-and-dispatch [:contact.ui/remove-contact-pressed contact])}]]))
-
 (views/defview block-contact []
   (views/letsubs [{:keys [public-key]} [:bottom-sheet/options]]
     [react/view

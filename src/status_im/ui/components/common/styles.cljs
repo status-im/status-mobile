@@ -11,18 +11,6 @@
              :background-color colors/black-transparent
              :opacity          0.5}})
 
-(def list-separator
-  {:margin-left 72})
-
-(def network-container
-  {:flex-direction     :row
-   :padding-horizontal 13
-   :padding-vertical   11
-   :align-items        :center})
-
-(def label-action-text
-  {:color colors/blue})
-
 (defn logo-container [size]
   {:width            size
    :height           size

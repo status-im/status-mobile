@@ -19,11 +19,6 @@
 (def fleet-item-name-text
   {:font-size 17})
 
-(def fleet-item-connected-text
-  {:color      colors/gray
-   :font-size  14
-   :margin-top 6})
-
 (defn fleet-icon-container [current?]
   {:width            40
    :height           40
