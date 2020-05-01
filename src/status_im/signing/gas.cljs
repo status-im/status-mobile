@@ -8,6 +8,8 @@
 
 (def min-gas-price-wei ^js (money/bignumber 1))
 
+(def min-gas-units ^js (money/bignumber 21000))
+
 (defmulti get-error-label-key (fn [type _] type))
 
 (defmethod get-error-label-key :gasPrice [_ value]
@@ -19,7 +21,7 @@
 (defmethod get-error-label-key :gas [_ ^js value]
   (cond
     (not value) :t/invalid-number
-    (.lt value ^js (money/bignumber 1)) :t/invalid-number
+    (.lt value min-gas-units) :t/wallet-send-min-units
     (-> value .decimalPlaces pos?) :t/invalid-number))
 
 (defmethod get-error-label-key :default [_ value]

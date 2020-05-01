@@ -331,6 +331,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5359)
     @marks.critical
+    @marks.skip
     def test_modify_transaction_fee_values(self):
         sender = transaction_senders['U']
         sign_in_view = SignInView(self.driver)
@@ -350,17 +351,37 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.done_button.click()
         send_transaction.sign_transaction_button.click()
         send_transaction.network_fee_button.click_until_presence_of_element(send_transaction.gas_limit_input)
-        send_transaction.gas_limit_input.clear()
-        send_transaction.gas_limit_input.set_value('1')
+        gas_prices = {
+            "1.0000000009": "Invalid number",
+            "0.0000000009": "Min 1 wei",
+            "-1": "Min 1 wei"
+        }
+        gas_limit = {
+            "20999": "Min 21000 units",
+            "21000.1": "Invalid number",
+            "-21000": "Min 21000 units"
+        }
+        for key in gas_prices:
+            send_transaction.gas_price_input.clear()
+            send_transaction.gas_price_input.send_keys(key)
+            if not send_transaction.element_by_text(gas_prices[key]).is_element_displayed():
+                self.errors.append("With %s Gas Price value there is no %s error displayed" % key, gas_prices[key])
         send_transaction.gas_price_input.clear()
-        send_transaction.gas_price_input.send_keys('1')
+        send_transaction.gas_price_input.send_keys('10')
+
+        for key in gas_limit:
+            send_transaction.gas_price_input.clear()
+            send_transaction.gas_price_input.send_keys(key)
+            if not send_transaction.element_by_text(gas_limit[key]).is_element_displayed():
+                self.errors.append("With %s Gas Limit value there is no %s error displayed" % key, gas_prices[key])
+        send_transaction.gas_price_input.clear()
+        send_transaction.gas_price_input.send_keys('21000')
+
         send_transaction.update_fee_button.click_until_absense_of_element(send_transaction.update_fee_button)
         send_transaction.sign_with_password.click_until_presence_of_element(send_transaction.enter_password_input)
         send_transaction.enter_password_input.send_keys(common_password)
         send_transaction.sign_button.click()
-        send_transaction.element_by_text('intrinsic gas too low', 'text').wait_for_visibility_of_element(80)
         send_transaction.ok_button.click()
-
 
     @marks.testrail_id(5314)
     @marks.critical

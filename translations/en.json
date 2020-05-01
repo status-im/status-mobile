@@ -1046,6 +1046,7 @@
     "wallet-manage-assets": "Manage assets",
     "wallet-request": "Request",
     "wallet-send": "Send",
+    "wallet-send-min-units": "Min 21000 units",
     "wallet-send-min-wei": "Min 1 wei",
     "wallet-settings": "Wallet settings",
     "wallet-total-value": "Total value",
