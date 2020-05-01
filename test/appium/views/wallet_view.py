@@ -492,7 +492,7 @@ class WalletView(BaseView):
         self.wallet_account_by_name(account_name).click()
         self.receive_transaction_button.click()
         address = self.address_text.text
-        self.back_button.click()
+        self.close_share_popup()
         return address
 
     def wallet_account_by_name(self, account_name):
