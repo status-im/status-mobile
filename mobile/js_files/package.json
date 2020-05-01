@@ -10,6 +10,7 @@
     "app:android": "react-native run-android"
   },
   "dependencies": {
+    "@react-native-community/clipboard": "^1.2.2",
     "@react-native-community/masked-view": "^0.1.6",
     "@react-native-community/netinfo": "^4.4.0",
     "@react-navigation/bottom-tabs": "^5.1.1",
@@ -22,13 +23,12 @@
     "emojilib": "^2.4.0",
     "eth-phishing-detect": "^1.1.13",
     "functional-red-black-tree": "^1.0.1",
-    "hermes-engine": "0.2.1",
     "hi-base32": "^0.5.0",
     "i18n-js": "^3.3.0",
     "qrcode": "^1.4.1",
-    "react": "16.9.0",
+    "react": "16.11.0",
     "react-dom": "^16.4.2",
-    "react-native": "0.61.5",
+    "react-native": "0.62.2",
     "react-native-background-timer": "^2.1.1",
     "react-native-camera": "^3.3.3",
     "react-native-config": "git+https://github.com/status-im/react-native-config.git#v0.11.2-3-status",

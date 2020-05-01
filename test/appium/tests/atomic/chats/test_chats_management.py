@@ -135,7 +135,8 @@ class TestChatManagement(SingleDeviceTestCase):
         contacts_view.public_key_edit_box.paste_text_from_clipboard()
         if contacts_view.public_key_edit_box.text != public_key:
             self.driver.fail('Public key is not pasted from clipboard')
-        contacts_view.confirm()
+        contacts_view.public_key_edit_box.click()
+        contacts_view.confirm_until_presence_of_element(chat.chat_message_input)
         contacts_view.get_back_to_home_view()
         if not home.get_chat(basic_user['username']).is_element_present():
             self.driver.fail("No chat open in home view")

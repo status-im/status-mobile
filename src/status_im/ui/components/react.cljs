@@ -11,6 +11,7 @@
             ["react-native-gesture-handler" :refer (TouchableWithoutFeedback)]
             ["react-native-safe-area-context" :as safe-area-context
              :refer (SafeAreaView SafeAreaProvider SafeAreaConsumer)]
+            ["@react-native-community/clipboard" :default Clipboard]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.typography :as typography]))
 
@@ -200,10 +201,10 @@
   (.-Share react-native))
 
 (defn copy-to-clipboard [text]
-  (.setString  ^js (.-Clipboard react-native) text))
+  (.setString ^js Clipboard text))
 
 (defn get-from-clipboard [clbk]
-  (let [clipboard-contents (.getString  ^js (.-Clipboard react-native))]
+  (let [clipboard-contents (.getString  ^js Clipboard)]
     (.then clipboard-contents #(clbk %))))
 
 ;; KeyboardAvoidingView

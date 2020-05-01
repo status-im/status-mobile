@@ -1,4 +1,3 @@
-import time
 
 import emoji
 import random
@@ -216,11 +215,11 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         tag_message = '#spectentur'
         chat.send_message(tag_message)
         chat.element_starts_with_text(tag_message).click()
-        time.sleep(4)
+        chat.element_by_text_part('montagne-angerufen').wait_for_invisibility_of_element()
         if not chat.user_name_text.text == tag_message:
             self.driver.fail('Could not redirect a user to a public chat tapping the tag message.')
-        home = chat.get_back_to_home_view()
-        if not home.chat_name_text.text == tag_message:
+        home_view = chat.get_back_to_home_view()
+        if not home_view.chat_name_text.text == tag_message:
             self.driver.fail('Could not find the public chat in user chat list.')
 
     @marks.testrail_id(6205)

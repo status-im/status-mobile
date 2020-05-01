@@ -173,10 +173,10 @@ let
         '';
         fixupPhase = ''
           # Patch prepareJSC so that it doesn't subsequently try to build NDK libs
-          substituteInPlace $out/project/node_modules/react-native/ReactAndroid/build.gradle \
-            --replace \
-              'packageReactNdkLibs(dependsOn: buildReactNdkLib, ' \
-              'packageReactNdkLibs('
+          #substituteInPlace $out/project/node_modules/react-native/ReactAndroid/build.gradle \
+          #  --replace \
+          #    'packageReactNdkLibs(dependsOn: buildReactNdkLib, ' \
+          #    'packageReactNdkLibs('
         '';
 
         # The ELF types are incompatible with the host platform, so let's not even try
