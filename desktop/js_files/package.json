@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "prepare": "patch-package"
+    "prepare": "yarn run snyk-protect && patch-package",
+    "snyk-protect": "snyk protect"
   },
   "dependencies": {
     "assert": "^1.4.1",
@@ -43,7 +44,8 @@
     "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#0.33.16-status-rn049-desktop",
     "react-navigation": "^3.11.0",
     "status-conan": "git+https://github.com/status-im/status-conan.git#v1.0.0",
-    "web3-utils": "^1.2.4"
+    "web3-utils": "^1.2.4",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@babel/core": "^7.7.2",
@@ -212,5 +214,6 @@
     "../../../../../desktop/resources/user_profile_1.png",
     "../../../../../desktop/resources/wallet.png",
     "../../../../../desktop/resources/warning.png"
-  ]
+  ],
+  "snyk": true
 }
