@@ -17,7 +17,7 @@ GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 current_dir=$(cd "${BASH_SOURCE%/*}" && pwd)
 inputs_file_path="${current_dir}/maven-inputs.txt"
 output_nix_file_path="${current_dir}/maven-sources.nix"
-inputs2nix=$(realpath --relative-to="${current_dir}" "${GIT_ROOT}/nix/tools/maven/maven-inputs2nix.sh")
+inputs2nix="${GIT_ROOT}/nix/mobile/android/maven-and-npm-deps/maven/maven-inputs2nix.sh"
 
 echo "Regenerating Nix files, this process should take about 90 minutes"
 nix-shell --run "set -Eeuo pipefail; LC_ALL=C ${current_dir}/fetch-maven-deps.sh | sort -u -o ${inputs_file_path}" \
