@@ -54,7 +54,7 @@
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   _blankView = [[UIView alloc]initWithFrame:self.window.frame];
-  _blankView.backgroundColor = [UIColor systemBackgroundColor];
+  _blankView.backgroundColor = [UIColor whiteColor];
   _blankView.alpha = 0;
 
   UIViewController *rootViewController = [UIViewController new];
