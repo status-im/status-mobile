@@ -6461,9 +6461,9 @@ react-native-camera@^3.3.3:
   dependencies:
     prop-types "^15.6.2"
 
-"react-native-config@git+https://github.com/status-im/react-native-config.git#0.11.2-1-status":
+"react-native-config@git+https://github.com/status-im/react-native-config.git#v0.11.2-3-status":
   version "0.11.2"
-  resolved "git+https://github.com/status-im/react-native-config.git#f48d41012f812e1fc9dd6a78e874e3271e5e385e"
+  resolved "git+https://github.com/status-im/react-native-config.git#248bb4454bf4c51e6e4111d0f8399d078ce79d26"
 
 react-native-dark-mode@^0.2.2:
   version "0.2.2"
@@ -6514,18 +6514,18 @@ react-native-image-crop-picker@^0.25.0:
   resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.25.3.tgz#46ee28b4a0a187240e388bd28a44cf8c274caec6"
   integrity sha512-jQ416WXEiEQ3w057QOYU++8/mDqYb2A/AGZY/NwR5eKda/z8a4wncWKj7oF9KBAHNKE1TmPrl9Rm0GZ0Jrzp6A==
 
-"react-native-image-resizer@git+https://github.com/status-im/react-native-image-resizer.git#1.0.0-1-status":
+"react-native-image-resizer@git+https://github.com/status-im/react-native-image-resizer.git#1.0.0-2-status":
   version "1.0.0"
-  resolved "git+https://github.com/status-im/react-native-image-resizer.git#dcbe2e1c461b0dbc265435bfb873f0257c1a1c4a"
+  resolved "git+https://github.com/status-im/react-native-image-resizer.git#c997aeb136ff370c9c4cff20c594fda8602f1841"
 
 react-native-iphone-x-helper@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.2.1.tgz#645e2ffbbb49e80844bb4cbbe34a126fda1e6772"
   integrity sha512-/VbpIEp8tSNNHIvstuA3Swx610whci1Zpc9mqNkqn14DkMbw+ORviln2u0XyHG1kPvvwTNGZY6QpeFwxYaSdbQ==
 
-"react-native-keychain@git+https://github.com/status-im/react-native-keychain.git#v.3.0.0-status":
+"react-native-keychain@git+https://github.com/status-im/react-native-keychain.git#v.3.0.0-5-status":
   version "3.0.0-rc.3"
-  resolved "git+https://github.com/status-im/react-native-keychain.git#43e5512cabb8ee064fd9e503be943dcf2c7d7669"
+  resolved "git+https://github.com/status-im/react-native-keychain.git#9b0d9b283116947cf125e12b6d1d17203604f0d9"
 
 react-native-languages@^3.0.2:
   version "3.0.2"
