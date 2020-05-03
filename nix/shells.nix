@@ -18,7 +18,8 @@ let
 
     buildInputs = with pkgs; lib.unique ([
       # core utilities that should always be present in a shell
-      bash curl wget file unzip flock git gnumake jq ncurses
+      bash curl wget file unzip flock
+      git gnumake jq ncurses gnugrep
       # build specific utilities
       clojure maven watchman
       # other nice to have stuff
