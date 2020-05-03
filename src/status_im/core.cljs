@@ -22,12 +22,14 @@
 (set! interop/next-tick js/setTimeout)
 (set! batching/fake-raf #(js/setTimeout % 0))
 
-(if js/goog.DEBUG
-  (.ignoreWarnings (.-YellowBox ^js rn)
-                   #js ["re-frame: overwriting"
-                        "Warning: componentWillMount has been renamed, and is not recommended for use. See https://fb.me/react-async-component-lifecycle-hooks for details."
-                        "Warning: componentWillUpdate has been renamed, and is not recommended for use. See https://fb.me/react-async-component-lifecycle-hooks for details."])
-  (aset js/console "disableYellowBox" true))
+(aset js/console "disableYellowBox" true)
+;; TODO we must fix all warnings, currently it's just a noise
+#_(if js/goog.DEBUG
+    (.ignoreWarnings (.-YellowBox ^js rn)
+                     #js ["re-frame: overwriting"
+                          "Warning: componentWillMount has been renamed, and is not recommended for use. See https://fb.me/react-async-component-lifecycle-hooks for details."
+                          "Warning: componentWillUpdate has been renamed, and is not recommended for use. See https://fb.me/react-async-component-lifecycle-hooks for details."])
+    (aset js/console "disableYellowBox" true))
 
 (def app-registry (.-AppRegistry rn))
 (def splash-screen (-> rn .-NativeModules .-SplashScreen))

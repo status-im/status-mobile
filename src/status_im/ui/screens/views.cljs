@@ -14,7 +14,6 @@
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.popover.views :as popover]
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
-            [status-im.utils.dimensions :as dimensions]
             [status-im.ui.screens.wallet.send.views :as wallet]
             [status-im.ui.components.tabbar.core :as tabbar]
             [status-im.ui.components.status-bar.view :as statusbar]
@@ -25,7 +24,8 @@
             status-im.ui.screens.wallet.collectibles.kudos.views
             [status-im.ui.components.colors :as colors]
             [status-im.hardwallet.test-menu :as hardwallet.test-menu]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [status-im.reloader :as reloader]))
 
 (defview bottom-sheet []
   (letsubs [{:keys [show? view]} [:bottom-sheet]]
@@ -92,42 +92,31 @@
 (defonce twopane-app-navigator (partial routing/get-main-component true))
 
 (defn main []
-  (let [two-pane? (reagent/atom (dimensions/fit-two-pane?))]
-    (.addEventListener ^js react/dimensions
-                       "change"
-                       (fn [_]
-                         (let [two-pane-enabled? (dimensions/fit-two-pane?)]
-                           (re-frame/dispatch [:set-two-pane-ui-enabled two-pane-enabled?])
-                           (reset! two-pane? two-pane-enabled?))))
-    (reagent/create-class
-     {:component-did-mount
-      (fn []
-        (re-frame/dispatch [:set-two-pane-ui-enabled @two-pane?])
-        (utils.universal-links/initialize))
-
-      :component-will-unmount
-      utils.universal-links/finalize
-
-      :reagent-render
-      (fn []
-        [react/safe-area-provider
-         ^{:key @colors/theme}
-         [react/view {:flex             1
-                      :background-color colors/black-persist}
-          [navigation/navigation-container
-           (merge {:ref               (fn [r]
-                                        (navigation/set-navigator-ref r))
-                   :onStateChange     on-state-change
-                   :enableURLHandling false}
-                  (when debug?
-                    {:enableURLHandling true
-                     :initialState      @state}))
-           [(if @two-pane? twopane-app-navigator main-app-navigator)]]
-          [wallet/prepare-transaction]
-          [wallet/request-transaction]
-          [wallet/select-account]
-          [signing/signing]
-          [bottom-sheet]
-          [popover/popover]
-          (when config/keycard-test-menu-enabled?
-            [hardwallet.test-menu/test-menu])]])})))
+  (reagent/create-class
+   {:component-did-mount utils.universal-links/initialize
+    :component-will-unmount utils.universal-links/finalize
+    :reagent-render
+    (fn []
+      [react/safe-area-provider
+       ^{:key (str @colors/theme @reloader/cnt)}
+       [react/view {:flex             1
+                    :background-color colors/black-persist}
+        [navigation/navigation-container
+         (merge {:ref               (fn [r]
+                                      (navigation/set-navigator-ref r))
+                 :onStateChange     on-state-change
+                 :enableURLHandling false}
+                (when debug?
+                  {:enableURLHandling true
+                   :initialState      @state}))
+         [main-app-navigator]]
+        [wallet/prepare-transaction]
+        [wallet/request-transaction]
+        [wallet/select-account]
+        [signing/signing]
+        [bottom-sheet]
+        [popover/popover]
+        (when debug?
+          [reloader/reload-view @reloader/cnt])
+        (when config/keycard-test-menu-enabled?
+          [hardwallet.test-menu/test-menu])]])}))
