@@ -1,22 +1,12 @@
-Status is an open source, Ethereum-based app that gives you the power to chat, transact, and access a revolutionary world of DApps from your Android device.
+Status is a private and secure communication tool. Chat with friends, store crypto and explore the future of the web without being exploited for your data.
 
-<b>Important:</b> Status is currently in beta testing. There are risks associated with testing a beta product, so when opting in you will be prompted to read and acknowledge you understand and accept these risks.
+With Status, you alone control your information.
 
-Though still a work in progress, we hope this beta shows the beginnings of a friendly, intuitive experience for Ethereum, and what will be hopefully the start of a fantastic client for the Ethereum network.
+CHAT
+Status chat is peer-to-peer. Not only is your message content protected, but so is your metadata. The ultimate in privacy protection from a messenger.
 
-<b>What is Status?</b>
-It’s a new kind of tool, for a new kind of Internet. Browse, chat and transact, all within one app. 
+TRANSACT
+Store digital assets in your Status wallet. Send and request tokens from friends, or transact with decentralized applications.
 
-We want to see a world in which people have more control over the value they create, curate and contribute to as part of larger networks. To achieve this, we build tools that make it easier to participate in, and benefit from, new kinds of human interactions and economic activity.
-
-<b>Beta Features:</b>
-
-■ Encrypted Messaging — built on top of the Whisper protocol, enabling decentralized one-on-one, group chats, and social payments.
-
-■ Browse DApps — seamlessly interact with the emerging ecosystem of DApps using Status' Web 3.0 browser.
-
-■ Ether Wallet — a 'default' wallet, to provide ETH storage, send/receive transaction, a QR reader, and transaction logs.
-
-
-<b>Get Involved</b>
-As an open source project, the single best way to get involved with development is to download and test Status. Our mission is to facilitate the transition to a more open internet and financial system through the new paradigm Ethereum represent. With the high level goals of preserving our collective right as humans to privacy, mitigating the risk of censorship, and promoting economic trade in a transparent, open manner, Status is building a community where anyone is welcome to join and contribute to the cause. We’d love to hear from you. Join us at: https://join.status.im/chat/public/status
+EXPLORE
+Access Ethereum based applications on web3. Play games, exchange digital assets and more.
