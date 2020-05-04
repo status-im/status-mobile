@@ -3,6 +3,7 @@
 set -e
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
+source "${GIT_ROOT}/scripts/colors.sh"
 
 if [[ -z "${IN_NIX_SHELL}" ]]; then
     echo "Remember to call 'make shell'!"
@@ -25,7 +26,16 @@ function gen_deps_list() {
 }
 
 function get_repo_for_dir() {
-    grep -oP '.*>\K\w+' "${1}/_remote.repositories" | uniq
+    # This file has different name depending on Maven version
+    if [[ -f "${1}/_remote.repositories" ]]; then
+        REPO_FILE="${1}/_remote.repositories"
+    elif [[ -f "${1}/_maven.repositories" ]]; then
+        REPO_FILE="${1}/_maven.repositories"
+    else
+        echo -e "${RED}Cannot find Maven repo file for:${RST} ${1}" >&2
+        exit 1
+    fi
+    grep -oP '.*>\K\w+' "${REPO_FILE}" | uniq
 }
 
 function get_nix_sha() {
