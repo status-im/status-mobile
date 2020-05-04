@@ -40,13 +40,13 @@ let
         mkdir -p ${directory}
 
         ${optionalString (pom-download != "") ''
-        cp -f "${pom-download}" "${getPOM dep.path}"
+        ln -s "${pom-download}" "${getPOM dep.path}"
         ''}
         ${optionalString (pom.sha1 != "") ''
         echo "${pom.sha1}" > "${getPOM dep.path}.sha1"
         ''}
         ${optionalString (jar-download != "") ''
-        cp -f "${jar-download}" "${dep.path}.${dep.type}"
+        ln -s "${jar-download}" "${dep.path}.${dep.type}"
         ''}
         ${optionalString (jar.sha1 != "") ''
         echo "${jar.sha1}" > "${dep.path}.${dep.type}.sha1"
@@ -54,6 +54,9 @@ let
         
         ${if dep.postCopy != "" then ''
           depPath="$PWD/${dep.path}"
+          # postCopy can't modify the jar if it's a symlink
+          rm "${dep.path}.${dep.type}"
+          cp "${jar-download}" "${dep.path}.${dep.type}"
           ${dep.postCopy}
           unset depPath
         '' else ""

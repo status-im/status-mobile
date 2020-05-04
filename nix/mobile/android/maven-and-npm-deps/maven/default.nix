@@ -9,10 +9,9 @@ let
   mavenSourceFiles =
     let
       srcs = import ./maven-sources.nix { };
-      system = if stdenv.isDarwin then "osx" else "linux";
       # Warning: This must be the same as gradlePluginVersion android/gradle.properties
       version = "3.5.3-5435860";
-      aapt2NativePkg = "https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/${version}/aapt2-${version}-${system}";
+      aapt2NativePkg = "https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/${version}/aapt2-${version}-linux";
     in srcs // (if !stdenv.isLinux then { } else {
       # On Linux, we need to patch the interpreter in Java packages that contain native executables to use Nix's interpreter instead
       "${aapt2NativePkg}" = srcs."${aapt2NativePkg}" // {
