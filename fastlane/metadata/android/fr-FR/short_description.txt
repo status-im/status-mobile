@@ -1,1 +1,0 @@
-Status est un système d'exploitation mobile open source pour Ethereum.

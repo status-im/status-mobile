@@ -268,6 +268,7 @@ platform :android do
     upload_to_play_store(
       track: 'internal',
       apk_paths: APK_PATHS,
+      skip_upload_metadata: true,
       json_key_data: ENV['GOOGLE_PLAY_JSON_KEY']
     )
   end
@@ -278,17 +279,7 @@ platform :android do
     upload_to_play_store(
       track: 'alpha',
       apk_paths: APK_PATHS,
-      json_key_data: ENV['GOOGLE_PLAY_JSON_KEY']
-    )
-  end
-
-  desc 'Upload metadata to Google Play.'
-  desc 'Metadata is always updated when builds are uploaded,'
-  desc 'but this action can update metadata without uploading a build.'
-  desc 'expects GOOGLE_PLAY_JSON_KEY environment variable'
-  lane :upload_metadata do
-    upload_to_play_store(
-      skip_upload_apk: true,
+      skip_upload_metadata: true,
       json_key_data: ENV['GOOGLE_PLAY_JSON_KEY']
     )
   end
