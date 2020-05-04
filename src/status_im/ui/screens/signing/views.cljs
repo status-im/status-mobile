@@ -126,7 +126,7 @@
 
 (defn- keycard-view
   [{:keys [keycard-step]} phrase]
-  [react/view {:height 520}
+  [react/view
    [signing-phrase-view phrase]
    (case keycard-step
      :pin     [keycard-pin-view]

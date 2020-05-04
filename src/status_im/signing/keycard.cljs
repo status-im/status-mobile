@@ -85,6 +85,6 @@
               (assoc-in [:hardwallet :pin :enter-step] :sign)
               (assoc-in [:signing/sign :type] :keycard)
               (assoc-in [:signing/sign :keycard-step] :pin))}
-     (if message
-       (hash-message message nil)
-       (hash-transaction)))))
+     #(if message
+        (hash-message % message)
+        (hash-transaction %)))))
