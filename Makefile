@@ -365,3 +365,7 @@ startdev-ios-simulator: ##@startdev Compile Clojure for iOS simulator
 
 startdev-desktop: export TARGET ?= $(HOST_OS)
 startdev-desktop: _startdev-desktop
+
+re-frisk: export TARGET := clojure
+re-frisk: ##@re-frisk start re-frisk server
+	yarn shadow-cljs run re-frisk-remote.core/start
