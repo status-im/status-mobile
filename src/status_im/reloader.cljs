@@ -53,8 +53,3 @@
                                             :background-color "rgba(255,0,0,0.5))"}))}]
        [react/text {:style {:margin-top 10 :color (if @warning? :red colors/black)}}
         @label]])))
-
-(when ^boolean js/goog.DEBUG
-  (when-let [DevSettings (.-DevSettings ^js react/native-modules)]
-    (when (.-setHotLoadingEnabled DevSettings)
-      (.setHotLoadingEnabled ^js DevSettings false))))
