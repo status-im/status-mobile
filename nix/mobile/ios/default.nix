@@ -8,14 +8,21 @@ let
   pod-shell = callPackage ./pod-shell.nix { };
   status-go-shell = callPackage ./status-go-shell.nix { inherit status-go; };
 
-  selectedSources = [ status-go fastlane ];
+in {
+  inherit pod-shell status-go-shell;
 
-  buildInputs = unique ([
-    xcodeWrapper watchman bundler procps
-    flock # used in reset-node_modules.sh
-  ] ++ catAttrs "buildInputs" selectedSources);
+  shell = mkShell {
+    buildInputs = [
+      xcodeWrapper watchman bundler procps
+      flock # used in reset-node_modules.sh
+    ];
 
-  localShell = mkShell {
+    inputsFrom = [
+      fastlane.shell
+      status-go-shell
+      pod-shell
+    ];
+
     shellHook = ''
       pushd "$STATUS_REACT_HOME" > /dev/null
       {
@@ -29,13 +36,6 @@ let
       }
       popd > /dev/null
     '';
-    inherit buildInputs;
   };
 
-in {
-  inherit buildInputs pod-shell status-go-shell;
-
-  shell = lib.mergeSh localShell [
-    fastlane.shell status-go-shell pod-shell
-  ];
 }

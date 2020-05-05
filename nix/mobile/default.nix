@@ -29,9 +29,9 @@ let
   ];
 
 in {
-  buildInputs = unique (catAttrs "buildInputs" selectedSources);
-
-  shell = lib.mergeSh (mkShell {}) (catAttrs "shell" selectedSources);
+  shell = mkShell {
+    inputsFrom = (catAttrs "shell" selectedSources);
+  };
 
   # TARGETS
   inherit android ios fastlane;
