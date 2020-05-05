@@ -1,0 +1,55 @@
+library 'status-react-jenkins@v1.1.1'
+
+pipeline {
+  agent { label 'linux' }
+
+  environment {
+    LANG      = 'en_US.UTF-8'
+    LANGUAGE  = 'en_US.UTF-8'
+    LC_ALL    = 'en_US.UTF-8'
+    TARGET    = 'ios'
+    FASTLANE_DISABLE_COLORS = 1
+    /* See nix/README.md */
+    NIX_IGNORE_SYMLINK_STORE = 1
+    /* avoid writing to r/o /nix */
+    GEM_HOME  = '~/.rubygems'
+  }
+
+  options {
+    timestamps()
+    /* Disable concurrent jobs */
+    disableConcurrentBuilds()
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 5, unit: 'MINUTES')
+    /* Don't keep more than 50 builds */
+    buildDiscarder(logRotator(numToKeepStr: '50'))
+  }
+
+  stages {
+    stage('Prep') {
+      steps { script {
+        nix.shell(
+          'bundle install --gemfile=fastlane/Gemfile',
+          attr: 'shells.fastlane',
+        )
+      } }
+    }
+    stage('Play Store Update'){
+      steps { script {
+        withCredentials([
+          string(
+            credentialsId: 'SUPPLY_JSON_KEY_DATA',
+            variable: 'GOOGLE_PLAY_JSON_KEY'
+          ),
+        ]) {
+          nix.shell(
+            'bundle exec --gemfile=fastlane/Gemfile fastlane android upload_metadata',
+            keepEnv: ['FASTLANE_DISABLE_COLORS', 'GOOGLE_PLAY_JSON_KEY'],
+            attr: 'shells.fastlane',
+            pure: false
+          )
+        }
+      } }
+    }
+  }
+}

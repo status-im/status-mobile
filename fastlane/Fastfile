@@ -289,7 +289,14 @@ platform :android do
   lane :upload_metadata do
     upload_to_play_store(
       skip_upload_apk: true,
-      json_key_data: ENV['GOOGLE_PLAY_JSON_KEY']
+      skip_upload_changelogs: true,
+      json_key_data: ENV['GOOGLE_PLAY_JSON_KEY'],
+      # These don't matter much as we're not uploading any new builds
+      # and indeed, we're skipping changelogs. This is just so that
+      # the library can find what it thinks it needs and continue with
+      # the work we actually want it to do.
+      track: 'production',
+      version_code: '2020042307'
     )
   end
 
