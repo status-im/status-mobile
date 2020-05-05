@@ -8,7 +8,7 @@
 ;; Default HTTP request timeout ms
 (def http-request-default-timeout-ms 3000)
 
-(defn- headers [^js response]
+(defn- response-headers [^js response]
   (let [entries (es6-iterator-seq (.entries ^js (.-headers response)))]
     (reduce #(assoc %1 (string/trim (string/lower-case (first %2))) (string/trim (second %2))) {} entries)))
 
@@ -17,7 +17,7 @@
   ([url body on-success] (raw-post url body on-success nil))
   ([url body on-success on-error]
    (raw-post url body on-success on-error nil))
-  ([url body on-success on-error {:keys [timeout-ms]}]
+  ([url body on-success on-error {:keys [timeout-ms headers]}]
    (-> (fetch
         url
         (clj->js {:method  "POST"
