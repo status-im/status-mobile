@@ -690,6 +690,7 @@ class BaseView(object):
 
     def open_universal_web_link(self, deep_link):
         start_web_browser(self.driver)
+        self.element_by_text_part("Search").wait_for_element()
         self.driver.get(deep_link)
 
     def upgrade_app(self):

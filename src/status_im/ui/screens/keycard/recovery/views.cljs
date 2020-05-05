@@ -143,6 +143,7 @@
          :auto-focus        true
          :on-submit-editing #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-submitted])
          :placeholder       nil
+         :text-align        :center
          :container         {:background-color colors/white}
          :style             {:background-color colors/white
                              :height           24

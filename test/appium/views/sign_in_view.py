@@ -264,7 +264,7 @@ class SignInView(BaseView):
 
     def sign_in(self, password=common_password, keycard=False):
         self.rooted_device_continue()
-        self.multi_account_on_login_button.wait_for_visibility_of_element(5)
+        self.multi_account_on_login_button.wait_for_visibility_of_element(10)
         self.multi_account_on_login_button.click()
         if keycard:
             from views.keycard_view import KeycardView
