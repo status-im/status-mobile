@@ -297,5 +297,5 @@
                               :source {:uri (contenthash/url (-> content :sticker :hash))}}]
                 (if (= content-type constants/content-type-image)
                   [react/image {:style {:margin-vertical 10 :width 140 :height 140 :border-radius 8}
-                                :source {:uri (str "https://ipfs.infura.io/ipfs/" (:hash content))}}]
+                                :source {:uri (:image content)}}]
                   [unknown-content-type message])))))]])))

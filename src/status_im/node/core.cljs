@@ -123,7 +123,7 @@
              {:Enabled true
               :BloomFilterMode waku-bloom-filter-mode
               :LightClient true
-              :MinimumPoW 0.001}
+              :MinimumPoW 0.000001}
              :ShhextConfig
              {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
               :InstallationID             installation-id

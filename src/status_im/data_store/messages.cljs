@@ -31,6 +31,7 @@
                                                            :commandState :command-state})
       (assoc :content {:chat-id (:chatId message)
                        :text (:text message)
+                       :image (:image message)
                        :sticker (:sticker message)
                        :ens-name (:ensName message)
                        :line-count (:lineCount message)
@@ -38,7 +39,7 @@
                        :rtl? (:rtl message)
                        :response-to (:responseTo message)}
              :outgoing (boolean (:outgoingStatus message)))
-      (dissoc :ensName :chatId :text :rtl :responseTo :sticker :lineCount :parsedText)))
+      (dissoc :ensName :chatId :text :rtl :responseTo :image :sticker :lineCount :parsedText)))
 
 (defn update-outgoing-status-rpc [waku-enabled? message-id status]
   {::json-rpc/call [{:method (json-rpc/call-ext-method waku-enabled? "updateMessageOutgoingStatus")

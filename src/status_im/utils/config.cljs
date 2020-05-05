@@ -51,6 +51,6 @@
       string/upper-case))
 (def fleet (get-config :FLEET "eth.staging"))
 (def default-network (get-config :DEFAULT_NETWORK))
-(def pow-target (js/parseFloat (get-config :POW_TARGET "0.002")))
+(def pow-target (js/parseFloat (get-config :POW_TARGET "0.0001")))
 (def pow-time (js/parseInt (get-config :POW_TIME "1")))
 (def max-installations 2)
