@@ -384,3 +384,11 @@ startdev-desktop: _startdev-desktop
 re-frisk: export TARGET := clojure
 re-frisk: ##@re-frisk start re-frisk server
 	yarn shadow-cljs run re-frisk-remote.core/start
+
+repl-ios: export TARGET := clojure
+repl-ios: ##@repl-ios start repl for ios project
+	yarn shadow-cljs cljs-repl ios
+
+repl-android: export TARGET := clojure
+repl-android: ##@repl-android start repl for android project
+	yarn shadow-cljs cljs-repl android
