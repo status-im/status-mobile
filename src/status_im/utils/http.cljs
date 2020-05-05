@@ -130,9 +130,7 @@
                   (on-error response)
 
                   :else false)))
-       (.catch (or on-error
-                   (fn [error]
-                     (utils/show-popup "Error" url (str error))))))))
+       (.catch (or on-error #())))))
 
 (defn normalize-url [url]
   (str (when (and (string? url) (not (re-find #"^[a-zA-Z-_]+:/" url))) "http://") url))
