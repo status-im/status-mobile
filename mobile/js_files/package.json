@@ -14,7 +14,7 @@
     "@react-native-community/masked-view": "^0.1.6",
     "@react-native-community/netinfo": "^4.4.0",
     "@react-navigation/bottom-tabs": "^5.1.1",
-    "@react-navigation/native": "^5.0.9",
+    "@react-navigation/native": "^5.2.3",
     "@react-navigation/stack": "^5.1.1",
     "bignumber.js": "git+https://github.com/status-im/bignumber.js.git#v4.0.2-status",
     "buffer": "^5.4.2",

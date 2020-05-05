@@ -2,10 +2,9 @@
   (:require [status-im.constants :as constants]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
-            [status-im.qr-scanner.core :as qr-scanner]
             [status-im.navigation :as navigation]
-            [status-im.utils.fx :as fx]
-            [status-im.browser.webview-ref :as webview-ref]))
+            [status-im.qr-scanner.core :as qr-scanner]
+            [status-im.utils.fx :as fx]))
 
 (declare process-next-permission)
 (declare send-response-to-bridge)

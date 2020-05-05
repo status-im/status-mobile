@@ -1,15 +1,16 @@
 (ns status-im.ui.screens.hardwallet.authentication-method.views
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.screens.hardwallet.authentication-method.styles :as styles]
+            [status-im.i18n :as i18n]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.common.common :as common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.common.common :as common]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.hardwallet.authentication-method.styles
+             :as
+             styles]))
 
 (defn authentication-method-row [{:keys [title on-press icon]}]
   [react/touchable-highlight {:on-press on-press}

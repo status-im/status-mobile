@@ -45,7 +45,7 @@
   [react/view {:width window-width :flex 1}
    [react/scroll-view
     [react/view {:style styles/stickers-panel}
-     (for [{:keys [hash pack] :as sticker} stickers]
+     (for [{:keys [hash] :as sticker} stickers]
        ^{:key (str hash)}
        [react/touchable-highlight {:style    {:height 75 :width 75 :margin 5}
                                    :on-press #(re-frame/dispatch [:chat/send-sticker sticker])}

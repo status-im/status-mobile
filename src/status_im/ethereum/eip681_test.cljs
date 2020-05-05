@@ -1,5 +1,5 @@
 (ns status-im.ethereum.eip681-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
+  (:require [cljs.test :refer-macros [deftest is]]
             [status-im.ethereum.eip681 :as eip681]
             [status-im.utils.money :as money]))
 

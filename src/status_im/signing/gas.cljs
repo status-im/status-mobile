@@ -1,10 +1,10 @@
 (ns status-im.signing.gas
-  (:require [status-im.utils.money :as money]
-            [status-im.utils.fx :as fx]
+  (:require [re-frame.core :as re-frame]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
-            [re-frame.core :as re-frame]
-            [status-im.ethereum.json-rpc :as json-rpc]))
+            [status-im.utils.fx :as fx]
+            [status-im.utils.money :as money]))
 
 (def min-gas-price-wei ^js (money/bignumber 1))
 
@@ -40,10 +40,11 @@
         gas      (get-in edit [:gas :value-number])]
     (assoc edit :max-fee (calculate-max-fee gas gasPrice))))
 
-(defn build-edit [edit-value key value]
+(defn build-edit
   "Takes the previous edit, either :gas or :gas-price and a value as string.
   Wei for gas, and gwei for gas price.
   Validates them and sets max fee"
+  [edit-value key value]
   (let [^js bn-value        (money/bignumber value)
         error-label-key (get-error-label-key key bn-value)
         data            (if error-label-key

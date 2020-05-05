@@ -1,6 +1,5 @@
 (ns quo.previews.main
-  (:require [oops.core :refer [ocall]]
-            [quo.previews.header :as header]
+  (:require [quo.previews.header :as header]
             [quo.previews.text :as text]
             [quo.previews.text-input :as text-input]
             [quo.previews.tooltip :as tooltip]

@@ -1,16 +1,9 @@
 (ns status-im.data-store.messages
   (:require [clojure.set :as clojure.set]
-            [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
-            [clojure.string :as string]
-            [taoensso.timbre :as log]
-            [re-frame.core :as re-frame]
-            [status-im.waku.core :as waku]
-            [status-im.utils.types :as utils.types]
-            [status-im.utils.config :as config]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.constants :as constants]
-            [status-im.utils.core :as utils]))
+            [status-im.utils.fx :as fx]
+            [status-im.waku.core :as waku]
+            [taoensso.timbre :as log]))
 
 (defn ->rpc [{:keys [content] :as message}]
   (cond-> message

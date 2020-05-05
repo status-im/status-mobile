@@ -1,52 +1,39 @@
 (ns status-im.events
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.data-store.messages :as data-store.messages]
-            [status-im.data-store.chats :as data-store.chats]
-            [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [status-im.multiaccounts.login.core :as multiaccounts.login]
-            [status-im.multiaccounts.logout.core :as multiaccounts.logout]
-            [status-im.multiaccounts.recover.core :as multiaccounts.recover]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.bootnodes.core :as bootnodes]
             [status-im.browser.core :as browser]
             [status-im.browser.permissions :as browser.permissions]
-            [status-im.chat.db :as chat.db]
             [status-im.chat.models :as chat]
             [status-im.chat.models.input :as chat.input]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.chat.models.message :as chat.message]
+            [status-im.chat.models.message-seen :as message-seen]
             [status-im.contact.block :as contact.block]
             [status-im.contact.core :as contact]
+            [status-im.data-store.chats :as data-store.chats]
+            [status-im.data-store.messages :as data-store.messages]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.ens :as ethereum.ens]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
-            [status-im.ethereum.transactions.core :as ethereum.transactions]
             [status-im.fleet.core :as fleet]
             [status-im.group-chats.core :as group-chats]
-            [status-im.signing.keycard :as signing.keycard]
             [status-im.i18n :as i18n]
             [status-im.init.core :as init]
             [status-im.log-level.core :as log-level]
-            status-im.waku.core
-            [status-im.utils.universal-links.core :as universal-links]
-            [status-im.mailserver.core :as mailserver]
             [status-im.mailserver.constants :as mailserver.constants]
+            [status-im.mailserver.core :as mailserver]
             [status-im.mailserver.topics :as mailserver.topics]
-            [status-im.node.core :as node]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.multiaccounts.login.core :as multiaccounts.login]
+            [status-im.multiaccounts.logout.core :as multiaccounts.logout]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.pairing.core :as pairing]
             [status-im.privacy-policy.core :as privacy-policy]
-            [status-im.protocol.core :as protocol]
             [status-im.qr-scanner.core :as qr-scanner]
-            [status-im.search.core :as search]
             [status-im.signals.core :as signals]
             [status-im.stickers.core :as stickers]
             [status-im.transport.core :as transport]
             [status-im.transport.message.core :as transport.message]
-            status-im.wallet.choose-recipient.core
-            status-im.wallet.collectibles.core
-            status-im.wallet.accounts.core
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
@@ -54,18 +41,19 @@
              :as
              currency-settings.models]
             [status-im.navigation :as navigation]
-            [status-im.utils.build :as build]
-            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.logging.core :as logging]
-            [status-im.utils.utils :as utils]
+            [status-im.utils.universal-links.core :as universal-links]
             [status-im.wallet.core :as wallet]
             [status-im.wallet.custom-tokens.core :as custom-tokens]
             [status-im.wallet.db :as wallet.db]
             [taoensso.timbre :as log]
-            [status-im.utils.money :as money]
-            [status-im.chat.models.message-seen :as message-seen]
+            status-im.waku.core
+            status-im.wallet.choose-recipient.core
+            status-im.wallet.collectibles.core
+            status-im.wallet.accounts.core
+            status-im.multiaccounts.biometric.core
             status-im.hardwallet.core
             status-im.popover.core
             [status-im.hardwallet.core :as hardwallet]
@@ -75,6 +63,7 @@
             [status-im.native-module.core :as status]
             [status-im.ui.components.permissions :as permissions]
             [status-im.utils.http :as http]
+            [status-im.utils.utils :as utils]
             status-im.ui.screens.add-new.new-chat.events
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
@@ -245,7 +234,7 @@
 
 (handlers/register-handler-fx
  :mailserver.ui/retry-request-pressed
- (fn [cofx [_ args]]
+ (fn [cofx [_ _]]
    (mailserver/retry-next-messages-request cofx)))
 
 (handlers/register-handler-fx
@@ -357,7 +346,7 @@
 
 (handlers/register-handler-fx
  :log-level.ui/logging-enabled-confirmed
- (fn [cofx [_ enabled]]
+ (fn [_ [_ _]]
    ;;FIXME desktop only
    #_(log-level/save-logging-enabled cofx enabled)))
 
@@ -797,7 +786,7 @@
 
 (handlers/register-handler-fx
  :group-chats.ui/leave-chat-pressed
- (fn [_ [_ chat-id group?]]
+ (fn [_ [_ chat-id _]]
    {:ui/show-confirmation {:title               (i18n/label :t/leave-confirmation)
                            :content             (i18n/label :t/leave-chat-confirmation)
                            :confirm-button-text (i18n/label :t/leave)
@@ -811,7 +800,7 @@
 
 (handlers/register-handler-fx
  :transport/send-status-message-error
- (fn [{:keys [db] :as cofx} [_ err]]
+ (fn [_ [_ err]]
    (log/error :send-status-message-error err)))
 
 (fx/defn handle-update [cofx {:keys [chats messages] :as response}]
@@ -885,7 +874,7 @@
 
 (handlers/register-handler-fx
  :contact.ui/start-group-chat-pressed
- (fn [{:keys [db] :as cofx} _]
+ (fn [cofx _]
    (contact/open-contact-toggle-list cofx)))
 
 (handlers/register-handler-fx
@@ -1147,17 +1136,16 @@
 
 (handlers/register-handler-fx
  :wallet-send-request
- (fn [{:keys [db] :as cofx} [_ public-key amount symbol decimals]]
+ (fn [cofx [_ public-key _ _ _]]
    (assert public-key)
-   (let [request-command (get-in db [:id->command ["request" #{:personal-chats}]])]
-     (fx/merge cofx
-               (navigation/navigate-back)
-               (chat/start-chat public-key nil)
-               ;; TODO send
-               #_(commands.sending/send public-key
-                                        request-command
-                                        {:asset  (name symbol)
-                                         :amount (str (money/internal->formatted amount symbol decimals))})))))
+   (fx/merge cofx
+             (navigation/navigate-back)
+             (chat/start-chat public-key nil)
+             ;; TODO send
+             #_(commands.sending/send public-key
+                                      request-command
+                                      {:asset  (name symbol)
+                                       :amount (str (money/internal->formatted amount symbol decimals))}))))
 
 (handlers/register-handler-fx
  :identicon-generated
@@ -1349,7 +1337,7 @@
 ;; NOTE: Will be removed with the keycard PR
 (handlers/register-handler-fx
  :screens/on-will-focus
- (fn [{:keys [db] :as cofx} [_ view-id]]
+ (fn [cofx [_ view-id]]
    (fx/merge cofx
              #(case view-id
                 :keycard-settings (hardwallet/settings-screen-did-load %)

@@ -1,33 +1,18 @@
 (ns status-im.group-chats.core
   (:refer-clojure :exclude [remove])
-  (:require [clojure.set :as clojure.set]
-            [clojure.spec.alpha :as spec]
-            [clojure.string :as string]
-            [status-im.ethereum.json-rpc :as json-rpc]
+  (:require [clojure.spec.alpha :as spec]
             [re-frame.core :as re-frame]
-            [status-im.utils.config :as config]
-            [status-im.constants :as constants]
-            [status-im.chat.models.message-content :as message-content]
-            [status-im.navigation :as navigation]
-            [status-im.data-store.chats :as data-store.chats]
-            [status-im.data-store.messages :as data-store.messages]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.utils.pairing :as pairing.utils]
-            [status-im.waku.core :as waku]
             [status-im.chat.models :as models.chat]
             [status-im.chat.models.message :as models.message]
-            [status-im.contact.core :as models.contact]
-            [status-im.transport.filters.core :as transport.filters]
+            [status-im.data-store.chats :as data-store.chats]
+            [status-im.data-store.messages :as data-store.messages]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.group-chats.db :as group-chats.db]
-            [status-im.i18n :as i18n]
-            [status-im.native-module.core :as native-module]
-            [status-im.transport.message.protocol :as protocol]
-            [status-im.utils.clocks :as utils.clocks]
+            [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.transport.filters.core :as transport.filters]
+            [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
-            [status-im.mailserver.core :as mailserver]
-            [status-im.mailserver.topics :as mailserver.topics]
-            [taoensso.timbre :as log]))
+            [status-im.waku.core :as waku]))
 
 (fx/defn remove-member
   "Format group update message and sign membership"
@@ -119,4 +104,3 @@
      ::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "changeGroupChatName")
                        :params [nil chat-id new-name]
                        :on-success #(re-frame/dispatch [::chat-updated %])}]}))
-

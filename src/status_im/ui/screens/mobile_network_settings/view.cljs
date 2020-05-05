@@ -6,7 +6,6 @@
             [re-frame.core :as re-frame]
             status-im.ui.screens.mobile-network-settings.events
             [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.utils.platform :as platform]
             [status-im.ui.screens.mobile-network-settings.sheets :as sheets]
             [status-im.ui.components.topbar :as topbar]))
 

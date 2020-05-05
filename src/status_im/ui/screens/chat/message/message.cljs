@@ -1,19 +1,19 @@
 (ns status-im.ui.screens.chat.message.message
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.utils.http :as http]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
-            [status-im.utils.security :as security]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.sheets :as sheets]
+            [status-im.ui.screens.chat.message.command :as message.command]
             [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.utils.contenthash :as contenthash]
+            [status-im.utils.http :as http]
             [status-im.utils.platform :as platform]
-            [status-im.ui.screens.chat.message.command :as message.command])
+            [status-im.utils.security :as security])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]
@@ -37,7 +37,7 @@
    appender])
 
 (defview quoted-message
-  [message-id {:keys [from text]} outgoing current-public-key]
+  [_ {:keys [from text]} outgoing current-public-key]
   (letsubs [{:keys [ens-name alias]} [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
@@ -166,7 +166,7 @@
     [render-parsed-text message (:parsed-text content)]]])
 
 (defn emoji-message
-  [{:keys [content current-public-key alias outgoing] :as message}]
+  [{:keys [content current-public-key outgoing] :as message}]
   (let [response-to (:response-to content)]
     [message-bubble-wrapper message
      [react/view {:style (style/style-message-text outgoing)}

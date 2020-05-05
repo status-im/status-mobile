@@ -1,10 +1,9 @@
 (ns status-im.signing.keycard
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
-            [status-im.native-module.core :as status]
-            [status-im.utils.types :as types]
             [status-im.ethereum.abi-spec :as abi-spec]
-            [status-im.ethereum.core :as ethereum]
+            [status-im.native-module.core :as status]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
 
 (re-frame/reg-fx

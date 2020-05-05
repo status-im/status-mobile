@@ -1,6 +1,5 @@
 (ns status-im.native-module.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.utils.db :as utils.db]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]

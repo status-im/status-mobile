@@ -1,22 +1,22 @@
 (ns status-im.ui.screens.wallet.account.views
-  (:require-macros [status-im.utils.views :as views])
-  (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.ui.screens.wallet.accounts.views :as accounts]
-            [status-im.ui.screens.wallet.accounts.sheets :as sheets]
+  (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.ui.components.list.views :as list]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.screens.wallet.account.styles :as styles]
-            [status-im.ui.screens.wallet.transactions.views :as history]
             [status-im.ethereum.core :as ethereum]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.animation :as animation]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.list-item.views :as list-item]
-            [status-im.utils.money :as money]
-            [status-im.wallet.utils :as wallet.utils]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.animation :as animation]))
+            [status-im.ui.screens.wallet.account.styles :as styles]
+            [status-im.ui.screens.wallet.accounts.sheets :as sheets]
+            [status-im.ui.screens.wallet.accounts.views :as accounts]
+            [status-im.ui.screens.wallet.transactions.views :as history]
+            [status-im.utils.money :as money]
+            [status-im.wallet.utils :as wallet.utils])
+  (:require-macros [status-im.utils.views :as views]))
 
 (def state (reagent/atom {:tab :assets}))
 

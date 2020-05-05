@@ -11,12 +11,12 @@
 (defn utf8-to-hex [s]
   (try
     (.utf8ToHex utils (str s))
-    (catch :default err nil)))
+    (catch :default _ nil)))
 
 (defn hex-to-utf8 [s]
   (try
     (.hexToUtf8 utils s)
-    (catch :default err nil)))
+    (catch :default _ nil)))
 
 ;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
 
@@ -75,7 +75,7 @@
   (when s
     (string/replace s hex-prefix "")))
 
-(def ^:const public-key-length 128)
+(def public-key-length 128)
 
 (defn coordinates [public-key]
   (when-let [hex (naked-address public-key)]
@@ -137,10 +137,10 @@
     (when normalized-key
       (subs (sha3 normalized-key) 26))))
 
-(def ^:const bytes32-length 66) ; length of '0x' + 64 hex values. (a 32bytes value has 64 nibbles)
+(def bytes32-length 66) ; length of '0x' + 64 hex values. (a 32bytes value has 64 nibbles)
 
 (defn hex->text
-  "Converts a hexstring to UTF8 text. If the data received is 32 bytes long, 
+  "Converts a hexstring to UTF8 text. If the data received is 32 bytes long,
    return the value unconverted"
   [data]
   (if (= bytes32-length (count (normalized-hex data)))

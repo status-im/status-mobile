@@ -1,5 +1,4 @@
-(ns status-im.ui.screens.keycard.styles
-  (:require [status-im.ui.components.colors :as colors]))
+(ns status-im.ui.screens.keycard.styles)
 
 (def container
   {:flex             1

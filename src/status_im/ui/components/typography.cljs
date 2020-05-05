@@ -1,6 +1,6 @@
 (ns status-im.ui.components.typography
-  (:require [status-im.utils.platform :as platform]
-            [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.utils.platform :as platform]))
 
 (def default-font-family "Inter")
 (defn default-style []
@@ -29,7 +29,7 @@
 (defn get-style
   [{:keys [typography] :as style}]
   {:pre [(or (nil? typography) (contains? typography-styles typography))]}
-  (let [{:keys [font-weight font-style font-size line-height]
+  (let [{:keys [font-weight font-style]
          :as style}
         (merge (default-style)
                (get typography-styles
@@ -55,7 +55,7 @@
 (defn get-nested-style
   [{:keys [typography] :as style}]
   {:pre [(or (nil? typography) (contains? typography-styles typography))]}
-  (let [{:keys [font-weight font-style font-size] :as style}
+  (let [{:keys [font-weight font-style] :as style}
         (merge (get typography-styles
                     typography)
                (dissoc style :typography))]

@@ -3,16 +3,15 @@
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.screens.chat.sheets :as sheets]
-            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.badge :as badge]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.core :as utils]
-            [status-im.utils.datetime :as time])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+            [status-im.utils.datetime :as time]))
 
 (defn message-content-text [{:keys [content content-type]}]
   [react/view styles/last-message-container

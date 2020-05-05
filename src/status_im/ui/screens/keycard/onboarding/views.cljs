@@ -1,21 +1,20 @@
 (ns status-im.ui.screens.keycard.onboarding.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.ui.components.react :as react]
-            [status-im.ui.screens.keycard.styles :as styles]
-            [status-im.ui.screens.keycard.views :as views]
+  (:require [re-frame.core :as re-frame]
             [status-im.hardwallet.onboarding :as hardwallet.onboarding]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.i18n :as i18n]
-            [re-frame.core :as re-frame]
             [status-im.react-native.resources :as resources]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.text-input.view :as text-input]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.screens.keycard.styles :as styles])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview intro []
   (letsubs [flow [:hardwallet-flow]]
@@ -318,7 +317,7 @@
   (letsubs [word [:hardwallet-recovery-phrase-word]
             input-word [:hardwallet-recovery-phrase-input-word]
             error [:hardwallet-recovery-phrase-confirm-error]]
-    (let [{:keys [word idx]} word]
+    (let [{:keys [idx]} word]
       [react/view styles/container
        [toolbar/toolbar
         {:transparent? true}

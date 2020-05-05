@@ -1,10 +1,6 @@
 (ns status-im.multiaccounts.update.core
-  (:require [status-im.contact.db :as contact.db]
-            [status-im.utils.config :as config]
-            [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.transport.message.protocol :as protocol]
+  (:require [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
-            [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
 
 (fx/defn send-multiaccount-update [{:keys [db] :as cofx}]

@@ -1,10 +1,10 @@
 (ns status-im.ui.screens.browser.views
-  (:require [cljs.tools.reader.edn :as edn]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.browser.core :as browser]
-            [status-im.ethereum.core :as ethereum]
+            [status-im.browser.webview-ref :as webview-ref]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.connectivity.view :as connectivity]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -14,17 +14,14 @@
             [status-im.ui.components.toolbar.view :as toolbar.view]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.webview :as components.webview]
+            [status-im.ui.screens.browser.accounts :as accounts]
             [status-im.ui.screens.browser.permissions.views :as permissions.views]
             [status-im.ui.screens.browser.site-blocked.views :as site-blocked.views]
             [status-im.ui.screens.browser.styles :as styles]
-            [status-im.utils.http :as http]
-            [status-im.utils.js-resources :as js-res]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.screens.browser.accounts :as accounts]
             [status-im.utils.debounce :as debounce]
-            [status-im.browser.webview-ref :as webview-ref])
-  (:require-macros
-   [status-im.utils.views :as views]))
+            [status-im.utils.http :as http]
+            [status-im.utils.js-resources :as js-res])
+  (:require-macros [status-im.utils.views :as views]))
 
 (defn toolbar-content [url url-original {:keys [secure?]} url-editing?]
   (let [url-text (atom url)]
@@ -105,7 +102,7 @@
 ;; should-component-update is called only when component's props are changed,
 ;; that's why it can't be used in `browser`, because `url` comes from subs
 (views/defview browser-component
-  [{:keys [webview error? url browser browser-id unsafe? can-go-back?
+  [{:keys [error? url browser browser-id unsafe? can-go-back?
            can-go-forward? resolving? network-id url-original
            show-permission show-tooltip dapp? name dapps-account]}]
   {:should-component-update (fn [_ _ args]

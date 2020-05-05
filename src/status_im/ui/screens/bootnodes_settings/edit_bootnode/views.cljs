@@ -1,21 +1,20 @@
 (ns status-im.ui.screens.bootnodes-settings.edit-bootnode.views
-  (:require-macros [status-im.utils.views :as views])
-  (:require
-   [re-frame.core :as re-frame]
-   [status-im.ui.components.react :as react]
-   [status-im.i18n :as i18n]
-   [status-im.utils.utils :as utils]
-   [status-im.ui.components.styles :as components.styles]
-   [status-im.ui.components.common.common :as components.common]
-   [status-im.ui.components.colors :as colors]
-   [status-im.ui.components.icons.vector-icons :as vector-icons]
-   [status-im.ui.components.toolbar.view :as toolbar]
-   [status-im.ui.components.text-input.view :as text-input]
-   [status-im.ui.screens.bootnodes-settings.edit-bootnode.styles :as styles]
-   [status-im.utils.platform :as platform]
-   [status-im.ui.components.tooltip.views :as tooltip]
-   [clojure.string :as string]
-   [status-im.ui.components.topbar :as topbar]))
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.components.text-input.view :as text-input]
+            [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.bootnodes-settings.edit-bootnode.styles
+             :as
+             styles]
+            [status-im.utils.platform :as platform])
+  (:require-macros [status-im.utils.views :as views]))
 
 (defn delete-button [id]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:bootnodes.ui/delete-pressed id])}

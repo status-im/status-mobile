@@ -1,24 +1,19 @@
 (ns status-im.hardwallet.core
-  (:require [status-im.multiaccounts.create.core :as multiaccounts.create]
+  (:require [status-im.hardwallet.change-pin :as change-pin]
+            [status-im.hardwallet.common :as common]
+            [status-im.hardwallet.login :as login]
+            [status-im.hardwallet.mnemonic :as mnemonic]
+            [status-im.hardwallet.onboarding :as onboarding]
+            [status-im.hardwallet.recovery :as recovery]
+            [status-im.hardwallet.sign :as sign]
+            [status-im.hardwallet.wallet :as wallet]
             [status-im.i18n :as i18n]
+            [status-im.multiaccounts.recover.core :as multiaccounts.recover]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.navigation :as navigation]
             [status-im.utils.datetime :as utils.datetime]
             [status-im.utils.fx :as fx]
-            [status-im.hardwallet.login :as login]
-            [status-im.hardwallet.sign :as sign]
-            [status-im.hardwallet.change-pin :as change-pin]
-            [status-im.hardwallet.mnemonic :as mnemonic]
-            [status-im.hardwallet.recovery :as recovery]
-            [status-im.hardwallet.onboarding :as onboarding]
-            [status-im.hardwallet.common :as common]
-            status-im.hardwallet.unpair
-            status-im.hardwallet.export-key
-            status-im.hardwallet.delete-key
-            [status-im.hardwallet.wallet :as wallet]
-            [taoensso.timbre :as log]
-            status-im.hardwallet.fx
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.multiaccounts.recover.core :as multiaccounts.recover]))
+            [taoensso.timbre :as log]))
 
 (fx/defn show-keycard-has-multiaccount-alert
   [{:keys [db] :as cofx}]

@@ -1,29 +1,14 @@
 (ns status-im.data-store.chats
-  (:require [goog.object :as object]
-            [re-frame.core :as re-frame]
+  (:require [clojure.set :as clojure.set]
             [status-im.data-store.messages :as messages]
-            [status-im.waku.core :as waku]
-            [status-im.utils.config :as config]
-            [status-im.utils.fx :as fx]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.ethereum.core :as ethereum]
-            [taoensso.timbre :as log]
-            [status-im.utils.clocks :as utils.clocks]
-            [status-im.utils.core :as utils]))
+            [status-im.utils.fx :as fx]
+            [status-im.waku.core :as waku]
+            [taoensso.timbre :as log]))
 
 (def one-to-one-chat-type 1)
 (def public-chat-type 2)
 (def private-group-chat-type 3)
-
-(defn- event->string
-  "Transform an event in an a vector with keys in alphabetical order, to compute
-  a predictable id"
-  [event]
-  (js/JSON.stringify
-   (clj->js
-    (mapv
-     #(vector % (get event %))
-     (sort (keys event))))))
 
 (defn type->rpc [{:keys [public? group-chat] :as chat}]
   (assoc chat :chatType (cond

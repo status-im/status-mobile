@@ -1,10 +1,13 @@
+
 (ns status-im.ui.screens.chat.ttt
-  (:require [status-im.ui.screens.chat.styles.main :as style]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.profile.tribute-to-talk.views :as tribute-to-talk.views]
+  (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]))
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.styles.main :as style]
+            [status-im.ui.screens.profile.tribute-to-talk.views
+             :as
+             tribute-to-talk.views]))
 
 (defn tribute-to-talk-header
   [name]
@@ -31,8 +34,8 @@
                      :align-self        (if snt-amount :flex-start :flex-end)}}])
 
 (defn one-to-one-chat-description-container
-  [{:keys                 [chat-id name contact show-input? tribute-to-talk]
-    :tribute-to-talk/keys [my-message received? message tribute-status
+  [{:keys                 [chat-id name]
+    :tribute-to-talk/keys [received? tribute-status
                            tribute-label snt-amount on-share-my-profile
                            fiat-amount fiat-currency token]}]
   (case tribute-status
@@ -69,7 +72,7 @@
 
     (:paid :none)
     [react/view
-     ;[intro-header contact]
+                                        ;[intro-header contact]
      (when (= tribute-status :paid)
        [pay-to-chat-messages snt-amount chat-id tribute-status tribute-label
         fiat-amount fiat-currency token])
@@ -89,4 +92,4 @@
                         :tribute-to-talk-tribute-received2
                         :tribute-to-talk-contact-received-your-tribute))]]])]))
 
-    ;[intro-header contact]))
+                                        ;[intro-header contact]))

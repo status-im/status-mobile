@@ -1,19 +1,19 @@
 (ns status-im.ui.screens.add-new.new-chat.views
-  (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.add-new.styles :as add-new.styles]
-            [status-im.ui.screens.add-new.new-chat.styles :as styles]
-            [status-im.ui.components.list-item.views :as list-item]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.add-new.new-chat.styles :as styles]
+            [status-im.ui.screens.add-new.styles :as add-new.styles]
             [status-im.utils.debounce :as debounce]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils])
+  (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-row [row _ _]
   [list-item/list-item

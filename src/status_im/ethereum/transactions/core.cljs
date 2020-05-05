@@ -1,16 +1,13 @@
 (ns status-im.ethereum.transactions.core
   (:require [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
             [status-im.ethereum.decode :as decode]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.encode :as encode]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.tokens :as tokens]
             [status-im.utils.fx :as fx]
-            [status-im.utils.money :as money]
             [status-im.wallet.core :as wallet]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [cljs.spec.alpha :as spec]))
 
 (def confirmations-count-threshold 12)
 
@@ -38,8 +35,8 @@
 
 (defn- parse-token-transfer
   [chain-tokens contract]
-  (let [{:keys [nft? symbol] :as token}  (get chain-tokens contract
-                                              default-erc20-token)]
+  (let [{:keys [symbol] :as token} (get chain-tokens contract
+                                        default-erc20-token)]
     {:symbol        symbol
      :token         token
      ;; NOTE(goranjovic) - just a flag we need when we merge this entry
@@ -50,8 +47,8 @@
 
 (defn enrich-transfer
   [chain-tokens
-   {:keys [address blockNumber timestamp type transaction receipt from txStatus
-           txHash gasPrice gasUsed contract value gasLimit input nonce to type id] :as transfer}]
+   {:keys [address blockNumber timestamp from txStatus txHash gasPrice
+           gasUsed contract value gasLimit input nonce to type id]}]
   (let [erc20?  (= type "erc20")
         failed? (= txStatus "0x0")]
     (merge {:address   (eip55/address->checksum address)
@@ -251,8 +248,8 @@
               limit-per-address]
        :as params
        :or {limit default-transfers-limit}}]
-   {:pre [(cljs.spec.alpha/valid?
-           (cljs.spec.alpha/coll-of string?)
+   {:pre [(spec/valid?
+           (spec/coll-of string?)
            addresses)]}
    (log/debug "[transactions] get-transfers"
               "addresses" addresses

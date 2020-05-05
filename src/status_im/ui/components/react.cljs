@@ -1,19 +1,16 @@
 (ns status-im.ui.components.react
-  (:require-macros [status-im.utils.views :as views])
   (:require [reagent.core :as reagent]
-            [status-im.ui.components.styles :as styles]
-            [status-im.utils.utils :as utils]
-            [status-im.utils.core :as utils.core]
-            [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.typography :as typography]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.utils :as utils]
             ["react-native" :as react-native :refer (Keyboard)]
             ["react-native-image-crop-picker" :default image-picker]
-            ["react-native-gesture-handler" :refer (TouchableWithoutFeedback)]
             ["react-native-safe-area-context" :as safe-area-context
              :refer (SafeAreaView SafeAreaProvider SafeAreaConsumer)]
-            ["@react-native-community/clipboard" :default Clipboard]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.typography :as typography]))
+            ["@react-native-community/clipboard" :default Clipboard])
+  (:require-macros [status-im.utils.views :as views]))
 
 (def native-modules (.-NativeModules react-native))
 (def device-event-emitter (.-DeviceEventEmitter react-native))
@@ -129,7 +126,7 @@
 (def text-input-refs (atom {}))
 
 (defn text-input
-  [options text]
+  [options _]
   (let [render-fn (fn [options text]
                     [text-input-class
                      (merge

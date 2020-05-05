@@ -1,22 +1,22 @@
 (ns status-im.stickers.core
   (:require [cljs.reader :as edn]
+            [clojure.set :as clojure.set]
+            [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.navigation :as navigation]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.utils :as utils]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.signing.core :as signing]
             [status-im.utils.contenthash :as contenthash]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [clojure.string :as string]))
+            [status-im.utils.fx :as fx]
+            [status-im.utils.utils :as utils]))
 
 (defn pack-data-callback
   [id]
-  (fn [[category owner mintable timestamp price contenthash]]
+  (fn [[_ _ _ _ price contenthash]]
     (when-let [url (contenthash/url contenthash)]
       (re-frame/dispatch [:stickers/load-pack url id price]))))
 

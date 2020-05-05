@@ -1,5 +1,4 @@
-(ns quo.design-system.typography
-  (:require [quo.platform :as platform]))
+(ns quo.design-system.typography)
 
 (def tiny {:font-size    10
            :line-height 14})

@@ -2,28 +2,24 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.utils.config :as config]
-            [status-im.waku.core :as waku]
             [status-im.ethereum.abi-spec :as abi-spec]
-            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.tokens :as tokens]
-            [status-im.i18n :as i18n]
-            [status-im.signing.keycard :as signing.keycard]
-            [status-im.native-module.core :as status]
-            [status-im.utils.fx :as fx]
             [status-im.hardwallet.common :as hardwallet.common]
-            [status-im.hardwallet.sign :as hardwallet.sign]
+            [status-im.i18n :as i18n]
+            [status-im.native-module.core :as status]
             [status-im.signing.keycard :as signing.keycard]
+            [status-im.utils.fx :as fx]
             [status-im.utils.hex :as utils.hex]
             [status-im.utils.money :as money]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]
-            [re-frame.core :as re-frame.core]
-            [status-im.wallet.prices :as prices]))
+            [status-im.waku.core :as waku]
+            [status-im.wallet.prices :as prices]
+            [taoensso.timbre :as log]))
 
 (re-frame/reg-fx
  :signing/send-transaction-fx
@@ -269,7 +265,7 @@
         {:data data
          :on-completed
          (fn [hash]
-           (re-frame.core/dispatch
+           (re-frame/dispatch
             [:hardwallet/sign-message
              {:tx-hash transaction-hash
               :message-id message-id

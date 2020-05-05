@@ -1,11 +1,7 @@
 (ns status-im.chat.models.message-list
-  (:require
-   ["functional-red-black-tree" :as rb-tree]
-   [taoensso.timbre :as log]
-   [status-im.constants :as constants]
-   [status-im.utils.fx :as fx]
-   [status-im.chat.db :as chat.db]
-   [status-im.utils.datetime :as time]))
+  (:require [status-im.constants :as constants]
+            [status-im.utils.datetime :as time]
+            ["functional-red-black-tree" :as rb-tree]))
 
 (defn- add-datemark [{:keys [whisper-timestamp] :as msg}]
   (assoc msg :datemark (time/day-relative whisper-timestamp)))
@@ -46,8 +42,7 @@
 
 (defn display-photo?
   "We display photos for other users, and not in 1-to-1 chats"
-  [{:keys [system-message? one-to-one?
-           outgoing message-type]}]
+  [{:keys [system-message? one-to-one? outgoing]}]
   (or system-message?
       (and
        (not outgoing)

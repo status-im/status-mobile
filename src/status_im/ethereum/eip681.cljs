@@ -5,7 +5,6 @@
 
    e.g. ethereum:0x1234@1/transfer?to=0x5678&value=1e18&gas=5000"
   (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.tokens :as tokens]
@@ -57,7 +56,7 @@
         (when authority-path
           (let [[_ raw-address chain-id function-name] (re-find authority-path-pattern authority-path)]
             (when (or (ethereum/address? raw-address)
-                      (if (string/starts-with? raw-address "pay-")
+                      (when (string/starts-with? raw-address "pay-")
                         (let [pay-address (string/replace-first raw-address "pay-" "")]
                           (or (ens/is-valid-eth-name? pay-address)
                               (ethereum/address? pay-address)))))
@@ -74,16 +73,18 @@
                                           (ethereum/chain-keyword->chain-id :mainnet))}
                              arguments))))))))))))
 
-(defn parse-eth-value [s]
+(defn parse-eth-value
   "Takes a map as returned by `parse-uri` and returns value as BigNumber"
+  [s]
   (when (string? s)
     (let [eth? (string/ends-with? s "ETH")
           ^js n (money/bignumber (string/replace s "ETH" ""))]
       (if eth? (.times n 1e18) n))))
 
-(defn extract-request-details [{:keys [value address function-name function-arguments] :as details} all-tokens]
+(defn extract-request-details
   "Return a map encapsulating request details (with keys `value`, `address` and `symbol`) from a parsed URI.
    Supports ethereum and erc20 token."
+  [{:keys [value address function-name function-arguments] :as details} all-tokens]
   (when address
     (merge details
            (case function-name

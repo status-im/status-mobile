@@ -1,30 +1,28 @@
 (ns status-im.ui.screens.intro.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.ui.components.react :as react]
-            [re-frame.core :as re-frame]
-            [status-im.react-native.resources :as resources]
-            [status-im.privacy-policy.core :as privacy-policy]
-            [status-im.utils.utils :as utils]
-            [status-im.multiaccounts.create.core :refer [step-kw-to-num]]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.utils.identicon :as identicon]
-            [status-im.ui.components.radio :as radio]
-            [status-im.ui.components.text-input.view :as text-input]
-            [taoensso.timbre :as log]
-            [status-im.utils.gfycat.core :as gfy]
-            [status-im.ui.components.colors :as colors]
+  (:require [re-frame.core :as re-frame]
             [reagent.core :as r]
+            [status-im.constants :as constants]
+            [status-im.i18n :as i18n]
+            [status-im.multiaccounts.create.core :refer [step-kw-to-num]]
+            [status-im.privacy-policy.core :as privacy-policy]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.radio :as radio]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.text-input.view :as text-input]
+            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.intro.styles :as styles]
+            [status-im.utils.config :as config]
+            [status-im.utils.gfycat.core :as gfy]
+            [status-im.utils.identicon :as identicon]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
-            [status-im.i18n :as i18n]
-            [status-im.constants :as constants]
-            [status-im.utils.config :as config]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.utils.utils :as utils])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defn dots-selector [{:keys [on-press n selected color]}]
+(defn dots-selector [{:keys [n selected color]}]
   [react/view {:style (styles/dot-selector n)}
    (doall
     (for [i (range n)]
@@ -62,8 +60,7 @@
                                 :justify-content :flex-end
                                 :align-items :center
                                 :padding-horizontal 32}}
-            (let [margin 32
-                  size (min @width @height) #_(- (min @width @height) #_(* 2 margin))]
+            (let [size (min @width @height) #_(- (min @width @height) #_(* 2 margin))]
               [react/view {:style {:flex 1}
                            :on-layout (fn [^js e]
                                         (reset! height (-> e .-nativeEvent .-layout .-height)))}
@@ -186,7 +183,7 @@
          (i18n/label desc)]]
        [radio/radio selected?]]]]))
 
-(defn select-key-storage [{:keys [selected-storage-type view-height]}]
+(defn select-key-storage [{:keys [selected-storage-type]}]
   (let [storage-types [{:type        :default
                         :icon        :main-icons/mobile
                         :icon-width  24
@@ -252,7 +249,7 @@
 (defn bottom-bar [{:keys [step weak-password? encrypt-with-password?
                           forward-action
                           next-button-disabled?
-                          processing? existing-account?] :as wizard-state}]
+                          processing? existing-account?]}]
   [react/view {:style {:margin-bottom (if (or (#{:choose-key :select-key-storage
                                                  :enter-phrase :recovery-success} step)
                                               (and (#{:create-code :confirm-code} step)

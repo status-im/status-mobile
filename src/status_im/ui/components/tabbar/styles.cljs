@@ -1,8 +1,7 @@
 (ns status-im.ui.components.tabbar.styles
   (:require [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.styles :as styles]))
+            [status-im.utils.platform :as platform]))
 
 (def tabs-height
   (cond

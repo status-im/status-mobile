@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.currency-settings.models-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
+  (:require [cljs.test :refer-macros [deftest is]]
             [status-im.ui.screens.currency-settings.models :as models]))
 
 (deftest get-currency

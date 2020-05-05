@@ -1,9 +1,7 @@
 (ns status-im.mailserver.topics-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.transport.utils :as utils]
             [status-im.mailserver.constants :as c]
-            [status-im.mailserver.topics :as t]
-            [status-im.utils.random :as rand]))
+            [status-im.mailserver.topics :as t]))
 
 (def now-s 100000)
 

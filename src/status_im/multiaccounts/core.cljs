@@ -8,7 +8,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
-            status-im.utils.handlers
             [status-im.utils.identicon :as identicon]
             [status-im.utils.theme :as theme]))
 
@@ -39,11 +38,6 @@
  ::blank-preview-flag-changed
  (fn [flag]
    (native-module/set-blank-preview-flag flag)))
-
-(defn- chat-send? [transaction]
-  (and (seq transaction)
-       (not (:in-progress? transaction))
-       (:from-chat? transaction)))
 
 (fx/defn confirm-wallet-set-up
   [cofx]

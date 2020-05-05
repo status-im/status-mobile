@@ -1,22 +1,22 @@
 (ns status-im.ui.screens.profile.group-chat.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.utils.platform :as platform]
+  (:require [quo.core :as quo]
+            [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.profile.components.styles :as profile.components.styles]
-            [status-im.ui.screens.profile.components.views :as profile.components]
+            [status-im.i18n :as i18n]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.contact.contact :as contact]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.screens.chat.sheets :as chat.sheets]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
-            [quo.core :as quo]
             [status-im.ui.components.profile-header.view :as profile-header]
-            [status-im.ui.components.list-item.views :as list-item]))
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.sheets :as chat.sheets]
+            [status-im.ui.screens.profile.components.styles
+             :as
+             profile.components.styles]
+            [status-im.utils.platform :as platform])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn member-sheet [chat-id member us-admin?]
   [react/view

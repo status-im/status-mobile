@@ -1,9 +1,10 @@
 (ns status-im.chat.db
   (:require [clojure.set :as clojure.set]
-            [status-im.multiaccounts.core :as multiaccounts]
+            [clojure.string :as clojure.string]
             [status-im.contact.db :as contact.db]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.mailserver.constants :as mailserver.constants]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.gfycat.core :as gfycat]))
 
 (defn group-chat-name
@@ -11,7 +12,7 @@
   (str (when public? "#") name))
 
 (defn enrich-active-chat
-  [contacts {:keys [chat-id public? group-chat name] :as chat} current-public-key]
+  [contacts {:keys [chat-id group-chat] :as chat} current-public-key]
   (if group-chat
     (let [pending-invite-inviter-name
           (group-chats.db/get-pending-invite-inviter-name contacts

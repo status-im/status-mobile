@@ -1,19 +1,18 @@
 (ns status-im.ui.screens.profile.contact.views
-  (:require [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
+  (:require [quo.core :as quo]
+            [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.list.views :as list]
-            [status-im.utils.utils :as utils]
-            [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.profile.contact.styles :as styles]
-            [status-im.ui.components.list-item.views :as list-item]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.screens.profile.components.sheets :as sheets]
-            [status-im.ui.components.profile-header.view :as profile-header]
-            [status-im.utils.gfycat.core :as gfy]
             [status-im.multiaccounts.core :as multiaccounts]
-            [quo.core :as quo])
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.list-item.views :as list-item]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.profile-header.view :as profile-header]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.profile.components.sheets :as sheets]
+            [status-im.ui.screens.profile.contact.styles :as styles]
+            [status-im.utils.gfycat.core :as gfy]
+            [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn actions
@@ -25,7 +24,7 @@
                       :accessibility-label :start-conversation-button}
                (not (#{:none :paid} tribute-status))
                (assoc :subtext tribute-label))]
-             ;;TODO hide temporary for v1
+            ;;TODO hide temporary for v1
             #_{:label               (i18n/label :t/send-transaction)
                :icon                :main-icons/send
                :action              #(re-frame/dispatch [:profile/send-transaction public-key])
@@ -35,11 +34,11 @@
                 :icon                :main-icons/remove-contact
                 :accessibility-label :in-contacts-button
                 :action              #(re-frame/dispatch [:contact.ui/remove-contact-pressed contact])}]
-                ;; TODO sheets temporary disabled
-                ;:action              #(re-frame/dispatch [:bottom-sheet/show-sheet
-                ;                                          {:content        sheets/remove-contact
-                ;                                           :content-height 150}
-                ;                                          contact])
+              ;; TODO sheets temporary disabled
+                                        ;:action              #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                        ;                                          {:content        sheets/remove-contact
+                                        ;                                           :content-height 150}
+                                        ;                                          contact])
               [{:label               (i18n/label :t/add-to-contacts)
                 :icon                :main-icons/add-contact
                 :accessibility-label :add-to-contacts-button

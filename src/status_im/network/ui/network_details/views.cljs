@@ -1,15 +1,14 @@
 (ns status-im.network.ui.network-details.views
-  (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.network.ui.styles :as st]
             [status-im.network.core :as network]
+            [status-im.network.ui.styles :as st]
             [status-im.network.ui.views :as network-settings]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.components.topbar :as topbar])
+  (:require-macros [status-im.utils.views :as views]))
 
 (views/defview network-details []
   (views/letsubs [{:keys [networks/selected-network]} [:get-screen-params]

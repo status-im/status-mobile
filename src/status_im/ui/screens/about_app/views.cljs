@@ -1,15 +1,14 @@
 (ns status-im.ui.screens.about-app.views
-  (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.list.views :as list]
             [status-im.ui.components.list-item.views :as list-item]
+            [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.about-app.styles :as styles]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.about-app.styles :as styles])
+  (:require-macros [status-im.utils.views :as views]))
 
 (defn- data [app-version node-version]
   [{:type                :small

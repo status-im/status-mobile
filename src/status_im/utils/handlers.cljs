@@ -1,6 +1,6 @@
 (ns status-im.utils.handlers
   (:require [re-frame.core :as re-frame]
-            [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
+            [re-frame.interceptor :refer [->interceptor get-coeffect]]
             [taoensso.timbre :as log]))
 
 (defn- parse-json

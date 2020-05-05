@@ -6,8 +6,7 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.photos :as photos]
-            [status-im.utils.platform :as platform])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+            [status-im.utils.platform :as platform]))
 
 ;;TODO REWORK THIS NAMESPACE
 

@@ -1035,7 +1035,7 @@
 (defn locale->checkpoint [locale]
   (let [locale-labels (locale->labels locale)
         checkpoint    (->> checkpoints-def
-                           (filter (fn [[checkpoint checkpoint-labels]]
+                           (filter (fn [[_ checkpoint-labels]]
                                      (set/subset? checkpoint-labels locale-labels)))
                            ffirst)]
     checkpoint))

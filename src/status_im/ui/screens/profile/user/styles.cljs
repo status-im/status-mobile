@@ -1,5 +1,4 @@
-(ns status-im.ui.screens.profile.user.styles
-  (:require [status-im.ui.components.colors :as colors]))
+(ns status-im.ui.screens.profile.user.styles)
 
 (def share-link-button
   {:margin-top    12

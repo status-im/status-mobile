@@ -7,8 +7,7 @@
 (defn checkbox
   "react/check-box is currently not available on iOS,
   use it once it is available on all platforms"
-  [{:keys [on-value-change checked? accessibility-label
-           disabled? style icon-style]
+  [{:keys [on-value-change checked? accessibility-label style]
     :or   {accessibility-label :checkbox}}]
   [(if on-value-change react/touchable-highlight react/view)
    (merge {:style               (merge

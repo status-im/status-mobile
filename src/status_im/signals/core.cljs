@@ -2,14 +2,11 @@
   (:require [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [status-im.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
-            [clojure.string :as string]
             [status-im.multiaccounts.login.core :as login]
             [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.pairing.core :as pairing]
             [status-im.transport.filters.core :as transport.filters]
             [status-im.transport.message.core :as transport.message]
             [status-im.utils.fx :as fx]
-            [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
 
 (fx/defn status-node-started

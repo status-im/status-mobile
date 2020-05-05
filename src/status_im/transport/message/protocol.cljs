@@ -2,7 +2,6 @@
  status-im.transport.message.protocol
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 

@@ -288,9 +288,10 @@
                      (i18n/label :cooldown/warning-message)
                      #())))
 
-(defn set-dock-badge-label [label]
+(defn set-dock-badge-label
   "Sets dock badge label (OSX only for now).
    Label must be a string. Pass nil or empty string to clear the label."
+  [label]
   (.setDockBadgeLabel ^js react/desktop-notification label))
 
 (re-frame/reg-fx

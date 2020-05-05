@@ -4,7 +4,7 @@
 (def members-added-type 3)
 
 (defn joined?
-  [public-key {:keys [members-joined] :as chat}]
+  [public-key {:keys [members-joined]}]
   (contains? members-joined public-key))
 
 (defn invited?

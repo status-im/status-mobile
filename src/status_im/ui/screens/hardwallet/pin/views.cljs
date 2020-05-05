@@ -10,7 +10,7 @@
             [status-im.utils.platform :as platform]
             [status-im.ui.components.topbar :as topbar]))
 
-(def ^:const default-pin-retries-number 3)
+(def default-pin-retries-number 3)
 
 (defn numpad-button [n step enabled? small-screen?]
   [react/touchable-highlight

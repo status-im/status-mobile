@@ -1,6 +1,4 @@
-(ns status-im.hardwallet.core-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.hardwallet.core :as hardwallet]))
+(ns status-im.hardwallet.core-test)
 
 ;;TODO re-enable after fixing hardwallet flow
 #_(deftest process-pin-input

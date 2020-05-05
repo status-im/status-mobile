@@ -1,14 +1,12 @@
 (ns status-im.hardwallet.card
-  (:require
-   [status-im.hardwallet.keycard :as keycard]
-   [status-im.hardwallet.real-keycard :as real-keycard]
-   [status-im.hardwallet.simulated-keycard :as simulated-keycard]
-   [status-im.hardwallet.ios-keycard :as ios-keycard]
-   [taoensso.timbre :as log]
-   [re-frame.core :as re-frame]
-   [status-im.utils.config :as config]
-   [status-im.utils.platform :as platform]
-   ["react-native" :as react-native]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.hardwallet.ios-keycard :as ios-keycard]
+            [status-im.hardwallet.keycard :as keycard]
+            [status-im.hardwallet.real-keycard :as real-keycard]
+            [status-im.hardwallet.simulated-keycard :as simulated-keycard]
+            [status-im.utils.config :as config]
+            [status-im.utils.platform :as platform]
+            [taoensso.timbre :as log]))
 
 (defonce card (if config/keycard-test-menu-enabled?
                 (simulated-keycard/SimulatedKeycard.)
@@ -392,7 +390,7 @@
         (error-object->map response)]))}))
 
 (defn sign-typed-data
-  [{:keys [hash] :as args}]
+  [{:keys [hash]}]
   (log/info "[keycard] sign-typed-data")
   (keycard/sign-typed-data
    card

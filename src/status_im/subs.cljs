@@ -1,15 +1,14 @@
 (ns status-im.subs
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
-            [taoensso.timbre :as log]
             [re-frame.core :as re-frame]
             [status-im.browser.core :as browser]
-            [status-im.chat.constants :as chat.constants]
             [status-im.chat.db :as chat.db]
             [status-im.chat.models :as chat.models]
             [status-im.chat.models.message-list :as models.message-list]
             [status-im.constants :as constants]
             [status-im.contact.db :as contact.db]
+            [status-im.ens.core :as ens]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.ethereum.tokens :as tokens]
@@ -17,41 +16,34 @@
             [status-im.fleet.core :as fleet]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.i18n :as i18n]
-            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.db :as multiaccounts.db]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.recover.core :as recover]
             [status-im.pairing.core :as pairing]
-            [status-im.tribute-to-talk.core :as tribute-to-talk]
+            [status-im.signing.gas :as signing.gas]
+            #_[status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.tribute-to-talk.db :as tribute-to-talk.db]
-            [status-im.tribute-to-talk.whitelist :as whitelist]
-            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.toolbar.styles :as toolbar.styles]
+            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.screens.add-new.new-public-chat.db :as db]
-            [status-im.ui.screens.chat.stickers.styles :as stickers.styles]
             [status-im.ui.screens.mobile-network-settings.utils
              :as
              mobile-network-utils]
-            [status-im.wallet.utils :as wallet.utils]
             [status-im.utils.build :as build]
             [status-im.utils.config :as config]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.hex :as utils.hex]
-            [status-im.utils.identicon :as identicon]
+            [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.utils.universal-links.core :as links]
-            [status-im.wallet.core :as wallet]
             [status-im.wallet.db :as wallet.db]
-            [status-im.signing.gas :as signing.gas]
-            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.wallet.utils :as wallet.utils]
             status-im.ui.screens.keycard.subs
             status-im.ui.screens.hardwallet.settings.subs
             status-im.ui.screens.hardwallet.pin.subs
-            status-im.ui.screens.hardwallet.setup.subs
-            [status-im.ens.core :as ens]))
+            status-im.ui.screens.hardwallet.setup.subs))
 
 ;; TOP LEVEL ===========================================================================================================
 
@@ -210,9 +202,7 @@
  :intro-wizard
  :<- [:intro-wizard-state]
  :<- [:dimensions/window]
- (fn [[wizard-state
-       {:keys [width height] :as dimensions}
-       view-id]]
+ (fn [[wizard-state {:keys [width height]}]]
    (assoc wizard-state
           :view-height height :view-width width)))
 
@@ -404,7 +394,7 @@
 
 (re-frame/reg-sub
  :get-app-short-version
- (fn [db] app-short-version))
+ (fn [_] app-short-version))
 
 (re-frame/reg-sub
  :get-app-node-version
@@ -1434,12 +1424,12 @@
 
 (re-frame/reg-sub
  :wallet.transactions.details/current-transaction
- (fn [[_ hash address] _]
+ (fn [[_ _ address] _]
    [(re-frame/subscribe [:wallet.transactions/transactions address])
     (re-frame/subscribe [:ethereum/native-currency])
     (re-frame/subscribe [:ethereum/chain-keyword])])
  (fn [[transactions native-currency chain-keyword] [_ hash _]]
-   (let [{:keys [gas-used gas-price hash timestamp type token value]
+   (let [{:keys [gas-used gas-price hash timestamp type]
           :as transaction}
          (get transactions hash)
          native-currency-text (name (or (:symbol-display native-currency)
@@ -1696,7 +1686,7 @@
  (fn [[_ chat-id] _]
    [(re-frame/subscribe [:chats/chat chat-id])
     (re-frame/subscribe [:contacts/contacts-by-chat filter chat-id])])
- (fn [[chat contacts] [_ chat-id]]
+ (fn [[chat contacts] [_ _]]
    (when (and chat (not (:group-chat chat)))
      (if (pos? (count contacts))
        (multiaccounts/displayed-photo (first contacts))
@@ -1929,8 +1919,8 @@
         :as settings}
        {:keys [step editing? state error]
         :or {step :intro}
-        screen-snt-amount :snt-amount
-        screen-message :message} prices currency]]
+        screen-snt-amount :snt-amount}
+       prices currency]]
    (let [fiat-value (if snt-amount
                       (money/fiat-amount-value
                        snt-amount
@@ -2012,7 +2002,7 @@
 (re-frame/reg-sub
  :ens/confirmation-screen
  :<- [:ens/registration]
- (fn [{:keys [username state] :as ens}]
+ (fn [{:keys [username state]}]
    {:state          state
     :username       username}))
 
@@ -2080,7 +2070,7 @@
     (not (.eq bn (.round bn decimals)))))
 
 (defn get-amount-error [amount decimals]
-  (when (and (not (empty? amount)) decimals)
+  (when (and (seq amount) decimals)
     (let [normalized-amount (money/normalize amount)
           value             (money/bignumber normalized-amount)]
       (cond

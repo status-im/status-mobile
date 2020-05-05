@@ -1,11 +1,10 @@
 (ns status-im.fleet.core
   (:require [re-frame.core :as re-frame]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.node.core :as node]
             [status-im.utils.config :as config]
-            [status-im.utils.types :as types]
             [status-im.utils.fx :as fx]))
 
 (defn current-fleet-sub

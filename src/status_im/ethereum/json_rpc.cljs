@@ -2,13 +2,12 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ethereum.abi-spec :as abi-spec]
-            [status-im.utils.config :as config]
             [status-im.ethereum.decode :as decode]
             [status-im.native-module.core :as status]
             [status-im.utils.money :as money]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [taoensso.timbre :as log]))
 
 (def json-rpc-api
   {"eth_call" {}
@@ -197,10 +196,10 @@
 (defn call
   [{:keys [method params on-success] :as arg}]
   (if-let [method-options (json-rpc-api method)]
-    (let [{:keys [id on-result subscription?]
+    (let [params (or params [])
+          {:keys [id on-result subscription?]
            :or {on-result identity
-                id        1
-                params    []}} method-options
+                id 1}} method-options
           on-error (or (on-error-retry call arg)
                        #(log/warn :json-rpc/error method :error % :params params))]
       (if (nil? method)

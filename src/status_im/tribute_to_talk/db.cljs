@@ -21,7 +21,7 @@
     (.fromWei utils s)))
 
 (defn tribute-status
-  [{:keys [system-tags tribute-to-talk] :as contact}]
+  [{:keys [system-tags tribute-to-talk]}]
   (let [{:keys [snt-amount transaction-hash]} tribute-to-talk]
     (cond (contains? system-tags :tribute-to-talk/paid) :paid
           (not (nil? transaction-hash)) :pending
@@ -44,7 +44,7 @@
            (and (= (to-wei converted-snt-amount)
                    snt-amount)
                 (< 0 (js/parseFloat converted-snt-amount) max-snt-amount)))
-         (catch :default err nil))))
+         (catch :default _ nil))))
 
 (defn get-settings
   [db]

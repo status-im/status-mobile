@@ -6,9 +6,9 @@
 (def xs-height 896)
 
 (defn iphone-x-dimensions? []
-  (let [{:keys [width height]} (-> Dimensions
-                                   (.get "window")
-                                   (js->clj :keywordize-keys true))]
+  (let [{:keys [height]} (-> Dimensions
+                             (.get "window")
+                             (js->clj :keywordize-keys true))]
     (or (= height x-height) (= height xs-height))))
 
 (def platform-specific

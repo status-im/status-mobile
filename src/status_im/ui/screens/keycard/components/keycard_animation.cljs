@@ -1,12 +1,11 @@
 (ns status-im.ui.screens.keycard.components.keycard-animation
-  (:require [status-im.ui.components.react :as react]
-            [reagent.core :as reagent]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.animation :as animation]
+  (:require [reagent.core :as reagent]
             [status-im.hardwallet.card :as keycard-nfc]
             [status-im.react-native.resources :as resources]
+            [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]
-            [taoensso.timbre :as log]))
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.react :as react]))
 
 (defn circle [{:keys [animation-value color size]}]
   [react/animated-view
@@ -225,9 +224,6 @@
   (js/setTimeout #(when (= @state :error)
                     (restart)) 3000))
 
-(defn on-success [{:keys [state]}]
-  (reset! state :success))
-
 (defn on-connect
   [{:keys [state card small indicator
            medium big card-scale phone]}]
@@ -295,8 +291,6 @@
                                  :small      animation-small
                                  :medium     animation-medium
                                  :big        animation-big}))
-        on-success          #(on-success
-                              {:state state})
         on-error            #(do
                                (on-card-disconnected)
                                (on-error

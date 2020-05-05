@@ -1,20 +1,17 @@
 (ns ^{:doc "API to init and stop whisper messaging"}
  status-im.transport.core
-  (:require
-   [re-frame.core :as re-frame]
-   [status-im.ethereum.json-rpc :as json-rpc]
-   [status-im.waku.core :as waku]
-   [status-im.native-module.core :as status]
-   [status-im.mailserver.core :as mailserver]
-   [status-im.transport.message.core :as message]
-   [status-im.transport.filters.core :as transport.filters]
-   [status-im.pairing.core :as pairing]
-   [status-im.utils.publisher :as publisher]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.handlers :as handlers]
-   [taoensso.timbre :as log]
-   status-im.transport.shh
-   [status-im.utils.config :as config]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.mailserver.core :as mailserver]
+            [status-im.native-module.core :as status]
+            [status-im.pairing.core :as pairing]
+            [status-im.utils.config :as config]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.publisher :as publisher]
+            status-im.transport.shh
+            [status-im.waku.core :as waku]
+            [taoensso.timbre :as log]))
 
 (defn set-node-info [{:keys [db]} node-info]
   {:db (assoc db :node-info node-info)})

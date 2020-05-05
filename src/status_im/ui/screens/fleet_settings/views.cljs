@@ -1,14 +1,12 @@
 (ns status-im.ui.screens.fleet-settings.views
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.node.core :as node]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.fleet-settings.styles :as styles]
-            [status-im.node.core :as node]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- fleet-icon [current?]

@@ -1,22 +1,13 @@
-(ns status-im.pairing.core (:require [clojure.string :as string]
-                                     [re-frame.core :as re-frame]
-                                     [status-im.chat.models :as models.chat]
-                                     [status-im.waku.core :as waku]
-                                     [status-im.contact.core :as contact]
-                                     [status-im.contact.db :as contact.db]
-                                     [taoensso.timbre :as log]
-                                     [status-im.ethereum.json-rpc :as json-rpc]
-                                     [status-im.i18n :as i18n]
-                                     [status-im.multiaccounts.model :as multiaccounts.model]
-                                     [status-im.multiaccounts.update.core :as multiaccounts.update]
-                                     [status-im.transport.message.protocol :as protocol]
-                                     [status-im.navigation :as navigation]
-                                     [status-im.utils.config :as config]
-                                     [status-im.utils.fx :as fx]
-                                     [status-im.utils.identicon :as identicon]
-                                     [status-im.utils.pairing :as pairing.utils]
-                                     [status-im.utils.platform :as utils.platform]
-                                     [status-im.utils.types :as types]))
+(ns status-im.pairing.core
+  (:require [re-frame.core :as re-frame]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.i18n :as i18n]
+            [status-im.navigation :as navigation]
+            [status-im.utils.config :as config]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.platform :as utils.platform]
+            [status-im.waku.core :as waku]
+            [taoensso.timbre :as log]))
 
 (defn enable-installation-rpc [waku-enabled? installation-id on-success on-failure]
   (json-rpc/call {:method (json-rpc/call-ext-method waku-enabled? "enableInstallation")

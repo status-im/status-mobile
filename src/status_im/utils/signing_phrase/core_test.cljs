@@ -1,5 +1,5 @@
 (ns status-im.utils.signing-phrase.core-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
+  (:require [cljs.test :refer-macros [deftest is]]
             [status-im.utils.signing-phrase.core :refer [generate]]
             [clojure.string :as string]))
 

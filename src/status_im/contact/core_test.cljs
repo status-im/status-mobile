@@ -1,9 +1,7 @@
 (ns status-im.contact.core-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.identicon :as identicon]
-            [status-im.contact.core :as model]))
+            [status-im.contact.core :as model]
+            [status-im.ethereum.json-rpc :as json-rpc]))
 
 (def public-key "0x04fcf40c526b09ff9fb22f4a5dbd08490ef9b64af700870f8a0ba2133f4251d5607ed83cd9047b8c2796576bc83fa0de23a13a4dced07654b8ff137fe744047917")
 
@@ -57,8 +55,7 @@
                       public-key
                       1
                       {:name "new-name"
-                       :profile-image "new-image"})
-              contact (get-in actual [:db :contacts/contacts public-key])]
+                       :profile-image "new-image"})]
           (testing "it does nothing"
             (is (nil? actual)))))
       (testing "timestamp is less than last-updated"
@@ -72,8 +69,7 @@
                       public-key
                       0
                       {:name "new-name"
-                       :profile-image "new-image"})
-              contact (get-in actual [:db :contacts/contacts public-key])]
+                       :profile-image "new-image"})]
           (testing "it does nothing"
             (is (nil? actual))))))
     (testing "backward compatibility"

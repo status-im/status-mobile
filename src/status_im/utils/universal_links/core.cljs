@@ -9,7 +9,6 @@
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.security :as security]
-            [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
             [status-im.navigation :as navigation]

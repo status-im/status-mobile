@@ -5,7 +5,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.currency-settings.styles :as styles]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.search-input.view :as search-input]))

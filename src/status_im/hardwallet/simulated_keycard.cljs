@@ -1,12 +1,11 @@
 (ns status-im.hardwallet.simulated-keycard
-  (:require [status-im.hardwallet.keycard :as keycard]
-            [status-im.utils.utils :as utils]
+  (:require [re-frame.db :as re-frame.db]
             [status-im.constants :as constants]
-            [taoensso.timbre :as log]
             [status-im.ethereum.core :as ethereum]
+            [status-im.hardwallet.keycard :as keycard]
             [status-im.native-module.core :as status]
             [status-im.utils.types :as types]
-            [re-frame.db :as re-frame.db]))
+            [status-im.utils.utils :as utils]))
 
 (def initial-state
   {:card-connected?  false

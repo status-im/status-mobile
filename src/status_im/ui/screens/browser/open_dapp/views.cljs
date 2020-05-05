@@ -1,18 +1,16 @@
 (ns status-im.ui.screens.browser.open-dapp.views
-  (:require
-   [re-frame.core :as re-frame]
-   [status-im.i18n :as i18n]
-   [status-im.ui.components.colors :as colors]
-   [status-im.ui.components.react :as react]
-   [status-im.ui.screens.browser.open-dapp.styles :as styles]
-   [status-im.ui.components.list.views :as list]
-   [status-im.ui.components.common.common :as components.common]
-   [status-im.ui.screens.wallet.components.views :as components]
-   [status-im.react-native.resources :as resources]
-   [status-im.ui.components.list-item.views :as list-item]
-   [status-im.ui.components.icons.vector-icons :as vector-icons]
-   [status-im.ui.components.icons.vector-icons :as icons]
-   [status-im.ui.screens.browser.accounts :as accounts])
+  (:require [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.list-item.views :as list-item]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.browser.accounts :as accounts]
+            [status-im.ui.screens.browser.open-dapp.styles :as styles]
+            [status-im.ui.screens.wallet.components.views :as components])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn hide-sheet-and-dispatch [event]
@@ -43,7 +41,7 @@
     :title         name
     :subtitle      (or url :t/dapp)
     :icon          [react/view (styles/browser-icon-container)
-                    [vector-icons/icon :main-icons/browser {:color colors/gray}]]}])
+                    [icons/icon :main-icons/browser {:color colors/gray}]]}])
 
 (def dapp-image-data {:image (resources/get-image :dapp-store) :width 768 :height 333})
 (defn dapp-image [] [components.common/image-contain nil dapp-image-data])

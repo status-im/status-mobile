@@ -1,14 +1,9 @@
 (ns status-im.contact.block
   (:require [re-frame.core :as re-frame]
-            [status-im.chat.models :as chat.models]
-            [status-im.chat.models.loading :as chat.models.loading]
             [status-im.chat.models.message-list :as message-list]
-
-            [status-im.chat.models.message :as chat.models.message]
             [status-im.contact.db :as contact.db]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.contacts :as contacts-store]
-            [status-im.i18n :as i18n]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]))
 

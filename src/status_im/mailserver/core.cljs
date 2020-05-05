@@ -1,17 +1,17 @@
 (ns ^{:doc "Mailserver events and API"}
  status-im.mailserver.core
   (:require [clojure.string :as string]
+            [clojure.set :as clojure.set]
             [re-frame.core :as re-frame]
             [status-im.data-store.mailservers :as data-store.mailservers]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.waku.core :as waku]
-            [status-im.node.core :as node]
             [status-im.i18n :as i18n]
             [status-im.mailserver.constants :as constants]
             [status-im.mailserver.topics :as mailserver.topics]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as status]
+            [status-im.node.core :as node]
             [status-im.transport.utils :as transport.utils]
             [status-im.ui.screens.mobile-network-settings.utils
              :as
@@ -23,6 +23,7 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.random :as rand]
             [status-im.utils.utils :as utils]
+            [status-im.waku.core :as waku]
             [taoensso.timbre :as log]))
 
 ;; How do mailserver work ?
@@ -73,9 +74,7 @@
 (defn get-selected-mailserver
   "Use the preferred mailserver if set & exists"
   [db]
-  (let [current-fleet (node/current-fleet-key db)
-        current-id    (:mailserver/current-id db)
-        preference    (preferred-mailserver-id db)]
+  (let [preference    (preferred-mailserver-id db)]
     (when (and preference
                (fetch db preference))
       preference)))
@@ -320,7 +319,7 @@
     adjusted-from))
 
 (defn chats->never-synced-public-chats [chats]
-  (into {} (filter (fn [[k v]] (:might-have-join-time-messages? v)) chats)))
+  (into {} (filter (fn [[_ v]] (:might-have-join-time-messages? v)) chats)))
 
 (fx/defn handle-request-success [{{:keys [chats] :as db} :db}
                                  {:keys [request-id topics]}]
@@ -396,7 +395,7 @@
 
 (defn get-mailserver-when-ready
   "return the mailserver if the mailserver is ready"
-  [{:keys [db] :as cofx}]
+  [{:keys [db]}]
   (let [{:keys [sym-key-id] :as mailserver} (fetch-current db)
         mailserver-state (:mailserver/state db)]
     (when (and (= :connected mailserver-state)
@@ -686,7 +685,7 @@
                         #(log/error "failed to save chat request range" %)})
                      (vals updated-ranges))})))
 
-(defn prepare-new-gaps [new-gaps ranges {:keys [from to] :as req} chat-ids]
+(defn prepare-new-gaps [new-gaps ranges {:keys [from to]} chat-ids]
   (into
    {}
    (comp

@@ -1327,29 +1327,29 @@
     color "^3.1.2"
     react-native-iphone-x-helper "^1.2.1"
 
-"@react-navigation/core@^5.3.4":
-  version "5.3.4"
-  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-5.3.4.tgz#272eb48381c4db251f4dc5cd044db1606a551551"
-  integrity sha512-ul8J7oHC1/k/qWORr7uI710nKofbcD2clYI0bK0Bix+xgAoiFPgrwRDrQcjWw4YQViYlR8CGF/DhnKK+BFA+Yw==
+"@react-navigation/core@^5.4.0":
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-5.4.0.tgz#6b4973d48396d28ed3efee582b28807682a5865d"
+  integrity sha512-tDmfw7nzbJg186cXHUPl/VYEGSepzBXNiHRv4GTxLQ+S9cnZgPyrGv56kiSvHhxCzyNGN0nHscCY9IUv08KL6Q==
   dependencies:
-    "@react-navigation/routers" "^5.4.0"
+    "@react-navigation/routers" "^5.4.2"
     escape-string-regexp "^2.0.0"
     nanoid "^3.0.2"
     query-string "^6.12.0"
     react-is "^16.13.0"
     use-subscription "^1.4.0"
 
-"@react-navigation/native@^5.0.9":
-  version "5.1.6"
-  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-5.1.6.tgz#932ff1b5b8b9f051d8e5cd3b016d05badaa01898"
-  integrity sha512-DLLSnh29AndrGjPrHJoAgObeO9TiyrGtrASl+SA3B4ksmz4dUV2t6vaRwHogn1kejvRd+1T8VD923d3K1rjy7w==
+"@react-navigation/native@^5.2.3":
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-5.2.3.tgz#2e2ec88396d2be96d11f9430b4af6dcea34029b0"
+  integrity sha512-fQfW506n9eTwBGiUbuxSvI7DTBXwR3IqAlooBCUHRJC0WiuSUm3aGg6eESJc8nW1A64hu33i/ITf10mn3Ec6Tg==
   dependencies:
-    "@react-navigation/core" "^5.3.4"
+    "@react-navigation/core" "^5.4.0"
 
-"@react-navigation/routers@^5.4.0":
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/@react-navigation/routers/-/routers-5.4.0.tgz#2fce2a3880e84a110d4eaea317bb7dadee27d57c"
-  integrity sha512-Z5mQF/oQH9CRLilNm1H7h0wjY3dKomWOhuuDehW8UKuLiFp2mWJI1P5N9qwaSraxhcoiVfb9QXwKZru/wBzWMQ==
+"@react-navigation/routers@^5.4.2":
+  version "5.4.2"
+  resolved "https://registry.yarnpkg.com/@react-navigation/routers/-/routers-5.4.2.tgz#10c1f32b0ddde935d1fc9123fb1683472bf31815"
+  integrity sha512-YjGv4H0LXD2YnDjSBAJzIKzlZehFRqWfR2IJtZor/mfLkOi6qDl8yJeqZKbLEeQsu6o6493QdxM81tqX293kyQ==
   dependencies:
     nanoid "^3.0.2"
 

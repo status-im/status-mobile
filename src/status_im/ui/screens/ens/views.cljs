@@ -1,29 +1,27 @@
 (ns status-im.ui.screens.ens.views
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
+            [status-im.constants :as constants]
             [status-im.ens.core :as ens]
             [status-im.ethereum.core :as ethereum]
-            [status-im.constants :as constants]
             [status-im.ethereum.ens :as ethereum.ens]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.i18n :as i18n]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.message.message :as message]
-            [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.screens.chat.photos :as photos]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.utils.debounce :as debounce]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.screens.profile.components.views :as profile.components]
+            [status-im.utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- button
@@ -179,9 +177,9 @@
         [react/text ""]))))
 
 (defn- username-input
-  [username state placeholder]
+  [_ _ _]
   (let [input-ref (atom nil)]
-    (fn [username state placeholder]
+    (fn [_ state placeholder]
       [react/view {:flex-direction :row :justify-content :center}
        ;;NOTE required so that the keyboards shows up when navigating
        ;;back from checkout screen
@@ -476,7 +474,7 @@
 ;;; NAME DETAILS SCREEN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def ^:const release-instructions-link "https://our.status.im/managing-your-ens-name-in-v1/")
+(def release-instructions-link "https://our.status.im/managing-your-ens-name-in-v1/")
 
 (defn open-release-instructions-link! []
   (.openURL ^js react/linking release-instructions-link))
@@ -626,7 +624,7 @@
              [name-item {:name name :hide-chevron? true :action action}]]
             [radio/radio (= name preferred-name)]]]))]]]])
 
-(defn- registered [names {:keys [preferred-name public-key name] :as account} show?]
+(defn- registered [names {:keys [preferred-name public-key] :as account} _]
   [react/view {:style {:flex 1}}
    [react/scroll-view
     [react/view {:style {:margin-top 8}}

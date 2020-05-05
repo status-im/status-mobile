@@ -59,21 +59,21 @@
     (is (= [{:ChatID "0xchat-id"
              :OneToOne true
              :Identity "chat-id"}]
-           (transport.filters/chats->filter-requests [{:is-active true
-                                                       :group-chat false
-                                                       :chat-id "0xchat-id"}]))))
+           (#'status-im.transport.filters.core/chats->filter-requests [{:is-active true
+                                                                        :group-chat false
+                                                                        :chat-id "0xchat-id"}]))))
   (testing "a malformed one to one chat"
     (is (= []
-           (transport.filters/chats->filter-requests [{:is-active true
-                                                       :group-chat false
-                                                       :chat-id "malformed"}]))))
+           (#'status-im.transport.filters.core/chats->filter-requests [{:is-active true
+                                                                        :group-chat false
+                                                                        :chat-id "malformed"}]))))
   (testing "a single public chat"
     (is (= [{:ChatID "chat-id"
              :OneToOne false}]
-           (transport.filters/chats->filter-requests [{:is-active true
-                                                       :group-chat true
-                                                       :public? true
-                                                       :chat-id "chat-id"}]))))
+           (#'status-im.transport.filters.core/chats->filter-requests [{:is-active true
+                                                                        :group-chat true
+                                                                        :public? true
+                                                                        :chat-id "chat-id"}]))))
   (testing "a single group chat"
     (is (= [{:ChatID "0xchat-id-2"
              :OneToOne true
@@ -81,20 +81,20 @@
             {:ChatID "0xchat-id-1"
              :OneToOne true
              :Identity "chat-id-1"}]
-           (transport.filters/chats->filter-requests [{:is-active true
-                                                       :group-chat true
-                                                       :members-joined #{"0xchat-id-1" "0xchat-id-2"}
-                                                       :chat-id "chat-id"}])))))
+           (#'status-im.transport.filters.core/chats->filter-requests [{:is-active true
+                                                                        :group-chat true
+                                                                        :members-joined #{"0xchat-id-1" "0xchat-id-2"}
+                                                                        :chat-id "chat-id"}])))))
 
 (deftest contacts->filters
   (testing "converting contacts to filters"
     (is (= [{:ChatID "0xchat-id-2"
              :OneToOne true
              :Identity "chat-id-2"}]
-           (transport.filters/contacts->filter-requests [{:system-tags #{}
-                                                          :public-key "0xchat-id-1"}
-                                                         {:system-tags #{:contact/added}
-                                                          :public-key "0xchat-id-2"}])))))
+           (#'status-im.transport.filters.core/contacts->filter-requests [{:system-tags #{}
+                                                                           :public-key "0xchat-id-1"}
+                                                                          {:system-tags #{:contact/added}
+                                                                           :public-key "0xchat-id-2"}])))))
 
 (deftest load-member
   (testing "it returns fx for a member"

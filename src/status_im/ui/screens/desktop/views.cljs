@@ -1,31 +1,30 @@
 (ns status-im.ui.screens.desktop.views
-  (:require-macros [status-im.utils.views :as views])
-  (:require [status-im.ui.screens.desktop.main.views :as main.views]
+  (:require #_[status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
+            [status-im.ui.screens.desktop.main.views :as main.views]
+            [status-im.ui.screens.group.views
+             :refer
+             [add-participants-toggle-list contact-toggle-list new-group]]
             [status-im.ui.screens.intro.views :as intro.views]
-            [status-im.ui.screens.group.views :refer [contact-toggle-list
-                                                      new-group
-                                                      add-participants-toggle-list]]
-            [status-im.ui.screens.profile.group-chat.views :refer [group-chat-profile]]
             [status-im.ui.screens.multiaccounts.login.views :as login.views]
-            [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im.ui.screens.multiaccounts.views :as multiaccounts.views]
-            [status-im.utils.platform :as platform]
-            [status-im.i18n :as i18n]
-            [taoensso.timbre :as log]
-            [status-im.utils.utils :as utils]))
+            [status-im.ui.screens.profile.group-chat.views
+             :refer
+             [group-chat-profile]]
+            #_[status-im.utils.utils :as utils])
+  (:require-macros [status-im.utils.views :as views]))
 
 (enable-console-print!)
 
 (views/defview main []
   (views/letsubs [view-id [:view-id]
-                  version [:get-app-version]]
+                  #_#_version [:get-app-version]]
     {:component-did-mount
      (fn []
-       (.getValue rn-dependencies/desktop-config "desktop-alpha-warning-shown-for-version"
-                  #(when-not (= %1 version)
-                     (.setValue ^js rn-dependencies/desktop-config "desktop-alpha-warning-shown-for-version" version)
-                     (utils/show-popup nil (i18n/label :desktop-alpha-release-warning)))))}
+       #_(.getValue rn-dependencies/desktop-config "desktop-alpha-warning-shown-for-version"
+                    #(when-not (= %1 version)
+                       (.setValue ^js rn-dependencies/desktop-config "desktop-alpha-warning-shown-for-version" version)
+                       (utils/show-popup nil (i18n/label :desktop-alpha-release-warning)))))}
 
     (let [component (case view-id
                       :intro intro.views/intro

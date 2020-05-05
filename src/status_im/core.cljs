@@ -1,23 +1,22 @@
 (ns status-im.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.utils.error-handler :as error-handler]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.screens.views :as views]
-            [status-im.ui.components.react :as react]
-            [reagent.core :as reagent]
-            status-im.utils.db
-            status-im.db
+  (:require status-im.utils.db
             status-im.subs
             status-im.events
             ["react-native-languages" :default react-native-languages]
             ["react-native-shake" :as react-native-shake]
             ["react-native-screens" :refer (enableScreens)]
-            [status-im.utils.logging.core :as utils.logs]
             ["react-native" :as rn]
-            [status-im.utils.snoopy :as snoopy]
-            [status-im.i18n :as i18n]
+            [re-frame.core :as re-frame]
             [re-frame.interop :as interop]
-            [reagent.impl.batching :as batching]))
+            [reagent.core :as reagent]
+            [reagent.impl.batching :as batching]
+            [status-im.i18n :as i18n]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.screens.views :as views]
+            [status-im.utils.error-handler :as error-handler]
+            [status-im.utils.logging.core :as utils.logs]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.snoopy :as snoopy]))
 
 (set! interop/next-tick js/setTimeout)
 (set! batching/fake-raf #(js/setTimeout % 0))
@@ -46,7 +45,7 @@
 (defn app-state-change-handler [state]
   (re-frame/dispatch [:app-state-change state]))
 
-(defn root [props]
+(defn root [_]
   (reagent/create-class
    {:component-did-mount
     (fn [this]

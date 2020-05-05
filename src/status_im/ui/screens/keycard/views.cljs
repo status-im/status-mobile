@@ -1,20 +1,18 @@
 (ns status-im.ui.screens.keycard.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.screens.keycard.styles :as styles]
+  (:require [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.colors :as colors]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.react-native.resources :as resources]
-            [re-frame.core :as re-frame]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
-            [status-im.utils.core :as utils.core]
             [status-im.ui.components.list-item.views :as list-item]
-            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
-            [reagent.core :as reagent]))
+            [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
+            [status-im.ui.screens.keycard.styles :as styles])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 ;; NOTE(Ferossgp): Seems like it should be in popover
 (defn blank []
@@ -213,7 +211,7 @@
             enter-step [:hardwallet/pin-enter-step]
             status [:hardwallet/pin-status]
             error-label [:hardwallet/pin-error-label]
-            {:keys [key-uid name] :as account} [:multiaccounts/login]
+            {:keys [name] :as account} [:multiaccounts/login]
             small-screen? [:dimensions/small-screen?]
             retry-counter [:hardwallet/retry-counter]]
     [react/view styles/container

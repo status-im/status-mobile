@@ -1,6 +1,7 @@
 (ns ^{:doc "Mailserver events and API"}
  status-im.mailserver.topics
-  (:require [status-im.ethereum.json-rpc :as json-rpc]
+  (:require [clojure.set :as clojure.set]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.mailserver.constants :as constants]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
@@ -130,7 +131,7 @@
   Returns those topic that had chat-id but the member is not there anymore"
   [topics chat-id members]
   (reduce
-   (fn [acc {:keys [discovery? chat-ids] :as topic}]
+   (fn [acc {:keys [chat-ids] :as topic}]
      (cond (some chat-ids members)
            (update acc :modified conj
                    (assoc topic

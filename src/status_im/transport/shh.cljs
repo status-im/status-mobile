@@ -1,11 +1,8 @@
 (ns ^{:doc "Whisper API and events for managing keys and posting messages"}
  status-im.transport.shh
   (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.transport.utils :as transport.utils]
-            [status-im.utils.config :as config]
-            [taoensso.timbre :as log]
-            [status-im.ethereum.json-rpc :as json-rpc]))
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [taoensso.timbre :as log]))
 
 (defn generate-sym-key-from-password
   [waku-enabled? {:keys [password on-success on-error]}]

@@ -1,9 +1,9 @@
 (ns status-im.contact.db
-  (:require [clojure.set :as cset]
+  (:require [clojure.set :as clojure.set]
+            [clojure.string :as clojure.string]
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.identicon :as identicon]
-            status-im.utils.db))
+            [status-im.utils.identicon :as identicon]))
 
 (defn public-key->new-contact [public-key]
   (let [alias (gfycat/generate-gfy public-key)]
@@ -53,8 +53,8 @@
   [members admins contacts {:keys [public-key] :as current-account}]
   (let [current-contact (-> current-account
                             (select-keys  [:name :preferred-name :public-key :photo-path])
-                            (cset/rename-keys {:name           :alias
-                                               :preferred-name :name}))
+                            (clojure.set/rename-keys {:name           :alias
+                                                      :preferred-name :name}))
         all-contacts    (assoc contacts public-key current-contact)]
     (->> members
          (map #(or (get all-contacts %)

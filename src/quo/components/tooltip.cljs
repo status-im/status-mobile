@@ -2,7 +2,6 @@
   (:require [reagent.core :as reagent]
             [oops.core :refer [oget]]
             [quo.animated :as animated]
-            [quo.react :as react]
             [quo.react-native :as rn]
             [quo.design-system.colors :as colors]
             [quo.design-system.spacing :as spacing]

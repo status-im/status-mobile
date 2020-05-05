@@ -1,9 +1,8 @@
 (ns status-im.transport.core-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.fx :as fx]
             [status-im.protocol.core :as protocol]
-            [status-im.transport.core :as transport]
-            [status-im.transport.message.core :as message]))
+            [status-im.transport.message.core :as message]
+            [status-im.utils.fx :as fx]))
 
 (deftest init-whisper
   (let [cofx {:db {:multiaccount {:public-key "1"}}}]

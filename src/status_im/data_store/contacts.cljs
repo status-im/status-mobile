@@ -1,12 +1,10 @@
 (ns status-im.data-store.contacts
-  (:require [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.config :as config]
-            [status-im.waku.core :as waku]
-            [status-im.data-store.chats :as data-store.chats]
+  (:require [clojure.set :as clojure.set]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [taoensso.timbre :as log]
-            [status-im.utils.types :as types]))
+            [status-im.utils.fx :as fx]
+            [status-im.utils.types :as types]
+            [status-im.waku.core :as waku]
+            [taoensso.timbre :as log]))
 
 (defn deserialize-tribute-to-talk [t]
   (if (seq t)

@@ -4,7 +4,8 @@
             [reagent.core :as reagent]
             ["react-native-gesture-handler"
              :refer (TapGestureHandler PanGestureHandler LongPressGestureHandler
-                                       PureNativeButton TouchableWithoutFeedback createNativeWrapper State)]))
+                                       PureNativeButton TouchableWithoutFeedback
+                                       createNativeWrapper State)]))
 
 (def tap-gesture-handler
   (reagent/adapt-react-class TapGestureHandler))
@@ -18,8 +19,6 @@
 (def pure-native-button PureNativeButton)
 
 (def touchable-without-feedback-class TouchableWithoutFeedback)
-
-(def createNativeWrapper createNativeWrapper)
 
 (def touchable-without-feedback
   (reagent/adapt-react-class touchable-without-feedback-class))

@@ -2,7 +2,6 @@
   (:require [quo.animated :as reanimated]
             [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]

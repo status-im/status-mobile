@@ -1,11 +1,10 @@
 (ns status-im.ui.components.search-input.view
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [reagent.core :as reagent]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.search-input.styles :as styles]
-            [status-im.ui.components.icons.vector-icons :as icons]))
+            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.search-input.styles :as styles]))
 
 (defn search-input [{:keys [search-active?]}]
   (let [input-ref      (atom nil)

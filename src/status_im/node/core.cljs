@@ -1,14 +1,13 @@
 (ns status-im.node.core
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
+            [status-im.ethereum.ens :as ens]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.native-module.core :as status]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as utils.platform]
-            [status-im.utils.types :as types]
-            [taoensso.timbre :as log]
-            [status-im.ethereum.ens :as ens]))
+            [status-im.utils.types :as types]))
 
 (defn- add-custom-bootnodes [config network all-bootnodes]
   (let [bootnodes (as-> all-bootnodes $
@@ -101,7 +100,7 @@
 
       current-fleet
       (assoc :NoDiscovery   false
-             :Rendezvous    (not (empty? rendezvous-nodes))
+             :Rendezvous    (seq rendezvous-nodes)
              :ClusterConfig {:Enabled true
                              :Fleet              (name current-fleet-key)
                              :BootNodes

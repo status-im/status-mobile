@@ -4,7 +4,6 @@
             [quo.components.text :as text]
             [quo.design-system.colors :as colors]
             [quo.design-system.spacing :as spacing]
-            [quo.react :as react]
             [quo.react-native :as rn]
             [reagent.core :as reagent]
             [status-im.ui.components.icons.vector-icons :as icons]))

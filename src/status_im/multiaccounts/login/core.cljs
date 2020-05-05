@@ -1,14 +1,20 @@
 (ns status-im.multiaccounts.login.core
   (:require [re-frame.core :as re-frame]
             [status-im.chat.models.loading :as chat.loading]
+            [status-im.chat.models.message-seen :as message-seen]
             [status-im.contact.core :as contact]
+            [status-im.data-store.settings :as data-store.settings]
             [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
+            [status-im.multiaccounts.biometric.core :as biometric]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
             [status-im.notifications.core :as notifications]
+            [status-im.popover.core :as popover]
             [status-im.protocol.core :as protocol]
             [status-im.stickers.core :as stickers]
             [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
@@ -16,27 +22,21 @@
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
+            [status-im.utils.identicon :as identicon]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [status-im.wallet.core :as wallet]
-            [taoensso.timbre :as log]
-            [status-im.multiaccounts.biometric.core :as biometric]
-            [status-im.utils.identicon :as identicon]
-            [status-im.ethereum.eip55 :as eip55]
-            [status-im.popover.core :as popover]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.data-store.settings :as data-store.settings]
             [status-im.wallet.prices :as prices]
-            [status-im.chat.models.message-seen :as message-seen]))
+            [taoensso.timbre :as log]))
 
 (def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
 (def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
 (def contract-fleet? #{:eth.contract})
 
-(defn fetch-nodes [current-fleet resolve reject]
+(defn fetch-nodes [current-fleet resolve _]
   (let [default-nodes (-> (node/fleets {})
                           (get-in [:eth.staging :mail])
                           vals)]
@@ -47,7 +47,7 @@
          rpc-endpoint
          contract-address
          (handlers/response-handler resolve
-                                    (fn [error]
+                                    (fn [_]
                                       (log/warn "could not fetch nodes from contract defaulting to eth.staging")
                                       (resolve default-nodes)))))
       (resolve default-nodes))))
@@ -171,7 +171,7 @@
        (.then (fn [[accounts custom-tokens]]
                 (callback accounts
                           (mapv #(update % :symbol keyword) custom-tokens))))
-       (.catch (fn [error]
+       (.catch (fn [_]
                  (log/error "Failed to initialize wallet"))))))
 
 (fx/defn initialize-appearance [cofx]
@@ -180,8 +180,9 @@
 (fx/defn get-settings-callback
   {:events [::get-settings-callback]}
   [{:keys [db] :as cofx} settings]
-  (let [{:keys [address notifications-enabled?
-                networks/current-network networks/networks] :as settings}
+  (let [{:keys [address notifications-enabled?]
+         :networks/keys [current-network networks]
+         :as settings}
         (data-store.settings/rpc->settings settings)
         multiaccount (dissoc settings :networks/current-network :networks/networks)
         network-id (str (get-in networks [current-network :config :NetworkId]))]

@@ -8,13 +8,14 @@
             [status-im.ui.components.colors :as colors]
             [status-im.db :refer [app-db]]
             [status-im.utils.fx :as fx]
-            [status-im.utils.platform :as platform]
             [status-im.utils.theme :as theme]))
 
 (fx/defn initialize-app-db
   "Initialize db to initial state"
-  [{{:keys [hardwallet initial-props desktop/desktop
-            supported-biometric-auth network/type app-active-since]} :db now :now}]
+  [{{:keys [hardwallet initial-props supported-biometric-auth app-active-since]
+     :desktop/keys [desktop]
+     :network/keys [type]} :db
+    now :now}]
   {:db (assoc app-db
               :initial-props initial-props
               :desktop/desktop (merge desktop (:desktop/desktop app-db))

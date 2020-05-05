@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.common :as common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.components.styles :as styles]))

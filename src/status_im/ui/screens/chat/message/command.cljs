@@ -1,14 +1,14 @@
 (ns status-im.ui.screens.chat.message.command
   (:require [re-frame.core :as re-frame]
             [status-im.commands.core :as commands]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors]
-            [status-im.i18n :as i18n]
             [status-im.constants :as constants]
-            [status-im.utils.money :as money]
             [status-im.ethereum.transactions.core :as transactions]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.react :as react]
+            [status-im.utils.money :as money]))
 
 (defn- final-status? [command-state]
   (or (= command-state constants/command-state-request-address-for-transaction-declined)
@@ -56,7 +56,7 @@
                     :t/address-received)))]])
 
 (defn- command-final-status
-  [command-state direction transaction-type]
+  [command-state _ transaction-type]
   [react/view {:style {:flex-direction :row
                        :height 28
                        :align-items :center

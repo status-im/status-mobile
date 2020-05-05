@@ -1,12 +1,11 @@
 (ns status-im.ui.components.tooltip.views
-  (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.tooltip.animations :as animations]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.tooltip.styles :as styles]
             [status-im.ui.components.colors :as colors]
-            [reagent.core :as reagent]))
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.tooltip.animations :as animations]
+            [status-im.ui.components.tooltip.styles :as styles])
+  (:require-macros [status-im.utils.views :as views]))
 
 (views/defview tooltip [label & [{:keys [bottom-value color font-size container-style]
                                   :or {bottom-value 30 color colors/white font-size 15}}

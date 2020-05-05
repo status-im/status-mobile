@@ -1,11 +1,9 @@
 (ns shadow.cljs.devtools.client.react-native
-  (:require
-   [clojure.string :as str]
-   [cljs.reader :as reader]
-   [goog.object :as gobj]
-   [goog.net.XhrIo :as xhr]
-   [shadow.cljs.devtools.client.env :as env]
-   [status-im.reloader :as reloader]))
+  (:require [cljs.reader :as reader]
+            [clojure.string :as str]
+            [goog.net.XhrIo :as xhr]
+            [shadow.cljs.devtools.client.env :as env]
+            [status-im.reloader :as reloader]))
 
 (defonce repl-ns-ref (atom nil))
 
@@ -51,7 +49,7 @@
     (callback [])
     (xhr/send
      (env/files-url)
-     (fn [res]
+     (fn [_]
        (this-as ^goog req
                 (let [content
                       (-> req
@@ -64,10 +62,10 @@
               :sources (into [] (map :resource-id) sources)})
      #js {"content-type" "application/edn; charset=utf-8"})))
 
-(defn noop [& args])
+(defn noop [& _])
 
 (defn handle-build-complete [{:keys [info reload-info] :as msg}]
-  (let [{:keys [sources compiled]}
+  (let [{:keys [sources]}
         info
 
         warnings
@@ -97,7 +95,7 @@
         (assoc :id id)
         (ws-msg))))
 
-(defn repl-require [{:keys [id sources reload-namespaces js-requires] :as msg} done]
+(defn repl-require [{:keys [id sources reload-namespaces]} done]
   (let [sources-to-load
         (->> sources
              (remove (fn [{:keys [provides] :as src}]
@@ -188,7 +186,7 @@
             (env/process-ws-msg (. e -data) handle-message)))
 
     (set! (.-onopen socket)
-          (fn [e]
+          (fn [_]
             ;; :module-format :js already patches provide
             (when (= "goog" env/module-format)
               ;; patch away the already declared exception
@@ -199,7 +197,7 @@
             (devtools-msg "WebSocket connected!")))
 
     (set! (.-onclose socket)
-          (fn [e]
+          (fn [_]
             ;; not a big fan of reconnecting automatically since a disconnect
             ;; may signal a change of config, safer to just reload the page
             (devtools-msg "WebSocket disconnected!")
@@ -216,7 +214,7 @@
   ;; pretty much only for me while working on this file
   (when-let [s @socket-ref]
     (devtools-msg "connection reset!")
-    (set! (.-onclose s) (fn [e]))
+    (set! (.-onclose s) (fn [_]))
     (.close s)
     (vreset! socket-ref nil))
 

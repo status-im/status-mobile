@@ -1,15 +1,15 @@
 (ns status-im.ui.screens.routing.core
-  (:require [reagent.core :as reagent]
+  (:require ["react" :refer (useCallback useEffect)]
+            ["react-native" :refer (BackHandler)]
+            ["@react-navigation/native" :refer (NavigationContainer StackActions CommonActions useFocusEffect) :as react-navigation]
+            ["@react-navigation/stack" :refer (createStackNavigator TransitionPresets)]
+            ["@react-navigation/bottom-tabs" :refer (createBottomTabNavigator)]
+            [reagent.core :as reagent]
             [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
             [status-im.utils.platform :as platform]
             [status-im.ui.components.react :as react]
-            ["react" :refer (useCallback useEffect)]
-            ["react-native" :refer (BackHandler)]
-            ["@react-navigation/native" :refer (NavigationContainer StackActions CommonActions useFocusEffect) :as react-navigation]
-            ["@react-navigation/stack" :refer (createStackNavigator TransitionPresets)]
-            ["@react-navigation/bottom-tabs" :refer (createBottomTabNavigator)]
             [oops.core :refer [ocall oget]]))
 
 (def navigation-container (reagent/adapt-react-class NavigationContainer))

@@ -51,7 +51,7 @@
   ;; Note that the password won't be stored if the device isn't locked by a passcode.
   #js {:accessible (enum-val "ACCESSIBLE" "WHEN_PASSCODE_SET_THIS_DEVICE_ONLY")})
 
-(def ^:const keychain-secure-hardware
+(def keychain-secure-hardware
   ;; (Android) Requires storing the encryption key for the entry in secure hardware
   ;; or StrongBox (see https://developer.android.com/training/articles/keystore#ExtractionPrevention)
   "SECURE_HARDWARE")
@@ -109,10 +109,10 @@
         (.then callback))
     (callback))) ;; no-op for Desktop
 
-(def ^:const auth-method-password "password")
-(def ^:const auth-method-biometric "biometric")
-(def ^:const auth-method-biometric-prepare "biometric-prepare")
-(def ^:const auth-method-none "none")
+(def auth-method-password "password")
+(def auth-method-biometric "biometric")
+(def auth-method-biometric-prepare "biometric-prepare")
+(def auth-method-none "none")
 
 (re-frame/reg-fx
  :keychain/get-auth-method

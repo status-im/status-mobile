@@ -1,10 +1,10 @@
 (ns status-im.ui.components.bottom-panel.views
-  (:require-macros [status-im.utils.views :as views])
-  (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.animation :as anim]
+  (:require ["react-native" :refer [BackHandler]]
             [reagent.core :as reagent]
+            [status-im.ui.components.animation :as anim]
             [status-im.ui.components.colors :as colors]
-            ["react-native" :refer (BackHandler)]))
+            [status-im.ui.components.react :as react])
+  (:require-macros [status-im.utils.views :as views]))
 
 (def back-listener (atom nil))
 
@@ -42,7 +42,7 @@
                                :duration        500
                                :useNativeDriver true})])))
 
-(defn bottom-panel [obj render window-height]
+(defn bottom-panel [_ render window-height]
   (let [bottom-anim-value (anim/create-value window-height)
         alpha-value       (anim/create-value 0)
         clear-timeout     (atom nil)

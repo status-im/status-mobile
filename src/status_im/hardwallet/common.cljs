@@ -1,18 +1,16 @@
 (ns status-im.hardwallet.common
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
             [status-im.ethereum.core :as ethereum]
+            [status-im.hardwallet.nfc :as nfc]
             [status-im.i18n :as i18n]
             [status-im.navigation :as navigation]
-            [status-im.utils.config :as config]
-            [status-im.utils.fx :as fx]
-            [status-im.utils.platform :as platform]
-            [status-im.utils.types :as types]
-            [taoensso.timbre :as log]
             [status-im.ui.components.bottom-sheet.events :as bottom-sheet]
+            [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
+            [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
-            [status-im.hardwallet.nfc :as nfc]))
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log]))
 
 (def default-pin "000000")
 

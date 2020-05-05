@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.browser.styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.styles :as styles]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def browser {:flex 1})
 

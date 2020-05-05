@@ -275,6 +275,7 @@ endif
 
 lint: export TARGET := clojure
 lint: ##@test Run code style checks
+	yarn clj-kondo --confg .clj-kondo/config.edn --lint src && \
 	clojure -Sdeps '{:deps {cljfmt {:mvn/version "0.6.7"}}}' \
 		-m cljfmt.main check src \
 		--indents indentation.edn

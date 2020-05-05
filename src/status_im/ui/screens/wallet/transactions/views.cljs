@@ -9,7 +9,6 @@
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar-old]
             [status-im.ui.screens.wallet.transactions.styles :as styles]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.toolbar :as toolbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 

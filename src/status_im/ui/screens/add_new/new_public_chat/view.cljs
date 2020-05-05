@@ -1,22 +1,18 @@
 (ns status-im.ui.screens.add-new.new-public-chat.view
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [status-im.i18n-resources :as i18n-resources]
+            [status-im.react-native.resources :as resources]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as common.styles]
             [status-im.ui.components.text-input.view :as text-input.view]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
+            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.add-new.new-public-chat.db :as db]
             [status-im.ui.screens.add-new.new-public-chat.styles :as styles]
-            [status-im.ui.screens.add-new.styles :as add-new.styles]
-            status-im.utils.db
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.colors :as colors]
-            [status-im.i18n-resources :as i18n-resources]
-            [status-im.ui.components.topbar :as topbar])
-  (:require-macros
-   [status-im.utils.slurp :refer [slurp]]
-   [status-im.utils.views :as views]))
+            [status-im.ui.screens.add-new.styles :as add-new.styles])
+  (:require-macros [status-im.utils.views :as views]))
 
 (defn- start-chat [topic]
   (re-frame/dispatch [:chat.ui/start-public-chat topic {:navigation-reset? true}])

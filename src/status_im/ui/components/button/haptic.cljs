@@ -1,5 +1,5 @@
 (ns status-im.ui.components.button.haptic
-  (:require [oops.core :refer [oget ocall]]
+  (:require [oops.core :refer [ocall]]
             [react-native-haptic-feedback :default react-native-haptic-feedback]))
 
 (def haptic-methods

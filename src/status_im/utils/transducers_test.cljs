@@ -2,21 +2,21 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.transducers :as transducers]))
 
-(def ^:private preview-call-1
+(def preview-call-1
   {:jail-id 1
    :path [:preview]
    :params {:chat-id 1}
    :callback (fn []
                [[:msg-id 1]])})
 
-(def ^:private preview-call-2
+(def preview-call-2
   {:jail-id 1
    :path [:preview]
    :params {:chat-id 1}
    :callback (fn []
                [[:msg-id 2]])})
 
-(def ^:private jail-calls
+(def jail-calls
   '({:jail-id 1
      :path [:suggestions]
      :params {:arg 0}}

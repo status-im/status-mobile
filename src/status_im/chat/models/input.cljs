@@ -4,8 +4,8 @@
             [re-frame.core :as re-frame]
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.models :as chat]
-            [status-im.chat.models.message-content :as message-content]
             [status-im.chat.models.message :as chat.message]
+            [status-im.chat.models.message-content :as message-content]
             [status-im.constants :as constants]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
@@ -140,7 +140,7 @@
  (fn [^js ref]
    (try
      (.focus ref)
-     (catch :default e
+     (catch :default _
        (log/debug "Cannot focus the reference")))))
 
 (re-frame/reg-fx
@@ -148,5 +148,5 @@
  (fn [ref]
    (try
      (.clear ref)
-     (catch :default e
+     (catch :default _
        (log/debug "Cannot clear the reference")))))

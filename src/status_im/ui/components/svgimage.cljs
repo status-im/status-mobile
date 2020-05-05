@@ -1,7 +1,6 @@
 (ns status-im.ui.components.svgimage
   (:require [status-im.ui.components.react :as react]
             [reagent.core :as reagent]
-            [status-im.utils.platform :as platform]
             [status-im.utils.http :as http]
             [status-im.ui.components.webview :as components.webview]))
 

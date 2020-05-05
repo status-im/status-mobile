@@ -29,7 +29,7 @@
                             message-3
                             message-2
                             message-1]
-          [m1 d1 m2 m3 m4 d2 :as ms] (db/add-datemarks ordered-messages)]
+          [m1 d1 m2 m3 m4 d2] (db/add-datemarks ordered-messages)]
       (is (= "Jan 1, 2000"
              (:datemark m1)))
       (is (= {:type :datemark

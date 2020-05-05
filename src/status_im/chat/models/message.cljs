@@ -1,24 +1,21 @@
 (ns status-im.chat.models.message
   (:require [re-frame.core :as re-frame]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.chat.db :as chat.db]
-            [status-im.waku.core :as waku]
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat-loading]
-            [status-im.chat.models.message-list :as message-list]
             [status-im.chat.models.message-content :as message-content]
+            [status-im.chat.models.message-list :as message-list]
             [status-im.constants :as constants]
-            [status-im.contact.db :as contact.db]
             [status-im.data-store.messages :as data-store.messages]
-            [status-im.ui.screens.chat.state :as view.state]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.transport.message.protocol :as protocol]
-            [status-im.utils.datetime :as time]
+            [status-im.ui.screens.chat.state :as view.state]
             [status-im.utils.fx :as fx]
+            [status-im.waku.core :as waku]
             [taoensso.timbre :as log]))
 
 (defn- prepare-message
-  [{:keys [content content-type] :as message} chat-id current-chat?]
+  [{:keys [content content-type] :as message} current-chat?]
   (cond-> message
     current-chat?
     (assoc :seen true)
@@ -56,7 +53,7 @@
   (let [current-public-key (multiaccounts.model/current-public-key cofx)
         message-to-be-removed (when replace
                                 (get-in db [:chats chat-id :messages replace]))
-        prepared-message (prepare-message message chat-id seen-by-user?)]
+        prepared-message (prepare-message message seen-by-user?)]
     (fx/merge cofx
               (when message-to-be-removed
                 (hide-message chat-id message-to-be-removed))
@@ -100,13 +97,14 @@
   (get-in db [:chats chat-id :messages message-id]))
 
 (defn- earlier-than-deleted-at?
-  [{:keys [db]} {:keys [chat-id clock-value message-id from]}]
+  [{:keys [db]} {:keys [chat-id clock-value]}]
   (let [{:keys [deleted-at-clock-value]}
         (get-in db [:chats chat-id])]
     (>= deleted-at-clock-value clock-value)))
 
-(defn extract-chat-id [cofx {:keys [chat-id from message-type]}]
+(defn extract-chat-id
   "Validate and return a valid chat-id"
+  [cofx {:keys [chat-id from message-type]}]
   (cond
     (and (= constants/message-type-private-group message-type)
          (and (get-in cofx [:db :chats chat-id :contacts from])
@@ -200,9 +198,6 @@
                    (chat-model/join-time-messages-checked-for-chats (keys grouped-messages)))))))
 
 ;;;; Send message
-
-(def ^:private transport-keys [:content :content-type :message-type :clock-value :timestamp :name])
-
 (fx/defn update-message-status
   [{:keys [db] :as cofx} chat-id message-id status]
   (fx/merge cofx

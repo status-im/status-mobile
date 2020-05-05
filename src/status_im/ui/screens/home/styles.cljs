@@ -1,7 +1,5 @@
 (ns status-im.ui.screens.home.styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.components.tabbar.styles :as tabs.styles]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def last-message-container
   {:flex-shrink 1})

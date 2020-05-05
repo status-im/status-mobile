@@ -1,5 +1,5 @@
 (ns status-im.utils.varint-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
+  (:require [cljs.test :refer-macros [deftest is]]
             [status-im.utils.varint :as varint]))
 
 (deftest encode

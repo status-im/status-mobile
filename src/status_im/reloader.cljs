@@ -31,7 +31,7 @@
   (reset! label "building")
   (reset! visible true))
 
-(defn reload-view [cnt]
+(defn reload-view [_]
   (fn [cnt]
     (when @timeout (js/clearTimeout @timeout))
     (when (not= @cnt-prev cnt)

@@ -1,8 +1,7 @@
 (ns status-im.network.core-test
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.network.core :as network.core]
-            [reagent.core :as reagent]))
+            [status-im.network.core :as network.core]))
 
 (deftest valid-rpc-url-test
   (testing "nil?"

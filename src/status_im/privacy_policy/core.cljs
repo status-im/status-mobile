@@ -3,7 +3,7 @@
             [status-im.ui.components.react :as react]
             [status-im.utils.fx :as fx]))
 
-(def ^:const privacy-policy-link "https://www.iubenda.com/privacy-policy/45710059")
+(def privacy-policy-link "https://www.iubenda.com/privacy-policy/45710059")
 
 (defn open-privacy-policy-link! []
   (.openURL ^js react/linking privacy-policy-link))

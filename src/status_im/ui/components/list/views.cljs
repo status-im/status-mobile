@@ -21,17 +21,15 @@
   (:require [clojure.string :as string]
             [reagent.core :as reagent]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.animation :as animation]
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.list.styles :as styles]
+            [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.radio :as radio]
-            ["react-native" :as react-native])
-  (:require-macros [status-im.utils.views :as views]))
+            ["react-native" :as react-native]))
 
 (def flat-list-class (reagent/adapt-react-class (.-FlatList react-native)))
 (def section-list-class (reagent/adapt-react-class (.-SectionList react-native)))
@@ -116,12 +114,11 @@
 
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn big-list-item
-  [{:keys [style text text-color text-style subtext value action-fn active? destructive? hide-chevron?
+  [{:keys [style text text-style subtext action-fn active? hide-chevron?
            accessory-value text-color new? activity-indicator
-           accessibility-label icon icon-color image-source icon-content]
+           accessibility-label icon icon-color image-source]
     :or   {icon-color colors/blue
            text-color colors/black
-           value ""
            active? true
            style {}}}]
   {:pre [text

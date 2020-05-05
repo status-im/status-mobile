@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.hardwallet.setup.subs
-  (:require [re-frame.core :as re-frame]))
+  (:require [re-frame.core :as re-frame]
+            [clojure.string :as string]))
 
 (re-frame/reg-sub
  :hardwallet-setup-step

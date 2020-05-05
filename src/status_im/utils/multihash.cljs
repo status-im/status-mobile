@@ -5,7 +5,7 @@
    [alphabase.bytes :as bytes]
    [alphabase.hex :as hex]))
 
-(def ^:const algorithm-codes
+(def algorithm-codes
   "Map of information about the available content hashing algorithms."
   {:sha1     0x11
    :sha2-256 0x12

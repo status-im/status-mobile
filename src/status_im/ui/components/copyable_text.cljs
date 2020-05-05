@@ -3,8 +3,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.typography :as typography]))
+            [status-im.ui.components.react :as react]))
 
 (defn hide-cue-atom [anim-opacity anim-y cue-atom]
   (animation/start
@@ -79,8 +78,8 @@
        :font-size   14}}
      (i18n/label :sharing-copied-to-clipboard)]]])
 
-(defn copyable-text-view [{:keys [label container-style]}
-                          content]
+(defn copyable-text-view
+  [{:keys [label container-style]} content]
   (let [cue-atom     (reagent/atom false)
         width        (reagent/atom 0)
         height       (reagent/atom 0)

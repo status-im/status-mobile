@@ -3,7 +3,8 @@
            status-im.utils.fx/defn        clj-kondo.lint-as/def-catch-all
            quo.previews.preview/list-comp clojure.core/for
            status-im.utils.styles/def     clojure.core/def
-           status-im.utils.styles/defn    clojure.core/defn}
+           status-im.utils.styles/defn    clojure.core/defn
+           taoensso.tufte/defnp           clojure.core/defn}
  :linters {:invalid-arity {:skip-args [status-im.utils.fx/defn]}
            ;;TODO remove number when this is fixed
            ;;https://github.com/borkdude/clj-kondo/issues/867

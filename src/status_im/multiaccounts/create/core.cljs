@@ -5,24 +5,21 @@
             [status-im.data-store.settings :as data-store.settings]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
-            [taoensso.timbre :as log]
-            [status-im.i18n :as i18n]
             [status-im.hardwallet.nfc :as nfc]
+            [status-im.i18n :as i18n]
             [status-im.multiaccounts.db :as db]
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.ui.components.colors :as colors]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.identicon :as identicon]
+            [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.utils.signing-phrase.core :as signing-phrase]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [status-im.utils.platform :as platform]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
-            [status-im.constants :as const]))
+            [taoensso.timbre :as log]))
 
 (def step-kw-to-num
   {:generate-key         1

@@ -1,11 +1,9 @@
 (ns status-im.commands.core
-  (:require
-   [re-frame.core :as re-frame]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.waku.core :as waku]
-   [status-im.utils.config :as config]
-   [status-im.ethereum.json-rpc :as json-rpc]
-   [status-im.utils.fx :as fx]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.utils.fx :as fx]
+            [status-im.waku.core :as waku]))
 
 (fx/defn handle-prepare-accept-request-address-for-transaction
   {:events [::prepare-accept-request-address-for-transaction]}

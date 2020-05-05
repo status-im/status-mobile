@@ -3,11 +3,9 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.dapps-permissions.styles :as styles]
-            [status-im.constants :as constants]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.topbar :as topbar]))

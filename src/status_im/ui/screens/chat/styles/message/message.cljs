@@ -4,8 +4,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as photos]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.typography :as typography]
-            [status-im.utils.styles :as styles]))
+            [status-im.ui.components.typography :as typography]))
 
 (defn style-message-text
   [outgoing]
@@ -25,7 +24,7 @@
    :align-items    :center})
 
 (defn message-body
-  [{:keys [outgoing] :as message}]
+  [{:keys [outgoing]}]
   (let [align     (if outgoing :flex-end :flex-start)
         direction (if outgoing :row-reverse :row)]
     {:flex-direction direction

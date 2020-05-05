@@ -2,9 +2,9 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [clojure.string :as string]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.transport.utils :as utils]
-            [status-im.mailserver.core :as mailserver]
             [status-im.mailserver.constants :as constants]
+            [status-im.mailserver.core :as mailserver]
+            [status-im.transport.utils :as utils]
             [status-im.utils.random :as rand]))
 
 (def enode "enode://08d8eb6177b187049f6c97ed3f6c74fbbefb94c7ad10bafcaf4b65ce89c314dcfee0a8bc4e7a5b824dfa08b45b360cc78f34f0aff981f8386caa07652d2e601b@163.172.177.138:40404")
@@ -101,12 +101,12 @@
       (is (= {:address "enode://some-id@206.189.56.154:30504"
               :password "the-password"
               :user-defined true}
-             (mailserver/address->mailserver address)))))
+             (#'status-im.mailserver.core/address->mailserver address)))))
   (testing "without password"
     (let [address "enode://some-id@206.189.56.154:30504"]
       (is (= {:address "enode://some-id@206.189.56.154:30504"
               :user-defined true}
-             (mailserver/address->mailserver address))))))
+             (#'status-im.mailserver.core/address->mailserver address))))))
 
 (deftest set-input
   (testing "it validates names"
@@ -638,181 +638,180 @@
                      first)))))))
 
 (deftest check-existing-gaps
-  (let []
-    (testing "no gaps"
-      (is (= {}
-             (mailserver/check-existing-gaps
-              :chat-id
-              nil
-              {:from 1
-               :to   2}))))
-    (testing "request before gaps"
-      (is (= {}
-             (mailserver/check-existing-gaps
-              :chat-id
-              {:g1 {:from 10
-                    :to   20
-                    :id   :g1}
-               :g2 {:from 30
-                    :to   40
-                    :id   :g2}
-               :g3 {:from 50
-                    :to   60
-                    :id   :g3}}
-              {:from 1
-               :to   2}))))
-    (testing "request between gaps"
-      (is (= {}
-             (mailserver/check-existing-gaps
-              :chat-id
-              {:g1 {:from 10
-                    :to   20
-                    :id   :g1}
-               :g2 {:from 30
-                    :to   40
-                    :id   :g2}
-               :g3 {:from 50
-                    :to   60
-                    :id   :g3}}
-              {:from 22
-               :to   28}))))
-    (testing "request between gaps"
-      (is (= {}
-             (mailserver/check-existing-gaps
-              :chat-id
-              {:g1 {:from 10
-                    :to   20
-                    :id   :g1}
-               :g2 {:from 30
-                    :to   40
-                    :id   :g2}
-               :g3 {:from 50
-                    :to   60
-                    :id   :g3}}
-              {:from 22
-               :to   28}))))
-    (testing "request after gaps"
-      (is (= {}
-             (mailserver/check-existing-gaps
-              :chat-id
-              {:g1 {:from 10
-                    :to   20
-                    :id   :g1}
-               :g2 {:from 30
-                    :to   40
-                    :id   :g2}
-               :g3 {:from 50
-                    :to   60
-                    :id   :g3}}
-              {:from 70
-               :to   80}))))
-    (testing "request covers all gaps"
-      (is (= {:deleted-gaps [:g3 :g2 :g1]}
-             (mailserver/check-existing-gaps
-              :chat-id
-              {:g1 {:from 10
-                    :to   20
-                    :id   :g1}
-               :g2 {:from 30
-                    :to   40
-                    :id   :g2}
-               :g3 {:from 50
-                    :to   60
-                    :id   :g3}}
-              {:from 10
-               :to   60}))))
-    (testing "request splits gap in two"
-      (is (= {:deleted-gaps [:g1]
-              :new-gaps     [{:chat-id :chat-id :from 10 :to 12}
-                             {:chat-id :chat-id :from 18 :to 20}]}
-             (mailserver/check-existing-gaps
-              :chat-id
-              {:g1 {:from 10
-                    :to   20
-                    :id   :g1}
-               :g2 {:from 30
-                    :to   40
-                    :id   :g2}
-               :g3 {:from 50
-                    :to   60
-                    :id   :g3}}
-              {:from 12
-               :to   18}))))
-    (testing "request partially covers one gap #1"
-      (is (= {:updated-gaps {:g1 {:from 15
-                                  :to   20
-                                  :id   :g1}}}
-             (mailserver/check-existing-gaps
-              :chat-id
-              {:g1 {:from 10
-                    :to   20
-                    :id   :g1}
-               :g2 {:from 30
-                    :to   40
-                    :id   :g2}
-               :g3 {:from 50
-                    :to   60
-                    :id   :g3}}
-              {:from 8
-               :to   15}))))
-    (testing "request partially covers one gap #2"
-      (is (= {:updated-gaps {:g1 {:from 10
-                                  :to   15
-                                  :id   :g1}}}
-             (mailserver/check-existing-gaps
-              :chat-id
-              {:g1 {:from 10
-                    :to   20
-                    :id   :g1}
-               :g2 {:from 30
-                    :to   40
-                    :id   :g2}
-               :g3 {:from 50
-                    :to   60
-                    :id   :g3}}
-              {:from 15
-               :to   25}))))
-    (testing "request partially covers two gaps #2"
-      (is (= {:updated-gaps {:g1 {:from 10
-                                  :to   15
-                                  :id   :g1}
-                             :g2 {:from 35
-                                  :to   40
-                                  :id   :g2}}}
-             (mailserver/check-existing-gaps
-              :chat-id
-              {:g1 {:from 10
-                    :to   20
-                    :id   :g1}
-               :g2 {:from 30
-                    :to   40
-                    :id   :g2}
-               :g3 {:from 50
-                    :to   60
-                    :id   :g3}}
-              {:from 15
-               :to   35}))))
-    (testing "request covers one gap and two other partially"
-      (is (= {:updated-gaps {:g1 {:from 10
-                                  :to   15
-                                  :id   :g1}
-                             :g3 {:from 55
-                                  :to   60
-                                  :id   :g3}}
-              :deleted-gaps [:g2]}
-             (mailserver/check-existing-gaps
-              :chat-id
-              {:g1 {:from 10
-                    :to   20
-                    :id   :g1}
-               :g2 {:from 30
-                    :to   40
-                    :id   :g2}
-               :g3 {:from 50
-                    :to   60
-                    :id   :g3}}
-              {:from 15
-               :to   55}))))))
+  (testing "no gaps"
+    (is (= {}
+           (mailserver/check-existing-gaps
+            :chat-id
+            nil
+            {:from 1
+             :to   2}))))
+  (testing "request before gaps"
+    (is (= {}
+           (mailserver/check-existing-gaps
+            :chat-id
+            {:g1 {:from 10
+                  :to   20
+                  :id   :g1}
+             :g2 {:from 30
+                  :to   40
+                  :id   :g2}
+             :g3 {:from 50
+                  :to   60
+                  :id   :g3}}
+            {:from 1
+             :to   2}))))
+  (testing "request between gaps"
+    (is (= {}
+           (mailserver/check-existing-gaps
+            :chat-id
+            {:g1 {:from 10
+                  :to   20
+                  :id   :g1}
+             :g2 {:from 30
+                  :to   40
+                  :id   :g2}
+             :g3 {:from 50
+                  :to   60
+                  :id   :g3}}
+            {:from 22
+             :to   28}))))
+  (testing "request between gaps"
+    (is (= {}
+           (mailserver/check-existing-gaps
+            :chat-id
+            {:g1 {:from 10
+                  :to   20
+                  :id   :g1}
+             :g2 {:from 30
+                  :to   40
+                  :id   :g2}
+             :g3 {:from 50
+                  :to   60
+                  :id   :g3}}
+            {:from 22
+             :to   28}))))
+  (testing "request after gaps"
+    (is (= {}
+           (mailserver/check-existing-gaps
+            :chat-id
+            {:g1 {:from 10
+                  :to   20
+                  :id   :g1}
+             :g2 {:from 30
+                  :to   40
+                  :id   :g2}
+             :g3 {:from 50
+                  :to   60
+                  :id   :g3}}
+            {:from 70
+             :to   80}))))
+  (testing "request covers all gaps"
+    (is (= {:deleted-gaps [:g3 :g2 :g1]}
+           (mailserver/check-existing-gaps
+            :chat-id
+            {:g1 {:from 10
+                  :to   20
+                  :id   :g1}
+             :g2 {:from 30
+                  :to   40
+                  :id   :g2}
+             :g3 {:from 50
+                  :to   60
+                  :id   :g3}}
+            {:from 10
+             :to   60}))))
+  (testing "request splits gap in two"
+    (is (= {:deleted-gaps [:g1]
+            :new-gaps     [{:chat-id :chat-id :from 10 :to 12}
+                           {:chat-id :chat-id :from 18 :to 20}]}
+           (mailserver/check-existing-gaps
+            :chat-id
+            {:g1 {:from 10
+                  :to   20
+                  :id   :g1}
+             :g2 {:from 30
+                  :to   40
+                  :id   :g2}
+             :g3 {:from 50
+                  :to   60
+                  :id   :g3}}
+            {:from 12
+             :to   18}))))
+  (testing "request partially covers one gap #1"
+    (is (= {:updated-gaps {:g1 {:from 15
+                                :to   20
+                                :id   :g1}}}
+           (mailserver/check-existing-gaps
+            :chat-id
+            {:g1 {:from 10
+                  :to   20
+                  :id   :g1}
+             :g2 {:from 30
+                  :to   40
+                  :id   :g2}
+             :g3 {:from 50
+                  :to   60
+                  :id   :g3}}
+            {:from 8
+             :to   15}))))
+  (testing "request partially covers one gap #2"
+    (is (= {:updated-gaps {:g1 {:from 10
+                                :to   15
+                                :id   :g1}}}
+           (mailserver/check-existing-gaps
+            :chat-id
+            {:g1 {:from 10
+                  :to   20
+                  :id   :g1}
+             :g2 {:from 30
+                  :to   40
+                  :id   :g2}
+             :g3 {:from 50
+                  :to   60
+                  :id   :g3}}
+            {:from 15
+             :to   25}))))
+  (testing "request partially covers two gaps #2"
+    (is (= {:updated-gaps {:g1 {:from 10
+                                :to   15
+                                :id   :g1}
+                           :g2 {:from 35
+                                :to   40
+                                :id   :g2}}}
+           (mailserver/check-existing-gaps
+            :chat-id
+            {:g1 {:from 10
+                  :to   20
+                  :id   :g1}
+             :g2 {:from 30
+                  :to   40
+                  :id   :g2}
+             :g3 {:from 50
+                  :to   60
+                  :id   :g3}}
+            {:from 15
+             :to   35}))))
+  (testing "request covers one gap and two other partially"
+    (is (= {:updated-gaps {:g1 {:from 10
+                                :to   15
+                                :id   :g1}
+                           :g3 {:from 55
+                                :to   60
+                                :id   :g3}}
+            :deleted-gaps [:g2]}
+           (mailserver/check-existing-gaps
+            :chat-id
+            {:g1 {:from 10
+                  :to   20
+                  :id   :g1}
+             :g2 {:from 30
+                  :to   40
+                  :id   :g2}
+             :g3 {:from 50
+                  :to   60
+                  :id   :g3}}
+            {:from 15
+             :to   55})))))
 
 (defn rand-guid []
   (let [gap-id (atom 0)]

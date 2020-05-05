@@ -1,10 +1,7 @@
 (ns status-im.chat.models.message-list-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.constants :as const]
-            [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)]
-            [status-im.chat.models.loading :as l]
-
-            [status-im.chat.models.message-list :as s]))
+            [status-im.chat.models.message-list :as s]
+            [taoensso.tufte :as tufte :refer-macros [defnp profile]]))
 
 (deftest message-stream-tests
   (testing "building the list"

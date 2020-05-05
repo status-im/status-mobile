@@ -1,19 +1,16 @@
 (ns status-im.transport.filters.core
   "This namespace is used to handle filters loading and unloading from statusgo"
-  (:require
-   [taoensso.timbre :as log]
-   [re-frame.core :as re-frame]
-   [clojure.string :as string]
-   [status-im.contact.db :as contact.db]
-   [status-im.waku.core :as waku]
-   [status-im.ethereum.json-rpc :as json-rpc]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.config :as config]
-   [status-im.utils.handlers :as handlers]
-   [status-im.mailserver.topics :as mailserver.topics]
-   [status-im.mailserver.core :as mailserver]
-   [status-im.multiaccounts.model :as multiaccounts.model]
-   [status-im.transport.utils :as utils]))
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.contact.db :as contact.db]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.mailserver.core :as mailserver]
+            [status-im.mailserver.topics :as mailserver.topics]
+            [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.utils.fx :as fx]
+            [status-im.utils.handlers :as handlers]
+            [status-im.waku.core :as waku]
+            [taoensso.timbre :as log]))
 
 (defn is-public-key? [k]
   (string/starts-with? k "0x"))
@@ -88,7 +85,7 @@
 
 (defn loaded?
   "Given a filter, check if we already loaded it"
-  [db {:keys [filter-id] :as f}]
+  [db {:keys [filter-id]}]
   (get-in db [:filter/filters filter-id]))
 
 (def not-loaded?
@@ -143,8 +140,7 @@
   "Returns all the non-negotiated filters matching chat-id"
   [db chat-id]
   (filter
-   (fn [{:keys [negotiated?
-                filter-id] :as f}]
+   (fn [{:keys [negotiated?] :as f}]
      (and (= chat-id
              (:chat-id f))
           (not negotiated?)))
@@ -152,7 +148,8 @@
 
 ;; Filter requests
 
-(defn- ->remove-filter-request [{:keys [id filter-id filter]}]
+(defn- ->remove-filter-request
+  [{:keys [id filter-id]}]
   {:chatId id
    :filterId filter-id})
 
@@ -184,8 +181,8 @@
        (mapcat ->filter-request)))
 
 (defn- contacts->filter-requests
-  [contacts]
   "Convert added contacts to filter requests"
+  [contacts]
   (->> contacts
        (filter contact.db/added?)
        (map #(hash-map :chat-id (:public-key %)))
@@ -329,13 +326,13 @@
 
 (handlers/register-handler-fx
  :filters.callback/filters-added
- (fn [{:keys [db] :as cofx} [_ filters]]
+ (fn [cofx [_ filters]]
    (log/debug "PERF" :filters.callback/filters-added)
    (handle-filters-added cofx filters)))
 
 (handlers/register-handler-fx
  :filters.callback/filters-removed
- (fn [{:keys [db] :as cofx} [_ filters]]
+ (fn [cofx [_ filters]]
    (handle-filters-removed cofx filters)))
 
 (re-frame/reg-fx

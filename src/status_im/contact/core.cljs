@@ -1,23 +1,18 @@
 (ns status-im.contact.core
-  (:require
-   [re-frame.core :as re-frame]
-   [taoensso.timbre :as log]
-   [status-im.multiaccounts.update.core :as multiaccounts.update]
-   [status-im.waku.core :as waku]
-   [status-im.multiaccounts.model :as multiaccounts.model]
-   [status-im.transport.filters.core :as transport.filters]
-   [status-im.contact.db :as contact.db]
-   [status-im.ethereum.core :as ethereum]
-   [status-im.ethereum.json-rpc :as json-rpc]
-   [status-im.data-store.contacts :as contacts-store]
-   [status-im.mailserver.core :as mailserver]
-   [status-im.transport.message.protocol :as protocol]
-   [status-im.tribute-to-talk.db :as tribute-to-talk]
-   [status-im.tribute-to-talk.whitelist :as whitelist]
-   [status-im.navigation :as navigation]
-   [status-im.utils.config :as config]
-   [status-im.utils.fx :as fx]
-   [status-im.utils.datetime :as time]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.contact.db :as contact.db]
+            [status-im.data-store.contacts :as contacts-store]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.mailserver.core :as mailserver]
+            [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.transport.filters.core :as transport.filters]
+            [status-im.tribute-to-talk.db :as tribute-to-talk]
+            [status-im.tribute-to-talk.whitelist :as whitelist]
+            [status-im.navigation :as navigation]
+            [status-im.utils.fx :as fx]
+            [status-im.waku.core :as waku]
+            [taoensso.timbre :as log]))
 
 (fx/defn load-contacts
   {:events [::contacts-loaded]}
@@ -41,7 +36,7 @@
               (transport.filters/load-filters))))
 
 (defn build-contact
-  [{{:keys [chats multiaccount]
+  [{{:keys [multiaccount]
      :contacts/keys [contacts]} :db} public-key]
   (cond-> (contact.db/public-key->contact contacts public-key)
     (= public-key (:public-key multiaccount))

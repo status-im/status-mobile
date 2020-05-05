@@ -1,8 +1,7 @@
 (ns status-im.ens.core
+  (:refer-clojure :exclude [name])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.utils.datetime :as datetime]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
@@ -10,13 +9,13 @@
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.resolver :as resolver]
             [status-im.ethereum.stateofus :as stateofus]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.signing.core :as signing]
             [status-im.navigation :as navigation]
+            [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
-            [status-im.signing.core :as signing]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.utils.random :as random])
-  (:refer-clojure :exclude [name]))
+            [status-im.utils.random :as random]))
 
 (defn fullname [custom-domain? username]
   (if custom-domain?

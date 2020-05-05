@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.advanced-settings.views
-  (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.topbar :as topbar])
+  (:require-macros [status-im.utils.views :as views]))
 
 (defn- normal-mode-settings-data [{:keys [network-name
                                           current-log-level
                                           waku-enabled
                                           waku-bloom-filter-mode
-                                          current-fleet
-                                          dev-mode?]}]
+                                          current-fleet]}]
   [{:type                 :small
     :title                :t/network
     :accessibility-label  :network-button

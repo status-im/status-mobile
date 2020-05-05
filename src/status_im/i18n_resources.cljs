@@ -18,4 +18,4 @@
        (into {})))
 
 ;; API compatibility
-(defn load-language [lang])
+(defn load-language [_])

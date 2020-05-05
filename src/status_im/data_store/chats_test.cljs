@@ -1,6 +1,5 @@
 (ns status-im.data-store.chats-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.random :as utils.random]
             [status-im.data-store.chats :as chats]))
 
 (deftest ->to-rpc
@@ -46,7 +45,7 @@
                        :active true
                        :timestamp 2}]
     (testing "marshaling chat"
-      (is (= expected-chat (-> (chats/->rpc chat)
+      (is (= expected-chat (-> (#'status-im.data-store.chats/->rpc chat)
                                (update :members #(into #{} %))))))))
 
 (deftest normalize-chat-test

@@ -2,19 +2,18 @@
   (:refer-clojure :exclude [remove])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.contact.core :as contact]
             [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.transactions.core :as transactions]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.signing.core :as signing]
             [status-im.tribute-to-talk.db :as tribute-to-talk.db]
             [status-im.tribute-to-talk.whitelist :as whitelist]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
-            [status-im.utils.money :as money]
-            [taoensso.timbre :as log]
-            [status-im.signing.core :as signing]))
+            [taoensso.timbre :as log]))
 
 (defn add-transaction-hash
   [message db]

@@ -1,24 +1,22 @@
 (ns status-im.ui.screens.keycard.recovery.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.multiaccounts.recover.core :as multiaccounts.recover]
-            [status-im.ui.components.react :as react]
+  (:require [re-frame.core :as re-frame]
             [status-im.hardwallet.recovery :as hardwallet.recovery]
-            [status-im.ui.screens.keycard.styles :as styles]
-            [status-im.ui.screens.keycard.views :as views]
-            [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.i18n :as i18n]
-            [re-frame.core :as re-frame]
             [status-im.react-native.resources :as resources]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.text-input.view :as text-input]
-            [status-im.utils.gfycat.core :as gfy]
-            [status-im.utils.identicon :as identicon]
-            [status-im.utils.core :as utils.core]
-            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
+            [status-im.ui.screens.keycard.styles :as styles]
+            [status-im.utils.core :as utils.core]
+            [status-im.utils.gfycat.core :as gfy]
+            [status-im.utils.identicon :as identicon])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn intro []
   [react/view styles/container

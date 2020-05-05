@@ -1,7 +1,5 @@
 (ns status-im.ui.components.toolbar.actions
-  (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.toolbar.styles :as styles]
-            [status-im.ui.components.colors :as colors]))
+  (:require [re-frame.core :as re-frame]))
 
 (defn opts [options]
   {:icon    :main-icons/more

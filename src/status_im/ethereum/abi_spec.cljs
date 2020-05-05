@@ -47,7 +47,7 @@
     (let [hex-x (str "0x" x)]
       (try
         (.hexToNumber utils hex-x)
-        (catch :default err
+        (catch :default _
           (.hexToNumberString utils hex-x))))))
 
 (defn is-hex? [value]
@@ -90,8 +90,7 @@
 ;; bytes<M>: enc(X) is the sequence of bytes in X padded with trailing
 ;; zero-bytes to a length of 32 bytes.
 (defmethod enc :bytes
-  [{:keys [value size dynamic?]
-    :or {size 256}}]
+  [{:keys [value dynamic?]}]
   ;; in the examples of the abi specifications strings are passed for
   ;; bytes parameters, in our ens resolver we pass encoded bytes directly
   ;; for namehash, this handles both cases by checking if the value is already
@@ -114,17 +113,15 @@
 ;; fixed<M>x<N>: enc(X) is enc(X * 10**N) where X * 10**N is
 ;; interpreted as a int256.
 (defmethod enc :fixed
-  [{:keys [value size power]
-    :or {size 128
-         power 18}}]
+  [{:keys [value power]
+    :or {power 18}}]
   (enc {:type  :int
         :value (* value (Math/pow 10 power))}))
 
 ;; ufixed: as in the ufixed128x18 case
 (defmethod enc :ufixed
-  [{:keys [value size power]
-    :or {size 128
-         power 18}}]
+  [{:keys [value power]
+    :or {power 18}}]
   (enc {:type  :uint
         :value (* value (Math/pow 10 power))}))
 
@@ -137,7 +134,7 @@
 ;; i.e. it is encoded as if it were an array of static size k,
 ;; prefixed with the number of elements.
 (defmethod enc :array
-  [{:keys [value dynamic? array-of] :as x}]
+  [{:keys [value dynamic? array-of]}]
   (str (when dynamic?
          (enc {:type :int
                :value (count value)}))
@@ -174,7 +171,7 @@
                         (conj acc (assoc x :head enc-x))])))
                  [0 []]
                  value)
-        [_ heads tails] (reduce (fn [[len heads tails] {:keys [head tail] :as x}]
+        [_ heads tails] (reduce (fn [[len heads tails] {:keys [head tail]}]
                                   (if tail
                                     [(+ len (/ (count tail) 2))
                                      (conj heads (enc {:type :int :value len}))
@@ -228,7 +225,7 @@
     [(count m) m]))
 
 (defn tokenise [code]
-  (if (seq code)
+  (when (seq code)
     (if-let [[len token] (or (string code)
                              (single-char code)
                              (number code))]
@@ -273,12 +270,12 @@
   (apply str (take 10 (ethereum/sha3 signature))))
 
 (defn encode [method params]
-  (let [method-id (signature->method-id method)]
-    (let [params (map #(assoc %1 :value %2)
-                      (parse-params method)
-                      params)]
-      (str method-id (enc {:type  :tuple
-                           :value params})))))
+  (let [method-id (signature->method-id method)
+        params (map #(assoc %1 :value %2)
+                    (parse-params method)
+                    params)]
+    (str method-id (enc {:type  :tuple
+                         :value params}))))
 
 ;; ======= decode
 
