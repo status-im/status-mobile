@@ -115,9 +115,11 @@
        (i18n/label :t/sign-with)]
       [react/view {:padding-right 16}
        [react/image {:source (resources/get-image :keycard-logo)
-                     :style  {:width         64
-                              :margin-bottom 7
-                              :height        26}}]]]]))
+                     :style  (merge {:width         64
+                                     :margin-bottom 7
+                                     :height        26}
+                                    (when (colors/dark?)
+                                      {:tint-color colors/white-persist}))}]]]]))
 
 (defn- signing-phrase-view [phrase]
   [react/view {:align-items :center}
