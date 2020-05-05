@@ -45,6 +45,9 @@ in {
         export ANDROID_SDK_ROOT="${androidPkgs}"
         export ANDROID_NDK_ROOT="${androidPkgs}/ndk-bundle"
 
+        # required by some makefile targets
+        export STATUS_GO_ANDROID_LIBDIR=${status-go}
+
         # check if node modules changed and if so install them
         $STATUS_REACT_HOME/nix/mobile/reset-node_modules.sh \
           "${mavenAndNpmDeps.drv}/project"
