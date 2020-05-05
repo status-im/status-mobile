@@ -10,4 +10,4 @@
         }, 100);
         return pushState.apply(history, arguments);
     };
-}());
+})();
