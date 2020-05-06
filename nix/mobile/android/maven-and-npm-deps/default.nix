@@ -3,9 +3,8 @@
 #   as well as a local version of the Maven repository required by Gradle scripts
 #
 
-{ stdenv, lib, callPackage, mkShell,
-  gradle, bash, file, nodejs, zlib,
-  projectNodePackage, localMavenRepoBuilder }:
+{ stdenv, lib, callPackage, deps, mkShell,
+  gradle, bash, file, nodejs, zlib, localMavenRepoBuilder }:
 
 let
   mavenLocalRepo = callPackage ./maven { inherit localMavenRepoBuilder stdenv; };
@@ -20,7 +19,7 @@ let
   '';
 
   # fake build to pre-download deps into fixed-output derivation
-  deps = 
+  drv = 
     let
       # Place build target directories in NIX_BUILD_TOP (normally represents /build)
       projectBuildDir = "$NIX_BUILD_TOP/project";
@@ -48,7 +47,7 @@ let
               };
           };
         phases = [ "unpackPhase" "patchPhase" "installPhase" "fixupPhase" ];
-        nativeBuildInputs = [ projectNodePackage ];
+        nativeBuildInputs = [ deps.nodejs ];
         buildInputs = [ gradle nodejs bash file zlib mavenLocalRepo ];
         propagatedBuildInputs = [ react-native-deps ];
         unpackPhase = ''
@@ -71,7 +70,7 @@ let
           # Copy node_modules from Nix store
           rm -rf ${projectBuildDir}/node_modules
           mkdir -p ${projectBuildDir}/node_modules
-          cp -a ${projectNodePackage}/node_modules/. ${projectBuildDir}/node_modules/
+          cp -a ${deps.nodejs}/node_modules/. ${projectBuildDir}/node_modules/
 
           # Ensure that module was correctly installed
           [ -d ${projectBuildDir}/node_modules/jsc-android/dist ] || exit 1
@@ -189,12 +188,12 @@ let
       };
 
 in {
-  drv = deps;
+  inherit drv;
   shell = mkShell {
     shellHook = ''
       ${createMobileFilesSymlinks "$STATUS_REACT_HOME"}
 
-      export STATUSREACT_NIX_MAVEN_REPO="${deps}/.m2/repository"
+      export STATUSREACT_NIX_MAVEN_REPO="${drv}/.m2/repository"
     '';
   };
 }

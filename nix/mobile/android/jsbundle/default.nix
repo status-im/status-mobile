@@ -1,10 +1,10 @@
-
+#
 # This Nix expression builds the js files for the current repository given a node modules Nix expression
 #
 
-{ target ? "android",
-  stdenv, lib, deps, clojure, nodejs, bash, git, openjdk,
-  localMavenRepoBuilder, projectNodePackage }:
+{ target ? "android"
+, stdenv, lib, deps, pkgs
+, localMavenRepoBuilder }:
 
 stdenv.mkDerivation {
   name = "status-react-build-jsbundle-${target}";
@@ -33,7 +33,7 @@ stdenv.mkDerivation {
           ];
         };
     };
-  buildInputs = [ clojure nodejs bash git openjdk];
+  buildInputs = with pkgs; [ clojure nodejs bash git openjdk];
 
   phases = [ "unpackPhase" "patchPhase" "configurePhase" "buildPhase" "installPhase" ];
   # Patching shadow-cljs.edn so it uses the local maven repo of dependencies provided by Nix
@@ -47,7 +47,7 @@ stdenv.mkDerivation {
     '';
   configurePhase = ''
     # Symlink Node.js modules to build directory
-    ln -s ${projectNodePackage}/node_modules
+    ln -s ${deps.nodejs}/node_modules
 
     # Symlink Node.JS dependency definitions
     ln -sf mobile/js_files/package.json ./

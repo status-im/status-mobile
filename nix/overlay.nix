@@ -23,6 +23,7 @@ in {
   # Project dependencies
   deps = {
     clojure = callPackage ./deps/clojure { };
+    nodejs = callPackage ./deps/nodejs { };
   };
 
   # Android environement

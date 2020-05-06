@@ -1,9 +1,9 @@
 { lib, pkgs, newScope, mkShell
-, status-go, localMavenRepoBuilder, projectNodePackage
+, status-go, localMavenRepoBuilder
 , gradle, androidPkgs, androidShell }:
 
 let
-  callPackage = newScope { inherit localMavenRepoBuilder projectNodePackage; };
+  callPackage = newScope { inherit localMavenRepoBuilder; };
 
   # Import a jsbundle compiled out of clojure codebase
   jsbundle = callPackage ./jsbundle { };

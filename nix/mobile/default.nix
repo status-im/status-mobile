@@ -4,19 +4,17 @@
 let
   inherit (lib) catAttrs concatStrings optional unique;
 
-  projectNodePackage = callPackage ./node-package.nix { };
-
   localMavenRepoBuilder = callPackage ../tools/maven/maven-repo-builder.nix { };
 
   fastlane = callPackage ./fastlane { };
 
   android = callPackage ./android {
-    inherit localMavenRepoBuilder projectNodePackage;
+    inherit localMavenRepoBuilder;
     status-go = status-go.mobile.android;
   };
 
   ios = callPackage ./ios {
-    inherit xcodeWrapper projectNodePackage fastlane;
+    inherit xcodeWrapper fastlane;
     status-go = status-go.mobile.ios;
   };
 

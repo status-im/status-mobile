@@ -1,10 +1,9 @@
-{ lib, fetchFromGitHub
-, nodejs, yarn2nix-moretea }:
+{ lib, yarn2nix-moretea }:
 
 let
-  version = lib.fileContents ../../VERSION;
-  yarnLock = ../../mobile/js_files/yarn.lock;
-  packageJSON = ../../mobile/js_files/package.json;
+  version = lib.fileContents ../../../VERSION;
+  yarnLock = ../../../mobile/js_files/yarn.lock;
+  packageJSON = ../../../mobile/js_files/package.json;
   packageJSONContent = lib.importJSON packageJSON;
 in
   # Create a yarn package for our project that contains all the dependecies.
