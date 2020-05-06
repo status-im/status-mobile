@@ -39,7 +39,7 @@ let
               lib.mkFilter {
                 root = path;
                 include = [
-                  "android/.*" "translations/.*" "status-modules/.*"
+                  "android/.*" "status-modules/.*"
                   "resources/.*" "mobile/js_files/.*" ".babelrc"
                 ];
                 exclude = [
@@ -80,7 +80,6 @@ let
           chmod -R u+w ${projectBuildDir}
 
           cp -R ${projectBuildDir}/status-modules/ ${projectBuildDir}/node_modules/status-modules/
-          cp -R ${projectBuildDir}/translations/ ${projectBuildDir}/node_modules/status-modules/translations/
 
           # Set up symlinks to mobile enviroment in project root
           ${createMobileFilesSymlinks projectBuildDir}

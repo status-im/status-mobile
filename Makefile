@@ -165,20 +165,17 @@ release-ios: export BUILD_ENV ?= prod
 release-ios: watchman-clean ##@build build release for iOS release
 	@git clean -dxf -f target/ios && \
 	$(MAKE) jsbundle-ios && \
-	scripts/copy-translations.sh && \
 	xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration Release -destination 'generic/platform=iOS' -UseModernBuildSystem=N clean archive
 
 release-desktop: export TARGET ?= $(HOST_OS)
 release-desktop: ##@build build release for desktop release based on TARGET
 	@$(MAKE) jsbundle-desktop && \
-	scripts/copy-translations.sh && \
 	scripts/build-desktop.sh; \
 	$(MAKE) watchman-clean
 
 release-windows-desktop: export TARGET ?= windows
 release-windows-desktop: ##@build build release for windows desktop release
 	@$(MAKE) jsbundle-desktop && \
-	scripts/copy-translations.sh && \
 	scripts/build-desktop.sh; \
 	$(MAKE) watchman-clean
 
