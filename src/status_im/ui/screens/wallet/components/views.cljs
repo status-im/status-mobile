@@ -42,6 +42,7 @@
         :container           {:height           98
                               :padding-vertical 8}
         :placeholder         (i18n/label :t/recipient-code-placeholder)
+        :text-align-vertical :top
         :on-change-text      #(reset! content %)
         :accessibility-label :recipient-address-input}]
       [react/text {:style {:color           colors/gray
