@@ -3,20 +3,11 @@
 #   as well as a local version of the Maven repository required by Gradle scripts
 #
 
-{ stdenv, lib, callPackage, deps, mkShell,
-  gradle, bash, file, nodejs, zlib, localMavenRepoBuilder }:
+{ stdenv, lib, callPackage, pkgs, deps, mkShell
+, localMavenRepoBuilder }:
 
 let
   mavenLocalRepo = callPackage ./maven { inherit localMavenRepoBuilder stdenv; };
-
-  # Import the native dependencies for React Native Android builds
-  react-native-deps = callPackage ./maven/reactnative-android-native-deps.nix { };
-
-  createMobileFilesSymlinks = root: ''
-    ln -sf ${root}/mobile/js_files/package.json ${root}/package.json
-    ln -sf ${root}/mobile/js_files/metro.config.js ${root}/metro.config.js
-    ln -sf ${root}/mobile/js_files/yarn.lock ${root}/yarn.lock
-  '';
 
   # fake build to pre-download deps into fixed-output derivation
   drv = 
@@ -48,8 +39,8 @@ let
           };
         phases = [ "unpackPhase" "patchPhase" "installPhase" "fixupPhase" ];
         nativeBuildInputs = [ deps.nodejs ];
-        buildInputs = [ gradle nodejs bash file zlib mavenLocalRepo ];
-        propagatedBuildInputs = [ react-native-deps ];
+        buildInputs = with pkgs; [ gradle nodejs file zlib mavenLocalRepo ];
+        propagatedBuildInputs = [ deps.react-native ];
         unpackPhase = ''
           runHook preUnpack
 
@@ -62,10 +53,8 @@ let
           # Copy RN maven dependencies and make them writable, otherwise Gradle copy fails (since the top-level directory is read-only, Java isn't smart enough to copy the child files/folders into that target directory)
           mkdir -p ${mavenRepoDir}
           cp -a ${mavenLocalRepo}/. ${mavenRepoDir}
-          cp -a ${react-native-deps}/deps ${reactNativeDepsDir}
-          for d in `find ${reactNativeDepsDir} -mindepth 1 -maxdepth 1 -type d`; do 
-            chmod -R u+w $d
-          done
+          cp -a ${deps.react-native}/deps ${reactNativeDepsDir}
+          find ${reactNativeDepsDir} -maxdepth 1 -type d -exec chmod -R u+w {} \;
 
           # Copy node_modules from Nix store
           rm -rf ${projectBuildDir}/node_modules
@@ -79,9 +68,6 @@ let
           chmod -R u+w ${projectBuildDir}
 
           cp -R ${projectBuildDir}/status-modules/ ${projectBuildDir}/node_modules/status-modules/
-
-          # Set up symlinks to mobile enviroment in project root
-          ${createMobileFilesSymlinks projectBuildDir}
 
           # Create a dummy VERSION, since we don't want this expression to be invalidated just because the version changed
           echo '0.0.1' > ${projectBuildDir}/VERSION
@@ -144,7 +130,7 @@ let
           substituteInPlace ${projectBuildDir}/android/app/build.gradle \
             --replace \
               'nodeExecutableAndArgs: ["node"' \
-              'nodeExecutableAndArgs: ["${nodejs}/bin/node"'
+              'nodeExecutableAndArgs: ["${pkgs.nodejs}/bin/node"'
 
           # Fix bugs in Hermes usage (https://github.com/facebook/react-native/issues/25601#issuecomment-510856047)
           # - Make PR builds also count as release builds
@@ -191,8 +177,6 @@ in {
   inherit drv;
   shell = mkShell {
     shellHook = ''
-      ${createMobileFilesSymlinks "$STATUS_REACT_HOME"}
-
       export STATUSREACT_NIX_MAVEN_REPO="${drv}/.m2/repository"
     '';
   };

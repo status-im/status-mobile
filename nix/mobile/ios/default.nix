@@ -1,6 +1,5 @@
-{ callPackage, lib, mkShell,
-  xcodeWrapper, projectNodePackage, status-go,
-  flock, procps, watchman, bundler, fastlane }:
+{ callPackage, lib, mkShell, deps, pkgs
+, status-go, fastlane }:
 
 let
   inherit (lib) catAttrs unique;
@@ -12,7 +11,7 @@ in {
   inherit pod-shell status-go-shell;
 
   shell = mkShell {
-    buildInputs = [
+    buildInputs = with pkgs; [
       xcodeWrapper watchman bundler procps
       flock # used in reset-node_modules.sh
     ];
@@ -32,7 +31,7 @@ in {
         ln -sf ./mobile/js_files/yarn.lock ./yarn.lock
 
         # check if node modules changed and if so install them
-        ./nix/mobile/reset-node_modules.sh "${projectNodePackage}"
+        ./nix/mobile/reset-node_modules.sh "${deps.nodejs}"
       }
       popd > /dev/null
     '';

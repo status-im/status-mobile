@@ -29,7 +29,8 @@ in {
 
   shell = mkShell {
     buildInputs = with pkgs; [
-      mavenAndNpmDeps.drv openjdk gradle
+      openjdk
+      gradle
       lsof  # used in start-react-native.sh
       flock # used in reset-node_modules.sh
     ];

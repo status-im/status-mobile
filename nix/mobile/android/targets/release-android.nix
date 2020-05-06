@@ -12,22 +12,12 @@
 assert (lib.stringLength watchmanSockPath) > 0 -> stdenv.isDarwin;
 
 let
-  inherit (lib) toLower optionalString getConfig;
-
-  # custom env variables derived from config
-  env = {
-    ANDROID_ABI_SPLIT = getConfig "android.abi-split" "false";
-    ANDROID_ABI_INCLUDE = getConfig "android.abi-include" "armeabi-v7a;arm64-v8a;x86";
-    STATUS_GO_SRC_OVERRIDE = getConfig "nimbus.src-override" null;
-  };
+  inherit (lib) toLower optionalString stringLength getConfig makeLibraryPath;
 
   buildType = getConfig "build-type" "prod";
   buildNumber = getConfig "build-number" 9999;
   gradleOpts = getConfig "android.gradle-opts" null;
   keystorePath = getConfig "android.keystore-path" null;
-
-  # Keep the same keystore path for determinism
-  keystoreLocal = "${gradleHome}/status-im.keystore";
 
   baseName = "release-android";
   name = "status-react-build-${baseName}";
@@ -45,7 +35,7 @@ let
     then "Pr"
     else "Release"; # PR builds shouldn't replace normal releases
 
-  apksPath = "$sourceRoot/android/app/build/outputs/apk/${toLower gradleBuildType}";
+  apksPath = "$PROJECT/android/app/build/outputs/apk/${toLower gradleBuildType}";
   patchedWatchman = watchmanFactory watchmanSockPath;
 
 in stdenv.mkDerivation rec {
@@ -74,41 +64,56 @@ in stdenv.mkDerivation rec {
   # Used by Clojure at compile time to include JS modules
   BUILD_ENV = buildEnv;
 
-  phases = [ "unpackPhase" "patchPhase" "buildPhase" "checkPhase" "installPhase" ];
+  # custom env variables derived from config
+  STATUS_GO_SRC_OVERRIDE = getConfig "nimbus.src-override" null;
+  ANDROID_ABI_SPLIT = getConfig "android.abi-split" "false";
+  ANDROID_ABI_INCLUDE = getConfig "android.abi-include" "armeabi-v7a;arm64-v8a;x86";
+
+  ANDROID_SDK_ROOT = "${androidPkgs}";
+  ANDROID_NDK_ROOT = "${androidPkgs}/ndk-bundle";
+
+  # Used by the Android Gradle build script in android/build.gradle
+  STATUS_GO_ANDROID_LIBDIR = "${status-go}";
+
+  # Used by the Android Gradle wrapper in android/gradlew
+  STATUSREACT_NIX_MAVEN_REPO = "${mavenAndNpmDeps.drv}/.m2/repository";
+
+  phases = [
+    "unpackPhase" "patchPhase" "secretPhase" "buildPhase" "checkPhase" "installPhase"
+  ];
 
   unpackPhase = ''
-    runHook preUnpack
-
     cp -r $src ./project
     chmod u+w -R ./project
-
-    export sourceRoot=$PWD/project
+    export PROJECT=$PWD/project
 
     runHook postUnpack
   '';
   postUnpack = assert lib.assertMsg (keystorePath != null) "keystore-file has to be set!"; ''
     mkdir -p ${gradleHome}
 
-    # WARNING: Renaming the keystore will cause 'Keystore was tampered with' error
-    cp -a --no-preserve=ownership "${keystorePath}" "${keystoreLocal}"
+    # Keep the same keystore path for determinism
+    export KEYSTORE_PATH="${gradleHome}/status-im.keystore"
+    cp -a --no-preserve=ownership "${keystorePath}" "$KEYSTORE_PATH"
 
     # Ensure we have the right .env file
-    cp -f $sourceRoot/${envFileName} $sourceRoot/.env
+    cp -f $PROJECT/${envFileName} $PROJECT/.env
 
     # Copy index.js and app/ input files
-    cp -ra --no-preserve=ownership ${jsbundle}/* $sourceRoot/
+    cp -ra --no-preserve=ownership ${jsbundle}/* $PROJECT/
 
     # Copy android/ directory
-    cp -a --no-preserve=ownership ${sourceProjectDir}/android/ $sourceRoot/
-    chmod u+w $sourceRoot/android
-    chmod u+w $sourceRoot/android/app
-    mkdir -p $sourceRoot/android/build
-    chmod -R u+w $sourceRoot/android/build
+    cp -a --no-preserve=ownership ${sourceProjectDir}/android/ $PROJECT/
+    chmod u+w $PROJECT/android
+    chmod u+w $PROJECT/android/app
+    mkdir -p $PROJECT/android/build
+    chmod -R u+w $PROJECT/android/build
 
     # Copy node_modules/ directory
-    cp -a --no-preserve=ownership ${sourceProjectDir}/node_modules/ $sourceRoot/
+    cp -a --no-preserve=ownership ${sourceProjectDir}/node_modules/ $PROJECT/
+
     # Make android/build directories writable under node_modules
-    for d in `find $sourceRoot/node_modules -type f -name build.gradle | xargs dirname`; do
+    for d in `find $PROJECT/node_modules -type f -name build.gradle | xargs dirname`; do
       chmod -R u+w $d
     done
   '';
@@ -116,50 +121,38 @@ in stdenv.mkDerivation rec {
     prevSet=$-
     set -e
 
-    substituteInPlace $sourceRoot/android/gradlew \
+    substituteInPlace $PROJECT/android/gradlew \
       --replace \
         'exec gradle' \
         "exec gradle -Dmaven.repo.local='${localMavenRepo}' --offline ${toString gradleOpts}"
 
     set $prevSet
   '';
+  secretPhase = optionalString (secretsFile != "") ''
+    source "${secretsFile}"
+  '';
   buildPhase = let
-    inherit (lib)
-      stringLength optionalString substring
-      toInt concatStrings concatStringsSep
-      catAttrs mapAttrsToList makeLibraryPath;
-
-    # Take the env attribute set and build a couple of scripts
-    #  (one to export the environment variables, and another to unset them)
-    exportEnvVars = concatStringsSep ";"
-      (mapAttrsToList (name: value: "export ${name}='${toString value}'") env);
     adhocEnvVars = optionalString stdenv.isLinux
       "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${makeLibraryPath [ zlib ]}";
   in 
-    assert env.ANDROID_ABI_SPLIT != null && env.ANDROID_ABI_SPLIT != "";
-    assert stringLength env.ANDROID_ABI_INCLUDE > 0;
+    assert ANDROID_ABI_SPLIT != null && ANDROID_ABI_SPLIT != "";
+    assert stringLength ANDROID_ABI_INCLUDE > 0;
   ''
-    export ANDROID_SDK_ROOT="${androidPkgs}"
-    export ANDROID_NDK_ROOT="${androidPkgs}/ndk-bundle"
-
-    export KEYSTORE_PATH="${keystoreLocal}"
-
     export STATUS_REACT_HOME=$PWD
-    export HOME=$sourceRoot
+    export HOME=$PROJECT
 
-    # Used by the Android Gradle build script in android/build.gradle
-    export STATUS_GO_ANDROID_LIBDIR=${status-go}
-
-    ${exportEnvVars}
-    ${optionalString (secretsFile != "") "source ${secretsFile}"}
-
-    ${concatStrings (catAttrs "shellHook" [ mavenAndNpmDeps.shell ])}
+    # create mobile node/yarn symlinks
+    ln -sf $PROJECT/mobile/js_files/* $PROJECT/
 
     # fix permissions so gradle can create directories
-    chmod -R +w $sourceRoot/android
+    chmod -R +w $PROJECT/android
 
-    pushd $sourceRoot/android
-    ${adhocEnvVars} ./gradlew -PversionCode=${toString buildNumber} assemble${gradleBuildType} || exit
+    pushd $PROJECT/android
+    ${adhocEnvVars} ./gradlew \
+      --stacktrace \
+      -PversionCode=${toString buildNumber} \
+      assemble${gradleBuildType} \
+      || exit 1
     popd > /dev/null
   '';
   doCheck = true;

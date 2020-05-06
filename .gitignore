@@ -129,6 +129,7 @@ fastlane/README.md
 .dir-locals.el
 
 #ignore platform-specific files in the root since they are only symlinks to files in folders 'desktop/js_files' and 'mobile/js_files'
+/DEPENDENCIES.md
 /package-lock.json
 /package.json
 /metro.config.js

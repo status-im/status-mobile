@@ -24,6 +24,7 @@ in {
   deps = {
     clojure = callPackage ./deps/clojure { };
     nodejs = callPackage ./deps/nodejs { };
+    react-native = callPackage ./deps/react-native { };
   };
 
   # Android environement

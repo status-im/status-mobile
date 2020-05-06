@@ -1,5 +1,4 @@
-{ config, lib, stdenvNoCC, callPackage, mkShell,
-  status-go, xcodeWrapper }:
+{ config, lib, stdenvNoCC, callPackage, mkShell, status-go }:
 
 let
   inherit (lib) catAttrs concatStrings optional unique;
@@ -14,7 +13,7 @@ let
   };
 
   ios = callPackage ./ios {
-    inherit xcodeWrapper fastlane;
+    inherit fastlane;
     status-go = status-go.mobile.ios;
   };
 
@@ -29,6 +28,10 @@ let
 in {
   shell = mkShell {
     inputsFrom = (catAttrs "shell" selectedSources);
+    shellHooks = ''
+      # create mobile node/yarn symlinks
+      ln -sf $STATUS_REACT_HOME/mobile/js_files/* $STATUS_REACT_HOME/
+    '';
   };
 
   # TARGETS
