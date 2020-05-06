@@ -3,12 +3,10 @@
 #
 
 { target ? "android",
-  stdenv, lib, clojure, nodejs, bash, git, openjdk,
-  clojureDeps, localMavenRepoBuilder, projectNodePackage }:
+  stdenv, lib, deps, clojure, nodejs, bash, git, openjdk,
+  localMavenRepoBuilder, projectNodePackage }:
 
-let
-  clojureDepsLocal = localMavenRepoBuilder "clojure-project-deps" clojureDeps;
-in stdenv.mkDerivation {
+stdenv.mkDerivation {
   name = "status-react-build-jsbundle-${target}";
   src =
     let path = ./../../../..;
@@ -45,7 +43,7 @@ in stdenv.mkDerivation {
       substituteInPlace shadow-cljs.edn \
         --replace '${anchor}' \
                   '${anchor}
-       :maven {:local-repo "${clojureDepsLocal}"}'
+       :maven {:local-repo "${deps.clojure}"}'
     '';
   configurePhase = ''
     # Symlink Node.js modules to build directory
@@ -58,7 +56,7 @@ in stdenv.mkDerivation {
   buildPhase = ''
     # Assemble CLASSPATH from available clojure dependencies.
     # We append 'src' so it can find the local sources.
-    export CLASS_PATH="$(find ${clojureDepsLocal} -iname '*.jar' | tr '\n' ':')src"
+    export CLASS_PATH="$(find ${deps.clojure} -iname '*.jar' | tr '\n' ':')src"
 
     # target must be one of the builds defined in shadow-cljs.edn
     java -cp "$CLASS_PATH" clojure.main -m shadow.cljs.devtools.cli release ${target}

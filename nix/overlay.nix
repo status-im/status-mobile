@@ -20,6 +20,11 @@ in {
     inherit (self) config;
   });
 
+  # Project dependencies
+  deps = {
+    clojure = callPackage ./deps/clojure { };
+  };
+
   # Android environement
   androidEnvCustom = callPackage ./mobile/android/sdk { };
   androidPkgs = self.androidEnvCustom.licensedPkgs;

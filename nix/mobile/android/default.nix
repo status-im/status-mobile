@@ -5,10 +5,8 @@
 let
   callPackage = newScope { inherit localMavenRepoBuilder projectNodePackage; };
 
-  clojureDeps = import ../../deps/clojure/deps.nix { };
-
   # Import a jsbundle compiled out of clojure codebase
-  jsbundle = callPackage ./jsbundle { inherit clojureDeps; };
+  jsbundle = callPackage ./jsbundle { };
 
   # Import a patched version of watchman (important for sandboxed builds on macOS)
   watchmanFactory = callPackage ./watchman.nix { };
