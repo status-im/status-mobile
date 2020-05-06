@@ -33,7 +33,7 @@ John Dewey once said "Education is not preparation for life; education is life *
 Content is King, keeping our blog up to date and informing the community of news helps keep everyone on the same page. [Jump into our chat](https://join.status.im/chat/public/status) and discuss with the team how you can contribute!
 
 - **Testers**  
-It's bug hunting season! Status is currently in Alpha and there is sure to be a bunch of learning, [build status from scratch](https://status.im/build_status/) or if an android user check out our [nightly builds](https://status.im/nightly). You can shake your phone to submit bug reports, or start browsing our [Github Issues](https://github.com/status-im/status-react/issues). Every bug you find brings Status closer to stable, usable software for everyone to enjoy!
+It's bug hunting season! Status is currently under active development and there is sure to be a bunch of learning, [build status from scratch](https://status.im/build_status/) or if an android user check out our [nightly builds](https://status.im/nightly). You can shake your phone to submit bug reports, or start browsing our [Github Issues](https://github.com/status-im/status-react/issues). Every bug you find brings Status closer to stable, usable software for everyone to enjoy!
 
 - **Security**  
 Status is a visual interface to make permanent changes on the Blockchain, it handles crypto-tokens that have real value and allows 3rd party code execution. Security is paramount to its success. You are given permission to break Status as hard as you can, as long as you share your findings with the community!
