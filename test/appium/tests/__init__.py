@@ -52,5 +52,5 @@ connection_not_secure_text = "Connection is not secure! " \
 connection_is_secure_text = "Connection is secure. Make sure you really trust this site " \
                             "before signing transactions or entering personal data."
 
-test_dapp_url = 'status-im.github.io/dapp'
+test_dapp_url = 'simpledapp.eth'
 test_dapp_name = 'status-im.github.io'
