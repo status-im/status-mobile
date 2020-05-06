@@ -161,7 +161,7 @@
     :accessibility-label :about-button
     :accessories         [:chevron]
     :on-press            #(re-frame/dispatch [:navigate-to :about-app])}
-   {:icon                    :main-icons/log_out
+   {:icon                    :main-icons/log-out
     :title                   :t/sign-out
     :accessibility-label     :log-out-button
     :container-margin-top    24

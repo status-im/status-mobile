@@ -2,6 +2,7 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
             [status-im.utils.platform :as platform]
+            [status-im.ui.components.icons.icons :as icons]
             [clojure.string :as string])
   (:refer-clojure :exclude [use]))
 
@@ -25,7 +26,7 @@
 (defn icon-source [name]
   (if platform/desktop?
     {:uri (keyword (string/replace (clojure.core/name name) "-" "_"))}
-    {:uri (keyword (clojure.core/name name))}))
+    (icons/icon-source name)))
 
 (defn icon
   ([name] (icon name nil))
