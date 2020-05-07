@@ -1,4 +1,4 @@
-(ns status-im.bootnode.core-test
+(ns status-im.bootnodes.core-test
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.bootnodes.core :as model]))
 

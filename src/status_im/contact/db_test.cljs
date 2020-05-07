@@ -1,4 +1,4 @@
-(ns status-im.contacts.db-test
+(ns status-im.contact.db-test
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]

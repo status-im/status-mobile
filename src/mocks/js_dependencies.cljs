@@ -1,4 +1,5 @@
 (ns mocks.js-dependencies
+  (:require-macros [status-im.utils.slurp :refer [slurp]])
   (:require [status-im.default-fleet :refer (default-fleets)]))
 
 (def action-button          #js {:default #js {:Item #js {}}})
@@ -190,4 +191,17 @@
     "react-native-mail" react-native-mail
     "react-native-image-resizer" image-resizer
     "./fleets.js" default-fleets
+    "../translations/ar.json" (js/JSON.parse (slurp "./translations/ar.json"))
+    "../translations/en.json" (js/JSON.parse (slurp "./translations/en.json"))
+    "../translations/es.json" (js/JSON.parse (slurp "./translations/es.json"))
+    "../translations/es_419.json" (js/JSON.parse (slurp "./translations/es_419.json"))
+    "../translations/fil.json" (js/JSON.parse (slurp "./translations/fil.json"))
+    "../translations/fr.json" (js/JSON.parse (slurp "./translations/fr.json"))
+    "../translations/id.json" (js/JSON.parse (slurp "./translations/id.json"))
+    "../translations/it.json" (js/JSON.parse (slurp "./translations/it.json"))
+    "../translations/ko.json" (js/JSON.parse (slurp "./translations/ko.json"))
+    "../translations/ru.json" (js/JSON.parse (slurp "./translations/ru.json"))
+    "../translations/zh.json" (js/JSON.parse (slurp "./translations/zh.json"))
+    "../translations/zh_hant.json" (js/JSON.parse (slurp "./translations/zh_hant.json"))
+    "../translations/zh_TW.json" (js/JSON.parse (slurp "./translations/zh_TW.json"))
     nil))

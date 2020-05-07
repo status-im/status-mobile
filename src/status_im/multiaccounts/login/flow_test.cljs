@@ -1,11 +1,11 @@
-(ns status-im.multiaccount.login.flow-test
+(ns status-im.multiaccounts.login.flow-test
   "The main purpose of these tests is to signal that some steps of the sign in
   flow has been changed. Such changes should be reflected in both these tests
   and documents which describe the whole \"sign in\" flow."
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.multiaccount.login.data-test :as data]
+            [status-im.multiaccounts.login.data-test :as data]
             [status-im.multiaccounts.login.core :as login.core]))
 
 (deftest on-password-input-submitted

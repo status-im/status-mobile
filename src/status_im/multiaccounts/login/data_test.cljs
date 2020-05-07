@@ -1,4 +1,4 @@
-(ns status-im.multiaccount.login.data-test)
+(ns status-im.multiaccounts.login.data-test)
 
 (def all-contacts
   [{:last-updated  1547185503000
