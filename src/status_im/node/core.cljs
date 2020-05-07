@@ -100,7 +100,7 @@
 
       current-fleet
       (assoc :NoDiscovery   false
-             :Rendezvous    (seq rendezvous-nodes)
+             :Rendezvous    (boolean (seq rendezvous-nodes))
              :ClusterConfig {:Enabled true
                              :Fleet              (name current-fleet-key)
                              :BootNodes
