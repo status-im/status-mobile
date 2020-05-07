@@ -99,7 +99,7 @@
                     :margin-vertical (if small-screen? 8 16)}
         [react/text-input
          {:style               {:font-size (if small-screen? 24 38)
-                                :color (when amount-error colors/red)
+                                :color (if amount-error colors/red colors/black)
                                 :flex-shrink 1}
           :keyboard-type       :numeric
           :accessibility-label :amount-input
