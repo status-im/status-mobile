@@ -77,7 +77,7 @@ pipeline {
         stage('Build') { stages {
           stage('JSBundle') {
             steps {
-              script { nix.shell('make jsbundle-ios') }
+              script { sh 'make jsbundle-ios' }
             }
           }
           stage('Bundle') {

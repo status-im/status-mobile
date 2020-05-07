@@ -6,20 +6,20 @@
 }:
 
 let
-  inherit (pkgs) lib stdenv;
+  inherit (pkgs) lib stdenv mkShell;
 
   # everything else we define in nix/ dir
   targets = pkgs.callPackage ./targets.nix { inherit config; };
 
   # the default shell that is used when target is not specified
   # it is also merged with all the other shells
-  default = pkgs.mkShell {
+  default = mkShell {
     name = "status-react-shell"; # for identifying all shells
 
     buildInputs = with pkgs; lib.unique ([
       # core utilities that should always be present in a shell
       bash curl wget file unzip flock
-      git gnumake jq ncurses gnugrep
+      git gnumake jq ncurses gnugrep parallel
       # build specific utilities
       clojure maven watchman
       # other nice to have stuff
@@ -43,26 +43,47 @@ let
     '';
   };
 
+  # Combines with many other shells
+  node-sh = mkShell {
+    buildInputs = [ pkgs.androidPkgs ];
+    shellHook = ''
+      export STATUS_REACT_HOME=$(git rev-parse --show-toplevel)
+      $STATUS_REACT_HOME/nix/mobile/reset-node_modules.sh ${pkgs.deps.nodejs}
+    '';
+  };
+
   # An attrset for easier merging with default shell
   shells = {
-    inherit default;
+    nodejs = node-sh;
 
     # for calling clojure targets in CI or Makefile
-    clojure = pkgs.mkShell {
-      buildInputs = with pkgs; [ clojure flock maven nodejs openjdk ];
+    clojure = mkShell {
+      buildInputs = with pkgs; [ clojure flock maven openjdk ];
+      inputsFrom = [ node-sh ];
     };
 
     # for 'make watchman-clean'
-    watchman = pkgs.mkShell {
-      buildInputs = [ pkgs.watchman ];
+    watchman = mkShell {
+      buildInputs = with pkgs; [ watchman ];
     };
 
     # for running fastlane commands alone
     fastlane = targets.mobile.fastlane.shell;
 
+    # for running gradle by hand
+    gradle = mkShell {
+      buildInputs = with pkgs; [ gradle maven ];
+      inputsFrom = [ node-sh ];
+      shellHook = ''
+        export STATUS_GO_ANDROID_LIBDIR="DUMMY"
+        export ANDROID_SDK_ROOT="${pkgs.androidPkgs}"
+        export ANDROID_NDK_ROOT="${pkgs.androidPkgs}/ndk-bundle"
+      '';
+    };
+
     # for 'scripts/generate-keystore.sh'
-    keytool = pkgs.mkShell {
-      buildInputs = [ pkgs.openjdk8 ];
+    keytool = mkShell {
+      buildInputs = with pkgs; [ openjdk8 ];
     };
 
     # for targets that need 'adb' and other SDK/NDK tools
@@ -82,4 +103,6 @@ let
 
 # values here can be selected using `nix-shell --attr shells.$TARGET default.nix`
 # the nix/scripts/shell.sh wrapper does this for us and expects TARGET to be set
-in lib.mapAttrs mergeDefaultShell shells
+in {
+  inherit default;
+} // lib.mapAttrs mergeDefaultShell shells

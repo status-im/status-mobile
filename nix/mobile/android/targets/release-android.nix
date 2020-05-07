@@ -23,8 +23,8 @@ let
   name = "status-react-build-${baseName}";
 
   gradleHome = "$NIX_BUILD_TOP/.gradle";
-  localMavenRepo = "${mavenAndNpmDeps.drv}/.m2/repository";
-  sourceProjectDir = "${mavenAndNpmDeps.drv}/project";
+  localMavenRepo = "${mavenAndNpmDeps}/.m2/repository";
+  sourceProjectDir = "${mavenAndNpmDeps}/project";
   envFileName = if (buildType == "release" || buildType == "nightly" || buildType == "e2e")
     then ".env.${buildType}"
     else if buildType != "" then ".env.jenkins"
@@ -75,11 +75,8 @@ in stdenv.mkDerivation rec {
   # Used by the Android Gradle build script in android/build.gradle
   STATUS_GO_ANDROID_LIBDIR = "${status-go}";
 
-  # Used by the Android Gradle wrapper in android/gradlew
-  STATUSREACT_NIX_MAVEN_REPO = "${mavenAndNpmDeps.drv}/.m2/repository";
-
   phases = [
-    "unpackPhase" "patchPhase" "secretPhase" "buildPhase" "checkPhase" "installPhase"
+    "unpackPhase" "secretPhase" "buildPhase" "checkPhase" "installPhase"
   ];
 
   unpackPhase = ''
@@ -117,17 +114,6 @@ in stdenv.mkDerivation rec {
       chmod -R u+w $d
     done
   '';
-  patchPhase = ''
-    prevSet=$-
-    set -e
-
-    substituteInPlace $PROJECT/android/gradlew \
-      --replace \
-        'exec gradle' \
-        "exec gradle -Dmaven.repo.local='${localMavenRepo}' --offline ${toString gradleOpts}"
-
-    set $prevSet
-  '';
   secretPhase = optionalString (secretsFile != "") ''
     source "${secretsFile}"
   '';
@@ -148,8 +134,9 @@ in stdenv.mkDerivation rec {
     chmod -R +w $PROJECT/android
 
     pushd $PROJECT/android
-    ${adhocEnvVars} ./gradlew \
-      --stacktrace \
+    ${adhocEnvVars} gradle ${toString gradleOpts} \
+      --offline --stacktrace \
+      -Dmaven.repo.local='${localMavenRepo}' \
       -PversionCode=${toString buildNumber} \
       assemble${gradleBuildType} \
       || exit 1

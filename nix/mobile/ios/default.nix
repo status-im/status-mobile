@@ -23,17 +23,15 @@ in {
     ];
 
     shellHook = ''
-      pushd "$STATUS_REACT_HOME" > /dev/null
       {
+        cd "$STATUS_REACT_HOME"
+
         # Set up symlinks to mobile enviroment in project root 
-        ln -sf ./mobile/js_files/metro.config.js ./metro.config.js
-        ln -sf ./mobile/js_files/package.json ./package.json
-        ln -sf ./mobile/js_files/yarn.lock ./yarn.lock
+        ln -sf ./mobile/js_files/* ./
 
         # check if node modules changed and if so install them
         ./nix/mobile/reset-node_modules.sh "${deps.nodejs}"
       }
-      popd > /dev/null
     '';
   };
 

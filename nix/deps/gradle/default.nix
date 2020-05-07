@@ -1,12 +1,13 @@
-{ stdenv, lib, writeShellScriptBin, fetchurl }:
-
-# Put the downloaded files in a fake Maven repository
-name: source:
+{ stdenv, lib, pkgs, fetchurl, writeShellScriptBin }:
 
 let
   inherit (lib)
     removeSuffix optionalString splitString concatMapStrings
     attrByPath attrValues last makeOverridable;
+
+  inherit (pkgs) aapt2;
+
+  deps = import ./deps.nix;
 
   # some .jar files have an `-aot` suffix that doesn't work for .pom files
   getPOM = jarUrl: "${removeSuffix "-aot" jarUrl}.pom";
@@ -51,21 +52,18 @@ let
         ${optionalString (jar.sha1 != "") ''
         echo "${jar.sha1}" > "${dep.path}.${dep.type}.sha1"
         ''}
-        
-        ${if dep.postCopy != "" then ''
-          depPath="$PWD/${dep.path}"
-          # postCopy can't modify the jar if it's a symlink
-          rm "${dep.path}.${dep.type}"
-          cp "${jar-download}" "${dep.path}.${dep.type}"
-          ${dep.postCopy}
-          unset depPath
-        '' else ""
-        }
       '')
-    (attrValues source)));
+    (attrValues deps)));
 
 in makeOverridable stdenv.mkDerivation {
-  inherit name;
-  phases = [ "buildPhase" ];
+  name = "status-react-maven-deps";
+  buildInputs = [ aapt2 ];
+  phases = [ "buildPhase" "patchPhase" ];
   buildPhase = "${script}/bin/create-local-maven-repo";
+  # Patched AAPT2 
+  patchPhase = ''
+    aapt2_dir=$out/com/android/tools/build/aapt2/${aapt2.version}
+    mkdir -p $aapt2_dir
+    ln -sf ${aapt2}/* $aapt2_dir
+  '';
 }

@@ -3,8 +3,7 @@
 #
 
 { target ? "android"
-, stdenv, lib, deps, pkgs
-, localMavenRepoBuilder }:
+, stdenv, lib, deps, pkgs }:
 
 stdenv.mkDerivation {
   name = "status-react-build-jsbundle-${target}";

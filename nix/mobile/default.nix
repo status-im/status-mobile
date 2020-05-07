@@ -3,12 +3,9 @@
 let
   inherit (lib) catAttrs concatStrings optional unique;
 
-  localMavenRepoBuilder = callPackage ../tools/maven/maven-repo-builder.nix { };
-
   fastlane = callPackage ./fastlane { };
 
   android = callPackage ./android {
-    inherit localMavenRepoBuilder;
     status-go = status-go.mobile.android;
   };
 

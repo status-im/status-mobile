@@ -1,4 +1,4 @@
-.PHONY: nix-add-gcroots clean nix-clean disable-githooks react-native-android react-native-ios react-native-desktop test release _list _fix-node-perms _tmpdir-mk _tmpdir-rm
+.PHONY: nix-add-gcroots clean nix-clean react-native-android react-native-ios react-native-desktop test release _list _fix-node-perms _tmpdir-mk _tmpdir-rm
 
 help: SHELL := /bin/sh
 help: ##@other Show this help
@@ -89,11 +89,12 @@ nix-add-gcroots: export TARGET := default
 nix-add-gcroots: ##@nix Add Nix GC roots to avoid status-react expressions being garbage collected
 	nix/scripts/gcroots.sh
 
+nix-update-gradle: export TARGET := gradle
 nix-update-gradle: ##@nix Update maven nix expressions based on current gradle setup
-	nix/mobile/android/maven-and-npm-deps/maven/generate-nix.sh
+	nix/deps/gradle/generate.sh
 
 nix-update-clojure: export TARGET := clojure
-nix-update-clojure: ##@nix Update maven nix expressions based on current clojure setup
+nix-update-clojure: ##@nix Update maven Nix expressions based on current clojure setup
 	nix/deps/clojure/generate.sh
 
 nix-update-gems: export TARGET := default
@@ -160,7 +161,7 @@ release-android: export ANDROID_ABI_INCLUDE ?= armeabi-v7a;arm64-v8a;x86
 release-android: keystore ##@build build release for Android
 	scripts/release-android.sh
 
-release-ios: export TARGET ?= ios
+release-ios: export TARGET := ios
 release-ios: export BUILD_ENV ?= prod
 release-ios: watchman-clean ##@build build release for iOS release
 	@git clean -dxf -f target/ios && \
@@ -183,7 +184,7 @@ prod-build-android: jsbundle-android ##@legacy temporary legacy alias for jsbund
 	@echo "${YELLOW}This a deprecated target name, use jsbundle-android.$(RESET)"
 
 jsbundle-android: SHELL := /bin/sh
-jsbundle-android: export TARGET ?= android
+jsbundle-android: export TARGET := android
 jsbundle-android: export BUILD_ENV ?= prod
 jsbundle-android: ##@jsbundle Compile JavaScript and Clojurescript into app directory
 	# Call nix-build to build the 'targets.mobile.android.jsbundle' attribute and copy the.js files to the project root
@@ -193,7 +194,7 @@ jsbundle-android: ##@jsbundle Compile JavaScript and Clojurescript into app dire
 prod-build-ios: jsbundle-ios ##@legacy temporary legacy alias for jsbundle-ios
 	@echo "${YELLOW}This a deprecated target name, use jsbundle-ios.$(RESET)"
 
-jsbundle-ios: export TARGET ?= ios
+jsbundle-ios: export TARGET := ios
 jsbundle-ios: export BUILD_ENV ?= prod
 jsbundle-ios: ##@jsbundle Compile JavaScript and Clojure into index.ios.js
 	yarn shadow-cljs release ios

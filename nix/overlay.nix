@@ -4,7 +4,6 @@
 # For more details see:
 # - https://nixos.wiki/wiki/Overlays
 # - https://nixos.org/nixos/nix-pills/callpackage-design-pattern.html
-#
 
 self: super:
 
@@ -23,6 +22,7 @@ in {
   # Project dependencies
   deps = {
     clojure = callPackage ./deps/clojure { };
+    gradle = callPackage ./deps/gradle { };
     nodejs = callPackage ./deps/nodejs { };
     react-native = callPackage ./deps/react-native { };
   };
@@ -38,6 +38,7 @@ in {
   nodejs = super.pkgs.nodejs-12_x;
 
   # Custom packages
+  aapt2 = callPackage ./pkgs/aapt2 { };
   gomobile = callPackage ./pkgs/gomobile { };
   qt5custom = callPackage ./pkgs/qt5custom { };
   qtkeychain-src = callPackage ./pkgs/qtkeychain-src { };

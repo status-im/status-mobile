@@ -20,10 +20,8 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${project.ext.gradlePluginVersion}"
-        classpath 'de.undercouch:gradle-download-task:3.1.2'
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        // WARNING: Do not place your application dependencies here!
+        //          They belong in the individual module build.gradle files.
     }
 }
 

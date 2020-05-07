@@ -1,10 +1,7 @@
-{ lib, pkgs, newScope, mkShell
-, status-go, localMavenRepoBuilder
-, gradle, androidPkgs, androidShell }:
+{ lib, pkgs, callPackage, mkShell
+, status-go, gradle, androidPkgs, androidShell }:
 
 let
-  callPackage = newScope { inherit localMavenRepoBuilder; };
-
   # Import a jsbundle compiled out of clojure codebase
   jsbundle = callPackage ./jsbundle { };
 
@@ -19,13 +16,9 @@ let
     inherit gradle mavenAndNpmDeps jsbundle status-go watchmanFactory;
   };
 
-  generate-maven-and-npm-deps-shell = callPackage ./maven-and-npm-deps/maven/shell.nix {
-    inherit status-go;
-  };
-
 in {
   # TARGETS
-  inherit release jsbundle generate-maven-and-npm-deps-shell;
+  inherit release jsbundle;
 
   shell = mkShell {
     buildInputs = with pkgs; [
@@ -33,12 +26,12 @@ in {
       gradle
       lsof  # used in start-react-native.sh
       flock # used in reset-node_modules.sh
+      mavenAndNpmDeps
     ];
 
     inputsFrom = [
       gradle
       release
-      mavenAndNpmDeps.shell
       androidShell
     ];
 
@@ -46,12 +39,20 @@ in {
       export ANDROID_SDK_ROOT="${androidPkgs}"
       export ANDROID_NDK_ROOT="${androidPkgs}/ndk-bundle"
 
+      export STATUSREACT_NIX_MAVEN_REPO="${mavenAndNpmDeps}/.m2/repository"
+
       # required by some makefile targets
       export STATUS_GO_ANDROID_LIBDIR=${status-go}
 
-      # check if node modules changed and if so install them
-      $STATUS_REACT_HOME/nix/mobile/reset-node_modules.sh \
-        "${mavenAndNpmDeps.drv}/project"
+      {
+        cd "$STATUS_REACT_HOME" 
+
+        # Set up symlinks to mobile enviroment in project root 
+        ln -sf ./mobile/js_files/* ./
+
+        # check if node modules changed and if so install them
+        $STATUS_REACT_HOME/nix/mobile/reset-node_modules.sh ${mavenAndNpmDeps}/project
+      }
     '';
   };
 }
