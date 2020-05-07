@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.profile.db
   (:require [clojure.string :as string]
-            [status-im.chat.constants :as chat.constants]))
+            [status-im.chat.constants :as chat.constants]
+            [cljs.spec.alpha :as spec]))
 
 (defn correct-name? [username]
   (when-let [username (some-> username (string/trim))]
@@ -17,3 +18,5 @@
 (defn base64-encoded-image-path? [photo-path]
   (or (base64-png? photo-path)
       (base64-jpeg? photo-path)))
+
+(spec/def :profile/name correct-name?)
