@@ -1,6 +1,8 @@
 (ns status-im.hardwallet.core
   (:require [status-im.hardwallet.change-pin :as change-pin]
             [status-im.hardwallet.common :as common]
+            status-im.hardwallet.delete-key 
+            status-im.hardwallet.export-key
             [status-im.hardwallet.login :as login]
             [status-im.hardwallet.mnemonic :as mnemonic]
             [status-im.hardwallet.onboarding :as onboarding]

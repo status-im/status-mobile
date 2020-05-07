@@ -138,7 +138,8 @@
     :accessibility-label :sync-settings-button
     :accessories         [:chevron]
     :on-press            #(re-frame/dispatch [:navigate-to :sync-settings])}
-   (when (and platform/android?
+   (when (and (or platform/android?
+                  config/keycard-test-menu-enabled?)
               config/hardwallet-enabled?
               keycard-account?)
      {:icon                :main-icons/keycard

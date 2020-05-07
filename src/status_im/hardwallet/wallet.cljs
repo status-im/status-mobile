@@ -5,7 +5,8 @@
             [status-im.hardwallet.common :as common]
             [status-im.constants :as constants]
             [status-im.ethereum.eip55 :as eip55]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
+            [status-im.utils.hex :as utils.hex]))
 
 (fx/defn show-pin-sheet
   {:events [:hardwallet/new-account-pin-sheet]}
@@ -41,10 +42,14 @@
      (assoc-in
       db [:hardwallet :on-export-success]
       #(vector :wallet.accounts/account-stored
-               {;; Strip leading 04 prefix denoting uncompressed key format
-                :address    (eip55/address->checksum (str "0x" (ethereum/public-key->address (subs % 2))))
-                :public-key (str "0x" %)
-                :path       path}))
+               (let [public-key (utils.hex/normalize-hex %)]
+                 {;; Strip leading 04 prefix denoting uncompressed key format
+                  :address    (eip55/address->checksum
+                               (str "0x"
+                                    (ethereum/public-key->address
+                                     (subs public-key 2))))
+                  :public-key (str "0x" public-key)
+                  :path       path})))
 
      :hardwallet/export-key {:pin pin :pairing pairing :path path}}))
 

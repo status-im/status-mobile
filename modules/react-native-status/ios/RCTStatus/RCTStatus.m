@@ -276,6 +276,16 @@ RCT_EXPORT_METHOD(multiAccountImportPrivateKey:(NSString *)json
     callback(@[result]);
 }
 
+//////////////////////////////////////////////////////////////////// hashTransaction
+RCT_EXPORT_METHOD(hashTransaction:(NSString *)txArgsJSON
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"HashTransaction() method called");
+#endif
+    NSString *result = StatusgoHashTransaction(txArgsJSON);
+    callback(@[result]);
+}
+
 //////////////////////////////////////////////////////////////////// multiAccountImportMnemonic
 RCT_EXPORT_METHOD(multiAccountImportMnemonic:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {

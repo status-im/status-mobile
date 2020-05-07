@@ -50,7 +50,8 @@
       :icon                :main-icons/text
       :on-press            #(re-frame/dispatch [::multiaccounts.recover/enter-phrase-pressed])}]
     (when (and config/hardwallet-enabled?
-               platform/android?
+               (or platform/android?
+                   config/keycard-test-menu-enabled?)
                (nfc/nfc-supported?))
       [list-item/list-item
        {:theme               :action

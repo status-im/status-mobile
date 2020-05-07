@@ -136,14 +136,8 @@
         path-num            (inc (get-in db [:multiaccount :latest-derived-path]))
         accounts            (:multiaccount/accounts db)]
     {:db                (assoc-in db [:add-account :step] :generating)
-     ::generate-account {:derivation-info (if wallet-root-address
-                                            ;; Use the walllet-root-address for stored on disk keys
-                                            ;; This needs to be the RELATIVE path to the key used to derive
-                                            {:path    (str "m/" path-num)
-                                             :address wallet-root-address}
-                                            ;; Fallback on the master account for keycards, use the absolute path
-                                            {:path    (str constants/path-wallet-root "/" path-num)
-                                             :address (get-in db [:multiaccount :address])})
+     ::generate-account {:derivation-info {:path    (str "m/" path-num)
+                                           :address wallet-root-address}
                          :hashed-password hashed-password
                          :accounts accounts}}))
 

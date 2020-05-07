@@ -100,8 +100,7 @@
 
 (re-frame/reg-fx
  :send-transaction-with-signature
- (fn [{:keys [transaction signature on-completed]}]
-   (status/send-transaction-with-signature transaction signature on-completed)))
+ card/send-transaction-with-signature)
 
 (re-frame/reg-fx
  :hardwallet/persist-pairings

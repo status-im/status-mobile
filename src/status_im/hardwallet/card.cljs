@@ -412,3 +412,6 @@
 
 (defn login [args]
   (keycard/login card args))
+
+(defn send-transaction-with-signature [args]
+  (keycard/send-transaction-with-signature card args))

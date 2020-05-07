@@ -29,4 +29,5 @@
   (get-keys [this args])
   (sign [this args])
   (save-multiaccount-and-login [this args])
-  (login [this args]))
+  (login [this args])
+  (send-transaction-with-signature [this args]))

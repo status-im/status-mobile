@@ -176,8 +176,13 @@
        (i18n/label type)]]
      [react/touchable-highlight
       {:accessibility-label (keyword (str "select-storage-" type))
-       :on-press #(re-frame/dispatch [:intro-wizard/on-key-storage-selected (if (and config/hardwallet-enabled?
-                                                                                     platform/android?) type :default)])}
+       :on-press #(re-frame/dispatch
+                   [:intro-wizard/on-key-storage-selected
+                    (if (and config/hardwallet-enabled?
+                             (or platform/android?
+                                 config/keycard-test-menu-enabled?))
+                      type
+                      :default)])}
       [react/view (assoc (styles/list-item selected?)
                          :align-items :flex-start
                          :padding-top 16

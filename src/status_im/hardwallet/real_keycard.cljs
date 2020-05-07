@@ -211,6 +211,10 @@
 (defn login [args]
   (status/login-with-keycard args))
 
+(defn send-transaction-with-signature
+  [{:keys [transaction signature on-completed]}]
+  (status/send-transaction-with-signature transaction signature on-completed))
+
 (defrecord RealKeycard []
   keycard/Keycard
   (keycard/check-nfc-support [this args]
