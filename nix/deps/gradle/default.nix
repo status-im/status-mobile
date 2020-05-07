@@ -16,9 +16,8 @@ let
     mkdir -p $out
     cd $out
   '' +
-  (concatMapStrings (dep': 
+  (concatMapStrings (dep: 
     let
-      dep = { postCopy = ""; } // dep';
       url = "${dep.host}/${dep.path}";
       pom = {
         sha1 = attrByPath [ "pom" "sha1" ] "" dep;

@@ -27,15 +27,18 @@ in {
     react-native = callPackage ./deps/react-native { };
   };
 
-  # Android environement
-  androidEnvCustom = callPackage ./mobile/android/sdk { };
-  androidPkgs = self.androidEnvCustom.licensedPkgs;
-  androidShell = self.androidEnvCustom.shell;
+  # For patching Node.js modules with Gradle repo path
+  patchNodeModules = callPackage ./tools/patchNodeModules.nix { };
 
   # Package version adjustments
   xcodeWrapper = super.xcodeenv.composeXcodeWrapper { version = "11.4.1"; };
   openjdk = super.pkgs.openjdk8_headless;
   nodejs = super.pkgs.nodejs-12_x;
+
+  # Android environement
+  androidEnvCustom = callPackage ./pkgs/android-sdk { };
+  androidPkgs = self.androidEnvCustom.licensedPkgs;
+  androidShell = self.androidEnvCustom.shell;
 
   # Custom packages
   aapt2 = callPackage ./pkgs/aapt2 { };
@@ -44,4 +47,5 @@ in {
   qtkeychain-src = callPackage ./pkgs/qtkeychain-src { };
   appimagekit = callPackage ./pkgs/appimagekit { };
   linuxdeployqt = callPackage ./pkgs/linuxdeployqt { inherit (self) appimagekit; };
+  patchMavenSources = callPackage ./pkgs/patch-maven-srcs { };
 }

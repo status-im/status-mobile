@@ -151,7 +151,7 @@ keystore: ##@prepare Generate a Keystore for signing Android APKs
 #----------------
 release: release-android release-ios ##@build build release for Android and iOS
 
-release-android: export TARGET := android
+release-android: export TARGET := default
 release-android: export BUILD_ENV ?= prod
 release-android: export BUILD_TYPE ?= nightly
 release-android: export BUILD_NUMBER ?= $(TMP_BUILD_NUMBER)

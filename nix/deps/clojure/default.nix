@@ -1,4 +1,4 @@
-{ stdenv, lib, writeShellScriptBin, fetchurl }:
+{ stdenv, lib, fetchurl, writeShellScriptBin }:
 
 let
   inherit (lib)

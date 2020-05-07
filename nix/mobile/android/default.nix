@@ -1,5 +1,5 @@
-{ lib, pkgs, callPackage, mkShell
-, status-go, gradle, androidPkgs, androidShell }:
+{ lib, pkgs, deps, callPackage, mkShell
+, status-go, androidPkgs, androidShell, patchNodeModules }:
 
 let
   # Import a jsbundle compiled out of clojure codebase
@@ -8,29 +8,28 @@ let
   # Import a patched version of watchman (important for sandboxed builds on macOS)
   watchmanFactory = callPackage ./watchman.nix { };
 
-  # Import a local patched version of node_modules, together with a local version of the Maven repo
-  mavenAndNpmDeps = callPackage ./maven-and-npm-deps { };
+  # Some node_modules have build.gradle files that reference remote repos.
+  # This patches them to reference local repos only
+  nodeJsModules = patchNodeModules deps.nodejs deps.gradle;
 
   # TARGETS
-  release = callPackage ./targets/release-android.nix {
-    inherit gradle mavenAndNpmDeps jsbundle status-go watchmanFactory;
+  release = callPackage ./release.nix {
+    inherit jsbundle status-go watchmanFactory nodeJsModules;
   };
 
 in {
   # TARGETS
-  inherit release jsbundle;
+  inherit release jsbundle nodeJsModules;
 
   shell = mkShell {
     buildInputs = with pkgs; [
       openjdk
       gradle
       lsof  # used in start-react-native.sh
-      flock # used in reset-node_modules.sh
-      mavenAndNpmDeps
+      flock # used in nix/scripts/node_modules.sh
     ];
 
     inputsFrom = [
-      gradle
       release
       androidShell
     ];
@@ -39,7 +38,7 @@ in {
       export ANDROID_SDK_ROOT="${androidPkgs}"
       export ANDROID_NDK_ROOT="${androidPkgs}/ndk-bundle"
 
-      export STATUSREACT_NIX_MAVEN_REPO="${mavenAndNpmDeps}/.m2/repository"
+      export STATUSREACT_NIX_MAVEN_REPO="${deps.gradle}"
 
       # required by some makefile targets
       export STATUS_GO_ANDROID_LIBDIR=${status-go}
@@ -51,7 +50,7 @@ in {
         ln -sf ./mobile/js_files/* ./
 
         # check if node modules changed and if so install them
-        $STATUS_REACT_HOME/nix/mobile/reset-node_modules.sh ${mavenAndNpmDeps}/project
+        $STATUS_REACT_HOME/nix/scripts/node_modules.sh ${nodeJsModules}
       }
     '';
   };

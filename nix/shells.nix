@@ -18,7 +18,7 @@ let
 
     buildInputs = with pkgs; lib.unique ([
       # core utilities that should always be present in a shell
-      bash curl wget file unzip flock
+      bash curl wget file unzip flock rsync
       git gnumake jq ncurses gnugrep parallel
       # build specific utilities
       clojure maven watchman
@@ -48,7 +48,7 @@ let
     buildInputs = [ pkgs.androidPkgs ];
     shellHook = ''
       export STATUS_REACT_HOME=$(git rev-parse --show-toplevel)
-      $STATUS_REACT_HOME/nix/mobile/reset-node_modules.sh ${pkgs.deps.nodejs}
+      $STATUS_REACT_HOME/nix/scripts/node_modules.sh ${pkgs.deps.nodejs}
     '';
   };
 

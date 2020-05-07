@@ -1,6 +1,6 @@
-{ stdenv, lib, config, callPackage,
+{ stdenv, lib, config, callPackage, deps,
   bash, file, gnumake, watchmanFactory, gradle,
-  androidPkgs, mavenAndNpmDeps,
+  androidPkgs, patchMavenSources, nodeJsModules,
   nodejs, openjdk, jsbundle, status-go, unzip, zlib }:
 
 {
@@ -22,9 +22,6 @@ let
   baseName = "release-android";
   name = "status-react-build-${baseName}";
 
-  gradleHome = "$NIX_BUILD_TOP/.gradle";
-  localMavenRepo = "${mavenAndNpmDeps}/.m2/repository";
-  sourceProjectDir = "${mavenAndNpmDeps}/project";
   envFileName = if (buildType == "release" || buildType == "nightly" || buildType == "e2e")
     then ".env.${buildType}"
     else if buildType != "" then ".env.jenkins"
@@ -35,12 +32,12 @@ let
     then "Pr"
     else "Release"; # PR builds shouldn't replace normal releases
 
-  apksPath = "$PROJECT/android/app/build/outputs/apk/${toLower gradleBuildType}";
+  apksPath = "./android/app/build/outputs/apk/${toLower gradleBuildType}";
   patchedWatchman = watchmanFactory watchmanSockPath;
 
 in stdenv.mkDerivation rec {
   inherit name;
-  src = let path = ./../../../..;
+  src = let path = ./../../..;
   # We use builtins.path so that we can name the resulting derivation
   in builtins.path {
     inherit path;
@@ -50,7 +47,7 @@ in stdenv.mkDerivation rec {
       root = path;
       include = [
         "mobile/js_files.*" "resources/.*" "translations/.*"
-        "modules/react-native-status/android.*"
+        "modules/react-native-status/android.*" "android/.*"
         envFileName "VERSION" ".watchmanconfig"
         "status-go-version.json" "react-native.config.js"
       ];
@@ -69,6 +66,7 @@ in stdenv.mkDerivation rec {
   ANDROID_ABI_SPLIT = getConfig "android.abi-split" "false";
   ANDROID_ABI_INCLUDE = getConfig "android.abi-include" "armeabi-v7a;arm64-v8a;x86";
 
+  # Android SDK/NDK for use by Gradle
   ANDROID_SDK_ROOT = "${androidPkgs}";
   ANDROID_NDK_ROOT = "${androidPkgs}/ndk-bundle";
 
@@ -80,39 +78,38 @@ in stdenv.mkDerivation rec {
   ];
 
   unpackPhase = ''
-    cp -r $src ./project
-    chmod u+w -R ./project
-    export PROJECT=$PWD/project
-
+    cp -ar $src/. ./
+    chmod u+w -R ./
     runHook postUnpack
   '';
   postUnpack = assert lib.assertMsg (keystorePath != null) "keystore-file has to be set!"; ''
-    mkdir -p ${gradleHome}
-
     # Keep the same keystore path for determinism
-    export KEYSTORE_PATH="${gradleHome}/status-im.keystore"
+    export KEYSTORE_PATH="$PWD/status-im.keystore"
     cp -a --no-preserve=ownership "${keystorePath}" "$KEYSTORE_PATH"
 
     # Ensure we have the right .env file
-    cp -f $PROJECT/${envFileName} $PROJECT/.env
+    cp -f ./${envFileName} ./.env
+
+    # create mobile node/yarn symlinks
+    ln -sf ./mobile/js_files/* ./
 
     # Copy index.js and app/ input files
-    cp -ra --no-preserve=ownership ${jsbundle}/* $PROJECT/
+    cp -ra --no-preserve=ownership ${jsbundle}/* ./
 
     # Copy android/ directory
-    cp -a --no-preserve=ownership ${sourceProjectDir}/android/ $PROJECT/
-    chmod u+w $PROJECT/android
-    chmod u+w $PROJECT/android/app
-    mkdir -p $PROJECT/android/build
-    chmod -R u+w $PROJECT/android/build
+    mkdir -p ./android/build
+    chmod -R +w ./android
 
-    # Copy node_modules/ directory
-    cp -a --no-preserve=ownership ${sourceProjectDir}/node_modules/ $PROJECT/
+    # Copy node_modules/ directory. The -L is CRUCIAL!
+    # Otherwise Metro failes to find modules due to symlinks.
+    cp -aL ${nodeJsModules}/node_modules/ ./
+    chmod +w -R ./node_modules
 
-    # Make android/build directories writable under node_modules
-    for d in `find $PROJECT/node_modules -type f -name build.gradle | xargs dirname`; do
-      chmod -R u+w $d
-    done
+    # Patch build.gradle to use local repo
+    ${patchMavenSources} ./android/build.gradle ${deps.gradle}
+
+    # Patch dependencies which are not yet ported to AndroidX
+    ${nodejs}/bin/node ./node_modules/jetifier/bin/jetify
   '';
   secretPhase = optionalString (secretsFile != "") ''
     source "${secretsFile}"
@@ -124,19 +121,10 @@ in stdenv.mkDerivation rec {
     assert ANDROID_ABI_SPLIT != null && ANDROID_ABI_SPLIT != "";
     assert stringLength ANDROID_ABI_INCLUDE > 0;
   ''
-    export STATUS_REACT_HOME=$PWD
-    export HOME=$PROJECT
-
-    # create mobile node/yarn symlinks
-    ln -sf $PROJECT/mobile/js_files/* $PROJECT/
-
-    # fix permissions so gradle can create directories
-    chmod -R +w $PROJECT/android
-
-    pushd $PROJECT/android
+    pushd ./android
     ${adhocEnvVars} gradle ${toString gradleOpts} \
       --offline --stacktrace \
-      -Dmaven.repo.local='${localMavenRepo}' \
+      -Dmaven.repo.local='${deps.gradle}' \
       -PversionCode=${toString buildNumber} \
       assemble${gradleBuildType} \
       || exit 1

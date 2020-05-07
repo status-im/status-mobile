@@ -13,7 +13,7 @@ in {
   shell = mkShell {
     buildInputs = with pkgs; [
       xcodeWrapper watchman bundler procps
-      flock # used in reset-node_modules.sh
+      flock # used in nix/scripts/node_modules.sh
     ];
 
     inputsFrom = [
@@ -30,7 +30,7 @@ in {
         ln -sf ./mobile/js_files/* ./
 
         # check if node modules changed and if so install them
-        ./nix/mobile/reset-node_modules.sh "${deps.nodejs}"
+        ./nix/scripts/node_modules.sh "${deps.nodejs}"
       }
     '';
   };
