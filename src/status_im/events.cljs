@@ -68,6 +68,7 @@
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
             status-im.utils.universal-links.events
+            status-im.search.core
             status-im.ui.screens.profile.events))
 
 ;; init module
