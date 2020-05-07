@@ -37,7 +37,8 @@
          :icon                :main-icons/security
          :accessibility-label :wallet-backup-recovery-title
          :on-press            #(hide-sheet-and-dispatch
-                                [:navigate-to :backup-seed])}])]))
+                                [:navigate-to :profile-stack {:screen :backup-seed
+                                                              :initial false}])}])]))
 
 (defn send-receive [account type]
   [react/view

@@ -131,13 +131,12 @@
                   portfolio-value    [:portfolio-value]
                   empty-balances?    [:empty-balances?]
                   {:keys [mnemonic]} [:multiaccount]]
-    [reanimated/view {:style          (styles/container {:minimized minimized})
-                      :pointer-events :none}
-
+    [reanimated/view {:style (styles/container {:minimized minimized})}
      (when (and mnemonic minimized (not empty-balances?))
        [reanimated/view {:style (styles/accounts-mnemonic {:animation animation})}
         [react/touchable-highlight
-         {:on-press #(re-frame/dispatch [:navigate-to :backup-seed])}
+         {:on-press #(re-frame/dispatch [:navigate-to :profile-stack {:screen :backup-seed
+                                                                      :initial false}])}
          [react/view {:flex-direction :row :align-items :center}
           [react/view {:width            14
                        :height           14
@@ -155,7 +154,8 @@
            (i18n/label :t/back-up-your-seed-phrase)]]]])
 
      [reanimated/view {:style (styles/value-container {:minimized minimized
-                                                       :animation animation})}
+                                                       :animation animation})
+                       :pointer-events :none}
       [reanimated/view {:style {:justify-content :center}}
        [quo/text {:animated? true
                   :weight    :semi-bold
