@@ -1,5 +1,5 @@
 import pytest
-from tests import marks, connection_not_secure_text, connection_is_secure_text
+from tests import marks, connection_not_secure_text, connection_is_secure_text, test_dapp_url
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 from views.dapps_view import DappsView
@@ -160,3 +160,27 @@ class TestBrowsing(SingleDeviceTestCase):
         status_test_dapp.find_full_text('Sign message')
         status_test_dapp.browser_refresh_page_button.click()
         status_test_dapp.find_full_text('defaultAccount')
+
+    @marks.testrail_id(5456)
+    @marks.medium
+    def test_can_access_images_by_link(self):
+        urls = {
+            'https://cdn.dribbble.com/users/45534/screenshots/3142450/logo_dribbble.png':
+                'url_1.png',
+            'https://thebitcoinpub-91d3.kxcdn.com/uploads/default/original/2X/d/db97611b41a96cb7642b06636b82c0800678b140.jpg':
+                'url_2.png',
+            'https://steemitimages.com/DQmYEjeBuAKVRa3b3ZqwLicSHaPUm7WFtQqohGaZdA9ghjx/images%20(4).jpeg':
+                'url_3.png'
+        }
+        sign_in_view = SignInView(self.driver)
+        home_view = sign_in_view.create_user()
+        dapp_view = home_view.dapp_tab_button.click()
+        for url in urls:
+            self.driver.set_clipboard_text(url)
+            dapp_view.enter_url_editbox.click()
+            dapp_view.paste_text()
+            dapp_view.confirm()
+            dapp_view.progress_bar.wait_for_invisibility_of_element(20)
+            if not dapp_view.web_page.is_element_image_equals_template(urls[url]):
+                self.driver.fail('Web page does not match expected template %s' % urls[url])
+            dapp_view.cross_icon.click()

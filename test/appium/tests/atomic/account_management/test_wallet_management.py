@@ -139,13 +139,21 @@ class TestWalletManagement(SingleDeviceTestCase):
         profile.switch_network('Mainnet with upstream RPC')
         wallet = sign_in.wallet_button.click()
         wallet.set_up_wallet()
-        asset_name = 'CryptoKitties'
-        wallet.select_asset(asset_name)
+        assets = ['CryptoKitties', 'CryptoStrikers', 'EtheremonAsset']
+        for asset in assets:
+            wallet.select_asset(asset)
         wallet.accounts_status_account.click()
+        wallet.collectibles_button.click()
+        for asset in assets:
+            if not wallet.element_by_text(asset).is_element_displayed():
+                self.errors.append('Assets are not shown in Collectibles after adding')
+        wallet.transaction_history_button.click()
         send_transaction = wallet.send_transaction_button.click()
         send_transaction.select_asset_button.click()
-        if send_transaction.asset_by_name(asset_name).is_element_displayed():
-            self.driver.fail('Collectibles can be sent from wallet')
+        for asset in assets:
+            if send_transaction.asset_by_name(asset).is_element_displayed():
+                self.errors.append('Collectibles can be sent from wallet')
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5467)
     @marks.medium

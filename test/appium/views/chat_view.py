@@ -659,6 +659,11 @@ class ChatView(BaseView):
         self.chat_element_by_text(message).long_press_element()
         self.reply_message_button.click()
 
+    def view_profile_long_press(self, message = str):
+        self.chat_element_by_text(message).long_press_element()
+        self.view_profile_button.click()
+        self.profile_block_contact.wait_for_visibility_of_element(5)
+
     def move_to_messages_by_time_marker(self, marker='Today'):
         self.driver.info("Moving to messages by time marker: '%s'" % marker)
         HistoryTimeMarker(self.driver, marker).scroll_to_element(depth=50, direction='up')

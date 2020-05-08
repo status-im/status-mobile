@@ -1,4 +1,4 @@
-from views.base_element import BaseButton, BaseEditBox
+from views.base_element import BaseButton, BaseEditBox, BaseElement
 from views.base_view import BaseView
 from views.home_view import ChatElement
 
@@ -82,6 +82,13 @@ class CrossCloseWeb3PermissionButton(BaseButton):
         self.locator = self.Locator.xpath_selector(
             '//*[contains(@text,"ÐApps can access")]/../android.view.ViewGroup[1]/android.view.ViewGroup')
 
+
+class WebViewPageElement(BaseElement):
+    def __init__(self, driver):
+        super(WebViewPageElement, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('(//android.webkit.WebView)[1]')
+
+
 class DappsView(BaseView):
 
     def __init__(self, driver):
@@ -89,6 +96,7 @@ class DappsView(BaseView):
 
         self.enter_url_editbox = EnterUrlEditbox(self.driver)
         self.discover_dapps_button = DiscoverDappsButton(self.driver)
+        self.web_page = WebViewPageElement(self.driver)
 
         #ens dapp
         self.ens_name = EnsName(self.driver)
