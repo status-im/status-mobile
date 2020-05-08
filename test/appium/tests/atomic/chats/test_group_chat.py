@@ -321,3 +321,46 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_2_home.get_chat(new_chat_name).click()
 
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(5752)
+    @marks.medium
+    def test_block_and_unblock_user_from_group_chat_via_group_info(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
+        initial_chat_name = device_1_home.get_random_chat_name()
+
+        device_2.just_fyi('Create and join group chat')
+        device_2_key, device_2_username = device_2.get_public_key_and_username(True)
+        device_2.home_button.click()
+        device_1_home.add_contact(device_2_key)
+        device_1_home.get_back_to_home_view()
+        device_1_chat = device_1_home.create_group_chat([device_2_username], initial_chat_name)
+        device_2_chat = device_2_home.get_chat(initial_chat_name).click()
+        device_2_chat.join_chat_button.click()
+
+        device_2.just_fyi('Send message and block user via Group Info')
+        message_before_block = 'message from device2'
+        device_2_chat.send_message(message_before_block)
+        device_2_options = device_1_chat.get_user_options(device_2_username)
+        device_2_options.view_profile_button.click()
+        device_2_options.block_contact()
+        device_2_options.back_button.click()
+        if device_1_chat.chat_element_by_text(message_before_block).is_element_displayed(10):
+            self.errors.append('User was blocked, but past message are shown')
+        message_after_block = 'message from device2 after block'
+        device_2_chat.send_message(message_after_block)
+        if device_1_chat.chat_element_by_text(message_after_block).is_element_displayed(10):
+            self.errors.append('User was blocked, but new messages still received')
+
+        device_1.just_fyi('Unblock user via group info and check that new messages will arrive')
+        device_2_options = device_1_chat.get_user_options(device_2_username)
+        device_2_options.view_profile_button.click()
+        device_2_options.unblock_contact_button.click()
+        device_2_options.back_button.click(2)
+        message_after_unblock = 'message from device2 after unblock'
+        device_2_chat.send_message(message_after_unblock)
+        if not device_1_chat.chat_element_by_text(message_after_unblock).is_element_displayed(20):
+            self.errors.append('User was unblocked, but new messages are not received')
+
+        self.errors.verify_no_errors()
