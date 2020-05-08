@@ -9,6 +9,7 @@
                                          text
                                          response-to
                                          ens-name
+                                         image-path
                                          message-type
                                          sticker
                                          content-type]
@@ -20,6 +21,7 @@
                                :text text
                                :responseTo response-to
                                :ensName ens-name
+                               :imagePath image-path
                                :sticker sticker
                                :contentType content-type}]
                      :on-success

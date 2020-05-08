@@ -4,9 +4,13 @@
             ["react-native-image-resizer" :as image-resizer]))
 
 (defn- resize [path max-width max-height on-resize on-error]
-  (-> (.createResizedImage image-resizer path max-width max-height "JPEG" 75 0 nil)
-      (.then on-resize)
-      (.catch on-error)))
+  (let [resize-fn (-> image-resizer
+                      (object/get "default")
+                      (object/get "createResizedImage"))]
+    (->
+     (resize-fn path max-width max-height "JPEG" 75 0 nil)
+     (.then on-resize)
+     (.catch on-error))))
 
 (defn- image-base64-encode [path on-success on-error]
   (fs/read-file path "base64" on-success #(on-error :base64 %)))
