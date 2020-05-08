@@ -72,7 +72,7 @@
                              :style {:width size
                                      :height size}}]])
             [react/i18n-text {:style styles/wizard-title :key (:title s)}]
-            [react/text {:style (styles/wizard-text @text-height)
+            [react/text {:style (styles/wizard-text-with-height @text-height)
                          :on-layout
                          (fn [^js e]
                            (let [new-height (-> e .-nativeEvent .-layout .-height)]

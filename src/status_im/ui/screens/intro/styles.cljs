@@ -29,9 +29,12 @@
    :text-align    :center
    :margin-bottom 16})
 
-(defn wizard-text [height]
-  (merge {:color      colors/gray
-          :text-align :center}
+(def wizard-text
+  {:color      colors/gray
+   :text-align :center})
+
+(defn wizard-text-with-height [height]
+  (merge wizard-text
          (when-not (zero? height)
            {:height height})))
 
