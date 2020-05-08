@@ -6,7 +6,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.invite.views :as invite]
             [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
@@ -53,10 +53,7 @@
         [react/view {:align-items :center :flex 1 :justify-content :center}
          [react/text {:style {:color colors/gray :margin-vertical 24}}
           (i18n/label :t/you-dont-have-contacts)]
-         [quo/button
-          {:accessibility-label :invite-friends
-           :on-press #(list-selection/open-share {:message (i18n/label :t/get-status-at)})}
-          (i18n/label :t/invite-friends)]])]]))
+         [invite/button]])]]))
 
 (defview blocked-users-list []
   (letsubs [blocked-contacts [:contacts/blocked]]

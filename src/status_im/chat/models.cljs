@@ -246,7 +246,7 @@
 
 (fx/defn start-chat
   "Start a chat, making sure it exists"
-  [{:keys [db] :as cofx} chat-id _]
+  [{:keys [db] :as cofx} chat-id]
   ;; don't allow to open chat with yourself
   (when (not= (multiaccounts.model/current-public-key cofx) chat-id)
     (fx/merge cofx

@@ -9,7 +9,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
-            [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
             [quo.core :as quo]
@@ -19,6 +18,7 @@
             [status-im.utils.debounce :as debounce]
             [status-im.utils.utils :as utils]
             [cljs-bean.core :as bean]
+            [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -64,12 +64,10 @@
        :on-press            #(re-frame/dispatch [:multiaccounts.ui/hide-home-tooltip])
        :accessibility-label :hide-home-button}
       [icons/icon :main-icons/close-circle {:color colors/gray}]]]]
-   [react/i18n-text {:style styles/no-chats-text :key :chat-and-transact}]
-   [react/view {:align-items :center :margin-top 16}
-    [quo/button {:on-press            #(list-selection/open-share {:message (i18n/label :t/get-status-at)})
-                 :accessibility-label :invite-friends-button}
-     (i18n/label :t/invite-friends)]]
-   [react/view {:align-items :center :margin-top 16}
+   [react/view {:style {:padding-bottom 8}}
+    [react/i18n-text {:style styles/no-chats-text :key :chat-and-transact}]]
+   [invite/button]
+   [react/view {:align-items :center :padding-top 8}
     [react/view {:style (styles/hr-wrapper)}]
     [react/i18n-text {:style (styles/or-text) :key :or}]]
    [react/view {:margin-top 16}

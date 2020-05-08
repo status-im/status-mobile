@@ -12,7 +12,7 @@
             [status-im.ui.components.keyboard-avoid-presentation
              :as
              kb-presentation]
-            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.search-input.view :as search]
@@ -69,9 +69,6 @@
 (defn- group-toggle-participant [allow-new-users? contact]
   [toggle-item allow-new-users? :is-participant-selected? contact on-toggle-participant])
 
-(defn- handle-invite-friends-pressed []
-  (list-selection/open-share {:message (i18n/label :t/get-status-at)}))
-
 (defn toggle-list [{:keys [contacts render-fn]}]
   [react/scroll-view {:flex 1}
    [list/flat-list {:data                      contacts
@@ -84,10 +81,7 @@
    [react/text
     {:style (styles/no-contact-text)}
     no-contacts]
-   [quo/button
-    {:type     :secondary
-     :on-press handle-invite-friends-pressed}
-    (i18n/label :t/invite-friends)]])
+   [invite/button]])
 
 (defn filter-contacts [filter-text contacts]
   (let [lower-filter-text (string/lower-case (str filter-text))

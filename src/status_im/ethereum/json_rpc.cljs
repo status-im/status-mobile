@@ -88,6 +88,7 @@
    "shhext_declineRequestTransaction" {}
    "shhext_sendTransaction" {}
    "shhext_acceptRequestTransaction" {}
+   "shhext_signMessageWithChatKey" {}
    "wakuext_post" {}
    "wakuext_startMessenger" {}
    "wakuext_sendPairInstallation" {}
@@ -142,6 +143,7 @@
    "wakuext_declineRequestTransaction" {}
    "wakuext_sendTransaction" {}
    "wakuext_acceptRequestTransaction" {}
+   "wakuext_signMessageWithChatKey" {}
    "status_chats" {}
    "wallet_getTransfers" {}
    "wallet_getTokensBalances" {}

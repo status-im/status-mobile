@@ -10,7 +10,7 @@
 
 (defn send-transaction [chat-id cofx]
   ;;TODO start send transaction command flow
-  (chat-models/start-chat cofx chat-id {:navigation-reset? true}))
+  (chat-models/start-chat cofx chat-id))
 
 (defn- valid-name? [name]
   (spec/valid? :profile/name name))

@@ -35,16 +35,19 @@
                    (fn [error]
                      (utils/show-popup "Error" url (str error))))))))
 
+;; FIXME: Should be more extensible and accept multiple methods
 (defn post
   "Performs an HTTP POST request"
   ([url data on-success]
    (post url data on-success nil))
   ([url data on-success on-error]
    (post url data on-success on-error nil))
-  ([url data on-success on-error {:keys [valid-response? timeout-ms headers]}]
+  ([url data on-success on-error
+    {:keys [valid-response? method timeout-ms headers]
+     :or   {method "POST"}}]
    (-> (fetch
         url
-        (clj->js (merge {:method  "POST"
+        (clj->js (merge {:method  method
                          :body    data
                          :timeout (or timeout-ms http-request-default-timeout-ms)}
                         (when headers

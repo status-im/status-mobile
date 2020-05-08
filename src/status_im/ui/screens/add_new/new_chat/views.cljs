@@ -21,8 +21,7 @@
                (multiaccounts/displayed-photo row)]
     :chevron  true
     :on-press #(re-frame/dispatch [:chat.ui/start-chat
-                                   (:public-key row)
-                                   {:navigation-reset? true}])}])
+                                   (:public-key row)])}])
 
 (defn- icon-wrapper [color icon]
   [react/view

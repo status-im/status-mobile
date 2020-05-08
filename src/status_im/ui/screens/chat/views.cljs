@@ -24,6 +24,7 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.gap :as gap]
+            [status-im.ui.components.invite.chat :as invite.chat]
             [status-im.ui.screens.chat.components.accessory :as accessory]
             [status-im.ui.screens.chat.components.input :as components]
             [status-im.ui.screens.chat.message.datemark :as message-datemark])
@@ -148,7 +149,10 @@
        :ref                          #(reset! messages-list-ref %)
        :header                       (when (and group-chat (not public?))
                                        [chat.group/group-chat-footer chat-id])
-       :footer                       [chat-intro-header-container chat no-messages?]
+       :footer                       [:<>
+                                      [chat-intro-header-container chat no-messages?]
+                                      (when (and (not group-chat) (not public?))
+                                        [invite.chat/reward-messages])]
        :data                         messages
        :inverted                     true
        :render-fn                    (fn [{:keys [outgoing type] :as message} idx]

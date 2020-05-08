@@ -482,8 +482,8 @@
 
 (handlers/register-handler-fx
  :chat.ui/start-chat
- (fn [cofx [_ contact-id opts]]
-   (chat/start-chat cofx contact-id opts)))
+ (fn [cofx [_ contact-id]]
+   (chat/start-chat cofx contact-id)))
 
 (handlers/register-handler-fx
  :chat.ui/start-public-chat
@@ -857,7 +857,7 @@
  :contact.ui/send-message-pressed
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ {:keys [public-key]}]]
-   (chat/start-chat cofx public-key {:navigation-reset? true})))
+   (chat/start-chat cofx public-key)))
 
 (handlers/register-handler-fx
  :contact.ui/contact-code-submitted
@@ -867,7 +867,7 @@
      (fx/merge cofx
                #(if new-contact?
                   (contact/add-contact % public-key)
-                  (chat/start-chat % public-key {:navigation-reset? true}))
+                  (chat/start-chat % public-key))
                #(when new-contact?
                   (navigation/navigate-back %))
                #(when ens-name
@@ -1103,7 +1103,7 @@
    (assert public-key)
    (fx/merge cofx
              (navigation/navigate-back)
-             (chat/start-chat public-key nil)
+             (chat/start-chat public-key)
              ;; TODO send
              #_(commands.sending/send public-key
                                       request-command

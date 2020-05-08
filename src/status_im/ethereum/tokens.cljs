@@ -774,7 +774,11 @@
                    {:symbol   :WIBB
                     :name     "WIBB"
                     :address  "0x7d4ccf6af2f0fdad48ee7958bcc28bdef7b732c7"
-                    :decimals 18}])
+                    :decimals 18}
+                   {:name     "Status Test Token"
+                    :symbol   :STT
+                    :decimals 18
+                    :address  "0x43d5adc3b49130a575ae6e4b00dfa4bc55c71621"}])
 
    :xdai
    (resolve-icons :xdai
@@ -806,3 +810,7 @@
             (= (:symbol native-coin) symbol))
       native-coin
       (symbol->token all-tokens symbol))))
+
+(defn symbol->icon [sym]
+  (:icon (first (filter #(= sym (:symbol %))
+                        (:mainnet all-default-tokens)))))

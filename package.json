@@ -10,6 +10,7 @@
     "app:android": "react-native run-android"
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/audio-toolkit": "git+https://github.com/tbenr/react-native-audio-toolkit.git#v2.0.3-status-v6",
     "@react-native-community/cameraroll": "^1.6.1",
     "@react-native-community/clipboard": "^1.2.2",
@@ -37,6 +38,7 @@
     "react-native-camera": "^3.3.3",
     "react-native-config": "git+https://github.com/status-im/react-native-config.git#v0.11.2-3-status",
     "react-native-dark-mode": "^0.2.2",
+    "react-native-device-info": "^5.6.1",
     "react-native-dialogs": "^1.0.4",
     "react-native-fetch-polyfill": "^1.1.2",
     "react-native-fs": "^2.14.1",

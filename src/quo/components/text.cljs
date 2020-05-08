@@ -22,6 +22,7 @@
            :secondary         {:color (:text-02 @colors/theme)}
            :secondary-inverse {:color (:text-03 @colors/theme)}
            :link              {:color (:text-04 @colors/theme)}
+           :inverse           {:color (:text-05 @colors/theme)}
            :positive          {:color (:positive-01 @colors/theme)}
            :negative          {:color (:negative-01 @colors/theme)}
            :inherit           nil)

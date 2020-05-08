@@ -91,7 +91,7 @@
         (fx/merge cofx
                   (contact/add-contact contact-identity)
                   (navigation/navigate-to-cofx :contacts-list {}))
-        (chat/start-chat cofx contact-identity {:navigation-reset? true}))
+        (chat/start-chat cofx contact-identity))
 
       (and (string? contact-identity) (ul/match-url contact-identity ul/profile-regex))
       (qr-code-scanned cofx (ul/match-url contact-identity ul/profile-regex) opts)

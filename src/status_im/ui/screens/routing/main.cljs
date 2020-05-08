@@ -17,6 +17,7 @@
             [status-im.ui.screens.routing.profile-stack :as profile-stack]
             [status-im.ui.screens.routing.browser-stack :as browser-stack]
             [status-im.ui.components.tabbar.core :as tabbar]
+            [status-im.ui.components.invite.views :as invite]
             [status-im.ui.screens.routing.core :as navigation]
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.chat.image.preview.views :as image-preview]
@@ -85,6 +86,10 @@
       {:name       :create-group-chat
        :transition :presentation-ios
        :component  chat-stack/new-group-chat}
+      {:name       :referral-invite
+       :transition :presentation-ios
+       :insets     {:bottom true}
+       :component  invite/referral-invite}
       {:name       :add-participants-toggle-list
        :on-focus   [::group.events/add-participants-toggle-list]
        :transition :presentation-ios

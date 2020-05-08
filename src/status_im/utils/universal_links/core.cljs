@@ -14,6 +14,7 @@
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
+            [status-im.acquisition.core :as acquisition]
             [status-im.wallet.choose-recipient.core :as choose-recipient]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
@@ -23,6 +24,7 @@
 (def public-chat-regex #"(?:https?://join\.)?status[.-]im(?::/)?/(?:chat/public/([a-z0-9\-]+)$|([a-z0-9\-]+))$")
 (def profile-regex #"(?:https?://join\.)?status[.-]im(?::/)?/(?:u/(0x.*)$|u/(.*)$|user/(.*))$")
 (def browse-regex #"(?:https?://join\.)?status[.-]im(?::/)?/(?:b/(.*)$|browse/(.*))$")
+(def referral-link-regex #"(?:https?://join\.)?status[.-]im(?::/)?/(?:referral/(.*))$")
 
 ;; domains should be without the trailing slash
 (def domains {:external "https://join.status.im"
@@ -64,7 +66,7 @@
 
 (fx/defn handle-private-chat [cofx chat-id]
   (log/info "universal-links: handling private chat" chat-id)
-  (chat/start-chat cofx chat-id {}))
+  (chat/start-chat cofx chat-id))
 
 (fx/defn handle-public-chat [cofx public-chat]
   (log/info "universal-links: handling public chat" public-chat)
@@ -95,6 +97,9 @@
                                                   :else
                                                   (log/info "universal-link: no pub-key for ens-name " ens-name)))}})))
 
+(fx/defn handle-referrer-url [_ referrer]
+  {::acquisition/check-referrer referrer})
+
 (fx/defn handle-eip681 [cofx url]
   (fx/merge cofx
             (choose-recipient/parse-eip681-uri-and-resolve-ens url)
@@ -114,6 +119,9 @@
   "Match a url against a list of routes and handle accordingly"
   [cofx url]
   (cond
+
+    (match-url url referral-link-regex)
+    (handle-referrer-url cofx (match-url url referral-link-regex))
 
     (match-url url private-chat-regex)
     (handle-private-chat cofx (match-url url private-chat-regex))
