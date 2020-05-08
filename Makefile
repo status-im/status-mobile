@@ -275,10 +275,6 @@ endif
 
 lint: export TARGET := clojure
 lint: ##@test Run code style checks
-	yarn clj-kondo --confg .clj-kondo/config.edn --lint src && \
-	clojure -Sdeps '{:deps {cljfmt {:mvn/version "0.6.7"}}}' \
-		-m cljfmt.main check src/status_im/core.cljs $(git diff --diff-filter=d --cached --name-only src) \
-		--indents indentation.edn
 
 lint-fix: export TARGET := clojure
 lint-fix: ##@test Run code style checks and fix issues
@@ -288,9 +284,6 @@ lint-fix: ##@test Run code style checks and fix issues
 
 test: export TARGET := clojure
 test: ##@test Run tests once in NodeJS
-	yarn shadow-cljs compile mocks && \
-	yarn shadow-cljs compile test && \
-	node --require ./test-resources/override.js target/test/test.js
 
 coverage: ##@test Run tests once in NodeJS generating coverage
 	@scripts/run-coverage.sh
