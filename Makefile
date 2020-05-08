@@ -255,7 +255,7 @@ lint: export TARGET := clojure
 lint: ##@test Run code style checks
 	yarn clj-kondo --confg .clj-kondo/config.edn --lint src && \
 	clojure -Sdeps '{:deps {cljfmt {:mvn/version "0.6.7"}}}' \
-		-m cljfmt.main check src/status_im/core.cljs $(git diff --diff-filter=d --cached --name-only src) \
+		-m cljfmt.main check $$(git diff --diff-filter=d --cached --name-only src && echo src) \
 		--indents indentation.edn
 
 lint-fix: export TARGET := clojure
