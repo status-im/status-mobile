@@ -15,8 +15,8 @@
 		34996D7B9E61544498C6F21B /* libPods-StatusIm-StatusImTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BD217B00F08543249C27E827 /* libPods-StatusIm-StatusImTests.a */; };
 		3870E1E692E24133A80B07DE /* Inter-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 693A62DB37BC4CD5A30E5C96 /* Inter-SemiBold.otf */; };
 		393D26E3080B443A998F4A2F /* Inter-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B07176ACDAA1422E8F0A3D6B /* Inter-Italic.otf */; };
-		3ABC7AF8245FF85900612C45 /* InterStatus-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9C76AF5A418D4D65A4CAD1D9 /* InterStatus-Regular.otf */; };
 		3A2626CF245C3F2200D5F94B /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2626CE245C3F2200D5F94B /* Dummy.swift */; };
+		3ABC7AF8245FF85900612C45 /* InterStatus-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9C76AF5A418D4D65A4CAD1D9 /* InterStatus-Regular.otf */; };
 		57C854A7993C47A3B1AECD32 /* Inter-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = C6B1215047604CD59A4C74D6 /* Inter-MediumItalic.otf */; };
 		70ADBB5ECF934DCF8A0E4919 /* Inter-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1426DF592BA248FC81D955CB /* Inter-Regular.otf */; };
 		74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */; };
@@ -679,7 +679,6 @@
 					"COCOAPODS=1",
 					"$(inherited)",
 					"SQLITE_HAS_CODEC=1",
-					"ENABLE_FLIPPER=0",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
