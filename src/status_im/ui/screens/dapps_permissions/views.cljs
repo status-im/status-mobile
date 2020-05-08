@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [status-im.constants :as constants]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.colors :as colors]
@@ -22,9 +23,11 @@
 
 (defn prepare-items-manage [name]
   (fn [permission]
-    {:title       (case permission
-                    constants/dapp-permission-web3         name
-                    constants/dapp-permission-contact-code :t/contact-code)
+    {:title       (cond
+                    (= permission constants/dapp-permission-web3)
+                    name
+                    (= permission constants/dapp-permission-contact-code)
+                    :t/contact-code)
      :type        :small
      :accessories [:main-icons/check]}))
 

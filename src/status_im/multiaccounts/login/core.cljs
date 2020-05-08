@@ -369,13 +369,16 @@
                "keycard-multiacc?" keycard-multiaccount?)
     (fx/merge cofx
               {:db (assoc db :auth-method auth-method)}
-              #(case auth-method
-                 keychain/auth-method-biometric
+              #(cond
+                 (= auth-method
+                    keychain/auth-method-biometric)
                  (biometric/biometric-auth %)
-                 keychain/auth-method-password
+                 (= auth-method
+                    keychain/auth-method-password)
                  (get-credentials % key-uid)
 
                  ;;nil or "none" or "biometric-prepare"
+                 :else
                  (open-login-callback % nil)))))
 
 (fx/defn biometric-auth-done

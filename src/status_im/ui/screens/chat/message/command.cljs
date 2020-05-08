@@ -181,14 +181,13 @@
        (str amount-fiat " " code)]]]))
 
 (defn calculate-direction [outgoing command-state]
-  (case command-state
-    (constants/command-state-request-address-for-transaction-accepted
-     constants/command-state-request-address-for-transaction-declined
-     constants/command-state-request-transaction)
+  (if (#{constants/command-state-request-address-for-transaction-accepted
+         constants/command-state-request-address-for-transaction-declined
+         constants/command-state-request-transaction} command-state)
     (if outgoing :incoming :outgoing)
     (if outgoing :outgoing :incoming)))
 
-(defn comand-content
+(defn command-content
   [wrapper {:keys [message-id
                    chat-id
                    outgoing

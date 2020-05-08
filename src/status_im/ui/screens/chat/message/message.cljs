@@ -269,14 +269,14 @@
 
 (defn chat-message [{:keys [content content-type] :as message}]
   (if (= content-type constants/content-type-command)
-    [message.command/comand-content message-content-wrapper message]
+    [message.command/command-content message-content-wrapper message]
     (if (= content-type constants/content-type-system-text)
       [system-message-content-wrapper message [system-text-message message]]
       [react/touchable-highlight (message-press-handlers message)
        [message-content-wrapper
         message
         (if (= content-type constants/content-type-text)
-          ; text message
+          ;; text message
           [text-message message]
           (if (= content-type constants/content-type-status)
             [message-content-status message]
