@@ -203,26 +203,21 @@ class TestChatManagement(SingleDeviceTestCase):
         contacts_view.deny_button.wait_for_visibility_of_element(2)
 
     @marks.testrail_id(5757)
-    @marks.critical
-    @marks.skip
-    # TODO: skipped due to issue in e2e build (emulators) only
-    # if start typing in search field - empty chat view is shown
+    @marks.medium
     def test_search_chat_on_home(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
         search_list = list()
-
         chat_name = home.get_random_chat_name()
         search_list.append(chat_name)
         public_chat = home.join_public_chat(chat_name)
         public_chat.get_back_to_home_view()
-
         chat = home.add_contact(basic_user['public_key'])
         search_list.append(basic_user['username'])
         chat.get_back_to_home_view()
-
         home.swipe_down()
         for keyword in search_list:
+            home.search_chat_input.click()
             home.search_chat_input.send_keys(keyword)
             search_results = home.chat_name_text.find_elements()
             if not search_results:
@@ -231,7 +226,7 @@ class TestChatManagement(SingleDeviceTestCase):
                 if keyword not in element.text:
                     self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
                                        (element.text, keyword))
-            home.search_chat_input.clear()
+            home.cancel_button.click()
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6221)
