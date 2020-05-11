@@ -13,6 +13,8 @@ pipeline {
       daysToKeepStr: '20',
       artifactNumToKeepStr: '10',
     ))
+    /* Allows combined build to copy */
+    copyArtifactPermission('/status-react/*')
   }
 
   parameters {
