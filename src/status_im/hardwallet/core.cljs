@@ -1,7 +1,7 @@
 (ns status-im.hardwallet.core
   (:require [status-im.hardwallet.change-pin :as change-pin]
             [status-im.hardwallet.common :as common]
-            status-im.hardwallet.delete-key 
+            status-im.hardwallet.delete-key
             status-im.hardwallet.export-key
             [status-im.hardwallet.login :as login]
             [status-im.hardwallet.mnemonic :as mnemonic]
@@ -15,9 +15,7 @@
             [status-im.navigation :as navigation]
             [status-im.utils.datetime :as utils.datetime]
             [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]
-            status-im.hardwallet.delete-key
-            status-im.hardwallet.export-key))
+            [taoensso.timbre :as log]))
 
 (fx/defn show-keycard-has-multiaccount-alert
   [{:keys [db] :as cofx}]
