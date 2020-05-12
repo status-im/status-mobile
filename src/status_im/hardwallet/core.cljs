@@ -13,7 +13,9 @@
             [status-im.navigation :as navigation]
             [status-im.utils.datetime :as utils.datetime]
             [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            status-im.hardwallet.delete-key
+            status-im.hardwallet.export-key))
 
 (fx/defn show-keycard-has-multiaccount-alert
   [{:keys [db] :as cofx}]
