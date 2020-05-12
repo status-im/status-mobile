@@ -74,3 +74,13 @@
    :padding-bottom     15
    :padding-horizontal 12
    :max-height         max-input-height})
+
+(def autocomplete-container
+  {:position :absolute
+   :left 0
+   :right 0
+   :bottom 0
+   :background-color colors/white
+   :flex-direction   :column
+   :border-top-width border-height
+   :border-top-color colors/gray-lighter})

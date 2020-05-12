@@ -109,7 +109,8 @@
   (debounce/debounce-and-dispatch [:chat.ui/message-visibility-changed e] 5000))
 
 (defview messages-view
-  [{:keys [group-chat chat-id pending-invite-inviter-name] :as chat}]
+  [{:keys [group-chat chat-id pending-invite-inviter-name] :as chat}
+   !message-view-height]
   (letsubs [messages           [:chats/current-chat-messages-stream]
             current-public-key [:multiaccount/public-key]]
     [list/flat-list
@@ -125,13 +126,14 @@
                                         [message-datemark/chat-datemark (:value message)]
                                         (if (= type :gap)
                                           [gap/gap message idx messages-list-ref]
-                                          ; message content
+                                          ;; message content
                                           [message/chat-message
                                            (assoc message
                                                   :incoming-group (and group-chat (not outgoing))
                                                   :group-chat group-chat
                                                   :current-public-key current-public-key)])))
       :on-viewable-items-changed    on-viewable-items-changed
+      :on-layout #(reset! !message-view-height (-> ^js % .-nativeEvent .-layout .-height))
       :on-end-reached               #(re-frame/dispatch [:chat.ui/load-more-messages])
       :on-scroll-to-index-failed    #() ;;don't remove this
       :keyboard-should-persist-taps :handled}]))
@@ -151,7 +153,8 @@
 
 (defview chat []
   (letsubs [{:keys [chat-id show-input? group-chat contact] :as current-chat}
-            [:chats/current-chat]]
+            [:chats/current-chat]
+            !message-view-height (atom nil)]
     [react/view {:style {:flex 1}}
      [connectivity/connectivity
       [topbar current-chat]
@@ -159,7 +162,7 @@
        ;;TODO contact.db/added? looks weird here, move to events
        (when (and (not group-chat) (not (contact.db/added? contact)))
          [add-contact-bar chat-id])
-       [messages-view current-chat]]]
-     (when show-input?
-       [input/container])
+       [messages-view current-chat !message-view-height]
+       (when show-input?
+         [input/container !message-view-height])]]
      [bottom-sheet]]))

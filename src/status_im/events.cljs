@@ -535,11 +535,6 @@
    (chat.message/toggle-expand-message cofx chat-id message-id)))
 
 (handlers/register-handler-fx
- :chat.ui/set-chat-input-text
- (fn [cofx [_ text]]
-   (chat.input/set-chat-input-text cofx text)))
-
-(handlers/register-handler-fx
  :chat.ui/cancel-message-reply
  (fn [cofx _]
    (chat.input/cancel-message-reply cofx)))
@@ -548,11 +543,6 @@
  :chat.ui/reply-to-message
  (fn [cofx [_ message]]
    (chat.input/reply-to-message cofx message)))
-
-(handlers/register-handler-fx
- :chat.ui/send-current-message
- (fn [cofx _]
-   (chat.input/send-current-message cofx)))
 
 (defn- mark-messages-seen
   [{:keys [db] :as cofx}]

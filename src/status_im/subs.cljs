@@ -683,11 +683,14 @@
    (get chats current-chat-id)))
 
 (re-frame/reg-sub
- :chats/current-chat-input-text
+ :chats/current-chat-input
  :<- [:chats/current-chat-id]
  :<- [:chat/inputs]
  (fn [[chat-id inputs]]
-   (get-in inputs [chat-id :input-text])))
+   (select-keys
+    (get inputs chat-id)
+    [:input-text :input-text-empty? :suggestions
+     :before-cursor :after-cursor :completing? :cursor])))
 
 (re-frame/reg-sub
  :chats/current-chat
