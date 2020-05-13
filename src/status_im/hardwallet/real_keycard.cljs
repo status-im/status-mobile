@@ -274,4 +274,6 @@
   (keycard/save-multiaccount-and-login [this args]
     (save-multiaccount-and-login args))
   (keycard/login [this args]
-    (login args)))
+    (login args))
+  (keycard/send-transaction-with-signature [this args]
+    (send-transaction-with-signature args)))
