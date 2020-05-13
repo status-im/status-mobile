@@ -39,7 +39,8 @@
            :dev {:devtools {:after-load status-im.reloader/reload
                             :preloads [re-frisk-remote.preload]}
                  :compiler-options {:closure-defines
-                                    {re-frame.trace/trace-enabled? true}}
+                                    {re-frame.trace/trace-enabled? true}
+                                    :source-map false}
                  ;; if you want to use a real device, set your local ip
                  ;; in the SHADOW_HOST env variable to make sure that
                  ;; it will use the right interface
@@ -61,7 +62,8 @@
            :dev {:devtools {:after-load status-im.reloader/reload
                             :preloads [re-frisk-remote.preload]}
                  :compiler-options {:closure-defines
-                                    {re-frame.trace/trace-enabled? true}}
+                                    {re-frame.trace/trace-enabled? true}
+                                    :source-map false}
                  ;; if you want to use a real device, set your local ip
                  ;; in the SHADOW_HOST env variable to make sure that
                  ;; it will use the right interface
