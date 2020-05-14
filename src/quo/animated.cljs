@@ -1,25 +1,44 @@
 (ns quo.animated
-  (:refer-clojure :exclude [set])
+  (:refer-clojure :exclude [set divide])
   (:require [reagent.core :as reagent]
+            [quo.gesture-handler :as gh]
             [oops.core :refer [oget ocall]]
             ["react-native-reanimated" :default animated :refer (clockRunning Easing)]
-            ["react-native-redash" :as redash]))
+            ["react-native-redash" :as redash]
+            quo.react)
+  (:require-macros [quo.react :refer [maybe-js-deps]]))
 
 (def view (reagent/adapt-react-class (.-View animated)))
 (def text (reagent/adapt-react-class (.-Text animated)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView animated)))
 (def code (reagent/adapt-react-class (.-Code animated)))
 
+(def useCode (.-useCode animated))
+
+(defn code!
+  ([setup-fn]
+   (useCode
+    (fn [] (setup-fn))))
+  ([setup-fn deps]
+   (useCode
+    (fn [] (setup-fn))
+    (maybe-js-deps deps))))
+
 (def eq (oget animated "eq"))
 (def neq (oget animated "neq"))
+(def greater (oget animated "greaterThan"))
 (def greater-or-eq (oget animated "greaterOrEq"))
+(def less (oget animated "lessThan"))
+(def less-or-eq (oget animated "lessOrEq"))
 (def not* (oget animated "not"))
 (def or* (oget animated "or"))
 (def and* (oget animated "and"))
 
+(def diff (oget animated "diff"))
 (def add (oget animated "add"))
 (def sub (oget animated "sub"))
 (def multiply (oget animated "multiply"))
+(def divide (oget animated "divide"))
 (def abs (oget animated "abs"))
 
 (def min* (oget animated "min"))
@@ -66,13 +85,13 @@
 
 (defn cond*
   ([condition node]
-   (ocall animated "cond"
+   (.cond ^js animated
           condition
           (if (vector? node)
             (clj->js node)
             node)))
   ([condition if-node else-node]
-   (ocall animated "cond"
+   (.cond ^js animated
           condition
           (if (vector? if-node)
             (clj->js if-node)
@@ -109,6 +128,15 @@
 (defn with-spring [config]
   (ocall redash "withSpring" (clj->js config)))
 
+(defn with-decay [config]
+  (.withDecay ^js redash (clj->js config)))
+
+(defn with-offset [config]
+  (.withOffset ^js redash (clj->js config)))
+
+(defn diff-clamp [node min max]
+  (.diffClamp ^js redash node min max))
+
 (defn with-spring-transition [val config]
   (.withSpringTransition ^js redash val (clj->js config)))
 
@@ -116,7 +144,10 @@
   (.withTimingTransition ^js redash val (clj->js config)))
 
 (defn re-timing [config]
-  (ocall redash "timing" (clj->js config)))
+  (.timing ^js redash (clj->js config)))
+
+(defn re-spring [config]
+  (.spring ^js redash (clj->js config)))
 
 (defn on-scroll [opts]
   (ocall redash "onScrollEvent" (clj->js opts)))
@@ -131,3 +162,47 @@
 
 (defn loop* [opts]
   (ocall redash "loop" (clj->js opts)))
+
+(defn use-value [value]
+  (.useValue ^js redash value))
+
+(defn use-clock []
+  (.useClock ^js redash))
+
+(defn snap-point [value velocity snap-points]
+  (.snapPoint ^js redash value velocity (to-array snap-points)))
+
+(defn with-easing
+  [{val   :value
+    :keys [snap-points velocity offset state easing duration on-snap]
+    :or   {duration 250
+           easing   (:ease-out easings)}}]
+  (let [position         (value 0)
+        c                (clock)
+        animation-over   (value 1)
+        interrupted      (and* (eq state (:began gh/states))
+                               (clock-running c))
+        vel              (multiply velocity 1.5)
+        to               (snap-point position vel snap-points)
+        finish-animation [(set offset position)
+                          (stop-clock c)
+                          (call* [position] on-snap)
+                          (set animation-over 1)]]
+    (block
+     [(cond* interrupted finish-animation)
+      (cond* animation-over
+             (set position offset))
+      (cond* (neq state (:end gh/states))
+             [(set animation-over 0)
+              (set position (add offset val))])
+      (cond* (and* (eq state (:end gh/states))
+                   (not* animation-over))
+             [(set position (re-timing
+                             {:clock    c
+                              :easing   easing
+                              :duration duration
+                              :from     position
+                              :to       to}))
+              (cond* (not* (clock-running c))
+                     finish-animation)])
+      position])))

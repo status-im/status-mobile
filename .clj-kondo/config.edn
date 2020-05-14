@@ -1,11 +1,12 @@
 {:lint-as {status-im.utils.views/defview  clojure.core/defn
            status-im.utils.views/letsubs  clojure.core/let
            status-im.utils.fx/defn        clj-kondo.lint-as/def-catch-all
+           quo.react/with-deps-check      clojure.core/fn
            quo.previews.preview/list-comp clojure.core/for
            status-im.utils.styles/def     clojure.core/def
            status-im.utils.styles/defn    clojure.core/defn
            taoensso.tufte/defnp           clojure.core/defn}
- :linters {:invalid-arity {:skip-args [status-im.utils.fx/defn]}
+ :linters {:invalid-arity     {:skip-args [status-im.utils.fx/defn]}
            ;;TODO remove number when this is fixed
            ;;https://github.com/borkdude/clj-kondo/issues/867
            :unresolved-symbol {:exclude [PersistentPriorityMap.EMPTY number]}}}

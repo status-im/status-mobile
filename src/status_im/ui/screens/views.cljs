@@ -93,7 +93,7 @@
 
 (defn main []
   (reagent/create-class
-   {:component-did-mount utils.universal-links/initialize
+   {:component-did-mount    utils.universal-links/initialize
     :component-will-unmount utils.universal-links/finalize
     :reagent-render
     (fn []

@@ -251,7 +251,7 @@ PODS:
     - React
   - react-native-netinfo (4.7.0):
     - React
-  - react-native-safe-area-context (0.7.3):
+  - react-native-safe-area-context (2.0.0):
     - React
   - react-native-shake (3.4.0):
     - React
@@ -585,7 +585,7 @@ SPEC CHECKSUMS:
   react-native-image-resizer: 4516052af6ae0248caf4ccf356caecefe60072d7
   react-native-mail: 7e37dfbe93ff0d4c7df346b738854dbed533e86f
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
-  react-native-safe-area-context: e200d4433aba6b7e60b52da5f37af11f7a0b0392
+  react-native-safe-area-context: 60f654e00b6cc416573f6d5dbfce3839958eb57a
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-webview: cf5527893252b3b036eea024a1da6996f7344c74

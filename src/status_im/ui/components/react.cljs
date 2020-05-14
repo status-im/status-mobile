@@ -8,7 +8,7 @@
             ["react-native" :as react-native :refer (Keyboard)]
             ["react-native-image-crop-picker" :default image-picker]
             ["react-native-safe-area-context" :as safe-area-context
-             :refer (SafeAreaView SafeAreaProvider SafeAreaConsumer)]
+             :refer (SafeAreaView SafeAreaProvider SafeAreaInsetsContext)]
             ["@react-native-community/clipboard" :default Clipboard])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -244,6 +244,6 @@
       comp)))
 
 (def safe-area-provider (reagent/adapt-react-class SafeAreaProvider))
-(def safe-area-consumer (reagent/adapt-react-class SafeAreaConsumer))
+(def safe-area-consumer (reagent/adapt-react-class (.-Consumer ^js SafeAreaInsetsContext)))
 
 (def safe-area-view (reagent/adapt-react-class SafeAreaView))
