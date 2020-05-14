@@ -12,7 +12,8 @@
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
             [status-im.ui.screens.wallet.accounts.styles :as styles]
             [status-im.utils.utils :as utils.utils]
-            [status-im.wallet.utils :as wallet.utils])
+            [status-im.wallet.utils :as wallet.utils]
+            [status-im.hardwallet.login :as hardwallet.login])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview account-card [{:keys [name color address type] :as account}]
@@ -130,14 +131,21 @@
   (views/letsubs [currency           [:wallet/currency]
                   portfolio-value    [:portfolio-value]
                   empty-balances?    [:empty-balances?]
+                  frozen-card?       [:hardwallet/frozen-card?]
                   {:keys [mnemonic]} [:multiaccount]]
     [reanimated/view {:style (styles/container {:minimized minimized})}
-     (when (and mnemonic minimized (not empty-balances?))
+     (when (or
+            (and frozen-card? minimized)
+            (and mnemonic minimized (not empty-balances?)))
        [reanimated/view {:style (styles/accounts-mnemonic {:animation animation})}
         [react/touchable-highlight
-         {:on-press #(re-frame/dispatch [:navigate-to :profile-stack {:screen :backup-seed
-                                                                      :initial false}])}
-         [react/view {:flex-direction :row :align-items :center}
+         {:on-press #(re-frame/dispatch
+                      (if frozen-card?
+                        [::hardwallet.login/reset-pin]
+                        [:navigate-to :profile-stack {:screen :backup-seed
+                                                      :initial false}]))}
+         [react/view {:flex-direction :row
+                      :align-items    :center}
           [react/view {:width            14
                        :height           14
                        :background-color colors/gray
@@ -151,7 +159,9 @@
             "!"]]
           [react/text {:style               {:color colors/gray}
                        :accessibility-label :back-up-your-seed-phrase-warning}
-           (i18n/label :t/back-up-your-seed-phrase)]]]])
+           (if frozen-card?
+             (i18n/label :t/your-card-is-frozen)
+             (i18n/label :t/back-up-your-seed-phrase))]]]])
 
      [reanimated/view {:style (styles/value-container {:minimized minimized
                                                        :animation animation})

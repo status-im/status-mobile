@@ -60,6 +60,7 @@
   (navigate-to-cofx cofx view-id params))
 
 (fx/defn navigate-replace
+  {:events [:navigate-replace]}
   [{:keys [db]} go-to-view-id screen-params]
   (let [db (cond-> (assoc db :view-id go-to-view-id)
              (seq screen-params)

@@ -188,6 +188,9 @@
 (reg-root-key-sub ::message-lists :message-lists)
 (reg-root-key-sub ::pagination-info :pagination-info)
 
+;; keycard
+(reg-root-key-sub :hardwallet/new-account-sheet? :hardwallet/new-account-sheet?)
+
 ;;GENERAL ==============================================================================================================
 
 (re-frame/reg-sub

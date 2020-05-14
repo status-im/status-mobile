@@ -1,21 +1,40 @@
 (ns status-im.ui.screens.hardwallet.pin.styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.styles :as styles]))
+  (:require [status-im.ui.components.colors :as colors]))
 
-(styles/def pin-container
+(def pin-container
   {:flex            1
    :flex-direction  :column
    :justify-content :space-between})
 
-(defn error-container [small-screen?]
-  {:height        (when small-screen? 18)
-   :margin-top    (if small-screen? 14 10)
-   :margin-bottom (if small-screen? 10 0)})
+(defn info-container [small-screen?]
+  {:height 44
+   :width "100%"
+   :justify-content :center
+   :margin-top    (if small-screen? 14 10)})
+
+(defn error-container [y-translation opacity]
+  {:left 0
+   :right 0
+   :align-items :center
+   :position :absolute
+   :transform [{:translateY y-translation}]
+   :opacity opacity
+   :justify-content :center})
 
 (defn error-text [small-screen?]
-  {:color      colors/red
+  {:position :absolute
+   :color      colors/red
    :font-size  (if small-screen? 12 15)
    :text-align :center})
+
+(defn retry-container [y-translation opacity]
+  {:left 0
+   :right 0
+   :align-items :center
+   :position :absolute
+   :transform [{:translateY y-translation}]
+   :opacity opacity
+   :justify-content :center})
 
 (defn center-container [title]
   {:flex-direction :column
@@ -34,20 +53,31 @@
 (def pin-indicator-container
   {:flex-direction  :row
    :justify-content :space-between
-   :margin-top      16})
+   :align-items :center
+   :height 22
+   :margin-top 5})
 
 (def pin-indicator-group-container
   {:flex-direction  :row
    :justify-content :space-between})
 
-(defn pin-indicator [pressed? status]
+(defn pin-indicator [pressed? error?]
   {:width             8
    :height            8
-   :background-color  (if (= status :error)
+   :background-color  (if error?
                         colors/red
                         (if pressed?
                           colors/blue
                           colors/black-transparent))
+   :border-radius     50
+   :margin-horizontal 5})
+
+(defn puk-indicator [error?]
+  {:width             8
+   :height            8
+   :background-color  (if error?
+                        colors/red
+                        colors/black-transparent)
    :border-radius     50
    :margin-horizontal 5})
 

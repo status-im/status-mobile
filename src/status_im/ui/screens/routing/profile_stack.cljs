@@ -126,5 +126,7 @@
      :component hardwallet.settings/keycard-settings}
     {:name      :reset-card
      :component hardwallet.settings/reset-card}
+    {:name      :keycard-pin
+     :component hardwallet.settings/reset-pin}
     {:name      :enter-pin-settings
      :component hardwallet.pin/enter-pin}]])

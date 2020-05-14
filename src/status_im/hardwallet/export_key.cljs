@@ -1,6 +1,7 @@
 (ns status-im.hardwallet.export-key
   (:require [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
+            [status-im.hardwallet.wallet :as wallet]
             [status-im.hardwallet.common :as common]))
 
 (fx/defn on-export-key-error
@@ -39,5 +40,6 @@
   (let [callback-fn (get-in db [:hardwallet :on-export-success])]
     (fx/merge cofx
               {:dispatch (callback-fn pubkey)}
+              (wallet/hide-pin-sheet)
               (common/clear-pin)
               (common/hide-connection-sheet))))

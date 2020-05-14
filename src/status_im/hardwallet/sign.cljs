@@ -197,17 +197,21 @@
   {:events [:hardwallet.callback/on-sign-error]}
   [{:keys [db] :as cofx} error]
   (log/debug "[hardwallet] sign error: " error)
-  (let [tag-was-lost? (common/tag-lost? (:error error))]
+  (let [tag-was-lost? (common/tag-lost? (:error error))
+        pin-retries (get-in db [:hardwallet :application-info :pin-retry-counter])]
     (when-not tag-was-lost?
       (if (re-matches common/pin-mismatch-error (:error error))
         (fx/merge cofx
                   {:db (-> db
+                           (assoc-in [:hardwallet :application-info :pin-retry-counter] (dec pin-retries))
                            (update-in [:hardwallet :pin] merge {:status      :error
                                                                 :sign        []
                                                                 :error-label :t/pin-mismatch})
                            (assoc-in [:signing/sign :keycard-step] :pin))}
                   (common/hide-connection-sheet)
-                  (common/get-application-info (common/get-pairing db) nil))
+                  (common/get-application-info (common/get-pairing db) nil)
+                  (when (zero? (dec pin-retries))
+                    (common/frozen-keycard-popup)))
         (fx/merge cofx
                   (common/hide-connection-sheet)
                   (common/show-wrong-keycard-alert true))))))

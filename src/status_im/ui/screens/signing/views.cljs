@@ -96,14 +96,15 @@
                   enter-step [:hardwallet/pin-enter-step]
                   status [:hardwallet/pin-status]
                   retry-counter [:hardwallet/retry-counter]]
-    [react/view
-     [pin.views/pin-view
-      {:pin           pin
-       :retry-counter retry-counter
-       :step          enter-step
-       :small-screen? small-screen?
-       :status        status
-       :error-label   error-label}]]))
+    (let [enter-step (or enter-step :sign)]
+      [react/view
+       [pin.views/pin-view
+        {:pin           pin
+         :retry-counter retry-counter
+         :step          enter-step
+         :small-screen? small-screen?
+         :status        status
+         :error-label   error-label}]])))
 
 (defn sign-with-keycard-button
   [amount-error gas-error]

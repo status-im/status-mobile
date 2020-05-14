@@ -17,7 +17,8 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.security :as security]
             [clojure.string :as string]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.bottom-panel.views :as bottom-panel]))
 
 (defn- request-camera-permissions []
   (let [options {:handler :wallet.add-new/qr-scanner-result}]
@@ -127,22 +128,39 @@
           (re-frame/dispatch [:set-in [:add-account :private-key] (security/mask-data %)]))}])])
 
 (defview pin []
-  (letsubs [pin         [:hardwallet/pin]
-            status      [:hardwallet/pin-status]
-            error-label [:hardwallet/pin-error-label]]
+  (letsubs [pin           [:hardwallet/pin]
+            status        [:hardwallet/pin-status]
+            error-label   [:hardwallet/pin-error-label]
+            retry-counter [:hardwallet/retry-counter]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [topbar/topbar
       {:navigation :none
        :accessories
        [{:label   :t/cancel
-         :handler #(re-frame/dispatch [:bottom-sheet/hide])}]}]
+         :handler #(re-frame/dispatch [:hardwallet/new-account-pin-sheet-hide])}]}]
      [pin.views/pin-view
       {:pin               pin
        :status            status
+       :retry-counter     retry-counter
        :title-label       :t/current-pin
        :description-label :t/current-pin-description
        :error-label       error-label
        :step              :export-key}]]))
+
+(defn pin-sheet []
+  (let [show-sheet? @(re-frame/subscribe [:hardwallet/new-account-sheet?])
+        {window-height :height} @(re-frame/subscribe [:dimensions/window])]
+    [bottom-panel/bottom-panel
+     show-sheet?
+     (fn [_]
+       [react/view {:style
+                    {:background-color        colors/white
+                     :border-top-right-radius 16
+                     :border-top-left-radius  16
+                     :padding-bottom          40
+                     :flex 1}}
+        [pin]])
+     window-height]))
 
 (defview add-account []
   (letsubs [{:keys [type account] :as add-account} [:add-account]
@@ -164,7 +182,8 @@
         :label               :t/add-account
         :accessibility-label :add-account-add-account-button
         :on-press
-        (if keycard?
+        (if (and keycard?
+                 (not= type :watch))
           #(re-frame/dispatch [:hardwallet/new-account-pin-sheet
                                {:view {:content pin
                                        :height  256}}])
@@ -177,5 +196,6 @@
              (and
               (not keycard?)
               (not (spec/valid? ::multiaccounts.db/password
-                                @entered-password)))))}}]]))
+                                @entered-password)))))}}]
+     [pin-sheet]]))
 

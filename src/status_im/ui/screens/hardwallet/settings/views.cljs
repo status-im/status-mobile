@@ -8,7 +8,9 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.ui.screens.keycard.views :as keycard.views]
+            [status-im.hardwallet.common :as hardwallet.common]))
 
 (defn- action-row [{:keys [icon label on-press color-theme]}]
   [react/touchable-highlight
@@ -131,3 +133,10 @@
                         :color-theme :red
                         :label       :t/reset-card
                         :on-press    #(re-frame/dispatch [:keycard-settings.ui/reset-card-pressed])}]])]]))
+
+(defn reset-pin []
+  [keycard.views/login-pin
+   {:back-button-handler
+    ::hardwallet.common/navigate-to-keycard-settings
+    :hide-login-actions? true
+    :default-enter-step :reset}])

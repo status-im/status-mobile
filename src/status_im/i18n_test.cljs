@@ -716,7 +716,6 @@
     :pin-changed
     :pin-code
     :pin-mismatch
-    :pin-retries-left
     :preview-privacy
     :privacy
     :privacy-and-security

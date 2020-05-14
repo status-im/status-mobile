@@ -19,7 +19,7 @@
 (re-frame/reg-sub
  :hardwallet/pin-enter-step
  (fn [db]
-   (get-in db [:hardwallet :pin :enter-step] :original)))
+   (get-in db [:hardwallet :pin :enter-step])))
 
 (re-frame/reg-sub
  :hardwallet/pin-operation
@@ -47,3 +47,10 @@
  :hardwallet/pin-error-label
  (fn [db]
    (get-in db [:hardwallet :pin :error-label])))
+
+(re-frame/reg-sub
+ :hardwallet/frozen-card?
+ (fn [db]
+   (let [{:keys [pin-retry-counter]}
+         (get-in db [:hardwallet :application-info])]
+     (zero? pin-retry-counter))))

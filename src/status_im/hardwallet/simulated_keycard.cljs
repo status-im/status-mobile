@@ -31,6 +31,8 @@
           :paired?                true
           :has-master-key?        true
           :initialized?           true
+          :pin-retry-counter      3
+          :puk-retry-counter      5
           :key-uid                (get-in @re-frame.db/app-db [:multiaccounts/login :key-uid])})
   (connect-card))
 
@@ -84,7 +86,7 @@
 (defn install-cash-applet [_])
 
 (def kk1-password "000000")
-
+(def default-puk "000000000000")
 (defn init-card [{:keys [pin on-success]}]
   (swap! state assoc :application-info
          {:free-pairing-slots     5
@@ -98,7 +100,7 @@
   (swap! state assoc :pin pin)
   (later
    #(on-success {:password kk1-password
-                 :puk      "000000000000"
+                 :puk      default-puk
                  :pin      pin})))
 
 (defn install-applet-and-init-card [_])
@@ -141,12 +143,34 @@
        password
        #(on-success response)))))
 
-(defn unblock-pin [_])
+(defn unblock-pin
+  [{:keys [puk on-success on-failure]}]
+  (if (= puk default-puk)
+    (do
+      (swap! state update :application-info assoc
+             :pin-retry-counter 3
+             :puk-retry-counter 5)
+      (later #(on-success true)))
+    (do
+      (swap! state update-in
+             [:application-info :puk-retry-counter]
+             (fnil dec 5))
+      (later
+       #(on-failure
+         #js {:code    "EUNSPECIFIED"
+              :message "Unexpected error SW, 0x63C2"})))))
 
-(defn verify-pin [{:keys [pin pairing on-success]}]
-  (when (and (= pairing kk1-pair)
-             (= pin (get @state :pin)))
-    (later #(on-success 3))))
+(defn verify-pin [{:keys [pin pairing on-success on-failure]}]
+  (if (and (= pairing kk1-pair)
+           (= pin (get @state :pin)))
+    (later #(on-success 3))
+    (do
+      (swap! state update-in
+             [:application-info :pin-retry-counter]
+             (fnil dec 3))
+      (later #(on-failure
+               #js {:code    "EUNSPECIFIED"
+                    :message "Unexpected error SW, 0x63C2"})))))
 
 (defn change-pin [args]
   (log/warn "change-pin not implemented" args))
@@ -199,16 +223,42 @@
                          (on-success publicKey)))))))))))))))
 
 (defn unpair-and-delete [_])
-(defn get-keys [{:keys [on-success pin]}]
-  (swap! state assoc :pin pin)
-  ;;TODO(rasom): verify password before callback
-  (later
-   #(on-success
-     {:key-uid               (get-in @state [:application-info :key-uid])
-      :encryption-public-key (ethereum/sha3 pin)})))
 
-(defn sign [{:keys [on-success]}]
-  (on-success "123"))
+;; It is a bit complicated to verify password before we have multiaccs main
+;; wallet address, so we just define a set of "allowed" pins
+(def allowed-pins
+  #{"121212" "111111" "222222" "123123"})
+
+(defn get-keys [{:keys [on-success on-failure pin]}]
+  (if (contains? allowed-pins pin)
+    (do
+      (swap! state assoc :pin pin)
+      (later
+       #(on-success
+         {:key-uid               (get-in @state [:application-info :key-uid])
+          :encryption-public-key (ethereum/sha3 pin)})))
+    (do
+      (log/debug "Incorrect PIN" pin)
+      (swap! state update-in
+             [:application-info :pin-retry-counter]
+             (fnil dec 3))
+      (later
+       #(on-failure
+         #js {:code    "EUNSPECIFIED"
+              :message "Unexpected error SW, 0x63C2"})))))
+
+(defn sign [{:keys [pin on-success on-failure]}]
+  (if (= pin (get @state :pin))
+    (later
+     #(on-success "123"))
+    (do
+      (swap! state update-in
+             [:application-info :pin-retry-counter]
+             (fnil dec 3))
+      (later
+       #(on-failure
+         #js {:code    "EUNSPECIFIED"
+              :message "Unexpected error SW, 0x63C2"})))))
 
 (defn sign-typed-data [args]
   (log/warn "sign-typed-data not implemented" args))

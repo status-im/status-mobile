@@ -15,8 +15,9 @@
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.utils.core :as utils.core]
             [status-im.utils.gfycat.core :as gfy]
-            [status-im.utils.identicon :as identicon]
-            [status-im.constants :as constants])
+            [status-im.constants :as constants]
+            [status-im.ui.screens.keycard.views :as keycard.views]
+            [status-im.utils.identicon :as identicon])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn intro []
@@ -83,26 +84,34 @@
        {:handler #(re-frame/dispatch [::hardwallet.recovery/cancel-pressed])
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
-      [react/text {:style {:color colors/gray}}
-       (i18n/label :t/step-i-of-n {:number 2
-                                   :step   2})]]
-     [react/view {:flex            1
-                  :flex-direction  :column
-                  :justify-content :space-between
-                  :align-items     :center}
-      [react/view {:flex-direction :column
-                   :align-items    :center}
-       [react/view {:margin-top 16}
-        [react/text {:style {:typography :header
-                             :text-align :center}}
-         (i18n/label :t/enter-your-code)]]]
-      [pin.views/pin-view
-       {:pin           pin
-        :retry-counter retry-counter
-        :small-screen? small-screen?
-        :status        status
-        :error-label   error-label
-        :step          :import-multiaccount}]]]))
+      (when-not (#{:frozen-card :blocked-card} status)
+        [react/text {:style {:color colors/gray}}
+         (i18n/label :t/step-i-of-n {:number 2
+                                     :step   2})])]
+     (case status
+       :frozen-card
+       [keycard.views/frozen-card]
+
+       :blocked-card
+       [keycard.views/blocked-card]
+
+       [react/view {:flex            1
+                    :flex-direction  :column
+                    :justify-content :space-between
+                    :align-items     :center}
+        [react/view {:flex-direction :column
+                     :align-items    :center}
+         [react/view {:margin-top 16}
+          [react/text {:style {:typography :header
+                               :text-align :center}}
+           (i18n/label :t/enter-your-code)]]]
+        [pin.views/pin-view
+         {:pin           pin
+          :retry-counter retry-counter
+          :small-screen? small-screen?
+          :status        status
+          :error-label   error-label
+          :step          :import-multiaccount}]])]))
 
 (defview pair []
   (letsubs [pair-code [:hardwallet-pair-code]
