@@ -69,7 +69,8 @@
             status-im.ui.screens.group.events
             status-im.utils.universal-links.events
             status-im.search.core
-            status-im.ui.screens.profile.events))
+            status-im.ui.screens.profile.events
+            status-im.chat.models.images))
 
 ;; init module
 (handlers/register-handler-fx
@@ -575,7 +576,7 @@
      :stickers/recent-stickers
      (conj (remove #(= hash %) (:stickers/recent-stickers multiaccount)) hash)
      {})
-    (chat.input/send-sticker-fx sticker current-chat-id))))
+    (chat.input/send-sticker-message sticker current-chat-id))))
 
 (handlers/register-handler-fx
  :chat/disable-cooldown

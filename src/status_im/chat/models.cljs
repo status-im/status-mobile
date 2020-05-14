@@ -18,9 +18,7 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
             [status-im.chat.models.message-seen :as message-seen]
-            [status-im.chat.models.loading :as loading]
-            [status-im.utils.image-processing :as image-processing]
-            [taoensso.timbre :as log]))
+            [status-im.chat.models.loading :as loading]))
 
 (defn- get-chat [cofx chat-id]
   (get-in cofx [:db :chats chat-id]))
@@ -311,21 +309,3 @@
   {:events [:chat.ui/input-on-focus]}
   [{db :db}]
   {:db (set-chat-ui-props db {:input-bottom-sheet nil})})
-
-(re-frame/reg-fx
- :chat-open-image-picker
- (fn []
-   (react/show-image-picker
-    (fn [image]
-      (image-processing/resize
-       (aget image "path")
-       400 400
-       (fn [resized-image]
-         (re-frame/dispatch [:chat.ui/set-chat-ui-props {:send-image (aget resized-image "path")}]))
-       #(log/error "could not resize image" %)))
-    "photo")))
-
-(fx/defn chat-open-image-picker
-  {:events [:chat.ui/open-image-picker]}
-  [cofx]
-  {:chat-open-image-picker nil})

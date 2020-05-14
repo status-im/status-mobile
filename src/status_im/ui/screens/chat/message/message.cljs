@@ -13,7 +13,8 @@
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.http :as http]
             [status-im.utils.platform :as platform]
-            [status-im.utils.security :as security])
+            [status-im.utils.security :as security]
+            [reagent.core :as reagent])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]
@@ -37,7 +38,7 @@
    appender])
 
 (defview quoted-message
-  [_ {:keys [from text]} outgoing current-public-key]
+  [_ {:keys [from text image]} outgoing current-public-key]
   (letsubs [{:keys [ens-name alias]} [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
@@ -47,10 +48,15 @@
        ens-name
        current-public-key
        (partial style/quoted-message-author outgoing)]]
-
-     [react/text {:style           (style/quoted-message-text outgoing)
-                  :number-of-lines 5}
-      text]]))
+     (if image
+       [react/image {:style  {:width            56
+                              :height           56
+                              :background-color :black
+                              :border-radius    4}
+                     :source {:uri image}}]
+       [react/text {:style           (style/quoted-message-text outgoing)
+                    :number-of-lines 5}
+        text])]))
 
 (defn render-inline [message-text outgoing content-type acc {:keys [type literal destination]}]
   (case type
@@ -149,15 +155,24 @@
       ;; Append timestamp to new block
       (conj elements timestamp))))
 
+(defn text-message-press-handlers [message]
+  {:on-press      (fn [_]
+                    (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet nil}])
+                    (react/dismiss-keyboard!))
+   :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                       {:content (sheets/message-long-press message)
+                                        :height  192}])})
+
 (defn text-message
   [{:keys [content outgoing current-public-key] :as message}]
-  [message-bubble-wrapper message
-   (let [response-to (:response-to content)]
-     [react/view
-      (when (and (seq response-to) (:quoted-message message))
-        [quoted-message response-to (:quoted-message message) outgoing current-public-key])
-      [render-parsed-text-with-timestamp message (:parsed-text content)]])
-   [message-timestamp message true]])
+  [react/touchable-highlight (text-message-press-handlers message)
+   [message-bubble-wrapper message
+    (let [response-to (:response-to content)]
+      [react/view
+       (when (and (seq response-to) (:quoted-message message))
+         [quoted-message response-to (:quoted-message message) outgoing current-public-key])
+       [render-parsed-text-with-timestamp message (:parsed-text content)]])
+    [message-timestamp message true]]])
 
 (defn unknown-content-type
   [{:keys [outgoing content-type content] :as message}]
@@ -177,13 +192,14 @@
 (defn emoji-message
   [{:keys [content current-public-key outgoing] :as message}]
   (let [response-to (:response-to content)]
-    [message-bubble-wrapper message
-     [react/view {:style (style/style-message-text outgoing)}
-      (when (and (seq response-to) (:quoted-message message))
-        [quoted-message response-to (:quoted-message message) outgoing current-public-key])
-      [react/text {:style (style/emoji-message message)}
-       (:text content)]]
-     [message-timestamp message]]))
+    [react/touchable-highlight (text-message-press-handlers message)
+     [message-bubble-wrapper message
+      [react/view {:style (style/style-message-text outgoing)}
+       (when (and (seq response-to) (:quoted-message message))
+         [quoted-message response-to (:quoted-message message) outgoing current-public-key])
+       [react/text {:style (style/emoji-message message)}
+        (:text content)]]
+      [message-timestamp message]]]))
 
 (defn message-activity-indicator
   []
@@ -224,24 +240,6 @@
   (letsubs [{:keys [ens-name]} [:contacts/contact-name-by-identity from]]
     (chat.utils/format-author alias style/message-author-name-container ens-name)))
 
-(defn message-press-handlers [{:keys [outgoing from content-type content] :as message}]
-  (let [pack (get-in content [:sticker :pack])]
-    {:on-press      (fn [_]
-                      (when (and (= content-type constants/content-type-sticker) pack)
-                        (re-frame/dispatch [:stickers/open-sticker-pack pack]))
-                      (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet nil}])
-                      (react/dismiss-keyboard!))
-     :on-long-press #(cond (or (= content-type constants/content-type-text)
-                               (= content-type constants/content-type-emoji))
-                           (re-frame/dispatch [:bottom-sheet/show-sheet
-                                               {:content (sheets/message-long-press message)
-                                                :height  192}])
-                           (and (= content-type constants/content-type-sticker)
-                                from (not outgoing))
-                           (re-frame/dispatch [:bottom-sheet/show-sheet
-                                               {:content (sheets/sticker-long-press message)
-                                                :height  64}]))}))
-
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
   [{:keys [alias first-in-group? display-photo? identicon display-username?
@@ -276,26 +274,61 @@
    [react/view (style/system-message-body message)
     [react/view child]]])
 
+(defn message-content-image [{:keys [content outgoing]}]
+  (let [dimensions (reagent/atom [260 260])
+        uri (:image content)]
+    (react/image-get-size
+     uri
+     (fn [width height]
+       (let [k (/ (max width height) 260)]
+         (reset! dimensions [(/ width k) (/ height k)]))))
+    (fn []
+      [react/view {:style (style/image-content outgoing)}
+       [react/image {:style {:width (first @dimensions) :height (last @dimensions)}
+                     :resize-mode :contain
+                     :source {:uri uri}}]])))
+
+(defn image-message-press-handlers [{:keys [content] :as message}]
+  {:on-press      (fn [_]
+                    (when (:image content)
+                      (re-frame/dispatch [:navigate-to :image-preview message]))
+                    (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet nil}])
+                    (react/dismiss-keyboard!))
+   :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                       {:content (sheets/image-long-press message false)
+                                        :height  160}])})
+
+(defn sticker-message-press-handlers [{:keys [content] :as message}]
+  (let [pack (get-in content [:sticker :pack])]
+    {:on-press      (fn [_]
+                      (when pack
+                        (re-frame/dispatch [:stickers/open-sticker-pack pack]))
+                      (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet nil}])
+                      (react/dismiss-keyboard!))
+     :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                         {:content (sheets/sticker-long-press message)
+                                          :height  64}])}))
+
 (defn chat-message [{:keys [content content-type] :as message}]
   (if (= content-type constants/content-type-command)
     [message.command/command-content message-content-wrapper message]
     (if (= content-type constants/content-type-system-text)
       [system-message-content-wrapper message [system-text-message message]]
-      [react/touchable-highlight (message-press-handlers message)
-       [message-content-wrapper
-        message
-        (if (= content-type constants/content-type-text)
-          ;; text message
-          [text-message message]
-          (if (= content-type constants/content-type-status)
-            [message-content-status message]
-            (if (= content-type constants/content-type-emoji)
-              [emoji-message message]
-              (if (= content-type constants/content-type-sticker)
+      [message-content-wrapper
+       message
+       (if (= content-type constants/content-type-text)
+         ;; text message
+         [text-message message]
+         (if (= content-type constants/content-type-status)
+           [message-content-status message]
+           (if (= content-type constants/content-type-emoji)
+             [emoji-message message]
+             (if (= content-type constants/content-type-sticker)
+               [react/touchable-highlight (sticker-message-press-handlers message)
                 [react/image {:style  {:margin 10 :width 140 :height 140}
                               ;;TODO (perf) move to event
-                              :source {:uri (contenthash/url (-> content :sticker :hash))}}]
-                (if (= content-type constants/content-type-image)
-                  [react/image {:style {:margin-vertical 10 :width 140 :height 140 :border-radius 8}
-                                :source {:uri (:image content)}}]
-                  [unknown-content-type message])))))]])))
+                              :source {:uri (contenthash/url (-> content :sticker :hash))}}]]
+               (if (= content-type constants/content-type-image)
+                 [react/touchable-highlight (image-message-press-handlers message)
+                  [message-content-image message]]
+                 [unknown-content-type message])))))])))

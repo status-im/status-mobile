@@ -119,6 +119,7 @@
 (reg-root-key-sub :group-chat-profile/profile :group-chat-profile/profile)
 (reg-root-key-sub :selected-participants :selected-participants)
 (reg-root-key-sub :chat/inputs :chat/inputs)
+(reg-root-key-sub :camera-roll-photos :camera-roll-photos)
 
 ;;browser
 (reg-root-key-sub :browsers :browser/browsers)
@@ -836,6 +837,12 @@
  :<- [:chats/current-chat]
  (fn [{:keys [metadata]}]
    (:responding-to-message metadata)))
+
+(re-frame/reg-sub
+ :chats/sending-image
+ :<- [:chats/current-chat]
+ (fn [{:keys [metadata]}]
+   (get-in metadata [:sending-image])))
 
 (re-frame/reg-sub
  :public-chat.new/topic-error-message

@@ -3,7 +3,6 @@
             [status-im.ui.screens.ens.views :as ens]
             [status-im.ui.screens.contacts-list.views :as contacts-list]
             [status-im.ui.screens.profile.contact.views :as profile.contact]
-            [status-im.ui.screens.profile.photo-capture.views :as photo-capture]
             [status-im.ui.screens.bootnodes-settings.edit-bootnode.views
              :as
              edit-bootnode]
@@ -69,8 +68,6 @@
     {:name      :profile
      :insets    {:top false}
      :component profile.contact/profile}
-    {:name      :profile-photo-capture
-     :component photo-capture/profile-photo-capture}
     {:name      :bootnodes-settings
      :component bootnodes-settings/bootnodes-settings}
     {:name      :installations

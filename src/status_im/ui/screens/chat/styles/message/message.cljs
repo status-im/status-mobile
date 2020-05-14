@@ -309,3 +309,10 @@
   (if outgoing
     (outgoing-blockquote-text-style)
     (default-blockquote-text-style)))
+
+(defn image-content [outgoing]
+  {:overflow                   :hidden
+   :border-top-left-radius     16
+   :border-top-right-radius    16
+   :border-bottom-left-radius  (if outgoing 16 4)
+   :border-bottom-right-radius (if outgoing 4 16)})

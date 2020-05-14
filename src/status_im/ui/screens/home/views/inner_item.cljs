@@ -80,6 +80,11 @@
                    ;;TODO (perf) move to event
                    :source {:uri (contenthash/url (-> content :sticker :hash))}}]
 
+     (= constants/content-type-image content-type)
+     [react/text {:style               styles/last-message-text
+                  :accessibility-label :no-messages-text}
+      (i18n/label :t/image)]
+
      (string/blank? (:text content))
      [react/text {:style styles/last-message-text}
       ""]

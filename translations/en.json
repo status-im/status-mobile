@@ -877,7 +877,7 @@
     "share-public-chat-text": "Check out this public chat on the Status app: {{link}}",
     "sharing-copied-to-clipboard": "Copied",
     "sharing-copy-to-clipboard": "Copy",
-    "sharing-share": "Share...",
+    "sharing-share": "Share",
     "show-less": "Show less",
     "show-more": "Show more",
     "show-qr": "Show QR code",
@@ -1122,5 +1122,8 @@
     "preference": "Preference",
     "light": "Light",
     "dark": "Dark",
-    "system": "System"
+    "system": "System",
+    "give-permissions-camera": "Give permission\nto access camera",
+    "photos": "Photos",
+    "image": "Image"
 }

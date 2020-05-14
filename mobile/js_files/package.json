@@ -10,6 +10,7 @@
     "app:android": "react-native run-android"
   },
   "dependencies": {
+    "@react-native-community/cameraroll": "^1.6.1",
     "@react-native-community/clipboard": "^1.2.2",
     "@react-native-community/masked-view": "^0.1.6",
     "@react-native-community/netinfo": "^4.4.0",
@@ -38,7 +39,7 @@
     "react-native-fs": "^2.14.1",
     "react-native-gesture-handler": "^1.6.0",
     "react-native-haptic-feedback": "^1.9.0",
-    "react-native-image-crop-picker": "^0.25.0",
+    "react-native-image-crop-picker": "^0.31.1",
     "react-native-image-resizer": "git+https://github.com/status-im/react-native-image-resizer.git#1.0.0-2-status",
     "react-native-keychain": "git+https://github.com/status-im/react-native-keychain.git#v.3.0.0-5-status",
     "react-native-languages": "^3.0.2",

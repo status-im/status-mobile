@@ -3,6 +3,7 @@
             [reagent.core :as reagent]
             [clojure.string :as string]
             [clojure.walk :as walk]
+            [oops.core :refer [oget]]
             ["react-native-camera" :refer (RNCamera)]))
 
 (defn- constants [t]
@@ -24,9 +25,20 @@
       (.then (fn [allowed?] (if allowed? (then) (else))))
       (.catch else)))
 
-(defn camera [props]
-  (reagent/create-element RNCamera (clj->js (merge {:inverted true} props))))
+(def camera (reagent/adapt-react-class RNCamera))
 
 (defn get-qr-code-data [^js code]
   (when-let [data (.-data code)]
     (string/trim data)))
+
+(defn on-layout [layout]
+  (fn [evt]
+    (reset! layout {:width (oget evt "nativeEvent" "layout" "width")
+                    :height (oget evt "nativeEvent" "layout" "height")})))
+
+(defn on-tap [camera-ref layout focus-object]
+  (fn [coord]
+    (when (and @camera-ref (:width @layout))
+      (let [{:keys [width height]} @layout
+            {:keys [x y]} (js->clj coord :keywordize-keys true)]
+        (reset! focus-object (clj->js {:x (/ x width) :y (/ y height) :autoExposure true}))))))

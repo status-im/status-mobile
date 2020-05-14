@@ -5,21 +5,8 @@
             [status-im.ui.components.react :as react]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.chat.models :as chat-models]
-            [status-im.utils.image-processing :as image-processing]
             [taoensso.timbre :as log]
             [status-im.utils.fx :as fx]))
-
-(defn open-image-picker! [callback-event]
-  (react/show-image-picker
-   (fn [image]
-     (let [path (get (js->clj image) "path")
-           _ (log/debug path)
-           on-success (fn [base64]
-                        (re-frame/dispatch [callback-event base64]))
-           on-error (fn [type error]
-                      (.log js/console type error))]
-       (image-processing/img->base64 path on-success on-error 150 150)))
-   "photo"))
 
 (defn send-transaction [chat-id cofx]
   ;;TODO start send transaction command flow
@@ -58,17 +45,6 @@
               (multiaccounts.update/multiaccount-update :last-updated now {})
               (when photo-path
                 (multiaccounts.update/multiaccount-update :photo-path photo-path {})))))
-
-(defn update-picture [this-event base64-image {:keys [db] :as cofx}]
-  (if base64-image
-    (fx/merge cofx
-              {:db (-> db
-                       (assoc-in [:my-profile/profile :photo-path]
-                                 (str "data:image/jpeg;base64," base64-image))
-                       (assoc :my-profile/editing? true)
-                       (assoc :profile/photo-added? true))}
-              save)
-    {:open-image-picker this-event}))
 
 (defn start-editing-group-chat-profile [{:keys [db]}]
   (let [current-chat-name (get-in db [:chats (:current-chat-id db) :name])]

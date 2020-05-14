@@ -18,7 +18,8 @@
             [status-im.ui.screens.routing.browser-stack :as browser-stack]
             [status-im.ui.components.tabbar.core :as tabbar]
             [status-im.ui.screens.routing.core :as navigation]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.screens.chat.image.preview.views :as image-preview]))
 
 (defonce main-stack (navigation/create-stack))
 (defonce bottom-tabs (navigation/create-bottom-tabs))
@@ -87,4 +88,7 @@
        :component wallet.components/contact-code}
       {:name      :qr-scanner
        :insets    {:top false}
-       :component qr-scanner/qr-scanner}]]))
+       :component qr-scanner/qr-scanner}
+      {:name      :image-preview
+       :insets    {:top false}
+       :component image-preview/preview-image}]]))

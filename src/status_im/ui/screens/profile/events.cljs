@@ -8,12 +8,6 @@
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.utils.fx :as fx]))
 
-(re-frame/reg-fx
- :open-image-picker
- ;; the image picker is only used here for now, this effect can be use in other scenarios as well
- (fn [callback-event]
-   (profile.models/open-image-picker! callback-event)))
-
 (handlers/register-handler-fx
  :profile/send-transaction
  (fn [cofx [_ chat-id]]
@@ -23,11 +17,6 @@
  :my-profile/update-name
  (fn [cofx [_ name]]
    (profile.models/update-name name cofx)))
-
-(handlers/register-handler-fx
- :my-profile/update-picture
- (fn [cofx [this-event base64-image]]
-   (profile.models/update-picture this-event base64-image cofx)))
 
 (handlers/register-handler-fx
  :my-profile/remove-current-photo

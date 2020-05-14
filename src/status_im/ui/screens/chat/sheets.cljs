@@ -210,3 +210,51 @@
          :accessibility-label :view-chat-details-button
          :accessories         [:chevron]
          :on-press            #(hide-sheet-and-dispatch  [:chat.ui/show-profile from])}]])))
+
+(defn image-long-press [{:keys [content identicon from outgoing] :as message} from-preview?]
+  (fn []
+    (let [{:keys [ens-name alias]} @(re-frame/subscribe [:contacts/contact-name-by-identity from])]
+      [react/view
+       (when-not outgoing
+         [list-item/list-item
+          {:theme               :action
+           :icon                (multiaccounts/displayed-photo {:identicon  identicon
+                                                                :public-key from})
+           :title               [view-profile {:name   (or ens-name alias)
+                                               :helper :t/view-profile}]
+           :accessibility-label :view-chat-details-button
+           :accessories         [:chevron]
+           :on-press            #(do
+                                   (when from-preview?
+                                     (re-frame/dispatch [:navigate-back]))
+                                   (hide-sheet-and-dispatch  [:chat.ui/show-profile from]))}])
+       [list-item/list-item
+        {:theme    :action
+         :title    :t/message-reply
+         :icon     :main-icons/reply
+         :on-press #(do
+                      (when from-preview?
+                        (re-frame/dispatch [:navigate-back]))
+                      (hide-sheet-and-dispatch [:chat.ui/reply-to-message message]))}]
+       ;; we have only base64 string for image, so we need to find a way how to copy it
+       #_[list-item/list-item
+          {:theme    :action
+           :title    :t/sharing-copy-to-clipboard
+           :icon     :main-icons/copy
+           :on-press (fn []
+                       (re-frame/dispatch [:bottom-sheet/hide-sheet])
+                       (react/copy-to-clipboard (:image content)))}]
+       [list-item/list-item
+        {:theme    :action
+         :title    :t/save
+         :icon     :main-icons/download
+         :on-press (fn []
+                     (hide-sheet-and-dispatch [:chat.ui/save-image-to-gallery (:image content)]))}]
+       ;; we have only base64 string for image, so we need to find a way how to share it
+       #_[list-item/list-item
+          {:theme    :action
+           :title    :t/sharing-share
+           :icon     :main-icons/share
+           :on-press (fn []
+                       (re-frame/dispatch [:bottom-sheet/hide-sheet])
+                       (list-selection/open-share {:message (:image content)}))}]])))

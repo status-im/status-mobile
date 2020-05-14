@@ -16,6 +16,7 @@
                                :ens-name "ens-name"
                                :parsed-text "parsed-text"
                                :rtl? false
+                               :image nil
                                :response-to "a"}
                      :whisper-timestamp 1
                      :outgoing-status :sending

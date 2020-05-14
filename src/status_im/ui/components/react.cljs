@@ -29,6 +29,9 @@
 (def text-class (reagent/adapt-react-class (.-Text react-native)))
 (def text-input-class (reagent/adapt-react-class (.-TextInput react-native)))
 (def image-class (reagent/adapt-react-class (.-Image react-native)))
+
+(defn image-get-size [uri callback] (.getSize (.-Image react-native) uri callback))
+
 (defn valid-source? [source]
   (or (not (map? source))
       (not (contains? source :uri))
@@ -189,6 +192,15 @@
   ([images-fn media-type]
    (->  ^js image-picker
         (.openPicker (clj->js {:multiple false :mediaType (or media-type "any")}))
+        (.then images-fn)
+        (.catch show-access-error))))
+
+(defn show-image-picker-camera
+  ([images-fn]
+   (show-image-picker-camera images-fn nil))
+  ([images-fn props]
+   (->  ^js image-picker
+        (.openCamera (clj->js props))
         (.then images-fn)
         (.catch show-access-error))))
 
