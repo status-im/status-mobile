@@ -375,11 +375,8 @@
                  (biometric/biometric-auth %)
                  (= auth-method
                     keychain/auth-method-password)
-                 (get-credentials % key-uid)
-
-                 ;;nil or "none" or "biometric-prepare"
-                 :else
-                 (open-login-callback % nil)))))
+                 (get-credentials % key-uid))
+              (open-login-callback nil))))
 
 (fx/defn biometric-auth-done
   {:events [:biometric-auth-done]}
