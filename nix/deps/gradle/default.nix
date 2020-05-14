@@ -3,11 +3,11 @@
 let
   inherit (lib)
     removeSuffix optionalString splitString concatMapStrings
-    attrByPath attrValues last makeOverridable;
+    attrByPath attrValues last makeOverridable importJSON;
 
   inherit (pkgs) aapt2;
 
-  deps = import ./deps.nix;
+  deps = importJSON ./deps.json;
 
   # some .jar files have an `-aot` suffix that doesn't work for .pom files
   getPOM = jarUrl: "${removeSuffix "-aot" jarUrl}.pom";
@@ -53,7 +53,7 @@ let
         echo "${jar.sha1}" > "${dep.path}.${dep.type}.sha1"
         ''}
       '')
-    (attrValues deps)));
+    deps));
 
 in makeOverridable stdenv.mkDerivation {
   name = "status-react-maven-deps";
