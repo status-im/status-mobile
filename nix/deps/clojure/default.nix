@@ -3,10 +3,10 @@
 let
   inherit (lib)
     removeSuffix optionalString splitString concatMapStrings
-    attrByPath attrValues last makeOverridable;
+    attrByPath attrValues last makeOverridable importJSON;
 
   # load dependencies
-  deps = import ./deps.nix;
+  deps = importJSON ./deps.json;
 
   # some .jar files have an `-aot` suffix that doesn't work for .pom files
   getPOM = jarUrl: "${removeSuffix "-aot" jarUrl}.pom";
@@ -30,7 +30,7 @@ let
         sha256 = attrByPath [ "jar" "sha256" ] "" dep;
       };
       jar-download = optionalString (jar.sha256 != "") (
-        fetchurl { url = "${url}.${dep.type}"; inherit (jar) sha256; }
+        fetchurl { url = "${url}.jar"; inherit (jar) sha256; }
       );
       fileName = last (splitString "/" dep.path);
       directory = removeSuffix fileName dep.path;
@@ -45,13 +45,13 @@ let
         echo "${pom.sha1}" > "${getPOM dep.path}.sha1"
         ''}
         ${optionalString (jar-download != "") ''
-        ln -s "${jar-download}" "${dep.path}.${dep.type}"
+        ln -s "${jar-download}" "${dep.path}.jar"
         ''}
         ${optionalString (jar.sha1 != "") ''
-        echo "${jar.sha1}" > "${dep.path}.${dep.type}.sha1"
+        echo "${jar.sha1}" > "${dep.path}.jar.sha1"
         ''}
       '')
-    (attrValues deps)));
+    deps));
 
 in makeOverridable stdenv.mkDerivation {
   name = "status-react-clojure-deps";
