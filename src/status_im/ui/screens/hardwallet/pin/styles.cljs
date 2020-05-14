@@ -7,8 +7,8 @@
    :flex-direction  :column
    :justify-content :space-between})
 
-(styles/defn error-container [small-screen?]
-  {:height        (if small-screen? 18 22)
+(defn error-container [small-screen?]
+  {:height        (when small-screen? 18)
    :margin-top    (if small-screen? 14 10)
    :margin-bottom (if small-screen? 10 0)})
 
