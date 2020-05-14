@@ -20,6 +20,7 @@ let
       # core utilities that should always be present in a shell
       bash curl wget file unzip flock rsync
       git gnumake jq ncurses gnugrep parallel
+      lsof # used in start-react-native.sh
       # build specific utilities
       clojure maven watchman
       # other nice to have stuff

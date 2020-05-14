@@ -32,10 +32,10 @@
 
  :cache-blockers #{status-im.utils.js-resources}
 
- :builds {:android
+ :builds {:mobile
           {:target :react-native
            :output-dir "app"
-           :init-fn status-im.android.core/init
+           :init-fn status-im.core/init
            :dev {:devtools {:after-load status-im.reloader/reload
                             :preloads [re-frisk-remote.preload]}
                  :compiler-options {:closure-defines
@@ -50,27 +50,6 @@
                                         ;;disable for android build as there
                                         ;;is an intermittent warning with deftype
                                         :warnings-as-errors false
-                                        :infer-externs :auto
-                                        :static-fns true
-                                        :fn-invoke-direct true
-                                        :optimizations :advanced
-                                        :js-options {:js-provider :closure}}}}
-          :ios
-          {:target :react-native
-           :output-dir "app"
-           :init-fn status-im.ios.core/init
-           :dev {:devtools {:after-load status-im.reloader/reload
-                            :preloads [re-frisk-remote.preload]}
-                 :compiler-options {:closure-defines
-                                    {re-frame.trace/trace-enabled? true}
-                                    :source-map false}
-                 ;; if you want to use a real device, set your local ip
-                 ;; in the SHADOW_HOST env variable to make sure that
-                 ;; it will use the right interface
-                 :local-ip #shadow/env "SHADOW_HOST"}
-           :chunks {:fleets status-im.default-fleet/default-fleets}
-           :release {:compiler-options {:output-feature-set :es6
-                                        :warnings-as-errors true
                                         :infer-externs :auto
                                         :static-fns true
                                         :fn-invoke-direct true

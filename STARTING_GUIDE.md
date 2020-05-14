@@ -21,11 +21,11 @@ For more `make` targets run `make help`.
 
 There are three steps necessary to start development, in this case for Android:
 
-1. `make startdev-android-real` - Compiles Clojure into JavaScript for real device
-2. `make react-native-android` - Watches JavaScript code and updates the App
+1. `make run-clojure` - Compiles Clojure into JavaScript, watches for changes on cljs files, and hot-reloads code in the app
+2. `make run-metro` - Starts metro bundler and watches JavaScript code
 3. `make run-android` - Builds the Android app and starts it on the device
 
-The first two will continue watching for changes and keep re-building the app.
+The first two will continue watching for changes and keep re-building the app. They need to be ready first.
 The last one will exit once the app is up and ready.
 
 # Manual Steps

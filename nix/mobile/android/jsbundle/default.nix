@@ -2,11 +2,10 @@
 # This Nix expression builds the js files for the current repository given a node modules Nix expression
 #
 
-{ target ? "android"
-, stdenv, lib, deps, pkgs }:
+{ stdenv, lib, deps, pkgs }:
 
 stdenv.mkDerivation {
-  name = "status-react-build-jsbundle-${target}";
+  name = "status-react-build-jsbundle-android";
   src =
     let path = ./../../../..;
     in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
@@ -55,10 +54,12 @@ stdenv.mkDerivation {
   buildPhase = ''
     # Assemble CLASSPATH from available clojure dependencies.
     # We append 'src' so it can find the local sources.
-    export CLASS_PATH="$(find ${deps.clojure} -iname '*.jar' | tr '\n' ':')src"
+    export CLASS_PATH="$(find ${deps.clojure} \
+      -iname '*.jar' | tr '\n' ':')src"
 
     # target must be one of the builds defined in shadow-cljs.edn
-    java -cp "$CLASS_PATH" clojure.main -m shadow.cljs.devtools.cli release ${target}
+    java -cp "$CLASS_PATH" clojure.main \
+      -m shadow.cljs.devtools.cli release mobile
   '';
   installPhase = ''
     mkdir -p $out

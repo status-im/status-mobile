@@ -1,14 +1,19 @@
 (ns status-im.desktop.core
   (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
+            ["react-native" :as rn]
             status-im.utils.db
             status-im.subs
             [status-im.ui.screens.views :as views]
             [status-im.ui.components.react :as react]
-            [status-im.core :as core]
+            [status-im.utils.snoopy :as snoopy]
+            [status-im.utils.error-handler :as error-handler]
+            [status-im.utils.logging.core :as utils.logs]
             [status-im.ui.screens.desktop.views :as desktop-views]
             [status-im.desktop.deep-links :as deep-links]
             [status-im.utils.config :as config]))
+
+(def app-registry (.-AppRegistry rn))
 
 (defn app-state-change-handler [state]
   (re-frame/dispatch [:app-state-change state]))
@@ -34,4 +39,8 @@
                              desktop-views/main)})))
 
 (defn init []
-  (core/init app-root))
+  (utils.logs/init-logs)
+  (error-handler/register-exception-handler!)
+  (re-frame/dispatch-sync [:init/app-started])
+  (.registerComponent ^js app-registry "StatusIm" #(reagent/reactify-component app-root))
+  (snoopy/subscribe!))

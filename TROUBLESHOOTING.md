@@ -51,7 +51,7 @@ Developer updates `package.json` file with a new dependency using a GitHub URL. 
 ```
   "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#feature/exportKeyWithPath",
 ```
-Afterwards, when running e.g. `make react-native-android`, they might see the following confusing error:
+Afterwards, when running e.g. `make run-metro`, they might see the following confusing error:
 ```
 # macOS
 fatal: unable to access 'https://github.com/siphiuel/react-native-status-keycard.git/': SSL certificate problem: unable to get local issuer certificate

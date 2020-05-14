@@ -11,6 +11,7 @@
             [reagent.core :as reagent]
             [reagent.impl.batching :as batching]
             [status-im.i18n :as i18n]
+            [status-im.native-module.core :as status]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.views :as views]
             [status-im.utils.error-handler :as error-handler]
@@ -77,10 +78,12 @@
     :display-name "root"
     :reagent-render views/main}))
 
-(defn init [app-root]
+(defn init []
   (utils.logs/init-logs)
   (error-handler/register-exception-handler!)
   (enableScreens)
   (re-frame/dispatch-sync [:init/app-started])
-  (.registerComponent ^js app-registry "StatusIm" #(reagent/reactify-component app-root))
+  (when platform/android?
+    (status/set-soft-input-mode status/adjust-resize))
+  (.registerComponent ^js app-registry "StatusIm" #(reagent/reactify-component root))
   (snoopy/subscribe!))

@@ -1,4 +1,4 @@
-.PHONY: nix-add-gcroots clean nix-clean react-native-android react-native-ios react-native-desktop test release _list _fix-node-perms _tmpdir-mk _tmpdir-rm
+.PHONY: nix-add-gcroots clean nix-clean run-metro react-native-desktop test release _list _fix-node-perms _tmpdir-mk _tmpdir-rm
 
 help: SHELL := /bin/sh
 help: ##@other Show this help
@@ -180,9 +180,6 @@ release-windows-desktop: ##@build build release for windows desktop release
 	scripts/build-desktop.sh; \
 	$(MAKE) watchman-clean
 
-prod-build-android: jsbundle-android ##@legacy temporary legacy alias for jsbundle-android
-	@echo "${YELLOW}This a deprecated target name, use jsbundle-android.$(RESET)"
-
 jsbundle-android: SHELL := /bin/sh
 jsbundle-android: export TARGET := android
 jsbundle-android: export BUILD_ENV ?= prod
@@ -191,21 +188,14 @@ jsbundle-android: ##@jsbundle Compile JavaScript and Clojurescript into app dire
 	nix/scripts/build.sh targets.mobile.android.jsbundle && \
 	mv result/* ./
 
-prod-build-ios: jsbundle-ios ##@legacy temporary legacy alias for jsbundle-ios
-	@echo "${YELLOW}This a deprecated target name, use jsbundle-ios.$(RESET)"
-
 jsbundle-ios: export TARGET := ios
 jsbundle-ios: export BUILD_ENV ?= prod
 jsbundle-ios: ##@jsbundle Compile JavaScript and Clojure into index.ios.js
-	yarn shadow-cljs release ios
+	yarn shadow-cljs release mobile
 
 #--------------
 # status-go lib
-# -------------
-
-status-go-desktop: SHELL := /bin/sh
-status-go-desktop: ##@status-go Compile status-go for desktop app
-	nix/scripts/build.sh targets.status-go.desktop
+#--------------
 
 status-go-android: SHELL := /bin/sh
 status-go-android: ##@status-go Compile status-go for Android app
@@ -215,48 +205,34 @@ status-go-ios: SHELL := /bin/sh
 status-go-ios: ##@status-go Compile status-go for iOS app
 	nix/scripts/build.sh targets.status-go.mobile.ios
 
+status-go-desktop: SHELL := /bin/sh
+status-go-desktop: ##@status-go Compile status-go for desktop app
+	nix/scripts/build.sh targets.status-go.desktop
+
 #--------------
-# Clojure REPL
-# -------------
+# Watch, Build & Review changes
+#--------------
 
-_watch-%: ##@watch Start development for device
-	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
-	$(eval DEVICE := $(word 3, $(subst -, , $@)))
-	yarn shadow-cljs watch $(SYSTEM)
+run-clojure: export TARGET := default
+run-clojure: ##@run Watch for and build Clojure changes for mobile
+	yarn shadow-cljs watch mobile
 
-watch-ios-real: export TARGET := ios
-watch-ios-real: _watch-ios-real
-watch-ios-simulator: export TARGET := ios
-watch-ios-simulator: _watch-ios-simulator
-watch-android-real: export TARGET := android
-watch-android-real: _watch-android-real
-watch-android-avd: export TARGET := android
-watch-android-avd: _watch-android-avd
-watch-android-genymotion: export TARGET ?= android
-watch-android-genymotion: _watch-android-genymotion
-
-watch-desktop: export TARGET ?= $(HOST_OS)
-watch-desktop:
+run-clojure-desktop: export TARGET ?= $(HOST_OS)
+run-clojure-desktop: #@run Watch for and build Clojure changes for desktop
 	clj -R:dev build.clj watch --platform desktop
 
-desktop-server: export TARGET ?= $(HOST_OS)
-desktop-server:
-	node ubuntu-server.js
+run-metro: export TARGET := default
+run-metro: ##@run Start Metro to build React Native changes
+	@scripts/start-react-native.sh
 
-#--------------
-# Run React-Native app
-#--------------
-_run-%:
-	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
-	npx react-native run-$(SYSTEM)
+run-re-frisk: export TARGET := clojure
+run-re-frisk: ##@run Start re-frisk server
+	yarn shadow-cljs run re-frisk-remote.core/start
 
 # TODO: Migrate this to a Nix recipe, much the same way as nix/mobile/android/targets/release-android.nix
 run-android: export TARGET := android
 run-android: ##@run Build Android APK and start it on the device
 	npx react-native run-android --appIdSuffix debug
-
-run-desktop: export TARGET ?= $(HOST_OS)
-run-desktop: _run-desktop ##@run Run Desktop build
 
 SIMULATOR=
 run-ios: export TARGET := ios
@@ -266,6 +242,10 @@ ifneq ("$(SIMULATOR)", "")
 else
 	npx react-native run-ios
 endif
+
+run-desktop: export TARGET ?= $(HOST_OS)
+run-desktop: ##@run Run Desktop build
+	npx react-native run-desktop
 
 #--------------
 # Tests
@@ -296,19 +276,14 @@ coverage: ##@test Run tests once in NodeJS generating coverage
 #--------------
 # Other
 #--------------
+
+start-desktop-server: export TARGET ?= $(HOST_OS)
+start-desktop-server: #@other Start ubuntu-server.js for desktop
+	node ubuntu-server.js
+
 react-native-desktop: export TARGET ?= $(HOST_OS)
 react-native-desktop: export _NIX_PURE ?= true
 react-native-desktop: ##@other Start react native packager
-	@scripts/start-react-native.sh
-
-react-native-android: export TARGET := android
-react-native-android: export _NIX_PURE ?= true
-react-native-android: ##@other Start react native packager for Android client
-	@scripts/start-react-native.sh
-
-react-native-ios: export TARGET := ios
-react-native-ios: export _NIX_PURE ?= true
-react-native-ios: ##@other Start react native packager for Android client
 	@scripts/start-react-native.sh
 
 geth-connect: export TARGET := android-env
@@ -316,9 +291,9 @@ geth-connect: ##@other Connect to Geth on the device
 	adb forward tcp:8545 tcp:8545 && \
 	build/bin/geth attach http://localhost:8545
 
-android-clean: export TARGET := android
+android-clean: export TARGET := gradle
 android-clean: ##@prepare Clean Gradle state
-	git clean -dxf -f ./android/app/build
+	git clean -dxf -f ./android/app/build; \
 	[[ -d android/.gradle ]] && cd android && ./gradlew clean
 
 android-ports: export TARGET := android-env
@@ -345,49 +320,12 @@ _list: SHELL := /bin/sh
 _list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
 
-_unknown-startdev-target-%: SHELL := /bin/sh
-_unknown-startdev-target-%:
-	@ echo "Unknown target device '$*'. Supported targets:"; \
-	${MAKE} _list | grep "watch-" | sed s/watch-/startdev-/; \
-	exit 1
+#--------------
+# REPLs
+#--------------
 
-_startdev-%: SHELL := /bin/sh
-_startdev-%:
-	$(eval SYSTEM := $(word 2, $(subst -, , $@)))
-	$(eval DEVICE := $(word 3, $(subst -, , $@)))
-	@ if [ -z "$(DEVICE)" ]; then \
-		$(MAKE) watch-$(SYSTEM) || $(MAKE) _unknown-startdev-target-$@; \
-	else \
-		$(MAKE) watch-$(SYSTEM)-$(DEVICE) || $(MAKE) _unknown-startdev-target-$@; \
-	fi
+repl-clojure: export TARGET := clojure
+repl-clojure: ##@repl Start Clojure repl for mobile App
+	yarn shadow-cljs cljs-repl mobile
 
-startdev-android-avd: export TARGET = android
-startdev-android-avd: _startdev-android-avd
-startdev-android-avd:  ##@startdev Compile Clojure for Android AVD
-startdev-android-genymotion: export TARGET = android
-startdev-android-genymotion: _startdev-android-genymotion
-startdev-android-genymotion: ##@startdev Compile Clojure for Genymotion
-startdev-android-real: export TARGET = android
-startdev-android-real: _startdev-android-real
-startdev-android-real: ##@startdev Compile Clojure for Android real device
-startdev-ios-real: export TARGET = ios
-startdev-ios-real: _startdev-ios-real
-startdev-ios-real: ##@startdev Compile Clojure for iOS device
-startdev-ios-simulator: export TARGET = ios
-startdev-ios-simulator: _startdev-ios-simulator
-startdev-ios-simulator: ##@startdev Compile Clojure for iOS simulator
-
-startdev-desktop: export TARGET ?= $(HOST_OS)
-startdev-desktop: _startdev-desktop
-
-re-frisk: export TARGET := clojure
-re-frisk: ##@re-frisk start re-frisk server
-	yarn shadow-cljs run re-frisk-remote.core/start
-
-repl-ios: export TARGET := clojure
-repl-ios: ##@repl-ios start repl for ios project
-	yarn shadow-cljs cljs-repl ios
-
-repl-android: export TARGET := clojure
-repl-android: ##@repl-android start repl for android project
-	yarn shadow-cljs cljs-repl android
+repl-nix: nix-repl ##@repl Start an interactive Nix REPL
