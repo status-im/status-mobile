@@ -206,17 +206,36 @@ class ValidationWarnings(object):
 
 
 class SignWithPasswordButton(BaseButton):
-
     def __init__(self, driver):
         super(SignWithPasswordButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="Sign with password"]')
+        self.locator = self.Locator.text_selector('Sign with password')
 
 
 class SignButton(BaseButton):
-
     def __init__(self, driver):
         super(SignButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="Sign"]')
+
+
+class SignWithKeycardButton(BaseButton):
+    def __init__(self, driver):
+        super(SignWithKeycardButton, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector('Sign with')
+
+    def navigate(self):
+        from views.keycard_view import KeycardView
+        return KeycardView(self.driver)
+
+    def click(self):
+        from views.keycard_view import TwoPinKeyboardButton
+        self.click_until_presence_of_element(TwoPinKeyboardButton(self.driver))
+        return self.navigate()
+
+class SigningPhraseText(BaseText):
+    def __init__(self, driver):
+        super(SigningPhraseText, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector('Signing phrase')
+
 
 # Elements for commands in 1-1 chat
 class UserNameInSendTransactionBottomSheet(BaseButton):
@@ -233,14 +252,13 @@ class AccountNameInSelectAccountBottomSheet(BaseButton):
         self.locator = self.Locator.xpath_selector(
             "//*[@text='Select account']/..//*[starts-with(@text,'%s')]" % self.username)
 
-class SelectButton(BaseButton):
 
+class SelectButton(BaseButton):
     def __init__(self, driver):
         super(SelectButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('select-account-bottom-sheet')
 
 class RequestTransactionButtonBottomSheet(BaseButton):
-
     def __init__(self, driver):
         super(RequestTransactionButtonBottomSheet, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('request-transaction-bottom-sheet')
@@ -269,6 +287,7 @@ class SendTransactionView(BaseView):
 
         self.cancel_button = CancelButton(self.driver)
         self.sign_transaction_button = SignTransactionButton(self.driver)
+        self.sign_with_keycard_button = SignWithKeycardButton(self.driver)
         self.sign_with_password = SignWithPasswordButton(self.driver)
         self.sign_button = SignButton(self.driver)
         self.sign_in_phrase_text = SignInPhraseText(self.driver)
@@ -298,10 +317,14 @@ class SendTransactionView(BaseView):
             wallet_view = WalletView(self.driver)
             wallet_view.ok_got_it_button.click()
 
-    def sign_transaction(self, sender_password: str = common_password):
-        self.sign_with_password.click_until_presence_of_element(self.enter_password_input)
-        self.enter_password_input.send_keys(sender_password)
-        self.sign_button.click_until_absense_of_element(self.sign_button)
+    def sign_transaction(self, sender_password: str = common_password, keycard=False):
+        if keycard:
+            keycard_view = self.sign_with_keycard_button.click()
+            keycard_view.enter_default_pin()
+        else:
+            self.sign_with_password.click_until_presence_of_element(self.enter_password_input)
+            self.enter_password_input.send_keys(sender_password)
+            self.sign_button.click_until_absense_of_element(self.sign_button)
         self.ok_button.wait_for_element(120)
         self.ok_button.click()
 

@@ -29,6 +29,9 @@ appium_container = AppiumContainer()
 
 common_password = 'qwerty'
 unique_password = 'unique' + get_current_time()
+pin = '121212'
+puk = '000000000000'
+pair_code= '000000'
 
 bootnode_address = "enode://a8a97f126f5e3a340cb4db28a1187c325290ec08b2c9a6b1f19845ac86c46f9fac2ba13328822590" \
                    "fd3de3acb09cc38b5a05272e583a2365ad1fa67f66c55b34@167.99.210.203:30404"

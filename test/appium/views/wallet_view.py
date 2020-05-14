@@ -154,7 +154,7 @@ class AssetCheckBox(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='%s']" % self.asset_name)
 
     def click(self):
-        self.scroll_to_element().click()
+        self.scroll_to_element(12).click()
         self.driver.info('Click %s asset checkbox' % self.asset_name)
 
 
@@ -542,7 +542,10 @@ class WalletView(BaseView):
             recent_recipient.click()
         if kwargs.get('sign_transaction', True):
             send_transaction_view.sign_transaction_button.click()
-            send_transaction_view.sign_transaction()
+            if kwargs.get('keycard', False):
+                send_transaction_view.sign_transaction(keycard=True)
+            else:
+                send_transaction_view.sign_transaction()
 
     def receive_transaction(self, **kwargs):
         self.receive_transaction_button.click()
@@ -586,9 +589,15 @@ class WalletView(BaseView):
     def get_account_by_name(self, account_name: str):
         return AccountElementButton(self.driver, account_name)
 
-    def add_account(self, account_name: str, password: str = common_password):
+    def add_account(self, account_name: str, password: str = common_password, keycard=False):
         self.add_account_button.click()
         self.generate_an_account_button.click()
-        self.enter_your_password_input.send_keys(password)
         self.account_name_input.send_keys(account_name)
-        self.add_account_generate_account_button.click()
+        if keycard:
+            from views.keycard_view import KeycardView
+            keycard_view = KeycardView(self.driver)
+            self.add_account_button.click()
+            keycard_view.enter_default_pin()
+        else:
+            self.enter_your_password_input.send_keys(password)
+            self.add_account_generate_account_button.click()

@@ -1,4 +1,4 @@
-from views.base_element import BaseButton, BaseText, BaseElement, BaseEditBox
+from views.base_element import BaseButton, BaseText, BaseEditBox
 from views.base_view import BaseView
 
 

@@ -34,6 +34,11 @@ class TransactionsButton(BaseButton):
             super(TransactionsButton.SignMessageButton, self).__init__(driver)
             self.locator = self.Locator.text_selector('Sign message')
 
+        def click(self):
+            from views.send_transaction_view import SigningPhraseText
+            self.click_until_presence_of_element(SigningPhraseText(self.driver))
+            return self.navigate()
+
         def navigate(self):
             from views.send_transaction_view import SendTransactionView
             return SendTransactionView(self.driver)
@@ -42,6 +47,11 @@ class TransactionsButton(BaseButton):
         def __init__(self, driver):
             super(TransactionsButton.SignTypedMessageButton, self).__init__(driver)
             self.locator = self.Locator.text_selector('Sign Typed Message')
+
+        def click(self):
+            from views.send_transaction_view import SigningPhraseText
+            self.click_until_presence_of_element(SigningPhraseText(self.driver))
+            return self.navigate()
 
         def navigate(self):
             from views.send_transaction_view import SendTransactionView

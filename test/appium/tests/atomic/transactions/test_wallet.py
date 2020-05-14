@@ -3,8 +3,8 @@ import string
 
 from support.utilities import get_merged_txs_list
 from tests import marks, unique_password, common_password
-from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
-from tests.users import transaction_senders, basic_user, wallet_users, transaction_recipients
+from tests.base_test_case import SingleDeviceTestCase
+from tests.users import transaction_senders, basic_user, wallet_users
 from views.send_transaction_view import SendTransactionView
 from views.sign_in_view import SignInView
 
@@ -18,7 +18,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         recipient = basic_user
         sender = transaction_senders['P']
         sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.recover_access(sender['passphrase'])
+        home_view = sign_in_view.recover_access(sender['passphrase'], password=unique_password)
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
@@ -29,45 +29,23 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
         send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value('0xDE709F2102306220921060314715629080E2fB77')
-        send_transaction.done_button.click()
-        if not send_transaction.element_by_text_part('Invalid address').is_element_displayed():
-            self.errors.append('Invalid EIP55 address is resolved correctly')
-        send_transaction.ok_button.click()
+
+        send_transaction.just_fyi('Send transaction')
         send_transaction.enter_recipient_address_input.set_value(recipient['address'])
         send_transaction.done_button.click()
         send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction()
+        send_transaction.sign_transaction(unique_password)
         self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
 
-    @marks.testrail_id(5325)
-    @marks.critical
-    def test_send_stt_from_wallet(self):
-        recipient = transaction_recipients['F']
-        sender = transaction_senders['Q']
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'])
-        home_view = sign_in_view.get_home_view()
-        home_view.add_contact(recipient['public_key'])
-        home_view.get_back_to_home_view()
-        wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.accounts_status_account.click()
-        send_transaction = wallet_view.send_transaction_button.click()
-        stt_button = send_transaction.asset_by_name('STT')
-        send_transaction.select_asset_button.click_until_presence_of_element(send_transaction.eth_asset_in_select_asset_bottom_sheet_button, 5)
-        stt_button.click()
-        send_transaction.amount_edit_box.click()
-        amount = send_transaction.get_unique_amount()
-        send_transaction.amount_edit_box.set_value(amount)
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(recipient['address'])
-        send_transaction.done_button.click()
-        send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction()
-        self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True)
+        send_transaction.just_fyi('Check that transaction is appeared in transaction history')
+        transactions_view = wallet_view.transaction_history_button.click()
+        transactions_view.transactions_table.find_transaction(amount=transaction_amount)
+
+        transactions_view.just_fyi('Check logcat for sensitive data')
+        values_in_logcat = send_transaction.find_values_in_logcat(password=unique_password)
+        if values_in_logcat:
+            self.driver.fail(values_in_logcat)
+
 
     @marks.testrail_id(5408)
     @marks.high
@@ -128,27 +106,13 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view.just_fyi('Change that balance is updated')
         initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
         sign_in_view.toggle_airplane_mode()
+
+        sign_in_view.just_fyi('Check that transaction is appeared in transaction history')
         wallet_view.wait_balance_is_changed('STT', initial_amount_STT)
-
-    @marks.testrail_id(6236)
-    @marks.medium
-    def test_transaction_appears_in_history(self):
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.create_user()
-        wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-
-        address = wallet_view.get_wallet_address()[2:]
-        self.network_api.get_donate(address, False)
-        wallet_view.wait_balance_is_equal_expected_amount()
-        recipient = "0x"+basic_user['address']
-        sending_amount = "0.08"
-        asset = 'ETHro'
-        wallet_view.send_transaction(asset_name='ETH', amount=sending_amount, recipient=recipient, sign_transaction=True)
-        wallet_view.wait_balance_is_changed(asset, initial_balance="0.1")
         transactions_view = wallet_view.transaction_history_button.click()
-        transactions_view.transactions_table.find_transaction(amount=sending_amount)
-        transactions_view.transactions_table.find_transaction(amount="0.1")
+        transactions_view.transactions_table.find_transaction(amount=sending_amount, asset='STT')
+
+
 
     @marks.testrail_id(5461)
     @marks.medium
@@ -171,35 +135,15 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.enter_recipient_address_input.set_value(recipient['public_key'])
         send_transaction.done_button.click()
         if not send_transaction.find_text_part('Invalid address'):
-            self.driver.fail("Invalid address accepted for input as recipient!")
+            self.errors.append("Invalid address accepted for input as recipient!")
         send_transaction.ok_button.click()
-
-    @marks.logcat
-    @marks.testrail_id(5416)
-    @marks.critical
-    def test_logcat_send_transaction_from_wallet(self):
-        sender = transaction_senders['R']
-        recipient = basic_user
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'], unique_password)
-        home_view = sign_in_view.get_home_view()
-        wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.accounts_status_account.click()
-        send_transaction = wallet_view.send_transaction_button.click()
-        send_transaction.amount_edit_box.click()
-        transaction_amount = send_transaction.get_unique_amount()
-        send_transaction.amount_edit_box.set_value(transaction_amount)
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(recipient['address'])
+        send_transaction.enter_recipient_address_input.set_value('0xDE709F2102306220921060314715629080E2fB77')
         send_transaction.done_button.click()
-        send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction(unique_password)
-        values_in_logcat = send_transaction.find_values_in_logcat(password=unique_password)
-        if values_in_logcat:
-            self.driver.fail(values_in_logcat)
+        if not send_transaction.element_by_text_part('Invalid address').is_element_displayed():
+            self.errors.append('Invalid EIP55 address is resolved correctly')
+        send_transaction.ok_button.click()
+        self.errors.verify_no_errors()
+
 
     @marks.testrail_id(5350)
     @marks.critical
@@ -498,11 +442,16 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.accounts_button.click()
         send_transaction.element_by_text('Status account').click()
         send_transaction.sign_transaction_button.click()
-        total_fee = send_transaction.get_transaction_fee_total()
         send_transaction.sign_transaction()
         send_transaction.back_button.click()
         sub_account_address = wallet_view.get_wallet_address(account_name)[2:]
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
+        self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
+        transactions_view = wallet_view.transaction_history_button.click()
+
+        wallet_view.just_fyi("Check transactions on subaccount")
+        transactions_view.transactions_table.find_transaction(amount=transaction_amount)
+        transactions_view.transactions_table.find_transaction(amount=format(float(transaction_amount_1),'.11f').rstrip('0'))
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
 
         wallet_view.just_fyi("Verify total ETH on main wallet view")

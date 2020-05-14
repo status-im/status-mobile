@@ -14,17 +14,27 @@ class TestTransactionDApp(SingleDeviceTestCase):
     def test_send_transaction_from_daap(self):
         sender = transaction_senders['K']
         sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.recover_access(sender['passphrase'])
+        home_view = sign_in_view.recover_access(sender['passphrase'], unique_password)
         address = sender['address']
         initial_balance = self.network_api.get_balance(address)
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
+        initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
         status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
-        send_transaction_view.sign_transaction()
+        send_transaction_view.sign_transaction(unique_password)
         self.network_api.verify_balance_is_updated(initial_balance, address)
+        status_test_dapp.wallet_button.click()
+
+        send_transaction_view.just_fyi('Verify that wallet balance is updated')
+        wallet_view.wait_balance_is_changed('STT', initial_amount_STT)
+
+        send_transaction_view.just_fyi('Check logcat for sensitive data')
+        values_in_logcat = send_transaction_view.find_values_in_logcat(password=unique_password)
+        if values_in_logcat:
+            self.driver.fail(values_in_logcat)
 
     @marks.testrail_id(5342)
     @marks.critical
@@ -41,6 +51,13 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view.find_full_text('Test message')
         send_transaction_view.enter_password_input.send_keys(password)
         send_transaction_view.sign_button.click()
+        if not status_test_dapp.element_by_text_part('Signed message').is_element_displayed():
+            self.driver.fail('Message was not signed')
+
+        send_transaction_view.just_fyi('Check logcat for sensitive data')
+        values_in_logcat = send_transaction_view.find_values_in_logcat(password=password)
+        if values_in_logcat:
+            self.driver.fail(values_in_logcat)
 
     @marks.testrail_id(5333)
     @marks.critical
@@ -92,7 +109,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view.sign_transaction()
 
         wallet_view.just_fyi('Check that second "Send transaction" screen appears')
-        if not send_transaction_view.element_by_text('Sign with password').is_element_displayed(10):
+        if not send_transaction_view.sign_with_password.is_element_displayed(10):
             self.driver.fail('Second send transaction screen did not appear!')
 
         send_transaction_view.sign_transaction()
@@ -111,48 +128,11 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view = status_test_dapp.send_two_tx_one_by_one_button.click()
         send_transaction_view.sign_transaction()
 
-        # Check that second 'Send transaction' screen appears
-        if not send_transaction_view.element_by_text('Sign with password').is_element_displayed(20):
+        send_transaction_view.just_fyi('Check that second "Send transaction" screen appears')
+        if not send_transaction_view.sign_with_password.is_element_displayed(20):
             self.driver.fail('Second send transaction screen did not appear!')
 
         send_transaction_view.sign_transaction()
-
-    @marks.logcat
-    @marks.testrail_id(5418)
-    @marks.critical
-    def test_logcat_send_transaction_from_daap(self):
-        sender = transaction_senders['M']
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.recover_access(sender['passphrase'], unique_password)
-        wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        status_test_dapp = home_view.open_status_test_dapp()
-        status_test_dapp.wait_for_d_aap_to_load()
-        status_test_dapp.assets_button.click()
-        send_transaction_view = status_test_dapp.request_stt_button.click()
-        send_transaction_view.sign_transaction(unique_password)
-        values_in_logcat = send_transaction_view.find_values_in_logcat(password=unique_password)
-        if values_in_logcat:
-            self.driver.fail(values_in_logcat)
-
-
-    @marks.logcat
-    @marks.testrail_id(5420)
-    @marks.critical
-    def test_logcat_sign_message_from_daap(self):
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.create_user(password=unique_password)
-        status_test_dapp = home_view.open_status_test_dapp()
-        status_test_dapp.wait_for_d_aap_to_load()
-        status_test_dapp.transactions_button.click()
-        send_transaction_view = status_test_dapp.sign_message_button.click()
-        send_transaction_view.sign_transaction_button.click_until_presence_of_element(
-            send_transaction_view.enter_password_input)
-        send_transaction_view.enter_password_input.send_keys(unique_password)
-        send_transaction_view.sign_button.click()
-        values_in_logcat = send_transaction_view.find_values_in_logcat(password=unique_password)
-        if values_in_logcat:
-            self.driver.fail(values_in_logcat)
 
     @marks.testrail_id(5677)
     @marks.high

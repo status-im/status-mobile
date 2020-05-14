@@ -32,10 +32,10 @@ class TransactionTable(BaseElement):
             super(TransactionTable.TransactionElement, self).__init__(driver)
 
         @staticmethod
-        def by_amount(driver, amount: str):
+        def by_amount(driver, amount: str, asset):
             element = TransactionTable.TransactionElement(driver)
             element.locator = element.Locator.xpath_selector(
-                "(//android.widget.TextView[contains(@text,'%s ETH')])" % amount)
+                "(//android.widget.TextView[contains(@text,'%s %s')])" % (amount, asset))
             return element
 
         @staticmethod
@@ -84,11 +84,11 @@ class TransactionTable(BaseElement):
     def transaction_by_index(self, index: int):
         return self.TransactionElement.by_index(self.driver, index=index)
 
-    def transaction_by_amount(self, amount: str):
-        return self.TransactionElement.by_amount(self.driver, amount=amount.replace(',', '.'))
+    def transaction_by_amount(self, amount: str, asset):
+        return self.TransactionElement.by_amount(self.driver, amount=amount.replace(',', '.'), asset=asset)
 
-    def find_transaction(self, amount: str) -> TransactionElement:
-        element = self.transaction_by_amount(amount=amount)
+    def find_transaction(self, amount: str, asset='ETH') -> TransactionElement:
+        element = self.transaction_by_amount(amount=amount, asset=asset)
         for i in range(9):
             try:
                 element.find_element()
@@ -96,7 +96,7 @@ class TransactionTable(BaseElement):
             except NoSuchElementException:
                 time.sleep(5)
                 self.refresh_transactions()
-        self.driver.fail('Transaction was not found on Wallet/Transaction screen')
+        self.driver.fail('Transaction %s %s was not found on Wallet/Transaction screen' %(amount, asset))
 
     def refresh_transactions(self):
         self.driver.swipe(500, 500, 500, 1000)
