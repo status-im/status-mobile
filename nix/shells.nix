@@ -96,6 +96,7 @@ let
     linux = targets.desktop.linux.shell;
     macos = targets.desktop.macos.shell;
     windows = targets.desktop.macos.shell;
+    status-go = targets.status-go.mobile.android;
   };
 
   # for merging the default shell with others
