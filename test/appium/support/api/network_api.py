@@ -23,7 +23,6 @@ class NetworkApi(object):
         self.api_key = environ.get('ETHERSCAN_API_KEY')
 
     def log(self, text: str):
-
         tests.test_suite_data.current_test.testruns[-1].steps.append(text)
         logging.info(text)
 
@@ -51,6 +50,7 @@ class NetworkApi(object):
             try:
                 return int(requests.request('GET', method, headers=self.headers).json()["result"])
             except ValueError:
+                time.sleep(5)
                 pass
 
     def get_latest_block_number(self) -> int:

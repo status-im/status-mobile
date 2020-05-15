@@ -61,7 +61,7 @@ class WebViewMenuButton(BaseButton):
         self.locator = self.Locator.accessibility_id('chat-menu-button')
 
 
-class URLEditBoxLockIcon(BaseEditBox):
+class URLEditBoxLockIcon(BaseButton):
 
     def __init__(self, driver):
         super(URLEditBoxLockIcon, self).__init__(driver)

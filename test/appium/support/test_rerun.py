@@ -21,7 +21,8 @@ RERUN_ERRORS = [
     "[Errno 110] Connection timed out",
     "replacement transaction underpriced",
     "StaleElementReferenceException",
-    "No System TLS"
+    "'GetStartedButton' is not found on the screen",
+    "'AccessKeyButton' is not found on the screen"
 ]
 
 
