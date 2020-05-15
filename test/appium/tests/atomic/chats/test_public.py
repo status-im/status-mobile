@@ -186,7 +186,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6275)
     @marks.medium
-    def test_public_chat_messaging(self):
+    def test_public_chat_messages_received_while_different_tab_opened(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()

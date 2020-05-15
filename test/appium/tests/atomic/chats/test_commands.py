@@ -199,7 +199,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
                                'in fact %s ' % chat_2_sender_message.transaction_status.text)
         send_message = chat_2_sender_message.sign_and_send.click()
         send_message.next_button.click()
-        send_message.sign_transaction()
+        send_message.sign_transaction(default_gas_price=False)
 
         home_2.just_fyi('Check that transaction message is updated with new status after offline')
         chat_2.toggle_airplane_mode()
@@ -287,7 +287,8 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
 
         from views.send_transaction_view import SendTransactionView
         send_transaction = SendTransactionView(self.driver)
-        send_transaction.sign_transaction()
+        send_transaction.ok_got_it_button.click()
+        send_transaction.sign_transaction(default_gas_price=False)
         chat_sender_message = chat.chat_element_by_text('↑ Outgoing transaction')
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15)
         if chat_sender_message.transaction_status.text != 'Confirmed':

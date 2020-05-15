@@ -72,7 +72,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
         send_transaction_view = status_test_dapp.deploy_contract_button.click()
-        send_transaction_view.sign_transaction(keycard=True)
+        send_transaction_view.sign_transaction(keycard=True, default_gas_price=False)
         for text in 'Contract deployed at: ', 'Call contract get function', \
                     'Call contract set function', 'Call function 2 times in a row':
             if not status_test_dapp.element_by_text(text).is_element_displayed(180):

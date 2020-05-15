@@ -317,7 +317,13 @@ class SendTransactionView(BaseView):
             wallet_view = WalletView(self.driver)
             wallet_view.ok_got_it_button.click()
 
-    def sign_transaction(self, sender_password: str = common_password, keycard=False):
+    def sign_transaction(self, sender_password: str = common_password, keycard=False, default_gas_price=True):
+        if not default_gas_price:
+            self.network_fee_button.click()
+            default_gas_price = self.gas_price_input.text
+            self.gas_price_input.clear()
+            self.gas_price_input.set_value(str(float(default_gas_price)+30))
+            self.update_fee_button.click()
         if keycard:
             keycard_view = self.sign_with_keycard_button.click()
             keycard_view.enter_default_pin()
