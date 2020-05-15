@@ -8,11 +8,15 @@ stdenv.mkDerivation {
   name = "status-react-build-jsbundle-android";
   src =
     let path = ./../../../..;
-    in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
+    # We use builtins.path so that we can name the resulting derivation,
+    # otherwise the name would be taken from the checkout directory,
+    # which is outside of our control inherit path;
+    in builtins.path {
       inherit path;
       name = "status-react-source-jsbundle";
       filter =
-        # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
+        # Keep this filter as restrictive as possible in order to avoid
+        # unnecessary rebuilds and limit closure size
         lib.mkFilter {
           root = path;
           ignoreVCS = false;

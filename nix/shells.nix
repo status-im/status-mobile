@@ -18,7 +18,7 @@ let
 
     buildInputs = with pkgs; lib.unique ([
       # core utilities that should always be present in a shell
-      bash curl wget file unzip flock rsync
+      bash curl wget file unzip flock
       git gnumake jq ncurses gnugrep parallel
       lsof # used in start-react-native.sh
       # build specific utilities
