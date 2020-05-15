@@ -65,7 +65,7 @@
 (fx/defn check-eligible
   {:events [::eligible]}
   [{:keys [db]}]
-  (let [contract (contracts/get-address db :status/starter-pack)
+  (let [contract (contracts/get-address db :status/acquisition)
         address  (ethereum/default-address db)]
     {::json-rpc/eth-call [{:contract   contract
                            :method     "eligible(address)"
@@ -85,7 +85,7 @@
 (fx/defn check-amount
   {:events [::check-amount]}
   [{:keys [db]}]
-  (let [contract (contracts/get-address db :status/starter-pack)]
+  (let [contract (contracts/get-address db :status/acquisition)]
     {::json-rpc/eth-call [{:contract   contract
                            :method     "getPack()"
                            :outputs    ["address" "uint256" "address[]" "uint256[]" "uint256[]"]

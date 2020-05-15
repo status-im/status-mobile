@@ -33,7 +33,7 @@
          (payment/clear-purchase-listeners @listeners)
          (reset! listeners nil)))}
     [react/view
-     (prn  (= :visible starter-pack-state)
+     (prn starter-pack-state
            starter-pack-eligible
            can-pay
            @price)

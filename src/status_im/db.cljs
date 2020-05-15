@@ -14,7 +14,7 @@
              :selected-participants              #{}
              :sync-state                         :done
              :app-state                          "active"
-             :wallet                              wallet.db/default-wallet
+             :wallet                             wallet.db/default-wallet
              :wallet/all-tokens                  {}
              :prices                             {}
              :peers-count                        0
@@ -38,10 +38,11 @@
              :registry                           {}
              :stickers/packs-owned               #{}
              :stickers/packs-pending             #{}
-             :hardwallet                         {:nfc-enabled?   false
-                                                  :pin            {:original     []
-                                                                   :confirmation []
-                                                                   :current      []
-                                                                   :puk          []
-                                                                   :enter-step   :original}}
+             :iap/payment                        {:starter-pack :visible}
+             :hardwallet                         {:nfc-enabled? false
+                                                  :pin          {:original     []
+                                                                 :confirmation []
+                                                                 :current      []
+                                                                 :puk          []
+                                                                 :enter-step   :original}}
              :two-pane-ui-enabled?               (dimensions/fit-two-pane?)})
