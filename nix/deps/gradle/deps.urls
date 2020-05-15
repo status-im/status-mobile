@@ -11,6 +11,7 @@ https://dl.google.com/dl/android/maven2/androidx/arch/core/core-common/2.1.0/cor
 https://dl.google.com/dl/android/maven2/androidx/arch/core/core-runtime/2.0.0/core-runtime-2.0.0
 https://dl.google.com/dl/android/maven2/androidx/arch/core/core-runtime/2.1.0/core-runtime-2.1.0
 https://dl.google.com/dl/android/maven2/androidx/asynclayoutinflater/asynclayoutinflater/1.0.0/asynclayoutinflater-1.0.0
+https://dl.google.com/dl/android/maven2/androidx/browser/browser/1.0.0/browser-1.0.0
 https://dl.google.com/dl/android/maven2/androidx/cardview/cardview/1.0.0/cardview-1.0.0
 https://dl.google.com/dl/android/maven2/androidx/collection/collection/1.0.0/collection-1.0.0
 https://dl.google.com/dl/android/maven2/androidx/collection/collection/1.1.0/collection-1.1.0
@@ -74,6 +75,8 @@ https://dl.google.com/dl/android/maven2/com/android/databinding/baseLibrary/3.5.
 https://dl.google.com/dl/android/maven2/com/android/databinding/compilerCommon/3.0.0/compilerCommon-3.0.0
 https://dl.google.com/dl/android/maven2/com/android/databinding/compilerCommon/3.0.1/compilerCommon-3.0.1
 https://dl.google.com/dl/android/maven2/com/android/support/appcompat-v7/28.0.0/appcompat-v7-28.0.0
+https://dl.google.com/dl/android/maven2/com/android/support/customtabs/28.0.0/customtabs-28.0.0
+https://dl.google.com/dl/android/maven2/com/android/support/support-annotations/28.0.0/support-annotations-28.0.0
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/crash/26.2.1/crash-26.2.1
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/crash/26.3.1/crash-26.3.1
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/crash/26.5.3/crash-26.5.3
@@ -255,6 +258,7 @@ https://plugins.gradle.org/m2/com/android/tools/sdk-common/25.2.3/sdk-common-25.
 https://plugins.gradle.org/m2/com/facebook/fbjni/fbjni-java-only/0.0.3/fbjni-java-only-0.0.3
 https://plugins.gradle.org/m2/com/facebook/yoga/proguard-annotations/1.14.1/proguard-annotations-1.14.1
 https://plugins.gradle.org/m2/org/jetbrains/trove4j/trove4j/20160824/trove4j-20160824
+https://repository.sonatype.org/content/groups/sonatype-public-grid/com/android/billingclient/billing/2.0.3/billing-2.0.3
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/facebook/flipper/flipper-fresco-plugin/0.35.0/flipper-fresco-plugin-0.35.0
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/facebook/flipper/flipper-network-plugin/0.35.0/flipper-network-plugin-0.35.0
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/facebook/flipper/flipper/0.35.0/flipper-0.35.0
@@ -478,6 +482,7 @@ https://repo.maven.apache.org/maven2/com/googlecode/jmockit/jmockit/1.6/jmockit-
 https://repo.maven.apache.org/maven2/com/googlecode/json-simple/json-simple/1.1/json-simple-1.1
 https://repo.maven.apache.org/maven2/com/googlecode/juniversalchardet/juniversalchardet/1.0.3/juniversalchardet-1.0.3
 https://repo.maven.apache.org/maven2/com/googlecode/maven-download-plugin/download-maven-plugin/1.2.0/download-maven-plugin-1.2.0
+https://repo.maven.apache.org/maven2/com/google/android/android/4.1.1.4/android-4.1.1.4
 https://repo.maven.apache.org/maven2/com/google/auto/auto-common/0.3/auto-common-0.3
 https://repo.maven.apache.org/maven2/com/google/auto/auto-parent/2/auto-parent-2
 https://repo.maven.apache.org/maven2/com/google/auto/auto-parent/3/auto-parent-3
@@ -587,6 +592,9 @@ https://repo.maven.apache.org/maven2/com/simpligility/maven/plugins/android-mave
 https://repo.maven.apache.org/maven2/com/simpligility/maven/progressive-organization-pom/6.0.0/progressive-organization-pom-6.0.0
 https://repo.maven.apache.org/maven2/com/squareup/javapoet/1.8.0/javapoet-1.8.0
 https://repo.maven.apache.org/maven2/com/squareup/javawriter/2.5.0/javawriter-2.5.0
+https://repo.maven.apache.org/maven2/com/squareup/okhttp3/mockwebserver/3.12.1/mockwebserver-3.12.1
+https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp-testing-support/3.12.1/okhttp-testing-support-3.12.1
+https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp-tls/3.12.1/okhttp-tls-3.12.1
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp-urlconnection/3.12.1/okhttp-urlconnection-3.12.1
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/3.12.1/okhttp-3.12.1
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/3.14.1/okhttp-3.14.1
@@ -799,6 +807,7 @@ https://repo.maven.apache.org/maven2/org/apache/felix/maven-bundle-plugin/4.1.0/
 https://repo.maven.apache.org/maven2/org/apache/felix/maven-bundle-plugin/4.2.1/maven-bundle-plugin-4.2.1
 https://repo.maven.apache.org/maven2/org/apache/felix/org.apache.felix.bundlerepository/1.6.6/org.apache.felix.bundlerepository-1.6.6
 https://repo.maven.apache.org/maven2/org/apache/felix/org.apache.felix.utils/1.6.0/org.apache.felix.utils-1.6.0
+https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.0.1/httpclient-4.0.1
 https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.0.2/httpclient-4.0.2
 https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.1.1/httpclient-4.1.1
 https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.1.3/httpclient-4.1.3
@@ -807,6 +816,7 @@ https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.3.5/
 https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.5.2/httpclient-4.5.2
 https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.5.3/httpclient-4.5.3
 https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.5.6/httpclient-4.5.6
+https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpcomponents-client/4.0.1/httpcomponents-client-4.0.1
 https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpcomponents-client/4.0.2/httpcomponents-client-4.0.2
 https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpcomponents-client/4.1.1/httpcomponents-client-4.1.1
 https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpcomponents-client/4.1.3/httpcomponents-client-4.1.3
@@ -1161,6 +1171,7 @@ https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-javadoc-plug
 https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-javadoc-plugin/2.10/maven-javadoc-plugin-2.10
 https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-javadoc-plugin/3.0.0-M1/maven-javadoc-plugin-3.0.0-M1
 https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-javadoc-plugin/3.0.0/maven-javadoc-plugin-3.0.0
+https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-javadoc-plugin/3.0.1/maven-javadoc-plugin-3.0.1
 https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-javadoc-plugin/3.2.0/maven-javadoc-plugin-3.2.0
 https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-plugins/1/maven-plugins-1
 https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-plugins/3/maven-plugins-3
@@ -1244,6 +1255,7 @@ https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plu
 https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plugin/2.20.1/maven-surefire-plugin-2.20.1
 https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plugin/2.21.0/maven-surefire-plugin-2.21.0
 https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plugin/2.22.0/maven-surefire-plugin-2.22.0
+https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plugin/2.22.1/maven-surefire-plugin-2.22.1
 https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plugin/3.0.0-M3/maven-surefire-plugin-3.0.0-M3
 https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plugin/3.0.0-M4/maven-surefire-plugin-3.0.0-M4
 https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-war-plugin/3.2.1/maven-war-plugin-3.2.1
@@ -1349,6 +1361,7 @@ https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire/2.19.1/s
 https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire/2.20.1/surefire-2.20.1
 https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire/2.21.0/surefire-2.21.0
 https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire/2.22.0/surefire-2.22.0
+https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire/2.22.1/surefire-2.22.1
 https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire/3.0.0-M3/surefire-3.0.0-M3
 https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire/3.0.0-M4/surefire-3.0.0-M4
 https://repo.maven.apache.org/maven2/org/apache/maven/wagon/wagon-http-shared/2.7/wagon-http-shared-2.7
@@ -1416,17 +1429,20 @@ https://repo.maven.apache.org/maven2/org/codehaus/jackson/jackson-xc/1.9.2/jacks
 https://repo.maven.apache.org/maven2/org/codehaus/jsr166-mirror/jsr166y/1.7.0/jsr166y-1.7.0
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-annotations/1.10/animal-sniffer-annotations-1.10
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-annotations/1.14/animal-sniffer-annotations-1.14
+https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-annotations/1.15/animal-sniffer-annotations-1.15
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-annotations/1.17/animal-sniffer-annotations-1.17
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-maven-plugin/1.10/animal-sniffer-maven-plugin-1.10
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-maven-plugin/1.11/animal-sniffer-maven-plugin-1.11
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-maven-plugin/1.13/animal-sniffer-maven-plugin-1.13
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-maven-plugin/1.14/animal-sniffer-maven-plugin-1.14
+https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-maven-plugin/1.15/animal-sniffer-maven-plugin-1.15
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-maven-plugin/1.16/animal-sniffer-maven-plugin-1.16
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-maven-plugin/1.17/animal-sniffer-maven-plugin-1.17
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-parent/1.10/animal-sniffer-parent-1.10
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-parent/1.11/animal-sniffer-parent-1.11
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-parent/1.13/animal-sniffer-parent-1.13
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-parent/1.14/animal-sniffer-parent-1.14
+https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-parent/1.15/animal-sniffer-parent-1.15
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-parent/1.16/animal-sniffer-parent-1.16
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-parent/1.17/animal-sniffer-parent-1.17
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/buildnumber-maven-plugin/1.0/buildnumber-maven-plugin-1.0
@@ -1462,6 +1478,7 @@ https://repo.maven.apache.org/maven2/org/codehaus/mojo/mojo-parent/38/mojo-paren
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/mojo-parent/40/mojo-parent-40
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/mojo/7/mojo-7
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/mojo/17/mojo-17
+https://repo.maven.apache.org/maven2/org/codehaus/mojo/templating-maven-plugin/1.0-alpha-3/templating-maven-plugin-1.0-alpha-3
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/templating-maven-plugin/1.0.0/templating-maven-plugin-1.0.0
 https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-archiver/1.0-alpha-7/plexus-archiver-1.0-alpha-7
 https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-archiver/1.0-alpha-12/plexus-archiver-1.0-alpha-12
@@ -1575,6 +1592,8 @@ https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/3.3/plexus-3.3
 https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/4.0/plexus-4.0
 https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/5.0/plexus-5.0
 https://repo.maven.apache.org/maven2/org/conscrypt/conscrypt-android/2.0.0/conscrypt-android-2.0.0
+https://repo.maven.apache.org/maven2/org/conscrypt/conscrypt-openjdk-uber/1.4.0/conscrypt-openjdk-uber-1.4.0
+https://repo.maven.apache.org/maven2/org/conscrypt/conscrypt-openjdk-uber/2.0.0/conscrypt-openjdk-uber-2.0.0
 https://repo.maven.apache.org/maven2/org/easymock/easymockclassextension/2.2.1/easymockclassextension-2.2.1
 https://repo.maven.apache.org/maven2/org/easymock/easymock-parent/3.2/easymock-parent-3.2
 https://repo.maven.apache.org/maven2/org/easymock/easymock-parent/3.3/easymock-parent-3.3
@@ -1701,6 +1720,7 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-test/1.2.71/kot
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-test/1.3.20/kotlin-test-1.3.20
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-test/1.3.50/kotlin-test-1.3.50
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-util-io/1.3.50/kotlin-util-io-1.3.50
+https://repo.maven.apache.org/maven2/org/json/json/20080701/json-20080701
 https://repo.maven.apache.org/maven2/org/jsoup/jsoup/1.6.3/jsoup-1.6.3
 https://repo.maven.apache.org/maven2/org/jsoup/jsoup/1.7.2/jsoup-1.7.2
 https://repo.maven.apache.org/maven2/org/junit-pioneer/junit-pioneer/0.3.0/junit-pioneer-0.3.0
@@ -1722,6 +1742,7 @@ https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-suite-api
 https://repo.maven.apache.org/maven2/org/junit/vintage/junit-vintage-engine/5.2.0/junit-vintage-engine-5.2.0
 https://repo.maven.apache.org/maven2/org/jvnet/staxex/stax-ex/1.7.7/stax-ex-1.7.7
 https://repo.maven.apache.org/maven2/org/kathrynhuxtable/maven/wagon/wagon-gitsite/0.3.1/wagon-gitsite-0.3.1
+https://repo.maven.apache.org/maven2/org/khronos/opengl-api/gl1.1-android-2.1_r1/opengl-api-gl1.1-android-2.1_r1
 https://repo.maven.apache.org/maven2/org/littleshoot/littleproxy/1.1.0-beta2/littleproxy-1.1.0-beta2
 https://repo.maven.apache.org/maven2/org/mockito/mockito-core/1.8.5/mockito-core-1.8.5
 https://repo.maven.apache.org/maven2/org/mockito/mockito-core/1.10.16/mockito-core-1.10.16
@@ -1919,9 +1940,11 @@ https://repo.maven.apache.org/maven2/xalan/serializer/2.7.2/serializer-2.7.2
 https://repo.maven.apache.org/maven2/xalan/xalan/2.7.2/xalan-2.7.2
 https://repo.maven.apache.org/maven2/xerces/xercesImpl/2.9.1/xercesImpl-2.9.1
 https://repo.maven.apache.org/maven2/xerces/xercesImpl/2.11.0/xercesImpl-2.11.0
+https://repo.maven.apache.org/maven2/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2
 https://repo.maven.apache.org/maven2/xmlpull/xmlpull/1.1.3.1/xmlpull-1.1.3.1
 https://repo.maven.apache.org/maven2/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2
 https://repo.maven.apache.org/maven2/xml-apis/xml-apis/1.3.04/xml-apis-1.3.04
 https://repo.maven.apache.org/maven2/xml-apis/xml-apis/1.4.01/xml-apis-1.4.01
 https://repo.maven.apache.org/maven2/xml-apis/xml-apis/2.0.2/xml-apis-2.0.2
+https://repo.maven.apache.org/maven2/xpp3/xpp3/1.1.4c/xpp3-1.1.4c
 https://repo.maven.apache.org/maven2/xpp3/xpp3_min/1.1.4c/xpp3_min-1.1.4c

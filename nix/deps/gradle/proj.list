@@ -10,6 +10,7 @@ react-native-dialogs
 react-native-fs
 react-native-gesture-handler
 react-native-haptic-feedback
+react-native-iap
 react-native-image-crop-picker
 react-native-image-resizer
 react-native-keychain
