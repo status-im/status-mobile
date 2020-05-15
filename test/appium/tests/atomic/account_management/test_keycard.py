@@ -75,7 +75,7 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(6240)
+    @marks.testrail_id(5742)
     @marks.medium
     def test_keycard_interruption_creating_onboarding_flow(self):
         sign_in = SignInView(self.driver)

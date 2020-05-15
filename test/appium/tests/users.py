@@ -15,6 +15,9 @@ ens_user['ens'] = 'statuse2e'
 ens_user['ens_another_domain'] = 'statuse2e.eth'
 ens_user['address'] = '0x1eE3058Bd300246B4B20E687Efc9Eba81FF7814b'
 
+ens_user_ropsten = dict()
+ens_user_ropsten['ens'] = 'nastya'
+ens_user_ropsten['username'] = 'Thoughtful Stupendous Graywolf'
 
 dummy_user = dict()
 dummy_user['username'] = "Vain Wordy Hagfish"

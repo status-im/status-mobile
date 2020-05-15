@@ -2,7 +2,7 @@ from _pytest.outcomes import Failed
 import time
 
 from tests import marks
-from tests.users import transaction_senders, transaction_recipients
+from tests.users import transaction_senders, transaction_recipients, ens_user_ropsten
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -272,11 +272,11 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
 
     @marks.testrail_id(6279)
     @marks.high
-    def test_send_eth_to_ens(self):
+    def test_send_eth_to_ens_in_chat(self):
         sign_in = SignInView(self.driver)
         sender = transaction_senders['E']
         home = sign_in.recover_access(sender['passphrase'])
-        chat = home.add_contact('nastya')
+        chat = home.add_contact(ens_user_ropsten['ens'])
         chat.commands_button.click()
         amount = chat.get_unique_amount()
 

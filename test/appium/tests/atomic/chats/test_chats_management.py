@@ -1,7 +1,7 @@
 import time
 
 from tests import marks, camera_access_error_text
-from tests.users import basic_user, dummy_user
+from tests.users import basic_user, dummy_user, ens_user_ropsten
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 
@@ -207,26 +207,48 @@ class TestChatManagement(SingleDeviceTestCase):
     def test_search_chat_on_home(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
-        search_list = list()
+
+        home.just_fyi('Join public chat, start 1-1 with username and with ENS')
         chat_name = home.get_random_chat_name()
-        search_list.append(chat_name)
         public_chat = home.join_public_chat(chat_name)
         public_chat.get_back_to_home_view()
-        chat = home.add_contact(basic_user['public_key'])
-        search_list.append(basic_user['username'])
-        chat.get_back_to_home_view()
+        for public_key in (basic_user['public_key'], ens_user_ropsten['ens']):
+            chat = home.add_contact(public_key)
+            chat.get_back_to_home_view()
+
+        search_list = {
+            basic_user['username']: basic_user['username'],
+            ens_user_ropsten['username']: ens_user_ropsten['ens'],
+            chat_name: chat_name
+        }
+
+        home.just_fyi('Can search for public chat name, ens name, username')
         home.swipe_down()
         for keyword in search_list:
+            home.just_fyi('Search for %s' %keyword)
             home.search_chat_input.click()
             home.search_chat_input.send_keys(keyword)
             search_results = home.chat_name_text.find_elements()
             if not search_results:
                 self.errors.append('No search results after searching by %s keyword' % keyword)
             for element in search_results:
-                if keyword not in element.text:
+                if search_list[keyword] not in element.text:
                     self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
-                                       (element.text, keyword))
+                                            (element.text, keyword))
             home.cancel_button.click()
+
+        home.just_fyi('Can search for public chat while offline')
+        home.toggle_airplane_mode()
+        home.search_chat_input.click()
+        home.search_chat_input.send_keys(chat_name)
+        search_results = home.chat_name_text.find_elements()
+        if not search_results:
+            self.errors.append('No search results after searching by %s keyword' % chat_name)
+        for element in search_results:
+            if search_list[chat_name] not in element.text:
+                self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
+                                   (element.text, chat_name))
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6221)
