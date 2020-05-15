@@ -2,7 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.utils.platform :as platform]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.http :as http]
             [status-im.utils.fx :as fx]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.waku.core :as waku]
@@ -48,7 +47,7 @@
  ::init-connection
  (fn []
    ;; NOTE: Consume all items so we can retest it many times
-   (ocall js-dependencies/react-native-iap "consumeAllItemsAndroid")
+   (ocall react-native-iap "consumeAllItemsAndroid")
    (-> (init-connection)
        (.then #(re-frame/dispatch [:set-in [:iap/payment :can-make-payment] %]))
        (.catch (fn [e]

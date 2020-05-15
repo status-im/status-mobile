@@ -5,11 +5,8 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.contracts :as contracts]
             [status-im.ethereum.core :as ethereum]
-            [status-im.stickers.core :as stickers]
             [status-im.utils.money :as money]
-            [status-im.ethereum.transactions.core :as transaction]
-            [status-im.js-dependencies :as dependencies]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.ethereum.transactions.core :as transaction]))
 
 (def tozemoon-id 0)
 

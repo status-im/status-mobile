@@ -8,9 +8,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.payments.core :as payment]
             [status-im.ui.starter-pack.events :as sp]
-            [status-im.ui.components.button :as button]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ethereum.tokens :as tokens]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]))
 

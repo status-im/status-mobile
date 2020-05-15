@@ -52,7 +52,7 @@
 
   Spec: https://www.figma.com/file/cb4p8AxLtTF3q1L6JYDnKN15/Index?node-id=858%3A0"
 
-  [{:keys [label type theme disabled? on-press accessibility-label style container-style text-style]
+  [{:keys [label type theme disabled? on-press accessibility-label style container-style]
     :or   {type :main theme :blue}}]
   (let [label (utils.label/stringify label)]
     [react/touchable-opacity (cond-> {:on-press on-press

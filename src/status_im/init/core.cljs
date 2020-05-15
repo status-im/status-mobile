@@ -8,7 +8,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.db :refer [app-db]]
             [status-im.utils.fx :as fx]
-            [status-im.utils.platform :as platform]
             [status-im.payments.core :as payment]
             [status-im.utils.theme :as theme]))
 
