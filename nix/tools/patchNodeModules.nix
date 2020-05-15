@@ -2,7 +2,7 @@
 # result of yarn2nix and symlinking what is fine, and 
 # copying and modifying what needs to be adjusted.
 
-{ stdenv, lib, pkgs, patchMavenSources, coreutils }:
+{ stdenv, patchMavenSources, nodejs }:
 
 nodePkgs: mavenPkgs:
 
@@ -31,8 +31,8 @@ stdenv.mkDerivation {
       if [[ -L ./node_modules/$moduleName ]]; then
         unlink ./node_modules/$moduleName
         cp -r ${nodePkgs}/node_modules/$moduleName ./node_modules/
+        chmod u+w -R ./node_modules/$moduleName
       fi
-      chmod +w -R ./node_modules/$relativeToNode
       ${patchMavenSources} $modBuildGradle '${mavenPkgs}'
     done
 
@@ -50,6 +50,9 @@ stdenv.mkDerivation {
     substituteInPlace ./node_modules/react-native/react.gradle --replace \
         'targetName.toLowerCase().contains("release")' \
         '!targetName.toLowerCase().contains("debug")'
+
+    # Patch Java files in modules which are not yet ported to AndroidX
+    ${nodejs}/bin/node ./node_modules/jetifier/bin/jetify
   '';
 
   installPhase = ''

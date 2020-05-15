@@ -107,9 +107,6 @@ in stdenv.mkDerivation rec {
 
     # Patch build.gradle to use local repo
     ${patchMavenSources} ./android/build.gradle ${deps.gradle}
-
-    # Patch dependencies which are not yet ported to AndroidX
-    ${nodejs}/bin/node ./node_modules/jetifier/bin/jetify
   '';
   secretPhase = optionalString (secretsFile != "") ''
     source "${secretsFile}"
