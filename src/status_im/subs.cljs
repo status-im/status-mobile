@@ -834,8 +834,8 @@
 (re-frame/reg-sub
  :chats/reply-message
  :<- [:chats/current-chat]
- (fn [{:keys [metadata messages]}]
-   (get messages (get-in metadata [:responding-to-message :message-id]))))
+ (fn [{:keys [metadata]}]
+   (:responding-to-message metadata)))
 
 (re-frame/reg-sub
  :public-chat.new/topic-error-message

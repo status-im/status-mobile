@@ -162,7 +162,7 @@
        :accessibility-label :delete-transaction-button
        :on-press            #(hide-sheet-and-dispatch [:chat.ui/delete-message chat-id message-id])}]]))
 
-(defn message-long-press [{:keys [message-id content identicon from outgoing]}]
+(defn message-long-press [{:keys [content identicon from outgoing] :as message}]
   (fn []
     (let [{:keys [ens-name alias]} @(re-frame/subscribe [:contacts/contact-name-by-identity from])]
       [react/view
@@ -180,7 +180,7 @@
         {:theme    :action
          :title    :t/message-reply
          :icon     :main-icons/reply
-         :on-press #(hide-sheet-and-dispatch [:chat.ui/reply-to-message message-id])}]
+         :on-press #(hide-sheet-and-dispatch [:chat.ui/reply-to-message message])}]
        [list-item/list-item
         {:theme    :action
          :title    :t/sharing-copy-to-clipboard

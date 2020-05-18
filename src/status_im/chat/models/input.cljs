@@ -75,11 +75,11 @@
 
 (fx/defn reply-to-message
   "Sets reference to previous chat message and focuses on input"
-  [{:keys [db] :as cofx} message-id]
+  [{:keys [db] :as cofx} message]
   (let [current-chat-id (:current-chat-id db)]
     (fx/merge cofx
               {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-message]
-                             {:message-id     message-id})}
+                             message)}
               (chat-input-focus :input-ref))))
 
 (fx/defn cancel-message-reply

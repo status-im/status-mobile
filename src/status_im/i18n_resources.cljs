@@ -13,8 +13,7 @@
    (conj #{:en} default-device-language)))
 
 (def translations
-  {
-   :ar         (js/require "../translations/ar.json")
+  {:ar         (js/require "../translations/ar.json")
    :en         (js/require "../translations/en.json")
    :es         (js/require "../translations/es.json")
    :es_419     (js/require "../translations/es_419.json")
@@ -47,7 +46,7 @@
 ;; translations
 (def translations-by-locale
   (cond->
-      {:en (require-translation :en)}
+   {:en (require-translation :en)}
     (not= :en default-device-language)
     (assoc default-device-language
            (require-translation (-> (name default-device-language)

@@ -546,8 +546,8 @@
 
 (handlers/register-handler-fx
  :chat.ui/reply-to-message
- (fn [cofx [_ message-id]]
-   (chat.input/reply-to-message cofx message-id)))
+ (fn [cofx [_ message]]
+   (chat.input/reply-to-message cofx message)))
 
 (handlers/register-handler-fx
  :chat.ui/send-current-message
