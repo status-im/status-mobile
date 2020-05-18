@@ -79,7 +79,12 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
 project.ext.react = [
     nodeExecutableAndArgs: ["node", "--max-old-space-size=16384"],
     entryFile: "index.js",
-    enableHermes: true,     // clean and rebuild if changing. NOTE: Hermes engine is required for Android 64-bit builds running on 64 devices, to guard against a hang in the UI thread after invoking status-go
+    /* NOTE: Hermes engine is required for Android 64-bit builds running on 64 devices,
+     *       to guard against a hang in the UI thread after invoking status-go.
+     * Also a clean and rebuild is required when changing this. */
+    enableHermes: true,
+    /* Disable 'The first definition was here.' warnings */
+    hermesFlagsRelease: ["-w"],
     bundleInPr: true,
     inputExcludes: ["android/**", "ios/**", "react-native/**", "src/**", "test/**"]
 ]
