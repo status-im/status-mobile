@@ -325,7 +325,11 @@
   (let [message?      (constants/web3-sign-message? method)
         dapps-address (get-in cofx [:db :multiaccount :dapps-address])]
     (if (or message? (= constants/web3-send-transaction method))
-      (let [[address data] (when message? (normalize-sign-message-params params))]
+      (let [[address data] (cond (= method constants/web3-keycard-sign-typed-data)
+                                 ;; We don't use signer argument for keycard sign-typed-data
+                                 ["0x0" params]
+                                 message? (normalize-sign-message-params params)
+                                 :else [nil nil])]
         (when (or (not message?) (and address data))
           (signing/sign cofx (merge
                               (if message?

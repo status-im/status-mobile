@@ -148,7 +148,7 @@
                    :signing :t/try-keeping-the-card-still
                    :error :t/tap-card-again
                    :success :t/transaction-signed)]
-    [react/view (assoc styles/message :padding-vertical 16 :align-items :center)
+    [react/view (assoc (styles/message) :padding-vertical 16 :align-items :center)
      [react/view {:style {:align-self :flex-start :padding-left 16 :margin-bottom 24}}
       [react/text {:style {:font-size (if small-screen? 15 17) :font-weight "700"}}
        (i18n/label :t/confirmation-request)]]
