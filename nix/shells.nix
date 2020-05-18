@@ -49,7 +49,7 @@ let
     buildInputs = [ pkgs.androidPkgs ];
     shellHook = ''
       export STATUS_REACT_HOME=$(git rev-parse --show-toplevel)
-      $STATUS_REACT_HOME/nix/scripts/node_modules.sh ${pkgs.deps.nodejs}
+      $STATUS_REACT_HOME/nix/scripts/node_modules.sh ${pkgs.deps.nodejs-patched}
     '';
   };
 

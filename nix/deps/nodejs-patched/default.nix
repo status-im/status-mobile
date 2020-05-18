@@ -1,13 +1,11 @@
-# This method patches Node.js dependencies by taking the
-# result of yarn2nix and symlinking what is fine, and 
-# copying and modifying what needs to be adjusted.
+# This derivation patches Node.js dependencies by
+# taking the result of yarn2nix and symlinking what is fine,
+# and copying and modifying what needs to be adjusted.
 
-{ stdenv, patchMavenSources, nodejs }:
-
-nodePkgs: mavenPkgs:
+{ stdenv, deps, nodejs, patchMavenSources }:
 
 stdenv.mkDerivation {
-  name = "${nodePkgs.name}-patched";
+  name = "${deps.nodejs.name}-patched";
 
   phases = [ "unpackPhase" "patchPhase" "installPhase" ];
 
@@ -15,10 +13,10 @@ stdenv.mkDerivation {
   # WARNING: Metro has issues when dealing with symlinks!
   unpackPhase = ''
     mkdir -p ./node_modules/
-    for module in $(ls ${nodePkgs}/node_modules); do
-      ln -s ${nodePkgs}/node_modules/$module ./node_modules/
+    for module in $(ls ${deps.nodejs}/node_modules); do
+      ln -s ${deps.nodejs}/node_modules/$module ./node_modules/
     done
-    cp -r ${nodePkgs}/node_modules/.bin ./node_modules/
+    cp -r ${deps.nodejs}/node_modules/.bin ./node_modules/
   '';
 
   # Then patch the modules that have build.gradle files
@@ -30,10 +28,10 @@ stdenv.mkDerivation {
       moduleName=''${relativeToNode%%/*}
       if [[ -L ./node_modules/$moduleName ]]; then
         unlink ./node_modules/$moduleName
-        cp -r ${nodePkgs}/node_modules/$moduleName ./node_modules/
+        cp -r ${deps.nodejs}/node_modules/$moduleName ./node_modules/
         chmod u+w -R ./node_modules/$moduleName
       fi
-      ${patchMavenSources} $modBuildGradle '${mavenPkgs}'
+      ${patchMavenSources} $modBuildGradle '${deps.gradle}'
     done
 
     patchShebangs ./node_modules

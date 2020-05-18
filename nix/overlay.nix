@@ -24,6 +24,7 @@ in {
     clojure = callPackage ./deps/clojure { };
     gradle = callPackage ./deps/gradle { };
     nodejs = callPackage ./deps/nodejs { };
+    nodejs-patched = callPackage ./deps/nodejs-patched { };
     react-native = callPackage ./deps/react-native { };
   };
 

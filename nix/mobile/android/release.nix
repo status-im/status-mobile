@@ -1,7 +1,6 @@
-{ stdenv, lib, config, callPackage, deps,
-  bash, file, gnumake, watchmanFactory, gradle,
-  androidPkgs, patchMavenSources, nodeJsModules,
-  nodejs, openjdk, jsbundle, status-go, unzip, zlib }:
+{ stdenv, pkgs, deps, lib, config, callPackage,
+  watchmanFactory, androidPkgs, patchMavenSources,
+  jsbundle, status-go }:
 
 {
   buildEnv ? "prod", # Value for BUILD_ENV checked by Clojure code at compile time
@@ -54,8 +53,8 @@ in stdenv.mkDerivation rec {
     };
   };
 
-  buildInputs = [ nodejs openjdk ];
-  nativeBuildInputs = [ bash gradle unzip ]
+  buildInputs = with pkgs; [ nodejs openjdk ];
+  nativeBuildInputs = with pkgs; [ bash gradle unzip ]
     ++ lib.optionals stdenv.isDarwin [ file gnumake patchedWatchman ];
 
   # Used by Clojure at compile time to include JS modules
@@ -102,7 +101,7 @@ in stdenv.mkDerivation rec {
 
     # Copy node_modules/ directory. The -L is CRUCIAL!
     # Otherwise Metro failes to find modules due to symlinks.
-    cp -aL ${nodeJsModules}/node_modules/ ./
+    cp -aL ${deps.nodejs-patched}/node_modules/ ./
     chmod +w -R ./node_modules
 
     # Patch build.gradle to use local repo
@@ -113,13 +112,14 @@ in stdenv.mkDerivation rec {
   '';
   buildPhase = let
     adhocEnvVars = optionalString stdenv.isLinux
-      "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${makeLibraryPath [ zlib ]}";
+      "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${makeLibraryPath [ pkgs.zlib ]}";
   in 
     assert ANDROID_ABI_SPLIT != null && ANDROID_ABI_SPLIT != "";
     assert stringLength ANDROID_ABI_INCLUDE > 0;
   ''
     pushd ./android
-    ${adhocEnvVars} gradle ${toString gradleOpts} \
+    ${adhocEnvVars} ${pkgs.gradle}/bin/gradle \
+      ${toString gradleOpts} \
       --offline --stacktrace \
       -Dmaven.repo.local='${deps.gradle}' \
       -PversionCode=${toString buildNumber} \
@@ -129,7 +129,9 @@ in stdenv.mkDerivation rec {
   '';
   doCheck = true;
   checkPhase = ''
-    ls ${apksPath}/*.apk | xargs -n1 unzip -qql | grep 'assets/index.android.bundle'
+    ls ${apksPath}/*.apk \
+      | xargs -n1 ${pkgs.unzip}/bin/unzip -qql \
+      | grep 'assets/index.android.bundle'
   '';
   installPhase = ''
     mkdir -p $out

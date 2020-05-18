@@ -1,5 +1,5 @@
 { lib, pkgs, deps, callPackage, mkShell
-, status-go, androidPkgs, androidShell, patchNodeModules }:
+, status-go, androidPkgs, androidShell }:
 
 let
   # Import a jsbundle compiled out of clojure codebase
@@ -8,18 +8,14 @@ let
   # Import a patched version of watchman (important for sandboxed builds on macOS)
   watchmanFactory = callPackage ./watchman.nix { };
 
-  # Some node_modules have build.gradle files that reference remote repos.
-  # This patches them to reference local repos only
-  nodeJsModules = patchNodeModules deps.nodejs deps.gradle;
-
   # TARGETS
   release = callPackage ./release.nix {
-    inherit jsbundle status-go watchmanFactory nodeJsModules;
+    inherit jsbundle status-go watchmanFactory;
   };
 
 in {
   # TARGETS
-  inherit release jsbundle nodeJsModules;
+  inherit release jsbundle;
 
   shell = mkShell {
     buildInputs = with pkgs; [
@@ -50,7 +46,7 @@ in {
         ln -sf ./mobile/js_files/* ./
 
         # check if node modules changed and if so install them
-        $STATUS_REACT_HOME/nix/scripts/node_modules.sh ${nodeJsModules}
+        $STATUS_REACT_HOME/nix/scripts/node_modules.sh ${deps.nodejs-patched}
       }
     '';
   };
