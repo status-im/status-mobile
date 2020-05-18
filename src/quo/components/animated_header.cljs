@@ -35,7 +35,7 @@
 (defn header-container []
   (let [y               (animated/value 0)
         animation-value (animated/value 0)
-        animation       (animated/with-timing
+        animation       (animated/with-timing-transition
                           animation-value
                           {:duration 250
                            :easing   (:ease-in animated/easings)})

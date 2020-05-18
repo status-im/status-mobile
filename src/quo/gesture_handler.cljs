@@ -23,16 +23,15 @@
 (def touchable-without-feedback
   (reagent/adapt-react-class touchable-without-feedback-class))
 
-(def animated-raw-button
+(def raw-button
   (reagent/adapt-react-class
-   (createNativeWrapper
-    (.createAnimatedComponent animated touchable-without-feedback-class))))
+   (createNativeWrapper (.createAnimatedComponent animated PureNativeButton)
+                        #js {:shouldActivateOnStart   true
+                             :shouldCancelWhenOutside true})))
 
-(def state State)
-
-(def states {:began        (oget state "BEGAN")
-             :active       (oget state "ACTIVE")
-             :cancelled    (oget state "CANCELLED")
-             :end          (oget state "END")
-             :failed       (oget state "FAILED")
-             :undetermined (oget state "UNDETERMINED")})
+(def states {:began        (oget State "BEGAN")
+             :active       (oget State "ACTIVE")
+             :cancelled    (oget State "CANCELLED")
+             :end          (oget State "END")
+             :failed       (oget State "FAILED")
+             :undetermined (oget State "UNDETERMINED")})

@@ -6543,15 +6543,14 @@ react-native-reanimated@^1.7.0:
   dependencies:
     fbjs "^1.0.0"
 
-react-native-redash@^10.0.1:
-  version "10.1.1"
-  resolved "https://registry.yarnpkg.com/react-native-redash/-/react-native-redash-10.1.1.tgz#228564f2a9cee2406b8f87b1c90c2fdf7d81cdfb"
-  integrity sha512-VxyKygf//IzDgJfK5oFK0KYSaxxpuXwwVE2rldtINRByuCIZIUx8QVE3pmxG7XYc15T4OHC3l7wug+tLsLI44w==
+react-native-redash@^14.0.3:
+  version "14.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-redash/-/react-native-redash-14.0.3.tgz#7f62644f110ceb61962a5aa181e2c8ae05e04c9d"
+  integrity sha512-ExSP77re4QEGEtjVenfwMTo4RGI1togE6NGsblbqVGtRMTD0IDGovpeC6YQt37jHdaYLRM4VYjVNqjgDjcCt5Q==
   dependencies:
     abs-svg-path "^0.1.1"
     normalize-svg-path "^1.0.1"
     parse-svg-path "^0.1.2"
-    use-memo-one "^1.1.1"
 
 react-native-safe-area-context@^0.7.3:
   version "0.7.3"
@@ -8017,11 +8016,6 @@ url@^0.11.0:
   dependencies:
     punycode "1.3.2"
     querystring "0.2.0"
-
-use-memo-one@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/use-memo-one/-/use-memo-one-1.1.1.tgz#39e6f08fe27e422a7d7b234b5f9056af313bd22c"
-  integrity sha512-oFfsyun+bP7RX8X2AskHNTxu+R3QdE/RC5IefMbqptmACAA/gfol1KDD5KRzPsGMa62sWxGZw+Ui43u6x4ddoQ==
 
 use-subscription@^1.0.0, use-subscription@^1.4.0:
   version "1.4.1"

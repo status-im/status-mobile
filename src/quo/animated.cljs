@@ -82,21 +82,23 @@
             else-node))))
 
 (defn block [opts]
-  (ocall animated "block" (clj->js opts)))
+  (.block ^js animated (clj->js opts)))
 
 (defn interpolate [anim-value config]
-  (ocall anim-value "interpolate" (clj->js config)))
+  (.interpolate ^js animated anim-value (clj->js config)))
 
 (defn call* [args callback]
-  (ocall animated "call" (clj->js args) callback))
+  (.call ^js animated (clj->js args) callback))
 
 (defn timing [clock-value opts config]
-  (ocall animated "timing" clock-value
-         (clj->js opts) (clj->js config)))
+  (.timing ^js animated
+           clock-value
+           (clj->js opts)
+           (clj->js config)))
 
 (defn spring [clock-value opts config]
-  (ocall animated "spring" clock-value
-         (clj->js opts) (clj->js config)))
+  (.spring ^js animated clock-value
+           (clj->js opts) (clj->js config)))
 
 (def extrapolate {:clamp (oget animated "Extrapolate" "CLAMP")})
 
@@ -107,8 +109,11 @@
 (defn with-spring [config]
   (ocall redash "withSpring" (clj->js config)))
 
-(defn with-timing [val config]
-  (ocall redash "withTimingTransition" val (clj->js config)))
+(defn with-spring-transition [val config]
+  (.withSpringTransition ^js redash val (clj->js config)))
+
+(defn with-timing-transition [val config]
+  (.withTimingTransition ^js redash val (clj->js config)))
 
 (defn re-timing [config]
   (ocall redash "timing" (clj->js config)))
@@ -116,8 +121,13 @@
 (defn on-scroll [opts]
   (ocall redash "onScrollEvent" (clj->js opts)))
 
-(defn b-interpolate [anim-value a b]
-  (ocall redash "bInterpolate" anim-value a b))
+(defn on-gesture [opts]
+  (let [gesture-event (event #js [#js {:nativeEvent (clj->js opts)}])]
+    {:onHandlerStateChange gesture-event
+     :onGestureEvent       gesture-event}))
+
+(defn mix [anim-value a b]
+  (.mix ^js redash anim-value a b))
 
 (defn loop* [opts]
   (ocall redash "loop" (clj->js opts)))

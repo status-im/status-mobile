@@ -17,7 +17,7 @@
    :color       colors/black})
 
 (defn accounts-mnemonic [{:keys [animation]}]
-  {:opacity         (animated/b-interpolate animation 1 0)
+  {:opacity         (animated/mix animation 1 0)
    :flex            1
    :justify-content :center
    :position        :absolute

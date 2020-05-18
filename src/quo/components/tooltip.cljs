@@ -18,7 +18,7 @@
     :right       0
     :top         (- bottom-value)
     :opacity     animation
-    :transform   [{:translateY (animated/b-interpolate animation 10 0)}]}))
+    :transform   [{:translateY (animated/mix animation 10 0)}]}))
 
 (defn container-style []
   {:z-index        2
@@ -38,7 +38,7 @@
 (defn tooltip []
   (let [layout      (reagent/atom {:height initial-height})
         animation-v (animated/value 0)
-        animation   (animated/with-timing
+        animation   (animated/with-timing-transition
                       animation-v
                       {:easing (:ease-in animated/easings)})
         on-layout   (fn [evt]

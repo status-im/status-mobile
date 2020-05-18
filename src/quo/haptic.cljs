@@ -1,6 +1,5 @@
-(ns status-im.ui.components.button.haptic
-  (:require [oops.core :refer [ocall]]
-            [react-native-haptic-feedback :default react-native-haptic-feedback]))
+(ns quo.haptic
+  (:require [react-native-haptic-feedback :default react-native-haptic-feedback]))
 
 (def haptic-methods
   {:selection            "selection"
@@ -22,4 +21,4 @@
    })
 
 (defn trigger [method]
-  (ocall react-native-haptic-feedback "trigger" (get haptic-methods method)))
+  (.trigger ^js react-native-haptic-feedback (get haptic-methods method)))
