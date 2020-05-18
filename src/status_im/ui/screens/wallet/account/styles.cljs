@@ -32,7 +32,7 @@
    anim-y
    {:toValue 0
     :duration 200
-    :easing (.-ease ^js (animation/easing))
+    :easing (.-ease ^js animation/easing)
     :useNativeDriver true}))
 
 (defn bottom-send-recv-buttons-lower [anim-y y]
@@ -40,5 +40,5 @@
    anim-y
    {:toValue y
     :duration 200
-    :easing (.-ease ^js (animation/easing))
+    :easing (.-ease ^js animation/easing)
     :useNativeDriver true}))
