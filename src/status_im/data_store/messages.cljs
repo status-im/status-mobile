@@ -35,7 +35,7 @@
                        :ens-name (:ensName message)
                        :line-count (:lineCount message)
                        :parsed-text (:parsedText message)
-                       :rtl (:rtl message)
+                       :rtl? (:rtl message)
                        :response-to (:responseTo message)}
              :outgoing (boolean (:outgoingStatus message)))
       (dissoc :ensName :chatId :text :rtl :responseTo :sticker :lineCount :parsedText)))

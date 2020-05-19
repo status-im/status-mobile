@@ -15,7 +15,7 @@
                                :line-count 1
                                :ens-name "ens-name"
                                :parsed-text "parsed-text"
-                               :rtl false
+                               :rtl? false
                                :response-to "a"}
                      :whisper-timestamp 1
                      :outgoing-status :sending
