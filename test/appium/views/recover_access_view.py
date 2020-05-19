@@ -94,7 +94,7 @@ class CancelPhraseButton(BaseButton):
 class RecoverAccessView(SignInView):
 
     def __init__(self, driver):
-        super(RecoverAccessView, self).__init__(driver)
+        super(RecoverAccessView, self).__init__(driver, skip_popups=False)
         self.driver = driver
 
         self.seedphrase_input = SeedphraseInput(self.driver)

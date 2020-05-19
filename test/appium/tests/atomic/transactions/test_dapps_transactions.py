@@ -78,7 +78,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
                 self.driver.fail('Contract was not created')
 
     @marks.testrail_id(5784)
-    @marks.critical
+    @marks.medium
     def test_sign_typed_message(self):
         sender = transaction_senders['W']
         sign_in_view = SignInView(self.driver)

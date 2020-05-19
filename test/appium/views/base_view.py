@@ -297,7 +297,7 @@ class AssetButton(BaseButton):
     def __init__(self, driver, asset_name):
         super(AssetButton, self).__init__(driver)
         self.asset_name = asset_name
-        self.locator = self.Locator.xpath_selector('(//*[@content-desc=":' + self.asset_name + '-asset-value"])[last()]')
+        self.locator = self.Locator.xpath_selector('(//*[@content-desc=":' + self.asset_name + '-asset-value"])[1]')
 
     @property
     def name(self):

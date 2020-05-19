@@ -45,7 +45,7 @@
   (fx/merge cofx
             {:db (-> db
                      (assoc-in [:hardwallet :setup-step] :pair))
-             :dispatch [:bottom-sheet/hide-sheet]}
+             :dispatch [:bottom-sheet/hide]}
             (common/listen-to-hardware-back-button)
             (navigation/navigate-to-cofx :keycard-recovery-pair nil)))
 

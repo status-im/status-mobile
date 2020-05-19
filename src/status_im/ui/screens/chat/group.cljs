@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.chat.group
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.ui.components.react :as react]
             [status-im.utils.universal-links.core :as links]
             [status-im.ui.screens.chat.styles.main :as style]
@@ -10,10 +10,10 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn join-chat-button [chat-id]
-  [button/button
+  [quo/button
    {:type     :secondary
-    :on-press #(re-frame/dispatch [:group-chats.ui/join-pressed chat-id])
-    :label    :t/join-group-chat}])
+    :on-press #(re-frame/dispatch [:group-chats.ui/join-pressed chat-id])}
+   (i18n/label :t/join-group-chat)])
 
 (defn decline-chat [chat-id]
   [react/touchable-highlight

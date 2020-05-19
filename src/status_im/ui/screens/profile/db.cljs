@@ -15,8 +15,4 @@
 (defn base64-jpeg? [photo-path]
   (string/starts-with? photo-path "data:image/jpeg;base64,"))
 
-(defn base64-encoded-image-path? [photo-path]
-  (or (base64-png? photo-path)
-      (base64-jpeg? photo-path)))
-
 (spec/def :profile/name correct-name?)

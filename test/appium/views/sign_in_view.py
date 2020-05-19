@@ -9,7 +9,7 @@ class MultiAccountButton(BaseButton):
     class Username(BaseText):
         def __init__(self, driver, locator_value):
             super(MultiAccountButton.Username, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector(locator_value + '/android.view.ViewGroup/android.widget.TextView[1]')
+            self.locator = self.Locator.xpath_selector(locator_value + "//android.widget.TextView[@content-desc='username']")
 
     def __init__(self, driver, position=1):
         super(MultiAccountButton, self).__init__(driver)

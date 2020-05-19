@@ -59,7 +59,6 @@
             (fn []
               ;; Reset currently mounted text inputs to their default values
               ;; on navigating away; this is a privacy measure
-              (println @quo/text-input-refs)
               (doseq [[_ {:keys [ref value]}] @quo/text-input-refs]
                 (.setNativeProps ^js ref (clj->js {:text value})))
               (doseq [[^js text-input default-value] @react/text-input-refs]

@@ -280,6 +280,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         account_button = wallet_view.get_account_by_name(account_name)
         if not account_button.is_element_displayed():
             self.driver.fail('Account was not added')
+
         if not account_button.color_matches('multi_account_color.png'):
             self.driver.fail('Account color does not match expected')
 
@@ -303,7 +304,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.driver.fail('Account was not added')
 
         wallet_view.just_fyi('Check that overall balance is changed after adding watch-only account')
-        for asset in ('ETHro', 'ADI', 'STT'):
+        for asset in ('ETH', 'ADI', 'STT'):
             wallet_view.wait_balance_is_changed(asset)
 
         wallet_view.just_fyi('Check individual watch-only account view, settings and receive option')
@@ -326,7 +327,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet_view.yes_button.click()
         if account_button.is_element_displayed():
             self.driver.fail('Account was not deleted')
-        for asset in ('ETHro', 'ADI', 'STT'):
+        for asset in ('ETH', 'ADI', 'STT'):
             balance = wallet_view.get_asset_amount_by_name(asset)
             if balance != 0:
                 self.errors.append("Balance for %s is not updated after deleting watch-only account" % asset)
@@ -360,7 +361,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.driver.fail('Account was not added')
 
         wallet_view.just_fyi('Check that overall balance is changed after adding account')
-        for asset in ('ETHro', 'ADI'):
+        for asset in ('ETH', 'ADI'):
             wallet_view.wait_balance_is_changed(asset)
 
         wallet_view.just_fyi('Check account view and send option')
@@ -400,7 +401,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.driver.fail('Account was not added')
 
         wallet_view.just_fyi('Check that overall balance is changed after adding account')
-        for asset in ('ETHro', 'ADI'):
+        for asset in ('ETH', 'ADI'):
             wallet_view.wait_balance_is_changed(asset)
 
         wallet_view.just_fyi('Check individual account view, receive option')

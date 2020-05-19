@@ -6,7 +6,7 @@
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.list-item.views :as list-item]
+            [quo.core :as quo]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
@@ -82,14 +82,16 @@
   (fn [{:keys [name icon amount] :as collectible}]
     (let [items-number (money/to-fixed amount)
           details?     (pos? items-number)]
-      [list-item/list-item
-       {:title       (wallet.utils/display-symbol collectible)
-        :subtitle    name
-        :icon        [list/item-image icon]
-        :on-press    (when details?
-                       #(re-frame/dispatch
-                         [:show-collectibles-list collectible address]))
-        :accessories [items-number :chevron]}])))
+      [quo/list-item
+       {:title          (wallet.utils/display-symbol collectible)
+        :subtitle       name
+        :icon           [list/item-image icon]
+        :on-press       (when details?
+                          #(re-frame/dispatch
+                            [:show-collectibles-list collectible address]))
+        :chevron        :true
+        :accessory      :text
+        :accessory-text items-number}])))
 
 (views/defview transactions [address]
   (views/letsubs [{:keys [transaction-history-sections]}
@@ -98,8 +100,7 @@
 
 (views/defview assets-and-collections [address]
   (views/letsubs [{:keys [tokens nfts]} [:wallet/visible-assets-with-values address]
-                  currency [:wallet/currency]
-                  prices-loading? [:prices-loading?]]
+                  currency [:wallet/currency]]
     (let [{:keys [tab]} @state]
       [react/view {:flex 1}
        [react/view {:flex-direction :row :margin-bottom 8 :padding-horizontal 4}
@@ -111,7 +112,7 @@
          [list/flat-list {:data               tokens
                           :default-separator? false
                           :key-fn             :name
-                          :render-fn          (accounts/render-asset (:code currency) prices-loading?)}]
+                          :render-fn          (accounts/render-asset (:code currency))}]
          (= tab :nft)
          (if (seq nfts)
            [list/flat-list {:data               nfts

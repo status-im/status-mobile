@@ -3,9 +3,9 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
             [re-frame.core :as re-frame]
+            [quo.core :as quo]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.animation :as anim]
-            [status-im.ui.components.icons.vector-icons :as icons]))
+            [status-im.ui.components.animation :as anim]))
 
 (defn show-panel-anim
   [bottom-anim-value alpha-value]
@@ -18,34 +18,32 @@
                                :useNativeDriver true})])))
 
 (defn input-button [images-showing?]
-  [react/touchable-highlight
-   {:on-press
-    (fn [_]
-      (re-frame/dispatch [:chat.ui/set-chat-ui-props
-                          {:input-bottom-sheet (when-not images-showing? :images)}])
-      (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
-    :accessibility-label :show-photo-icon}
-   [icons/icon
-    :main-icons/photo
-    {:container-style {:margin 14 :margin-right 6}
-     :color           (if images-showing? colors/blue colors/gray)}]])
+  [quo/button
+   {:on-press            (fn [_]
+                           (re-frame/dispatch [:chat.ui/set-chat-ui-props
+                                               {:input-bottom-sheet (when-not images-showing? :images)}])
+                           (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
+    :accessibility-label :show-photo-icon
+    :type                :icon
+    :theme               (if images-showing? :main :disabled)}
+   :main-icons/photo])
 
 (defn take-picture []
   (react/show-image-picker-camera #(re-frame/dispatch [:chat.ui/image-captured (.-path %)]) {}))
 
 (defn buttons []
   [react/view
-   [react/touchable-highlight {:on-press take-picture}
-    [react/view {:style {:width       44 :height 44
-                         :align-items :center :justify-content :center}
-                 :accessibility-label :take-picture}
-     [icons/icon :main-icons/camera {:color colors/black}]]]
-   [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/open-image-picker])
-                               :style    {:margin-top 8}}
-    [react/view {:style {:width       44 :height 44
-                         :align-items :center :justify-content :center}
-                 :accessibility-label :open-gallery}
-     [icons/icon :main-icons/gallery {:color colors/black}]]]])
+   [quo/button {:type     :icon
+                :theme    :icon
+                :accessibility-label :take-picture
+                :on-press take-picture}
+    :main-icons/camera]
+   [react/view {:style {:padding-top 8}}
+    [quo/button {:on-press #(re-frame/dispatch [:chat.ui/open-image-picker])
+                 :accessibility-label :open-gallery
+                 :type     :icon
+                 :theme    :icon}
+     :main-icons/gallery]]])
 
 (defn image-preview [uri first? panel-height]
   (let [wh (/ (- panel-height 8) 2)]

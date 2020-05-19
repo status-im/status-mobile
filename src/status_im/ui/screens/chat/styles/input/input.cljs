@@ -61,7 +61,7 @@
 
 (def input-container
   {:flex-direction :row
-   :align-items    :flex-end})
+   :align-items    :center})
 
 (def input-view
   {:flex               1

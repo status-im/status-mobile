@@ -5,7 +5,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.list-item.views :as list-item]
+            [quo.core :as quo]
             [reagent.core :as reagent]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.search-input.view :as search-input]
@@ -23,22 +23,22 @@
      :handler             #(re-frame/dispatch [:wallet.settings.ui/navigate-back-pressed])}}])
 
 (defn hide-sheet-and-dispatch [event]
-  (re-frame/dispatch [:bottom-sheet/hide-sheet])
+  (re-frame/dispatch [:bottom-sheet/hide])
   (re-frame/dispatch event))
 
 (defn custom-token-actions-view [{:keys [custom?] :as token}]
   (fn []
     [react/view
-     [list-item/list-item
-      {:theme    :action
-       :title    :t/token-details
+     [quo/list-item
+      {:theme    :accent
+       :title    (i18n/label :t/token-details)
        :icon     :main-icons/warning
        :on-press #(hide-sheet-and-dispatch
                    [:navigate-to :wallet-custom-token-details token])}]
      (when custom?
-       [list-item/list-item
-        {:theme    :action-destructive
-         :title    :t/remove-token
+       [quo/list-item
+        {:theme    :negative
+         :title    (i18n/label :t/remove-token)
          :icon     :main-icons/delete
          :on-press #(hide-sheet-and-dispatch
                      [:wallet.custom-token.ui/remove-pressed token])}])]))
@@ -50,24 +50,20 @@
     (fn [_ [_ old-token] [_ new-token]]
       (not= (:checked? old-token) (:checked? new-token)))
     :reagent-render
-    (fn [{:keys [symbol name icon color custom? checked?] :as token}]
-      [list/list-item-with-checkbox
-       {:checked?        checked?
-        :on-long-press
-        #(re-frame/dispatch
-          [:bottom-sheet/show-sheet
-           {:content        (custom-token-actions-view token)
-            :content-height (if custom? 128 68)}])
-        :on-value-change
-        #(re-frame/dispatch
-          [:wallet.settings/toggle-visible-token (keyword symbol) %])}
-       [list/item
-        (if icon
-          [list/item-image icon]
-          [chat-icon/custom-icon-view-list name color])
-        [list/item-content
-         [list/item-primary name]
-         [list/item-secondary symbol]]]])}))
+    (fn [{:keys [symbol name icon color checked?] :as token}]
+      [quo/list-item {:active        checked?
+                      :accessory     :checkbox
+                      :animated      false
+                      :icon          (if icon
+                                       [list/item-image icon]
+                                       [chat-icon/custom-icon-view-list name color])
+                      :title         name
+                      :subtitle      (clojure.core/name symbol)
+                      :on-press      #(re-frame/dispatch
+                                       [:wallet.settings/toggle-visible-token (keyword symbol) (not checked?)])
+                      :on-long-press #(re-frame/dispatch
+                                       [:bottom-sheet/show-sheet
+                                        {:content (custom-token-actions-view token)}])}])}))
 
 (defn- render-token-wrapper
   [token]
@@ -96,9 +92,9 @@
       [list/section-list
        {:header
         [react/view {:margin-top 16}
-         [list-item/list-item
-          {:theme :action
-           :title :t/add-custom-token
+         [quo/list-item
+          {:theme :accent
+           :title (i18n/label :t/add-custom-token)
            :icon  :main-icons/add
            :on-press
            #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]]
@@ -112,5 +108,5 @@
         :stickySectionHeadersEnabled false
         :render-section-header-fn
         (fn [{:keys [title]}]
-          [list-item/list-item {:type :section-header :title title}])
+          [quo/list-header title])
         :render-fn                   render-token-wrapper}]]]))

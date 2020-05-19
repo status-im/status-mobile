@@ -4,7 +4,6 @@
             [status-im.i18n :as i18n]
             [status-im.network.core :as network]
             [status-im.network.ui.edit-network.styles :as styles]
-            [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
@@ -60,8 +59,9 @@
                :on-change-text #(re-frame/dispatch [::network/input-changed :network-id %])}]])]]
         [react/view styles/bottom-container
          [react/view components.styles/flex]
-         [components.common/bottom-button
-          {:forward?  true
-           :label     (i18n/label :t/save)
-           :disabled? (not is-valid?)
-           :on-press  #(re-frame/dispatch [::network/save-network-pressed])}]]]])))
+         [quo/button
+          {:after      :main-icons/next
+           :type       :secondary
+           :disabled   (not is-valid?)
+           :on-press  #(re-frame/dispatch [::network/save-network-pressed])}
+          (i18n/label :t/save)]]]])))

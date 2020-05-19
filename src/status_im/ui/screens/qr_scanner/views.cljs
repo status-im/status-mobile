@@ -9,7 +9,7 @@
             [status-im.ui.screens.qr-scanner.styles :as styles]
             [status-im.ui.components.colors :as colors]
             [status-im.utils.config :as config]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [reagent.core :as reagent]))
 
 (defn- topbar [_ {:keys [title] :as opts}]
@@ -36,15 +36,15 @@
                   :align-items     :center
                   :justify-content :center}
       [react/text-input {:multiline      true
-                         :style {:color colors/white-persist}
+                         :style          {:color colors/white-persist}
                          :on-change-text #(reset! text-value %)}]
       [react/view {:flex-direction :row}
-       [button/button
-        {:label    "Cancel"
-         :on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-cancel opts])}]
-       [button/button
-        {:label    "OK"
-         :on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success opts (when-let [text @text-value] (string/trim text))])}]]]]))
+       [quo/button
+        {:on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-cancel opts])}
+        "Cancel"]
+       [quo/button
+        {:on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success opts (when-let [text @text-value] (string/trim text))])}
+        "Ok"]]]]))
 
 (defn corner [border1 border2 corner]
   [react/view (assoc {:border-color colors/white-persist :width 60 :height 60} border1 5 border2 5 corner 32)])

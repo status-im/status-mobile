@@ -4,7 +4,7 @@
             [status-im.ui.screens.wallet.collectibles.styles :as styles]
             [status-im.ui.components.svgimage :as svgimage]
             [status-im.ui.screens.wallet.collectibles.views :as collectibles]
-            [status-im.ui.components.list-item.views :as list-item]))
+            [quo.core :as quo]))
 
 (defmethod collectibles/render-collectible :EMONA [_ {:keys [user_defined_name image class_id]}]
   [react/view {:style styles/details}
@@ -16,8 +16,8 @@
     [react/view {:flex 1 :justify-content :center}
      [react/text {:style styles/details-name}
       user_defined_name]]]
-   [list-item/list-item
-    {:theme               :action
+   [quo/list-item
+    {:theme :accent
      :title               :t/view-etheremon
      :icon                :main-icons/address
      :accessibility-label :open-collectible-button

@@ -1,9 +1,6 @@
 (ns status-im.ui.screens.home.styles
   (:require [status-im.ui.components.colors :as colors]))
 
-(def last-message-container
-  {:flex-shrink 1})
-
 (def last-message-text
   {:flex        1
    :align-self  :stretch

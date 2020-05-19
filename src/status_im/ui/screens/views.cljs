@@ -4,7 +4,6 @@
             [re-frame.core :as re-frame]
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.ui.screens.routing.core :as navigation]
             [reagent.core :as reagent]
             [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
@@ -24,38 +23,40 @@
             status-im.ui.screens.wallet.collectibles.kudos.views
             [status-im.ui.components.colors :as colors]
             [status-im.hardwallet.test-menu :as hardwallet.test-menu]
+            [quo.core :as quo]
             [status-im.utils.config :as config]
             [status-im.reloader :as reloader]))
 
 (defview bottom-sheet []
   (letsubs [{:keys [show? view]} [:bottom-sheet]]
-    (let [opts (cond-> {:show?     show?
-                        :on-cancel #(re-frame/dispatch [:bottom-sheet/hide])}
+    (let [{:keys [content]
+           :as   opts}
+          (cond-> {:visible?   show?
+                   :on-cancel #(re-frame/dispatch [:bottom-sheet/hide])}
 
-                 (map? view)
-                 (merge view)
+            (map? view)
+            (merge view)
 
-                 (= view :mobile-network)
-                 (merge mobile-network-settings/settings-sheet)
+            (= view :mobile-network)
+            (merge mobile-network-settings/settings-sheet)
 
-                 (= view :mobile-network-offline)
-                 (merge mobile-network-settings/offline-sheet)
+            (= view :mobile-network-offline)
+            (merge mobile-network-settings/offline-sheet)
 
-                 (= view :add-new)
-                 (merge home.sheet/add-new)
+            (= view :add-new)
+            (merge home.sheet/add-new)
 
-                 (= view :edit-group-chat-name)
-                 (merge home.sheet/add-new)
+            (= view :keycard.login/more)
+            (merge keycard/more-sheet)
 
-                 (= view :keycard.login/more)
-                 (merge keycard/more-sheet)
+            (= view :learn-more)
+            (merge about-app/learn-more)
 
-                 (= view :learn-more)
-                 (merge about-app/learn-more)
-
-                 (= view :recover-sheet)
-                 (merge (recover.views/bottom-sheet)))]
-      [bottom-sheet/bottom-sheet opts])))
+            (= view :recover-sheet)
+            (merge recover.views/bottom-sheet))]
+      [quo/bottom-sheet opts
+       (when content
+         [content])])))
 
 (def debug? ^boolean js/goog.DEBUG)
 

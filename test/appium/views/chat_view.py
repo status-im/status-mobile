@@ -258,7 +258,7 @@ class ImageFromGalleryButton(BaseButton):
 class FirstElementFromGalleryButton(BaseButton):
     def __init__(self, driver):
         super(FirstElementFromGalleryButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@content-desc="open-gallery"]/../following-sibling::android.view.ViewGroup[1]')
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="open-gallery"]/following-sibling::android.view.ViewGroup[1]')
 
 class ViewProfileButton(BaseButton):
     def __init__(self, driver):

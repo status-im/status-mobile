@@ -91,9 +91,10 @@
        :component    keycard.recovery/pair}
       {:name         :keycard-recovery-success
        :back-handler :noop
+       :insets       {:bottom true}
        :component    keycard.recovery/success}
-      {:name         :keycard-recovery-no-key
-       :component    keycard.recovery/no-key}
+      {:name      :keycard-recovery-no-key
+       :component keycard.recovery/no-key}
       {:name      :keycard-recovery-pin
        :component keycard.recovery/pin}
       {:name      :hardwallet-authentication-method

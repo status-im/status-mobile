@@ -2,20 +2,21 @@
   (:require [status-im.ui.components.list.views :as list]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.list-item.views :as list-item]
+            [quo.core :as quo]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.utils.utils :as utils]
             [re-frame.core :as re-frame]))
 
 (defn render-account [dapps-account]
   (fn [account]
-    [list-item/list-item
-     {:theme     :selectable
-      :selected? (= (:address dapps-account) (:address account))
-      :icon      [chat-icon/custom-icon-view-list (:name account) (:color account)]
-      :title     (:name account)
-      :subtitle  (utils/get-shortened-checksum-address (:address account))
-      :on-press  #(re-frame/dispatch [:dapps-account-selected (:address account)])}]))
+    [quo/list-item
+     (merge {:accessory :radio
+             :active    (= (:address dapps-account) (:address account))
+             :icon      [chat-icon/custom-icon-view-list (:name account) (:color account)]
+             :title     (:name account)
+             :subtitle  (utils/get-shortened-checksum-address (:address account))}
+            (when (not= (:address dapps-account) (:address account))
+              {:on-press  #(re-frame/dispatch [:dapps-account-selected (:address account)])}))]))
 
 (defn accounts-list [accounts dapps-account]
   (fn []

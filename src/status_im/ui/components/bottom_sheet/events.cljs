@@ -17,3 +17,11 @@
  :bottom-sheet/hide
  (fn [cofx]
    (hide-bottom-sheet cofx)))
+
+(handlers/register-handler-fx
+ :bottom-sheet/show-sheet
+ (fn [cofx [_ view options]]
+   (show-bottom-sheet
+    cofx
+    {:view    view
+     :options options})))

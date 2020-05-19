@@ -25,25 +25,6 @@
    :color :none
    :container-style {}})
 
-(def bottom-button
-  {:flex-direction :row
-   :align-items    :center})
-
-(defn button [style background? disabled?]
-  (merge
-   {:padding-vertical   12
-    :padding-horizontal 42
-    :border-radius      8
-    :background-color   (cond disabled?
-                              colors/gray-lighter
-                              background?
-                              colors/blue-transparent-10)}
-   style))
-
-(def button-label
-  {:text-align :center
-   :color      colors/blue})
-
 (defn counter-container [size]
   {:width            size
    :height           size

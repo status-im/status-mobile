@@ -52,9 +52,6 @@
 (def twelve-words-spacer
   {:flex 1})
 
-(def twelve-words-button-container
-  {:align-items :flex-end})
-
 (def twelve-words-columns
   {:margin-top       8
    :margin-bottom    16

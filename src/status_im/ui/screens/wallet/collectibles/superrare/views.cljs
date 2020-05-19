@@ -1,9 +1,10 @@
 (ns status-im.ui.screens.wallet.collectibles.superrare.views
   (:require [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.wallet.collectibles.styles :as styles]
             [status-im.ui.screens.wallet.collectibles.views :as collectibles]
-            [status-im.ui.components.list-item.views :as list-item]))
+            [quo.core :as quo]))
 
 (defmethod collectibles/render-collectible :SUPR [_ {tokenId :tokenId {:keys [description name imageUri]} :metadata}]
   [react/view {:style styles/details}
@@ -16,9 +17,9 @@
       name]
      [react/text
       description]]]
-   [list-item/list-item
-    {:theme               :action
-     :title               :t/view-superrare
+   [quo/list-item
+    {:theme               :accent
+     :title               (i18n/label :t/view-superrare)
      :icon                :main-icons/address
      :accessibility-label :open-collectible-button
      :on-press            #(re-frame/dispatch [:open-collectible-in-browser

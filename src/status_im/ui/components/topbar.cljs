@@ -1,9 +1,9 @@
 (ns status-im.ui.components.topbar
   (:require [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.colors :as colors]
             [reagent.core :as reagent]
+            [quo.core :as quo]
             [status-im.utils.label :as utils.label]))
 
 (defn default-navigation [modal?]
@@ -21,17 +21,17 @@
 
 (defn button [value nav?]
   (let [{:keys [handler icon label accessibility-label]} value]
-    [react/touchable-highlight {:on-press #(when handler (handler))}
-     [react/view (cond-> {:padding-horizontal (if nav? 16 10) :height 56
-                          :align-items        :center :justify-content :center}
-                   accessibility-label
-                   (assoc :accessibility-label accessibility-label))
+    [react/view {:padding-horizontal (if nav? 8 0)}
+     [quo/button (merge {:on-press #(when handler (handler))}
+                        (cond
+                          icon  {:type  :icon
+                                 :theme :icon}
+                          label {:type :secondary})
+                        (when accessibility-label
+                          {:accessibility-label accessibility-label}))
       (cond
-        icon
-        [icons/icon icon]
-        label
-        [react/text {:style {:color colors/blue}}
-         (utils.label/stringify label)])]]))
+        icon  icon
+        label (utils.label/stringify label))]]))
 
 (def default-title-padding 16)
 ;; TODO(Ferossgp): Tobbar should handle safe area

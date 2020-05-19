@@ -32,7 +32,6 @@
             [status-im.stickers.core :as stickers]
             [status-im.transport.core :as transport]
             [status-im.transport.message.core :as transport.message]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.currency-settings.models
              :as
@@ -50,8 +49,6 @@
             status-im.wallet.choose-recipient.core
             status-im.wallet.collectibles.core
             status-im.wallet.accounts.core
-            status-im.multiaccounts.biometric.core
-            status-im.hardwallet.core
             status-im.popover.core
             [status-im.hardwallet.core :as hardwallet]
             [status-im.utils.dimensions :as dimensions]
@@ -61,6 +58,7 @@
             [status-im.ui.components.permissions :as permissions]
             [status-im.utils.http :as http]
             [status-im.utils.utils :as utils]
+            status-im.ui.components.bottom-sheet.core
             status-im.ui.screens.add-new.new-chat.events
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
@@ -402,7 +400,9 @@
    {:ui/show-confirmation {:title               (i18n/label :t/clear-history-title)
                            :content             (i18n/label :t/clear-history-confirmation-content)
                            :confirm-button-text (i18n/label :t/clear-history-action)
-                           :on-accept           #(re-frame/dispatch [:chat.ui/clear-history chat-id])}}))
+                           :on-accept           #(do
+                                                   (re-frame/dispatch [:bottom-sheet/hide])
+                                                   (re-frame/dispatch [:chat.ui/clear-history chat-id]))}}))
 
 (handlers/register-handler-fx
  :chat.ui/fetch-history-pressed
@@ -465,7 +465,9 @@
    {:ui/show-confirmation {:title               (i18n/label :t/delete-confirmation)
                            :content             (i18n/label :t/delete-chat-confirmation)
                            :confirm-button-text (i18n/label :t/delete)
-                           :on-accept           #(re-frame/dispatch [:chat.ui/remove-chat chat-id])}}))
+                           :on-accept           #(do
+                                                   (re-frame/dispatch [:bottom-sheet/hide])
+                                                   (re-frame/dispatch [:chat.ui/remove-chat chat-id]))}}))
 
 (handlers/register-handler-fx
  :chat.ui/set-chat-ui-props
@@ -789,7 +791,9 @@
    {:ui/show-confirmation {:title               (i18n/label :t/leave-confirmation)
                            :content             (i18n/label :t/leave-chat-confirmation)
                            :confirm-button-text (i18n/label :t/leave)
-                           :on-accept           #(re-frame/dispatch [:group-chats.ui/leave-chat-confirmed chat-id])}}))
+                           :on-accept           #(do
+                                                   (re-frame/dispatch [:bottom-sheet/hide])
+                                                   (re-frame/dispatch [:group-chats.ui/leave-chat-confirmed chat-id]))}}))
 (handlers/register-handler-fx
  :group-chats.ui/join-pressed
  (fn [cofx [_ chat-id]]
@@ -979,23 +983,6 @@
  :stickers/pending-timeout
  (fn [cofx _]
    (stickers/pending-timeout cofx)))
-
-;; Tribute to Talk
-
-
-;; bottom-sheet events
-(handlers/register-handler-fx
- :bottom-sheet/show-sheet
- (fn [cofx [_ view options]]
-   (bottom-sheet/show-bottom-sheet
-    cofx
-    {:view    view
-     :options options})))
-
-(handlers/register-handler-fx
- :bottom-sheet/hide-sheet
- (fn [cofx _]
-   (bottom-sheet/hide-bottom-sheet cofx)))
 
 ;;custom tokens
 

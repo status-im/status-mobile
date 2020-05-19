@@ -59,17 +59,12 @@
    :background-color (if selected? colors/blue-light colors/white)
    :padding-vertical 12})
 
-(def list-item-body
-  {:flex-direction :row
-   :flex           1
-   :align-items    :flex-start})
-
 (def multiaccount-image
-  {:width         40
-   :height        40
-   :border-radius 20
-   :border-width  1
-   :border-color  colors/black-transparent})
+  {:width            40
+   :height           40
+   :border-radius    20
+   :border-width     1
+   :border-color     colors/black-transparent})
 
 (defn password-text-input [width]
   {:typography :header
@@ -84,17 +79,3 @@
    :justify-content    :center
    :align-items        :center
    :flex-direction     :row})
-
-(def disabled-bottom-button
-  (assoc bottom-button :background-color colors/gray-transparent-10))
-
-(def disabled-bottom-button-text
-  {:color colors/gray-transparent-40})
-
-(defn bottom-arrow []
-  {:flex-direction   :row
-   :justify-content  :flex-end
-   :align-self       :stretch
-   :padding-top      16
-   :border-top-width 1
-   :border-top-color colors/gray-lighter})

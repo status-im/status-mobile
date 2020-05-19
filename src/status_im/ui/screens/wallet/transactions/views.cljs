@@ -9,6 +9,7 @@
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar-old]
             [status-im.ui.screens.wallet.transactions.styles :as styles]
+            [quo.core :as quo]
             [status-im.ui.components.toolbar :as toolbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -95,8 +96,8 @@
 (defn history-list
   [transactions-history-sections address]
   (let [fetching-recent-history? @(re-frame/subscribe [:wallet/fetching-recent-tx-history? address])
-        fetching-more-history? @(re-frame/subscribe [:wallet/fetching-tx-history? address])
-        all-fetched? @(re-frame/subscribe [:wallet/tx-history-fetched? address])]
+        fetching-more-history?   @(re-frame/subscribe [:wallet/fetching-tx-history? address])
+        all-fetched?             @(re-frame/subscribe [:wallet/tx-history-fetched? address])]
     [react/view components.styles/flex
      [etherscan-link address]
      (when fetching-recent-history?
@@ -104,18 +105,18 @@
         {:style {:flex            1
                  :height          40
                  :margin-vertical 16}}
-        [react/activity-indicator {:size :large
+        [react/activity-indicator {:size      :large
                                    :animating true}]])
      [list/section-list
-      {:sections     transactions-history-sections
-       :key-fn       :hash
-       :render-fn    #(render-transaction %)
+      {:sections   transactions-history-sections
+       :key-fn     :hash
+       :render-fn  #(render-transaction %)
        :empty-component
        [react/i18n-text {:style styles/empty-text
                          :key   (if (or fetching-recent-history? fetching-more-history?)
                                   :transactions-history-loading
                                   :transactions-history-empty)}]
-       :refreshing   false}]
+       :refreshing false}]
      (when (and (not fetching-recent-history?)
                 (not all-fetched?))
        (if fetching-more-history?
@@ -123,14 +124,15 @@
           {:style {:flex            1
                    :height          40
                    :margin-vertical 8}}
-          [react/activity-indicator {:size :large
+          [react/activity-indicator {:size      :large
                                      :animating true}]]
          [toolbar/toolbar
-          {:center {:label    (i18n/label :t/transactions-load-more)
-                    :type     :secondary
-                    :on-press (when-not fetching-more-history?
-                                #(re-frame/dispatch
-                                  [:transactions/fetch-more address]))}}]))]))
+          {:center
+           [quo/button {:type     :secondary
+                        :on-press (when-not fetching-more-history?
+                                    #(re-frame/dispatch
+                                      [:transactions/fetch-more address]))}
+            (i18n/label :t/transactions-load-more)]}]))]))
 
 ;; NOTE: Is this needed?
 (defn details-header

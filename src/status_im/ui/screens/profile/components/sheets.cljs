@@ -14,12 +14,15 @@
      [react/text {:style styles/sheet-text}
       (i18n/label :t/block-contact-details)]
      [react/view {:align-items :center :margin-top 16}
-      [quo/button {:theme :negative :disabled @in-progress? :loading @in-progress?
+      [quo/button {:theme               :negative
+                   :disabled            @in-progress?
+                   :loading             @in-progress?
                    :accessibility-label :block-contact-confirm
-                   :on-press #(do (reset! in-progress? true)
-                                  (re-frame/dispatch [:contact.ui/block-contact-confirmed public-key]))}
-       :t/block]
+                   :on-press            #(do (reset! in-progress? true)
+                                             (re-frame/dispatch [:contact.ui/block-contact-confirmed public-key]))}
+       (i18n/label :t/block)]
       [react/view {:height 8}]
-      [quo/button {:type :secondary :disabled @in-progress?
+      [quo/button {:type     :secondary
+                   :disabled @in-progress?
                    :on-press #(re-frame/dispatch [:hide-popover])}
-       :t/close]]]))
+       (i18n/label :t/close)]]]))

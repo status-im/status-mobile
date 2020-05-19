@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.biometric.views
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.biometric.core :as biometric]
             [status-im.ui.components.colors :as colors]
@@ -43,14 +43,15 @@
        (if description-label
          [(i18n/label description-label {:bio-type-label bio-type-label})]
          description-text)))
-     [button/button {:label    (i18n/label ok-button-label
-                                           {:bio-type-label bio-type-label})
-                     :style    {:margin-top 24}
-                     :on-press #(re-frame/dispatch [on-confirm])}]
-     [button/button {:label    (or cancel-button-label :t/cancel)
-                     :style    {:margin-bottom 24}
-                     :type     :secondary
-                     :on-press #(re-frame/dispatch [(or on-cancel :hide-popover)])}]]))
+     [react/view {:padding-vertical 16}
+      [react/view {:padding-vertical 8}
+       [quo/button {:on-press #(re-frame/dispatch [on-confirm])}
+        (i18n/label ok-button-label
+                    {:bio-type-label bio-type-label})]]
+      [quo/button {:type     :secondary
+                   :on-press #(re-frame/dispatch [(or on-cancel :hide-popover)])}
+       (or cancel-button-label
+           (i18n/label :t/cancel))]]]))
 
 (defn disable-password-saving-popover []
   (let [bio-label-type (get-bio-type-label)]

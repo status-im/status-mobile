@@ -3,7 +3,7 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.common.common :as components.common]
+            [quo.core :as quo]
             [status-im.hardwallet.login :as login]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]))
@@ -32,13 +32,13 @@
    [react/view {:margin-bottom     24
                 :margin-horizontal 24
                 :align-items       :center}
-    [components.common/button
-     {:on-press     #(re-frame/dispatch [::login/reset-pin])
-      :button-style {:margin-top 24}
-      :label        (i18n/label :t/keycard-is-frozen-reset)}]
+    [react/view {:style {:margin-top 24}}
+     [quo/button
+      {:on-press #(re-frame/dispatch [::login/reset-pin])}
+      (i18n/label :t/keycard-is-frozen-reset)]]
     (when show-dismiss-button?
-      [components.common/button
-       {:on-press     #(re-frame/dispatch [::login/frozen-keycard-popover-dismissed])
-        :button-style {:margin-top 24}
-        :background?  false
-        :label        (i18n/label :t/dismiss)}])]])
+      [react/view {:margin-top 24}
+       [quo/button
+        {:on-press    #(re-frame/dispatch [::login/frozen-keycard-popover-dismissed])
+         :background? false}
+        (i18n/label :t/dismiss)]])]])

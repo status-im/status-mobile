@@ -45,7 +45,6 @@
    :border-radius      36
    :padding-horizontal 8
    :padding-vertical   6
-   :flex               1
    :align-items        :center
    :justify-content    :center
    :shadow-offset      {:width 0 :height 1}

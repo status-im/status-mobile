@@ -9,11 +9,10 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
-            [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.ui.components.search-input.view :as search-input]
             [cljs-bean.core :as bean]
             [status-im.ui.components.topbar :as topbar])
@@ -41,32 +40,31 @@
     [react/i18n-text {:style styles/welcome-text-description
                       :key   :welcome-to-status-description}]]
    [react/view {:align-items :center :margin-bottom 50}
-    [components.common/button {:on-press
-                               #(re-frame/dispatch [:navigate-reset {:index  0
-                                                                     :routes [{:name :tabs}]}])
-                               :accessibility-label :lets-go-button
-                               :label               (i18n/label :t/lets-go)}]]])
+    [quo/button {:on-press #(re-frame/dispatch [:navigate-reset {:index               0
+                                                                 :routes [{:name :tabs}]}])
+                 :accessibility-label :lets-go-button}
+     (i18n/label :t/lets-go)]]])
 
 (defn home-tooltip-view []
   [react/view (styles/chat-tooltip)
    [react/view {:style {:flex-direction :row}}
     [react/view {:flex 1}
      [react/view {:style styles/empty-chats-header-container}
-      [react/view {:style {:width 66 :position :absolute :top -6 :background-color colors/white
+      [react/view {:style {:width       66 :position :absolute :top -6 :background-color colors/white
                            :align-items :center}}
        [react/image {:source (resources/get-image :empty-chats-header)
                      :style  {:width 50 :height 50}}]]]
      [react/touchable-highlight
-      {:style               {:position :absolute :right 0 :top 0
-                             :width    44 :height 44 :align-items :center :justify-content :center}
+      {:style               {:position :absolute :right  0  :top         0
+                             :width    44        :height 44 :align-items :center :justify-content :center}
        :on-press            #(re-frame/dispatch [:multiaccounts.ui/hide-home-tooltip])
        :accessibility-label :hide-home-button}
       [icons/icon :main-icons/close-circle {:color colors/gray}]]]]
    [react/i18n-text {:style styles/no-chats-text :key :chat-and-transact}]
    [react/view {:align-items :center :margin-top 16}
-    [button/button {:label               :t/invite-friends
-                    :on-press            #(list-selection/open-share {:message (i18n/label :t/get-status-at)})
-                    :accessibility-label :invite-friends-button}]]
+    [quo/button {:on-press            #(list-selection/open-share {:message (i18n/label :t/get-status-at)})
+                 :accessibility-label :invite-friends-button}
+     (i18n/label :t/invite-friends)]]
    [react/view {:align-items :center :margin-top 16}
     [react/view {:style (styles/hr-wrapper)}]
     [react/i18n-text {:style (styles/or-text) :key :or}]]
@@ -126,10 +124,10 @@
 (views/defview plus-button []
   (views/letsubs [logging-in? [:multiaccounts/login]]
     [react/view styles/action-button-container
-     [react/touchable-highlight
-      {:accessibility-label :new-chat-button
-       :on-press            (when-not logging-in?
-                              #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))}
+     [quo/button {:type                :scale
+                  :accessibility-label :new-chat-button
+                  :on-press            (when-not logging-in?
+                                         #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))}
       [react/view (styles/action-button)
        (if logging-in?
          [react/activity-indicator {:color     colors/white-persist

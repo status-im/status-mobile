@@ -2,9 +2,8 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]
-            [quo.core :as quo]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.ui.components.colors :as colors]))
 
 (views/defview fee-bottom-sheet [fee-display-symbol]
@@ -52,12 +51,12 @@
         [{:style {:color colors/gray}} fee-display-symbol]]]]
      [react/view {:height 1 :background-color colors/gray-lighter}]
      [react/view {:margin-horizontal 16 :align-items :center :justify-content :space-between :flex-direction :row :margin-top 6}
-      [button/button
+      [quo/button
        {:type     :secondary
-        :on-press #(re-frame/dispatch [:bottom-sheet/hide-sheet])
-        :label    :t/cancel}]
-      [button/button
+        :on-press #(re-frame/dispatch [:bottom-sheet/hide])}
+       (i18n/label :t/cancel)]
+      [quo/button
        {:type      :secondary
         :on-press  #(re-frame/dispatch [:signing.edit-fee.ui/submit])
-        :disabled? (or (:error gas-edit) (:error gas-price-edit))
-        :label     :t/update}]]]))
+        :disabled  (or (:error gas-edit) (:error gas-price-edit))}
+       (i18n/label :t/update)]]]))

@@ -52,13 +52,6 @@
          {:color colors/blue}]
         [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]])))
 
-(defn intro-header [name]
-  [react/text {:style (assoc style/intro-header-description
-                             :margin-bottom 32)}
-   (str
-    (i18n/label :t/empty-chat-description-one-to-one)
-    name)])
-
 (defn chat-intro [{:keys [chat-id
                           chat-name
                           group-chat

@@ -3,11 +3,12 @@
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.common :as components.common]
+            [quo.core :as quo]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.view :as not.toolbar]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.profile.tribute-to-talk.styles :as styles])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -277,7 +278,7 @@
 (defn learn-more [owner?]
   [react/view {:flex 1}
    (when-not owner?
-     [toolbar/toolbar nil toolbar/default-nav-close
+     [not.toolbar/toolbar nil not.toolbar/default-nav-close
       [react/view
        [react/text {:style styles/tribute-to-talk}
         (i18n/label :t/tribute-to-talk)]
@@ -325,10 +326,10 @@
             [:tribute-to-talk/settings-ui]]
     [react/keyboard-avoiding-view {:style styles/container}
      [react/view {:style {:flex 1}}
-      [toolbar/toolbar
+      [not.toolbar/toolbar
        nil
        (when-not (= :finish step)
-         (toolbar/nav-button
+         (not.toolbar/nav-button
           (actions/back #(re-frame/dispatch
                           [:tribute-to-talk.ui/step-back-pressed]))))
        [react/view
@@ -338,29 +339,31 @@
           [react/text {:style styles/step-n}
            (if (= step :finish)
              (i18n/label (case state
-                           :completed :t/completed
-                           :pending :t/pending
-                           :signing :t/signing
+                           :completed          :t/completed
+                           :pending            :t/pending
+                           :signing            :t/signing
                            :transaction-failed :t/transaction-failed
-                           :disabled :t/disabled))
-             (i18n/label :t/step-i-of-n {:step ((steps-numbers editing?) step)
+                           :disabled           :t/disabled))
+             (i18n/label :t/step-i-of-n {:step   ((steps-numbers editing?) step)
                                          :number (if editing? 2 3)}))])
         (when (= step :learn-more)
           [react/text {:style styles/step-n}
            (i18n/label :t/learn-more)])]]
 
       (case step
-        :intro                [intro]
-        :set-snt-amount       [set-snt-amount snt-amount]
-        :edit                 [edit snt-amount fiat-value]
-        :learn-more           [learn-more step]
-        :finish               [finish snt-amount state])
+        :intro          [intro]
+        :set-snt-amount [set-snt-amount snt-amount]
+        :edit           [edit snt-amount fiat-value]
+        :learn-more     [learn-more step]
+        :finish         [finish snt-amount state])
 
       (when-not (#{:learn-more :edit} step)
-        [react/view {:style styles/bottom-toolbar}
-         [components.common/button {:button-style styles/intro-button
-                                    :disabled?    disable-button?
-                                    :label-style  (when disable-button? {:color colors/gray})
-                                    :on-press     #(re-frame/dispatch
-                                                    [:tribute-to-talk.ui/step-forward-pressed])
-                                    :label        (i18n/label (step-forward-label step))}]])]]))
+        [toolbar/toolbar
+         {:show-border? true
+          :size         :large
+          :center
+          [quo/button {:disabled disable-button?
+                       :type     :secondary
+                       :on-press #(re-frame/dispatch
+                                   [:tribute-to-talk.ui/step-forward-pressed])}
+           (i18n/label (step-forward-label step))]}])]]))

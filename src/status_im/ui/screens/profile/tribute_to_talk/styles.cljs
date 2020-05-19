@@ -19,18 +19,6 @@
   {:text-align :center
    :color      colors/gray})
 
-(def intro-button
-  {:margin-vertical    8
-   :padding-horizontal 32
-   :align-self         :center
-   :justify-content    :center
-   :align-items        :center})
-
-(def bottom-toolbar
-  {:height           60
-   :border-top-width 1
-   :border-top-color colors/gray-lighter})
-
 (def step-n
   {:margin-top 5
    :font-size  14

@@ -17,7 +17,7 @@
 
 (def react-native
   (clj->js {:NativeModules {:RNGestureHandlerModule {:Direction (fn [])}
-                            :ReanimatedModule {:configureProps (fn [])}}
+                            :ReanimatedModule       {:configureProps (fn [])}}
 
             :View                     {}
             :FlatList                 {}

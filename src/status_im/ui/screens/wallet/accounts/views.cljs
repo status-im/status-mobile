@@ -6,7 +6,6 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
@@ -66,32 +65,31 @@
    (when active?
      [react/view {:width 24 :height 3 :border-radius 4 :background-color colors/blue}])])
 
-(defn render-asset [currency prices-loading? & [on-press]]
+(defn render-asset [currency & [on-press]]
   (fn [{:keys [icon decimals amount color value] :as token}]
-    [list-item/list-item
-     (cond-> {:title-prefix         (wallet.utils/format-amount amount decimals)
-              :title                (wallet.utils/display-symbol token)
-              :title-color-override colors/gray
-              :accessibility-label (str (:symbol token)  "-asset-value")
-              :subtitle             [react/view {:style {:flex-direction :row :line-height 22}}
-                                     (if prices-loading?
-                                       [react/small-loading-indicator]
-                                       [react/text {:style {:color colors/gray}} (if value value 0)])
-                                     [react/text {:style {:color colors/gray}} (str " " currency)]]
-              :icon                 (if icon
-                                      [list/item-image icon]
-                                      [chat-icon/custom-icon-view-list (:name token) color])}
-       on-press
-       (assoc :on-press #(on-press token)))]))
+    [quo/list-item
+     (merge {:title               [quo/text {:weight :medium}
+                                   [quo/text {:weight :inherit}
+                                    (str (wallet.utils/format-amount amount decimals)
+                                         " ")]
+                                   [quo/text {:color  :secondary
+                                              :weight :inherit}
+                                    (wallet.utils/display-symbol token)]]
+             :subtitle            (str (if value value "0.00") " " currency)
+             :accessibility-label (str (:symbol token)  "-asset-value")
+             :icon                (if icon
+                                    [list/item-image icon]
+                                    [chat-icon/custom-icon-view-list (:name token) color])}
+            (when on-press
+              {:on-press #(on-press token)}))]))
 
 (views/defview assets []
   (views/letsubs [{:keys [tokens]} [:wallet/all-visible-assets-with-values]
-                  currency [:wallet/currency]
-                  prices-loading? [:prices-loading?]]
+                  currency [:wallet/currency]]
     [list/flat-list {:data               tokens
                      :default-separator? false
                      :key-fn             :name
-                     :render-fn          (render-asset (:code currency) prices-loading?)}]))
+                     :render-fn          (render-asset (:code currency))}]))
 
 (defn- request-camera-permissions []
   (let [options {:handler :wallet.send/qr-scanner-result}]
@@ -110,8 +108,9 @@
 (views/defview send-button []
   (views/letsubs [account [:multiaccount/default-account]]
     [react/view styles/send-button-container
-     [react/touchable-highlight
+     [quo/button
       {:accessibility-label :send-transaction-button
+       :type                :scale
        :on-press            #(re-frame/dispatch [:wallet/prepare-transaction-from-wallet account])}
       [react/view (styles/send-button)
        [icons/icon :main-icons/send {:color colors/white-persist}]]]]))

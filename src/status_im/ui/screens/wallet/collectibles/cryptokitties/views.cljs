@@ -5,22 +5,22 @@
             [status-im.ui.screens.wallet.collectibles.styles :as styles]
             [status-im.ui.screens.wallet.collectibles.views :as collectibles]
             [status-im.ui.components.svgimage :as svgimage]
-            [status-im.ui.components.list-item.views :as list-item]))
+            [quo.core :as quo]))
 
 (defmethod collectibles/render-collectible :CK [_ {:keys [id name bio image_url]}]
   [react/view {:style styles/details}
    [react/view {:style styles/details-text}
-    [svgimage/svgimage {:style styles/details-image
+    [svgimage/svgimage {:style  styles/details-image
                         :source {:uri image_url}}]
     [react/view {:flex 1}
      [react/text {:style styles/details-name}
       (or name (i18n/label :t/cryptokitty-name {:id id}))]
      [react/text {:number-of-lines 3
-                  :ellipsize-mode :tail}
+                  :ellipsize-mode  :tail}
       bio]]]
-   [list-item/list-item
-    {:theme               :action
-     :title               :t/view-cryptokitties
+   [quo/list-item
+    {:theme               :accent
+     :title               (i18n/label :t/view-cryptokitties)
      :icon                :main-icons/address
      :accessibility-label :open-collectible-button
      :on-press            #(re-frame/dispatch [:open-collectible-in-browser

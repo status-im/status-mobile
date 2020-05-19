@@ -43,7 +43,8 @@ class ScanQRButton(BaseButton):
 class AssetText(BaseText):
     def __init__(self, driver, asset):
         super(AssetText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='%s']/preceding-sibling::*[1]" % asset)
+        self.locator = self.Locator.xpath_selector("//android.view.ViewGroup[@content-desc=':%s-asset-value']"
+                                                   "//android.widget.TextView[1]" % asset)
 
 
 class AssetFullNameInAssets(BaseText):
@@ -151,7 +152,7 @@ class RemindMeLaterButton(BaseButton):
 class AssetTextElement(BaseText):
     def __init__(self, driver, asset_name):
         super(AssetTextElement, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='%s']" % asset_name)
+        self.locator = self.Locator.text_part_selector(asset_name)
 
 
 class CollectibleTextElement(BaseText):
@@ -359,7 +360,7 @@ class AccountColorButton(BaseButton):
     def select_color_by_position(self, position: int):
         self.click()
         self.driver.find_element_by_xpath(
-            "//*[@text='Cancel']/../preceding-sibling::android.widget.ScrollView/*/*[%s]" % position).click()
+            "((//android.widget.ScrollView)[last()]/*/*)[%s]" % str(position+1)).click()
 
 # Add account on Generate An Account screen
 class AddAccountGenerateAnAccountButton(BaseButton):
@@ -450,7 +451,7 @@ class WalletView(BaseView):
     def get_asset_amount_by_name(self, asset: str):
         asset_value = AssetText(self.driver, asset)
         asset_value.scroll_to_element()
-        return float(asset_value.text)
+        return float(asset_value.text.split()[0])
 
     def verify_currency_balance(self, expected_rate: int, errors: list):
         usd = self.get_usd_total_value()

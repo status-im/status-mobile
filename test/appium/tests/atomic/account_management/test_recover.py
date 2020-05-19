@@ -80,6 +80,7 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
         if recover_access_view.reencrypt_your_key_button.is_element_displayed():
             self.errors.append("Possible to create account with empty seed phrase")
 
+        signin_view = SignInView(self.driver, skip_popups=False)
         # we're performing the same steps changing only phrase per attempt
         for validation in validations:
             phrase, elm, msg, words_count, popup = validation.get('phrase'), \

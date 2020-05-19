@@ -174,11 +174,14 @@
 (defn loop* [opts]
   (ocall redash "loop" (clj->js opts)))
 
-(defn use-value [value]
-  (.useValue ^js redash value))
+(def use-value (.-useValue ^js redash))
 
-(defn use-clock []
-  (.useClock ^js redash))
+(def use-clock (.-useClock ^js redash))
+
+(defn use-gesture [opts]
+  (let [gesture (.useGestureHandler ^js redash (clj->js opts))]
+    {:onHandlerStateChange (.-onHandlerStateChange ^js gesture)
+     :onGestureEvent       (.-onGestureEvent ^js gesture)}))
 
 (defn snap-point [value velocity snap-points]
   (.snapPoint ^js redash value velocity (to-array snap-points)))

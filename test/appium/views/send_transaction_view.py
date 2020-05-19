@@ -87,7 +87,7 @@ class EnterRecipientAddressInput(BaseEditBox):
 class EnterRecipientAddressInputText(BaseText):
     def __init__(self, driver):
         super(EnterRecipientAddressInputText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@content-desc='choose-recipient-button']/android.widget.TextView")
+        self.locator = self.Locator.xpath_selector("//*[@content-desc='choose-recipient-button']//android.widget.TextView")
 
 
 class RecentRecipientsButton(BaseButton):

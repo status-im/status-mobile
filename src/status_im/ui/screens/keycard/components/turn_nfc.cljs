@@ -4,7 +4,7 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.button :as button]
+            [quo.core :as quo]
             [status-im.ui.screens.keycard.components.style :as styles]))
 
 (defn turn-nfc-on []
@@ -16,11 +16,10 @@
     [react/view {:margin-top 16}
      [react/text {:style {:typography :title-bold}}
       (i18n/label :t/turn-nfc-on)]]
-    [react/view {:margin-top 8}
+    [react/view {:margin-top    8
+                 :margin-bottom 16}
      [react/text {:number-of-lines 2
                   :style           styles/helper-text-style}
       (i18n/label :t/turn-nfc-description)]]
-
-    [button/button {:label    :t/open-nfc-settings
-                    :style    {:margin-top 16}
-                    :on-press #(re-frame/dispatch [:keycard.onboarding.nfc-on/open-nfc-settings-pressed])}]]])
+    [quo/button {:on-press #(re-frame/dispatch [:keycard.onboarding.nfc-on/open-nfc-settings-pressed])}
+     (i18n/label :t/open-nfc-settings)]]])

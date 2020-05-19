@@ -20,11 +20,6 @@
    :line-height 16
    :color       colors/text-gray})
 
-(def last-activity-text
-  {:font-size  14
-   :margin-top 4
-   :color      colors/text-gray})
-
 ;; this map looks a bit strange
 ;; but this way of setting elevation seems to be the only way to set z-index (in RN 0.30)
 (defn add-contact []

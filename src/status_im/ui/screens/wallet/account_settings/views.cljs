@@ -9,7 +9,6 @@
             [status-im.ui.components.copyable-text :as copyable-text]
             [reagent.core :as reagent]
             [quo.core :as quo]
-            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.topbar :as topbar]))
 
 (defview colors-popover [selected-color on-press]
@@ -20,16 +19,17 @@
        (for [color colors/account-colors]
          ^{:key color}
          [react/touchable-highlight {:on-press #(on-press color)}
-          [react/view {:height          52 :background-color color :border-radius 8 :width (* 0.7 width)
-                       :justify-content :center :padding-left 12 :margin-bottom 16}
+          [react/view {:height          52      :background-color color :border-radius 8 :width (* 0.7 width)
+                       :justify-content :center :padding-left     12    :margin-bottom 16}
            [react/view {:height           32 :width 32 :border-radius 20 :align-items :center :justify-content :center
                         :background-color colors/black-transparent}
             (when (= selected-color color)
               [icons/icon :main-icons/check {:color colors/white}])]]]))]
      [toolbar/toolbar
-      {:center {:on-press #(re-frame/dispatch [:hide-popover])
-                :label    (i18n/label :t/cancel)
-                :type     :secondary}}]]))
+      {:center
+       [quo/button {:on-press #(re-frame/dispatch [:hide-popover])
+                    :type     :secondary}
+        (i18n/label :t/cancel)]}]]))
 
 (defn property [label value]
   [react/view {:margin-top 28}
@@ -71,14 +71,14 @@
                                                     (swap! new-account assoc :color new-color)
                                                     (re-frame/dispatch [:hide-popover]))]
                                           :style {:max-height "60%"}}])}
-         [react/view {:height        52 :margin-top 12 :background-color (or (:color @new-account) color)
+         [react/view {:height        52        :margin-top      12      :background-color (or (:color @new-account) color)
                       :border-radius 8
-                      :align-items   :flex-end :justify-content :center :padding-right 12}
+                      :align-items   :flex-end :justify-content :center :padding-right    12}
           [icons/icon :main-icons/dropdown {:color colors/white}]]]
         [property (i18n/label :t/type)
          (case type
-           :watch (i18n/label :t/watch-only)
-           (:key :seed)  (i18n/label :t/off-status-tree)
+           :watch       (i18n/label :t/watch-only)
+           (:key :seed) (i18n/label :t/off-status-tree)
            (i18n/label :t/on-status-tree))]
         [property (i18n/label :t/wallet-address)
          [copyable-text/copyable-text-view
@@ -97,6 +97,7 @@
        (when (= type :watch)
          [react/view
           [react/view {:margin-bottom 8 :margin-top 28 :height 1 :background-color colors/gray-lighter}]
-          [list-item/list-item
-           {:theme :action-destructive :title :t/delete-account
+          [quo/list-item
+           {:theme    :negative
+            :title    (i18n/label :t/delete-account)
             :on-press #(re-frame/dispatch [:wallet.settings/show-delete-account-confirmation account])}]])]]]))

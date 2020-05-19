@@ -6,8 +6,6 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.contact.contact :as contact]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.ui.components.react :as react]
@@ -20,51 +18,55 @@
 
 (defn member-sheet [chat-id member us-admin?]
   [react/view
-   [list-item/list-item
-    {:theme               :action
-     :icon                (multiaccounts/displayed-photo member)
-     :title               [chat.sheets/view-profile {:name   (contact/format-name member)
-                                                     :helper :t/view-profile}]
+   [quo/list-item
+    {:theme               :accent
+     :icon                [chat-icon/contact-icon-contacts-tab
+                           (multiaccounts/displayed-photo member)]
+     :title               (contact/format-name member)
+     :subtitle            (i18n/label :t/view-profile)
      :accessibility-label :view-chat-details-button
-     :accessories         [:chevron]
+     :chevron             true
      :on-press            #(chat.sheets/hide-sheet-and-dispatch
                             [(if platform/desktop? :show-profile-desktop :chat.ui/show-profile)
                              (:public-key member)])}]
    (when (and us-admin?
               (not (:admin? member)))
-     [list-item/list-item
-      {:theme               :action
-       :title               :t/make-admin
+     [quo/list-item
+      {:theme               :accent
+       :title               (i18n/label :t/make-admin)
        :accessibility-label :make-admin
-       ;; TODO(Ferossgp): Fix case for make admin icon
        :icon                :main-icons/make-admin
        :on-press            #(chat.sheets/hide-sheet-and-dispatch [:group-chats.ui/make-admin-pressed chat-id (:public-key member)])}])
    (when-not (:admin? member)
-     [list-item/list-item
-      {:theme               :action
-       :title               :t/remove-from-chat
+     [quo/list-item
+      {:theme               :accent
+       :title               (i18n/label :t/remove-from-chat)
        :accessibility-label :remove-from-chat
        :icon                :main-icons/remove-contact
        :on-press            #(chat.sheets/hide-sheet-and-dispatch [:group-chats.ui/remove-member-pressed chat-id (:public-key member)])}])])
 
 (defn render-member [chat-id {:keys [public-key] :as member} admin? current-user-identity]
-  [list-item/list-item
+  [quo/list-item
    (merge
-    {:title                (contact/format-name member)
+    {:title               (contact/format-name member)
      :accessibility-label :member-item
-     :icon                [chat-icon/contact-icon-contacts-tab member]
+     :icon                [chat-icon/contact-icon-contacts-tab
+                           (multiaccounts/displayed-photo member)]
      :on-press            (when (not= public-key current-user-identity)
                             #(re-frame/dispatch [(if platform/desktop? :show-profile-desktop :chat.ui/show-profile) public-key]))}
     (when (:admin? member)
-      {:accessories [(i18n/label :t/group-chat-admin)]})
+      {:accessory      :text
+       :accessory-text (i18n/label :t/group-chat-admin)})
     (when (and admin?
                (not (:admin? member))
                (not= public-key current-user-identity))
-      {:accessories [[react/touchable-highlight {:on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                                           {:content (fn []
-                                                                                                       [member-sheet chat-id member admin?])}])
-                                                 :accessibility-label :menu-option}
-                      [vector-icons/icon :main-icons/more {:accessibility-label :options}]]]}))])
+      {:accessory [quo/button {:on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                                         {:content (fn []
+                                                                                     [member-sheet chat-id member admin?])}])
+                               :type                :icon
+                               :theme               :icon
+                               :accessibility-label :menu-option}
+                   :main-icons/more]}))])
 
 (defview chat-group-members-view [chat-id admin? current-user-identity]
   (letsubs [members [:contacts/current-chat-contacts]]
@@ -75,12 +77,12 @@
 
 (defn members-list [{:keys [chat-id admin? current-pk allow-adding-members?]}]
   [react/view
-   [list-item/list-item {:title :t/members-title :type :section-header}]
+   [quo/list-header (i18n/label :t/members-title)]
    (when allow-adding-members?
-     [list-item/list-item
-      {:title    :t/add-members
+     [quo/list-item
+      {:title    (i18n/label :t/add-members)
        :icon     :main-icons/add-contact
-       :theme    :action
+       :theme    :accent
        :on-press #(re-frame/dispatch [:navigate-to :add-participants-toggle-list])}])
    [chat-group-members-view chat-id admin? current-pk]])
 
@@ -109,9 +111,9 @@
                                 :subtitle-icon :icons/tiny-group})}
           [react/view profile.components.styles/profile-form
            (when joined?
-             [list-item/list-item
-              {:theme               :action
-               :title               :t/leave-chat
+             [quo/list-item
+              {:theme               :negative
+               :title               (i18n/label :t/leave-chat)
                :accessibility-label :leave-chat-button
                :icon                :main-icons/arrow-left
                :on-press            #(re-frame/dispatch [:group-chats.ui/leave-chat-pressed chat-id])}])

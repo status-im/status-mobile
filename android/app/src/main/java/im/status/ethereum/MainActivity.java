@@ -199,7 +199,7 @@ public class MainActivity extends ReactFragmentActivity
     private static final Integer FREQUENCY_OF_REMINDER_IN_PERCENT = 5;
 
     private boolean shouldShowRootedNotification() {
-        if (RootUtil.isDeviceRooted()) {
+        if (RootUtil.isDeviceRooted() && BuildConfig.ENABLE_ROOT_ALERT == "1") {
             if (userRejectedRootedNotification()) {
                 return ((Math.random() * 100) < FREQUENCY_OF_REMINDER_IN_PERCENT);
             } else return true;

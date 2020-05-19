@@ -85,11 +85,5 @@
    :margin-horizontal 12
    :margin-vertical   15})
 
-(def delete-button
-  {:background-color colors/white-persist})
-
-(def delete-button-text
-  {:color colors/red})
-
 (def container
   components.styles/flex)

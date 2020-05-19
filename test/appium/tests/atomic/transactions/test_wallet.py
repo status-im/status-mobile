@@ -90,7 +90,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         sign_in_view.just_fyi('Go back to online and check that balance is updated')
         sign_in_view.toggle_airplane_mode()
-        wallet_view.wait_balance_is_changed('ETHro')
+        wallet_view.wait_balance_is_changed('ETH')
         wallet_view.wait_balance_is_changed('STT')
 
         sign_in_view.just_fyi('Send some tokens to other account')
@@ -179,7 +179,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view.recover_access(sender['passphrase'])
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
-        eth_value = wallet_view.get_asset_amount_by_name('ETHro')
+        eth_value = wallet_view.get_asset_amount_by_name('ETH')
         stt_value = wallet_view.get_asset_amount_by_name('STT')
         if eth_value == 0 or stt_value == 0:
             self.driver.fail('No funds!')

@@ -3,7 +3,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.list-item.views :as list-item]
+            [quo.core :as quo]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
@@ -11,19 +11,18 @@
 
 (views/defview assets [address]
   (views/letsubs [{:keys [tokens]} [:wallet/visible-assets-with-values address]
-                  currency [:wallet/currency]
-                  prices-loading? [:prices-loading?]]
-    [list/flat-list
-     {:data      tokens
-      :key-fn    (comp str :symbol)
-      :render-fn (wallet.accounts/render-asset
+                  currency [:wallet/currency]]
+    (let [render (wallet.accounts/render-asset
                   (:code currency)
-                  prices-loading?
-                  #(re-frame/dispatch [:wallet.send/set-symbol (:symbol %)]))}]))
+                  #(re-frame/dispatch [:wallet.send/set-symbol (:symbol %)]))]
+      [:<>
+       (for [token tokens]
+         ^{:key (str (:symbol token))}
+         [render token])])))
 
 (defn render-account [field event]
   (fn [account]
-    [list-item/list-item
+    [quo/list-item
      {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
       :title    (:name account)
       :on-press #(re-frame/dispatch [event field account])}]))
@@ -51,27 +50,27 @@
          50)}])))
 
 (defn show-accounts-list []
-  (re-frame/dispatch [:bottom-sheet/hide-sheet])
+  (re-frame/dispatch [:bottom-sheet/hide])
   (js/setTimeout #(re-frame/dispatch [:bottom-sheet/show-sheet
                                       {:content        (fn [] [accounts-list :to :wallet.send/set-field])
                                        :content-height 300}]) 400))
 
 (defn choose-recipient []
   [react/view
-   (for [item [{:title    (i18n/label :t/accounts)
-                :icon     :main-icons/profile
-                :theme    :action
+   (for [item [{:title               (i18n/label :t/accounts)
+                :icon                :main-icons/profile
+                :theme               :accent
                 :accessibility-label :chose-recipient-accounts-button
-                :on-press show-accounts-list}
-               {:title    (i18n/label :t/scan-qr)
-                :icon     :main-icons/qr
-                :theme    :action
+                :on-press            show-accounts-list}
+               {:title               (i18n/label :t/scan-qr)
+                :icon                :main-icons/qr
+                :theme               :accent
                 :accessibility-label :chose-recipient-scan-qr
-                :on-press request-camera-permissions}
-               {:title    (i18n/label :t/recipient-code)
-                :icon     :main-icons/address
-                :theme    :action
+                :on-press            request-camera-permissions}
+               {:title               (i18n/label :t/recipient-code)
+                :icon                :main-icons/address
+                :theme               :accent
                 :accessibility-label :choose-recipient-recipient-code
-                :on-press #(re-frame/dispatch [:wallet.send/navigate-to-recipient-code])}]]
+                :on-press            #(re-frame/dispatch [:wallet.send/navigate-to-recipient-code])}]]
      ^{:key item}
-     [list-item/list-item item])])
+     [quo/list-item item])])

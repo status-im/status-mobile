@@ -8,7 +8,6 @@
             [status-im.ui.screens.wallet.send.styles :as styles]
             [status-im.ui.components.bottom-panel.views :as bottom-panel]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list.views :as list]
@@ -18,8 +17,9 @@
             [status-im.ui.screens.wallet.send.sheets :as sheets]
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.utils.utils :as utils]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [quo.core :as quo]
+            [status-im.ethereum.core :as ethereum]))
 
 (defn header [{:keys [label small-screen?]}]
   [react/view (styles/header small-screen?)
@@ -52,36 +52,40 @@
         [icons/icon :main-icons/dropdown {:color colors/gray}])]]))
 
 (defn render-account [account {:keys [amount decimals] :as token} event]
-  [list-item/list-item
-   {:icon        [chat-icon/custom-icon-view-list (:name account) (:color account)]
-    :title       (:name account)
-    :subtitle    (when token
-                   (str (wallet.utils/format-amount amount decimals)
-                        " "
-                        (wallet.utils/display-symbol token)))
-    :accessories [:chevron]
-    :on-press    #(do
-                    (re-frame/dispatch [:dismiss-keyboard])
-                    (re-frame/dispatch [:bottom-sheet/show-sheet
-                                        {:content        (fn [] [sheets/accounts-list :from event])
-                                         :content-height 300}]))}])
+  [quo/list-item
+   {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
+    :title    (:name account)
+    :subtitle (when token
+                (str (wallet.utils/format-amount amount decimals)
+                     " "
+                     (wallet.utils/display-symbol token)))
+    :chevron  true
+    :on-press #(do
+                 (re-frame/dispatch [:dismiss-keyboard])
+                 (re-frame/dispatch [:bottom-sheet/show-sheet
+                                     {:content        (fn [] [sheets/accounts-list :from event])
+                                      :content-height 300}]))}])
 
 (defn render-contact [contact from-chat?]
   (if from-chat?
-    [list-item/list-item {:title    (multiaccounts/displayed-name contact)
-                          :subtitle (:address contact)
-                          :icon     (multiaccounts/displayed-photo contact)}]
-    [list-item/list-item
-     {:title               (utils/get-shortened-checksum-address
-                            (if (string? contact) contact (:address contact)))
-      :subtitle            (when-not contact (i18n/label :t/wallet-choose-recipient))
+    [quo/list-item {:title    (multiaccounts/displayed-name contact)
+                    :subtitle (:address contact)
+                    :icon     [chat-icon/contact-icon-contacts-tab
+                               (multiaccounts/displayed-photo contact)]}]
+    [quo/list-item
+     {:title               (if-not contact
+                             (i18n/label :t/wallet-choose-recipient)
+                             [quo/text {:size      :large
+                                        :monospace true}
+                              (utils/get-shortened-checksum-address
+                               (if (string? contact) contact (:address contact)))])
       :accessibility-label :choose-recipient-button
       :on-press            #(do
                               (re-frame/dispatch [:dismiss-keyboard])
                               (re-frame/dispatch [:bottom-sheet/show-sheet
                                                   {:content        sheets/choose-recipient
                                                    :content-height 200}]))
-      :accessories         [:chevron]}]))
+      :chevron             true}]))
 
 (defn set-max [token]
   [react/touchable-highlight
@@ -98,11 +102,11 @@
       [react/text {:style {:color     colors/gray :margin-left 16 :margin-bottom 8
                            :font-size 15 :line-height 22}}
        (str (i18n/format-currency (* amount price) (:code wallet-currency)) " " (:code wallet-currency))])))
-
 (views/defview sheet [_]
   (views/letsubs [{:keys [amount-error amount-text
                           request?
-                          from token to sign-enabled? from-chat?] :as tx}
+                          from token to sign-enabled? from-chat?]
+                   :as   tx}
                   [:wallet.send/prepare-transaction-with-balance]
                   prices [:prices]
                   wallet-currency [:wallet/currency]
@@ -110,10 +114,10 @@
                   window-width [:dimensions/window-width]
                   keyboard-height [:keyboard-height]]
     (let [small-screen? (< (- window-height keyboard-height) 450)
-          to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))]
+          to-norm       (ethereum/normalized-hex (if (string? to) to (:address to)))]
       [react/view {:style (styles/sheet small-screen?)}
        [react/view {:flex-direction :row :padding-horizontal 16 :align-items :center
-                    :margin-top     12 :margin-bottom 4}
+                    :margin-top     12   :margin-bottom      4}
         [react/text-input
          {:style               {:font-size (if small-screen? 24 38)
                                 :max-width (- (* (/ window-width 4) 3) 106)
@@ -138,14 +142,15 @@
          [set-max token])
        [components/separator]
        (when-not small-screen?
-         [list-item/list-item {:type :section-header :title :t/from}])
+         [quo/list-header (i18n/label :t/from)])
        [react/view {:flex-direction :row :flex 1 :align-items :center}
         (when small-screen?
           [react/i18n-text {:style {:width 50 :text-align :right :color colors/gray} :key :t/from}])
         [react/view {:flex 1}
          [render-account from token :wallet.send/set-field]]]
        (when-not small-screen?
-         [list-item/list-item {:type :section-header :title :t/to}])
+         [quo/list-header
+          (i18n/label :t/to)])
        [react/view {:flex-direction :row :flex 1 :align-items :center}
         (when small-screen?
           [react/i18n-text {:style {:width 50 :text-align :right :color colors/gray} :key :t/to}])
@@ -153,22 +158,25 @@
          [render-contact to from-chat?]]]
        [toolbar/toolbar
         {:left
-         {:label    :t/cancel
-          :type     :secondary
-          :on-press #(re-frame/dispatch [:wallet/cancel-transaction-command])}
+         [quo/button
+          {:type     :secondary
+           :on-press #(re-frame/dispatch [:wallet/cancel-transaction-command])}
+          (i18n/label :t/cancel)]
          :right
-         {:label               (if (and (not request?) from-chat? (not to-norm)) :t/wallet-send :t/next)
-          :accessibility-label :send-transaction-bottom-sheet
-          :disabled?           (not sign-enabled?)
-          :on-press            #(re-frame/dispatch
-                                 [(cond
-                                    request?
-                                    :wallet.ui/sign-transaction-button-clicked-from-request
-                                    from-chat?
-                                    :wallet.ui/sign-transaction-button-clicked-from-chat
-                                    :else
-                                    :wallet.ui/sign-transaction-button-clicked) tx])}}]])))
-
+         [quo/button
+          {:accessibility-label :send-transaction-bottom-sheet
+           :disabled            (not sign-enabled?)
+           :on-press            #(re-frame/dispatch
+                                  [(cond
+                                     request?
+                                     :wallet.ui/sign-transaction-button-clicked-from-request
+                                     from-chat?
+                                     :wallet.ui/sign-transaction-button-clicked-from-chat
+                                     :else
+                                     :wallet.ui/sign-transaction-button-clicked) tx])}
+          (if (and (not request?) from-chat? (not to-norm))
+            (i18n/label :t/wallet-send)
+            (i18n/label :t/next))]}]])))
 (views/defview request-sheet [_]
   (views/letsubs [{:keys [amount-error amount-text from token sign-enabled?] :as tx}
                   [:wallet.request/prepare-transaction-with-balance]
@@ -201,7 +209,8 @@
        [fiat-value amount-text token prices wallet-currency]
        [components/separator]
        (when-not small-screen?
-         [list-item/list-item {:type :section-header :title :t/to}])
+         [quo/list-header
+          (i18n/label :t/to)])
        [react/view {:flex-direction :row :flex 1 :align-items :center}
         (when small-screen?
           [react/i18n-text {:style {:width 50 :text-align :right :color colors/gray} :key :t/to}])
@@ -209,15 +218,18 @@
          [render-account from token :wallet.request/set-field]]]
        [toolbar/toolbar
         {:left
-         {:label    :t/cancel
-          :type     :secondary
-          :on-press #(re-frame/dispatch [:wallet/cancel-transaction-command])}
+         [react/view {:padding-horizontal 8}
+          [quo/button
+           {:type     :secondary
+            :on-press #(re-frame/dispatch [:wallet/cancel-transaction-command])}
+           (i18n/label :t/cancel)]]
          :right
-         {:label               :t/wallet-request
-          :accessibility-label :request-transaction-bottom-sheet
-          :disabled?           (not sign-enabled?)
-          :on-press            #(re-frame/dispatch
-                                 [:wallet.ui/request-transaction-button-clicked tx])}}]])))
+         [quo/button
+          {:accessibility-label :request-transaction-bottom-sheet
+           :disabled            (not sign-enabled?)
+           :on-press            #(re-frame/dispatch
+                                  [:wallet.ui/request-transaction-button-clicked tx])}
+          (i18n/label :t/wallet-request)]}]])))
 
 (views/defview select-account-sheet [{:keys [from message]}]
   (views/letsubs [window-height [:dimensions/window-height]
@@ -229,7 +241,8 @@
        [react/view {:flex-direction  :row :padding-horizontal 24 :align-items :center
                     :margin-vertical (if small-screen? 8 16)}]
        (when-not small-screen?
-         [list-item/list-item {:type :section-header :title :t/from}])
+         [quo/list-header
+          (i18n/label :t/from)])
        [react/view {:flex-direction :row :flex 1 :align-items :center}
         (when small-screen?
           [react/i18n-text {:style {:width 50 :text-align :right :color colors/gray} :key :t/from}])
@@ -237,17 +250,20 @@
          [render-account from nil ::commands/set-selected-account]]]
        [toolbar/toolbar
         {:left
-         {:label    :t/cancel
-          :type     :secondary
-          :on-press #(re-frame/dispatch [:set :commands/select-account nil])}
+         [react/view {:padding-horizontal 8}
+          [quo/button
+           {:type     :secondary
+            :on-press #(re-frame/dispatch [:set :commands/select-account nil])}
+           (i18n/label :t/cancel)]]
          :right
-         {:label               :t/share
-          :accessibility-label :select-account-bottom-sheet
-          :disabled?           (nil? from)
-          :on-press            #(re-frame/dispatch
-                                 [::commands/accept-request-address-for-transaction
-                                  (:message-id message)
-                                  (:address from)])}}]])))
+         [quo/button
+          {:accessibility-label :select-account-bottom-sheet
+           :disabled            (nil? from)
+           :on-press            #(re-frame/dispatch
+                                  [::commands/accept-request-address-for-transaction
+                                   (:message-id message)
+                                   (:address from)])}
+          (i18n/label :t/share)]}]])))
 
 (defview prepare-transaction []
   (letsubs [tx [:wallet/prepare-transaction]]

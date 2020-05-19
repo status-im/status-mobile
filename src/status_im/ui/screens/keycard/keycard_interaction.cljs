@@ -29,7 +29,8 @@
     (fn [{:keys [on-card-connected connected? on-card-disconnected params]}]
       (let [translation (or (get-in params [:state-translations @state])
                             (get state->translations @state))]
-        [react/view {:style styles/container-style}
+        [react/view {:style  styles/container-style
+                     :height 286}
          [react/view {:height        200
                       :margin-bottom 20}
           [animated-circles {:state                state

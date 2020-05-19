@@ -6,16 +6,18 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.animation :as anim]
+            [quo.core :as quo]
             [status-im.i18n :as i18n]))
 
 (defn button [showing?]
-  [react/touchable-highlight
+  [quo/button
    {:on-press            (fn [_]
                            (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet (when-not showing? :extensions)}])
                            (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
-    :accessibility-label :show-extensions-icon}
-   [icons/icon :main-icons/commands {:container-style {:margin 14 :margin-right 10}
-                                     :color           (if showing? colors/blue colors/gray)}]])
+    :accessibility-label :show-extensions-icon
+    :type                :icon
+    :theme               (if showing? :main :disabled)}
+   :main-icons/commands])
 
 (defn show-panel-anim
   [bottom-anim-value alpha-value]

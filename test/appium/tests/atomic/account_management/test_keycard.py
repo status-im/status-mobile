@@ -46,7 +46,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.just_fyi('Check that after restring account with assets is restored')
         wallet_view = sign_in.wallet_button.click()
         wallet_view.set_up_wallet()
-        for asset in ['ETHro', 'ADI', 'STT']:
+        for asset in ['ETH', 'ADI', 'STT']:
             if wallet_view.get_asset_amount_by_name(asset) == 0:
                 self.errors.append('Asset %s was not restored')
 

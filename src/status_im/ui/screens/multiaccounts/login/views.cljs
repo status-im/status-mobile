@@ -3,8 +3,6 @@
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.checkbox.view :as checkbox]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.multiaccounts.login.styles :as styles]
@@ -14,7 +12,9 @@
             [status-im.utils.utils :as utils]
             [quo.core :as quo]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.colors :as colors])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn login-multiaccount [^js password-text-input]
@@ -92,18 +92,20 @@
        [react/view styles/processing-view
         [react/activity-indicator {:animating true}]
         [react/i18n-text {:style styles/processing :key :processing}]])
-     [react/view {:style (styles/bottom-button-container)}
-      [components.common/button
-       {:label        (i18n/label :t/access-existing-keys)
-        :button-style styles/bottom-button
-        :background?  false
-        :on-press     #(do
-                         (react/dismiss-keyboard!)
-                         (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))}]
-      [components.common/button
-       {:label        (i18n/label :t/submit)
-        :button-style styles/bottom-button
-        :label-style  {:color (if (or (not sign-in-enabled?) processing) colors/gray colors/blue)}
-        :background?  true
-        :disabled?    (or (not sign-in-enabled?) processing)
-        :on-press     #(login-multiaccount @password-text-input)}]]]))
+
+     [toolbar/toolbar
+      {:show-border? true
+       :size         :large
+       :left
+       [quo/button
+        {:type     :secondary
+         :on-press #(do
+                      (react/dismiss-keyboard!)
+                      (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))}
+        (i18n/label :t/access-existing-keys)]
+       :right
+       [react/view {:padding-horizontal 8}
+        [quo/button
+         {:disabled (or (not sign-in-enabled?) processing)
+          :on-press #(login-multiaccount @password-text-input)}
+         (i18n/label :t/submit)]]}]]))

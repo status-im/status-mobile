@@ -173,7 +173,7 @@ class AdvancedButton(BaseButton):
 
     def __init__(self, driver):
         super(AdvancedButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Advanced')
+        self.locator = self.Locator.accessibility_id('advanced-button')
 
     def click(self):
         self.scroll_to_element().click()

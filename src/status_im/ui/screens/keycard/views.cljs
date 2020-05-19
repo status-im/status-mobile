@@ -6,14 +6,14 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.list-item.views :as list-item]
+            [quo.core :as quo]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.constants :as constants]
-            [status-im.ui.components.button :as button]
             [status-im.hardwallet.login :as hardwallet.login]
             [status-im.ui.screens.hardwallet.frozen-card.view :as frozen-card.view])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
@@ -47,17 +47,8 @@
                    :style       {:width  144
                                  :height 114}}]]
     [react/view {:margin-bottom 32}
-     [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:navigate-back])}
-      [react/view {:background-color colors/blue-light
-                   :align-items      :center
-                   :justify-content  :center
-                   :flex-direction   :row
-                   :width            133
-                   :height           44
-                   :border-radius    10}
-       [react/text {:style {:color colors/blue}}
-        (i18n/label :t/ok-got-it)]]]]]])
+     [quo/button {:on-press #(re-frame/dispatch [:navigate-back])}
+      (i18n/label :t/ok-got-it)]]]])
 
 ;; NOTE(Ferossgp): Seems like it should be in popover
 (defn wrong []
@@ -87,17 +78,8 @@
                    :style  {:width  255
                             :height 124}}]]
     [react/view {:margin-bottom 32}
-     [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:navigate-back])}
-      [react/view {:background-color colors/blue-light
-                   :align-items      :center
-                   :justify-content  :center
-                   :flex-direction   :row
-                   :width            133
-                   :height           44
-                   :border-radius    10}
-       [react/text {:style {:color colors/blue}}
-        (i18n/label :t/ok-got-it)]]]]]])
+     [quo/button {:on-press #(re-frame/dispatch [:navigate-back])}
+      (i18n/label :t/ok-got-it)]]]])
 
 (defn unpaired []
   [react/view {:flex             1
@@ -128,22 +110,13 @@
     [react/view {:margin-bottom  32
                  :flex-direction :column
                  :align-items    :center}
-     [react/touchable-highlight
+     [quo/button
       {:on-press #(re-frame/dispatch [:keycard.login.ui/pair-card-pressed])}
-      [react/view {:background-color colors/blue-light
-                   :align-items      :center
-                   :justify-content  :center
-                   :flex-direction   :row
-                   :width            133
-                   :height           44
-                   :border-radius    10}
-       [react/text {:style {:color colors/blue}}
-        (i18n/label :t/pair-this-card)]]]
+      (i18n/label :t/pair-this-card)]
      [react/view {:margin-top 27}
-      [react/touchable-highlight
-       {:on-press #(re-frame/dispatch [:keycard.login.ui/dismiss-pressed])}
-       [react/text {:style {:color colors/blue}}
-        (i18n/label :t/dismiss)]]]]]])
+      [quo/button {:type     :secondary
+                   :on-press #(re-frame/dispatch [:keycard.login.ui/dismiss-pressed])}
+       (i18n/label :t/dismiss)]]]]])
 
 ;; NOTE(Ferossgp): Seems like it should be in popover
 (defn not-keycard []
@@ -185,17 +158,8 @@
         [vector-icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
                                                            :container-style {:margin-left 5}}]]]]]
     [react/view {:margin-bottom 32}
-     [react/touchable-highlight
-      {:on-press #(re-frame/dispatch [:navigate-back])}
-      [react/view {:background-color colors/blue-light
-                   :align-items      :center
-                   :justify-content  :center
-                   :flex-direction   :row
-                   :width            133
-                   :height           44
-                   :border-radius    10}
-       [react/text {:style {:color colors/blue}}
-        (i18n/label :t/ok-got-it)]]]]]])
+     [quo/button {:on-press #(re-frame/dispatch [:navigate-back])}
+      (i18n/label :t/ok-got-it)]]]])
 
 (defn photo [_ _]
   (reagent/create-class
@@ -213,16 +177,16 @@
 
 (defn access-is-reset [{:keys [hide-login-actions?]}]
   [react/view
-   {:style {:flex 1
+   {:style {:flex        1
             :align-items :center}}
    [react/view
-    {:style {:flex 1
+    {:style {:flex            1
              :align-items     :center
              :justify-content :center}}
     [react/view
      {:style
       {:background-color colors/green-transparent-10
-       :margin-bottom 32
+       :margin-bottom    32
        :width            40
        :height           40
        :align-items      :center
@@ -236,15 +200,13 @@
     [react/text (i18n/label :t/keycard-can-use-with-new-passcode)]]
    (when-not hide-login-actions?
      [react/view
-      {:style {:width 160
+      {:style {:width         160
                :margin-bottom 15}}
-      [button/button
-       {:type            :main
-        :style           {:align-self :stretch}
-        :container-style {:height 52}
-        :label           (i18n/label :t/open)
-        :on-press        #(re-frame/dispatch
-                           [::hardwallet.login/login-after-reset])}]])])
+      [react/view {:flex-direction :row
+                   :height         52}
+       [quo/button {:on-press #(re-frame/dispatch
+                                [::hardwallet.login/login-after-reset])}
+        (i18n/label :t/open)]]])])
 
 (defn frozen-card []
   [frozen-card.view/frozen-card
@@ -297,7 +259,7 @@
 (defview login-pin [{:keys [back-button-handler
                             hide-login-actions?
                             default-enter-step]
-                     :or {default-enter-step :login}}]
+                     :or   {default-enter-step :login}}]
   (letsubs [pin [:hardwallet/pin]
             enter-step [:hardwallet/pin-enter-step]
             status [:hardwallet/pin-status]
@@ -310,27 +272,27 @@
           ;; TODO(rasom): this hack fixes state mess when more then two
           ;; pin-view instances are used at the same time. Should be properly
           ;; refactored instead
-          enter-step (or enter-step default-enter-step)]
+          enter-step                 (or enter-step default-enter-step)]
       [react/view styles/container
        [topbar/topbar
         {:accessories [(when-not hide-login-actions?
                          {:icon    :main-icons/more
                           :handler #(re-frame/dispatch [:keycard.login.pin.ui/more-icon-pressed])})]
-         :content (cond
-                    (= :reset enter-step)
-                    [step-view 1]
+         :content     (cond
+                        (= :reset enter-step)
+                        [step-view 1]
 
-                    (= :reset-confirmation enter-step)
-                    [step-view 2]
+                        (= :reset-confirmation enter-step)
+                        [step-view 2]
 
-                    (and (= :puk enter-step)
-                         (not= :blocked-card status))
-                    [react/view
-                     {:style {:flex            1
-                              :justify-content :center
-                              :align-items     :center}}
-                     [react/text {:style {:color colors/gray}}
-                      (i18n/label :t/enter-puk-code)]])
+                        (and (= :puk enter-step)
+                             (not= :blocked-card status))
+                        [react/view
+                         {:style {:flex            1
+                                  :justify-content :center
+                                  :align-items     :center}}
+                         [react/text {:style {:color colors/gray}}
+                          (i18n/label :t/enter-puk-code)]])
          :navigation
          {:icon                :main-icons/arrow-left
           :accessibility-label :back-button
@@ -399,20 +361,21 @@
                                            #{:reset :reset-confirmation :puk}
                                            enter-step))}])
         (when-not hide-login-actions?
-          [react/view {:margin-bottom (if small-screen? 25 32)}
-           [react/touchable-highlight
-            {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])}
-            [react/text {:style {:color colors/blue}}
-             (i18n/label :t/recover-key)]]])]])))
+          [toolbar/toolbar
+           {:center [quo/button
+                     {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
+                      :type     :secondary}
+                     (i18n/label :t/recover-key)]}])]])))
 
 (defn- more-sheet-content []
   [react/view {:flex 1}
-   [list-item/list-item
-    {:theme     :action
-     :title     :t/create-new-key
-     :icon      :main-icons/profile
-     :on-press  #(re-frame/dispatch [:multiaccounts.create.ui/get-new-key])}]])
+   [quo/list-item
+    {:theme    :accent
+     :title    (i18n/label :t/create-new-key)
+     :icon     :main-icons/profile
+     :on-press #(do
+                  (re-frame/dispatch [:bottom-sheet/hide])
+                  (re-frame/dispatch [:multiaccounts.create.ui/get-new-key]))}]])
 
 (def more-sheet
-  {:content        more-sheet-content
-   :content-height 65})
+  {:content more-sheet-content})

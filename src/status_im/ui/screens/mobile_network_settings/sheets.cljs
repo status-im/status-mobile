@@ -5,7 +5,7 @@
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.list-item.views :as list-item]))
+            [quo.core :as quo]))
 
 (defn title [label]
   [react/view {:style styles/title}
@@ -59,16 +59,16 @@
    [react/view {:align-items :center}
     [title :mobile-syncing-sheet-title]
     [details :mobile-syncing-sheet-details]]
-   [list-item/list-item
-    {:theme    :action
-     :title    :t/mobile-network-continue-syncing
-     :subtitle :t/mobile-network-continue-syncing-details
+   [quo/list-item
+    {:theme    :accent
+     :title    (i18n/label :t/mobile-network-continue-syncing)
+     :subtitle (i18n/label :t/mobile-network-continue-syncing-details)
      :icon     :main-icons/network
      :on-press #(re-frame/dispatch [:mobile-network/continue-syncing])}]
-   [list-item/list-item
-    {:theme    :action-destructive
-     :title    :t/mobile-network-stop-syncing
-     :subtitle :t/mobile-network-stop-syncing-details
+   [quo/list-item
+    {:theme    :negative
+     :title    (i18n/label :t/mobile-network-stop-syncing)
+     :subtitle (i18n/label :t/mobile-network-stop-syncing-details)
      :icon     :main-icons/cancel
      :on-press #(re-frame/dispatch [:mobile-network/stop-syncing])}]
    [separator]
@@ -82,10 +82,10 @@
    [react/view {:align-items :center}
     [title :t/mobile-network-sheet-offline]
     [details :t/mobile-network-sheet-offline-details]]
-   [list-item/list-item
-    {:theme    :action
-     :title    :t/mobile-network-start-syncing
-     :subtitle :t/mobile-network-continue-syncing-details
+   [quo/list-item
+    {:theme    :accent
+     :title    (i18n/label :t/mobile-network-start-syncing)
+     :subtitle (i18n/label :t/mobile-network-continue-syncing-details)
      :icon     :main-icons/network
      :on-press #(re-frame/dispatch [:mobile-network/continue-syncing])}]
    [separator]

@@ -1,14 +1,13 @@
 (ns status-im.ui.screens.keycard.onboarding.views
   (:require [re-frame.core :as re-frame]
             [status-im.hardwallet.onboarding :as hardwallet.onboarding]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar :as bottom-toolbar]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
@@ -22,11 +21,9 @@
     [react/view styles/container
      [topbar/topbar]
      [react/view {:flex            1
-                  :flex-direction  :column
                   :justify-content :space-between
                   :align-items     :center}
-      [react/view {:flex-direction :column
-                   :align-items    :center}
+      [react/view {:align-items :center}
        [react/view
         [react/view {:align-items     :center
                      :justify-content :center}
@@ -88,18 +85,8 @@
                                                   :padding-right 35}}
                               text]]]]))]
       [react/view {:margin-bottom 40}
-       [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:keycard.onboarding.intro.ui/begin-setup-pressed])}
-        [react/view {:background-color colors/blue-light
-                     :align-items      :center
-                     :justify-content  :center
-                     :flex-direction   :row
-                     :width            133
-                     :height           44
-                     :border-radius    10}
-         [react/text {:style                {:color colors/blue}
-                      :accessibility-label  :begin-set-up}
-          (i18n/label :t/begin-set-up)]]]]]]))
+       [quo/button {:on-press #(re-frame/dispatch [:keycard.onboarding.intro.ui/begin-setup-pressed])}
+        (i18n/label :t/begin-set-up)]]]]))
 
 (defview puk-code []
   (letsubs [secrets [:hardwallet-secrets]
@@ -148,10 +135,10 @@
              (i18n/label :t/puk-code)]]
            [react/view {:justify-content :flex-start
                         :flex            1}
-            [react/text {:style              {:typography  :header
-                                              :font-family "monospace"
-                                              :text-align  :center
-                                              :color       colors/blue}
+            [react/text {:style               {:typography  :header
+                                               :font-family "monospace"
+                                               :text-align  :center
+                                               :color       colors/blue}
                          :accessibility-label :puk-code}
              puk-code]]]]
          [react/view {:margin-top 16}
@@ -185,16 +172,12 @@
          [react/view {:margin-top 16}
           [react/text {:style {:color colors/gray}}
            (i18n/label :t/pair-code-explanation)]]]]
-       [react/view {:flex-direction  :row
-                    :justify-content :space-between
-                    :align-items     :center
-                    :width           "100%"
-                    :height          86}
-        [react/view components.styles/flex]
-        [react/view {:margin-right 20}
-         [components.common/bottom-button
-          {:on-press #(re-frame/dispatch [:keycard.onboarding.puk-code.ui/next-pressed])
-           :forward? true}]]]]]]))
+       [bottom-toolbar/toolbar
+        {:right
+         [quo/button {:type     :secondary
+                      :after    :main-icon/next
+                      :on-press #(re-frame/dispatch [:keycard.onboarding.puk-code.ui/next-pressed])}
+          (i18n/label :t/next)]}]]]]))
 
 (defview pin []
   (letsubs [pin [:hardwallet/pin]
@@ -298,22 +281,17 @@
                           :margin-left        12}
               [react/text {:style {:color colors/gray}}
                (str (inc i) ". ")]
-              [react/text {:accessibility-label  (str "word" i)}
+              [react/text {:accessibility-label (str "word" i)}
                word]])])]
        [react/view {:margin-top 24}
         [react/text {:style {:text-align :center}}
          (i18n/label :t/keycard-onboarding-recovery-phrase-description)]]]
-      [react/view {:flex-direction  :row
-                   :justify-content :space-between
-                   :align-items     :center
-                   :width           "100%"
-                   :height          86}
-       [react/view components.styles/flex]
-       [react/view {:margin-right 20}
-        [components.common/bottom-button
-         {:on-press #(re-frame/dispatch [:keycard.onboarding.recovery-phrase.ui/next-pressed])
-          :label    (i18n/label :t/confirm)
-          :forward? true}]]]]]))
+      [bottom-toolbar/toolbar
+       {:right
+        [quo/button {:on-press #(re-frame/dispatch [:keycard.onboarding.recovery-phrase.ui/next-pressed])
+                     :type     :secondary
+                     :after    :main-icon/next}
+         (i18n/label :t/confirm)]}]]]))
 
 (defview recovery-phrase-confirm-word []
   (letsubs [word [:hardwallet-recovery-phrase-word]
@@ -362,20 +340,16 @@
          [react/view {:margin-top 5
                       :width      250}
           [tooltip/tooltip error]]]
-        [react/view {:flex-direction  :row
-                     :justify-content :space-between
-                     :align-items     :center
-                     :width           "100%"
-                     :height          86}
-         [react/view {:margin-left 20}
-          [components.common/bottom-button
-           {:on-press #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/back-pressed])
-            :back?    true
-            :label    (i18n/label :t/back)}]]
-         [react/view {:margin-right 20}
-          [components.common/bottom-button
-           {:on-press            #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed])
-            :label               (i18n/label :t/next)
-            :accessibility-label :next
-            :disabled?           (empty? input-word)
-            :forward?            true}]]]]])))
+        [bottom-toolbar/toolbar
+         {:left
+          [quo/button {:on-press #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/back-pressed])
+                       :type     :secondary
+                       :before   :main-icon/back}
+           (i18n/label :t/back)]
+          :right
+          [quo/button {:on-press            #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed])
+                       :accessibility-label :next
+                       :disabled            (empty? input-word)
+                       :type                :secondary
+                       :after               :main-icon/next}
+           (i18n/label :t/next)]}]]])))

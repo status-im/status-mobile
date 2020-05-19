@@ -4,38 +4,12 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.common :as components.common]
+            [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar]
             [status-im.constants :as constants]
             [status-im.ui.screens.keycard.views :as keycard.views]
             [status-im.hardwallet.common :as hardwallet.common]))
-
-(defn- action-row [{:keys [icon label on-press color-theme]}]
-  [react/touchable-highlight
-   {:on-press on-press}
-   [react/view {:flex-direction :row
-                :margin-top     15}
-    [react/view {:background-color (case color-theme
-                                     :red colors/red-transparent-10
-                                     colors/blue-light)
-                 :width            40
-                 :height           40
-                 :border-radius    50
-                 :align-items      :center
-                 :justify-content  :center}
-     [vector-icons/icon icon {:color (case color-theme
-                                       :red colors/red
-                                       colors/blue)}]]
-    [react/view {:align-items     :center
-                 :justify-content :center
-                 :margin-left     16}
-     [react/text {:style {:font-size 17
-                          :color     (case color-theme
-                                       :red colors/red
-                                       colors/blue)}}
-      (i18n/label label)]]]])
 
 (defn- activity-indicator [loading?]
   (when loading?
@@ -44,12 +18,14 @@
                                 :size      :large}]]))
 
 (defn- reset-card-next-button [disabled?]
-  [react/view {:margin-right  18
-               :margin-bottom 15}
-   [components.common/bottom-button
-    {:on-press   #(re-frame/dispatch [:keycard-settings.ui/reset-card-next-button-pressed])
-     :disabled?  disabled?
-     :forward?   true}]])
+  [react/view {:margin-right  6
+               :margin-bottom 8}
+   [quo/button
+    ;; TODO: Should have label?:
+    {:on-press  #(re-frame/dispatch [:keycard-settings.ui/reset-card-next-button-pressed])
+     :disabled  disabled?
+     :type      :secondary
+     :after     :main-icon/next}]])
 
 (defview reset-card []
   (letsubs [disabled? [:keycard-reset-card-disabled?]]
@@ -92,10 +68,8 @@
             pairing [:keycard-multiaccount-pairing]]
     [react/view {:flex 1}
      [topbar/topbar {:title :t/status-keycard}]
-     [react/view {:flex             1
-                  :background-color colors/white}
+     [react/scroll-view {:flex 1}
       [react/view {:margin-top  47
-                   :flex        1
                    :align-items :center}
        [react/image {:source (resources/get-image :hardwallet-card)
                      :style  {:width  255
@@ -104,35 +78,36 @@
          [react/view {:margin-top 27}
           [react/text
            (i18n/label :t/linked-on {:date paired-on})]])]
-      [react/view {:margin-left    16
-                   :flex           1
-                   :width          "90%"
-                   :flex-direction :column}
+      [react/view {:padding-vertical 16}
        (if (zero? puk-retry-counter)
          [card-blocked]
-         [react/view
-          [action-row {:icon     :main-icons/help
-                       :label    :t/help-capitalized
-                       :on-press #(.openURL ^js react/linking
-                                            constants/faq-keycard)}]
+         [:<>
+          [quo/list-item {:icon     :main-icons/help
+                          :size     :small
+                          :title    (i18n/label :t/help-capitalized)
+                          :on-press #(.openURL ^js react/linking
+                                               constants/faq-keycard)}]
           (when pairing
-            [react/view
-             [action-row {:icon     :main-icons/add
-                          :label    :t/change-pin
-                          :on-press #(re-frame/dispatch [:keycard-settings.ui/change-pin-pressed])}]
+            [:<>
+             [quo/list-item {:icon     :main-icons/add
+                             :size     :small
+                             :title    (i18n/label :t/change-pin)
+                             :on-press #(re-frame/dispatch [:keycard-settings.ui/change-pin-pressed])}]
              ;; TODO(rasom): uncomment this when unpairing will be enabled
              ;; https://github.com/status-im/status-react/issues/9227
-             #_[action-row {:icon     :main-icons/close
-                            :label    :t/unpair-card
-                            :on-press #(re-frame/dispatch [:keycard-settings.ui/unpair-card-pressed])}]])])]
+             #_[quo/list-item {:icon     :main-icons/close
+                               :size     :small
+                               :title    (i18n/label :t/unpair-card)
+                               :on-press #(re-frame/dispatch [:keycard-settings.ui/unpair-card-pressed])}]])])]
                                         ; NOTE: Reset card is hidden until multiaccount removal will be implemented
       #_(when pairing
           [react/view {:margin-bottom 35
                        :margin-left   16}
-           [action-row {:icon        :main-icons/warning
-                        :color-theme :red
-                        :label       :t/reset-card
-                        :on-press    #(re-frame/dispatch [:keycard-settings.ui/reset-card-pressed])}]])]]))
+           [quo/list-item {:icon     :main-icons/warning
+                           :theme    :negative
+                           :size     :small
+                           :title    (i18n/label :t/reset-card)
+                           :on-press #(re-frame/dispatch [:keycard-settings.ui/reset-card-pressed])}]])]]))
 
 (defn reset-pin []
   [keycard.views/login-pin

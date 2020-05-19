@@ -1,5 +1,6 @@
 (ns quo.react-native
   (:require [reagent.core :as reagent]
+            [cljs-bean.core :as bean]
             ["react-native" :as rn]
             ["@react-native-community/hooks" :as hooks]))
 
@@ -73,3 +74,16 @@
      :width      (.-window ^js window)}))
 
 (def use-back-handler (.-useBackHandler hooks))
+
+(defn use-keyboard []
+  (let [kb (.useKeyboard hooks)]
+    {:keyboard-shown  (.-keyboardShown ^js kb)
+     :keyboard-height (.-keyboardHeight ^js kb)}))
+
+(defn use-layout []
+  (let [{:keys [onLayout x y height width]} (bean/bean (.useLayout hooks))]
+    {:on-layout onLayout
+     :x         x
+     :y         y
+     :height    height
+     :width     width}))

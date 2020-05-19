@@ -58,7 +58,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         sign_in_view.just_fyi('Go back to online and check that balance is updated')
         sign_in_view.toggle_airplane_mode()
-        wallet_view.wait_balance_is_changed('ETHro')
+        wallet_view.wait_balance_is_changed('ETH')
         wallet_view.wait_balance_is_changed('STT')
 
         sign_in_view.just_fyi('Send some tokens to other account')

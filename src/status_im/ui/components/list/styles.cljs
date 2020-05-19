@@ -21,31 +21,15 @@
 (def primary-text-base
   {:font-size 16})
 
-(def primary-text
-  primary-text-base)
-
 (def primary-text-only
   (merge primary-text-base
          {:padding-vertical 16}))
-
-(def secondary-text
-  {:font-size   14
-   :color       colors/gray
-   :padding-top 4})
 
 (def image-size 40)
 
 (def item-image
   {:width         image-size
    :height        image-size})
-
-(def big-item-image
-  {:width         image-size
-   :height        image-size
-   :margin-right  16
-   :border-radius (/ image-size 2)
-   :border-color  colors/gray-transparent-10
-   :border-width  1})
 
 (def icon-size 24)
 (def icon-wrapper-size (+ icon-size (* 2 8)))
@@ -71,68 +55,6 @@
 
 (def right-item-wrapper
   {:justify-content :center})
-
-(def settings-item
-  {:padding-left   16
-   :padding-right  8
-   :flex           1
-   :flex-direction :row
-   :align-items    :center
-   :height         64})
-
-(defn settings-item-icon
-  [icon-color large?]
-  (cond-> {:background-color (colors/alpha icon-color 0.1)
-           :width            40
-           :height           40
-           :border-radius    40
-           :margin-right     16
-           :justify-content  :center
-           :align-items      :center}
-    large?
-    (merge {:align-self :flex-start
-            :margin-top 12})))
-
-(defn settings-item-text
-  [color]
-  {:typography :title
-   :flex       1
-   :flex-wrap  :nowrap
-   :color      color})
-
-(def settings-item-text-container
-  {:flex       1
-   :align-self :flex-start
-   :margin-top 12})
-
-(def settings-item-main-text-container
-  {:flex-direction :row
-   :align-items    :center})
-
-(def settings-item-subtext
-  {:margin-top  2
-   :color       colors/gray})
-
-(def settings-item-value
-  {:flex-wrap     :nowrap
-   :text-align    :right
-   :padding-right 10
-   :color         colors/gray})
-
-(def new-label
-  {:background-color colors/blue
-   :border-radius    4
-   :justify-content  :center
-   :align-items      :center
-   :height           16
-   :margin-right     6})
-
-(def new-label-text
-  {:color        colors/white
-   :margin-left  6
-   :margin-right 4
-   :font-size    11
-   :font-weight  "700"})
 
 (def base-separator
   {:height           1

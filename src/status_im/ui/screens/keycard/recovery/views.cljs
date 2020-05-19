@@ -3,10 +3,10 @@
             [status-im.hardwallet.recovery :as hardwallet.recovery]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.toolbar :as bottom-toolbar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.topbar :as topbar]
@@ -29,11 +29,13 @@
                 :align-items     :center}
     [react/view {:flex-direction :column
                  :align-items    :center}
+
      [react/view {:margin-top 16
                   :width      311}
       [react/text {:style {:typography :header
                            :text-align :center}}
        (i18n/label :t/keycard-recovery-intro-header)]]
+
      [react/view {:margin-top 16
                   :width      311}
       [react/text {:style {:font-size   15
@@ -41,6 +43,7 @@
                            :color       colors/gray
                            :text-align  :center}}
        (i18n/label :t/keycard-recovery-intro-text)]]
+
      [react/view {:margin-top 33}
       [react/touchable-highlight {:on-press #(.openURL ^js react/linking
                                                        constants/keycard-integration-link)}
@@ -52,24 +55,17 @@
          (i18n/label :t/learn-more-about-keycard)]
         [vector-icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
                                                            :container-style {:margin-left 5}}]]]]]
-    [react/view
-     [react/view {:align-items     :center
-                  :justify-content :center}
-      [react/image {:source (resources/get-image :keycard)
-                    :style  {:width  144
-                             :height 114}}]]]
+
+    [react/view {:align-items     :center
+                 :justify-content :center}
+     [react/image {:source (resources/get-image :keycard)
+                   :style  {:width  144
+                            :height 114}}]]
+
     [react/view {:margin-bottom 50}
-     [react/touchable-highlight
+     [quo/button
       {:on-press #(re-frame/dispatch [:keycard.recovery.intro.ui/begin-recovery-pressed])}
-      [react/view {:background-color colors/blue-light
-                   :align-items      :center
-                   :justify-content  :center
-                   :flex-direction   :row
-                   :width            133
-                   :height           44
-                   :border-radius    10}
-       [react/text {:style {:color colors/blue}}
-        (i18n/label :t/keycard-recovery-intro-button-text)]]]]]])
+      (i18n/label :t/keycard-recovery-intro-button-text)]]]])
 
 (defview pin []
   (letsubs [pin [:hardwallet/pin]
@@ -158,18 +154,13 @@
        [react/view {:margin-top 5
                     :width      250}
         [tooltip/tooltip error]]]
-      [react/view {:flex-direction  :row
-                   :justify-content :space-between
-                   :align-items     :center
-                   :width           "100%"
-                   :height          86}
-       [react/view]
-       [react/view {:margin-right 20}
-        [components.common/bottom-button
-         {:on-press  #(re-frame/dispatch [:keycard.onboarding.pair.ui/next-pressed])
-          :label     (i18n/label :t/pair-card)
-          :disabled? (empty? pair-code)
-          :forward?  true}]]]]]))
+      [bottom-toolbar/toolbar
+       {:right
+        [quo/button {:on-press  #(re-frame/dispatch [:keycard.onboarding.pair.ui/next-pressed])
+                     :disabled  (empty? pair-code)
+                     :type      :secondary
+                     :after     :main-icon/next}
+         (i18n/label :t/pair-card)]}]]]))
 
 (defview success []
   (letsubs [address [:hardwallet-multiaccount-wallet-address]
@@ -215,17 +206,8 @@
                      :ellipsize-mode  :middle}
          (utils.core/truncate-str address 14 true)]]]
       [react/view {:margin-bottom 50}
-       [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:keycard.recovery.success/finish-pressed])}
-        [react/view {:background-color colors/blue-light
-                     :align-items      :center
-                     :justify-content  :center
-                     :flex-direction   :row
-                     :width            133
-                     :height           44
-                     :border-radius    10}
-         [react/text {:style {:color colors/blue}}
-          (i18n/label :t/finish)]]]]]]))
+       [quo/button {:on-press #(re-frame/dispatch [:keycard.recovery.success/finish-pressed])}
+        (i18n/label :t/finish)]]]]))
 
 (defview no-key []
   (letsubs [card-state [:hardwallet-card-state]]
@@ -263,20 +245,10 @@
                          :style  {:width  165
                                   :height 110}}])]]]
       [react/view {:margin-bottom 50}
-       [react/touchable-highlight
+       [quo/button
         {:on-press #(re-frame/dispatch [:keycard.recovery.no-key.ui/generate-key-pressed])}
-        [react/view {:background-color colors/blue-light
-                     :align-items      :center
-                     :justify-content  :center
-                     :flex-direction   :row
-                     :width            190
-                     :height           44
-                     :border-radius    10}
-         [react/text {:style {:color colors/blue}}
-          (i18n/label :t/generate-new-key)]]]
-       [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:navigate-back])}
-        [react/text {:style {:text-align  :center
-                             :padding-top 27
-                             :color       colors/blue}}
-         (i18n/label :t/cancel)]]]]]))
+        (i18n/label :t/generate-new-key)]
+       [quo/button
+        {:type     :secondary
+         :on-press #(re-frame/dispatch [:navigate-back])}
+        (i18n/label :t/cancel)]]]]))

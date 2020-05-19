@@ -1,16 +1,10 @@
 (ns status-im.ui.screens.bootnodes-settings.edit-bootnode.styles
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as components.styles]
             [status-im.utils.styles :as styles]))
 
 (def edit-bootnode-view
   {:flex              1
    :margin-horizontal 16
-   :margin-vertical   15})
-
-(def bottom-container
-  {:flex-direction    :row
-   :margin-horizontal 12
    :margin-vertical   15})
 
 (def button-container
@@ -32,6 +26,3 @@
 (def delete-button
   (assoc button
          :background-color colors/red))
-
-(def container
-  components.styles/flex)

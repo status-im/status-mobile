@@ -1,5 +1,8 @@
 (ns quo.components.animated.pressable
   (:require [quo.animated :as animated]
+            [quo.react :as react]
+            [reagent.core :as reagent]
+            [cljs-bean.core :as bean]
             [quo.gesture-handler :as gesture-handler]))
 
 (def long-press-duration 500)
@@ -38,6 +41,12 @@
    :foreground {:transform [{:scale (animated/mix animation 1 scale-down-small)}]
                 :opacity   (animated/mix animation 1 opactiy)}})
 
+(defmethod type->animation :scale
+  [{:keys [animation]}]
+  {:background {:opacity 0}
+   :foreground {:transform [{:scale (animated/mix animation 1 scale-down-small)}]
+                :opacity   (animated/mix animation 1 opactiy)}})
+
 (def absolute-fill
   {:top      0
    :bottom   0
@@ -45,58 +54,76 @@
    :right    0
    :position :absolute})
 
-(defn pressable []
-  (let [state           (animated/value (:undetermined gesture-handler/states))
-        active          (animated/eq state (:began gesture-handler/states))
-        gesture-handler (animated/on-gesture {:state state})
-        duration        (animated/cond* active time-in time-out)
-        long-pressed    (animated/value 0)
-        long-duration   (animated/cond* active long-press-duration 0)
-        long-timing     (animated/with-timing-transition active
-                          {:duration long-duration})
-        animation       (animated/with-timing-transition active
-                          {:duration duration
-                           :easing   (:ease-in animated/easings)})]
-    (fn [{:keys [background-color border-radius type disabled
-                 on-press on-long-press on-press-start
-                 accessibility-label]
-          :or   {border-radius 0
-                 type          :primary}}
-         & children]
-      (let [{:keys [background foreground]}
-            (type->animation {:type      type
-                              :animation animation})
-            handle-press       (fn [] (when on-press (on-press)))
-            handle-press-start (fn [] (when on-press-start (on-press-start)))
-            handle-long-press  (fn [] (when on-long-press (on-long-press)))]
-        [:<>
-         (when on-long-press
-           [animated/code
-            {:exec (animated/block
-                    [(animated/cond* (animated/eq long-timing 1)
-                                     (animated/set long-pressed 1))
-                     (animated/cond* long-pressed
-                                     [(animated/set long-pressed 0)
-                                      (animated/call* [] handle-long-press)
-                                      (animated/set state (:undetermined gesture-handler/states))])])}])
-         [animated/code
-          {:key  (str on-press on-long-press on-press-start)
-           :exec (animated/on-change state
-                                     [(animated/cond* (animated/eq state (:began gesture-handler/states))
-                                                      (animated/call* [] handle-press-start))
-                                      (animated/cond* (animated/and* (animated/eq state (:end gesture-handler/states))
-                                                                     (animated/not* long-pressed))
-                                                      [(animated/call* [] handle-press)
-                                                       (animated/set state (:undetermined gesture-handler/states))])])}]
-         [gesture-handler/tap-gesture-handler
-          (merge gesture-handler
-                 {:shouldCancelWhenOutside true
-                  :enabled                 (not disabled)})
-          [animated/view {:accessible          true
-                          :accessibility-label accessibility-label}
-           [animated/view {:style (merge absolute-fill
-                                         background
-                                         {:background-color background-color
-                                          :border-radius    border-radius})}]
-           (into [animated/view {:style foreground}]
-                 children)]]]))))
+(defn pressable-hooks [props]
+  (let [{background-color    :bgColor
+         border-radius       :borderRadius
+         type                :type
+         disabled            :disabled
+         on-press            :onPress
+         on-long-press       :onLongPress
+         on-press-start      :onPressStart
+         accessibility-label :accessibilityLabel
+         children            :children
+         :or                 {border-radius 0
+                              type          "primary"}}
+        (bean/bean props)
+        long-press-ref       (react/create-ref)
+        state                (animated/use-value (:undetermined gesture-handler/states))
+        active               (animated/eq state (:began gesture-handler/states))
+        gesture-handler      (animated/use-gesture {:state state})
+        animation            (react/use-memo
+                              (fn []
+                                (animated/with-timing-transition active
+                                  {:duration (animated/cond* active time-in time-out)
+                                   :easing   (:ease-in animated/easings)}))
+                              [])
+        {:keys [background
+                foreground]} (react/use-memo
+                              (fn []
+                                (type->animation {:type      (keyword type)
+                                                  :animation animation}))
+                              [type])
+        handle-press         (fn [] (when on-press (on-press)))
+        handle-press-start   (fn [] (when on-press-start (on-press-start)))
+        long-gesture-handler (fn [^js evt]
+                               (when (and on-long-press
+                                          (= (-> evt .-nativeEvent .-state)
+                                             (:active gesture-handler/states)))
+                                 (on-long-press)
+                                 (animated/set-value state (:undetermined gesture-handler/states))))]
+    (animated/code!
+     (fn []
+       (when on-press-start
+         (animated/cond* (animated/eq state (:began gesture-handler/states))
+                         (animated/call* [] handle-press-start))))
+     [on-press-start])
+    (animated/code!
+     (fn []
+       (when on-press
+         (animated/cond* (animated/eq state (:end gesture-handler/states))
+                         [(animated/set state (:undetermined gesture-handler/states))
+                          (animated/call* [] handle-press)])))
+     [on-press])
+    (reagent/as-element
+     [gesture-handler/long-press-gesture-handler
+      {:enabled                 (boolean (and on-long-press (not disabled)))
+       :on-handler-state-change long-gesture-handler
+       :min-duration-ms         long-press-duration
+       :ref                     long-press-ref}
+      [animated/view {:accessible          true
+                      :accessibility-label accessibility-label}
+       [gesture-handler/tap-gesture-handler
+        (merge gesture-handler
+               {:shouldCancelWhenOutside true
+                :wait-for                long-press-ref
+                :enabled                 (boolean (and (or on-press on-long-press on-press-start)
+                                                       (not disabled)))})
+        [animated/view
+         [animated/view {:style (merge absolute-fill
+                                       background
+                                       {:background-color background-color
+                                        :border-radius    border-radius})}]
+         (into [animated/view {:style foreground}]
+               (react/get-children children))]]]])))
+
+(def pressable (reagent/adapt-react-class (react/memo pressable-hooks)))

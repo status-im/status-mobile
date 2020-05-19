@@ -3,11 +3,10 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.common.common :as components.common]
+            [status-im.ui.components.toolbar :as toolbar]
             [clojure.string :as string]
             [status-im.i18n :as i18n]
             [quo.core :as quo]
-            [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.topbar :as topbar]))
 
 (def debounce-timers (atom {}))
@@ -90,22 +89,20 @@
                            (wallet.utils/format-amount balance decimals))
           :editable      false
           :placeholder   (i18n/label :t/no-tokens-found)}]]
-     [react/view {:style {:height 1 :background-color colors/gray-lighter}}]
-     [react/view {:flex-direction    :row
-                  :margin-horizontal 12
-                  :margin-vertical   15
-                  :align-items       :center}
 
-      [react/view {:style {:flex 1}}]
-      [components.common/bottom-button
-       {:forward?  true
-        :label     (i18n/label :t/add)
-        :disabled? (boolean
+     [toolbar/toolbar
+      {:show-border? true
+       :right
+       [quo/button
+        {:type     :secondary
+         :after    :main-icon/next
+         :disabled (boolean
                     (or in-progress?
                         error error-name error-symbol
                         (string/blank? contract) (string/blank? name)
                         (string/blank? symbol) (string/blank? decimals)))
-        :on-press  #(re-frame/dispatch [:wallet.custom-token.ui/add-pressed])}]]]))
+         :on-press #(re-frame/dispatch [:wallet.custom-token.ui/add-pressed])}
+        (i18n/label :t/add)]}]]))
 
 (defview custom-token-details []
   (letsubs [{:keys [address name symbol decimals custom?] :as token}
@@ -144,8 +141,8 @@
             :editable      false}]]]]]
       [react/view {:height 24}]
       (when custom?
-        [list-item/list-item
-         {:theme    :action-destructive
-          :title    :t/remove-token
+        [quo/list-item
+         {:theme    :negative
+          :title    (i18n/label :t/remove-token)
           :icon     :main-icons/delete
           :on-press #(re-frame/dispatch [:wallet.custom-token.ui/remove-pressed token true])}])]]))

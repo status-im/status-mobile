@@ -1,12 +1,12 @@
 (ns quo.components.header
   (:require [oops.core :refer [oget]]
             [quo.animated :as animated]
+            [quo.components.button.view :as button]
             [quo.components.text :as text]
             [quo.design-system.colors :as colors]
             [quo.design-system.spacing :as spacing]
             [quo.react-native :as rn]
-            [reagent.core :as reagent]
-            [status-im.ui.components.icons.vector-icons :as icons]))
+            [reagent.core :as reagent]))
 
 (def header-height 56)
 
@@ -64,25 +64,21 @@
 (def header-action-placeholder
   {:width (:base spacing/spacing)})
 
-(def header-icon-touchable
-  (merge
-   {:flex               1
-    :align-items        :center
-    :justify-content    :center}
-   (:tiny spacing/padding-horizontal)))
-
 (def element {:align-items        :center
               :justify-content    :center
               :flex               1})
 
 (defn header-action [{:keys [icon label on-press accessibility-label]}]
-  [rn/touchable-opacity {:on-press on-press}
-   [rn/view (merge {:style header-icon-touchable}
-                   (when accessibility-label
-                     {:accessibility-label accessibility-label}))
-    (cond
-      icon  [icons/icon icon {:color (:icon-01 @colors/theme)}]
-      label [text/text {:color :link} label])]])
+  [button/button (merge {:on-press on-press}
+                        (cond
+                          icon  {:type  :icon
+                                 :theme :icon}
+                          label {:type :secondary})
+                        (when accessibility-label
+                          {:accessibility-label accessibility-label}))
+   (cond
+     icon  icon
+     label label)])
 
 (defn header-actions [{:keys [accessories component]}]
   [rn/view {:style element}

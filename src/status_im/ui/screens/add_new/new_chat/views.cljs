@@ -5,24 +5,24 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.list-item.views :as list-item]
+            [quo.core :as quo]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.add-new.new-chat.styles :as styles]
             [status-im.utils.debounce :as debounce]
-            [quo.core :as quo]
             [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-row [row _ _]
-  [list-item/list-item
-   {:title       (multiaccounts/displayed-name row)
-    :icon        [chat-icon/contact-icon-contacts-tab row]
-    :accessories [:chevron]
-    :on-press    #(re-frame/dispatch [:chat.ui/start-chat
-                                      (:public-key row)
-                                      {:navigation-reset? true}])}])
+  [quo/list-item
+   {:title    (multiaccounts/displayed-name row)
+    :icon     [chat-icon/contact-icon-contacts-tab
+               (multiaccounts/displayed-photo row)]
+    :chevron  true
+    :on-press #(re-frame/dispatch [:chat.ui/start-chat
+                                   (:public-key row)
+                                   {:navigation-reset? true}])}])
 
 (defn- icon-wrapper [color icon]
   [react/view
