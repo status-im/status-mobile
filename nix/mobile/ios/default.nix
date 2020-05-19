@@ -30,7 +30,7 @@ in {
         ln -sf ./mobile/js_files/* ./
 
         # check if node modules changed and if so install them
-        ./nix/scripts/node_modules.sh "${deps.nodejs}"
+        ./nix/scripts/node_modules.sh "${deps.nodejs-patched}"
       }
     '';
   };
