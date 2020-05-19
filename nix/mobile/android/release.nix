@@ -105,7 +105,7 @@ in stdenv.mkDerivation rec {
     chmod +w -R ./node_modules
 
     # Patch build.gradle to use local repo
-    ${patchMavenSources} ./android/build.gradle ${deps.gradle}
+    ${patchMavenSources} ./android/build.gradle
   '';
   secretPhase = optionalString (secretsFile != "") ''
     source "${secretsFile}"
