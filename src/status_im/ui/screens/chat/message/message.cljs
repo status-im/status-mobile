@@ -159,6 +159,15 @@
       [render-parsed-text-with-timestamp message (:parsed-text content)]])
    [message-timestamp message true]])
 
+(defn unknown-content-type
+  [{:keys [outgoing content-type content] :as message}]
+  [message-bubble-wrapper message
+   [react/text
+    {:style {:color (if outgoing colors/white-persist colors/black)}}
+    (if (seq (:text content))
+      (:text content)
+      (str "Unhandled content-type " content-type))]])
+
 (defn system-text-message
   [{:keys [content] :as message}]
   [message-bubble-wrapper message
@@ -286,5 +295,4 @@
                 [react/image {:style  {:margin 10 :width 140 :height 140}
                               ;;TODO (perf) move to event
                               :source {:uri (contenthash/url (-> content :sticker :hash))}}]
-                [message-bubble-wrapper message
-                 [react/text (str "Unhandled content-type " content-type)]]))))]])))
+                [unknown-content-type message]))))]])))
