@@ -1,6 +1,6 @@
 from tests import marks
-from tests.base_test_case import MultipleDeviceTestCase
-from tests.users import chat_users
+from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
+from tests.users import transaction_recipients
 from views.sign_in_view import SignInView
 
 
@@ -362,5 +362,36 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_2_chat.send_message(message_after_unblock)
         if not device_1_chat.chat_element_by_text(message_after_unblock).is_element_displayed(20):
             self.errors.append('User was unblocked, but new messages are not received')
+
+        self.errors.verify_no_errors()
+
+
+class TestCommandsSingleDevices(SingleDeviceTestCase):
+
+    @marks.testrail_id(5721)
+    @marks.medium
+    def test_cant_add_more_ten_participants_to_group_chat(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        usernames = []
+
+        home.just_fyi('Add 10 users to contacts')
+        for user in transaction_recipients:
+            home.add_contact(transaction_recipients[user]['public_key'])
+            usernames.append(transaction_recipients[user]['username'])
+            home.get_back_to_home_view()
+
+        home.just_fyi('Create group chat with max amount of users')
+        chat = home.create_group_chat(usernames, 'some_group_chat')
+        if chat.element_by_text(transaction_recipients['J']['username']).is_element_displayed():
+            self.errors.append('11 users are in chat (10 users and admin)!')
+
+        home.just_fyi('Verify that can not add more users via group info')
+        chat.chat_options.click()
+        group_info_view = chat.group_info.click()
+        if group_info_view.add_members.is_element_displayed():
+            self.errors.append('Add members button is displayed when max users are added in chat')
+        if not group_info_view.element_by_text_part('10 members').is_element_displayed():
+            self.errors.append('Amount of users is not shown on Group info screen')
 
         self.errors.verify_no_errors()

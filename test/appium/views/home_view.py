@@ -222,9 +222,7 @@ class HomeView(BaseView):
         self.plus_button.click()
         contacts_view = self.new_group_chat_button.click()
         for user_name in user_names_to_add:
-            user_contact = contacts_view.get_username_checkbox(user_name)
-            user_contact.scroll_to_element()
-            user_contact.click()
+            contacts_view.get_username_checkbox(user_name).click()
         contacts_view.next_button.click()
         contacts_view.chat_name_editbox.send_keys(group_chat_name)
         contacts_view.create_button.click()

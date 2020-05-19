@@ -1,5 +1,6 @@
 from views.base_element import BaseButton, BaseEditBox
 from views.base_view import BaseView
+from selenium.common.exceptions import NoSuchElementException
 
 
 class PlusButton(BaseButton):
@@ -37,7 +38,15 @@ class ConfirmPublicKeyButton(BaseButton):
 class UsernameCheckbox(BaseButton):
     def __init__(self, driver, username):
         super(UsernameCheckbox, self).__init__(driver)
+        self.username = username
         self.locator = self.Locator.xpath_selector("//*[@text='%s']" % username)
+
+    def click(self):
+        self.driver.info('Click %s username checkbox' % self.username)
+        try:
+                self.scroll_to_element().click()
+        except NoSuchElementException:
+                self.scroll_to_element(direction='up').click()
 
 
 class ChatNameEditBox(BaseEditBox):
