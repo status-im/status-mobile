@@ -6,7 +6,8 @@
 (def default-device-language
   (keyword (.-language react-native-languages)))
 
-(def languages [:ar :en :es :es_419 :fil :fr :id :in :it :ko :ru :zh :zh_Hant :zh_TW])
+;; Update js_dependencies.cljs
+(def languages [:ar :de :en :es :es_419 :fil :fr :id :in :it :ko :pt_BR :ru :tr :zh :zh_Hant :zh_TW])
 
 (defonce loaded-languages
   (atom
@@ -14,6 +15,7 @@
 
 (def translations
   {:ar         (js/require "../translations/ar.json")
+   :de         (js/require "../translations/de.json")
    :en         (js/require "../translations/en.json")
    :es         (js/require "../translations/es.json")
    :es_419     (js/require "../translations/es_419.json")
@@ -23,7 +25,9 @@
    :in         (js/require "../translations/id.json")
    :it         (js/require "../translations/it.json")
    :ko         (js/require "../translations/ko.json")
+   :pt_BR      (js/require "../translations/pt_br.json")
    :ru         (js/require "../translations/ru.json")
+   :tr         (js/require "../translations/tr.json")
    :zh         (js/require "../translations/zh.json")
    :zh_Hant    (js/require "../translations/zh_hant.json")
    :zh_TW      (js/require "../translations/zh_TW.json")})
