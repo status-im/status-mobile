@@ -9,6 +9,7 @@
 , outputFileName ? "status-go-${source.shortRev}-${platform}.aar" }:
 
 let
+  inherit (stdenv) isDarwin;
   inherit (lib)
     concatStrings concatStringsSep concatMapStrings optionalString
     getAttr attrValues makeBinPath optional;
@@ -28,13 +29,13 @@ in buildGoPackage {
 
   nativeBuildInputs = [ gomobile ]
     ++ optional (platform == "android") openjdk
-    ++ optional stdenv.isDarwin xcodeWrapper;
+    ++ optional isDarwin xcodeWrapper;
 
   # Fixes Cgo related build failures (see https://github.com/NixOS/nixpkgs/issues/25959 )
   hardeningDisable = [ "fortify" ];
 
-  # Ensure XCode is present, instead of failing at the end of the build
-  preConfigure = optionalString stdenv.isDarwin utils.enforceXCodeAvailable;
+  # Ensure XCode is present for iOS build, instead of failing at the end of the build
+  preConfigure = optionalString (isDarwin && platform == "ios") utils.enforceXCodeAvailable;
 
   # Build mobile libraries
   preBuild = let
