@@ -39,15 +39,34 @@ class ScanQRButton(BaseButton):
         super(ScanQRButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id("accounts-qr-code")
 
+
 class EnterQRcodeEditBox(BaseEditBox):
     def __init__(self, driver):
         super(EnterQRcodeEditBox, self).__init__(driver)
         self.locator = self.Locator.text_selector('Type a message...')
 
+
 class AssetText(BaseText):
     def __init__(self, driver, asset):
         super(AssetText, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='%s']/preceding-sibling::*[1]" % asset)
+
+
+class AssetFullNameInAssets(BaseText):
+    def __init__(self, driver):
+        super(AssetFullNameInAssets, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="checkbox"]/../android.widget.TextView[1]')
+
+
+class AssetSymbolInAssets(BaseText):
+    def __init__(self, driver):
+        super(AssetSymbolInAssets, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="checkbox"]/../android.widget.TextView[2]')
+
+class CurrencyItemText(BaseText):
+    def __init__(self, driver):
+        super(CurrencyItemText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="currency-item"]//android.widget.TextView')
 
 
 class UsdTotalValueText(BaseText):
@@ -380,6 +399,10 @@ class WalletView(BaseView):
         self.options_button = OptionsButton(self.driver)
         self.manage_assets_button = ManageAssetsButton(self.driver)
         self.stt_check_box = STTCheckBox(self.driver)
+        self.all_assets_full_names = AssetFullNameInAssets(self.driver)
+        self.all_assets_symbols = AssetSymbolInAssets(self.driver)
+        self.currency_item_text = CurrencyItemText(self.driver)
+
 
         self.qr_code_image = QRCodeImage(self.driver)
         self.address_text = AddressText(self.driver)
@@ -396,7 +419,6 @@ class WalletView(BaseView):
         self.add_custom_token_button = AddCustomTokenButton(self.driver)
 
         # elements for multiaccount
-
         self.multiaccount_more_options = MultiaccountMoreOptions(self.driver)
         self.accounts_status_account = AccountElementButton(self.driver, account_name="Status account")
         self.collectibles_button = CollectiblesButton(self.driver)

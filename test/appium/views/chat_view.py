@@ -122,6 +122,18 @@ class ReplyMessageButton(BaseButton):
         self.locator = self.Locator.text_selector("Reply")
 
 
+class ProfileDetailsOtherUser(BaseButton):
+    def __init__(self, driver):
+        super(ProfileDetailsOtherUser, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('profile-public-key')
+
+
+class ShareChatButton(BaseButton):
+    def __init__(self, driver):
+        super(ShareChatButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('share-chat-button')
+
+
 class GroupInfoButton(BaseButton):
 
     def __init__(self, driver):
@@ -541,6 +553,7 @@ class ChatView(BaseView):
         self.delete_chat_button = DeleteChatButton(self.driver)
         self.clear_history_button = ClearHistoryButton(self.driver)
         self.reply_message_button = ReplyMessageButton(self.driver)
+        self.share_chat_button = ShareChatButton(self.driver)
         self.clear_button = ClearButton(self.driver)
         self.block_contact_button = BlockContactButton(self.driver)
         self.unblock_contact_button = UnblockContactButton(self.driver)
@@ -571,6 +584,7 @@ class ChatView(BaseView):
         self.profile_address_text = ProfileAddressText(self.driver)
         self.profile_block_contact = ProfileBlockContactButton(self.driver)
         self.profile_add_to_contacts = ProfileAddToContactsButton(self.driver)
+        self.profile_details = ProfileDetailsOtherUser(self.driver)
 
     def delete_chat(self):
         self.chat_options.click()

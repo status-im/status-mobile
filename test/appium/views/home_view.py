@@ -161,12 +161,6 @@ class ChatUrlText(BaseText):
         self.locator = self.Locator.accessibility_id('chat-url-text')
 
 
-class SearchChatInput(BaseEditBox):
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.locator = self.Locator.text_selector('Search')
-
-
 class HomeView(BaseView):
     def __init__(self, driver):
         super(HomeView, self).__init__(driver)
@@ -174,7 +168,6 @@ class HomeView(BaseView):
         self.plus_button = PlusButton(self.driver)
         self.chat_name_text = ChatNameText(self.driver)
         self.chat_url_text = ChatUrlText(self.driver)
-        self.search_chat_input = SearchChatInput(self.driver)
 
         self.start_new_chat_button = StartNewChatButton(self.driver)
         self.new_group_chat_button = NewGroupChatButton(self.driver)

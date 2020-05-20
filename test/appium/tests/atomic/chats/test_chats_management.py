@@ -225,9 +225,7 @@ class TestChatManagement(SingleDeviceTestCase):
         home.just_fyi('Can search for public chat name, ens name, username')
         home.swipe_down()
         for keyword in search_list:
-            home.just_fyi('Search for %s' %keyword)
-            home.search_chat_input.click()
-            home.search_chat_input.send_keys(keyword)
+            home.search_by_keyword(keyword)
             search_results = home.chat_name_text.find_elements()
             if not search_results:
                 self.errors.append('No search results after searching by %s keyword' % keyword)
@@ -318,6 +316,47 @@ class TestChatManagement(SingleDeviceTestCase):
         chat_view.cancel_reply_button.click()
         if chat_view.cancel_reply_button.is_element_displayed():
             self.errors.append("Message quote kept in 1-1 chat input after it's cancelation")
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(5498)
+    @marks.medium
+    def test_share_user_profile_url_public_chat(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+
+        sign_in.just_fyi('Join to one-to-one chat and share link to other user profile via messenger')
+        chat_view = home.add_contact(dummy_user["public_key"])
+        chat_view.chat_options.click()
+        chat_view.view_profile_button.click_until_presence_of_element(chat_view.remove_from_contacts)
+        chat_view.profile_details.click()
+        chat_view.share_button.click()
+        chat_view.share_via_messenger()
+        if not chat_view.element_by_text_part('https://join.status.im/u/%s' % dummy_user["public_key"]).is_element_present():
+             self.errors.append("Can't share public key of contact")
+        for _ in range(2):
+             chat_view.click_system_back_button()
+
+        sign_in.just_fyi('Join to public chat and share link to it via messenger')
+        chat_view.get_back_to_home_view()
+        public_chat_name = 'pubchat'
+        public_chat = home.join_public_chat(public_chat_name)
+        public_chat.chat_options.click()
+        public_chat.share_chat_button.click()
+        public_chat.share_via_messenger()
+        if not chat_view.element_by_text_part('https://join.status.im/%s' % public_chat_name).is_element_present():
+             self.errors.append("Can't share link to public chat")
+        for _ in range(2):
+             chat_view.click_system_back_button()
+        chat_view.get_back_to_home_view()
+
+        sign_in.just_fyi('Open URL and share link to it via messenger')
+        daap_view = home.dapp_tab_button.click()
+        browsing_view = daap_view.open_url('dap.ps')
+        browsing_view.share_url_button.click()
+        browsing_view.share_via_messenger()
+        if not chat_view.element_by_text_part('https://join.status.im/b/https://dap.ps').is_element_present():
+             self.errors.append("Can't share link to URL")
 
         self.errors.verify_no_errors()
 

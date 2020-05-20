@@ -490,3 +490,57 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.errors.append('ENS address "stateofus.eth" without domain is not resolved as recipient')
 
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(6269)
+    @marks.medium
+    def test_search_asset_and_currency(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        profile = home.profile_button.click()
+        profile.switch_network('Mainnet with upstream RPC')
+        search_list_assets = {
+            'ad': ['AdEx', 'Open Trading Network', 'TrueCAD'],
+            'zs': ['ZSC']
+        }
+        wallet = home.wallet_button.click()
+
+        home.just_fyi('Searching for asset by name and symbol')
+        wallet.set_up_wallet()
+        wallet.multiaccount_more_options.click()
+        wallet.manage_assets_button.click()
+        for keyword in search_list_assets:
+            home.search_by_keyword(keyword)
+            if keyword == 'ad':
+                search_elements = wallet.all_assets_full_names.find_elements()
+            else:
+                search_elements = wallet.all_assets_symbols.find_elements()
+            if not search_elements:
+                self.errors.append('No search results after searching by %s keyword' % keyword)
+            search_results = [element.text for element in search_elements]
+            if search_results != search_list_assets[keyword]:
+                self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
+                                                                    (', '.join(search_list_assets[keyword]), keyword))
+            home.cancel_button.click()
+        wallet.back_button.click()
+
+        home.just_fyi('Searching for currency')
+        search_list_currencies = {
+            'aF': ['Afghanistan Afghan (AFN)', 'South Africa Rand (ZAR)'],
+            'bolívi': ['Bolivia Bolíviano (BOB)']
+        }
+        wallet.multiaccount_more_options.click_until_presence_of_element(wallet.set_currency_button)
+        wallet.set_currency_button.click()
+        for keyword in search_list_currencies:
+            home.search_by_keyword(keyword)
+            search_elements = wallet.currency_item_text.find_elements()
+            if not search_elements:
+                self.errors.append('No search results after searching by %s keyword' % keyword)
+            search_results = [element.text for element in search_elements]
+            from pprint import pprint
+            pprint(search_results)
+            if search_results != search_list_assets[keyword]:
+                 self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
+                                                                     (', '.join(search_list_assets[keyword]), keyword))
+            home.cancel_button.click()
+
+        self.errors.verify_no_errors()
