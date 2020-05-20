@@ -213,7 +213,7 @@ status-go-desktop: ##@status-go Compile status-go for desktop app
 # Watch, Build & Review changes
 #--------------
 
-run-clojure: export TARGET := default
+run-clojure: export TARGET := clojure
 run-clojure: ##@run Watch for and build Clojure changes for mobile
 	yarn shadow-cljs watch mobile
 
@@ -221,7 +221,7 @@ run-clojure-desktop: export TARGET ?= $(HOST_OS)
 run-clojure-desktop: #@run Watch for and build Clojure changes for desktop
 	clj -R:dev build.clj watch --platform desktop
 
-run-metro: export TARGET := default
+run-metro: export TARGET := clojure
 run-metro: ##@run Start Metro to build React Native changes
 	@scripts/start-react-native.sh
 
