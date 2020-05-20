@@ -9,7 +9,7 @@ RERUN_ERRORS = [
     'Unexpected server error',
     '504 Gateway Time-out',
     'Internal Server Error',
-    'Invalid message: ERROR Internal Server Error',
+    'failed to start the browser or device',
     'ERROR The test with session id'
     "Message: 'CreateMultiaccountButton' is not found on screen",
     "503 Service Unavailable",

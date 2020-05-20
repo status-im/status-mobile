@@ -641,6 +641,7 @@ class BaseView(object):
         return user_data
 
     def share_via_messenger(self):
+        self.element_by_text_part("Direct share").wait_for_element()
         self.element_by_text('Messages').click()
         self.element_by_text('New message').click()
         self.send_as_keyevent('+0100100101')

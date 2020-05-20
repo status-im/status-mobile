@@ -66,6 +66,7 @@ class AbstractTestCase:
         desired_caps['commandTimeout'] = 600
         desired_caps['idleTimeout'] = 1000
         desired_caps['unicodeKeyboard'] = True
+        desired_caps['resetKeyboard'] = True
         desired_caps['automationName'] = 'UiAutomator2'
         desired_caps['setWebContentDebuggingEnabled'] = True
         desired_caps['ignoreUnimportantViews'] = False
@@ -94,6 +95,7 @@ class AbstractTestCase:
         desired_caps['newCommandTimeout'] = 600
         desired_caps['fullReset'] = False
         desired_caps['unicodeKeyboard'] = True
+        desired_caps['resetKeyboard'] = True
         desired_caps['automationName'] = 'UiAutomator2'
         desired_caps['setWebContentDebuggingEnabled'] = True
         return desired_caps
