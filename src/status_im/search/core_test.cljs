@@ -4,16 +4,16 @@
 
 (deftest filter-chats
   (let [chats {:chat-1 {:name "name1"
-                        :random-name "random-name1"
+                        :alias "alias1"
                         :tags #{"tag1"}}
                :chat-2 {:name "name2"
-                        :random-name "random-name2"
+                        :alias "alias2"
                         :tags #{"tag2" "tag3"}}
                :chat-3 {:name "name3"
-                        :random-name "random-name3"
+                        :alias "alias3"
                         :tags #{}}
                :chat-4 {:name "name4"
-                        :random-name "random-name4"
+                        :alias "alias4"
                         :tags #{"tag4"}}}]
     (testing "no search filter"
       (is (= (count chats)
@@ -33,15 +33,15 @@
                                               chats
                                               search.subs/extract-chat-attributes
                                               false)))))
-    (testing "searching for a specific random-name"
+    (testing "searching for a specific alias"
       (is (= 1
-             (count (search.subs/apply-filter "random-name1"
+             (count (search.subs/apply-filter "alias4"
                                               chats
                                               search.subs/extract-chat-attributes
                                               false)))))
-    (testing "searching for a partial random-name"
+    (testing "searching for a partial alias"
       (is (= 4
-             (count (search.subs/apply-filter "random-name"
+             (count (search.subs/apply-filter "alias"
                                               chats
                                               search.subs/extract-chat-attributes
                                               false)))))

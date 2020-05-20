@@ -1786,8 +1786,8 @@
 ;;SEARCH ==============================================================================================================
 
 (defn extract-chat-attributes [chat]
-  (let [{:keys [name random-name tags]} (val chat)]
-    (into [name random-name] tags)))
+  (let [{:keys [name alias tags]} (val chat)]
+    (into [name alias] tags)))
 
 (defn sort-by-timestamp
   [coll]

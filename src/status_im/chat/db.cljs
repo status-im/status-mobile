@@ -1,10 +1,10 @@
 (ns status-im.chat.db
   (:require [clojure.set :as clojure.set]
             [clojure.string :as clojure.string]
-            [status-im.contact.db :as contact.db]
             [status-im.group-chats.db :as group-chats.db]
             [status-im.mailserver.constants :as mailserver.constants]
             [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.utils.identicon :as identicon]
             [status-im.utils.gfycat.core :as gfycat]))
 
 (defn group-chat-name
@@ -12,7 +12,10 @@
   (str (when public? "#") name))
 
 (defn enrich-active-chat
-  [contacts {:keys [chat-id group-chat] :as chat} current-public-key]
+  [contacts {:keys [chat-id
+                    identicon
+                    alias
+                    group-chat] :as chat} current-public-key]
   (if group-chat
     (let [pending-invite-inviter-name
           (group-chats.db/get-pending-invite-inviter-name contacts
@@ -29,15 +32,25 @@
         (assoc :inviter-name inviter-name)
         :always
         (assoc :chat-name (group-chat-name chat))))
-    (let [{contact-name :name :as contact}
+    (let [photo (if (seq identicon)
+                  identicon
+                  (identicon/identicon chat-id))
+          alias (if (seq alias)
+                  alias
+                  (gfycat/generate-gfy chat-id))
+          {contact-name :name :as contact}
           (get contacts chat-id
-               (contact.db/public-key->new-contact chat-id))
-          random-name (gfycat/generate-gfy chat-id)]
+               {:public-key chat-id
+                :identicon photo
+                :alias alias
+                :name alias
+                :system-tags #{}})]
       (-> chat
           (assoc :contact contact
                  :chat-name (multiaccounts/displayed-name contact)
                  :name contact-name
-                 :random-name random-name)
+                 :identicon photo
+                 :alias alias)
           (update :tags clojure.set/union (:tags contact))))))
 
 (defn active-chats
