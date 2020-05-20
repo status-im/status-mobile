@@ -34,7 +34,7 @@ in {
       export ANDROID_SDK_ROOT="${androidPkgs}"
       export ANDROID_NDK_ROOT="${androidPkgs}/ndk-bundle"
 
-      export STATUSREACT_NIX_MAVEN_REPO="${deps.gradle}"
+      export STATUS_NIX_MAVEN_REPO="${deps.gradle}"
 
       # required by some makefile targets
       export STATUS_GO_ANDROID_LIBDIR=${status-go}

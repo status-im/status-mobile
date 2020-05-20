@@ -77,6 +77,7 @@ let
       inputsFrom = [ node-sh ];
       shellHook = ''
         export STATUS_GO_ANDROID_LIBDIR="DUMMY"
+        export STATUS_NIX_MAVEN_REPO="${pkgs.deps.gradle}"
         export ANDROID_SDK_ROOT="${pkgs.androidPkgs}"
         export ANDROID_NDK_ROOT="${pkgs.androidPkgs}/ndk-bundle"
       '';
