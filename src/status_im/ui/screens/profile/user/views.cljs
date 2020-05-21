@@ -23,11 +23,12 @@
 (views/defview share-chat-key []
   (views/letsubs [{:keys [address ens-name]}     [:popover/popover]
                   width                          (reagent/atom nil)]
-    (let [link (universal-links/generate-link :user :external (or ens-name address))]
+    (let [link (universal-links/generate-link :user :external (or ens-name address))
+          icon (multiaccounts/displayed-photo {:public-key address})]
       [react/view {:on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
        [react/view {:style {:padding-top 16 :padding-horizontal 16}}
         (when @width
-          [qr-code-viewer/qr-code-view (- @width 32) address])
+          [qr-code-viewer/qr-code-view (- @width 32) address :identicon icon])
         (when ens-name
           [react/view
            [copyable-text/copyable-text-view
