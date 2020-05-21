@@ -1,4 +1,4 @@
-(ns quo.components.button.animation
+(ns quo.components.animated.pressable
   (:require [quo.animated :as animated]
             [quo.gesture-handler :as gesture-handler]))
 
@@ -50,8 +50,8 @@
         active          (animated/eq state (:began gesture-handler/states))
         gesture-handler (animated/on-gesture {:state state})
         duration        (animated/cond* active time-in time-out)
-        long-duration   (animated/cond* active long-press-duration 0)
         long-pressed    (animated/value 0)
+        long-duration   (animated/cond* active long-press-duration 0)
         long-timing     (animated/with-timing-transition active
                           {:duration long-duration})
         animation       (animated/with-timing-transition active
@@ -70,9 +70,15 @@
             handle-press-start (fn [] (when on-press-start (on-press-start)))
             handle-long-press  (fn [] (when on-long-press (on-long-press)))]
         [:<>
-         [animated/code
-          {:exec (animated/cond* (animated/eq long-timing 1)
-                                 (animated/set long-pressed 1))}]
+         (when on-long-press
+           [animated/code
+            {:exec (animated/block
+                    [(animated/cond* (animated/eq long-timing 1)
+                                     (animated/set long-pressed 1))
+                     (animated/cond* long-pressed
+                                     [(animated/set long-pressed 0)
+                                      (animated/call* [] handle-long-press)
+                                      (animated/set state (:undetermined gesture-handler/states))])])}])
          [animated/code
           {:key  (str on-press on-long-press on-press-start)
            :exec (animated/on-change state
@@ -80,11 +86,8 @@
                                                       (animated/call* [] handle-press-start))
                                       (animated/cond* (animated/and* (animated/eq state (:end gesture-handler/states))
                                                                      (animated/not* long-pressed))
-                                                      (animated/call* [] handle-press))
-                                      (animated/cond* (animated/and* (animated/eq state (:end gesture-handler/states))
-                                                                     long-pressed)
-                                                      [(animated/set long-pressed 0)
-                                                       (animated/call* [] handle-long-press)])])}]
+                                                      [(animated/call* [] handle-press)
+                                                       (animated/set state (:undetermined gesture-handler/states))])])}]
          [gesture-handler/tap-gesture-handler
           (merge gesture-handler
                  {:shouldCancelWhenOutside true

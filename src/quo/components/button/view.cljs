@@ -1,5 +1,5 @@
 (ns quo.components.button.view
-  (:require [quo.components.button.animation :as animation]
+  (:require [quo.components.animated.pressable :as animation]
             [quo.react-native :as rn]
             [quo.haptic :as haptic]
             [quo.design-system.colors :as colors]
