@@ -8,8 +8,12 @@
 
 CUR_DIR=$(cd "${BASH_SOURCE%/*}" && pwd)
 
-# sources REPOS associative array
-source ${CUR_DIR}/repos.sh
+# This defines URLs of Maven repos we know about and use.
+declare -a REPOS=(
+  "https://repo.maven.apache.org/maven2"
+  "https://dl.google.com/dl/android/maven2"
+  "https://repository.sonatype.org/content/groups/sonatype-public-grid"
+)
 
 function nix_fetch() {
     nix-prefetch-url --print-path --type sha256 "${1}" 2>/dev/null

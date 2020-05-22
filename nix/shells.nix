@@ -73,7 +73,7 @@ let
 
     # for running gradle by hand
     gradle = mkShell {
-      buildInputs = with pkgs; [ gradle maven ];
+      buildInputs = with pkgs; [ gradle maven goMavenResolver ];
       inputsFrom = [ node-sh ];
       shellHook = ''
         export STATUS_GO_ANDROID_LIBDIR="DUMMY"

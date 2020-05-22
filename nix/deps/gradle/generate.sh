@@ -22,12 +22,6 @@ DEPS_JSON="${CUR_DIR}/deps.json"
 # Raise limit of file descriptors
 ulimit -n 16384
 
-# This needs to be used by all instances of determine_url.sh
-# but needs to be fresh on every run of generate.sh.
-# Helps mvn not re-download same stuff over and over again.
-export MVN_REPO_CACHE='/tmp/maven-repo-cache'
-trap "rm -rf ${MVN_REPO_CACHE}" ERR EXIT HUP INT
-
 echo "Regenerating Nix files..."
 
 # Gradle needs to be run in 'android' subfolder
@@ -55,11 +49,9 @@ fi
 
 # Find download URLs for each dependency --------------------------------------
 # The AWK call removes duplicates using different repos.
-DEPENDENCIES=$(cat ${DEPS_LIST})
-parallel --will-cite \
-    ${CUR_DIR}/get_urls.sh \
-    ::: ${DEPENDENCIES[@]} \
-    | awk -F'/' '{db[$NF]++;if(db[$NF]==1){print}}' \
+cat ${DEPS_LIST} \
+    | go-maven-resolver \
+    | sed 's/.pom$//' \
     | sort -uV -o ${DEPS_URLS}
 
 echo -e "\033[2KFound ${GRN}$(wc -l < ${DEPS_URLS})${RST} dependency URLs..."

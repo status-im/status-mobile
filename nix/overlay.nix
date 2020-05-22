@@ -49,4 +49,5 @@ in {
   appimagekit = callPackage ./pkgs/appimagekit { };
   linuxdeployqt = callPackage ./pkgs/linuxdeployqt { inherit (self) appimagekit; };
   patchMavenSources = callPackage ./pkgs/patch-maven-srcs { };
+  goMavenResolver = callPackage ./pkgs/go-maven-resolver { };
 }
