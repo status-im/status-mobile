@@ -19,6 +19,13 @@
   [react/view styles/installed-icon
    [icons/icon :main-icons/check {:color colors/white-persist :height 20 :width 20}]])
 
+(defview uninstall-badge [id]
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:stickers/install-pack id])}
+   [react/view 
+    [react/text {:style {:color colors/red}
+                 :accessibility-label :sticker-pack-price}
+     (i18n/label :t/uninstall)]]])
+
 (defview price-badge [price id owned? pending]
   (letsubs [chain   [:ethereum/chain-keyword]
             balance [:balance-default]]
@@ -87,7 +94,7 @@
           [react/text {:style {:typography :header}} name]
           [react/text {:style {:color colors/gray :margin-top 6}} author]]
          (if installed
-           [installed-icon]
+           [uninstall-badge id]
            [price-badge price id owned pending])]
         [react/view {:style {:padding-top 8 :flex 1}}
          [react/scroll-view {:keyboard-should-persist-taps :handled :style {:flex 1}}

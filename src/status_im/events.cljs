@@ -972,6 +972,11 @@
    (stickers/install-stickers-pack cofx id)))
 
 (handlers/register-handler-fx
+ :stickers/uninstall-pack
+ (fn [cofx [_ id]]
+   (stickers/uninstall-stickers-pack cofx id)))
+
+(handlers/register-handler-fx
  :stickers/load-packs
  (fn [cofx _]
    (stickers/load-packs cofx)))

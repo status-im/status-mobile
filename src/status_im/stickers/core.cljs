@@ -112,6 +112,17 @@
       (assoc (:stickers/packs-installed multiaccount) id pack)
       {}))))
 
+(fx/defn uninstall-stickers-pack
+  [{{:keys [multiaccount] :as db} :db :as cofx} id]
+  (fx/merge
+   cofx
+   {:db (-> db
+            (assoc-in [:stickers/packs-installed] id))}
+   (multiaccounts.update/multiaccount-update
+    :stickers/packs-installed
+    (dissoc (:stickers/packs-installed multiaccount) id)
+    {})))
+
 (defn valid-sticker? [sticker]
   (contains? sticker :hash))
 
