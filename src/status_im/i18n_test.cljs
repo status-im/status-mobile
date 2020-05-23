@@ -421,6 +421,7 @@
     :error
     :error-unable-to-get-balance
     :error-unable-to-get-prices
+    :error-usd-value-is-not-availble
     :error-unable-to-get-token-balance
     :errors
     :eth
