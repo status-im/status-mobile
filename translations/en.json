@@ -426,6 +426,7 @@
     "error": "Error",
     "error-unable-to-get-balance": "Unable to get balance",
     "error-unable-to-get-prices": "Currency conversion error. Refresh your screen to try again.",
+    "error-usd-value-is-not-availble": "USD value is not available.",
     "error-unable-to-get-token-balance": "Unable to get token balance",
     "errors": "Errors",
     "eth": "ETH",
