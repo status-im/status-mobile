@@ -2,10 +2,8 @@ androidx.activity:activity:1.1.0
 androidx.annotation:annotation:1.0.0
 androidx.annotation:annotation:1.1.0
 androidx.appcompat:appcompat-resources:1.1.0
-androidx.appcompat:appcompat:1.0.0
 androidx.appcompat:appcompat:1.0.2
 androidx.appcompat:appcompat:1.1.0
-androidx.appcompat:appcompat:1.1.0-rc01
 androidx.arch.core:core-common:2.0.0
 androidx.arch.core:core-common:2.1.0
 androidx.arch.core:core-runtime:2.0.0
@@ -87,9 +85,6 @@ com.android.databinding:compilerCommon:1.0-rc5
 com.android.databinding:compilerCommon:2.2.3
 com.android.databinding:compilerCommon:3.0.0
 com.android.databinding:compilerCommon:3.0.1
-com.android.support:appcompat-v7:28.0.0
-com.android.support:appcompat-v7:androidx.appcompat:appcompat:1.0.2
-com.android.support:appcompat-v7:androidx.appcompat:appcompat:1.1.0
 com.android.tools.analytics-library:crash:26.2.1
 com.android.tools.analytics-library:crash:26.3.1
 com.android.tools.analytics-library:crash:26.5.3
@@ -316,7 +311,6 @@ com.facebook.fresco:nativeimagefilters:2.0.0
 com.facebook.fresco:nativeimagetranscoder:2.0.0
 com.facebook.fresco:stetho:2.0.0
 com.facebook.infer.annotation:infer-annotation:0.11.2
-com.facebook.react:react-native:0.62.2
 com.facebook.soloader:annotation:0.8.0
 com.facebook.soloader:annotation:0.8.2
 com.facebook.soloader:nativeloader:0.8.0

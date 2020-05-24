@@ -7,8 +7,8 @@ in buildGoPackage rec {
   version = strings.substring 0 7 rev;
   owner = "status-im";
   repo = pname;
-  rev = "c6f05fc28e4a9df1dc09bca1473b20eb1eec212e";
-  sha256 = "1lghzickfms8s0bm6qiq1xg1nz4qsv9k3vmz4d255acnydxmc893";
+  rev = "72b6c12ab193f59d197e7f63273ec0c079b6e3a9";
+  sha256 = "0r6k74716175pjy8vjz0fig2h010fabl00w114qd2wb2iwq4z3x4";
   goPackagePath = "github.com/${owner}/${repo}";
 
   goDeps = ./deps.nix;

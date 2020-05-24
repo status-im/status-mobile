@@ -40,9 +40,11 @@ if [[ -z "${1}" ]]; then
     exit 1
 fi
 
-OBJ_REL_URL=${1}
+POM_URL=${1}
+# Drop the POM extension
+OBJ_REL_URL=${POM_URL%.pom}
 
-echo -en "\033[2K - Nix entry for: ${1##*/}\r" >&2
+echo -en "${CLR} - Nix entry for: ${1##*/}\r" >&2
 
 REPO_URL=$(match_repo_url "${OBJ_REL_URL}")
 

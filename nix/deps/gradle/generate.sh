@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 if [[ -z "${IN_NIX_SHELL}" ]]; then
     echo "Remember to call 'make shell'!"
     exit 1
@@ -37,24 +39,14 @@ echo -e "Found ${GRN}$(wc -l < ${PROJ_LIST})${RST} sub-projects..."
 
 # Check each sub-project in parallel, the ":" is for local deps ---------------
 PROJECTS=$(cat ${PROJ_LIST})
-${CUR_DIR}/get_deps.sh ":" ${PROJECTS[@]} \
-    | sort -uV -o ${DEPS_LIST}
+${CUR_DIR}/get_deps.sh ":" ${PROJECTS[@]} | sort -uV -o ${DEPS_LIST}
 
-echo -e "\033[2KFound ${GRN}$(wc -l < ${DEPS_LIST})${RST} direct dependencies..."
-
-# Save old URLs file to improve search
-if [[ ! -s "${DEPS_URLS}.old" ]] && [[ -s "${DEPS_URLS}" ]]; then
-    mv "${DEPS_URLS}" "${DEPS_URLS}.old"
-fi
+echo -e "${CLR}Found ${GRN}$(wc -l < ${DEPS_LIST})${RST} direct dependencies..."
 
 # Find download URLs for each dependency --------------------------------------
-# The AWK call removes duplicates using different repos.
-cat ${DEPS_LIST} \
-    | go-maven-resolver \
-    | sed 's/.pom$//' \
-    | sort -uV -o ${DEPS_URLS}
+cat ${DEPS_LIST} | go-maven-resolver | sort -uV -o ${DEPS_URLS}
 
-echo -e "\033[2KFound ${GRN}$(wc -l < ${DEPS_URLS})${RST} dependency URLs..."
+echo -e "${CLR}Found ${GRN}$(wc -l < ${DEPS_URLS})${RST} dependency URLs..."
 
 # Open the Nix attribute set --------------------------------------------------
 echo -n "[" > ${DEPS_JSON}
@@ -72,5 +64,6 @@ sed -i '$ s/},/}/' ${DEPS_JSON}
 # Close the Nix attribute set
 echo "]" >> ${DEPS_JSON}
 
-echo -e "\033[2KGenerated Nix deps file: ${DEPS_JSON}"
+REL_DEPS_JSON=$(realpath --relative-to=${PWD} ${DEPS_JSON})
+echo -e "${CLR}Generated Nix deps file: ${REL_DEPS_JSON#../}"
 echo -e "${GRN}Done${RST}"
