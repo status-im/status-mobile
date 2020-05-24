@@ -48,5 +48,5 @@
              "chaos-mode?" chaos-mode?)
   (http/get
    (gen-price-url from to chaos-mode?)
-   (fn [resp] (on-success (format-price-resp resp mainnet?)))
+   (fn [resp] (on-success (format-price-resp resp mainnet?) to))
    on-error))
