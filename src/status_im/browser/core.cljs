@@ -29,6 +29,7 @@
             ["hi-base32" :as hi-base32]))
 
 (fx/defn update-browser-option
+  {:events [:browser/update-option]}
   [{:keys [db]} option-key option-value]
   {:db (assoc-in db [:browser/options option-key] option-value)})
 

@@ -103,7 +103,7 @@
 ;; should-component-update is called only when component's props are changed,
 ;; that's why it can't be used in `browser`, because `url` comes from subs
 (views/defview browser-component
-  [{:keys [error? url browser browser-id unsafe? can-go-back?
+  [{:keys [error? warning? url browser browser-id unsafe? can-go-back?
            can-go-forward? resolving? network-id url-original
            show-permission show-tooltip dapp? name dapps-account]}]
   {:should-component-update (fn [_ _ args]
@@ -112,8 +112,9 @@
   [react/view {:flex 1
                :elevation -10}
    [react/view components.styles/flex
-    (if (or unsafe? error?)
+    (if (or unsafe? warning?)
       [site-blocked.views/view {:can-go-back? can-go-back?
+                                :warning?     warning?
                                 :site         browser-id}]
       [components.webview/webview
        {:dapp?                                      dapp?
@@ -126,10 +127,7 @@
         :render-error                               web-view-error
         :on-navigation-state-change                 #(do
                                                        (re-frame/dispatch [:set-in [:ens/registration :state] :searching])
-                                                       (log/info "#on-navigation-state-change" (.-title ^js %) (.-url ^js %))
-                                                       (when (not= (.-title ^js %) (.-url ^js %))
-                                                         (log/info "#on-navigation-state-change not=")
-                                                         #_(re-frame/dispatch [:browser/error-occured]))
+                                                       (log/info "#on-navigation-state-change title:" (.-title ^js %) "url:" (.-url ^js %))
                                                        (debounce/debounce-and-dispatch
                                                         [:browser/navigation-state-changed % error?]
                                                         500))
@@ -138,21 +136,16 @@
         :on-message                                 #(re-frame/dispatch [:browser/bridge-message-received (.. ^js % -nativeEvent -data)])
         ;:on-load                                    #(re-frame/dispatch [:browser/loading-started])
         :on-load-start                              #(let [event (.. ^js % -nativeEvent)]
-                                                       (log/info "#on-load-start" (.-title ^js event) (.-title ^js event))
-                                                       (when (not= (.-title ^js event) (.-url ^js event))
-                                                         (log/info "#on-load-start not equal")
-                                                         #_(re-frame/dispatch [:browser/error-occured])))
+                                                       (log/info "#on-load-start title:" (.-title ^js event) "url:" (.-url ^js event))
+                                                       (re-frame/dispatch [:browser/update-option :url (.-url ^js event)]))
         :on-load-end                                #(let [event (.. ^js % -nativeEvent)]
-                                                       (log/info "#on-load-end" (.-title ^js event) (.-url ^js event))
-                                                       (when (not= (.-title ^js event) (.-url ^js event))
+                                                       (log/info "#on-load-end title:" (.-title ^js event) "url:" (.-url ^js event) "original url:" url)
+                                                       (when (and (nil? warning?) (not (nil? url)) (not= url (.-url ^js event)))
                                                          (log/info "#on-load-end not equal")
-                                                         #_(re-frame/dispatch [:browser/error-occured])))
+                                                         (re-frame/dispatch [:browser/update-option :warning? true])))
         :on-load                                    #(let [event (.. ^js % -nativeEvent)]
-                                                       (log/info "#on-load" (.-title ^js event) (.-url ^js event))
-                                                       (re-frame/dispatch [:browser/loading-started])
-                                                       (when (not= (.-title ^js event) (.-url ^js event))
-                                                         (log/info "#on-load not equal")
-                                                         (re-frame/dispatch [:browser/error-occured])))
+                                                       (log/info "#on-load title:" (.-title ^js event) "url:" (.-url ^js event))
+                                                       (re-frame/dispatch [:browser/loading-started]))
         :on-http-error                              #(let [event (.. ^js % -nativeEvent)]
                                                        (log/info "#on-http-error" (.-statusCode ^js event) (.-title ^js event) (.-url ^js event))
                                                        (re-frame/dispatch [:browser/error-occured]))
@@ -173,7 +166,7 @@
 (views/defview browser []
   (views/letsubs [window-width [:dimensions/window-width]
                   {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
-                  {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:browser/options]
+                  {:keys [url error? warning? loading? url-editing? show-tooltip show-permission resolving?]} [:browser/options]
                   dapps-account [:dapps-account]
                   network-id [:chain-id]]
     (let [can-go-back?    (browser/can-go-back? browser)
@@ -186,6 +179,7 @@
           [connectivity/loading-indicator window-width])]
        [browser-component {:dapp?           dapp?
                            :error?          error?
+                           :warning?        warning?
                            :url             url
                            :url-original    url-original
                            :browser         browser
