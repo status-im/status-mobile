@@ -32,13 +32,16 @@
 
 (fx/defn on-update-prices-success
   {:events [::update-prices-success]}
-  [{:keys [db]} prices currency-code]
-  {:db (if (contains? prices currency-code)
+  [{:keys [db]} prices from to]
+  {:db (if (every? true? (for [from-entity from]
+                           (for [to-entity to]
+                             (not (Empty? (get-in db [from-entity to-entity]))))))
          (assoc db
                 :prices prices
                 :prices-loading? false)
          (-> db
              (assoc-error-message :prices-update :error-currency-value-is-not-availble)
+              (assoc :prices prices)
              (assoc :prices-loading? false)))})
 
 (fx/defn on-update-prices-fail
