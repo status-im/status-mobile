@@ -276,7 +276,6 @@ https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-iid/17.0.3/
 https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-ml-common/17.0.0/firebase-ml-common-17.0.0.pom
 https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-ml-vision-face-model/17.0.2/firebase-ml-vision-face-model-17.0.2.pom
 https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-ml-vision/19.0.3/firebase-ml-vision-19.0.3.pom
-https://repository.sonatype.org/content/groups/sonatype-public-grid/com/afollestad/material-dialogs/commons/0.9.6.0/commons-0.9.6.0.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/afollestad/material-dialogs/core/0.9.6.0/core-0.9.6.0.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/android/databinding/baseLibrary/2.2.3/baseLibrary-2.2.3.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/android/databinding/compilerCommon/2.2.3/compilerCommon-2.2.3.pom
@@ -303,7 +302,6 @@ https://repository.sonatype.org/content/groups/sonatype-public-grid/com/android/
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/android/tools/sdk-common/25.2.3/sdk-common-25.2.3.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/facebook/fbjni/fbjni-java-only/0.0.3/fbjni-java-only-0.0.3.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/facebook/flipper/flipper-fresco-plugin/0.35.0/flipper-fresco-plugin-0.35.0.pom
-https://repository.sonatype.org/content/groups/sonatype-public-grid/com/facebook/flipper/flipper-network-plugin/0.35.0/flipper-network-plugin-0.35.0.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/facebook/flipper/flipper/0.35.0/flipper-0.35.0.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/facebook/yoga/proguard-annotations/1.14.1/proguard-annotations-1.14.1.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/github/status-im/function/0.0.1/function-0.0.1.pom
@@ -473,15 +471,11 @@ https://repo.maven.apache.org/maven2/com/squareup/javawriter/2.5.0/javawriter-2.
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp-urlconnection/3.12.1/okhttp-urlconnection-3.12.1.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/3.8.1/okhttp-3.8.1.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/3.12.1/okhttp-3.12.1.pom
-https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/3.14.1/okhttp-3.14.1.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/okhttp/4.7.2/okhttp-4.7.2.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/parent/3.8.1/parent-3.8.1.pom
 https://repo.maven.apache.org/maven2/com/squareup/okhttp3/parent/3.12.1/parent-3.12.1.pom
-https://repo.maven.apache.org/maven2/com/squareup/okhttp3/parent/3.14.1/parent-3.14.1.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio-parent/1.15.0/okio-parent-1.15.0.pom
-https://repo.maven.apache.org/maven2/com/squareup/okio/okio-parent/1.17.2/okio-parent-1.17.2.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio/1.15.0/okio-1.15.0.pom
-https://repo.maven.apache.org/maven2/com/squareup/okio/okio/1.17.2/okio-1.17.2.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio/2.6.0/okio-2.6.0.pom
 https://repo.maven.apache.org/maven2/com/squareup/okio/okio/2.7.0-alpha.lockfree.1/okio-2.7.0-alpha.lockfree.1.pom
 https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.0/all-1.2.0.pom

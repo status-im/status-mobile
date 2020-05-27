@@ -295,7 +295,6 @@ com.drewnoakes:metadata-extractor:2.11.0
 com.facebook.conceal:conceal:1.1.3
 com.facebook.fbjni:fbjni-java-only:0.0.3
 com.facebook.flipper:flipper-fresco-plugin:0.35.0
-com.facebook.flipper:flipper-network-plugin:0.35.0
 com.facebook.flipper:flipper:0.35.0
 com.facebook.fresco:animated-base:2.0.0
 com.facebook.fresco:animated-drawable:2.0.0
@@ -371,9 +370,7 @@ com.intellij:annotations:12.0
 com.parse.bolts:bolts-tasks:1.4.0
 com.squareup.okhttp3:okhttp-urlconnection:3.12.1
 com.squareup.okhttp3:okhttp:3.12.1
-com.squareup.okhttp3:okhttp:3.14.1
 com.squareup.okio:okio:1.15.0
-com.squareup.okio:okio:1.17.2
 com.squareup:javapoet:1.8.0
 com.squareup:javawriter:2.5.0
 com.sun.activation:javax.activation:1.2.0
