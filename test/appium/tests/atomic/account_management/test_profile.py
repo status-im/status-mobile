@@ -281,8 +281,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append("Can't proceed using account after it's re-recover twice.")
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5329)
-    @marks.critical
+    @marks.testrail_id(6296)
+    @marks.high
     def test_recover_account_from_new_user_seedphrase(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
