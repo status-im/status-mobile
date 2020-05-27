@@ -4,7 +4,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.utils.universal-links.core :as universal-links]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
             [status-im.utils.platform :as platform]
@@ -27,40 +26,42 @@
                         :color       colors/gray}}
     (i18n/label helper)]])
 
-(defn chat-actions [{:keys [chat-id contact chat-name]}]
-  [react/view
-   [list-item/list-item
-    {:theme       :action
-     :icon        (multiaccounts/displayed-photo contact)
-     :title       [view-profile {:name   chat-name
-                                 :helper :t/view-profile}]
-     :accessibility-label :view-chat-details-button
-     :accessories [:chevron]
-     :on-press    #(hide-sheet-and-dispatch  [:chat.ui/show-profile chat-id])}]
-   [list-item/list-item
-    {:theme    :action
-     :title    :t/mark-all-read
-     :accessibility-label :mark-all-read-button
-     :icon     :main-icons/check
-     :on-press #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
-   [list-item/list-item
-    {:theme    :action
-     :title    :t/clear-history
-     :accessibility-label :clear-history-button
-     :icon     :main-icons/close
-     :on-press #(hide-sheet-and-dispatch [:chat.ui/clear-history-pressed chat-id])}]
-   [list-item/list-item
-    {:theme    :action
-     :title    :t/fetch-history
-     :accessibility-label :fetch-history-button
-     :icon     :main-icons/arrow-down
-     :on-press #(hide-sheet-and-dispatch [:chat.ui/fetch-history-pressed chat-id])}]
-   [list-item/list-item
-    {:theme    :action-destructive
-     :title    :t/delete-chat
-     :accessibility-label :delete-chat-button
-     :icon     :main-icons/delete
-     :on-press #(hide-sheet-and-dispatch [:chat.ui/remove-chat-pressed chat-id])}]])
+(defn one-to-one-chat-actions [{:keys [chat-id]}]
+  (let [photo @(re-frame/subscribe [:chats/photo-path chat-id])
+        contact-name @(re-frame/subscribe [:contacts/contact-name-by-identity chat-id])]
+    [react/view
+     [list-item/list-item
+      {:theme       :action
+       :icon        photo
+       :title       [view-profile {:name   contact-name
+                                   :helper :t/view-profile}]
+       :accessibility-label :view-chat-details-button
+       :accessories [:chevron]
+       :on-press    #(hide-sheet-and-dispatch  [:chat.ui/show-profile chat-id])}]
+     [list-item/list-item
+      {:theme    :action
+       :title    :t/mark-all-read
+       :accessibility-label :mark-all-read-button
+       :icon     :main-icons/check
+       :on-press #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
+     [list-item/list-item
+      {:theme    :action
+       :title    :t/clear-history
+       :accessibility-label :clear-history-button
+       :icon     :main-icons/close
+       :on-press #(hide-sheet-and-dispatch [:chat.ui/clear-history-pressed chat-id])}]
+     [list-item/list-item
+      {:theme    :action
+       :title    :t/fetch-history
+       :accessibility-label :fetch-history-button
+       :icon     :main-icons/arrow-down
+       :on-press #(hide-sheet-and-dispatch [:chat.ui/fetch-history-pressed chat-id])}]
+     [list-item/list-item
+      {:theme    :action-destructive
+       :title    :t/delete-chat
+       :accessibility-label :delete-chat-button
+       :icon     :main-icons/delete
+       :on-press #(hide-sheet-and-dispatch [:chat.ui/remove-chat-pressed chat-id])}]]))
 
 (defn public-chat-actions [{:keys [chat-id]}]
   (let [link    (universal-links/generate-link :public-chat :external chat-id)
@@ -101,15 +102,15 @@
        :on-press #(hide-sheet-and-dispatch [:chat.ui/remove-chat-pressed chat-id])}]]))
 
 (defn group-chat-actions []
-  (fn [{:keys [chat-id contact group-chat chat-name color online]}]
-    (let [joined @(re-frame/subscribe [:group-chat/chat-joined? chat-id])]
+  (fn [{:keys [chat-id group-chat chat-name color]}]
+    (let [{:keys [joined?]} @(re-frame/subscribe [:group-chat/inviter-info chat-id])]
       [react/view
        [list-item/list-item
         {:theme       :action
          :title       [view-profile {:name   chat-name
                                      :helper :t/group-info}]
          :icon        [chat-icon/chat-icon-view-chat-sheet
-                       contact group-chat chat-name color online]
+                       chat-id group-chat chat-name color]
          :accessories [:chevron]
          :on-press    #(hide-sheet-and-dispatch [:show-group-chat-profile chat-id])}]
        [list-item/list-item
@@ -130,7 +131,7 @@
          :accessibility-label :fetch-history-button
          :icon                :main-icons/arrow-down
          :on-press            #(hide-sheet-and-dispatch [:chat.ui/fetch-history-pressed chat-id])}]
-       (when joined
+       (when joined?
          [list-item/list-item
           {:theme               :action
            :title               :t/leave-chat
@@ -143,7 +144,7 @@
   (cond
     public?    [public-chat-actions current-chat]
     group-chat [group-chat-actions current-chat]
-    :else      [chat-actions current-chat]))
+    :else      [one-to-one-chat-actions current-chat]))
 
 (defn options [chat-id message-id]
   (fn []
@@ -162,16 +163,16 @@
        :accessibility-label :delete-transaction-button
        :on-press            #(hide-sheet-and-dispatch [:chat.ui/delete-message chat-id message-id])}]]))
 
-(defn message-long-press [{:keys [content identicon from outgoing] :as message}]
+(defn message-long-press [{:keys [content from outgoing] :as message}]
   (fn []
-    (let [{:keys [ens-name alias]} @(re-frame/subscribe [:contacts/contact-name-by-identity from])]
+    (let [photo @(re-frame/subscribe [:chats/photo-path from])
+          contact-name @(re-frame/subscribe [:contacts/contact-name-by-identity from])]
       [react/view
        (when-not outgoing
          [list-item/list-item
           {:theme               :action
-           :icon                (multiaccounts/displayed-photo {:identicon  identicon
-                                                                :public-key from})
-           :title               [view-profile {:name   (or ens-name alias)
+           :icon                photo
+           :title               [view-profile {:name   contact-name
                                                :helper :t/view-profile}]
            :accessibility-label :view-chat-details-button
            :accessories         [:chevron]
@@ -197,15 +198,15 @@
                        (re-frame/dispatch [:bottom-sheet/hide-sheet])
                        (list-selection/open-share {:message (:text content)}))}])])))
 
-(defn sticker-long-press [{:keys [from identicon]}]
+(defn sticker-long-press [{:keys [from]}]
   (fn []
-    (let [{:keys [ens-name alias]} @(re-frame/subscribe [:contacts/contact-name-by-identity from])]
+    (let [photo @(re-frame/subscribe [:chats/photo-path from])
+          contact-name @(re-frame/subscribe [:contacts/contact-name-by-identity from])]
       [react/view
        [list-item/list-item
         {:theme               :action
-         :icon                (multiaccounts/displayed-photo {:identicon  identicon
-                                                              :public-key from})
-         :title               [view-profile {:name   (or ens-name alias)
+         :icon                photo
+         :title               [view-profile {:name   contact-name
                                              :helper :t/view-profile}]
          :accessibility-label :view-chat-details-button
          :accessories         [:chevron]

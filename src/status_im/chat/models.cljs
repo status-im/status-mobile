@@ -4,7 +4,6 @@
             [status-im.transport.filters.core :as transport.filters]
             [status-im.contact.core :as contact.core]
             [status-im.waku.core :as waku]
-            [status-im.contact.db :as contact.db]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
             [status-im.ethereum.json-rpc :as json-rpc]
@@ -92,8 +91,7 @@
      :is-active          true
      :timestamp          now
      :contacts           #{chat-id}
-     :last-clock-value   0
-     :messages           {}}))
+     :last-clock-value   0}))
 
 (fx/defn ensure-chat
   "Add chat to db and update"
@@ -165,6 +163,7 @@
                {:chat-id                        topic
                 :is-active                      true
                 :name                           topic
+                :chat-name                      (str "#" topic)
                 :group-chat                     true
                 :contacts                       #{}
                 :public?                        true
@@ -175,20 +174,20 @@
 (fx/defn clear-history
   "Clears history of the particular chat"
   [{:keys [db] :as cofx} chat-id]
-  (let [{:keys [messages
-                last-message
+  (let [{:keys [last-message
                 deleted-at-clock-value]} (get-in db [:chats chat-id])
         last-message-clock-value (or (:clock-value last-message)
                                      deleted-at-clock-value
                                      (utils.clocks/send 0))]
     (fx/merge
      cofx
-     {:db            (update-in db [:chats chat-id] merge
-                                {:messages                  {}
-                                 :message-list              nil
-                                 :last-message              nil
-                                 :unviewed-messages-count   0
-                                 :deleted-at-clock-value    last-message-clock-value})}
+     {:db            (-> db
+                         (assoc-in [:messages chat-id] {})
+                         (update-in [:message-lists] dissoc chat-id)
+                         (update-in [:chats chat-id] merge
+                                    {:last-message              nil
+                                     :unviewed-messages-count   0
+                                     :deleted-at-clock-value    last-message-clock-value}))}
      (messages-store/delete-messages-by-chat-id chat-id)
      #(chats-store/save-chat % (get-in % [:db :chats chat-id])))))
 
@@ -218,13 +217,9 @@
     {:db
      (-> db
          (dissoc :loaded-chat-id)
-         (update-in [:chats current-chat-id]
-                    assoc
-                    :all-loaded? false
-                    :cursor nil
-                    :messages-initialized? false
-                    :messages {}
-                    :message-list nil))}))
+         (update :messages dissoc current-chat-id)
+         (update :message-lists dissoc current-chat-id)
+         (update :pagination-info dissoc current-chat-id))}))
 
 (fx/defn preload-chat-data
   "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
@@ -241,8 +236,6 @@
                 (transport.filters/load-chat chat-id))
               (when platform/desktop?
                 (message-seen/mark-messages-seen chat-id))
-              (when (and (one-to-one-chat? cofx chat-id) (not (contact.db/contact-exists? db chat-id)))
-                (contact.core/create-contact chat-id))
               (loading/load-messages))))
 
 (fx/defn navigate-to-chat

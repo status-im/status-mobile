@@ -41,8 +41,7 @@
     (when (seq loaded-unviewed-ids)
       (fx/merge cofx
                 {:db (reduce (fn [acc message-id]
-                               (assoc-in acc [:chats chat-id :messages
-                                              message-id :seen]
+                               (assoc-in acc [:messages chat-id message-id :seen]
                                          true))
                              db
                              loaded-unviewed-ids)}

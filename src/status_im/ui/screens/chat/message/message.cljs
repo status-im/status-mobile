@@ -18,8 +18,8 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]
-  (letsubs [{:keys [ens-name alias]} [:contacts/contact-name-by-identity from]]
-    (if ens-name (str "@" ens-name) alias)))
+  (letsubs [contact-name [:contacts/contact-name-by-identity from]]
+    contact-name))
 
 (defn message-timestamp
   ([message]
@@ -38,14 +38,13 @@
    appender])
 
 (defview quoted-message
-  [_ {:keys [from text image]} outgoing current-public-key public?]
-  (letsubs [{:keys [ens-name alias]} [:contacts/contact-name-by-identity from]]
+  [_ {:keys [from text]} outgoing current-public-key public?]
+  (letsubs [contact-name [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
       [chat.utils/format-reply-author
        from
-       alias
-       ens-name
+       contact-name
        current-public-key
        (partial style/quoted-message-author outgoing)]]
      (if (and image
@@ -239,8 +238,8 @@
       nil)))
 
 (defview message-author-name [from alias]
-  (letsubs [{:keys [ens-name]} [:contacts/contact-name-by-identity from]]
-    (chat.utils/format-author alias style/message-author-name-container ens-name)))
+  (letsubs [contact-name [:contacts/raw-contact-name-by-identity from]]
+    (chat.utils/format-author (or contact-name alias) style/message-author-name-container)))
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
@@ -261,7 +260,6 @@
      (when display-username?
        [react/touchable-opacity {:style    style/message-author-touchable
                                  :on-press #(re-frame/dispatch [:chat.ui/show-profile from])}
-        ;;TODO (perf) move to event
         [message-author-name from alias]])
      ;;MESSAGE CONTENT
      content]]

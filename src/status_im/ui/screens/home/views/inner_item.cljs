@@ -15,8 +15,8 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]
-  (letsubs [{:keys [ens-name alias]} [:contacts/contact-name-by-identity from]]
-    (if ens-name (str "@" ens-name) alias)))
+  (letsubs [contact-name [:contacts/contact-name-by-identity from]]
+    contact-name))
 
 (defn render-subheader-inline [acc {:keys [type destination literal children]}]
   (case type
@@ -108,20 +108,20 @@
 
 (defn home-list-item [[_ home-item]]
   (let [{:keys [chat-id chat-name color online group-chat
-                public? contact timestamp last-message]}
+                public? timestamp last-message]}
         home-item
         private-group?      (and group-chat (not public?))
-        public-group?       (and group-chat public?)
-        ;;TODO (perf) move to event
-        truncated-chat-name (utils/truncate-str chat-name 30)]
+        public-group?       (and group-chat public?)]
     [list-item/list-item
      {:icon                      [chat-icon.screen/chat-icon-view-chat-list
-                                  contact group-chat truncated-chat-name color online false]
+                                  chat-id group-chat chat-name color online false]
       :title-prefix              (cond
                                    private-group? :main-icons/tiny-group
                                    public-group? :main-icons/tiny-public
                                    :else nil)
-      :title                     truncated-chat-name
+      :title                     (if group-chat
+                                   (utils/truncate-str chat-name 30)
+                                   @(re-frame/subscribe [:contacts/contact-name-by-identity chat-id]))
       :title-accessibility-label :chat-name-text
       :title-row-accessory       [message-timestamp (if (pos? (:whisper-timestamp last-message))
                                                       (:whisper-timestamp last-message)

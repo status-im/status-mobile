@@ -65,15 +65,15 @@
 
 (deftest clear-history-test
   (let [chat-id "1"
-        cofx    {:db {:chats {chat-id {:message-list            [{:something "a"}]
-                                       :last-message            {:clock-value 10}
+        cofx    {:db {:message-lists {chat-id [{:something "a"}]}
+                      :chats {chat-id {:last-message            {:clock-value 10}
                                        :unviewed-messages-count 1}}}}]
     (testing "it deletes all the messages"
       (let [actual (chat/clear-history cofx chat-id)]
-        (is (= {} (get-in actual [:db :chats chat-id :messages])))))
+        (is (= {} (get-in actual [:db :messages chat-id])))))
     (testing "it deletes all the message groups"
       (let [actual (chat/clear-history cofx chat-id)]
-        (is (= nil (get-in actual [:db :chats chat-id :message-list])))))
+        (is (= nil (get-in actual [:db :message-lists chat-id])))))
     (testing "it deletes unviewed messages set"
       (let [actual (chat/clear-history cofx chat-id)]
         (is (= 0 (get-in actual [:db :chats chat-id :unviewed-messages-count])))))
@@ -103,13 +103,13 @@
 
 (deftest remove-chat-test
   (let [chat-id "1"
-        cofx    {:db {:chats {chat-id {:last-message {:clock-value 10}
-                                       :messages {"1" {:clock-value 1}
-                                                  "2" {:clock-value 10}
-                                                  "3" {:clock-value 2}}}}}}]
+        cofx    {:db {:messages {chat-id {"1" {:clock-value 1}
+                                          "2" {:clock-value 10}
+                                          "3" {:clock-value 2}}}
+                      :chats {chat-id {:last-message {:clock-value 10}}}}}]
     (testing "it deletes all the messages"
       (let [actual (chat/remove-chat cofx chat-id)]
-        (is (= {} (get-in actual [:db :chats chat-id :messages])))))
+        (is (= {} (get-in actual [:db :messages chat-id])))))
     (testing "it sets a deleted-at-clock-value equal to the last message clock-value"
       (let [actual (chat/remove-chat cofx chat-id)]
         (is (= 10 (get-in actual [:db :chats chat-id :deleted-at-clock-value])))))
@@ -147,9 +147,10 @@
 
 (def test-db
   {:multiaccount {:public-key "me"}
+
+   :messages {"status" {"4" {} "5" {} "6" {}}}
    :chats {"status" {:public? true
                      :group-chat true
-                     :messages {"4" {} "5" {} "6" {}}
                      :loaded-unviewed-messages-ids #{"6" "5" "4"}}
            "opened" {:loaded-unviewed-messages-ids #{}}
            "1-1"    {:loaded-unviewed-messages-ids #{"6" "5" "4"}}}})

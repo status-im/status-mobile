@@ -94,7 +94,8 @@
                                                                :clock-value 1
                                                                :chat-id "a"}))))
   (testing "it returns true when it's already in the loaded message"
-    (is (#'status-im.chat.models.message/message-loaded? {:db {:chats {"a" {:messages {"message-id" {}}}}}}
+    (is (#'status-im.chat.models.message/message-loaded? {:db
+                                                          {:messages {"a" {"message-id" {}}}}}
                                                          {:message-id "message-id"
                                                           :from "a"
                                                           :clock-value 1
@@ -124,7 +125,8 @@
             :view-id :chat
             :loaded-chat-id "chat-id"
             :current-chat-id "chat-id"
-            :chats {"chat-id" {:messages {}}}}]
+            :messages {"chat-id" {}}
+            :chats {"chat-id" {}}}]
     (testing "a message coming from you!"
       (let [actual (message/receive-one {:db db}
                                         {:from "me"
@@ -136,7 +138,7 @@
                                          :outgoing true
                                          :content "b"
                                          :clock-value 1})
-            message (get-in actual [:db :chats "chat-id" :messages "id"])]
+            message (get-in actual [:db :messages "chat-id" "id"])]
         (testing "it adds the message"
           (is message))))))
 
@@ -170,7 +172,7 @@
                               :whisper-timestamp 0
                               :timestamp   0}]
     (testing "a valid message"
-      (is (get-in (message/receive-one cofx valid-message) [:db :chats "chat-id" :messages "1"])))
+      (is (get-in (message/receive-one cofx valid-message) [:db :messages "chat-id" "1"])))
     (testing "a message from someone not in the list of participants"
       (is (not (message/receive-one cofx bad-from-message))))
     (testing "a message with non existing chat-id"
@@ -199,7 +201,7 @@
                               :whisper-timestamp 0
                               :timestamp   0}]
     (testing "a valid message"
-      (is (get-in (message/receive-one cofx valid-message) [:db :chats "chat-id" :messages "1"])))
+      (is (get-in (message/receive-one cofx valid-message) [:db :messages "chat-id" "1"])))
     (testing "a message with non existing chat-id"
       (is (not (message/receive-one cofx bad-chat-id-message))))))
 
@@ -235,37 +237,39 @@
                                 :whisper-timestamp 0
                                 :timestamp   0}]
       (testing "a valid message"
-        (is (get-in (message/receive-one cofx valid-message) [:db :chats "matching" :messages "1"])))
+        (is (get-in (message/receive-one cofx valid-message) [:db :messages "matching" "1"])))
       (testing "our own message"
-        (is (get-in (message/receive-one cofx own-message) [:db :chats "matching" :messages "1"])))
+        (is (get-in (message/receive-one cofx own-message) [:db :messages "matching" "1"])))
       (testing "a message with non matching chat-id"
-        (is (not (get-in (message/receive-one cofx bad-chat-id-message) [:db :chats "not-matching" :messages "1"])))))))
+        (is (not (get-in (message/receive-one cofx bad-chat-id-message) [:db :messages "not-matching" "1"])))))))
 
 (deftest delete-message
   (with-redefs [time/day-relative (constantly "day-relative")
                 time/timestamp->time (constantly "timestamp")]
-    (let [cofx1     {:db {:chats {"chat-id" {:messages      {0 {:message-id  0
-                                                                :content     "a"
-                                                                :clock-value 0
-                                                                :whisper-timestamp 0
-                                                                :timestamp   0}
-                                                             1 {:message-id  1
-                                                                :content     "b"
-                                                                :clock-value 1
-                                                                :whisper-timestamp 1
-                                                                :timestamp   1}}
-                                             :message-list [{:something :something}]}}}}
-          cofx2     {:db {:chats {"chat-id" {:messages      {0 {:message-id  0
-                                                                :content     "a"
-                                                                :clock-value 0
-                                                                :whisper-timestamp 1
-                                                                :timestamp   1}}
-                                             :message-list [{:something :something}]}}}}
+    (let [cofx1     {:db {:messages      {"chat-id" {0 {:message-id  0
+                                                        :content     "a"
+                                                        :clock-value 0
+                                                        :whisper-timestamp 0
+                                                        :timestamp   0}
+                                                     1 {:message-id  1
+                                                        :content     "b"
+                                                        :clock-value 1
+                                                        :whisper-timestamp 1
+                                                        :timestamp   1}}}
+                          :message-lists {"chat-id" [{:something :something}]}
+                          :chats {"chat-id" {}}}}
+          cofx2     {:db {:messages   {"chat-id"   {0 {:message-id  0
+                                                       :content     "a"
+                                                       :clock-value 0
+                                                       :whisper-timestamp 1
+                                                       :timestamp   1}}}
+                          :message-list {"chat-id" [{:something :something}]}
+                          :chats {"chat-id" {}}}}
           fx1       (message/delete-message cofx1 "chat-id" 1)
           fx2       (message/delete-message cofx2 "chat-id" 0)]
       (testing "Deleting message deletes it along with all references"
         (is (= '(0)
-               (keys (get-in fx1 [:db :chats "chat-id" :messages]))))
+               (keys (get-in fx1 [:db :messages "chat-id"]))))
         (is (= [{:one-to-one? false
                  :message-id 0
                  :whisper-timestamp 0
@@ -284,8 +288,8 @@
                  :display-username? true
                  :outgoing false}]
                (models.message-list/->seq
-                (get-in fx1 [:db :chats "chat-id" :message-list]))))
+                (get-in fx1 [:db :message-lists "chat-id"]))))
         (is (= {}
-               (get-in fx2 [:db :chats "chat-id" :messages])))
+               (get-in fx2 [:db :messages "chat-id"])))
         (is (= nil
-               (get-in fx2 [:db :chats "chat-id" :message-list])))))))
+               (get-in fx2 [:db :message-lists "chat-id"])))))))

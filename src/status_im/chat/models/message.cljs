@@ -28,8 +28,8 @@
 
 (fx/defn rebuild-message-list
   [{:keys [db]} chat-id]
-  {:db (assoc-in db [:chats chat-id :message-list]
-                 (message-list/add-many nil (vals (get-in db [:chats chat-id :messages]))))})
+  {:db (assoc-in db [:message-lists chat-id]
+                 (message-list/add-many nil (vals (get-in db [:messages chat-id]))))})
 
 (fx/defn hidden-message-marked-as-seen
   {:events [::hidden-message-marked-as-seen]}
@@ -42,7 +42,7 @@
   "Hide chat message, rebuild message-list"
   [{:keys [db] :as cofx} chat-id {:keys [seen message-id]}]
   (fx/merge cofx
-            {:db (update-in db [:chats chat-id :messages] dissoc message-id)}
+            {:db (update-in db [:messages chat-id] dissoc message-id)}
             (data-store.messages/mark-messages-seen chat-id [message-id] #(re-frame/dispatch [::hidden-message-marked-as-seen %1 %2 %3]))
             (rebuild-message-list chat-id)))
 
@@ -52,7 +52,7 @@
     :keys [seen-by-user?]}]
   (let [current-public-key (multiaccounts.model/current-public-key cofx)
         message-to-be-removed (when replace
-                                (get-in db [:chats chat-id :messages replace]))
+                                (get-in db [:messages chat-id replace]))
         prepared-message (prepare-message message seen-by-user?)]
     (fx/merge cofx
               (when message-to-be-removed
@@ -62,8 +62,8 @@
                                  ;; We should not be always adding to the list, as it does not make sense
                                  ;; if the chat has not been initialized, but run into
                                  ;; some troubles disabling it, so next time
-                                 (update-in [:chats chat-id :messages] assoc message-id prepared-message)
-                                 (update-in [:chats chat-id :message-list] message-list/add prepared-message))
+                                 (update-in [:messages chat-id] assoc message-id prepared-message)
+                                 (update-in [:message-lists chat-id] message-list/add prepared-message))
                        (and (not seen-by-user?)
                             (not= from current-public-key))
                        (update-in [:chats chat-id :loaded-unviewed-messages-ids]
@@ -94,7 +94,7 @@
 
 (defn- message-loaded?
   [{:keys [db]} {:keys [chat-id message-id]}]
-  (get-in db [:chats chat-id :messages message-id]))
+  (get-in db [:messages chat-id message-id]))
 
 (defn- earlier-than-deleted-at?
   [{:keys [db]} {:keys [chat-id clock-value]}]
@@ -145,7 +145,7 @@
           ;; If the message is already loaded, it means it's an update, that
           ;; happens when a message that was missing a reply had the reply
           ;; coming through, in which case we just insert the new message
-          {:db (assoc-in db [:chats chat-id :messages message-id] message-with-chat-id)}
+          {:db (assoc-in db [:messages chat-id message-id] message-with-chat-id)}
           (fx/merge cofx
                     (add-received-message message-with-chat-id)
                     (update-unviewed-count message-with-chat-id)
@@ -202,7 +202,7 @@
   [{:keys [db] :as cofx} chat-id message-id status]
   (fx/merge cofx
             {:db (assoc-in db
-                           [:chats chat-id :messages message-id :outgoing-status]
+                           [:messages chat-id message-id :outgoing-status]
                            status)}
             (data-store.messages/update-outgoing-status message-id status)))
 
@@ -219,7 +219,7 @@
   "Deletes chat message, rebuild message-list"
   [{:keys [db] :as cofx} chat-id message-id]
   (fx/merge cofx
-            {:db            (update-in db [:chats chat-id :messages] dissoc message-id)}
+            {:db            (update-in db [:messages chat-id] dissoc message-id)}
             (data-store.messages/delete-message message-id)
             (rebuild-message-list chat-id)))
 
@@ -229,4 +229,4 @@
 
 (fx/defn toggle-expand-message
   [{:keys [db]} chat-id message-id]
-  {:db (update-in db [:chats chat-id :messages message-id :expanded?] not)})
+  {:db (update-in db [:messages chat-id message-id :expanded?] not)})

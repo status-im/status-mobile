@@ -1,68 +1,10 @@
 (ns status-im.chat.db
-  (:require [clojure.set :as clojure.set]
-            [clojure.string :as clojure.string]
-            [status-im.group-chats.db :as group-chats.db]
-            [status-im.mailserver.constants :as mailserver.constants]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.utils.identicon :as identicon]
-            [status-im.utils.gfycat.core :as gfycat]))
+  (:require [clojure.string :as clojure.string]
+            [status-im.mailserver.constants :as mailserver.constants]))
 
 (defn group-chat-name
   [{:keys [public? name]}]
   (str (when public? "#") name))
-
-(defn enrich-active-chat
-  [contacts {:keys [chat-id
-                    identicon
-                    alias
-                    group-chat] :as chat} current-public-key]
-  (if group-chat
-    (let [pending-invite-inviter-name
-          (group-chats.db/get-pending-invite-inviter-name contacts
-                                                          chat
-                                                          current-public-key)
-          inviter-name
-          (group-chats.db/get-inviter-name contacts
-                                           chat
-                                           current-public-key)]
-      (cond-> chat
-        pending-invite-inviter-name
-        (assoc :pending-invite-inviter-name pending-invite-inviter-name)
-        inviter-name
-        (assoc :inviter-name inviter-name)
-        :always
-        (assoc :chat-name (group-chat-name chat))))
-    (let [photo (if (seq identicon)
-                  identicon
-                  (identicon/identicon chat-id))
-          alias (if (seq alias)
-                  alias
-                  (gfycat/generate-gfy chat-id))
-          {contact-name :name :as contact}
-          (get contacts chat-id
-               {:public-key chat-id
-                :identicon photo
-                :alias alias
-                :name alias
-                :system-tags #{}})]
-      (-> chat
-          (assoc :contact contact
-                 :chat-name (multiaccounts/displayed-name contact)
-                 :name contact-name
-                 :identicon photo
-                 :alias alias)
-          (update :tags clojure.set/union (:tags contact))))))
-
-(defn active-chats
-  [contacts chats {:keys [public-key]}]
-  (reduce-kv (fn [acc chat-id {:keys [is-active] :as chat}]
-               (if is-active
-                 (assoc acc
-                        chat-id
-                        (enrich-active-chat contacts chat public-key))
-                 acc))
-             {}
-             chats))
 
 (defn datemark? [{:keys [type]}]
   (= type :datemark))

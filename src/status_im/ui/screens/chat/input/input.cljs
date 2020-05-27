@@ -33,21 +33,6 @@
     :placeholder-text-color colors/gray
     :auto-capitalize        :sentences}])
 
-(defview reply-message [from alias content]
-  (letsubs [{:keys [ens-name]} [:contacts/contact-name-by-identity from]
-            current-public-key [:multiaccount/public-key]]
-    [react/scroll-view {:style style/reply-message-content}
-     [react/view {:style style/reply-message-to-container}
-      (chat-utils/format-reply-author from alias ens-name current-public-key style/reply-message-author)]
-     (if (:image content)
-       [react/image {:style  {:width            56
-                              :height           56
-                              :background-color :black
-                              :border-radius    4}
-                     :source {:uri (:image content)}}]
-       [react/text {:style (assoc (message-style/style-message-text false) :font-size 14)
-                    :number-of-lines 3} (:text content)])]))
-
 (defn close-button [on-press]
   [react/touchable-highlight
    {:style               style/cancel-reply-highlight
@@ -58,18 +43,35 @@
                                          :height          19
                                          :color           colors/white}]])
 
-(defn reply-message-view [{:keys [content from alias]}]
-  [react/view {:style style/reply-message}
-   [photos/member-photo from]
-   [reply-message from alias content]
-   [close-button #(re-frame/dispatch [:chat.ui/cancel-message-reply])]])
-
 (defn send-image-view [{:keys [uri]}]
   [react/view {:style style/reply-message}
    [react/image {:style  {:width         56 :height 56
                           :border-radius 4}
                  :source {:uri uri}}]
    [close-button #(re-frame/dispatch [:chat.ui/cancel-sending-image])]])
+
+(defview reply-message [from message-text image]
+  (letsubs [contact-name [:contacts/contact-name-by-identity from]
+            current-public-key [:multiaccount/public-key]]
+    [react/scroll-view {:style style/reply-message-content}
+     [react/view {:style style/reply-message-to-container}
+      (chat-utils/format-reply-author from contact-name current-public-key style/reply-message-author)]
+     (if image
+       [react/image {:style  {:width            56
+                              :height           56
+                              :background-color :black
+                              :border-radius    4}
+                     :source {:uri image}}]
+       [react/text {:style (assoc (message-style/style-message-text false) :font-size 14)
+                    :number-of-lines 3} message-text])]))
+
+(defview reply-message-view []
+  (letsubs [{:keys [content from] :as message} [:chats/reply-message]]
+    (when message
+      [react/view {:style style/reply-message}
+       [photos/member-photo from]
+       [reply-message from (:text content) (:image content)]
+       [close-button #(re-frame/dispatch [:chat.ui/cancel-message-reply])]])))
 
 (defview container []
   (letsubs [mainnet?           [:mainnet?]

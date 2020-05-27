@@ -389,13 +389,11 @@
    {:multiaccount {:public-key "me"}
     :chats
     {"chat-id-1" {:is-active                      true
-                  :messages                       {}
                   :might-have-join-time-messages? true
                   :group-chat                     true
                   :public?                        true
                   :chat-id                        "chat-id-1"}
      "chat-id-2" {:is-active  true
-                  :messages   {}
                   :group-chat true
                   :public?    true
                   :chat-id    "chat-id-2"}}}})
@@ -405,14 +403,12 @@
    {:multiaccount {:public-key "me"}
     :chats
     {"chat-id-1" {:is-active                      true
-                  :messages                       {}
                   :join-time-mail-request-id      "a"
                   :might-have-join-time-messages? true
                   :group-chat                     true
                   :public?                        true
                   :chat-id                        "chat-id-1"}
      "chat-id-2" {:is-active  true
-                  :messages   {}
                   :group-chat true
                   :public?    true
                   :chat-id    "chat-id-2"}}}})
@@ -422,26 +418,22 @@
    {:multiaccount {:public-key "me"}
     :chats
     {"chat-id-1" {:is-active                      true
-                  :messages                       {}
                   :join-time-mail-request-id      "a"
                   :might-have-join-time-messages? true
                   :group-chat                     true
                   :public?                        true
                   :chat-id                        "chat-id-1"}
      "chat-id-2" {:is-active                      true
-                  :messages                       {}
                   :join-time-mail-request-id      "a"
                   :might-have-join-time-messages? true
                   :group-chat                     true
                   :public?                        true
                   :chat-id                        "chat-id-2"}
      "chat-id-3" {:is-active  true
-                  :messages   {}
                   :group-chat true
                   :public?    true
                   :chat-id    "chat-id-3"}
      "chat-id-4" {:is-active                      true
-                  :messages                       {}
                   :join-time-mail-request-id      "a"
                   :might-have-join-time-messages? true
                   :group-chat                     true

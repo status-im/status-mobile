@@ -519,7 +519,7 @@
 (handlers/register-handler-fx
  :chat.ui/resend-message
  (fn [{:keys [db] :as cofx} [_ chat-id message-id]]
-   (let [message (get-in db [:chats chat-id :messages message-id])]
+   (let [message (get-in db [:messages chat-id message-id])]
      (fx/merge
       cofx
       (transport.message/set-message-envelope-hash chat-id message-id (:message-type message) 1)

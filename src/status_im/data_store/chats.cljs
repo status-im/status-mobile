@@ -16,10 +16,16 @@
                           group-chat private-group-chat-type
                           :else one-to-one-chat-type)))
 
-(defn rpc->type [{:keys [chatType] :as chat}]
+(defn rpc->type [{:keys [chatType name] :as chat}]
   (cond
-    (= public-chat-type chatType) (assoc chat :public? true :group-chat true)
-    (= private-group-chat-type chatType) (assoc chat :public? false :group-chat true)
+    (= public-chat-type chatType) (assoc chat
+                                         :chat-name (str "#" name)
+                                         :public? true
+                                         :group-chat true)
+    (= private-group-chat-type chatType) (assoc chat
+                                                :chat-name name
+                                                :public? false
+                                                :group-chat true)
     :else (assoc chat :public? false :group-chat false)))
 
 (defn- marshal-members [{:keys [admins contacts members-joined chatType] :as chat}]
@@ -68,11 +74,10 @@
                                 :deleted-at-clock-value :deletedAtClockValue
                                 :is-active :active
                                 :last-clock-value :lastClockValue})
-      (dissoc :message-list :gaps-loaded? :pagination-info
-              :public? :group-chat :messages
+      (dissoc :public? :group-chat :messages
               :might-have-join-time-messages?
               :loaded-unviewed-messages-ids
-              :messages-initialized? :contacts :admins :members-joined)))
+              :contacts :admins :members-joined)))
 
 (defn <-rpc [chat]
   (-> chat

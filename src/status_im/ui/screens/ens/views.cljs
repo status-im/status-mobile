@@ -18,7 +18,9 @@
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.ui.screens.chat.message.message :as message]
+            [status-im.ui.screens.chat.styles.message.message :as message.style]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.utils.debounce :as debounce])
@@ -624,7 +626,11 @@
              [name-item {:name name :hide-chevron? true :action action}]]
             [radio/radio (= name preferred-name)]]]))]]]])
 
-(defn- registered [names {:keys [preferred-name public-key] :as account} _]
+(views/defview my-name []
+  (views/letsubs [contact-name [:multiaccount/my-name]]
+    (chat.utils/format-author contact-name message.style/message-author-name-container)))
+
+(defn- registered [names {:keys [preferred-name] :as account} _]
   [react/view {:style {:flex 1}}
    [react/scroll-view
     [react/view {:style {:margin-top 8}}
@@ -663,7 +669,7 @@
                    :timestamp-str "9:41 AM"}]
       [react/view
        [react/view {:padding-left 72}
-        [message/message-author-name public-key]]
+        [my-name]]
        [react/view {:flex-direction :row}
         [react/view {:padding-left 16 :padding-right 8 :padding-top 4}
          [photos/photo (multiaccounts/displayed-photo account) {:size 36}]]

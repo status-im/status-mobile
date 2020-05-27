@@ -5,7 +5,6 @@
 (deftest ->to-rpc
   (let [chat {:public? false
               :group-chat true
-              :message-list []
               :color "color"
               :contacts #{"a" "b" "c" "d"}
               :last-clock-value 10
@@ -13,15 +12,11 @@
               :members-joined #{"a" "c"}
               :name "name"
               :membership-update-events :events
-              :gaps-loaded? true
               :unviewed-messages-count 2
               :is-active true
-              :messages {}
-              :pagination-info {}
               :chat-id "chat-id"
               :loaded-unviewed-messages-ids []
-              :timestamp 2
-              :messages-initialized? true}
+              :timestamp 2}
         expected-chat {:id "chat-id"
                        :color "color"
                        :name "name"
@@ -73,6 +68,7 @@
         expected-chat {:public? false
                        :group-chat true
                        :color "color"
+                       :chat-name "name"
                        :contacts #{"a" "b" "c" "d"}
                        :last-clock-value 10
                        :last-message nil

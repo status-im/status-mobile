@@ -91,7 +91,7 @@
   [{:keys [db] :as cofx} message-id status]
   (if-let [{:keys [chat-id]}
            (get-in db [:transport/message-envelopes message-id])]
-    (when-let [{:keys [from]} (get-in db [:chats chat-id :messages message-id])]
+    (when-let [{:keys [from]} (get-in db [:messages chat-id message-id])]
       (check-confirmations cofx status chat-id message-id))
     ;; We don't have a message-envelope for this, might be that the confirmation
     ;; came too early
