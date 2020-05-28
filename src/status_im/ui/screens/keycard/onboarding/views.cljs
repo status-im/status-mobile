@@ -13,7 +13,8 @@
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
-            [status-im.ui.screens.keycard.styles :as styles])
+            [status-im.ui.screens.keycard.styles :as styles]
+            [status-im.constants :as constants])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview intro []
@@ -43,7 +44,8 @@
                              :text-align  :center}}
          (i18n/label :t/keycard-onboarding-intro-text)]]
        [react/view
-        [react/touchable-highlight {:on-press #(.openURL ^js react/linking "https://keycard.status.im")}
+        [react/touchable-highlight {:on-press #(.openURL ^js react/linking
+                                                         constants/faq-keycard)}
          [react/view {:flex-direction  :row
                       :align-items     :center
                       :justify-content :center}

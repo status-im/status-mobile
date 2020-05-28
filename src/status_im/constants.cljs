@@ -284,3 +284,6 @@
 ;;ipfs
 (def ipfs-proto-code "e3")
 (def swarm-proto-code "e4")
+
+(def faq "https://status.im/faq/")
+(def faq-keycard (str faq "#keycard"))

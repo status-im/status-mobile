@@ -15,7 +15,8 @@
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.utils.core :as utils.core]
             [status-im.utils.gfycat.core :as gfy]
-            [status-im.utils.identicon :as identicon])
+            [status-im.utils.identicon :as identicon]
+            [status-im.constants :as constants])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn intro []
@@ -40,7 +41,8 @@
                            :text-align  :center}}
        (i18n/label :t/keycard-recovery-intro-text)]]
      [react/view {:margin-top 33}
-      [react/touchable-highlight {:on-press #(.openURL ^js react/linking "https://keycard.status.im")}
+      [react/touchable-highlight {:on-press #(.openURL ^js react/linking
+                                                       constants/faq-keycard)}
        [react/view {:flex-direction  :row
                     :align-items     :center
                     :justify-content :center}

@@ -11,7 +11,8 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
-            [status-im.ui.screens.keycard.styles :as styles])
+            [status-im.ui.screens.keycard.styles :as styles]
+            [status-im.constants :as constants])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 ;; NOTE(Ferossgp): Seems like it should be in popover
@@ -170,7 +171,8 @@
                    :style  {:width  144
                             :height 120}}]
      [react/view {:margin-top 40}
-      [react/touchable-highlight {:on-press #(.openURL ^js react/linking "https://keycard.status.im")}
+      [react/touchable-highlight {:on-press #(.openURL ^js react/linking
+                                                       constants/faq-keycard)}
        [react/view {:flex-direction  :row
                     :align-items     :center
                     :justify-content :center}

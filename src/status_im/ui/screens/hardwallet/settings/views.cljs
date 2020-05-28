@@ -7,7 +7,8 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.constants :as constants]))
 
 (defn- action-row [{:keys [icon label on-press color-theme]}]
   [react/touchable-highlight
@@ -110,7 +111,8 @@
          [react/view
           [action-row {:icon     :main-icons/help
                        :label    :t/help-capitalized
-                       :on-press #(.openURL ^js react/linking "https://hardwallet.status.im")}]
+                       :on-press #(.openURL ^js react/linking
+                                            constants/faq-keycard)}]
           (when pairing
             [react/view
              [action-row {:icon     :main-icons/add
