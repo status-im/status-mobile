@@ -162,15 +162,15 @@ private:
   QString m_packagerPort = "8081";
   QString m_localSource;
   QString m_packagerTemplate =
-      "http://%1:%2/app/index.js?platform=desktop-qt&dev=true";
+      "http://%1:%2/index.js.bundle?platform=desktop-qt&dev=true";
   QUrl m_codeLocation;
   QString m_pluginsPath;
 #ifdef BUILD_FOR_BUNDLE
   QString m_executor = "RemoteServerConnection";
   QString m_jsExecutor = "RemoteServerConnection";
 #else
-  QString m_executor = "JSWebEngineExecutor";
-  QString m_jsExecutor = "JSWebEngineExecutor";
+  QString m_executor = "NodeJsExecutor";
+  QString m_jsExecutor = "NodeJsExecutor";
 #endif
   QVariantMap m_initialProps;
 };
