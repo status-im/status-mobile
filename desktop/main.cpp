@@ -162,7 +162,7 @@ private:
   QString m_packagerPort = "8081";
   QString m_localSource;
   QString m_packagerTemplate =
-      "http://%1:%2/index.bundle?platform=desktop-qt&dev=true";
+      "http://%1:%2/app/index.js?platform=desktop-qt&dev=true";
   QUrl m_codeLocation;
   QString m_pluginsPath;
 #ifdef BUILD_FOR_BUNDLE

@@ -81,7 +81,7 @@
 (defn init []
   (utils.logs/init-logs)
   (error-handler/register-exception-handler!)
-  (enableScreens)
+  #_(enableScreens)
   (re-frame/dispatch-sync [:init/app-started])
   (when platform/android?
     (status/set-soft-input-mode status/adjust-resize))

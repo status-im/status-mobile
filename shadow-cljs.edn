@@ -34,7 +34,9 @@
 
  :builds {:desktop
           {:target :react-native
+           :output-to "app/index.js"
            :output-dir "app"
+           :main  status-im.core/init 
            :init-fn status-im.core/init ;status-im.desktop.core/init
            :dev {:devtools {:after-load status-im.reloader/reload
                             :preloads [re-frisk-remote.preload]}
