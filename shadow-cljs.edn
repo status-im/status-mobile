@@ -39,7 +39,7 @@
            :main  status-im.core/init 
            :init-fn status-im.core/init ;status-im.desktop.core/init
            :dev {:devtools {:after-load status-im.reloader/reload
-                            :preloads [re-frisk-remote.preload]}
+                            #_:preloads #_[re-frisk-remote.preload]}
                  :compiler-options {:closure-defines
                                     {re-frame.trace/trace-enabled? true}
                                     :source-map false}
