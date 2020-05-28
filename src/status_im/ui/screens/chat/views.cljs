@@ -27,6 +27,7 @@
   [topbar/topbar
    {:content      [toolbar-content/toolbar-content-view]
     :show-border? true
+    :initial-title-padding 56
     :navigation   {:icon                :main-icons/back
                    :accessibility-label :back-button
                    :handler

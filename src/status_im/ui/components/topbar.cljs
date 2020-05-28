@@ -33,9 +33,10 @@
         [react/text {:style {:color colors/blue}}
          (utils.label/stringify label)])]]))
 
+(def default-title-padding 16)
 ;; TODO(Ferossgp): Tobbar should handle safe area
-(defn topbar [_]
-  (let [title-padding (reagent/atom 16)]
+(defn topbar [{:keys [initial-title-padding]}]
+  (let [title-padding (reagent/atom (or initial-title-padding default-title-padding))]
     (fn [& [{:keys [title navigation accessories show-border? modal? content]}]]
       (let [navigation (or navigation (default-navigation modal?))]
         [react/view (cond-> {:height 56 :align-items :center :flex-direction :row}

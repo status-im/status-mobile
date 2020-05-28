@@ -121,6 +121,9 @@
                                    :else nil)
       :title                     (if group-chat
                                    (utils/truncate-str chat-name 30)
+                                   ;; This looks a bit odd, but I would like only to subscribe
+                                   ;; if it's a one-to-one. If wrapped in a component styling
+                                   ;; won't be applied correctly.
                                    @(re-frame/subscribe [:contacts/contact-name-by-identity chat-id]))
       :title-accessibility-label :chat-name-text
       :title-row-accessory       [message-timestamp (if (pos? (:whisper-timestamp last-message))

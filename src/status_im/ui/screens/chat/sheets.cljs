@@ -6,6 +6,7 @@
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.chat.styles.message.sheets :as sheets.styles]
             [status-im.ui.components.list-item.views :as list-item]))

@@ -8,6 +8,8 @@
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.utils.platform :as platform]))
 
+;;TODO REWORK THIS NAMESPACE
+
 (defn default-chat-icon [name styles]
   (when-not (string/blank? name)
     [react/view (:default-chat-icon styles)

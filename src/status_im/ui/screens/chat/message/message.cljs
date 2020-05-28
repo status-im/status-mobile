@@ -38,7 +38,7 @@
    appender])
 
 (defview quoted-message
-  [_ {:keys [from text]} outgoing current-public-key public?]
+  [_ {:keys [from text image]} outgoing current-public-key public?]
   (letsubs [contact-name [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
