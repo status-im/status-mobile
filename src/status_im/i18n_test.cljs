@@ -7,15 +7,14 @@
             [clojure.string :as string]))
 
 ;; english as source of truth
-(def labels (set (keys (js->clj (:en i18n-resources/translations-by-locale)
-                                :keywordize-keys true))))
+(def labels (set (keys (:en i18n-resources/translations-by-locale))))
 
 (spec/def ::label labels)
 (spec/def ::labels (spec/coll-of ::label :kind set? :into #{}))
 
 (defn labels-for-all-locales []
   (->> i18n-resources/translations-by-locale
-       (mapcat #(-> % val (js->clj :keywordize-keys true) keys))
+       (mapcat #(-> % val keys))
        set))
 
 ;; checkpoints
@@ -1031,7 +1030,7 @@
 (spec/def ::locales (spec/coll-of ::locale :kind set? :into #{}))
 
 (defn locale->labels [locale]
-  (-> i18n-resources/translations-by-locale (get locale)  (js->clj :keywordize-keys true) keys set))
+  (-> i18n-resources/translations-by-locale (get locale) keys set))
 
 (defn locale->checkpoint [locale]
   (let [locale-labels (locale->labels locale)
