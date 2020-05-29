@@ -476,12 +476,12 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
         home.join_public_chat(''.join(random.choice(string.ascii_lowercase) for _ in range(7)))
         chat = sign_in.get_chat_view()
-        message_text = 'test'
+        message_text = 'mmmeowesage_text'
         message_input = chat.chat_message_input
         message_input.send_keys(message_text)
         chat.send_message_button.click()
 
-        chat.chat_element_by_text(message_text).long_press_element()
+        chat.element_by_text_part(message_text).long_press_element()
         chat.element_by_text('Copy').click()
 
         message_input.paste_text_from_clipboard()
