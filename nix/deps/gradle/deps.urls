@@ -276,6 +276,7 @@ https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-iid/17.0.3/
 https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-ml-common/17.0.0/firebase-ml-common-17.0.0.pom
 https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-ml-vision-face-model/17.0.2/firebase-ml-vision-face-model-17.0.2.pom
 https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-ml-vision/19.0.3/firebase-ml-vision-19.0.3.pom
+https://repository.sonatype.org/content/groups/sonatype-public-grid/com/afollestad/material-dialogs/commons/0.9.6.0/commons-0.9.6.0.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/afollestad/material-dialogs/core/0.9.6.0/core-0.9.6.0.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/android/databinding/baseLibrary/2.2.3/baseLibrary-2.2.3.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/android/databinding/compilerCommon/2.2.3/compilerCommon-2.2.3.pom
@@ -456,10 +457,10 @@ https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java-util/3.4.
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/2.5.0/protobuf-java-2.5.0.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.0.0/protobuf-java-3.0.0.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.4.0/protobuf-java-3.4.0.pom
-https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.12.1/protobuf-java-3.12.1.pom
+https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.12.2/protobuf-java-3.12.2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.0.0/protobuf-parent-3.0.0.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.4.0/protobuf-parent-3.4.0.pom
-https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.12.1/protobuf-parent-3.12.1.pom
+https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.12.2/protobuf-parent-3.12.2.pom
 https://repo.maven.apache.org/maven2/com/google/truth/truth-parent/1.0.1/truth-parent-1.0.1.pom
 https://repo.maven.apache.org/maven2/com/google/truth/truth/1.0.1/truth-1.0.1.pom
 https://repo.maven.apache.org/maven2/com/google/zxing/core/3.3.3/core-3.3.3.pom

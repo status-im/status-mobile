@@ -3892,6 +3892,20 @@
   },
 
   {
+    "path": "com/afollestad/material-dialogs/commons/0.9.6.0/commons-0.9.6.0",
+    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
+    "type": "aar",
+    "pom": {
+      "sha1": "9bfcde5a3e1b3f5874d127a5f934c69830c67f8b",
+      "sha256": "03sh821c73xks1pbzvy2vbcwq9ill1vcxr4hz8iwpgpa8zzxppfj"
+    },
+    "jar": {
+      "sha1": "21f4607036dc455fbe6c67ecbe5234c8257c33dc",
+      "sha256": "0zy97zx0pywq9622mzwhp7naj9x0nw1191h7ly70dlpp1bc87kym"
+    }
+  },
+
+  {
     "path": "com/afollestad/material-dialogs/core/0.9.6.0/core-0.9.6.0",
     "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
     "type": "aar",
@@ -6336,16 +6350,16 @@
   },
 
   {
-    "path": "com/google/protobuf/protobuf-java/3.12.1/protobuf-java-3.12.1",
+    "path": "com/google/protobuf/protobuf-java/3.12.2/protobuf-java-3.12.2",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "9f534fa0cea834450a87bb99ca02e36695037e2b",
-      "sha256": "1hdlmkcrkh8li38zqzvjfcd2f2lvknvydnpc3rxmr0hsj6pimfsz"
+      "sha1": "da3bb9dce2a722503f0d3e4f3b5eea93f737ba48",
+      "sha256": "1ijicnm83gq33px9c5r4man0n2zw6axrxsqw0jnm1miixyjz08cv"
     },
     "jar": {
-      "sha1": "48e4a0c3bf6750e6c4efa40a9f13defa869a2f57",
-      "sha256": "0b55fvlykjf14r01z4aymlrw4a35jklkkpvwm1zmyjybhz7mbq7w"
+      "sha1": "f0029524002295154c6b546d4e6bd1cfc5081874",
+      "sha256": "186a1lgmcfr3iml7bfxk9gnbsafyxmriqfyglvkwa85d7gwvx1dk"
     }
   },
 
@@ -6370,12 +6384,12 @@
   },
 
   {
-    "path": "com/google/protobuf/protobuf-parent/3.12.1/protobuf-parent-3.12.1",
+    "path": "com/google/protobuf/protobuf-parent/3.12.2/protobuf-parent-3.12.2",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "63dbda33bf785fe89f47c99c18a7a68688794276",
-      "sha256": "1d7dsw32p6s69ffn7py229ndg6qrf0hrw6y6cxxjyq9xczf42338"
+      "sha1": "f5b5d4cb5e6d512f2fac5d2b08e599644a53c087",
+      "sha256": "0md51xi5af8yi9l1dpqbmysrvlll05zpvmalag6p4f6fykwcry05"
     }
   },
 
