@@ -6644,7 +6644,7 @@ react-native-dark-mode@^0.2.2:
 
 "react-native-desktop-qt@git+https://github.com/status-im/react-native-desktop-qt.git":
   version "0.60.6"
-  resolved "git+https://github.com/status-im/react-native-desktop-qt.git#77db47770b5328938198e263d074108ea765fb17"
+  resolved "git+https://github.com/status-im/react-native-desktop-qt.git#3bb39ddc31dbb71f213596d34cd4592d2b232760"
   dependencies:
     babel-plugin-module-resolver "^4.0.0"
     optimist "^0.6.1"
