@@ -38,7 +38,7 @@
    appender])
 
 (defview quoted-message
-  [_ {:keys [from text image]} outgoing current-public-key]
+  [_ {:keys [from text image]} outgoing current-public-key public?]
   (letsubs [{:keys [ens-name alias]} [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
@@ -48,7 +48,9 @@
        ens-name
        current-public-key
        (partial style/quoted-message-author outgoing)]]
-     (if image
+     (if (and image
+              ;; Disabling images for public-chats
+              (not public?))
        [react/image {:style  {:width            56
                               :height           56
                               :background-color :black
@@ -164,13 +166,13 @@
                                         :height  192}])})
 
 (defn text-message
-  [{:keys [content outgoing current-public-key] :as message}]
+  [{:keys [content outgoing current-public-key public?] :as message}]
   [react/touchable-highlight (text-message-press-handlers message)
    [message-bubble-wrapper message
     (let [response-to (:response-to content)]
       [react/view
        (when (and (seq response-to) (:quoted-message message))
-         [quoted-message response-to (:quoted-message message) outgoing current-public-key])
+         [quoted-message response-to (:quoted-message message) outgoing current-public-key public?])
        [render-parsed-text-with-timestamp message (:parsed-text content)]])
     [message-timestamp message true]]])
 
@@ -190,13 +192,13 @@
     [render-parsed-text message (:parsed-text content)]]])
 
 (defn emoji-message
-  [{:keys [content current-public-key outgoing] :as message}]
+  [{:keys [content current-public-key outgoing public?] :as message}]
   (let [response-to (:response-to content)]
     [react/touchable-highlight (text-message-press-handlers message)
      [message-bubble-wrapper message
       [react/view {:style (style/style-message-text outgoing)}
        (when (and (seq response-to) (:quoted-message message))
-         [quoted-message response-to (:quoted-message message) outgoing current-public-key])
+         [quoted-message response-to (:quoted-message message) outgoing current-public-key public?])
        [react/text {:style (style/emoji-message message)}
         (:text content)]]
       [message-timestamp message]]]))
@@ -309,7 +311,7 @@
                                          {:content (sheets/sticker-long-press message)
                                           :height  64}])}))
 
-(defn chat-message [{:keys [content content-type] :as message}]
+(defn chat-message [{:keys [public? content content-type] :as message}]
   (if (= content-type constants/content-type-command)
     [message.command/command-content message-content-wrapper message]
     (if (= content-type constants/content-type-system-text)
@@ -328,7 +330,9 @@
                 [react/image {:style  {:margin 10 :width 140 :height 140}
                               ;;TODO (perf) move to event
                               :source {:uri (contenthash/url (-> content :sticker :hash))}}]]
-               (if (= content-type constants/content-type-image)
+               (if (and (= content-type constants/content-type-image)
+                        ;; Disabling images for public-chats
+                        (not public?))
                  [react/touchable-highlight (image-message-press-handlers message)
                   [message-content-image message]]
                  [unknown-content-type message])))))])))

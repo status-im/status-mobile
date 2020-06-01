@@ -110,7 +110,7 @@
   (debounce/debounce-and-dispatch [:chat.ui/message-visibility-changed e] 5000))
 
 (defview messages-view
-  [{:keys [group-chat chat-id pending-invite-inviter-name] :as chat}]
+  [{:keys [public? group-chat chat-id pending-invite-inviter-name] :as chat}]
   (letsubs [messages           [:chats/current-chat-messages-stream]
             current-public-key [:multiaccount/public-key]]
     [list/flat-list
@@ -131,6 +131,7 @@
                                            (assoc message
                                                   :incoming-group (and group-chat (not outgoing))
                                                   :group-chat group-chat
+                                                  :public? public?
                                                   :current-public-key current-public-key)])))
       :on-viewable-items-changed    on-viewable-items-changed
       :on-end-reached               #(re-frame/dispatch [:chat.ui/load-more-messages])

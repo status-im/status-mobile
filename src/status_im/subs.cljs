@@ -722,6 +722,12 @@
             (chat.models/public-chat? current-chat)))))
 
 (re-frame/reg-sub
+ :current-chat/public?
+ :<- [:chats/current-raw-chat]
+ (fn [current-chat]
+   (chat.models/public-chat? current-chat)))
+
+(re-frame/reg-sub
  :chats/current-chat-message
  :<- [:chats/current-chat]
  (fn [{:keys [messages]} [_ message-id]]
