@@ -2,13 +2,17 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
+            [status-im.utils.universal-links.core :as ul]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.resolver :as resolver]
             [status-im.ui.screens.add-new.new-chat.db :as db]
             [status-im.utils.handlers :as handlers]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.utils.random :as random]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.fx :as fx]
+            [status-im.chat.models :as chat]
+            [status-im.i18n :as i18n]))
 
 (defn- ens-name-parse [contact-identity]
   (when (string? contact-identity)
@@ -65,3 +69,34 @@
  ::new-chat-focus
  (fn [{:keys [db]}]
    {:db (dissoc db :contacts/new-identity)}))
+
+(defn- get-validation-label [value]
+  (case value
+    :invalid
+    (i18n/label :t/use-valid-contact-code)
+    :yourself
+    (i18n/label :t/can-not-add-yourself)))
+
+(fx/defn qr-code-scanned
+  {:events [:contact/qr-code-scanned]}
+  [{:keys [db] :as cofx} contact-identity]
+  (let [public-key?       (and (string? contact-identity)
+                               (string/starts-with? contact-identity "0x"))
+        validation-result (db/validate-pub-key db contact-identity)]
+    (cond
+      (and public-key? (not (some? validation-result)))
+      (chat/start-chat cofx contact-identity {:navigation-reset? true})
+
+      (and (string? contact-identity) (ul/match-url contact-identity ul/profile-regex))
+      (qr-code-scanned cofx (ul/match-url contact-identity ul/profile-regex))
+
+      (and (not public-key?) (string? contact-identity))
+      (let [chain (ethereum/chain-keyword db)]
+        {:resolve-public-key {:chain            chain
+                              :contact-identity contact-identity
+                              :cb               #(re-frame/dispatch [:contact/qr-code-scanned %])}})
+
+      :else
+      {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
+                          :content    (get-validation-label validation-result)
+                          :on-dismiss #(re-frame/dispatch [:navigate-to :home])}})))

@@ -54,11 +54,6 @@
   [_ config]
   {::navigate-reset config})
 
-(fx/defn navigate-to-clean
-  {:events [:navigate-to-clean]}
-  [cofx [_ view-id params]]
-  (navigate-to-cofx cofx view-id params))
-
 (fx/defn navigate-replace
   {:events [:navigate-replace]}
   [{:keys [db]} go-to-view-id screen-params]

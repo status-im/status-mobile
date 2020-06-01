@@ -1,6 +1,5 @@
 (ns status-im.events
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.bootnodes.core :as bootnodes]
             [status-im.browser.core :as browser]
             [status-im.browser.permissions :as browser.permissions]
@@ -13,7 +12,6 @@
             [status-im.contact.core :as contact]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.messages :as data-store.messages]
-            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [status-im.fleet.core :as fleet]
             [status-im.group-chats.core :as group-chats]
@@ -36,7 +34,6 @@
             [status-im.transport.message.core :as transport.message]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
             [status-im.ui.screens.currency-settings.models
              :as
              currency-settings.models]
@@ -844,35 +841,6 @@
  :contact.ui/unblock-contact-pressed
  (fn [cofx [_ public-key]]
    (contact.block/unblock-contact cofx public-key)))
-
-(defn get-validation-label [value]
-  (case value
-    :invalid
-    (i18n/label :t/use-valid-contact-code)
-    :yourself
-    (i18n/label :t/can-not-add-yourself)))
-
-(handlers/register-handler-fx
- :contact/qr-code-scanned
- [(re-frame/inject-cofx :random-id-generator)]
- (fn [{:keys [db] :as cofx} [_ contact-identity _]]
-   (let [public-key?       (and (string? contact-identity)
-                                (string/starts-with? contact-identity "0x"))
-         validation-result (new-chat.db/validate-pub-key db contact-identity)]
-     (cond
-       (and public-key? (not (some? validation-result)))
-       (chat/start-chat cofx contact-identity {:navigation-reset? true})
-
-       (and (not public-key?) (string? contact-identity))
-       (let [chain (ethereum/chain-keyword db)]
-         {:resolve-public-key {:chain            chain
-                               :contact-identity contact-identity
-                               :cb               #(re-frame/dispatch [:contact/qr-code-scanned %])}})
-
-       :else
-       {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
-                           :content    (get-validation-label validation-result)
-                           :on-dismiss #(re-frame/dispatch [:navigate-to-clean :home])}}))))
 
 (handlers/register-handler-fx
  :contact.ui/start-group-chat-pressed
