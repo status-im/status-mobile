@@ -572,7 +572,7 @@
     "keycard-recovery-no-key-header": "There’s nothing to \nrecover here",
     "keycard-recovery-no-key-text": "Your Keycard has no key stored on it. In order to use it, generate a new key and choose your Keycard to store the key",
     "keycard-recovery-phrase-confirm-header": "Confirm seed phrase",
-    "keycard-recovery-phrase-confirmation-text": "You won’t have a second chance! If you lose or change your device, you will not be able to access your keys or any assets associated with it unless you have your seed phrase.",
+    "keycard-recovery-phrase-confirmation-text": "You won’t have a second chance! If you lose access, for example by losing your keycard, you can only access your keys with your seed phrase. No one, but you has your seed phrase. Write it down. Keep it safe.",
     "keycard-recovery-phrase-confirmation-title": "Written the seed phrase down?",
     "keycard-recovery-success-header": "Your keys have been\n successfully recovered",
     "keycard-unauthorized-operation": "You're unauthorized to perform this operation.\n Please tap valid card and try again.",
