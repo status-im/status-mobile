@@ -202,11 +202,6 @@
         (:text content)]]
       [message-timestamp message]]]))
 
-(defn message-activity-indicator
-  []
-  [react/view style/message-activity-indicator
-   [react/activity-indicator {:animating true}]])
-
 (defn message-not-sent-text
   [chat-id message-id]
   [react/touchable-highlight
@@ -226,16 +221,10 @@
      [vector-icons/icon :main-icons/warning {:color colors/red}]]]])
 
 (defn message-delivery-status
-  [{:keys [chat-id message-id outgoing-status
-           first-outgoing? message-type]}]
-  (when (not= constants/message-type-private-group-system-message message-type)
-    (case outgoing-status
-      :sending  [message-activity-indicator]
-      :not-sent [message-not-sent-text chat-id message-id]
-      :sent     (when first-outgoing?
-                  [react/text {:style style/delivery-text}
-                   (i18n/label :t/status-sent)])
-      nil)))
+  [{:keys [chat-id message-id outgoing-status message-type]}]
+  (when (and (not= constants/message-type-private-group-system-message message-type)
+             (= outgoing-status :not-sent))
+    [message-not-sent-text chat-id message-id]))
 
 (defview message-author-name [from alias]
   (letsubs [contact-name [:contacts/raw-contact-name-by-identity from]]
