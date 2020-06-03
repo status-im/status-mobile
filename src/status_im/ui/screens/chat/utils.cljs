@@ -4,9 +4,13 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]))
 
+(def ^:private reply-symbol "↪ ")
+
 (defn format-author [contact-name style]
   (let [additional-styles (style false)]
-    (if (= (aget contact-name 0) "@")
+    (if (or (= (aget contact-name 0) "@")
+            ;; in case of replies
+            (= (aget contact-name 1) "@"))
       (let [trimmed-name (subs contact-name 0 81)]
         [react/text {:number-of-lines 2
                      :style (merge {:color       colors/blue
@@ -20,10 +24,8 @@
                                   :font-weight "400"} additional-styles)}
        contact-name])))
 
-(def ^:private reply-symbol "↪ ")
-
 (defn format-reply-author [from username current-public-key style]
   (or (and (= from current-public-key)
            [react/text {:style (style true)}
             (str reply-symbol (i18n/label :t/You))])
-      (format-author username style)))
+      (format-author (str reply-symbol username) style)))
