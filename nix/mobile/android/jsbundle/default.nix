@@ -22,9 +22,9 @@ stdenv.mkDerivation {
           ignoreVCS = false;
           include = [ 
             "VERSION" "BUILD_NUMBER" "scripts/version/.*"
+            "src/.*" "shadow-cljs.edn" "index.js"
             # I want to avoid including the whole .git directory
             ".git/HEAD" ".git/objects" ".git/refs/heads/.*"
-            "src/.*" "shadow-cljs.edn" "index.js"
             # shadow-cljs expects these for deps resolution
             "mobile/js_files/package.json" "mobile/js_files/yarn.lock"
             # build stat's images to check if they exist

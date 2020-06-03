@@ -1,22 +1,30 @@
 { stdenv, pkgs, deps, lib, config, callPackage,
   watchmanFactory, androidPkgs, patchMavenSources,
-  jsbundle, status-go }:
+  keystore, jsbundle, status-go }:
 
 {
-  buildEnv ? "prod", # Value for BUILD_ENV checked by Clojure code at compile time
-  secretsFile ? "", # Path to the file containing secret environment variables
-  watchmanSockPath ? "", # Path to the socket file exposed by an external watchman instance (workaround needed for building Android on macOS)
+  # Value for BUILD_ENV checked by Clojure code at compile time
+  buildEnv ? "prod",
+  # Path to the file containing secret environment variables
+  secretsFile ? "",
+  # Path to the socket file exposed by an external watchman instance
+  # (workaround needed for building Android on macOS)
+  watchmanSockPath ? "",
 }:
 
 assert (lib.stringLength watchmanSockPath) > 0 -> stdenv.isDarwin;
 
 let
-  inherit (lib) toLower optionalString stringLength getConfig makeLibraryPath;
+  inherit (lib)
+    toLower optionalString stringLength
+    getConfig makeLibraryPath assertEnvVarSet;
 
   buildType = getConfig "build-type" "prod";
   buildNumber = getConfig "build-number" 9999;
   gradleOpts = getConfig "android.gradle-opts" null;
-  keystorePath = getConfig "android.keystore-path" null;
+  # Keystore can be provided via config and extra-sandbox-paths.
+  # If it is not we use an ad-hoc one generated with default password.
+  keystorePath = getConfig "android.keystore-path" keystore;
 
   baseName = "release-android";
   name = "status-react-build-${baseName}";
@@ -73,7 +81,8 @@ in stdenv.mkDerivation rec {
   STATUS_GO_ANDROID_LIBDIR = "${status-go}";
 
   phases = [
-    "unpackPhase" "secretPhase" "buildPhase" "checkPhase" "installPhase"
+    "unpackPhase" "secretsPhase" "secretsCheckPhase"
+    "buildPhase" "checkPhase" "installPhase"
   ];
 
   unpackPhase = ''
@@ -81,7 +90,9 @@ in stdenv.mkDerivation rec {
     chmod u+w -R ./
     runHook postUnpack
   '';
-  postUnpack = assert lib.assertMsg (keystorePath != null) "keystore-file has to be set!"; ''
+  postUnpack = 
+    assert lib.assertMsg (keystorePath != null) "keystore-file has to be set!";
+  ''
     # Keep the same keystore path for determinism
     export KEYSTORE_PATH="$PWD/status-im.keystore"
     cp -a --no-preserve=ownership "${keystorePath}" "$KEYSTORE_PATH"
@@ -107,8 +118,14 @@ in stdenv.mkDerivation rec {
     # Patch build.gradle to use local repo
     ${patchMavenSources} ./android/build.gradle
   '';
-  secretPhase = optionalString (secretsFile != "") ''
+  # if secretsFile is not set we use generate keystore
+  secretsPhase = if (secretsFile != "") then ''
     source "${secretsFile}"
+  '' else keystore.shellHook;
+  secretsCheckPhase = ''
+    ${assertEnvVarSet "KEYSTORE_ALIAS"}
+    ${assertEnvVarSet "KEYSTORE_PASSWORD"}
+    ${assertEnvVarSet "KEYSTORE_KEY_PASSWORD"}
   '';
   buildPhase = let
     adhocEnvVars = optionalString stdenv.isLinux

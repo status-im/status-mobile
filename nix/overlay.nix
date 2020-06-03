@@ -28,8 +28,8 @@ in {
     react-native = callPackage ./deps/react-native { };
   };
 
-  # For patching Node.js modules with Gradle repo path
-  patchNodeModules = callPackage ./tools/patchNodeModules.nix { };
+  # For parsing gradle.properties into an attrset
+  gradlePropParser = callPackage ./tools/gradlePropParser.nix { };
 
   # Package version adjustments
   xcodeWrapper = super.xcodeenv.composeXcodeWrapper { version = "11.4.1"; };

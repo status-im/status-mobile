@@ -19,16 +19,11 @@ let
     # nix-prefetch-url --unpack https://github.com/${ORG}/nixpkgs/archive/${REV}.tar.gz
   };
 
+  # Status specific configuration defaults
+  defaultConfig = import ./config.nix;
+
   # Override some packages and utilities
   pkgsOverlay = import ./overlay.nix;
-
-  # we want these packages easily available via callPackage
-  defaultConfig = {
-    android_sdk.accept_license = true;
-    # Android Env still needs old OpenSSL
-    permittedInsecurePackages = [ "openssl-1.0.2u" ];
-  };
-
 in
   # import nixpkgs with a config override
   (import nixpkgsSrc) {

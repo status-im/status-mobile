@@ -2,6 +2,9 @@
 , status-go, androidPkgs, androidShell }:
 
 let
+  # For generating a temporary keystore for local development
+  keystore = callPackage ./keystore.nix { };
+
   # Import a jsbundle compiled out of clojure codebase
   jsbundle = callPackage ./jsbundle { };
 
@@ -10,12 +13,12 @@ let
 
   # TARGETS
   release = callPackage ./release.nix {
-    inherit jsbundle status-go watchmanFactory;
+    inherit keystore jsbundle status-go watchmanFactory;
   };
 
 in {
   # TARGETS
-  inherit release jsbundle;
+  inherit keystore release jsbundle;
 
   shell = mkShell {
     buildInputs = with pkgs; [
