@@ -23,19 +23,17 @@
                               (fn [[message-id {:keys [from]}]]
                                 (when (= from public-key)
                                   message-id))
-                              (get-in db [:chats chat-id :messages]))
+                              (get-in db [:messages chat-id]))
         db (-> db
                ;; remove messages
-               (update-in [:chats chat-id :messages]
+               (update-in [:messages chat-id]
                           #(apply dissoc % removed-messages-ids))
-               ;; remove message groups
-               (update-in [:chats chat-id]
-                          dissoc :message-list)
                (update-in [:chats chat-id]
                           assoc
                           :unviewed-messages-count unviewed-messages-count
                           :last-message last-message))]
-    {:db (update-in db [:chats chat-id :message-list] message-list/add-many (vals (get-in db [:chats chat-id :messages])))}))
+    {:db (assoc-in db [:message-lists chat-id]
+                   (message-list/add-many nil (vals (get-in db [:messages chat-id]))))}))
 
 (fx/defn contact-blocked
   {:events [::contact-blocked]}
