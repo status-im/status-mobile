@@ -99,24 +99,26 @@
 
 (views/defview chats-list []
   (views/letsubs [loading? [:chats/loading?]
-                  {:keys [chats all-home-items search-filter]} [:home-items]
+                  {:keys [chats search-filter]} [:home-items]
                   {:keys [hide-home-tooltip?]} [:multiaccount]]
     (if loading?
       [react/view {:flex 1 :align-items :center :justify-content :center}
        [react/activity-indicator {:animating true}]]
-      (if (and (empty? all-home-items) hide-home-tooltip? (not @search-active?))
+      (if (and (empty? chats)
+               (empty? search-filter)
+               hide-home-tooltip?
+               (not @search-active?))
         [welcome-blank-page]
-        (let [data (if @search-active? chats all-home-items)]
-          [list/flat-list
-           {:key-fn                         first
-            :keyboard-should-persist-taps   :always
-            :data                           data
-            :render-fn                      inner-item/home-list-item
-            :header                         (when (or (not-empty data) @search-active?)
-                                              [search-input-wrapper search-filter])
-            :footer                         (if (and (not hide-home-tooltip?) (not @search-active?))
-                                              [home-tooltip-view]
-                                              [react/view {:height 68}])}])))))
+        [list/flat-list
+         {:key-fn                         :chat-id
+          :keyboard-should-persist-taps   :always
+          :data                           chats
+          :render-fn                      inner-item/home-list-item
+          :header                         (when (or (seq chats) @search-active?)
+                                            [search-input-wrapper search-filter])
+          :footer                         (if (and (not hide-home-tooltip?) (not @search-active?))
+                                            [home-tooltip-view]
+                                            [react/view {:height 68}])}]))))
 
 (views/defview plus-button []
   (views/letsubs [logging-in? [:multiaccounts/login]]

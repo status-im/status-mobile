@@ -106,7 +106,7 @@
                    :accessibility-label :unviewed-messages-public}]
       [badge/message-counter unviewed-messages-count])))
 
-(defn home-list-item [[_ home-item]]
+(defn home-list-item [home-item]
   (let [{:keys [chat-id chat-name color online group-chat
                 public? timestamp last-message]}
         home-item

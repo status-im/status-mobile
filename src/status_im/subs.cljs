@@ -969,16 +969,11 @@
 
 (re-frame/reg-sub
  :home-items
- :<- [:chats/active-chats]
  :<- [:search/home-filter]
  :<- [:search/filtered-chats]
- (fn [[chats search-filter filtered-chats]]
-   (if (or (nil? search-filter)
-           (and platform/desktop? (empty? search-filter)))
-     {:all-home-items
-      (sort-by #(-> % second :timestamp) > chats)}
-     {:search-filter search-filter
-      :chats         filtered-chats})))
+ (fn [[search-filter filtered-chats]]
+   {:search-filter search-filter
+    :chats         filtered-chats}))
 
 ;;PAIRING ==============================================================================================================
 
@@ -1802,12 +1797,38 @@
       (sort-by-timestamp results)
       results)))
 
+(defn filter-chat
+  [contacts search-filter {:keys [group-chat alias name chat-id]}]
+  (let [alias (if-not group-chat
+                (string/lower-case (or alias
+                                       (get-in contacts [chat-id :alias])
+                                       (gfycat/generate-gfy chat-id)))
+                "")]
+
+    (or
+     (string/includes? (string/lower-case (str name)) search-filter)
+     (string/includes? (string/lower-case alias) search-filter)
+     (and
+      (get-in contacts [chat-id :ens-verified])
+      (string/includes? (string/lower-case
+                         (str (get-in contacts [chat-id :name])))
+                        search-filter)))))
 (re-frame/reg-sub
  :search/filtered-chats
  :<- [:chats/active-chats]
+ :<- [::contacts]
  :<- [:search/home-filter]
- (fn [[chats search-filter]]
-   (apply-filter search-filter chats extract-chat-attributes true)))
+ (fn [[chats contacts search-filter]]
+   ;; Short-circuit if search-filter is empty
+   (let [filtered-chats (if (seq search-filter)
+                          (filter
+                           (partial filter-chat
+                                    contacts
+                                    (string/lower-case search-filter))
+                           (vals chats))
+                          (vals chats))]
+
+     (sort-by :timestamp > filtered-chats))))
 
 (defn extract-currency-attributes [currency]
   (let [{:keys [code display-name]} (val currency)]
