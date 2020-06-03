@@ -38,7 +38,7 @@
    appender])
 
 (defview quoted-message
-  [_ {:keys [from text image]} outgoing current-public-key public?]
+  [_ {:keys [from text image]} outgoing current-public-key _]
   (letsubs [contact-name [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
@@ -48,8 +48,8 @@
        current-public-key
        (partial style/quoted-message-author outgoing)]]
      (if (and image
-              ;; Disabling images for public-chats
-              (not public?))
+              ;; Disabling images for all chats
+              false)
        [react/image {:style  {:width            56
                               :height           56
                               :background-color :black
@@ -298,7 +298,7 @@
                                          {:content (sheets/sticker-long-press message)
                                           :height  64}])}))
 
-(defn chat-message [{:keys [public? content content-type] :as message}]
+(defn chat-message [{:keys [content content-type] :as message}]
   (if (= content-type constants/content-type-command)
     [message.command/command-content message-content-wrapper message]
     (if (= content-type constants/content-type-system-text)
@@ -318,8 +318,8 @@
                               ;;TODO (perf) move to event
                               :source {:uri (contenthash/url (-> content :sticker :hash))}}]]
                (if (and (= content-type constants/content-type-image)
-                        ;; Disabling images for public-chats
-                        (not public?))
+                        ;; Disabling images for all chats
+                        false)
                  [react/touchable-highlight (image-message-press-handlers message)
                   [message-content-image message]]
                  [unknown-content-type message])))))])))

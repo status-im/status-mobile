@@ -78,7 +78,6 @@
             cooldown-enabled?  [:chats/cooldown-enabled?]
             input-bottom-sheet [:chats/current-chat-ui-prop :input-bottom-sheet]
             one-to-one-chat?   [:current-chat/one-to-one-chat?]
-            public?            [:current-chat/public?]
             reply-message      [:chats/reply-message]
             sending-image      [:chats/sending-image]]
     (let [input-text-empty? (and (string/blank? (string/trim (or input-text "")))
@@ -90,7 +89,8 @@
          [send-image-view sending-image])
        [react/view {:style style/input-container}
         [basic-text-input input-text cooldown-enabled?]
-        (when (and input-text-empty? (not reply-message) (not public?))
+        ;; Disable images for all chats
+        (when (and input-text-empty? (not reply-message) false)
           [image/input-button (= :images input-bottom-sheet)])
         (when (and input-text-empty? mainnet? (not reply-message))
           [stickers/button (= :stickers input-bottom-sheet)])
