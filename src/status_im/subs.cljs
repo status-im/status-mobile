@@ -464,15 +464,6 @@
    preferred-name))
 
 (re-frame/reg-sub
- :multiaccount/my-name
- :<- [:multiaccount/public-key]
- :<- [:multiaccount/preferred-name]
- (fn [[identity preferred-name]]
-   (if preferred-name
-     (stateofus/username (str "@" preferred-name))
-     (gfycat/generate-gfy identity))))
-
-(re-frame/reg-sub
  :multiaccount/default-account
  :<- [:multiaccount/accounts]
  (fn [accounts]
@@ -1607,7 +1598,7 @@
    [(re-frame/subscribe [:contacts/contact-by-identity identity])])
  (fn [[db-contact] _]
    (if (and (:ens-verified db-contact) (seq (:name db-contact)))
-     (stateofus/username (str "@" (:name db-contact)))
+     (str "@" (:name db-contact))
      (:alias db-contact))))
 
 (re-frame/reg-sub
@@ -1620,7 +1611,8 @@
      (if me?
        (or (:preferred-name current-multiaccount)
            (gfycat/generate-gfy identity))
-       (or contact-name
+       (or (stateofus/username contact-name)
+           contact-name
            (gfycat/generate-gfy identity))))))
 
 (re-frame/reg-sub

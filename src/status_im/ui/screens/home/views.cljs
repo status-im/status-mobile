@@ -113,7 +113,7 @@
          {:key-fn                         :chat-id
           :keyboard-should-persist-taps   :always
           :data                           chats
-          :render-fn                      inner-item/home-list-item
+          :render-fn                      (fn [home-item] [inner-item/home-list-item home-item])
           :header                         (when (or (seq chats) @search-active?)
                                             [search-input-wrapper search-filter])
           :footer                         (if (and (not hide-home-tooltip?) (not @search-active?))

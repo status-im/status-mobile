@@ -23,7 +23,8 @@
             [status-im.ui.screens.chat.styles.message.message :as message.style]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.profile.components.views :as profile.components]
-            [status-im.utils.debounce :as debounce])
+            [status-im.utils.debounce :as debounce]
+            [clojure.string :as string])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- button
@@ -627,8 +628,9 @@
             [radio/radio (= name preferred-name)]]]))]]]])
 
 (views/defview my-name []
-  (views/letsubs [contact-name [:multiaccount/my-name]]
-    (chat.utils/format-author contact-name message.style/message-author-name-container)))
+  (views/letsubs [contact-name [:multiaccount/preferred-name]]
+    (when-not (string/blank? contact-name)
+      (chat.utils/format-author (str "@" contact-name) message.style/message-author-name-container))))
 
 (defn- registered [names {:keys [preferred-name] :as account} _]
   [react/view {:style {:flex 1}}

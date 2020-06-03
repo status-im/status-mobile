@@ -110,8 +110,8 @@
   (let [{:keys [chat-id chat-name color online group-chat
                 public? timestamp last-message]}
         home-item
-        private-group?      (and group-chat (not public?))
-        public-group?       (and group-chat public?)]
+        private-group? (and group-chat (not public?))
+        public-group?  (and group-chat public?)]
     [list-item/list-item
      {:icon                      [chat-icon.screen/chat-icon-view-chat-list
                                   chat-id group-chat chat-name color online false]
@@ -129,8 +129,8 @@
       :title-row-accessory       [message-timestamp (if (pos? (:whisper-timestamp last-message))
                                                       (:whisper-timestamp last-message)
                                                       timestamp)]
-      :subtitle [message-content-text {:content      (:content last-message)
-                                       :content-type (:content-type last-message)}]
+      :subtitle                  [message-content-text {:content      (:content last-message)
+                                                        :content-type (:content-type last-message)}]
       :subtitle-row-accessory    [unviewed-indicator home-item]
       :on-press                  #(do
                                     (re-frame/dispatch [:dismiss-keyboard])
