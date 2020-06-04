@@ -175,7 +175,7 @@
                             :height 120}}]
      [react/view {:margin-top 40}
       [react/touchable-highlight {:on-press #(.openURL ^js react/linking
-                                                       constants/faq-keycard)}
+                                                       constants/keycard-integration-link)}
        [react/view {:flex-direction  :row
                     :align-items     :center
                     :justify-content :center}

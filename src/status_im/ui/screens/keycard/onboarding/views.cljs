@@ -45,7 +45,7 @@
          (i18n/label :t/keycard-onboarding-intro-text)]]
        [react/view
         [react/touchable-highlight {:on-press #(.openURL ^js react/linking
-                                                         constants/faq-keycard)}
+                                                         constants/keycard-integration-link)}
          [react/view {:flex-direction  :row
                       :align-items     :center
                       :justify-content :center}

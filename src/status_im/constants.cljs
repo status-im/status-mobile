@@ -288,3 +288,4 @@
 
 (def faq "https://status.im/faq/")
 (def faq-keycard (str faq "#keycard"))
+(def keycard-integration-link "https://status.im/keycard-integration")

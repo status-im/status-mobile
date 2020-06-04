@@ -43,7 +43,7 @@
        (i18n/label :t/keycard-recovery-intro-text)]]
      [react/view {:margin-top 33}
       [react/touchable-highlight {:on-press #(.openURL ^js react/linking
-                                                       constants/faq-keycard)}
+                                                       constants/keycard-integration-link)}
        [react/view {:flex-direction  :row
                     :align-items     :center
                     :justify-content :center}

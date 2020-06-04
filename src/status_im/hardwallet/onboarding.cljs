@@ -83,7 +83,7 @@
 (fx/defn recovery-phrase-learn-more-pressed
   {:events [:keycard.onboarding.recovery-phrase.ui/learn-more-pressed]}
   [_]
-  (.openURL ^js react/linking constants/faq-keycard))
+  (.openURL ^js react/linking constants/keycard-integration-link))
 
 (fx/defn recovery-phrase-next-pressed
   {:events [:keycard.onboarding.recovery-phrase.ui/next-pressed
