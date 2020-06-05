@@ -127,7 +127,7 @@ public class MainActivity extends ReactFragmentActivity
         Log.v("RNBootstrap", "Available system memory "+getAvailableMemory(activityManager).availMem + ", maximum usable application memory " + activityManager.getLargeMemoryClass()+"M");
 
         setSecureFlag();
-        SplashScreen.show(this, true);
+        SplashScreen.show(this, R.style.AppTheme);
         // NOTE: Try to not restore the state https://github.com/software-mansion/react-native-screens/issues/17
         super.onCreate(null);
 

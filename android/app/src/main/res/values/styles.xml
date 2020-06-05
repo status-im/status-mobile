@@ -6,15 +6,19 @@
         <item name="android:windowBackground">?attr/backgroundColor</item>
         <item name="android:textColor">?attr/textColor</item>
         <item name="android:forceDarkAllowed">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="LightTheme" parent="AppTheme">
         <item name="textColor">#000000</item>
         <item name="backgroundColor">#ffffff</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="DarkTheme" parent="AppTheme">
         <item name="textColor">#ffffff</item>
         <item name="backgroundColor">#000000</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>
