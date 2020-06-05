@@ -7,6 +7,7 @@
 
 (def container {:flex-direction   :row
                 :padding-vertical 8
+                :flex             1
                 :align-items      :center})
 
 (defn touchable-style []
@@ -104,10 +105,11 @@
          [rn/view {:style label-style}
           [quo/text label]]
          [rn/view {:style {:flex 0.6}}
-          [rn/modal {:visible          @open
-                     :on-request-close #(reset! open false)
-                     :transparent      :true
-                     :animation        :slide}
+          [rn/modal {:visible              @open
+                     :on-request-close     #(reset! open false)
+                     :statusBarTranslucent true
+                     :transparent          true
+                     :animation            :slide}
            [rn/view {:style (modal-container)}
             [rn/view {:style (modal-view)}
              [rn/scroll-view
@@ -144,14 +146,14 @@
             [quo/text "↓"]]]]]))))
 
 (defn customizer [state descriptors]
-  [rn/view
+  [rn/view {:style {:flex 1}}
    (doall
     (for [{:keys [key type]
            :as   desc} descriptors
           :let         [descriptor (merge desc
                                           {:state state})]]
       ^{:key key}
-      [rn/view
+      [:<>
        (case type
          :boolean [customizer-boolean descriptor]
          :text    [customizer-text descriptor]

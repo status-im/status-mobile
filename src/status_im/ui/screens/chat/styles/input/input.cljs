@@ -18,7 +18,6 @@
    :justify-content :space-between
    :padding-top     8
    :padding-bottom  8
-   :padding-right   8
    :padding-left    8})
 
 (def reply-message-content
@@ -47,22 +46,18 @@
    :justify-content :flex-start})
 
 (def cancel-reply-highlight
-  {:align-self :flex-start
-   :width      19
-   :height     19})
-
-(def cancel-reply-container
-  {:flex-direction  :row
-   :justify-content :flex-end
-   :height          "100%"})
+  {:align-items     :center
+   :width           44
+   :height          44})
 
 (def cancel-reply-icon
   {:background-color colors/gray
-   :width            21
-   :height           21
+   :width            20
+   :height           20
+   :margin-top       4
    :align-items      :center
    :justify-content  :center
-   :border-radius    12})
+   :border-radius    10})
 
 (def input-container
   {:flex-direction :row

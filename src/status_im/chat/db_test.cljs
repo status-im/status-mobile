@@ -1,7 +1,5 @@
 (ns status-im.chat.db-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.identicon :as identicon]
             [status-im.chat.db :as db]))
 
 (deftest group-chat-name
@@ -40,18 +38,6 @@
              (:datemark m4)))
       (is (= {:type :datemark
               :value "Dec 31, 1999"} d2)))))
-
-(deftest active-chats-test
-  (with-redefs [gfycat/generate-gfy (constantly "generated")
-                identicon/identicon (constantly "generated")]
-    (let [active-chat-1 {:is-active true :chat-id "1"}
-          active-chat-2 {:is-active true :chat-id "2"}
-          chats         {"1" active-chat-1
-                         "2" active-chat-2
-                         "3" {:is-active false :chat-id "3"}}]
-      (testing "it returns only chats with is-active"
-        (is (= #{"1" "2"}
-               (set (keys (db/active-chats {} chats {})))))))))
 
 (deftest add-gaps
   (testing "empty state"

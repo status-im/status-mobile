@@ -6,13 +6,7 @@ GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 # Gradle needs to be run in 'android' subfolder
 cd $GIT_ROOT/android
 
-# AWK script to catch only non-test deps
-AWK_SCRIPT='
-/^(classpath|[a-zA-Z]+ - .*)$/{
-    if ($1 ~ "test") { next; }
-    while ($0!="") { print; getline; }
-}
-'
+AWK_SCRIPT="${GIT_ROOT}/nix/deps/gradle/gradle_parser.awk"
 
 # Run the gradle command for a project:
 # - ':buildEnvironment' to get build tools
@@ -38,13 +32,4 @@ done
 ./gradlew --no-daemon --console plain \
     "${BUILD_DEPS[@]}" \
     "${NORMAL_DEPS[@]}" \
-    | awk "${AWK_SCRIPT}" \
-    | grep -e '[\\\+]---' \
-    | sed -E 's;.*[\\\+]--- ([^ ]+:)(.+ -> )?([^ ]+).*$;\1\3;' \
-    | grep --invert-match -E \
-        -e '^[a-z]+$' \
-        -e '^:?[^:]+$' \
-        -e '--- project :' \
-        -e '^(#|status-im:)' \
-        -e '(\+|unspecified)$' \
-        -e '^[^+].+ \([\*n]\)$'
+    | awk -f ${AWK_SCRIPT}

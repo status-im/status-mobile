@@ -12,6 +12,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.utils.config :as config]
+            [status-im.ui.screens.chat.image.views :as image]
             [status-im.ui.screens.chat.stickers.views :as stickers]
             [status-im.ui.screens.chat.extensions.views :as extensions]))
 
@@ -32,44 +33,70 @@
     :placeholder-text-color colors/gray
     :auto-capitalize        :sentences}])
 
-(defview reply-message [from alias message-text]
-  (letsubs [{:keys [ens-name]} [:contacts/contact-name-by-identity from]
+(defn close-button [on-press]
+  [react/touchable-highlight
+   {:style               style/cancel-reply-highlight
+    :on-press            on-press
+    :accessibility-label :cancel-message-reply}
+   [vector-icons/icon :main-icons/close {:container-style style/cancel-reply-icon
+                                         :width           19
+                                         :height          19
+                                         :color           colors/white}]])
+
+(defn send-image-view [{:keys [uri]}]
+  [react/view {:style style/reply-message}
+   [react/image {:style  {:width         56 :height 56
+                          :border-radius 4}
+                 :source {:uri uri}}]
+   [close-button #(re-frame/dispatch [:chat.ui/cancel-sending-image])]])
+
+(defview reply-message [from message-text image]
+  (letsubs [contact-name [:contacts/contact-name-by-identity from]
             current-public-key [:multiaccount/public-key]]
     [react/scroll-view {:style style/reply-message-content}
      [react/view {:style style/reply-message-to-container}
-      (chat-utils/format-reply-author from alias ens-name current-public-key style/reply-message-author)]
-     [react/text {:style (assoc (message-style/style-message-text false) :font-size 14) :number-of-lines 3} message-text]]))
+      (chat-utils/format-reply-author from contact-name current-public-key style/reply-message-author)]
+     (if image
+       [react/image {:style  {:width            56
+                              :height           56
+                              :background-color :black
+                              :border-radius    4}
+                     :source {:uri image}}]
+       [react/text {:style (assoc (message-style/style-message-text false) :font-size 14)
+                    :number-of-lines 3} message-text])]))
 
 (defview reply-message-view []
-  (letsubs [{:keys [content from alias] :as message} [:chats/reply-message]]
+  (letsubs [{:keys [content from] :as message} [:chats/reply-message]]
     (when message
       [react/view {:style style/reply-message}
        [photos/member-photo from]
-       [reply-message from alias (:text content)]
-       [react/touchable-highlight
-        {:style               style/cancel-reply-highlight
-         :on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])
-         :accessibility-label :cancel-message-reply}
-        [react/view {:style style/cancel-reply-container}
-         [vector-icons/icon :main-icons/close {:container-style style/cancel-reply-icon
-                                               :width           19
-                                               :height          19
-                                               :color           colors/white}]]]])))
+       [reply-message from (:text content) (:image content)]
+       [close-button #(re-frame/dispatch [:chat.ui/cancel-message-reply])]])))
 
 (defview container []
   (letsubs [mainnet?           [:mainnet?]
             input-text         [:chats/current-chat-input-text]
             cooldown-enabled?  [:chats/cooldown-enabled?]
             input-bottom-sheet [:chats/current-chat-ui-prop :input-bottom-sheet]
-            one-to-one-chat?   [:current-chat/one-to-one-chat?]]
-    (let [input-text-empty? (string/blank? (string/trim (or input-text "")))]
+            one-to-one-chat?   [:current-chat/one-to-one-chat?]
+            public?            [:current-chat/public?]
+            reply-message      [:chats/reply-message]
+            sending-image      [:chats/sending-image]]
+    (let [input-text-empty? (and (string/blank? (string/trim (or input-text "")))
+                                 (not sending-image))]
       [react/view {:style (style/root)}
-       [reply-message-view]
+       (when reply-message
+         [reply-message-view reply-message])
+       (when sending-image
+         [send-image-view sending-image])
        [react/view {:style style/input-container}
         [basic-text-input input-text cooldown-enabled?]
-        (when (and input-text-empty? mainnet?)
+        (when (and input-text-empty? (not reply-message) (not public?))
+          [image/input-button (= :images input-bottom-sheet)])
+        (when (and input-text-empty? mainnet? (not reply-message))
           [stickers/button (= :stickers input-bottom-sheet)])
-        (when (and one-to-one-chat? input-text-empty? (or config/commands-enabled? mainnet?))
+        (when (and one-to-one-chat? input-text-empty? (or config/commands-enabled? mainnet?)
+                   (not reply-message))
           [extensions/button (= :extensions input-bottom-sheet)])
         (when-not input-text-empty?
           [send-button/send-button-view input-text-empty?

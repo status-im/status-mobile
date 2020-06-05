@@ -348,7 +348,8 @@
          response]))
      :on-failure
      (fn [response]
-       (log/info "[keycard response fail] get-keys")
+       (log/info "[keycard response fail] get-keys"
+                 (error-object->map response))
        (re-frame/dispatch [:hardwallet.callback/on-get-keys-error
                            (error-object->map response)]))})))
 

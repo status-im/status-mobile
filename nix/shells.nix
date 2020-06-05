@@ -18,7 +18,7 @@ let
 
     buildInputs = with pkgs; lib.unique ([
       # core utilities that should always be present in a shell
-      bash curl wget file unzip flock rsync
+      bash curl wget file unzip flock
       git gnumake jq ncurses gnugrep parallel
       lsof # used in start-react-native.sh
       # build specific utilities
@@ -73,10 +73,11 @@ let
 
     # for running gradle by hand
     gradle = mkShell {
-      buildInputs = with pkgs; [ gradle maven ];
+      buildInputs = with pkgs; [ gradle maven goMavenResolver ];
       inputsFrom = [ node-sh ];
       shellHook = ''
         export STATUS_GO_ANDROID_LIBDIR="DUMMY"
+        export STATUS_NIX_MAVEN_REPO="${pkgs.deps.gradle}"
         export ANDROID_SDK_ROOT="${pkgs.androidPkgs}"
         export ANDROID_NDK_ROOT="${pkgs.androidPkgs}/ndk-bundle"
       '';

@@ -1,8 +1,6 @@
 (ns status-im.ui.screens.chat.views
   (:require [re-frame.core :as re-frame]
-            [status-im.contact.db :as contact.db]
             [status-im.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.connectivity.view :as connectivity]
@@ -15,6 +13,7 @@
             [status-im.ui.screens.chat.stickers.views :as stickers]
             [status-im.ui.screens.chat.styles.main :as style]
             [status-im.ui.screens.chat.toolbar-content :as toolbar-content]
+            [status-im.ui.screens.chat.image.views :as image]
             [status-im.ui.screens.chat.state :as state]
             [status-im.utils.debounce :as debounce]
             [status-im.ui.screens.chat.extensions.views :as extensions]
@@ -28,6 +27,7 @@
   [topbar/topbar
    {:content      [toolbar-content/toolbar-content-view]
     :show-border? true
+    :initial-title-padding 56
     :navigation   {:icon                :main-icons/back
                    :accessibility-label :back-button
                    :handler
@@ -40,56 +40,86 @@
                                                      [sheets/actions current-chat])
                                           :height  256}])}]}])
 
-(defn add-contact-bar
-  [public-key]
-  [react/touchable-highlight
-   {:on-press
-    #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
-    :accessibility-label :add-to-contacts-button}
-   [react/view {:style (style/add-contact)}
-    [vector-icons/icon :main-icons/add
-     {:color colors/blue}]
-    [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]])
+(defview add-contact-bar [public-key]
+  (letsubs [added? [:contacts/contact-added? public-key]]
+    (when-not added?
+      [react/touchable-highlight
+       {:on-press
+        #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
+        :accessibility-label :add-to-contacts-button}
+       [react/view {:style (style/add-contact)}
+        [vector-icons/icon :main-icons/add
+         {:color colors/blue}]
+        [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]])))
 
-(defn intro-header
-  [contact]
+(defn intro-header [name]
   [react/text {:style (assoc style/intro-header-description
                              :margin-bottom 32)}
    (str
     (i18n/label :t/empty-chat-description-one-to-one)
-    (multiaccounts/displayed-name contact))])
+    name)])
+
+(defn chat-intro [{:keys [chat-id
+                          chat-name
+                          group-chat
+                          contact-name
+                          public?
+                          color
+                          loading-messages?
+                          no-messages?]}]
+  [react/view (style/intro-header-container loading-messages? no-messages?)
+   ;; Icon section
+   [react/view {:style {:margin-top    42
+                        :margin-bottom 24}}
+    [chat-icon.screen/chat-intro-icon-view
+     chat-name chat-id group-chat
+     {:default-chat-icon      (style/intro-header-icon 120 color)
+      :default-chat-icon-text style/intro-header-icon-text
+      :size                   120}]]
+   ;; Chat title section
+   [react/text {:style (style/intro-header-chat-name)} (if group-chat chat-name contact-name)]
+   ;; Description section
+   (if group-chat
+     [chat.group/group-chat-description-container {:chat-id chat-id
+                                                   :loading-messages? loading-messages?
+                                                   :chat-name chat-name
+                                                   :public? public?
+                                                   :no-messages? no-messages?}]
+     [react/text {:style (assoc style/intro-header-description
+                                :margin-bottom 32)}
+
+      (str
+       (i18n/label :t/empty-chat-description-one-to-one)
+       contact-name)])])
+
+(defview chat-intro-one-to-one [{:keys [chat-id] :as opts}]
+  (letsubs [contact-name [:contacts/contact-name-by-identity chat-id]]
+    (chat-intro (assoc opts :contact-name contact-name))))
 
 (defn chat-intro-header-container
-  [{:keys [group-chat name pending-invite-inviter-name color chat-id chat-name
-           public? contact intro-status] :as chat}
+  [{:keys [group-chat
+           might-have-join-time-messages?
+           color chat-id chat-name
+           public?]}
    no-messages]
-  (let [icon-text  (if public? chat-id name)
-        intro-name (if public? chat-name (multiaccounts/displayed-name contact))]
-    (when (or pending-invite-inviter-name
-              (not= (get-in contact [:tribute-to-talk :snt-amount]) 0))
-      [react/touchable-without-feedback
-       {:style    {:flex        1
-                   :align-items :flex-start}
-        :on-press (fn [_]
-                    (re-frame/dispatch
-                     [:chat.ui/set-chat-ui-props {:input-bottom-sheet nil}])
-                    (react/dismiss-keyboard!))}
-       [react/view (style/intro-header-container intro-status no-messages)
-        ;; Icon section
-        [react/view {:style {:margin-top    42
-                             :margin-bottom 24}}
-         [chat-icon.screen/chat-intro-icon-view
-          icon-text chat-id
-          {:default-chat-icon      (style/intro-header-icon 120 color)
-           :default-chat-icon-text style/intro-header-icon-text
-           :size                   120}]]
-        ;; Chat title section
-        [react/text {:style (style/intro-header-chat-name)}
-         (if group-chat chat-name intro-name)]
-        ;; Description section
-        (if group-chat
-          [chat.group/group-chat-description-container chat]
-          [intro-header contact])]])))
+  [react/touchable-without-feedback
+   {:style    {:flex        1
+               :align-items :flex-start}
+    :on-press (fn [_]
+                (re-frame/dispatch
+                 [:chat.ui/set-chat-ui-props {:input-bottom-sheet nil}])
+                (react/dismiss-keyboard!))}
+   (let [opts
+         {:chat-id chat-id
+          :group-chat group-chat
+          :chat-name chat-name
+          :public? public?
+          :color color
+          :loading-messages? might-have-join-time-messages?
+          :no-messages? no-messages}]
+     (if group-chat
+       [chat-intro opts]
+       [chat-intro-one-to-one opts]))])
 
 (defonce messages-list-ref (atom nil))
 
@@ -109,15 +139,16 @@
   (debounce/debounce-and-dispatch [:chat.ui/message-visibility-changed e] 5000))
 
 (defview messages-view
-  [{:keys [group-chat chat-id pending-invite-inviter-name] :as chat}]
+  [{:keys [group-chat chat-id public?] :as chat}]
   (letsubs [messages           [:chats/current-chat-messages-stream]
+            no-messages?       [:chats/current-chat-no-messages?]
             current-public-key [:multiaccount/public-key]]
     [list/flat-list
      {:key-fn                       #(or (:message-id %) (:value %))
       :ref                          #(reset! messages-list-ref %)
-      :header                       (when pending-invite-inviter-name
+      :header                       (when (and group-chat (not public?))
                                       [chat.group/group-chat-footer chat-id])
-      :footer                       [chat-intro-header-container chat (empty? messages)]
+      :footer                       [chat-intro-header-container chat no-messages?]
       :data                         messages
       :inverted                     true
       :render-fn                    (fn [{:keys [outgoing type] :as message} idx]
@@ -130,6 +161,7 @@
                                            (assoc message
                                                   :incoming-group (and group-chat (not outgoing))
                                                   :group-chat group-chat
+                                                  :public? public?
                                                   :current-public-key current-public-key)])))
       :on-viewable-items-changed    on-viewable-items-changed
       :on-end-reached               #(re-frame/dispatch [:chat.ui/load-more-messages])
@@ -147,17 +179,18 @@
       [stickers/stickers-view]
       :extensions
       [extensions/extensions-view]
+      :images
+      [image/image-view]
       [empty-bottom-sheet])))
 
 (defview chat []
-  (letsubs [{:keys [chat-id show-input? group-chat contact] :as current-chat}
+  (letsubs [{:keys [chat-id show-input? group-chat] :as current-chat}
             [:chats/current-chat]]
     [react/view {:style {:flex 1}}
      [connectivity/connectivity
       [topbar current-chat]
       [react/view {:style {:flex 1}}
-       ;;TODO contact.db/added? looks weird here, move to events
-       (when (and (not group-chat) (not (contact.db/added? contact)))
+       (when-not group-chat
          [add-contact-bar chat-id])
        [messages-view current-chat]]]
      (when show-input?

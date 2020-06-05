@@ -1207,6 +1207,11 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
+"@react-native-community/cameraroll@^1.6.1":
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cameraroll/-/cameraroll-1.6.2.tgz#a4dedcf8ba7bc938f805dd07dd43a275edb1f411"
+  integrity sha512-5R/2Tpi7APoNBDmRV23OcRIN9YiaRMJAHrXkGDpj7jVo2yQpJCCrARnZ9qhJ9dYEMybdP/XhXI1vVjuad5xqNQ==
+
 "@react-native-community/cli-debugger-ui@^4.8.0":
   version "4.8.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-4.8.0.tgz#9a6419b29be69422e0056bbb1874775750351d22"
@@ -1308,6 +1313,11 @@
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@react-native-community/clipboard/-/clipboard-1.2.2.tgz#956b29df141199fd9ed47e820baf9693f9f50b55"
   integrity sha512-WJkJSWA/fhuBhHL3rh6UDdB8+AZNMvAHoyo/ERnNxl9KZqruq7K+AIaQQlggEAsIVBIhjKt65fT+Zynj7gF8Cg==
+
+"@react-native-community/hooks@^2.5.1":
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/hooks/-/hooks-2.5.1.tgz#545c76d1a6203532a8e776578bbaaa64bb754cf6"
+  integrity sha512-P9gwIUGpa/h8p5ASwY8QFTthXw/e/rt4mzZRfe3Xh5L13mTuOFXsYVwe9f8JAUx512cUKUsdTg6Dsg3/jTlxeg==
 
 "@react-native-community/masked-view@^0.1.6":
   version "0.1.9"
@@ -6451,9 +6461,9 @@ react-native-background-timer@^2.1.1:
   integrity sha512-Y7N6diSFko/FCJPMmB0PoBlmY1kEcma7qDVwn8t7zi12GLqpe/Vwls97onkSD8/QL+BR33BygUHOrLTPwgeKfg==
 
 react-native-camera@^3.3.3:
-  version "3.23.1"
-  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-3.23.1.tgz#fb6fe52f8a357852de6dcd81d0d187cd632dc7dd"
-  integrity sha512-ghQT2IhiZiNMDgixD/MrfwgFx9arwOb2z79xDJ8dsz8DFcpBMbXjXZETaAK0WaZ/MWOaY84k0eGlx1hoVT77wQ==
+  version "3.26.0"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-3.26.0.tgz#80f37124c524d76ae79f55f3975ed73b6515aa49"
+  integrity sha512-W/h89LN+jujlzc89nWpvukbfnbFO+Fskf6PR23pP6zminpJDIArHabWLd1mQoJ3p6r+gUJ8I4bgsxUmSMgLAgA==
   dependencies:
     prop-types "^15.6.2"
 
@@ -6505,10 +6515,10 @@ react-native-haptic-feedback@^1.9.0:
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.9.0.tgz#7d62c54536f04dd5d8f1c2bb8ee444009f2294b9"
   integrity sha512-tIRbq8k7HK9AoyvXrOHUEFmJd65ZAh1HP9mDyD/gDisG1ApY4Im9UKn0q0of9z7s8AJY3sZA9GMuSKdSBGdKKQ==
 
-react-native-image-crop-picker@^0.25.0:
-  version "0.25.3"
-  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.25.3.tgz#46ee28b4a0a187240e388bd28a44cf8c274caec6"
-  integrity sha512-jQ416WXEiEQ3w057QOYU++8/mDqYb2A/AGZY/NwR5eKda/z8a4wncWKj7oF9KBAHNKE1TmPrl9Rm0GZ0Jrzp6A==
+react-native-image-crop-picker@^0.31.1:
+  version "0.31.1"
+  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.31.1.tgz#b56248a9e31d62f1c6e7c2f85d296869c32af4cd"
+  integrity sha512-I5z7DcTKYYASevIalkqKdiw9Fe4CVCKPVMMkLGDVGUYgZZWlbOS9G1+oNWtWwoB5S9e931GkDrZ/HL5UhADG/Q==
 
 "react-native-image-resizer@git+https://github.com/status-im/react-native-image-resizer.git#1.0.0-2-status":
   version "1.0.0"
@@ -6543,20 +6553,19 @@ react-native-reanimated@^1.7.0:
   dependencies:
     fbjs "^1.0.0"
 
-react-native-redash@^10.0.1:
-  version "10.1.1"
-  resolved "https://registry.yarnpkg.com/react-native-redash/-/react-native-redash-10.1.1.tgz#228564f2a9cee2406b8f87b1c90c2fdf7d81cdfb"
-  integrity sha512-VxyKygf//IzDgJfK5oFK0KYSaxxpuXwwVE2rldtINRByuCIZIUx8QVE3pmxG7XYc15T4OHC3l7wug+tLsLI44w==
+react-native-redash@^14.0.3:
+  version "14.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-redash/-/react-native-redash-14.0.3.tgz#7f62644f110ceb61962a5aa181e2c8ae05e04c9d"
+  integrity sha512-ExSP77re4QEGEtjVenfwMTo4RGI1togE6NGsblbqVGtRMTD0IDGovpeC6YQt37jHdaYLRM4VYjVNqjgDjcCt5Q==
   dependencies:
     abs-svg-path "^0.1.1"
     normalize-svg-path "^1.0.1"
     parse-svg-path "^0.1.2"
-    use-memo-one "^1.1.1"
 
-react-native-safe-area-context@^0.7.3:
-  version "0.7.3"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-0.7.3.tgz#ad6bd4abbabe195332c53810e4ce5851eb21aa2a"
-  integrity sha512-9Uqu1vlXPi+2cKW/CW6OnHxA76mWC4kF3wvlqzq4DY8hn37AeiXtLFs2WkxH4yXQRrnJdP6ivc65Lz+MqwRZAA==
+react-native-safe-area-context@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-2.0.0.tgz#7ef48e5a83a1e2f7fe9d5321493822b6765fd1ab"
+  integrity sha512-5VtCI3Nluzm7QfTcB/3j4YeWqt25QO1u5KTA1jEg1ckJzV19qCZFyHIpCCkS5+VEX+2JEHfdczhCdwE5sPgyEw==
 
 react-native-screens@^2.3.0:
   version "2.5.0"
@@ -8017,11 +8026,6 @@ url@^0.11.0:
   dependencies:
     punycode "1.3.2"
     querystring "0.2.0"
-
-use-memo-one@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/use-memo-one/-/use-memo-one-1.1.1.tgz#39e6f08fe27e422a7d7b234b5f9056af313bd22c"
-  integrity sha512-oFfsyun+bP7RX8X2AskHNTxu+R3QdE/RC5IefMbqptmACAA/gfol1KDD5KRzPsGMa62sWxGZw+Ui43u6x4ddoQ==
 
 use-subscription@^1.0.0, use-subscription@^1.4.0:
   version "1.4.1"

@@ -31,6 +31,7 @@ config = {
   };
 };
 ```
+You can see the defaults in [`nix/config.nix`](./config.nix).
 
 ## Shell
 

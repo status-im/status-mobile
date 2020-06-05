@@ -174,7 +174,6 @@ conan.cmake
 /.ran-setup
 /.nix-gcroots/
 /result
-/nix/deps/gradle/deps.urls.old
 
 # modules
 status-modules/translations

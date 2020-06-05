@@ -1171,7 +1171,7 @@
      {})))
 
 (fx/defn load-gaps-fx [{:keys [db] :as cofx} chat-id]
-  (when-not (get-in db [:chats chat-id :gaps-loaded?])
+  (when-not (get-in db [:gaps-loaded? chat-id])
     (let [success-fn #(re-frame/dispatch [::gaps-loaded %1 %2])]
       (data-store.mailservers/load-gaps cofx chat-id success-fn))))
 
@@ -1190,7 +1190,7 @@
      cofx
      {:db
       (-> db
-          (assoc-in [:chats chat-id :gaps-loaded?] true)
+          (assoc-in [:gaps-loaded? chat-id] true)
           (assoc-in [:mailserver/gaps chat-id] gaps))}
 
      (data-store.mailservers/delete-gaps outdated-gaps))))

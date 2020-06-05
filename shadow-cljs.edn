@@ -30,7 +30,7 @@
  :http {:port 3449
         :host "0.0.0.0"}
 
- :cache-blockers #{status-im.utils.js-resources}
+ :cache-blockers #{status-im.utils.js-resources status-im.ui.components.icons.icons}
 
  :builds {:mobile
           {:target :react-native

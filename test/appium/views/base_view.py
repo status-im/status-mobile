@@ -125,6 +125,12 @@ class HomeButton(TabButton):
         self.click_until_presence_of_element(PlusButton(self.driver))
         return self.navigate()
 
+class ShareButton(BaseButton):
+
+    def __init__(self, driver):
+        super(ShareButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('share-my-contact-code-button')
+
 
 class DappTabButton(TabButton):
     def __init__(self, driver):
@@ -342,6 +348,12 @@ class AirplaneModeButton(BaseButton):
         self.driver.press_keycode(4)
 
 
+class SearchChatInput(BaseEditBox):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.text_selector('Search')
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
@@ -376,7 +388,8 @@ class BaseView(object):
         self.cross_icon_iside_welcome_screen_button = CrossIconInWelcomeScreen(self.driver)
         self.status_in_background_button = StatusInBackgroundButton(self.driver)
         self.cancel_button = CancelButton(self.driver)
-
+        self.search_chat_input = SearchChatInput(self.driver)
+        self.share_button = ShareButton(self.driver)
 
         # external browser
         self.search_in_google_edit_box = SearchEditBox(self.driver)
@@ -641,6 +654,7 @@ class BaseView(object):
         return user_data
 
     def share_via_messenger(self):
+        self.element_by_text_part("Direct share").wait_for_element()
         self.element_by_text('Messages').click()
         self.element_by_text('New message').click()
         self.send_as_keyevent('+0100100101')
@@ -695,6 +709,11 @@ class BaseView(object):
     def upgrade_app(self):
         self.driver.install_app(pytest_config_global['apk_upgrade'], replace=True)
         self.driver.info('Upgrading apk to apk_upgrade')
+
+    def search_by_keyword(self, keyword):
+        self.driver.info('Search for %s' % keyword)
+        self.search_chat_input.click()
+        self.search_chat_input.send_keys(keyword)
 
     # Method-helper
     def write_page_source_to_file(self, full_path_to_file):

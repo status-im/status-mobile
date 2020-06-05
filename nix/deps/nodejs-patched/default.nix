@@ -31,7 +31,7 @@ stdenv.mkDerivation {
         cp -r ${deps.nodejs}/node_modules/$moduleName ./node_modules/
         chmod u+w -R ./node_modules/$moduleName
       fi
-      ${patchMavenSources} $modBuildGradle '${deps.gradle}'
+      ${patchMavenSources} $modBuildGradle
     done
 
     patchShebangs ./node_modules

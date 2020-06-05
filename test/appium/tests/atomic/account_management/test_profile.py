@@ -6,7 +6,6 @@ from tests import marks, bootnode_address, mailserver_address, camera_access_err
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user
 from views.sign_in_view import SignInView
-from tests import pytest_config_global
 
 
 @marks.all
@@ -282,8 +281,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append("Can't proceed using account after it's re-recover twice.")
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5329)
-    @marks.critical
+    @marks.testrail_id(6296)
+    @marks.high
     def test_recover_account_from_new_user_seedphrase(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -538,6 +537,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5766)
     @marks.medium
+    @marks.flaky
     def test_use_pinned_mailserver(self):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()
@@ -664,6 +664,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5436)
     @marks.medium
+    @marks.flaky
     def test_add_switch_delete_custom_mailserver(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -743,6 +744,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5767)
     @marks.medium
+    @marks.flaky
     def test_can_not_connect_to_mailserver(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])

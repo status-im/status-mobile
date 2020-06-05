@@ -8,7 +8,8 @@
             [status-im.hardwallet.recovery :as recovery]
             [status-im.hardwallet.onboarding :as onboarding]
             status-im.hardwallet.fx
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
+            [status-im.signing.core :as signing.core]))
 
 (fx/defn login-got-it-pressed
   {:events [:keycard.login.pin.ui/got-it-pressed
@@ -49,16 +50,56 @@
             {:db (assoc-in db [:hardwallet :flow] :login)}
             (navigation/navigate-to-cofx :keycard-recovery-pair nil)))
 
+(fx/defn frozen-keycard-popup
+  [{:keys [db]}]
+  {:db (assoc db :popover/popover {:view :frozen-card})})
+
+(fx/defn reset-pin
+  {:events [::reset-pin]}
+  [{:keys [db] :as cofx}]
+  (fx/merge
+   cofx
+   {:db (assoc db :hardwallet/new-account-sheet? false)}
+   (signing.core/discard)
+   (fn [{:keys [db]}]
+     {:db (-> db
+              (dissoc :popover/popover)
+              (update-in [:hardwallet :pin] dissoc
+                         :reset :puk)
+              (update-in [:hardwallet :pin] assoc
+                         :enter-step :reset
+                         :error nil
+                         :status nil))})
+   (when-not (:multiaccounts/login db)
+     (navigation/navigate-to-cofx
+      :profile-stack
+      {:screen :keycard-pin}))))
+
+(fx/defn dismiss-frozen-keycard-popover
+  {:events [::frozen-keycard-popover-dismissed]}
+  [{:keys [db]}]
+  {:db (-> db
+           (dissoc :popover/popover)
+           (update :hardwallet dissoc :setup-step))})
+
 (fx/defn login-with-keycard
   {:events [:hardwallet/login-with-keycard]}
   [{:keys [db] :as cofx}]
-  (let [application-info       (get-in db [:hardwallet :application-info])
+  (let [{:keys [:pin-retry-counter :puk-retry-counter]
+         :as application-info}
+        (get-in db [:hardwallet :application-info])
+
         key-uid                (get-in db [:hardwallet :application-info :key-uid])
         multiaccount           (get-in db [:multiaccounts/multiaccounts (get-in db [:multiaccounts/login :key-uid])])
         multiaccount-key-uid   (get multiaccount :key-uid)
         multiaccount-mismatch? (or (nil? multiaccount)
                                    (not= multiaccount-key-uid key-uid))
         pairing                (:keycard-pairing multiaccount)]
+    (log/debug "[keycard] login-with-keycard"
+               "empty application info" (empty? application-info)
+               "no key-uid" (empty? key-uid)
+               "multiaccount-mismatch?" multiaccount-mismatch?
+               "no pairing" (empty? pairing))
     (cond
       (empty? application-info)
       (fx/merge cofx
@@ -80,10 +121,16 @@
                 (common/hide-connection-sheet)
                 (navigation/navigate-to-cofx :keycard-unpaired nil))
 
+      (and (zero? pin-retry-counter)
+           (or (nil? puk-retry-counter)
+               (= 5 puk-retry-counter)))
+      nil #_(frozen-keycard-popup cofx)
+
       :else
       (common/get-keys-from-keycard cofx))))
 
 (fx/defn proceed-to-login
+  {:events [::login-after-reset]}
   [cofx]
   (log/debug "[hardwallet] proceed-to-login")
   (common/show-connection-sheet

@@ -254,39 +254,6 @@ class TestWalletManagement(SingleDeviceTestCase):
         if not web_view.element_by_text(cryptokitty_link).is_element_displayed():
             self.driver.fail('Cryptokitty detail page not opened')
 
-    @marks.testrail_id(6208)
-    @marks.high
-    def test_add_custom_token(self):
-        contract_address = '0x25B1bD06fBfC2CbDbFc174e10f1B78b1c91cc77B'
-        name = 'SNTMiniMeToken'
-        symbol = 'SNT'
-        decimals = '18'
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.multiaccount_more_options.click()
-        wallet_view.manage_assets_button.click()
-        token_view = wallet_view.add_custom_token_button.click()
-        token_view.contract_address_input.send_keys(contract_address)
-        token_view.progress_bar.wait_for_invisibility_of_element(30)
-        if token_view.name_input.text != name:
-            self.errors.append('Name for custom token was not set')
-        if token_view.symbol_input.text != symbol:
-            self.errors.append('Symbol for custom token was not set')
-        if token_view.decimals_input.text != decimals:
-            self.errors.append('Decimals for custom token was not set')
-        token_view.add_button.click()
-        token_view.back_button.click()
-        if not wallet_view.asset_by_name(symbol).is_element_displayed():
-            self.errors.append('Custom token is not shown on Wallet view')
-        wallet_view.accounts_status_account.click()
-        send_transaction = wallet_view.send_transaction_button.click()
-        token_element = send_transaction.asset_by_name(symbol)
-        send_transaction.select_asset_button.click_until_presence_of_element(token_element)
-        if not token_element.is_element_displayed():
-            self.errors.append('Custom token is not shown on Send Transaction view')
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(6224)
     @marks.critical
@@ -488,5 +455,57 @@ class TestWalletManagement(SingleDeviceTestCase):
 
         if send_transaction.enter_recipient_address_text.text != formatted_ens_user_address:
             self.errors.append('ENS address "stateofus.eth" without domain is not resolved as recipient')
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6269)
+    @marks.medium
+    def test_search_asset_and_currency(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        profile = home.profile_button.click()
+        profile.switch_network('Mainnet with upstream RPC')
+        search_list_assets = {
+            'ad': ['AdEx', 'Open Trading Network', 'TrueCAD'],
+            'zs': ['ZSC']
+        }
+        wallet = home.wallet_button.click()
+
+        home.just_fyi('Searching for asset by name and symbol')
+        wallet.set_up_wallet()
+        wallet.multiaccount_more_options.click()
+        wallet.manage_assets_button.click()
+        for keyword in search_list_assets:
+            home.search_by_keyword(keyword)
+            if keyword == 'ad':
+                search_elements = wallet.all_assets_full_names.find_elements()
+            else:
+                search_elements = wallet.all_assets_symbols.find_elements()
+            if not search_elements:
+                self.errors.append('No search results after searching by %s keyword' % keyword)
+            search_results = [element.text for element in search_elements]
+            if search_results != search_list_assets[keyword]:
+                self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
+                                                                    (', '.join(search_results), keyword))
+            home.cancel_button.click()
+        wallet.back_button.click()
+
+        home.just_fyi('Searching for currency')
+        search_list_currencies = {
+            'aF': ['Afghanistan Afghani (AFN)', 'South Africa Rand (ZAR)'],
+            'bolívi': ['Bolivia Bolíviano (BOB)']
+        }
+        wallet.multiaccount_more_options.click_until_presence_of_element(wallet.set_currency_button)
+        wallet.set_currency_button.click()
+        for keyword in search_list_currencies:
+            home.search_by_keyword(keyword)
+            search_elements = wallet.currency_item_text.find_elements()
+            if not search_elements:
+                self.errors.append('No search results after searching by %s keyword' % keyword)
+            search_results = [element.text for element in search_elements]
+            if search_results != search_list_currencies[keyword]:
+                 self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
+                                                                     (', '.join(search_results), keyword))
+            home.cancel_button.click()
 
         self.errors.verify_no_errors()

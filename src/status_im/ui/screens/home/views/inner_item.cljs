@@ -11,7 +11,60 @@
             [status-im.ui.screens.home.styles :as styles]
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.core :as utils]
-            [status-im.utils.datetime :as time]))
+            [status-im.utils.datetime :as time])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+
+(defview mention-element [from]
+  (letsubs [contact-name [:contacts/contact-name-by-identity from]]
+    contact-name))
+
+(defn render-subheader-inline [acc {:keys [type destination literal children]}]
+  (case type
+    "paragraph"
+    (conj acc (reduce
+               (fn [acc e] (render-subheader-inline acc e))
+               [react/text-class " "]
+               children))
+
+    "blockquote"
+    (conj acc (.substring literal 0 (dec (.-length literal))))
+
+    "codeblock"
+    (conj acc (.substring literal 0 (dec (.-length literal))))
+
+    "mention"
+    (conj acc [react/text-class
+               [mention-element literal]])
+
+    "status-tag"
+    (conj acc [react/text-class
+               "#"
+               literal])
+
+    "link"
+    (conj acc destination)
+
+    (conj acc literal)))
+
+(def max-length 40)
+
+(defn render-subheader
+  "Render the chat subheader markdown inline, to a maximum of max-length characters"
+  [parsed-text]
+  (:elements
+   (reduce
+    (fn [{:keys [elements l] :as acc} {:keys [literal] :as e}]
+      (if (> l max-length)
+        (reduced acc)
+        {:elements (render-subheader-inline elements e)
+         :l (+ l (count literal))}))
+    {:length 0
+     :elements
+     [react/text-class {:style               styles/last-message-text
+                        :number-of-lines     1
+                        :ellipsize-mode      :tail
+                        :accessibility-label :chat-message-text}]}
+    parsed-text)))
 
 (defn message-content-text [{:keys [content content-type]}]
   [react/view styles/last-message-container
@@ -27,19 +80,17 @@
                    ;;TODO (perf) move to event
                    :source {:uri (contenthash/url (-> content :sticker :hash))}}]
 
+     (= constants/content-type-image content-type)
+     [react/text {:style               styles/last-message-text
+                  :accessibility-label :no-messages-text}
+      (i18n/label :t/image)]
+
      (string/blank? (:text content))
      [react/text {:style styles/last-message-text}
       ""]
 
      (:text content)
-     [react/text {:style               styles/last-message-text
-                  :number-of-lines     1
-                  :ellipsize-mode      :tail
-                  :accessibility-label :chat-message-text}
-      ;;TODO (perf) move to event
-      (-> (:text content)
-          (subs 0 40)
-          (string/trim-newline))])])
+     (render-subheader (:parsed-text content)))])
 
 (defn message-timestamp [timestamp]
   (when timestamp
@@ -55,32 +106,31 @@
                    :accessibility-label :unviewed-messages-public}]
       [badge/message-counter unviewed-messages-count])))
 
-(defn home-list-item [[_ home-item]]
+(defn home-list-item [home-item]
   (let [{:keys [chat-id chat-name color online group-chat
-                public? contact timestamp last-message]}
+                public? timestamp last-message]}
         home-item
-        private-group?      (and group-chat (not public?))
-        public-group?       (and group-chat public?)
-        ;;TODO (perf) move to event
-        truncated-chat-name (utils/truncate-str chat-name 30)]
+        private-group? (and group-chat (not public?))
+        public-group?  (and group-chat public?)]
     [list-item/list-item
      {:icon                      [chat-icon.screen/chat-icon-view-chat-list
-                                  contact group-chat truncated-chat-name color online false]
+                                  chat-id group-chat chat-name color online false]
       :title-prefix              (cond
                                    private-group? :main-icons/tiny-group
                                    public-group? :main-icons/tiny-public
                                    :else nil)
-      :title                     truncated-chat-name
+      :title                     (if group-chat
+                                   (utils/truncate-str chat-name 30)
+                                   ;; This looks a bit odd, but I would like only to subscribe
+                                   ;; if it's a one-to-one. If wrapped in a component styling
+                                   ;; won't be applied correctly.
+                                   @(re-frame/subscribe [:contacts/contact-name-by-identity chat-id]))
       :title-accessibility-label :chat-name-text
       :title-row-accessory       [message-timestamp (if (pos? (:whisper-timestamp last-message))
                                                       (:whisper-timestamp last-message)
                                                       timestamp)]
-      :subtitle
-      (let [{:keys [tribute-status tribute-label]} (:tribute-to-talk contact)]
-        (if (not (#{:require :pending} tribute-status))
-          [message-content-text {:content      (:content last-message)
-                                 :content-type (:content-type last-message)}]
-          tribute-label))
+      :subtitle                  [message-content-text {:content      (:content last-message)
+                                                        :content-type (:content-type last-message)}]
       :subtitle-row-accessory    [unviewed-indicator home-item]
       :on-press                  #(do
                                     (re-frame/dispatch [:dismiss-keyboard])

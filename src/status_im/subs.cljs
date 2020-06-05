@@ -37,7 +37,6 @@
             [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
-            [status-im.utils.universal-links.core :as links]
             [status-im.wallet.db :as wallet.db]
             [status-im.wallet.utils :as wallet.utils]
             status-im.ui.screens.keycard.subs
@@ -119,6 +118,7 @@
 (reg-root-key-sub :group-chat-profile/profile :group-chat-profile/profile)
 (reg-root-key-sub :selected-participants :selected-participants)
 (reg-root-key-sub :chat/inputs :chat/inputs)
+(reg-root-key-sub :camera-roll-photos :camera-roll-photos)
 
 ;;browser
 (reg-root-key-sub :browsers :browser/browsers)
@@ -166,9 +166,11 @@
 
 ;;ens
 (reg-root-key-sub :ens/registration :ens/registration)
+(reg-root-key-sub :ens/registrations :ens/registrations)
 (reg-root-key-sub :ens/names :ens/names)
 
 ;;signing
+(reg-root-key-sub :signing/sign :signing/sign)
 (reg-root-key-sub :signing/tx :signing/tx)
 (reg-root-key-sub :signing/edit-fee :signing/edit-fee)
 
@@ -183,6 +185,13 @@
 (reg-root-key-sub :auth-method :auth-method)
 
 (reg-root-key-sub :multiaccounts/loading :multiaccounts/loading)
+
+(reg-root-key-sub ::messages :messages)
+(reg-root-key-sub ::message-lists :message-lists)
+(reg-root-key-sub ::pagination-info :pagination-info)
+
+;; keycard
+(reg-root-key-sub :hardwallet/new-account-sheet? :hardwallet/new-account-sheet?)
 
 ;;GENERAL ==============================================================================================================
 
@@ -450,6 +459,12 @@
    public-key))
 
 (re-frame/reg-sub
+ :multiaccount/preferred-name
+ :<- [:multiaccount]
+ (fn [{:keys [preferred-name]}]
+   preferred-name))
+
+(re-frame/reg-sub
  :multiaccount/default-account
  :<- [:multiaccount/accounts]
  (fn [accounts]
@@ -607,77 +622,24 @@
 
 (re-frame/reg-sub
  :chats/active-chats
- :<- [:contacts/contacts]
  :<- [::chats]
- :<- [:multiaccount]
- (fn [[contacts chats multiaccount]]
-   (chat.db/active-chats contacts chats multiaccount)))
+ (fn [chats]
+   (reduce-kv (fn [acc id {:keys [is-active] :as chat}]
+                (if is-active
+                  (assoc acc id chat)
+                  acc))
+              {}
+              chats)))
 
-;; TODO: this is no useful without tribute to talk
-#_(defn enrich-current-one-to-one-chat
-    [{:keys [contact] :as current-chat} my-public-key ttt-settings
-     chain-keyword prices currency]
-    (let [{:keys [tribute-to-talk]} contact
-          {:keys [disabled? snt-amount message]} tribute-to-talk
-          whitelisted-by? (whitelist/whitelisted-by? contact)
-          loading?        (and (not whitelisted-by?)
-                               (not tribute-to-talk))
-          show-input?     (or whitelisted-by?
-                              disabled?)
-          token           (case chain-keyword
-                            :mainnet :SNT
-                            :STT)
-          tribute-status  (if loading?
-                            :loading
-                            (tribute-to-talk.db/tribute-status contact))
-          tribute-label   (tribute-to-talk.db/status-label tribute-status snt-amount)]
-
-      (cond-> (assoc current-chat
-                     :tribute-to-talk/tribute-status tribute-status
-                     :tribute-to-talk/tribute-label tribute-label)
-
-        (#{:required :pending :paid} tribute-status)
-        (assoc :tribute-to-talk/snt-amount
-               (tribute-to-talk.db/from-wei snt-amount)
-               :tribute-to-talk/message
-               message
-               :tribute-to-talk/fiat-amount   (if snt-amount
-                                                (money/fiat-amount-value
-                                                 snt-amount
-                                                 token
-                                                 (-> currency :code keyword)
-                                                 prices)
-                                                "0")
-               :tribute-to-talk/fiat-currency (:code currency)
-               :tribute-to-talk/token         (str " " (name token)))
-
-        (tribute-to-talk.db/enabled? ttt-settings)
-        (assoc :tribute-to-talk/received? (tribute-to-talk.db/tribute-received?
-                                           contact))
-
-        (= tribute-status :required)
-        (assoc :tribute-to-talk/on-share-my-profile
-               #(re-frame/dispatch
-                 [:profile/share-profile-link my-public-key]))
-
-        show-input?
-        (assoc :show-input? true))))
-
-(defn enrich-current-chat
-  [{:keys [messages chat-id might-have-join-time-messages?] :as chat} ranges]
-  (assoc chat
-         :range
-         (get ranges chat-id)
-         :intro-status
-         (if might-have-join-time-messages?
-           :loading
-           (if (empty? messages)
-             :empty
-             :messages))))
+(re-frame/reg-sub
+ ::chat
+ :<- [::chats]
+ (fn [chats [_ chat-id]]
+   (get chats chat-id)))
 
 (re-frame/reg-sub
  :chats/current-raw-chat
- :<- [:chats/active-chats]
+ :<- [::chats]
  :<- [:chats/current-chat-id]
  (fn [[chats current-chat-id]]
    (get chats current-chat-id)))
@@ -693,15 +655,10 @@
  :chats/current-chat
  :<- [:chats/current-raw-chat]
  :<- [:multiaccount/public-key]
- :<- [:mailserver/ranges]
- (fn [[{:keys [group-chat chat-id messages] :as current-chat}
-       my-public-key ranges]]
+ (fn [[{:keys [group-chat] :as current-chat}
+       my-public-key]]
    (when current-chat
-     (cond-> (enrich-current-chat current-chat ranges)
-       (empty? messages)
-       (assoc :universal-link
-              (links/generate-link :public-chat :external chat-id))
-
+     (cond-> current-chat
        (chat.models/public-chat? current-chat)
        (assoc :show-input? true)
 
@@ -721,16 +678,17 @@
             (chat.models/public-chat? current-chat)))))
 
 (re-frame/reg-sub
- :chats/current-chat-message
- :<- [:chats/current-chat]
- (fn [{:keys [messages]} [_ message-id]]
-   (get messages message-id)))
+ :current-chat/public?
+ :<- [:chats/current-raw-chat]
+ (fn [current-chat]
+   (chat.models/public-chat? current-chat)))
 
 (re-frame/reg-sub
  :chats/current-chat-messages
- :<- [:chats/current-chat]
- (fn [{:keys [messages]}]
-   (or messages {})))
+ :<- [::messages]
+ :<- [:chats/current-chat-id]
+ (fn [[messages chat-id]]
+   (get messages chat-id {})))
 
 (re-frame/reg-sub
  :chats/messages-gaps
@@ -738,6 +696,12 @@
  :<- [:chats/current-chat-id]
  (fn [[gaps chat-id]]
    (sort-by :from (vals (get gaps chat-id)))))
+
+(re-frame/reg-sub
+ :mailserver/ranges-by-chat-id
+ :<- [:mailserver/ranges]
+ (fn [ranges [_ chat-id]]
+   (get ranges chat-id)))
 
 (re-frame/reg-sub
  :chats/range
@@ -748,27 +712,23 @@
 
 (re-frame/reg-sub
  :chats/all-loaded?
- :<- [:chats/current-chat]
- (fn [chat]
-   (:all-loaded? chat)))
+ :<- [::pagination-info]
+ :<- [:chats/current-chat-id]
+ (fn [[pagination-info chat-id]]
+   (get-in pagination-info [chat-id :all-loaded?])))
 
 (re-frame/reg-sub
  :chats/public?
- :<- [:chats/current-chat]
+ :<- [:chats/current-raw-chat]
  (fn [chat]
    (:public? chat)))
 
 (re-frame/reg-sub
  :chats/message-list
- :<- [:chats/current-chat]
- (fn [chat]
-   (:message-list chat)))
-
-(re-frame/reg-sub
- :chats/messages
- :<- [:chats/current-chat]
- (fn [chat]
-   (:messages chat)))
+ :<- [::message-lists]
+ :<- [:chats/current-chat-id]
+ (fn [[message-lists chat-id]]
+   (get message-lists chat-id)))
 
 (defn hydrate-messages
   "Pull data from messages and add it to the sorted list"
@@ -780,9 +740,15 @@
         message-list))
 
 (re-frame/reg-sub
+ :chats/current-chat-no-messages?
+ :<- [:chats/current-chat-messages]
+ (fn [messages]
+   (empty? messages)))
+
+(re-frame/reg-sub
  :chats/current-chat-messages-stream
  :<- [:chats/message-list]
- :<- [:chats/messages]
+ :<- [:chats/current-chat-messages]
  :<- [:chats/messages-gaps]
  :<- [:chats/range]
  :<- [:chats/all-loaded?]
@@ -793,17 +759,6 @@
        (chat.db/add-datemarks)
        (hydrate-messages messages)
        (chat.db/add-gaps messages-gaps range all-loaded? public?))))
-
-(re-frame/reg-sub
- :chats/current-chat-intro-status
- :<- [:chats/current-chat]
- :<- [:chats/current-chat-messages]
- (fn [[{:keys [might-have-join-time-messages?]} messages]]
-   (if might-have-join-time-messages?
-     :loading
-     (if (empty? messages)
-       :empty
-       :messages))))
 
 (re-frame/reg-sub
  :chats/photo-path
@@ -819,9 +774,15 @@
  :chats/unread-messages-number
  :<- [:chats/active-chats]
  (fn [chats _]
-   (let [grouped-chats (group-by :public? (vals chats))]
-     {:public (apply + (map :unviewed-messages-count (get grouped-chats true)))
-      :other (apply + (map :unviewed-messages-count (get grouped-chats false)))})))
+   (reduce-kv (fn [{:keys [public other]} _ {:keys [unviewed-messages-count public?]}]
+                (if public?
+                  {:public (+ public unviewed-messages-count)
+                   :other other}
+                  {:other (+ other unviewed-messages-count)
+                   :public public}))
+              {:public 0
+               :other 0}
+              chats)))
 
 (re-frame/reg-sub
  :chats/cooldown-enabled?
@@ -834,8 +795,14 @@
 (re-frame/reg-sub
  :chats/reply-message
  :<- [:chats/current-chat]
- (fn [{:keys [metadata messages]}]
-   (get messages (get-in metadata [:responding-to-message :message-id]))))
+ (fn [{:keys [metadata]}]
+   (:responding-to-message metadata)))
+
+(re-frame/reg-sub
+ :chats/sending-image
+ :<- [:chats/current-chat]
+ (fn [{:keys [metadata]}]
+   (get-in metadata [:sending-image])))
 
 (re-frame/reg-sub
  :public-chat.new/topic-error-message
@@ -873,13 +840,13 @@
    (filter-contacts selected-contacts active-contacts)))
 
 (re-frame/reg-sub
- :group-chat/chat-joined?
- :<- [:multiaccount/public-key]
- :<- [:chats/active-chats]
- (fn [[my-public-key chats] [_ chat-id]]
-   (let [current-chat (get chats chat-id)]
-     (and (chat.models/group-chat? current-chat)
-          (group-chats.db/joined? my-public-key current-chat)))))
+ :group-chat/inviter-info
+ (fn [[_ chat-id] _]
+   [(re-frame/subscribe [::chat chat-id])
+    (re-frame/subscribe [:multiaccount/public-key])])
+ (fn [[chat my-public-key]]
+   {:joined? (group-chats.db/joined? my-public-key chat)
+    :inviter-pk (group-chats.db/get-inviter-pk my-public-key chat)}))
 
 (re-frame/reg-sub
  :chats/transaction-status
@@ -994,16 +961,11 @@
 
 (re-frame/reg-sub
  :home-items
- :<- [:chats/active-chats]
  :<- [:search/home-filter]
  :<- [:search/filtered-chats]
- (fn [[chats search-filter filtered-chats]]
-   (if (or (nil? search-filter)
-           (and platform/desktop? (empty? search-filter)))
-     {:all-home-items
-      (sort-by #(-> % second :timestamp) > chats)}
-     {:search-filter search-filter
-      :chats         filtered-chats})))
+ (fn [[search-filter filtered-chats]]
+   {:search-filter search-filter
+    :chats         filtered-chats}))
 
 ;;PAIRING ==============================================================================================================
 
@@ -1619,20 +1581,40 @@
            contact.db/enrich-contact))))
 
 (re-frame/reg-sub
+ :contacts/contact-by-identity
+ :<- [::contacts]
+ (fn [contacts [_ identity]]
+   (get contacts identity)))
+
+(re-frame/reg-sub
+ :contacts/contact-added?
+ (fn [[_ identity] _]
+   [(re-frame/subscribe [:contacts/contact-by-identity identity])])
+ (fn [[contact] _]
+   (contact.db/added? contact)))
+
+(re-frame/reg-sub
+ :contacts/raw-contact-name-by-identity
+ (fn [[_ identity] _]
+   [(re-frame/subscribe [:contacts/contact-by-identity identity])])
+ (fn [[db-contact] _]
+   (if (and (:ens-verified db-contact) (seq (:name db-contact)))
+     (str "@" (:name db-contact))
+     (:alias db-contact))))
+
+(re-frame/reg-sub
  :contacts/contact-name-by-identity
- :<- [:contacts/contacts]
- :<- [:multiaccount]
- (fn [[contacts current-multiaccount] [_ identity]]
+ (fn [[_ identity] _]
+   [(re-frame/subscribe [:contacts/raw-contact-name-by-identity identity])
+    (re-frame/subscribe [:multiaccount])])
+ (fn [[contact-name current-multiaccount] [_ identity]]
    (let [me? (= (:public-key current-multiaccount) identity)]
      (if me?
-       {:ens-name (:preferred-name current-multiaccount)
-        :alias (gfycat/generate-gfy identity)}
-       (let [contact (or (contacts identity)
-                         (contact.db/public-key->new-contact identity))]
-         {:ens-name  (when (:ens-verified contact)
-                       (:name contact))
-          :alias (or (:alias contact)
-                     (gfycat/generate-gfy identity))})))))
+       (or (:preferred-name current-multiaccount)
+           (gfycat/generate-gfy identity))
+       (or (stateofus/username contact-name)
+           contact-name
+           (gfycat/generate-gfy identity))))))
 
 (re-frame/reg-sub
  :messages/quote-info
@@ -1680,17 +1662,6 @@
     (re-frame/subscribe [:contacts/contacts])])
  (fn [[chat all-contacts] [_ query-fn]]
    (contact.db/query-chat-contacts chat all-contacts query-fn)))
-
-(re-frame/reg-sub
- :contacts/chat-photo
- (fn [[_ chat-id] _]
-   [(re-frame/subscribe [:chats/chat chat-id])
-    (re-frame/subscribe [:contacts/contacts-by-chat filter chat-id])])
- (fn [[chat contacts] [_ _]]
-   (when (and chat (not (:group-chat chat)))
-     (if (pos? (count contacts))
-       (multiaccounts/displayed-photo (first contacts))
-       (multiaccounts/displayed-photo chat)))))
 
 (re-frame/reg-sub
  :contacts/contact-by-address
@@ -1786,8 +1757,8 @@
 ;;SEARCH ==============================================================================================================
 
 (defn extract-chat-attributes [chat]
-  (let [{:keys [name random-name tags]} (val chat)]
-    (into [name random-name] tags)))
+  (let [{:keys [name alias tags]} (val chat)]
+    (into [name alias] tags)))
 
 (defn sort-by-timestamp
   [coll]
@@ -1819,12 +1790,38 @@
       (sort-by-timestamp results)
       results)))
 
+(defn filter-chat
+  [contacts search-filter {:keys [group-chat alias name chat-id]}]
+  (let [alias (if-not group-chat
+                (string/lower-case (or alias
+                                       (get-in contacts [chat-id :alias])
+                                       (gfycat/generate-gfy chat-id)))
+                "")]
+
+    (or
+     (string/includes? (string/lower-case (str name)) search-filter)
+     (string/includes? (string/lower-case alias) search-filter)
+     (and
+      (get-in contacts [chat-id :ens-verified])
+      (string/includes? (string/lower-case
+                         (str (get-in contacts [chat-id :name])))
+                        search-filter)))))
 (re-frame/reg-sub
  :search/filtered-chats
  :<- [:chats/active-chats]
+ :<- [::contacts]
  :<- [:search/home-filter]
- (fn [[chats search-filter]]
-   (apply-filter search-filter chats extract-chat-attributes true)))
+ (fn [[chats contacts search-filter]]
+   ;; Short-circuit if search-filter is empty
+   (let [filtered-chats (if (seq search-filter)
+                          (filter
+                           (partial filter-chat
+                                    contacts
+                                    (string/lower-case search-filter))
+                           (vals chats))
+                          (vals chats))]
+
+     (sort-by :timestamp > filtered-chats))))
 
 (defn extract-currency-attributes [currency]
   (let [{:keys [code display-name]} (val currency)]
@@ -2028,10 +2025,12 @@
  :<- [:multiaccount/usernames]
  :<- [:multiaccount]
  :<- [:ens/preferred-name]
- (fn [[names multiaccount preferred-name]]
-   {:names          names
-    :multiaccount   multiaccount
-    :preferred-name preferred-name}))
+ :<- [:ens/registrations]
+ (fn [[names multiaccount preferred-name registrations]]
+   {:names             names
+    :multiaccount      multiaccount
+    :preferred-name    preferred-name
+    :registrations registrations}))
 
 ;;SIGNING =============================================================================================================
 
@@ -2048,19 +2047,24 @@
    signing-phrase))
 
 (re-frame/reg-sub
- :signing/sign
- (fn [db]
-   (let [sign (:signing/sign db)]
-     (if (= :pinless (:type sign))
-       (let [message (get-in sign [:formatted-data :message])]
-         (if (and (:amount message) (:currency message))
-           (assoc sign :fiat-amount
-                  (money/fiat-amount-value (:amount message)
-                                           (:currency message)
-                                           :USD (:prices db))
-                  :fiat-currency "USD")
-           sign))
-       sign))))
+ :signing/sign-message
+ :<- [:signing/sign]
+ :<- [:multiaccount/accounts]
+ :<- [:prices]
+ (fn [[sign wallet-accounts prices]]
+   (if (= :pinless (:type sign))
+     (let [message (get-in sign [:formatted-data :message])
+           wallet-acc (some #(when (= (:address %) (:receiver message)) %) wallet-accounts)]
+       (cond-> sign
+         (and (:amount message) (:currency message))
+         (assoc :fiat-amount
+                (money/fiat-amount-value (:amount message)
+                                         (:currency message)
+                                         :USD prices)
+                :fiat-currency "USD")
+         (and (:receiver message) wallet-acc)
+         (assoc :account wallet-acc)))
+     sign)))
 
 (defn- too-precise-amount?
   "Checks if number has any extra digit beyond the allowed number of decimals.

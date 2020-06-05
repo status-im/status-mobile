@@ -8,8 +8,12 @@
 
 CUR_DIR=$(cd "${BASH_SOURCE%/*}" && pwd)
 
-# sources REPOS associative array
-source ${CUR_DIR}/repos.sh
+# This defines URLs of Maven repos we know about and use.
+declare -a REPOS=(
+  "https://repo.maven.apache.org/maven2"
+  "https://dl.google.com/dl/android/maven2"
+  "https://repository.sonatype.org/content/groups/sonatype-public-grid"
+)
 
 function nix_fetch() {
     nix-prefetch-url --print-path --type sha256 "${1}" 2>/dev/null
@@ -36,9 +40,11 @@ if [[ -z "${1}" ]]; then
     exit 1
 fi
 
-OBJ_REL_URL=${1}
+POM_URL=${1}
+# Drop the POM extension
+OBJ_REL_URL=${POM_URL%.pom}
 
-echo -en "\033[2K - Nix entry for: ${1##*/}\r" >&2
+echo -en "${CLR} - Nix entry for: ${1##*/}\r" >&2
 
 REPO_URL=$(match_repo_url "${OBJ_REL_URL}")
 

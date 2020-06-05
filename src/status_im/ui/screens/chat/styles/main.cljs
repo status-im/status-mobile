@@ -47,8 +47,8 @@
    :margin-right     6})
 
 (defn intro-header-container
-  [status no-messages]
-  (if (or no-messages (= status (or :loading :empty)))
+  [loading-messages? no-messages?]
+  (if (or loading-messages? no-messages?)
     {:flex               1
      :flex-direction     :column
      :justify-content    :center

@@ -14,6 +14,7 @@ eth-utils==1.0.3
 ethereum==2.3.0
 execnet==1.4.1
 future==0.16.0
+flaky
 idna==2.5
 kiwisolver==1.0.1
 lxml==4.3.1
@@ -43,7 +44,7 @@ scrypt==0.8.6
 selenium==3.14.1
 six==1.10.0
 toolz==0.9.0
-urllib3==1.24.2
+urllib3==1.24.3
 yarl==0.12.0
 zbarlight==2.3
 docker

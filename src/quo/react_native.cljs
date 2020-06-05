@@ -1,6 +1,7 @@
 (ns quo.react-native
   (:require [reagent.core :as reagent]
-            ["react-native" :as rn]))
+            ["react-native" :as rn]
+            ["@react-native-community/hooks" :as hooks]))
 
 (def app-registry (.-AppRegistry rn))
 
@@ -15,8 +16,13 @@
 
 (def touchable-opacity (reagent/adapt-react-class (.-TouchableOpacity ^js rn)))
 (def touchable-highlight (reagent/adapt-react-class (.-TouchableHighlight ^js rn)))
-
+(def touchable-without-feedback (reagent/adapt-react-class (.-TouchableWithoutFeedback ^js rn)))
 (def text-input (reagent/adapt-react-class  (.-TextInput ^js rn)))
+
+(def keyboard-avoiding-view (reagent/adapt-react-class (.-KeyboardAvoidingView ^js rn)))
+
+(def keyboard (.-Keyboard ^js rn))
+(def dismiss-keyboard! #(.dismiss ^js keyboard))
 
 (def ui-manager  (.-UIManager ^js rn))
 
@@ -53,3 +59,14 @@
 
 (defn flat-list [props]
   [rn-flat-list (base-list-props props)])
+
+;; Hooks
+
+(defn use-window-dimensions []
+  (let [window (rn/useWindowDimensions)]
+    {:font-scale (.-fontScale window)
+     :height     (.-height ^js window)
+     :scale      (.-scale ^js window)
+     :width      (.-window ^js window)}))
+
+(def use-back-handler (.-useBackHandler hooks))

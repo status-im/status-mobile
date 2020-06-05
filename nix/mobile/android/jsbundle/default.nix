@@ -8,19 +8,23 @@ stdenv.mkDerivation {
   name = "status-react-build-jsbundle-android";
   src =
     let path = ./../../../..;
-    in builtins.path { # We use builtins.path so that we can name the resulting derivation, otherwise the name would be taken from the checkout directory, which is outside of our control
+    # We use builtins.path so that we can name the resulting derivation,
+    # otherwise the name would be taken from the checkout directory,
+    # which is outside of our control inherit path;
+    in builtins.path {
       inherit path;
       name = "status-react-source-jsbundle";
       filter =
-        # Keep this filter as restrictive as possible in order to avoid unnecessary rebuilds and limit closure size
+        # Keep this filter as restrictive as possible in order to avoid
+        # unnecessary rebuilds and limit closure size
         lib.mkFilter {
           root = path;
           ignoreVCS = false;
           include = [ 
             "VERSION" "BUILD_NUMBER" "scripts/version/.*"
+            "src/.*" "shadow-cljs.edn" "index.js"
             # I want to avoid including the whole .git directory
             ".git/HEAD" ".git/objects" ".git/refs/heads/.*"
-            "src/.*" "shadow-cljs.edn" "index.js"
             # shadow-cljs expects these for deps resolution
             "mobile/js_files/package.json" "mobile/js_files/yarn.lock"
             # build stat's images to check if they exist

@@ -61,7 +61,7 @@ class WebViewMenuButton(BaseButton):
         self.locator = self.Locator.accessibility_id('chat-menu-button')
 
 
-class URLEditBoxLockIcon(BaseEditBox):
+class URLEditBoxLockIcon(BaseButton):
 
     def __init__(self, driver):
         super(URLEditBoxLockIcon, self).__init__(driver)
@@ -73,6 +73,12 @@ class PolicySummary(BaseElement):
     def __init__(self, driver):
         super(PolicySummary, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@content-desc="Policy summary"] | //*[@text="Policy summary"]')
+
+
+class ShareUrlButton(BaseButton):
+    def __init__(self, driver):
+        super(ShareUrlButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('modal-share-link-button')
 
 
 class BaseWebView(BaseView):
@@ -93,6 +99,7 @@ class BaseWebView(BaseView):
         self.web_view_menu_button = WebViewMenuButton(self.driver)
         self.always_button = AlwaysButton(self.driver)
         self.browser_refresh_page_button = BrowserRefreshPageButton(self.driver)
+        self.share_url_button = ShareUrlButton(self.driver)
 
     def wait_for_d_aap_to_load(self, wait_time=35):
         counter = 0

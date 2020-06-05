@@ -4,7 +4,8 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.colors :as colors]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.constants :as constants]))
 
 (def data
   [{:type                :small
@@ -12,9 +13,7 @@
     :accessibility-label :faq-button
     :on-press
     #(.openURL ^js react/linking
-               (if platform/desktop?
-                 "https://status.im/docs/FAQ-desktop.html"
-                 "https://status.im/docs/FAQs.html"))
+               constants/faq)
     :accessories         [:chevron]}
    {:type                :small
     :title               :t/glossary

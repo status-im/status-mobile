@@ -22,6 +22,36 @@
     username
     (stateofus/subdomain username)))
 
+(fx/defn update-ens-tx-state
+  {:events [:update-ens-tx-state]}
+  [{:keys [db]} new-state username custom-domain? tx-hash]
+  {:db (assoc-in db [:ens/registrations tx-hash] {:state          new-state
+                                                  :username       username
+                                                  :custom-domain? custom-domain?})})
+
+(fx/defn redirect-to-ens-summary
+  {:events [::redirect-to-ens-summary]}
+  [cofx]
+  ;; we reset navigation so that navigate back doesn't return
+  ;; into the registration flow
+  (navigation/navigate-reset cofx
+                             {:index  1
+                              :key    :profile-stack
+                              :routes [{:name :my-profile}
+                                       {:name :ens-confirmation}]}))
+
+(fx/defn update-ens-tx-state-and-redirect
+  {:events [:update-ens-tx-state-and-redirect]}
+  [cofx new-state username custom-domain? tx-hash]
+  (fx/merge cofx
+            (update-ens-tx-state new-state username custom-domain? tx-hash)
+            (redirect-to-ens-summary)))
+
+(fx/defn clear-ens-registration
+  {:events [:clear-ens-registration]}
+  [{:keys [db]} tx-hash]
+  {:db (update db :ens/registrations dissoc tx-hash)})
+
 (re-frame/reg-fx
  ::resolve-address
  (fn [[registry name cb]]
@@ -62,19 +92,20 @@
      {:contract   resolver-contract
       :method     "setPubkey(bytes32,bytes32,bytes32)"
       :params     [namehash x y]
-      :on-result  [::save-username custom-domain? username]
+      :on-result  [::save-username custom-domain? username true]
       :on-error   [::on-registration-failure]})))
 
 (fx/defn save-username
   {:events [::save-username]}
-  [{:keys [db] :as cofx} custom-domain? username]
+  [{:keys [db] :as cofx} custom-domain? username redirectToSummary]
   (let [name   (fullname custom-domain? username)
         names  (get-in db [:multiaccount :usernames] [])
         new-names (conj names name)]
     (fx/merge cofx
               (multiaccounts.update/multiaccount-update
                :usernames new-names
-               {:on-success #(re-frame/dispatch [::username-saved])})
+               (when redirectToSummary
+                 {:on-success #(re-frame/dispatch [::redirect-to-ens-summary])}))
               (when (empty? names)
                 (multiaccounts.update/multiaccount-update
                  :preferred-name name {})))))
@@ -93,20 +124,9 @@
       (ens/resolver registry-contract ens-name
                     #(re-frame/dispatch [::resolver-found %]))
       :connected
-      (save-username cofx custom-domain? username)
+      (save-username cofx custom-domain? username true)
       ;; for other states, we do nothing
       nil)))
-
-(fx/defn username-saved
-  {:events [::username-saved]}
-  [{:keys [db] :as cofx}]
-  ;; we reset navigation so that navigate back doesn't return
-  ;; into the registration flow
-  (navigation/navigate-reset cofx
-                             {:index  1
-                              :key    :profile-stack
-                              :routes [{:name :my-profile}
-                                       {:name :ens-confirmation}]}))
 
 (defn- on-resolve-owner
   [registry custom-domain? username address public-key response resolve-last-id* resolve-last-id]
@@ -157,7 +177,7 @@
                    (money/unit->token amount 18)
                    (abi-spec/encode "register(bytes32,address,bytes32,bytes32)"
                                     [(ethereum/sha3 username) address x y])]
-      :on-result  [::save-username custom-domain? username]
+      :on-result  [:update-ens-tx-state-and-redirect :submitted username custom-domain?]
       :on-error   [::on-registration-failure]})))
 
 (defn- valid-custom-domain? [username]

@@ -45,6 +45,7 @@ keytool -genkey -v \
     -keyalg RSA \
     -keysize 2048 \
     -validity 10000 \
+    -deststoretype pkcs12 \
     -dname "CN=, OU=, O=, L=, S=, C=" \
     -keystore "${KEYSTORE_PATH}" \
     -alias "${KEYSTORE_ALIAS}" \

@@ -9,6 +9,7 @@ low = pytest.mark.low
 
 account = pytest.mark.account
 upgrade = pytest.mark.upgrade
+flaky = pytest.mark.flaky
 api = pytest.mark.api
 all = pytest.mark.all
 chat = pytest.mark.chat

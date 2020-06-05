@@ -92,6 +92,7 @@
           :margin              0
           :text-align-vertical :center
           :flex                1
+          :color               (:text-01 @colors/theme)
           :height              height}
          (when-not before
            {:padding-left (:base spacing/spacing)})
@@ -164,7 +165,6 @@
             (merge {:style                   (text-input-style multiline input-style before after)
                     :ref                     ref
                     :placeholder-text-color  (:text-02 @colors/theme)
-                    :color                   (:text-01 @colors/theme)
                     :underline-color-android :transparent
                     :auto-capitalize         :none
                     :secure-text-entry       secure

@@ -213,7 +213,7 @@ status-go-desktop: ##@status-go Compile status-go for desktop app
 # Watch, Build & Review changes
 #--------------
 
-run-clojure: export TARGET := default
+run-clojure: export TARGET := clojure
 run-clojure: ##@run Watch for and build Clojure changes for mobile
 	yarn shadow-cljs watch mobile
 
@@ -221,7 +221,7 @@ run-clojure-desktop: export TARGET ?= $(HOST_OS)
 run-clojure-desktop: #@run Watch for and build Clojure changes for desktop
 	clj -R:dev build.clj watch --platform desktop
 
-run-metro: export TARGET := default
+run-metro: export TARGET := clojure
 run-metro: ##@run Start Metro to build React Native changes
 	@scripts/start-react-native.sh
 
@@ -255,7 +255,7 @@ lint: export TARGET := clojure
 lint: ##@test Run code style checks
 	yarn clj-kondo --confg .clj-kondo/config.edn --lint src && \
 	clojure -Sdeps '{:deps {cljfmt {:mvn/version "0.6.7"}}}' \
-		-m cljfmt.main check src/status_im/core.cljs $(git diff --diff-filter=d --cached --name-only src) \
+		-m cljfmt.main check $$(git diff --diff-filter=d --cached --name-only src && echo src) \
 		--indents indentation.edn
 
 lint-fix: export TARGET := clojure

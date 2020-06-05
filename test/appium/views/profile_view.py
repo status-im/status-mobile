@@ -133,6 +133,12 @@ class ProfilePictureElement(BaseElement):
         self.locator = self.Locator.accessibility_id('chat-icon')
 
 
+class ProfileDetailsOtherUser(BaseElement):
+    def __init__(self, driver):
+        super(ProfileDetailsOtherUser, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('profile-public-key')
+
+
 class EditPictureButton(BaseButton):
 
     def __init__(self, driver):
@@ -154,12 +160,6 @@ class CrossIcon(BaseButton):
         super(CrossIcon, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('done-button')
 
-
-class ShareButton(BaseButton):
-
-    def __init__(self, driver):
-        super(ShareButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('share-my-contact-code-button')
 
 
 class ENSUsernameInShareChatKeyPopup(BaseText):
@@ -186,6 +186,7 @@ class LogLevelSetting(BaseButton):
     def __init__(self, driver):
         super(LogLevelSetting, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@content-desc="log-level-settings-button"]/android.widget.TextView[2]')
+
 
 class BackupRecoveryPhraseButton(BaseButton):
 
@@ -588,7 +589,6 @@ class ProfileView(BaseView):
         self.remove_picture_button = RemovePictureButton(self.driver)
         self.confirm_edit_button = ConfirmEditButton(self.driver)
         self.cross_icon = CrossIcon(self.driver)
-        self.share_button = ShareButton(self.driver)
         self.advanced_button = AdvancedButton(self.driver)
         self.log_level_setting = LogLevelSetting(self.driver)
         self.debug_mode_toggle = DebugModeToggle(self.driver)
@@ -674,6 +674,7 @@ class ProfileView(BaseView):
         self.plus_button.click_until_presence_of_element(self.ropsten_chain_button)
         self.custom_network_url.send_keys('https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a')
         self.specify_name_input.send_keys('custom_ropsten')
+        self.ropsten_chain_button.scroll_to_element()
         self.ropsten_chain_button.click()
         self.ropsten_chain_button.click()
         self.save_button.click()

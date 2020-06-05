@@ -12,7 +12,8 @@
             [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.biometric.views :as biometric]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.screens.hardwallet.frozen-card.view :as frozen-card]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -136,6 +137,9 @@
 
                    (= :transaction-data view)
                    [signing/transaction-data]
+
+                   (= :frozen-card view)
+                   [frozen-card/frozen-card]
 
                    :else
                    [view])]]]]])))})))

@@ -8,7 +8,8 @@
             [status-im.hardwallet.mnemonic :as mnemonic]
             [taoensso.timbre :as log]
             status-im.hardwallet.fx
-            [status-im.ui.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [status-im.constants :as constants]))
 
 (fx/defn begin-setup-button-pressed
   {:keys [:hardwallet.ui/begin-setup-button-pressed]}
@@ -82,7 +83,7 @@
 (fx/defn recovery-phrase-learn-more-pressed
   {:events [:keycard.onboarding.recovery-phrase.ui/learn-more-pressed]}
   [_]
-  (.openURL ^js react/linking "https://keycard.status.im"))
+  (.openURL ^js react/linking constants/faq-keycard))
 
 (fx/defn recovery-phrase-next-pressed
   {:events [:keycard.onboarding.recovery-phrase.ui/next-pressed

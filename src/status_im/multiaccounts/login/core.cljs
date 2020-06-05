@@ -7,6 +7,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.hardwallet.common :as hardwallet.common]
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.biometric.core :as biometric]
@@ -367,16 +368,18 @@
     (log/debug "[login] get-auth-method-success"
                "auth-method" auth-method
                "keycard-multiacc?" keycard-multiaccount?)
-    (fx/merge cofx
-              {:db (assoc db :auth-method auth-method)}
-              #(cond
-                 (= auth-method
-                    keychain/auth-method-biometric)
-                 (biometric/biometric-auth %)
-                 (= auth-method
-                    keychain/auth-method-password)
-                 (get-credentials % key-uid))
-              (open-login-callback nil))))
+    (fx/merge
+     cofx
+     {:db (assoc db :auth-method auth-method)}
+     #(cond
+        (= auth-method keychain/auth-method-biometric)
+        (biometric/biometric-auth %)
+        (= auth-method keychain/auth-method-password)
+        (get-credentials % key-uid)
+        (and keycard-multiaccount?
+             (get-in db [:hardwallet :card-connected?]))
+        (hardwallet.common/get-application-info % nil nil))
+     (open-login-callback nil))))
 
 (fx/defn biometric-auth-done
   {:events [:biometric-auth-done]}

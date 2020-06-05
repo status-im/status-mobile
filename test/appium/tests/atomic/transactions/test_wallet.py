@@ -153,8 +153,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.recover_access(sender['passphrase'])
         home_view = sign_in_view.get_home_view()
-        home_view.add_contact(recipient['public_key'])
-        home_view.get_back_to_home_view()
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
@@ -596,5 +594,53 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                         self.errors.append(
                             'Expected error %s is not shown' % error)
                 send_transaction_view.cancel_button.click()
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6208)
+    @marks.high
+    def test_send_transaction_with_custom_token(self):
+        contract_address = '0x101848D5C5bBca18E6b4431eEdF6B95E9ADF82FA'
+        name = 'Weenus 💪'
+        symbol = 'WEENUS'
+        decimals = '18'
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.recover_access(wallet_users['B']['passphrase'])
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        wallet_view.multiaccount_more_options.click()
+        wallet_view.manage_assets_button.click()
+        token_view = wallet_view.add_custom_token_button.click()
+        token_view.contract_address_input.send_keys(contract_address)
+        token_view.progress_bar.wait_for_invisibility_of_element(30)
+        if token_view.name_input.text != name:
+            self.errors.append('Name for custom token was not set')
+        if token_view.symbol_input.text != symbol:
+            self.errors.append('Symbol for custom token was not set')
+        if token_view.decimals_input.text != decimals:
+            self.errors.append('Decimals for custom token was not set')
+        token_view.add_button.click()
+        token_view.back_button.click()
+        if not wallet_view.asset_by_name(symbol).is_element_displayed():
+            self.errors.append('Custom token is not shown on Wallet view')
+        wallet_view.accounts_status_account.click()
+        send_transaction = wallet_view.send_transaction_button.click()
+        token_element = send_transaction.asset_by_name(symbol)
+        send_transaction.select_asset_button.click_until_presence_of_element(token_element)
+        if not token_element.is_element_displayed():
+            self.errors.append('Custom token is not shown on Send Transaction view')
+        send_transaction.cancel_button.click()
+
+        #TODO: workaroud for issue 10699
+        profile = wallet_view.profile_button.click()
+        profile.relogin()
+        profile.wallet_button.click()
+
+        recipient = "0x" + basic_user['address']
+        amount = '0.0%s' % str(random.randint(10000, 99999)) + '1'
+        wallet_view.accounts_status_account.click()
+        wallet_view.send_transaction(asset_name=symbol, amount=amount, recipient=recipient)
+        transactions_view = wallet_view.transaction_history_button.click()
+        transactions_view.transactions_table.find_transaction(amount=amount, asset=symbol)
 
         self.errors.verify_no_errors()

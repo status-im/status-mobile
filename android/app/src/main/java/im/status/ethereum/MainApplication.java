@@ -3,6 +3,7 @@ package im.status.ethereum;
 import androidx.multidex.MultiDexApplication;
 import android.util.Log;
 import android.content.Context;
+import android.webkit.WebView;
 import java.lang.reflect.InvocationTargetException;
 import com.facebook.react.PackageList;
 
@@ -51,6 +52,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
     public void onCreate() {
         super.onCreate();
         SoLoader.init(this, /* native exopackage */ false);
+        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG_WEBVIEW == "1");
         initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
     }
     /**

@@ -21,15 +21,15 @@
 
 (views/defview gap
   [{:keys [gaps first-gap?]} idx list-ref]
-  (views/letsubs [{:keys [range intro-status]} [:chats/current-chat]
+  (views/letsubs [range [:chats/range]
+                  {:keys [might-have-join-time-messages?]} [:chats/current-raw-chat]
                   in-progress? [:chats/fetching-gap-in-progress?
                                 (if first-gap?
                                   [:first-gap]
                                   (:ids gaps))]
                   connected?   [:mailserver/connected?]]
-    (let [ids            (:ids gaps)
-          intro-loading? (= intro-status :loading)]
-      (when-not (and first-gap? intro-loading?)
+    (let [ids            (:ids gaps)]
+      (when-not (and first-gap? might-have-join-time-messages?)
         [react/view {:style style/gap-container}
          [react/touchable-highlight
           {:on-press (when (and connected? (not in-progress?))

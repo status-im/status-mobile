@@ -14,13 +14,14 @@ def get_parameters():
     file_path = path.join(directory, 'src/status_im/ethereum/tokens.cljs')
     with open(file_path, 'r') as f:
         data = f.read()
-    return re.findall('{:symbol\s*:(.*)\n\s*:name\s*"(.*)"\n\s*:address\s*"(.*)"\n\s*:decimals\s*(.*)}', data)
+    return re.findall(r'{:symbol\s*:(.*)\n\s*:name\s*"(.*)"\n\s*:address\s*"(.*)"\n\s*:decimals\s*(.*)}', data)
 
 
 class TestAPi(object):
 
     @marks.api
     @pytest.mark.parametrize('symbol,name,address,decimals', get_parameters())
+    @pytest.mark.skip
     def test_tokens_verification(self, symbol, name, address, decimals):
         res = get_token_info(address)
         errors = list()

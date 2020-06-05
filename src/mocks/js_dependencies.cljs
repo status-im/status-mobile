@@ -1,5 +1,4 @@
 (ns mocks.js-dependencies
-  (:require-macros [status-im.utils.slurp :refer [slurp]])
   (:require [status-im.default-fleet :refer (default-fleets)]))
 
 (def action-button          #js {:default #js {:Item #js {}}})
@@ -19,45 +18,52 @@
   (clj->js {:NativeModules {:RNGestureHandlerModule {:Direction (fn [])}
                             :ReanimatedModule {:configureProps (fn [])}}
 
-            :View      {}
-            :FlatList  {}
-            :Text      {}
-            :ProgressBarAndroid {}
-            :StatusBar {}
-            :ScrollView {}
-            :KeyboardAvoidingView {}
-            :TextInput {}
-            :Image {}
-            :Picker {:Item {}}
-            :Switch {}
-            :Modal {}
-            :Keyboard {:dismiss (fn [])}
-            :Linking {}
-            :TouchableWithoutFeedback  {}
-            :TouchableHighlight {}
-            :TouchableOpacity {}
-            :ActivityIndicator {}
-            :StyleSheet {:create (fn [])}
-            :Animated            {:createAnimatedComponent identity
-                                  :Value (fn [])
-                                  :ValueXY (fn [])
-                                  :View      {}
-                                  :FlatList  {}
-                                  :ScrollView  {}
-                                  :Text      {}}
-            :Easing              {:bezier (fn [])
-                                  :poly (fn [])
-                                  :out (fn [])
-                                  :in (fn [])
-                                  :inOut (fn [])}
-            :DeviceEventEmitter  {:addListener (fn [])}
-            :Dimensions          {:get (fn [])}
-            :Platform {:select (fn [])}
-            :I18nManager {:isRTL ""}
-            :NativeEventEmitter (fn [])
-            :requireNativeComponent (fn [] {:propTypes ""})}))
+            :View                     {}
+            :FlatList                 {}
+            :Text                     {}
+            :ProgressBarAndroid       {}
+            :StatusBar                {}
+            :ScrollView               {}
+            :KeyboardAvoidingView     {}
+            :TextInput                {}
+            :Image                    {}
+            :Picker                   {:Item {}}
+            :Switch                   {}
+            :Modal                    {}
+            :Keyboard                 {:dismiss (fn [])}
+            :Linking                  {}
+            :TouchableWithoutFeedback {}
+            :TouchableHighlight       {}
+            :TouchableOpacity         {}
+            :ActivityIndicator        {}
+            :StyleSheet               {:create (fn [])}
+            :Animated                 {:createAnimatedComponent identity
+                                       :Value                   (fn [])
+                                       :ValueXY                 (fn [])
+                                       :View                    {}
+                                       :FlatList                {}
+                                       :ScrollView              {}
+                                       :Text                    {}}
+            :Easing                   {:bezier (fn [])
+                                       :poly   (fn [])
+                                       :out    (fn [])
+                                       :in     (fn [])
+                                       :inOut  (fn [])}
+            :DeviceEventEmitter       {:addListener (fn [])}
+            :Dimensions               {:get (fn [])}
+            :useWindowDimensions {}
+            :Platform                 {:select (fn [])}
+            :I18nManager              {:isRTL ""}
+            :NativeEventEmitter       (fn [])
+            :LayoutAnimation          {:Presets       {:easeInEaseOut nil
+                                                       :linear        nil
+                                                       :spring        nil}
+                                       :configureNext (fn [])}
+            :requireNativeComponent   (fn [] {:propTypes ""})}))
 
 (set! js/ReactNative react-native)
+
+(def reanimated-bottom-sheet           #js {:default #js {}})
 
 (def vector-icons           #js {:default #js {}})
 (def webview                #js {:WebView #js {}})
@@ -89,7 +95,7 @@
 (def net-info  #js {})
 (def touchid  #js {})
 (def safe-area-context (clj->js {:SafeAreaProvider {:_reactNativeIphoneXHelper {:getStatusBarHeight (fn [])}}
-                                 :SafeAreaConsumer {}
+                                 :SafeAreaInsetsContext {:Consumer (fn [])}
                                  :SafeAreaView {}}))
 (def react-native-dark-mode #js {"eventEmitter" {} "initialMode" {}})
 
@@ -113,7 +119,12 @@
 (def react-native-reanimated #js {:default      #js {:createAnimatedComponent identity
                                                      :eq                      nil
                                                      :greaterOrEq             nil
+                                                     :greaterThan             nil
+                                                     :lessThan                nil
+                                                     :lessOrEq                nil
                                                      :add                     nil
+                                                     :diff                    nil
+                                                     :divide                  nil
                                                      :sub                     nil
                                                      :multiply                nil
                                                      :abs                     nil
@@ -166,6 +177,7 @@
                       :addEventListener (fn []),
                       :removeEventListener (fn [])}}))
 
+;; Update i18n_resources.cljs
 (defn mock [module]
   (case module
     "react-native-languages" react-native-languages
@@ -190,18 +202,7 @@
     "react-native-fs" fs
     "react-native-mail" react-native-mail
     "react-native-image-resizer" image-resizer
+    "react-native-haptic-feedback" react-native-haptic-feedback
+    "reanimated-bottom-sheet" reanimated-bottom-sheet
     "./fleets.js" default-fleets
-    "../translations/ar.json" (js/JSON.parse (slurp "./translations/ar.json"))
-    "../translations/en.json" (js/JSON.parse (slurp "./translations/en.json"))
-    "../translations/es.json" (js/JSON.parse (slurp "./translations/es.json"))
-    "../translations/es_419.json" (js/JSON.parse (slurp "./translations/es_419.json"))
-    "../translations/fil.json" (js/JSON.parse (slurp "./translations/fil.json"))
-    "../translations/fr.json" (js/JSON.parse (slurp "./translations/fr.json"))
-    "../translations/id.json" (js/JSON.parse (slurp "./translations/id.json"))
-    "../translations/it.json" (js/JSON.parse (slurp "./translations/it.json"))
-    "../translations/ko.json" (js/JSON.parse (slurp "./translations/ko.json"))
-    "../translations/ru.json" (js/JSON.parse (slurp "./translations/ru.json"))
-    "../translations/zh.json" (js/JSON.parse (slurp "./translations/zh.json"))
-    "../translations/zh_hant.json" (js/JSON.parse (slurp "./translations/zh_hant.json"))
-    "../translations/zh_TW.json" (js/JSON.parse (slurp "./translations/zh_TW.json"))
     nil))

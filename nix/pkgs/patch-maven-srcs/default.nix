@@ -14,13 +14,9 @@ writeScript "patch-maven-srcs" (''
   }
 
   gradleFile="$1"
-  derivation="$2"
 
   # Some of those find something, some don't, that's fine.
   patchMavenSource "$gradleFile" 'mavenCentral()' 'mavenLocal()'
   patchMavenSource "$gradleFile" 'google()'       'mavenLocal()'
   patchMavenSource "$gradleFile" 'jcenter()'      'mavenLocal()'
-  patchMavenSource "$gradleFile" 'https://maven.google.com' "$derivation"
-  patchMavenSource "$gradleFile" 'https://www.jitpack.io'   "$derivation"
-  patchMavenSource "$gradleFile" 'https://jitpack.io'       "$derivation"
 '')

@@ -9,7 +9,7 @@ RERUN_ERRORS = [
     'Unexpected server error',
     '504 Gateway Time-out',
     'Internal Server Error',
-    'Invalid message: ERROR Internal Server Error',
+    'failed to start the browser or device',
     'ERROR The test with session id'
     "Message: 'CreateMultiaccountButton' is not found on screen",
     "503 Service Unavailable",
@@ -21,7 +21,8 @@ RERUN_ERRORS = [
     "[Errno 110] Connection timed out",
     "replacement transaction underpriced",
     "StaleElementReferenceException",
-    "No System TLS"
+    "'GetStartedButton' is not found on the screen",
+    "'AccessKeyButton' is not found on the screen"
 ]
 
 

@@ -179,7 +179,7 @@
          var payload = {id:      messageId,
                         jsonrpc: "2.0",
                         method:  method,
-                        params:  params};
+                        params:  requestArguments.params};
 
          bridgeSend({type:      'web3-send-async-read-only',
                      messageId: messageId,

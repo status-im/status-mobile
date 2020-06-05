@@ -60,7 +60,8 @@
   (let [chat-id "chat-id"
         from "from"
         message-id "message-id"
-        initial-cofx {:db {:chats {chat-id {:messages {message-id {:from from}}}}}}]
+        initial-cofx {:db {:messages {chat-id {message-id {:from from}}}
+                           :chats {chat-id {}}}}]
 
     (testing "a single envelope message"
       (let [cofx (message/set-message-envelope-hash initial-cofx chat-id message-id :message-type 1)]
@@ -72,12 +73,12 @@
           (is (= :sent
                  (get-in
                   (message/update-envelope-status cofx message-id :sent)
-                  [:db :chats chat-id :messages message-id :outgoing-status]))))
+                  [:db :messages chat-id message-id :outgoing-status]))))
         (testing "the message is not sent"
           (is (= :not-sent
                  (get-in
                   (message/update-envelope-status cofx message-id :not-sent)
-                  [:db :chats chat-id :messages message-id :outgoing-status]))))))
+                  [:db :messages chat-id message-id :outgoing-status]))))))
     (testing "multi envelope message"
       (testing "only inserts"
         (let [cofx (fx/merge
@@ -103,7 +104,7 @@
             (is (= :sent
                    (get-in
                     cofx
-                    [:db :chats chat-id :messages message-id :outgoing-status]))))))
+                    [:db :messages chat-id message-id :outgoing-status]))))))
       (testing "order of events is reversed"
         (let [cofx (fx/merge
                     initial-cofx
@@ -119,7 +120,7 @@
             (is (= :sent
                    (get-in
                     cofx
-                    [:db :chats chat-id :messages message-id :outgoing-status]))))))
+                    [:db :messages chat-id message-id :outgoing-status]))))))
       (testing "message not sent"
         (let [cofx (fx/merge
                     initial-cofx
@@ -135,4 +136,4 @@
             (is (= :not-sent
                    (get-in
                     cofx
-                    [:db :chats chat-id :messages message-id :outgoing-status])))))))))
+                    [:db :messages chat-id message-id :outgoing-status])))))))))

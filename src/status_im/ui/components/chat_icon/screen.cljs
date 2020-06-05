@@ -32,15 +32,16 @@
      [react/view online-dot-right]]]])
 
 (defn chat-icon-view
-  [contact group-chat name _online styles]
+  [chat-id group-chat name styles]
   [react/view (:container styles)
-   (if-not group-chat
-     [photos/photo (multiaccounts/displayed-photo contact) styles]
-     [default-chat-icon name styles])])
+   (if group-chat
+     [default-chat-icon name styles]
+     (let [photo-path @(re-frame.core/subscribe [:chats/photo-path chat-id])]
+       [photos/photo photo-path styles]))])
 
 (defn chat-icon-view-toolbar
-  [contact group-chat name color online]
-  [chat-icon-view contact group-chat name online
+  [chat-id group-chat name color]
+  [chat-icon-view chat-id group-chat name
    {:container              styles/container-chat-toolbar
     :online-view-wrapper    styles/online-view-wrapper
     :online-view            styles/online-view
@@ -52,8 +53,8 @@
     :default-chat-icon-text (styles/default-chat-icon-text 36)}])
 
 (defn chat-icon-view-chat-list
-  [contact group-chat name color online]
-  [chat-icon-view contact group-chat name online
+  [chat-id group-chat name color]
+  [chat-icon-view chat-id group-chat name
    {:container              styles/container-chat-list
     :online-view-wrapper    styles/online-view-wrapper
     :online-view            styles/online-view
@@ -65,8 +66,8 @@
     :default-chat-icon-text (styles/default-chat-icon-text 40)}])
 
 (defn chat-icon-view-chat-sheet
-  [contact group-chat name color online]
-  [chat-icon-view contact group-chat name online
+  [chat-id group-chat name color]
+  [chat-icon-view chat-id group-chat name
    {:container              styles/container-chat-list
     :online-view-wrapper    styles/online-view-wrapper
     :online-view            styles/online-view
@@ -116,11 +117,12 @@
     :default-chat-icon      (styles/default-chat-icon-profile colors/default-chat-color size)
     :default-chat-icon-text (styles/default-chat-icon-text size)}])
 
-(defn chat-intro-icon-view [icon-text chat-id styles]
-  (let [photo-path (re-frame.core/subscribe [:contacts/chat-photo chat-id])]
-    (if-not (string/blank? @photo-path)
-      [photos/photo @photo-path styles]
-      [default-chat-icon icon-text styles])))
+(defn chat-intro-icon-view [icon-text chat-id group-chat styles]
+  (if group-chat
+    [default-chat-icon icon-text styles]
+    (let [photo-path @(re-frame.core/subscribe [:chats/photo-path chat-id])]
+      (if-not (string/blank? photo-path)
+        [photos/photo photo-path styles]))))
 
 (defn profile-icon-view [photo-path name color edit? size override-styles]
   (let [styles (merge {:container              {:width size :height size}

@@ -110,7 +110,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5315)
     @marks.high
-    def test_send_message_to_newly_added_contact(self):
+    def test_send_non_english_message_to_newly_added_contact(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
 
@@ -129,15 +129,16 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2_home.home_button.click()
 
         device_1_chat = device_1_home.add_contact(device_2_public_key)
-        message = 'hello'
-        device_1_chat.chat_message_input.send_keys(message)
-        device_1_chat.send_message_button.click()
+        messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
+        for message in messages:
+            device_1_chat.send_message(message)
 
         chat_element = device_2_home.get_chat(default_username_1)
         chat_element.wait_for_visibility_of_element()
         device_2_chat = chat_element.click()
-        if not device_2_chat.chat_element_by_text(message).is_element_displayed():
-            self.errors.append("Message with test '%s' was not received" % message)
+        for message in messages:
+            if not device_2_chat.chat_element_by_text(message).is_element_displayed():
+                self.errors.append("Message with test '%s' was not received" % message)
         if not device_2_chat.add_to_contacts.is_element_displayed():
             self.errors.append('Add to contacts button is not shown')
         if device_2_chat.user_name_text.text != default_username_1:
@@ -149,6 +150,63 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         # if not device_2_chat.contact_profile_picture.is_element_image_equals_template('sauce_logo.png'):
         #     self.errors.append("Updated profile picture is not shown in one-to-one chat")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(5782)
+    @marks.critical
+    def test_install_pack_and_send_sticker(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
+
+        device_1_home.just_fyi('join public chat and check that stickers are not available on Ropsten')
+        chat_name = device_1_home.get_random_chat_name()
+        device_1_home.join_public_chat(chat_name)
+        device_1_public_chat = device_1_home.get_chat_view()
+        if device_1_public_chat.show_stickers_button.is_element_displayed():
+            self.errors.append('Sticker button is shown while on Ropsten')
+
+        device_1_home.just_fyi('switch to mainnet')
+        device_1_public_chat.get_back_to_home_view()
+        device_1_profile, device_2_profile = device_1_home.profile_button.click(), device_2_home.profile_button.click()
+        device_2_public_key = device_2_profile.get_public_key_and_username()
+        device_1_public_key, device_1_username = device_1_profile.get_public_key_and_username(return_username=True)
+
+        for device in device_2_profile, device_1_profile:
+            device.switch_network('Mainnet with upstream RPC')
+        device_1_home.get_chat('#' + chat_name).click()
+
+        device_1_home.just_fyi('install free sticker pack and use it in public chat')
+        device_1_public_chat.show_stickers_button.click()
+        device_1_public_chat.get_stickers.click()
+        device_1_public_chat.install_sticker_pack_by_name('Status Cat')
+        device_1_public_chat.back_button.click()
+        time.sleep(2)
+        device_1_public_chat.swipe_left()
+        device_1_public_chat.sticker_icon.click()
+        if not device_1_public_chat.chat_item.is_element_displayed():
+            self.errors.append('Sticker was not sent')
+        device_1_public_chat.swipe_right()
+        if not device_1_public_chat.sticker_icon.is_element_displayed():
+            self.errors.append('Sticker is not shown in recently used list')
+        device_1_public_chat.get_back_to_home_view()
+
+        device_1_home.just_fyi('send stickers in 1-1 chat from Recent')
+        device_1_one_to_one_chat = device_1_home.add_contact(device_2_public_key)
+        device_1_one_to_one_chat.show_stickers_button.click()
+        device_1_one_to_one_chat.sticker_icon.click()
+        if not device_1_one_to_one_chat.chat_item.is_element_displayed():
+            self.errors.append('Sticker was not sent from Recent')
+
+        device_2_home.just_fyi('check that can install stickers by tapping on sticker message')
+        device2_one_to_one_chat = device_2_home.get_chat(device_1_username).click()
+        device2_one_to_one_chat.chat_item.click()
+        if not device2_one_to_one_chat.element_by_text_part('Status Cat').is_element_displayed():
+            self.errors.append('Stickerpack is not available for installation after tapping on sticker message')
+        device2_one_to_one_chat.element_by_text_part('Free').click()
+        if device2_one_to_one_chat.element_by_text_part('Free').is_element_displayed():
+            self.errors.append('Stickerpack was not installed')
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5316)
@@ -418,12 +476,12 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
         home.join_public_chat(''.join(random.choice(string.ascii_lowercase) for _ in range(7)))
         chat = sign_in.get_chat_view()
-        message_text = 'test'
+        message_text = 'mmmeowesage_text'
         message_input = chat.chat_message_input
         message_input.send_keys(message_text)
         chat.send_message_button.click()
 
-        chat.chat_element_by_text(message_text).long_press_element()
+        chat.element_by_text_part(message_text).long_press_element()
         chat.element_by_text('Copy').click()
 
         message_input.paste_text_from_clipboard()
@@ -492,40 +550,6 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             self.errors.append('Message with emoji was not sent in 1-1 chat')
         self.errors.verify_no_errors()
 
-
-    @marks.testrail_id(5782)
-    @marks.critical
-    def test_install_pack_and_send_sticker(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-
-        sign_in.just_fyi('join public chat and check that stickers are not available on Ropsten')
-        chat_name = home.get_random_chat_name()
-        home.join_public_chat(chat_name)
-        chat = sign_in.get_chat_view()
-        if chat.show_stickers_button.is_element_displayed():
-            self.errors.append('Sticker button is shown while on Ropsten')
-
-        sign_in.just_fyi('switch to mainnet')
-        chat.get_back_to_home_view()
-        profile = home.profile_button.click()
-        profile.switch_network('Mainnet with upstream RPC')
-        home.get_chat('#' + chat_name).click()
-
-        sign_in.just_fyi('install free sticker pack and use it in public chat')
-        chat.show_stickers_button.click()
-        chat.get_stickers.click()
-        chat.install_sticker_pack_by_name('Status Cat')
-        chat.back_button.click()
-        time.sleep(2)
-        chat.swipe_left()
-        chat.sticker_icon.click()
-        if not chat.chat_item.is_element_displayed():
-            self.errors.append('Sticker was not sent')
-        chat.swipe_right()
-        if not chat.sticker_icon.is_element_displayed():
-            self.errors.append('Sticker is not shown in recently used list')
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(5783)
     @marks.critical

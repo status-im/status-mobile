@@ -115,7 +115,7 @@ class BaseElement(object):
             try:
                 return self.find_element()
             except NoSuchElementException:
-                self.driver.info('Scrolling down to %s' % self.name)
+                self.driver.info('Scrolling %s to %s' % (direction, self.name))
                 if direction == 'down':
                     self.driver.swipe(500, 1000, 500, 500)
                 else:

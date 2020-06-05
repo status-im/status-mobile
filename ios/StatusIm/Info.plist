@@ -76,13 +76,13 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>The app uses your camera to scan QR codes.</string>
+	<string>Status uses camera to take pictures and scan QR codes.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Location access is required for some DApps to function properly.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location access is required for some DApps to function properly.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Photos access is required to give you the ability to choose custom profile pictures.</string>
+	<string>Photos access is required to give you the ability to send images.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter-Bold.otf</string>
