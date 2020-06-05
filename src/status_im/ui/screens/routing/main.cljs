@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.routing.main
   (:require-macros [status-im.utils.views :as views])
-  (:require [status-im.ui.screens.profile.tribute-to-talk.views :as tr-to-talk]
+  (:require
+    [status-im.ui.screens.profile.tribute-to-talk.views :as tr-to-talk]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
             [status-im.ui.screens.wallet.components.views :as wallet.components]
             [status-im.ui.screens.qr-scanner.views :as qr-scanner]
@@ -10,15 +11,20 @@
             [status-im.ui.screens.add-new.new-chat.events :as new-chat.events]
             [status-im.ui.screens.routing.intro-login-stack :as intro-login-stack]
             [status-im.ui.screens.routing.chat-stack :as chat-stack]
-            [status-im.ui.screens.routing.wallet-stack :as wallet-stack]
             [status-im.ui.screens.wallet.events :as wallet.events]
             [status-im.ui.screens.group.views :as group-chat]
             [status-im.ui.screens.group.events :as group.events]
-            [status-im.ui.screens.routing.profile-stack :as profile-stack]
-            [status-im.ui.screens.routing.browser-stack :as browser-stack]
             [status-im.ui.components.tabbar.core :as tabbar]
             [status-im.ui.screens.routing.core :as navigation]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+
+
+
+    ;[status-im.ui.screens.routing.profile-stack :as profile-stack]
+    ;[status-im.ui.screens.routing.browser-stack :as browser-stack]
+    ;[status-im.ui.screens.routing.wallet-stack :as wallet-stack]
+
+            ))
 
 (defonce main-stack (navigation/create-stack))
 (defonce bottom-tabs (navigation/create-bottom-tabs))
@@ -32,16 +38,17 @@
    [{:name      :chat-stack
      :insets    {:top false}
      :component chat-stack/chat-stack}
-    {:name      :browser-stack
-     :insets    {:top false}
-     :component browser-stack/browser-stack}
-    {:name      :wallet-stack
-     :on-focus  [::wallet.events/wallet-stack]
-     :insets    {:top false}
-     :component wallet-stack/wallet-stack}
-    {:name      :profile-stack
-     :insets    {:top false}
-     :component profile-stack/profile-stack}]])
+    ;{:name      :browser-stack
+    ; :insets    {:top false}
+    ; :component browser-stack/browser-stack}
+    ;{:name      :wallet-stack
+    ; :on-focus  [::wallet.events/wallet-stack]
+    ; :insets    {:top false}
+    ; :component wallet-stack/wallet-stack}
+    ;{:name      :profile-stack
+    ; :insets    {:top false}
+    ; :component profile-stack/profile-stack}
+    ]])
 
 (views/defview get-main-component [_]
   (views/letsubs [logged-in? [:multiaccount/logged-in?]]

@@ -1,0 +1,22 @@
+patch-package
+--- a/node_modules/react-native-safe-area-context/src/NativeSafeAreaView.native.tsx
++++ b/node_modules/react-native-safe-area-context/src/NativeSafeAreaView.native.tsx
+@@ -1,6 +1,14 @@
+-import { requireNativeComponent } from 'react-native';
++import { requireNativeComponent, View, Platform } from 'react-native';
+ import { NativeSafeAreaViewProps } from './SafeArea.types';
+ 
+-export default requireNativeComponent<NativeSafeAreaViewProps>(
+-  'RNCSafeAreaView',
+-);
++var component;
++
++if(Platform.OS != 'desktop-qt') {
++    component = requireNativeComponent<NativeSafeAreaViewProps>(
++    'RNCSafeAreaView',
++  );
++} else {
++    component = View;
++}
++
++export default component;

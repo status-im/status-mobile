@@ -48,7 +48,7 @@
                                         :height height})))]
     (fn  [{:keys [bottom-value]} & children]
       [:<>
-       [animated/code {:exec (animated/set animation-v 1)}]
+       ;[animated/code {:exec (animated/set animation-v 1)}]
        [animated/view {:style          (tooltip-style {:bottom-value (- (get @layout :height)
                                                                         bottom-value)
                                                        :animation    animation})

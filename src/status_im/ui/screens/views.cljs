@@ -17,11 +17,13 @@
             [status-im.ui.screens.wallet.send.views :as wallet]
             [status-im.ui.components.tabbar.core :as tabbar]
             [status-im.ui.components.status-bar.view :as statusbar]
-            status-im.ui.screens.wallet.collectibles.etheremon.views
-            status-im.ui.screens.wallet.collectibles.cryptostrikers.views
-            status-im.ui.screens.wallet.collectibles.cryptokitties.views
-            status-im.ui.screens.wallet.collectibles.superrare.views
-            status-im.ui.screens.wallet.collectibles.kudos.views
+
+            ;status-im.ui.screens.wallet.collectibles.etheremon.views
+            ;status-im.ui.screens.wallet.collectibles.cryptostrikers.views
+            ;status-im.ui.screens.wallet.collectibles.cryptokitties.views
+            ;status-im.ui.screens.wallet.collectibles.superrare.views
+            ;status-im.ui.screens.wallet.collectibles.kudos.views
+
             [status-im.ui.components.colors :as colors]
             [status-im.hardwallet.test-menu :as hardwallet.test-menu]
             [status-im.utils.config :as config]
@@ -97,11 +99,12 @@
     :component-will-unmount utils.universal-links/finalize
     :reagent-render
     (fn []
-      [react/safe-area-provider
-       ^{:key (str @colors/theme @reloader/cnt)}
+      ;[react/safe-area-provider
+      ; ^{:key (str @colors/theme @reloader/cnt)}
+
        [react/view {:flex             1
                     :background-color colors/black-persist}
-        #_[navigation/navigation-container
+        [navigation/navigation-container
          (merge {:ref               (fn [r]
                                       (navigation/set-navigator-ref r))
                  :onStateChange     on-state-change
@@ -119,4 +122,6 @@
         (when debug?
           [reloader/reload-view @reloader/cnt])
         (when config/keycard-test-menu-enabled?
-          [hardwallet.test-menu/test-menu])]])}))
+          [hardwallet.test-menu/test-menu])]
+       ;]
+        )}))

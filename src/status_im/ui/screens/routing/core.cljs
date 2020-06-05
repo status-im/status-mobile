@@ -12,23 +12,23 @@
             [status-im.ui.components.react :as react]
             [oops.core :refer [ocall oget]]))
 
-(def navigation-container nil (reagent/adapt-react-class NavigationContainer))
+(def navigation-container (reagent/adapt-react-class NavigationContainer))
 
-(def use-focus-effect nil useFocusEffect)
-(def use-callback nil useCallback)
-(def use-effect nil useEffect)
+(def use-focus-effect useFocusEffect)
+(def use-callback useCallback)
+(def use-effect useEffect)
 
 (defn add-back-handler-listener
   [callback]
-  nil #_(.addEventListener BackHandler "hardwareBackPress" callback))
+  (.addEventListener BackHandler "hardwareBackPress" callback))
 
 (defn remove-back-handler-listener
   [callback]
-  nil #_(.removeEventListener BackHandler "hardwareBackPress" callback))
+  (.removeEventListener BackHandler "hardwareBackPress" callback))
 
-(def transition-presets nil #_TransitionPresets)
+(def transition-presets TransitionPresets)
 
-(def modal-presentation-ios nil #_(merge (js->clj (.-ModalPresentationIOS ^js transition-presets))
+(def modal-presentation-ios (merge (js->clj (.-ModalPresentationIOS ^js transition-presets))
                                    {:gestureEnabled     true
                                     :cardOverlayEnabled true}))
 
@@ -87,9 +87,9 @@
 (defn wrap-screen [{:keys [component] :as options}]
   (assoc options :component
          (fn [props]
-           #_(handle-on-screen-blur
+           (handle-on-screen-blur
             (oget props "navigation"))
-           #_(handle-on-screen-focus options)
+           (handle-on-screen-focus options)
            (let [props'   (js->clj props :keywordize-keys true)
                  focused? (oget props "navigation" "isFocused")]
              (reagent/as-element
@@ -112,15 +112,15 @@
             (mapv screen children)))))
 
 (defn create-stack []
-  nil #_(let [nav-obj (createStackNavigator)]
+  (let [nav-obj (createStackNavigator)]
     (get-navigator nav-obj)))
 
 (defn create-bottom-tabs []
-  nil #_(let [nav-obj (createBottomTabNavigator)]
+  (let [nav-obj (createBottomTabNavigator)]
     (get-navigator nav-obj)))
 
-(def common-actions nil #_CommonActions)
-(def stack-actions nil #_StackActions)
+(def common-actions CommonActions)
+(def stack-actions StackActions)
 
 (defonce navigator-ref (reagent/atom nil))
 

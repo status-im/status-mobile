@@ -70,7 +70,7 @@
     (fn []
       [rn/view {:margin-bottom 50
                 :padding       16}
-       [animated/code {:exec (animated/set animation (animated/loop* {:duration 1000}))}]
+       ;[animated/code {:exec (animated/set animation (animated/loop* {:duration 1000}))}]
        [preview/customizer state descriptor]
        [rn/view {:padding-vertical 16}
         [quo/text (merge @state

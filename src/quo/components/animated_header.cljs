@@ -47,12 +47,12 @@
     (fn [{:keys [extended-header] :as props} & children]
       [animated/view {:flex           1
                       :pointer-events :box-none}
-       [animated/code {:key  (str @offset)
-                       :exec (animated/cond*
-                              (animated/and* (animated/greater-or-eq y @offset)
-                                             (animated/greater-or-eq y 1))
-                              (animated/set animation-value 1)
-                              (animated/set animation-value 0))}]
+       ;[animated/code {:key  (str @offset)
+       ;                :exec (animated/cond*
+       ;                       (animated/and* (animated/greater-or-eq y @offset)
+       ;                                      (animated/greater-or-eq y 1))
+       ;                       (animated/set animation-value 1)
+       ;                       (animated/set animation-value 0))}]
        [animated/view {:pointer-events :box-none
                        :style          (header-wrapper-style {:value  y
                                                               :offset @offset})}

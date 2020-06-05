@@ -35,7 +35,7 @@
     (aset js/console "disableYellowBox" true))
 
 (def app-registry (.-AppRegistry rn))
-(def splash-screen (-> rn .-NativeModules .-SplashScreen))
+;(def splash-screen (-> rn .-NativeModules .-SplashScreen))
 
 (defn on-languages-change [^js event]
   (i18n/set-language (.-language event)))
@@ -50,27 +50,28 @@
   (reagent/create-class
    {:component-did-mount
     (fn [this]
-      (.addListener ^js react/keyboard
-                    (if platform/ios?
-                      "keyboardWillShow"
-                      "keyboardDidShow")
-                    (fn [^js e]
-                      (let [h (.. e -endCoordinates -height)]
-                        (re-frame/dispatch-sync [:set :keyboard-height h])
-                        (re-frame/dispatch-sync [:set :keyboard-max-height h]))))
-      (.addListener ^js react/keyboard
-                    (if platform/ios?
-                      "keyboardWillHide"
-                      "keyboardWDidHide")
-                    (fn [_]
-                      (re-frame/dispatch-sync [:set :keyboard-height 0])))
+      ;(.addListener ^js react/keyboard
+      ;              (if platform/ios?
+      ;                "keyboardWillShow"
+      ;                "keyboardDidShow")
+      ;              (fn [^js e]
+      ;                (let [h (.. e -endCoordinates -height)]
+      ;                  (re-frame/dispatch-sync [:set :keyboard-height h])
+      ;                  (re-frame/dispatch-sync [:set :keyboard-max-height h]))))
+      ;(.addListener ^js react/keyboard
+      ;              (if platform/ios?
+      ;                "keyboardWillHide"
+      ;                "keyboardWDidHide")
+      ;              (fn [_]
+      ;                (re-frame/dispatch-sync [:set :keyboard-height 0])))
       (.addEventListener ^js react/app-state "change" app-state-change-handler)
       (.addEventListener react-native-languages "change" on-languages-change)
-      (.addEventListener react-native-shake
-                         "ShakeEvent"
-                         on-shake)
+      ;(.addEventListener react-native-shake
+      ;                   "ShakeEvent"
+      ;                   on-shake)
       (re-frame/dispatch [:set-initial-props (reagent/props this)])
-      (.hide ^js splash-screen))
+      ;(.hide ^js splash-screen)
+        )
     :component-will-unmount
     (fn []
       (.removeEventListener ^js react/app-state "change" app-state-change-handler)

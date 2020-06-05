@@ -39,7 +39,11 @@
            :main  status-im.core/init
            :js-options {:resolve {"react-native-touch-id" {:target :npm :require ""}
                                   "react-native-image-resizer" {:target :npm :require ""}
-                                  "react-native-dark-mode" {:target :npm :require ""}}}
+                                  "react-native-dark-mode" {:target :npm :require ""}
+                                  "@react-native-community/netinfo" {:target :npm :require ""}
+                                  "react-native-reanimated" {:target :npm :require ""}
+                                  "react-native-redash" {:target :npm :require ""}
+                                  "react-native-webview" {:target :npm :require ""}}}
            :init-fn status-im.core/init ;status-im.desktop.core/init
            :dev {:devtools {:after-load status-im.reloader/reload
                             #_:preloads #_[re-frisk-remote.preload]}
