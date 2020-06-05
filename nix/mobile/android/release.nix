@@ -16,7 +16,7 @@ assert (lib.stringLength watchmanSockPath) > 0 -> stdenv.isDarwin;
 
 let
   inherit (lib)
-    toLower optionalString stringLength
+    toLower optionalString stringLength assertMsg
     getConfig makeLibraryPath assertEnvVarSet;
 
   buildType = getConfig "build-type" "prod";
@@ -82,7 +82,7 @@ in stdenv.mkDerivation rec {
 
   phases = [
     "unpackPhase" "secretsPhase" "secretsCheckPhase"
-    "buildPhase" "checkPhase" "installPhase"
+    "keystorePhase" "buildPhase" "checkPhase" "installPhase"
   ];
 
   unpackPhase = ''
@@ -90,13 +90,7 @@ in stdenv.mkDerivation rec {
     chmod u+w -R ./
     runHook postUnpack
   '';
-  postUnpack = 
-    assert lib.assertMsg (keystorePath != null) "keystore-file has to be set!";
-  ''
-    # Keep the same keystore path for determinism
-    export KEYSTORE_PATH="$PWD/status-im.keystore"
-    cp -a --no-preserve=ownership "${keystorePath}" "$KEYSTORE_PATH"
-
+  postUnpack = ''
     # Ensure we have the right .env file
     cp -f ./${envFileName} ./.env
 
@@ -118,10 +112,19 @@ in stdenv.mkDerivation rec {
     # Patch build.gradle to use local repo
     ${patchMavenSources} ./android/build.gradle
   '';
+
   # if secretsFile is not set we use generate keystore
   secretsPhase = if (secretsFile != "") then ''
     source "${secretsFile}"
   '' else keystore.shellHook;
+
+  # if keystorePath is set copy it into build directory
+  keystorePhase =
+    assert assertMsg (keystorePath != null) "keystorePath has to be set!";
+  ''
+    export KEYSTORE_PATH="$PWD/status-im.keystore"
+    cp -a --no-preserve=ownership "${keystorePath}" "$KEYSTORE_PATH"
+  '';
   secretsCheckPhase = ''
     ${assertEnvVarSet "KEYSTORE_ALIAS"}
     ${assertEnvVarSet "KEYSTORE_PASSWORD"}

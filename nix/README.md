@@ -10,26 +10,26 @@ __NOTE:__ If you are in Asia you might want to add the `https://nix-cache-cn.sta
 
 ## Build arguments
 
-We leverage the standard nixpkgs `config` argument for our own parameterization of the builds (e.g. to pass a build number or build type).
+We leverage the `config` argument of standard `nixpkgs` for our own parameterization of the builds (e.g. to pass a build number or build type).
 
 Here is a sample structure of the `config` attribute set:
 
 ```nix
-config = {
+{
   status-im = {
-    build-type = "pr";       # Build type (influences which .env file gets used for feature flags)
-    build-number = 9999;     # Used for versionCode and CFBundleVersion in Android and iOS respectively
+    build-type = "pr";     # Build type (influences which .env file gets used for feature flags)
+    build-number = 9999;   # Used for versionCode and CFBundleVersion in Android and iOS respectively
     android = {
-      gradle-opts = "";      # Gradle options passed for Android builds
-      keystore-path = "";    # Path to keystore for signing the APK
-      abi-split = false;     # If APKs should be split based on architectures
-      abi-include = "x86";   # Android architectures to build for
+      gradle-opts = "";    # Gradle options passed for Android builds
+      keystore-path = "";  # Path to keystore for signing the APK
+      abi-split = false;   # If APKs should be split based on architectures
+      abi-include = "x86"; # Android architectures to build for
     };
     status-go = {
       src-override = "$HOME/my/source/status-go"; # local source override
     };
   };
-};
+}
 ```
 You can see the defaults in [`nix/config.nix`](./config.nix).
 
@@ -58,6 +58,15 @@ environment variable:
 export STATUS_GO_SRC_OVERRIDE=$GOPATH/src/github.com/status-im/status-go
 make release-android
 ```
+
+## Resources
+
+You can learn more about Nix by watching these presentations:
+
+* [Nix Fundamentals](https://www.youtube.com/watch?v=m4sv2M9jRLg) ([PDF](https://drive.google.com/file/d/1Tt5R7QOubudGiSuZIGxuFWB1OYgcThcL/view?usp=sharing), [src](https://github.com/status-im/infra-docs/tree/master/presentations/nix_basics))
+* [Nix in Status](https://www.youtube.com/watch?v=rEQ1EvRG8Wc) ([PDF](https://drive.google.com/file/d/1Ti0wppMoj40icCPdHy7mJcQj__DeaYBE/view?usp=sharing), [src](https://github.com/status-im/infra-docs/tree/master/presentations/nix_in_status))
+
+And you can read [`nix/DETAILS.md`](./DETAILS.md) for more information.
 
 ## Known Issues
 

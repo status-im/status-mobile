@@ -2,7 +2,7 @@
 { config ? { } }:
 
 let
-  project = import ./default.nix { inherit config; };
+  main = import ./nix { inherit config; };
 in
-  # we use the shell combining most shells as default
-  project.shells.default
+  # use the default shell when calling nix-shell without arguments
+  main.shells.default
