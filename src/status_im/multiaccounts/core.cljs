@@ -1,15 +1,14 @@
 (ns status-im.multiaccounts.core
-  (:require [quo.theme :as quo-theme]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as native-module]
             [status-im.notifications.core :as notifications]
-            [status-im.ui.components.colors :as colors]
             [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
-            [status-im.utils.theme :as theme]))
+            [status-im.utils.theme :as utils.theme]
+            [status-im.theme.core :as theme]))
 
 (defn displayed-name
   "Use preferred name, name or alias in that order"
@@ -97,11 +96,10 @@
 (re-frame/reg-fx
  ::switch-theme
  (fn [theme-id]
-   (let [theme (if (or (= 2 theme-id) (and (= 0 theme-id) (theme/is-dark-mode)))
+   (let [theme (if (or (= 2 theme-id) (and (= 0 theme-id) (utils.theme/is-dark-mode)))
                  :dark
                  :light)]
-     (quo-theme/set-theme theme)
-     (colors/set-theme theme))))
+     (theme/change-theme theme))))
 
 (fx/defn switch-appearance
   {:events [:multiaccounts.ui/appearance-switched]}

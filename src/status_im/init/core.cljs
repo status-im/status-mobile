@@ -1,14 +1,13 @@
 (ns status-im.init.core
   (:require [clojure.string :as string]
-            [quo.theme :as quo-theme]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.native-module.core :as status]
             [status-im.network.net-info :as network]
-            [status-im.ui.components.colors :as colors]
             [status-im.db :refer [app-db]]
             [status-im.utils.fx :as fx]
-            [status-im.utils.theme :as theme]))
+            [status-im.theme.core :as theme]
+            [status-im.utils.theme :as utils.theme]))
 
 (fx/defn initialize-app-db
   "Initialize db to initial state"
@@ -81,7 +80,6 @@
 (re-frame/reg-fx
  ::init-theme
  (fn []
-   (theme/add-mode-change-listener #(re-frame/dispatch [:system-theme-mode-changed %]))
-   (when (theme/is-dark-mode)
-     (quo-theme/set-theme :dark)
-     (colors/set-theme :dark))))
+   (utils.theme/add-mode-change-listener #(re-frame/dispatch [:system-theme-mode-changed %]))
+   (when (utils.theme/is-dark-mode)
+     (theme/change-theme :dark))))
