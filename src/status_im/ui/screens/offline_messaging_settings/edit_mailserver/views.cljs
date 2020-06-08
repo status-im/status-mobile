@@ -8,10 +8,9 @@
    [status-im.ui.components.icons.vector-icons :as vector-icons]
    [status-im.ui.components.styles :as components.styles]
    [status-im.ui.components.common.common :as components.common]
-   [status-im.ui.components.text-input.view :as text-input]
    [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]
-   [status-im.ui.components.tooltip.views :as tooltip]
    [clojure.string :as string]
+   [quo.core :as quo]
    [status-im.ui.components.topbar :as topbar]))
 
 (defn connect-button [id]
@@ -54,29 +53,26 @@
         [topbar/topbar {:title (if id :t/mailserver-details :t/add-mailserver)}]
         [react/scroll-view {:keyboard-should-persist-taps :handled}
          [react/view styles/edit-mailserver-view
-          [text-input/text-input-with-label
-           {:label           (i18n/label :t/name)
-            :placeholder     (i18n/label :t/specify-name)
-            :container       styles/input-container
-            :default-value   name
-            :on-change-text  #(re-frame/dispatch [:mailserver.ui/input-changed :name %])
-            :auto-focus      true}]
-          [react/view
-           {:flex 1}
-           [text-input/text-input-with-label
+          [react/view {:padding-vertical 8}
+           [quo/text-input
+            {:label          (i18n/label :t/name)
+             :placeholder    (i18n/label :t/specify-name)
+             :default-value  name
+             :on-change-text #(re-frame/dispatch [:mailserver.ui/input-changed :name %])
+             :auto-focus     true}]]
+          [react/view {:flex             1
+                       :padding-vertical 8}
+           [quo/text-input
             {:label          (i18n/label :t/mailserver-address)
              :placeholder    (i18n/label :t/mailserver-format)
              :content        qr-code
-             :container      styles/input-container
              :default-value  url
-             :on-change-text #(re-frame/dispatch [:mailserver.ui/input-changed :url %])}]
-           (when (and (not (string/blank? url))
-                      invalid-url?)
-             [tooltip/tooltip (i18n/label :t/invalid-format
-                                          {:format (i18n/label :t/mailserver-format)})
-              {:color        colors/red-light
-               :font-size    12
-               :bottom-value 25}])]
+             :on-change-text #(re-frame/dispatch [:mailserver.ui/input-changed :url %])
+             :bottom-value   0
+             :error          (when (and (not (string/blank? url))
+                                        invalid-url?)
+                               (i18n/label :t/invalid-format
+                                           {:format (i18n/label :t/mailserver-format)}))}]]
           (when (and id
                      (not connected?))
             [react/view

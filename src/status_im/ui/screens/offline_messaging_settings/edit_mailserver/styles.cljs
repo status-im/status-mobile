@@ -1,20 +1,11 @@
 (ns status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles
-  (:require [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [status-im.utils.styles :as styles]))
 
 (def edit-mailserver-view
   {:flex              1
    :margin-horizontal 16
    :margin-vertical   15})
-
-(def input-container
-  {:flex-direction  :row
-   :align-items     :center
-   :justify-content :space-between
-   :border-radius   components.styles/border-radius
-   :height          52
-   :margin-bottom   15})
 
 (def qr-code
   {:padding 16})

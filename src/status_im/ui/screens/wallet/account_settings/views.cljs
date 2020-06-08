@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.account-settings.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.components.text-input.view :as text-input]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -9,6 +8,7 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.copyable-text :as copyable-text]
             [reagent.core :as reagent]
+            [quo.core :as quo]
             [status-im.ui.components.list-item.views :as list-item]
             [status-im.ui.components.topbar :as topbar]))
 
@@ -57,14 +57,13 @@
                          :style                        {:flex 1}}
       [react/view {:padding-bottom 28 :padding-top 10}
        [react/view {:margin-horizontal 16}
-        [text-input/text-input-with-label
+        [quo/text-input
          {:label               (i18n/label :t/account-name)
-          :label-style         {:color colors/gray}
           :auto-focus          false
           :default-value       (:name account)
           :accessibility-label :enter-account-name
           :on-change-text      #(swap! new-account assoc :name %)}]
-        [react/text {:style {:margin-top 30 :color colors/gray}} (i18n/label :t/account-color)]
+        [react/text {:style {:margin-top 16 :color colors/gray}} (i18n/label :t/account-color)]
         [react/touchable-highlight
          {:on-press #(re-frame/dispatch [:show-popover
                                          {:view  [colors-popover color

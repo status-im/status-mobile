@@ -6,13 +6,13 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.multiaccounts.login.styles :as styles]
             [status-im.ui.screens.multiaccounts.styles :as ast]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.utils.utils :as utils]
+            [quo.core :as quo]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
@@ -53,11 +53,12 @@
                     :important-for-accessibility :no-hide-descendants}
         [react/view {:flex-direction :row :align-items :center}
          [react/view {:flex 1}
-          [text-input/text-input-with-label
+          [quo/text-input
            {:placeholder         (i18n/label :t/enter-your-password)
-            :ref                 #(reset! password-text-input %)
+            :get-ref             #(reset! password-text-input %)
             :auto-focus          (= view-id :login)
             :accessibility-label :password-input
+            :show-cancel         false
             :on-submit-editing   (when sign-in-enabled?
                                    #(login-multiaccount @password-text-input))
             :on-change-text      #(do

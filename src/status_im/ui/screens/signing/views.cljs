@@ -13,7 +13,7 @@
             [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.ui.components.text-input.view :as text-input]
+            [quo.core :as quo]
             [status-im.i18n :as i18n]
             [status-im.utils.security :as security]
             [status-im.ui.screens.signing.sheets :as sheets]
@@ -258,15 +258,17 @@
       :password
       [react/view {:padding-top 8 :padding-bottom 8}
        [signing-phrase-view phrase]
-       [text-input/text-input-with-label
-        {:secure-text-entry   true
-         :placeholder         (i18n/label :t/enter-password)
-         :on-change-text      #(re-frame/dispatch [:signing.ui/password-is-changed (security/mask-data %)])
-         :accessibility-label :enter-password-input
-         :auto-capitalize     :none
-         :editable            (not in-progress?)
-         :error               error
-         :container           {:margin-top 12 :margin-bottom 12 :margin-horizontal 16}}]
+       [react/view {:padding-horizontal 16
+                    :padding-vertical   12}
+        [quo/text-input
+         {:secure-text-entry   true
+          :placeholder         (i18n/label :t/enter-password)
+          :on-change-text      #(re-frame/dispatch [:signing.ui/password-is-changed (security/mask-data %)])
+          :accessibility-label :enter-password-input
+          :auto-capitalize     :none
+          :editable            (not in-progress?)
+          :error               error
+          :show-cancel         false}]]
        [react/view {:align-items :center :height 60}
         (if in-progress?
           [react/activity-indicator {:animating true

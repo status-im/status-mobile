@@ -11,7 +11,6 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.intro.styles :as styles]
             [status-im.utils.config :as config]
@@ -19,6 +18,7 @@
             [status-im.utils.identicon :as identicon]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
+            [quo.core :as quo]
             [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -230,24 +230,23 @@
                             :max-height 16}}]
        [storage-entry (second storage-types) selected-storage-type]]]]))
 
-(defn password-container [confirm-failure? view-width]
+(defn password-container [confirm-failure? _]
   (let [horizontal-margin 16]
-    [react/view {:style {:flex 1
-                         :justify-content :space-between
-                         :align-items :center :margin-horizontal horizontal-margin}}
-     [react/view {:style {:justify-content :center :flex 1}}
+    [react/view {:style {:flex              1
+                         :justify-content   :space-between
+                         :margin-horizontal horizontal-margin}}
+     [react/view
       [react/text {:style (assoc styles/wizard-text :color colors/red
                                  :margin-bottom 16)}
-       (if confirm-failure? (i18n/label :t/password_error1) " ")]
-
-      [react/text-input {:secure-text-entry true
-                         :auto-capitalize :none
-                         :auto-focus true
-                         :accessibility-label :password-input
-                         :text-align :center
-                         :placeholder ""
-                         :style (styles/password-text-input (- view-width (* 2 horizontal-margin)))
-                         :on-change-text #(re-frame/dispatch [:intro-wizard/code-symbol-pressed %])}]]
+       (if confirm-failure? (i18n/label :t/password_error1) " ")]]
+     [react/view {:padding 16}
+      [quo/text-input {:secure-text-entry   true
+                       :auto-capitalize     :none
+                       :auto-focus          true
+                       :show-cancel         false
+                       :accessibility-label :password-input
+                       :placeholder         ""
+                       :on-change-text      #(re-frame/dispatch [:intro-wizard/code-symbol-pressed %])}]]
      [react/text {:style (assoc styles/wizard-text :margin-bottom 16)} (i18n/label :t/password-description)]]))
 
 (defn create-code [{:keys [confirm-failure? view-width]}]
@@ -362,69 +361,45 @@
                             next-button-disabled?
                             passphrase-error]}]
   [react/keyboard-avoiding-view {:flex             1
-                                 :justify-content  :flex-start
                                  :background-color colors/white}
-   [text-input/text-input-with-label
-    {:on-change-text      #(re-frame/dispatch [:multiaccounts.recover/enter-phrase-input-changed (security/mask-data %)])
-     :auto-focus          true
-     :error               (when passphrase-error (i18n/label passphrase-error))
-     :accessibility-label :passphrase-input
-     :placeholder         nil
-     :bottom-value        40
-     :multiline           true
-     :auto-correct        false
-     :keyboard-type       "visible-password"
-     :parent-container    {:flex            1
-                           :justify-content :center}
-     :container           (merge {:background-color colors/white
-                                  :flex             1
-                                  :justify-content  :center
-                                  :min-height       90}
-                                 (when platform/ios?
-                                   {:max-height 150}))
-     :style               {:background-color    colors/white
-                           :text-align          :center
-                           :text-align-vertical :center
-                           :min-width           40
-                           :font-size           16
-                           :font-weight         "700"}}]
-   [react/view {:align-items :center}
-    (if passphrase-word-count
-      [react/view {:flex-direction :row
-                   :margin-bottom  4
-                   :min-height     24
-                   :max-height     24
-                   :align-items    :center}
-       [react/nested-text {:style {:font-size     14
-                                   :padding-right 4
-                                   :text-align    :center
-                                   :color         colors/gray}}
-        (str (i18n/label  :t/word-count) ": ")
-        [{:style {:font-weight "500"
-                  :color       colors/black}}
-         (i18n/label-pluralize passphrase-word-count :t/words-n)]]
+   [react/view {:background-color   colors/white
+                :flex               1
+                :justify-content    :center
+                :padding-horizontal 16}
+    [quo/text-input
+     {:on-change-text      #(re-frame/dispatch [:multiaccounts.recover/enter-phrase-input-changed (security/mask-data %)])
+      :auto-focus          true
+      :error               (when passphrase-error (i18n/label passphrase-error))
+      :accessibility-label :passphrase-input
+      :placeholder         (i18n/label :t/seed-phrase-placeholder)
+      :show-cancel         false
+      :bottom-value        40
+      :multiline           true
+      :auto-correct        false
+      :monospace           true}]
+    [react/view {:align-items :flex-end}
+     [react/view {:flex-direction   :row
+                  :align-items      :center
+                  :padding-vertical 8
+                  :opacity          (if passphrase-word-count 1 0)}
+      [quo/text {:color (if next-button-disabled? :secondary :main)
+                 :size  :small}
        (when-not next-button-disabled?
-         [react/view {:style {:background-color colors/green-transparent-10
-                              :border-radius    12
-                              :width            24
-                              :justify-content  :center
-                              :align-items      :center
-                              :height           24}}
-          [vector-icons/tiny-icon :tiny-icons/tiny-check {:color colors/green}]])]
-      [react/view {:align-self :stretch :margin-bottom 4
-                   :max-height 24       :min-height    24}])
+         "✓ ")
+       (i18n/label-pluralize passphrase-word-count :t/words-n)]]]]
+   [react/view {:align-items :center}
     [react/text {:style {:color         colors/gray
                          :font-size     14
                          :margin-bottom 8
                          :text-align    :center}}
-     (i18n/label :t/multiaccounts-recover-enter-phrase-text)]]
-   (when processing?
-     [react/view {:flex 1 :align-items :center}
-      [react/activity-indicator {:size      :large
-                                 :animating true}]
-      [react/text {:style {:color      colors/gray
-                           :margin-top 8}}
-       (i18n/label :t/processing)]])])
+     (i18n/label :t/multiaccounts-recover-enter-phrase-text)]
+    (when processing?
+      [react/view {:flex 1 :align-items :center}
+       [react/activity-indicator {:size      :large
+                                  :animating true}]
+       [react/text {:style {:color      colors/gray
+                            :margin-top 8}}
+        (i18n/label :t/processing)]])]])
 
 (defn recovery-success [pubkey name photo-path]
   [react/view {:flex           1

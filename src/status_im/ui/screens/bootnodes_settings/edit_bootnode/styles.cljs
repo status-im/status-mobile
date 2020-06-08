@@ -3,21 +3,6 @@
             [status-im.ui.components.styles :as components.styles]
             [status-im.utils.styles :as styles]))
 
-(def input-container
-  {:flex-direction    :row
-   :align-items       :center
-   :justify-content   :space-between
-   :border-radius     components.styles/border-radius
-   :height            52
-   :margin-top        15})
-
-(styles/def input
-  {:flex    1
-   :android {:padding 0}})
-
-(def qr-code
-  {:margin-right 14})
-
 (def edit-bootnode-view
   {:flex              1
    :margin-horizontal 16

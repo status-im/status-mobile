@@ -86,15 +86,17 @@
 (defonce search-active? (reagent/atom false))
 
 (defn search-input-wrapper [search-filter]
-  [search-input/search-input
-   {:search-active?         search-active?
-    :search-filter          search-filter
-    :on-cancel              #(re-frame/dispatch [:search/home-filter-changed nil])
-    :on-focus               (fn [search-filter]
-                              (when-not search-filter
-                                (re-frame/dispatch [:search/home-filter-changed ""])))
-    :on-change              (fn [text]
-                              (re-frame/dispatch [:search/home-filter-changed text]))}])
+  [react/view {:padding-horizontal 16
+               :padding-vertical   10}
+   [search-input/search-input
+    {:search-active? search-active?
+     :search-filter  search-filter
+     :on-cancel      #(re-frame/dispatch [:search/home-filter-changed nil])
+     :on-focus       (fn [search-filter]
+                       (when-not search-filter
+                         (re-frame/dispatch [:search/home-filter-changed ""])))
+     :on-change      (fn [text]
+                       (re-frame/dispatch [:search/home-filter-changed text]))}]])
 
 (views/defview chats-list []
   (views/letsubs [loading? [:chats/loading?]
