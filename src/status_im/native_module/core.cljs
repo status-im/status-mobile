@@ -252,7 +252,8 @@
 
 (defn set-blank-preview-flag [flag]
   (log/debug "[native-module] set-blank-preview-flag")
-  (.setBlankPreviewFlag ^js (status) flag))
+  (when platform/mobile?
+    (.setBlankPreviewFlag ^js (status) flag)))
 
 (defn is24Hour []
   (log/debug "[native-module] is24Hour")
