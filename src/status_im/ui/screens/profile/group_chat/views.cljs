@@ -37,7 +37,7 @@
        :title               :t/make-admin
        :accessibility-label :make-admin
        ;; TODO(Ferossgp): Fix case for make admin icon
-       :icon                :main-icons/make_admin
+       :icon                :main-icons/make-admin
        :on-press            #(chat.sheets/hide-sheet-and-dispatch [:group-chats.ui/make-admin-pressed chat-id (:public-key member)])}])
    (when-not (:admin? member)
      [list-item/list-item
