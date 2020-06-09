@@ -292,7 +292,8 @@
   "Sets dock badge label (OSX only for now).
    Label must be a string. Pass nil or empty string to clear the label."
   [label]
-  (.setDockBadgeLabel ^js react/desktop-notification label))
+  ; TODO fix desktop-notification package
+  #_(.setDockBadgeLabel ^js react/desktop-notification label))
 
 (re-frame/reg-fx
  :set-dock-badge-label
