@@ -32,7 +32,7 @@ public:
     QList<ModuleMethod*> methodsToExport() override;
     QVariantMap constantsToExport() override;
 
-    Q_INVOKABLE void handleSetJSResponder(int viewTag, void* blockNativeResponder);
+    Q_INVOKABLE void handleSetJSResponder(int viewTag, bool blockNativeResponder);
     Q_INVOKABLE void handleClearJSResponder();
     Q_INVOKABLE void createGestureHandler(const QString& handlerName, int handlerTag, void* config);
     Q_INVOKABLE void attachGestureHandler(int handlerTag, int viewTag);

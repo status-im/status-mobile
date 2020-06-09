@@ -61,7 +61,7 @@ QVariantMap GestureHandlerModule::constantsToExport() {
     return QVariantMap{{"Direction", directionValues}};
 }
 
-void GestureHandlerModule::handleSetJSResponder(int viewTag, void* blockNativeResponder) {}
+void GestureHandlerModule::handleSetJSResponder(int viewTag, bool blockNativeResponder) {}
 
 void GestureHandlerModule::handleClearJSResponder() {}
 
