@@ -27,7 +27,10 @@
                   :border-radius    16
                   :align-items      :center
                   :justify-content  :center}
-      [icons/icon (if (= supported-biometric-auth :FaceID) :faceid :print)]]
+      [icons/icon (if (= supported-biometric-auth :FaceID)
+                    :main-icons/faceid
+                    :main-icons/print)
+       {:color colors/blue}]]
 
      [react/text {:style {:typography :title-bold
                           :margin-top 16}}

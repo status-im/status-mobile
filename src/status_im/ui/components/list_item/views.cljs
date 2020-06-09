@@ -51,7 +51,7 @@
             (= "main-icons" (namespace title-prefix)))
        [icons/icon title-prefix
         (merge
-         {:color  colors/gray
+         {:color  colors/black
           :width  16
           :height 16
           :container-style

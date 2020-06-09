@@ -467,16 +467,16 @@
     [react/view {:style {:flex 1}}
      [topbar/topbar
       {:navigation
-       {:icon    :main-icons/back
+       {:icon                :main-icons/arrow-left
         :accessibility-label :back-button
-        :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
-     [react/view {:style {:flex 1
+        :handler             #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
+     [react/view {:style {:flex            1
                           :justify-content :space-between}}
       [top-bar {:step :generate-key}]
       [generate-key]
-      [bottom-bar {:step :generate-key
+      [bottom-bar {:step           :generate-key
                    :forward-action :intro-wizard/step-forward-pressed
-                   :processing? (:processing? wizard-state)}]]]))
+                   :processing?    (:processing? wizard-state)}]]]))
 
 (defview wizard-choose-key []
   (letsubs [wizard-state [:intro-wizard/choose-key]]
@@ -501,7 +501,7 @@
          {:label   :t/cancel
           :accessibility-label :back-button
           :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}
-         {:icon    :main-icons/back
+         {:icon    :main-icons/arrow-left
           :accessibility-label :back-button
           :handler #(re-frame/dispatch [:intro-wizard/navigate-back])})}]
      [react/view {:style {:flex 1
@@ -516,7 +516,7 @@
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [topbar/topbar
       {:navigation
-       {:icon    :main-icons/back
+       {:icon    :main-icons/arrow-left
         :accessibility-label :back-button
         :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
      [react/view {:style {:flex 1
@@ -534,7 +534,7 @@
       {:navigation
        (if (:processing? wizard-state)
          :none
-         {:icon    :main-icons/back
+         {:icon    :main-icons/arrow-left
           :accessibility-label :back-button
           :handler #(re-frame/dispatch [:intro-wizard/navigate-back])})}]
      [react/view {:style {:flex 1
@@ -550,7 +550,7 @@
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [topbar/topbar
       {:navigation
-       {:icon    :main-icons/back
+       {:icon    :main-icons/arrow-left
         :accessibility-label :back-button
         :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
      [react/view {:style {:flex            1
@@ -567,7 +567,7 @@
     [react/view {:style {:flex 1}}
      [topbar/topbar
       {:navigation
-       {:icon    :main-icons/back
+       {:icon    :main-icons/arrow-left
         :accessibility-label :back-button
         :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
      [react/view {:style {:flex 1

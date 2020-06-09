@@ -18,7 +18,7 @@
   [topbar/topbar
    {:title :t/wallet-assets
     :navigation
-    {:icon                :main-icons/back
+    {:icon                :main-icons/arrow-left
      :accessibility-label :back-button
      :handler             #(re-frame/dispatch [:wallet.settings.ui/navigate-back-pressed])}}])
 

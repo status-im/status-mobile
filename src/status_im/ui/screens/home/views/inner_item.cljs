@@ -112,13 +112,14 @@
         home-item
         private-group? (and group-chat (not public?))
         public-group?  (and group-chat public?)]
+    ;; NOTE(Ferossgp): Change icon color to black in refactor PR
     [list-item/list-item
      {:icon                      [chat-icon.screen/chat-icon-view-chat-list
                                   chat-id group-chat chat-name color online false]
       :title-prefix              (cond
                                    private-group? :main-icons/tiny-group
-                                   public-group? :main-icons/tiny-public
-                                   :else nil)
+                                   public-group?  :main-icons/tiny-public
+                                   :else          :main-icons/tiny-new-contact)
       :title                     (if group-chat
                                    (utils/truncate-str chat-name 30)
                                    ;; This looks a bit odd, but I would like only to subscribe

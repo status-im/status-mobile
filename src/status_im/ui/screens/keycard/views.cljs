@@ -332,7 +332,7 @@
                      [react/text {:style {:color colors/gray}}
                       (i18n/label :t/enter-puk-code)]])
          :navigation
-         {:icon                :main-icons/back
+         {:icon                :main-icons/arrow-left
           :accessibility-label :back-button
           :handler             #(re-frame/dispatch
                                  [(or back-button-handler

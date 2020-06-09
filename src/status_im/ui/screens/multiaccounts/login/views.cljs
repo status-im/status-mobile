@@ -69,7 +69,10 @@
          (when (and supported-biometric-auth (= auth-method "biometric"))
            [react/touchable-highlight {:on-press #(re-frame/dispatch [:biometric-authenticate])}
             [react/view {:style styles/biometric-button}
-             [icons/icon (if (= supported-biometric-auth :FaceID) :faceid :print)]]])]]
+             [icons/icon (if (= supported-biometric-auth :FaceID)
+                           :main-icons/faceid
+                           :main-icons/print)
+              {:color colors/blue}]]])]]
        (when-not platform/desktop?
          ;; saving passwords is unavailable on Desktop
          (if (and platform/android? (not auth-method))

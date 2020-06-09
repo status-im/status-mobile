@@ -95,7 +95,7 @@
         [react/view profile.components.styles/profile
          [quo/animated-header
           {:use-insets        true
-           :left-accessories  [{:icon                :main-icons/back
+           :left-accessories  [{:icon                :main-icons/arrow-left
                                 :accessibility-label :back-button
                                 :on-press            #(re-frame/dispatch [:navigate-back])}]
            :right-accessories (when (and admin? joined?)

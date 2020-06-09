@@ -6,7 +6,7 @@
    :options options})
 
 (defn back [handler]
-  {:icon                :main-icons/back
+  {:icon                :main-icons/arrow-left
    :handler             handler
    :accessibility-label :back-button})
 

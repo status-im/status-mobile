@@ -103,7 +103,7 @@
           {:use-insets        true
            :right-accessories [{:icon     :main-icons/share
                                 :on-press on-share}]
-           :left-accessories  [{:icon                :main-icons/back
+           :left-accessories  [{:icon                :main-icons/arrow-left
                                 :accessibility-label :back-button
                                 :on-press            #(re-frame/dispatch [:navigate-back])}]
            :extended-header   (profile-header/extended-header

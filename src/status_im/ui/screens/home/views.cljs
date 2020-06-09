@@ -61,8 +61,7 @@
                              :width    44 :height 44 :align-items :center :justify-content :center}
        :on-press            #(re-frame/dispatch [:multiaccounts.ui/hide-home-tooltip])
        :accessibility-label :hide-home-button}
-      [react/view {:style (styles/close-icon-container)}
-       [icons/icon :main-icons/close {:color colors/white-persist}]]]]]
+      [icons/icon :main-icons/close-circle {:color colors/gray}]]]]
    [react/i18n-text {:style styles/no-chats-text :key :chat-and-transact}]
    [react/view {:align-items :center :margin-top 16}
     [button/button {:label               :t/invite-friends

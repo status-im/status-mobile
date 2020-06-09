@@ -28,7 +28,7 @@
    {:content      [toolbar-content/toolbar-content-view]
     :show-border? true
     :initial-title-padding 56
-    :navigation   {:icon                :main-icons/back
+    :navigation   {:icon                :main-icons/arrow-left
                    :accessibility-label :back-button
                    :handler
                    #(re-frame/dispatch [:navigate-to :home])}

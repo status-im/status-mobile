@@ -7,7 +7,7 @@
             [status-im.utils.label :as utils.label]))
 
 (defn default-navigation [modal?]
-  {:icon                (if modal? :main-icons/close :main-icons/back)
+  {:icon                (if modal? :main-icons/close :main-icons/arrow-left)
    :accessibility-label :back-button
    :handler             #(re-frame/dispatch [:navigate-back])})
 

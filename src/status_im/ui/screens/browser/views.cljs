@@ -29,7 +29,7 @@
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/lock-pressed secure?])}
       (if secure?
         [icons/tiny-icon :tiny-icons/tiny-lock {:color colors/green}]
-        [icons/tiny-icon :tiny-icons/tiny-lock-broken])]
+        [icons/tiny-icon :tiny-icons/tiny-lock-broken {:color colors/dark}])]
      (if url-editing?
        [react/text-input {:on-change-text    #(reset! url-text %)
                           :on-blur           #(re-frame/dispatch [:browser.ui/url-input-blured])

@@ -38,12 +38,12 @@
    [react/touchable-highlight {:on-press take-picture}
     [react/view {:style {:width       44 :height 44
                          :align-items :center :justify-content :center}}
-     [icons/icon :camera {:color colors/black}]]]
+     [icons/icon :main-icons/camera {:color colors/black}]]]
    [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/open-image-picker])
                                :style    {:margin-top 8}}
     [react/view {:width       44 :height 44
                  :align-items :center :justify-content :center}
-     [icons/icon :collection {:color colors/black}]]]])
+     [icons/icon :main-icons/gallery {:color colors/black}]]]])
 
 (defn image-preview [uri first? panel-height]
   (let [wh (/ (- panel-height 8) 2)]

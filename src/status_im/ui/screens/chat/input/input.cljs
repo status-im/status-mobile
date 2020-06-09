@@ -38,10 +38,9 @@
    {:style               style/cancel-reply-highlight
     :on-press            on-press
     :accessibility-label :cancel-message-reply}
-   [vector-icons/icon :main-icons/close {:container-style style/cancel-reply-icon
-                                         :width           19
-                                         :height          19
-                                         :color           colors/white}]])
+   [vector-icons/icon :main-icons/close-circle {:width  24
+                                                :height 24
+                                                :color  colors/gray}]])
 
 (defn send-image-view [{:keys [uri]}]
   [react/view {:style style/reply-message}

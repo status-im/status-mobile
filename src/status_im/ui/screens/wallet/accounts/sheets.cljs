@@ -73,7 +73,7 @@
      [list-item/list-item
       {:theme               :action
        :title               :t/add-a-watch-account
-       :icon                :main-icons/watch
+       :icon                :main-icons/show
        :accessibility-label :add-account-sheet-watch
        :on-press            #(hide-sheet-and-dispatch
                               [:wallet.accounts/start-adding-new-account
