@@ -20,7 +20,7 @@
 
 
 
-    ;[status-im.ui.screens.routing.profile-stack :as profile-stack]
+    [status-im.ui.screens.routing.profile-stack :as profile-stack]
     ;[status-im.ui.screens.routing.browser-stack :as browser-stack]
     ;[status-im.ui.screens.routing.wallet-stack :as wallet-stack]
 
@@ -45,9 +45,9 @@
     ; :on-focus  [::wallet.events/wallet-stack]
     ; :insets    {:top false}
     ; :component wallet-stack/wallet-stack}
-    ;{:name      :profile-stack
-    ; :insets    {:top false}
-    ; :component profile-stack/profile-stack}
+    {:name      :profile-stack
+     :insets    {:top false}
+     :component profile-stack/profile-stack}
     ]])
 
 (views/defview get-main-component [_]
