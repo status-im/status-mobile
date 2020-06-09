@@ -20,8 +20,8 @@
 ;
 ;(def pure-native-button PureNativeButton)
 ;
-;(def touchable-without-feedback-class TouchableWithoutFeedback)
-(def touchable-without-feedback-class (reagent/adapt-react-class (.-TouchableWithoutFeedback react-native)))
+; (def touchable-without-feedback-class TouchableWithoutFeedback)
+(def touchable-without-feedback-class (.-TouchableWithoutFeedback react-native))
 
 (def touchable-without-feedback
   (reagent/adapt-react-class touchable-without-feedback-class))
