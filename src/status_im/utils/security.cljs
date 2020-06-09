@@ -11,6 +11,18 @@
 (deftype MaskedData [data]
   Object
   (toString [_] "******")
+
+  ICounted
+  (-count [^js this]
+    (count (.-data this)))
+
+  IEquiv
+  (-equiv [this other]
+    (if (instance? MaskedData other)
+      (= (unmask this)
+         (unmask other))
+      false))
+
   Unmaskable
   (unmask [^js this]
     (.-data this)))
