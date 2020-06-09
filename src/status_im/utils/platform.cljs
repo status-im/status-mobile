@@ -17,8 +17,8 @@
 
 (def android? (= os "android"))
 (def ios? (= os "ios"))
-(def desktop? (= os "desktop"))
-(def mobile? (not= os "desktop"))
+(def desktop? (= os "desktop-qt"))
+(def mobile? (not= os "desktop-qt"))
 (def iphone-x? (and ios? (ios/iphone-x-dimensions?)))
 
 (def isMacOs? (when platform (.-isMacOs ^js platform)))
