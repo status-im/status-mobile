@@ -298,20 +298,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('Device 1: URL was not opened from 1-1 chat')
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5374)
-    @marks.high
-    def test_message_marked_as_sent_in_1_1_chat(self):
-        self.create_drivers(1)
-        sign_in_view = SignInView(self.drivers[0])
-        home_view = sign_in_view.create_user()
-        chat_view = home_view.add_contact(basic_user['public_key'])
-        message = 'test message'
-        chat_view.chat_message_input.send_keys(message)
-        chat_view.send_message_button.click()
-        if chat_view.chat_element_by_text(message).status.text != 'Sent':
-            self.errors.append("'Sent' status is not shown under the sent text message")
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(5362)
     @marks.medium
     def test_unread_messages_counter_1_1_chat(self):

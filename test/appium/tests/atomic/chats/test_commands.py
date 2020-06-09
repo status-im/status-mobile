@@ -121,9 +121,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         send_message = chat_1_sender_message.sign_and_send.click()
         send_message.next_button.click()
         send_message.sign_transaction()
-        if chat_1_sender_message.transaction_status.text != 'Pending':
-            self.errors.append('Wrong state is shown for outgoing transaction: "Pending" is expected, in fact'
-                               ' %s ' % chat_1_sender_message.transaction_status.text)
         updated_timestamp_sender = chat_1_sender_message.timestamp_message.text
         if updated_timestamp_sender == timestamp_sender:
             self.errors.append("Timestamp of message is not updated after signing transaction")

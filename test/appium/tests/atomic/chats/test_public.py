@@ -164,13 +164,13 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys(emoji.emojize(emoji_name))
         chat_1.send_message_button.click()
 
-        chat_1.chat_element_by_text(emoji_unicode).long_press_element()
+        chat_1.element_by_text_part(emoji_unicode).long_press_element()
         chat_1.element_by_text('Copy').click()
         chat_1.chat_message_input.paste_text_from_clipboard()
         if chat_1.chat_message_input.text != emoji_unicode:
             self.errors.append('Emoji message was not copied')
 
-        chat_element_2 = chat_2.chat_element_by_text(emoji_unicode)
+        chat_element_2 = chat_2.element_by_text_part(emoji_unicode)
         if not chat_element_2.is_element_displayed(sec=10):
             self.errors.append('Message with emoji was not received in public chat by the recipient')
 
