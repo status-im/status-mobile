@@ -1,5 +1,6 @@
 (ns status-im.utils.theme
   (:require ["react-native-dark-mode" :as react-native-dark-mode]
+            [status-im.utils.platform :as platform]
             [oops.core :refer [oget ocall]]))
 
 (def event-emitter nil #_(oget react-native-dark-mode "eventEmitter"))
@@ -10,4 +11,6 @@
                                                       (callback (keyword %)))))
 
 (defn is-dark-mode []
-  (= @initial-mode "dark"))
+  (if platform/desktop?
+    false
+    (= @initial-mode "dark")))
