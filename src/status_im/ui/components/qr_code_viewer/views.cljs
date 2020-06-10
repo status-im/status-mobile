@@ -3,7 +3,7 @@
             [reagent.core :as reagent]
             [status-im.ui.components.qr-code-viewer.styles :as styles]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.svg :as svg]
+            ;[status-im.ui.components.svg :as svg]
             ["qrcode" :as qr-code-js]))
 
 (defn qr-code [{:keys [size value]}]
@@ -15,7 +15,8 @@
      #(reset! uri %2))
     (fn []
       (when @uri
-        [svg/svgxml {:xml @uri :width size :height size}]))))
+        ;[svg/svgxml {:xml @uri :width size :height size}]
+            ))))
 
 (defn qr-code-view
   "Qr Code view including the frame.
