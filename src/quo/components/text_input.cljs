@@ -246,4 +246,4 @@
                                              ;; one we receive a non-nil ref
                                              (when (and r (nil? @ref))
                                                (swap! text-input-refs assoc r default-value))
-                                             (when get-ref (get-ref)))})])}))))
+                                             (when get-ref (get-ref r)))})])}))))
