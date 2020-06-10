@@ -23,6 +23,15 @@ class EnterUrlEditbox(BaseEditBox):
         super(EnterUrlEditbox, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('dapp-url-input')
 
+class EditUrlEditbox(BaseEditBox):
+    def __init__(self, driver):
+        super(EditUrlEditbox, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('(//android.widget.TextView)[1]')
+
+    @property
+    def text(self):
+        return self.find_element().text
+
 
 class BrowserEntry(ChatElement):
     def __init__(self, driver, name):
@@ -95,6 +104,7 @@ class DappsView(BaseView):
         super(DappsView, self).__init__(driver)
 
         self.enter_url_editbox = EnterUrlEditbox(self.driver)
+        self.edit_url_editbox = EditUrlEditbox(self.driver)
         self.discover_dapps_button = DiscoverDappsButton(self.driver)
         self.web_page = WebViewPageElement(self.driver)
 
