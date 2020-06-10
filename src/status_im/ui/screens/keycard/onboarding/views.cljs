@@ -8,12 +8,12 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.hardwallet.pin.views :as pin.views]
             [status-im.ui.screens.keycard.styles :as styles]
+            [quo.core :as quo]
             [status-im.constants :as constants])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -324,9 +324,9 @@
        [toolbar/toolbar
         {:transparent? true}
         [toolbar/nav-text
-         {:handler #(re-frame/dispatch [::hardwallet.onboarding/cancel-pressed])
+         {:handler             #(re-frame/dispatch [::hardwallet.onboarding/cancel-pressed])
           :accessibility-label :cancel-keycard-setup
-          :style   {:padding-left 21}}
+          :style               {:padding-left 21}}
          (i18n/label :t/cancel)]
         [react/text {:style {:color colors/gray}}
          (i18n/label :t/step-i-of-n {:step 3 :number 3})]]
@@ -348,20 +348,17 @@
                        :accessibility-label :word-number}
 
            (i18n/label :t/word-n {:number (inc idx)})]]]
-        [react/view
-         [text-input/text-input-with-label
+        [react/view {:flex            1
+                     :padding         16
+                     :justify-content :center}
+         [quo/text-input
           {:on-change-text      #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/input-changed %])
            :auto-focus          true
            :on-submit-editing   #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/input-submitted])
-           :placeholder         nil
+           :placeholder         (i18n/label :t/word-n {:number (inc idx)})
            :auto-correct        false
-           :keyboard-type       "visible-password"
            :accessibility-label :enter-word
-           :container           {:background-color colors/white}
-           :style               {:background-color colors/white
-                                 :text-align       :center
-                                 :height           52
-                                 :typography       :header}}]
+           :monospace           true}]
          [react/view {:margin-top 5
                       :width      250}
           [tooltip/tooltip error]]]
@@ -380,5 +377,5 @@
            {:on-press            #(re-frame/dispatch [:keycard.onboarding.recovery-phrase-confirm-word.ui/next-pressed])
             :label               (i18n/label :t/next)
             :accessibility-label :next
-            :disabled?            (empty? input-word)
-            :forward?             true}]]]]])))
+            :disabled?           (empty? input-word)
+            :forward?            true}]]]]])))

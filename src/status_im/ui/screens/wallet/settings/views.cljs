@@ -74,7 +74,7 @@
   [render-token token])
 
 (defview manage-assets []
-  (letsubs [{search-filter :search-filter
+  (letsubs [{search-filter                           :search-filter
              {custom-tokens true default-tokens nil} :tokens} [:wallet/filtered-grouped-chain-tokens]]
     {:component-will-unmount #(do
                                 (re-frame/dispatch [:search/token-filter-changed nil])
@@ -82,33 +82,35 @@
     [react/view (merge components.styles/flex {:background-color colors/white})
      [toolbar]
      [react/view {:style components.styles/flex}
-      [search-input/search-input
-       {:search-active? search-active?
-        :search-filter search-filter
-        :on-cancel #(re-frame/dispatch [:search/token-filter-changed nil])
-        :on-focus  (fn [search-filter]
-                     (when-not search-filter
-                       (re-frame/dispatch [:search/token-filter-changed ""])))
-        :on-change (fn [text]
-                     (re-frame/dispatch [:search/token-filter-changed text]))}]
+      [react/view {:padding-horizontal 16
+                   :padding-vertical   10}
+       [search-input/search-input
+        {:search-active? search-active?
+         :search-filter  search-filter
+         :on-cancel      #(re-frame/dispatch [:search/token-filter-changed nil])
+         :on-focus       (fn [search-filter]
+                           (when-not search-filter
+                             (re-frame/dispatch [:search/token-filter-changed ""])))
+         :on-change      (fn [text]
+                           (re-frame/dispatch [:search/token-filter-changed text]))}]]
       [list/section-list
        {:header
         [react/view {:margin-top 16}
          [list-item/list-item
-          {:theme     :action
-           :title     :t/add-custom-token
-           :icon      :main-icons/add
+          {:theme :action
+           :title :t/add-custom-token
+           :icon  :main-icons/add
            :on-press
            #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]]
-        :sections (concat
-                   (when (seq custom-tokens)
-                     [{:title (i18n/label :t/custom)
-                       :data  custom-tokens}])
-                   [{:title (i18n/label :t/default)
-                     :data  default-tokens}])
-        :key-fn :address
+        :sections                    (concat
+                                      (when (seq custom-tokens)
+                                        [{:title (i18n/label :t/custom)
+                                          :data  custom-tokens}])
+                                      [{:title (i18n/label :t/default)
+                                        :data  default-tokens}])
+        :key-fn                      :address
         :stickySectionHeadersEnabled false
         :render-section-header-fn
         (fn [{:keys [title]}]
           [list-item/list-item {:type :section-header :title title}])
-        :render-fn render-token-wrapper}]]]))
+        :render-fn                   render-token-wrapper}]]]))

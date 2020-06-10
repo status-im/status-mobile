@@ -6,13 +6,6 @@
    :margin-horizontal 16
    :margin-vertical   15})
 
-(def input-container
-  {:margin-bottom 15})
-
-(def network-type
-  {:flex-direction :row
-   :align-items    :center})
-
 (def bottom-container
   {:flex-direction    :row
    :margin-horizontal 12

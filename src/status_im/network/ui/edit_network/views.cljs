@@ -8,7 +8,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.text-input.view :as text-input]
+            [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -33,31 +33,31 @@
         [topbar/topbar {:title :t/add-network}]
         [react/scroll-view
          [react/view styles/edit-network-view
-          [text-input/text-input-with-label
-           {:label          (i18n/label :t/name)
-            :placeholder    (i18n/label :t/specify-name)
-            :container      styles/input-container
-            :default-value  (get-in manage-network [:name :value])
-            :on-change-text #(re-frame/dispatch [::network/input-changed :name %])
-            :auto-focus     true}]
-          [text-input/text-input-with-label
-           {:label          (i18n/label :t/rpc-url)
-            :placeholder    (i18n/label :t/specify-rpc-url)
-            :container      styles/input-container
-            :default-value  (get-in manage-network [:url :value])
-            :on-change-text #(re-frame/dispatch [::network/input-changed :url (string/lower-case %)])}]
-          [react/i18n-text {:key :network-chain}]
-          [react/view styles/network-type
+          [react/view {:padding-vertical 8}
+           [quo/text-input
+            {:label          (i18n/label :t/name)
+             :placeholder    (i18n/label :t/specify-name)
+             :default-value  (get-in manage-network [:name :value])
+             :on-change-text #(re-frame/dispatch [::network/input-changed :name %])
+             :auto-focus     true}]]
+          [react/view {:padding-vertical 8}
+           [quo/text-input
+            {:label          (i18n/label :t/rpc-url)
+             :placeholder    (i18n/label :t/specify-rpc-url)
+             :default-value  (get-in manage-network [:url :value])
+             :on-change-text #(re-frame/dispatch [::network/input-changed :url (string/lower-case %)])}]]
+          [react/view {:padding-vertical 8}
+           [react/i18n-text {:key :network-chain}]
            [list/flat-list {:data      [:mainnet :testnet :rinkeby :custom]
                             :key-fn    (fn [_ i] (str i))
                             :separator list/base-separator
                             :render-fn #(render-network-type manage-network %)}]]
           (when custom?
-            [text-input/text-input-with-label
-             {:label          (i18n/label :t/network-id)
-              :container      styles/input-container
-              :placeholder    (i18n/label :t/specify-network-id)
-              :on-change-text #(re-frame/dispatch [::network/input-changed :network-id %])}])]]
+            [react/view {:padding-vertical 8}
+             [quo/text-input
+              {:label          (i18n/label :t/network-id)
+               :placeholder    (i18n/label :t/specify-network-id)
+               :on-change-text #(re-frame/dispatch [::network/input-changed :network-id %])}]])]]
         [react/view styles/bottom-container
          [react/view components.styles/flex]
          [components.common/bottom-button

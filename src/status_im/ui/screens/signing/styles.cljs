@@ -58,22 +58,3 @@
    :color              (if disabled? colors/black colors/white-persist)
    :padding-horizontal 16
    :padding-vertical   10})
-
-(defn sheet-title [small-screen?]
-  {:font-weight "500"
-   :font-size   (if small-screen? 16 19)
-   :margin-top  16})
-
-(defn sheet-subtitle [small-screen?]
-  {:font-size     (if small-screen? 16 19)
-   :text-align    :center
-   :margin-bottom 12
-   :color         colors/gray})
-
-(defn sheet-icon [bg-color]
-  {:height        64
-   :width         64
-   :border-radius 32
-   :justify-content :center
-   :align-items :center
-   :background-color bg-color})

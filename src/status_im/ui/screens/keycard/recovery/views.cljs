@@ -7,7 +7,6 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.topbar :as topbar]
@@ -16,6 +15,7 @@
             [status-im.utils.core :as utils.core]
             [status-im.utils.gfycat.core :as gfy]
             [status-im.constants :as constants]
+            [quo.core :as quo]
             [status-im.ui.screens.keycard.views :as keycard.views]
             [status-im.utils.identicon :as identicon])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
@@ -147,16 +147,15 @@
                                :color      (if (> 3 free-pairing-slots) colors/red colors/gray)}}
            (i18n/label :t/keycard-free-pairing-slots {:n free-pairing-slots})]])]
       [react/view
-       [text-input/text-input-with-label
-        {:on-change-text    #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-changed %])
-         :auto-focus        true
-         :on-submit-editing #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-submitted])
-         :placeholder       nil
-         :text-align        :center
-         :container         {:background-color colors/white}
-         :style             {:background-color colors/white
-                             :height           24
-                             :typography       :header}}]
+       [react/view {:flex            1
+                    :padding         16
+                    :justify-content :center}
+        [quo/text-input
+         {:on-change-text    #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-changed %])
+          :auto-focus        true
+          :on-submit-editing #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-submitted])
+          :placeholder       (i18n/label :t/pair-code-placeholder)
+          :monospace         true}]]
        [react/view {:margin-top 5
                     :width      250}
         [tooltip/tooltip error]]]

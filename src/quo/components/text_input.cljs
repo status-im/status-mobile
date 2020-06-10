@@ -5,30 +5,36 @@
             [quo.react-native :as rn]
             ;; TODO(Ferossgp): Move icon component to lib
             [status-im.ui.components.icons.vector-icons :as icons]
-            ;; TODO(Ferossgp): Move tooltip into lib
             [quo.components.tooltip :as tooltip]
-            [quo.react :as react]
             [quo.platform :as platform]
             [quo.design-system.typography :as typography]
             [quo.design-system.spacing :as spacing]
             [quo.design-system.colors :as colors]
             [quo.components.text :as text]))
 
+;; NOTE(Ferossgp): Refactor with hooks when available
+;; We track all currently mounted text input refs
+;; in a ref-to-defaultValue map
+;; so that we can clear them (restore their default values)
+;; when global react-navigation's onWillBlur event is invoked
+(defonce text-input-refs (atom {}))
+
 (s/def ::multiline boolean?)
 (s/def ::secure-text-entry boolean?)
 (s/def ::show-cancel boolean?)
-(s/def ::label (s/nilable string?))
+(s/def ::label (s/nilable (s/or :string string? :component vector?)))
 (s/def ::cancel-label (s/nilable string?))
 (s/def ::default-value (s/nilable string?))
 (s/def ::placeholder (s/nilable string?))
-(s/def ::keyboard-type #{})
+(s/def ::keyboard-type (s/nilable (s/or :string string? :keyword keyword?))) ; TODO: make set
 (s/def ::accessibility-label (s/nilable (s/or :string string? :keyword keyword?)))
 (s/def ::on-focus fn?)
 (s/def ::on-blur fn?)
 (s/def ::on-press fn?)
 
-(s/def ::accessory (s/keys :req-un [::icon]
-                           :opt-un [::on-press]))
+(s/def ::accessory (s/keys :opt-un [::on-press
+                                    ::icon
+                                    ::component]))
 (s/def ::after (s/nilable ::accessory))
 (s/def ::before (s/nilable ::accessory))
 
@@ -60,14 +66,12 @@
       false)))
 
 ;; TODO(Ferossgp): Check performance for android layout animations
-(when (and platform/android?
-           (aget rn/ui-manager "setLayoutAnimationEnabledExperimental"))
-  (ocall rn/ui-manager "setLayoutAnimationEnabledExperimental" true))
+;; (when (and platform/android?
+;;            (aget rn/ui-manager "setLayoutAnimationEnabledExperimental"))
+;;   (ocall rn/ui-manager "setLayoutAnimationEnabledExperimental" true))
 
 (def height 44)                         ; 22 line-height + 11*2 vertical padding
 (def multiline-height 88)               ; 3 * 22 three line-height + 11* vertical padding
-
-(defn container-style [])
 
 (defn label-style []
   {:margin-bottom (:tiny spacing/spacing)})
@@ -84,8 +88,10 @@
           :background-color (:ui-01 @colors/theme)}
          style))
 
-(defn text-input-style [multiline input-style before after]
-  (merge typography/font-regular
+(defn text-input-style [multiline input-style monospace before after]
+  (merge (if monospace
+           typography/monospace
+           typography/font-regular)
          {:padding-top         11
           :padding-bottom      11
           :font-size           15
@@ -115,7 +121,7 @@
          {:flex            1
           :justify-content :center}))
 
-(defn accessory-element [{:keys [icon icon-opts style accessibility-label on-press]}]
+(defn accessory-element [{:keys [icon component icon-opts style accessibility-label on-press]}]
   (let [el (if on-press
              rn/touchable-opacity
              rn/view)]
@@ -126,21 +132,29 @@
                                     style)}
                      (when accessibility-label
                        {:accessibility-label accessibility-label}))
-      [icons/icon icon (merge {:color (:icon-01 @colors/theme)}
-                              icon-opts)]]]))
+      (cond
+        icon
+        [icons/icon icon (merge {:color (:icon-01 @colors/theme)}
+                                icon-opts)]
+        component
+        component
 
-(defn text-input []
-  (let [focused   (reagent/atom nil)
-        visible   (reagent/atom false)
-        ref       (react/create-ref)
-        on-cancel (fn []
-                    (some-> (react/current-ref ref) (ocall "blur")))]
+        :else
+        nil)]]))
+
+(defn text-input-raw []
+  (let [focused (reagent/atom nil)
+        visible (reagent/atom false)
+        ref     (atom nil)
+        blur    (fn []
+                  (some-> @ref (ocall "blur")))]
     (fn [{:keys [label multiline error style input-style keyboard-type before after
                  cancel-label on-focus on-blur show-cancel accessibility-label
-                 bottom-value secure-text-entry container-style]
-          :or  {cancel-label "Cancel"
-                show-cancel  true}
-          :as  props}]
+                 bottom-value secure-text-entry container-style get-ref on-cancel
+                 monospace]
+          :or   {cancel-label "Cancel"
+                 show-cancel  true}
+          :as   props}]
       {:pre [(check-spec ::text-input props)]}
       (let [after (cond
                     (and secure-text-entry @visible)
@@ -152,7 +166,11 @@
                      :on-press #(reset! visible true)}
 
                     :else after)
-            secure (and secure-text-entry (not @visible))]
+            secure    (and secure-text-entry (not @visible))
+            on-cancel (fn []
+                        (when on-cancel
+                          (on-cancel))
+                        (blur))]
         [rn/view {:style container-style}
          (when label
            [text/text {:style (label-style)}
@@ -162,19 +180,23 @@
            (when before
              [accessory-element before])
            [rn/text-input
-            (merge {:style                   (text-input-style multiline input-style before after)
-                    :ref                     ref
+            (merge {:style                   (text-input-style multiline input-style monospace before after)
+                    :ref                     (fn [r]
+                                               (reset! ref r)
+                                               (when get-ref (get-ref r)))
                     :placeholder-text-color  (:text-02 @colors/theme)
                     :underline-color-android :transparent
                     :auto-capitalize         :none
                     :secure-text-entry       secure
                     :on-focus                (fn [evt]
                                                (when on-focus (on-focus evt))
-                                               (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets))
+                                               (when (and platform/ios? show-cancel)
+                                                 (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets)))
                                                (reset! focused true))
                     :on-blur                 (fn [evt]
                                                (when on-blur (on-blur evt))
-                                               (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets))
+                                               (when (and platform/ios? show-cancel)
+                                                 (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets)))
                                                (reset! focused false))}
                    (when (and platform/ios? (not after))
                      {:clear-button-mode :while-editing})
@@ -183,7 +205,7 @@
                      {:keyboard-type keyboard-type})
                    (dissoc props
                            :style :keyboard-type :on-focus :on-blur
-                           :secure-text-entry :ref))]
+                           :secure-text-entry :ref :get-ref))]
            (when after
              [accessory-element after])]
           (when (and platform/ios?
@@ -192,13 +214,35 @@
                      @focused)
             [rn/touchable-opacity {:style    (cancel-style)
                                    :on-press on-cancel}
-             [text/text {:color :link} cancel-label]])]
-         (when error
-           [tooltip/tooltip (merge {:bottom-value (cond bottom-value bottom-value
-                                                        label        30 ; 22 line height 8 margin
-                                                        )}
-                                   (when accessibility-label
-                                     {:accessibility-label (str (name accessibility-label) "-error")}))
-            [text/text {:color :negative
-                        :size  :small}
-             error]])]))))
+             [text/text {:color :link} cancel-label]])
+          (when error
+            [tooltip/tooltip (merge {:bottom-value (cond bottom-value bottom-value
+                                                         label        30 ; 22 line height 8 margin
+                                                         )}
+                                    (when accessibility-label
+                                      {:accessibility-label (str (name accessibility-label) "-error")}))
+             [text/text {:color :negative
+                         :align :center
+                         :size  :small}
+              error]])]]))))
+
+;; TODO(Ferossgp): Refactor me when hooks available
+(defn text-input [{:keys [preserve-input?]
+                   :as   props}]
+  (if preserve-input?
+    [text-input-raw props]
+    (let [id (random-uuid)]
+      (reagent/create-class
+       {:component-will-unmount
+        (fn []
+          (swap! text-input-refs dissoc id))
+        :reagent-render
+        (fn [{:keys [get-ref default-value]
+              :as   props}]
+          [text-input-raw (merge props
+                                 {:get-ref (fn [r]
+                                             ;; Store input and its defaultValue
+                                             ;; one we receive a non-nil ref
+                                             (when r
+                                               (swap! text-input-refs assoc id  {:ref r :value default-value}))
+                                             (when get-ref (get-ref r)))})])}))))

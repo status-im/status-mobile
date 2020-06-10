@@ -153,8 +153,8 @@
                                                      :Text                    #js {}
                                                      :Extrapolate             #js {:CLAMP nil}
                                                      :Code                    #js {}}
-                                  :Easing       #js {:bezier nil
-                                                     :linear nil}
+                                  :Easing       #js {:bezier identity
+                                                     :linear identity}
                                   :clockRunning nil})
 (def react-native-gesture-handler #js {:default                  #js {}
                                        :State                    #js {:BEGAN        nil
@@ -203,6 +203,5 @@
     "react-native-mail" react-native-mail
     "react-native-image-resizer" image-resizer
     "react-native-haptic-feedback" react-native-haptic-feedback
-    "reanimated-bottom-sheet" reanimated-bottom-sheet
     "./fleets.js" default-fleets
     nil))

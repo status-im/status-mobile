@@ -5,15 +5,18 @@
             [quo.react-native :as rn]
             [reagent.core :as reagent]))
 
-(defn text-style [{:keys [size align weight color style]}]
+(defn text-style [{:keys [size align weight monospace color style]}]
   ;; NOTE(Ferossgo): or in destructoring will keep nil as a value
-  (merge (case (or weight :regular)
-           :regular   typography/font-regular
-           :medium    typography/font-medium
-           :semi-bold typography/font-semi-bold
-           :bold      typography/font-bold
-           :monospace typography/monospace
-           :inherit   nil)
+  (merge (if monospace
+           ;; TODO(Ferossgp): Add all weights for monospace
+           typography/monospace
+           (case (or weight :regular)
+             :regular   typography/font-regular
+             :medium    typography/font-medium
+             :semi-bold typography/font-semi-bold
+             :bold      typography/font-bold
+             :monospace typography/monospace ; DEPRECATED
+             :inherit   nil))
          (case (or color :main)
            :main              {:color (:text-01 @colors/theme)}
            :secondary         {:color (:text-02 @colors/theme)}
