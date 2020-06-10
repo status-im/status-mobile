@@ -10,8 +10,6 @@
             [taoensso.timbre :as log]
             [status-im.utils.platform :as platform]
             [status-im.ui.components.react :as react]
-            ;; NOTE(Ferossgp): This is temporary to mimic the behaviour of old input
-            [quo.components.text-input :as quo]
             [oops.core :refer [ocall oget]]))
 
 (def navigation-container (reagent/adapt-react-class NavigationContainer))
@@ -59,8 +57,6 @@
             (fn []
               ;; Reset currently mounted text inputs to their default values
               ;; on navigating away; this is a privacy measure
-              (doseq [[^js text-input default-value] @quo/text-input-refs]
-                (.setNativeProps text-input (clj->js {:text default-value})))
               (doseq [[^js text-input default-value] @react/text-input-refs]
                 (.setNativeProps text-input (clj->js {:text default-value}))))))
    #js [navigation]))

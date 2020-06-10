@@ -6,7 +6,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar.view :as topbar]
             [status-im.ui.screens.wallet.components.styles :as styles]
-            [quo.core :as quo]
+            [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.colors :as colors]
             [status-im.utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :as views]))
@@ -37,9 +37,10 @@
      [react/view {:padding-horizontal 16
                   :padding-vertical   24
                   :flex               1}
-      [quo/text-input
+      [text-input/text-input-with-label
        {:multiline           true
-        :height              98
+        :container           {:height           98
+                              :padding-vertical 8}
         :placeholder         (i18n/label :t/recipient-code-placeholder)
         :text-align-vertical :top
         :on-change-text      #(reset! content %)

@@ -5,7 +5,6 @@
             [quo.react-native :as rn]
             [quo.design-system.colors :as colors]
             [quo.design-system.spacing :as spacing]
-            [quo.platform :as platform]
             [status-im.ui.components.icons.vector-icons :as vector-icons]))
 
 (def ^:private initial-height 22)
@@ -49,8 +48,7 @@
                                         :height height})))]
     (fn  [{:keys [bottom-value]} & children]
       [:<>
-       [animated/code {:exec (animated/cond* (animated/not* animation-v)
-                                             (animated/set animation-v 1))}]
+       [animated/code {:exec (animated/set animation-v 1)}]
        [animated/view {:style          (tooltip-style {:bottom-value (- (get @layout :height)
                                                                         bottom-value)
                                                        :animation    animation})
@@ -60,10 +58,7 @@
          (into [rn/view {:style     (content-style)
                          :on-layout on-layout}]
                children)
-
-         (when platform/ios?
-           ;; NOTE(Ferossgp): Android does not show elevation for tooltip making it lost on white bg
-           [vector-icons/icon :icons/tooltip-tip {:width           18
-                                                  :height          8
-                                                  :container-style {:elevation 3}
-                                                  :color           (:ui-background @colors/theme)}])]]])))
+         [vector-icons/icon :icons/tooltip-tip {:width           18
+                                                :height          8
+                                                :container-style {:elevation 3}
+                                                :color           (:ui-background @colors/theme)}]]]])))

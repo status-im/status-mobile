@@ -115,6 +115,9 @@
   {:padding-top  3
    :padding-left 3})
 
+(def message-activity-indicator
+  {:padding-top 4})
+
 (defn emoji-message
   [{:keys [incoming-group]}]
   {:font-size    28

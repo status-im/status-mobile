@@ -11,12 +11,13 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
             [status-im.utils.utils :as utils.utils]
+            [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.screens.wallet.account-settings.views :as account-settings]
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.security :as security]
             [clojure.string :as string]
-            [quo.core :as quo]
+            [status-im.utils.platform :as platform]
             [status-im.ui.components.bottom-panel.views :as bottom-panel]))
 
 (defn- request-camera-permissions []
@@ -47,8 +48,8 @@
                               :handler #(request-camera-permissions)}]}))]))
 
 (defn common-settings [account]
-  [react/view {:margin-horizontal 16}
-   [quo/text-input
+  [react/view {:margin-horizontal 16 :margin-top 30}
+   [text-input/text-input-with-label
     {:label               (i18n/label :t/account-name)
      :auto-focus          false
      :default-value       (:name account)
@@ -64,25 +65,24 @@
                              (re-frame/dispatch [:set-in [:add-account :account :color] new-color])
                              (re-frame/dispatch [:hide-popover]))]
                    :style {:max-height "60%"}}])}
-    [react/view {:height      52        :margin-top      12      :background-color (:color account) :border-radius 8
-                 :align-items :flex-end :justify-content :center :padding-right    12}
+    [react/view {:height      52 :margin-top 12 :background-color (:color account) :border-radius 8
+                 :align-items :flex-end :justify-content :center :padding-right 12}
      [icons/icon :main-icons/dropdown {:color colors/white}]]]])
 
 (defn settings [{:keys [type scanned-address password-error account-error]}
                 entered-password]
-  [react/view {:padding-horizontal 16
-               :padding-vertical   16}
+  [react/view {:margin-horizontal 16}
    (if (= type :watch)
-     [quo/text-input
+     [text-input/text-input-with-label
       {:label               (i18n/label :t/wallet-key-title)
        :auto-focus          false
        :default-value       scanned-address
        :placeholder         (i18n/label :t/enter-address)
        :accessibility-label :add-account-enter-watch-address
        :on-change-text      #(re-frame/dispatch [:set-in [:add-account :address] %])}]
-     [quo/text-input
+     [text-input/text-input-with-label
       {:label               (i18n/label :t/password)
-       :show-cancel         false
+       :parent-container    {:margin-top 30}
        :auto-focus          false
        :placeholder         (i18n/label :t/enter-your-password)
        :secure-text-entry   true
@@ -93,37 +93,39 @@
                                (re-frame/dispatch [:set-in [:add-account :password-error] nil])
                                (reset! entered-password %))}])
    (when (= type :seed)
-     [react/view {:padding-top 16}
-      [quo/text-input
-       {:label               (i18n/label :t/recovery-phrase)
-        :auto-focus          false
-        :placeholder         (i18n/label :t/multiaccounts-recover-enter-phrase-title)
-        :auto-correct        false
-        :keyboard-type       "visible-password"
-        :multiline           true
-        :height              95
-        :error               account-error
-        :accessibility-label :add-account-enter-seed
-        :on-change-text
-        #(do
-           (re-frame/dispatch [:set-in [:add-account :account-error] nil])
-           (re-frame/dispatch [:set-in [:add-account :seed] (security/mask-data (string/lower-case %))]))}]])
+     [text-input/text-input-with-label
+      {:parent-container    {:margin-top 30}
+       :label               (i18n/label :t/recovery-phrase)
+       :auto-focus          false
+       :placeholder         (i18n/label :t/multiaccounts-recover-enter-phrase-title)
+       :auto-correct        false
+       :keyboard-type       "visible-password"
+       :multiline           true
+       :style               (when platform/android?
+                              {:flex 1})
+       :height              95
+       :error               account-error
+       :accessibility-label :add-account-enter-seed
+       :on-change-text
+       #(do
+          (re-frame/dispatch [:set-in [:add-account :account-error] nil])
+          (re-frame/dispatch [:set-in [:add-account :seed] (security/mask-data (string/lower-case %))]))}])
    (when (= type :key)
-     [react/view {:margin-top 30}
-      [quo/text-input
-       {:label               (i18n/label :t/private-key)
-        :auto-focus          false
-        :placeholder         (i18n/label :t/enter-a-private-key)
-        :auto-correct        false
-        :keyboard-type       "visible-password"
-        :error               account-error
-        :secure-text-entry   true
-        :accessibility-label :add-account-enter-private-key
-        :text-content-type   :none
-        :on-change-text
-        #(do
-           (re-frame/dispatch [:set-in [:add-account :account-error] nil])
-           (re-frame/dispatch [:set-in [:add-account :private-key] (security/mask-data %)]))}]])])
+     [text-input/text-input-with-label
+      {:parent-container    {:margin-top 30}
+       :label               (i18n/label :t/private-key)
+       :auto-focus          false
+       :placeholder         (i18n/label :t/enter-a-private-key)
+       :auto-correct        false
+       :keyboard-type       "visible-password"
+       :error               account-error
+       :secure-text-entry   true
+       :accessibility-label :add-account-enter-private-key
+       :text-content-type   :none
+       :on-change-text
+       #(do
+          (re-frame/dispatch [:set-in [:add-account :account-error] nil])
+          (re-frame/dispatch [:set-in [:add-account :private-key] (security/mask-data %)]))}])])
 
 (defview pin []
   (letsubs [pin           [:hardwallet/pin]

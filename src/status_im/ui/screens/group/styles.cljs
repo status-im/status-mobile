@@ -24,9 +24,7 @@
 
 (defn search-container []
   {:border-bottom-color colors/gray-lighter
-   :border-bottom-width 1
-   :padding-horizontal  16
-   :padding-vertical    10})
+   :border-bottom-width 1})
 
 (defn members-title []
   {:color         colors/gray

@@ -57,6 +57,10 @@
    :height 22
    :margin-top 5})
 
+(def pin-indicator-group-container
+  {:flex-direction  :row
+   :justify-content :space-between})
+
 (defn pin-indicator [pressed? error?]
   {:width             8
    :height            8
@@ -76,6 +80,9 @@
                         colors/black-transparent)
    :border-radius     50
    :margin-horizontal 5})
+
+(def waiting-indicator-container
+  {:margin-top 26})
 
 (def numpad-container
   {:margin-top 18})

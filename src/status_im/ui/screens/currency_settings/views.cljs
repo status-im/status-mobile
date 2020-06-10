@@ -32,20 +32,18 @@
     [react/view {:flex 1}
      [topbar/topbar {:title :t/main-currency}]
      [react/view {:flex 1}
-      [react/view {:padding-horizontal 16
-                   :padding-vertical   10}
-       [search-input/search-input
-        {:search-active? search-active?
-         :search-filter  search-filter
-         :on-cancel      #(re-frame/dispatch [:search/currency-filter-changed nil])
-         :on-focus       (fn [search-filter]
-                           (when-not search-filter
-                             (re-frame/dispatch [:search/currency-filter-changed ""])))
-         :on-change      (fn [text]
-                           (re-frame/dispatch [:search/currency-filter-changed text]))}]]
-      [list/flat-list {:data                      (->> currencies
-                                                       vals
-                                                       (sort #(compare (:code %1) (:code %2))))
-                       :key-fn                    :code
-                       :render-fn                 (render-currency currency-id)
+      [search-input/search-input
+       {:search-active? search-active?
+        :search-filter search-filter
+        :on-cancel #(re-frame/dispatch [:search/currency-filter-changed nil])
+        :on-focus  (fn [search-filter]
+                     (when-not search-filter
+                       (re-frame/dispatch [:search/currency-filter-changed ""])))
+        :on-change (fn [text]
+                     (re-frame/dispatch [:search/currency-filter-changed text]))}]
+      [list/flat-list {:data      (->> currencies
+                                       vals
+                                       (sort #(compare (:code %1) (:code %2))))
+                       :key-fn    :code
+                       :render-fn (render-currency currency-id)
                        :keyboardShouldPersistTaps :always}]]]))

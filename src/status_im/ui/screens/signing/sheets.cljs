@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]
-            [quo.core :as quo]
+            [status-im.ui.components.text-input.view :as text-input]
             [status-im.i18n :as i18n]
             [status-im.ui.components.button :as button]
             [status-im.ui.components.colors :as colors]))
@@ -12,11 +12,9 @@
     [react/view
      [react/view {:style {:margin-horizontal 16 :margin-top 8}}
       [react/text {:style {:typography :title-bold}} (i18n/label :t/network-fee)]
-      [react/view {:style {:flex-direction :row
-                           :margin-top     8
-                           :align-items    :flex-end}}
+      [react/view {:style {:flex-direction :row :margin-top 8}}
        [react/view {:flex 1}
-        [quo/text-input
+        [text-input/text-input-with-label
          {:on-change-text  #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :gas %])
           :label           (i18n/label :t/gas-limit)
           :error           (:error gas-edit)
@@ -24,11 +22,9 @@
           :keyboard-type   :numeric
           :auto-capitalize :none
           :placeholder     "0"
-          :show-cancel     false
           :auto-focus      false}]]
-       [react/view {:flex         1
-                    :padding-left 16}
-        [quo/text-input
+       [react/view {:flex 1 :margin-left 33}
+        [text-input/text-input-with-label
          {:label           (i18n/label :t/gas-price)
           :on-change-text  #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :gasPrice %])
           :error           (:error gas-price-edit)
@@ -36,12 +32,9 @@
           :keyboard-type   :numeric
           :auto-capitalize :none
           :placeholder     "0.000"
-          :show-cancel     false
           :auto-focus      false}]]
-       [react/view {:padding-left   8
-                    :padding-bottom 12}
+       [react/view {:margin-top 58 :margin-left 10}
         [react/text (i18n/label :t/gwei)]]]
-
       [react/view {:margin-vertical 16 :align-items :center}
        [react/text {:style {:color colors/gray}} (i18n/label :t/wallet-transaction-total-fee)]
        [react/view {:height 8}]

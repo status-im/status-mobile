@@ -3,6 +3,38 @@
 
 ;; profile header elements
 
+(def profile-header-display
+  {:flex-direction  :row
+   :justify-content :flex-start
+   :align-items     :center})
+
+(def profile-name-text
+  {:typography  :header
+   :line-height 28
+   :text-align  :left})
+
+(def profile-name-text-with-subtitle
+  {:margin-vertical 5
+   :typography      :header
+   :line-height     28
+   :text-align      :left})
+
+(def profile-three-words
+  {:color       colors/gray})
+
+(def profile-header-name-container
+  {:flex            1
+   :justify-content :center
+   :align-items     :flex-start
+   :margin-left     16})
+
+(def profile-header-name-container-with-subtitle
+  {:flex            1
+   :justify-content :flex-start
+   :align-items     :flex-start
+   :align-self      :stretch
+   :margin-left     16})
+
 ;; settings items elements
 
 (def settings-item

@@ -12,7 +12,7 @@
             [status-im.ui.components.checkbox.view :as checkbox.views]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [quo.core :as quo]
+            [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.screens.pairing.styles :as styles]
             [status-im.ui.components.topbar :as topbar]))
 
@@ -138,13 +138,15 @@
   [react/keyboard-avoiding-view styles/edit-installation
    [react/scroll-view {:keyboard-should-persist-taps :handled}
     [react/view
-     [quo/text-input
-      {:placeholder         (i18n/label :t/specify-name)
-       :label               (i18n/label :t/pairing-please-set-a-name)
-       :accessibility-label :device-name
-       :default-value       @installation-name
-       :on-change-text      #(reset! installation-name %)
-       :auto-focus          true}]]]
+     [react/text (i18n/label :t/pairing-please-set-a-name)]]
+    [text-input/text-input-with-label
+     {:placeholder     (i18n/label :t/specify-name)
+      :style               styles/input
+      :accessibility-label :device-name
+      :container           styles/input-container
+      :default-value       @installation-name
+      :on-change-text      #(reset! installation-name %)
+      :auto-focus          true}]]
    [react/view styles/bottom-container
     [react/view components.styles/flex]
     [components.common/bottom-button

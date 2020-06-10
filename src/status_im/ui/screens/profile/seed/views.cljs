@@ -7,13 +7,13 @@
             [status-im.ui.components.common.common :as components.common]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
+            [status-im.ui.components.text-input.view :as text-input]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.common.styles :as components.common.styles]
             [clojure.string :as string]
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.profile.seed.styles :as styles]
             [status-im.i18n :as i18n]
-            [quo.core :as quo]
             [status-im.utils.platform :as platform]))
 
 (def steps-numbers
@@ -77,15 +77,10 @@
        {:forward? true
         :on-press #(re-frame/dispatch [:my-profile/enter-two-random-words])}]]]))
 
-(defview input [error next-handler idx]
+(defview input [error next-handler]
   (letsubs [ref (reagent/atom nil)]
-    [quo/text-input
+    [text-input/text-input-with-label
      {:placeholder       (i18n/label :t/enter-word)
-      :label             [:<>
-                          (i18n/label :t/check-your-recovery-phrase)
-                          " "
-                          [quo/text {:color :secondary}
-                           (i18n/label :t/word-n {:number (inc idx)})]]
       :ref               (partial reset! ref)
       :auto-focus        true
       :auto-correct      false
@@ -111,8 +106,12 @@
 (defn enter-word [step [idx word] error entered-word]
   ^{:key word}
   [react/view {:style styles/enter-word-container}
-   [react/view {:padding-bottom 8}
-    [input error (next-handler word entered-word step) idx]]
+   [react/view {:style styles/enter-word-row}
+    [react/text {:style styles/enter-word-label}
+     (i18n/label :t/check-your-recovery-phrase)]
+    [react/text {:style styles/enter-word-n}
+     (i18n/label :t/word-n {:number (inc idx)})]]
+   [input error (next-handler word entered-word step)]
    [react/text {:style styles/enter-word-n-description}
     (i18n/label :t/word-n-description {:number (inc idx)})]
    [react/view styles/twelve-words-spacer]
