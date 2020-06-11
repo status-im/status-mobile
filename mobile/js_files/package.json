@@ -55,7 +55,7 @@
     "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#v2.5.23",
     "react-native-svg": "^9.8.4",
     "react-native-touch-id": "^4.4.1",
-    "react-native-webview": "git+https://github.com/status-im/react-native-webview.git#v9.4.0_1",
+    "react-native-webview": "git+https://github.com/status-im/react-native-webview.git#v10.2.3_1",
     "web3-utils": "^1.2.1"
   },
   "devDependencies": {
