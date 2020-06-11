@@ -273,8 +273,7 @@
               {:hardwallet/generate-and-load-key
                {:mnemonic     mnemonic
                 :pairing      pairing
-                :pin          pin'
-                :multiaccount multiaccount}})))
+                :pin          pin'}})))
 
 (fx/defn begin-setup-pressed
   {:events [:keycard.onboarding.intro.ui/begin-setup-pressed]}

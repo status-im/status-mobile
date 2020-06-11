@@ -112,11 +112,18 @@
     (later #(on-success kk1-pair))))
 
 (defn generate-and-load-key
-  [{:keys [pin pairing on-success multiaccount]}]
+  [{:keys [pin pairing on-success]}]
   (when (and (= pin (get @state :pin))
              (= pairing kk1-pair))
-    (let [{:keys [id address public-key derived key-uid]}
-          multiaccount
+    (let [{:keys [selected-id multiaccounts root-key derived]}
+          (:intro-wizard @re-frame.db/app-db)
+
+          {:keys [id address public-key derived key-uid]}
+          (or (->> multiaccounts
+                   (filter #(= (:id %) selected-id))
+                   first)
+              (assoc root-key :derived derived))
+
           whisper     (get derived constants/path-whisper-keyword)
           wallet      (get derived constants/path-default-wallet-keyword)
           wallet-root (get derived constants/path-wallet-root-keyword)
