@@ -94,10 +94,12 @@
       (update :last-message #(when % (messages/<-rpc %)))
       (dissoc :chatType :members)))
 
-(fx/defn save-chat [cofx {:keys [chat-id] :as chat}]
+(fx/defn save-chat [cofx {:keys [chat-id] :as chat} on-success]
   {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "saveChat")
                      :params [(->rpc chat)]
-                     :on-success #(log/debug "saved chat" chat-id "successfuly")
+                     :on-success #(do
+                                    (log/debug "saved chat" chat-id "successfuly")
+                                    (when on-success (on-success)))
                      :on-failure #(log/error "failed to save chat" chat-id %)}]})
 
 (fx/defn fetch-chats-rpc [cofx {:keys [on-success]}]

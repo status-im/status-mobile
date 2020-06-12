@@ -124,7 +124,7 @@
                     :accessibility-label :unviewed-messages-public}]
        [badge/message-counter unviewed-messages-count])]))
 
-(defn icon-style []
+(def icon-style
   {:color           colors/black
    :width           15
    :height          15
@@ -134,7 +134,7 @@
 
 (defn home-list-item [home-item]
   (let [{:keys [chat-id chat-name color online group-chat
-                public? timestamp last-message]}
+                public? timestamp last-message muted]}
         home-item
         private-group? (and group-chat (not public?))
         public-group?  (and group-chat public?)]
@@ -148,13 +148,16 @@
                                                :padding-right  16
                                                :align-items    :center}
                                    (cond
+                                     muted
+                                     [icons/icon :main-icons/tiny-muted (assoc icon-style :color colors/gray)]
                                      private-group?
-                                     [icons/icon :main-icons/tiny-group (icon-style)]
+                                     [icons/icon :main-icons/tiny-group icon-style]
                                      public-group?
-                                     [icons/icon :main-icons/tiny-public (icon-style)]
+                                     [icons/icon :main-icons/tiny-public icon-style]
                                      :else
-                                     [icons/icon :main-icons/tiny-new-contact (icon-style)])
+                                     [icons/icon :main-icons/tiny-new-contact icon-style])
                                    [quo/text {:weight              :medium
+                                              :color               (when muted :secondary)
                                               :accessibility-label :chat-name-text
                                               :ellipsize-mode      :tail
                                               :number-of-lines     1}

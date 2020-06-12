@@ -22,7 +22,6 @@
             [status-im.utils.identicon :as identicon]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.logging.core :as logging]
-            [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
@@ -88,8 +87,7 @@
                 {:db (update db :keycard dissoc :flow)}
                 (if (= :import flow)
                   (navigation/navigate-to-cofx :intro-stack {:screen :keycard-recovery-success})
-                  (navigation/navigate-to-cofx (if platform/android?
-                                                 :notifications-settings :welcome) nil))))))
+                  (navigation/navigate-to-cofx :notifications-onboarding nil))))))
 
 (fx/defn  initialize-dapp-permissions
   {:events [::initialize-dapp-permissions]}
@@ -192,8 +190,7 @@
                        (fn [accounts custom-tokens]
                          (re-frame/dispatch [::initialize-wallet
                                              accounts custom-tokens]))}
-                (and platform/android?
-                     notifications-enabled?)
+                notifications-enabled?
                 (assoc ::notifications/enable nil))
               (acquisition/login)
               (initialize-appearance)

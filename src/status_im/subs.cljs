@@ -197,6 +197,9 @@
 ;; delete profile
 (reg-root-key-sub :delete-profile/error :delete-profile/error)
 
+;; push notifications
+(reg-root-key-sub :push-notifications/servers :push-notifications/servers)
+
 ;;GENERAL ==============================================================================================================
 
 (re-frame/reg-sub

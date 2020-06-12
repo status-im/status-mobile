@@ -39,3 +39,10 @@
   (multiaccount-update cofx
                        :mnemonic nil
                        {}))
+
+(fx/defn optimistic
+  [{:keys [db] :as cofx} setting setting-value]
+  (let [current-multiaccount (:multiaccount db)]
+    {:db (if setting-value
+           (assoc-in db [:multiaccount setting] setting-value)
+           (update db :multiaccount dissoc setting))}))

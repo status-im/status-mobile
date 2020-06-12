@@ -461,7 +461,7 @@ class AboutButton(BaseButton):
 class PrifileNotificationsButton(BaseButton):
     def __init__(self, driver):
         super().__init__(driver)
-        self.locator = self.Locator.accessibility_id("notifications-button")
+        self.locator = self.Locator.accessibility_id("notifications-settings-button")
 
 
 class RemovePictureButton(BaseButton):

@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
+            [status-im.chat.models :as chat.models]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -14,6 +15,7 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
+            [status-im.utils.platform :as platform]
             [reagent.core :as reagent]
             [clojure.string :as string])
   (:require-macros [status-im.utils.views :as views]))
@@ -76,15 +78,22 @@
        (i18n/label :t/profile-details)]]
      [render-detail contact]]))
 
-(defn render-chat-settings [{:keys [names]}]
-  [quo/list-item
-   {:title               (i18n/label :t/nickname)
-    :size                :small
-    :accessibility-label :profile-nickname-item
-    :accessory           :text
-    :accessory-text      (or (:nickname names) (i18n/label :t/none))
-    :on-press            #(re-frame/dispatch [:navigate-to :nickname])
-    :chevron             true}])
+(defn render-chat-settings [{:keys [public-key names]}]
+  (let [muted? (:muted @(re-frame/subscribe [:chats/chat public-key]))]
+    [quo/list-item
+     {:title               (i18n/label :t/nickname)
+      :size                :small
+      :accessibility-label :profile-nickname-item
+      :accessory           :text
+      :accessory-text      (or (:nickname names) (i18n/label :t/none))
+      :on-press            #(re-frame/dispatch [:navigate-to :nickname])
+      :chevron             true}]
+    [quo/list-item
+     {:title               (i18n/label :mute-chat)
+      :active               muted?
+      :accessibility-label :mute-chat
+      :on-press            #(re-frame/dispatch [::chat.models/mute-chat-toggled public-key (not muted?)])
+      :accessory           :switch}]))
 
 (defn chat-settings [contact]
   [react/view
@@ -195,5 +204,8 @@
                                :on-press            action}]))]
           [react/view styles/contact-profile-details-container
            [profile-details contact]
-           [chat-settings contact]]
+          ;; Mute chat is only supported on ios for now
+           (when platform/ios?
+             [react/view {}
+              [chat-settings contact]])]
           [block-contact-action contact]]]))))

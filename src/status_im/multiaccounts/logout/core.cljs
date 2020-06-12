@@ -6,7 +6,8 @@
             [status-im.native-module.core :as status]
             [status-im.transport.core :as transport]
             [status-im.utils.fx :as fx]
-            [status-im.utils.keychain.core :as keychain]))
+            [status-im.utils.keychain.core :as keychain]
+            [status-im.notifications.core :as notifications]))
 
 (fx/defn logout-method
   [{:keys [db] :as cofx} {:keys [auth-method logout?]}]
@@ -15,6 +16,7 @@
               {::logout                      nil
                :keychain/clear-user-password key-uid
                ::init/open-multiaccounts     #(re-frame/dispatch [::init/initialize-multiaccounts % {:logout? logout?}])}
+              (notifications/logout-disable)
               (keychain/save-auth-method key-uid auth-method)
               (transport/stop-whisper)
               (chaos-mode/stop-checking)

@@ -1,5 +1,6 @@
 (ns status-im.chat.models
   (:require [re-frame.core :as re-frame]
+            [taoensso.timbre :as log]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.transport.filters.core :as transport.filters]
             [status-im.contact.core :as contact.core]
@@ -136,15 +137,15 @@
 
 (fx/defn upsert-chat
   "Upsert chat when not deleted"
-  [{:keys [db] :as cofx} {:keys [chat-id] :as chat-props}]
+  [{:keys [db] :as cofx} {:keys [chat-id] :as chat-props} on-success]
   (fx/merge cofx
             (ensure-chat chat-props)
-            #(chats-store/save-chat % (get-in % [:db :chats chat-id]))))
+            #(chats-store/save-chat % (get-in % [:db :chats chat-id]) on-success)))
 
 (fx/defn handle-save-chat
   {:events [::save-chat]}
-  [{:keys [db] :as cofx} chat-id]
-  (chats-store/save-chat cofx (get-in db [:chats chat-id])))
+  [{:keys [db] :as cofx} chat-id on-success]
+  (chats-store/save-chat cofx (get-in db [:chats chat-id]) on-success))
 
 (fx/defn handle-mark-all-read-successful
   {:events [::mark-all-read-successful]}
@@ -172,7 +173,8 @@
                 :public?                        true
                 :might-have-join-time-messages? true
                 :unviewed-messages-count        0
-                :loaded-unviewed-messages-ids   #{}}))
+                :loaded-unviewed-messages-ids   #{}}
+               nil))
 
 (fx/defn clear-history
   "Clears history of the particular chat"
@@ -192,7 +194,7 @@
                                      :unviewed-messages-count   0
                                      :deleted-at-clock-value    last-message-clock-value}))}
      (messages-store/delete-messages-by-chat-id chat-id)
-     #(chats-store/save-chat % (get-in % [:db :chats chat-id])))))
+     #(chats-store/save-chat % (get-in % [:db :chats chat-id]) nil))))
 
 (fx/defn deactivate-chat
   "Deactivate chat in db, no side effects"
@@ -253,7 +255,8 @@
   (when (not= (multiaccounts.model/current-public-key cofx) chat-id)
     (fx/merge cofx
               (upsert-chat {:chat-id   chat-id
-                            :is-active true})
+                            :is-active true}
+                           nil)
               (transport.filters/load-chat chat-id)
               (navigate-to-chat chat-id))))
 
@@ -292,6 +295,29 @@
        cofx
        {:db (assoc db :contacts/identity identity)}
        (navigation/navigate-to-cofx :profile nil)))))
+
+(fx/defn mute-chat-failed
+  {:events [::mute-chat-failed]}
+  [{:keys [db] :as cofx} chat-id muted? error]
+  (log/error "mute chat failed" chat-id error)
+  {:db (assoc-in db [:chats chat-id :muted] (not muted?))})
+
+(fx/defn mute-chat
+  {:events [::mute-chat-toggled]}
+  [{:keys [db] :as cofx} chat-id muted?]
+  (let [method (if muted? "muteChat" "unmuteChat")
+        chat (get-in db [:chats chat-id])]
+    ;; chat does not exist, create and then mute
+    (if-not chat
+      (upsert-chat cofx
+                   {:is-active true
+                    :chat-id chat-id}
+                   #(re-frame/dispatch [::mute-chat-toggled chat-id muted?]))
+      {:db (assoc-in db [:chats chat-id :muted] muted?)
+       ::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) method)
+                         :params [chat-id]
+                         :on-error #(re-frame/dispatch [::mute-chat-failed chat-id muted? %])
+                         :on-success #(log/info method "successful" chat-id)}]})))
 
 (fx/defn show-profile
   {:events [:chat.ui/show-profile]}

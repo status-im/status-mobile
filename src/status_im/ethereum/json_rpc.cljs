@@ -71,6 +71,8 @@
    "shhext_updateMessageOutgoingStatus" {}
    "shhext_chatMessages" {}
    "shhext_saveChat" {}
+   "shhext_muteChat" {}
+   "shhext_unmuteChat" {}
    "shhext_contacts" {}
    "shhext_prepareContent" {}
    "shhext_blockContact" {}
@@ -93,6 +95,18 @@
    "shhext_sendGroupChatInvitationRequest" {}
    "shhext_sendGroupChatInvitationRejection" {}
    "shhext_getGroupChatInvitations" {}
+   "shhext_registerForPushNotifications" {}
+   "shhext_unregisterFromPushNotifications" {}
+   "shhext_enablePushNotificationsFromContactsOnly" {}
+   "shhext_disablePushNotificationsFromContactsOnly" {}
+   "shhext_startPushNotificationsServer" {}
+   "shhext_stopPushNotificationsServer" {}
+   "shhext_disableSendingNotifications" {}
+   "shhext_enableSendingNotifications" {}
+   "shhext_addPushNotificationsServer" {}
+   "shhext_getPushNotificationsServers" {}
+   "shhext_enablePushNotificationsBlockMentions" {}
+   "shhext_disablePushNotificationsBlockMentions" {}
    "wakuext_post" {}
    "wakuext_startMessenger" {}
    "wakuext_sendPairInstallation" {}
@@ -130,6 +144,8 @@
    "wakuext_updateMessageOutgoingStatus" {}
    "wakuext_chatMessages" {}
    "wakuext_saveChat" {}
+   "wakuext_muteChat" {}
+   "wakuext_unmuteChat" {}
    "wakuext_contacts" {}
    "wakuext_prepareContent" {}
    "wakuext_blockContact" {}
@@ -152,6 +168,18 @@
    "wakuext_sendGroupChatInvitationRequest" {}
    "wakuext_sendGroupChatInvitationRejection" {}
    "wakuext_getGroupChatInvitations" {}
+   "wakuext_registerForPushNotifications" {}
+   "wakuext_unregisterFromPushNotifications" {}
+   "wakuext_enablePushNotificationsFromContactsOnly" {}
+   "wakuext_disablePushNotificationsFromContactsOnly" {}
+   "wakuext_startPushNotificationsServer" {}
+   "wakuext_stopPushNotificationsServer" {}
+   "wakuext_disableSendingNotifications" {}
+   "wakuext_enableSendingNotifications" {}
+   "wakuext_addPushNotificationsServer" {}
+   "wakuext_getPushNotificationsServers" {}
+   "wakuext_enablePushNotificationsBlockMentions" {}
+   "wakuext_disablePushNotificationsBlockMentions" {}
    "status_chats" {}
    "wallet_getTransfers" {}
    "wallet_getTokensBalances" {}
@@ -210,16 +238,20 @@
     (str "shhext_" method)))
 
 (defn call
-  [{:keys [method params on-success] :as arg}]
+  [{:keys [method params on-success on-error] :as arg}]
   (if-let [method-options (json-rpc-api method)]
     (let [params (or params [])
           {:keys [id on-result subscription?]
            :or {on-result identity
                 id 1}} method-options
-          on-error (or (on-error-retry call arg)
-                       #(log/warn :json-rpc/error method :error % :params params))]
+          on-error (or
+                    on-error
+                    (on-error-retry call arg)
+                    #(log/warn :json-rpc/error method :error % :params params))]
       (if (nil? method)
-        (log/error :json-rpc/method-not-found method)
+        (do
+          (log/error :json-rpc/method-not-found method)
+          (on-error :json-rpc/method-not-found))
         (status/call-private-rpc
          (types/clj->json {:jsonrpc "2.0"
                            :id      id

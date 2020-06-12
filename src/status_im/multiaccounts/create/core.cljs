@@ -138,8 +138,7 @@
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db (dissoc db :intro-wizard)}
-            (navigation/navigate-to-cofx (if platform/android?
-                                           :notifications-settings :welcome) nil)))
+            (navigation/navigate-to-cofx :notifications-onboarding nil)))
 
 (fx/defn init-key-generation
   [{:keys [db] :as cofx}]
@@ -252,6 +251,7 @@
                   :dapps-address         (:address wallet-account)
                   :latest-derived-path   0
                   :signing-phrase        signing-phrase
+                  :send-push-notifications? true
                   :installation-id       (random-guid-generator)}
                  constants/default-multiaccount)
           ;; The address from which we derive any chat

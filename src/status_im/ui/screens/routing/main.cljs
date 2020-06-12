@@ -23,8 +23,8 @@
             [quo.previews.main :as quo.preview]
             [status-im.utils.config :as config]
             [status-im.ui.screens.chat.image.preview.views :as image-preview]
-            [status-im.ui.screens.notifications-settings.views :as notifications-settings]
-            [status-im.ui.screens.profile.contact.views :as contact]))
+            [status-im.ui.screens.profile.contact.views :as contact]
+            [status-im.ui.screens.notifications-settings.views :as notifications-settings]))
 
 (defonce main-stack (navigation/create-stack))
 (defonce bottom-tabs (navigation/create-bottom-tabs))
@@ -114,7 +114,12 @@
        {:name         :notifications-settings
         :back-handler :noop
         :insets       {:bottom true}
-        :component    notifications-settings/notifications-settings}]
+        :component    notifications-settings/notifications-settings}
+       {:name         :notifications-onboarding
+        :back-handler :noop
+        :insets       {:bottom true}
+        :component    notifications-settings/notifications-onboarding}]
+
       (when config/quo-preview-enabled?
         [{:name      :quo-preview
           :insets    {:top false :bottom false}

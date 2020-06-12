@@ -37,6 +37,7 @@
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
             [status-im.ui.screens.routing.core :as navigation]
             [status-im.ui.screens.appearance.views :as appearance]
+            [status-im.ui.screens.notifications-settings.views :as notifications-settings]
             [status-im.ui.screens.privacy-and-security-settings.delete-profile :as delete-profile]))
 
 (defonce stack (navigation/create-stack))
@@ -83,6 +84,10 @@
      :component privacy-and-security/privacy-and-security}
     {:name      :appearance
      :component appearance/appearance}
+    {:name      :notifications
+     :component notifications-settings/notifications-settings}
+    {:name      :notifications-servers
+     :component notifications-settings/notifications-servers}
     {:name      :sync-settings
      :component sync-settings/sync-settings}
     {:name      :advanced-settings

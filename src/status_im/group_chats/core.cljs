@@ -117,7 +117,8 @@
   (fx/merge cofx
             (models.chat/deactivate-chat chat-id)
             (models.chat/upsert-chat {:chat-id   chat-id
-                                      :is-active false})
+                                      :is-active false}
+                                     nil)
             (navigation/navigate-to-cofx :home {})))
 
 (defn- valid-name? [name]

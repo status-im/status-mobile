@@ -3,7 +3,6 @@
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as native-module]
-            [status-im.notifications.core :as notifications]
             [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
@@ -86,17 +85,6 @@
   (multiaccounts.update/multiaccount-update cofx
                                             :dev-mode? dev-mode?
                                             {}))
-
-(fx/defn switch-notifications
-  {:events [:multiaccounts.ui/notifications-switched]}
-  [cofx notifications-enabled?]
-  (fx/merge cofx
-            {(if notifications-enabled?
-               ::notifications/enable
-               ::notifications/disable) nil}
-            (multiaccounts.update/multiaccount-update
-             :notifications-enabled? (boolean notifications-enabled?)
-             {})))
 
 (fx/defn switch-chaos-mode
   [{:keys [db] :as cofx} chaos-mode?]

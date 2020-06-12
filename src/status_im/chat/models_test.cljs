@@ -15,7 +15,7 @@
           cofx           {:now "now"
                           :db {:contacts/contacts {chat-id
                                                    {:name contact-name}}}}
-          response      (chat/upsert-chat cofx chat-props)
+          response      (chat/upsert-chat cofx chat-props nil)
           actual-chat   (get-in response [:db :chats chat-id])]
       (testing "it adds the chat to the chats collection"
         (is actual-chat))
@@ -36,7 +36,7 @@
                           :extra-prop "some"}
           cofx           {:db {:chats {chat-id {:is-active true
                                                 :name "old-name"}}}}
-          response      (chat/upsert-chat cofx chat-props)
+          response      (chat/upsert-chat cofx chat-props nil)
           actual-chat   (get-in response [:db :chats chat-id])]
       (testing "it adds the chat to the chats collection"
         (is actual-chat))
