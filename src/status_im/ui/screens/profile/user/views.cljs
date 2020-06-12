@@ -181,34 +181,31 @@
         active-contacts-count @(re-frame/subscribe [:contacts/active-count])
         tribute-to-talk       @(re-frame/subscribe [:tribute-to-talk/profile])
         registrar             @(re-frame/subscribe [:ens.stateofus/registrar])]
-    (flat-list-content
-     preferred-name registrar tribute-to-talk
-     active-contacts-count mnemonic
-     keycard-pairing notifications-enabled?)))
+    [react/view
+     (for [item (flat-list-content
+                 preferred-name registrar tribute-to-talk
+                 active-contacts-count mnemonic
+                 keycard-pairing notifications-enabled?)]
+       ^{:key (str "item" (:title item))}
+       [list.views/flat-list-generic-render-fn item])]))
 
 (defn my-profile []
-  (fn []
-    (let [{:keys [public-key ens-verified preferred-name]
-           :as   account} @(re-frame/subscribe [:multiaccount])
-          on-share        #(re-frame/dispatch [:show-popover
-                                               {:view     :share-chat-key
-                                                :address  public-key
-                                                :ens-name preferred-name}])]
-      [react/view {:style {:flex 1}}
-       [quo/animated-header
-        {:right-accessories [{:icon     :main-icons/share
-                              :on-press on-share}]
-         :use-insets        true
-         :extended-header   (profile-header/extended-header
-                             {:on-press on-share
-                              :title    (multiaccounts/displayed-name account)
-                              :photo    (multiaccounts/displayed-photo account)
-                              :subtitle (if (and ens-verified public-key)
-                                          (gfy/generate-gfy public-key)
-                                          public-key)})}
-        [list.views/flat-list
-         {:data                         (content)
-          :initial-num-to-render        3
-          :render-fn                    list.views/flat-list-generic-render-fn
-          :key-fn                       (fn [_ idx] (str idx))
-          :keyboard-should-persist-taps :handled}]]])))
+  (let [{:keys [public-key ens-verified preferred-name]
+         :as   account} @(re-frame/subscribe [:multiaccount])
+        on-share        #(re-frame/dispatch [:show-popover
+                                             {:view     :share-chat-key
+                                              :address  public-key
+                                              :ens-name preferred-name}])]
+    [react/view {:style {:flex 1}}
+     [quo/animated-header
+      {:right-accessories [{:icon     :main-icons/share
+                            :on-press on-share}]
+       :use-insets        true
+       :extended-header   (profile-header/extended-header
+                           {:on-press on-share
+                            :title    (multiaccounts/displayed-name account)
+                            :photo    (multiaccounts/displayed-photo account)
+                            :subtitle (if (and ens-verified public-key)
+                                        (gfy/generate-gfy public-key)
+                                        public-key)})}
+      [content]]]))

@@ -44,7 +44,7 @@
         offset          (reagent/atom 0)
         on-layout       (fn [evt]
                           (reset! offset (oget evt "nativeEvent" "layout" "height")))]
-    (fn [{:keys [extended-header] :as props} & children]
+    (fn [{:keys [extended-header] :as props} children]
       [animated/view {:flex           1
                       :pointer-events :box-none}
        [animated/code {:key  (str @offset)
