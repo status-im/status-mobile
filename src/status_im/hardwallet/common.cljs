@@ -427,11 +427,15 @@
 (fx/defn on-get-application-info-error
   {:events [:hardwallet.callback/on-get-application-info-error]}
   [{:keys [db] :as cofx} error]
-  (log/debug "[hardwallet] application info error " error)
-  (let [on-card-read      (get-in db [:hardwallet :on-card-read])
-        on-card-connected (get-in db [:hardwallet :on-card-connected])
-        login?            (= on-card-read :hardwallet/login-with-keycard)
-        tag-was-lost?     (tag-lost? (:error error))]
+  (let [on-card-read           (get-in db [:hardwallet :on-card-read])
+        on-card-connected      (get-in db [:hardwallet :on-card-connected])
+        last-on-card-connected (get-in db [:hardwallet :last-on-card-connected])
+        login?                 (= on-card-read :hardwallet/login-with-keycard)
+        tag-was-lost?          (tag-lost? (:error error))]
+    (log/debug "[hardwallet] application info error"
+               error
+               on-card-connected
+               last-on-card-connected)
     (when-not tag-was-lost?
       (if login?
         (fx/merge cofx
@@ -440,7 +444,9 @@
         (fx/merge cofx
                   {:db (assoc-in db [:hardwallet :application-info-error] error)}
 
-                  (when (= on-card-connected :hardwallet/prepare-to-sign)
+                  (when (contains?
+                         #{last-on-card-connected on-card-connected}
+                         :hardwallet/prepare-to-sign)
                     (show-wrong-keycard-alert true))
 
                   (when on-card-read
