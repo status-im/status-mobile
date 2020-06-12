@@ -169,8 +169,8 @@ private:
   QString m_executor = "RemoteServerConnection";
   QString m_jsExecutor = "RemoteServerConnection";
 #else
-  QString m_executor = "NodeJsExecutor";
-  QString m_jsExecutor = "NodeJsExecutor";
+  QString m_executor = "JSWebEngineExecutor";
+  QString m_jsExecutor = "JSWebEngineExecutor";
 #endif
   QVariantMap m_initialProps;
 };
@@ -404,7 +404,7 @@ bool IsProcessRunning(const wchar_t *processName) {
 #endif
 
 void killZombieJsServer() {
-  // Ensure that a zombie Node.js server process is not still running in the background before we spawn a new one 
+  // Ensure that a zombie Node.js server process is not still running in the background before we spawn a new one
   QString cmd;
 #ifdef Q_OS_LINUX
   cmd = QString("pkill -f %1").arg(NODEJS_SERVER_NAME);
@@ -558,4 +558,3 @@ void saveMessage(QtMsgType type, const QMessageLogContext &context,
 }
 
 #include "main.moc"
-
