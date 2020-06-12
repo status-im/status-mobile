@@ -121,8 +121,9 @@
        :accessibility-label :appearance-settings-button
        :chevron             true
        :on-press            #(re-frame/dispatch [:navigate-to :appearance])}]
-     (when (and platform/android?
-                config/local-notifications?)
+     (when (or (and platform/android?
+                    config/local-notifications?)
+               platform/ios?)
        [quo/list-item
         {:icon                :main-icons/notification
          :title               (i18n/label :t/notifications)
