@@ -239,6 +239,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_2 = home_2.get_chat(sender['username']).click()
         chat_2_receiver_message = chat_2.chat_element_by_text('↓ Incoming transaction')
         chat_2_receiver_message.decline_transaction.click()
+        chat_1.element_by_text_part('Transaction declined').wait_for_element(20)
         for status in chat_2_receiver_message.transaction_status.text, chat_1_sender_message.transaction_status.text:
             if status != 'Transaction declined':
                 self.errors.append('Wrong state is shown: "Transaction declined" is expected, in fact'
@@ -254,7 +255,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_1_request_message = chat_1.chat_element_by_text('↓ Incoming transaction')
         chat_2_sender_message = chat_2.chat_element_by_text('↑ Outgoing transaction')
         chat_2_sender_message.decline_transaction.click()
-
+        chat_1.element_by_text_part('Transaction declined').wait_for_element(20)
         for status in chat_2_sender_message.transaction_status.text, chat_1_request_message.transaction_status.text:
             if status != 'Transaction declined':
                 self.errors.append('Wrong state is shown: "Transaction declined" is expected, in fact'

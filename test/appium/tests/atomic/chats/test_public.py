@@ -219,8 +219,10 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         if not chat.user_name_text.text == tag_message:
             self.driver.fail('Could not redirect a user to a public chat tapping the tag message.')
         home_view = chat.get_back_to_home_view()
-        if not home_view.chat_name_text.text == tag_message:
+        if not home_view.element_by_text(tag_message).is_element_displayed():
             self.driver.fail('Could not find the public chat in user chat list.')
+        #if not home_view.chat_name_text.text == tag_message:
+
 
     @marks.testrail_id(6205)
     @marks.high

@@ -209,6 +209,81 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(6305)
+    @marks.critical
+    def test_image_in_one_to_one_send_save_reply(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
+
+        device_1_home.just_fyi('start 1-1 chat')
+        device_1_profile, device_2_profile = device_1_home.profile_button.click(), device_2_home.profile_button.click()
+        device_2_public_key = device_2_profile.get_public_key_and_username()
+        device_1_public_key, device_1_username = device_1_profile.get_public_key_and_username(return_username=True)
+        image_description = 'description'
+        [home.click() for home in [device_1_profile.home_button, device_2_profile.home_button]]
+        device_1_chat = device_1_home.add_contact(device_2_public_key)
+
+        device_1_home.just_fyi('send image in 1-1 chat from Gallery, check options for sender')
+        device_1_chat.show_images_button.click()
+        device_1_chat.image_from_gallery_button.click()
+        device_1_chat.allow_button.click()
+        device_1_chat.click_system_back_button()
+        device_1_chat.chat_message_input.click()
+        device_1_chat.show_images_button.click()
+        device_1_chat.first_image_from_gallery.click()
+        if not device_1_chat.cancel_reply_button.is_element_displayed():
+            self.errors.append("Can't cancel sending images, expected image preview is not shown!")
+        device_1_chat.chat_message_input.set_value(image_description)
+        device_1_chat.send_message_button.click()
+        device_1_chat.chat_message_input.click()
+        for message in device_1_chat.image_chat_item, device_1_chat.chat_element_by_text(image_description):
+            if not message.is_element_displayed():
+                self.errors.append('Image or description is not shown in chat after sending for sender')
+        if not device_1_chat.image_chat_item.is_element_image_equals_template('message_image_sender.png'):
+            self.errors.append("Image doesn't match expected template for sender")
+        device_1_chat.show_images_button.click()
+        device_1_chat.image_from_gallery_button.click()
+        device_1_chat.click_system_back_button()
+        device_1_chat.image_chat_item.long_press_element()
+        for element in device_1_chat.reply_message_button, device_1_chat.save_image_button:
+            if not element.is_element_displayed():
+                self.errors.append('Save and reply are not available on long-press on own image messages')
+        if device_1_chat.view_profile_button.is_element_displayed():
+            self.errors.append('Options are not shown on long-press on image messages')
+
+        device_2_home.just_fyi('check image, description and options for receiver')
+        device_2_chat = device_2_home.get_chat(device_1_username).click()
+        for message in device_2_chat.image_chat_item, device_2_chat.chat_element_by_text(image_description):
+            if not message.is_element_displayed():
+                self.errors.append('Image or description is not shown in chat after sending for receiver')
+        if not device_2_chat.image_chat_item.is_element_image_equals_template('message_image_receiver.png'):
+            self.errors.append("Image doesn't match expected template for receiver")
+        device_2_chat.image_chat_item.long_press_element()
+        for element in device_2_chat.reply_message_button, device_2_chat.save_image_button, device_2_chat.view_profile_button:
+            if not element.is_element_displayed():
+                self.errors.append('Save and reply are not available on long-press on own image messages')
+
+        device_1_home.just_fyi('save image')
+        device_1_chat.save_image_button.click()
+        device_1_chat.show_images_button.click_until_presence_of_element(device_1_chat.image_from_gallery_button)
+        device_1_chat.image_from_gallery_button.click()
+        device_1_chat.wait_for_element_starts_with_text('Recent')
+        if not device_1_chat.recent_image_in_gallery.is_element_displayed():
+            self.errors.append('Saved image is not shown in Recent')
+
+        device_2_home.just_fyi('reply to image message')
+        device_2_chat.reply_message_button.click()
+        if device_2_chat.quote_username_in_message_input.text != "↪ %s" % device_1_username:
+            self.errors.append("Username is not displayed in reply quote snippet replying to image message")
+        reply_to_message_from_receiver = "image reply"
+        device_2_chat.send_message(reply_to_message_from_receiver)
+        reply_message = device_2_chat.chat_element_by_text(reply_to_message_from_receiver)
+        if not reply_message.image_in_reply.is_element_displayed():
+            self.errors.append("Image is not displayed in reply")
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(5316)
     @marks.critical
     def test_add_to_contacts(self):

@@ -121,6 +121,16 @@ class ReplyMessageButton(BaseButton):
         super(ReplyMessageButton, self).__init__(driver)
         self.locator = self.Locator.text_selector("Reply")
 
+class SaveImageButton(BaseButton):
+    def __init__(self, driver):
+        super(SaveImageButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector("Save")
+
+
+class ImageInRecentInGalleryElement(BaseElement):
+    def __init__(self, driver):
+        super(ImageInRecentInGalleryElement, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[contains(@resource-id,"thumbnail")]')
 
 class ProfileDetailsOtherUser(BaseButton):
     def __init__(self, driver):
@@ -229,6 +239,26 @@ class StickerIcon(BaseButton):
         super(StickerIcon, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('sticker-icon')
 
+class ShowImagesButton(BaseButton):
+    def __init__(self, driver):
+        super(ShowImagesButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('show-photo-icon')
+
+
+class TakePhotoButton(BaseButton):
+    def __init__(self, driver):
+        super(TakePhotoButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('take-picture')
+
+class ImageFromGalleryButton(BaseButton):
+    def __init__(self, driver):
+        super(ImageFromGalleryButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('open-gallery')
+
+class FirstElementFromGalleryButton(BaseButton):
+    def __init__(self, driver):
+        super(FirstElementFromGalleryButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="open-gallery"]/../following-sibling::android.view.ViewGroup[1]')
 
 class ViewProfileButton(BaseButton):
     def __init__(self, driver):
@@ -315,6 +345,18 @@ class ChatElementByText(BaseText):
                 self.locator = self.Locator.xpath_selector(parent_locator + text)
 
         return StatusText(self.driver, self.locator.value).wait_for_element(10)
+
+    @property
+    def image_in_reply(self):
+        class ImageInReply(BaseElement):
+            def __init__(self, driver, parent_locator):
+                super(ImageInReply, self).__init__(driver)
+                self.locator = self.Locator.xpath_selector(
+                    parent_locator + "//android.widget.ImageView")
+        try:
+            return ImageInReply(self.driver, self.locator.value)
+        except NoSuchElementException:
+            return ''
 
     @property
     def timestamp_message(self):
@@ -458,6 +500,11 @@ class ChatItem(BaseElement):
         super().__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@content-desc="chat-item"]')
 
+class ImageChatItem(BaseElement):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="chat-item"]//android.widget.ImageView')
+
 
 class HistoryTimeMarker(BaseText):
     def __init__(self, driver, marker='Today'):
@@ -546,6 +593,17 @@ class ChatView(BaseView):
         self.show_stickers_button = ShowStickersButton(self.driver)
         self.get_stickers = GetStickers(self.driver)
         self.sticker_icon = StickerIcon(self.driver)
+
+        # Images
+        self.show_images_button = ShowImagesButton(self.driver)
+        self.take_photo_button = TakePhotoButton(self.driver)
+        self.image_from_gallery_button = ImageFromGalleryButton(self.driver)
+        self.first_image_from_gallery = FirstElementFromGalleryButton(self.driver)
+        self.image_chat_item = ImageChatItem(self.driver)
+        self.save_image_button = SaveImageButton(self.driver)
+        self.recent_image_in_gallery = ImageInRecentInGalleryElement(self.driver)
+
+
 
         self.chat_options = ChatMenuButton(self.driver)
         self.members_button = MembersButton(self.driver)
