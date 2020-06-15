@@ -1,0 +1,8 @@
+<resources>
+    <string name="status_service">Status Service</string>
+    <string name="stop">STOP</string>
+    <string name="keep_status_running">Keep Status running to receive notifications</string>
+    <string name="background_service_opened">Background notification service opened</string>
+    <string name="channel_description">Get notifications on new messages and mentions</string>
+</resources>
+

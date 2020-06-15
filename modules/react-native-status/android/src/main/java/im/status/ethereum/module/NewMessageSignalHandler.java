@@ -49,7 +49,6 @@ public class NewMessageSignalHandler {
     public static final String ACTION_TAP_STOP = "im.status.ethereum.module.TAP_STOP";
     private static final String GROUP_STATUS_MESSAGES = "im.status.notifications.message";
     private static final String CHANNEL_NAME = "Status";
-    private static final String CHANNEL_DESCRIPTION = "Get notifications on new messages and mentions";
     private static final String CHANNEL_ID = "status-chat-notifications";
     private static final String TAG = "StatusModule";
     private NotificationManager notificationManager;
@@ -161,7 +160,7 @@ public class NewMessageSignalHandler {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.getPackageName() + "/" + R.raw.notification_sound);
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription(CHANNEL_DESCRIPTION);
+            channel.setDescription(context.getResources().getString(R.string.channel_description));
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                 .build();

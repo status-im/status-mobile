@@ -33,7 +33,7 @@ public class ForegroundService extends Service {
             NotificationManager notificationManager =
                 context.getSystemService(NotificationManager.class);
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                                                                  "Status Service",
+                                                                  context.getResources().getString(R.string.status_service),
                                                                   NotificationManager.IMPORTANCE_HIGH);
             channel.setShowBadge(false);
             notificationManager.createNotificationChannel(channel);
@@ -57,16 +57,18 @@ public class ForegroundService extends Service {
         Intent stopIntent = new Intent(NewMessageSignalHandler.ACTION_TAP_STOP);
         PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        String content = "Keep Status running to receive notifications";
+        String content = context.getResources().getString(R.string.keep_status_running);
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_notify_status)
-            .setContentTitle("Background notification service opened")
+            .setContentTitle(context.getResources().getString(R.string.background_service_opened))
             .setContentText(content)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setContentIntent(pendingIntent)
             .setNumber(0)
-            .addAction(R.drawable.ic_stat_notify_status, "STOP", stopPendingIntent)
+            .addAction(R.drawable.ic_stat_notify_status,
+                       context.getResources().getString(R.string.stop),
+                       stopPendingIntent)
             .build();
         // the id of the foreground notification MUST NOT be 0
         startForeground(1, notification);
