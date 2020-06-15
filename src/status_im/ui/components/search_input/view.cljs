@@ -17,7 +17,9 @@
                        :on-cancel       on-cancel
                        :auto-correct    false
                        :auto-capitalize :none
-                       :input-style     {:height 36}
+                       :input-style     {:height         36
+                                         :padding-top    2
+                                         :padding-bottom 2}
                        :before          {:icon      :main-icons/search
                                          :style     {:padding-horizontal 8}
                                          :on-press  #(.focus ^js @input-ref)
