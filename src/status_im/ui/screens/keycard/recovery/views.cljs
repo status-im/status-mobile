@@ -147,8 +147,7 @@
                                :color      (if (> 3 free-pairing-slots) colors/red colors/gray)}}
            (i18n/label :t/keycard-free-pairing-slots {:n free-pairing-slots})]])]
       [react/view
-       [react/view {:flex            1
-                    :padding         16
+       [react/view {:padding         16
                     :justify-content :center}
         [quo/text-input
          {:on-change-text    #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-changed %])
