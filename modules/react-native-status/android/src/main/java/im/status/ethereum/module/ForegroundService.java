@@ -52,6 +52,8 @@ public class ForegroundService extends Service {
         intent.setAction(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        Intent stopIntent = new Intent(NewMessageSignalHandler.ACTION_TAP_STOP);
+        PendingIntent stopPendingIntent = PendingIntent.getBroadcast(context, 0, stopIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         String content = "Keep Status running to receive notifications";
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
@@ -61,6 +63,7 @@ public class ForegroundService extends Service {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setContentIntent(pendingIntent)
+            .addAction(R.drawable.ic_stat_notify_status, "STOP", stopPendingIntent)
             .build();
         // the id of the foreground notification MUST NOT be 0
         startForeground(1, notification);

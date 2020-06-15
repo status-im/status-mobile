@@ -46,6 +46,7 @@ public class NewMessageSignalHandler {
     //in notificationActionReceiver.
     public static final String ACTION_DELETE_NOTIFICATION = "im.status.ethereum.module.DELETE_NOTIFICATION";
     public static final String ACTION_TAP_NOTIFICATION = "im.status.ethereum.module.TAP_NOTIFICATION";
+    public static final String ACTION_TAP_STOP = "im.status.ethereum.module.TAP_STOP";
     private static final String GROUP_STATUS_MESSAGES = "im.status.notifications.message";
     private static final String CHANNEL_NAME = "Status";
     private static final String CHANNEL_DESCRIPTION = "Get notifications on new messages and mentions";
@@ -65,15 +66,21 @@ public class NewMessageSignalHandler {
     private final BroadcastReceiver notificationActionReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String chatId = intent.getExtras().getString("im.status.ethereum.chatId");
-                if (intent.getAction() == ACTION_TAP_NOTIFICATION) {
-                    context.startActivity(getOpenAppIntent(chatId));
-                }
-                removeChat(chatId);
-                // clean up the group notifications when there is no
-                // more unread chats
-                if (chats.size() == 0) {
-                    notificationManager.cancelAll();
+                if (intent.getAction() == ACTION_TAP_NOTIFICATION ||
+                    intent.getAction() == ACTION_DELETE_NOTIFICATION) {
+                    String chatId = intent.getExtras().getString("im.status.ethereum.chatId");
+                    if (intent.getAction() == ACTION_TAP_NOTIFICATION) {
+                        context.startActivity(getOpenAppIntent(chatId));
+                    }
+                    removeChat(chatId);
+                    // clean up the group notifications when there is no
+                    // more unread chats
+                    if (chats.size() == 0) {
+                        notificationManager.cancelAll();
+                    }}
+                if (intent.getAction() == ACTION_TAP_STOP) {
+                    stop();
+                    System.exit(0);
                 }
                 Log.e(TAG, "intent received: " + intent.getAction());
             }
@@ -83,6 +90,7 @@ public class NewMessageSignalHandler {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_DELETE_NOTIFICATION);
         filter.addAction(ACTION_TAP_NOTIFICATION);
+        filter.addAction(ACTION_TAP_STOP);
         context.registerReceiver(notificationActionReceiver, filter);
         Log.e(TAG, "Broadcast Receiver registered");
     }
