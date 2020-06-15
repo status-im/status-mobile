@@ -32,9 +32,11 @@ public class ForegroundService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager =
                 context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(new NotificationChannel(CHANNEL_ID,
-                                                                                  "Status Service",
-                                                                                  NotificationManager.IMPORTANCE_HIGH));
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+                                                                  "Status Service",
+                                                                  NotificationManager.IMPORTANCE_HIGH);
+            channel.setShowBadge(false);
+            notificationManager.createNotificationChannel(channel);
         }
         Class intentClass;
         String packageName = context.getPackageName();
@@ -63,6 +65,7 @@ public class ForegroundService extends Service {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setContentIntent(pendingIntent)
+            .setNumber(0)
             .addAction(R.drawable.ic_stat_notify_status, "STOP", stopPendingIntent)
             .build();
         // the id of the foreground notification MUST NOT be 0

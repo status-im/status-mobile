@@ -166,6 +166,7 @@ public class NewMessageSignalHandler {
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                 .build();
             channel.setSound(soundUri, audioAttributes);
+            channel.setShowBadge(true);
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
@@ -205,6 +206,7 @@ public class NewMessageSignalHandler {
             .setGroupSummary(true)
             .setContentIntent(createOnTapIntent(context, notificationId, chat.getId()))
             .setDeleteIntent(createOnDismissedIntent(context, notificationId, chat.getId()))
+            .setNumber(messages.size())
             .setAutoCancel(true);
         if (Build.VERSION.SDK_INT >= 21) {
             builder.setVibrate(new long[0]);
