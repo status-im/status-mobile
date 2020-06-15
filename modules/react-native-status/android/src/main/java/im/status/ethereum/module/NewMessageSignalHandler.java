@@ -87,10 +87,7 @@ public class NewMessageSignalHandler {
         Log.e(TAG, "Broadcast Receiver registered");
     }
 
-    //NOTE: this method takes a chatId and returns an intent that will open the app in that chat
-    //Once we support other kind of notifications we will need to adapt it. The simplest method
-    //is probably to pass the universal link as param instead of the chatId.
-    public Intent getOpenAppIntent(String chatId) {
+    public Intent getOpenAppIntent() {
         Class intentClass;
         String packageName = context.getPackageName();
         Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
@@ -112,6 +109,14 @@ public class NewMessageSignalHandler {
         //flags in this link:
         //https://stackoverflow.com/questions/52390129/android-intent-setflags-issue
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return intent;
+    }
+
+    //NOTE: this method takes a chatId and returns an intent that will open the app in that chat
+    //Once we support other kind of notifications we will need to adapt it. The simplest method
+    //is probably to pass the universal link as param instead of the chatId.
+    public Intent getOpenAppIntent(String chatId) {
+        Intent intent = getOpenAppIntent();
         intent.setData(Uri.parse("status-im://chat/private/" + chatId));
         return intent;
     }

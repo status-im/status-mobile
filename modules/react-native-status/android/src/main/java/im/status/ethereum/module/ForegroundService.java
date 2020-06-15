@@ -7,6 +7,7 @@ import android.os.IBinder;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -22,7 +23,7 @@ public class ForegroundService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(Intent i, int flags, int startId) {
         // NOTE: recent versions of Android require the service to display
         // a sticky notification to inform the user that the service is running
         Context context = getApplicationContext();
@@ -35,6 +36,23 @@ public class ForegroundService extends Service {
                                                                                   "Status Service",
                                                                                   NotificationManager.IMPORTANCE_HIGH));
         }
+        Class intentClass;
+        String packageName = context.getPackageName();
+        Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+        String className = launchIntent.getComponent().getClassName();
+        try {
+            intentClass =  Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        Intent intent = new Intent(context, intentClass);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
         String content = "Keep Status running to receive notifications";
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_notify_status)
@@ -42,6 +60,7 @@ public class ForegroundService extends Service {
             .setContentText(content)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setContentIntent(pendingIntent)
             .build();
         // the id of the foreground notification MUST NOT be 0
         startForeground(1, notification);
