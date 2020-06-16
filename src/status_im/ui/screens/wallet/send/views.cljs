@@ -34,20 +34,22 @@
 (defn asset-selector [{:keys [request? token from]}]
   (let [{:keys [name icon color]} token]
     [react/touchable-highlight
-     {:on-press (when-not request? #(do
+     {:style    {:flex 1}
+      :on-press (when-not request? #(do
                                       (re-frame/dispatch [:dismiss-keyboard])
                                       (re-frame/dispatch [:bottom-sheet/show-sheet
                                                           {:content        (fn [] [sheets/assets (:address from)])
                                                            :content-height 300}])))}
      [react/view {:style               {:flex-direction :row
                                         :align-items    :center
-                                        :margin-left    16}
+                                        :flex           1 :margin-left 16}
                   :accessibility-label :choose-asset-button}
       (if icon
         [list/item-image (assoc icon :style {:background-color colors/gray-lighter
                                              :border-radius    50} :image-style {:width 32 :height 32})]
         [chat-icon/custom-icon-view-list name color 32])
-      [react/text {:style {:margin-left 8}}
+      [react/text {:style           {:margin-left 8 :flex-shrink 0.5}
+                   :number-of-lines 2}
        (wallet.utils/display-symbol token)]
       (when-not request?
         [icons/icon :main-icons/dropdown {:color colors/gray}])]]))
@@ -96,6 +98,7 @@
        [header {:small-screen? small-screen?
                 :on-cancel #(re-frame/dispatch [:wallet/cancel-transaction-command])}]
        [react/view {:flex-direction :row :padding-horizontal 24 :align-items :center
+                    :flex 1
                     :margin-vertical (if small-screen? 8 16)}
         [react/text-input
          {:style               {:font-size (if small-screen? 24 38)
