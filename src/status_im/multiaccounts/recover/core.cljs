@@ -136,8 +136,10 @@
    {:title               (i18n/label :t/multiaccount-exists-title)
     :content             (i18n/label :t/multiaccount-exists-content)
     :confirm-button-text (i18n/label :t/unlock)
-    :on-accept           #(re-frame/dispatch
-                           [:multiaccounts.login.ui/multiaccount-selected key-uid])
+    :on-accept           #(do
+                            (re-frame/dispatch [:navigate-to :multiaccounts])
+                            (re-frame/dispatch
+                             [:multiaccounts.login.ui/multiaccount-selected key-uid]))
     :on-cancel           #(re-frame/dispatch [:navigate-to :multiaccounts])}})
 
 (fx/defn on-import-multiaccount-success
