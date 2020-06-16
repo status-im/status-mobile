@@ -24,7 +24,7 @@
             [status-im.utils.contenthash :as contenthash])
   (:require-macros [status-im.utils.views :as views]))
 
-(defn toolbar-content [url url-original {:keys [secure?]} url-editing?]
+(defn toolbar-content [url url-original {:keys [secure?]} url-editing? unsafe?]
   (let [url-text (atom url)]
     [react/view (styles/toolbar-content)
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/lock-pressed secure?])}
@@ -45,11 +45,12 @@
        [react/touchable-highlight {:style    styles/url-text-container
                                    :on-press #(re-frame/dispatch [:browser.ui/url-input-pressed])}
         [react/text (http/url-host url-original)]])
-     [react/touchable-highlight {:on-press #(.reload ^js @webview-ref/webview-ref)
-                                 :accessibility-label :refresh-page-button}
-      [icons/icon :main-icons/refresh]]]))
+     (when-not unsafe?
+       [react/touchable-highlight {:on-press #(.reload ^js @webview-ref/webview-ref)
+                                   :accessibility-label :refresh-page-button}
+        [icons/icon :main-icons/refresh]])]))
 
-(defn toolbar [error? url url-original browser browser-id url-editing?]
+(defn toolbar [error? url url-original browser browser-id url-editing? unsafe?]
   [toolbar.view/toolbar
    {:browser? true}
    [toolbar.view/nav-button
@@ -58,7 +59,7 @@
                      (re-frame/dispatch [:navigate-back])
                      (when error?
                        (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
-   [toolbar-content url url-original browser url-editing?]])
+   [toolbar-content url url-original browser url-editing? unsafe?]])
 
 (defn- web-view-error [_ _ desc]
   (reagent/as-element
@@ -156,7 +157,7 @@
           can-go-forward? (browser/can-go-forward? browser)
           url-original    (browser/get-current-url browser)]
       [react/view {:style styles/browser}
-       [toolbar error? url url-original browser browser-id url-editing?]
+       [toolbar error? url url-original browser browser-id url-editing? unsafe?]
        [react/view
         (when loading?
           [connectivity/loading-indicator window-width])]

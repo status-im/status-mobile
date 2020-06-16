@@ -74,7 +74,10 @@ class TestBrowsing(SingleDeviceTestCase):
     def test_open_blocked_site(self):
         home_view = SignInView(self.driver).create_user()
         daap_view = home_view.dapp_tab_button.click()
-        daap_view.open_url('https://www.cryptokitties.domainname').find_text_part('This site is blocked')
+        dapp_detail = daap_view.open_url('https://www.cryptokitties.domainname')
+        dapp_detail.find_text_part('This site is blocked')
+        if dapp_detail.browser_refresh_page_button.is_element_displayed():
+            self.driver.fail("Refresh button is present in blocked site")
 
 
     @marks.testrail_id(6300)
