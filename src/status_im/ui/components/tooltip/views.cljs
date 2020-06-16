@@ -26,9 +26,9 @@
                                                :color color)]]]))
 
 (views/defview bottom-tooltip-info [label on-close]
-  (views/letsubs [bottom-anim-value (animation/create-value 150)
+  (views/letsubs [bottom-anim-value (animation/create-value 75)
                   opacity-value     (animation/create-value 0)]
-    {:component-did-mount (animations/animate-tooltip 150 bottom-anim-value opacity-value 10)}
+    {:component-did-mount (animations/animate-tooltip 75 bottom-anim-value opacity-value 10)}
     [react/view styles/bottom-tooltip-container
      [react/animated-view {:style (styles/tooltip-animated bottom-anim-value opacity-value)}
       [vector-icons/icon :icons/tooltip-tip (assoc
