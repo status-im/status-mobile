@@ -139,7 +139,8 @@
         (reduce (fn [acc [address balances]]
                   (let [pos-balances
                         (reduce (fn [acc [token-address token-balance]]
-                                  (let [token-symbol (get tokens (name token-address))]
+                                  (let [token-symbol (or (get tokens (name token-address))
+                                                         (get tokens (eip55/address->checksum (name token-address))))]
                                     (if (or (and (empty? assets) (pos? token-balance))
                                             (and (seq assets) (assets token-symbol)))
                                       (assoc acc token-symbol token-balance)
