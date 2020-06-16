@@ -355,8 +355,12 @@ class TestChatManagement(SingleDeviceTestCase):
         browsing_view = daap_view.open_url('dap.ps')
         browsing_view.share_url_button.click()
         browsing_view.share_via_messenger()
-        if not chat_view.element_by_text_part('https://join.status.im/b/https://dap.ps').is_element_present():
-             self.errors.append("Can't share link to URL")
+        expeceted_text_1 = 'https://join.status.im/b/https://dap.ps'
+        expeceted_text_2 = 'https://join.status.im/b/http://dap.ps'
+
+        if not (chat_view.element_by_text_part(expeceted_text_1).is_element_present() or
+                chat_view.element_by_text_part(expeceted_text_2).is_element_present()):
+            self.errors.append("Can't share link to URL")
 
         self.errors.verify_no_errors()
 

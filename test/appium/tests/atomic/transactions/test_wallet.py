@@ -484,6 +484,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         wallet_view.just_fyi('change account name/color and verified applied changes')
         account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+        wallet_view.account_name_input.clear()
         wallet_view.account_name_input.send_keys(account_name)
         wallet_view.account_color_button.select_color_by_position(1)
         wallet_view.apply_settings_button.click()
@@ -629,7 +630,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.select_asset_button.click_until_presence_of_element(token_element)
         if not token_element.is_element_displayed():
             self.errors.append('Custom token is not shown on Send Transaction view')
-        send_transaction.cancel_button.click()
+        send_transaction.cancel_button.click_until_absense_of_element(token_element)
 
         #TODO: workaroud for issue 10699
         profile = wallet_view.profile_button.click()

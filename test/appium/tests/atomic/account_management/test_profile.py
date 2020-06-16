@@ -63,7 +63,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     def test_mobile_data_usage_popup_stop_syncing(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
-        offline_banner_text = "Offline, waiting for Wi-Fi"
+        offline_banner_text = "No Wi-fi, message syncing disabled."
 
         sign_in_view.just_fyi("Enable mobile network to see popup and stop syncing")
         sign_in_view.toggle_mobile_data()
@@ -71,7 +71,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if not sign_in_view.wait_for_element_starts_with_text(offline_banner_text, 60):
             self.driver.fail('No popup about offline history is shown')
         sign_in_view.element_by_text_part(offline_banner_text).click()
-        for item in "Offline, waiting for Wi-Fi", "Start syncing", "Go to settings":
+        for item in offline_banner_text, "Start syncing", "Go to settings":
             if not sign_in_view.element_by_text(item).is_element_displayed():
                 self.driver.fail("%s is not shown" % item)
 
