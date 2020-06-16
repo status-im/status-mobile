@@ -6,7 +6,8 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.multiaccounts.biometric.core :as biometric]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- list-data [mnemonic preview-privacy? supported-biometric-auth biometric-auth? _]
@@ -56,7 +57,9 @@
     :accessibility-label :dapps-permissions-button
     :accessories         [:chevron]}
    {:type                    :small
-    :title                   :t/hide-content-when-switching-apps
+    :title                   (if platform/android?
+                               :t/hide-content-when-switching-apps
+                               :t/hide-content-when-switching-apps-ios)
     :container-margin-bottom 8
     :accessories
     [[react/switch
