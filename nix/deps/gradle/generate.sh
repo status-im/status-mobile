@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
+# Stop on any failures, including in pipes
 set -e
+set -o pipefail
 
 if [[ -z "${IN_NIX_SHELL}" ]]; then
     echo "Remember to call 'make shell'!"
