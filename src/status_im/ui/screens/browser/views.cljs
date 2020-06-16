@@ -20,7 +20,8 @@
             [status-im.ui.screens.browser.styles :as styles]
             [status-im.utils.debounce :as debounce]
             [status-im.utils.http :as http]
-            [status-im.utils.js-resources :as js-res])
+            [status-im.utils.js-resources :as js-res]
+            [status-im.utils.contenthash :as contenthash])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn toolbar-content [url url-original {:keys [secure?]} url-editing?]
@@ -59,12 +60,13 @@
                        (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
    [toolbar-content url url-original browser url-editing?]])
 
-(defn- web-view-error [_ code desc]
+(defn- web-view-error [_ _ desc]
   (reagent/as-element
    [react/view styles/web-view-error
+    [react/image {:style  {:width 140 :height 140 :margin-bottom 16}
+                  :source {:uri (contenthash/url
+                                 "e3010170122001bbe2f5bfba0305a3bdc2047fddc47ee595a591bdee61de6040ffc2456624e1")}}]
     [react/i18n-text {:style styles/web-view-error-text :key :web-view-error}]
-    [react/text {:style styles/web-view-error-text}
-     (str code)]
     [react/text {:style styles/web-view-error-text}
      (str desc)]]))
 

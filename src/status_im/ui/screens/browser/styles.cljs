@@ -17,13 +17,20 @@
   {:opacity 0.4})
 
 (def web-view-error
-  {:flex             1
-   :justify-content  :center
+  {:justify-content  :center
    :align-items      :center
-   :background-color colors/gray-lighter})
+   :position         :absolute
+   :padding          20
+   :top              0
+   :left             0
+   :bottom           0
+   :right            0
+   :background-color colors/white})
 
 (def web-view-error-text
-  {:color colors/gray})
+  {:color       colors/gray
+   :line-height 22
+   :text-align  :center})
 
 (defn toolbar-content []
   {:flex-direction     :row
