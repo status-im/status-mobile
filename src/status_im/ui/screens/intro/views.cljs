@@ -29,7 +29,7 @@
       ^{:key i}
       [react/view {:style (styles/dot color (selected i))}]))])
 
-(defn intro-viewer [slides window-height]
+(defn intro-viewer [slides window-height _]
   (let [scroll-x (r/atom 0)
         scroll-view-ref (atom nil)
         width (r/atom 0)
@@ -38,58 +38,63 @@
         text-temp-height (atom 0)
         text-temp-timer (atom nil)
         bottom-margin (if (> window-height 600) 32 16)]
-    (fn []
-      [react/view {:style {:align-items :center
-                           :flex 1
-                           :margin-bottom bottom-margin
-                           :justify-content :flex-end}
-                   :on-layout (fn [^js e]
-                                (reset! width (-> e .-nativeEvent .-layout .-width)))}
-       [react/scroll-view {:horizontal true
-                           :paging-enabled true
-                           :ref #(reset! scroll-view-ref %)
-                           :shows-vertical-scroll-indicator false
-                           :shows-horizontal-scroll-indicator false
-                           :pinch-gesture-enabled false
-                           :on-scroll #(let [^js x (.-nativeEvent.contentOffset.x ^js %)]
-                                         (reset! scroll-x x))
-                           :style {:margin-bottom bottom-margin}}
-        (doall
-         (for [s slides]
-           ^{:key (:title s)}
-           [react/view {:style {:flex 1
-                                :width @width
-                                :justify-content :flex-end
-                                :align-items :center
-                                :padding-horizontal 32}}
-            (let [size (min @width @height)]
-              [react/view {:style {:flex 1}
-                           :on-layout (fn [^js e]
-                                        (let [new-height (-> e .-nativeEvent .-layout .-height)]
-                                          (swap! height #(if (pos? %) (min % new-height) new-height))))}
-               [react/image {:source (:image s)
-                             :resize-mode :contain
-                             :style {:width size
-                                     :height size}}]])
-            [react/i18n-text {:style styles/wizard-title :key (:title s)}]
-            [react/text {:style (styles/wizard-text-with-height @text-height)
-                         :on-layout
-                         (fn [^js e]
-                           (let [new-height (-> e .-nativeEvent .-layout .-height)]
-                             (when (and (not= new-height @text-temp-height)
-                                        (not (zero? new-height))
-                                        (< new-height 200))
-                               (swap! text-temp-height #(if (pos? %) (max % new-height) new-height))
-                               (when @text-temp-timer (js/clearTimeout @text-temp-timer))
-                               (reset! text-temp-timer
-                                       (js/setTimeout #(reset! text-height @text-temp-height) 500)))))}
-             (i18n/label (:text s))]]))]
-       (let [selected (hash-set (quot (int @scroll-x) (int @width)))]
-         [dots-selector {:selected selected :n (count slides)
-                         :color colors/blue}])])))
+    (fn [_ _ view-id]
+      (let [current-screen? (or (nil? view-id) (= view-id :intro))]
+        [react/view {:style {:align-items :center
+                             :flex 1
+                             :margin-bottom bottom-margin
+                             :justify-content :flex-end}
+                     :on-layout (fn [^js e]
+                                  (when current-screen?
+                                    (reset! width (-> e .-nativeEvent .-layout .-width))))}
+         [react/scroll-view {:horizontal true
+                             :paging-enabled true
+                             :ref #(reset! scroll-view-ref %)
+                             :shows-vertical-scroll-indicator false
+                             :shows-horizontal-scroll-indicator false
+                             :pinch-gesture-enabled false
+                             :on-scroll #(let [^js x (.-nativeEvent.contentOffset.x ^js %)]
+                                           (reset! scroll-x x))
+                             :style {:margin-bottom bottom-margin}}
+          (doall
+           (for [s slides]
+             ^{:key (:title s)}
+             [react/view {:style {:flex 1
+                                  :width @width
+                                  :justify-content :flex-end
+                                  :align-items :center
+                                  :padding-horizontal 32}}
+              (let [size (min @width @height)]
+                [react/view {:style {:flex 1}
+                             :on-layout (fn [^js e]
+                                          (let [new-height (-> e .-nativeEvent .-layout .-height)]
+                                            (when current-screen?
+                                              (swap! height #(if (pos? %) (min % new-height) new-height)))))}
+                 [react/image {:source (:image s)
+                               :resize-mode :contain
+                               :style {:width size
+                                       :height size}}]])
+              [react/i18n-text {:style styles/wizard-title :key (:title s)}]
+              [react/text {:style (styles/wizard-text-with-height @text-height)
+                           :on-layout
+                           (fn [^js e]
+                             (let [new-height (-> e .-nativeEvent .-layout .-height)]
+                               (when (and current-screen?
+                                          (not= new-height @text-temp-height)
+                                          (not (zero? new-height))
+                                          (< new-height 200))
+                                 (swap! text-temp-height #(if (pos? %) (max % new-height) new-height))
+                                 (when @text-temp-timer (js/clearTimeout @text-temp-timer))
+                                 (reset! text-temp-timer
+                                         (js/setTimeout #(reset! text-height @text-temp-height) 500)))))}
+               (i18n/label (:text s))]]))]
+         (let [selected (hash-set (quot (int @scroll-x) (int @width)))]
+           [dots-selector {:selected selected :n (count slides)
+                           :color colors/blue}])]))))
 
 (defview intro []
-  (letsubs  [{window-height :height} [:dimensions/window]]
+  (letsubs  [{window-height :height} [:dimensions/window]
+             view-id [:view-id]]
     [react/view {:style styles/intro-view}
      [intro-viewer [{:image (resources/get-theme-image :chat)
                      :title :intro-title1
@@ -99,7 +104,7 @@
                      :text :intro-text2}
                     {:image (resources/get-theme-image :browser)
                      :title :intro-title3
-                     :text :intro-text3}] window-height]
+                     :text :intro-text3}] window-height view-id]
      [react/view styles/buttons-container
       [components.common/button {:button-style (assoc styles/bottom-button :margin-bottom 16)
                                  :on-press     #(re-frame/dispatch [:multiaccounts.create.ui/intro-wizard])
