@@ -19,6 +19,7 @@
         [quo/text-input
          {:on-change-text  #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :gas %])
           :label           (i18n/label :t/gas-limit)
+          :bottom-value    0
           :error           (:error gas-edit)
           :default-value   (:value gas-edit)
           :keyboard-type   :numeric
@@ -31,6 +32,7 @@
         [quo/text-input
          {:label           (i18n/label :t/gas-price)
           :on-change-text  #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :gasPrice %])
+          :bottom-value    0
           :error           (:error gas-price-edit)
           :default-value   (:value gas-price-edit)
           :keyboard-type   :numeric
