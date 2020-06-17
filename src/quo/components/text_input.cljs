@@ -159,27 +159,39 @@
                           ;; Enabled by default on iOs and disabled on Android
                           platform/ios?
                           show-cancel)
-            after (cond
-                    (and secure-text-entry @visible)
-                    {:icon     :main-icons/hide
-                     :on-press #(reset! visible false)}
+            after       (cond
+                          (and secure-text-entry @visible)
+                          {:icon     :main-icons/hide
+                           :on-press #(reset! visible false)}
 
-                    (and secure-text-entry (not @visible))
-                    {:icon     :main-icons/show
-                     :on-press #(reset! visible true)}
+                          (and secure-text-entry (not @visible))
+                          {:icon     :main-icons/show
+                           :on-press #(reset! visible true)}
 
-                    :else after)
+                          :else after)
             secure    (and secure-text-entry (not @visible))
             on-cancel (fn []
                         (when on-cancel
                           (on-cancel))
-                        (blur))]
+                        (blur))
+            keyboard-type (cond
+                            (and platform/ios? (= keyboard-type "visible-password"))
+                            "default"
+
+                            (and platform/android? secure-text-entry @visible)
+                            "visible-password"
+
+                            :else
+                            keyboard-type)]
         [rn/view {:style container-style}
          (when label
            [text/text {:style (label-style)}
             label])
          [rn/view {:style (text-input-row-style)}
-          [rn/view {:style (text-input-view-style style)}
+          [rn/view {:style                       (text-input-view-style style)
+                    :important-for-accessibility (if secure-text-entry
+                                                   :no-hide-descendants
+                                                   :auto)}
            (when before
              [accessory-element before])
            [rn/text-input
@@ -200,12 +212,10 @@
                                                (when on-blur (on-blur evt))
                                                (when show-cancel
                                                  (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets)))
-                                               (reset! focused false))}
+                                               (reset! focused false))
+                    :keyboard-type           keyboard-type}
                    (when (and platform/ios? (not after))
                      {:clear-button-mode :while-editing})
-                   (when (and platform/ios?
-                              (not= keyboard-type "visible-password"))
-                     {:keyboard-type keyboard-type})
                    (dissoc props
                            :style :keyboard-type :on-focus :on-blur
                            :secure-text-entry :ref :get-ref))]

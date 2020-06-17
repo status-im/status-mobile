@@ -49,8 +49,7 @@
                          :style                     styles/login-view}
       [react/view styles/login-badge-container
        [multiaccount-login-badge multiaccount]
-       [react/view {:style                       styles/password-container
-                    :important-for-accessibility :no-hide-descendants}
+       [react/view {:style styles/password-container}
         [react/view {:flex-direction :row :align-items :center}
          [react/view {:flex 1}
           [quo/text-input

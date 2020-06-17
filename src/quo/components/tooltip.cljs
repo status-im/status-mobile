@@ -6,6 +6,7 @@
             [quo.design-system.colors :as colors]
             [quo.design-system.spacing :as spacing]
             [quo.platform :as platform]
+            ;; FIXME(Ferossgp): Dependecy on status
             [status-im.ui.components.icons.vector-icons :as vector-icons]))
 
 (def ^:private initial-height 22)
@@ -47,7 +48,7 @@
                             height (oget evt "nativeEvent" "layout" "height")]
                         (reset! layout {:width  width
                                         :height height})))]
-    (fn  [{:keys [bottom-value]} & children]
+    (fn  [{:keys [bottom-value accessibility-label]} & children]
       [:<>
        [animated/code {:exec (animated/cond* (animated/not* animation-v)
                                              (animated/set animation-v 1))}]
@@ -57,8 +58,10 @@
                        :pointer-events :box-none}
         [animated/view {:style          (container-style)
                         :pointer-events :box-none}
-         (into [rn/view {:style     (content-style)
-                         :on-layout on-layout}]
+         (into [rn/view {:style               (content-style)
+                         :pointer-events      :box-none
+                         :accessibility-label accessibility-label
+                         :on-layout           on-layout}]
                children)
 
          (when platform/ios?
