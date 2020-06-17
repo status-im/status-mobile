@@ -69,6 +69,9 @@ class NetworkApi(object):
         counter = 0
         while True:
             if counter >= wait_time:
+                for entry in range(0,5):
+                    self.log('Transaction #%s, amount is %s' %(entry+1, float(int(transactions[entry]['value']) / 10 ** decimals)))
+                    self.log(str(transactions[entry]))
                 pytest.fail(
                     'Transaction with amount %s is not found in list of transactions, address is %s' %
                     (amount, address))
