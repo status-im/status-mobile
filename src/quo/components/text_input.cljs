@@ -66,9 +66,9 @@
       false)))
 
 ;; TODO(Ferossgp): Check performance for android layout animations
-;; (when (and platform/android?
-;;            (aget rn/ui-manager "setLayoutAnimationEnabledExperimental"))
-;;   (ocall rn/ui-manager "setLayoutAnimationEnabledExperimental" true))
+(when (and platform/android?
+           (aget rn/ui-manager "setLayoutAnimationEnabledExperimental"))
+  (ocall rn/ui-manager "setLayoutAnimationEnabledExperimental" true))
 
 (def height 44)                         ; 22 line-height + 11*2 vertical padding
 (def multiline-height 88)               ; 3 * 22 three line-height + 11* vertical padding
@@ -152,11 +152,14 @@
                  cancel-label on-focus on-blur show-cancel accessibility-label
                  bottom-value secure-text-entry container-style get-ref on-cancel
                  monospace]
-          :or   {cancel-label "Cancel"
-                 show-cancel  true}
+          :or   {cancel-label "Cancel"}
           :as   props}]
       {:pre [(check-spec ::text-input props)]}
-      (let [after (cond
+      (let [show-cancel (if (nil? show-cancel)
+                          ;; Enabled by default on iOs and disabled on Android
+                          platform/ios?
+                          show-cancel)
+            after (cond
                     (and secure-text-entry @visible)
                     {:icon     :main-icons/hide
                      :on-press #(reset! visible false)}
@@ -190,12 +193,12 @@
                     :secure-text-entry       secure
                     :on-focus                (fn [evt]
                                                (when on-focus (on-focus evt))
-                                               (when (and platform/ios? show-cancel)
+                                               (when show-cancel
                                                  (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets)))
                                                (reset! focused true))
                     :on-blur                 (fn [evt]
                                                (when on-blur (on-blur evt))
-                                               (when (and platform/ios? show-cancel)
+                                               (when show-cancel
                                                  (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets)))
                                                (reset! focused false))}
                    (when (and platform/ios? (not after))
@@ -208,8 +211,7 @@
                            :secure-text-entry :ref :get-ref))]
            (when after
              [accessory-element after])]
-          (when (and platform/ios?
-                     show-cancel
+          (when (and show-cancel
                      (not multiline)
                      @focused)
             [rn/touchable-opacity {:style    (cancel-style)

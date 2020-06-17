@@ -15,6 +15,7 @@
                        :default-value   search-filter
                        :auto-focus      auto-focus
                        :on-cancel       on-cancel
+                       :show-cancel     true
                        :auto-correct    false
                        :auto-capitalize :none
                        :input-style     {:height         36
