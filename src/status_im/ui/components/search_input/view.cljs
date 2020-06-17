@@ -7,11 +7,11 @@
 (defn search-input [{:keys [search-active?]}]
   (let [input-ref      (atom nil)
         search-active? (or search-active? (reagent/atom nil))]
-    (fn [{:keys [on-focus on-change on-cancel search-filter auto-focus]}]
+    (fn [{:keys [on-focus on-change on-blur on-cancel search-filter auto-focus]}]
       [quo/text-input {:placeholder     (i18n/label :t/search)
                        :blur-on-submit  true
                        :multiline       false
-                       :ref             #(reset! input-ref %)
+                       :get-ref         #(reset! input-ref %)
                        :default-value   search-filter
                        :auto-focus      auto-focus
                        :on-cancel       on-cancel
@@ -23,13 +23,16 @@
                                          :padding-bottom 2}
                        :before          {:icon      :main-icons/search
                                          :style     {:padding-horizontal 8}
-                                         :on-press  #(.focus ^js @input-ref)
+                                         :on-press  #(some-> ^js @input-ref (.focus))
                                          :icon-opts {:color (:icon-02  @colors/theme)}}
                        :on-focus        #(do
                                            (when on-focus
                                              (on-focus search-filter))
                                            (reset! search-active? true))
-                       :on-blur         #(reset! search-active? false)
+                       :on-blur         #(do
+                                           (when on-blur
+                                             (on-blur))
+                                           (reset! search-active? false))
                        :on-change       (fn [e]
                                           (let [^js native-event (.-nativeEvent ^js e)
                                                 text             (.-text native-event)]

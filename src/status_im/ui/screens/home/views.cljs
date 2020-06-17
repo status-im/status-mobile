@@ -85,13 +85,15 @@
 
 (defonce search-active? (reagent/atom false))
 
-(defn search-input-wrapper [search-filter]
+(defn search-input-wrapper [search-filter chats]
   [react/view {:padding-horizontal 16
                :padding-vertical   10}
    [search-input/search-input
     {:search-active? search-active?
      :search-filter  search-filter
      :on-cancel      #(re-frame/dispatch [:search/home-filter-changed nil])
+     :on-blur        #(when-not (seq chats)
+                        (re-frame/dispatch [:search/home-filter-changed nil]))
      :on-focus       (fn [search-filter]
                        (when-not search-filter
                          (re-frame/dispatch [:search/home-filter-changed ""])))
@@ -116,7 +118,7 @@
           :data                           chats
           :render-fn                      (fn [home-item] [inner-item/home-list-item home-item])
           :header                         (when (or (seq chats) @search-active?)
-                                            [search-input-wrapper search-filter])
+                                            [search-input-wrapper search-filter chats])
           :footer                         (if (and (not hide-home-tooltip?) (not @search-active?))
                                             [home-tooltip-view]
                                             [react/view {:height 68}])}]))))
