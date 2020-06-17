@@ -632,14 +632,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             self.errors.append('Custom token is not shown on Send Transaction view')
         send_transaction.cancel_button.click_until_absense_of_element(token_element)
 
-        #TODO: workaroud for issue 10699
-        profile = wallet_view.profile_button.click()
-        profile.relogin()
-        profile.wallet_button.click()
-
         recipient = "0x" + basic_user['address']
         amount = '0.0%s' % str(random.randint(10000, 99999)) + '1'
-        wallet_view.accounts_status_account.click()
         wallet_view.send_transaction(asset_name=symbol, amount=amount, recipient=recipient)
         transactions_view = wallet_view.transaction_history_button.click()
         transactions_view.transactions_table.find_transaction(amount=amount, asset=symbol)
