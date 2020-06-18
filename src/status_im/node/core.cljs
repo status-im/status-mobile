@@ -7,8 +7,7 @@
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as utils.platform]
-            [status-im.utils.types :as types])
-  (:require-macros [status-im.utils.slurp :refer [slurp]]))
+            [status-im.utils.types :as types]))
 
 (defn- add-custom-bootnodes [config network all-bootnodes]
   (let [bootnodes (as-> all-bootnodes $
@@ -70,10 +69,8 @@
   [limit nodes]
   (take limit (shuffle nodes)))
 
-(def default-fleets (slurp "resources/config/fleets.json"))
-
 (defn fleets [{:keys [custom-fleets]}]
-  (as-> [default-fleets] $
+  (as-> [(js/require "./fleets.js")] $
     (mapv #(:fleets (types/json->clj %)) $)
     (conj $ custom-fleets)
     (reduce merge $)))
