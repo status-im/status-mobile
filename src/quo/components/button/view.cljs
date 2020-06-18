@@ -6,7 +6,8 @@
             [quo.design-system.spacing :as spacing]
             [quo.components.text :as text]
             ;; FIXME:
-            [status-im.ui.components.icons.vector-icons :as icons]))
+            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.utils.label :as utils.label]))
 
 (defn style-container [type]
   (merge {:height          44
@@ -46,7 +47,7 @@
 
 (defn button [{:keys [on-press disabled type theme before after icon
                       haptic-feedback haptic-type on-long-press on-press-start
-                      accessibility-label]
+                      accessibility-label loading]
                :or   {theme           :main
                       type            :primary
                       haptic-feedback true
@@ -81,16 +82,21 @@
       (when before
         [rn/view
          [icons/icon before {:color icon-color}]])
-      [rn/view {:style (content-style type)}
+      (when loading
+        [rn/view {:style {:position :absolute}}
+         [rn/activity-indicator]])
+      [rn/view {:style (merge (content-style type)
+                              (when loading
+                                {:opacity 0}))}
        (cond
          (= type :icon)
          [icons/icon icon {:color icon-color}]
 
-         (string? children)
+         (or (keyword? children) (string? children))
          [text/text {:weight          :medium
                      :number-of-lines 1
                      :style           {:color text-color}}
-          children]
+          (utils.label/stringify children)]
 
          (vector? children)
          children)]

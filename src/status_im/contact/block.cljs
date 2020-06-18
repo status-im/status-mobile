@@ -57,7 +57,8 @@
                        (assoc-in [:contacts/contacts public-key] contact)
                        ;; remove the 1-1 chat if it exists
                        (update-in [:chats] dissoc public-key))}
-              (contacts-store/block contact #(re-frame/dispatch [::contact-blocked contact (map chats-store/<-rpc %)]))
+              (contacts-store/block contact #(do (re-frame/dispatch [::contact-blocked contact (map chats-store/<-rpc %)])
+                                                 (re-frame/dispatch [:hide-popover])))
               ;; reset navigation to avoid going back to non existing one to one chat
               (if from-one-to-one-chat?
                 remove-current-chat-id

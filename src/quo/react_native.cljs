@@ -34,6 +34,11 @@
 
 (def switch (reagent/adapt-react-class (.-Switch ^js rn)))
 
+(def activity-indicator-class (reagent/adapt-react-class (.-ActivityIndicator ^js rn)))
+
+(defn activity-indicator [props]
+  [activity-indicator-class props])
+
 ;; Flat-list
 (def ^:private rn-flat-list (reagent/adapt-react-class (.-FlatList ^js rn)))
 

@@ -72,14 +72,14 @@
                            :title-accessibility-label :profile-details}]
      [profile-details-list-view contact]]))
 
-(defn block-contact-action [{:keys [blocked? public-key] :as contact}]
+(defn block-contact-action [{:keys [blocked? public-key]}]
   [react/touchable-highlight {:on-press (if blocked?
                                           #(re-frame/dispatch [:contact.ui/unblock-contact-pressed public-key])
-                                          #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                               {:content        sheets/block-contact
-                                                                :content-height 160}
-                                                               contact]))}
-   [react/text {:style styles/block-action-label
+                                          #(re-frame/dispatch [:show-popover
+                                                               {:view             sheets/block-contact
+                                                                :prevent-closing? true
+                                                                :public-key       public-key}]))}
+   [react/text {:style               styles/block-action-label
                 :accessibility-label (if blocked?
                                        :unblock-contact
                                        :block-contact)}

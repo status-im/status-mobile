@@ -2,21 +2,23 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
-            [status-im.ui.components.list-item.views :as list-item]
-            [status-im.ui.screens.profile.components.styles :as styles])
+            [status-im.ui.screens.profile.components.styles :as styles]
+            [quo.core :as quo]
+            [reagent.core :as reagent])
   (:require-macros [status-im.utils.views :as views]))
 
-(defn hide-sheet-and-dispatch [event]
-  (re-frame/dispatch [:bottom-sheet/hide-sheet])
-  (re-frame/dispatch event))
-
 (views/defview block-contact []
-  (views/letsubs [{:keys [public-key]} [:bottom-sheet/options]]
-    [react/view
+  (views/letsubs [{:keys [public-key]} [:popover/popover]
+                  in-progress? (reagent/atom false)]
+    [react/view {:style {:padding-top 16 :padding-horizontal 24 :padding-bottom 8}}
      [react/text {:style styles/sheet-text}
       (i18n/label :t/block-contact-details)]
-     [list-item/list-item
-      {:theme               :action-destructive
-       :accessibility-label :block-contact-confirm
-       :title               :t/block-contact
-       :on-press            #(hide-sheet-and-dispatch [:contact.ui/block-contact-confirmed public-key])}]]))
+     [react/view {:align-items :center :margin-top 16}
+      [quo/button {:theme :negative :disabled @in-progress? :loading @in-progress?
+                   :on-press #(do (reset! in-progress? true)
+                                  (re-frame/dispatch [:contact.ui/block-contact-confirmed public-key]))}
+       :t/block]
+      [react/view {:height 8}]
+      [quo/button {:type :secondary :disabled @in-progress?
+                   :on-press #(re-frame/dispatch [:hide-popover])}
+       :t/close]]]))

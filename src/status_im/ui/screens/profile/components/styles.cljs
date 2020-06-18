@@ -55,7 +55,6 @@
 ;; sheets
 
 (def sheet-text
-  {:color       colors/gray
-   :padding     24
+  {:text-align :center
    :line-height 22
    :font-size   15})

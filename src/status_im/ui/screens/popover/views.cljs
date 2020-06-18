@@ -42,12 +42,13 @@
         current-popover   (reagent/atom nil)
         update?           (reagent/atom nil)
         request-close     (fn []
-                            (reset! clear-timeout
-                                    (js/setTimeout
-                                     #(do (reset! current-popover nil)
-                                          (re-frame/dispatch [:hide-popover])) 200))
-                            (hide-panel-anim
-                             bottom-anim-value alpha-value (- window-height))
+                            (when-not (:prevent-closing? @current-popover)
+                              (reset! clear-timeout
+                                      (js/setTimeout
+                                       #(do (reset! current-popover nil)
+                                            (re-frame/dispatch [:hide-popover])) 200))
+                              (hide-panel-anim
+                               bottom-anim-value alpha-value (- window-height)))
                             true)
         on-show           (fn []
                             (show-panel-anim bottom-anim-value alpha-value)
