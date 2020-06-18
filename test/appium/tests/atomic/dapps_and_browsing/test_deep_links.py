@@ -13,17 +13,15 @@ class TestDeepLinks(SingleDeviceTestCase):
     @pytest.mark.parametrize("run", [i for i in range(100)])
     def test_open_public_chat_using_deep_link(self, run):
         sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        sign_in_view.just_fyi("Run number %s" % str(run))
+        sign_in_view.get_started_button.click()
+        sign_in_view.generate_key_button.click()
         self.driver.close_app()
-        chat_name = sign_in_view.get_random_chat_name()
-        deep_link = 'status-im://%s' % chat_name
-        sign_in_view.open_weblink_and_login(deep_link)
-        chat_view = sign_in_view.get_chat_view()
-        try:
-            assert chat_view.user_name_text.text == '#' + chat_name
-        except (AssertionError, NoSuchElementException):
-            self.driver.fail("Public chat '%s' is not opened" % chat_name)
+        self.driver.launch_app()
+        sign_in_view.get_started_button.click()
+        self.driver.close_app()
+        self.driver.launch_app()
+        sign_in_view.get_started_button.click()
+
 
     @marks.testrail_id(5441)
     @marks.medium
