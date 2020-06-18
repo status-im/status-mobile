@@ -10,7 +10,7 @@ class TestDeepLinks(SingleDeviceTestCase):
 
     @marks.testrail_id(5396)
     @marks.high
-    @pytest.mark.parametrize("run", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21])
+    @pytest.mark.parametrize("run", [i for i in range(100)])
     def test_open_public_chat_using_deep_link(self, run):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
