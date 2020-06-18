@@ -8142,20 +8142,6 @@
   },
 
   {
-    "path": "org/conscrypt/conscrypt-android/2.0.0/conscrypt-android-2.0.0",
-    "host": "https://repo.maven.apache.org/maven2",
-    "type": "aar",
-    "pom": {
-      "sha1": "25e058e27a29aca4bd7fdc8e5025d7692eddc5ba",
-      "sha256": "1nirj905nlrkbw040kxhpgvsa846lrdjnykzs356a7ga5w10x7l1"
-    },
-    "jar": {
-      "sha1": "663deffff43ca9ff12a73662058fa4f3ed918614",
-      "sha256": "02gwrljmr2brfjgcgrvyryyn81qiwghcw8ibhs10m1lvlicsa320"
-    }
-  },
-
-  {
     "path": "org/easymock/easymockclassextension/3.2/easymockclassextension-3.2",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",

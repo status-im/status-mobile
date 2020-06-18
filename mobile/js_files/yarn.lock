@@ -1309,10 +1309,10 @@
     wcwidth "^1.0.1"
     ws "^1.1.0"
 
-"@react-native-community/clipboard@^1.2.2":
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/@react-native-community/clipboard/-/clipboard-1.2.2.tgz#956b29df141199fd9ed47e820baf9693f9f50b55"
-  integrity sha512-WJkJSWA/fhuBhHL3rh6UDdB8+AZNMvAHoyo/ERnNxl9KZqruq7K+AIaQQlggEAsIVBIhjKt65fT+Zynj7gF8Cg==
+"@react-native-community/clipboard@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/clipboard/-/clipboard-1.2.0.tgz#07e1bab720c8ad80b33a018f689842a497294890"
+  integrity sha512-ajaqbn1YgzyA3HH+G174JPXXRFZ5Qpz4GF+SHerh/XOXRsNaF4fnQy5d29KkpH8B/ss3TvlrvWdGR/+D53sW3w==
 
 "@react-native-community/hooks@^2.5.1":
   version "2.5.1"

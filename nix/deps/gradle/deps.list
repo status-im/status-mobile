@@ -433,7 +433,6 @@ org.checkerframework:checker-qual:2.5.2
 org.codehaus.groovy:groovy-all:2.4.15
 org.codehaus.mojo:animal-sniffer-annotations:1.14
 org.codehaus.mojo:animal-sniffer-annotations:1.17
-org.conscrypt:conscrypt-android:2.0.0
 org.eclipse.jdt.core.compiler:ecj:4.4
 org.eclipse.jdt.core.compiler:ecj:4.4.2
 org.eclipse.jdt.core.compiler:ecj:4.5.1
