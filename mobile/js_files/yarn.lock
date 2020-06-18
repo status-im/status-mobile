@@ -6542,6 +6542,11 @@ react-native-languages@^3.0.2:
   version "4.0.0"
   resolved "git+https://github.com/status-im/react-native-mail.git#a5ff17c3e394b5545549fed33883afe4496f127a"
 
+react-native-navigation-bar-color@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-navigation-bar-color/-/react-native-navigation-bar-color-2.0.1.tgz#ee2be25cc37105f7da355717b0a9a32c9c059ae6"
+  integrity sha512-1kE/oxWt+HYjRxdZdvke9tJ365xaee5n3+euOQA1En8zQuSbOxiE4SYEGM7TeaWnmLJ0l37mRnPHaB2H4mGh0A==
+
 "react-native-navigation-twopane@git+https://github.com/status-im/react-native-navigation-twopane.git#v0.0.2-status":
   version "0.0.2"
   resolved "git+https://github.com/status-im/react-native-navigation-twopane.git#04ed5fddfb46a6a3ee30776987acb4d3b11c27d4"

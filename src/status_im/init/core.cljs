@@ -81,5 +81,4 @@
  ::init-theme
  (fn []
    (utils.theme/add-mode-change-listener #(re-frame/dispatch [:system-theme-mode-changed %]))
-   (when (utils.theme/is-dark-mode)
-     (theme/change-theme :dark))))
+   (theme/change-theme (if (utils.theme/is-dark-mode) :dark :light))))

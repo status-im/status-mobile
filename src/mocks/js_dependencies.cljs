@@ -98,6 +98,7 @@
                                  :SafeAreaInsetsContext {:Consumer (fn [])}
                                  :SafeAreaView {}}))
 (def react-native-dark-mode #js {"eventEmitter" {} "initialMode" {}})
+(def react-native-navigation-bar-color  #js {"changeNavigationBarColor" #()})
 
 (def back-handler #js {:addEventListener identity
                        :removeEventListener identity})
@@ -187,6 +188,7 @@
     "react-native-safe-area-context" safe-area-context
     "react-native-config" config
     "react-native-dark-mode" react-native-dark-mode
+    "react-native-navigation-bar-color" react-native-navigation-bar-color
     "react-native-iphone-x-helper" (clj->js {:getStatusBarHeight (fn [])
                                              :getBottomSpace (fn [])})
     "react-native-screens" (clj->js {})
