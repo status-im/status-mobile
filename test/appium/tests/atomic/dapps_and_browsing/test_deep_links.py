@@ -4,15 +4,17 @@ from tests import marks, test_dapp_url
 from tests.base_test_case import SingleDeviceTestCase
 from tests.users import basic_user, ens_user
 from views.sign_in_view import SignInView
-
+import pytest
 
 class TestDeepLinks(SingleDeviceTestCase):
 
     @marks.testrail_id(5396)
     @marks.high
-    def test_open_public_chat_using_deep_link(self):
+    @pytest.mark.parametrize("run", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21])
+    def test_open_public_chat_using_deep_link(self, run):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
+        sign_in_view.just_fyi("Run number %s" % str(run))
         self.driver.close_app()
         chat_name = sign_in_view.get_random_chat_name()
         deep_link = 'status-im://%s' % chat_name
