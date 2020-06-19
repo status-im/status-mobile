@@ -21,7 +21,7 @@
   (testing "an https url"
     (is (network.core/valid-rpc-url? "https://valid.something.else")))
   (testing "a fully qualified url"
-    (is (network.core/valid-rpc-url? "https://mainnet.infura.io:6523/v3/f315575765b14720b32382a61a89341a")))
+    (is (network.core/valid-rpc-url? "https://mainnet.infura.io:6523/v3/some-token")))
   (testing "an ip address"
     (is (network.core/valid-rpc-url? "https://192.168.1.1")))
   (testing "localhost"

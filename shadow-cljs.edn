@@ -36,6 +36,7 @@
           {:target :react-native
            :output-dir "app"
            :init-fn status-im.core/init
+           :closure-defines {"status-im.utils.config/INFURA_TOKEN" #shadow/env "INFURA_TOKEN"}
            :dev {:devtools {:after-load status-im.reloader/reload
                             :preloads [re-frisk-remote.preload]}
                  :compiler-options {:closure-defines
@@ -63,6 +64,7 @@
           {:output-to     "target/test/test.js"
            :output-dir    "target/test"
            :optimizations :simple
+           :closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
            :target        :node-test
            :compiler-options {;; needed because we override require and it
                               ;; messes with source-map which reports callstack

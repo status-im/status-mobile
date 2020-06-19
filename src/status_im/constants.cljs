@@ -45,7 +45,7 @@
 
 (def system "system")
 
-(def mainnet-rpc-url "https://mainnet.infura.io/v3/f315575765b14720b32382a61a89341a")
+(def mainnet-rpc-url (str "https://mainnet.infura.io/v3/" config/INFURA_TOKEN))
 
 (def mainnet-networks
   [{:id             "mainnet_rpc",
@@ -77,14 +77,14 @@
     :config         {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
                      :DataDir        "/ethereum/testnet_rpc"
                      :UpstreamConfig {:Enabled true
-                                      :URL     "https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a"}}}
+                                      :URL     (str "https://ropsten.infura.io/v3/" config/INFURA_TOKEN)}}}
    {:id             "rinkeby_rpc",
     :etherscan-link "https://rinkeby.etherscan.io/address/",
     :name           "Rinkeby with upstream RPC",
     :config         {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
                      :DataDir        "/ethereum/rinkeby_rpc"
                      :UpstreamConfig {:Enabled true
-                                      :URL     "https://rinkeby.infura.io/v3/f315575765b14720b32382a61a89341a"}}}
+                                      :URL     (str "https://rinkeby.infura.io/v3/" config/INFURA_TOKEN)}}}
    {:id             "goerli_rpc",
     :etherscan-link "https://goerli.etherscan.io/address/",
     :name           "Goerli with upstream RPC",

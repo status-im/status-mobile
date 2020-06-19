@@ -20,9 +20,7 @@
             [status-im.stickers.core :as stickers]
             [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
             [status-im.navigation :as navigation]
-            [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
-            [status-im.utils.handlers :as handlers]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.logging.core :as logging]
@@ -34,25 +32,11 @@
             [status-im.wallet.prices :as prices]
             [taoensso.timbre :as log]))
 
-(def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
-(def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
-(def contract-fleet? #{:eth.contract})
-
-(defn fetch-nodes [current-fleet resolve _]
+(defn fetch-nodes [_ resolve _]
   (let [default-nodes (-> (node/fleets {})
                           (get-in [:eth.staging :mail])
                           vals)]
-    (if config/contract-nodes-enabled?
-      (do
-        (log/debug "fetching contract fleet" current-fleet)
-        (status/get-nodes-from-contract
-         rpc-endpoint
-         contract-address
-         (handlers/response-handler resolve
-                                    (fn [_]
-                                      (log/warn "could not fetch nodes from contract defaulting to eth.staging")
-                                      (resolve default-nodes)))))
-      (resolve default-nodes))))
+    (resolve default-nodes)))
 
 (re-frame/reg-fx
  ::login
