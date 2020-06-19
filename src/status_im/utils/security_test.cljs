@@ -20,6 +20,8 @@
     (is (not (security/safe-link? "JaVasCrIpt://anything"))))
   (testing "a javascript link upper cases"
     (is (not (security/safe-link? "JAVASCRIPT://anything"))))
+  (testing "an url-encoded javascript link"
+    (is (not (security/safe-link? "javascript:/%2F%250dalert(document.domain)"))))
   (testing "rtlo links"
     (is (not (security/safe-link? rtlo-link)))))
 

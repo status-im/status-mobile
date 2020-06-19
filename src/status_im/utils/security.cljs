@@ -1,4 +1,5 @@
-(ns status-im.utils.security)
+(ns status-im.utils.security
+  (:require [status-im.utils.security-html :as h]))
 
 (defprotocol Unmaskable
   ;; Retrieve the stored value.
@@ -32,8 +33,10 @@
   "Check the link is safe to be handled, it is not a javavascript link or contains
   an rtlo character, which might mean is a spoofed url"
   [link]
-  (not (or (re-matches javascript-link-regex link)
-           (re-matches rtlo-link-regex link))))
+  (let [decoded-link (js/decodeURIComponent link)]
+    (not (or (re-matches javascript-link-regex decoded-link)
+             (re-matches rtlo-link-regex decoded-link)
+             (h/is-html? decoded-link)))))
 
 (defn safe-link-text?
   "Check the text of the message containing a link  is safe to be handled
