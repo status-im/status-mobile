@@ -15,6 +15,7 @@
       (i18n/label :t/block-contact-details)]
      [react/view {:align-items :center :margin-top 16}
       [quo/button {:theme :negative :disabled @in-progress? :loading @in-progress?
+                   :accessibility-label :block-contact-confirm
                    :on-press #(do (reset! in-progress? true)
                                   (re-frame/dispatch [:contact.ui/block-contact-confirmed public-key]))}
        :t/block]
