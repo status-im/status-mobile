@@ -105,6 +105,7 @@
                                 :color (if amount-error colors/red colors/black)
                                 :flex-shrink 1}
           :keyboard-type       :decimal-pad
+          :auto-capitalize     :words
           :accessibility-label :amount-input
           :default-value       amount-text
           :editable            (not request?)
@@ -164,6 +165,7 @@
                                 :color (when amount-error colors/red)
                                 :flex-shrink 1}
           :keyboard-type       :decimal-pad
+          :auto-capitalize     :words
           :accessibility-label :amount-input
           :default-value       amount-text
           :auto-focus          true
