@@ -2,14 +2,20 @@
 
 set -Eeu
 
+_NIX_GCROOTS="${_NIX_GCROOTS:-/nix/var/nix/gcroots/per-user/${USER}/status-react}"
+
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 source "${GIT_ROOT}/nix/scripts/source.sh"
+source "${GIT_ROOT}/scripts/colors.sh"
 
-GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
+TARGET="${1}"
+if [[ -z "${TARGET}" ]]; then
+    echo -e "${RED}No target specified for gcroots.sh!${RST}" >&2
+    exit 1
+fi
 
-rm -rf .nix-gcroots
-mkdir .nix-gcroots
-
-drv=$(nix-instantiate --argstr target all --add-root ${GIT_ROOT}/shell.nix)
-refs=$(nix-store --query --references $drv)
-nix-store -r $refs --indirect --add-root $GIT_ROOT/.nix-gcroots/shell.dep
+# Creates a symlink to derivation in _NIX_GCROOTS directory.
+# This prevents it from being removed by 'gc-collect-garbage'.
+nix-instantiate --attr "${TARGET}" \
+    --add-root "${_NIX_GCROOTS}/${TARGET}" \
+    "${GIT_ROOT}/default.nix" >/dev/null

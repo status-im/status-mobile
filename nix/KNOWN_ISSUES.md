@@ -45,3 +45,10 @@ When building Android on NixOS you might encounter the following error:
 ignoring the user-specified setting 'extra-sandbox-paths', because it is a restricted setting and you are not a trusted user
 ```
 You can mitigate this by setting the [`nix.trustedUsers`](https://nixos.org/nixos/options.html#nix.trustedusers) property.
+
+## NixOS Prioritizes System Config
+
+Currently on NixOS `NIX_CONF_DIR` is being ignored in favor of the default `/etc/nix/nix.conf`.
+This will be possible to fix once Nix `2.4` comes out with support for `NIX_USER_CONF_FILES`.
+
+For more details see https://github.com/NixOS/nix/issues/3723.

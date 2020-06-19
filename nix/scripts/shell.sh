@@ -23,6 +23,12 @@ if [[ -z "${TARGET}" ]]; then
     TARGET="default"
     echo -e "${YLW}Missing TARGET, assuming default target.${RST} See nix/README.md for more details." 1>&2
 fi
+# Minimal shell with just Nix sourced, useful for `make nix-gc`.
+if [[ "${TARGET}" == "nix" ]]; then
+    eval $@
+    exit
+fi
+
 entryPoint="default.nix"
 nixArgs+=("--attr shells.${TARGET}")
 
@@ -60,6 +66,9 @@ if [[ -n "${_NIX_PURE}" ]]; then
 fi
 
 echo -e "${GRN}Configuring ${pureDesc}Nix shell for target '${TARGET}'...${RST}" 1>&2
+
+# Save derivation from being garbage collected
+${GIT_ROOT}/nix/scripts/gcroots.sh "shells.${TARGET}"
 
 # ENTER_NIX_SHELL is the fake command used when `make shell` is run.
 # It is just a special string, not a variable, and a marker to not use `--run`.

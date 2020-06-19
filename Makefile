@@ -39,6 +39,8 @@ export REACT_SERVER_PORT ?= 5001
 
 # Our custom config is located in nix/nix.conf
 export NIX_CONF_DIR = $(PWD)/nix
+# Location of symlinks to derivations that should not be garbage collected
+export _NIX_GCROOTS = /nix/var/nix/gcroots/per-user/$(USER)/status-react
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
 export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE,NIMBUS_SRC_OVERRIDE
 
@@ -73,9 +75,14 @@ nix-repl: SHELL := /bin/sh
 nix-repl: ##@nix Start an interactive Nix REPL
 	nix repl default.nix
 
-nix-gc: export TARGET := default
-nix-gc: ##@nix Garbage collect all packages older than 20 days from /nix/store
-	nix-collect-garbage --delete-old --delete-older-than 20d
+nix-gc-protected: SHELL := /bin/sh
+nix-gc-protected:
+	@echo -e "$(YELLOW)The following paths are protected:$(RESET)" && \
+	ls -1 $(_NIX_GCROOTS) | sed 's/^/ - /'
+
+nix-gc: export TARGET := nix
+nix-gc: nix-gc-protected ##@nix Garbage collect all packages older than 20 days from /nix/store
+	nix-store --gc
 
 nix-clean: export TARGET := default
 nix-clean: ##@nix Remove all status-react build artifacts from /nix/store
@@ -84,10 +91,6 @@ nix-clean: ##@nix Remove all status-react build artifacts from /nix/store
 nix-purge: SHELL := /bin/sh
 nix-purge: ##@nix Completely remove Nix setup, including /nix directory
 	nix/scripts/purge.sh
-
-nix-add-gcroots: export TARGET := default
-nix-add-gcroots: ##@nix Add Nix GC roots to avoid status-react expressions being garbage collected
-	nix/scripts/gcroots.sh
 
 nix-update-gradle: export TARGET := gradle
 nix-update-gradle: ##@nix Update maven nix expressions based on current gradle setup

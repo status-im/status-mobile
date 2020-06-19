@@ -89,3 +89,11 @@ Some of those are required which is why just calling:
 nix-build --attr targets.mobile.android.release
 ```
 Would fail.
+
+# Garbage Collection
+
+The `make nix-gc` target calls `nix-store --gc` and normally would remove almost everything, but to prevent that we place symlinks to protected derivations in `/nix/var/nix/gcroots` subfolder. Specifically:
+```sh
+_NIX_GCROOTS="${_NIX_GCROOTS:-/nix/var/nix/gcroots/per-user/${USER}/status-react}"
+```
+Whenever `nix/scripts/build.sh` or `nix/scripts/shell.sh` are called they update symlinks named after given targets in that folder. This in combination with `keep-outputs = true` set in `nix/nix.conf` prevents garbage collection from removing too much.

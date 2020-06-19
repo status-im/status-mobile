@@ -5,7 +5,7 @@
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 
 # Location of profile script for Nix that adjusts PATH
-NIX_PROFILE_SH="${HOME}/.nix-profile/etc/profile.d/nix.sh"
+export NIX_PROFILE_SH="${HOME}/.nix-profile/etc/profile.d/nix.sh"
 
 function source_nix() {
   # Just stop if Nix is already available

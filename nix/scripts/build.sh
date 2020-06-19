@@ -36,10 +36,10 @@ function extractResults() {
   chmod -R u+w "${resultPath}"
 }
 
-targetAttr="${1}"
+TARGET="${1}"
 shift
 
-if [[ -z "${targetAttr}" ]]; then
+if [[ -z "${TARGET}" ]]; then
   echo -e "${RED}First argument is mandatory and has to specify the Nix attribute!${RST}"
   exit 1
 fi
@@ -51,8 +51,11 @@ nixOpts=(
   "--fallback"
   "--no-out-link"
   "--show-trace"
-  "--attr" "${targetAttr}"
+  "--attr" "${TARGET}"
 )
+
+# Save derivation from being garbage collected
+${GIT_ROOT}/nix/scripts/gcroots.sh "${TARGET}"
 
 # Run the actual build
 echo "Running: nix-build "${nixOpts[@]}" "${@}" default.nix"
