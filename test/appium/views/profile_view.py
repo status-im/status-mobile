@@ -672,7 +672,7 @@ class ProfileView(BaseView):
         self.network_settings_button.scroll_to_element()
         self.network_settings_button.click()
         self.plus_button.click_until_presence_of_element(self.ropsten_chain_button)
-        self.custom_network_url.send_keys('https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a')
+        self.custom_network_url.send_keys('https://ropsten.infura.io/v3/a61f40c227824c80892886c0806c748e')
         self.specify_name_input.send_keys('custom_ropsten')
         self.ropsten_chain_button.scroll_to_element()
         self.ropsten_chain_button.click()

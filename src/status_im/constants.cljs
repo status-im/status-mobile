@@ -76,14 +76,14 @@
     :config         {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
                      :DataDir        "/ethereum/testnet_rpc"
                      :UpstreamConfig {:Enabled true
-                                      :URL     "https://ropsten.infura.io/v3/f315575765b14720b32382a61a89341a"}}}
+                                      :URL     "https://ropsten.infura.io/v3/a61f40c227824c80892886c0806c748e"}}}
    {:id             "rinkeby_rpc",
     :etherscan-link "https://rinkeby.etherscan.io/address/",
     :name           "Rinkeby with upstream RPC",
     :config         {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
                      :DataDir        "/ethereum/rinkeby_rpc"
                      :UpstreamConfig {:Enabled true
-                                      :URL     "https://rinkeby.infura.io/v3/f315575765b14720b32382a61a89341a"}}}
+                                      :URL     "https://rinkeby.infura.io/v3/a61f40c227824c80892886c0806c748e"}}}
    {:id             "goerli_rpc",
     :etherscan-link "https://goerli.etherscan.io/address/",
     :name           "Goerli with upstream RPC",

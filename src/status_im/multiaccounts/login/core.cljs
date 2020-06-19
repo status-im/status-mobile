@@ -32,7 +32,7 @@
             [status-im.wallet.prices :as prices]
             [taoensso.timbre :as log]))
 
-(def rpc-endpoint "https://goerli.infura.io/v3/f315575765b14720b32382a61a89341a")
+(def rpc-endpoint "https://goerli.infura.io/v3/a61f40c227824c80892886c0806c748e")
 (def contract-address "0xfbf4c8e2B41fAfF8c616a0E49Fb4365a5355Ffaf")
 (def contract-fleet? #{:eth.contract})
 
