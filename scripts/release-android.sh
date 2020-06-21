@@ -37,14 +37,19 @@ config+="status-im.android.abi-split=\"$(must_get_env ANDROID_ABI_SPLIT)\";"
 config+="status-im.android.abi-include=\"$(must_get_env ANDROID_ABI_INCLUDE)\";"
 nixOpts=()
 
-# Secrets like this can't be passed via args or they end up in derivation
-SECRETS_FILE_PATH=$(mktemp)
-chmod 644 ${SECRETS_FILE_PATH}
-trap "rm -f ${SECRETS_FILE_PATH}" EXIT
-append_env_export 'KEYSTORE_PASSWORD'
-append_env_export 'KEYSTORE_ALIAS'
-append_env_export 'KEYSTORE_KEY_PASSWORD'
-nixOpts+=("--argstr" "secretsFile" "${SECRETS_FILE_PATH}")
+# If no secrets were passed there's no need to pass the 'secretsFile'
+if [[ -n "${KEYSTORE_ALIAS}${KEYSTORE_ALIAS}${KEYSTORE_ALIAS}" ]]; then
+  # Secrets like this can't be passed via args or they end up in derivation
+  SECRETS_FILE_PATH=$(mktemp)
+  trap "rm -f ${SECRETS_FILE_PATH}" EXIT ERR INT QUIT
+  chmod 644 ${SECRETS_FILE_PATH}
+  append_env_export 'KEYSTORE_PASSWORD'
+  append_env_export 'KEYSTORE_ALIAS'
+  append_env_export 'KEYSTORE_KEY_PASSWORD'
+  nixOpts+=("--argstr" "secretsFile" "${SECRETS_FILE_PATH}")
+fi
+
+# Used by Clojure at compile time to include JS modules
 nixOpts+=("--argstr" "buildEnv" "$(must_get_env BUILD_ENV)")
 
 if [[ "$(uname -s)" =~ Darwin ]]; then
