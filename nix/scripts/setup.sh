@@ -3,7 +3,7 @@
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 source "${GIT_ROOT}/scripts/colors.sh"
 
-NIX_VERSION="2.3.4"
+NIX_VERSION="2.3.6"
 NIX_INSTALL_URL="https://nixos.org/releases/nix/nix-${NIX_VERSION}/install"
 
 function install_nix() {
