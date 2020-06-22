@@ -2091,29 +2091,31 @@
     {:amount-error (i18n/label :t/wallet-insufficient-funds)}))
 
 (defn get-sufficient-gas-error
-  [balance symbol amount ^js gas ^js gasPrice]
+  [gas-error-message balance symbol amount ^js gas ^js gasPrice]
   (if (and gas gasPrice)
-    (let [^js fee               (.times gas gasPrice)
-          ^js available-ether   (money/bignumber (get balance :ETH 0))
+    (let [^js fee (.times gas gasPrice)
+          ^js available-ether (money/bignumber (get balance :ETH 0))
           ^js available-for-gas (if (= :ETH symbol)
                                   (.minus available-ether (money/bignumber amount))
                                   available-ether)]
-      (when-not (money/sufficient-funds? fee (money/bignumber available-for-gas))
-        {:gas-error (i18n/label :t/wallet-insufficient-gas)}))
-    {:gas-error (i18n/label :t/invalid-number)}))
+      (merge {:gas-error-state (when gas-error-message :gas-is-set)}
+             (when-not (money/sufficient-funds? fee (money/bignumber available-for-gas))
+               {:gas-error (i18n/label :t/wallet-insufficient-gas)})))
+    {:gas-error-state (when gas-error-message :gas-isnt-set)
+     :gas-error       (or gas-error-message (i18n/label :t/invalid-number))}))
 
 (re-frame/reg-sub
  :signing/amount-errors
  (fn [[_ address] _]
    [(re-frame/subscribe [:signing/tx])
     (re-frame/subscribe [:balance address])])
- (fn [[{:keys [amount token gas gasPrice approve?]} balance]]
+ (fn [[{:keys [amount token gas gasPrice approve? gas-error-message]} balance]]
    (if (and amount token (not approve?))
      (let [amount-bn (money/formatted->internal (money/bignumber amount) (:symbol token) (:decimals token))
            amount-error (or (get-amount-error amount (:decimals token))
                             (get-sufficient-funds-error balance (:symbol token) amount-bn))]
-       (or amount-error (get-sufficient-gas-error balance (:symbol token) amount-bn gas gasPrice)))
-     (get-sufficient-gas-error balance nil nil gas gasPrice))))
+       (merge amount-error (get-sufficient-gas-error gas-error-message balance (:symbol token) amount-bn gas gasPrice)))
+     (get-sufficient-gas-error gas-error-message balance nil nil gas gasPrice))))
 
 (re-frame/reg-sub
  :wallet.send/prepare-transaction-with-balance

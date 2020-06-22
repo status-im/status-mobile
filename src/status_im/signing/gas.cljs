@@ -80,8 +80,10 @@
 
 (fx/defn update-estimated-gas-error
   {:events [:signing/update-estimated-gas-error]}
-  [{db :db}]
-  {:db (assoc-in db [:signing/edit-fee :gas-loading?] false)})
+  [{db :db} {:keys [message]}]
+  {:db (-> db
+           (assoc-in [:signing/edit-fee :gas-loading?] false)
+           (assoc-in [:signing/tx :gas-error-message] message))})
 
 (fx/defn update-gas-price-error
   {:events [:signing/update-gas-price-error]}
