@@ -98,6 +98,14 @@ class TestBrowsing(SingleDeviceTestCase):
             self.errors.append("URL changed on attempt to redirect to no-content page \n")
 
         browsing_view.cross_icon.click()
+        daap_view.open_url('https://simpledapp.status.im/webviewtest/webviewtest.html')
+        browsing_view.element_by_text_part('XSS check').click()
+        browsing_view.open_in_status_button.click()
+        if browsing_view.element_by_text_part('simpledapp.status.im').is_element_displayed():
+            self.errors.append("XSS attemp succedded \n")
+            browsing_view.ok_button.click()
+
+        browsing_view.cross_icon.click()
         daap_view.open_url('https://simpledapp.status.im/webviewtest/url-blank.html')
         if daap_view.edit_url_editbox.text == '':
             self.errors.append("Blank URL value. Must show the actual URL \n")
