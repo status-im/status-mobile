@@ -1154,6 +1154,5 @@
     "sign-anyway" : "Sign anyway",
     "tx-fail-description1" : "This transaction is likely to fail. Sign at your own risk using custom network fee.",
     "tx-fail-description2" : "This transaction is likely to fail. Set a custom network fee to sign at your own risk.",
-    "set-custom-fee" : "Set custom fee",
-    "wtf" : "WTF2"
+    "set-custom-fee" : "Set custom fee"
 }
