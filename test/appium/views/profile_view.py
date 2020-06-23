@@ -646,7 +646,7 @@ class ProfileView(BaseView):
         self.use_mobile_data = UseMobileDataToggle(self.driver)
         self.ask_me_when_on_mobile_network = AskMeWhenOnMobileNetworkToggle(self.driver)
 
-    def switch_network(self, network):
+    def switch_network(self, network='Mainnet with upstream RPC'):
         self.advanced_button.click()
         self.network_settings_button.click()
         network_button = NetworkSettingsButton.NetworkButton(self.driver, network)

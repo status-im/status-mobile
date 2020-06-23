@@ -40,12 +40,6 @@ class ScanQRButton(BaseButton):
         self.locator = self.Locator.accessibility_id("accounts-qr-code")
 
 
-class EnterQRcodeEditBox(BaseEditBox):
-    def __init__(self, driver):
-        super(EnterQRcodeEditBox, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Type a message...')
-
-
 class AssetText(BaseText):
     def __init__(self, driver, asset):
         super(AssetText, self).__init__(driver)
@@ -440,7 +434,6 @@ class WalletView(BaseView):
         self.add_account_generate_account_button = AddAccountGenerateAnAccountButton(self.driver)
         self.status_account_total_usd_value = StatusAccountTotalValueText(self.driver)
         self.scan_qr_button = ScanQRButton(self.driver)
-        self.enter_qr_edit_box = EnterQRcodeEditBox(self.driver)
 
         # individual account settings
         self.account_settings_button = AccountSettingsButton(self.driver)

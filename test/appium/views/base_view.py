@@ -325,6 +325,11 @@ class StatusInBackgroundButton(BaseButton):
         super(StatusInBackgroundButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[contains(@content-desc,"Status")]')
 
+class EnterQRcodeEditBox(BaseEditBox):
+    def __init__(self, driver):
+        super(EnterQRcodeEditBox, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Type a message...')
+
 
 class OkGotItButton(BaseButton):
     def __init__(self,driver):
@@ -399,6 +404,7 @@ class BaseView(object):
         self.status_app_icon = StatusAppIcon(self.driver)
 
         self.airplane_mode_button = AirplaneModeButton(self.driver)
+        self.enter_qr_edit_box = EnterQRcodeEditBox(self.driver)
 
         self.element_types = {
             'base': BaseElement,

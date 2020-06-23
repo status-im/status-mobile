@@ -133,9 +133,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.chose_recipient_button.click()
         send_transaction.enter_recipient_address_button.click()
         send_transaction.enter_recipient_address_input.set_value(recipient['public_key'])
-        send_transaction.done_button.click()
-        if not send_transaction.find_text_part('Invalid address'):
-            self.errors.append("Invalid address accepted for input as recipient!")
+        send_transaction.done_button.click_until_presence_of_element(send_transaction.element_by_text_part('Invalid address'))
         send_transaction.ok_button.click()
         send_transaction.enter_recipient_address_input.set_value('0xDE709F2102306220921060314715629080E2fB77')
         send_transaction.done_button.click()
@@ -635,7 +633,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         recipient = "0x" + basic_user['address']
         amount = '0.0%s' % str(random.randint(10000, 99999)) + '1'
         wallet_view.send_transaction(asset_name=symbol, amount=amount, recipient=recipient)
-        transactions_view = wallet_view.transaction_history_button.click()
-        transactions_view.transactions_table.find_transaction(amount=amount, asset=symbol)
+        # TODO: disabled due to 10838
+        # transactions_view = wallet_view.transaction_history_button.click()
+        # transactions_view.transactions_table.find_transaction(amount=amount, asset=symbol)
 
         self.errors.verify_no_errors()
