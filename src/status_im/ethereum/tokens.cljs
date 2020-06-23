@@ -11,6 +11,8 @@
       :decimals 18
       :icon     {:source (js/require "../resources/images/tokens/default-native.png")}})))
 
+(def snt-icon-source (js/require "../resources/images/tokens/mainnet/SNT.png"))
+
 (def all-native-currencies
   (ethereum.macros/resolve-native-currency-icons
    {:mainnet {:name     "Ether"

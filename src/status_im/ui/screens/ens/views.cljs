@@ -24,7 +24,9 @@
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.utils.debounce :as debounce]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [status-im.ethereum.tokens :as tokens]
+            [quo.core :as quo])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- button
@@ -276,28 +278,26 @@
     "\n"
     (i18n/label :t/ens-understand)]])
 
-(defn- registration-bottom-bar
-  [checked? amount-label]
-  [react/view {:style {:height           60
-                       :border-top-width 1
-                       :border-top-color colors/gray-lighter}}
-   [react/view {:style {:margin-horizontal 16
-                        :flex-direction    :row
-                        :justify-content   :space-between}}
-    [react/view {:flex-direction :row}
-     [react/view {:style {:margin-top 12 :margin-right 8}}
-      [components.common/logo
-       {:size      36
-        :icon-size 16}]]
-     [react/view {:flex-direction :column :margin-vertical 8}
-      [react/text {:style {:font-size 15}}
-       amount-label]
-      [react/text {:style {:color colors/gray :font-size 15}}
-       (i18n/label :t/ens-deposit)]]]
-    [button {:disabled?    (not @checked?)
-             :label-style  (when (not @checked?) {:color colors/gray})
-             :on-press     #(debounce/dispatch-and-chill [::ens/register-name-pressed] 2000)}
-     (i18n/label :t/ens-register)]]])
+(defn- registration-bottom-bar [checked? amount-label sufficient-funds?]
+  [react/view {:style {:border-top-width 1
+                       :border-top-color colors/gray-lighter
+                       :padding-horizontal 16
+                       :padding-vertical   8
+                       :flex-direction    :row
+                       :justify-content   :space-between}}
+   [react/view {:flex-direction :row :align-items :center}
+    [react/image {:source tokens/snt-icon-source
+                  :style {:width 36 :height 36}}]
+    [react/view {:flex-direction :column :margin 8}
+     [react/text {:style {:font-size 15}}
+      amount-label]
+     [react/text {:style {:color colors/gray :font-size 15}}
+      (i18n/label :t/ens-deposit)]]]
+   [quo/button {:disabled   (or (not @checked?) (not sufficient-funds?))
+                :on-press    #(debounce/dispatch-and-chill [::ens/register-name-pressed] 2000)}
+    (if sufficient-funds?
+      (i18n/label :t/ens-register)
+      (i18n/label :t/not-enough-snt))]])
 
 (defn- registration
   [checked contract address public-key]
@@ -311,7 +311,7 @@
 
 (views/defview checkout []
   (views/letsubs [{:keys [username address custom-domain? public-key
-                          contract amount-label]}
+                          contract amount-label sufficient-funds?]}
                   [:ens/checkout-screen]]
     (let [checked? (reagent/atom false)]
       [react/keyboard-avoiding-view {:flex 1}
@@ -340,7 +340,7 @@
            (domain-label custom-domain?)]
           [react/view {:flex 1 :min-width 24}]]]
         [registration checked? contract address public-key]]
-       [registration-bottom-bar checked? amount-label]])))
+       [registration-bottom-bar checked? amount-label sufficient-funds?]])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; CONFIRMATION SCREEN

@@ -1986,14 +1986,18 @@
  :<- [:multiaccount/default-account]
  :<- [:multiaccount/public-key]
  :<- [:chain-id]
+ :<- [:balance-default]
  (fn [[{:keys [custom-domain? username]}
-       registrar default-account public-key chain-id]]
-   {:address        (ethereum/normalized-hex (:address default-account))
-    :username       username
-    :public-key     public-key
-    :custom-domain? custom-domain?
-    :contract       registrar
-    :amount-label   (ens-amount-label chain-id)}))
+       registrar default-account public-key chain-id balance]]
+   {:address           (ethereum/normalized-hex (:address default-account))
+    :username          username
+    :public-key        public-key
+    :custom-domain?    custom-domain?
+    :contract          registrar
+    :amount-label      (ens-amount-label chain-id)
+    :sufficient-funds? (money/sufficient-funds?
+                        (money/formatted->internal (money/bignumber 10) :SNT 18)
+                        (get balance :SNT))}))
 
 (re-frame/reg-sub
  :ens/confirmation-screen
