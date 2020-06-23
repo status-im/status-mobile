@@ -103,8 +103,6 @@ pipeline {
               }
               /* build type specific */
               switch (btype) {
-                case 'release':
-                  android.uploadToPlayStore(); break;
                 case 'nightly':
                   env.DIAWI_URL = android.uploadToDiawi(); break;
                 case 'e2e':
