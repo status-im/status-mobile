@@ -7,7 +7,14 @@
              :refer (TapGestureHandler PanGestureHandler LongPressGestureHandler
                                        PureNativeButton TouchableWithoutFeedback
                                        TouchableHighlight
-                                       createNativeWrapper State)]))
+                                       createNativeWrapper State NativeViewGestureHandler
+                                       FlatList ScrollView)]))
+
+(def flat-list-raw FlatList)
+
+(def flat-list (reagent/adapt-react-class FlatList))
+
+(def scroll-view (reagent/adapt-react-class ScrollView))
 
 (def tap-gesture-handler
   (reagent/adapt-react-class TapGestureHandler))
@@ -37,6 +44,8 @@
    (createNativeWrapper (.createAnimatedComponent animated PureNativeButton)
                         #js {:shouldActivateOnStart   true
                              :shouldCancelWhenOutside true})))
+
+(def native-view-gesture-handler (reagent/adapt-react-class NativeViewGestureHandler))
 
 (def states {:began        (oget State "BEGAN")
              :active       (oget State "ACTIVE")

@@ -53,13 +53,16 @@
                                        :inOut  (fn [])}
             :DeviceEventEmitter       {:addListener (fn [])}
             :Dimensions               {:get (fn [])}
-            :useWindowDimensions {}
+            :useWindowDimensions      {}
             :Platform                 {:select (fn [])}
             :I18nManager              {:isRTL ""}
             :NativeEventEmitter       (fn [])
-            :LayoutAnimation          {:Presets       {:easeInEaseOut nil
-                                                       :linear        nil
-                                                       :spring        nil}
+            :LayoutAnimation          {:Presets       #js {:easeInEaseOut nil
+                                                           :linear        nil
+                                                           :spring        nil}
+                                       :Types         #js {}
+                                       :Properties    #{}
+                                       :create        (fn [])
                                        :configureNext (fn [])}
             :requireNativeComponent   (fn [] {:propTypes ""})}))
 
@@ -167,6 +170,9 @@
                                        :TouchableHighlight       #js {}
                                        :LongPressGestureHandler  #js {}
                                        :TouchableWithoutFeedback #js {}
+                                       :NativeViewGestureHandler #js {}
+                                       :FlatList                 #js {}
+                                       :ScrollView               #js {}
                                        :createNativeWrapper      identity})
 
 (def react-native-redash #js {:clamp nil})

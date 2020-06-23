@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.chat.views
   (:require [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.colors :as colors]
@@ -8,7 +9,8 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.sheets :as sheets]
-            [status-im.ui.screens.chat.input.input :as input]
+            [quo.animated :as animated]
+            [quo.react-native :as rn]
             [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.screens.chat.stickers.views :as stickers]
             [status-im.ui.screens.chat.styles.main :as style]
@@ -20,6 +22,8 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.gap :as gap]
+            [status-im.ui.screens.chat.components.accessory :as accessory]
+            [status-im.ui.screens.chat.components.input :as components]
             [status-im.ui.screens.chat.message.datemark :as message-datemark])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -100,8 +104,6 @@
    {:style    {:flex        1
                :align-items :flex-start}
     :on-press (fn [_]
-                (re-frame/dispatch
-                 [:chat.ui/set-chat-ui-props {:input-bottom-sheet nil}])
                 (react/dismiss-keyboard!))}
    (let [opts
          {:chat-id chat-id
@@ -133,60 +135,79 @@
   (debounce/debounce-and-dispatch [:chat.ui/message-visibility-changed e] 5000))
 
 (defview messages-view
-  [{:keys [group-chat chat-id public?] :as chat}]
+  [{:keys [group-chat chat-id public?] :as chat} bottom-space pan-handler]
   (letsubs [messages           [:chats/current-chat-messages-stream]
             no-messages?       [:chats/current-chat-no-messages?]
             current-public-key [:multiaccount/public-key]]
     [list/flat-list
-     {:key-fn                       #(or (:message-id %) (:value %))
-      :ref                          #(reset! messages-list-ref %)
-      :header                       (when (and group-chat (not public?))
-                                      [chat.group/group-chat-footer chat-id])
-      :footer                       [chat-intro-header-container chat no-messages?]
-      :data                         messages
-      :inverted                     true
-      :render-fn                    (fn [{:keys [outgoing type] :as message} idx]
-                                      (if (= type :datemark)
-                                        [message-datemark/chat-datemark (:value message)]
-                                        (if (= type :gap)
-                                          [gap/gap message idx messages-list-ref]
-                                          ; message content
-                                          [message/chat-message
-                                           (assoc message
-                                                  :incoming-group (and group-chat (not outgoing))
-                                                  :group-chat group-chat
-                                                  :public? public?
-                                                  :current-public-key current-public-key)])))
-      :on-viewable-items-changed    on-viewable-items-changed
-      :on-end-reached               #(re-frame/dispatch [:chat.ui/load-more-messages])
-      :on-scroll-to-index-failed    #() ;;don't remove this
-      :keyboard-should-persist-taps :handled}]))
+     (merge
+      pan-handler
+      {:key-fn                       #(or (:message-id %) (:value %))
+       :ref                          #(reset! messages-list-ref %)
+       :header                       (when (and group-chat (not public?))
+                                       [chat.group/group-chat-footer chat-id])
+       :footer                       [chat-intro-header-container chat no-messages?]
+       :data                         messages
+       :inverted                     true
+       :render-fn                    (fn [{:keys [outgoing type] :as message} idx]
+                                       (if (= type :datemark)
+                                         [message-datemark/chat-datemark (:value message)]
+                                         (if (= type :gap)
+                                           [gap/gap message idx messages-list-ref]
+                                        ; message content
+                                           [message/chat-message
+                                            (assoc message
+                                                   :incoming-group (and group-chat (not outgoing))
+                                                   :group-chat group-chat
+                                                   :public? public?
+                                                   :current-public-key current-public-key)])))
+       :on-viewable-items-changed    on-viewable-items-changed
+       :on-end-reached               #(re-frame/dispatch [:chat.ui/load-more-messages])
+       :on-scroll-to-index-failed    #() ;;don't remove this
+       :content-container-style      {:padding-top @bottom-space}
+       :scrollIndicatorInsets        {:top @bottom-space}
+       :keyboardDismissMode          "interactive"
+       :keyboard-should-persist-taps :handled})]))
 
-(defview empty-bottom-sheet []
-  (letsubs [input-bottom-sheet [:chats/empty-chat-panel-height]]
-    [react/view {:height input-bottom-sheet}]))
+(defn bottom-sheet [input-bottom-sheet]
+  (case input-bottom-sheet
+    :stickers
+    [stickers/stickers-view]
+    :extensions
+    [extensions/extensions-view]
+    :images
+    [image/image-view]
+    nil))
 
-(defview bottom-sheet []
-  (letsubs [input-bottom-sheet [:chats/current-chat-ui-prop :input-bottom-sheet]]
-    (case input-bottom-sheet
-      :stickers
-      [stickers/stickers-view]
-      :extensions
-      [extensions/extensions-view]
-      :images
-      [image/image-view]
-      [empty-bottom-sheet])))
-
-(defview chat []
-  (letsubs [{:keys [chat-id show-input? group-chat] :as current-chat}
-            [:chats/current-chat]]
-    [react/view {:style {:flex 1}}
-     [connectivity/connectivity
-      [topbar current-chat]
-      [react/view {:style {:flex 1}}
-       (when-not group-chat
-         [add-contact-bar chat-id])
-       [messages-view current-chat]]]
-     (when show-input?
-       [input/container])
-     [bottom-sheet]]))
+(defn chat []
+  (let [bottom-space     (reagent/atom 0)
+        active-panel     (reagent/atom nil)
+        position-y       (animated/value 0)
+        pan-state        (animated/value 0)
+        on-update        (partial reset! bottom-space)
+        pan-responder    (accessory/create-pan-responder position-y pan-state)
+        set-active-panel (fn [panel]
+                           (reset! active-panel panel)
+                           (rn/configure-next
+                            (:ease-opacity-200 rn/custom-animations))
+                           (when panel
+                             (js/setTimeout #(react/dismiss-keyboard!) 100)))]
+    (fn []
+      (let [{:keys [chat-id show-input? group-chat] :as current-chat}
+            @(re-frame/subscribe [:chats/current-chat])]
+        [react/view {:style {:flex 1}}
+         [connectivity/connectivity
+          [topbar current-chat]
+          [react/view {:style {:flex 1}}
+           (when-not group-chat
+             [add-contact-bar chat-id])
+           [messages-view current-chat bottom-space pan-responder]]]
+         (when show-input?
+           [accessory/view {:y               position-y
+                            :pan-state       pan-state
+                            :has-panel       (boolean @active-panel)
+                            :on-close        #(set-active-panel nil)
+                            :on-update-inset on-update}
+            [components/chat-toolbar {:active-panel     @active-panel
+                                      :set-active-panel set-active-panel}]
+            [bottom-sheet @active-panel]])]))))

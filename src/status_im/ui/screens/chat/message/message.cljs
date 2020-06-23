@@ -154,7 +154,6 @@
 
 (defn text-message-press-handlers [message]
   {:on-press      (fn [_]
-                    (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet nil}])
                     (react/dismiss-keyboard!))
    :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                        {:content (sheets/message-long-press message)
@@ -275,7 +274,6 @@
   {:on-press      (fn [_]
                     (when (:image content)
                       (re-frame/dispatch [:navigate-to :image-preview message]))
-                    (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet nil}])
                     (react/dismiss-keyboard!))
    :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                        {:content (sheets/image-long-press message false)
@@ -286,7 +284,6 @@
     {:on-press      (fn [_]
                       (when pack
                         (re-frame/dispatch [:stickers/open-sticker-pack pack]))
-                      (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet nil}])
                       (react/dismiss-keyboard!))
      :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                          {:content (sheets/sticker-long-press message)

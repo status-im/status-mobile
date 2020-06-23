@@ -30,6 +30,7 @@
    :ui-background  "rgba(255,255,255,1)"   ; Default view background
    :ui-01          "rgba(238,242,245,1)"   ; Secondary background
    :ui-02          "rgba(0,0,0,0.1)"       ; Deviders
+   :ui-03          "rgba(0,0,0,0.86)"      ; Dark background
    :text-01        "rgba(0,0,0,1)"         ; Main text color
    :text-02        "rgba(147,155,161,1)"   ; Secondary text
    :text-03        "rgba(255,255,255,0.7)" ; Secondary on accent
@@ -55,6 +56,7 @@
    :ui-background  "rgba(20,20,20,1)"
    :ui-01          "rgba(37,37,40,1)"
    :ui-02          "rgba(0,0,0,0.1)"
+   :ui-03          "rgba(0,0,0,0.86)"
    :text-01        "rgba(255,255,255,1)"
    :text-02        "rgba(131,140,145,1)"
    :text-03        "rgba(255,255,255,0.7)"

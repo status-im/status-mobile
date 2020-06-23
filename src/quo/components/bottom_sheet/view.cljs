@@ -23,7 +23,7 @@
   (if platform/android?
     (into [rn/view {:style          styles/container
                     :pointer-events (if visible :box-none :none)}]
-          children)
+          (when visible children))
     (into [rn/modal props] children)))
 
 (defn bottom-sheet-hooks [props]
@@ -38,16 +38,17 @@
                              backdrop-dismiss?  true
                              back-button-cancel true}}
         (bean/bean props)
+        body-ref   (react/create-ref)
+        master-ref (react/create-ref)
 
-        {:keys [on-layout height]}
-        (rn/use-layout)
-        {window-height :height} (rn/use-window-dimensions)
-        {:keys [keyboard-shown keyboard-height]}
-        (rn/use-keyboard)
-        safe-area               (safe-area/use-safe-area)
-        min-height              (+ (* styles/vertical-padding 2) (:bottom safe-area))
-        max-height              (- window-height (:top safe-area) styles/margin-top)
-        visible                 (react/state false)
+        height                    (react/state 0)
+        {window-height :height}   (rn/use-window-dimensions)
+        {:keys [keyboard-shown
+                keyboard-height]} (rn/use-keyboard)
+        safe-area                 (safe-area/use-safe-area)
+        min-height                (+ (* styles/vertical-padding 2) (:bottom safe-area))
+        max-height                (- window-height (:top safe-area) styles/margin-top)
+        visible                   (react/state false)
 
         master-translation-y (animated/use-value 0)
         master-velocity-y    (animated/use-value (:undetermined gesture-handler/states))
@@ -58,8 +59,6 @@
         offset               (animated/use-value 0)
         drag-over            (animated/use-value 1)
         clock                (animated/use-clock)
-        body-ref             (react/create-ref)
-        master-ref           (react/create-ref)
         tap-gesture-handler  (animated/use-gesture {:state tap-state})
         on-master-event      (animated/use-gesture
                               {:translationY master-translation-y
@@ -67,13 +66,14 @@
                                :velocityY    master-velocity-y})
         on-body-event        on-master-event
         sheet-height         (min max-height
-                                  (+ styles/border-radius height))
+                                  (+ styles/border-radius @height))
 
         open-snap-point  (animated/use-value 0)
         close-snap-point 0
         on-close         (fn []
                            (when @visible
                              (reset! visible false)
+                             (reset! height 0)
                              (when on-cancel
                                (on-cancel))))
         close-sheet      (fn []
@@ -155,13 +155,13 @@
      [on-cancel])
     (animated/code!
      (fn []
-       (when (and (> height min-height)
-                  @visible)
-         (animated/cond* (animated/not* manual-close)
-                         [(animated/stop-clock clock)
-                          (animated/set open-snap-point (* -1 sheet-height))
-                          (animated/set manual-open 1)])))
-     [height @visible])
+       (animated/cond* (animated/and* (animated/not* manual-close)
+                                      (if @visible 1 0)
+                                      (if (> @height min-height) 1 0))
+                       [(animated/stop-clock clock)
+                        (animated/set open-snap-point (* -1 sheet-height))
+                        (animated/set manual-open 1)]))
+     [@height @visible])
     ;; NOTE(Ferossgp): Remove me when RNGH will suport modal
     (rn/use-back-handler
      (fn []
@@ -213,17 +213,12 @@
           [animated/scroll-view {:bounces        false
                                  :flex           1
                                  :scroll-enabled (= sheet-height max-height)}
-           [animated/view {:style     (merge
-                                       (when (and platform/android? (not @visible))
-                                         ;; NOTE(Ferossgp): Remove when RNGH will support modals,
-                                         ;; now need to trigger on-layout when closed
-                                         {:height 0})
-                                       {:padding-top    styles/vertical-padding
-                                        :padding-bottom (+ styles/vertical-padding
-                                                           (if (and platform/ios? keyboard-shown)
-                                                             keyboard-height
-                                                             (:bottom safe-area)))})
-                           :on-layout on-layout}
+           [animated/view {:style     {:padding-top    styles/vertical-padding
+                                       :padding-bottom (+ styles/vertical-padding
+                                                          (if (and platform/ios? keyboard-shown)
+                                                            keyboard-height
+                                                            (:bottom safe-area)))}
+                           :on-layout #(reset! height (.-nativeEvent.layout.height ^js %))}
             (into [:<>]
                   (react/get-children children))]]]]]]])))
 

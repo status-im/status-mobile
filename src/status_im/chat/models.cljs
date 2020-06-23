@@ -286,8 +286,3 @@
   (fx/merge (assoc-in cofx [:db :contacts/identity] identity)
             (contact.core/create-contact identity)
             (navigation/navigate-to-cofx :profile nil)))
-
-(fx/defn input-on-focus
-  {:events [:chat.ui/input-on-focus]}
-  [{db :db}]
-  {:db (set-chat-ui-props db {:input-bottom-sheet nil})})

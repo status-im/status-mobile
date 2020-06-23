@@ -791,6 +791,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.confirm_button.click()
         profile_1.element_by_text(server_name).scroll_to_element()
         profile_1.element_by_text(server_name).click()
+        profile_1.mail_server_delete_button.scroll_to_element()
         profile_1.mail_server_delete_button.click()
         profile_1.mail_server_confirm_delete_button.click()
         if profile_1.element_by_text(server_name).is_element_displayed():

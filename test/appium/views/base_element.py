@@ -241,7 +241,7 @@ class BaseEditBox(BaseElement):
         action = TouchAction(self.driver)
         location = self.find_element().location
         x, y = location['x'], location['y']
-        action.press(x=x + 100, y=y - 50).release().perform()
+        action.press(x=x + 25, y=y - 50).release().perform()
 
     def cut_text(self):
         self.driver.info('Cut text in %s' % self.name)

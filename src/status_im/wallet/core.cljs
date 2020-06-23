@@ -51,15 +51,13 @@
   {:events [::update-balance-fail]}
   [{:keys [db]} err]
   (log/debug "Unable to get balance: " err)
-  {:db (-> db
-           (assoc-error-message :balance-update :error-unable-to-get-balance))})
+  {:db (assoc-error-message db :balance-update :error-unable-to-get-balance)})
 
 (fx/defn on-update-token-balance-fail
   {:events [::update-token-balance-fail]}
   [{:keys [db]} err]
   (log/debug "Unable to get tokens balances: " err)
-  {:db (-> db
-           (assoc-error-message :balance-update :error-unable-to-get-token-balance))})
+  {:db (assoc-error-message db :balance-update :error-unable-to-get-token-balance)})
 
 (fx/defn open-transaction-details
   [cofx hash address]
@@ -337,9 +335,7 @@
         to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))
         from-address (:address from)
         identity (:current-chat-id db)
-        db (-> db
-               (update-in [:chat-ui-props identity] dissoc :input-bottom-sheet)
-               (dissoc :wallet/prepare-transaction))]
+        db (dissoc db :wallet/prepare-transaction)]
     (if to-norm
       (fx/merge
        cofx
@@ -374,9 +370,7 @@
         from-address (:address from)
         identity (:current-chat-id db)]
     (fx/merge cofx
-              {:db (-> db
-                       (update-in [:chat-ui-props identity] dissoc :input-bottom-sheet)
-                       (dissoc db :wallet/prepare-transaction))
+              {:db (dissoc db :wallet/prepare-transaction)
                ::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "requestTransaction")
                                  :params [(:public-key to)
                                           amount
@@ -542,9 +536,7 @@
   {:events [:wallet/cancel-transaction-command]}
   [{:keys [db]}]
   (let [identity (:current-chat-id db)]
-    {:db (-> db
-             (dissoc :wallet/prepare-transaction)
-             (update-in [:chat-ui-props identity] dissoc :input-bottom-sheet))}))
+    {:db (dissoc db :wallet/prepare-transaction)}))
 
 (fx/defn finalize-transaction-from-command
   {:events [:wallet/finalize-transaction-from-command]}

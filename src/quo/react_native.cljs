@@ -36,15 +36,52 @@
 
 (def dismiss-keyboard! #(.dismiss ^js keyboard))
 
+(def dimensions (.-Dimensions ^js rn))
+
+(def pan-responder (.-PanResponder ^js rn))
+
+(defn create-pan-responder [opts]
+  (.create ^js pan-responder (clj->js opts)))
+
+(def animated (.-Animated rn))
+
+(def subtract (.-subtract ^js animated))
+
+(def animated-flat-list-class
+  (reagent/adapt-react-class (.-FlatList ^js animated)))
+
+(def animated-view
+  (reagent/adapt-react-class (.-View ^js animated)))
+
 (def ui-manager  (.-UIManager ^js rn))
 
 (def layout-animation (.-LayoutAnimation ^js rn))
 (def configure-next (.-configureNext ^js layout-animation))
+(def create-animation (.-create ^js layout-animation))
+
 (def layout-animation-presets {:ease-in-ease-out (-> ^js layout-animation .-Presets .-easeInEaseOut)
                                :linear           (-> ^js layout-animation .-Presets .-linear)
                                :spring           (-> ^js layout-animation .-Presets .-spring)})
 
-(def switch (reagent/adapt-react-class (.-Switch ^js rn)))
+(def layout-animation-types {:spring           (-> ^js layout-animation .-Types .-spring)
+                             :linear           (-> ^js layout-animation .-Types .-linear)
+                             :ease-in-ease-out (-> ^js layout-animation .-Types .-easeInEaseOut)
+                             :ease-in          (-> ^js layout-animation .-Types .-easeIn)
+                             :ease-out         (-> ^js layout-animation .-Types .-easeOut)})
+
+(def layout-animation-properties {:opacity  (-> ^js layout-animation .-Properties .-opacity)
+                                  :scale-x  (-> ^js layout-animation .-Properties .-scaleX)
+                                  :scale-y  (-> ^js layout-animation .-Properties .-scaleY)
+                                  :scale-xy (-> ^js layout-animation .-Properties .-scaleXY)})
+
+(def custom-animations {:ease-opacity-200 #js {:duration 200
+                                               :create   #js {:type     (:ease-in-ease-out layout-animation-types)
+                                                              :property (:opacity layout-animation-properties)}
+                                               :update   #js {:type     (:ease-in-ease-out layout-animation-types)
+                                                              :property (:opacity layout-animation-properties)}
+                                               :delete   #js {:type     (:ease-in-ease-out layout-animation-types)
+                                                              :property (:opacity layout-animation-properties)}}})
+
 (def activity-indicator (reagent/adapt-react-class (.-ActivityIndicator ^js rn)))
 
 ;; Flat-list
@@ -59,7 +96,7 @@
     {:post [(some? %)]}
     (f data index)))
 
-(defn- base-list-props
+(defn base-list-props
   [{:keys [key-fn render-fn empty-component header footer separator data] :as props}]
   (merge {:data (to-array data)}
          (when key-fn            {:keyExtractor (wrap-key-fn key-fn)})
@@ -73,6 +110,8 @@
 (defn flat-list [props]
   [rn-flat-list (base-list-props props)])
 
+(defn animated-flat-list [props]
+  [animated-flat-list-class (base-list-props props)])
 ;; Hooks
 
 (defn use-window-dimensions []

@@ -73,7 +73,7 @@
   ((-> ^js rn .-Animated .add) anim-x anim-y))
 
 (defn subtract [anim-x anim-y]
-  ((-> ^js rn .-Animated .substract) anim-x anim-y))
+  ((-> ^js rn .-Animated .-subtract) anim-x anim-y))
 
 (defn x [^js value-xy]
   (.-x value-xy))

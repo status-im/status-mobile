@@ -33,6 +33,11 @@ class CancelReplyButton(BaseEditBox):
         super(CancelReplyButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('cancel-message-reply')
 
+class CancelSendImage(BaseEditBox):
+    def __init__(self, driver):
+        super(CancelSendImage, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('cancel-send-image')
+
 
 class AddToContacts(BaseButton):
     def __init__(self, driver):
@@ -602,6 +607,7 @@ class ChatView(BaseView):
         self.image_chat_item = ImageChatItem(self.driver)
         self.save_image_button = SaveImageButton(self.driver)
         self.recent_image_in_gallery = ImageInRecentInGalleryElement(self.driver)
+        self.cancel_send_image_button = CancelSendImage(self.driver)
 
 
 

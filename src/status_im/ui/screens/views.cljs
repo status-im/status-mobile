@@ -1,5 +1,4 @@
 (ns status-im.ui.screens.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
   (:require [status-im.utils.universal-links.core :as utils.universal-links]
             [re-frame.core :as re-frame]
             [status-im.ui.screens.about-app.views :as about-app]
@@ -27,36 +26,39 @@
             [status-im.utils.config :as config]
             [status-im.reloader :as reloader]))
 
-(defview bottom-sheet []
-  (letsubs [{:keys [show? view]} [:bottom-sheet]]
-    (let [{:keys [content]
-           :as   opts}
-          (cond-> {:visible?   show?
-                   :on-cancel #(re-frame/dispatch [:bottom-sheet/hide])}
+(defn on-sheet-cancel []
+  (re-frame/dispatch [:bottom-sheet/hide]))
 
-            (map? view)
-            (merge view)
+(defn bottom-sheet []
+  (let [{:keys [show? view]} @(re-frame/subscribe [:bottom-sheet])
+        {:keys [content]
+         :as   opts}
+        (cond-> {:visible?   show?
+                 :on-cancel on-sheet-cancel}
 
-            (= view :mobile-network)
-            (merge mobile-network-settings/settings-sheet)
+          (map? view)
+          (merge view)
 
-            (= view :mobile-network-offline)
-            (merge mobile-network-settings/offline-sheet)
+          (= view :mobile-network)
+          (merge mobile-network-settings/settings-sheet)
 
-            (= view :add-new)
-            (merge home.sheet/add-new)
+          (= view :mobile-network-offline)
+          (merge mobile-network-settings/offline-sheet)
 
-            (= view :keycard.login/more)
-            (merge keycard/more-sheet)
+          (= view :add-new)
+          (merge home.sheet/add-new)
 
-            (= view :learn-more)
-            (merge about-app/learn-more)
+          (= view :keycard.login/more)
+          (merge keycard/more-sheet)
 
-            (= view :recover-sheet)
-            (merge recover.views/bottom-sheet))]
-      [quo/bottom-sheet opts
-       (when content
-         [content])])))
+          (= view :learn-more)
+          (merge about-app/learn-more)
+
+          (= view :recover-sheet)
+          (merge recover.views/bottom-sheet))]
+    [quo/bottom-sheet opts
+     (when content
+       [content])]))
 
 (def debug? ^boolean js/goog.DEBUG)
 

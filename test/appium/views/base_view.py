@@ -328,7 +328,7 @@ class StatusInBackgroundButton(BaseButton):
 class EnterQRcodeEditBox(BaseEditBox):
     def __init__(self, driver):
         super(EnterQRcodeEditBox, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Type a message...')
+        self.locator = self.Locator.text_selector('Message')
 
 
 class OkGotItButton(BaseButton):

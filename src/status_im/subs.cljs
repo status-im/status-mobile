@@ -25,7 +25,6 @@
             #_[status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.tribute-to-talk.db :as tribute-to-talk.db]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.screens.add-new.new-public-chat.db :as db]
             [status-im.ui.screens.mobile-network-settings.utils
              :as
@@ -35,7 +34,6 @@
             [status-im.utils.datetime :as datetime]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.money :as money]
-            [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.wallet.db :as wallet.db]
             [status-im.wallet.utils :as wallet.utils]
@@ -565,34 +563,6 @@
  :<- [:chats/current-chat-ui-props]
  (fn [ui-props [_ prop]]
    (get ui-props prop)))
-
-;; NOTE: The whole logic of stickers panel and input should be revised
-(re-frame/reg-sub
- :chats/chat-panel-height
- :<- [:keyboard-max-height]
- (fn [kb-height]
-   (cond
-     (and platform/iphone-x? (pos? kb-height))
-     (- kb-height tabs.styles/minimized-tabs-height 34)
-
-     (pos? kb-height)
-     (- kb-height tabs.styles/minimized-tabs-height)
-
-     platform/iphone-x? 299
-
-     platform/ios? 258
-
-     :else 272)))
-
-(re-frame/reg-sub
- :chats/empty-chat-panel-height
- :<- [:keyboard-height]
- (fn [kb-height]
-   (if (and platform/ios? (pos? kb-height))
-     (- kb-height
-        tabs.styles/minimized-tabs-height
-        (if platform/iphone-x? 34 0))
-     0)))
 
 (re-frame/reg-sub
  :chats/active-chats

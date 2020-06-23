@@ -1,7 +1,6 @@
 (ns status-im.chat.models.input
   (:require [clojure.string :as string]
             [goog.object :as object]
-            [re-frame.core :as re-frame]
             [status-im.chat.constants :as chat.constants]
             [status-im.chat.models :as chat]
             [status-im.chat.models.message :as chat.message]
@@ -9,7 +8,6 @@
             [status-im.constants :as constants]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]
             ["emojilib" :as emojis]))
 
 (defn text->emoji
@@ -61,18 +59,6 @@
         (and spamming-fast? spamming-frequently?)
         (start-cooldown (inc cooldowns))))))
 
-(fx/defn chat-input-focus
-  "Returns fx for focusing on active chat input reference"
-  [{{:keys [current-chat-id chat-ui-props]} :db} ref]
-  (when-let [cmp-ref (get-in chat-ui-props [current-chat-id ref])]
-    {::focus-rn-component cmp-ref}))
-
-(fx/defn chat-input-clear
-  "Returns fx for focusing on active chat input reference"
-  [{{:keys [current-chat-id chat-ui-props]} :db} ref]
-  (when-let [cmp-ref (get-in chat-ui-props [current-chat-id ref])]
-    {::clear-rn-component cmp-ref}))
-
 (fx/defn reply-to-message
   "Sets reference to previous chat message and focuses on input"
   [{:keys [db] :as cofx} message]
@@ -82,16 +68,13 @@
                        (assoc-in [:chats current-chat-id :metadata :responding-to-message]
                                  message)
                        (update-in [:chats current-chat-id :metadata]
-                                  dissoc :sending-image))}
-              (chat-input-focus :input-ref))))
+                                  dissoc :sending-image))})))
 
 (fx/defn cancel-message-reply
   "Cancels stage message reply"
-  [{:keys [db] :as cofx}]
+  [{:keys [db]}]
   (let [current-chat-id (:current-chat-id db)]
-    (fx/merge cofx
-              {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-message] nil)}
-              (chat-input-focus :input-ref))))
+    {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-message] nil)}))
 
 (fx/defn send-plain-text-message
   "when not empty, proceed by sending text message"
@@ -112,7 +95,6 @@
                                             :response-to message-id
                                             :ens-name preferred-name})
                 (set-chat-input-text nil)
-                (chat-input-clear :input-ref)
                 (process-cooldown)))))
 
 (fx/defn send-image
@@ -142,19 +124,3 @@
     (fx/merge cofx
               (send-image)
               (send-plain-text-message input-text current-chat-id))))
-
-(re-frame/reg-fx
- ::focus-rn-component
- (fn [^js ref]
-   (try
-     (.focus ref)
-     (catch :default _
-       (log/debug "Cannot focus the reference")))))
-
-(re-frame/reg-fx
- ::clear-rn-component
- (fn [ref]
-   (try
-     (.clear ref)
-     (catch :default _
-       (log/debug "Cannot clear the reference")))))
