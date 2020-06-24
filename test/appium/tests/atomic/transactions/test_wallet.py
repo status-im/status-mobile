@@ -4,7 +4,7 @@ import string
 from support.utilities import get_merged_txs_list
 from tests import marks, unique_password, common_password
 from tests.base_test_case import SingleDeviceTestCase
-from tests.users import transaction_senders, basic_user, wallet_users
+from tests.users import transaction_senders, basic_user, wallet_users, ens_user_ropsten
 from views.send_transaction_view import SendTransactionView
 from views.sign_in_view import SignInView
 
@@ -170,74 +170,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_transaction()
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True, decimals=7)
 
-    @marks.testrail_id(6245)
-    @marks.high
-    def test_token_with_more_than_allowed_decimals(self):
-        sender = wallet_users['C']
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'])
-        wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.accounts_status_account.click()
-        send_transaction = wallet_view.send_transaction_button.click()
-        adi_button = send_transaction.asset_by_name('ADI')
-        send_transaction.select_asset_button.click_until_presence_of_element(send_transaction.eth_asset_in_select_asset_bottom_sheet_button)
-        adi_button.click()
-        send_transaction.amount_edit_box.click()
-        amount = '0.0%s' % str(random.randint(100000, 999999)) + '1'
-        send_transaction.amount_edit_box.set_value(amount)
-        error_text = 'Amount is too precise. Max number of decimals is 7.'
-        if not send_transaction.element_by_text(error_text).is_element_displayed():
-            self.driver.fail('Warning about too precise amount is not shown when sending a transaction')
-
-    @marks.testrail_id(5423)
-    @marks.medium
-    def test_send_valid_amount_after_insufficient_funds_error(self):
-        sender = transaction_senders['T']
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'])
-        wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.accounts_status_account.click()
-        bigger_amount = wallet_view.get_asset_amount_by_name('ETHro') + 1
-        send_transaction = wallet_view.send_transaction_button.click()
-        amount_edit_box = send_transaction.amount_edit_box
-        amount_edit_box.click()
-        amount_edit_box.set_value(bigger_amount)
-        send_transaction.element_by_text('Insufficient funds').wait_for_visibility_of_element(5)
-
-        valid_amount = send_transaction.get_unique_amount()
-        amount_edit_box.clear()
-        amount_edit_box.set_value(valid_amount)
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(basic_user['address'])
-        send_transaction.done_button.click()
-        send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction()
-        self.network_api.find_transaction_by_unique_amount(sender['address'], valid_amount)
-
-    @marks.testrail_id(5471)
-    @marks.medium
-    def test_insufficient_funds_wallet_0_balance(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.select_asset("STT")
-        wallet_view.accounts_status_account.click()
-        send_transaction = wallet_view.send_transaction_button.click()
-        send_transaction.amount_edit_box.set_value(1)
-        error_text = send_transaction.element_by_text('Insufficient funds')
-        if not error_text.is_element_displayed():
-            self.errors.append("'Insufficient funds' error is now shown when sending 1 ETH from wallet with balance 0")
-        send_transaction.select_asset_button.click()
-        send_transaction.asset_by_name('STT').click()
-        send_transaction.amount_edit_box.set_value(1)
-        if not error_text.is_element_displayed():
-            self.errors.append("'Insufficient funds' error is now shown when sending 1 STT from wallet with balance 0")
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(5412)
     @marks.high
@@ -268,60 +200,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                 "'Insufficient funds' error is not shown when sending %s STT from wallet with balance %s" % (
                     round(stt_value + 1), stt_value))
         self.errors.verify_no_errors()
-
-    @marks.testrail_id(5359)
-    @marks.critical
-    @marks.skip
-    def test_modify_transaction_fee_values(self):
-        sender = transaction_senders['U']
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'])
-        wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.accounts_status_account.click()
-        send_transaction = wallet_view.send_transaction_button.click()
-
-        amount = send_transaction.get_unique_amount()
-        send_transaction.amount_edit_box.set_value(amount)
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        recipient_address = basic_user['address']
-        send_transaction.enter_recipient_address_input.set_value(recipient_address)
-        send_transaction.done_button.click()
-        send_transaction.sign_transaction_button.click()
-        send_transaction.network_fee_button.click_until_presence_of_element(send_transaction.gas_limit_input)
-        gas_prices = {
-            "1.0000000009": "Invalid number",
-            "0.0000000009": "Min 1 wei",
-            "-1": "Min 1 wei"
-        }
-        gas_limit = {
-            "20999": "Min 21000 units",
-            "21000.1": "Invalid number",
-            "-21000": "Min 21000 units"
-        }
-        for key in gas_prices:
-            send_transaction.gas_price_input.clear()
-            send_transaction.gas_price_input.send_keys(key)
-            if not send_transaction.element_by_text(gas_prices[key]).is_element_displayed():
-                self.errors.append("With %s Gas Price value there is no %s error displayed" % key, gas_prices[key])
-        send_transaction.gas_price_input.clear()
-        send_transaction.gas_price_input.send_keys('10')
-
-        for key in gas_limit:
-            send_transaction.gas_price_input.clear()
-            send_transaction.gas_price_input.send_keys(key)
-            if not send_transaction.element_by_text(gas_limit[key]).is_element_displayed():
-                self.errors.append("With %s Gas Limit value there is no %s error displayed" % key, gas_prices[key])
-        send_transaction.gas_price_input.clear()
-        send_transaction.gas_price_input.send_keys('21000')
-
-        send_transaction.update_fee_button.click_until_absense_of_element(send_transaction.update_fee_button)
-        send_transaction.sign_with_password.click_until_presence_of_element(send_transaction.enter_password_input)
-        send_transaction.enter_password_input.send_keys(common_password)
-        send_transaction.sign_button.click()
-        send_transaction.ok_button.click()
 
     @marks.testrail_id(5314)
     @marks.critical
@@ -638,3 +516,121 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         # transactions_view.transactions_table.find_transaction(amount=amount, asset=symbol)
 
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(5437)
+    @marks.medium
+    def test_validation_amount_errors(self):
+        sender = wallet_users['C']
+        sign_in_view = SignInView(self.driver)
+
+        errors = {'send_transaction_screen': {
+                    'too_precise': 'Amount is too precise. Max number of decimals is 7.',
+                    'insufficient_funds': 'Insufficient funds'
+                    },
+                  'sending_screen': {
+                    'Amount': 'Insufficient funds',
+                    'Network fee': 'Not enough ETH for gas'
+                    },
+                  'gas_prices': {
+                    '1.0000000009': 'Invalid number',
+                    '0.0000000009': 'Min 1 wei',
+                    '-1': 'Min 1 wei'
+                   },
+                  'gas_limit': {
+                    '20999': 'Min 21000 units',
+                    '21000.1': 'Invalid number',
+                    '-21000': 'Min 21000 units'
+                   }
+                  }
+        warning = 'Warning %s is not shown on %s'
+
+        sign_in_view.recover_access(sender['passphrase'])
+        wallet_view = sign_in_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        wallet_view.accounts_status_account.click()
+
+        screen = 'send transaction screen from wallet'
+        sign_in_view.just_fyi('Checking %s on %s' % (errors['send_transaction_screen']['too_precise'], screen))
+        initial_amount_ADI = wallet_view.get_asset_amount_by_name('ADI')
+        send_transaction = wallet_view.send_transaction_button.click()
+        adi_button = send_transaction.asset_by_name('ADI')
+        send_transaction.select_asset_button.click_until_presence_of_element(send_transaction.eth_asset_in_select_asset_bottom_sheet_button)
+        adi_button.click()
+        send_transaction.amount_edit_box.click()
+        amount = '0.0%s' % str(random.randint(100000, 999999)) + '1'
+        send_transaction.amount_edit_box.set_value(amount)
+        if not send_transaction.element_by_text(errors['send_transaction_screen']['too_precise']).is_element_displayed():
+            self.errors.append(warning % (errors['send_transaction_screen']['too_precise'], screen))
+
+        sign_in_view.just_fyi('Checking %s on %s' % (errors['send_transaction_screen']['insufficient_funds'], screen))
+        send_transaction.amount_edit_box.clear()
+        send_transaction.amount_edit_box.set_value(str(initial_amount_ADI) + '1')
+        if not send_transaction.element_by_text(errors['send_transaction_screen']['insufficient_funds']).is_element_displayed():
+            self.errors.append(warning % (errors['send_transaction_screen']['insufficient_funds'], screen))
+        send_transaction.cancel_button.click()
+        wallet_view.back_button.click()
+
+        screen = 'sending screen from wallet'
+        sign_in_view.just_fyi('Checking %s on %s' % (errors['sending_screen']['Network fee'],screen))
+        account_name = 'new'
+        wallet_view.add_account(account_name)
+        wallet_view.get_account_by_name(account_name).click()
+        wallet_view.send_transaction_button.click()
+        send_transaction.amount_edit_box.set_value('0')
+        send_transaction.chose_recipient_button.click()
+        send_transaction.enter_recipient_address_button.click()
+        send_transaction.enter_recipient_address_input.set_value(ens_user_ropsten['ens'])
+        send_transaction.done_button.click()
+        send_transaction.next_button.click()
+        if not send_transaction.validation_error_element.is_element_displayed(10):
+            self.errors.append('Validation icon is not shown when testing %s on %s' % (errors['sending_screen']['Network fee'],screen))
+        send_transaction.get_validation_icon().click()
+        if not send_transaction.element_by_text_part(errors['sending_screen']['Network fee']).is_element_displayed(10):
+            self.errors.append(warning % (errors['sending_screen']['Network fee'],screen))
+        send_transaction.sign_with_password.click()
+        if send_transaction.enter_password_input.is_element_displayed():
+            self.errors.append('Sign button is active when not enough ETH for gas')
+
+        sign_in_view.just_fyi('check validation for Gas Limit and Gas Price')
+        send_transaction.network_fee_button.click_until_presence_of_element(send_transaction.gas_limit_input)
+        for key in errors['gas_prices']:
+            send_transaction.gas_price_input.clear()
+            send_transaction.gas_price_input.send_keys(key)
+            if not send_transaction.element_by_text(errors['gas_prices'][key]).is_element_displayed():
+                self.errors.append("With %s Gas Price value there is no %s error displayed" % (key, errors['gas_prices'][key]))
+        send_transaction.gas_price_input.clear()
+        send_transaction.gas_price_input.send_keys('0.1')
+        for key in errors['gas_limit']:
+            send_transaction.gas_limit_input.clear()
+            send_transaction.gas_limit_input.send_keys(key)
+            if not send_transaction.element_by_text(errors['gas_limit'][key]).is_element_displayed():
+                self.errors.append("With %s Gas Limit value there is no %s error displayed" % (key, errors['gas_limit'][key]))
+        send_transaction.gas_limit_input.clear()
+        send_transaction.gas_limit_input.send_keys('21000')
+        send_transaction.update_fee_button.click_until_absense_of_element(send_transaction.update_fee_button)
+        if send_transaction.validation_error_element.is_element_displayed():
+            self.errors.append('Warning about insufficient funds for gas is shown after updating transaction fee')
+        send_transaction.cancel_button.click()
+
+        screen = 'sending screen from DApp'
+        sign_in_view.just_fyi('Checking %s on %s' % (errors['sending_screen']['Network fee'],screen))
+        home_view = wallet_view.home_button.click()
+        dapp_view = sign_in_view.dapp_tab_button.click()
+        dapp_view.select_account_button.click()
+        dapp_view.select_account_by_name(account_name).wait_for_element(30)
+        dapp_view.select_account_by_name(account_name).click()
+        status_test_dapp = home_view.open_status_test_dapp()
+        status_test_dapp.wait_for_d_aap_to_load()
+        status_test_dapp.transactions_button.click_until_presence_of_element(
+            status_test_dapp.send_two_tx_in_batch_button)
+        status_test_dapp.send_two_tx_in_batch_button.click()
+        if not send_transaction.validation_error_element.is_element_displayed(10):
+            self.errors.append(warning % (errors['sending_screen']['Network fee'],screen))
+        send_transaction.cancel_button.click()
+
+        for element in errors['sending_screen']:
+            send_transaction.get_validation_icon(element).click()
+            if not send_transaction.element_by_text_part(errors['sending_screen'][element]).is_element_displayed(10):
+                self.errors.append(warning % (errors['sending_screen'][element], screen))
+        self.errors.verify_no_errors()
+

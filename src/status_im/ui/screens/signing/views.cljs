@@ -341,9 +341,11 @@
         :accessories (if (or gas-price-loading? gas-loading?)
                        [[react/small-loading-indicator]]
                        (if (= :gas-isnt-set gas-error-state)
-                         [[react/text {:style {:color colors/blue}}
+                         [[react/text {:style               {:color colors/blue}
+                                       :accessibility-label :custom-gas-fee}
                            (i18n/label :t/set-custom-fee)]]
-                         [[react/view {:style {:flex-direction :row}}
+                         [[react/view {:style               {:flex-direction :row}
+                                       :accessibility-label :custom-gas-fee}
                            [react/nested-text {:style {:color colors/gray}}
                             [{:style {:color colors/black}} (utils/format-decimals fee 6)]
                             " "

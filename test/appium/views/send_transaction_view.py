@@ -125,7 +125,7 @@ class ErrorDialog(BaseView):
 class NetworkFeeButton(BaseButton):
     def __init__(self, driver):
         super(NetworkFeeButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="Network fee"]')
+        self.locator = self.Locator.accessibility_id('custom-gas-fee')
 
 
 class TransactionFeeButton(BaseButton):
@@ -179,6 +179,18 @@ class UpdateFeeButton(BaseButton):
             self.driver.info('Wait for no %s' % self.name)
             if not self.is_element_displayed():
                 return self.navigate()
+
+
+class ValidationErrorOnSendTransaction(BaseButton):
+    def __init__(self, driver, field):
+        super(ValidationErrorOnSendTransaction, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='%s']/../*[@content-desc='icon']" % field)
+
+class ValidationIconOnSendTransaction(BaseButton):
+    def __init__(self, driver):
+        super(ValidationIconOnSendTransaction, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="custom-gas-fee"]/../android.view.ViewGroup/*[@content-desc="icon"]')
+
 
 
 class ShareButton(BaseButton):
@@ -276,6 +288,7 @@ class SendTransactionView(BaseView):
         self.enter_recipient_address_text = EnterRecipientAddressInputText(self.driver)
         self.recent_recipients_button = RecentRecipientsButton(self.driver)
         self.amount_edit_box = AmountEditBox(self.driver)
+        self.validation_error_element = ValidationIconOnSendTransaction(self.driver)
 
         self.network_fee_button = NetworkFeeButton(self.driver)
         self.transaction_fee_button = TransactionFeeButton(self.driver)
@@ -348,6 +361,9 @@ class SendTransactionView(BaseView):
 
     def get_account_in_select_account_bottom_sheet_button(self, account_name):
         return AccountNameInSelectAccountBottomSheet(self.driver, account_name)
+
+    def get_validation_icon(self, field='Network fee'):
+        return ValidationErrorOnSendTransaction(self.driver, field)
 
     def get_values_from_send_transaction_bottom_sheet(self, gas=False):
         data = {
