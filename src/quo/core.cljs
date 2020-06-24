@@ -9,6 +9,7 @@
             [quo.components.list.header :as list-header]
             [quo.components.list.footer :as list-footer]
             [quo.components.list.item :as list-item]
+            [quo.components.controls.view :as controls]
             [quo.components.bottom-sheet.view :as bottom-sheet]))
 
 (def text text/text)
@@ -21,6 +22,9 @@
 (def list-footer list-footer/footer)
 (def list-item list-item/list-item)
 (def bottom-sheet bottom-sheet/bottom-sheet)
+(def switch controls/switch)
+(def radio controls/radio)
+(def checkbox controls/checkbox)
 (def safe-area-provider safe-area/provider)
 (def safe-area-consumer safe-area/consumer)
 (def safe-area-view safe-area/view)

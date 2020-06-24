@@ -4,9 +4,8 @@
             [quo.design-system.spacing :as spacing]
             [quo.design-system.colors :as colors]
             [quo.components.text :as text]
+            [quo.components.controls.view :as controls]
             ;; FIXME:
-            [status-im.ui.components.radio :as radio]
-            [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.icons.vector-icons :as icons]
             [quo.components.animated.pressable :as animated]))
 
@@ -113,12 +112,12 @@
                     :flex-direction :row}}
    [rn/view {:style (:tiny spacing/padding-horizontal)}
     (case accessory
-      :radio    [radio/radio active]
-      :checkbox [checkbox/checkbox {:checked? active}]
-      :switch   [rn/switch {:value           active
-                            :track-color     #js {:true  (:interactive-01 @colors/theme)
-                                                  :false nil}
-                            :on-value-change on-press}]
+      :radio    [controls/radio {:value     active
+                                 :on-change on-press}]
+      :checkbox [controls/checkbox {:value     active
+                                    :on-change on-press}]
+      :switch   [controls/switch {:value     active
+                                  :on-change on-press}]
       :text     [text/text {:color           :secondary
                             :number-of-lines 1}
                  accessory-text]

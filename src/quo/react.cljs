@@ -112,12 +112,14 @@
      (react/useCallback f (maybe-js-deps @prev-deps*))
      deps)))
 
-(defn memo
+(defn use-memo
   ([f] (react/useMemo f))
   ([f deps]
    (with-deps-check [prev-deps*]
      (react/useMemo f (maybe-js-deps @prev-deps*))
      deps)))
+
+(def memo react/memo)
 
 (defn get-children [^js children]
   (->> children

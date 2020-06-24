@@ -51,8 +51,9 @@
 (def bezier (.-bezier ^js Easing))
 (def linear (.-linear ^js Easing))
 
-(def easings {:ease-in  (bezier 0.42 0 1 1)
-              :ease-out (bezier 0 0 0.58 1)})
+(def easings {:ease-in     (bezier 0.42 0 1 1)
+              :ease-out    (bezier 0 0 0.58 1)
+              :ease-in-out (bezier 0.42 0 0.58 1)})
 
 (defn set-value [anim val]
   (ocall anim "setValue" val))
@@ -143,6 +144,12 @@
 (defn with-timing-transition [val config]
   (.withTimingTransition ^js redash val (clj->js config)))
 
+(defn use-spring-transition [val config]
+  (.withSpringTransition ^js redash val (clj->js config)))
+
+(defn use-timing-transition [val config]
+  (.withTimingTransition ^js redash val (clj->js config)))
+
 (defn re-timing [config]
   (.timing ^js redash (clj->js config)))
 
@@ -159,6 +166,9 @@
 
 (defn mix [anim-value a b]
   (.mix ^js redash anim-value a b))
+
+(defn mix-color [anim-value a b]
+  (.mixColor ^js redash anim-value a b))
 
 (defn loop* [opts]
   (ocall redash "loop" (clj->js opts)))
