@@ -1,4 +1,4 @@
-library 'status-react-jenkins@v1.1.7'
+library 'status-react-jenkins@v1.1.8'
 
 pipeline {
   agent { label 'macos-xcode-11.5' }

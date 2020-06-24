@@ -86,21 +86,38 @@ end
 # `readonly`:
 #    if true  - only fetch existing certificates and profiles, don't upgrade from AppStoreConnect
 #    if false - read list of devices from AppStoreConnect, and upgrade the provisioning profiles from it
-def build_ios_adhoc(readonly)
+# `pr_build`:
+#    if true  - uses StatusImPR scheme and postfixed app id with `.pr` to build an app, which can be used in parallel with release
+#    if false - uses StatusIm scheme to build the release app 
+
+def build_ios_adhoc(readonly: false, pr_build: false)
+  # PR builds should appear as a separate App on iOS
+  scheme = pr_build ? 'StatusImPR' : 'StatusIm'
+  app_id = pr_build ? 'im.status.ethereum.pr' : 'im.status.ethereum'
+
   match(
     type: 'adhoc',
     force_for_new_devices: true,
     readonly: readonly,
+    app_identifier: app_id,
     keychain_name: 'login.keychain'
   )
 
   build_ios_app(
-    scheme: 'StatusIm',
+    scheme: scheme,
     workspace: 'ios/StatusIm.xcworkspace',
     configuration: 'Release',
     clean: true,
     export_method: 'ad-hoc',
-    output_directory: 'status-adhoc'
+    output_name: 'StatusIm',
+    output_directory: 'status-adhoc',
+    export_options: {
+      signingStyle: 'manual',
+      provisioningProfiles: {
+        "im.status.ethereum": "match AdHoc im.status.ethereum",
+        "im.status.ethereum.pr": "match AdHoc im.status.ethereum.pr"
+      }
+    }
   )
 end
 
@@ -165,7 +182,7 @@ platform :ios do
   desc 'This .ipa is ready to be distibuted through diawi.com'
   lane :adhoc do
     unlock_keychain_if_needed
-    build_ios_adhoc(true)
+    build_ios_adhoc(readonly: true)
   end
 
   desc '`fastlane ios e2e` - e2e lane for iOS.'
@@ -180,14 +197,14 @@ platform :ios do
   desc 'This lane builds a new adhoc build and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)'
   lane :pr do
     unlock_keychain_if_needed
-    build_ios_adhoc(false)
+    build_ios_adhoc(pr_build: true)
   end
 
   desc '`fastlane ios nightly` - makes a new nightly'
   desc 'This lane builds a new nightly and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)'
   lane :nightly do
     unlock_keychain_if_needed
-    build_ios_adhoc(false)
+    build_ios_adhoc()
   end
 
   desc '`fastlane ios release` builds a release & uploads it to TestFlight'
@@ -195,6 +212,7 @@ platform :ios do
     match(
       type: 'appstore',
       readonly: true,
+      app_identifier: 'im.status.ethereum',
       keychain_name: 'login.keychain'
     )
 

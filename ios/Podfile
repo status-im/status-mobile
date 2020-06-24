@@ -44,7 +44,7 @@ def flipper_post_install(installer)
   end
 end
 
-target 'StatusIm' do
+abstract_target 'Status' do
   # Pods for StatusQuo
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
@@ -81,14 +81,21 @@ target 'StatusIm' do
   pod 'SQLCipher', '~>3.0'
   pod 'SSZipArchive'
 
+  target 'StatusIm' do
+    target 'StatusImTests' do
+      inherit! :complete
+      # Pods for testing
+    end
+  end
+  
+  target 'StatusImPR' do
+  end
+  
   add_flipper_pods!
   post_install do |installer|
     flipper_post_install(installer)
   end
-  target 'StatusImTests' do
-    inherit! :complete
-    # Pods for testing
-  end
+
 
   use_native_modules!
 end
