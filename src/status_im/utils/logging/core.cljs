@@ -1,18 +1,18 @@
 (ns status-im.utils.logging.core
-  (:require [clojure.string :as clojure.string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.email :as mail]
             [taoensso.timbre :as log]
-            [status-im.utils.config :as config]
             [status-im.i18n :as i18n]
             [status-im.utils.platform :as platform]
             [status-im.utils.build :as build]
             [status-im.transport.utils :as transport.utils]
-            [status-im.utils.datetime :as datetime]))
+            [status-im.utils.datetime :as datetime]
+            [clojure.string :as string]
+            [status-im.utils.config :as config]))
 
 (def report-email "error-reports@status.im")
 (def max-log-entries 1000)
@@ -22,17 +22,19 @@
   (when (>= (count @logs-queue) max-log-entries)
     (swap! logs-queue pop)))
 
-(defn init-logs []
-  (log/set-level! config/log-level)
-  (log/debug)
-  (log/merge-config!
-   {:output-fn (fn [& data]
-                 (let [res (apply log/default-output-fn data)]
-                   (add-log-entry res)
-                   res))}))
+(defn init-logs [level]
+  (when-not (string/blank? level)
+    (log/set-level! (-> level
+                        string/lower-case
+                        keyword))
+    (log/merge-config!
+     {:output-fn (fn [& data]
+                   (let [res (apply log/default-output-fn data)]
+                     (add-log-entry res)
+                     res))})))
 
 (defn get-js-logs []
-  (clojure.string/join "\n" @logs-queue))
+  (string/join "\n" @logs-queue))
 
 (re-frame/reg-fx
  :logs/archive-logs
@@ -44,18 +46,14 @@
 
 (re-frame/reg-fx
  :logs/set-level
- (fn [log-level]
-   (log/set-level! log-level)))
+ (fn [level]
+   (init-logs level)))
 
 (fx/defn set-log-level
-  [{:keys [db]}  multiaccount]
-  (let [log-level (if-let [level (get multiaccount :log-level)]
-                    (if (clojure.string/blank? level) "ERROR" level)
-                    config/log-level-status-go)]
-    {:db (assoc-in db [:multiaccount :log-level] log-level)
-     :logs/set-level (-> log-level
-                         clojure.string/lower-case
-                         keyword)}))
+  [{:keys [db]} log-level]
+  (let [log-level (or log-level config/log-level)]
+    {:db             (assoc-in db [:multiaccount :log-level] log-level)
+     :logs/set-level log-level}))
 
 (fx/defn send-logs
   [{:keys [db]}]
@@ -112,10 +110,10 @@
            :node-info :peers-summary]}]
   (let [build-number  (if platform/desktop? build/version build/build-no)
         build-version (str build/version " (" build-number ")")
-        separator (clojure.string/join (take 40 (repeat "-")))
+        separator (string/join (take 40 (repeat "-")))
         [enode-id ip-address port]
         (transport.utils/extract-url-components (:enode node-info))]
-    (clojure.string/join
+    (string/join
      "\n"
      (concat [(i18n/label :t/report-bug-email-template)]
              [separator

@@ -44,12 +44,7 @@
 
 ;; CONFIG VALUES
 (def log-level
-  (-> (get-config :LOG_LEVEL "error")
-      string/lower-case
-      keyword))
-(def log-level-status-go
-  (-> (get-config :LOG_LEVEL_STATUS_GO "")
-      string/upper-case))
+  (string/upper-case (get-config :LOG_LEVEL "")))
 (def fleet (get-config :FLEET "eth.staging"))
 (def default-network (get-config :DEFAULT_NETWORK))
 (def pow-target (js/parseFloat (get-config :POW_TARGET "0.0001")))
