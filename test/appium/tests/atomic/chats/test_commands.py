@@ -240,8 +240,10 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_2_receiver_message = chat_2.chat_element_by_text('↓ Incoming transaction')
         chat_2_receiver_message.decline_transaction.click()
         for message in chat_1_sender_message, chat_2_receiver_message:
-            if not message.contains_text('Transaction declined' ,20):
-                self.errors.append('Message status is not updated to  "Transaction declined"')
+            if not message.contains_text('Transaction declined', 20):
+                self.errors.append('Message status is not updated to  "Transaction declined" for transaction before '
+                                   'sharing address')
+
         home_1.just_fyi('Decline transaction request and check that state is changed')
         chat_1.commands_button.click()
         request_amount = chat_1.get_unique_amount()
@@ -252,11 +254,9 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_1_request_message = chat_1.chat_element_by_text('↓ Incoming transaction')
         chat_2_sender_message = chat_2.chat_element_by_text('↑ Outgoing transaction')
         chat_2_sender_message.decline_transaction.click()
-        chat_1.element_by_text_part('Transaction declined').wait_for_element(20)
-        for status in chat_2_sender_message.transaction_status.text, chat_1_request_message.transaction_status.text:
-            if status != 'Transaction declined':
-                self.errors.append('Wrong state is shown: "Transaction declined" is expected, in fact'
-                                   ' %s ' % status)
+        for message in chat_2_sender_message, chat_1_request_message:
+            if not message.contains_text('Transaction declined', 20):
+                self.errors.append('Message status is not updated to  "Transaction declined" for transaction request')
 
         self.errors.verify_no_errors()
 

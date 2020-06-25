@@ -139,7 +139,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         profile.switch_network('Mainnet with upstream RPC')
         wallet = sign_in.wallet_button.click()
         wallet.set_up_wallet()
-        assets = ['CryptoKitties', 'CryptoStrikers', 'EtheremonAsset']
+        assets = ['CryptoKitties', 'CryptoStrikers']
         for asset in assets:
             wallet.select_asset(asset)
         wallet.accounts_status_account.click()
