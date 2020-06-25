@@ -1077,7 +1077,7 @@
          (-> balance-total-value
              (money/with-precision 2)
              str
-             (i18n/format-currency (:code currency) false))
+             (i18n/format-currency (:code currency)))
          "0"))
      "...")))
 
@@ -1096,7 +1096,7 @@
          (-> balance-total-value
              (money/with-precision 2)
              str
-             (i18n/format-currency (:code currency) false))
+             (i18n/format-currency (:code currency)))
          "0"))
      "...")))
 
@@ -1182,7 +1182,7 @@
                           (money/crypto->fiat price)
                           (money/with-precision 2)
                           str
-                          (i18n/format-currency (:code currency) false)))))))
+                          (i18n/format-currency (:code currency))))))))
 
 (re-frame/reg-sub
  :wallet/visible-assets-with-values

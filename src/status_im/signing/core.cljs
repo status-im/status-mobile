@@ -207,7 +207,7 @@
        (prices/update-prices)
        #(when-not gas
           {:db (assoc-in (:db %) [:signing/edit-fee :gas-loading?] true)
-           :signing/update-estimated-gas {:obj           tx-obj
+           :signing/update-estimated-gas {:obj           (dissoc tx-obj :gasPrice)
                                           :success-event :signing/update-estimated-gas-success
                                           :error-event :signing/update-estimated-gas-error}})
        #(when-not gasPrice

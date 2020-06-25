@@ -23,7 +23,8 @@
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
-            [status-im.wallet.prices :as prices]))
+            [status-im.wallet.prices :as prices]
+            [status-im.wallet.utils :as wallet.utils]))
 
 (defn get-balance
   [{:keys [address on-success on-error]}]
@@ -305,6 +306,24 @@
   [{:keys [db]} amount]
   {:db (assoc-in db [:wallet/prepare-transaction :amount-text] amount)})
 
+(fx/defn wallet-send-gas-price-success
+  {:events [:wallet.send/update-gas-price-success]}
+  [{db :db} price]
+  {:db (assoc-in db [:wallet/prepare-transaction :gasPrice] price)})
+
+(fx/defn set-max-amount
+  {:events [:wallet.send/set-max-amount]}
+  [{:keys [db]} {:keys [amount decimals symbol]}]
+  (let [^js gas (money/bignumber 21000)
+        ^js gasPrice (get-in db [:wallet/prepare-transaction :gasPrice])
+        ^js fee (when gasPrice (.times gas gasPrice))
+        amount-text (if (= :ETH symbol)
+                      (when (and fee (money/sufficient-funds? fee amount))
+                        (str (wallet.utils/format-amount (.minus amount fee) decimals)))
+                      (str (wallet.utils/format-amount amount decimals)))]
+    (when amount-text
+      {:db (assoc-in db [:wallet/prepare-transaction :amount-text] amount-text)})))
+
 (fx/defn set-and-validate-request-amount
   {:events [:wallet.request/set-amount-text]}
   [{:keys [db]} amount]
@@ -466,7 +485,8 @@
 (fx/defn on-recipient-address-resolved
   {:events [::recipient-address-resolved]}
   [{:keys [db]} address]
-  {:db (assoc-in db [:wallet/prepare-transaction :to :address] address)})
+  {:db (assoc-in db [:wallet/prepare-transaction :to :address] address)
+   :signing/update-gas-price {:success-event :wallet.send/update-gas-price-success}})
 
 (fx/defn prepare-transaction-from-chat
   {:events [:wallet/prepare-transaction-from-chat]}
@@ -515,7 +535,8 @@
               {:from       account
                :to         nil
                :symbol     :ETH
-               :from-chat? false})})
+               :from-chat? false})
+   :signing/update-gas-price {:success-event :wallet.send/update-gas-price-success}})
 
 (fx/defn cancel-transaction-command
   {:events [:wallet/cancel-transaction-command]}
