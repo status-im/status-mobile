@@ -1,13 +1,13 @@
 (ns status-im.hardwallet.sign
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
-            [status-im.hardwallet.common :as common]))
+            [status-im.hardwallet.common :as common]
+            [clojure.string :as clojure.string]))
 
 (fx/defn sign
   {:events [:hardwallet/sign]}
@@ -18,6 +18,7 @@
         instance-uid         (get-in db [:hardwallet :application-info :instance-uid])
         keycard-match?       (= keycard-instance-uid instance-uid)
         hash                 (get-in db [:hardwallet :hash])
+        data                 (get-in db [:hardwallet :data])
         pin                  (common/vector->string (get-in db [:hardwallet :pin :sign]))
         from                 (get-in db [:signing/tx :from :address])
         path                 (reduce
@@ -32,6 +33,7 @@
                             (assoc-in [:hardwallet :card-read-in-progress?] true)
                             (assoc-in [:hardwallet :pin :status] :verifying))
        :hardwallet/sign {:hash    (ethereum/naked-address hash)
+                         :data    data
                          :pairing pairing
                          :pin     pin
                          :path    path}}
@@ -59,6 +61,7 @@
                             (assoc-in [:hardwallet :card-read-in-progress?] true)
                             (assoc-in [:hardwallet :pin :status] :verifying))
        :hardwallet/sign {:hash       (ethereum/naked-address hash)
+                         :data       (:data params)
                          :pairing    pairing
                          :pin        pin
                          :on-success on-success}}
@@ -77,6 +80,7 @@
     (if message-id
       [:sign/send-accept-transaction-message message-id tx-hash signature]
       [:sign/send-transaction-message chat-id value contract tx-hash signature])
+    :signing/show-transaction-result nil
     :db (-> db
             (assoc-in [:hardwallet :pin :sign] [])
             (assoc-in [:hardwallet :pin :status] nil))}
@@ -144,14 +148,8 @@
 
 (fx/defn sign-message-completed
   [_ signature]
-  (let [signature' (-> signature
-                                        ; add 27 to last byte
-                                        ; https://github.com/ethereum/go-ethereum/blob/master/internal/ethapi/api.go#L431
-                       (clojure.string/replace-first #"00$", "1b")
-                       (clojure.string/replace-first #"01$", "1c")
-                       (ethereum/normalized-hex))]
-    {:dispatch
-     [:signing/sign-message-completed (types/clj->json {:result signature'})]}))
+  {:dispatch
+   [:signing/sign-message-completed signature]})
 
 (fx/defn send-transaction-with-signature
   [_ data]
@@ -161,9 +159,14 @@
   {:events [:hardwallet.callback/on-sign-success]}
   [{:keys [db] :as cofx} signature]
   (log/debug "[hardwallet] sign success: " signature)
-  (let [transaction (get-in db [:hardwallet :transaction])
-        tx-obj      (select-keys transaction [:from :to :value :gas :gasPrice :command? :chat-id :message-id])
-        command?    (:command? transaction)]
+  (let [signature-json (types/clj->json
+                        {:result (-> signature
+                                     (clojure.string/replace-first #"00$", "1b")
+                                     (clojure.string/replace-first #"01$", "1c")
+                                     ethereum/normalized-hex)})
+        transaction    (get-in db [:hardwallet :transaction])
+        tx-obj         (select-keys transaction [:from :to :value :gas :gasPrice :command? :chat-id :message-id])
+        command?       (:command? transaction)]
     (fx/merge cofx
               {:db (-> db
                        (assoc-in [:hardwallet :hash] nil)
@@ -179,10 +182,11 @@
                    (common/get-application-info (common/get-pairing db) nil)
                    (common/hide-connection-sheet))))
               (if transaction
-                (send-transaction-with-signature {:transaction  (types/clj->json transaction)
-                                                  :signature    signature
-                                                  :on-completed #(re-frame/dispatch [:signing/transaction-completed % tx-obj])})
-                (sign-message-completed signature)))))
+                (send-transaction-with-signature
+                 {:transaction  (types/clj->json transaction)
+                  :signature    signature
+                  :on-completed #(re-frame/dispatch [:signing/transaction-completed % tx-obj])})
+                (sign-message-completed signature-json)))))
 
 (fx/defn on-sign-error
   {:events [:hardwallet.callback/on-sign-error]}

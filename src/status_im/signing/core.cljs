@@ -271,7 +271,8 @@
               :message-id message-id
               :chat-id chat-id
               :value value
-              :contract contract}
+              :contract contract
+              :data data}
              hash]))})
        (fn [_]
          {:signing.fx/sign-message

@@ -4,7 +4,8 @@
             [status-im.utils.types :as types]
             [status-im.native-module.core :as status]
             [status-im.ethereum.core :as ethereum]
-            [status-im.hardwallet.keycard :as keycard]))
+            [status-im.hardwallet.keycard :as keycard]
+            [taoensso.timbre :as log]))
 
 (defonce event-emitter (.-DeviceEventEmitter rn))
 (defonce active-listeners (atom []))
@@ -191,6 +192,7 @@
 
 (defn sign
   [{:keys [pairing pin path hash on-success on-failure]}]
+  (log/debug "keycard sign" "path" path)
   (when (and pairing pin hash)
     (if path
       (.. status-keycard
