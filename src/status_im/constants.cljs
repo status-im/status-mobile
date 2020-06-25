@@ -108,7 +108,7 @@
    :currency :usd
    :appearance 0
    :waku-enabled true
-   :log-level config/log-level-status-go})
+   :log-level config/log-level})
 
 (defn default-visible-tokens [chain]
   (get-in default-multiaccount [:wallet/visible-tokens chain]))

@@ -195,7 +195,7 @@
               (contact/initialize-contacts)
               (stickers/init-stickers-packs)
               (mobile-network/on-network-status-change)
-              (logging/set-log-level multiaccount)
+              (logging/set-log-level (:log-level multiaccount))
               (multiaccounts/switch-preview-privacy-mode-flag))))
 
 (defn get-new-auth-method [auth-method save-password?]
@@ -256,7 +256,7 @@
                                              :mailserver-topics {}
                                              :default-mailserver true})
               (multiaccounts/switch-preview-privacy-mode-flag)
-              (logging/set-log-level multiaccount)
+              (logging/set-log-level (:log-level multiaccount))
               (when-not platform/desktop?
                 (initialize-wallet accounts nil)))))
 

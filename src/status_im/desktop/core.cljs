@@ -8,7 +8,6 @@
             [status-im.ui.components.react :as react]
             [status-im.utils.snoopy :as snoopy]
             [status-im.utils.error-handler :as error-handler]
-            [status-im.utils.logging.core :as utils.logs]
             [status-im.ui.screens.desktop.views :as desktop-views]
             [status-im.desktop.deep-links :as deep-links]
             [status-im.utils.config :as config]))
@@ -39,7 +38,6 @@
                              desktop-views/main)})))
 
 (defn init []
-  (utils.logs/init-logs)
   (error-handler/register-exception-handler!)
   (re-frame/dispatch-sync [:init/app-started])
   (.registerComponent ^js app-registry "StatusIm" #(reagent/reactify-component app-root))

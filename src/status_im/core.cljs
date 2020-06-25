@@ -17,7 +17,8 @@
             [status-im.utils.error-handler :as error-handler]
             [status-im.utils.logging.core :as utils.logs]
             [status-im.utils.platform :as platform]
-            [status-im.utils.snoopy :as snoopy]))
+            [status-im.utils.snoopy :as snoopy]
+            [status-im.utils.config :as config]))
 
 (set! interop/next-tick js/setTimeout)
 (set! batching/fake-raf #(js/setTimeout % 0))
@@ -79,7 +80,7 @@
     :reagent-render views/main}))
 
 (defn init []
-  (utils.logs/init-logs)
+  (utils.logs/init-logs config/log-level)
   (error-handler/register-exception-handler!)
   (enableScreens)
   (re-frame/dispatch-sync [:init/app-started])
