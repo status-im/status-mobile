@@ -1,7 +1,7 @@
 library 'status-react-jenkins@v1.1.7'
 
 pipeline {
-  agent { label 'macos-xcode-11.4.1' }
+  agent { label 'macos-xcode-11.5' }
 
   parameters {
     string(
