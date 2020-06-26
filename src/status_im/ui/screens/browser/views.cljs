@@ -105,7 +105,7 @@
 ;; should-component-update is called only when component's props are changed,
 ;; that's why it can't be used in `browser`, because `url` comes from subs
 (views/defview browser-component
-  [{:keys [error? url browser browser-id unsafe? can-go-back?
+  [{:keys [error? url browser browser-id unsafe? can-go-back? ignore-unsafe
            can-go-forward? resolving? network-id url-original
            show-permission show-tooltip dapp? name dapps-account]}]
   {:should-component-update (fn [_ _ args]
@@ -114,7 +114,7 @@
   [react/view {:flex 1
                :elevation -10}
    [react/view components.styles/flex
-    (if unsafe?
+    (if (and unsafe? (not= (http/url-host url) ignore-unsafe))
       [site-blocked.views/view {:can-go-back? can-go-back?
                                 :site         browser-id}]
       [components.webview/webview
@@ -148,7 +148,7 @@
 
 (views/defview browser []
   (views/letsubs [window-width [:dimensions/window-width]
-                  {:keys [browser-id dapp? name unsafe?] :as browser} [:get-current-browser]
+                  {:keys [browser-id dapp? name unsafe? ignore-unsafe] :as browser} [:get-current-browser]
                   {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]} [:browser/options]
                   dapps-account [:dapps-account]
                   network-id [:chain-id]]
@@ -167,6 +167,7 @@
                            :browser         browser
                            :browser-id      browser-id
                            :unsafe?         unsafe?
+                           :ignore-unsafe   ignore-unsafe
                            :can-go-back?    can-go-back?
                            :can-go-forward? can-go-forward?
                            :resolving?      resolving?

@@ -3,8 +3,7 @@
 
 (def container
   {:justify-content  :center
-   :flex             1
-   :background-color colors/gray-lighter})
+   :flex             1})
 
 (def container-root-view
   {:flex            1
@@ -26,6 +25,4 @@
   {:color colors/blue})
 
 (def buttons-container
-  {:flex-direction  :row
-   :justify-content :center
-   :margin-top      24})
+  {:margin     24})

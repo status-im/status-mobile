@@ -1157,5 +1157,6 @@
     "tx-fail-description2" : "This transaction is likely to fail. Set a custom network fee to sign at your own risk.",
     "set-custom-fee" : "Set custom fee",
     "not-enough-snt": "Not enough SNT",
-    "set-max": "Set max"
+    "set-max": "Set max",
+    "continue-anyway": "Continue anyway"
 }

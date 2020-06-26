@@ -139,6 +139,13 @@
                 (update-browser (assoc browser :history-index (dec history-index)))
                 (resolve-url nil)))))
 
+(fx/defn ignore-unsafe
+  {:events [:browser/ignore-unsafe]}
+  [cofx]
+  (let [browser (get-current-browser (:db cofx))
+        host (http/url-host (get-current-url browser))]
+    (update-browser cofx (assoc browser :ignore-unsafe host))))
+
 (defn can-go-forward? [{:keys [history-index history]}]
   (< history-index (dec (count history))))
 
