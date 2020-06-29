@@ -87,7 +87,10 @@ pipeline {
         sshagent(credentials: ['nix-cache-ssh']) {
           nix.shell("""
               find /nix/store/ -mindepth 1 -maxdepth 1 -type d \
-                -not -name '*.links' -and -not -name '*-status-react-*' \
+                -not -name '*.links' -and \
+                -not -name '*-ndk-bundle-*' -and \
+                -not -name '*-status-react-*' \
+                | tee find.log \
                 | xargs nix-copy-closure -v --to ${NIX_CACHE_USER}@${NIX_CACHE_HOST}
             """,
             pure: false
