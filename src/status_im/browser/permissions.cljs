@@ -4,6 +4,7 @@
             [status-im.i18n :as i18n]
             [status-im.navigation :as navigation]
             [status-im.qr-scanner.core :as qr-scanner]
+            [re-frame.core :as re-frame]
             [status-im.utils.fx :as fx]))
 
 (declare process-next-permission)
@@ -12,6 +13,12 @@
 (def supported-permissions
   {constants/dapp-permission-qr-code           {:yield-control? true
                                                 :allowed?       true}
+   ;;TODO require this to be invoked each time, otherwise dapps could exploit this.
+   constants/dapp-permission-send-to-public-chat {:type       :chat
+                                                  :yield-control? true
+                                                  :title       "Wants to send a message"
+                                                  :description "To public chat"
+                                                  :icon        :main-icons/public-chat}
    constants/dapp-permission-contact-code      {:type        :profile
                                                 :title       (i18n/label :t/wants-to-access-profile)
                                                 :description (i18n/label :t/your-contact-code)
@@ -20,6 +27,12 @@
                                                 :title       (i18n/label :t/dapp-would-like-to-connect-wallet)
                                                 :description (i18n/label :t/allowing-authorizes-this-dapp)
                                                 :icon        :main-icons/wallet}})
+
+(fx/defn dapp-message-to-topic
+  [{:keys [db] :as cofx} permission message-id {:keys [topic message] :as params}]
+  (re-frame/dispatch [:chat.ui/start-public-chat topic {:navigation-reset? true}])
+  (re-frame/dispatch [:chat.ui/set-chat-input-text message])
+  (send-response-to-bridge cofx permission message-id true params))
 
 (fx/defn permission-yield-control
   [{:keys [db] :as cofx} dapp-name permission message-id params]
@@ -30,7 +43,11 @@
                                         :cancel-handler :browser.bridge.callback/qr-code-canceled
                                         :data           {:dapp-name  dapp-name
                                                          :permission permission
-                                                         :message-id message-id}}))))
+                                                         :message-id message-id}}))
+
+    (= permission constants/dapp-permission-send-to-public-chat)
+    (dapp-message-to-topic cofx permission message-id params)
+    ))
 
 (fx/defn permission-show-permission
   [{:keys [db] :as cofx} dapp-name permission message-id yield-control?]

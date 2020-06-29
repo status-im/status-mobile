@@ -146,6 +146,11 @@
         return sendAPIrequest('contact-code');
     };
 
+    StatusAPI.prototype.sendToPublicChat = function(topic, message) {
+        const params = { topic, message };
+        return sendAPIrequest('send-to-public-chat', params);
+    }
+
     var EthereumProvider = function () {};
 
     EthereumProvider.prototype.isStatus = true;
