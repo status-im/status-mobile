@@ -509,15 +509,18 @@
           [section {:title   (i18n/label :t/key)
                     :content public-key}]])
        [react/view {:style {:margin-top 16 :margin-bottom 32}}
-        ;;TODO: re-enable once feature is developped
-        #_[list/big-list-item {:text          (i18n/label :t/ens-remove-username)
-                               :subtext       (i18n/label :t/ens-remove-hints)
-                               :text-color    colors/gray
+        ;;TODO this is temporary fix for accounts with failed txs
+        ;;we still need this for regular ens names (not pending) but we need to detach public key in the contract
+        (when pending?
+          [list/big-list-item {:text          (i18n/label :t/ens-remove-username)
+                               ;:subtext       (i18n/label :t/ens-remove-hints)
+                               :text-color    colors/red
                                :text-style    {:font-weight "500"}
                                :icon          :main-icons/close
-                               :icon-color    colors/gray
-                               :hide-chevron? true}]
-        (when-not custom-domain?
+                               :icon-color    colors/red
+                               :hide-chevron? true
+                               :action-fn     #(re-frame/dispatch [::ens/remove-username name])}])
+        (when (and (not custom-domain?) (not pending?))
           [react/view {:style {:margin-top 18}}
            [list/big-list-item {:text          (i18n/label :t/ens-release-username)
                                 :text-color    (if releasable?
