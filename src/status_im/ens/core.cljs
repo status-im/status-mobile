@@ -303,3 +303,18 @@
   (fx/merge cofx
             (set-username-candidate (get-in db [:ens/registration :username] ""))
             (navigation/navigate-to-cofx :ens-search {})))
+
+(fx/defn remove-username
+  {:events [::remove-username]}
+  [{:keys [db] :as cofx} name]
+  (let [names          (get-in db [:multiaccount :usernames] [])
+        preferred-name (get-in db [:multiaccount :preferred-name])
+        new-names      (remove #(= name %) names)]
+    (fx/merge cofx
+              (multiaccounts.update/multiaccount-update
+               :usernames new-names
+               {})
+              (when (= name preferred-name)
+                (multiaccounts.update/multiaccount-update
+                 :preferred-name (first new-names) {}))
+              (navigation/navigate-back))))
