@@ -217,7 +217,7 @@
     "../translations/id.json" (js/JSON.parse (slurp "./translations/id.json"))
     "../translations/it.json" (js/JSON.parse (slurp "./translations/it.json"))
     "../translations/ko.json" (js/JSON.parse (slurp "./translations/ko.json"))
-    "../translations/pt_br.json" (js/JSON.parse (slurp "./translations/pt_br.json"))
+    "../translations/pt_BR.json" (js/JSON.parse (slurp "./translations/pt_BR.json"))
     "../translations/ru.json" (js/JSON.parse (slurp "./translations/ru.json"))
     "../translations/tr.json" (js/JSON.parse (slurp "./translations/tr.json"))
     "../translations/zh.json" (js/JSON.parse (slurp "./translations/zh.json"))
