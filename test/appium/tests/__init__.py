@@ -40,10 +40,13 @@ mailserver_address = "enode://ee2b53b0ace9692167a410514bca3024695dbf0e1a68e1dff9
                      "1106c465b8e2b6c4f0d93b8749d1578bfcaf03e:status-offline-inbox@104.197.238.144:443"
 staging_fleet = 'eth.staging'
 prod_fleet = 'eth.prod'
+# This fleet is used in the tests
+used_fleet = staging_fleet
+
 mailserver_ams = 'mail-01.do-ams3'
 mailserver_hk = 'mail-02.ac-cn-hongkong-c'
 mailserver_gc = 'mail-01.gc-us-central1-a'
-mailserver_ams_01 = 'mail-01.do-ams3.eth.prod'
+mailserver_ams_01 = 'mail-01.do-ams3.{}'.format(used_fleet)
 camera_access_error_text = "To grant the required camera permission, please go to your system settings " \
                            "and make sure that Status > Camera is selected."
 

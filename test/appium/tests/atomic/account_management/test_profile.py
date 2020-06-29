@@ -2,7 +2,7 @@ import re
 
 from tests import marks, bootnode_address, mailserver_address, camera_access_error_text, \
     photos_access_error_text, test_dapp_url, test_dapp_name, mailserver_ams, mailserver_gc, \
-    mailserver_hk, prod_fleet, common_password
+    mailserver_hk, used_fleet, common_password
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user
 from views.sign_in_view import SignInView
@@ -401,7 +401,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
         profile_view.advanced_button.click()
-        for text in 'INFO', 'eth.prod':
+        for text in 'INFO', used_fleet:
             if not profile_view.element_by_text(text).is_element_displayed():
                 self.errors.append('%s is not selected by default' % text)
         self.errors.verify_no_errors()
@@ -545,8 +545,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         profile_view.just_fyi('pin mailserver')
         profile_view.sync_settings_button.click()
-        mailserver_1 = profile_view.return_mailserver_name(mailserver_gc, prod_fleet)
-        mailserver_2 = profile_view.return_mailserver_name(mailserver_ams, prod_fleet)
+        mailserver_1 = profile_view.return_mailserver_name(mailserver_gc, used_fleet)
+        mailserver_2 = profile_view.return_mailserver_name(mailserver_ams, used_fleet)
         # TODO: temporary to avoid issue 9269 - should be disabled after fix
         mailserver = mailserver_1 if profile_view.element_by_text(mailserver_2).is_element_present() else mailserver_2
         profile_view.mail_server_button.click()
@@ -678,8 +678,8 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.just_fyi('disable autoselection')
         profile_1.sync_settings_button.click()
         profile_1.mail_server_button.click()
-        mailserver_1 = profile_1.return_mailserver_name(mailserver_hk, prod_fleet)
-        mailserver_2 = profile_1.return_mailserver_name(mailserver_ams, prod_fleet)
+        mailserver_1 = profile_1.return_mailserver_name(mailserver_hk, used_fleet)
+        mailserver_2 = profile_1.return_mailserver_name(mailserver_ams, used_fleet)
         # TODO: temporary pin mailserver to avoid issue 9269 - should be disabled after fix
         mailserver = mailserver_1 if profile_1.element_by_text(mailserver_2).is_element_present() else mailserver_2
         profile_1.mail_server_auto_selection_button.click()
@@ -794,7 +794,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         # profile_1.just_fyi('check that can pick another mailserver and receive messages')
         # public_chat_1.element_by_text('PICK ANOTHER').is_element_displayed(30)
         # public_chat_1.element_by_text_part('PICK ANOTHER').click()
-        # mailserver = profile_1.return_mailserver_name(mailserver_ams, prod_fleet)
+        # mailserver = profile_1.return_mailserver_name(mailserver_ams, used_fleet)
         # profile_1.element_by_text(mailserver).click()
         # profile_1.confirm_button.click()
         # profile_1.home_button.click()
