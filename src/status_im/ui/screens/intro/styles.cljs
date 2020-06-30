@@ -1,33 +1,38 @@
 (ns status-im.ui.screens.intro.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]
+            [quo.animated :as animated]))
+
+(def dot-size 6)
+(def progress-size 36)
 
 (def intro-view
   {:flex               1
    :justify-content    :flex-end
    :margin-bottom      12})
 
-(defn dot-selector [n]
-  (let [diameter 6
-        interval 10]
-    {:flex-direction  :row
-     :justify-content :space-between
-     :align-items     :center
-     :height          diameter
-     :width           (+ diameter (* (+ diameter interval)
-                                     (dec n)))}))
+(defn dot-selector []
+  {:flex-direction  :row
+   :justify-content :space-between
+   :align-items     :center})
 
-(defn dot [color selected?]
-  {:background-color (if selected?
-                       color
-                       (colors/alpha color 0.2))
-   :width            6
-   :height           6
-   :border-radius    3})
+(defn dot-style [active]
+  {:background-color  colors/blue-light
+   :overflow          :hidden
+   :opacity           1
+   :margin-horizontal 2
+   :width             (animated/mix active dot-size progress-size)
+   :height            dot-size
+   :border-radius     3})
+
+(defn dot-progress [active progress]
+  {:background-color colors/blue
+   :height           dot-size
+   :width            progress-size
+   :opacity          (animated/mix active 0 1)
+   :transform        [{:translateX (animated/mix progress (- progress-size) 0)}]})
 
 (def wizard-title
-  {:typography    :header
-   :text-align    :center
-   :margin-bottom 16})
+  {:margin-bottom 16})
 
 (def wizard-text
   {:color      colors/gray

@@ -51,7 +51,8 @@
 (def bezier (.-bezier ^js Easing))
 (def linear (.-linear ^js Easing))
 
-(def easings {:ease-in     (bezier 0.42 0 1 1)
+(def easings {:linear      linear
+              :ease-in     (bezier 0.42 0 1 1)
               :ease-out    (bezier 0 0 0.58 1)
               :ease-in-out (bezier 0.42 0 0.58 1)})
 
@@ -181,6 +182,31 @@
 
 (defn snap-point [value velocity snap-points]
   (.snapPoint ^js redash value velocity (to-array snap-points)))
+
+(defn cancelable-loop
+  [{:keys [clock duration finished on-reach]}]
+  (let [time       (value 0)
+        frame-time (value 0)
+        position   (value 0)
+        to-value   (value 1)
+        state      {:time      time
+                    :frameTime frame-time
+                    :finished  finished
+                    :position  position}
+        config     {:toValue  to-value
+                    :duration duration
+                    :easing   (:linear easings)}]
+    (block
+     [(timing clock state config)
+      (cond* (and* finished
+                   (eq position to-value))
+             (call* [] on-reach))
+      (cond* finished
+             [(set finished 0)
+              (set time 0)
+              (set frame-time 0)
+              (set position 0)])
+      position])))
 
 (defn with-easing
   [{val   :value

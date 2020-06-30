@@ -8,7 +8,7 @@
 (def platform (.-Platform ^js rn))
 
 (def view (reagent/adapt-react-class (.-View ^js rn)))
-
+(def image (reagent/adapt-react-class (.-Image rn)))
 (def text (reagent/adapt-react-class (.-Text ^js rn)))
 
 (def scroll-view (reagent/adapt-react-class (.-ScrollView ^js rn)))
