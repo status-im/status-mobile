@@ -12,7 +12,9 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.fx :as fx]
             [status-im.chat.models :as chat]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.contact.core :as contact]
+            [status-im.navigation :as navigation]))
 
 (defn- ens-name-parse [contact-identity]
   (when (string? contact-identity)
@@ -79,22 +81,26 @@
 
 (fx/defn qr-code-scanned
   {:events [:contact/qr-code-scanned]}
-  [{:keys [db] :as cofx} contact-identity]
+  [{:keys [db] :as cofx} contact-identity {:keys [new-contact?] :as opts}]
   (let [public-key?       (and (string? contact-identity)
                                (string/starts-with? contact-identity "0x"))
         validation-result (db/validate-pub-key db contact-identity)]
     (cond
       (and public-key? (not (some? validation-result)))
-      (chat/start-chat cofx contact-identity {:navigation-reset? true})
+      (if new-contact?
+        (fx/merge cofx
+                  (contact/add-contact contact-identity)
+                  (navigation/navigate-to-cofx :contacts-list {}))
+        (chat/start-chat cofx contact-identity {:navigation-reset? true}))
 
       (and (string? contact-identity) (ul/match-url contact-identity ul/profile-regex))
-      (qr-code-scanned cofx (ul/match-url contact-identity ul/profile-regex))
+      (qr-code-scanned cofx (ul/match-url contact-identity ul/profile-regex) opts)
 
       (and (not public-key?) (string? contact-identity))
       (let [chain (ethereum/chain-keyword db)]
         {:resolve-public-key {:chain            chain
                               :contact-identity contact-identity
-                              :cb               #(re-frame/dispatch [:contact/qr-code-scanned %])}})
+                              :cb               #(re-frame/dispatch [:contact/qr-code-scanned % opts])}})
 
       :else
       {:utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)

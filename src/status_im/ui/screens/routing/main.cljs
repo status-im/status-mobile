@@ -69,6 +69,10 @@
        :on-focus   [::new-chat.events/new-chat-focus]
        :transition :presentation-ios
        :component  new-chat/new-chat}
+      {:name       :new-contact
+       :on-focus   [::new-chat.events/new-chat-focus]
+       :transition :presentation-ios
+       :component  new-chat/new-contact}
       {:name       :new-public-chat
        :transition :presentation-ios
        :component  new-public-chat/new-public-chat}

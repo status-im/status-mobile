@@ -35,20 +35,21 @@
    icon])
 
 (defn- input-icon
-  [state]
-  (case state
-    :searching
-    [icon-wrapper colors/gray
-     [react/activity-indicator {:color colors/white-persist}]]
+  [state new-contact?]
+  (let [icon (if new-contact? :main-icons/add :main-icons/arrow-right)]
+    (case state
+      :searching
+      [icon-wrapper colors/gray
+       [react/activity-indicator {:color colors/white-persist}]]
 
-    :valid
-    [react/touchable-highlight
-     {:on-press #(debounce/dispatch-and-chill [:contact.ui/contact-code-submitted] 3000)}
-     [icon-wrapper colors/blue
-      [vector-icons/icon :main-icons/arrow-right {:color colors/white-persist}]]]
+      :valid
+      [react/touchable-highlight
+       {:on-press #(debounce/dispatch-and-chill [:contact.ui/contact-code-submitted new-contact?] 3000)}
+       [icon-wrapper colors/blue
+        [vector-icons/icon icon {:color colors/white-persist}]]]
 
-    [icon-wrapper colors/gray
-     [vector-icons/icon :main-icons/arrow-right {:color colors/white-persist}]]))
+      [icon-wrapper colors/gray
+       [vector-icons/icon icon {:color colors/white-persist}]])))
 
 (defn get-validation-label [value]
   (case value
@@ -80,7 +81,7 @@
             (debounce/debounce-and-dispatch [:new-chat/set-new-identity %] 600))
          :on-submit-editing
          #(when (= state :valid)
-            (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted] 3000))
+            (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted false] 3000))
          :placeholder         (i18n/label :t/enter-contact-code)
          :show-cancel         false
          :accessibility-label :enter-contact-code-input
@@ -88,7 +89,7 @@
          :return-key-type     :go}]]
       [react/view {:justify-content :center
                    :align-items     :center}
-       [input-icon state]]]
+       [input-icon state false]]]
      [react/view {:min-height 30 :justify-content :flex-end}
       [react/text {:style styles/message}
        (cond (= state :error)
@@ -102,3 +103,44 @@
                       :render-fn                 render-row
                       :enableEmptySections       true
                       :keyboardShouldPersistTaps :always}]]))
+
+(views/defview new-contact []
+  (views/letsubs [{:keys [state ens-name public-key error]} [:contacts/new-identity]]
+    [react/view {:style {:flex 1}}
+     [topbar/topbar
+      {:title       :t/new-contact
+       :modal?      true
+       :accessories [{:icon                :qr
+                      :accessibility-label :scan-contact-code-button
+                      :handler             #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
+                                                                {:title        (i18n/label :t/new-contact)
+                                                                 :handler      :contact/qr-code-scanned
+                                                                 :new-contact? true}])}]}]
+     [react/view {:flex-direction :row
+                  :padding        16}
+      [react/view {:flex          1
+                   :padding-right 16}
+       [quo/text-input
+        {:on-change-text
+         #(do
+            (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
+            (debounce/debounce-and-dispatch [:new-chat/set-new-identity %] 600))
+         :on-submit-editing
+         #(when (= state :valid)
+            (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted true] 3000))
+         :placeholder         (i18n/label :t/enter-contact-code)
+         :show-cancel         false
+         :accessibility-label :enter-contact-code-input
+         :auto-capitalize     :none
+         :return-key-type     :go}]]
+      [react/view {:justify-content :center
+                   :align-items     :center}
+       [input-icon state true]]]
+     [react/view {:min-height 30 :justify-content :flex-end}
+      [react/text {:style styles/message}
+       (cond (= state :error)
+             (get-validation-label error)
+             (= state :valid)
+             (str (when ens-name (str ens-name " • "))
+                  (utils/get-shortened-address public-key))
+             :else "")]]]))

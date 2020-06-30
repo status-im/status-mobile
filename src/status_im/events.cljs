@@ -860,10 +860,14 @@
 (handlers/register-handler-fx
  :contact.ui/contact-code-submitted
  [(re-frame/inject-cofx :random-id-generator)]
- (fn [{{:contacts/keys [new-identity]} :db :as cofx} _]
+ (fn [{{:contacts/keys [new-identity]} :db :as cofx} [_ new-contact?]]
    (let [{:keys [public-key ens-name]} new-identity]
      (fx/merge cofx
-               (chat/start-chat public-key {:navigation-reset? true})
+               #(if new-contact?
+                  (contact/add-contact % public-key)
+                  (chat/start-chat % public-key {:navigation-reset? true}))
+               #(when new-contact?
+                  (navigation/navigate-back %))
                #(when ens-name
                   (contact/name-verified % public-key ens-name))))))
 
