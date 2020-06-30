@@ -37,13 +37,9 @@
                         :title :intro-title3
                         :text :intro-text3}] window-height view-id]
      [react/view styles/buttons-container
-      [components.common/button {:button-style (assoc styles/bottom-button :margin-bottom 16)
+      [components.common/button {:button-style (assoc styles/bottom-button :margin-bottom 24)
                                  :on-press     #(re-frame/dispatch [:multiaccounts.create.ui/intro-wizard])
                                  :label        (i18n/label :t/get-started)}]
-      [components.common/button {:button-style (assoc styles/bottom-button :margin-bottom 24)
-                                 :on-press    #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
-                                 :label       (i18n/label :t/access-key)
-                                 :background? false}]
       [react/nested-text
        {:style styles/welcome-text-bottom-note}
        (i18n/label :t/intro-privacy-policy-note1)
@@ -247,7 +243,13 @@
                                                             (and (= step :create-code) weak-password?)
                                                             (and (= step :enter-phrase) next-button-disabled?))
                                              :forward? true}]]])
-
+   (when (and (= :generate-key step) (not processing?))
+     [components.common/button
+      {:button-style (assoc styles/bottom-button :margin-top 8)
+       :on-press    #(re-frame/dispatch
+                      [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
+       :label       (i18n/label :t/access-existing-keys)
+       :background? false}])
    (when (or (= :generate-key step) (and processing? (= :recovery-success step)))
      [react/text {:style (assoc styles/wizard-text :margin-top 20)}
       (i18n/label (cond (= :recovery-success step)

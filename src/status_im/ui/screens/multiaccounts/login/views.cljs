@@ -94,7 +94,7 @@
         [react/i18n-text {:style styles/processing :key :processing}]])
      [react/view {:style (styles/bottom-button-container)}
       [components.common/button
-       {:label        (i18n/label :t/access-key)
+       {:label        (i18n/label :t/access-existing-keys)
         :button-style styles/bottom-button
         :background?  false
         :on-press     #(do

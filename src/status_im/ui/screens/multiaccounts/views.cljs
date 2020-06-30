@@ -62,4 +62,4 @@
       [react/view {:style (styles/bottom-button-container)}
        [button/button {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
                        :type     :secondary
-                       :label    (i18n/label :t/access-key)}]]]]))
+                       :label    (i18n/label :t/access-existing-keys)}]]]]))
