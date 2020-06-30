@@ -110,7 +110,7 @@
     "card-reseted": "Card has been reseted",
     "card-unpaired": "Card has been unpaired from current device",
     "change-fleet": "Change fleet to {{fleet}}",
-    "change-log-level": "Change log level to {{log-level}}",
+    "change-log-level": "Confirm and restart the app to change log level to {{log-level}}",
     "change-logging-enabled": "Are you sure you want to {{enable}} logging?",
     "change-passcode": "Change Passcode",
     "change-password": "Change Password",
