@@ -132,7 +132,7 @@ class IHaveMultiaccountButton(RecoverAccessButton):
 class AccessKeyButton(RecoverAccessButton):
     def __init__(self, driver):
         super(AccessKeyButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Access key']")
+        self.locator = self.Locator.xpath_selector("//*[@text='Access existing keys']")
 
 
 class MaybeLaterButton(BaseButton):
@@ -242,6 +242,7 @@ class SignInView(BaseView):
         return self.get_home_view()
 
     def recover_access(self, passphrase: str, password: str = common_password, keycard=False):
+        self.get_started_button.click_until_presence_of_element(self.access_key_button)
         recover_access_view = self.access_key_button.click()
         recover_access_view.enter_seed_phrase_button.click()
         recover_access_view.seedphrase_input.click()
