@@ -32,7 +32,9 @@
    :transform        [{:translateX (animated/mix progress (- progress-size) 0)}]})
 
 (def wizard-title
-  {:margin-bottom 16})
+  {:margin-bottom 16
+   :typography    :header
+   :text-align    :center})
 
 (def wizard-text
   {:color      colors/gray
