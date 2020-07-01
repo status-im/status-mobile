@@ -45,16 +45,14 @@
                            :icon  :main-icons/message}
      :count-subscription  :chats/unread-messages-number
      :accessibility-label :home-tab-button}
-    (when-not platform/desktop?
-      {:nav-stack           :browser-stack
-       :content             {:title (i18n/label :t/browser)
-                             :icon  :main-icons/browser}
-       :accessibility-label :dapp-tab-button})
-    (when-not platform/desktop?
-      {:nav-stack           :wallet-stack
-       :content             {:title (i18n/label :t/wallet)
-                             :icon  :main-icons/wallet}
-       :accessibility-label :wallet-tab-button})
+    {:nav-stack           :browser-stack
+     :content             {:title (i18n/label :t/browser)
+                           :icon  :main-icons/browser}
+     :accessibility-label :dapp-tab-button}
+    {:nav-stack           :wallet-stack
+     :content             {:title (i18n/label :t/wallet)
+                           :icon  :main-icons/wallet}
+     :accessibility-label :wallet-tab-button}
     {:nav-stack           :profile-stack
      :content             {:title (i18n/label :t/profile)
                            :icon  :main-icons/user-profile}
@@ -87,10 +85,9 @@
               [react/view {:style (tabs.styles/counter-public-container)}
                [react/view {:style               tabs.styles/counter-public
                             :accessibility-label :public-unread-badge}]]))]
-         (when-not platform/desktop?
-           [react/view {:style tabs.styles/tab-title-container}
-            [react/text {:style (tabs.styles/tab-title active?)}
-             label]])]]])))
+         [react/view {:style tabs.styles/tab-title-container}
+          [react/text {:style (tabs.styles/tab-title active?)}
+           label]]]]])))
 
 (defn tabs []
   (let [listeners        (atom [])

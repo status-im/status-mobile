@@ -4,17 +4,13 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.log-level-settings.styles :as styles]
-            [status-im.utils.platform :as platform]
             [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- log-level-icon [current?]
-  [react/view (if platform/desktop?
-                {:style (styles/log-level-icon-container current?)}
-                (styles/log-level-icon-container current?))
+  [react/view (styles/log-level-icon-container current?)
    [vector-icons/icon :main-icons/mailserver
-    (if platform/desktop? {:style (styles/log-level-icon current?)}
-        (styles/log-level-icon current?))]])
+    (styles/log-level-icon current?)]])
 
 (defn change-log-level [log-level]
   (re-frame/dispatch [:log-level.ui/log-level-selected log-level]))

@@ -11,8 +11,6 @@
    :margin-top         24
    :height             36
    :padding-horizontal 14
-   :desktop            {:height 30
-                        :width  "100%"}
    :android            {:padding 0}})
 
 (defn browser-icon-container []

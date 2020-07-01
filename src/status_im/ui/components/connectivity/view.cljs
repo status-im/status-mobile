@@ -7,7 +7,6 @@
             [status-im.ui.components.connectivity.styles :as styles]
             [status-im.ui.components.react :as react]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log])
   (:require-macros
@@ -93,7 +92,7 @@ all connectivity views (we have at least one view in home and one in chat)"
                                 :easing          (.-ease ^js animation/easing)
                                 :useNativeDriver true})
              (animation/timing anim-y
-                               {:toValue         (if platform/desktop? 0 neg-connectivity-bar-height)
+                               {:toValue         neg-connectivity-bar-height
                                 :delay           800
                                 :duration        150
                                 :easing          (.-ease ^js animation/easing)
@@ -102,7 +101,7 @@ all connectivity views (we have at least one view in home and one in chat)"
            #(do (reset! to-hide? false) (reset! status-hidden true))))
         (do
           (animation/set-value anim-opacity 0)
-          (animation/set-value anim-y (if platform/desktop? 0 neg-connectivity-bar-height))
+          (animation/set-value anim-y neg-connectivity-bar-height)
           (reset! to-hide? false)
           (reset! status-hidden true)))
       ;; else
@@ -116,7 +115,7 @@ all connectivity views (we have at least one view in home and one in chat)"
                                 :easing          (.-ease ^js animation/easing)
                                 :useNativeDriver true})
              (animation/timing anim-y
-                               {:toValue         (if platform/desktop? connectivity-bar-height 0)
+                               {:toValue         0
                                 :duration        150
                                 :easing          (.-ease ^js animation/easing)
                                 :useNativeDriver true})])
@@ -124,7 +123,7 @@ all connectivity views (we have at least one view in home and one in chat)"
            #(do (reset! to-hide? true) (reset! status-hidden false))))
         (do
           (animation/set-value anim-opacity 1)
-          (animation/set-value anim-y (if platform/desktop? connectivity-bar-height 0))
+          (animation/set-value anim-y 0)
           (reset! to-hide? true)
           (reset! status-hidden false))))))
 

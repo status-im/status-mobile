@@ -2,8 +2,8 @@
 
 let
   version = lib.fileContents ../../../VERSION;
-  yarnLock = ../../../mobile/js_files/yarn.lock;
-  packageJSON = ../../../mobile/js_files/package.json;
+  yarnLock = ../../../yarn.lock;
+  packageJSON = ../../../package.json;
   packageJSONContent = lib.importJSON packageJSON;
 in
   # Create a yarn package for our project that contains all the dependecies.

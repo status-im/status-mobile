@@ -32,14 +32,6 @@ fi
 entryPoint="default.nix"
 nixArgs+=("--attr shells.${TARGET}")
 
-if [[ "$TARGET" =~ (linux|windows|darwin|macos) ]]; then
-  # This is a dirty workaround because 'yarn install' is an impure operation,
-  # so we need to call it from an impure shell.
-  # Hopefully we'll be able to fix this later on with something like yarn2nix
-  # TODO: Manage node dependencies for desktop with yarn2nix
-  nix-shell ${nixArgs[@]} --run "scripts/prepare-for-desktop-platform.sh" default.nix || exit
-fi
-
 config=''
 if [ -n "${STATUS_GO_SRC_OVERRIDE}" ]; then
   config+="status-im.status-go.src-override=\"${STATUS_GO_SRC_OVERRIDE}\";"

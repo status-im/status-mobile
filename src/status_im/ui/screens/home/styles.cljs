@@ -5,8 +5,7 @@
   {:flex        1
    :align-self  :stretch
    :line-height 22
-   :color       colors/gray
-   :desktop     {:max-height 20}})
+   :color       colors/gray})
 
 (def public-unread
   {:background-color colors/blue

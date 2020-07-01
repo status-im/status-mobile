@@ -35,22 +35,20 @@
                (get typography-styles
                     typography)
                (dissoc style :typography :nested?))]
-    (if platform/desktop?
-      (assoc style :font-family default-font-family)
-      (-> style
-          (assoc :font-family
-                 (if (= (:font-family style) "monospace")
-                   (if platform/ios? "Menlo-Regular" "monospace")
-                   (str default-font-family "-"
-                        (case font-weight
-                          "400" (when-not (= font-style :italic)
-                                  "Regular")
-                          "500" "Medium"
-                          "600" "SemiBold"
-                          "700" "Bold")
-                        (when (= font-style :italic)
-                          "Italic"))))
-          (dissoc :font-weight :font-style)))))
+    (-> style
+        (assoc :font-family
+               (if (= (:font-family style) "monospace")
+                 (if platform/ios? "Menlo-Regular" "monospace")
+                 (str default-font-family "-"
+                      (case font-weight
+                        "400" (when-not (= font-style :italic)
+                                "Regular")
+                        "500" "Medium"
+                        "600" "SemiBold"
+                        "700" "Bold")
+                      (when (= font-style :italic)
+                        "Italic"))))
+        (dissoc :font-weight :font-style))))
 
 (defn get-nested-style
   [{:keys [typography] :as style}]
@@ -59,17 +57,15 @@
         (merge (get typography-styles
                     typography)
                (dissoc style :typography))]
-    (if platform/desktop?
-      style
-      (cond-> (dissoc style :font-weight :font-style)
-        (or font-weight font-style)
-        (assoc :font-family
-               (str default-font-family "-"
-                    (case font-weight
-                      "500" "Medium"
-                      "600" "SemiBold"
-                      "700" "Bold"
-                      (when-not (= font-style :italic)
-                        "Regular"))
-                    (when (= font-style :italic)
-                      "Italic")))))))
+    (cond-> (dissoc style :font-weight :font-style)
+      (or font-weight font-style)
+      (assoc :font-family
+             (str default-font-family "-"
+                  (case font-weight
+                    "500" "Medium"
+                    "600" "SemiBold"
+                    "700" "Bold"
+                    (when-not (= font-style :italic)
+                      "Regular"))
+                  (when (= font-style :italic)
+                    "Italic"))))))

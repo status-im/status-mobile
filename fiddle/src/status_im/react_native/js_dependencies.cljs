@@ -25,9 +25,6 @@
 (def svg                    (fn [] #js {:default #js {}}))
 (def status-keycard         (fn [] #js {:default #js {}}))
 
-(def desktop-linking #js {:addEventListener (fn [])})
-(def desktop-shortcuts #js {:addEventListener (fn [])})
-
 (def snoopy                 (fn [] #js {:default #js {}}))
 (def snoopy-filter          (fn [] #js {:default #js {}}))
 (def snoopy-bars            (fn [] #js {:default #js {}}))
@@ -42,7 +39,5 @@
 
 (def keychain (fn [] #js {:setGenericPassword (constantly (.resolve js/Promise true))}))
 (def react-navigation #js {:NavigationActions #js {}})
-(def desktop-menu #js {})
-(def desktop-config #js {})
 (def react-native-mail (fn [] #js {:mail #js {}}))
 (def react-native-navigation-twopane  #js {})

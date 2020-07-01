@@ -92,7 +92,6 @@
 (def dimensions nil)
 (def keyboard nil)
 (def linking nil)
-(def desktop-notification nil)
 
 (def max-font-size-multiplier 1.25)
 

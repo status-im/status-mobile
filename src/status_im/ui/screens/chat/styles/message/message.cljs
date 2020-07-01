@@ -78,9 +78,9 @@
 (defn delivery-status [outgoing]
   (if outgoing
     {:align-self    :flex-end
-     :padding-right (if platform/desktop? 24 8)}
+     :padding-right 8}
     {:align-self    :flex-start
-     :padding-left  (if platform/desktop? 24 8)}))
+     :padding-left  8}))
 
 (def message-author-touchable
   {:margin-left      12

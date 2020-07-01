@@ -74,7 +74,6 @@
                                                   :chat/last-outgoing-message-sent-at
                                                   :chat/spam-messages-frequency
                                                   :chats/loading?
-                                                  :desktop/desktop
                                                   :dimensions/window
                                                   :my-profile/editing?]))]
     {:logs/archive-logs [db-json ::send-email]}))
@@ -108,7 +107,7 @@
   "logs attached"
   [{:keys [:web3-node-version :mailserver/current-id
            :node-info :peers-summary]}]
-  (let [build-number  (if platform/desktop? build/version build/build-no)
+  (let [build-number  build/build-no
         build-version (str build/version " (" build-number ")")
         separator (string/join (take 40 (repeat "-")))
         [enode-id ip-address port]

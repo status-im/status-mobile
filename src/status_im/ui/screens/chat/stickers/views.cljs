@@ -11,7 +11,6 @@
             [status-im.ui.screens.chat.stickers.styles :as styles]
             [status-im.ui.components.animation :as anim]
             [status-im.utils.contenthash :as contenthash]
-            [status-im.utils.platform :as platform]
             [status-im.utils.debounce :as debounce]))
 
 (def icon-size 28)
@@ -25,7 +24,7 @@
   [quo/button
    {:on-press            (fn [_]
                            (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet (when-not stickers-showing? :stickers)}])
-                           (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
+                           (js/setTimeout #(react/dismiss-keyboard!) 100))
     :accessibility-label :show-stickers-icon
     :type                :icon
     :theme               (if stickers-showing? :main :disabled)}

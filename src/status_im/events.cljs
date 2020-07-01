@@ -112,11 +112,6 @@
       (multiaccounts/switch-chaos-mode chaos-mode?)))))
 
 (handlers/register-handler-fx
- :multiaccounts.ui/notifications-enabled
- (fn [cofx [_ desktop-notifications?]]
-   (multiaccounts/enable-notifications cofx desktop-notifications?)))
-
-(handlers/register-handler-fx
  :multiaccounts.ui/preview-privacy-mode-switched
  (fn [cofx [_ private?]]
    (multiaccounts/switch-preview-privacy-mode cofx private?)))
@@ -333,19 +328,6 @@
  :log-level.ui/log-level-selected
  (fn [cofx [_ log-level]]
    (log-level/show-change-log-level-confirmation cofx log-level)))
-
-(handlers/register-handler-fx
- :log-level.ui/logging-enabled
- (fn [cofx [_ enabled]]
-   (log/debug "### :log-level.ui/logging-enabled" enabled)
-
-   (log-level/show-logging-enabled-confirmation cofx enabled)))
-
-(handlers/register-handler-fx
- :log-level.ui/logging-enabled-confirmed
- (fn [_ [_ _]]
-   ;;FIXME desktop only
-   #_(log-level/save-logging-enabled cofx enabled)))
 
 ;; Browser bridge module
 
@@ -1287,11 +1269,6 @@
  :update-window-dimensions
  (fn [{:keys [db]} [_ dimensions]]
    {:db (assoc db :dimensions/window (dimensions/window dimensions))}))
-
-(handlers/register-handler-fx
- :set-two-pane-ui-enabled
- (fn [{:keys [db]} [_ enabled?]]
-   {:db (assoc db :two-pane-ui-enabled? enabled?)}))
 
 ;; NOTE: Will be removed with the keycard PR
 (handlers/register-handler-fx

@@ -21,8 +21,7 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.group.styles :as styles]
             [quo.core :as quo]
-            [status-im.utils.debounce :as debounce]
-            [status-im.utils.platform :as platform])
+            [status-im.utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-contact [row]
@@ -71,31 +70,24 @@
   [toggle-item allow-new-users? :is-participant-selected? contact on-toggle-participant])
 
 (defn- handle-invite-friends-pressed []
-  (if platform/desktop?
-    (re-frame/dispatch [:navigate-to :new-contact])
-    (list-selection/open-share {:message (i18n/label :t/get-status-at)})))
+  (list-selection/open-share {:message (i18n/label :t/get-status-at)}))
 
 (defn toggle-list [{:keys [contacts render-fn]}]
   [react/scroll-view {:flex 1}
-   (if platform/desktop?
-     (for [contact contacts]
-       ^{:key (:public-key contact)}
-       (render-fn contact))
-     [list/flat-list {:data                      contacts
-                      :key-fn                    :public-key
-                      :render-fn                 render-fn
-                      :keyboardShouldPersistTaps :always}])])
+   [list/flat-list {:data                      contacts
+                    :key-fn                    :public-key
+                    :render-fn                 render-fn
+                    :keyboardShouldPersistTaps :always}]])
 
 (defn no-contacts [{:keys [no-contacts]}]
   [react/view {:style styles/no-contacts}
    [react/text
     {:style (styles/no-contact-text)}
     no-contacts]
-   (when-not platform/desktop?
-     [quo/button
-      {:type     :secondary
-       :on-press handle-invite-friends-pressed}
-      (i18n/label :t/invite-friends)])])
+   [quo/button
+    {:type     :secondary
+     :on-press handle-invite-friends-pressed}
+    (i18n/label :t/invite-friends)]])
 
 (defn filter-contacts [filter-text contacts]
   (let [lower-filter-text (string/lower-case (str filter-text))

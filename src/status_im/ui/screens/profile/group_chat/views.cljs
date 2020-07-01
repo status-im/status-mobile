@@ -12,8 +12,7 @@
             [status-im.ui.screens.chat.sheets :as chat.sheets]
             [status-im.ui.screens.profile.components.styles
              :as
-             profile.components.styles]
-            [status-im.utils.platform :as platform])
+             profile.components.styles])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn member-sheet [chat-id member us-admin?]
@@ -27,7 +26,7 @@
      :accessibility-label :view-chat-details-button
      :chevron             true
      :on-press            #(chat.sheets/hide-sheet-and-dispatch
-                            [(if platform/desktop? :show-profile-desktop :chat.ui/show-profile)
+                            [:chat.ui/show-profile
                              (:public-key member)])}]
    (when (and us-admin?
               (not (:admin? member)))
@@ -53,7 +52,7 @@
      :icon                [chat-icon/contact-icon-contacts-tab
                            (multiaccounts/displayed-photo member)]
      :on-press            (when (not= public-key current-user-identity)
-                            #(re-frame/dispatch [(if platform/desktop? :show-profile-desktop :chat.ui/show-profile) public-key]))}
+                            #(re-frame/dispatch [:chat.ui/show-profile public-key]))}
     (when (:admin? member)
       {:accessory      :text
        :accessory-text (i18n/label :t/group-chat-admin)})

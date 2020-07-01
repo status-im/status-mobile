@@ -5,17 +5,13 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.fleet-settings.styles :as styles]
-            [status-im.utils.platform :as platform])
+            [status-im.ui.screens.fleet-settings.styles :as styles])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- fleet-icon [current?]
-  [react/view (if platform/desktop?
-                {:style (styles/fleet-icon-container current?)}
-                (styles/fleet-icon-container current?))
+  [react/view (styles/fleet-icon-container current?)
    [vector-icons/icon :main-icons/mailserver
-    (if platform/desktop? {:style (styles/fleet-icon current?)}
-        (styles/fleet-icon current?))]])
+    (styles/fleet-icon current?)]])
 
 (defn change-fleet [fleet]
   (re-frame/dispatch [:fleet.ui/fleet-selected fleet]))

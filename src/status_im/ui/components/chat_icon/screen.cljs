@@ -5,8 +5,7 @@
             [status-im.ui.components.chat-icon.styles :as styles]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.utils.platform :as platform]))
+            [status-im.ui.screens.chat.photos :as photos]))
 
 ;;TODO REWORK THIS NAMESPACE
 
@@ -126,9 +125,9 @@
                        :default-chat-icon      (styles/default-chat-icon-profile color size)
                        :default-chat-icon-text (styles/default-chat-icon-text size)} override-styles)]
     [react/view (:container styles)
-     (when (and edit? (not platform/desktop?))
+     (when edit?
        [react/view (styles/profile-icon-mask size)])
-     (when (and edit? (not platform/desktop?))
+     (when edit?
        [react/view (styles/profile-icon-edit-text-containter size)
         [react/i18n-text {:style styles/profile-icon-edit-text :key :edit}]])
      (if (and photo-path (seq photo-path))

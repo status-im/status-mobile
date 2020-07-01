@@ -13,8 +13,7 @@
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.profile.seed.styles :as styles]
             [status-im.i18n :as i18n]
-            [quo.core :as quo]
-            [status-im.utils.platform :as platform]))
+            [quo.core :as quo]))
 
 (def steps-numbers
   {:intro       1
@@ -33,9 +32,8 @@
   [react/scroll-view {:style                   {:padding-horizontal 16}
                       :content-container-style {:align-items     :center
                                                 :justify-content :center}}
-   (when-not platform/desktop?
-     [react/image {:source (resources/get-image :lock)
-                   :style  styles/intro-image}])
+   [react/image {:source (resources/get-image :lock)
+                 :style  styles/intro-image}]
    [react/i18n-text {:style styles/intro-text
                      :key   :your-data-belongs-to-you}]
    [react/i18n-text {:style styles/intro-description

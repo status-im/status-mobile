@@ -5,7 +5,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]
             [status-im.ui.components.topbar :as topbar]
             [status-im.constants :as constants]))
 
@@ -34,9 +33,7 @@
     :accessibility-label :request-a-feature-button
     :on-press
     #(re-frame/dispatch [:chat.ui/start-public-chat
-                         (if platform/desktop?
-                           "status-desktop"
-                           "status")
+                         "status"
                          {:navigation-reset? false}])
     :chevron             true}])
 

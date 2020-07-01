@@ -6,17 +6,13 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.utils.platform :as platform]
             [status-im.ui.screens.offline-messaging-settings.styles :as styles]
             [status-im.ui.components.topbar :as topbar]))
 
 (defn- mailserver-icon [connected?]
-  [react/view (if platform/desktop?
-                {:style (styles/mailserver-icon-container connected?)}
-                (styles/mailserver-icon-container connected?))
+  [react/view (styles/mailserver-icon-container connected?)
    [vector-icons/icon :main-icons/mailserver
-    (if platform/desktop? {:style (styles/mailserver-icon connected?)}
-        (styles/mailserver-icon connected?))]])
+    (styles/mailserver-icon connected?)]])
 
 (defn pinned-state [pinned?]
   [react/touchable-highlight {:on-press (if pinned?

@@ -33,7 +33,6 @@
              :chat/spam-messages-frequency       0
              :tooltips                           {}
              :initial-props                      {}
-             :desktop/desktop                    {:tab-view-id :home}
              :dimensions/window                  (dimensions/window)
              :registry                           {}
              :stickers/packs-owned               #{}
@@ -43,5 +42,4 @@
                                                                    :confirmation []
                                                                    :current      []
                                                                    :puk          []
-                                                                   :enter-step   :original}}
-             :two-pane-ui-enabled?               (dimensions/fit-two-pane?)})
+                                                                   :enter-step   :original}}})

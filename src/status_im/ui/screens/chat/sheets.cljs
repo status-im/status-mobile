@@ -6,7 +6,6 @@
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.utils.platform :as platform]
             [status-im.ui.screens.chat.styles.message.sheets :as sheets.styles]
             [quo.core :as quo]))
 
@@ -55,18 +54,17 @@
   (let [link    (universal-links/generate-link :public-chat :external chat-id)
         message (i18n/label :t/share-public-chat-text {:link link})]
     [react/view
-     (when-not platform/desktop?
-       [quo/list-item
-        {:theme               :accent
-         :title               (i18n/label :t/share-chat)
-         :accessibility-label :share-chat-button
-         :icon                :main-icons/share
-         :on-press            (fn []
-                                (re-frame/dispatch [:bottom-sheet/hide])
-                                ;; https://github.com/facebook/react-native/pull/26839
-                                (js/setTimeout
-                                 #(list-selection/open-share {:message message})
-                                 250))}])
+     [quo/list-item
+      {:theme               :accent
+       :title               (i18n/label :t/share-chat)
+       :accessibility-label :share-chat-button
+       :icon                :main-icons/share
+       :on-press            (fn []
+                              (re-frame/dispatch [:bottom-sheet/hide])
+                              ;; https://github.com/facebook/react-native/pull/26839
+                              (js/setTimeout
+                               #(list-selection/open-share {:message message})
+                               250))}]
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/mark-all-read)
@@ -180,17 +178,16 @@
          :on-press (fn []
                      (re-frame/dispatch [:bottom-sheet/hide])
                      (react/copy-to-clipboard (:text content)))}]
-       (when-not platform/desktop?
-         [quo/list-item
-          {:theme    :accent
-           :title    (i18n/label :t/sharing-share)
-           :icon     :main-icons/share
-           :on-press (fn []
-                       (re-frame/dispatch [:bottom-sheet/hide])
-                       ;; https://github.com/facebook/react-native/pull/26839
-                       (js/setTimeout
-                        #(list-selection/open-share {:message (:text content)})
-                        250))}])])))
+       [quo/list-item
+        {:theme    :accent
+         :title    (i18n/label :t/sharing-share)
+         :icon     :main-icons/share
+         :on-press (fn []
+                     (re-frame/dispatch [:bottom-sheet/hide])
+                     ;; https://github.com/facebook/react-native/pull/26839
+                     (js/setTimeout
+                      #(list-selection/open-share {:message (:text content)})
+                      250))}]])))
 
 (defn sticker-long-press [{:keys [from]}]
   (fn []

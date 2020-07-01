@@ -299,11 +299,6 @@
     platform/ios?
     (callback false)
 
-    ;; we assume that Desktop is unsafe by default
-    ;; (theoretically, Desktop is always "rooted", by design
-    platform/desktop?
-    (callback true)
-
     ;; we check root on android
     platform/android?
     (if (status)

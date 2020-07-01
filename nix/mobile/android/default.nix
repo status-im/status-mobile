@@ -42,15 +42,8 @@ in {
       # required by some makefile targets
       export STATUS_GO_ANDROID_LIBDIR=${status-go}
 
-      {
-        cd "$STATUS_REACT_HOME" 
-
-        # Set up symlinks to mobile enviroment in project root 
-        ln -sf ./mobile/js_files/* ./
-
-        # check if node modules changed and if so install them
-        $STATUS_REACT_HOME/nix/scripts/node_modules.sh ${deps.nodejs-patched}
-      }
+      # check if node modules changed and if so install them
+      $STATUS_REACT_HOME/nix/scripts/node_modules.sh ${deps.nodejs-patched}
     '';
   };
 }

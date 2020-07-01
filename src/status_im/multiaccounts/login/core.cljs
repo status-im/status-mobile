@@ -1,7 +1,6 @@
 (ns status-im.multiaccounts.login.core
   (:require [re-frame.core :as re-frame]
             [status-im.chat.models.loading :as chat.loading]
-            [status-im.chat.models.message-seen :as message-seen]
             [status-im.contact.core :as contact]
             [status-im.data-store.settings :as data-store.settings]
             [status-im.ethereum.core :as ethereum]
@@ -13,7 +12,6 @@
             [status-im.multiaccounts.biometric.core :as biometric]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.native-module.core :as status]
-            [status-im.node.core :as node]
             [status-im.notifications.core :as notifications]
             [status-im.popover.core :as popover]
             [status-im.protocol.core :as protocol]
@@ -31,12 +29,6 @@
             [status-im.wallet.core :as wallet]
             [status-im.wallet.prices :as prices]
             [taoensso.timbre :as log]))
-
-(defn fetch-nodes [_ resolve _]
-  (let [default-nodes (-> (node/fleets {})
-                          (get-in [:eth.staging :mail])
-                          vals)]
-    (resolve default-nodes)))
 
 (re-frame/reg-fx
  ::login
@@ -124,7 +116,7 @@
   {:ui/close-application nil})
 
 (fx/defn check-network-version
-  [cofx network-id]
+  [_ network-id]
   {::json-rpc/call
    [{:method "net_version"
      :on-success
@@ -167,7 +159,7 @@
 (fx/defn get-settings-callback
   {:events [::get-settings-callback]}
   [{:keys [db] :as cofx} settings]
-  (let [{:keys [address notifications-enabled?]
+  (let [{:keys [notifications-enabled?]
          :networks/keys [current-network networks]
          :as settings}
         (data-store.settings/rpc->settings settings)
@@ -178,15 +170,14 @@
                                (dissoc :multiaccounts/login)
                                (assoc :networks/current-network current-network
                                       :networks/networks networks
-                                      :multiaccount multiaccount))}
-                (and platform/android?
-                     notifications-enabled?)
-                (assoc ::notifications/enable nil)
-                (not platform/desktop?)
-                (assoc ::initialize-wallet
+                                      :multiaccount multiaccount))
+                       ::initialize-wallet
                        (fn [accounts custom-tokens]
                          (re-frame/dispatch [::initialize-wallet
-                                             accounts custom-tokens]))))
+                                             accounts custom-tokens]))}
+                (and platform/android?
+                     notifications-enabled?)
+                (assoc ::notifications/enable nil))
               (initialize-appearance)
               ;; NOTE: initializing mailserver depends on user mailserver
               ;; preference which is why we wait for config callback
@@ -231,9 +222,7 @@
                  :on-success #(re-frame/dispatch [::get-settings-callback %])}]}
               (when save-password?
                 (keychain/save-user-password key-uid password))
-              (keychain/save-auth-method key-uid (or new-auth-method auth-method))
-              (when platform/desktop?
-                (message-seen/update-dock-badge-label)))))
+              (keychain/save-auth-method key-uid (or new-auth-method auth-method)))))
 
 (fx/defn create-only-events
   [{:keys [db] :as cofx}]
@@ -258,8 +247,7 @@
                                              :default-mailserver true})
               (multiaccounts/switch-preview-privacy-mode-flag)
               (logging/set-log-level (:log-level multiaccount))
-              (when-not platform/desktop?
-                (initialize-wallet accounts nil)))))
+              (initialize-wallet accounts nil))))
 
 (defn- keycard-setup? [cofx]
   (boolean (get-in cofx [:db :hardwallet :flow])))

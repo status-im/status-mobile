@@ -320,7 +320,6 @@
     :delete-network-title
     :deny
     :description
-    :desktop-alpha-release-warning
     :dev-mode
     :dev-mode-settings
     :device-syncing
@@ -933,7 +932,6 @@
     :url
     :usd-currency
     :use-valid-contact-code
-    :use-valid-contact-code-desktop
     :validation-amount-invalid-number
     :validation-amount-is-too-precise
     :version

@@ -2,7 +2,6 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]
-            [status-im.utils.platform :as platform]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.animation :as anim]
@@ -13,7 +12,7 @@
   [quo/button
    {:on-press            (fn [_]
                            (re-frame/dispatch [:chat.ui/set-chat-ui-props {:input-bottom-sheet (when-not showing? :extensions)}])
-                           (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
+                           (js/setTimeout #(react/dismiss-keyboard!) 100))
     :accessibility-label :show-extensions-icon
     :type                :icon
     :theme               (if showing? :main :disabled)}

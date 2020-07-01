@@ -3,7 +3,6 @@
             [goog.string :as gstring]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
-            [status-im.utils.platform :as platform]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.core :as ethereum]
             ["react-native" :as react-native]
@@ -91,9 +90,7 @@
 ;; background-timer
 
 (defn set-timeout [cb ms]
-  (if platform/desktop?
-    (js/setTimeout cb ms)
-    (.setTimeout background-timer cb ms)))
+  (.setTimeout background-timer cb ms))
 
 ;; same as re-frame dispatch-later but using background timer for long
 ;; running timeouts
@@ -104,19 +101,13 @@
      (set-timeout #(re-frame/dispatch dispatch) ms))))
 
 (defn clear-timeout [id]
-  (if platform/desktop?
-    (js/clearTimeout id)
-    (.clearTimeout background-timer id)))
+  (.clearTimeout background-timer id))
 
 (defn set-interval [cb ms]
-  (if platform/desktop?
-    (js/setInterval cb ms)
-    (.setInterval background-timer cb ms)))
+  (.setInterval background-timer cb ms))
 
 (defn clear-interval [id]
-  (if platform/desktop?
-    (js/clearInterval id)
-    (.clearInterval background-timer id)))
+  (.clearInterval background-timer id))
 
 (defn format-decimals [amount places]
   (let [decimal-part (get (string/split (str amount) ".") 1)]

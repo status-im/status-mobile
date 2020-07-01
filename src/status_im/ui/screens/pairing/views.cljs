@@ -18,13 +18,8 @@
 (def syncing (reagent/atom false))
 (def installation-name (reagent/atom ""))
 
-(defn icon-style [{:keys [width height] :as style}]
-  (if utils.platform/desktop?
-    {:container-style {:width width
-
-                       :height height}
-     :style  style}
-    style))
+(defn icon-style [style]
+  style)
 
 (defn synchronize-installations! []
   (reset! syncing true)
@@ -76,11 +71,10 @@
 (defn your-device [{:keys [installation-id name device-type]}]
   [react/view {:style styles/installation-item}
    [react/view {:style (styles/pairing-button true)}
-    [icons/icon  (if (= "desktop"
-                        device-type)
-                   :main-icons/desktop
-                   :main-icons/mobile)
-
+    [icons/icon (if (= "desktop"
+                       device-type)
+                  :main-icons/desktop
+                  :main-icons/mobile)
      (icon-style (styles/pairing-button-icon true))]]
    [react/view {:style styles/pairing-actions-text}
     [react/view
@@ -93,8 +87,8 @@
                   ")")]]]])
 
 (defn render-row [{:keys [name
-                          device-type
                           enabled?
+                          device-type
                           installation-id]}]
   [react/touchable-highlight
    {:accessibility-label :installation-item}

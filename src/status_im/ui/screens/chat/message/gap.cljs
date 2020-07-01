@@ -4,13 +4,12 @@
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
-            [status-im.ui.screens.chat.styles.input.gap :as style]
-            [status-im.utils.platform :as platform]))
+            [status-im.ui.screens.chat.styles.input.gap :as style]))
 
 (defn on-press
   [ids first-gap? idx list-ref]
   (fn []
-    (when (and list-ref @list-ref (not platform/desktop?))
+    (when (and list-ref @list-ref)
       (.scrollToIndex ^js @list-ref
                       #js {:index        (max 0 (dec idx))
                            :viewOffset   20

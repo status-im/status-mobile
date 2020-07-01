@@ -73,21 +73,19 @@
                            :main-icons/faceid
                            :main-icons/print)
               {:color colors/blue}]]])]]
-       (when-not platform/desktop?
-         ;; saving passwords is unavailable on Desktop
-         (if (and platform/android? (not auth-method))
-           ;; on Android, there is much more reasons for the password save to be unavailable,
-           ;; so we don't show the checkbox whatsoever but put a label explaining why it happenned.
-           [react/i18n-text {:style styles/save-password-unavailable-android
-                             :key   :save-password-unavailable-android}]
-           [react/view {:style {:flex-direction  :row
-                                :align-items     :center
-                                :justify-content :flex-start
-                                :margin-top      19}}
-            [checkbox/checkbox {:checked?        save-password?
-                                :style           {:margin-left 3 :margin-right 10}
-                                :on-value-change #(re-frame/dispatch [:multiaccounts/save-password %])}]
-            [react/text (i18n/label :t/save-password)]]))]]
+       (if (and platform/android? (not auth-method))
+         ;; on Android, there is much more reasons for the password save to be unavailable,
+         ;; so we don't show the checkbox whatsoever but put a label explaining why it happenned.
+         [react/i18n-text {:style styles/save-password-unavailable-android
+                           :key   :save-password-unavailable-android}]
+         [react/view {:style {:flex-direction  :row
+                              :align-items     :center
+                              :justify-content :flex-start
+                              :margin-top      19}}
+          [checkbox/checkbox {:checked?        save-password?
+                              :style           {:margin-left 3 :margin-right 10}
+                              :on-value-change #(re-frame/dispatch [:multiaccounts/save-password %])}]
+          [react/text (i18n/label :t/save-password)]])]]
      (when processing
        [react/view styles/processing-view
         [react/activity-indicator {:animating true}]

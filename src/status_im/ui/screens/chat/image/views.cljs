@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.chat.image.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
-            [status-im.utils.platform :as platform]
             [re-frame.core :as re-frame]
             [quo.core :as quo]
             [status-im.ui.components.colors :as colors]
@@ -22,7 +21,7 @@
    {:on-press            (fn [_]
                            (re-frame/dispatch [:chat.ui/set-chat-ui-props
                                                {:input-bottom-sheet (when-not images-showing? :images)}])
-                           (when-not platform/desktop? (js/setTimeout #(react/dismiss-keyboard!) 100)))
+                           (js/setTimeout #(react/dismiss-keyboard!) 100))
     :accessibility-label :show-photo-icon
     :type                :icon
     :theme               (if images-showing? :main :disabled)}

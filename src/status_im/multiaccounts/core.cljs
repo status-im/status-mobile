@@ -74,12 +74,6 @@
                :chaos-mode? (boolean chaos-mode?)
                {}))))
 
-(fx/defn enable-notifications [cofx desktop-notifications?]
-  (multiaccounts.update/multiaccount-update
-   cofx
-   :desktop-notifications? desktop-notifications?
-   {}))
-
 (fx/defn switch-preview-privacy-mode
   [{:keys [db] :as cofx} private?]
   (fx/merge cofx

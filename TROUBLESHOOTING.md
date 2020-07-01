@@ -67,8 +67,6 @@ info Visit https://yarnpkg.com/en/docs/cli/install for documentation about this 
 Update yarn.lock file. In order to do this, perform the following steps on a clean `status-react` repo:
 ```
 cd status-react
-ln -sf mobile/js_files/package.json .
-ln -sf mobile/js_files/yarn.lock .
 yarn install
 ```
 and don't forget to commit updated `yarn.lock` together with `package.json`.

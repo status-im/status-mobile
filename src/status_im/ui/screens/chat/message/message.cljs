@@ -11,8 +11,6 @@
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.utils.contenthash :as contenthash]
-            [status-im.utils.http :as http]
-            [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [reagent.core :as reagent])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
@@ -82,10 +80,8 @@
             :on-press
             #(when (and (security/safe-link? destination)
                         (security/safe-link-text? message-text))
-               (if platform/desktop?
-                 (.openURL ^js react/linking (http/normalize-url destination))
-                 (re-frame/dispatch
-                  [:browser.ui/message-link-pressed destination])))}
+               (re-frame/dispatch
+                [:browser.ui/message-link-pressed destination]))}
            destination])
 
     "mention"
@@ -214,9 +210,7 @@
       (react/dismiss-keyboard!))}
    [react/view style/not-sent-view
     [react/text {:style style/not-sent-text}
-     (i18n/label (if platform/desktop?
-                   :t/status-not-sent-click
-                   :t/status-not-sent-tap))]
+     (i18n/label :t/status-not-sent-tap)]
     [react/view style/not-sent-icon
      [vector-icons/icon :main-icons/warning {:color colors/red}]]]])
 

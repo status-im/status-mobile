@@ -6,8 +6,7 @@
 (def tabs-height
   (cond
     platform/android? 52
-    platform/ios?     52
-    platform/desktop? 36))
+    platform/ios?     52))
 
 (def minimized-tabs-height 36)
 

@@ -79,8 +79,7 @@
     :deleted-at-clock-value    nil}])
 
 (def multiaccount
-  {:desktop-alpha-release-warning-shown? false
-   :last-updated                         0
+  {:last-updated                         0
    :address                              "7540c34d6c4082391f12468580a9a4e0724c6755"
    :mnemonic                             "tumble gorilla neglect dumb budget involve tennis ocean diary eagle lady ring"
    :custom-bootnodes                     {}
@@ -88,7 +87,6 @@
    :signed-up?                           true
    :name                                 "name"
    :last-request                         nil
-   :desktop-notifications?               false
    :wallet/visible-tokens                {:testnet #{:STT
                                                      :HND}
                                           :mainnet #{:SNT}

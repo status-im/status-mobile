@@ -82,7 +82,6 @@
 (def keyboard (.-Keyboard react-native))
 (def dismiss-keyboard! #(.dismiss ^js Keyboard))
 (def linking (.-Linking react-native))
-(def desktop-notification (.-DesktopNotification ^js (.-NativeModules react-native)))
 
 (def max-font-size-multiplier 1.25)
 

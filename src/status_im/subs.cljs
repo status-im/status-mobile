@@ -52,7 +52,6 @@
 ;;view
 (reg-root-key-sub :view-id :view-id)
 (reg-root-key-sub :screen-params :navigation/screen-params)
-(reg-root-key-sub :two-pane-ui-enabled? :two-pane-ui-enabled?)
 
 ;;bottom sheet
 (reg-root-key-sub :bottom-sheet/show? :bottom-sheet/show?)
@@ -68,8 +67,6 @@
 (reg-root-key-sub :dimensions/window :dimensions/window)
 (reg-root-key-sub :initial-props :initial-props)
 (reg-root-key-sub :fleets/custom-fleets :custom-fleets)
-(reg-root-key-sub :desktop/desktop :desktop/desktop)
-(reg-root-key-sub :desktop :desktop)
 (reg-root-key-sub :animations :animations)
 (reg-root-key-sub :ui/search :ui/search)
 (reg-root-key-sub :web3-node-version :web3-node-version)
@@ -200,12 +197,6 @@
  (fn [db]
    (multiaccounts.model/logged-in? {:db db})))
 
-(re-frame/reg-sub
- :connection-stats
- :<- [:desktop/desktop]
- (fn [desktop _]
-   (get desktop :debug-metrics)))
-
 ;; Intro wizard
 (re-frame/reg-sub
  :intro-wizard
@@ -278,13 +269,6 @@
  :<- [:multiaccounts/multiaccounts]
  (fn [[intro-wizard multiaccounts]]
    (recover/existing-account? (:root-key intro-wizard) multiaccounts)))
-
-;;FIXME not needed until desktop enabled
-#_(re-frame/reg-sub
-   :settings/logging-enabled
-   :<- [:desktop/desktop]
-   (fn [desktop _]
-     (get desktop :logging-enabled false)))
 
 (re-frame/reg-sub
  :current-network
@@ -392,7 +376,7 @@
   (or web3-node-version "N/A"))
 
 (def app-short-version
-  (let [version (if platform/desktop? build/version build/build-no)]
+  (let [version build/build-no]
     (str build/version " (" version ")")))
 
 (re-frame/reg-sub

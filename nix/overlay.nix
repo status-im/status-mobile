@@ -44,10 +44,6 @@ in {
   # Custom packages
   aapt2 = callPackage ./pkgs/aapt2 { };
   gomobile = callPackage ./pkgs/gomobile { };
-  qt5custom = callPackage ./pkgs/qt5custom { };
-  qtkeychain-src = callPackage ./pkgs/qtkeychain-src { };
-  appimagekit = callPackage ./pkgs/appimagekit { };
-  linuxdeployqt = callPackage ./pkgs/linuxdeployqt { inherit (self) appimagekit; };
   patchMavenSources = callPackage ./pkgs/patch-maven-srcs { };
   goMavenResolver = callPackage ./pkgs/go-maven-resolver { };
 }

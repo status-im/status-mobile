@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.log-level-settings.styles
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]
             [status-im.utils.styles :as styles]))
 
 (def wrapper
@@ -30,5 +29,5 @@
    :justify-content  :center})
 
 (defn log-level-icon [current?]
-  (hash-map (if platform/desktop? :tint-color :color)
+  (hash-map :color
             (if current? colors/white-persist colors/gray)))

@@ -104,10 +104,8 @@
   "Gets the credentials for a specified server from the Keychain"
   [server callback]
   (log/debug "[keychain] get-credentials")
-  (if platform/mobile?
-    (-> (.getInternetCredentials react-native-keychain (string/lower-case server))
-        (.then callback))
-    (callback))) ;; no-op for Desktop
+  (-> (.getInternetCredentials react-native-keychain (string/lower-case server))
+      (.then callback)))
 
 (def auth-method-password "password")
 (def auth-method-biometric "biometric")
@@ -198,9 +196,8 @@
 (re-frame/reg-fx
  :keychain/clear-user-password
  (fn [key-uid]
-   (when platform/mobile?
-     (-> (.resetInternetCredentials react-native-keychain (string/lower-case key-uid))
-         (.then #(when-not % (log/error (str "Error while clearing saved password."))))))))
+   (-> (.resetInternetCredentials react-native-keychain (string/lower-case key-uid))
+       (.then #(when-not % (log/error (str "Error while clearing saved password.")))))))
 
 (fx/defn get-auth-method
   [_ key-uid]

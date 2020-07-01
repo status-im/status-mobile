@@ -122,10 +122,6 @@ used to get user language and interact with i18n.js
 
 used to send email to support when phone is shaked
 
-## "react-native-navigation-twopane": "git+https://github.com/status-im/react-native-navigation-twopane.git#v0.0.2-status"
-
-used by desktop
-
 ## "react-native-screens": "1.0.0-alpha.22"
 
 used by react-navigation

@@ -26,7 +26,7 @@ stdenv.mkDerivation {
             # I want to avoid including the whole .git directory
             ".git/HEAD" ".git/objects" ".git/refs/heads/.*"
             # shadow-cljs expects these for deps resolution
-            "mobile/js_files/package.json" "mobile/js_files/yarn.lock"
+            "package.json" "yarn.lock"
             # build stat's images to check if they exist
             "resources/.*" "translations/.*"
           ];
@@ -50,10 +50,6 @@ stdenv.mkDerivation {
   configurePhase = ''
     # Symlink Node.js modules to build directory
     ln -s ${deps.nodejs}/node_modules
-
-    # Symlink Node.JS dependency definitions
-    ln -sf mobile/js_files/package.json ./
-    ln -sf mobile/js_files/yarn.lock ./
   '';
   buildPhase = ''
     # Assemble CLASSPATH from available clojure dependencies.

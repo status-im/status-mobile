@@ -64,8 +64,7 @@
   (let [color (if enabled?
                 colors/blue
                 colors/gray)]
-    {:desktop {:tint-color color}
-     :ios     {:color color}
+    {:ios     {:color color}
      :android {:color color}}))
 
 (def paired-devices-title

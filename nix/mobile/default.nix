@@ -25,10 +25,6 @@ let
 in {
   shell = mkShell {
     inputsFrom = (catAttrs "shell" selectedSources);
-    shellHooks = ''
-      # create mobile node/yarn symlinks
-      ln -sf $STATUS_REACT_HOME/mobile/js_files/* $STATUS_REACT_HOME/
-    '';
   };
 
   # TARGETS

@@ -38,11 +38,7 @@ in rec {
     inherit meta source goBuildFlags goBuildLdFlags;
   };
 
-  desktop = callPackage ./desktop {
-    inherit meta source goBuildFlags goBuildLdFlags;
-  };
-
   shell = mkShell {
-    inputsFrom = [ mobile.android mobile.ios desktop ];
+    inputsFrom = [ mobile.android mobile.ios ];
   };
 }

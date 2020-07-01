@@ -23,15 +23,8 @@ in {
     ];
 
     shellHook = ''
-      {
-        cd "$STATUS_REACT_HOME"
-
-        # Set up symlinks to mobile enviroment in project root 
-        ln -sf ./mobile/js_files/* ./
-
-        # check if node modules changed and if so install them
-        ./nix/scripts/node_modules.sh "${deps.nodejs-patched}"
-      }
+      # check if node modules changed and if so install them
+      ./nix/scripts/node_modules.sh "${deps.nodejs-patched}"
     '';
   };
 

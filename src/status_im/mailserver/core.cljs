@@ -20,7 +20,6 @@
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.platform :as platform]
             [status-im.utils.random :as rand]
             [status-im.utils.utils :as utils]
             [status-im.waku.core :as waku]
@@ -510,9 +509,7 @@
           :content             (i18n/label :t/mailserver-error-content)
           :confirm-button-text (i18n/label :t/mailserver-pick-another)
           :on-accept           #(re-frame/dispatch
-                                 [:navigate-to (if platform/desktop?
-                                                 :advanced-settings
-                                                 :offline-messaging-settings)])
+                                 [:navigate-to :offline-messaging-settings])
           :extra-options       [{:text    (i18n/label :t/mailserver-retry)
                                  :onPress #(re-frame/dispatch
                                             [:mailserver.ui/connect-confirmed

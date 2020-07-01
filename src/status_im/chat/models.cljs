@@ -10,13 +10,10 @@
             [status-im.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.react :as react]
             [status-im.navigation :as navigation]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.fx :as fx]
-            [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
-            [status-im.chat.models.message-seen :as message-seen]
             [status-im.chat.models.loading :as loading]))
 
 (defn- get-chat [cofx chat-id]
@@ -234,8 +231,6 @@
               ;; happens on membership changes
               (when-not (group-chat? cofx chat-id)
                 (transport.filters/load-chat chat-id))
-              (when platform/desktop?
-                (message-seen/mark-messages-seen chat-id))
               (loading/load-messages))))
 
 (fx/defn navigate-to-chat
@@ -280,16 +275,6 @@
    (utils/show-popup nil
                      (i18n/label :cooldown/warning-message)
                      #())))
-
-(defn set-dock-badge-label
-  "Sets dock badge label (OSX only for now).
-   Label must be a string. Pass nil or empty string to clear the label."
-  [label]
-  (.setDockBadgeLabel ^js react/desktop-notification label))
-
-(re-frame/reg-fx
- :set-dock-badge-label
- set-dock-badge-label)
 
 (fx/defn show-profile
   {:events [:chat.ui/show-profile]}

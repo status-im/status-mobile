@@ -1,4 +1,4 @@
-library 'status-react-jenkins@v1.1.9'
+library 'status-react-jenkins@v1.1.10'
 
 pipeline {
   agent { label params.AGENT_LABEL }
@@ -36,7 +36,7 @@ pipeline {
     }
     stage('Build status-go') {
       steps { script {
-        def platforms = ['mobile.android', 'mobile.ios', 'desktop']
+        def platforms = ['mobile.android', 'mobile.ios']
         if (uname != "Darwin") {
           platforms.removeAll { it == "ios" }
         }

@@ -64,10 +64,6 @@ let
     # helpers for use with target argument
     ios = targets.mobile.ios.shell;
     android = targets.mobile.android.shell;
-    desktop = targets.desktop.shell;
-    linux = targets.desktop.linux.shell;
-    macos = targets.desktop.macos.shell;
-    windows = targets.desktop.macos.shell;
     status-go = targets.status-go.mobile.android;
   };
 

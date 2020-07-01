@@ -53,7 +53,8 @@ in stdenv.mkDerivation rec {
     filter = lib.mkFilter {
       root = path;
       include = [
-        "mobile/js_files.*" "resources/.*" "translations/.*"
+        "package.json" "yarn.lock" "metro.config.js"
+        "resources/.*" "translations/.*"
         "modules/react-native-status/android.*" "android/.*"
         envFileName "VERSION" ".watchmanconfig"
         "status-go-version.json" "react-native.config.js"
@@ -93,9 +94,6 @@ in stdenv.mkDerivation rec {
   postUnpack = ''
     # Ensure we have the right .env file
     cp -f ./${envFileName} ./.env
-
-    # create mobile node/yarn symlinks
-    ln -sf ./mobile/js_files/* ./
 
     # Copy index.js and app/ input files
     cp -ra --no-preserve=ownership ${jsbundle}/* ./

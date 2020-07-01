@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.offline-messaging-settings.styles
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]
             [status-im.utils.styles :as styles]))
 
 (def wrapper
@@ -33,7 +32,7 @@
    :justify-content  :center})
 
 (defn mailserver-icon [connected?]
-  (hash-map (if platform/desktop? :tint-color :color)
+  (hash-map :color
             (if connected? colors/white-persist colors/gray)))
 
 (def mailserver-pinned

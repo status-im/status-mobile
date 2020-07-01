@@ -1,4 +1,4 @@
-.PHONY: nix-add-gcroots clean nix-clean run-metro react-native-desktop test release _list _fix-node-perms _tmpdir-mk _tmpdir-rm
+.PHONY: nix-add-gcroots clean nix-clean run-metro test release _list _fix-node-perms _tmpdir-mk _tmpdir-rm
 
 help: SHELL := /bin/sh
 help: ##@other Show this help
@@ -171,18 +171,6 @@ release-ios: watchman-clean ##@build build release for iOS release
 	$(MAKE) jsbundle-ios && \
 	xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration Release -destination 'generic/platform=iOS' -UseModernBuildSystem=N clean archive
 
-release-desktop: export TARGET ?= $(HOST_OS)
-release-desktop: ##@build build release for desktop release based on TARGET
-	@$(MAKE) jsbundle-desktop && \
-	scripts/build-desktop.sh; \
-	$(MAKE) watchman-clean
-
-release-windows-desktop: export TARGET ?= windows
-release-windows-desktop: ##@build build release for windows desktop release
-	@$(MAKE) jsbundle-desktop && \
-	scripts/build-desktop.sh; \
-	$(MAKE) watchman-clean
-
 jsbundle-android: SHELL := /bin/sh
 jsbundle-android: export TARGET := android
 jsbundle-android: export BUILD_ENV ?= prod
@@ -208,10 +196,6 @@ status-go-ios: SHELL := /bin/sh
 status-go-ios: ##@status-go Compile status-go for iOS app
 	nix/scripts/build.sh targets.status-go.mobile.ios
 
-status-go-desktop: SHELL := /bin/sh
-status-go-desktop: ##@status-go Compile status-go for desktop app
-	nix/scripts/build.sh targets.status-go.desktop
-
 #--------------
 # Watch, Build & Review changes
 #--------------
@@ -219,10 +203,6 @@ status-go-desktop: ##@status-go Compile status-go for desktop app
 run-clojure: export TARGET := clojure
 run-clojure: ##@run Watch for and build Clojure changes for mobile
 	yarn shadow-cljs watch mobile
-
-run-clojure-desktop: export TARGET ?= $(HOST_OS)
-run-clojure-desktop: #@run Watch for and build Clojure changes for desktop
-	clj -R:dev build.clj watch --platform desktop
 
 run-metro: export TARGET := clojure
 run-metro: ##@run Start Metro to build React Native changes
@@ -245,10 +225,6 @@ ifneq ("$(SIMULATOR)", "")
 else
 	npx react-native run-ios
 endif
-
-run-desktop: export TARGET ?= $(HOST_OS)
-run-desktop: ##@run Run Desktop build
-	npx react-native run-desktop
 
 #--------------
 # Tests
@@ -279,15 +255,6 @@ coverage: ##@test Run tests once in NodeJS generating coverage
 #--------------
 # Other
 #--------------
-
-start-desktop-server: export TARGET ?= $(HOST_OS)
-start-desktop-server: #@other Start ubuntu-server.js for desktop
-	node ubuntu-server.js
-
-react-native-desktop: export TARGET ?= $(HOST_OS)
-react-native-desktop: export _NIX_PURE ?= true
-react-native-desktop: ##@other Start react native packager
-	@scripts/start-react-native.sh
 
 geth-connect: export TARGET := android-env
 geth-connect: ##@other Connect to Geth on the device

@@ -70,9 +70,6 @@
 (def webview                #js {:WebView #js {}})
 (def status-keycard         #js {:default #js {}})
 
-(def desktop-linking #js {:addEventListener (fn [])})
-(def desktop-shortcuts #js {:addEventListener (fn [])})
-
 (def snoopy                 #js {:default #js {}})
 (def snoopy-filter          #js {:default #js {}})
 (def snoopy-bars            #js {:default #js {}})
@@ -87,10 +84,8 @@
 (def keychain #js {:setGenericPassword (constantly (.resolve js/Promise true))
                    "ACCESSIBLE" {}
                    "ACCESS_CONTROL" {}})
-(def desktop-menu #js {})
-(def desktop-config #js {})
+
 (def react-native-mail #js {:mail #js {}})
-(def react-native-navigation-twopane  #js {})
 (def react-native-screens  #js {})
 (def react-native-shake  #js {})
 (def net-info  #js {})

@@ -4,8 +4,7 @@
             [status-im.utils.identicon :as identicon]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.clocks :as utils.clocks]
-            [status-im.chat.models :as chat]
-            [status-im.chat.models.message-seen :as message-seen]))
+            [status-im.chat.models :as chat]))
 
 (deftest upsert-chat-test
   (testing "upserting a non existing chat"
@@ -154,38 +153,3 @@
                      :loaded-unviewed-messages-ids #{"6" "5" "4"}}
            "opened" {:loaded-unviewed-messages-ids #{}}
            "1-1"    {:loaded-unviewed-messages-ids #{"6" "5" "4"}}}})
-
-(deftest update-dock-badge-label
-  (testing "When user has unseen private messages"
-    (is (= {:set-dock-badge-label 3}
-           (message-seen/update-dock-badge-label
-            {:db {:chats {"0x0"    {:is-active                    true
-                                    :public?                      false
-                                    :unviewed-messages-count      3
-                                    :loaded-unviewed-messages-ids #{1 2 3}}
-                          "status" {:is-active                    true
-                                    :public?                      true
-                                    :unviewed-messages-count      2
-                                    :loaded-unviewed-messages-ids #{1 2}}}}}))))
-  (testing "When user has unseen public messages and no unseen private messages"
-    (is (= {:set-dock-badge-label "•"}
-           (message-seen/update-dock-badge-label
-            {:db {:chats {"0x0"    {:is-active                    true
-                                    :public?                      false
-                                    :unviewed-messages-count      0
-                                    :loaded-unviewed-messages-ids #{}}
-                          "status" {:is-active                    true
-                                    :public?                      true
-                                    :unviewed-messages-count      2
-                                    :loaded-unviewed-messages-ids #{1 2}}}}}))))
-  (testing "When user has no unseen messages"
-    (is (= {:set-dock-badge-label nil}
-           (message-seen/update-dock-badge-label
-            {:db {:chats {"0x0"    {:is-active                    true
-                                    :public?                      false
-                                    :unviewed-messages-count      0
-                                    :loaded-unviewed-messages-ids #{}}
-                          "status" {:is-active                    true
-                                    :public?                      true
-                                    :unviewed-messages-count      0
-                                    :loaded-unviewed-messages-ids #{}}}}})))))
