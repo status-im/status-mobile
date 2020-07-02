@@ -9,8 +9,6 @@ from views.sign_in_view import SignInView
 
 @marks.chat
 @marks.transaction
-@marks.skip
-## TODO: uncomment and check when commands in 1-1 chat will be ready in kk framework
 class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(6293)
@@ -144,7 +142,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.driver.fail('No incoming transaction in 1-1 chat is shown for recipient after requesting STT')
 
         home_2.just_fyi('Check that transaction message is fetched from offline and sign transaction')
-        device_2.sign_in()
+        device_2.sign_in(keycard=True)
         home_2.connection_status.wait_for_invisibility_of_element(30)
         home_2.get_chat(recipient_username).click()
         chat_2_sender_message = chat_2.chat_element_by_text('↑ Outgoing transaction')
@@ -174,8 +172,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
 @marks.chat
 @marks.transaction
-@marks.skip
-## TODO: uncomment and check when commands in 1-1 chat will be ready in kk framework
 class TestCommandsSingleDevices(SingleDeviceTestCase):
 
     @marks.testrail_id(6295)

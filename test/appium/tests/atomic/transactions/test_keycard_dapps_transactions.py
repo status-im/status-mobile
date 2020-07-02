@@ -116,7 +116,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
         send_transaction_view.sign_transaction(keycard=True)
 
-    @marks.testrail_id(5744)
+    @marks.testrail_id(6288)
     @marks.critical
     def test_keycard_send_two_transactions_one_after_another_in_dapp(self):
         sender = transaction_senders['Z']
