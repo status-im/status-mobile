@@ -197,7 +197,8 @@ platform :ios do
   desc 'This lane builds a new adhoc build and leaves an .ipa that is ad-hoc signed (can be uploaded to diawi)'
   lane :pr do
     unlock_keychain_if_needed
-    build_ios_adhoc(pr_build: true)
+    # Temporarily switched to not build PR builds since they don't start
+    build_ios_adhoc(pr_build: false)
   end
 
   desc '`fastlane ios nightly` - makes a new nightly'
