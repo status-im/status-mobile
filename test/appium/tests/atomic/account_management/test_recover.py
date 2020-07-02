@@ -44,6 +44,7 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
     @marks.high
     def test_pass_phrase_validation(self):
         signin_view = SignInView(self.driver)
+        signin_view.get_started_button.click_until_presence_of_element(signin_view.access_key_button)
         signin_view.access_key_button.click()
         recover_access_view = RecoverAccessView(self.driver)
         validations = [
