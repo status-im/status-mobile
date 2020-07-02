@@ -421,7 +421,7 @@
     "enter-pin": "Enter 6-digit passcode",
     "enter-puk-code": "Enter PUK code",
     "enter-puk-code-description": "6-digit passcode has been blocked.\n Please enter PUK code to unblock passcode.",
-    "enter-recipient-address-or-username": "Enter address or username of the recepient",
+    "enter-recipient-address-or-username": "Enter address or username of the recipient",
     "enter-seed-phrase": "Enter seed phrase",
     "enter-url": "Enter URL",
     "enter-watch-account-address": "Scan a QR code\nor\nenter the address to watch",
