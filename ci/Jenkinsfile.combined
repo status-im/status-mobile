@@ -7,7 +7,7 @@ pipeline {
     timestamps()
     disableConcurrentBuilds()
     /* Prevent Jenkins jobs from running forever */
-    timeout(time: 45, unit: 'MINUTES')
+    timeout(time: 40, unit: 'MINUTES')
     /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '10',
