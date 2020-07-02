@@ -43,11 +43,18 @@
                 (when-not keycard-match?
                   (common/show-wrong-keycard-alert card-connected?))))))
 
+(defn normalize-signature [signature]
+  (-> signature
+      (clojure.string/replace-first #"00$", "1b")
+      (clojure.string/replace-first #"01$", "1c")
+      ethereum/normalized-hex))
+
 (fx/defn sign-message
   {:events [:hardwallet/sign-message]}
   [{:keys [db] :as cofx} params result]
   (let [{:keys [result error]} (types/json->clj result)
-        on-success #(re-frame/dispatch [:hardwallet/on-sign-message-success params %])
+        on-success #(re-frame/dispatch [:hardwallet/on-sign-message-success params
+                                        (normalize-signature %)])
         hash (ethereum/naked-address result)
         card-connected?                   (get-in db [:hardwallet :card-connected?])
         pairing                           (common/get-pairing db)
@@ -159,11 +166,7 @@
   {:events [:hardwallet.callback/on-sign-success]}
   [{:keys [db] :as cofx} signature]
   (log/debug "[hardwallet] sign success: " signature)
-  (let [signature-json (types/clj->json
-                        {:result (-> signature
-                                     (clojure.string/replace-first #"00$", "1b")
-                                     (clojure.string/replace-first #"01$", "1c")
-                                     ethereum/normalized-hex)})
+  (let [signature-json (types/clj->json {:result (normalize-signature signature)})
         transaction    (get-in db [:hardwallet :transaction])
         tx-obj         (select-keys transaction [:from :to :value :gas :gasPrice :command? :chat-id :message-id])
         command?       (:command? transaction)]
