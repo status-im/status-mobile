@@ -78,6 +78,11 @@ class TestBrowsing(SingleDeviceTestCase):
         dapp_detail.find_text_part('This site is blocked')
         if dapp_detail.browser_refresh_page_button.is_element_displayed():
             self.driver.fail("Refresh button is present in blocked site")
+        dapp_detail.go_back_button.click()
+        daap_view.element_by_text("Browser").click()
+        dapp_detail.continue_anyway_button.click()
+        if not dapp_detail.element_by_text("Unable to load page").is_element_displayed():
+            self.driver.fail("Failed to open Dapp after 'Continue anyway' tapped")
 
 
     @marks.testrail_id(6300)

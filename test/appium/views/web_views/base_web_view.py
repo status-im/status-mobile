@@ -81,6 +81,18 @@ class ShareUrlButton(BaseButton):
         self.locator = self.Locator.accessibility_id('modal-share-link-button')
 
 
+class GoBackButton(BaseButton):
+    def __init__(self, driver):
+        super(GoBackButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector("Go back")
+
+
+class ContinueAnywayButton(BaseButton):
+    def __init__(self, driver):
+        super(ContinueAnywayButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector("Continue anyway")
+
+
 class BaseWebView(BaseView):
 
     def __init__(self, driver):
@@ -100,6 +112,8 @@ class BaseWebView(BaseView):
         self.always_button = AlwaysButton(self.driver)
         self.browser_refresh_page_button = BrowserRefreshPageButton(self.driver)
         self.share_url_button = ShareUrlButton(self.driver)
+        self.go_back_button = GoBackButton(self.driver)
+        self.continue_anyway_button = ContinueAnywayButton(self.driver)
 
     def wait_for_d_aap_to_load(self, wait_time=35):
         counter = 0
