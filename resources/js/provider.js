@@ -151,6 +151,10 @@
         return sendAPIrequest('send-to-public-chat', params);
     }
 
+    StatusAPI.prototype.getChatMessages = function() {
+      return sendAPIrequest('get-chat-messages');
+    }
+
     var EthereumProvider = function () {};
 
     EthereumProvider.prototype.isStatus = true;

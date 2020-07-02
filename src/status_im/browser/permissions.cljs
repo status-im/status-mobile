@@ -5,6 +5,7 @@
             [status-im.navigation :as navigation]
             [status-im.qr-scanner.core :as qr-scanner]
             [re-frame.core :as re-frame]
+            [clojure.string :as string]
             [status-im.utils.fx :as fx]))
 
 (declare process-next-permission)
@@ -13,12 +14,15 @@
 (def supported-permissions
   {constants/dapp-permission-qr-code           {:yield-control? true
                                                 :allowed?       true}
-   ;;TODO require this to be invoked each time, otherwise dapps could exploit this.
    constants/dapp-permission-send-to-public-chat {:type       :chat
                                                   :yield-control? true
                                                   :title       "Wants to send a message"
                                                   :description "To public chat"
                                                   :icon        :main-icons/public-chat}
+   constants/dapp-permission-get-chat-messages {:type        :chat
+                                                :title       "Wants to get messages"
+                                                :description "In the current chat"
+                                                :icon        :main-icons/public-chat}
    constants/dapp-permission-contact-code      {:type        :profile
                                                 :title       (i18n/label :t/wants-to-access-profile)
                                                 :description (i18n/label :t/your-contact-code)
@@ -32,6 +36,10 @@
   [{:keys [db] :as cofx} permission message-id {:keys [topic message] :as params}]
   (re-frame/dispatch [:chat.ui/start-public-chat topic {:navigation-reset? true}])
   (re-frame/dispatch [:chat.ui/set-chat-input-text message])
+  (send-response-to-bridge cofx permission message-id true params))
+
+(fx/defn get-current-messages
+  [{:keys [db] :as cofx} permission message-id {:keys [topic message] :as params}]
   (send-response-to-bridge cofx permission message-id true params))
 
 (fx/defn permission-yield-control
@@ -57,9 +65,38 @@
                   :dapp-name            dapp-name
                   :yield-control?       yield-control?})})
 
-(defn get-permission-data [cofx allowed-permission]
-  (let [multiaccount (get-in cofx [:db :multiaccount])]
+(defn replace-several [content & replacements]
+  (let [replacement-list (partition 2 replacements)]
+    (reduce #(apply string/replace %1 %2) content replacement-list)))
+
+(defn sanitize-text-for-parse
+  "These characters cause JSON payloads to fail being sent over the bridge without proper scrubbing"
+  [text]
+  (replace-several text
+                   #"/\n/g" "\\n"
+                   #"\n"    "\\n"
+                   #"\r"    "\\r"
+                   #"/\r/g" "\\r"
+                   #"/\t/g" "\\t"
+                   #"\'" ""))
+
+(defn format-message-client
+  [[message-id, {:keys [content] :as message}]]
+  (let [reduced-message (select-keys message [:timestamp :from :alias :message-id])]
+    (merge {:text (sanitize-text-for-parse (:text content))} reduced-message)))
+
+(defn messages-format-js
+  [messages]
+  (let [chat-keys (keys messages)
+        chat-content (mapcat #(get messages %) chat-keys)
+        reduced-content (map format-message-client chat-content)]
+    reduced-content))
+
+(defn get-permission-data [cofx allowed-permission & [{:keys [start] :as params}]]
+  (let [multiaccount (get-in cofx [:db :multiaccount])
+        messages (get-in cofx [:db :messages])]
     (get {constants/dapp-permission-contact-code (:public-key multiaccount)
+          constants/dapp-permission-get-chat-messages (messages-format-js messages)
           constants/dapp-permission-web3         [(:dapps-address multiaccount)]}
          allowed-permission)))
 
@@ -122,12 +159,12 @@
             (permission-show-permission new-cofx dapp-name permission message-id yield-control?)))))))
 
 (fx/defn send-response-and-process-next-permission
-  [{:keys [db] :as cofx} dapp-name requested-permission message-id]
+  [{:keys [db] :as cofx} dapp-name requested-permission message-id params]
   (fx/merge cofx
             (send-response-to-bridge requested-permission
                                      message-id
                                      true
-                                     (get-permission-data cofx requested-permission))
+                                     (get-permission-data cofx requested-permission params))
             (process-next-permission dapp-name)))
 
 (fx/defn allow-permission
@@ -139,7 +176,7 @@
               (update-dapp-permissions dapp-name requested-permission true)
               (if yield-control?
                 (permission-yield-control dapp-name requested-permission message-id params)
-                (send-response-and-process-next-permission dapp-name requested-permission message-id)))))
+                (send-response-and-process-next-permission dapp-name requested-permission message-id params)))))
 
 (fx/defn deny-permission
   "Add permission to set of allowed permission and process next permission"
@@ -165,7 +202,7 @@
       (send-response-to-bridge cofx permission message-id false nil)
 
       (and (or permission-allowed? (:allowed? supported-permission)) (not (:yield-control? supported-permission)))
-      (send-response-to-bridge cofx permission message-id true (get-permission-data cofx permission))
+      (send-response-to-bridge cofx permission message-id true (get-permission-data cofx permission params))
 
       :else
       (process-next-permission (update-in cofx [:db :browser/options :pending-permissions]
