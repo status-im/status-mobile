@@ -11,7 +11,8 @@
             [status-im.constants :as constants]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
+            [status-im.utils.platform :as platform]))
 
 (fx/defn pair* [_ password]
   {:hardwallet/pair {:password password}})
@@ -120,7 +121,8 @@
             {:db (update db :hardwallet dissoc
                          :multiaccount-wallet-address
                          :multiaccount-whisper-public-key)}
-            (navigation/navigate-to-cofx :welcome nil)))
+            (navigation/navigate-to-cofx (if platform/android?
+                                           :notifications-settings :welcome) nil)))
 
 (fx/defn recovery-no-key
   {:events [:keycard.recovery.no-key.ui/generate-key-pressed]}
@@ -187,7 +189,8 @@
                  {})
                 (if (= flow :import)
                   (navigation/navigate-replace :keycard-recovery-success nil)
-                  (navigation/navigate-to-cofx :welcome nil))))))
+                  (navigation/navigate-to-cofx (if platform/android?
+                                                 :notifications-settings :welcome) nil))))))
 
 (fx/defn on-generate-and-load-key-success
   {:events       [:hardwallet.callback/on-generate-and-load-key-success]
