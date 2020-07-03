@@ -151,6 +151,11 @@
         return sendAPIrequest('send-to-public-chat', params);
     }
 
+    StatusAPI.prototype.gotoPublicChat = function(topic) {
+      const params = { topic }
+      return sendAPIrequest('goto-public-chat', params);
+    }
+
     StatusAPI.prototype.getChatMessages = function() {
       return sendAPIrequest('get-chat-messages');
     }

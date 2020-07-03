@@ -14,6 +14,11 @@
 (def supported-permissions
   {constants/dapp-permission-qr-code           {:yield-control? true
                                                 :allowed?       true}
+   constants/dapp-permission-goto-public-chat  {:type           :chat
+                                                :yield-control? true
+                                                :title          "Wants to go to"
+                                                :description    "To a public chat"
+                                                :icon           :main-icons/public-chat}
    constants/dapp-permission-send-to-public-chat {:type       :chat
                                                   :yield-control? true
                                                   :title       "Wants to send a message"
@@ -38,6 +43,11 @@
   (re-frame/dispatch [:chat.ui/set-chat-input-text message])
   (send-response-to-bridge cofx permission message-id true params))
 
+(fx/defn dapp-goto-to-topic
+  [{:keys [db] :as cofx} permission message-id {:keys [topic] :as params}]
+  (re-frame/dispatch [:chat.ui/start-public-chat topic {:navigation-reset? true}])
+  (send-response-to-bridge cofx permission message-id true params))
+
 (fx/defn get-current-messages
   [{:keys [db] :as cofx} permission message-id {:keys [topic message] :as params}]
   (send-response-to-bridge cofx permission message-id true params))
@@ -55,6 +65,9 @@
 
     (= permission constants/dapp-permission-send-to-public-chat)
     (dapp-message-to-topic cofx permission message-id params)
+
+    (= permission constants/dapp-permission-goto-public-chat)
+    (dapp-goto-to-topic cofx permission message-id params)
     ))
 
 (fx/defn permission-show-permission

@@ -274,6 +274,7 @@
 (def dapp-permission-contact-code "contact-code")
 (def dapp-permission-get-chat-messages "get-chat-messages")
 (def dapp-permission-send-to-public-chat "send-to-public-chat")
+(def dapp-permission-goto-public-chat "goto-public-chat")
 (def dapp-permission-web3 "web3")
 (def dapp-permission-qr-code "qr-code")
 (def api-response "api-response")
