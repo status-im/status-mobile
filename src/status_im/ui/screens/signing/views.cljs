@@ -316,7 +316,7 @@
 
 (defn error-item []
   (fn [title show-error]
-    [gh/touchable-opacity {:on-press #(swap! show-error not)}
+    [gh/touchable-highlight {:on-press #(swap! show-error not)}
      [react/view {:style {:align-items    :center
                           :flex-direction :row}}
       [react/text {:style {:color colors/red :margin-right 8}}

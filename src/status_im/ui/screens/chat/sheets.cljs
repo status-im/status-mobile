@@ -152,57 +152,6 @@
        :accessibility-label :delete-transaccent-button
        :on-press            #(hide-sheet-and-dispatch [:chat.ui/delete-message chat-id message-id])}]]))
 
-(defn message-long-press [{:keys [content from outgoing] :as message}]
-  (fn []
-    (let [photo        @(re-frame/subscribe [:chats/photo-path from])
-          contact-name @(re-frame/subscribe [:contacts/contact-name-by-identity from])]
-      [react/view
-       (when-not outgoing
-         [quo/list-item
-          {:theme               :accent
-           :icon                [chat-icon/contact-icon-contacts-tab photo]
-           :title               contact-name
-           :subtitle            (i18n/label :t/view-profile)
-           :accessibility-label :view-chat-details-button
-           :chevron             true
-           :on-press            #(hide-sheet-and-dispatch [:chat.ui/show-profile from])}])
-       [quo/list-item
-        {:theme    :accent
-         :title    (i18n/label :t/message-reply)
-         :icon     :main-icons/reply
-         :on-press #(hide-sheet-and-dispatch [:chat.ui/reply-to-message message])}]
-       [quo/list-item
-        {:theme    :accent
-         :title    (i18n/label :t/sharing-copy-to-clipboard)
-         :icon     :main-icons/copy
-         :on-press (fn []
-                     (re-frame/dispatch [:bottom-sheet/hide])
-                     (react/copy-to-clipboard (:text content)))}]
-       [quo/list-item
-        {:theme    :accent
-         :title    (i18n/label :t/sharing-share)
-         :icon     :main-icons/share
-         :on-press (fn []
-                     (re-frame/dispatch [:bottom-sheet/hide])
-                     ;; https://github.com/facebook/react-native/pull/26839
-                     (js/setTimeout
-                      #(list-selection/open-share {:message (:text content)})
-                      250))}]])))
-
-(defn sticker-long-press [{:keys [from]}]
-  (fn []
-    (let [photo        @(re-frame/subscribe [:chats/photo-path from])
-          contact-name @(re-frame/subscribe [:contacts/contact-name-by-identity from])]
-      [react/view
-       [quo/list-item
-        {:theme               :accent
-         :icon                [chat-icon/contact-icon-contacts-tab photo]
-         :title               contact-name
-         :subtitle            (i18n/label :t/view-profile)
-         :accessibility-label :view-chat-details-button
-         :chevron             true
-         :on-press            #(hide-sheet-and-dispatch  [:chat.ui/show-profile from])}]])))
-
 (defn image-long-press [{:keys [content identicon from outgoing] :as message} from-preview?]
   (fn []
     (let [contact-name @(re-frame/subscribe [:contacts/contact-name-by-identity from])]

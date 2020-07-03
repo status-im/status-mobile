@@ -12,10 +12,6 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.slider :as slider]))
 
-(defn message-press-handlers [_]
-  ;;TBI save audio file?
-  )
-
 (defonce player-ref (atom nil))
 (defonce current-player-message-id (atom nil))
 (defonce current-active-state-ref-ref (atom nil))

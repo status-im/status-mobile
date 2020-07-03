@@ -62,7 +62,7 @@
       (.addListener ^js react/keyboard
                     (if platform/ios?
                       "keyboardWillHide"
-                      "keyboardWDidHide")
+                      "keyboardDidHide")
                     (fn [_]
                       (re-frame/dispatch-sync [:set :keyboard-height 0])))
       (.addEventListener ^js react/app-state "change" app-state-change-handler)

@@ -2,12 +2,13 @@
  status-im.transport.message.core
   (:require [status-im.chat.models.message :as models.message]
             [status-im.chat.models :as models.chat]
+            [status-im.chat.models.reactions :as models.reactions]
             [status-im.contact.core :as models.contact]
             [status-im.pairing.core :as models.pairing]
             [status-im.data-store.messages :as data-store.messages]
+            [status-im.data-store.reactions :as data-store.reactions]
             [status-im.data-store.contacts :as data-store.contacts]
             [status-im.data-store.chats :as data-store.chats]
-            [status-im.utils.handlers :as handlers]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]))
 
@@ -20,11 +21,17 @@
 (fx/defn handle-message [cofx message]
   (models.message/receive-one cofx message))
 
-(fx/defn process-response [cofx ^js response-js]
+(fx/defn handle-reactions [cofx reactions]
+  (models.reactions/receive-signal cofx reactions))
+
+(fx/defn process-response
+  {:events [::process]}
+  [cofx ^js response-js]
   (let [^js chats (.-chats response-js)
         ^js contacts (.-contacts response-js)
         ^js installations (.-installations response-js)
-        ^js messages (.-messages response-js)]
+        ^js messages (.-messages response-js)
+        ^js emoji-reactions (.-emojiReactions response-js)]
     (cond
       (seq installations)
       (let [installations-clj (types/js->clj installations)]
@@ -54,12 +61,14 @@
       (let [message (.pop messages)]
         (fx/merge cofx
                   {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
-                  (handle-message (-> message (types/js->clj) (data-store.messages/<-rpc))))))))
+                  (handle-message (-> message (types/js->clj) (data-store.messages/<-rpc)))))
 
-(handlers/register-handler-fx
- ::process
- (fn [cofx [_ response-js]]
-   (process-response cofx response-js)))
+      (seq emoji-reactions)
+      (let [reactions (types/js->clj emoji-reactions)]
+        (js-delete response-js "emojiReactions")
+        (fx/merge cofx
+                  {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (handle-reactions (map data-store.reactions/<-rpc reactions)))))))
 
 (fx/defn remove-hash
   [{:keys [db] :as cofx} envelope-hash]

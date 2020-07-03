@@ -8,6 +8,7 @@
             [status-im.transport.filters.core :as filters]
             [status-im.mailserver.core :as mailserver]
             [status-im.utils.fx :as fx]
+            [status-im.chat.models.reactions :as reactions]
             [status-im.chat.models.message-list :as message-list]
             [taoensso.timbre :as log]
             [status-im.chat.models.message-seen :as message-seen]))
@@ -133,6 +134,7 @@
                                 #(re-frame/dispatch [::failed-loading-messages current-chat-id session-id %]))]
           (fx/merge cofx
                     load-messages-fx
+                    (reactions/load-more-reactions cursor)
                     (mailserver/load-gaps-fx current-chat-id)))))))
 
 (fx/defn load-messages

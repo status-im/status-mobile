@@ -18,6 +18,7 @@
    :border-radius (radius size)})
 
 (defn photo [size]
-  {:border-radius (radius size)
-   :width         size
-   :height        size})
+  {:border-radius    (radius size)
+   :width            size
+   :height           size
+   :background-color colors/white})

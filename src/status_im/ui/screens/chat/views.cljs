@@ -12,6 +12,7 @@
             [quo.animated :as animated]
             [quo.react-native :as rn]
             [status-im.ui.screens.chat.audio-message.views :as audio-message]
+            [quo.react :as quo.react]
             [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.screens.chat.stickers.views :as stickers]
             [status-im.ui.screens.chat.styles.main :as style]
@@ -136,7 +137,7 @@
   (debounce/debounce-and-dispatch [:chat.ui/message-visibility-changed e] 5000))
 
 (defview messages-view
-  [{:keys [group-chat chat-id public?] :as chat} bottom-space pan-handler]
+  [{:keys [group-chat chat-id public?] :as chat} bottom-space pan-handler set-active-panel]
   (letsubs [messages           [:chats/current-chat-messages-stream]
             no-messages?       [:chats/current-chat-no-messages?]
             current-public-key [:multiaccount/public-key]]
@@ -161,11 +162,13 @@
                                                    :incoming-group (and group-chat (not outgoing))
                                                    :group-chat group-chat
                                                    :public? public?
-                                                   :current-public-key current-public-key)])))
+                                                   :current-public-key current-public-key)
+                                            set-active-panel])))
        :on-viewable-items-changed    on-viewable-items-changed
        :on-end-reached               #(re-frame/dispatch [:chat.ui/load-more-messages])
        :on-scroll-to-index-failed    #() ;;don't remove this
-       :content-container-style      {:padding-top @bottom-space}
+       :content-container-style      {:padding-top    (+ @bottom-space 16)
+                                      :padding-bottom 16}
        :scrollIndicatorInsets        {:top @bottom-space}
        :keyboardDismissMode          "interactive"
        :keyboard-should-persist-taps :handled})]))
@@ -187,12 +190,16 @@
         active-panel     (reagent/atom nil)
         position-y       (animated/value 0)
         pan-state        (animated/value 0)
+        text-input-ref   (quo.react/create-ref)
         on-update        (partial reset! bottom-space)
         pan-responder    (accessory/create-pan-responder position-y pan-state)
         set-active-panel (fn [panel]
-                           (reset! active-panel panel)
                            (rn/configure-next
                             (:ease-opacity-200 rn/custom-animations))
+                           (when (and (not panel)
+                                      (= :keep-space @active-panel))
+                             (some-> ^js (quo.react/current-ref text-input-ref) .focus))
+                           (reset! active-panel panel)
                            (when panel
                              (js/setTimeout #(react/dismiss-keyboard!) 100)))]
     (fn []
@@ -204,7 +211,7 @@
           [react/view {:style {:flex 1}}
            (when-not group-chat
              [add-contact-bar chat-id])
-           [messages-view current-chat bottom-space pan-responder]]]
+           [messages-view current-chat bottom-space pan-responder set-active-panel]]]
          (when show-input?
            [accessory/view {:y               position-y
                             :pan-state       pan-state
@@ -212,5 +219,6 @@
                             :on-close        #(set-active-panel nil)
                             :on-update-inset on-update}
             [components/chat-toolbar {:active-panel     @active-panel
-                                      :set-active-panel set-active-panel}]
+                                      :set-active-panel set-active-panel
+                                      :text-input-ref   text-input-ref}]
             [bottom-sheet @active-panel]])]))))

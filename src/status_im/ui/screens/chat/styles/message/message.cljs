@@ -10,11 +10,6 @@
   [outgoing]
   {:color (if outgoing colors/white-persist colors/text)})
 
-(defn last-message-padding
-  [{:keys [first? typing]}]
-  (when (and first? (not typing))
-    {:padding-bottom 16}))
-
 (defn system-message-body
   [_]
   {:margin-top     4
@@ -54,12 +49,8 @@
                                    :bottom                9 ; 6 Bubble bottom, 3 message baseline
                                    (if rtl? :left :right) 12})))
 
-(defn message-wrapper-base [message]
-  (merge {:flex-direction   :column}
-         (last-message-padding message)))
-
-(defn message-wrapper [{:keys [outgoing] :as message}]
-  (merge (message-wrapper-base message)
+(defn message-wrapper [{:keys [outgoing]}]
+  (merge {:flex-direction :column}
          (if outgoing
            {:margin-left 96}
            {:margin-right 52})))
@@ -83,8 +74,8 @@
      :padding-left  8}))
 
 (def message-author-touchable
-  {:margin-left      12
-   :padding-vertical 2})
+  {:margin-left    12
+   :flex-direction :row})
 
 (defn message-author-userpic [outgoing]
   (merge
@@ -93,7 +84,7 @@
    (if outgoing
      {:padding-left 8}
      {:padding-horizontal 8
-      :padding-right 8})))
+      :padding-right      8})))
 
 (def delivery-text
   {:color       colors/gray
@@ -162,13 +153,6 @@
    :font-weight         (if chosen? "500" "400")
    :padding-top         6
    :padding-left        12
-   :text-align-vertical :center})
-
-(def message-author-name-container
-  {:padding-top         6
-   :padding-left        12
-   :padding-right       16
-   :margin-right        12
    :text-align-vertical :center})
 
 (defn quoted-message-container [outgoing]

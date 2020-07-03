@@ -8,12 +8,6 @@
             [quo.components.controls.styles :as styles]
             [status-im.ui.components.icons.vector-icons :as icons]))
 
-(def spring-config {:damping                   50
-                    :mass                      0.3
-                    :stiffness                 120
-                    :overshootClamping         true
-                    :bouncyFactor              1})
-
 (defn control-builder [component]
   (fn [props]
     (let [{:keys [value onChange disabled]}
@@ -29,7 +23,7 @@
                        [])
           transition  (react/use-memo
                        (fn []
-                         (animated/with-spring-transition state spring-config))
+                         (animated/with-spring-transition state (:lazy animated/springs)))
                        [])
           press-end   (fn []
                         (when (and (not disabled) onChange)

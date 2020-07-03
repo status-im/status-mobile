@@ -169,7 +169,7 @@
                            :on-press #(reset! visible true)}
 
                           :else after)
-            secure        (and secure-text-entry
+            secure        (and (true? secure-text-entry)
                                (or platform/android? (not @visible)))
             on-cancel     (fn []
                             (when on-cancel

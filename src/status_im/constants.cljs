@@ -1,5 +1,6 @@
 (ns status-im.constants
   (:require [status-im.ethereum.core :as ethereum]
+            [status-im.react-native.resources :as resources]
             [status-im.i18n :as i18n]
             [status-im.utils.config :as config]))
 
@@ -15,6 +16,20 @@
 (def content-type-system-text 6)
 (def content-type-image 7)
 (def content-type-audio 8)
+
+(def emoji-reaction-love 1)
+(def emoji-reaction-thumbs-up  2)
+(def emoji-reaction-thumbs-down  3)
+(def emoji-reaction-laugh 4)
+(def emoji-reaction-sad 5)
+(def emoji-reaction-angry 6)
+
+(def reactions {emoji-reaction-love        (:love resources/reactions)
+                emoji-reaction-thumbs-up   (:thumbs-up resources/reactions)
+                emoji-reaction-thumbs-down (:thumbs-down resources/reactions)
+                emoji-reaction-laugh       (:laugh resources/reactions)
+                emoji-reaction-sad         (:sad resources/reactions)
+                emoji-reaction-angry       (:angry resources/reactions)})
 
 (def message-type-one-to-one 1)
 (def message-type-public-group 2)

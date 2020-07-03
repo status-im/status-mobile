@@ -18,7 +18,6 @@
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.chat.message.message :as message]
-            [status-im.ui.screens.chat.styles.message.message :as message.style]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.utils.debounce :as debounce]
@@ -629,7 +628,7 @@
 (views/defview my-name []
   (views/letsubs [contact-name [:multiaccount/preferred-name]]
     (when-not (string/blank? contact-name)
-      (chat.utils/format-author (str "@" contact-name) message.style/message-author-name-container))))
+      (chat.utils/format-author (str "@" contact-name)))))
 
 (views/defview registered [names {:keys [preferred-name] :as account} _ registrations]
   [react/view {:style {:flex 1}}
@@ -674,9 +673,9 @@
        [react/view {:padding-left 72}
         [my-name]]
        [react/view {:flex-direction :row}
-        [react/view {:padding-left 16 :padding-right 8 :padding-top 4}
+        [react/view {:padding-left 16 :padding-top 4}
          [photos/photo (multiaccounts/displayed-photo account) {:size 36}]]
-        [message/text-message message]]])]])
+        [message/->message message {:on-long-press identity}]]])]])
 
 (views/defview main []
   (views/letsubs [{:keys [names multiaccount show? registrations]} [:ens.main/screen]]

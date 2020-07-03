@@ -20,6 +20,7 @@
             [status-im.multiaccounts.db :as multiaccounts.db]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.recover.core :as recover]
+            [status-im.chat.models.reactions :as models.reactions]
             [status-im.pairing.core :as pairing]
             [status-im.signing.gas :as signing.gas]
             #_[status-im.tribute-to-talk.core :as tribute-to-talk]
@@ -182,6 +183,7 @@
 (reg-root-key-sub :multiaccounts/loading :multiaccounts/loading)
 
 (reg-root-key-sub ::messages :messages)
+(reg-root-key-sub ::reactions :reactions)
 (reg-root-key-sub ::message-lists :message-lists)
 (reg-root-key-sub ::pagination-info :pagination-info)
 
@@ -636,6 +638,16 @@
  :<- [:chats/current-chat-id]
  (fn [[messages chat-id]]
    (get messages chat-id {})))
+
+(re-frame/reg-sub
+ :chats/message-reactions
+ :<- [:multiaccount/public-key]
+ :<- [::reactions]
+ :<- [:chats/current-chat-id]
+ (fn [[current-public-key reactions chat-id] [_ message-id]]
+   (models.reactions/message-reactions
+    current-public-key
+    (get-in reactions [chat-id message-id]))))
 
 (re-frame/reg-sub
  :chats/messages-gaps

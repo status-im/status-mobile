@@ -74,6 +74,9 @@
    "shhext_prepareContent" {}
    "shhext_blockContact" {}
    "shhext_updateMailservers" {}
+   "shhext_sendEmojiReaction" {}
+   "shhext_sendEmojiReactionRetraction" {}
+   "shhext_emojiReactionsByChatID" {}
    ;;TODO not used anywhere?
    "shhext_deleteChat" {}
    "shhext_saveContact" {}
@@ -125,6 +128,9 @@
    "wakuext_prepareContent" {}
    "wakuext_blockContact" {}
    "wakuext_updateMailservers" {}
+   "wakuext_sendEmojiReaction" {}
+   "wakuext_sendEmojiReactionRetraction" {}
+   "wakuext_emojiReactionsByChatID" {}
    ;;TODO not used anywhere?
    "wakuext_deleteChat" {}
    "wakuext_saveContact" {}

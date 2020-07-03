@@ -7,11 +7,13 @@
             [status-im.chat.models.input :as chat.input]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.chat.models.message :as chat.message]
+            [status-im.chat.models.reactions :as chat.reactions]
             [status-im.chat.models.message-seen :as message-seen]
             [status-im.contact.block :as contact.block]
             [status-im.contact.core :as contact]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.messages :as data-store.messages]
+            [status-im.data-store.reactions :as data-store.reactions]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [status-im.fleet.core :as fleet]
             [status-im.group-chats.core :as group-chats]
@@ -794,12 +796,14 @@
  (fn [_ [_ err]]
    (log/error :send-status-message-error err)))
 
-(fx/defn handle-update [cofx {:keys [chats messages] :as response}]
-  (let [chats       (map data-store.chats/<-rpc chats)
-        messages    (map data-store.messages/<-rpc messages)
-        message-fxs (map chat.message/receive-one messages)
-        chat-fxs    (map #(chat/ensure-chat (dissoc % :unviewed-messages-count)) chats)]
-    (apply fx/merge cofx (concat chat-fxs message-fxs))))
+(fx/defn handle-update [cofx {:keys [chats messages emojiReactions] :as response}]
+  (let [chats           (map data-store.chats/<-rpc chats)
+        messages        (map data-store.messages/<-rpc messages)
+        message-fxs     (map chat.message/receive-one messages)
+        emoji-reactions (map data-store.reactions/<-rpc emojiReactions)
+        emoji-react-fxs (map chat.reactions/receive-one emoji-reactions)
+        chat-fxs        (map #(chat/ensure-chat (dissoc % :unviewed-messages-count)) chats)]
+    (apply fx/merge cofx (concat chat-fxs message-fxs emoji-react-fxs))))
 
 (handlers/register-handler-fx
  :transport/message-sent
@@ -810,6 +814,16 @@
      (apply fx/merge cofx
             (conj set-hash-fxs
                   (handle-update response))))))
+
+(fx/defn reaction-sent
+  {:events [:transport/reaction-sent]}
+  [cofx response]
+  (handle-update cofx response))
+
+(fx/defn retraction-sent
+  {:events [:transport/retraction-sent]}
+  [cofx response]
+  (handle-update cofx response))
 
 (handlers/register-handler-fx
  :transport.callback/node-info-fetched

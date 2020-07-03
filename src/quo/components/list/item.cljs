@@ -168,7 +168,7 @@
                                (not on-long-press))
                           rn/view
                           animated animated/pressable
-                          :else    gh/touchable-hightlight)]
+                          :else    gh/touchable-highlight)]
     [rn/view {:background-color (if (and (= accessory :radio) active)
                                   active-background
                                   passive-background)}

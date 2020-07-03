@@ -2,10 +2,12 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
+            [quo.platform :as platform]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.message.audio :as message.audio]
+            [status-im.chat.models.reactions :as models.reactions]
             [status-im.ui.screens.chat.message.command :as message.command]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.chat.sheets :as sheets]
@@ -13,6 +15,7 @@
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.security :as security]
+            [status-im.ui.screens.chat.message.reactions :as reactions]
             [reagent.core :as reagent])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -28,13 +31,6 @@
                         justify-timestamp?
                         outgoing
                         (:rtl? content))} timestamp-str]))
-
-(defn message-bubble-wrapper
-  [message message-content appender]
-  [react/view
-   (style/message-view message)
-   message-content
-   appender])
 
 (defview quoted-message
   [_ {:keys [from text image]} outgoing current-public-key public?]
@@ -106,14 +102,6 @@
 
     (conj acc literal)))
 
-(defview message-content-status [{:keys [content content-type]}]
-  [react/view style/status-container
-   [react/text {:style (style/status-text)}
-    (reduce
-     (fn [acc e] (render-inline (:text content) false content-type acc e))
-     [react/text-class {:style (style/status-text)}]
-     (-> content :parsed-text peek :children))]])
-
 (defn render-block [{:keys [content outgoing content-type]} acc
                     {:keys [type ^js literal children]}]
   (case type
@@ -153,50 +141,14 @@
       ;; Append timestamp to new block
       (conj elements timestamp))))
 
-(defn text-message-press-handlers [message]
-  {:on-press      (fn [_]
-                    (react/dismiss-keyboard!))
-   :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                       {:content (sheets/message-long-press message)
-                                        :height  192}])})
-
-(defn text-message
-  [{:keys [content outgoing current-public-key public?] :as message}]
-  [react/touchable-highlight (text-message-press-handlers message)
-   [message-bubble-wrapper message
-    (let [response-to (:response-to content)]
-      [react/view
-       (when (and (seq response-to) (:quoted-message message))
-         [quoted-message response-to (:quoted-message message) outgoing current-public-key public?])
-       [render-parsed-text-with-timestamp message (:parsed-text content)]])
-    [message-timestamp message true]]])
-
 (defn unknown-content-type
   [{:keys [outgoing content-type content] :as message}]
-  [message-bubble-wrapper message
+  [react/view (style/message-view message)
    [react/text
     {:style {:color (if outgoing colors/white-persist colors/black)}}
     (if (seq (:text content))
       (:text content)
       (str "Unhandled content-type " content-type))]])
-
-(defn system-text-message
-  [{:keys [content] :as message}]
-  [message-bubble-wrapper message
-   [react/view
-    [render-parsed-text message (:parsed-text content)]]])
-
-(defn emoji-message
-  [{:keys [content current-public-key outgoing public?] :as message}]
-  (let [response-to (:response-to content)]
-    [react/touchable-highlight (text-message-press-handlers message)
-     [message-bubble-wrapper message
-      [react/view {:style (style/style-message-text outgoing)}
-       (when (and (seq response-to) (:quoted-message message))
-         [quoted-message response-to (:quoted-message message) outgoing current-public-key public?])
-       [react/text {:style (style/emoji-message message)}
-        (:text content)]]
-      [message-timestamp message]]]))
 
 (defn message-not-sent-text
   [chat-id message-id]
@@ -220,42 +172,38 @@
              (= outgoing-status :not-sent))
     [message-not-sent-text chat-id message-id]))
 
-(defview message-author-name [from alias]
+(defview message-author-name [from alias modal]
   (letsubs [contact-name [:contacts/raw-contact-name-by-identity from]]
-    (chat.utils/format-author (or contact-name alias) style/message-author-name-container)))
+    (chat.utils/format-author (or contact-name alias) modal)))
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
   [{:keys [alias first-in-group? display-photo? identicon display-username?
            from outgoing]
-    :as   message} content]
-  [react/view {:style (style/message-wrapper message)
+    :as   message} content {:keys [modal close-modal]}]
+  [react/view {:style               (style/message-wrapper message)
+               :pointer-events      :box-none
                :accessibility-label :chat-item}
-   [react/view (style/message-body message)
+   [react/view {:style          (style/message-body message)
+                :pointer-events :box-none}
     (when display-photo?
-      ; userpic
       [react/view (style/message-author-userpic outgoing)
        (when first-in-group?
-         [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/show-profile from])}
+         [react/touchable-highlight {:on-press #(do (when modal (close-modal))
+                                                    (re-frame/dispatch [:chat.ui/show-profile from]))}
           [photos/member-identicon identicon]])])
-    ; username
-    [react/view (style/message-author-wrapper outgoing display-photo?)
+    [react/view {:style (style/message-author-wrapper outgoing display-photo?)}
      (when display-username?
        [react/touchable-opacity {:style    style/message-author-touchable
-                                 :on-press #(re-frame/dispatch [:chat.ui/show-profile from])}
-        [message-author-name from alias]])
+                                 :on-press #(do (when modal (close-modal))
+                                                (re-frame/dispatch [:chat.ui/show-profile from]))}
+        [message-author-name from alias modal]])
      ;;MESSAGE CONTENT
-     content]]
+     [react/view
+      content]]]
    ; delivery status
    [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])
-
-(defn system-message-content-wrapper
-  [message child]
-  [react/view {:style (style/message-wrapper-base message)
-               :accessibility-label :chat-item}
-   [react/view (style/system-message-body message)
-    [react/view child]]])
 
 (defn message-content-image [{:keys [content outgoing]}]
   (let [dimensions (reagent/atom [260 260])
@@ -271,57 +219,146 @@
                      :resize-mode :contain
                      :source {:uri uri}}]])))
 
-(defn image-message-press-handlers [{:keys [content] :as message}]
-  {:on-press      (fn [_]
-                    (when (:image content)
-                      (re-frame/dispatch [:navigate-to :image-preview message]))
-                    (react/dismiss-keyboard!))
-   :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                       {:content (sheets/image-long-press message false)
-                                        :height  160}])})
+(defmulti ->message :content-type)
 
-(defn sticker-message-press-handlers [{:keys [content] :as message}]
-  (let [pack (get-in content [:sticker :pack])]
-    {:on-press      (fn [_]
-                      (when pack
-                        (re-frame/dispatch [:stickers/open-sticker-pack pack]))
-                      (react/dismiss-keyboard!))
-     :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                         {:content (sheets/sticker-long-press message)
-                                          :height  64}])}))
-
-(defn message-content-audio
+(defmethod ->message constants/content-type-command
   [message]
-  [react/touchable-highlight (message.audio/message-press-handlers message)
-   [message-bubble-wrapper message
-    [message.audio/message-content message [message-timestamp message false]]]])
+  [message.command/command-content message-content-wrapper message])
 
-(defn chat-message [{:keys [public? content content-type] :as message}]
-  (if (= content-type constants/content-type-command)
-    [message.command/command-content message-content-wrapper message]
-    (if (= content-type constants/content-type-system-text)
-      [system-message-content-wrapper message [system-text-message message]]
-      [message-content-wrapper
-       message
-       (if (= content-type constants/content-type-text)
-         ;; text message
-         [text-message message]
-         (if (= content-type constants/content-type-status)
-           [message-content-status message]
-           (if (= content-type constants/content-type-emoji)
-             [emoji-message message]
-             (if (= content-type constants/content-type-sticker)
-               [react/touchable-highlight (sticker-message-press-handlers message)
-                [react/image {:style  {:margin 10 :width 140 :height 140}
-                              ;;TODO (perf) move to event
-                              :source {:uri (contenthash/url (-> content :sticker :hash))}}]]
-               (if (and (= content-type constants/content-type-image)
-                        ;; Disabling images for public-chats
-                        (not public?))
-                 [react/touchable-highlight (image-message-press-handlers message)
-                  [message-content-image message]]
-                 (if (and (= content-type constants/content-type-audio)
-                        ;; Disabling audio for public-chats
-                          (not public?))
-                   [message-content-audio message]
-                   [unknown-content-type message]))))))])))
+(defmethod ->message constants/content-type-system-text [{:keys [content] :as message}]
+  [react/view {:accessibility-label :chat-item}
+   [react/view (style/system-message-body message)
+    [react/view (style/message-view message)
+     [react/view
+      [render-parsed-text message (:parsed-text content)]]]]])
+
+(defmethod ->message constants/content-type-text
+  [{:keys [content outgoing current-public-key public?] :as message} {:keys [on-long-press modal]
+                                                                      :as   reaction-picker}]
+  [message-content-wrapper message
+   [react/touchable-highlight (when-not modal
+                                {:on-press      (fn [_]
+                                                  (react/dismiss-keyboard!))
+                                 :on-long-press (fn []
+                                                  (on-long-press
+                                                   [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                                     :label    (i18n/label :t/message-reply)}
+                                                    {:on-press #(react/copy-to-clipboard (get content :text))
+                                                     :label    (i18n/label :t/sharing-copy-to-clipboard)}]))})
+    [react/view (style/message-view message)
+     (let [response-to (:response-to content)]
+       [react/view
+        (when (and (seq response-to) (:quoted-message message))
+          [quoted-message response-to (:quoted-message message) outgoing current-public-key public?])
+        [render-parsed-text-with-timestamp message (:parsed-text content)]])
+     [message-timestamp message true]]]
+   reaction-picker])
+
+(defmethod ->message constants/content-type-status
+  [{:keys [content content-type] :as message}]
+  [message-content-wrapper message
+   [react/view style/status-container
+    [react/text {:style (style/status-text)}
+     (reduce
+      (fn [acc e] (render-inline (:text content) false content-type acc e))
+      [react/text-class {:style (style/status-text)}]
+      (-> content :parsed-text peek :children))]]])
+
+(defmethod ->message constants/content-type-emoji
+  [{:keys [content current-public-key outgoing public?] :as message} {:keys [on-long-press modal]
+                                                                      :as   reaction-picker}]
+  (let [response-to (:response-to content)]
+    [message-content-wrapper message
+     [react/touchable-highlight (when-not modal
+                                  {:on-press      (fn []
+                                                    (react/dismiss-keyboard!))
+                                   :on-long-press (fn []
+                                                    (on-long-press
+                                                     [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                                       :label    (i18n/label :t/message-reply)}
+                                                      {:on-press #(react/copy-to-clipboard (get content :text))
+                                                       :label    (i18n/label :t/sharing-copy-to-clipboard)}]))})
+      [react/view (style/message-view message)
+       [react/view {:style (style/style-message-text outgoing)}
+        (when (and (seq response-to) (:quoted-message message))
+          [quoted-message response-to (:quoted-message message) outgoing current-public-key public?])
+        [react/text {:style (style/emoji-message message)}
+         (:text content)]]
+       [message-timestamp message]]]
+     reaction-picker]))
+
+(defmethod ->message constants/content-type-sticker
+  [{:keys [content from outgoing]
+    :as   message}
+   {:keys [on-long-press modal]
+    :as   reaction-picker}]
+  (let [pack (get-in content [:sticker :pack])]
+    [message-content-wrapper message
+     [react/touchable-highlight (when-not modal
+                                  {:on-press      (fn [_]
+                                                    (when pack
+                                                      (re-frame/dispatch [:stickers/open-sticker-pack pack]))
+                                                    (react/dismiss-keyboard!))
+                                   :on-long-press (fn []
+                                                    (on-long-press
+                                                     (when-not outgoing
+                                                       [{:on-press #(when pack
+                                                                      (re-frame/dispatch [:chat.ui/show-profile from]))
+                                                         :label    (i18n/label :t/view-details)}])))})
+      [react/image {:style  {:margin 10 :width 140 :height 140}
+                    ;;TODO (perf) move to event
+                    :source {:uri (contenthash/url (-> content :sticker :hash))}}]]
+     reaction-picker]))
+
+(defmethod ->message constants/content-type-image [{:keys [content] :as message} {:keys [on-long-press modal]
+                                                                                  :as   reaction-picker}]
+  [message-content-wrapper message
+   [react/touchable-highlight (when-not modal
+                                {:on-press      (fn [_]
+                                                  (when (:image content)
+                                                    (re-frame/dispatch [:navigate-to :image-preview message]))
+                                                  (react/dismiss-keyboard!))
+                                 :on-long-press (fn []
+                                                  (on-long-press
+                                                   [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                                     :label    (i18n/label :t/message-reply)}
+                                                    {:on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
+                                                     :label    (i18n/label :t/save)}]))})
+    [message-content-image message]]
+   reaction-picker])
+
+(defmethod ->message constants/content-type-audio [message {:keys [on-long-press modal]
+                                                            :as   reaction-picker}]
+  [message-content-wrapper message
+   [react/touchable-highlight (when-not modal
+                                {:on-long-press
+                                 (fn [] (on-long-press []))})
+    [react/view (style/message-view message)
+     [message.audio/message-content message [message-timestamp message false]]]]
+   reaction-picker])
+
+(defmethod ->message :default [message]
+  [message-content-wrapper message
+   [unknown-content-type message]])
+
+(defn chat-message [message set-active-panel]
+  [reactions/with-reaction-picker
+   {:message         message
+    :reactions       @(re-frame/subscribe [:chats/message-reactions (:message-id message)])
+    :picker-on-open  (fn []
+                       ;; NOTE(Ferossgp): Because of soft-input adjustResize there are some problems on android
+                       (when (and platform/ios? (pos? @(re-frame/subscribe [:keyboard-height])))
+                         (set-active-panel :keep-space)))
+    :picker-on-close (fn []
+                       (when platform/ios?
+                         (set-active-panel nil)))
+    :send-emoji      (fn [{:keys [emoji-id]}]
+                       (re-frame/dispatch [::models.reactions/send-emoji-reaction
+                                           {:message-id (:message-id message)
+                                            :emoji-id   emoji-id}]))
+    :retract-emoji   (fn [{:keys [emoji-id emoji-reaction-id]}]
+                       (re-frame/dispatch [::models.reactions/send-emoji-reaction-retraction
+                                           {:message-id        (:message-id message)
+                                            :emoji-id          emoji-id
+                                            :emoji-reaction-id emoji-reaction-id}]))
+    :render          ->message}])

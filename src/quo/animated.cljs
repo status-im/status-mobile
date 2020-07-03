@@ -64,6 +64,19 @@
               :ease-in-out (bezier 0.42 0 0.58 1)
               :keyboard    (bezier 0.17 0.59 0.4 0.77)})
 
+(def springs {:lazy {:damping           50
+                     :mass              0.3
+                     :stiffness         120
+                     :overshootClamping true
+                     :bouncyFactor      1}
+              :jump {:damping                   13
+                     :mass                      0.5
+                     :stiffness                 170
+                     :overshootClamping         false
+                     :bouncyFactor              1
+                     :restSpeedThreshold        0.001
+                     :restDisplacementThreshold 0.001}})
+
 (defn set-value [anim val]
   (ocall anim "setValue" val))
 

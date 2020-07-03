@@ -32,11 +32,11 @@
 (def touchable-without-feedback
   (reagent/adapt-react-class touchable-without-feedback-class))
 
-(def touchable-hightlight-class (reagent/adapt-react-class TouchableHighlight))
+(def touchable-highlight-class (reagent/adapt-react-class TouchableHighlight))
 
-(defn touchable-hightlight [props & children]
-  (into [touchable-hightlight-class (merge {:underlay-color (:interactive-02 @colors/theme)}
-                                           props)]
+(defn touchable-highlight [props & children]
+  (into [touchable-highlight-class (merge {:underlay-color (:interactive-02 @colors/theme)}
+                                          props)]
         children))
 
 (def touchable-opacity

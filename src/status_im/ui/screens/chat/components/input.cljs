@@ -134,14 +134,9 @@
                                :set-active          set-active-panel}])]]]])
 
 (defn chat-toolbar []
-  (let [text-input-ref  (react/create-ref)
-        input-focus     (fn []
-                          (some-> ^js (react/current-ref text-input-ref) .focus))
-        clear-input     (fn []
-                          (some-> ^js (react/current-ref text-input-ref) .clear))
-        previous-layout (atom nil)
+  (let [previous-layout (atom nil)
         had-reply       (atom nil)]
-    (fn [{:keys [active-panel set-active-panel]}]
+    (fn [{:keys [active-panel set-active-panel text-input-ref]}]
       (let [disconnected?        @(re-frame/subscribe [:disconnected?])
             {:keys [processing]} @(re-frame/subscribe [:multiaccounts/login])
             mainnet?             @(re-frame/subscribe [:mainnet?])
@@ -151,6 +146,10 @@
             public?              @(re-frame/subscribe [:current-chat/public?])
             reply                @(re-frame/subscribe [:chats/reply-message])
             sending-image        @(re-frame/subscribe [:chats/sending-image])
+            input-focus          (fn []
+                                   (some-> ^js (react/current-ref text-input-ref) .focus))
+            clear-input          (fn []
+                                   (some-> ^js (react/current-ref text-input-ref) .clear))
             empty-text           (string/blank? (string/trim (or input-text "")))
             show-send            (and (or (not empty-text)
                                           sending-image)
