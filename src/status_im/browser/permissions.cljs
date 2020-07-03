@@ -5,7 +5,7 @@
             [status-im.navigation :as navigation]
             [status-im.qr-scanner.core :as qr-scanner]
             [re-frame.core :as re-frame]
-            [clojure.string :as string]
+            [status-im.utils.messages :as dapp-messages]
             [status-im.utils.fx :as fx]))
 
 (declare process-next-permission)
@@ -78,38 +78,11 @@
                   :dapp-name            dapp-name
                   :yield-control?       yield-control?})})
 
-(defn replace-several [content & replacements]
-  (let [replacement-list (partition 2 replacements)]
-    (reduce #(apply string/replace %1 %2) content replacement-list)))
-
-(defn sanitize-text-for-parse
-  "These characters cause JSON payloads to fail being sent over the bridge without proper scrubbing"
-  [text]
-  (replace-several text
-                   #"/\n/g" "\\n"
-                   #"\n"    "\\n"
-                   #"\r"    "\\r"
-                   #"/\r/g" "\\r"
-                   #"/\t/g" "\\t"
-                   #"\'" ""))
-
-(defn format-message-client
-  [[message-id, {:keys [content] :as message}]]
-  (let [reduced-message (select-keys message [:timestamp :from :alias :message-id])]
-    (merge {:text (sanitize-text-for-parse (:text content))} reduced-message)))
-
-(defn messages-format-js
-  [messages]
-  (let [chat-keys (keys messages)
-        chat-content (mapcat #(get messages %) chat-keys)
-        reduced-content (map format-message-client chat-content)]
-    reduced-content))
-
 (defn get-permission-data [cofx allowed-permission & [{:keys [start] :as params}]]
   (let [multiaccount (get-in cofx [:db :multiaccount])
         messages (get-in cofx [:db :messages])]
     (get {constants/dapp-permission-contact-code (:public-key multiaccount)
-          constants/dapp-permission-get-chat-messages (messages-format-js messages)
+          constants/dapp-permission-get-chat-messages (dapp-messages/messages-format-js messages)
           constants/dapp-permission-web3         [(:dapps-address multiaccount)]}
          allowed-permission)))
 
