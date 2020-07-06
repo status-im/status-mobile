@@ -48,7 +48,6 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.next_button.click()
         sign_in.next_button.click()
         sign_in.create_password_input.set_value(common_password)
-        sign_in.next_button.click()
         sign_in.confirm_your_password_input.set_value(common_password)
         sign_in.next_button.click()
         for element in sign_in.maybe_later_button, sign_in.lets_go_button:

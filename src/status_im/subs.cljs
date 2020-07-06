@@ -231,18 +231,9 @@
  :intro-wizard/create-code
  :<- [:intro-wizard]
  (fn [wizard-state]
-   (merge (select-keys wizard-state [:confirm-failure? :encrypt-with-password? :weak-password? :view-width])
+   (merge (select-keys wizard-state [:processing?])
           (if (:recovering? wizard-state)
             {:forward-action  :multiaccounts.recover/enter-password-next-pressed}
-            {:forward-action :intro-wizard/step-forward-pressed}))))
-
-(re-frame/reg-sub
- :intro-wizard/confirm-code
- :<- [:intro-wizard]
- (fn [wizard-state]
-   (merge (select-keys wizard-state [:confirm-failure? :encrypt-with-password? :processing? :view-width])
-          (if (:recovering? wizard-state)
-            {:forward-action  :multiaccounts.recover/confirm-password-next-pressed}
             {:forward-action :intro-wizard/step-forward-pressed}))))
 
 (re-frame/reg-sub

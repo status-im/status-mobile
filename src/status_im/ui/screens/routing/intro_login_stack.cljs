@@ -7,6 +7,7 @@
             [status-im.ui.screens.keycard.onboarding.views :as keycard.onboarding]
             [status-im.ui.screens.keycard.recovery.views :as keycard.recovery]
             [status-im.ui.screens.keycard.views :as keycard]
+            [status-im.ui.screens.intro.password :as password]
             [status-im.ui.screens.keycard.authentication-method.views
              :as
              keycard.authentication]
@@ -47,10 +48,7 @@
        :component    intro/wizard-select-key-storage}
       {:name         :create-multiaccount-create-code
        :back-handler :noop
-       :component    intro/wizard-create-code}
-      {:name         :create-multiaccount-confirm-code
-       :back-handler :noop
-       :component    intro/wizard-confirm-code}
+       :component    password/screen}
       {:name      :recover-multiaccount-enter-phrase
        :component intro/wizard-enter-phrase}
       {:name         :recover-multiaccount-select-storage
@@ -58,10 +56,7 @@
        :component    intro/wizard-select-key-storage}
       {:name         :recover-multiaccount-enter-password
        :back-handler :noop
-       :component    intro/wizard-create-code}
-      {:name         :recover-multiaccount-confirm-password
-       :back-handler :noop
-       :component    intro/wizard-confirm-code}
+       :component    password/screen}
       {:name         :recover-multiaccount-success
        :back-handler :noop
        :component    intro/wizard-recovery-success}

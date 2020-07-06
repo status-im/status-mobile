@@ -70,15 +70,13 @@ class FirstKeyForChatText(BaseText):
 class CreatePasswordInput(BaseEditBox):
     def __init__(self, driver):
         super(CreatePasswordInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Create a password']/.."
-                                                   "//android.widget.EditText")
+        self.locator = self.Locator.xpath_selector("(//android.widget.EditText[@content-desc='password-input'])[1]")
 
 
 class ConfirmYourPasswordInput(BaseEditBox):
     def __init__(self, driver):
         super(ConfirmYourPasswordInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Confirm your password']/.."
-                                                   "//android.widget.EditText")
+        self.locator = self.Locator.xpath_selector("(//android.widget.EditText[@content-desc='password-input'])[2]")
 
 
 class SignInButton(BaseButton):
@@ -265,7 +263,6 @@ class SignInView(BaseView):
         else:
             self.next_button.click()
             self.create_password_input.set_value(password)
-            self.next_button.click()
             self.confirm_your_password_input.set_value(password)
             self.next_button.click()
         self.maybe_later_button.wait_for_visibility_of_element(30)
@@ -288,7 +285,6 @@ class SignInView(BaseView):
         else:
             recover_access_view.next_button.click()
             recover_access_view.create_password_input.set_value(password)
-            recover_access_view.next_button.click()
             recover_access_view.confirm_your_password_input.set_value(password)
             recover_access_view.next_button.click_until_presence_of_element(self.maybe_later_button)
         self.maybe_later_button.wait_for_element(30)

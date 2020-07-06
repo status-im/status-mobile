@@ -1,6 +1,7 @@
 (ns quo.react-native
   (:require [reagent.core :as reagent]
             [cljs-bean.core :as bean]
+            [quo.platform :as platform]
             ["react-native" :as rn]
             ["@react-native-community/hooks" :as hooks]))
 
@@ -20,9 +21,19 @@
 (def touchable-without-feedback (reagent/adapt-react-class (.-TouchableWithoutFeedback ^js rn)))
 (def text-input (reagent/adapt-react-class  (.-TextInput ^js rn)))
 
-(def keyboard-avoiding-view (reagent/adapt-react-class (.-KeyboardAvoidingView ^js rn)))
+(def keyboard-avoiding-view-class (reagent/adapt-react-class (.-KeyboardAvoidingView ^js rn)))
+
+(defn keyboard-avoiding-view []
+  (let [this  (reagent/current-component)
+        props (reagent/props this)]
+    (into [keyboard-avoiding-view-class
+           (merge (when platform/ios?
+                    {:behavior :padding})
+                  props)]
+          (reagent/children this))))
 
 (def keyboard (.-Keyboard ^js rn))
+
 (def dismiss-keyboard! #(.dismiss ^js keyboard))
 
 (def ui-manager  (.-UIManager ^js rn))
@@ -33,10 +44,8 @@
                                :linear           (-> ^js layout-animation .-Presets .-linear)
                                :spring           (-> ^js layout-animation .-Presets .-spring)})
 
-(def activity-indicator-class (reagent/adapt-react-class (.-ActivityIndicator ^js rn)))
-
-(defn activity-indicator [props]
-  [activity-indicator-class props])
+(def switch (reagent/adapt-react-class (.-Switch ^js rn)))
+(def activity-indicator (reagent/adapt-react-class (.-ActivityIndicator ^js rn)))
 
 ;; Flat-list
 (def ^:private rn-flat-list (reagent/adapt-react-class (.-FlatList ^js rn)))

@@ -1,7 +1,9 @@
 (ns quo.platform
-  (:require [quo.react-native :as rn]))
+  (:require ["react-native" :as rn]))
 
-(def os (when rn/platform (.-OS rn/platform)))
+(def platform (.-Platform ^js rn))
+
+(def os (when platform (.-OS platform)))
 
 (def android? (= os "android"))
 (def ios? (= os "ios"))

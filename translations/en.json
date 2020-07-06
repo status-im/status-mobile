@@ -417,6 +417,8 @@
     "pair-code-placeholder": "Pair code...",
     "enter-pair-code-description": "Pairing code was displayed to you during the Keycard setup",
     "enter-password": "Enter password",
+    "password-placeholder":"Password...",
+    "confirm-password-placeholder": "Confirm your password...",
     "enter-pin": "Enter 6-digit passcode",
     "enter-puk-code": "Enter PUK code",
     "enter-puk-code-description": "6-digit passcode has been blocked.\n Please enter PUK code to unblock passcode.",

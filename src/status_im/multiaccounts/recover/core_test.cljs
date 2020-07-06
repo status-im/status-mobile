@@ -2,8 +2,7 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.multiaccounts.recover.core :as models]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [status-im.utils.security :as security]
-            [status-im.i18n :as i18n]))
+            [status-im.utils.security :as security]))
 
 ;;;; helpers
 
@@ -37,21 +36,9 @@
 
 (deftest store-multiaccount
   (let [new-cofx (models/store-multiaccount {:db {:intro-wizard
-                                                  {:passphrase "game buzz method pretty zeus fat quit display velvet unveil marine crater"
-                                                   :password   "thisisapaswoord"}}})]
+                                                  {:passphrase "game buzz method pretty zeus fat quit display velvet unveil marine crater"}}}
+                                            (security/mask-data "thisisapaswoord"))]
     (is (::multiaccounts.create/store-multiaccount new-cofx))))
-
-(deftest recover-multiaccount-with-checks
-  (let [new-cofx (models/recover-multiaccount-with-checks {:db {:intro-wizard
-                                                                {:passphrase "game buzz method pretty olympic fat quit display velvet unveil marine crater"
-                                                                 :password   "thisisapaswoord"}}})]
-    (is (::multiaccounts.create/store-multiaccount new-cofx)))
-  (let [new-cofx (models/recover-multiaccount-with-checks {:db {:intro-wizard
-                                                                {:passphrase "game buzz method pretty zeus fat quit display velvet unveil marine crater"
-                                                                 :password   "thisisapaswoord"}}})]
-    (is (= (i18n/label :recovery-typo-dialog-title) (-> new-cofx :ui/show-confirmation :title)))
-    (is (= (i18n/label :recovery-typo-dialog-description) (-> new-cofx :ui/show-confirmation :content)))
-    (is (= (i18n/label :recovery-confirm-phrase) (-> new-cofx :ui/show-confirmation :confirm-button-text)))))
 
 (deftest on-import-multiaccount-success
   (testing "importing a new multiaccount"

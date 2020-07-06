@@ -7,7 +7,6 @@
             [status-im.ethereum.eip55 :as eip55]
             [status-im.keycard.nfc :as nfc]
             [status-im.i18n :as i18n]
-            [status-im.multiaccounts.db :as db]
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
@@ -26,8 +25,7 @@
   {:generate-key         1
    :choose-key           2
    :select-key-storage   3
-   :create-code          4
-   :confirm-code         5})
+   :create-code          4})
 
 (defn decrement-step [step]
   (let [inverted  (map-invert step-kw-to-num)]
@@ -69,8 +67,8 @@
     (update :derived normalize-derived-data-keys)))
 
 (fx/defn create-multiaccount
-  [{:keys [db]}]
-  (let [{:keys [selected-id key-code]} (:intro-wizard db)
+  [{:keys [db]} key-code]
+  (let [{:keys [selected-id]} (:intro-wizard db)
         key-uid (some
                  (fn [{:keys [id key-uid]}]
                    (when (= id selected-id)
@@ -94,10 +92,8 @@
 (fx/defn prepare-intro-wizard
   [{:keys [db] :as cofx}]
   {:db (assoc db :intro-wizard {:step :generate-key
-                                :weak-password? true
                                 :back-action :intro-wizard/navigate-back
-                                :forward-action :intro-wizard/step-forward-pressed
-                                :encrypt-with-password? true})})
+                                :forward-action :intro-wizard/step-forward-pressed})})
 
 (fx/defn intro-wizard
   {:events [:multiaccounts.create.ui/intro-wizard]}
@@ -121,11 +117,7 @@
   (let  [step (get-in db [:intro-wizard :step])]
     (fx/merge cofx
               (when-not (= :generate-key step)
-                {:db (cond-> (assoc-in db [:intro-wizard :step] (decrement-step step))
-                       (#{:create-code :confirm-code} step)
-                       (update :intro-wizard assoc :weak-password? true :key-code nil)
-                       (= step :confirm-code)
-                       (assoc-in [:intro-wizard :confirm-failure?] false))})
+                {:db (assoc-in db [:intro-wizard :step] (decrement-step step))})
               (when (= :generate-key-step)
                 {:db (dissoc db :intro-wizard)}))))
 
@@ -154,18 +146,6 @@
   {:db (assoc-in db [:intro-wizard :processing?] true)
    :intro-wizard/start-onboarding nil})
 
-(fx/defn on-confirm-failure [{:keys [db] :as cofx}]
-  (do
-    (utils/vibrate)
-    {:db (assoc-in db [:intro-wizard :confirm-failure?] true)}))
-
-(defn confirm-failure? [db]
-  (let [step (get-in db [:intro-wizard :step])]
-    (and (= step :confirm-code)
-         (not (:multiaccounts/login db))
-         (get-in db [:intro-wizard :encrypt-with-password?])
-         (not= (get-in db [:intro-wizard :stored-key-code]) (get-in db [:intro-wizard :key-code])))))
-
 (fx/defn store-key-code [{:keys [db] :as cofx}]
   (let [key-code  (get-in db [:intro-wizard :key-code])]
     {:db (update db :intro-wizard
@@ -174,27 +154,20 @@
 
 (fx/defn intro-step-forward
   {:events [:intro-wizard/step-forward-pressed]}
-  [{:keys [db] :as cofx} {:keys [skip?] :as opts}]
-  (let [{:keys [step selected-storage-type processing? weak-password?]} (:intro-wizard db)]
+  [{:keys [db] :as cofx} {:keys [skip? key-code] :as opts}]
+  (let [{:keys [step selected-storage-type processing?]} (:intro-wizard db)]
     (log/debug "[multiaccount.create] intro-step-forward"
                "step" step)
-    (cond (confirm-failure? db)
-          (on-confirm-failure cofx)
-
-          (= step :generate-key)
+    (cond (= step :generate-key)
           (init-key-generation cofx)
 
-          (and  (= step :create-code)
-                (= weak-password? true))
-          nil
-
-          (and (= step :confirm-code)
+          (and (= step :create-code)
                (not processing?))
           (fx/merge cofx
                     {:db (assoc-in db [:intro-wizard :processing?] true)}
-                    create-multiaccount)
+                    (create-multiaccount key-code))
 
-          (and  (= step :confirm-code)
+          (and  (= step :create-code)
                 (:multiaccounts/login db))
           (exit-wizard cofx)
 
@@ -363,32 +336,10 @@
   [{:keys [db] :as cofx} storage-type]
   {:db (assoc-in db [:intro-wizard :selected-storage-type] storage-type)})
 
-(fx/defn on-encrypt-with-password-pressed
-  {:events [:intro-wizard/on-encrypt-with-password-pressed]}
-  [{:keys [db] :as cofx}]
-  {:db (assoc-in db [:intro-wizard :encrypt-with-password?] true)})
-
 (fx/defn on-learn-more-pressed
   {:events [:intro-wizard/on-learn-more-pressed]}
   [{:keys [db] :as cofx}]
   {:db (assoc-in db [:intro-wizard :show-learn-more?] true)})
-
-(defn get-new-key-code [current-code sym encrypt-with-password?]
-  (cond (or (= sym :remove) (= sym "Backspace"))
-        (subs current-code 0 (dec (count current-code)))
-        (and (not encrypt-with-password?) (= (count current-code) 6))
-        current-code
-        (= (count sym) 1)
-        (str current-code sym)
-        :else current-code))
-
-(fx/defn code-symbol-pressed
-  {:events [:intro-wizard/code-symbol-pressed]}
-  [{:keys [db] :as cofx} new-key-code]
-  (let [encrypt-with-password? (get-in db [:intro-wizard :encrypt-with-password?])]
-    {:db (update db :intro-wizard assoc :key-code new-key-code
-                 :confirm-failure? false
-                 :weak-password? (not (db/valid-length? new-key-code)))}))
 
 (re-frame/reg-cofx
  ::get-signing-phrase

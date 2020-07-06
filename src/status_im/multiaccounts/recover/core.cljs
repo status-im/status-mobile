@@ -77,27 +77,13 @@
 
 (fx/defn store-multiaccount
   {:events [::recover-multiaccount-confirmed]}
-  [{:keys [db]}]
-  (let [password (get-in db [:intro-wizard :key-code])
-        {:keys [root-key]} (:intro-wizard db)
+  [{:keys [db]} password]
+  (let [{:keys [root-key]} (:intro-wizard db)
         {:keys [id key-uid]} root-key
         callback #(re-frame/dispatch [::store-multiaccount-success % password])
         hashed-password (ethereum/sha3 (security/safe-unmask-data password))]
     {:db (assoc-in db [:intro-wizard :processing?] true)
      ::multiaccounts.create/store-multiaccount [id key-uid hashed-password callback]}))
-
-(fx/defn recover-multiaccount-with-checks
-  {:events [::sign-in-button-pressed]}
-  [{:keys [db] :as cofx}]
-  (let [{:keys [passphrase processing?]} (:intro-wizard db)]
-    (when-not processing?
-      (if (mnemonic/status-generated-phrase? passphrase)
-        (store-multiaccount cofx)
-        {:ui/show-confirmation
-         {:title               (i18n/label :recovery-typo-dialog-title)
-          :content             (i18n/label :recovery-typo-dialog-description)
-          :confirm-button-text (i18n/label :recovery-confirm-phrase)
-          :on-accept           #(re-frame/dispatch [::recover-multiaccount-confirmed])}}))))
 
 (re-frame/reg-fx
  ::import-multiaccount
@@ -210,11 +196,9 @@
                    (case step
                      :recovery-success :enter-phrase
                      :select-key-storage :recovery-success
-                     :create-code :select-key-storage
-                     :confirm-code :create-code)
+                     :create-code :select-key-storage)
                    :confirm-failure? false
-                   :key-code nil
-                   :weak-password? true)})))
+                   :key-code nil)})))
 
 (fx/defn cancel-pressed
   {:events [:multiaccounts.recover/cancel-pressed]}
@@ -259,31 +243,11 @@
               (navigation/navigate-to-cofx :recover-multiaccount-select-storage nil)
               (select-storage-next-pressed))))
 
-(fx/defn proceed-to-password-confirm
-  [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db  (update db :intro-wizard assoc :step :confirm-code
-                          :forward-action :multiaccounts.recover/confirm-password-next-pressed)}
-            (navigation/navigate-to-cofx :recover-multiaccount-confirm-password nil)))
-
-(fx/defn enter-password-next-button-pressed
-  {:events [:multiaccounts.recover/enter-password-next-pressed]}
-  [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (-> db
-                     (assoc-in [:intro-wizard :stored-key-code] (get-in db [:intro-wizard :key-code]))
-                     (assoc-in [:intro-wizard :key-code] ""))}
-            (proceed-to-password-confirm)))
-
 (fx/defn confirm-password-next-button-pressed
-  {:events [:multiaccounts.recover/confirm-password-next-pressed]
+  {:events [:multiaccounts.recover/enter-password-next-pressed]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)]}
-  [{:keys [db] :as cofx}]
-  (let [{:keys [key-code stored-key-code]} (:intro-wizard db)]
-    (if (= key-code stored-key-code)
-      (fx/merge cofx
-                (store-multiaccount))
-      {:db (assoc-in db [:intro-wizard :confirm-failure?] true)})))
+  [{:keys [db] :as cofx} {:keys [key-code]}]
+  (store-multiaccount cofx key-code))
 
 (fx/defn count-words
   [{:keys [db]}]
