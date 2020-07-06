@@ -10,7 +10,8 @@
             [status-im.ui.screens.chat.stickers.styles :as styles]
             [status-im.ui.components.animation :as anim]
             [status-im.utils.contenthash :as contenthash]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.debounce :as debounce]))
 
 (def icon-size 28)
 (def icon-horizontal-margin 8)
@@ -48,7 +49,7 @@
      (for [{:keys [hash] :as sticker} stickers]
        ^{:key (str hash)}
        [react/touchable-highlight {:style    {:height 75 :width 75 :margin 5}
-                                   :on-press #(re-frame/dispatch [:chat/send-sticker sticker])}
+                                   :on-press #(debounce/dispatch-and-chill [:chat/send-sticker sticker] 1000)}
         [react/image {:style {:resize-mode :cover :width "100%" :height "100%"}
                       :accessibility-label :sticker-icon
                       :source {:uri (contenthash/url (str "0x" hash))}}]])]]])
