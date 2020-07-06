@@ -213,19 +213,19 @@
 
 (defn with-easing
   [{val   :value
-    :keys [snap-points velocity offset state easing duration on-snap]
-    :or   {duration 250
-           easing   (:ease-out easings)}}]
+    :keys [snap-points velocity offset state easing duration
+           animation-over]
+    :or   {duration       250
+           animation-over (value 1)
+           easing         (:ease-out easings)}}]
   (let [position         (value 0)
         c                (clock)
-        animation-over   (value 1)
         interrupted      (and* (eq state (:began gh/states))
                                (clock-running c))
         vel              (multiply velocity 1.5)
         to               (snap-point position vel snap-points)
         finish-animation [(set offset position)
                           (stop-clock c)
-                          (call* [position] on-snap)
                           (set animation-over 1)]]
     (block
      [(cond* interrupted finish-animation)

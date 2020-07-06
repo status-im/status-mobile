@@ -59,7 +59,6 @@
                                 {:min-height       (size->container-size size)
                                  :padding-vertical 8
                                  :flex-direction   :row
-                                 :flex             1
                                  :align-items      :center
                                  :justify-content  :space-between})}]
         children))

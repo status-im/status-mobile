@@ -152,8 +152,8 @@
                  cancel-label on-focus on-blur show-cancel accessibility-label
                  bottom-value secure-text-entry container-style get-ref on-cancel
                  monospace]
-          :or   {cancel-label "Cancel"}
-          :as   props}]
+          :or  {cancel-label "Cancel"}
+          :as  props}]
       {:pre [(check-spec ::text-input props)]}
       (let [show-cancel (if (nil? show-cancel)
                           ;; Enabled by default on iOs and disabled on Android
@@ -169,15 +169,17 @@
                            :on-press #(reset! visible true)}
 
                           :else after)
-            secure    (and secure-text-entry (not @visible))
-            on-cancel (fn []
-                        (when on-cancel
-                          (on-cancel))
-                        (blur))
+            secure        (and secure-text-entry
+                               (or platform/android? (not @visible)))
+            on-cancel     (fn []
+                            (when on-cancel
+                              (on-cancel))
+                            (blur))
             keyboard-type (cond
                             (and platform/ios? (= keyboard-type "visible-password"))
                             "default"
 
+                            ;; NOTE: Now switching dynamically brakes android input
                             (and platform/android? secure-text-entry @visible)
                             "visible-password"
 

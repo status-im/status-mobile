@@ -84,19 +84,17 @@
                                                   :animation animation}))
                               [type])
         handle-press         (fn [] (when on-press (on-press)))
-        handle-press-start   (fn [] (when on-press-start (on-press-start)))
-        long-gesture-handler (fn [^js evt]
-                               (when (and on-long-press
-                                          (= (-> evt .-nativeEvent .-state)
-                                             (:active gesture-handler/states)))
-                                 (on-long-press)
-                                 (animated/set-value state (:undetermined gesture-handler/states))))]
-    (animated/code!
-     (fn []
-       (when on-press-start
-         (animated/cond* (animated/eq state (:began gesture-handler/states))
-                         (animated/call* [] handle-press-start))))
-     [on-press-start])
+        long-gesture-handler (react/callback
+                              (fn [^js evt]
+                                (let [state (-> evt .-nativeEvent .-state)]
+                                  (when (and on-press-start
+                                             (= state (:began gesture-handler/states)))
+                                    (on-press-start))
+                                  (when (and on-long-press
+                                             (= state (:active gesture-handler/states)))
+                                    (on-long-press)
+                                    (animated/set-value state (:undetermined gesture-handler/states)))))
+                              [on-long-press on-press-start])]
     (animated/code!
      (fn []
        (when on-press
@@ -109,6 +107,7 @@
       {:enabled                 (boolean (and on-long-press (not disabled)))
        :on-handler-state-change long-gesture-handler
        :min-duration-ms         long-press-duration
+       :max-dist                22
        :ref                     long-press-ref}
       [animated/view {:accessible          true
                       :accessibility-label accessibility-label}

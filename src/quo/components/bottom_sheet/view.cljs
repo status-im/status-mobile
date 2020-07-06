@@ -56,6 +56,7 @@
         manual-open          (animated/use-value 0)
         manual-close         (animated/use-value 0)
         offset               (animated/use-value 0)
+        drag-over            (animated/use-value 1)
         clock                (animated/use-clock)
         body-ref             (react/create-ref)
         master-ref           (react/create-ref)
@@ -85,15 +86,15 @@
         translate-y      (react/use-memo
                           (fn []
                             (animated/with-easing
-                              {:value       (animated/cond* (animated/less-or-eq master-translation-y 0)
-                                                            (animated/divide master-translation-y 2)
-                                                            master-translation-y)
-                               :velocity    master-velocity-y
-                               :offset      offset
-                               :state       master-state
-                               :on-snap     on-snap
-                               :snap-points [open-snap-point close-snap-point]}))
-                          [on-close])
+                              {:value          (animated/cond* (animated/less-or-eq master-translation-y 0)
+                                                               (animated/divide master-translation-y 2)
+                                                               master-translation-y)
+                               :velocity       master-velocity-y
+                               :offset         offset
+                               :state          master-state
+                               :animation-over drag-over
+                               :snap-points    [open-snap-point close-snap-point]}))
+                          [])
         opacity          (react/use-memo
                           (fn []
                             (animated/cond*
@@ -104,6 +105,12 @@
                                :outputRange [1 0]
                                :extrapolate (:clamp animated/extrapolate)})))
                           [])]
+    (animated/code!
+     (fn []
+       (animated/cond* (animated/and* (animated/eq master-state (:end gesture-handler/states))
+                                      (animated/not* drag-over))
+                       (animated/call* [translate-y] on-snap)))
+     [on-snap])
     (animated/code!
      (fn []
        (animated/block
