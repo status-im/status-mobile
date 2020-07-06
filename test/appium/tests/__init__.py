@@ -44,7 +44,7 @@ prod_fleet = 'eth.prod'
 used_fleet = staging_fleet
 
 mailserver_ams = 'mail-01.do-ams3'
-mailserver_hk = 'mail-02.ac-cn-hongkong-c'
+mailserver_hk = 'mail-01.ac-cn-hongkong-c'
 mailserver_gc = 'mail-01.gc-us-central1-a'
 mailserver_ams_01 = 'mail-01.do-ams3.{}'.format(used_fleet)
 camera_access_error_text = "To grant the required camera permission, please go to your system settings " \

@@ -14,26 +14,26 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(6293)
     @marks.critical
     def test_keycard_send_eth_in_1_1_chat(self):
-        recipient = transaction_recipients['A']
         sender = transaction_senders['A']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1 = device_1.recover_access(passphrase=sender['passphrase'], keycard=True)
-        home_2 = device_2.recover_access(passphrase=recipient['passphrase'], keycard=True)
+        home_2 = device_2.create_user(keycard=True)
+        recipient_public_key, recipient_username = home_2.get_public_key_and_username(return_username=True)
         wallet_1, wallet_2 = home_1.wallet_button.click(), home_2.wallet_button.click()
         for wallet in (wallet_1, wallet_2):
             wallet.set_up_wallet()
             wallet.home_button.click()
 
-        chat_1 = home_1.add_contact(recipient['public_key'])
+        chat_1 = home_1.add_contact(recipient_public_key)
         amount = chat_1.get_unique_amount()
 
         home_1.just_fyi('Send %s ETH in 1-1 chat and check it for sender and receiver: Address requested' % amount)
         chat_1.commands_button.click()
         send_transaction = chat_1.send_command.click()
-        if not send_transaction.get_username_in_transaction_bottom_sheet_button(recipient['username']).is_element_displayed():
-            self.driver.fail('%s is not shown in "Send Transaction" bottom sheet' % recipient['username'])
-        send_transaction.get_username_in_transaction_bottom_sheet_button(recipient['username']).click()
+        if not send_transaction.get_username_in_transaction_bottom_sheet_button(recipient_username).is_element_displayed():
+            self.driver.fail('%s is not shown in "Send Transaction" bottom sheet' % recipient_username)
+        send_transaction.get_username_in_transaction_bottom_sheet_button(recipient_username).click()
         if send_transaction.scan_qr_code_button.is_element_displayed():
             self.driver.fail('Recipient is editable in bootom sheet when send ETH from 1-1 chat')
         send_transaction.amount_edit_box.set_value(amount)
@@ -123,7 +123,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         amount = chat_2.get_unique_amount()
         asset_name = 'STT'
         profile_2 = wallet_2.profile_button.click()
-        profile_2.logout()
+        profile_2.airplane_mode_button.click()
+        device_2.home_button.click()
         chat_element = home_1.get_chat(sender['username'])
         chat_element.wait_for_visibility_of_element(30)
         chat_1 = chat_element.click()
@@ -142,7 +143,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.driver.fail('No incoming transaction in 1-1 chat is shown for recipient after requesting STT')
 
         home_2.just_fyi('Check that transaction message is fetched from offline and sign transaction')
-        device_2.sign_in(keycard=True)
+        profile_2.airplane_mode_button.click()
         home_2.connection_status.wait_for_invisibility_of_element(30)
         home_2.get_chat(recipient_username).click()
         chat_2_sender_message = chat_2.chat_element_by_text('↑ Outgoing transaction')

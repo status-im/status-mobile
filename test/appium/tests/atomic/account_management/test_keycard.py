@@ -147,6 +147,7 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.medium
     def test_keycard_interruption_access_key_onboarding_flow(self):
         sign_in = SignInView(self.driver)
+        sign_in.get_started_button.click()
 
         recover_access = sign_in.access_key_button.click()
         recover_access.enter_seed_phrase_button.click()
@@ -194,6 +195,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         if default_username != basic_user['username']:
             self.errors.append('Default username %s does not match expected' % default_username)
         profile_view.logout()
-        sign_in.sign_in(keycard=True)
-
+        home = sign_in.sign_in(keycard=True)
+        if not home.wallet_button.is_element_displayed(10):
+            self.errors.append("Failed to login to Keycard account")
         self.errors.verify_no_errors()
