@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.hardwallet.setup.subs
   (:require [re-frame.core :as re-frame]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im.ethereum.core :as ethereum]))
 
 (re-frame/reg-sub
  :hardwallet-setup-step
@@ -101,4 +102,4 @@
 (re-frame/reg-sub
  :hardwallet-multiaccount-whisper-public-key
  (fn [db]
-   (str "0x" (get-in db [:hardwallet :multiaccount-whisper-public-key]))))
+   (ethereum/normalized-hex (get-in db [:hardwallet :multiaccount-whisper-public-key]))))

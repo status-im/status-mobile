@@ -61,7 +61,7 @@
   (let [{:keys [result error]} (types/json->clj result)]
     {:db (update db :hardwallet assoc
                  :hash result
-                 :type? typed?
+                 :typed? typed?
                  :data data)}))
 
 (fx/defn hash-transaction

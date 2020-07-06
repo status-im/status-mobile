@@ -23,6 +23,7 @@
             :align-items     :center}}
    [button "conn" :connect-card simulated-keycard/connect-card]
    [button "conn sell" :connect-selected-card simulated-keycard/connect-selected-card]
+   [button "pair" :connect-pairing-card simulated-keycard/connect-pairing-card]
    [button "disc" :disconnect-card simulated-keycard/disconnect-card]
    [button "res"  :keycard-reset-state simulated-keycard/reset-state]])
 

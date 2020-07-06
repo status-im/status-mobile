@@ -19,6 +19,7 @@
         keycard-match?       (= keycard-instance-uid instance-uid)
         hash                 (get-in db [:hardwallet :hash])
         data                 (get-in db [:hardwallet :data])
+        typed?               (get-in db [:hardwallet :typed?])
         pin                  (common/vector->string (get-in db [:hardwallet :pin :sign]))
         from                 (get-in db [:signing/tx :from :address])
         path                 (reduce
@@ -35,6 +36,7 @@
        :hardwallet/sign {:hash    (ethereum/naked-address hash)
                          :data    data
                          :pairing pairing
+                         :typed?  typed?
                          :pin     pin
                          :path    path}}
       (fx/merge cofx
