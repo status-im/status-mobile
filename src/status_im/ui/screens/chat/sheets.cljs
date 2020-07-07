@@ -91,42 +91,49 @@
        :on-press            #(re-frame/dispatch [:chat.ui/remove-chat-pressed chat-id])}]]))
 
 (defn group-chat-accents []
-  (fn [{:keys [chat-id group-chat chat-name color]}]
+  (fn [{:keys [chat-id group-chat chat-name color invitation-admin]}]
     (let [{:keys [joined?]} @(re-frame/subscribe [:group-chat/inviter-info chat-id])]
-      [react/view
-       [quo/list-item
-        {:theme    :accent
-         :title    chat-name
-         :subtitle (i18n/label :t/group-info)
-         :icon     [chat-icon/chat-icon-view-chat-sheet
-                    chat-id group-chat chat-name color]
-         :chevron  true
-         :on-press #(hide-sheet-and-dispatch [:show-group-chat-profile chat-id])}]
-       [quo/list-item
-        {:theme               :accent
-         :title               (i18n/label :t/mark-all-read)
-         :accessibility-label :mark-all-read-button
-         :icon                :main-icons/check
-         :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
-       [quo/list-item
-        {:theme               :accent
-         :title               (i18n/label :t/clear-history)
-         :accessibility-label :clear-history-button
-         :icon                :main-icons/close
-         :on-press            #(re-frame/dispatch [:chat.ui/clear-history-pressed chat-id])}]
-       [quo/list-item
-        {:theme               :accent
-         :title               (i18n/label :t/fetch-history)
-         :accessibility-label :fetch-history-button
-         :icon                :main-icons/arrow-down
-         :on-press            #(hide-sheet-and-dispatch [:chat.ui/fetch-history-pressed chat-id])}]
-       (when joined?
+      (if invitation-admin
+        [quo/list-item
+         {:theme               :accent
+          :title               (i18n/label :t/remove)
+          :accessibility-label :remove-group-chat
+          :icon                :main-icons/delete
+          :on-press            #(hide-sheet-and-dispatch [:group-chats.ui/remove-chat-confirmed chat-id])}]
+        [react/view
          [quo/list-item
-          {:theme               :negative
-           :title               (i18n/label :t/leave-chat)
-           :accessibility-label :leave-chat-button
-           :icon                :main-icons/arrow-left
-           :on-press            #(re-frame/dispatch [:group-chats.ui/leave-chat-pressed chat-id])}])])))
+          {:theme    :accent
+           :title    chat-name
+           :subtitle (i18n/label :t/group-info)
+           :icon     [chat-icon/chat-icon-view-chat-sheet
+                      chat-id group-chat chat-name color]
+           :chevron  true
+           :on-press #(hide-sheet-and-dispatch [:show-group-chat-profile chat-id])}]
+         [quo/list-item
+          {:theme               :accent
+           :title               (i18n/label :t/mark-all-read)
+           :accessibility-label :mark-all-read-button
+           :icon                :main-icons/check
+           :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
+         [quo/list-item
+          {:theme               :accent
+           :title               (i18n/label :t/clear-history)
+           :accessibility-label :clear-history-button
+           :icon                :main-icons/close
+           :on-press            #(re-frame/dispatch [:chat.ui/clear-history-pressed chat-id])}]
+         [quo/list-item
+          {:theme               :accent
+           :title               (i18n/label :t/fetch-history)
+           :accessibility-label :fetch-history-button
+           :icon                :main-icons/arrow-down
+           :on-press            #(hide-sheet-and-dispatch [:chat.ui/fetch-history-pressed chat-id])}]
+         (when joined?
+           [quo/list-item
+            {:theme               :negative
+             :title               (i18n/label :t/leave-chat)
+             :accessibility-label :leave-chat-button
+             :icon                :main-icons/arrow-left
+             :on-press            #(re-frame/dispatch [:group-chats.ui/leave-chat-pressed chat-id])}])]))))
 
 (defn actions [{:keys [public? group-chat]
                 :as current-chat}]

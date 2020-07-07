@@ -9,6 +9,8 @@
             [status-im.data-store.reactions :as data-store.reactions]
             [status-im.data-store.contacts :as data-store.contacts]
             [status-im.data-store.chats :as data-store.chats]
+            [status-im.data-store.invitations :as data-store.invitations]
+            [status-im.group-chats.core :as models.group]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]))
 
@@ -24,6 +26,9 @@
 (fx/defn handle-reactions [cofx reactions]
   (models.reactions/receive-signal cofx reactions))
 
+(fx/defn handle-invitations [cofx invitations]
+  (models.group/handle-invitations cofx invitations))
+
 (fx/defn process-response
   {:events [::process]}
   [cofx ^js response-js]
@@ -31,7 +36,8 @@
         ^js contacts (.-contacts response-js)
         ^js installations (.-installations response-js)
         ^js messages (.-messages response-js)
-        ^js emoji-reactions (.-emojiReactions response-js)]
+        ^js emoji-reactions (.-emojiReactions response-js)
+        ^js invitations (.-invitations response-js)]
     (cond
       (seq installations)
       (let [installations-clj (types/js->clj installations)]
@@ -68,7 +74,14 @@
         (js-delete response-js "emojiReactions")
         (fx/merge cofx
                   {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
-                  (handle-reactions (map data-store.reactions/<-rpc reactions)))))))
+                  (handle-reactions (map data-store.reactions/<-rpc reactions))))
+
+      (seq invitations)
+      (let [invitations (types/js->clj invitations)]
+        (js-delete response-js "invitations")
+        (fx/merge cofx
+                  {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (handle-invitations (map data-store.invitations/<-rpc invitations)))))))
 
 (fx/defn remove-hash
   [{:keys [db] :as cofx} envelope-hash]

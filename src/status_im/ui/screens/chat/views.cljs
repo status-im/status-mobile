@@ -28,7 +28,11 @@
             [status-im.ui.components.invite.chat :as invite.chat]
             [status-im.ui.screens.chat.components.accessory :as accessory]
             [status-im.ui.screens.chat.components.input :as components]
-            [status-im.ui.screens.chat.message.datemark :as message-datemark]))
+            [status-im.ui.screens.chat.message.datemark :as message-datemark]
+            [status-im.ui.components.toolbar :as toolbar]
+            [quo.core :as quo]
+            [clojure.string :as string]
+            [status-im.constants :as constants]))
 
 (defn topbar []
   (let [current-chat @(re-frame/subscribe [:current-chat/metadata])]
@@ -42,6 +46,19 @@
                                                 {:content (fn []
                                                             [sheets/actions current-chat])
                                                  :height  256}])}]}]))
+
+(defn invitation-requests [chat-id admins]
+  (let [current-pk @(re-frame/subscribe [:multiaccount/public-key])
+        admin? (get admins current-pk)]
+    (when admin?
+      (let [invitations @(re-frame/subscribe [:group-chat/pending-invitations-by-chat-id chat-id])]
+        (when (seq invitations)
+          [react/touchable-highlight
+           {:on-press            #(re-frame/dispatch [:navigate-to :group-chat-invite])
+            :accessibility-label :invitation-requests-button}
+           [react/view {:style (style/add-contact)}
+            [react/text {:style style/add-contact-text}
+             (i18n/label :t/group-membership-request)]]])))))
 
 (defn add-contact-bar [public-key]
   (let [added? @(re-frame/subscribe [:contacts/contact-added? public-key])]
@@ -58,6 +75,7 @@
 (defn chat-intro [{:keys [chat-id
                           chat-name
                           group-chat
+                          invitation-admin
                           contact-name
                           public?
                           color
@@ -78,6 +96,7 @@
    ;; Description section
    (if group-chat
      [chat.group/group-chat-description-container {:chat-id chat-id
+                                                   :invitation-admin invitation-admin
                                                    :loading-messages? loading-messages?
                                                    :chat-name chat-name
                                                    :public? public?
@@ -95,7 +114,7 @@
     (chat-intro (assoc opts :contact-name (first contact-names)))))
 
 (defn chat-intro-header-container
-  [{:keys [group-chat
+  [{:keys [group-chat invitation-admin
            might-have-join-time-messages?
            color chat-id chat-name
            public?]}
@@ -108,6 +127,7 @@
    (let [opts
          {:chat-id chat-id
           :group-chat group-chat
+          :invitation-admin invitation-admin
           :chat-name chat-name
           :public? public?
           :color color
@@ -136,7 +156,7 @@
 
 (defn messages-view
   [{:keys [chat bottom-space pan-responder space-keeper]}]
-  (let [{:keys [group-chat chat-id public?]} chat
+  (let [{:keys [group-chat chat-id public? invitation-admin]} chat
 
         messages           @(re-frame/subscribe [:chats/current-chat-messages-stream])
         no-messages?       @(re-frame/subscribe [:chats/current-chat-no-messages?])
@@ -147,7 +167,7 @@
       {:key-fn                       #(or (:message-id %) (:value %))
        :ref                          #(reset! messages-list-ref %)
        :header                       (when (and group-chat (not public?))
-                                       [chat.group/group-chat-footer chat-id])
+                                       [chat.group/group-chat-footer chat-id invitation-admin])
        :footer                       [:<>
                                       [chat-intro-header-container chat no-messages?]
                                       (when (and (not group-chat) (not public?))
@@ -188,6 +208,41 @@
     [audio-message/audio-message-view]
     nil))
 
+(defn invitation-bar [chat-id]
+  (let [{:keys [state chat-id] :as invitation}
+        (first @(re-frame/subscribe [:group-chat/invitations-by-chat-id chat-id]))
+        {:keys [retry? message]} @(re-frame/subscribe [:chats/current-chat-membership])]
+    [react/view {:margin-horizontal 16 :margin-top 10}
+     (cond
+       (and invitation (= constants/invitation-state-requested state) (not retry?))
+       [toolbar/toolbar {:show-border? true
+                         :center
+                         [quo/button
+                          {:type     :secondary
+                           :disabled true}
+                          (i18n/label :t/request-pending)]}]
+
+       (and invitation (= constants/invitation-state-rejected state) (not retry?))
+       [toolbar/toolbar {:show-border? true
+                         :right
+                         [quo/button
+                          {:type     :secondary
+                           :on-press #(re-frame/dispatch [:group-chats.ui/membership-retry])}
+                          (i18n/label :t/mailserver-retry)]
+                         :left
+                         [quo/button
+                          {:type     :secondary
+                           :on-press #(re-frame/dispatch [:group-chats.ui/remove-chat-confirmed chat-id])}
+                          (i18n/label :t/remove-group)]}]
+       :else
+       [toolbar/toolbar {:show-border? true
+                         :center
+                         [quo/button
+                          {:type :secondary
+                           :disabled (string/blank? message)
+                           :on-press #(re-frame/dispatch [:send-group-chat-membership-request])}
+                          (i18n/label :t/request-membership)]}])]))
+
 (defn chat []
   (let [bottom-space   (reagent/atom 0)
         panel-space    (reagent/atom 0)
@@ -220,18 +275,23 @@
                            (when panel
                              (js/setTimeout #(react/dismiss-keyboard!) 100)))]
     (fn []
-      (let [{:keys [chat-id show-input? group-chat] :as current-chat}
+      (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as current-chat}
             @(re-frame/subscribe [:chats/current-chat])]
         [react/view {:style {:flex 1}}
          [connectivity/connectivity
           [topbar]
           [react/view {:style {:flex 1}}
-           (when-not group-chat
+           (if group-chat
+             [invitation-requests chat-id admins]
              [add-contact-bar chat-id])
            [messages-view {:chat          current-chat
                            :bottom-space  (max @bottom-space @panel-space)
                            :pan-responder pan-responder
                            :space-keeper  space-keeper}]]]
+         (when (and group-chat invitation-admin)
+           [accessory/view {:y               position-y
+                            :on-update-inset on-update}
+            [invitation-bar chat-id]])
          (when show-input?
            [accessory/view {:y               position-y
                             :pan-state       pan-state

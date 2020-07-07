@@ -1230,5 +1230,18 @@
     "update-to-see-sticker": "Update to latest version to see a nice sticker here!",
     "nickname": "Nickname",
     "add-nickname": "Add a nickname (optional)",
-    "nickname-description": "Nicknames help you identify others in Status.\nOnly you can see the nicknames you’ve added"
+    "nickname-description": "Nicknames help you identify others in Status.\nOnly you can see the nicknames you’ve added",
+    "accept": "Accept",
+    "group-invite": "Group invite",
+    "group-invite-link": "Group invite link",
+    "pending-invitations": "Pending membership requests",
+    "empty-pending-invitations-descr": "People who wish to join the group\nvia an invite link will appear here",
+    "introduce-yourself": "Introduce yourself with a brief message",
+    "request-pending": "Request pending…",
+    "membership-declined": "Membership request was declined",
+    "remove-group": "Remove group",
+    "request-membership": "Request membership",
+    "membership-description": "Group membership requires you to be accepted by the group admin",
+    "group-membership-request": "Group membership request",
+    "members-limit-reached": "Members limit reached"
 }

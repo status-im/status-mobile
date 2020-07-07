@@ -13,7 +13,8 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.acquisition.core :as acquisition]
-            [status-im.wallet.choose-recipient.core :as choose-recipient]))
+            [status-im.wallet.choose-recipient.core :as choose-recipient]
+            [status-im.group-chats.core :as group-chats]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link
@@ -22,10 +23,11 @@
 (def domains {:external "https://join.status.im"
               :internal "status-im:/"})
 
-(def links {:public-chat "%s/%s"
+(def links {:public-chat  "%s/%s"
             :private-chat "%s/p/%s"
-            :user        "%s/u/%s"
-            :browse      "%s/b/%s"})
+            :group-chat   "%s/g/%s"
+            :user         "%s/u/%s"
+            :browse       "%s/b/%s"})
 
 (defn generate-link [link-type domain-type param]
   (gstring/format (get links link-type)
@@ -43,6 +45,10 @@
 (fx/defn handle-browse [cofx {:keys [url]}]
   (log/info "universal-links: handling browse" url)
   {:browser/show-browser-selection url})
+
+(fx/defn handle-group-chat [cofx params]
+  (log/info "universal-links: handling group" params)
+  (group-chats/create-from-link cofx params))
 
 (fx/defn handle-private-chat [{:keys [db] :as cofx} {:keys [chat-id]}]
   (log/info "universal-links: handling private chat" chat-id)
@@ -93,6 +99,7 @@
   {:events [::match-value]}
   [cofx url {:keys [type] :as data}]
   (case type
+    :group-chat   (handle-group-chat cofx data)
     :public-chat  (handle-public-chat cofx data)
     :private-chat (handle-private-chat cofx data)
     :contact      (handle-view-profile cofx data)

@@ -7,7 +7,8 @@
             [status-im.utils.utils :as utils]
             [status-im.ethereum.core :as ethereum]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
-            [status-im.utils.fx :as fx]))
+            [status-im.utils.fx :as fx]
+            [status-im.group-chats.core :as group-chats]))
 
 (fx/defn scan-qr-code
   {:events [::scan-code]}
@@ -50,6 +51,9 @@
   (when (seq topic)
     (chat/start-public-chat cofx topic {})))
 
+(fx/defn handle-group-chat [cofx params]
+  (group-chats/create-from-link cofx params))
+
 (fx/defn handle-view-profile
   [{:keys [db] :as cofx} {:keys [public-key]}]
   (let [own (new-chat.db/own-public-key? db public-key)]
@@ -79,6 +83,7 @@
   [cofx {:keys [type] :as data}]
   (case type
     :public-chat  (handle-public-chat cofx data)
+    :group-chat   (handle-group-chat cofx data)
     :private-chat (handle-private-chat cofx data)
     :contact      (handle-view-profile cofx data)
     :browser      (handle-browse cofx data)

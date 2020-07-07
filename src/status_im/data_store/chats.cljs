@@ -89,7 +89,8 @@
                                 :unviewedMessagesCount :unviewed-messages-count
                                 :lastMessage :last-message
                                 :active :is-active
-                                :lastClockValue :last-clock-value})
+                                :lastClockValue :last-clock-value
+                                :invitationAdmin :invitation-admin})
       (update :last-message #(when % (messages/<-rpc %)))
       (dissoc :chatType :members)))
 

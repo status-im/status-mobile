@@ -10,7 +10,9 @@
             [status-im.ethereum.resolver :as resolver]
             [status-im.ethereum.stateofus :as stateofus]
             [cljs.spec.alpha :as spec]
-            [status-im.ethereum.core :as ethereum]))
+            [status-im.ethereum.core :as ethereum]
+            [status-im.utils.db :as utils.db]
+            [status-im.utils.http :as http]))
 
 (def ethereum-scheme "ethereum:")
 
@@ -27,6 +29,9 @@
 (def browser-extractor {[#"(.*)" :domain] {""  :browser
                                            "/" :browser}})
 
+(def group-chat-extractor {[#"(.*)" :params] {""  :group-chat
+                                              "/" :group-chat}})
+
 (def eip-extractor {#{[:prefix "-" :address]
                       [:address]}
                     {#{["@" :chain-id] ""}
@@ -38,13 +43,19 @@
                                   "b/"                    browser-extractor
                                   "browser/"              browser-extractor
                                   ["p/" :chat-id]         :private-chat
+                                  "g/"                    group-chat-extractor
                                   ["u/" :user-id]         :user
                                   ["user/" :user-id]      :user
                                   ["referral/" :referrer] :referrals}
                  ethereum-scheme eip-extractor}])
 
+(defn parse-query-params
+  [url]
+  (let [url (goog.Uri. url)]
+    (http/query->map (.getQuery url))))
+
 (defn match-uri [uri]
-  (assoc (bidi/match-route routes uri) :uri uri))
+  (assoc (bidi/match-route routes uri) :uri uri :query-params (parse-query-params uri)))
 
 (defn- ens-name-parse [contact-identity]
   (when (string? contact-identity)
@@ -86,6 +97,21 @@
      :topic chat-id}
     {:type  :public-chat
      :error :invalid-topic}))
+
+(defn match-group-chat [{:strs [a a1 a2]}]
+  (let [[admin-pk encoded-chat-name chat-id] [a a1 a2]
+        chat-id-parts (when (not (string/blank? chat-id)) (string/split chat-id #"-"))
+        chat-name (when (not (string/blank? encoded-chat-name)) (js/decodeURI encoded-chat-name))]
+    (if (and (not (string/blank? chat-id)) (not (string/blank? admin-pk)) (not (string/blank? chat-name))
+             (> (count chat-id-parts) 1)
+             (not (string/blank? (first chat-id-parts)))
+             (utils.db/valid-public-key? admin-pk)
+             (utils.db/valid-public-key? (last chat-id-parts)))
+      {:type             :group-chat
+       :chat-id          chat-id
+       :invitation-admin admin-pk
+       :chat-name        chat-name}
+      {:error :invalid-group-chat-data})))
 
 (defn match-private-chat-async [chain {:keys [chat-id]} cb]
   (match-contact-async chain
@@ -143,7 +169,7 @@
    :referrer referrer})
 
 (defn handle-uri [chain uri cb]
-  (let [{:keys [handler route-params]} (match-uri uri)]
+  (let [{:keys [handler route-params query-params]} (match-uri uri)]
     (log/info "[router] uri " uri " matched " handler " with " route-params)
     (cond
       (= handler :public-chat)
@@ -160,6 +186,9 @@
 
       (= handler :private-chat)
       (match-private-chat-async chain route-params cb)
+
+      (= handler :group-chat)
+      (cb (match-group-chat query-params))
 
       (spec/valid? :global/public-key uri)
       (match-contact-async chain {:user-id uri} cb)

@@ -115,7 +115,9 @@
 (reg-root-key-sub :group-chat-profile/profile :group-chat-profile/profile)
 (reg-root-key-sub :selected-participants :selected-participants)
 (reg-root-key-sub :chat/inputs :chat/inputs)
+(reg-root-key-sub :chat/memberships :chat/memberships)
 (reg-root-key-sub :camera-roll-photos :camera-roll-photos)
+(reg-root-key-sub :group-chat/invitations :group-chat/invitations)
 
 ;;browser
 (reg-root-key-sub :browsers :browser/browsers)
@@ -603,6 +605,13 @@
    (get-in inputs [chat-id :input-text])))
 
 (re-frame/reg-sub
+ :chats/current-chat-membership
+ :<- [:chats/current-chat-id]
+ :<- [:chat/memberships]
+ (fn [[chat-id memberships]]
+   (get memberships chat-id)))
+
+(re-frame/reg-sub
  :chats/current-chat
  :<- [:chats/current-raw-chat]
  :<- [:multiaccount/public-key]
@@ -626,7 +635,7 @@
  :<- [:chats/current-raw-chat]
  (fn [current-chat]
    (select-keys current-chat
-                [:public? :group-chat :chat-id :chat-name :color])))
+                [:public? :group-chat :chat-id :chat-name :color :invitation-admin])))
 
 (re-frame/reg-sub
  :current-chat/one-to-one-chat?
@@ -815,6 +824,19 @@
  (fn [[chat my-public-key]]
    {:joined? (group-chats.db/joined? my-public-key chat)
     :inviter-pk (group-chats.db/get-inviter-pk my-public-key chat)}))
+
+(re-frame/reg-sub
+ :group-chat/invitations-by-chat-id
+ :<- [:group-chat/invitations]
+ (fn [invitations [_ chat-id]]
+   (filter #(= (:chat-id %) chat-id) (vals invitations))))
+
+(re-frame/reg-sub
+ :group-chat/pending-invitations-by-chat-id
+ (fn [[_ chat-id] _]
+   [(re-frame/subscribe [:group-chat/invitations-by-chat-id chat-id])])
+ (fn [[invitations]]
+   (filter #(= constants/invitation-state-requested (:state %)) invitations)))
 
 (re-frame/reg-sub
  :chats/transaction-status

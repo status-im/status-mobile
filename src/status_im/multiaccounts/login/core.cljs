@@ -29,7 +29,9 @@
             [status-im.wallet.core :as wallet]
             [status-im.wallet.prices :as prices]
             [status-im.acquisition.core :as acquisition]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.data-store.invitations :as data-store.invitations]
+            [status-im.waku.core :as waku]))
 
 (re-frame/reg-fx
  ::login
@@ -107,6 +109,14 @@
                          all-stored-browsers)]
     {:db (assoc db :browser/browsers browsers)}))
 
+(fx/defn initialize-invitations
+  {:events [::initialize-invitations]}
+  [{:keys [db]} invitations]
+  {:db (assoc db :group-chat/invitations (reduce (fn [acc {:keys [id] :as inv}]
+                                                   (assoc acc id (data-store.invitations/<-rpc inv)))
+                                                 {}
+                                                 invitations))})
+
 (fx/defn initialize-web3-client-version
   {:events [::initialize-web3-client-version]}
   [{:keys [db]} node-version]
@@ -158,6 +168,11 @@
 (fx/defn initialize-appearance [cofx]
   {::multiaccounts/switch-theme (get-in cofx [:db :multiaccount :appearance])})
 
+(fx/defn get-group-chat-invitations [cofx]
+  {::json-rpc/call
+   [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) "getGroupChatInvitations")
+     :on-success #(re-frame/dispatch [::initialize-invitations %])}]})
+
 (fx/defn get-settings-callback
   {:events [::get-settings-callback]}
   [{:keys [db] :as cofx} settings]
@@ -190,6 +205,7 @@
               (contact/initialize-contacts)
               (stickers/init-stickers-packs)
               (mobile-network/on-network-status-change)
+              (get-group-chat-invitations)
               (logging/set-log-level (:log-level multiaccount))
               (multiaccounts/switch-preview-privacy-mode-flag))))
 

@@ -31,6 +31,11 @@
                 emoji-reaction-sad         (:sad resources/reactions)
                 emoji-reaction-angry       (:angry resources/reactions)})
 
+(def invitation-state-unknown 0)
+(def invitation-state-requested 1)
+(def invitation-state-rejected  2)
+(def invitation-state-approved  3)
+
 (def message-type-one-to-one 1)
 (def message-type-public-group 2)
 (def message-type-private-group 3)

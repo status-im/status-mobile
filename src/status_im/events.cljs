@@ -67,7 +67,8 @@
             status-im.http.core
             status-im.ui.screens.profile.events
             status-im.chat.models.images
-            status-im.ui.screens.privacy-and-security-settings.events))
+            status-im.ui.screens.privacy-and-security-settings.events
+            [status-im.data-store.invitations :as data-store.invitations]))
 
 ;; init module
 (handlers/register-handler-fx
@@ -776,14 +777,16 @@
  (fn [_ [_ err]]
    (log/error :send-status-message-error err)))
 
-(fx/defn handle-update [cofx {:keys [chats messages emojiReactions] :as response}]
+(fx/defn handle-update [cofx {:keys [chats messages emojiReactions invitations]}]
   (let [chats           (map data-store.chats/<-rpc chats)
         messages        (map data-store.messages/<-rpc messages)
         message-fxs     (map chat.message/receive-one messages)
         emoji-reactions (map data-store.reactions/<-rpc emojiReactions)
         emoji-react-fxs (map chat.reactions/receive-one emoji-reactions)
+        invitations-fxs [(group-chats/handle-invitations
+                          (map data-store.invitations/<-rpc invitations))]
         chat-fxs        (map #(chat/ensure-chat (dissoc % :unviewed-messages-count)) chats)]
-    (apply fx/merge cofx (concat chat-fxs message-fxs emoji-react-fxs))))
+    (apply fx/merge cofx (concat chat-fxs message-fxs emoji-react-fxs invitations-fxs))))
 
 (handlers/register-handler-fx
  :transport/message-sent
@@ -802,6 +805,11 @@
 
 (fx/defn retraction-sent
   {:events [:transport/retraction-sent]}
+  [cofx response]
+  (handle-update cofx response))
+
+(fx/defn invitation-sent
+  {:events [:transport/invitation-sent]}
   [cofx response]
   (handle-update cofx response))
 

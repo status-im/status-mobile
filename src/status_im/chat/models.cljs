@@ -110,10 +110,12 @@
 
 (defn map-chats [{:keys [db] :as cofx}]
   (fn [val]
-    (merge
-     (or (get (:chats db) (:chat-id val))
-         (create-new-chat (:chat-id val) cofx))
-     val)))
+    (assoc
+     (merge
+      (or (get (:chats db) (:chat-id val))
+          (create-new-chat (:chat-id val) cofx))
+      val)
+     :invitation-admin (:invitation-admin val))))
 
 (defn filter-chats [db]
   (fn [val]

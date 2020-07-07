@@ -27,6 +27,8 @@
     {:name      :group-chat-profile
      :insets    {:top false}
      :component profile.group-chat/group-chat-profile}
+    {:name      :group-chat-invite
+     :component profile.group-chat/group-chat-invite}
     {:name      :stickers
      :component stickers/packs}
     {:name      :stickers-pack

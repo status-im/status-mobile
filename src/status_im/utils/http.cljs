@@ -133,3 +133,23 @@
 
 (defn url-sanitized? [uri]
   (not (nil? (re-find #"^(https:)([/|.|\w|\s|-])*\.(?:jpg|svg|png)$" uri))))
+
+(defn- split-param [param]
+  (->
+   (string/split param #"=")
+   (concat (repeat ""))
+   (->>
+    (take 2))))
+
+(defn- url-decode
+  [string]
+  (some-> string str (string/replace #"\+" "%20") (js/decodeURIComponent)))
+
+(defn query->map
+  [qstr]
+  (when-not (string/blank? qstr)
+    (some->> (string/split qstr #"&")
+             seq
+             (mapcat split-param)
+             (map url-decode)
+             (apply hash-map))))
