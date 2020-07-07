@@ -139,10 +139,6 @@
                     :name     "Tronix"
                     :address  "0xf230b790e05390fc8295f4d3f60332c93bed42e2"
                     :decimals 6}
-                   {:symbol   :ETHOS
-                    :name     "Ethos"
-                    :address  "0x5af2be193a6abca9c8817001f45744777db30756"
-                    :decimals 8}
                    {:symbol   :RDN
                     :name     "Raiden Token"
                     :address  "0x255aa6df07540cb5d3d297f0d0d4d84cb52bc8e6"
@@ -356,7 +352,7 @@
                     :name     "district0x Network Token"
                     :address  "0x0abdace70d3790235af448c88547603b945604ea"
                     :decimals 18}
-                   {:symbol   :٨
+                   {:symbol   :DCN
                     :name     "Dentacoin"
                     :address  "0x08d32b0da63e2c3bcf8019c9c5d849d7a9d791e6"
                     :decimals 0}
@@ -429,7 +425,7 @@
                     :address  "0x80046305aaab08f6033b56a360c184391165dc2d"
                     :decimals 18}
                    {:symbol   :USDC
-                    :name     "USD//C"
+                    :name     "USD Coin"
                     :address  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
                     :decimals 6}
                    {:symbol   :LPT
@@ -500,7 +496,7 @@
                    {:address  "0x80fB784B7eD66730e8b1DBd9820aFD29931aab03"
                     :decimals 18
                     :symbol   :LEND
-                    :name     "EHTLend"}
+                    :name     "EthLend Token"}
                    {:address  "0xA15C7Ebe1f07CaF6bFF097D8a589fb8AC49Ae5B3"
                     :decimals 18
                     :symbol   :NPXS
@@ -508,15 +504,15 @@
                    {:address  "0xA4e8C3Ec456107eA67d3075bF9e3DF3A75823DB0"
                     :decimals 18
                     :symbol   :LOOM
-                    :name     "Loom Network"}
+                    :name     "LoomToken"}
                    {:address  "0x0e0989b1f9B8A38983c2BA8053269Ca62Ec9B195"
                     :decimals 8
                     :symbol   :POE
-                    :name     "Po.et Tokens"}
+                    :name     "Po.et"}
                    {:address  "0x5732046A883704404F284Ce41FfADd5b007FD668"
                     :decimals 18
                     :symbol   :BLZ
-                    :name     "Bluzelle"}
+                    :name     "Bluzelle Token"}
                    {:address  "0xFA1a856Cfa3409CFa145Fa4e20Eb270dF3EB21ab"
                     :decimals 18
                     :symbol   :IOST
@@ -524,19 +520,15 @@
                    {:address  "0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671"
                     :decimals 18
                     :symbol   :NMR
-                    :name     "Numerai"}
+                    :name     "Numeraire"}
                    {:address  "0x8E870D67F660D95d5be530380D0eC0bd388289E1"
                     :decimals 18
                     :symbol   :PAX
-                    :name     "Paxos Standard (PAX)"}
-                   {:address  "0x08d32b0da63e2C3bcF8019c9c5d849d7a9d791e6"
-                    :decimals 0
-                    :symbol   :DCN
-                    :name     "Dentacoin"}
+                    :name     "Paxos Standard"}
                    {:address  "0xEA26c4aC16D4a5A106820BC8AEE85fd0b7b2b664"
                     :decimals 18
                     :symbol   :QKC
-                    :name     "QuarkChain"}
+                    :name     "QuarkChain Token"}
                    {:address  "0x45804880De22913dAFE09f4980848ECE6EcbAf78"
                     :decimals 18
                     :symbol   :PAXG
@@ -552,11 +544,11 @@
                    {:address  "0x607F4C5BB672230e8672085532f7e901544a7375"
                     :decimals 9
                     :symbol   :RLC
-                    :name     "IEx.ec"}
+                    :name     "iEx.ec Network Token"}
                    {:address  "0x8400D94A5cb0fa0D041a3788e395285d61c9ee5e"
                     :decimals 8
                     :symbol   :UBT
-                    :name     "Unibright"}
+                    :name     "UniBright"}
                    {:address  "0x4f3AfEC4E5a3F2A6a1A411DEF7D7dFe50eE057bF"
                     :decimals 9
                     :symbol   :DGX
@@ -564,7 +556,7 @@
                    {:address  "0xEA38eAa3C86c8F9B751533Ba2E562deb9acDED40"
                     :decimals 18
                     :symbol   :FUEL
-                    :name     "Etherparty FUEL"}
+                    :name     "Fuel Token"}
                    {:address  "0x00000100F2A2bd000715001920eB70D229700085"
                     :decimals 18
                     :symbol   :TCAD
@@ -580,7 +572,7 @@
                    {:address  "0x0E8d6b471e332F140e7d9dbB99E5E3822F728DA6"
                     :decimals 18
                     :symbol   :ABYSS
-                    :name     "The Abyss"}
+                    :name     "ABYSS"}
                    {:address  "0xB62132e35a6c13ee1EE0f84dC5d40bad8d815206"
                     :decimals 18
                     :symbol   :NEXO
@@ -608,11 +600,11 @@
                    {:address  "0x9992eC3cF6A55b00978cdDF2b27BC6882d88D1eC"
                     :decimals 18
                     :symbol   :POLY
-                    :name     "Polymath Network"}
+                    :name     "Polymath"}
                    {:address  "0x20F7A3DdF244dc9299975b4Da1C39F8D5D75f05A"
                     :decimals 6
                     :symbol   :SPN
-                    :name     "Sapien"}
+                    :name     "Sapien Network"}
                    {:address  "0x1a7a8BD9106F2B8D977E08582DC7d24c723ab0DB"
                     :decimals 18
                     :symbol   :APPC
@@ -620,7 +612,7 @@
                    {:address  "0xdAC17F958D2ee523a2206206994597C13D831ec7"
                     :decimals 6
                     :symbol   :USDT
-                    :name     "USD Tether (erc20)"}
+                    :name     "Tether USD"}
                    {:address  "0xa3d58c4E56fedCae3a7c43A725aeE9A71F0ece4e"
                     :decimals 18
                     :symbol   :MET
@@ -628,11 +620,11 @@
                    {:address  "0x6f259637dcD74C767781E37Bc6133cd6A68aa161"
                     :decimals 18
                     :symbol   :HT
-                    :name     "Huobi Token"}
+                    :name     "HuobiToken"}
                    {:address  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
                     :decimals 18
                     :symbol   :WETH
-                    :name     "WETH"}
+                    :name     "Wrapped Ether"}
                    {:address  "0x8f3470A7388c05eE4e7AF3d01D8C722b0FF52374"
                     :decimals 18
                     :symbol   :VERI
@@ -648,7 +640,7 @@
                    {:address  "0xB24754bE79281553dc1adC160ddF5Cd9b74361a4"
                     :decimals 9
                     :symbol   :XRL
-                    :name     "XRL"}
+                    :name     "RIALTO"}
                    {:address  "0xC011A72400E58ecD99Ee497CF89E3775d4bd732F"
                     :decimals 18
                     :symbol   :SNX
@@ -656,7 +648,7 @@
                    {:address  "0x07e3c70653548B04f0A75970C1F81B4CBbFB606f"
                     :decimals 18
                     :symbol   :DLT
-                    :name     "Agrello"}
+                    :name     "Delta"}
                    {:address  "0x8207c1FfC5B6804F6024322CcF34F29c3541Ae26"
                     :decimals 18
                     :symbol   :OGN
@@ -667,8 +659,8 @@
                     :name     "Decision Token"}
                    {:address  "0x286BDA1413a2Df81731D4930ce2F862a35A609fE"
                     :decimals 18
-                    :symbol   :WABI
-                    :name     "Tael"}
+                    :symbol   :WaBi
+                    :name     "WaBi"}
                    {:address  "0xE5a3229CCb22b6484594973A03a3851dCd948756"
                     :decimals 18
                     :symbol   :RAE
@@ -688,7 +680,7 @@
                    {:address  "0xB98d4C97425d9908E66E53A6fDf673ACcA0BE986"
                     :decimals 18
                     :symbol   :ABT
-                    :name     "ArcBlock Token"}
+                    :name     "ArcBlock"}
                    {:address  "0x81c9151de0C8bafCd325a57E3dB5a5dF1CEBf79c"
                     :decimals 18
                     :symbol   :DAT
@@ -697,14 +689,6 @@
                     :decimals 18
                     :symbol   :EKO
                     :name     "EchoLink"}
-                   {:address  "0x2C4e8f2D746113d0696cE89B35F0d8bF88E0AEcA"
-                    :decimals 18
-                    :symbol   :OST
-                    :name     "Simple Token 'OST'"}
-                   {:address  "0xc92D6E3E64302C59d734f3292E2A13A13D7E1817"
-                    :decimals 8
-                    :symbol   :FXC
-                    :name     "FUTURAX"}
                    {:address  "0x4a57E687b9126435a9B19E4A802113e266AdeBde"
                     :decimals 18
                     :symbol   :FXC
@@ -712,21 +696,21 @@
                    {:address  "0xC86D054809623432210c107af2e3F619DcFbf652"
                     :decimals 18
                     :symbol   :UPP
-                    :name     "Sentinel Protocol"}
+                    :name     "SENTINEL PROTOCOL"}
                    {:address  "0x5Af2Be193a6ABCa9c8817001F45744777Db30756"
                     :decimals 8
-                    :symbol   :BQX
-                    :name     "Bitquence"}
+                    :symbol   :VGX
+                    :name     "Voyager"}
                    {:address  "0x69b148395ce0015c13e36bffbad63f49ef874e03"
                     :symbol   :DTA
-                    :name     "Data"
+                    :name     "Data Token"
                     :decimals 18}
                    {:address  "0x57ab1e02fee23774580c119740129eac7081e9d3"
-                    :symbol   :SUSD
+                    :symbol   :sUSD
                     :name     "Synth sUSD"
                     :decimals 18}
                    {:address  "0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643"
-                    :symbol   :CDAI
+                    :symbol   :cDAI
                     :name     "Compound Dai"
                     :decimals 8}
                    {:address  "0xba11d00c5f74255f56a5e366f4f77f5a186d7f55"

@@ -88,22 +88,23 @@
 
 (defn- validate-token-symbol!
   [{:keys [address symbol]}]
-  (json-rpc/eth-call
-   {:contract address
-    :method "symbol()"
-    :outputs ["string"]
-    :on-success
-    (fn [[contract-symbol]]
-      ;;NOTE(goranjovic): skipping check if field not set in contract
-      (when (and (seq contract-symbol)
-                 (not= (clojure.core/name symbol) contract-symbol))
-        (let [message (i18n/label :t/token-auto-validate-symbol-error
-                                  {:symbol   symbol
-                                   :expected (clojure.core/name symbol)
-                                   :actual   contract-symbol
-                                   :address  address})]
-          (log/warn message)
-          (utils.utils/show-popup (i18n/label :t/warning) message))))}))
+  (when-not (= symbol :DCN) ;; ignore this symbol because it has weird symbol
+    (json-rpc/eth-call
+     {:contract address
+      :method "symbol()"
+      :outputs ["string"]
+      :on-success
+      (fn [[contract-symbol]]
+        ;;NOTE(goranjovic): skipping check if field not set in contract
+        (when (and (seq contract-symbol)
+                   (not= (clojure.core/name symbol) contract-symbol))
+          (let [message (i18n/label :t/token-auto-validate-symbol-error
+                                    {:symbol   symbol
+                                     :expected (clojure.core/name symbol)
+                                     :actual   contract-symbol
+                                     :address  address})]
+            (log/warn message)
+            (utils.utils/show-popup (i18n/label :t/warning) message))))})))
 
 (defn- validate-token-decimals!
   [{:keys [address symbol decimals nft?]}]
@@ -124,13 +125,24 @@
             (log/warn message)
             (utils.utils/show-popup (i18n/label :t/warning) message))))})))
 
+(defn dups [seq]
+  (for [[id freq] (frequencies seq)
+        :when (> freq 1)]
+    id))
+
 (re-frame/reg-fx
  :wallet/validate-tokens
- (fn [tokens]
-   (doseq [token tokens]
-     (validate-token-decimals! token)
-     (validate-token-symbol! token)
-     (validate-token-name! token))))
+ (fn [[tokens all-default-tokens]]
+   (let [symb-dups (dups (map :symbol all-default-tokens))
+         addr-dups (dups (map :address all-default-tokens))]
+     (when (seq symb-dups)
+       (utils.utils/show-popup (i18n/label :t/warning) (str "Duplicated tokens symbols" symb-dups)))
+     (when (seq addr-dups)
+       (utils.utils/show-popup (i18n/label :t/warning) (str "Duplicated tokens addresses" addr-dups)))
+     (doseq [token (vals tokens)]
+       (validate-token-decimals! token)
+       (validate-token-symbol! token)
+       (validate-token-name! token)))))
 
 (defn- clean-up-results
   "remove empty balances
@@ -188,13 +200,14 @@
 
 (fx/defn initialize-tokens
   [{:keys [db]} custom-tokens]
-  (let [default-tokens (utils.core/index-by :address (get tokens/all-default-tokens
-                                                          (ethereum/chain-keyword db)))
+  (let [all-default-tokens (get tokens/all-default-tokens
+                                (ethereum/chain-keyword db))
+        default-tokens (utils.core/index-by :address all-default-tokens)
         all-tokens     (merge default-tokens (rpc->token custom-tokens))]
     (merge
      {:db (assoc db :wallet/all-tokens all-tokens)}
      (when config/erc20-contract-warnings-enabled?
-       {:wallet/validate-tokens default-tokens}))))
+       {:wallet/validate-tokens [default-tokens all-default-tokens]}))))
 
 (fx/defn update-balances
   [{{:keys [network-status :wallet/all-tokens
