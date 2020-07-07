@@ -138,7 +138,7 @@ class AccessKeyButton(RecoverAccessButton):
 class MaybeLaterButton(BaseButton):
     def __init__(self, driver):
         super(MaybeLaterButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Maybe later']")
+        self.locator = self.Locator.accessibility_id("maybe-later")
 
 
 class AddExistingMultiaccountButton(RecoverAccessButton):
@@ -236,7 +236,8 @@ class SignInView(BaseView):
             self.next_button.click()
             self.confirm_your_password_input.set_value(password)
             self.next_button.click()
-        self.lets_go_button.wait_for_visibility_of_element(30)
+        self.maybe_later_button.wait_for_visibility_of_element(30)
+        self.maybe_later_button.click_until_presence_of_element(self.lets_go_button)
         self.lets_go_button.click_until_absense_of_element(self.lets_go_button)
         self.profile_button.wait_for_visibility_of_element(30)
         return self.get_home_view()
@@ -252,13 +253,14 @@ class SignInView(BaseView):
         if keycard:
             keycard_flow = self.keycard_storage_button.click()
             keycard_flow.confirm_pin_and_proceed()
-            self.lets_go_button.wait_for_visibility_of_element(30)
         else:
             recover_access_view.next_button.click()
             recover_access_view.create_password_input.set_value(password)
             recover_access_view.next_button.click()
             recover_access_view.confirm_your_password_input.set_value(password)
-            recover_access_view.next_button.click_until_presence_of_element(self.lets_go_button)
+            recover_access_view.next_button.click_until_presence_of_element(self.maybe_later_button)
+        self.maybe_later_button.wait_for_element(30)
+        self.maybe_later_button.click_until_presence_of_element(self.lets_go_button)
         self.lets_go_button.click()
         self.profile_button.wait_for_visibility_of_element(30)
         return self.get_home_view()

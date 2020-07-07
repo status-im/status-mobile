@@ -29,6 +29,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.next_button.click()
         sign_in.confirm_your_password_input.set_value(common_password)
         sign_in.next_button.click()
+        sign_in.maybe_later_button.click_until_presence_of_element(sign_in.lets_go_button)
         sign_in.lets_go_button.click()
 
         if sign_in.get_public_key_and_username() == public_key:
@@ -49,8 +50,9 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.next_button.click()
         sign_in.confirm_your_password_input.set_value(common_password)
         sign_in.next_button.click()
-        sign_in.lets_go_button.wait_for_element(10)
-        sign_in.lets_go_button.click()
+        for element in sign_in.maybe_later_button, sign_in.lets_go_button:
+            element.wait_for_element(10)
+            element.click()
         home_view = sign_in.get_home_view()
         texts = ['Chat and transact privately with friends',
                  'Jump into a public chat and meet new people',
