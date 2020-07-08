@@ -477,7 +477,7 @@ class WalletView(BaseView):
                 self.driver.info('Transaction received, balance updated!')
                 return
 
-    def wait_balance_is_changed(self, asset ='ETHro', initial_balance=0, wait_time=300):
+    def wait_balance_is_changed(self, asset ='ETH', initial_balance=0, wait_time=300):
         counter = 0
         while True:
             if counter >= wait_time:

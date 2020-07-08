@@ -144,7 +144,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         home_2.just_fyi('Check that transaction message is fetched from offline and sign transaction')
         profile_2.airplane_mode_button.click()
-        home_2.connection_status.wait_for_invisibility_of_element(30)
+        home_2.connection_status.wait_for_invisibility_of_element(60)
         home_2.get_chat(recipient_username).click()
         chat_2_sender_message = chat_2.chat_element_by_text('↑ Outgoing transaction')
         if not chat_2_sender_message.is_element_displayed():
@@ -160,7 +160,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_2.toggle_airplane_mode()
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15, token=True)
         chat_2.toggle_airplane_mode()
-        chat_2.connection_status.wait_for_invisibility_of_element(30)
+        chat_2.connection_status.wait_for_invisibility_of_element(60)
         if chat_2_sender_message.transaction_status.text != 'Confirmed':
             self.errors.append('Wrong state is shown for outgoing transaction: "Confirmed" is expected, in fact'
                                ' %s ' % chat_2_sender_message.transaction_status.text)
