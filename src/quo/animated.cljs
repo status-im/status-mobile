@@ -103,13 +103,13 @@
             else-node))))
 
 (defn block [opts]
-  (.block ^js animated (clj->js opts)))
+  (.block ^js animated (to-array opts)))
 
 (defn interpolate [anim-value config]
   (.interpolate ^js animated anim-value (clj->js config)))
 
 (defn call* [args callback]
-  (.call ^js animated (clj->js args) callback))
+  (.call ^js animated (to-array args) callback))
 
 (defn timing [clock-value opts config]
   (.timing ^js animated
@@ -126,6 +126,7 @@
 ;; utilities
 
 (def clamp (oget redash "clamp"))
+(def diff-clamp (.-diffClamp ^js redash))
 
 (defn with-spring [config]
   (ocall redash "withSpring" (clj->js config)))
@@ -135,9 +136,6 @@
 
 (defn with-offset [config]
   (.withOffset ^js redash (clj->js config)))
-
-(defn diff-clamp [node min max]
-  (.diffClamp ^js redash node min max))
 
 (defn with-spring-transition [val config]
   (.withSpringTransition ^js redash val (clj->js config)))
@@ -165,11 +163,9 @@
     {:onHandlerStateChange gesture-event
      :onGestureEvent       gesture-event}))
 
-(defn mix [anim-value a b]
-  (.mix ^js redash anim-value a b))
+(def mix (.-mix ^js redash))
 
-(defn mix-color [anim-value a b]
-  (.mixColor ^js redash anim-value a b))
+(def mix-color (.-mixColor ^js redash))
 
 (defn loop* [opts]
   (ocall redash "loop" (clj->js opts)))

@@ -50,7 +50,7 @@ class AssetText(BaseText):
 class AssetFullNameInAssets(BaseText):
     def __init__(self, driver):
         super(AssetFullNameInAssets, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@content-desc="checkbox"]/../android.widget.TextView[1]')
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="checkbox"]/../../android.widget.TextView[1]')
 
 
 class AssetSymbolInAssets(BaseText):

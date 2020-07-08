@@ -13,7 +13,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.utils :as chat.utils]
@@ -580,12 +579,13 @@
   (let [stateofus-username (stateofus/username name)
         s                  (or stateofus-username name)]
     [quo/list-item
-     {:title       s
-      :subtitle    (if subtitle
-                     subtitle
-                     (when stateofus-username stateofus/domain))
-      :on-press    action
-      :icon        :main-icons/username}]))
+     (merge {:title    s
+             :subtitle (if subtitle
+                         subtitle
+                         (when stateofus-username stateofus/domain))
+             :icon     :main-icons/username}
+            (when action
+              {:on-press action}))]))
 
 (defn- name-list [names preferred-name]
   [react/view {:style {:flex 1 :margin-top 16}}
@@ -596,29 +596,34 @@
      [{:style {:color colors/black :text-align :center}}
       (str "\n@" preferred-name)]]]
    [react/view {:style {:flex 1 :margin-top 8}}
-    [react/scroll-view {:style {:flex 1}}
-     [react/view {:style {:flex 1}}
-      (for [name names]
-        (let [action #(do (re-frame/dispatch [::ens/save-preferred-name name])
-                          (re-frame/dispatch [:bottom-sheet/hide]))]
-          ^{:key name}
-          [react/touchable-highlight {:on-press action}
-           [react/view {:style {:flex 1 :flex-direction :row :align-items :center :justify-content :center :margin-right 16}}
-            [react/view {:style {:flex 1}}
-             [name-item {:name name :hide-chevron? true :action action}]]
-            [radio/radio (= name preferred-name)]]]))]]]])
+    (for [name names]
+      (let [action             #(do (re-frame/dispatch [::ens/save-preferred-name name])
+                                    (re-frame/dispatch [:bottom-sheet/hide]))
+            stateofus-username (stateofus/username name)
+            s                  (or stateofus-username name)]
+        ^{:key name}
+        [quo/list-item
+         {:accessibility-label (if (= name preferred-name)
+                                 :primary-username
+                                 :not-primary-username)
+          :title               s
+          :subtitle            (when stateofus-username stateofus/domain)
+          :icon                :main-icons/username
+          :on-press            action
+          :accessory           :radio
+          :active              (= name preferred-name)}]))]])
 
 (views/defview in-progress-registrations [registrations]
   [react/view {:style {:margin-top 8}}
    (for [[hash {:keys [state username]}] registrations
-         :when (or (= state :submitted) (= state :failure))]
+         :when                           (or (= state :submitted) (= state :failure))]
      ^{:key hash}
-     [name-item {:name username
-                 :action (when-not (= state :submitted)
-                           #(re-frame/dispatch [:clear-ens-registration hash]))
+     [name-item {:name     username
+                 :action   (when-not (= state :submitted)
+                             #(re-frame/dispatch [:clear-ens-registration hash]))
                  :subtitle (case state
                              :submitted (i18n/label :t/ens-registration-in-progress)
-                             :failure (i18n/label :t/ens-registration-failure)
+                             :failure   (i18n/label :t/ens-registration-failure)
                              nil)}])])
 
 (views/defview my-name []
@@ -644,8 +649,9 @@
        [react/view {:style {:margin-top 8}}
         (for [name names]
           ^{:key name}
-          [name-item {:name name :action #(re-frame/dispatch [::ens/navigate-to-name name])}])]
-       [react/text {:style {:color colors/gray :font-size 15
+          [name-item {:name   name
+                      :action #(re-frame/dispatch [::ens/navigate-to-name name])}])]
+       [react/text {:style {:color             colors/gray :font-size 15
                             :margin-horizontal 16}}
         (i18n/label :t/ens-no-usernames)])]
     [react/view {:style {:padding-vertical 22 :border-color colors/gray-lighter :border-top-width 1}}
@@ -658,13 +664,11 @@
           :value     preferred-name
           :action-fn #(re-frame/dispatch [:bottom-sheet/show-sheet
                                           {:content
-                                           (fn [] (name-list names preferred-name))
-                                           :content-height
-                                           (+ 72 (* (min 4 (count names)) 64))}])}]])]
-    (let [message {:content {:parsed-text
-                             [{:type "paragraph"
-                               :children [{:literal (i18n/label :t/ens-test-message)}]}]}
-                   :content-type constants/content-type-text
+                                           (fn [] (name-list names preferred-name))}])}]])]
+    (let [message {:content       {:parsed-text
+                                   [{:type     "paragraph"
+                                     :children [{:literal (i18n/label :t/ens-test-message)}]}]}
+                   :content-type  constants/content-type-text
                    :timestamp-str "9:41 AM"}]
       [react/view
        [react/view {:padding-left 72}

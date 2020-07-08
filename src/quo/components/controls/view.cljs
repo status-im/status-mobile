@@ -54,15 +54,21 @@
                      :hold       hold}]]]))))
 
 (defn switch-view [{:keys [transition hold]}]
-  [animated/view {:style (styles/switch-style transition)}
+  [animated/view {:style               (styles/switch-style transition)
+                  :accessibility-label :switch
+                  :accessibility-role  :switch}
    [animated/view {:style (styles/switch-bullet-style transition hold)}]])
 
 (defn radio-view [{:keys [transition hold]}]
-  [animated/view {:style (styles/radio-style transition)}
+  [animated/view {:style (styles/radio-style transition)
+                  :accessibility-label :radio
+                  :accessibility-role  :radio}
    [animated/view {:style (styles/radio-bullet-style transition hold)}]])
 
 (defn checkbox-view [{:keys [transition hold]}]
-  [animated/view {:style (styles/checkbox-style transition)}
+  [animated/view {:style               (styles/checkbox-style transition)
+                  :accessibility-label :checkbox
+                  :accessibility-role  :checkbox}
    [animated/view {:style (styles/check-icon-style transition hold)}
     [icons/tiny-icon :tiny-icons/tiny-check {:color colors/white}]]])
 

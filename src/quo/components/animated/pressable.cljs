@@ -86,12 +86,12 @@
         handle-press         (fn [] (when on-press (on-press)))
         long-gesture-handler (react/callback
                               (fn [^js evt]
-                                (let [state (-> evt .-nativeEvent .-state)]
+                                (let [gesture-state (-> evt .-nativeEvent .-state)]
                                   (when (and on-press-start
-                                             (= state (:began gesture-handler/states)))
+                                             (= gesture-state (:began gesture-handler/states)))
                                     (on-press-start))
                                   (when (and on-long-press
-                                             (= state (:active gesture-handler/states)))
+                                             (= gesture-state (:active gesture-handler/states)))
                                     (on-long-press)
                                     (animated/set-value state (:undetermined gesture-handler/states)))))
                               [on-long-press on-press-start])]
