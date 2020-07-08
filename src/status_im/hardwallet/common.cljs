@@ -373,9 +373,11 @@
 (fx/defn get-application-info
   {:events [:hardwallet/get-application-info]}
   [{:keys [db]} pairing on-card-read]
-  (let [key-uid  (get-in
-                  db [:hardwallet :application-info :key-uid]
-                  (get-in db [:multiaccounts/login :key-uid]))
+  (let [key-uid
+        (when-not (:intro-wizard db)
+          (get-in
+           db [:hardwallet :application-info :key-uid]
+           (get-in db [:multiaccounts/login :key-uid])))
         pairing' (or pairing (some->> key-uid (get-pairing db)))]
     (log/debug "[hardwallet] get-application-info"
                "pairing" pairing')
