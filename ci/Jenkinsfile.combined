@@ -1,4 +1,4 @@
-library 'status-react-jenkins@v1.1.10'
+library 'status-react-jenkins@v1.2.0'
 
 pipeline {
   agent { label 'linux' }
@@ -44,9 +44,10 @@ pipeline {
         //jenkins.copyArts(iose2e)
         jenkins.copyArts(apk)
         jenkins.copyArts(apke2e)
+        sha = "pkg/${utils.pkgFilename('sha256')}"
         dir('pkg') {
           /* generate sha256 checksums for upload */
-          sh "sha256sum * | tee ${utils.pkgFilename(btype, 'sha256')}"
+          sh "sha256sum * | tee ../${sha}"
           archiveArtifacts('*')
         }
       } }
@@ -60,7 +61,7 @@ pipeline {
           iOS: utils.pkgUrl(ios), /*iOSe2e: utils.pkgUrl(iose2e),*/
           Diawi: utils.utils.getEnv(ios, 'DIAWI_URL'),
           /* upload the sha256 checksums file too */
-          SHA: s3.uploadArtifact(utils.pkgFind('sha256')),
+          SHA: s3.uploadArtifact(sha),
         ]
         /* add URLs to the build description */
         jenkins.setBuildDesc(urls)

@@ -17,11 +17,13 @@ assert (lib.stringLength watchmanSockPath) > 0 -> stdenv.isDarwin;
 let
   inherit (lib)
     toLower optionalString stringLength assertMsg
-    getConfig makeLibraryPath assertEnvVarSet;
+    getConfig makeLibraryPath assertEnvVarSet elem;
 
-  buildType = getConfig "build-type" "prod";
+  buildType = getConfig "build-type" "release";
   buildNumber = getConfig "build-number" 9999;
   gradleOpts = getConfig "android.gradle-opts" null;
+  # Used to detect end-to-end builds
+  androidAbiInclude = getConfig "android.abi-include" "armeabi-v7a;arm64-v8a;x86";
   # Keystore can be provided via config and extra-sandbox-paths.
   # If it is not we use an ad-hoc one generated with default password.
   keystorePath = getConfig "android.keystore-path" keystore;
@@ -29,15 +31,14 @@ let
   baseName = "release-android";
   name = "status-react-build-${baseName}";
 
-  envFileName = if (buildType == "release" || buildType == "nightly" || buildType == "e2e")
-    then ".env.${buildType}"
-    else if buildType != "" then ".env.jenkins"
+  envFileName = 
+    if (elem buildType ["release" "nightly"]) then ".env.${buildType}"
+    else if androidAbiInclude == "x86"        then ".env.e2e" 
+    else if (elem buildType ["pr" "manual"])  then ".env.jenkins"
     else ".env";
 
-  # There are only two types of Gradle builds: pr and release
-  gradleBuildType = if (buildType == "pr" || buildType == "e2e")
-    then "Pr"
-    else "Release"; # PR builds shouldn't replace normal releases
+  # There are only two types of Gradle build targets: pr and release
+  gradleBuildType = if buildType == "pr" then "Pr" else "Release";
 
   apksPath = "./android/app/build/outputs/apk/${toLower gradleBuildType}";
   patchedWatchman = watchmanFactory watchmanSockPath;
@@ -72,7 +73,7 @@ in stdenv.mkDerivation rec {
   # custom env variables derived from config
   STATUS_GO_SRC_OVERRIDE = getConfig "nimbus.src-override" null;
   ANDROID_ABI_SPLIT = getConfig "android.abi-split" "false";
-  ANDROID_ABI_INCLUDE = getConfig "android.abi-include" "armeabi-v7a;arm64-v8a;x86";
+  ANDROID_ABI_INCLUDE = androidAbiInclude;
 
   # Android SDK/NDK for use by Gradle
   ANDROID_SDK_ROOT = "${androidPkgs}";
@@ -93,7 +94,7 @@ in stdenv.mkDerivation rec {
   '';
   postUnpack = ''
     # Ensure we have the right .env file
-    cp -f ./${envFileName} ./.env
+    cp -bf ./${envFileName} ./.env
 
     # Copy index.js and app/ input files
     cp -ra --no-preserve=ownership ${jsbundle}/* ./

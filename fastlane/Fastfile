@@ -82,7 +82,7 @@ def upload_to_saucelabs(file)
 end
 
 # builds an ios app with ad-hoc configuration and put it
-# to "status-adhoc" output folder
+# to "status-ios" output folder
 # `readonly`:
 #    if true  - only fetch existing certificates and profiles, don't upgrade from AppStoreConnect
 #    if false - read list of devices from AppStoreConnect, and upgrade the provisioning profiles from it
@@ -110,7 +110,7 @@ def build_ios_adhoc(readonly: false, pr_build: false)
     clean: true,
     export_method: 'ad-hoc',
     output_name: 'StatusIm',
-    output_directory: 'status-adhoc',
+    output_directory: 'status-ios',
     export_options: {
       signingStyle: 'manual',
       provisioningProfiles: {
@@ -122,7 +122,7 @@ def build_ios_adhoc(readonly: false, pr_build: false)
 end
 
 # builds an ios app with e2e configuration and put it
-# to "status-e2e" output folder
+# to "status-ios" output folder
 def build_ios_e2e
   # determine a simulator SDK installed
   showsdks_output = sh('xcodebuild', '-showsdks')
@@ -144,7 +144,7 @@ def build_ios_e2e
     #    it looks like i386 isn't supported by React Native
     xcargs: 'ARCHS="x86_64" ONLY_ACTIVE_ARCH=NO',
     # 3. directory where to up StatusIm.app
-    derived_data_path: 'status-e2e',
+    derived_data_path: 'status-ios',
     output_name: 'StatusIm.app',
     # -------------------------------------
     # Normal stuff
@@ -158,8 +158,8 @@ def build_ios_e2e
   )
 
   zip(
-    path: 'status-e2e/Build/Products/Release-iphonesimulator/StatusIm.app',
-    output_path: 'status-e2e/StatusIm.app.zip',
+    path: 'status-ios/Build/Products/Release-iphonesimulator/StatusIm.app',
+    output_path: 'status-ios/StatusIm.app.zip',
     verbose: false
   )
 end
@@ -222,7 +222,7 @@ platform :ios do
       configuration: 'Release',
       clean: true,
       export_method: 'app-store',
-      output_directory: 'status_appstore',
+      output_directory: 'status-ios',
       include_symbols: false,
       export_options: {
         "combileBitcode": true,
@@ -231,7 +231,7 @@ platform :ios do
       }
     )
     upload_to_testflight(
-      ipa: 'status_appstore/StatusIm.ipa',
+      ipa: 'status-ios/StatusIm.ipa',
       skip_waiting_for_build_processing: true
     )
   end
@@ -246,14 +246,14 @@ platform :ios do
   end
 
   desc '`fastlane ios upload-diawi` - upload .ipa to diawi'
-  desc 'expects to have an .ipa prepared: `status-adhoc/StatusIm.ipa`'
+  desc 'expects to have an .ipa prepared: `status-ios/StatusIm.ipa`'
   desc 'expects to have a diawi token as DIAWI_TOKEN env variable'
   desc 'expects to have a github token as GITHUB_TOKEN env variable'
   desc "will fails if file isn't there"
   desc '---'
   desc 'Output: writes `fastlane/diawi.out` file url of the uploded file'
   lane :upload_diawi do
-    ipa = ENV['DIAWI_IPA'] || 'status-adhoc/StatusIm.ipa'
+    ipa = ENV['DIAWI_IPA'] || 'status-ios/StatusIm.ipa'
     upload_to_diawi(ipa)
   end
 
@@ -266,7 +266,7 @@ platform :ios do
   desc "will fails if file isn't there"
   lane :saucelabs do
     upload_to_saucelabs(
-      'status-e2e/StatusIm.app.zip'
+      'status-ios/StatusIm.app.zip'
     )
   end
 
