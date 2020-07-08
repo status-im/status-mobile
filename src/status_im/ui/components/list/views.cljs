@@ -25,10 +25,12 @@
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]
             [status-im.utils.platform :as platform]
+            ["dcd-fast-list" :default FastList]
             ["react-native" :as react-native]))
 
 (def flat-list-class (reagent/adapt-react-class (.-FlatList react-native)))
 (def section-list-class (reagent/adapt-react-class (.-SectionList react-native)))
+(def virtualized-list-class (reagent/adapt-react-class (.-VirtualizedList react-native)))
 
 ;;TODO THIS NAMESPACE is DEPRECATED, use status-im.ui.components.list-item.views
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
@@ -167,3 +169,19 @@
           {:sections            (clj->js (map wrap-per-section-render-fn sections))
            :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)
            :style               style})])
+
+(defn virtualized-list [{:keys [data render-fn key-fn]
+                         :or   {key-fn str}}]
+  [virtualized-list-class {:data                  data
+                           ;; :debug                 true
+                           :renderItem            (wrap-render-fn render-fn)
+                           :keyExtractor          (wrap-key-fn key-fn)
+                           :getItemCount          count
+                           :removeClippedSubviews true
+                           :getItem               (fn [data index] (get data index))}])
+
+(defn fast-list [{:keys [render-fn data]}]
+  [:> FastList
+   {:row-height 64
+    :sections   [(count data)]
+    :render-row (render-fn data)}])

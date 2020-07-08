@@ -2832,6 +2832,11 @@ dayjs@^1.8.15:
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.25.tgz#d09a8696cee7191bc1289e739f96626391b9c73c"
   integrity sha512-Pk36juDfQQGDCgr0Lqd1kw15w3OS6xt21JaLPE3lCfsEf8KrERGwDNwvK1tRjrjqFC0uZBJncT4smZQ4F+uV5g==
 
+dcd-fast-list@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/dcd-fast-list/-/dcd-fast-list-1.0.7.tgz#6d48054fdc08cdd403476e0405e877fb880664be"
+  integrity sha512-SL2WLOEOfRtBNBiuMV2st1pLtcu4ml+ZrkS7DwiIHZY1YZC1CkUVybWJOHWvT3cKpC9MPnbmMJ4JVF94xQCtwQ==
+
 debounce@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/debounce/-/debounce-1.2.0.tgz#44a540abc0ea9943018dc0eaa95cce87f65cd131"

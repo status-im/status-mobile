@@ -179,6 +179,8 @@
                       :addEventListener (fn []),
                       :removeEventListener (fn [])}}))
 
+(def dcd-fast-list #js {:default #js {}})
+
 ;; Update i18n_resources.cljs
 (defn mock [module]
   (case module
@@ -206,6 +208,7 @@
     "react-native-mail" react-native-mail
     "react-native-image-resizer" image-resizer
     "react-native-haptic-feedback" react-native-haptic-feedback
+    "dcd-fast-list" dcd-fast-list
     "./fleets.js" default-fleets
     "../translations/ar.json" (js/JSON.parse (slurp "./translations/ar.json"))
     "../translations/de.json" (js/JSON.parse (slurp "./translations/de.json"))

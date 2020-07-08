@@ -99,13 +99,12 @@
      [components/separator]
      (if (empty? browsers)
        [list-header true]
-       [react/scroll-view
-        [list-header false]
-        [list/flat-list {:data           browsers
-                         :footer         [react/view
-                                          {:style {:height     64
-                                                   :align-self :stretch}}]
-                         :key-fn         :browser-id
-                         :end-fill-color colors/white
-                         :render-fn      list-item}]])
+       [list/flat-list {:data           browsers
+                        :header         [list-header false]
+                        :footer         [react/view
+                                         {:style {:height     64
+                                                  :align-self :stretch}}]
+                        :key-fn         :browser-id
+                        :end-fill-color colors/white
+                        :render-fn      list-item}])
      [select-account]]))

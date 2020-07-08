@@ -22,6 +22,7 @@
     "buffer": "^5.4.2",
     "chance": "^1.1.0",
     "create-react-class": "^15.6.2",
+    "dcd-fast-list": "^1.0.7",
     "emojilib": "^2.4.0",
     "eth-phishing-detect": "^1.1.13",
     "functional-red-black-tree": "^1.0.1",
