@@ -23,6 +23,32 @@ class MultiAccountOnLoginButton(BaseButton):
         self.locator = self.Locator.xpath_selector("(//*[@content-desc='chat-icon'])[%s]/.." % position)
 
 
+class RecoverWithKeycardButton(BaseButton):
+    def __init__(self, driver):
+        super(RecoverWithKeycardButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("recover-with-keycard-button")
+
+
+class BeginRecoveryButton(BaseButton):
+    def __init__(self, driver):
+        super(BeginRecoveryButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector("Begin recovery")
+
+    def navigate(self):
+        from views.keycard_view import KeycardView
+        return KeycardView(self.driver)
+
+    def click(self):
+        self.scroll_to_element().click()
+        return self.navigate()
+
+
+class PairToThisDeviceButton(BaseButton):
+    def __init__(self, driver):
+        super(PairToThisDeviceButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector("Pair to this device")
+
+
 class PasswordInput(BaseEditBox):
     def __init__(self, driver):
         super(PasswordInput, self).__init__(driver)
@@ -222,6 +248,12 @@ class SignInView(BaseView):
         self.keycard_storage_button = KeycardKeyStorageButton(self.driver)
         self.first_username_on_choose_chat_name = FirstKeyForChatText(self.driver)
 
+        #keycard recovery
+        self.recover_with_keycard_button = RecoverWithKeycardButton(self.driver)
+        self.begin_recovery_button = BeginRecoveryButton(self.driver)
+        self.pair_to_this_device_button = PairToThisDeviceButton(self.driver)
+
+
     def create_user(self, password=common_password, keycard=False):
         self.get_started_button.click()
         self.generate_key_button.click()
@@ -273,7 +305,7 @@ class SignInView(BaseView):
             from views.keycard_view import KeycardView
             keycard_view = KeycardView(self.driver)
             keycard_view.enter_default_pin()
-            keycard_view.connect_card_button.click()
+            keycard_view.connect_selected_card_button.click()
         else:
             self.password_input.set_value(password)
             self.sign_in_button.click()

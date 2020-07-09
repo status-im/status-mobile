@@ -1,8 +1,8 @@
-from tests import marks
+from tests import marks, pair_code
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 from views.keycard_view import KeycardView
-from tests.users import basic_user
+from tests.users import basic_user, transaction_senders
 
 
 @marks.all
@@ -48,7 +48,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         wallet_view.set_up_wallet()
         for asset in ['ETH', 'ADI', 'STT']:
             if wallet_view.get_asset_amount_by_name(asset) == 0:
-                self.errors.append('Asset %s was not restored')
+                self.errors.append('Asset %s was not restored' % asset)
 
         sign_in.just_fyi('Check that wallet address matches expected')
         address = wallet_view.get_wallet_address()
@@ -65,11 +65,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         profile_view.logout()
 
         sign_in.just_fyi('Check that can login with restored from mnemonic keycard account')
-        sign_in.multi_account_on_login_button.wait_for_visibility_of_element(5)
-        sign_in.multi_account_on_login_button.click()
-        keycard_view = KeycardView(self.driver)
-        keycard_view.connect_selected_card_button.click()
-        keycard_view.enter_default_pin()
+        sign_in.sign_in(keycard=True)
         if not sign_in.home_button.is_element_displayed(10):
             self.driver.fail('Keycard user is not logged in')
 
@@ -130,8 +126,9 @@ class TestCreateAccount(SingleDeviceTestCase):
             self.errors.append('Another seed phrase is shown after cancelling setup during Back up seed phrase')
         keycard_flow.backup_seed_phrase()
         keycard_flow.enter_default_pin()
-        sign_in.lets_go_button.wait_for_visibility_of_element(30)
-        sign_in.lets_go_button.click_until_absense_of_element(sign_in.lets_go_button)
+        for element in sign_in.maybe_later_button, sign_in.lets_go_button:
+            element.wait_for_visibility_of_element(30)
+            element.click()
         sign_in.profile_button.wait_for_visibility_of_element(30)
 
         sign_in.just_fyi('Check username and relogin')
@@ -140,7 +137,9 @@ class TestCreateAccount(SingleDeviceTestCase):
         if real_username != username:
             self.errors.append('Username was changed after interruption of creating account')
         profile.logout()
-        sign_in.sign_in(keycard=True)
+        home = sign_in.sign_in(keycard=True)
+        if not home.wallet_button.is_element_displayed(10):
+            self.errors.append("Failed to login to Keycard account")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6246)
@@ -185,8 +184,9 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard_flow.pair_code_input.set_value(pair_code)
         keycard_flow.pair_to_this_device_button.click()
         keycard_flow.enter_default_pin()
-        sign_in.lets_go_button.wait_for_visibility_of_element(30)
-        sign_in.lets_go_button.click_until_absense_of_element(sign_in.lets_go_button)
+        for element in sign_in.maybe_later_button, sign_in.lets_go_button:
+            element.wait_for_visibility_of_element(30)
+            element.click()
         sign_in.profile_button.wait_for_visibility_of_element(30)
         public_key, default_username = sign_in.get_public_key_and_username(return_username=True)
         profile_view = sign_in.get_profile_view()
@@ -199,3 +199,49 @@ class TestCreateAccount(SingleDeviceTestCase):
         if not home.wallet_button.is_element_displayed(10):
             self.errors.append("Failed to login to Keycard account")
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(5758)
+    @marks.high
+    def test_can_recover_keycard_account_card_pairing(self):
+        sign_in = SignInView(self.driver)
+        recovered_user = transaction_senders['A']
+
+        sign_in.just_fyi('Recover multiaccount')
+        sign_in.get_started_button.click_until_presence_of_element(sign_in.access_key_button)
+        sign_in.access_key_button.click()
+        sign_in.recover_with_keycard_button.click()
+        keycard_view = sign_in.begin_recovery_button.click()
+        keycard_view.connect_pairing_card_button.click()
+        keycard_view.pair_code_input.set_value(pair_code)
+        sign_in.pair_to_this_device_button.click()
+        keycard_view.enter_default_pin()
+        sign_in.home_button.wait_for_visibility_of_element(30)
+
+        sign_in.just_fyi('Check assets after pairing keycard for recovered multiaccount')
+        wallet_view = sign_in.wallet_button.click()
+        wallet_view.set_up_wallet()
+        for asset in ['ETH', 'LXS']:
+            if wallet_view.get_asset_amount_by_name(asset) == 0:
+                self.errors.append("%s value is not restored" % asset)
+
+        sign_in.just_fyi('Check that wallet address matches expected for recovered multiaccount')
+        address = wallet_view.get_wallet_address()
+        if str(address).lower() != '0x%s' % recovered_user['address']:
+            self.errors.append('Restored address %s does not match expected' % address)
+
+        sign_in.just_fyi('Check that username and public key match expected for recovered multiaccount')
+        public_key, default_username = sign_in.get_public_key_and_username(return_username=True)
+        profile_view = sign_in.get_profile_view()
+        if public_key != recovered_user['public_key']:
+            self.errors.append('Public key %s does not match expected' % public_key)
+        if default_username != recovered_user['username']:
+            self.errors.append('Default username %s does not match expected' % default_username)
+        profile_view.logout()
+
+        sign_in.just_fyi('Check that can login with recovered keycard account')
+        sign_in.sign_in(keycard=True)
+        if not sign_in.home_button.is_element_displayed(10):
+            self.driver.fail('Keycard user is not logged in')
+
+        self.errors.verify_no_errors()
+

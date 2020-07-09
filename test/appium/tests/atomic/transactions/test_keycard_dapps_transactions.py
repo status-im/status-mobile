@@ -78,7 +78,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
             if not status_test_dapp.element_by_text(text).is_element_displayed(180):
                 self.driver.fail('Contract was not created')
 
-    @marks.testrail_id(5784)
+    @marks.testrail_id(6310)
     @marks.medium
     def test_keycard_sign_typed_message(self):
         sender = transaction_senders['W']

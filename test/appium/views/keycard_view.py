@@ -73,6 +73,13 @@ class PairToThisDeviceButton(BaseButton):
         super(PairToThisDeviceButton, self).__init__(driver)
         self.locator = self.Locator.text_selector("Pair to this device")
 
+
+class ConnectPairingCardButton(BaseButton):
+    def __init__(self, driver):
+        super(ConnectPairingCardButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("connect-pairing-card")
+
+
 class KeycardView(BaseView):
     def __init__(self, driver):
         super(KeycardView, self).__init__(driver)
@@ -84,6 +91,7 @@ class KeycardView(BaseView):
         self.pair_code_text = PairCodeText(self.driver)
         self.pair_code_input = PairCodeInput(self.driver)
         self.pair_to_this_device_button = PairToThisDeviceButton(self.driver)
+        self.connect_pairing_card_button = ConnectPairingCardButton(self.driver)
 
         #keyboard
         self.one_button = OnePinKeyboardButton(self.driver)
