@@ -334,7 +334,8 @@
                :hardwallet/get-application-info {:pairing (get-pairing db key-uid)}
                :hardwallet/login-with-keycard   {:multiaccount-data multiaccount-data
                                                  :password          encryption-public-key
-                                                 :chat-key          whisper-private-key}}
+                                                 :chat-key          whisper-private-key
+                                                 :key-uid           key-uid}}
               (when save-keys?
                 (keychain/save-hardwallet-keys key-uid encryption-public-key whisper-private-key))
               (clear-on-card-connected)

@@ -80,11 +80,11 @@
   [{:keys [db]}]
   (let [password (get-in db [:intro-wizard :key-code])
         {:keys [root-key]} (:intro-wizard db)
-        {:keys [id]} root-key
+        {:keys [id key-uid]} root-key
         callback #(re-frame/dispatch [::store-multiaccount-success % password])
         hashed-password (ethereum/sha3 (security/safe-unmask-data password))]
     {:db (assoc-in db [:intro-wizard :processing?] true)
-     ::multiaccounts.create/store-multiaccount [id hashed-password callback]}))
+     ::multiaccounts.create/store-multiaccount [id key-uid hashed-password callback]}))
 
 (fx/defn recover-multiaccount-with-checks
   {:events [::sign-in-button-pressed]}

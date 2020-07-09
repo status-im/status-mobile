@@ -19,18 +19,19 @@
     (.clearCookies ^js (status))
     (.clearStorageAPIs ^js (status))))
 
-(defn init-keystore []
-  (log/debug "[native-module] init-keystore")
-  (.initKeystore ^js (status)))
+(defn init-keystore [key-uid callback]
+  (log/debug "[native-module] init-keystore" key-uid)
+  (.initKeystore ^js (status) key-uid callback))
 
 (defn open-accounts [callback]
   (log/debug "[native-module] open-accounts")
   (.openAccounts ^js (status) #(callback (types/json->clj %))))
 
 (defn prepare-dir-and-update-config
-  [config callback]
+  [key-uid config callback]
   (log/debug "[native-module] prepare-dir-and-update-config")
   (.prepareDirAndUpdateConfig ^js (status)
+                              key-uid
                               config
                               #(callback (types/json->clj %))))
 
@@ -44,26 +45,32 @@
 
 (defn save-account-and-login
   "NOTE: beware, the password has to be sha3 hashed"
-  [multiaccount-data hashed-password settings config accounts-data]
+  [key-uid multiaccount-data hashed-password settings config accounts-data]
   (log/debug "[native-module] save-account-and-login"
              "multiaccount-data" multiaccount-data)
   (clear-web-data)
-  (.saveAccountAndLogin
-   ^js (status) multiaccount-data hashed-password settings config accounts-data))
+  (init-keystore
+   key-uid
+   #(.saveAccountAndLogin
+     ^js (status) multiaccount-data hashed-password settings config accounts-data)))
 
 (defn save-multiaccount-and-login-with-keycard
   "NOTE: chat-key is a whisper private key sent from keycard"
-  [multiaccount-data password settings config accounts-data chat-key]
+  [key-uid multiaccount-data password settings config accounts-data chat-key]
   (log/debug "[native-module] save-account-and-login-with-keycard")
-  (.saveAccountAndLoginWithKeycard
-   ^js (status) multiaccount-data password settings config accounts-data chat-key))
+  (init-keystore
+   key-uid
+   #(.saveAccountAndLoginWithKeycard
+     ^js (status) multiaccount-data password settings config accounts-data chat-key)))
 
 (defn login
   "NOTE: beware, the password has to be sha3 hashed"
-  [account-data hashed-password]
+  [key-uid account-data hashed-password]
   (log/debug "[native-module] login")
   (clear-web-data)
-  (.login ^js (status) account-data hashed-password))
+  (init-keystore
+   key-uid
+   #(.login ^js (status) account-data hashed-password)))
 
 (defn logout []
   (log/debug "[native-module] logout")
@@ -116,24 +123,28 @@
    and chat accounts, you need to load the account again with
    `multiaccount-load-account` before using `multiaccount-store-derived`
    and the id of the account stored will have changed"
-  [account-id hashed-password callback]
+  [account-id key-uid hashed-password callback]
   (log/debug "[native-module] multiaccount-store-account")
   (when (status)
-    (.multiAccountStoreAccount  ^js (status)
-                                (types/clj->json {:accountID account-id
-                                                  :password hashed-password})
-                                callback)))
+    (init-keystore
+     key-uid
+     #(.multiAccountStoreAccount  ^js (status)
+                                  (types/clj->json {:accountID account-id
+                                                    :password  hashed-password})
+                                  callback))))
 
 (defn multiaccount-store-derived
   "NOTE: beware, the password has to be sha3 hashed"
-  [account-id paths hashed-password callback]
-  (log/debug "[native-module]  multiaccount-store-derived"
+  [account-id key-uid paths hashed-password callback]
+  (log/debug "[native-module] multiaccount-store-derived"
              "account-id" account-id)
-  (.multiAccountStoreDerived  ^js (status)
-                              (types/clj->json {:accountID account-id
-                                                :paths paths
-                                                :password hashed-password})
-                              callback))
+  (init-keystore
+   key-uid
+   #(.multiAccountStoreDerived  ^js (status)
+                                (types/clj->json {:accountID account-id
+                                                  :paths     paths
+                                                  :password  hashed-password})
+                                callback)))
 
 (defn multiaccount-generate-and-derive-addresses
   "used to generate multiple multiaccounts for onboarding
@@ -172,10 +183,12 @@
   (.verify ^js (status) address hashed-password callback))
 
 (defn login-with-keycard
-  [{:keys [multiaccount-data password chat-key]}]
+  [{:keys [key-uid multiaccount-data password chat-key]}]
   (log/debug "[native-module] login-with-keycard")
   (clear-web-data)
-  (.loginWithKeycard ^js (status) multiaccount-data password chat-key))
+  (init-keystore
+   key-uid
+   #(.loginWithKeycard ^js (status) multiaccount-data password chat-key)))
 
 (defn set-soft-input-mode [mode]
   (log/debug "[native-module]  set-soft-input-mode")

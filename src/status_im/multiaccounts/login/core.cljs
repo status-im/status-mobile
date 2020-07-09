@@ -32,8 +32,8 @@
 
 (re-frame/reg-fx
  ::login
- (fn [[account-data hashed-password]]
-   (status/login account-data hashed-password)))
+ (fn [[key-uid account-data hashed-password]]
+   (status/login key-uid account-data hashed-password)))
 
 (defn rpc->accounts [accounts]
   (reduce (fn [acc {:keys [chat type wallet] :as account}]
@@ -71,7 +71,8 @@
              (assoc-in [:multiaccounts/login :processing] true)
              (dissoc :intro-wizard)
              (update :hardwallet dissoc :flow))
-     ::login [(types/clj->json {:name       name
+     ::login [key-uid
+              (types/clj->json {:name       name
                                 :key-uid    key-uid
                                 :photo-path photo-path})
               (ethereum/sha3 (security/safe-unmask-data password))]}))

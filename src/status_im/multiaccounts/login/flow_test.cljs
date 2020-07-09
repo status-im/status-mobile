@@ -18,7 +18,7 @@
           efx (login.core/login cofx)]
       (testing "Change multiaccount."
         (is (= (::login.core/login efx)
-               ["{\"name\":\"user\",\"key-uid\":\"key-uid\",\"photo-path\":\"photo\"}" (ethereum/sha3 "password")])))
+               ["key-uid" "{\"name\":\"user\",\"key-uid\":\"key-uid\",\"photo-path\":\"photo\"}" (ethereum/sha3 "password")])))
       (testing "start activity indicator"
         (is (= (get-in efx [:db :multiaccounts/login :processing]) true))))))
 

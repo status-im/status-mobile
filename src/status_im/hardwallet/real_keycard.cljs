@@ -213,8 +213,9 @@
         (catch on-failure))))
 
 (defn save-multiaccount-and-login
-  [{:keys [multiaccount-data password settings node-config accounts-data chat-key]}]
+  [{:keys [key-uid multiaccount-data password settings node-config accounts-data chat-key]}]
   (status/save-multiaccount-and-login-with-keycard
+   key-uid
    (types/clj->json multiaccount-data)
    password
    (types/clj->json settings)

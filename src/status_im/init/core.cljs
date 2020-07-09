@@ -55,7 +55,6 @@
   (fx/merge cofx
             {:get-supported-biometric-auth          nil
              ::init-theme                           nil
-             ::init-keystore                        nil
              ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts % {:logout? false}])
              :ui/listen-to-window-dimensions-change nil
              ::network/listen-to-network-info       nil
@@ -69,11 +68,6 @@
  ::open-multiaccounts
  (fn [callback]
    (status/open-accounts callback)))
-
-(re-frame/reg-fx
- ::init-keystore
- (fn []
-   (status/init-keystore)))
 
 (re-frame/reg-fx
  ::init-theme

@@ -165,11 +165,13 @@ app-db"
 (fx/defn prepare-new-config
   "Use this function to apply settings to the current account node config"
   [{:keys [db]} {:keys [on-success]}]
-  {::prepare-new-config [(get-new-config db)
-                         #(re-frame/dispatch
-                           [::save-new-config % {:on-success on-success}])]})
+  (let [key-uid (get-in db [:multiaccount :key-uid])]
+    {::prepare-new-config [key-uid
+                           (get-new-config db)
+                           #(re-frame/dispatch
+                             [::save-new-config % {:on-success on-success}])]}))
 
 (re-frame/reg-fx
  ::prepare-new-config
- (fn [[config callback]]
-   (status/prepare-dir-and-update-config config callback)))
+ (fn [[key-uid config callback]]
+   (status/prepare-dir-and-update-config key-uid config callback)))

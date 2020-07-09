@@ -71,6 +71,11 @@
 (fx/defn create-multiaccount
   [{:keys [db]}]
   (let [{:keys [selected-id key-code]} (:intro-wizard db)
+        key-uid (some
+                 (fn [{:keys [id key-uid]}]
+                   (when (= id selected-id)
+                     key-uid))
+                 (get-in db [:intro-wizard :multiaccounts]))
         hashed-password (ethereum/sha3 (security/safe-unmask-data key-code))
         callback (fn [result]
                    (let [derived-data (normalize-derived-data-keys (types/json->clj result))
@@ -84,7 +89,7 @@
                                                               (merge derived-whisper {:name name :photo-path photo-path}))]
                           (re-frame/dispatch [::store-multiaccount-success
                                               key-code derived-data-extended]))))))]
-    {::store-multiaccount [selected-id hashed-password callback]}))
+    {::store-multiaccount [selected-id key-uid hashed-password callback]}))
 
 (fx/defn prepare-intro-wizard
   [{:keys [db] :as cofx}]
@@ -230,8 +235,9 @@
   {:hardwallet/save-multiaccount-and-login args})
 
 (fx/defn save-account-and-login
-  [_ multiaccount-data password settings node-config accounts-data]
-  {::save-account-and-login [(types/clj->json multiaccount-data)
+  [_ key-uid multiaccount-data password settings node-config accounts-data]
+  {::save-account-and-login [key-uid
+                             (types/clj->json multiaccount-data)
                              password
                              (types/clj->json settings)
                              node-config
@@ -303,17 +309,20 @@
               {:db db}
               (if keycard-multiaccount?
                 (save-multiaccount-and-login-with-keycard
-                 {:multiaccount-data multiaccount-data
+                 {:key-uid           key-uid
+                  :multiaccount-data multiaccount-data
                   :password          password
                   :settings          settings
                   :node-config       (node/get-new-config db)
                   :accounts-data     accounts-data
                   :chat-key          chat-key})
-                (save-account-and-login multiaccount-data
-                                        (ethereum/sha3 (security/safe-unmask-data password))
-                                        settings
-                                        (node/get-new-config db)
-                                        accounts-data))
+                (save-account-and-login
+                 key-uid
+                 multiaccount-data
+                 (ethereum/sha3 (security/safe-unmask-data password))
+                 settings
+                 (node/get-new-config db)
+                 accounts-data))
               (when (:intro-wizard db)
                 (intro-step-forward {})))))
 
@@ -401,9 +410,10 @@
 
 (re-frame/reg-fx
  ::store-multiaccount
- (fn [[id hashed-password callback]]
+ (fn [[id key-uid hashed-password callback]]
    (status/multiaccount-store-derived
     id
+    key-uid
     [constants/path-wallet-root
      constants/path-eip1581
      constants/path-whisper
@@ -413,9 +423,11 @@
 
 (re-frame/reg-fx
  ::save-account-and-login
- (fn [[multiaccount-data hashed-password settings config accounts-data]]
-   (status/save-account-and-login multiaccount-data
-                                  hashed-password
-                                  settings
-                                  config
-                                  accounts-data)))
+ (fn [[key-uid multiaccount-data hashed-password settings config accounts-data]]
+   (status/save-account-and-login
+    key-uid
+    multiaccount-data
+    hashed-password
+    settings
+    config
+    accounts-data)))

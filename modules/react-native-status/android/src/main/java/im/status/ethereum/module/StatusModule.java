@@ -246,7 +246,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         return file.getAbsolutePath();
     }
 
-    private String prepareDirAndUpdateConfig(final String jsonConfigString) {
+    private String prepareDirAndUpdateConfig(final String jsonConfigString, final String keyUID) {
 
         Activity currentActivity = getCurrentActivity();
 
@@ -303,7 +303,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         }
 
         try {
-            final String updatedJsonConfigString = this.updateConfig(jsonConfigString, absRootDirPath, "/keystore");
+            final String multiaccountKeystoreDir = pathCombine("/keystore", keyUID);
+            final String updatedJsonConfigString = this.updateConfig(jsonConfigString, absRootDirPath, multiaccountKeystoreDir);
 
             prettyPrintConfig(updatedJsonConfigString);
 
@@ -317,41 +318,55 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void prepareDirAndUpdateConfig(final String config, final Callback callback) {
+    public void prepareDirAndUpdateConfig(final String keyUID, final String config, final Callback callback) {
         Log.d(TAG, "prepareDirAndUpdateConfig");
-        String finalConfig = prepareDirAndUpdateConfig(config);
+        String finalConfig = prepareDirAndUpdateConfig(config, keyUID);
         callback.invoke(finalConfig);
     }
 
     @ReactMethod
     public void saveAccountAndLogin(final String multiaccountData, final String password, final String settings, final String config, final String accountsData) {
-        Log.d(TAG, "saveAccountAndLogin");
-        String finalConfig = prepareDirAndUpdateConfig(config);
-        String result = Statusgo.saveAccountAndLogin(multiaccountData, password, settings, finalConfig, accountsData);
-        if (result.startsWith("{\"error\":\"\"")) {
-            Log.d(TAG, "saveAccountAndLogin result: " + result);
-            Log.d(TAG, "Geth node started");
-        } else {
-            Log.e(TAG, "saveAccountAndLogin failed: " + result);
+        try {
+            Log.d(TAG, "saveAccountAndLogin");
+            String finalConfig = prepareDirAndUpdateConfig(config, this.getKeyUID(multiaccountData));
+            String result = Statusgo.saveAccountAndLogin(multiaccountData, password, settings, finalConfig, accountsData);
+            if (result.startsWith("{\"error\":\"\"")) {
+                Log.d(TAG, "saveAccountAndLogin result: " + result);
+                Log.d(TAG, "Geth node started");
+            } else {
+                Log.e(TAG, "saveAccountAndLogin failed: " + result);
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "JSON conversion failed: " + e.getMessage());
         }
     }
 
     @ReactMethod
     public void saveAccountAndLoginWithKeycard(final String multiaccountData, final String password, final String settings, final String config, final String accountsData, final String chatKey) {
-        Log.d(TAG, "saveAccountAndLoginWithKeycard");
-        String finalConfig = prepareDirAndUpdateConfig(config);
-        String result = Statusgo.saveAccountAndLoginWithKeycard(multiaccountData, password, settings, finalConfig, accountsData, chatKey);
-        if (result.startsWith("{\"error\":\"\"")) {
-            Log.d(TAG, "saveAccountAndLoginWithKeycard result: " + result);
-            Log.d(TAG, "Geth node started");
-        } else {
-            Log.e(TAG, "saveAccountAndLoginWithKeycard failed: " + result);
+        try {
+            Log.d(TAG, "saveAccountAndLoginWithKeycard");
+            String finalConfig = prepareDirAndUpdateConfig(config, this.getKeyUID(multiaccountData));
+            String result = Statusgo.saveAccountAndLoginWithKeycard(multiaccountData, password, settings, finalConfig, accountsData, chatKey);
+            if (result.startsWith("{\"error\":\"\"")) {
+                Log.d(TAG, "saveAccountAndLoginWithKeycard result: " + result);
+                Log.d(TAG, "Geth node started");
+            } else {
+                Log.e(TAG, "saveAccountAndLoginWithKeycard failed: " + result);
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "JSON conversion failed: " + e.getMessage());
         }
+    }
+
+    private String getKeyUID(final String json) throws JSONException {
+        final JSONObject jsonObj = new JSONObject(json);
+        return jsonObj.getString("key-uid");
     }
 
     @ReactMethod
     public void login(final String accountData, final String password) {
         Log.d(TAG, "login");
+        this.migrateKeyStoreDir(accountData, password);
         String result = Statusgo.login(accountData, password);
         if (result.startsWith("{\"error\":\"\"")) {
             Log.d(TAG, "Login result: " + result);
@@ -416,12 +431,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    private void initKeystore() {
+    private void initKeystore(final String keyUID, final Callback callback) {
         Log.d(TAG, "initKeystore");
 
         Activity currentActivity = getCurrentActivity();
-
-        final String keydir = pathCombine(this.getNoBackupDirectory(), "/keystore");
 
         if (!checkAvailability()) {
             Log.e(TAG, "[initKeystore] Activity doesn't exist, cannot init keystore");
@@ -429,10 +442,14 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
+        final String commonKeydir = pathCombine(this.getNoBackupDirectory(), "/keystore");
+        final String keydir = pathCombine(commonKeydir, keyUID);
+
         Runnable r = new Runnable() {
             @Override
             public void run() {
                 Statusgo.initKeystore(keydir);
+                callback.invoke(true);
             }
         };
 
@@ -487,9 +504,27 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
+    public void migrateKeyStoreDir(final String accountData, final String password) {
+        try {
+            final String commonKeydir = pathCombine(this.getNoBackupDirectory(), "/keystore");
+            final String keydir = pathCombine(commonKeydir, getKeyUID(accountData));
+            Log.d(TAG, "before migrateKeyStoreDir " + keydir);
+
+            File keydirFile = new File(keydir);
+            if(!keydirFile.exists() || keydirFile.list().length == 0) {
+                Log.d(TAG, "migrateKeyStoreDir");
+                Statusgo.migrateKeyStoreDir(accountData, password, commonKeydir, keydir);
+                Statusgo.initKeystore(keydir);
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "JSON conversion failed: " + e.getMessage());
+        }
+    }
+
     @ReactMethod
     public void loginWithKeycard(final String accountData, final String password, final String chatKey) {
         Log.d(TAG, "loginWithKeycard");
+        this.migrateKeyStoreDir(accountData, password);
         String result = Statusgo.loginWithKeycard(accountData, password, chatKey);
         if (result.startsWith("{\"error\":\"\"")) {
             Log.d(TAG, "LoginWithKeycard result: " + result);
