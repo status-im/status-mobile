@@ -1,4 +1,6 @@
 { lib, pkgs, deps, callPackage, mkShell
+, nim-status-android-all 
+, status-go-android-all
 , status-go, androidPkgs, androidShell }:
 
 let
@@ -13,7 +15,8 @@ let
 
   # TARGETS
   release = callPackage ./release.nix {
-    inherit keystore jsbundle status-go watchmanFactory;
+    inherit keystore jsbundle status-go watchmanFactory 
+    status-go-android-all nim-status-android-all;
   };
 
 in {
@@ -41,6 +44,8 @@ in {
 
       # required by some makefile targets
       export STATUS_GO_ANDROID_LIBDIR=${status-go}
+      export STATUS_GO_ANDROID_ALL_LIBDIR=${status-go-android-all}
+      export NIM_STATUS_ANDROID_ALL_LIBDIR=${nim-status-android-all}
 
       # check if node modules changed and if so install them
       $STATUS_REACT_HOME/nix/scripts/node_modules.sh ${deps.nodejs-patched}

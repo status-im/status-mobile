@@ -1,9 +1,8 @@
 #import <sys/utsname.h>
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
-#import "Statusgo/Statusgo.h"
+#import "nim_status.h"
 #import "RCTLog.h"
 
-@interface Status : NSObject <RCTBridgeModule, StatusgoSignalHandler>
-- (void)handleSignal:(NSString *)signal;
+@interface Status : NSObject <RCTBridgeModule>
 @end

@@ -7,11 +7,15 @@ let
 
   android = callPackage ./android {
     status-go = status-go.mobile.android;
+    status-go-android-all = status-go.shared.android-all;
+    nim-status-android-all = status-go.nim-status.android-all;
   };
 
   ios = callPackage ./ios {
     inherit fastlane;
     status-go = status-go.mobile.ios;
+    status-go-shared = status-go.shared.ios-all;
+    status-go-nim-status = status-go.nim-status.ios-all;
   };
 
   selectedSources = [

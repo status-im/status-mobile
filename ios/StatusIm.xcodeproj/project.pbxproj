@@ -21,7 +21,6 @@
 		3AAD2ABE24A3A60E0075D594 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		3AAD2AC024A3A60E0075D594 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B24FC7FE1DE7195F00D694FF /* MessageUI.framework */; };
 		3AAD2AC124A3A60E0075D594 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B24FC7FC1DE7195700D694FF /* Social.framework */; };
-		3AAD2AC224A3A60E0075D594 /* Statusgo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4E31B21D8695250033ED64 /* Statusgo.framework */; };
 		3AAD2AC324A3A60E0075D594 /* libRCTStatus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 201067C41D4789F700FA83B6 /* libRCTStatus.a */; };
 		3AAD2AC524A3A60E0075D594 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */; };
 		3AAD2AC624A3A60E0075D594 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E586E1B0E544F64AA9F5BD1 /* libz.tbd */; };
@@ -49,7 +48,6 @@
 		B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */; };
 		BA68A2377A20496EA737000D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E586E1B0E544F64AA9F5BD1 /* libz.tbd */; };
 		C8F62CB13C1F732A6ABDB977 /* libPods-Status-StatusImPR.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B9F8F780F889F228546DF60 /* libPods-Status-StatusImPR.a */; };
-		CE4E31B31D8695250033ED64 /* Statusgo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4E31B21D8695250033ED64 /* Statusgo.framework */; };
 		D1786306E0184916B11F4C37 /* Inter-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B2A38FC3D3954DE7B2B171F8 /* Inter-Medium.otf */; };
 		D84616FB563A48EBB1678699 /* Inter-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */; };
 		D99C50E5E18942A39C8DDF61 /* Inter-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B321D25F4493470980039457 /* Inter-BoldItalic.otf */; };
@@ -159,7 +157,6 @@
 		B321D25F4493470980039457 /* Inter-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-BoldItalic.otf"; path = "../resources/fonts/Inter-BoldItalic.otf"; sourceTree = "<group>"; };
 		C6B1215047604CD59A4C74D6 /* Inter-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-MediumItalic.otf"; path = "../resources/fonts/Inter-MediumItalic.otf"; sourceTree = "<group>"; };
 		CD4A2C27D6D5473184DC1F7E /* Inter-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.otf"; path = "../resources/fonts/Inter-Bold.otf"; sourceTree = "<group>"; };
-		CE4E31B21D8695250033ED64 /* Statusgo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Statusgo.framework; path = "../modules/react-native-status/ios/RCTStatus/Statusgo.framework"; sourceTree = "<group>"; };
 		D489EE8D5F52DA10AC715727 /* Pods-StatusImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StatusImTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-StatusImTests/Pods-StatusImTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -178,7 +175,6 @@
 			files = (
 				B24FC7FF1DE7195F00D694FF /* MessageUI.framework in Frameworks */,
 				B24FC7FD1DE7195700D694FF /* Social.framework in Frameworks */,
-				CE4E31B31D8695250033ED64 /* Statusgo.framework in Frameworks */,
 				20AB9EC61D47CC0300E7FD9C /* libRCTStatus.a in Frameworks */,
 				25DC9C9DC25846BD8D084888 /* libc++.tbd in Frameworks */,
 				BA68A2377A20496EA737000D /* libz.tbd in Frameworks */,
@@ -194,7 +190,6 @@
 				3A8F8EAA24A4D31600BF206D /* GameKit.framework in Frameworks */,
 				3AAD2AC024A3A60E0075D594 /* MessageUI.framework in Frameworks */,
 				3AAD2AC124A3A60E0075D594 /* Social.framework in Frameworks */,
-				3AAD2AC224A3A60E0075D594 /* Statusgo.framework in Frameworks */,
 				3AAD2AC324A3A60E0075D594 /* libRCTStatus.a in Frameworks */,
 				3AAD2AC524A3A60E0075D594 /* libc++.tbd in Frameworks */,
 				3AAD2AC624A3A60E0075D594 /* libz.tbd in Frameworks */,
@@ -351,7 +346,6 @@
 				4C16DE0B1F89508700AA10DB /* JavaScriptCore.framework */,
 				B24FC7FE1DE7195F00D694FF /* MessageUI.framework */,
 				B24FC7FC1DE7195700D694FF /* Social.framework */,
-				CE4E31B21D8695250033ED64 /* Statusgo.framework */,
 				8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */,
 				4E586E1B0E544F64AA9F5BD1 /* libz.tbd */,
 				1EA4C352EDC255945D9357D4 /* libPods-Status-StatusIm.a */,
@@ -564,7 +558,6 @@
 				3AAD2ACF24A3A60E0075D594 /* Inter-Italic.otf in Resources */,
 				3AAD2AD024A3A60E0075D594 /* Inter-Medium.otf in Resources */,
 				3AAD2AD124A3A60E0075D594 /* Inter-MediumItalic.otf in Resources */,
-				3A6406FF24A3ADF90046ED37 /* Info.plist in Resources */,
 				3AAD2AD224A3A60E0075D594 /* Inter-Regular.otf in Resources */,
 				3AAD2AD324A3A60E0075D594 /* Inter-SemiBold.otf in Resources */,
 				3AAD2AD424A3A60E0075D594 /* Inter-SemiBoldItalic.otf in Resources */,
@@ -906,6 +899,8 @@
 					"$(inherited)",
 					"-lc++",
 					"-ObjC",
+					"-lnim_status",
+					"-lstatus",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = StatusIm;
@@ -966,6 +961,8 @@
 					"$(inherited)",
 					"-lc++",
 					"-ObjC",
+					"-lstatus",
+					"-lnim_status",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = StatusIm;
@@ -1031,6 +1028,8 @@
 					"$(inherited)",
 					"-lc++",
 					"-ObjC",
+					"-lstatus",
+					"-lnim_status",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum.pr;
 				PRODUCT_NAME = "Status PR";
@@ -1090,6 +1089,8 @@
 					"$(inherited)",
 					"-lc++",
 					"-ObjC",
+					"-lstatus",
+					"-lnim_status",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum.pr;
 				PRODUCT_NAME = "Status PR";
@@ -1173,6 +1174,7 @@
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
+					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1244,6 +1246,7 @@
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
+					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;

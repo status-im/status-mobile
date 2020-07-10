@@ -62,7 +62,9 @@ allprojects {
         jcenter()
 
         // for geth, function, and status-go
-        flatDir { dirs "libs", System.env.STATUS_GO_ANDROID_LIBDIR }
+        flatDir { dirs "libs", System.env.STATUS_GO_ANDROID_LIBDIR, 
+                  System.env.STATUS_GO_ANDROID_ALL_LIBDIR,
+                  System.env.NIM_STATUS_ANDROID_ALL_LIBDIR}
         maven { url "https://www.jitpack.io" }
     }
 }

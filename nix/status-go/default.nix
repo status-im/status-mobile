@@ -34,8 +34,16 @@ let
   goBuildFlags = [ "-v" ];
 
 in rec {
+  shared = callPackage ./shared {
+    inherit meta source;
+  };
+
   mobile = callPackage ./mobile {
     inherit meta source goBuildFlags goBuildLdFlags;
+  };
+
+  nim-status = callPackage ./nim-status {
+    inherit meta source shared;
   };
 
   shell = mkShell {
