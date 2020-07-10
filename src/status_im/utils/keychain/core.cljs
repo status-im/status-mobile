@@ -130,7 +130,7 @@
    (get-credentials key-uid #(if % (callback (security/mask-data (.-password ^js %))) (callback nil)))))
 
 (re-frame/reg-fx
- :keychain/get-hardwallet-keys
+ :keychain/get-keycard-keys
  (fn [[key-uid callback]]
    (get-credentials
     key-uid
@@ -176,7 +176,7 @@
              "but you will have to login again next time you launch it."))))))
 
 (re-frame/reg-fx
- :keychain/save-hardwallet-keys
+ :keychain/save-keycard-keys
  (fn [[key-uid encryption-public-key whisper-private-key]]
    (save-credentials
     key-uid
@@ -211,22 +211,22 @@
     #(re-frame/dispatch
       [:multiaccounts.login.callback/get-user-password-success % key-uid])]})
 
-(fx/defn get-hardwallet-keys
+(fx/defn get-keycard-keys
   [_ key-uid]
-  {:keychain/get-hardwallet-keys
+  {:keychain/get-keycard-keys
    [key-uid
     #(re-frame/dispatch
-      [:multiaccounts.login.callback/get-hardwallet-keys-success key-uid %])]})
+      [:multiaccounts.login.callback/get-keycard-keys-success key-uid %])]})
 
 (fx/defn save-user-password
   [_ key-uid password]
   {:keychain/save-user-password [key-uid password]})
 
-(fx/defn save-hardwallet-keys
+(fx/defn save-keycard-keys
   [_ key-uid encryption-public-key whisper-private-key]
-  {:keychain/save-hardwallet-keys [key-uid
-                                   encryption-public-key
-                                   whisper-private-key]})
+  {:keychain/save-keycard-keys [key-uid
+                                encryption-public-key
+                                whisper-private-key]})
 (fx/defn save-auth-method
   [{:keys [db]} key-uid method]
   {:db                        (assoc db :auth-method method)

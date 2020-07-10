@@ -22,7 +22,7 @@
             status-im.ui.screens.wallet.collectibles.superrare.views
             status-im.ui.screens.wallet.collectibles.kudos.views
             [status-im.ui.components.colors :as colors]
-            [status-im.hardwallet.test-menu :as hardwallet.test-menu]
+            [status-im.keycard.test-menu :as keycard.test-menu]
             [quo.core :as quo]
             [status-im.utils.config :as config]
             [status-im.reloader :as reloader]))
@@ -120,4 +120,4 @@
         (when debug?
           [reloader/reload-view @reloader/cnt])
         (when config/keycard-test-menu-enabled?
-          [hardwallet.test-menu/test-menu])]])}))
+          [keycard.test-menu/test-menu])]])}))

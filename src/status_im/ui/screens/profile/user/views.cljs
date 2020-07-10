@@ -139,7 +139,6 @@
        :on-press            #(re-frame/dispatch [:navigate-to :sync-settings])}]
      (when (and (or platform/android?
                     config/keycard-test-menu-enabled?)
-                config/hardwallet-enabled?
                 keycard-pairing)
        [quo/list-item
         {:icon                :main-icons/keycard

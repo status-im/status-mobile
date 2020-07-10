@@ -50,7 +50,7 @@
             status-im.wallet.collectibles.core
             status-im.wallet.accounts.core
             status-im.popover.core
-            [status-im.hardwallet.core :as hardwallet]
+            [status-im.keycard.core :as keycard]
             [status-im.utils.dimensions :as dimensions]
             [status-im.multiaccounts.biometric.core :as biometric]
             [status-im.constants :as constants]
@@ -136,7 +136,7 @@
       cofx
       {:db (-> db
                (dissoc :intro-wizard)
-               (update :hardwallet dissoc :application-info))}
+               (update :keycard dissoc :application-info))}
       (multiaccounts.login/open-login key-uid photo-path name public-key)))))
 
 (handlers/register-handler-fx
@@ -577,50 +577,50 @@
    (log/debug :event-str event-str)
    (signals/process cofx event-str)))
 
-;; hardwallet module
+;; keycard module
 
 (handlers/register-handler-fx
- :hardwallet.ui/go-to-settings-button-pressed
+ :keycard.ui/go-to-settings-button-pressed
  (fn [_ _]
-   {:hardwallet/open-nfc-settings nil}))
+   {:keycard/open-nfc-settings nil}))
 
 (handlers/register-handler-fx
- :hardwallet.ui/pair-card-button-pressed
+ :keycard.ui/pair-card-button-pressed
  (fn [{:keys [db]} _]
-   {:db (assoc-in db [:hardwallet :setup-step] :enter-pair-code)}))
+   {:db (assoc-in db [:keycard :setup-step] :enter-pair-code)}))
 
 (handlers/register-handler-fx
- :hardwallet.ui/pair-code-input-changed
+ :keycard.ui/pair-code-input-changed
  (fn [{:keys [db]} [_ pair-code]]
-   {:db (assoc-in db [:hardwallet :secrets :password] pair-code)}))
+   {:db (assoc-in db [:keycard :secrets :password] pair-code)}))
 
 (handlers/register-handler-fx
- :hardwallet.ui/recovery-phrase-confirm-word-back-button-pressed
+ :keycard.ui/recovery-phrase-confirm-word-back-button-pressed
  (fn [{:keys [db]} _]
-   {:db (assoc-in db [:hardwallet :setup-step] :recovery-phrase)}))
+   {:db (assoc-in db [:keycard :setup-step] :recovery-phrase)}))
 
 (handlers/register-handler-fx
- :hardwallet.ui/recovery-phrase-confirm-word-input-changed
+ :keycard.ui/recovery-phrase-confirm-word-input-changed
  (fn [{:keys [db]} [_ input]]
-   {:db (assoc-in db [:hardwallet :recovery-phrase :input-word] input)}))
+   {:db (assoc-in db [:keycard :recovery-phrase :input-word] input)}))
 
 (handlers/register-handler-fx
- :hardwallet.ui/recovery-phrase-cancel-pressed
+ :keycard.ui/recovery-phrase-cancel-pressed
  (fn [{:keys [db]} _]
-   {:db (assoc-in db [:hardwallet :setup-step] :recovery-phrase)}))
+   {:db (assoc-in db [:keycard :setup-step] :recovery-phrase)}))
 
 (handlers/register-handler-fx
- :hardwallet.ui/pin-numpad-delete-button-pressed
+ :keycard.ui/pin-numpad-delete-button-pressed
  (fn [{:keys [db]} [_ step]]
-   (when-not (empty? (get-in db [:hardwallet :pin step]))
-     {:db (update-in db [:hardwallet :pin step] pop)})))
+   (when-not (empty? (get-in db [:keycard :pin step]))
+     {:db (update-in db [:keycard :pin step] pop)})))
 
 (handlers/register-handler-fx
- :hardwallet.ui/create-pin-button-pressed
+ :keycard.ui/create-pin-button-pressed
  (fn [{:keys [db]} _]
    {:db (-> db
-            (assoc-in [:hardwallet :setup-step] :pin)
-            (assoc-in [:hardwallet :pin :enter-step] :original))}))
+            (assoc-in [:keycard :setup-step] :pin)
+            (assoc-in [:keycard :pin :enter-step] :original))}))
 
 ;; browser module
 
@@ -1276,15 +1276,15 @@
  (fn [cofx [_ view-id]]
    (fx/merge cofx
              #(case view-id
-                :keycard-settings (hardwallet/settings-screen-did-load %)
-                :reset-card (hardwallet/reset-card-screen-did-load %)
-                :enter-pin-settings (hardwallet/enter-pin-screen-did-load %)
-                :keycard-login-pin (hardwallet/enter-pin-screen-did-load %)
-                :add-new-account-pin (hardwallet/enter-pin-screen-did-load %)
-                :hardwallet-authentication-method (hardwallet/authentication-method-screen-did-load %)
+                :keycard-settings (keycard/settings-screen-did-load %)
+                :reset-card (keycard/reset-card-screen-did-load %)
+                :enter-pin-settings (keycard/enter-pin-screen-did-load %)
+                :keycard-login-pin (keycard/enter-pin-screen-did-load %)
+                :add-new-account-pin (keycard/enter-pin-screen-did-load %)
+                :keycard-authentication-method (keycard/authentication-method-screen-did-load %)
                 ;; We need this as if you click on universal-links you transition
                 ;; from chat to chat, and therefore we won't be loading new
                 ;; messages
                 :chat (chat.loading/load-messages %)
-                :multiaccounts (hardwallet/multiaccounts-screen-did-load %)
+                :multiaccounts (keycard/multiaccounts-screen-did-load %)
                 nil))))

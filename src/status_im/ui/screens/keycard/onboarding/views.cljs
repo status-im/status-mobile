@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.keycard.onboarding.views
   (:require [re-frame.core :as re-frame]
-            [status-im.hardwallet.onboarding :as hardwallet.onboarding]
+            [status-im.keycard.onboarding :as keycard.onboarding]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar :as bottom-toolbar]
             [status-im.ui.components.colors :as colors]
@@ -10,14 +10,14 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
+            [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.ui.screens.keycard.styles :as styles]
             [quo.core :as quo]
             [status-im.constants :as constants])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview intro []
-  (letsubs [flow [:hardwallet-flow]]
+  (letsubs [flow [:keycard-flow]]
     [react/view styles/container
      [topbar/topbar]
      [react/view {:flex            1
@@ -89,14 +89,14 @@
         (i18n/label :t/begin-set-up)]]]]))
 
 (defview puk-code []
-  (letsubs [secrets [:hardwallet-secrets]
-            steps [:hardwallet-flow-steps]
-            puk-code [:hardwallet-puk-code]]
+  (letsubs [secrets [:keycard-secrets]
+            steps [:keycard-flow-steps]
+            puk-code [:keycard-puk-code]]
     [react/view styles/container
      [toolbar/toolbar
       {:transparent? true}
       [toolbar/nav-text
-       {:handler #(re-frame/dispatch [::hardwallet.onboarding/cancel-pressed])
+       {:handler #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
       [react/text {:style               {:color colors/gray}
@@ -180,18 +180,18 @@
           (i18n/label :t/next)]}]]]]))
 
 (defview pin []
-  (letsubs [pin [:hardwallet/pin]
-            enter-step [:hardwallet/pin-enter-step]
-            status [:hardwallet/pin-status]
-            error-label [:hardwallet/pin-error-label]
-            steps [:hardwallet-flow-steps]
+  (letsubs [pin [:keycard/pin]
+            enter-step [:keycard/pin-enter-step]
+            status [:keycard/pin-status]
+            error-label [:keycard/pin-error-label]
+            steps [:keycard-flow-steps]
             small-screen? [:dimensions/small-screen?]
-            setup-step [:hardwallet-setup-step]]
+            setup-step [:keycard-setup-step]]
     [react/view styles/container
      [toolbar/toolbar
       {:transparent? true}
       [toolbar/nav-text
-       {:handler #(re-frame/dispatch [::hardwallet.onboarding/cancel-pressed])
+       {:handler #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
       (when-not (= setup-step :loading-keys)
@@ -232,12 +232,12 @@
           (i18n/label :t/you-will-need-this-code)]])]]))
 
 (defview recovery-phrase []
-  (letsubs [mnemonic [:hardwallet-mnemonic]]
+  (letsubs [mnemonic [:keycard-mnemonic]]
     [react/view styles/container
      [toolbar/toolbar
       {:transparent? true}
       [toolbar/nav-text
-       {:handler #(re-frame/dispatch [::hardwallet.onboarding/cancel-pressed])
+       {:handler #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
       [react/text {:style {:color colors/gray}}
@@ -294,15 +294,15 @@
          (i18n/label :t/confirm)]}]]]))
 
 (defview recovery-phrase-confirm-word []
-  (letsubs [word [:hardwallet-recovery-phrase-word]
-            input-word [:hardwallet-recovery-phrase-input-word]
-            error [:hardwallet-recovery-phrase-confirm-error]]
+  (letsubs [word [:keycard-recovery-phrase-word]
+            input-word [:keycard-recovery-phrase-input-word]
+            error [:keycard-recovery-phrase-confirm-error]]
     (let [{:keys [idx]} word]
       [react/view styles/container
        [toolbar/toolbar
         {:transparent? true}
         [toolbar/nav-text
-         {:handler             #(re-frame/dispatch [::hardwallet.onboarding/cancel-pressed])
+         {:handler             #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
           :accessibility-label :cancel-keycard-setup
           :style               {:padding-left 21}}
          (i18n/label :t/cancel)]

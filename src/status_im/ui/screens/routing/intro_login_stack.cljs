@@ -7,9 +7,9 @@
             [status-im.ui.screens.keycard.onboarding.views :as keycard.onboarding]
             [status-im.ui.screens.keycard.recovery.views :as keycard.recovery]
             [status-im.ui.screens.keycard.views :as keycard]
-            [status-im.ui.screens.hardwallet.authentication-method.views
+            [status-im.ui.screens.keycard.authentication-method.views
              :as
-             hardwallet.authentication]
+             keycard.authentication]
             [status-im.ui.screens.routing.core :as navigation]))
 
 (defonce stack (navigation/create-stack))
@@ -97,8 +97,8 @@
        :component keycard.recovery/no-key}
       {:name      :keycard-recovery-pin
        :component keycard.recovery/pin}
-      {:name      :hardwallet-authentication-method
-       :component hardwallet.authentication/hardwallet-authentication-method}
+      {:name      :keycard-authentication-method
+       :component keycard.authentication/keycard-authentication-method}
       {:name      :keycard-login-pin
        :component keycard/login-pin}
       {:name      :keycard-blank

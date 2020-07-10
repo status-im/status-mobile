@@ -2,11 +2,11 @@
   (:require [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
- :hardwallet/nfc-enabled?
+ :keycard/nfc-enabled?
  (fn [db]
-   (get-in db [:hardwallet :nfc-enabled?])))
+   (get-in db [:keycard :nfc-enabled?])))
 
 (re-frame/reg-sub
- :hardwallet/card-read-in-progress?
+ :keycard/card-read-in-progress?
  (fn [db]
-   (get-in db [:hardwallet :card-read-in-progress?] false)))
+   (get-in db [:keycard :card-read-in-progress?] false)))

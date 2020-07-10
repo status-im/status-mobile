@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.keycard.recovery.views
   (:require [re-frame.core :as re-frame]
-            [status-im.hardwallet.recovery :as hardwallet.recovery]
+            [status-im.keycard.recovery :as keycard.recovery]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.react :as react]
@@ -10,7 +10,7 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
+            [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.utils.core :as utils.core]
             [status-im.utils.gfycat.core :as gfy]
@@ -68,16 +68,16 @@
       (i18n/label :t/keycard-recovery-intro-button-text)]]]])
 
 (defview pin []
-  (letsubs [pin [:hardwallet/pin]
-            status [:hardwallet/pin-status]
-            error-label [:hardwallet/pin-error-label]
+  (letsubs [pin [:keycard/pin]
+            status [:keycard/pin-status]
+            error-label [:keycard/pin-error-label]
             small-screen? [:dimensions/small-screen?]
-            retry-counter [:hardwallet/retry-counter]]
+            retry-counter [:keycard/retry-counter]]
     [react/view styles/container
      [toolbar/toolbar
       {:transparent? true}
       [toolbar/nav-text
-       {:handler #(re-frame/dispatch [::hardwallet.recovery/cancel-pressed])
+       {:handler #(re-frame/dispatch [::keycard.recovery/cancel-pressed])
         :style   {:padding-left 21}}
        (i18n/label :t/cancel)]
       (when-not (#{:frozen-card :blocked-card} status)
@@ -110,9 +110,9 @@
           :step          :import-multiaccount}]])]))
 
 (defview pair []
-  (letsubs [pair-code [:hardwallet-pair-code]
-            error [:hardwallet-setup-error]
-            {:keys [free-pairing-slots]} [:hardwallet-application-info]]
+  (letsubs [pair-code [:keycard-pair-code]
+            error [:keycard-setup-error]
+            {:keys [free-pairing-slots]} [:keycard-application-info]]
     [react/view styles/container
      [toolbar/toolbar
       {:transparent? true}
@@ -163,8 +163,8 @@
          (i18n/label :t/pair-card)]}]]]))
 
 (defview success []
-  (letsubs [address [:hardwallet-multiaccount-wallet-address]
-            whisper-public-key [:hardwallet-multiaccount-whisper-public-key]]
+  (letsubs [address [:keycard-multiaccount-wallet-address]
+            whisper-public-key [:keycard-multiaccount-whisper-public-key]]
     [react/view styles/container
      [topbar/topbar {:navigation :none}]
      [react/view {:flex            1
@@ -210,7 +210,7 @@
         (i18n/label :t/finish)]]]]))
 
 (defview no-key []
-  (letsubs [card-state [:hardwallet-card-state]]
+  (letsubs [card-state [:keycard-card-state]]
     [react/view styles/container
      [topbar/topbar {:navigation :none}]
      [react/view {:flex            1

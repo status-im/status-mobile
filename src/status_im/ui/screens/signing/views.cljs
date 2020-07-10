@@ -7,7 +7,7 @@
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.ui.components.list.views :as list]
-            [status-im.hardwallet.common :as hardwallet.common]
+            [status-im.keycard.common :as keycard.common]
             [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -19,7 +19,7 @@
             [quo.core :as quo]
             [status-im.ui.screens.signing.styles :as styles]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
+            [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.ui.components.bottom-panel.views :as bottom-panel]
             [status-im.utils.utils :as utils]
             [reagent.core :as reagent]
@@ -95,12 +95,12 @@
      (i18n/label :t/cancel)]]])
 
 (views/defview keycard-pin-view []
-  (views/letsubs [pin [:hardwallet/pin]
+  (views/letsubs [pin [:keycard/pin]
                   small-screen? [:dimensions/small-screen?]
-                  error-label [:hardwallet/pin-error-label]
-                  enter-step [:hardwallet/pin-enter-step]
-                  status [:hardwallet/pin-status]
-                  retry-counter [:hardwallet/retry-counter]]
+                  error-label [:keycard/pin-error-label]
+                  enter-step [:keycard/pin-enter-step]
+                  status [:keycard/pin-status]
+                  retry-counter [:keycard/retry-counter]]
     (let [enter-step (or enter-step :sign)]
       [react/view
        [pin.views/pin-view
@@ -215,8 +215,8 @@
   (let [message (:message formatted-data)]
     [react/view (assoc (styles/message) :padding-vertical 16)
      [keycard-sheet/connect-keycard
-      {:on-connect    ::hardwallet.common/on-card-connected
-       :on-disconnect ::hardwallet.common/on-card-disconnected
+      {:on-connect    ::keycard.common/on-card-connected
+       :on-disconnect ::keycard.common/on-card-disconnected
        :connected?    connected?
        :on-cancel     #(re-frame/dispatch [:signing.ui/cancel-is-pressed])
        :params

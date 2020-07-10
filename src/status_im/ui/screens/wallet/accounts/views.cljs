@@ -12,7 +12,7 @@
             [status-im.ui.screens.wallet.accounts.styles :as styles]
             [status-im.utils.utils :as utils.utils]
             [status-im.wallet.utils :as wallet.utils]
-            [status-im.hardwallet.login :as hardwallet.login])
+            [status-im.keycard.login :as keycard.login])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview account-card [{:keys [name color address type] :as account}]
@@ -130,7 +130,7 @@
   (views/letsubs [currency           [:wallet/currency]
                   portfolio-value    [:portfolio-value]
                   empty-balances?    [:empty-balances?]
-                  frozen-card?       [:hardwallet/frozen-card?]
+                  frozen-card?       [:keycard/frozen-card?]
                   {:keys [mnemonic]} [:multiaccount]]
     [reanimated/view {:style (styles/container {:minimized minimized})}
      (when (or
@@ -140,7 +140,7 @@
         [react/touchable-highlight
          {:on-press #(re-frame/dispatch
                       (if frozen-card?
-                        [::hardwallet.login/reset-pin]
+                        [::keycard.login/reset-pin]
                         [:navigate-to :profile-stack {:screen :backup-seed
                                                       :initial false}]))}
          [react/view {:flex-direction :row

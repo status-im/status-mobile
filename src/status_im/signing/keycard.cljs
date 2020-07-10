@@ -59,7 +59,7 @@
   {:events [:signing.keycard.callback/hash-message-completed]}
   [{:keys [db]} data typed? result]
   (let [{:keys [result error]} (types/json->clj result)]
-    {:db (update db :hardwallet assoc
+    {:db (update db :keycard assoc
                  :hash result
                  :typed? typed?
                  :data data)}))
@@ -78,9 +78,9 @@
   [{:keys [db]} original-tx result]
   (let [{:keys [transaction hash]} (:result (types/json->clj result))]
     {:db (-> db
-             (assoc-in [:hardwallet :transaction]
+             (assoc-in [:keycard :transaction]
                        (merge original-tx transaction))
-             (assoc-in [:hardwallet :hash] hash))}))
+             (assoc-in [:keycard :hash] hash))}))
 
 (fx/defn sign-with-keycard
   {:events [:signing.ui/sign-with-keycard-pressed]}
@@ -89,7 +89,7 @@
     (fx/merge
      cofx
      {:db (-> db
-              (assoc-in [:hardwallet :pin :enter-step] :sign)
+              (assoc-in [:keycard :pin :enter-step] :sign)
               (assoc-in [:signing/sign :type] :keycard)
               (assoc-in [:signing/sign :keycard-step] :pin))}
      #(if message

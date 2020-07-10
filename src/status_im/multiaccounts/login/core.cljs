@@ -6,7 +6,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.hardwallet.common :as hardwallet.common]
+            [status-im.keycard.common :as keycard.common]
             [status-im.fleet.core :as fleet]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.biometric.core :as biometric]
@@ -70,7 +70,7 @@
     {:db (-> db
              (assoc-in [:multiaccounts/login :processing] true)
              (dissoc :intro-wizard)
-             (update :hardwallet dissoc :flow))
+             (update :keycard dissoc :flow))
      ::login [key-uid
               (types/clj->json {:name       name
                                 :key-uid    key-uid
@@ -79,10 +79,10 @@
 
 (fx/defn finish-keycard-setup
   [{:keys [db] :as cofx}]
-  (let [flow (get-in db [:hardwallet :flow])]
+  (let [flow (get-in db [:keycard :flow])]
     (when flow
       (fx/merge cofx
-                {:db (update db :hardwallet dissoc :flow)}
+                {:db (update db :keycard dissoc :flow)}
                 (if (= :import flow)
                   (navigation/navigate-to-cofx :intro-stack {:screen :keycard-recovery-success})
                   (navigation/navigate-to-cofx (if platform/android?
@@ -251,7 +251,7 @@
               (initialize-wallet accounts nil))))
 
 (defn- keycard-setup? [cofx]
-  (boolean (get-in cofx [:db :hardwallet :flow])))
+  (boolean (get-in cofx [:db :keycard :flow])))
 
 (fx/defn multiaccount-login-success
   [{:keys [db now] :as cofx}]
@@ -267,7 +267,7 @@
     (fx/merge cofx
               {:db (-> db
                        (dissoc :connectivity/ui-status-properties)
-                       (update :hardwallet dissoc
+                       (update :keycard dissoc
                                :on-card-read
                                :card-read-in-progress?
                                :pin
@@ -320,9 +320,9 @@
        cofx
        (when keycard-account?
          {:db (-> db
-                  (assoc-in [:hardwallet :pin :enter-step] :login)
-                  (assoc-in [:hardwallet :pin :status] nil)
-                  (assoc-in [:hardwallet :pin :login] []))})
+                  (assoc-in [:keycard :pin :enter-step] :login)
+                  (assoc-in [:keycard :pin :status] nil)
+                  (assoc-in [:keycard :pin :login] []))})
        (if keycard-account?
          (navigation/navigate-to-cofx :intro-stack {:screen :keycard-login-pin})
          (navigation/navigate-to-cofx :intro-stack {:screen :login}))))))
@@ -333,7 +333,7 @@
     (log/debug "[login] get-credentials"
                "keycard-multiacc?" keycard-multiaccount?)
     (if keycard-multiaccount?
-      (keychain/get-hardwallet-keys cofx key-uid)
+      (keychain/get-keycard-keys cofx key-uid)
       (keychain/get-user-password cofx key-uid))))
 
 (fx/defn get-auth-method-success
@@ -354,8 +354,8 @@
         (= auth-method keychain/auth-method-password)
         (get-credentials % key-uid)
         (and keycard-multiaccount?
-             (get-in db [:hardwallet :card-connected?]))
-        (hardwallet.common/get-application-info % nil nil))
+             (get-in db [:keycard :card-connected?]))
+        (keycard.common/get-application-info % nil nil))
      (open-login-callback nil))))
 
 (fx/defn biometric-auth-done

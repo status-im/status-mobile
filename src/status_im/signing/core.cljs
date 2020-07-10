@@ -7,7 +7,7 @@
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.tokens :as tokens]
-            [status-im.hardwallet.common :as hardwallet.common]
+            [status-im.keycard.common :as keycard.common]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.signing.keycard :as signing.keycard]
@@ -197,7 +197,7 @@
        (when pinless?
          (signing.keycard/hash-message {:data data
                                         :typed? true
-                                        :on-completed #(re-frame/dispatch [:hardwallet/store-hash-and-sign-typed %])})))
+                                        :on-completed #(re-frame/dispatch [:keycard/store-hash-and-sign-typed %])})))
       (fx/merge
        cofx
        {:db               (assoc updated-db
@@ -260,13 +260,13 @@
     (fx/merge
      cofx
      {:db (dissoc db :signing/tx :signing/sign)}
-     (if (hardwallet.common/keycard-multiaccount? db)
+     (if (keycard.common/keycard-multiaccount? db)
        (signing.keycard/hash-message
         {:data data
          :on-completed
          (fn [hash]
            (re-frame/dispatch
-            [:hardwallet/sign-message
+            [:keycard/sign-message
              {:tx-hash transaction-hash
               :message-id message-id
               :chat-id chat-id
@@ -350,11 +350,11 @@
   (let [{:keys [on-error]} (get-in db [:signing/tx])]
     (fx/merge cofx
               {:db (-> db
-                       (assoc-in [:hardwallet :pin :status] nil)
+                       (assoc-in [:keycard :pin :status] nil)
                        (dissoc :signing/tx :signing/sign))}
               (check-queue)
-              (hardwallet.common/hide-connection-sheet)
-              (hardwallet.common/clear-pin)
+              (keycard.common/hide-connection-sheet)
+              (keycard.common/clear-pin)
               #(when on-error
                  {:dispatch (conj on-error "transaction was cancelled by user")}))))
 

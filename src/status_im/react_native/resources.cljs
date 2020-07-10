@@ -15,7 +15,7 @@
    :keys-dark          (js/require "../resources/images/ui/keys-dark.jpg")
    :lock               (js/require "../resources/images/ui/lock.png")
    :tribute-to-talk    (js/require "../resources/images/ui/tribute-to-talk.png")
-   :hardwallet-card    (js/require "../resources/images/ui/hardwallet-card.png")
+   :keycard-card    (js/require "../resources/images/ui/hardwallet-card.png")
    :keycard-lock       (js/require "../resources/images/ui/keycard-lock.png")
    :keycard            (js/require "../resources/images/ui/keycard.png")
    :keycard-logo       (js/require "../resources/images/ui/keycard-logo.png")

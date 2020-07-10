@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.keycard.components.keycard-animation
   (:require [reagent.core :as reagent]
-            [status-im.hardwallet.card :as keycard-nfc]
+            [status-im.keycard.card :as keycard-nfc]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]

@@ -37,7 +37,7 @@
              :registry                           {}
              :stickers/packs-owned               #{}
              :stickers/packs-pending             #{}
-             :hardwallet                         {:nfc-enabled?   false
+             :keycard                            {:nfc-enabled?   false
                                                   :pin            {:original     []
                                                                    :confirmation []
                                                                    :current      []

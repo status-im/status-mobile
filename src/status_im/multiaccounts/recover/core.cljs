@@ -4,7 +4,7 @@
             [status-im.constants :as constants]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.mnemonic :as mnemonic]
-            [status-im.hardwallet.nfc :as nfc]
+            [status-im.keycard.nfc :as nfc]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.native-module.core :as status]
@@ -171,7 +171,7 @@
                     :encrypt-with-password? true
                     :back-action            :intro-wizard/navigate-back
                     :forward-action         :multiaccounts.recover/enter-phrase-next-pressed})
-            (update :hardwallet dissoc :flow))}
+            (update :keycard dissoc :flow))}
    (bottom-sheet/hide-bottom-sheet)
    (navigation/navigate-to-cofx :recover-multiaccount-enter-phrase nil)))
 

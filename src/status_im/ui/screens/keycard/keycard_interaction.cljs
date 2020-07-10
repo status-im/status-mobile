@@ -65,7 +65,7 @@
        (:title params)]])
    (when (:header params)
      [(:header params)])
-   (if @(re-frame/subscribe [:hardwallet/nfc-enabled?])
+   (if @(re-frame/subscribe [:keycard/nfc-enabled?])
      [card-sync-flow {:connected? connected?
                       :params (select-keys params [:state-translations])
                       :on-card-disconnected

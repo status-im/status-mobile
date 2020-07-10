@@ -5,7 +5,7 @@
             [status-im.data-store.settings :as data-store.settings]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
-            [status-im.hardwallet.nfc :as nfc]
+            [status-im.keycard.nfc :as nfc]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.db :as db]
             [status-im.native-module.core :as status]
@@ -103,7 +103,7 @@
   {:events [:multiaccounts.create.ui/intro-wizard]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:db (update db :hardwallet dissoc :flow)}
+            {:db (update db :keycard dissoc :flow)}
             (prepare-intro-wizard)
             (navigation/navigate-to-cofx :create-multiaccount-generate-key nil)))
 
@@ -232,7 +232,7 @@
 
 (fx/defn save-multiaccount-and-login-with-keycard
   [_ args]
-  {:hardwallet/save-multiaccount-and-login args})
+  {:keycard/save-multiaccount-and-login args})
 
 (fx/defn save-account-and-login
   [_ key-uid multiaccount-data password settings node-config accounts-data]

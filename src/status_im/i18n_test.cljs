@@ -837,8 +837,8 @@
     :start-new-chat
     :status
     :status-confirmed
-    :status-hardwallet
     :status-keycard
+    :status-hardwallet
     :status-not-sent-click
     :status-not-sent-tap
     :status-pending

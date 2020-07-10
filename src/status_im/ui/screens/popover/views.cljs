@@ -13,7 +13,7 @@
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.biometric.views :as biometric]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.screens.hardwallet.frozen-card.view :as frozen-card]))
+            [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]

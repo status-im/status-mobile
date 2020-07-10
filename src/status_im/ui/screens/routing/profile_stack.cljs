@@ -33,8 +33,8 @@
             [status-im.ui.screens.fleet-settings.views :as fleet-settings]
             [status-im.ui.screens.profile.seed.views :as profile.seed]
             [status-im.ui.screens.profile.tribute-to-talk.views :as tr-to-talk]
-            [status-im.ui.screens.hardwallet.pin.views :as hardwallet.pin]
-            [status-im.ui.screens.hardwallet.settings.views :as hardwallet.settings]
+            [status-im.ui.screens.keycard.pin.views :as keycard.pin]
+            [status-im.ui.screens.keycard.settings.views :as keycard.settings]
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
             [status-im.ui.screens.routing.core :as navigation]
             [status-im.ui.screens.appearance.views :as appearance]))
@@ -120,10 +120,10 @@
 
     ;; KEYCARD
     {:name      :keycard-settings
-     :component hardwallet.settings/keycard-settings}
+     :component keycard.settings/keycard-settings}
     {:name      :reset-card
-     :component hardwallet.settings/reset-card}
+     :component keycard.settings/reset-card}
     {:name      :keycard-pin
-     :component hardwallet.settings/reset-pin}
+     :component keycard.settings/reset-pin}
     {:name      :enter-pin-settings
-     :component hardwallet.pin/enter-pin}]])
+     :component keycard.pin/enter-pin}]])

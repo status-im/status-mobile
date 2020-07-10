@@ -11,13 +11,13 @@
 
 (fx/defn initialize-app-db
   "Initialize db to initial state"
-  [{{:keys [hardwallet initial-props supported-biometric-auth app-active-since]
+  [{{:keys [keycard initial-props supported-biometric-auth app-active-since]
      :network/keys [type]} :db
     now :now}]
   {:db (assoc app-db
               :initial-props initial-props
               :network/type type
-              :hardwallet (dissoc hardwallet :secrets)
+              :keycard (dissoc keycard :secrets)
               :supported-biometric-auth supported-biometric-auth
               :app-active-since (or app-active-since now)
               :multiaccounts/loading true)})
@@ -58,10 +58,10 @@
              ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts % {:logout? false}])
              :ui/listen-to-window-dimensions-change nil
              ::network/listen-to-network-info       nil
-             :hardwallet/register-card-events       nil
-             :hardwallet/check-nfc-support          nil
-             :hardwallet/check-nfc-enabled          nil
-             :hardwallet/retrieve-pairings          nil}
+             :keycard/register-card-events       nil
+             :keycard/check-nfc-support          nil
+             :keycard/check-nfc-enabled          nil
+             :keycard/retrieve-pairings          nil}
             (initialize-app-db)))
 
 (re-frame/reg-fx

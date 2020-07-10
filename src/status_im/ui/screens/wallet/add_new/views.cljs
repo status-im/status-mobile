@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.add-new.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
-            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
+            [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.ui.components.colors :as colors]
@@ -126,16 +126,16 @@
            (re-frame/dispatch [:set-in [:add-account :private-key] (security/mask-data %)]))}]])])
 
 (defview pin []
-  (letsubs [pin           [:hardwallet/pin]
-            status        [:hardwallet/pin-status]
-            error-label   [:hardwallet/pin-error-label]
-            retry-counter [:hardwallet/retry-counter]]
+  (letsubs [pin           [:keycard/pin]
+            status        [:keycard/pin-status]
+            error-label   [:keycard/pin-error-label]
+            retry-counter [:keycard/retry-counter]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [topbar/topbar
       {:navigation :none
        :accessories
        [{:label   :t/cancel
-         :handler #(re-frame/dispatch [:hardwallet/new-account-pin-sheet-hide])}]}]
+         :handler #(re-frame/dispatch [:keycard/new-account-pin-sheet-hide])}]}]
      [pin.views/pin-view
       {:pin               pin
        :status            status
@@ -146,7 +146,7 @@
        :step              :export-key}]]))
 
 (defn pin-sheet []
-  (let [show-sheet? @(re-frame/subscribe [:hardwallet/new-account-sheet?])
+  (let [show-sheet? @(re-frame/subscribe [:keycard/new-account-sheet?])
         {window-height :height} @(re-frame/subscribe [:dimensions/window])]
     [bottom-panel/bottom-panel
      show-sheet?
@@ -183,7 +183,7 @@
          :on-press
          (if (and keycard?
                   (not= type :watch))
-           #(re-frame/dispatch [:hardwallet/new-account-pin-sheet
+           #(re-frame/dispatch [:keycard/new-account-pin-sheet
                                 {:view {:content pin
                                         :height  256}}])
            #(re-frame/dispatch [:wallet.accounts/add-new-account

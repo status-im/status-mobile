@@ -11,11 +11,11 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.screens.hardwallet.pin.views :as pin.views]
+            [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.constants :as constants]
-            [status-im.hardwallet.login :as hardwallet.login]
-            [status-im.ui.screens.hardwallet.frozen-card.view :as frozen-card.view])
+            [status-im.keycard.login :as keycard.login]
+            [status-im.ui.screens.keycard.frozen-card.view :as frozen-card.view])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 ;; NOTE(Ferossgp): Seems like it should be in popover
@@ -205,7 +205,7 @@
       [react/view {:flex-direction :row
                    :height         52}
        [quo/button {:on-press #(re-frame/dispatch
-                                [::hardwallet.login/login-after-reset])}
+                                [::keycard.login/login-after-reset])}
         (i18n/label :t/open)]]])])
 
 (defn frozen-card []
@@ -260,14 +260,14 @@
                             hide-login-actions?
                             default-enter-step]
                      :or   {default-enter-step :login}}]
-  (letsubs [pin [:hardwallet/pin]
-            enter-step [:hardwallet/pin-enter-step]
-            status [:hardwallet/pin-status]
-            error-label [:hardwallet/pin-error-label]
+  (letsubs [pin [:keycard/pin]
+            enter-step [:keycard/pin-enter-step]
+            status [:keycard/pin-status]
+            error-label [:keycard/pin-error-label]
             login-multiaccount [:multiaccounts/login]
             multiaccount [:multiaccount]
             small-screen? [:dimensions/small-screen?]
-            retry-counter [:hardwallet/retry-counter]]
+            retry-counter [:keycard/retry-counter]]
     (let [{:keys [name] :as account} (or login-multiaccount multiaccount)
           ;; TODO(rasom): this hack fixes state mess when more then two
           ;; pin-view instances are used at the same time. Should be properly

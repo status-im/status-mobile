@@ -40,9 +40,9 @@
             [status-im.wallet.db :as wallet.db]
             [status-im.wallet.utils :as wallet.utils]
             status-im.ui.screens.keycard.subs
-            status-im.ui.screens.hardwallet.settings.subs
-            status-im.ui.screens.hardwallet.pin.subs
-            status-im.ui.screens.hardwallet.setup.subs))
+            status-im.ui.screens.keycard.settings.subs
+            status-im.ui.screens.keycard.pin.subs
+            status-im.ui.screens.keycard.setup.subs))
 
 ;; TOP LEVEL ===========================================================================================================
 
@@ -177,7 +177,7 @@
 (reg-root-key-sub :popover/popover :popover/popover)
 (reg-root-key-sub :add-account :add-account)
 
-(reg-root-key-sub :keycard :hardwallet)
+(reg-root-key-sub :keycard :keycard)
 
 (reg-root-key-sub :auth-method :auth-method)
 
@@ -188,7 +188,7 @@
 (reg-root-key-sub ::pagination-info :pagination-info)
 
 ;; keycard
-(reg-root-key-sub :hardwallet/new-account-sheet? :hardwallet/new-account-sheet?)
+(reg-root-key-sub :keycard/new-account-sheet? :keycard/new-account-sheet?)
 
 ;;GENERAL ==============================================================================================================
 
