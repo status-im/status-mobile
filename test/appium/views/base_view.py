@@ -449,7 +449,7 @@ class BaseView(object):
     def logcat(self):
         logcat = self.driver.get_log("logcat")
         if len(logcat) > 1000:
-            return str([i for i in logcat if 'appium' or ':1.000000.' not in str(i).lower()])
+            return str([i for i in logcat if not ('appium' in str(i).lower() or ':1.000000.' in str(i).lower())])
         raise TimeoutError('Logcat is empty')
 
     def confirm(self):
