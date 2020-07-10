@@ -198,11 +198,20 @@ jsbundle-ios: ##@jsbundle Compile JavaScript and Clojure into index.ios.js
 
 status-go-android: SHELL := /bin/sh
 status-go-android: ##@status-go Compile status-go for Android app
-	nix/scripts/build.sh targets.status-go.mobile.android
+	nix/scripts/build.sh targets.status-go.android
 
 status-go-ios: SHELL := /bin/sh
 status-go-ios: ##@status-go Compile status-go for iOS app
-	nix/scripts/build.sh targets.status-go.mobile.ios
+	nix/scripts/build.sh targets.status-go.ios
+
+nim-status-android: SHELL := /bin/sh
+nim-status-android: ##@status-go Compile nim-status for Android app
+	nix/scripts/build.sh targets.nim-status.android
+
+nim-status-ios: SHELL := /bin/sh
+nim-status-ios: ##@status-go Compile nim-status for iOS app
+	nix/scripts/build.sh targets.nim-status.ios
+
 
 #--------------
 # Watch, Build & Review changes
@@ -287,7 +296,7 @@ android-devices: ##@other Invoke adb devices
 
 android-logcat: export TARGET := android-env
 android-logcat: ##@other Read status-react logs from Android phone using adb
-	adb logcat | grep -e RNBootstrap -e ReactNativeJS -e ReactNative -e StatusModule -e StatusNativeLogs -e 'F DEBUG   :' -e 'Go      :' -e 'GoLog   :' -e 'libc    :'
+	adb logcat | grep -e nim -e RNBootstrap -e ReactNativeJS -e ReactNative -e StatusModule -e StatusNativeLogs -e 'F DEBUG   :' -e 'Go      :' -e 'GoLog   :' -e 'libc    :'
 
 android-install: export TARGET := android-env
 android-install: export BUILD_TYPE ?= release

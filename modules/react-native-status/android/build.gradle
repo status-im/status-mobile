@@ -16,6 +16,11 @@ def getStatusGoSHA1 = { ->
     return object.get('commit-sha1').substring(0, 7)
 }
 
+def getEnvOrConfig = { varName ->
+    def val = System.getenv(varName) ? System.getenv(varName) : project.property(varName)
+    return val
+}
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
@@ -24,6 +29,15 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        ndk {
+            abiFilters getEnvOrConfig('ANDROID_ABI_INCLUDE').split(";")
+        }
+    }
+
+    externalNativeBuild {
+        ndkBuild {
+            path "src/main/jni/Android.mk"
+        }
     }
 }
 
@@ -31,5 +45,4 @@ dependencies {
     implementation 'com.facebook.react:react-native:+' // from node_modules
     implementation 'com.github.status-im:function:0.0.1'
     implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation(group: 'status-im', name: 'status-go', version: getStatusGoSHA1(), ext: 'aar')
 }

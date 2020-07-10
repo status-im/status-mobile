@@ -1,6 +1,8 @@
 { stdenv, pkgs, deps, lib, config, callPackage,
   watchmanFactory, androidPkgs, patchMavenSources,
-  keystore, jsbundle, status-go }:
+  nim-status,
+  status-go,
+  keystore, jsbundle}:
 
 {
   # Value for BUILD_ENV checked by Clojure code at compile time
@@ -85,6 +87,7 @@ in stdenv.mkDerivation rec {
 
   # Used by the Android Gradle build script in android/build.gradle
   STATUS_GO_ANDROID_LIBDIR = "${status-go}";
+  NIM_STATUS_ANDROID_LIBDIR = "${nim-status}";
 
   phases = [
     "unpackPhase" "secretsPhase" "keystorePhase"

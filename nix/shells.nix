@@ -64,7 +64,6 @@ let
     # helpers for use with target argument
     ios = targets.mobile.ios.shell;
     android = targets.mobile.android.shell;
-    status-go = targets.status-go.mobile.android;
   };
 
   # for merging the default shell with others

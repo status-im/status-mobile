@@ -1,10 +1,6 @@
-{ lib, callPackage, mkShell, openjdk, androidPkgs }:
+{ lib, pkgs, stdenv, writeScript, newScope, xcodeWrapper, mkShell }:
 
 let
-  inherit (lib)
-    catAttrs concatStrings concatStringsSep fileContents makeBinPath
-    getConfig optional attrValues mapAttrs attrByPath;
-
   # Metadata common to all builds of status-go
   meta = {
     description = "The Status Go module that consumes go-ethereum.";
@@ -14,31 +10,57 @@ let
 
   # Source can be changed with a local override from config
   source = callPackage ./source.nix { };
+  
+  callPackage = newScope { inherit meta source; };
+in rec {
 
-  # Params to be set at build time, important for About section and metrics
-  goBuildParams = {
-    GitCommit = source.rev;
-    Version = source.cleanVersion;
+  android-x86 = callPackage ./build.nix { platform = "android"; arch = "386"; };
+  android-arm = callPackage ./build.nix { platform = "androideabi"; arch = "arm"; };
+  android-arm64 = callPackage ./build.nix { platform = "android"; arch = "arm64"; };
+
+  # Symlink separate ABI builds to respective folders so that
+  # Gradle native build can find them
+  android = stdenv.mkDerivation {
+    name = "status-go-android-builder";
+    buildInputs = [ pkgs.coreutils ];
+    builder = writeScript "status-go-android-builder.sh"
+    ''
+      export PATH=${pkgs.coreutils}/bin:$PATH
+      mkdir -p $out
+      ln -s ${android-x86} $out/x86
+      ln -s ${android-arm} $out/armeabi-v7a
+      ln -s ${android-arm64} $out/arm64-v8a
+    '';
   };
 
-  # These are necessary for status-go to show correct version
-  paramsLdFlags = attrValues (mapAttrs (name: value:
-    "-X github.com/status-im/status-go/params.${name}=${value}"
-  ) goBuildParams);
+  ios-x86 = callPackage ./build.nix { platform = "ios"; arch = "386"; };
+  ios-arm = callPackage ./build.nix { platform = "ios"; arch = "arm"; };
+  ios-arm64 = callPackage ./build.nix { platform = "ios"; arch = "arm64"; };
 
-  goBuildLdFlags = paramsLdFlags ++ [
-    "-s" # -s disabled symbol table
-    "-w" # -w disables DWARF debugging information
-  ];
-
-  goBuildFlags = [ "-v" ];
-
-in rec {
-  mobile = callPackage ./mobile {
-    inherit meta source goBuildFlags goBuildLdFlags;
+  # Create a single multi-arch fat binary using lipo
+  # Create a single header for multiple target archs
+  # by utilizing C preprocessor conditionals
+  ios = stdenv.mkDerivation {
+    inherit xcodeWrapper;
+    buildInputs = [ pkgs.coreutils ];
+    name = "status-go-ios-builder";
+    builder = writeScript "status-go-ios-builder.sh"
+    ''
+      export PATH=${pkgs.coreutils}/bin:$PATH
+      mkdir -p $out
+      export PATH=${xcodeWrapper}/bin:$PATH 
+      lipo -create ${ios-x86}/libstatus.a ${ios-arm}/libstatus.a ${ios-arm64}/libstatus.a -output $out/libstatus.a
+      echo -e "#if TARGET_CPU_X86_64\n" >> $out/libstatus.h
+      cat ${ios-x86}/libstatus.h >> $out/libstatus.h
+      echo -e "#elif TARGET_CPU_ARM\n" >> $out/libstatus.h
+      cat ${ios-arm}/libstatus.h >> $out/libstatus.h
+      echo -e "#else \n" >> $out/libstatus.h
+      cat ${ios-arm64}/libstatus.h >> $out/libstatus.h
+      echo -e "#endif\n" >> $out/libstatus.h
+    '';
   };
 
   shell = mkShell {
-    inputsFrom = [ mobile.android mobile.ios ];
+    inputsFrom = [ android ios ];
   };
 }
