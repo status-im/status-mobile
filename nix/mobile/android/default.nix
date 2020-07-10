@@ -1,5 +1,6 @@
 { lib, pkgs, deps, callPackage, mkShell
-, status-go, androidPkgs, androidShell }:
+, nim-status
+, androidPkgs, androidShell }:
 
 let
   # For generating a temporary keystore for local development
@@ -13,7 +14,7 @@ let
 
   # TARGETS
   release = callPackage ./release.nix {
-    inherit keystore jsbundle status-go watchmanFactory;
+    inherit keystore jsbundle watchmanFactory nim-status;
   };
 
 in {
@@ -40,7 +41,8 @@ in {
       export STATUS_NIX_MAVEN_REPO="${deps.gradle}"
 
       # required by some makefile targets
-      export STATUS_GO_ANDROID_LIBDIR=${status-go}
+      export STATUS_GO_ANDROID_LIBDIR=${nim-status}
+      export NIM_STATUS_ANDROID_LIBDIR=${nim-status}
 
       # check if node modules changed and if so install them
       $STATUS_REACT_HOME/nix/scripts/node_modules.sh ${deps.nodejs-patched}

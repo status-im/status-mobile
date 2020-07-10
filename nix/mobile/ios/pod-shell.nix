@@ -1,4 +1,4 @@
-{ mkShell, cocoapods }:
+{ mkShell, cocoapods, xcodeWrapper }:
 
 let
   # source of what pod should install
@@ -16,6 +16,7 @@ in mkShell {
       else
         # CocoaPods are trash and can't handle other pod instances running
         ./scripts/wait-for.sh 240 'pod install'
+        export PATH=${xcodeWrapper}/bin:$PATH
         (cd ios && pod install)
       fi
     }

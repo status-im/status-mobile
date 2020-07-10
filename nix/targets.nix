@@ -6,8 +6,8 @@
 let
   inherit (pkgs) stdenv callPackage;
 
-  status-go = callPackage ./status-go { };
-  mobile = callPackage ./mobile { inherit status-go; };
+  nim-status = callPackage ./nim-status {};
+  mobile = callPackage ./mobile { inherit nim-status;};
 in {
-  inherit mobile status-go;
+  inherit mobile nim-status;
 }

@@ -41,6 +41,8 @@ in {
     allowHigher = true;
   };
 
+  nim = callPackage ./pkgs/nim {};
+
   # Android environement
   androidEnvCustom = callPackage ./pkgs/android-sdk { };
   androidPkgs = self.androidEnvCustom.pkgs;

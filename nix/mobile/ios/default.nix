@@ -1,11 +1,13 @@
 { callPackage, lib, mkShell, deps, pkgs
-, status-go, fastlane }:
+, nim-status, fastlane }:
 
 let
   inherit (lib) catAttrs unique;
 
   pod-shell = callPackage ./pod-shell.nix { };
-  status-go-shell = callPackage ./status-go-shell.nix { inherit status-go; };
+  status-go-shell = callPackage ./status-go-shell.nix { 
+    inherit nim-status; 
+  };
 
 in {
   inherit pod-shell status-go-shell;

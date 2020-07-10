@@ -2,7 +2,6 @@
 #import "ReactNativeConfig.h"
 #import "React/RCTBridge.h"
 #import "React/RCTEventDispatcher.h"
-#import "Statusgo/Statusgo.h"
 #import <SSZipArchive.h>
 
 @interface NSDictionary (BVJSONString)
@@ -48,6 +47,31 @@
 
 static RCTBridge *bridge;
 
+const char * fromObjCStr(NSString *s) {
+  return [s UTF8String];
+}
+
+NSString * toObjCStr(char *s) {
+  return [NSString stringWithUTF8String:s];
+}
+
+void handleSignal(char *signal)
+{
+    if(!signal){
+#if DEBUG
+        NSLog(@"SignalEvent nil");
+#endif
+        return;
+    }
+
+#if DEBUG
+    NSLog(@"[handleSignal] Received an event from Status-Go: %", signal);
+#endif
+    [bridge.eventDispatcher sendAppEventWithName:@"gethEvent"
+                                            body:@{@"jsonEvent": toObjCStr(signal)}];
+
+    return;
+}
 @implementation Status
 
 - (instancetype)init {
@@ -55,8 +79,10 @@ static RCTBridge *bridge;
     if (!self) {
         return nil;
     }
+    NimMain();
     // Subscribing to the signals from Status-Go
-    StatusgoSetMobileSignalHandler(self);
+    //StatusgoSetMobileSignalHandler(self);
+    setSignalEventCallback(&handleSignal);
     return self;
 }
 
@@ -70,23 +96,6 @@ static RCTBridge *bridge;
     bridge = newBridge;
 }
 
-- (void)handleSignal:(NSString *)signal
-{
-    if(!signal){
-#if DEBUG
-        NSLog(@"SignalEvent nil");
-#endif
-        return;
-    }
-
-#if DEBUG
-    NSLog(@"[handleSignal] Received an event from Status-Go: %@", signal);
-#endif
-    [bridge.eventDispatcher sendAppEventWithName:@"gethEvent"
-                                            body:@{@"jsonEvent": signal}];
-
-    return;
-}
 
 RCT_EXPORT_MODULE();
 
@@ -126,8 +135,8 @@ RCT_EXPORT_METHOD(initKeystore:(NSString *)keyUID
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                    ^(void)
                    {
-                        NSString *res = StatusgoInitKeystore(keystoreDir.path);
-                        NSLog(@"InitKeyStore result %@", res);
+                        char *res = initKeystore(fromObjCStr(keystoreDir.path));
+                        NSLog(@"InitKeyStore result %", res);
                         callback(@[]);
                    });
 }
@@ -186,14 +195,14 @@ RCT_EXPORT_METHOD(exportLogs:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"exportLogs() method called");
 #endif
-    NSString *result = StatusgoExportNodeLogs();
+    NSString *result = toObjCStr(exportNodeLogs());
     callback(@[result]);
 }
 
 //////////////////////////////////////////////////////////////////// addPeer
 RCT_EXPORT_METHOD(addPeer:(NSString *)enode
                   callback:(RCTResponseSenderBlock)callback) {
-  NSString *result = StatusgoAddPeer(enode);
+  NSString *result = toObjCStr(addPeer(fromObjCStr(enode)));
   callback(@[result]);
 #if DEBUG
   NSLog(@"AddPeer() method called");
@@ -204,7 +213,7 @@ RCT_EXPORT_METHOD(addPeer:(NSString *)enode
 RCT_EXPORT_METHOD(getNodesFromContract:(NSString *)url
                                address:(NSString *) address
                               callback:(RCTResponseSenderBlock)callback) {
-  NSString* result = StatusgoGetNodesFromContract(url, address);
+  NSString* result = toObjCStr(getNodesFromContract(fromObjCStr(url), fromObjCStr(address)));
   callback(@[result]);
 #if DEBUG
   NSLog(@"GetNodesFromContract() method called");
@@ -214,7 +223,7 @@ RCT_EXPORT_METHOD(getNodesFromContract:(NSString *)url
 //////////////////////////////////////////////////////////////////// chaosModeUpdate
 RCT_EXPORT_METHOD(chaosModeUpdate:(BOOL)on
                   callback:(RCTResponseSenderBlock)callback) {
-  NSString* result = StatusgoChaosModeUpdate(on);
+  NSString* result = toObjCStr(chaosModeUpdate(on));
   callback(@[result]);
 #if DEBUG
   NSLog(@"ChaosModeUpdate() method called");
@@ -228,7 +237,7 @@ RCT_EXPORT_METHOD(deleteMultiaccount:(NSString *)keyUID
     NSLog(@"MultiAccountImportPrivateKey() method called");
 #endif
     NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
-    NSString *result = StatusgoDeleteMultiaccount(keyUID, multiaccountKeystoreDir.path);
+    NSString *result = toObjCStr(deleteMultiAccount(fromObjCStr(keyUID), fromObjCStr(multiaccountKeystoreDir.path)));
     callback(@[result]);
 }
 
@@ -238,7 +247,7 @@ RCT_EXPORT_METHOD(multiAccountGenerateAndDeriveAddresses:(NSString *)json
 #if DEBUG
     NSLog(@"MultiAccountGenerateAndDeriveAddresses() method called");
 #endif
-    NSString *result = StatusgoMultiAccountGenerateAndDeriveAddresses(json);
+    NSString *result = toObjCStr(multiAccountGenerateAndDeriveAddresses(fromObjCStr(json)));
     callback(@[result]);
 }
 
@@ -248,7 +257,7 @@ RCT_EXPORT_METHOD(multiAccountStoreAccount:(NSString *)json
 #if DEBUG
     NSLog(@"MultiAccountStoreAccount() method called");
 #endif
-    NSString *result = StatusgoMultiAccountStoreAccount(json);
+    NSString *result = toObjCStr(multiAccountStoreAccount(fromObjCStr(json)));
     callback(@[result]);
 }
 
@@ -258,7 +267,7 @@ RCT_EXPORT_METHOD(multiAccountLoadAccount:(NSString *)json
 #if DEBUG
     NSLog(@"MultiAccountLoadAccount() method called");
 #endif
-    NSString *result = StatusgoMultiAccountLoadAccount(json);
+    NSString *result = toObjCStr(multiAccountLoadAccount(fromObjCStr(json)));
     callback(@[result]);
 }
 
@@ -267,7 +276,7 @@ RCT_EXPORT_METHOD(multiAccountReset:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"MultiAccountReset() method called");
 #endif
-    NSString *result = StatusgoMultiAccountReset();
+    NSString *result = toObjCStr(multiAccountReset());
     callback(@[result]);
 }
 
@@ -277,7 +286,7 @@ RCT_EXPORT_METHOD(multiAccountStoreDerived:(NSString *)json
 #if DEBUG
     NSLog(@"MultiAccountStoreDerived() method called");
 #endif
-    NSString *result = StatusgoMultiAccountStoreDerivedAccounts(json);
+    NSString *result = toObjCStr(multiAccountStoreDerivedAccounts(fromObjCStr(json)));
     callback(@[result]);
 }
 
@@ -287,7 +296,7 @@ RCT_EXPORT_METHOD(multiAccountImportPrivateKey:(NSString *)json
 #if DEBUG
     NSLog(@"MultiAccountImportPrivateKey() method called");
 #endif
-    NSString *result = StatusgoMultiAccountImportPrivateKey(json);
+    NSString *result = toObjCStr(multiAccountImportPrivateKey(fromObjCStr(json)));
     callback(@[result]);
 }
 
@@ -297,7 +306,7 @@ RCT_EXPORT_METHOD(hashTransaction:(NSString *)txArgsJSON
 #if DEBUG
     NSLog(@"HashTransaction() method called");
 #endif
-    NSString *result = StatusgoHashTransaction(txArgsJSON);
+    NSString *result = toObjCStr(hashTransaction(fromObjCStr(txArgsJSON)));
     callback(@[result]);
 }
 
@@ -307,7 +316,7 @@ RCT_EXPORT_METHOD(hashMessage:(NSString *)message
 #if DEBUG
     NSLog(@"hashMessage() method called");
 #endif
-    NSString *result = StatusgoHashMessage(message);
+    NSString *result = toObjCStr(hashMessage(fromObjCStr(message)));
     callback(@[result]);
 }
 
@@ -317,7 +326,7 @@ RCT_EXPORT_METHOD(hashTypedData:(NSString *)data
 #if DEBUG
     NSLog(@"hashTypedData() method called");
 #endif
-    NSString *result = StatusgoHashTypedData(data);
+    NSString *result = toObjCStr(hashTypedData(fromObjCStr(data)));
     callback(@[result]);
 }
 
@@ -328,7 +337,7 @@ RCT_EXPORT_METHOD(sendTransactionWithSignature:(NSString *)txArgsJSON
 #if DEBUG
     NSLog(@"sendTransactionWithSignature() method called");
 #endif
-    NSString *result = StatusgoSendTransactionWithSignature(txArgsJSON, signature);
+    NSString *result = toObjCStr(sendTransactionWithSignature(fromObjCStr(txArgsJSON), fromObjCStr(signature)));
     callback(@[result]);
 }
 
@@ -338,7 +347,7 @@ RCT_EXPORT_METHOD(multiAccountImportMnemonic:(NSString *)json
 #if DEBUG
     NSLog(@"MultiAccountImportMnemonic() method called");
 #endif
-    NSString *result = StatusgoMultiAccountImportMnemonic(json);
+    NSString *result = toObjCStr(multiAccountImportMnemonic(fromObjCStr(json)));
     callback(@[result]);
 }
 
@@ -348,7 +357,7 @@ RCT_EXPORT_METHOD(multiAccountDeriveAddresses:(NSString *)json
 #if DEBUG
     NSLog(@"MultiAccountDeriveAddresses() method called");
 #endif
-    NSString *result = StatusgoMultiAccountDeriveAddresses(json);
+    NSString *result = toObjCStr(multiAccountDeriveAddresses(fromObjCStr(json)));
     callback(@[result]);
 }
 
@@ -461,7 +470,7 @@ RCT_EXPORT_METHOD(saveAccountAndLogin:(NSString *)multiaccountData
     NSString *keyUID = [self getKeyUID:multiaccountData];
     NSString *finalConfig = [self prepareDirAndUpdateConfig:config
                                                  withKeyUID:keyUID];
-    NSString *result = StatusgoSaveAccountAndLogin(multiaccountData, password, settings, finalConfig, accountsData);
+    NSString *result = toObjCStr(saveAccountAndLogin(fromObjCStr(multiaccountData), fromObjCStr(password), fromObjCStr(settings), fromObjCStr(finalConfig), fromObjCStr(accountsData)));
     NSLog(@"%@", result);
 }
 
@@ -478,7 +487,7 @@ RCT_EXPORT_METHOD(saveAccountAndLoginWithKeycard:(NSString *)multiaccountData
     NSString *keyUID = [self getKeyUID:multiaccountData];
     NSString *finalConfig = [self prepareDirAndUpdateConfig:config
                                                  withKeyUID:keyUID];
-    NSString *result = StatusgoSaveAccountAndLoginWithKeycard(multiaccountData, password, settings, finalConfig, accountsData, chatKey);
+    NSString *result = toObjCStr(saveAccountAndLoginWithKeycard(fromObjCStr(multiaccountData), fromObjCStr(password), fromObjCStr(settings), fromObjCStr(finalConfig), fromObjCStr(accountsData), fromObjCStr(chatKey)));
     NSLog(@"%@", result);
 }
 
@@ -507,10 +516,10 @@ RCT_EXPORT_METHOD(saveAccountAndLoginWithKeycard:(NSString *)multiaccountData
 
     NSArray *keys = [fileManager contentsOfDirectoryAtPath:multiaccountKeystoreDir.path error:nil];
     if (keys.count == 0) {
-        NSString *migrationResult = StatusgoMigrateKeyStoreDir(accountData, password, oldKeystoreDir.path, multiaccountKeystoreDir.path);
+        NSString *migrationResult = toObjCStr(migrateKeyStoreDir(fromObjCStr(accountData), fromObjCStr(password), 
+                  fromObjCStr(oldKeystoreDir.path), fromObjCStr(multiaccountKeystoreDir.path)));
         NSLog(@"keystore migration result %@", migrationResult);
-
-        NSString *initKeystoreResult = StatusgoInitKeystore(multiaccountKeystoreDir.path);
+        NSString *initKeystoreResult = toObjCStr(initKeystore(fromObjCStr(multiaccountKeystoreDir.path)));
         NSLog(@"InitKeyStore result %@", initKeystoreResult);
     }
 }
@@ -522,7 +531,7 @@ RCT_EXPORT_METHOD(login:(NSString *)accountData
     NSLog(@"Login() method called");
 #endif
     [self migrateKeystore:accountData password:password];
-    NSString *result = StatusgoLogin(accountData, password);
+    NSString *result = toObjCStr(login(fromObjCStr(accountData), fromObjCStr(password)));
     NSLog(@"%@", result);
 }
 
@@ -534,8 +543,7 @@ RCT_EXPORT_METHOD(loginWithKeycard:(NSString *)accountData
     NSLog(@"LoginWithKeycard() method called");
 #endif
     [self migrateKeystore:accountData password:password];
-
-    NSString *result = StatusgoLoginWithKeycard(accountData, password, chatKey);
+    NSString *result = toObjCStr(loginWithKeycard(fromObjCStr(accountData), fromObjCStr(password), fromObjCStr(chatKey)));
 
     NSLog(@"%@", result);
 }
@@ -545,7 +553,7 @@ RCT_EXPORT_METHOD(logout) {
 #if DEBUG
     NSLog(@"Logout() method called");
 #endif
-    NSString *result = StatusgoLogout();
+    NSString *result = toObjCStr(logout());
 
     NSLog(@"%@", result);
 }
@@ -560,7 +568,7 @@ RCT_EXPORT_METHOD(openAccounts:(RCTResponseSenderBlock)callback) {
                       URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
                      lastObject];
 
-    NSString *result = StatusgoOpenAccounts(rootUrl.path);
+    NSString *result = toObjCStr(openAccounts(fromObjCStr(rootUrl.path)));
     callback(@[result]);
 }
 
@@ -577,7 +585,7 @@ RCT_EXPORT_METHOD(verify:(NSString *)address
                      lastObject];
     NSURL *absKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
 
-    NSString *result = StatusgoVerifyAccountPassword(absKeystoreUrl.path, address, password);
+    NSString *result = toObjCStr(verifyAccountPassword(fromObjCStr(absKeystoreUrl.path), fromObjCStr(address), fromObjCStr(password)));
     callback(@[result]);
 }
 
@@ -590,7 +598,7 @@ RCT_EXPORT_METHOD(sendTransaction:(NSString *)txArgsJSON
 #if DEBUG
     NSLog(@"SendTransaction() method called");
 #endif
-    NSString *result = StatusgoSendTransaction(txArgsJSON, password);
+    NSString *result = toObjCStr(sendTransaction(fromObjCStr(txArgsJSON), fromObjCStr(password)));
     callback(@[result]);
 }
 
@@ -602,7 +610,7 @@ RCT_EXPORT_METHOD(signMessage:(NSString *)message
 #if DEBUG
     NSLog(@"SignMessage() method called");
 #endif
-    NSString *result = StatusgoSignMessage(message);
+    NSString *result = toObjCStr(signMessage(fromObjCStr(message)));
     callback(@[result]);
 }
 
@@ -616,7 +624,7 @@ RCT_EXPORT_METHOD(signTypedData:(NSString *)data
 #if DEBUG
     NSLog(@"SignTypedData() method called");
 #endif
-    NSString *result = StatusgoSignTypedData(data, account, password);
+    NSString *result = toObjCStr(signTypedData(fromObjCStr(data), fromObjCStr(account), fromObjCStr(password)));
     callback(@[result]);
 }
 
@@ -628,7 +636,7 @@ RCT_EXPORT_METHOD(signGroupMembership:(NSString *)content
 #if DEBUG
     NSLog(@"SignGroupMembership() method called");
 #endif
-    NSString *result = StatusgoSignGroupMembership(content);
+    NSString *result = toObjCStr(signGroupMembership(fromObjCStr(content)));
     callback(@[result]);
 }
 
@@ -640,7 +648,7 @@ RCT_EXPORT_METHOD(extractGroupMembershipSignatures:(NSString *)content
 #if DEBUG
     NSLog(@"ExtractGroupMembershipSignatures() method called");
 #endif
-    NSString *result = StatusgoExtractGroupMembershipSignatures(content);
+    NSString *result = toObjCStr(extractGroupMembershipSignatures(fromObjCStr(content)));
     callback(@[result]);
 }
 
@@ -689,7 +697,7 @@ RCT_EXPORT_METHOD(clearStorageAPIs) {
 RCT_EXPORT_METHOD(callRPC:(NSString *)payload
                   callback:(RCTResponseSenderBlock)callback) {
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *result = StatusgoCallRPC(payload);
+        NSString *result = toObjCStr(callRPC(fromObjCStr(payload)));
         dispatch_async(dispatch_get_main_queue(), ^{
             callback(@[result]);
         });
@@ -697,7 +705,10 @@ RCT_EXPORT_METHOD(callRPC:(NSString *)payload
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(generateAlias:(NSString *)publicKey) {
-  return StatusgoGenerateAlias(publicKey);
+  const char * publicKeyStr = fromObjCStr(publicKey);
+
+  NSString * result = toObjCStr(generateAlias(publicKeyStr));
+  return result;
 }
 
 RCT_EXPORT_METHOD(generateAliasAsync:(NSString *)publicKey
@@ -705,12 +716,19 @@ RCT_EXPORT_METHOD(generateAliasAsync:(NSString *)publicKey
 #if DEBUG
     NSLog(@"generateAliasAsync() method called");
 #endif
-    NSString *result = StatusgoGenerateAlias(publicKey);
+
+    const char * publicKeyStr = fromObjCStr(publicKey);
+    NSString *result = toObjCStr(generateAlias(publicKeyStr));
     callback(@[result]);
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(identicon:(NSString *)publicKey) {
-  return StatusgoIdenticon(publicKey);
+  if (publicKey == NULL) {
+    return toObjCStr("");
+  }
+  const char * publicKeyStr = fromObjCStr(publicKey);
+  NSString * result = toObjCStr(identicon(publicKeyStr));
+  return result;
 }
 
 RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
@@ -718,7 +736,7 @@ RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
 #if DEBUG
     NSLog(@"validateMnemonic() method called");
 #endif
-    NSString *result = StatusgoValidateMnemonic(seed);
+    NSString *result = toObjCStr(validateMnemonic(fromObjCStr(seed)));
     callback(@[result]);
 }
 
@@ -727,7 +745,9 @@ RCT_EXPORT_METHOD(identiconAsync:(NSString *)publicKey
 #if DEBUG
     NSLog(@"identiconAsync() method called");
 #endif
-    NSString *result = StatusgoIdenticon(publicKey);
+
+    const char * publicKeyStr = fromObjCStr(publicKey);
+    NSString *result = toObjCStr(identicon(publicKeyStr));
     callback(@[result]);
 }
 
@@ -736,15 +756,17 @@ RCT_EXPORT_METHOD(generateAliasAndIdenticonAsync:(NSString *)publicKey
 #if DEBUG
     NSLog(@"generateAliasAndIdenticonAsync() method called");
 #endif
-    NSString *identiconResult = StatusgoIdenticon(publicKey);
-    NSString *aliasResult = StatusgoGenerateAlias(publicKey);
+    const char * publicKeyStr = fromObjCStr(publicKey);
+    NSString *identiconResult = toObjCStr(identicon(publicKeyStr));
+
+    NSString *aliasResult = toObjCStr(generateAlias(publicKeyStr));
     callback(@[aliasResult, identiconResult]);
 }
 
 RCT_EXPORT_METHOD(callPrivateRPC:(NSString *)payload
                   callback:(RCTResponseSenderBlock)callback) {
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *result = StatusgoCallPrivateRPC(payload);
+        NSString *result = toObjCStr(callPrivateRPC(fromObjCStr(payload)));
         dispatch_async(dispatch_get_main_queue(), ^{
             callback(@[result]);
         });
@@ -761,42 +783,42 @@ RCT_EXPORT_METHOD(connectionChange:(NSString *)type
 #if DEBUG
     NSLog(@"ConnectionChange() method called");
 #endif
-    StatusgoConnectionChange(type, isExpensive ? 1 : 0);
+    connectionChange(fromObjCStr(type), isExpensive ? 1 : 0);
 }
 
 RCT_EXPORT_METHOD(appStateChange:(NSString *)type) {
 #if DEBUG
     NSLog(@"AppStateChange() method called");
 #endif
-    StatusgoAppStateChange(type);
+    appStateChange(fromObjCStr(type));
 }
 
 RCT_EXPORT_METHOD(stopWallet) {
 #if DEBUG
     NSLog(@"StopWallet() method called");
 #endif
-    StatusgoStopWallet();
+    stopWallet();
 }
 
 RCT_EXPORT_METHOD(startWallet:(BOOL)watchNewBlocks) {
 #if DEBUG
     NSLog(@"StartWallet() method called");
 #endif
-    StatusgoStartWallet(watchNewBlocks);
+    startWallet(watchNewBlocks);
 }
 
 RCT_EXPORT_METHOD(stopLocalNotifications) {
 #if DEBUG
     NSLog(@"StopLocalNotifications() method called");
 #endif
-StatusgoStopLocalNotifications();
+    stopLocalNotifications();
 }
 
 RCT_EXPORT_METHOD(startLocalNotifications) {
 #if DEBUG
     NSLog(@"StartLocalNotifications() method called");
 #endif
-StatusgoStartLocalNotifications();
+    startLocalNotifications();
 }
 
 RCT_EXPORT_METHOD(exportUnencryptedDatabase:(NSString *)accountData
