@@ -1,6 +1,7 @@
 (ns mocks.js-dependencies
   (:require-macros [status-im.utils.slurp :refer [slurp]])
-  (:require [status-im.default-fleet :refer (default-fleets)]))
+  (:require [status-im.default-fleet :refer (default-fleets)])
+  (:require [status-im.chat.default-chats :refer (default-chats)]))
 
 (def action-button          #js {:default #js {:Item #js {}}})
 (def config                 #js {:default #js {}})
@@ -202,6 +203,7 @@
     "react-native-image-resizer" image-resizer
     "react-native-haptic-feedback" react-native-haptic-feedback
     "./fleets.js" default-fleets
+    "./chats.js" default-chats
     "../translations/ar.json" (js/JSON.parse (slurp "./translations/ar.json"))
     "../translations/de.json" (js/JSON.parse (slurp "./translations/de.json"))
     "../translations/en.json" (js/JSON.parse (slurp "./translations/en.json"))

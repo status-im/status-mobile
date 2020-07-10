@@ -74,7 +74,7 @@
                       :key   :follow-your-interests}]
     [react/view {:style styles/tags-wrapper}
      [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :center}
-      (for [chat new-public-chat/default-public-chats]
+      (for [chat (new-public-chat/featured-public-chats)]
         (new-public-chat/render-topic chat))]]]])
 
 (defn welcome-blank-page []

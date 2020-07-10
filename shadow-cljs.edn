@@ -48,7 +48,8 @@
                  ;; in the SHADOW_HOST env variable to make sure that
                  ;; it will use the right interface
                  :local-ip #shadow/env "SHADOW_HOST"}
-           :chunks {:fleets status-im.default-fleet/default-fleets}
+           :chunks {:fleets status-im.default-fleet/default-fleets
+                    :chats status-im.chat.default-chats/default-chats}
            :release {:compiler-options {:output-feature-set :es6
                                         ;;disable for android build as there
                                         ;;is an intermittent warning with deftype

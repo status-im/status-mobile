@@ -14,7 +14,11 @@
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
-            [status-im.chat.models.loading :as loading]))
+            [status-im.chat.models.loading :as loading]
+            [status-im.utils.types :as types]))
+
+(defn chats []
+  (:chats (types/json->clj (js/require "./chats.js"))))
 
 (defn- get-chat [cofx chat-id]
   (get-in cofx [:db :chats chat-id]))

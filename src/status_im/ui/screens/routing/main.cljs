@@ -76,6 +76,7 @@
        :component  new-chat/new-contact}
       {:name       :new-public-chat
        :transition :presentation-ios
+       :insets     {:bottom true}
        :component  new-public-chat/new-public-chat}
       {:name       :edit-group-chat-name
        :transition :presentation-ios

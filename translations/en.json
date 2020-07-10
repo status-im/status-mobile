@@ -1161,5 +1161,6 @@
     "continue-anyway": "Continue anyway",
     "private-notifications": "Private notifications",
     "private-notifications-descr": "Status will notify you about new messages. You can edit your notification preferences later in settings.",
-    "maybe-later": "Maybe later"
+    "maybe-later": "Maybe later",
+    "join": "Join"
 }
