@@ -30,7 +30,7 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
         home_1.plus_button.click_until_presence_of_element(home_1.join_public_chat_button)
         home_1.join_public_chat_button.click()
-        preselected_chats = ['#status', '#introductions', '#chitchat', '#crypto', '#tech', '#music', '#movies', '#support']
+        preselected_chats = ['#status', '#chitchat', '#defi', '#crypto', '#markets', '#dap-ps']
         for chat in preselected_chats:
             if not home_1.element_by_text(chat).is_element_displayed():
                 self.errors.append("'%s' text is not in the list of preselected chats" % chat)
