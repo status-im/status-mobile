@@ -1,6 +1,6 @@
 import random
 
-from tests import marks, common_password, get_current_time, unique_password
+from tests import marks, common_password, unique_password
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 from tests.users import basic_user
@@ -41,7 +41,8 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.get_started_button.click()
         sign_in.generate_key_button.click()
-        account_button = sign_in.get_account_by_position(random.randint(1, 4))
+        from views.sign_in_view import MultiAccountButton
+        account_button = sign_in.get_multiaccount_by_position(position=random.randint(1, 4), element_class=MultiAccountButton)
         username = account_button.username.text
         account_button.click()
         sign_in.next_button.click()

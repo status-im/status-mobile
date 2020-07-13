@@ -1,4 +1,4 @@
-from tests import marks, pair_code
+from tests import marks, pair_code, common_password
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 from views.keycard_view import KeycardView
@@ -43,7 +43,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.recover_access(passphrase=basic_user['passphrase'], keycard=True)
 
-        sign_in.just_fyi('Check that after restring account with assets is restored')
+        sign_in.just_fyi('Check that after restoring account with assets is restored')
         wallet_view = sign_in.wallet_button.click()
         wallet_view.set_up_wallet()
         for asset in ['ETH', 'ADI', 'STT']:
@@ -245,3 +245,58 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(6311)
+    @marks.medium
+    def test_same_seed_added_inside_multiaccount_and_keycard(self):
+        sign_in = SignInView(self.driver)
+        recipient = "0x" + transaction_senders['G']['address']
+
+        sign_in.just_fyi('Restore keycard multiaccount and logout')
+        sign_in.recover_access(passphrase=basic_user['passphrase'], keycard=True)
+        profile_view = sign_in.profile_button.click()
+        profile_view.logout()
+
+        sign_in.just_fyi('Create new multiaccount')
+        sign_in.your_keys_more_icon.click()
+        sign_in.generate_new_key_button.click()
+        sign_in.generate_key_button.click()
+        sign_in.next_button.click()
+        sign_in.next_button.click()
+        sign_in.create_password_input.set_value(common_password)
+        sign_in.next_button.click()
+        sign_in.confirm_your_password_input.set_value(common_password)
+        sign_in.next_button.click()
+        sign_in.maybe_later_button.click_until_presence_of_element(sign_in.lets_go_button)
+        sign_in.lets_go_button.click()
+
+        sign_in.just_fyi('Add to wallet seed phrase for restored multiaccount')
+        wallet_view = sign_in.wallet_button.click()
+        wallet_view.set_up_wallet()
+        wallet_view.add_account_button.click()
+        wallet_view.enter_a_seed_phrase_button.click()
+        wallet_view.enter_your_password_input.send_keys(common_password)
+        account_name = 'subacc'
+        wallet_view.account_name_input.send_keys(account_name)
+        wallet_view.enter_seed_phrase_input.set_value(basic_user['passphrase'])
+        wallet_view.add_account_generate_account_button.click()
+        wallet_view.get_account_by_name(account_name).click()
+
+        sign_in.just_fyi('Send transaction from added account and log out')
+        transaction_amount_added = wallet_view.get_unique_amount()
+        wallet_view.send_transaction(amount=transaction_amount_added, recipient=recipient, sign_transaction=True)
+        wallet_view.profile_button.click()
+        profile_view.logout()
+
+        sign_in.just_fyi('Login to keycard account and send another transaction')
+        sign_in.sign_in(position=2, keycard=True)
+        sign_in.wallet_button.click()
+        wallet_view.set_up_wallet()
+        wallet_view.accounts_status_account.click()
+        transaction_amount_keycard = wallet_view.get_unique_amount()
+        wallet_view.send_transaction(amount=transaction_amount_keycard, recipient=recipient, keycard=True, sign_transaction=True)
+
+        sign_in.just_fyi('Check both transactions from keycard multiaccount and from added account in network')
+        for amount in [transaction_amount_keycard, transaction_amount_added]:
+            self.network_api.find_transaction_by_unique_amount(basic_user['address'], amount)
+
+        self.errors.verify_no_errors()

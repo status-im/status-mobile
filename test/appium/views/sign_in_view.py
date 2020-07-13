@@ -297,10 +297,11 @@ class SignInView(BaseView):
         self.profile_button.wait_for_visibility_of_element(30)
         return self.get_home_view()
 
-    def sign_in(self, password=common_password, keycard=False):
+    def sign_in(self, password=common_password, keycard=False, position=1):
         self.rooted_device_continue()
         self.multi_account_on_login_button.wait_for_visibility_of_element(10)
-        self.multi_account_on_login_button.click()
+        self.get_multiaccount_by_position(position).click()
+
         if keycard:
             from views.keycard_view import KeycardView
             keycard_view = KeycardView(self.driver)
@@ -311,8 +312,9 @@ class SignInView(BaseView):
             self.sign_in_button.click()
         return self.get_home_view()
 
-    def get_account_by_position(self, position: int):
-        account_button = MultiAccountButton(self.driver, position)
+
+    def get_multiaccount_by_position(self, position: int, element_class=MultiAccountOnLoginButton):
+        account_button = element_class(self.driver, position)
         if account_button.is_element_displayed():
             return account_button
         else:

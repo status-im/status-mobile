@@ -254,7 +254,6 @@ class StatusAccountTotalValueText(BaseText):
 
 
 class SendTransactionButton(BaseButton):
-
     def __init__(self, driver):
         super(SendTransactionButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Send']")
@@ -270,7 +269,6 @@ class SendTransactionButton(BaseButton):
 
 
 class ReceiveTransactionButton(BaseButton):
-
     def __init__(self, driver):
         super(ReceiveTransactionButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Receive']")
