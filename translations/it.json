@@ -5,6 +5,7 @@
     "about-names-content": "Nessuno può fingere di essere te! Sei anonimo di default e non dovrai mai rivelare il tuo vero nome. È possibile registrare un nome personalizzato per una piccola quota.",
     "about-names-title": "I nomi non possono essere cambiati",
     "accept-and-share-address": "Accetta e condividi indirizzo",
+    "access-existing-keys": "Accedi a chiavi esistenti",
     "access-key": "Accedi a chiavi esistenti",
     "account-added": "Account aggiunto",
     "account-color": "Colore dell'account",
@@ -676,6 +677,7 @@
     "mainnet-network": "Rete principale",
     "make-admin": "Rendi amministratore",
     "mark-all-read": "Segna tutti come letti",
+    "maybe-later": "Ricordamelo più tardi",
     "members": {
         "one": "1 partecipante",
         "other": "{{count}} partecipanti"

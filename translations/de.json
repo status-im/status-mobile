@@ -5,6 +5,7 @@
     "about-names-content": "Niemand kann vorgeben, Sie zu sein! Sie sind standardmäßig anonym und müssen niemals Ihren richtigen Namen preisgeben. Sie können einen benutzerdefinierten Namen gegen eine geringe Gebühr registrieren.",
     "about-names-title": "Namen können nicht geändert werden",
     "accept-and-share-address": "Adresse akzeptieren und teilen",
+    "access-existing-keys": "Greifen Sie auf vorhandene Schlüssel zu",
     "access-key": "Zugangsschlüssel",
     "account-added": "Konto hinzugefügt",
     "account-color": "Farbe des Kontos",
@@ -28,6 +29,7 @@
     "add-mailserver": "Mailserver hinzufügen",
     "add-members": "Mitglieder hinzufügen",
     "add-network": "Netzwerk hinzufügen",
+    "add-new-contact": "Neuen Kontakt hinzufügen",
     "add-private-key-account": "Konto mit privatem Schlüssel hinzufügen",
     "add-seed-account": "Konto mit einer Seed-Phrase hinzufügen",
     "add-to-contacts": "Zu Kontakten hinzufügen",
@@ -125,7 +127,7 @@
     "change-passcode": "Passcode ändern",
     "change-password": "Passwort ändern",
     "change-pin": "Ändern Sie den 6-stelligen Passcode",
-    "changed-amount-warning": "Der Betrag wurde von {{alt}} zu {{neu}} geändert",
+    "changed-amount-warning": "Der Betrag wurde von {{old}} zu {{new}} geändert",
     "changed-asset-warning": "Der Betrag wurde von {{old}} zu {{new}} geändert",
     "chaos-mode": "Chaos-Modus",
     "chaos-unicorn-day": "Chaos Unicorn Day",
@@ -676,6 +678,7 @@
     "mainnet-network": "Hauptnetzwerk",
     "make-admin": "Zum Admin ernennen",
     "mark-all-read": "Alles als gelesen markieren",
+    "maybe-later": "Vielleicht später",
     "members": {
         "one": "Mitglied",
         "other": "Mitglieder"

@@ -479,7 +479,7 @@
     "error-unable-to-get-token-balance": "غير قادر علي الحصول علي رصيد الرمز المميز",
     "errors": "أخطاء",
     "eth": "ETH",
-    "ethereum-node-started-incorrectly-description": "تم بدء عقدة إيثيريوم بتكوين غير صحيح ، وسيتم إيقاف التطبيق للتعافي من هذا الشرط. معرف {{network-id}} = {{network-id}} ، الفعلي = {{fetched-network-id}}",
+    "ethereum-node-started-incorrectly-description": "تم بدء عقدة إيثيريوم بتكوين غير صحيح ، وسيتم إيقاف التطبيق للتعافي من هذا الشرط. معرف {{network-id}} = network id ، الفعلي = {{fetched-network-id}}",
     "ethereum-node-started-incorrectly-title": "بدأت عقدة Ethereum بشكل غير صحيح",
     "etherscan-lookup": "إبحث في Etherscan ",
     "export-account": "حساب التصدير",
@@ -702,6 +702,7 @@
     "mainnet-network": "الشبكة الرئيسية",
     "make-admin": "جعل المشرف",
     "mark-all-read": "ضع علامة بأنه تم القراءة",
+    "maybe-later": "ربما في وقت لاحق",
     "members": {
         "zero": "عضو",
         "one": "عضو",

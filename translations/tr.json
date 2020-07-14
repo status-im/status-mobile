@@ -29,6 +29,7 @@
     "add-mailserver": "Mailserver ekle",
     "add-members": "Üye ekle",
     "add-network": "Ağ ekle",
+    "add-new-contact": "Yeni kişi ekle",
     "add-private-key-account": "Özel Anahtarı Hesabına Ekle",
     "add-seed-account": "Kelime imzasıyla hesap ekle",
     "add-to-contacts": "Rehbere ekle",
@@ -678,6 +679,7 @@
     "mainnet-network": "Ana ağ",
     "make-admin": "Admin yap",
     "mark-all-read": "Tümünü okundu olarak işaretle",
+    "maybe-later": "Belki sonra",
     "members": {
         "one": "1 üye",
         "other": "{{count}} üyeler"
@@ -832,6 +834,8 @@
     "privacy-and-security": "Gizlilik ve güvenlik",
     "privacy-policy": "Gizlilik Politikası",
     "private-key": "Özel anahtar",
+    "private-notifications": "Özel bildirimler",
+    "private-notifications-descr": "Status yeni mesajlar hakkında sizi bilgilendirir. Bildirim tercihlerinizi daha sonra ayarlardan düzenleyebilirsiniz.",
     "processing": "Sadece bir dakika",
     "product-information": "Ürün Bilgisi",
     "profile": "Profil",
@@ -1146,6 +1150,7 @@
     "you-are-all-set": "Hazırsınız!",
     "you-are-all-set-description": "Telefonunuzu kaybederseniz, bakiyenize ve sohbet anahtarınıza kelime imzanızı kullanarak erişebilirsiniz",
     "you-can-change-account": "Hesap adını ve rengini istediğiniz şekilde değiştirebilirsiniz",
+    "you-dont-have-contacts": "Henüz hiç kişiniz yok.",
     "you-dont-have-stickers": "Henüz çıkartmanız yok",
     "you-will-need-this-code": "Statusu açmak ve işlemleri imzalamak için bu koda ihtiyacınız olacaktır",
     "you-will-start-from-scratch": "Sıfırdan yeni bir anahtar seti ile başlayacaksınız.",

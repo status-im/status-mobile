@@ -5,6 +5,7 @@
     "about-names-content": "Personne ne peut prendre votre identité! Vous êtes anonyme par défaut et n'avez jamais à révéler votre vrai nom. Vous pouvez enregistrer un nom personnalisé à peu de frais.",
     "about-names-title": "Les noms ne peuvent pas être modifiés",
     "accept-and-share-address": "Accepter et partager l'adresse",
+    "access-existing-keys": "Récupérer les clés existantes",
     "access-key": "Clé d'accès",
     "account-added": "Compte ajouté",
     "account-color": "Couleur du compte",
@@ -28,6 +29,7 @@
     "add-mailserver": "Ajouter un serveur de messagerie",
     "add-members": "Ajouter des membres",
     "add-network": "Ajouter réseau",
+    "add-new-contact": "Ajouter un nouveau contact",
     "add-private-key-account": "Ajouter un compte à partir d'une clé privée",
     "add-seed-account": "Ajouter un compte avec une phrase de récupération",
     "add-to-contacts": "Ajouter aux contacts",
@@ -549,7 +551,7 @@
     "invalid-address-qr-code": "Le code QR scanné ne contient pas d'adresse valide",
     "invalid-format": "Format invalide \nDoit être {{format}}",
     "invalid-key-confirm": "Appliquer",
-    "invalid-key-content": "{{message}} \n \n La base de données multi-comptes ne peut pas être cryptée car le fichier est corrompu. Il n'y a aucun moyen de le restaurer. Si vous appuyez sur le bouton \"Annuler\", rien ne se passera. Si vous appuyez sur le bouton \" {{erase-multiaccounts-data-button-text}} \", la base de données multi-comptes sera supprimée et vous pourrez déverrouiller plusieurs comptes. Toutes les données multi-comptes seront perdues.",
+    "invalid-key-content": "La base de données multi-comptes ne peut pas être cryptée car le fichier est corrompu. Il n'y a aucun moyen de le restaurer. Si vous appuyez sur le bouton \"Annuler\", rien ne se passera. Si vous appuyez sur le bouton \" {{erase-multiaccounts-data-button-text}} \", la base de données multi-comptes sera supprimée et vous pourrez déverrouiller plusieurs comptes. Toutes les données multi-comptes seront perdues.",
     "invalid-number": "Numéro invalide",
     "invalid-pairing-password": "Mot de passe d'appariement invalide",
     "invalid-range": "Format non valide, doit être compris entre {{min}} et {{max}}.",
@@ -657,6 +659,7 @@
     "mainnet-network": "Réseau principal",
     "make-admin": "Faire admin",
     "mark-all-read": "Marquer tout comme lu",
+    "maybe-later": "Peut-être plus tard",
     "members": {
         "one": "1 membre",
         "other": "{{count}} membres"

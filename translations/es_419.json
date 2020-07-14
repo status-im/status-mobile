@@ -5,6 +5,7 @@
     "about-names-content": "¡Nadie puede pretender ser tú! Eres anónimo por defecto y nunca tienes que revelar tu nombre real. Puedes registrar un nombre personalizado por una pequeña tarifa.",
     "about-names-title": "Los nombres no se pueden cambiar",
     "accept-and-share-address": "Aceptar y compartir dirección",
+    "access-existing-keys": "Ingresar claves existentes",
     "access-key": "Clave de acceso",
     "account-added": "Cuenta agregada",
     "account-color": "Color de la cuenta",
@@ -28,6 +29,7 @@
     "add-mailserver": "Agregar mailserver",
     "add-members": "Agregar miembros",
     "add-network": "Agregar red",
+    "add-new-contact": "Agregar nuevo contacto",
     "add-private-key-account": "Ingresa una cuenta de una llave privada",
     "add-seed-account": "Agrega una cuenta con una frase  semilla",
     "add-to-contacts": "Agregar a contactos",
@@ -675,6 +677,7 @@
     "mainnet-network": "Red principal",
     "make-admin": "Hacer admin",
     "mark-all-read": "Marcar todo como leído",
+    "maybe-later": "Quizas mas tarde",
     "members": {
         "one": "1 miembro",
         "other": "{{count}} miembros"
