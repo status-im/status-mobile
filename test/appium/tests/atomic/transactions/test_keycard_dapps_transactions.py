@@ -93,7 +93,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         send_transaction_view.sign_with_keycard_button.click()
         keycard_view = send_transaction_view.sign_with_keycard_button.click()
         keycard_view.enter_default_pin()
-        if not keycard_view.element_by_text('0x123').is_element_displayed():
+        if not keycard_view.element_by_text_part('0xde3048417').is_element_displayed():
             self.driver.fail('Typed message was not signed')
 
     @marks.testrail_id(6287)

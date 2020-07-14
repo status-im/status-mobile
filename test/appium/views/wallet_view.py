@@ -453,7 +453,7 @@ class WalletView(BaseView):
 
     def verify_currency_balance(self, expected_rate: int, errors: list):
         usd = self.get_usd_total_value()
-        eth = self.get_asset_amount_by_name('ETHro')
+        eth = self.get_asset_amount_by_name('ETH')
         expected_usd = round(eth * expected_rate, 2)
         percentage_diff = abs((usd - expected_usd) / ((usd + expected_usd) / 2)) * 100
         if percentage_diff > 2:
@@ -461,7 +461,7 @@ class WalletView(BaseView):
         else:
             self.driver.info('Current USD balance %s is ok' % usd)
 
-    def wait_balance_is_equal_expected_amount(self, asset ='ETHro', expected_balance=0.1, wait_time=300):
+    def wait_balance_is_equal_expected_amount(self, asset ='ETH', expected_balance=0.1, wait_time=300):
         counter = 0
         while True:
             if counter >= wait_time:
@@ -565,7 +565,7 @@ class WalletView(BaseView):
         self.receive_transaction_button.click()
         send_transaction_view = self.send_transaction_request.click()
         send_transaction_view.select_asset_button.click()
-        asset_name = kwargs.get('asset_name', 'ETHro').upper()
+        asset_name = kwargs.get('asset_name', 'ETH').upper()
         asset_button = send_transaction_view.asset_by_name(asset_name)
         send_transaction_view.select_asset_button.click_until_presence_of_element(asset_button)
         asset_button.click()

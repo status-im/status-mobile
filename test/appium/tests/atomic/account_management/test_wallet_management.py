@@ -5,6 +5,7 @@ from tests import marks, camera_access_error_text, common_password
 from tests.base_test_case import SingleDeviceTestCase
 from tests.users import wallet_users, transaction_senders, basic_user, ens_user
 from views.sign_in_view import SignInView
+import time
 
 
 @marks.all
@@ -478,6 +479,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.manage_assets_button.click()
         for keyword in search_list_assets:
             home.search_by_keyword(keyword)
+            # TODO: remove time sleep after 10957 is closed
+            time.sleep(5)
             if keyword == 'ad':
                 search_elements = wallet.all_assets_full_names.find_elements()
             else:

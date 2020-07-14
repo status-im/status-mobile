@@ -120,7 +120,7 @@ class BaseElement(object):
                 if direction == 'down':
                     self.driver.swipe(500, size["height"]*0.4, 500, size["height"]*0.05)
                 else:
-                    self.driver.swipe(500, size["height"]*0.1, 500, size["height"]*0.8)
+                    self.driver.swipe(500, size["height"]*0.25, 500, size["height"]*0.8)
         else:
             raise NoSuchElementException(
                 "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
