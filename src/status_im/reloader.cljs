@@ -21,26 +21,15 @@
   (reset! warning? false)
   (reset! visible true))
 
-(defn build-failed [warnings]
+(defn build-failed []
   (reset! warning? true)
-  (reset! label (str "building failed"
-                     (when (seq warnings)
-                       (str "\n" (count warnings) " warnings"))))
+  (reset! label "building failed")
   (reset! visible true))
 
 (defn build-start []
   (reset! warning? false)
   (reset! label "building")
   (reset! visible true))
-
-(defn build-notify [{:keys [type info]}]
-  (cond (= :build-start type)
-        (build-start)
-        (or (= :build-failure type)
-            (and (= :build-complete type) (seq (:warnings info))))
-        (build-failed (:warnings info))
-        (= :build-complete type)
-        (build-competed)))
 
 (defn reload-view [_]
   (fn [cnt]

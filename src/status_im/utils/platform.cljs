@@ -1,5 +1,6 @@
 (ns status-im.utils.platform
-  (:require ["react-native" :as react-native :refer (Dimensions)]))
+  (:require [status-im.ios.platform :as ios]
+            ["react-native" :as react-native]))
 
 (def platform
   (.-Platform react-native))
@@ -12,19 +13,9 @@
   (when platform
     (.-Version ^js platform)))
 
-;; iPhone X dimensions
-(def x-height 812)
-(def xs-height 896)
-
-(defn iphone-x-dimensions? []
-  (let [{:keys [height]} (-> Dimensions
-                             (.get "window")
-                             (js->clj :keywordize-keys true))]
-    (or (= height x-height) (= height xs-height))))
-
 (def android? (= os "android"))
 (def ios? (= os "ios"))
-(def iphone-x? (and ios? (iphone-x-dimensions?)))
+(def iphone-x? (and ios? (ios/iphone-x-dimensions?)))
 
 (defn no-backup-directory []
   (cond

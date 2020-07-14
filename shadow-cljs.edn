@@ -38,12 +38,10 @@
            :init-fn status-im.core/init
            :closure-defines {"status-im.utils.config/INFURA_TOKEN" #shadow/env "INFURA_TOKEN"}
            :dev {:devtools {:after-load status-im.reloader/reload
-                            :build-notify status-im.reloader/build-notify
                             :preloads [re-frisk-remote.preload]}
                  :compiler-options {:closure-defines
                                     {re-frame.trace/trace-enabled? true}
-                                    :source-map false
-                                    :infer-externs true}
+                                    :source-map false}
                  ;; if you want to use a real device, set your local ip
                  ;; in the SHADOW_HOST env variable to make sure that
                  ;; it will use the right interface
