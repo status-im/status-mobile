@@ -71,3 +71,6 @@
    :backdrop       "rgba(0,0,0,0.4)"})
 
 (def theme (reagent/atom light-theme))
+
+(defn get-color [color]
+  (get @theme color))

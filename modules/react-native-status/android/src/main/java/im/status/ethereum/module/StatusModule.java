@@ -504,10 +504,17 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
+    public String getKeyStorePath(String keyUID) {
+        final String commonKeydir = pathCombine(this.getNoBackupDirectory(), "/keystore");
+        final String keydir = pathCombine(commonKeydir, keyUID);
+
+        return keydir;
+    }
+
     public void migrateKeyStoreDir(final String accountData, final String password) {
         try {
             final String commonKeydir = pathCombine(this.getNoBackupDirectory(), "/keystore");
-            final String keydir = pathCombine(commonKeydir, getKeyUID(accountData));
+            final String keydir = this.getKeyStorePath(this.getKeyUID(accountData));
             Log.d(TAG, "before migrateKeyStoreDir " + keydir);
 
             File keydirFile = new File(keydir);
@@ -1175,6 +1182,27 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             @Override
             public void run() {
                 String res = Statusgo.chaosModeUpdate(on);
+
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void deleteMultiaccount(final String keyUID, final Callback callback) {
+        Log.d(TAG, "deleteMultiaccount");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        final String keyStoreDir = this.getKeyStorePath(keyUID);
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.deleteMultiaccount(keyUID, keyStoreDir);
 
                 callback.invoke(res);
             }

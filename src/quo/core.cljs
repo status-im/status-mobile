@@ -10,7 +10,9 @@
             [quo.components.list.footer :as list-footer]
             [quo.components.list.item :as list-item]
             [quo.components.controls.view :as controls]
-            [quo.components.bottom-sheet.view :as bottom-sheet]))
+            [quo.components.bottom-sheet.view :as bottom-sheet]
+            [quo.components.separator :as separator]
+            [quo.design-system.colors :as colors]))
 
 (def text text/text)
 (def header header/header)
@@ -28,3 +30,5 @@
 (def safe-area-provider safe-area/provider)
 (def safe-area-consumer safe-area/consumer)
 (def safe-area-view safe-area/view)
+(def separator separator/separator)
+(def get-color colors/get-color)

@@ -188,6 +188,9 @@
 ;; keycard
 (reg-root-key-sub :keycard/new-account-sheet? :keycard/new-account-sheet?)
 
+;; delete profile
+(reg-root-key-sub :delete-profile/error :delete-profile/error)
+
 ;;GENERAL ==============================================================================================================
 
 (re-frame/reg-sub

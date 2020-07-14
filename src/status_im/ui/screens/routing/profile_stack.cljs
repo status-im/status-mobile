@@ -37,7 +37,8 @@
             [status-im.ui.screens.keycard.settings.views :as keycard.settings]
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
             [status-im.ui.screens.routing.core :as navigation]
-            [status-im.ui.screens.appearance.views :as appearance]))
+            [status-im.ui.screens.appearance.views :as appearance]
+            [status-im.ui.screens.privacy-and-security-settings.delete-profile :as delete-profile]))
 
 (defonce stack (navigation/create-stack))
 
@@ -115,6 +116,10 @@
      :component profile.seed/backup-seed}
     {:name      :tribute-to-talk
      :component tr-to-talk/tribute-to-talk}
+    {:name       :delete-profile
+     :transition :presentation-ios
+     :insets     {:bottom true}
+     :component  delete-profile/delete-profile}
     ;; {:name:my-profile-ext-settings
     ;;          :component}
 

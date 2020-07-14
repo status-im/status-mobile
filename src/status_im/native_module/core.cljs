@@ -357,3 +357,10 @@
   [mnemonic callback]
   (log/debug "[native-module] validate-mnemonic")
   (.validateMnemonic ^js (status) mnemonic callback))
+
+(defn delete-multiaccount
+  "Delete multiaccount from database, deletes multiaccount's database and
+  key files."
+  [key-uid callback]
+  (log/debug "[native-module] delete-multiaccount")
+  (.deleteMultiaccount ^js (status) key-uid callback))

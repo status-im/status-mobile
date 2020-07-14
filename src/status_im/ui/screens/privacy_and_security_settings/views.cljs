@@ -10,10 +10,14 @@
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :as views]))
 
+(defn separator []
+  [quo/separator {:style {:margin-vertical  8}}])
+
 (views/defview privacy-and-security []
   (views/letsubs [{:keys [mnemonic preview-privacy?]} [:multiaccount]
                   supported-biometric-auth [:supported-biometric-auth]
-                  auth-method              [:auth-method]]
+                  auth-method              [:auth-method]
+                  keycard?                 [:keycard-multiaccount?]]
     [react/view {:flex 1 :background-color colors/white}
      [topbar/topbar {:title :t/privacy-and-security}]
      [react/scroll-view {:padding-vertical 8}
@@ -34,9 +38,7 @@
           :accessory           :switch
           :on-press            #(re-frame/dispatch [:multiaccounts.ui/biometric-auth-switched
                                                     ((complement boolean) (= auth-method "biometric"))])}])
-      [react/view {:margin-vertical  8
-                   :background-color colors/gray-lighter
-                   :height           1}]
+      [separator]
       ;; TODO - uncomment when implemented
       ;; {:size       :small
       ;;  :title       (i18n/label :t/change-password)
@@ -61,9 +63,14 @@
                       :on-press                #(re-frame/dispatch
                                                  [:multiaccounts.ui/preview-privacy-mode-switched
                                                   ((complement boolean) preview-privacy?)])}]
-
-      (comment
-        {:container-margin-top 8
-         :size                 :small
-         :title                :t/delete-my-account
-         :theme                :negative})]]))
+      ;; TODO(rasom): remove this condition when kk support will be added
+      (when-not keycard?
+        [separator])
+      (when-not keycard?
+        [quo/list-item
+         {:size                :small
+          :theme               :negative
+          :title               (i18n/label :t/delete-my-profile)
+          :on-press            #(re-frame/dispatch [:navigate-to :delete-profile])
+          :accessibility-label :dapps-permissions-button
+          :chevron             true}])]]))

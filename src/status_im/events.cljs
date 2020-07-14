@@ -65,7 +65,8 @@
             status-im.utils.universal-links.events
             status-im.search.core
             status-im.ui.screens.profile.events
-            status-im.chat.models.images))
+            status-im.chat.models.images
+            status-im.ui.screens.privacy-and-security-settings.events))
 
 ;; init module
 (handlers/register-handler-fx

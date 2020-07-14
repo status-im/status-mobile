@@ -221,6 +221,17 @@ RCT_EXPORT_METHOD(chaosModeUpdate:(BOOL)on
 #endif
 }
 
+//////////////////////////////////////////////////////////////////// multiAccountImportPrivateKey
+RCT_EXPORT_METHOD(deleteMultiaccount:(NSString *)keyUID
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"MultiAccountImportPrivateKey() method called");
+#endif
+    NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
+    NSString *result = StatusgoDeleteMultiaccount(keyUID, multiaccountKeystoreDir.path);
+    callback(@[result]);
+}
+
 //////////////////////////////////////////////////////////////////// multiAccountGenerateAndDeriveAddresses
 RCT_EXPORT_METHOD(multiAccountGenerateAndDeriveAddresses:(NSString *)json
                   callback:(RCTResponseSenderBlock)callback) {
@@ -440,6 +451,18 @@ RCT_EXPORT_METHOD(saveAccountAndLoginWithKeycard:(NSString *)multiaccountData
     NSLog(@"%@", result);
 }
 
+- (NSURL *) getKeyStoreDir:(NSString *)keyUID {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl =[[fileManager
+                      URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
+                     lastObject];
+    
+    NSURL *oldKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
+    NSURL *multiaccountKeystoreDir = [oldKeystoreDir URLByAppendingPathComponent:keyUID];
+    
+    return multiaccountKeystoreDir;
+}
+
 - (void) migrateKeystore:(NSString *)accountData
                 password:(NSString *)password {
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -449,7 +472,7 @@ RCT_EXPORT_METHOD(saveAccountAndLoginWithKeycard:(NSString *)multiaccountData
 
     NSString *keyUID = [self getKeyUID:accountData];
     NSURL *oldKeystoreDir = [rootUrl URLByAppendingPathComponent:@"keystore"];
-    NSURL *multiaccountKeystoreDir = [oldKeystoreDir URLByAppendingPathComponent:keyUID];
+    NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
     
     NSArray *keys = [fileManager contentsOfDirectoryAtPath:multiaccountKeystoreDir.path error:nil];
     if (keys.count == 0) {
