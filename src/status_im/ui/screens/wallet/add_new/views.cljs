@@ -88,6 +88,7 @@
        :secure-text-entry   true
        :text-content-type   :none
        :accessibility-label :add-account-enter-password
+       :bottom-value        0
        :error               (when password-error (i18n/label :t/add-account-incorrect-password))
        :on-change-text      #(do
                                (re-frame/dispatch [:set-in [:add-account :password-error] nil])
