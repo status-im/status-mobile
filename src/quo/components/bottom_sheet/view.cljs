@@ -157,10 +157,10 @@
      (fn []
        (when (and (> height min-height)
                   @visible)
-         (animated/block
-          [(animated/stop-clock clock)
-           (animated/set open-snap-point (* -1 sheet-height))
-           (animated/set manual-open 1)])))
+         (animated/cond* (animated/not* manual-close)
+                         [(animated/stop-clock clock)
+                          (animated/set open-snap-point (* -1 sheet-height))
+                          (animated/set manual-open 1)])))
      [height @visible])
     ;; NOTE(Ferossgp): Remove me when RNGH will suport modal
     (rn/use-back-handler
