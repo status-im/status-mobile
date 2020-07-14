@@ -4,6 +4,7 @@
             [status-im.ui.screens.wallet.collectibles.styles :as styles]
             [status-im.ui.components.svgimage :as svgimage]
             [status-im.ui.screens.wallet.collectibles.views :as collectibles]
+            [status-im.i18n :as i18n]
             [quo.core :as quo]))
 
 (defmethod collectibles/render-collectible :STRK [_ {:keys [external_url description name image]}]
@@ -18,8 +19,8 @@
      [react/text
       description]]]
    [quo/list-item
-    {:theme :accent
-     :title               :t/view-cryptostrikers
+    {:theme               :accent
+     :title               (i18n/label :t/view-cryptostrikers)
      :icon                :main-icons/address
      :accessibility-label :open-collectible-button
      :on-press            #(re-frame/dispatch [:open-collectible-in-browser external_url])}]])

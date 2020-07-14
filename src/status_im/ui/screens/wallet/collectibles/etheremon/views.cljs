@@ -4,6 +4,7 @@
             [status-im.ui.screens.wallet.collectibles.styles :as styles]
             [status-im.ui.components.svgimage :as svgimage]
             [status-im.ui.screens.wallet.collectibles.views :as collectibles]
+            [status-im.i18n :as i18n]
             [quo.core :as quo]))
 
 (defmethod collectibles/render-collectible :EMONA [_ {:keys [user_defined_name image class_id]}]
@@ -17,8 +18,8 @@
      [react/text {:style styles/details-name}
       user_defined_name]]]
    [quo/list-item
-    {:theme :accent
-     :title               :t/view-etheremon
+    {:theme               :accent
+     :title               (i18n/label :t/view-etheremon)
      :icon                :main-icons/address
      :accessibility-label :open-collectible-button
      :on-press            #(re-frame/dispatch [:open-collectible-in-browser
