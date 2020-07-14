@@ -164,6 +164,7 @@
                                        :PureNativeButton         #js {}
                                        :TapGestureHandler        #js {}
                                        :PanGestureHandler        #js {}
+                                       :TouchableHighlight       #js {}
                                        :LongPressGestureHandler  #js {}
                                        :TouchableWithoutFeedback #js {}
                                        :createNativeWrapper      identity})

@@ -2,9 +2,11 @@
   (:require [oops.core :refer [oget]]
             ["react-native-reanimated" :default animated]
             [reagent.core :as reagent]
+            [quo.design-system.colors :as colors]
             ["react-native-gesture-handler"
              :refer (TapGestureHandler PanGestureHandler LongPressGestureHandler
                                        PureNativeButton TouchableWithoutFeedback
+                                       TouchableHighlight
                                        createNativeWrapper State)]))
 
 (def tap-gesture-handler
@@ -22,6 +24,13 @@
 
 (def touchable-without-feedback
   (reagent/adapt-react-class touchable-without-feedback-class))
+
+(def touchable-hightlight-class (reagent/adapt-react-class TouchableHighlight))
+
+(defn touchable-hightlight [props & children]
+  (into [touchable-hightlight-class (merge {:underlay-color (:interactive-02 @colors/theme)}
+                                           props)]
+        children))
 
 (def raw-button
   (reagent/adapt-react-class

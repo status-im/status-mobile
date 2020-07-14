@@ -2,6 +2,7 @@
   (:require [quo.react-native :as rn]
             [quo.platform :as platform]
             [quo.haptic :as haptic]
+            [quo.gesture-handler :as gh]
             [quo.design-system.spacing :as spacing]
             [quo.design-system.colors :as colors]
             [quo.components.text :as text]
@@ -153,7 +154,7 @@
     :or   {subtitle-max-lines 1
            theme              :main
            haptic-feedback    true
-           animated           true
+           animated           platform/ios?
            haptic-type        :selection}}]
   (let [theme           (if disabled :disabled theme)
         {:keys [icon-color text-color icon-bg-color
@@ -167,7 +168,7 @@
                                (not on-long-press))
                           rn/view
                           animated animated/pressable
-                          :else    rn/touchable-opacity)]
+                          :else    gh/touchable-hightlight)]
     [rn/view {:background-color (if (and (= accessory :radio) active)
                                   active-background
                                   passive-background)}
