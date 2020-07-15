@@ -48,6 +48,23 @@ class OptionsButton(BaseButton):
             super(OptionsButton.UserStatusInput, self).__init__(driver)
             self.locator = self.Locator.xpath_selector('(//android.widget.EditText)[2]')
 
+class AddNewContactButton(BaseButton):
+
+    def __init__(self, driver):
+        super(AddNewContactButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('add-new-contact-button')
+
+    def navigate(self):
+        from views.contacts_view import ContactsView
+        return ContactsView(self.driver)
+
+
+class InviteFriendsInContactsButton(BaseButton):
+
+    def __init__(self, driver):
+        super(InviteFriendsInContactsButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('invite-friends')
+
 
 class NetworkSettingsButton(BaseButton):
 
@@ -594,6 +611,8 @@ class ProfileView(BaseView):
         self.debug_mode_toggle = DebugModeToggle(self.driver)
         self.contacts_button = ContactsButton(self.driver)
         self.blocked_users_button = BlockedUsersButton(self.driver)
+        self.add_new_contact_button = AddNewContactButton(self.driver)
+        self.invite_friends_in_contact_button = InviteFriendsInContactsButton(self.driver)
         self.dapp_permissions_button = DappPermissionsButton(self.driver)
         self.revoke_access_button = RevokeAccessButton(self.driver)
         self.privacy_and_security_button = PrivacyAndSecurityButton(self.driver)

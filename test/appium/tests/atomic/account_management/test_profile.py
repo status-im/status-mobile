@@ -4,7 +4,7 @@ from tests import marks, bootnode_address, mailserver_address, camera_access_err
     photos_access_error_text, test_dapp_url, test_dapp_name, mailserver_ams, mailserver_gc, \
     mailserver_hk, used_fleet, common_password
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
-from tests.users import transaction_senders, basic_user, ens_user
+from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten
 from views.sign_in_view import SignInView
 
 
@@ -323,6 +323,69 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         home.chats_menu_invite_friends_button.click()
         home.share_via_messenger()
         home.find_text_part("Get Status at http://status.im")
+
+    @marks.testrail_id(6312)
+    @marks.medium
+    def test_add_remove_contact_via_contacts_view(self):
+        sign_in_view = SignInView(self.driver)
+        home = sign_in_view.create_user()
+        home.just_fyi('Check empty contacts view')
+        profile = home.profile_button.click()
+        profile.switch_network()
+        home.profile_button.click()
+        profile.contacts_button.click()
+        for element in [profile.invite_friends_in_contact_button, profile.add_new_contact_button]:
+            if not element.is_element_displayed():
+                self.driver.fail('No expected element on contacts view')
+
+        users = {
+            'scanning_ens_with_stateofus_domain_deep_link': {
+                'contact_code': 'https://join.status.im/u/%s.stateofus.eth' % ens_user_ropsten['ens'],
+                'username': ens_user_ropsten['username'],
+             },
+            'scanning_public_key': {
+                'contact_code': transaction_senders['A']['public_key'],
+                'username': transaction_senders['A']['username'],
+            },
+            'pasting_public_key': {
+                'contact_code': basic_user['public_key'],
+                'username': basic_user['username'],
+            },
+            'pasting_ens_ahother_domain': {
+                'contact_code': ens_user['ens_another_domain'],
+                'username': '@%s' % ens_user['ens_another_domain'],
+            },
+
+        }
+
+        home.just_fyi('Add contactx  and check that they appear in Contacts view')
+        for key in users:
+            contact_view = profile.add_new_contact_button.click()
+            sign_in_view.just_fyi('Checking %s case' % key)
+            if 'scanning' in key:
+                contact_view.scan_contact_code_button.click()
+                if contact_view.allow_button.is_element_displayed():
+                    contact_view.allow_button.click()
+                contact_view.enter_qr_edit_box.set_value(users[key]['contact_code'])
+                contact_view.ok_button.click()
+            else:
+                contact_view.public_key_edit_box.click()
+                contact_view.public_key_edit_box.send_keys(users[key]['contact_code'])
+                contact_view.confirm_until_presence_of_element(profile.add_new_contact_button)
+            if not profile.element_by_text(users[key]['username']).is_element_displayed():
+                self.errors.append('In %s case username not found in contact view after scanning' % key)
+
+        home.just_fyi('Remove contact and check that it disappeared')
+        user_to_remove = '@%s' % ens_user['ens_another_domain']
+        profile.element_by_text(user_to_remove).click()
+        from views.chat_view import ChatView
+        profile_user_to_remove = ChatView(self.driver)
+        profile_user_to_remove.remove_from_contacts.click()
+        profile_user_to_remove.back_button.click()
+        if profile.element_by_text(user_to_remove).is_element_displayed():
+            self.errors.append('Removed user is still shown in contact view')
+        self.errors.verify_no_errors()
+
 
     @marks.testrail_id(5431)
     @marks.medium

@@ -32,7 +32,7 @@ class ConfirmPublicKeyButton(BaseButton):
     def __init__(self, driver):
         super(ConfirmPublicKeyButton, self).__init__(driver)
         self.locator = \
-            self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[2]')
+            self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[3]')
 
 
 class UsernameCheckbox(BaseButton):
