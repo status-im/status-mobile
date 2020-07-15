@@ -5,7 +5,7 @@
             [quo.design-system.colors :as colors]
             ["react-native-gesture-handler"
              :refer (TapGestureHandler PanGestureHandler LongPressGestureHandler
-                                       PureNativeButton TouchableWithoutFeedback
+                                       PureNativeButton TouchableWithoutFeedback TouchableOpacity
                                        TouchableHighlight
                                        createNativeWrapper State NativeViewGestureHandler
                                        FlatList ScrollView)]))
@@ -38,6 +38,9 @@
   (into [touchable-hightlight-class (merge {:underlay-color (:interactive-02 @colors/theme)}
                                            props)]
         children))
+
+(def touchable-opacity
+  (reagent/adapt-react-class TouchableOpacity))
 
 (def raw-button
   (reagent/adapt-react-class

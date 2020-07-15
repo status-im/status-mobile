@@ -17,13 +17,13 @@
             [status-im.ethereum.tokens :as tokens]
             [clojure.string :as string]
             [quo.core :as quo]
+            [quo.gesture-handler :as gh]
             [status-im.ui.screens.signing.styles :as styles]
             [status-im.react-native.resources :as resources]
             [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.ui.components.bottom-panel.views :as bottom-panel]
             [status-im.utils.utils :as utils]
-            [reagent.core :as reagent]
-            [status-im.ui.components.tooltip.views :as tooltip]))
+            [reagent.core :as reagent]))
 
 (defn separator []
   [react/view {:height 1 :background-color colors/gray-lighter}])
@@ -314,51 +314,52 @@
           [react/text (or formatted-data "")]]]
         [password-view sign]]])))
 
-(defn error-item [_ _]
-  (let [show-tooltip? (reagent/atom false)]
-    (fn [title error]
-      [react/touchable-highlight {:on-press #(swap! show-tooltip? not)}
-       [react/view {:align-items :center :flex-direction :row}
-        [react/text {:style {:color colors/red :margin-right 8}}
-         (i18n/label title)]
-        [icons/icon :warning {:color colors/red}]
-        (when @show-tooltip?
-          [tooltip/tooltip error {:bottom-value -20
-                                  :font-size    12}])]])))
+(defn error-item []
+  (fn [title show-error]
+    [gh/touchable-opacity {:on-press #(swap! show-error not)}
+     [react/view {:style {:align-items    :center
+                          :flex-direction :row}}
+      [react/text {:style {:color colors/red :margin-right 8}}
+       (i18n/label title)]
+      [icons/icon :warning {:color colors/red}]]]))
 
-(defn amount-item [prices wallet-currency amount amount-error display-symbol fee-display-symbol prices-loading?]
-  (let [converted-value (* amount (get-in prices [(keyword display-symbol) (keyword (:code wallet-currency)) :price]))]
-    [quo/list-item
-     {:size      :small
-      :title     (if amount-error
-                   [error-item :t/send-request-amount amount-error]
-                   (i18n/label :t/send-request-amount))
-      ;; FIXME???
-      ;; :error     amount-error
-      :accessory [react/view {:style {:flex-direction :row}}
-                  [react/nested-text {:style {:color colors/gray}}
-                   [{:style {:color colors/black}} (utils/format-decimals amount 6)]
-                   " "
-                   (or display-symbol fee-display-symbol)
-                   " • "]
-                  (if prices-loading?
-                    [react/small-loading-indicator]
-                    [react/text {:style {:color colors/black}}
-                     (i18n/format-currency converted-value (:code wallet-currency))])
-                  [react/text {:style {:color colors/gray}} (str " " (:code wallet-currency))]]}]))
+(defn amount-item []
+  (let [show-error (reagent/atom false)]
+    (fn [prices wallet-currency amount amount-error display-symbol fee-display-symbol prices-loading?]
+      (let [converted-value (* amount (get-in prices [(keyword display-symbol) (keyword (:code wallet-currency)) :price]))]
+        [quo/list-item
+         {:size      :small
+          :title     (if amount-error
+                       [error-item :t/send-request-amount show-error]
+                       (i18n/label :t/send-request-amount))
+          :error     (when (and amount-error @show-error) amount-error)
+          :animated  false
+          :accessory [react/view {:style {:flex-direction :row}}
+                      [react/nested-text {:style {:color colors/gray}}
+                       [{:style {:color colors/black}} (utils/format-decimals amount 6)]
+                       " "
+                       (or display-symbol fee-display-symbol)
+                       " • "]
+                      (if prices-loading?
+                        [react/small-loading-indicator]
+                        [react/text {:style {:color colors/black}}
+                         (i18n/format-currency converted-value (:code wallet-currency))])
+                      [react/text {:style {:color colors/gray}} (str " " (:code wallet-currency))]]}]))))
 
 (views/defview fee-item [prices wallet-currency fee-display-symbol fee gas-error gas-error-state prices-loading?]
-  (views/letsubs [{:keys [gas-price-loading? gas-loading?]} [:signing/edit-fee]]
+  (views/letsubs [{:keys [gas-price-loading? gas-loading?]} [:signing/edit-fee]
+                  show-error (reagent/atom false)]
     (let [converted-fee-value (* fee (get-in prices [(keyword fee-display-symbol) (keyword (:code wallet-currency)) :price]))]
       [quo/list-item
        {:size      :small
         :title     (if (and (not (or gas-price-loading? gas-loading?)) gas-error)
-                     [error-item :t/network-fee gas-error]
+                     [error-item :t/network-fee show-error]
                      (i18n/label :t/network-fee))
-        ;; FIXME
-        ;; :error     (when-not (or gas-price-loading? gas-loading?) gas-error)
+        :error     (when (and (not (or gas-price-loading? gas-loading?)) gas-error @show-error)
+                     gas-error)
         :disabled  (or gas-price-loading? gas-loading?)
         :chevron   true
+        :animated  false
         :accessory (if (or gas-price-loading? gas-loading?)
                      [react/small-loading-indicator]
                      (if (= :gas-isnt-set gas-error-state)

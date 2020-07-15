@@ -173,6 +173,7 @@
                                        :NativeViewGestureHandler #js {}
                                        :FlatList                 #js {}
                                        :ScrollView               #js {}
+                                       :TouchableOpacity         #js {}
                                        :createNativeWrapper      identity})
 
 (def react-native-redash #js {:clamp nil})
