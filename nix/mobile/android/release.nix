@@ -32,9 +32,9 @@ let
   name = "status-react-build-${baseName}";
 
   envFileName = 
-    if (elem buildType ["release" "nightly"]) then ".env.${buildType}"
-    else if androidAbiInclude == "x86"        then ".env.e2e" 
-    else if (elem buildType ["pr" "manual"])  then ".env.jenkins"
+    if androidAbiInclude == "x86"                  then ".env.e2e" 
+    else if (elem buildType ["release" "nightly"]) then ".env.${buildType}"
+    else if (elem buildType ["pr" "manual"])       then ".env.jenkins"
     else ".env";
 
   # There are only two types of Gradle build targets: pr and release
