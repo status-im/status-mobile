@@ -40,8 +40,8 @@
                                                      [sheets/actions current-chat])
                                           :height  256}])}]}])
 
-(defview add-contact-bar [public-key]
-  (letsubs [added? [:contacts/contact-added? public-key]]
+(defn add-contact-bar [public-key]
+  (let [added? @(re-frame/subscribe [:contacts/contact-added? public-key])]
     (when-not added?
       [react/touchable-highlight
        {:on-press
@@ -85,8 +85,9 @@
        (i18n/label :t/empty-chat-description-one-to-one)
        contact-name)])])
 
-(defview chat-intro-one-to-one [{:keys [chat-id] :as opts}]
-  (letsubs [contact-name [:contacts/contact-name-by-identity chat-id]]
+(defn chat-intro-one-to-one [{:keys [chat-id] :as opts}]
+  (let [contact-name @(re-frame/subscribe
+                       [:contacts/contact-name-by-identity chat-id])]
     (chat-intro (assoc opts :contact-name contact-name))))
 
 (defn chat-intro-header-container

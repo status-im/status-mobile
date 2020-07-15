@@ -2,7 +2,8 @@
   (:require [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.styles.main :as st])
+            [status-im.ui.screens.chat.styles.main :as st]
+            [re-frame.core :as re-frame])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- group-last-activity [{:keys [contacts public?]}]
@@ -15,12 +16,11 @@
           (i18n/label :members-active-none)
           (i18n/label-pluralize cnt :t/members-active))))]])
 
-(defview one-to-one-name [from]
-  (letsubs [contact-name [:contacts/contact-name-by-identity from]]
-    contact-name))
+(defn one-to-one-name [from]
+  @(re-frame.core/subscribe [:contacts/contact-name-by-identity from]))
 
-(defview contact-indicator [contact-id]
-  (letsubs [added? [:contacts/contact-added? contact-id]]
+(defn contact-indicator [contact-id]
+  (let [added? @(re-frame/subscribe [:contacts/contact-added? contact-id])]
     [react/view {:flex-direction :row}
      [react/text {:style st/toolbar-subtitle}
       (if added?
