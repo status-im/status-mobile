@@ -38,10 +38,10 @@
                      :key   :your-data-belongs-to-you}]
    [react/i18n-text {:style styles/intro-description
                      :key   :your-data-belongs-to-you-description}]
-   [quo/button
-    {:style    styles/intro-button
-     :on-press #(re-frame/dispatch [:set-in [:my-profile/seed :step] :12-words])}
-    (i18n/label :t/ok-continue)]])
+   [react/view {:style styles/intro-button}
+    [quo/button
+     {:on-press #(re-frame/dispatch [:set-in [:my-profile/seed :step] :12-words])}
+     (i18n/label :t/ok-continue)]]])
 
 (defn six-words [words]
   [react/view {:style styles/six-words-container}
@@ -94,8 +94,8 @@
 
 (defn enter-word [step [idx word] error entered-word]
   ^{:key word}
-  [react/view {:flex 1}
-   [react/view {:style styles/enter-word-container}
+  [:<>
+   [react/scroll-view {:style styles/enter-word-container}
     [quo/text-input
      {:placeholder       (i18n/label :t/enter-word)
       :label             [:<>
@@ -106,6 +106,7 @@
       :auto-focus        true
       :auto-correct      false
       :keyboard-type     "visible-password"
+      :monospace         true
       :on-change-text    #(re-frame/dispatch [:set-in [:my-profile/seed :word] %])
       :on-submit-editing next-handler
       :error             error}]
@@ -114,9 +115,9 @@
     [react/view styles/twelve-words-spacer]]
    [toolbar/toolbar
     {:right
-     [quo/button (merge {:type      :secondary
-                         :disabled  (string/blank? entered-word)
-                         :on-press  (next-handler word entered-word step)}
+     [quo/button (merge {:type     :secondary
+                         :disabled (string/blank? entered-word)
+                         :on-press (next-handler word entered-word step)}
                         (when-not (= :second-word step)
                           {:after :main-icon/next}))
       (if (= :second-word step)
@@ -132,9 +133,9 @@
     (i18n/label :t/you-are-all-set)]
    [react/text {:style styles/finish-description}
     (i18n/label :t/you-are-all-set-description)]
-   [quo/button {:style    styles/finish-button
-                :on-press #(re-frame/dispatch [:navigate-back])}
-    (i18n/label :t/ok-got-it)]])
+   [react/view {:style styles/finish-button}
+    [quo/button {:on-press #(re-frame/dispatch [:navigate-back])}
+     (i18n/label :t/ok-got-it)]]])
 
 (defview backup-seed []
   (letsubs [current-multiaccount [:multiaccount]

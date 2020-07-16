@@ -230,9 +230,7 @@
                                    :on-press on-cancel}
              [text/text {:color :link} cancel-label]])
           (when error
-            [tooltip/tooltip (merge {:bottom-value (cond bottom-value bottom-value
-                                                         label        30 ; 22 line height 8 margin
-                                                         )}
+            [tooltip/tooltip (merge {:bottom-value (if bottom-value bottom-value 0)}
                                     (when accessibility-label
                                       {:accessibility-label (str (name accessibility-label) "-error")}))
              [text/text {:color :negative

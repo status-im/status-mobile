@@ -69,8 +69,9 @@
    :padding 16})
 
 (def enter-word-n-description
-  {:font-size 14
-   :color     colors/gray})
+  {:font-size       14
+   :color           colors/gray
+   :margin-vertical 16})
 
 (def finish-container
   {:flex               1
