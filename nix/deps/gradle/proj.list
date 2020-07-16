@@ -21,6 +21,7 @@ react-native-mail
 react-native-navigation-bar-color
 react-native-nfc-manager
 react-native-permissions
+react-native-push-notification
 react-native-reanimated
 react-native-safe-area-context
 react-native-screens
