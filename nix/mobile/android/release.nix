@@ -136,6 +136,9 @@ in stdenv.mkDerivation rec {
     assert ANDROID_ABI_SPLIT != null && ANDROID_ABI_SPLIT != "";
     assert stringLength ANDROID_ABI_INCLUDE > 0;
   ''
+    # Fixes issue with failing to load libnative-platform.so
+    export GRADLE_USER_HOME=$(mktemp -d)
+
     pushd ./android
     ${adhocEnvVars} ${pkgs.gradle}/bin/gradle \
       ${toString gradleOpts} \
