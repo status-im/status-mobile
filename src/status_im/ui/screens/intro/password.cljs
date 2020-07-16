@@ -27,7 +27,7 @@
             valid-form     (confirm-password @password @confirm)
             on-submit      (fn []
                              (when (not processing?)
-                               (if valid-form
+                               (if (and valid-password valid-form)
                                  (do (reset! show-error false)
                                      (re-frame/dispatch [forward-action {:key-code @password}]))
                                  (reset! show-error true))))]
@@ -106,6 +106,7 @@
                       :accessibility-label :onboarding-next-button
                       :disabled            (or (nil? @confirm)
                                                (not valid-password)
+                                               (not valid-form)
                                                processing?)
                       :type                :secondary
                       :after               :main-icons/next}
