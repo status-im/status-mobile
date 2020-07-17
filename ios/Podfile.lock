@@ -245,7 +245,7 @@ PODS:
     - React
   - react-native-cameraroll (1.6.2):
     - React
-  - react-native-image-resizer (1.0.0):
+  - react-native-image-resizer (1.2.3):
     - React
   - react-native-mail (4.0.0):
     - React
@@ -568,7 +568,7 @@ SPEC CHECKSUMS:
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: afd4259ef9eadeeb2d30250b37d95cb3b6b97a69
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
-  glog: 682164e7ac67e41afd8f7b6a37a96d04caf61cc0
+  glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   RCTRequired: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
   RCTTypeSafety: 93006131180074cffa227a1075802c89a49dd4ce
@@ -582,7 +582,7 @@ SPEC CHECKSUMS:
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-camera: 2b74be8edc1103c4c46d1f4e5f41723d9ff052cc
   react-native-cameraroll: ac69828fc43b9dbf92149714fd739577d38e4448
-  react-native-image-resizer: 4516052af6ae0248caf4ccf356caecefe60072d7
+  react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3
   react-native-mail: 7e37dfbe93ff0d4c7df346b738854dbed533e86f
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
   react-native-safe-area-context: 60f654e00b6cc416573f6d5dbfce3839958eb57a
@@ -620,4 +620,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: f66349c5bfb9c21ac968307ea5a2d6c2dd4091ed
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.9.1

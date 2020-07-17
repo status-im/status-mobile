@@ -3,6 +3,7 @@
             [status-im.utils.fx :as fx]
             ["@react-native-community/cameraroll" :as CameraRoll]
             [status-im.utils.types :as types]
+            [status-im.ui.components.permissions :as permissions]
             [status-im.ui.components.react :as react]
             [status-im.utils.image-processing :as image-processing]
             [taoensso.timbre :as log]
@@ -47,14 +48,6 @@
          #(log/error "could not resize image" %)))))))
 
 (re-frame/reg-fx
- ::resize-camera-roll-images
- (fn [photos]
-   (doseq [photo photos]
-     (resize-and-call
-      (-> photo :node :image :uri)
-      #(re-frame/dispatch [:add-resized-image-to-roll %])))))
-
-(re-frame/reg-fx
  ::chat-open-image-picker
  (fn []
    (react/show-image-picker
@@ -65,7 +58,7 @@
     "photo")))
 
 (re-frame/reg-fx
- ::image-captured
+ ::image-selected
  (fn [uri]
    (resize-and-call
     uri
@@ -74,31 +67,27 @@
 (re-frame/reg-fx
  ::camera-roll-get-photos
  (fn [num]
-   (-> (.getPhotos CameraRoll (clj->js {:first num :assetType "Photos"}))
-       (.then #(re-frame/dispatch [:on-camera-roll-get-photos (:edges (types/js->clj %))]))
-       (.catch #(log/error "could not get cameraroll photos")))))
+   (permissions/request-permissions
+    {:permissions [:read-external-storage]
+     :on-allowed  (fn []
+                    (-> (.getPhotos CameraRoll #js {:first num :assetType "Photos" :groupTypes "All"})
+                        (.then #(re-frame/dispatch [:on-camera-roll-get-photos (:edges (types/js->clj %))]))
+                        (.catch #(log/error "could not get cameraroll photos"))))})))
 
 (fx/defn image-captured
   {:events [:chat.ui/image-captured]}
   [_ uri]
-  {::image-captured uri})
+  {::image-selected uri})
 
 (fx/defn camera-roll-get-photos
   {:events [:chat.ui/camera-roll-get-photos]}
   [_ num]
   {::camera-roll-get-photos num})
 
-(fx/defn add-resized-image-to-roll
-  {:events [:add-resized-image-to-roll]}
-  [{db :db} uri]
-  {:db (update db :camera-roll-photos conj uri)})
-
 (fx/defn on-camera-roll-get-photos
   {:events [:on-camera-roll-get-photos]}
   [{db :db} photos]
-  (when-not (seq (:camera-roll-photos db))
-    {:db (assoc db :camera-roll-photos [])
-     ::resize-camera-roll-images photos}))
+  {:db (assoc db :camera-roll-photos (mapv #(get-in % [:node :image :uri]) photos))})
 
 (fx/defn cancel-sending-image
   {:events [:chat.ui/cancel-sending-image]}
@@ -116,6 +105,11 @@
   {:events [:chat.ui/open-image-picker]}
   [_]
   {::chat-open-image-picker nil})
+
+(fx/defn camera-roll-pick
+  {:events [:chat.ui/camera-roll-pick]}
+  [_ uri]
+  {::image-selected uri})
 
 (fx/defn save-image-to-gallery
   {:events [:chat.ui/save-image-to-gallery]}

@@ -6520,9 +6520,10 @@ react-native-image-crop-picker@^0.31.1:
   resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.31.1.tgz#b56248a9e31d62f1c6e7c2f85d296869c32af4cd"
   integrity sha512-I5z7DcTKYYASevIalkqKdiw9Fe4CVCKPVMMkLGDVGUYgZZWlbOS9G1+oNWtWwoB5S9e931GkDrZ/HL5UhADG/Q==
 
-"react-native-image-resizer@git+https://github.com/status-im/react-native-image-resizer.git#1.0.0-2-status":
-  version "1.0.0"
-  resolved "git+https://github.com/status-im/react-native-image-resizer.git#c997aeb136ff370c9c4cff20c594fda8602f1841"
+react-native-image-resizer@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/react-native-image-resizer/-/react-native-image-resizer-1.2.3.tgz#21cb2b158ff950e55a0fc01c2cb61375bd5a03ba"
+  integrity sha512-RDPNJglRmWDZ/7hvu+CbpsKYl6AQmseL8cWX4UkLAHxQWNc5ZdYhP/9avC5xCfyiwkRw+Zmkmv78HO0kt0ewhQ==
 
 react-native-iphone-x-helper@^1.2.1:
   version "1.2.1"

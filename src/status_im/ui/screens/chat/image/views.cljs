@@ -46,10 +46,11 @@
 
 (defn image-preview [uri first? panel-height]
   (let [wh (/ (- panel-height 8) 2)]
-    [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/image-selected uri])}
+    [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/camera-roll-pick uri])}
      [react/image {:style  (merge {:width            wh
                                    :height           wh
                                    :background-color :black
+                                   :resize-mode      :cover
                                    :border-radius    4}
                                   (when first?
                                     {:margin-bottom 8}))
