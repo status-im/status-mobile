@@ -3,6 +3,7 @@
             [status-im.utils.fx :as fx]
             ["@react-native-community/cameraroll" :as CameraRoll]
             [status-im.utils.types :as types]
+            [status-im.ui.components.permissions :as permissions]
             [status-im.ui.components.react :as react]
             [status-im.utils.image-processing :as image-processing]
             [taoensso.timbre :as log]
@@ -66,9 +67,12 @@
 (re-frame/reg-fx
  ::camera-roll-get-photos
  (fn [num]
-   (-> (.getPhotos CameraRoll #js {:first num :assetType "Photos" :groupTypes "All"})
-       (.then #(re-frame/dispatch [:on-camera-roll-get-photos (:edges (types/js->clj %))]))
-       (.catch #(log/error "could not get cameraroll photos")))))
+   (permissions/request-permissions
+    {:permissions [:read-external-storage]
+     :on-allowed  (fn []
+                    (-> (.getPhotos CameraRoll #js {:first num :assetType "Photos" :groupTypes "All"})
+                        (.then #(re-frame/dispatch [:on-camera-roll-get-photos (:edges (types/js->clj %))]))
+                        (.catch #(log/error "could not get cameraroll photos"))))})))
 
 (fx/defn image-captured
   {:events [:chat.ui/image-captured]}
