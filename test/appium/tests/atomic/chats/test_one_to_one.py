@@ -226,11 +226,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_1_home.just_fyi('send image in 1-1 chat from Gallery, check options for sender')
         device_1_chat.show_images_button.click()
-        device_1_chat.image_from_gallery_button.click()
         device_1_chat.allow_button.click()
-        device_1_chat.click_system_back_button()
-        device_1_chat.chat_message_input.click()
-        device_1_chat.show_images_button.click()
         device_1_chat.first_image_from_gallery.click()
         if not device_1_chat.cancel_reply_button.is_element_displayed():
             self.errors.append("Can't cancel sending images, expected image preview is not shown!")
