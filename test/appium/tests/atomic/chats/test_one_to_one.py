@@ -35,6 +35,64 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2_chat = device_2_home.get_chat(default_username_1).click()
         device_2_chat.chat_element_by_text(message).wait_for_visibility_of_element()
 
+    @marks.testrail_id(6283)
+    @marks.high
+    def test_push_notification_1_1_chat(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        device_1_home, device_2_home = device_1.create_user(), device_2.create_user(enable_notifications=True)
+        device_2.just_fyi("Device_1 = Enables Notifications from Profile; Device_2 - from onboarding")
+
+        profile_1 = device_1_home.profile_button.click()
+        default_username_1 = profile_1.default_username_text.text
+        profile_1.profile_notifications_button.click()
+        device_1_home = profile_1.get_back_to_home_view()
+        device_2_public_key = device_2_home.get_public_key_and_username()
+
+        device_2.just_fyi("Device 2 puts app on background being on Profile view to receive PN with text")
+        device_2.click_system_home_button()
+
+        device_1_chat = device_1_home.add_contact(device_2_public_key)
+        message = 'Text push notification'
+        device_1_chat.chat_message_input.send_keys(message)
+        device_1_chat.send_message_button.click()
+
+        device_1.just_fyi("Device 1 puts app on background to receive emoji push notification")
+        device_1.profile_button.click()
+        device_1.click_system_home_button()
+
+        device_2.just_fyi("Check text push notification and tap it")
+        device_2.open_notification_bar()
+        if not (device_2.element_by_text_part(message).is_element_displayed()
+                and device_2.element_by_text_part(default_username_1).is_element_displayed()):
+           device_2.driver.fail("Push notification with text was not received")
+        chat_view_device_2 = device_2.click_upon_push_notification_by_text(message)
+
+        device_2.just_fyi("Send emoji message to Device 1 while it's on backround")
+        emoji_message = random.choice(list(emoji.EMOJI_UNICODE))
+        emoji_unicode = emoji.EMOJI_UNICODE[emoji_message]
+        chat_view_device_2.send_message(emoji.emojize(emoji_message))
+
+        device_1.just_fyi("Device 1 checks PN with emoji")
+        device_1.open_notification_bar()
+        if not device_1.element_by_text_part(emoji_unicode).is_element_displayed(10):
+            device_1.driver.fail("Push notification with emoji was not received")
+        chat_view_device_1 = device_1.click_upon_push_notification_by_text(emoji_unicode)
+        device_1.just_fyi("Check Device 1 is actually on chat")
+        if not (chat_view_device_1.element_by_text_part(message).is_element_displayed()
+            and chat_view_device_1.element_by_text_part(emoji_unicode).is_element_displayed()):
+            device_1.driver.fail("Failed to open chat view after tap on PN")
+
+        device_1.just_fyi("Checks there are no PN after message was seen")
+        device_1.click_system_home_button()
+        device_2.click_system_home_button()
+        device_1.open_notification_bar()
+        device_2.open_notification_bar()
+        if (device_2.element_by_text_part(message).is_element_displayed()
+                or device_1.element_by_text_part(emoji_unicode).is_element_displayed()):
+            self.errors.append("PN are keep staying after message was seen by user")
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(5310)
     @marks.critical
     def test_offline_messaging_1_1_chat(self):

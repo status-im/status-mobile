@@ -458,6 +458,12 @@ class AboutButton(BaseButton):
         return self.navigate()
 
 
+class PrifileNotificationsButton(BaseButton):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.accessibility_id("notifications-button")
+
+
 class RemovePictureButton(BaseButton):
     def __init__(self, driver):
         super().__init__(driver)
@@ -606,6 +612,7 @@ class ProfileView(BaseView):
         self.remove_picture_button = RemovePictureButton(self.driver)
         self.confirm_edit_button = ConfirmEditButton(self.driver)
         self.cross_icon = CrossIcon(self.driver)
+        self.profile_notifications_button = PrifileNotificationsButton(self.driver)
         self.advanced_button = AdvancedButton(self.driver)
         self.log_level_setting = LogLevelSetting(self.driver)
         self.debug_mode_toggle = DebugModeToggle(self.driver)

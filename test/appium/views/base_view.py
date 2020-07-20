@@ -476,6 +476,10 @@ class BaseView(object):
         for _ in range(times):
             self.driver.press_keycode(4)
 
+    def click_system_home_button(self):
+        self.driver.info('Press system Home button')
+        self.driver.press_keycode(3)
+
     def cut_text(self):
         self.driver.info('Cut text')
         self.driver.press_keycode(277)
@@ -666,6 +670,10 @@ class BaseView(object):
         self.send_as_keyevent('+0100100101')
         self.confirm()
 
+    def click_upon_push_notification_by_text(self, text):
+        self.element_by_text_part(text).click()
+        return self.get_chat_view()
+
     def reconnect(self):
         connect_status = self.connection_status
         for i in range(3):
@@ -692,6 +700,11 @@ class BaseView(object):
 
     def asset_by_name(self, asset_name):
         return AssetButton(self.driver, asset_name)
+
+    def open_notification_bar(self):
+        action = TouchAction(self.driver)
+        for i in range(2):
+            action.press(None, 100, 10).move_to(None, 100, 600).perform()
 
     def toggle_airplane_mode(self):
         self.airplane_mode_button.click()

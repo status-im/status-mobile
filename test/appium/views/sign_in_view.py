@@ -165,6 +165,12 @@ class MaybeLaterButton(BaseButton):
         self.locator = self.Locator.accessibility_id("maybe-later")
 
 
+class EnableNotificationsButton(BaseButton):
+    def __init__(self, driver):
+        super(EnableNotificationsButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("enable-notifications")
+
+
 class AddExistingMultiaccountButton(RecoverAccessButton):
     def __init__(self, driver):
         super(AddExistingMultiaccountButton, self).__init__(driver)
@@ -236,6 +242,7 @@ class SignInView(BaseView):
         self.confirm_password_input = ConfirmPasswordInput(self.driver)
         self.create_password_input = CreatePasswordInput(self.driver)
         self.confirm_your_password_input = ConfirmYourPasswordInput(self.driver)
+        self.enable_notifications_button = EnableNotificationsButton(self.driver)
         self.maybe_later_button = MaybeLaterButton(self.driver)
         self.name_input = NameInput(self.driver)
         self.other_multiaccounts_button = OtherMultiAccountsButton(self.driver)
@@ -252,7 +259,7 @@ class SignInView(BaseView):
         self.pair_to_this_device_button = PairToThisDeviceButton(self.driver)
 
 
-    def create_user(self, password=common_password, keycard=False):
+    def create_user(self, password=common_password, keycard=False, enable_notifications=False):
         self.get_started_button.click()
         self.generate_key_button.click()
         self.next_button.click()
@@ -266,7 +273,10 @@ class SignInView(BaseView):
             self.confirm_your_password_input.set_value(password)
             self.next_button.click()
         self.maybe_later_button.wait_for_visibility_of_element(30)
-        self.maybe_later_button.click_until_presence_of_element(self.lets_go_button)
+        if enable_notifications:
+            self.enable_notifications_button.click()
+        else:
+            self.maybe_later_button.click_until_presence_of_element(self.lets_go_button)
         self.lets_go_button.click_until_absense_of_element(self.lets_go_button)
         self.profile_button.wait_for_visibility_of_element(30)
         return self.get_home_view()
