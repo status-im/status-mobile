@@ -11,6 +11,9 @@
 (declare process-next-permission)
 (declare send-response-to-bridge)
 
+(def use-post-message
+  (set [constants/dapp-permission-get-chat-messages]))
+
 (def supported-permissions
   {constants/dapp-permission-qr-code           {:yield-control? true
                                                 :allowed?       true}
@@ -46,10 +49,6 @@
 (fx/defn dapp-goto-to-topic
   [{:keys [db] :as cofx} permission message-id {:keys [topic] :as params}]
   (re-frame/dispatch [:chat.ui/start-public-chat topic {:navigation-reset? true}])
-  (send-response-to-bridge cofx permission message-id true params))
-
-(fx/defn get-current-messages
-  [{:keys [db] :as cofx} permission message-id {:keys [topic message] :as params}]
   (send-response-to-bridge cofx permission message-id true params))
 
 (fx/defn permission-yield-control
@@ -90,12 +89,15 @@
   "Send response to the bridge. If the permission is allowed, send data associated
    with the permission"
   [{:keys [db] :as cofx} permission message-id allowed? data]
-  {:browser/send-to-bridge (cond-> {:type       constants/api-response
-                                    :isAllowed  allowed?
-                                    :permission permission
-                                    :messageId  message-id}
-                             allowed?
-                             (assoc :data data))})
+  (let [payload (cond-> {:type       constants/api-response
+                         :isAllowed  allowed?
+                         :permission permission
+                         :messageId  message-id}
+                  allowed?
+                  (assoc :data data))]
+    (if
+      (use-post-message permission) (dapp-messages/dapp-post-message payload))
+    {:browser/send-to-bridge payload}))
 
 (fx/defn update-dapp-permissions
   [{:keys [db]} dapp-name permission allowed?]
