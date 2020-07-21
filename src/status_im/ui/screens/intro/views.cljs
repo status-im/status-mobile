@@ -167,7 +167,7 @@
                           :generate-key     :t/generate-a-key
                           :recovery-success :t/re-encrypt-key
                           :intro-wizard-title6)]
-           [react/view (:style (assoc styles/bottom-button :margin-bottom 16))
+           [react/view {:style (assoc styles/bottom-button :margin-bottom 16)}
             [quo/button
              {:disabled            existing-account?
               :on-press            #(re-frame/dispatch [forward-action])
