@@ -77,7 +77,7 @@
                   :dapp-name            dapp-name
                   :yield-control?       yield-control?})})
 
-(defn get-permission-data [cofx allowed-permission & [{:keys [start] :as params}]]
+(defn get-permission-data [cofx allowed-permission]
   (let [multiaccount (get-in cofx [:db :multiaccount])
         messages (get-in cofx [:db :messages])]
     (get {constants/dapp-permission-contact-code (:public-key multiaccount)
@@ -152,7 +152,7 @@
             (send-response-to-bridge requested-permission
                                      message-id
                                      true
-                                     (get-permission-data cofx requested-permission params))
+                                     (get-permission-data cofx requested-permission))
             (process-next-permission dapp-name)))
 
 (fx/defn allow-permission
@@ -190,7 +190,7 @@
       (send-response-to-bridge cofx permission message-id false nil)
 
       (and (or permission-allowed? (:allowed? supported-permission)) (not (:yield-control? supported-permission)))
-      (send-response-to-bridge cofx permission message-id true (get-permission-data cofx permission params))
+      (send-response-to-bridge cofx permission message-id true (get-permission-data cofx permission))
 
       :else
       (process-next-permission (update-in cofx [:db :browser/options :pending-permissions]

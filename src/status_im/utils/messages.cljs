@@ -1,6 +1,7 @@
 (ns status-im.utils.messages
   (:require [clojure.string :as string]
             [status-im.utils.types :as util-types]
+            [clojure.set :as clj-set]
             [status-im.browser.webview-ref :as webview-ref]))
 
 (defn replace-several [content & replacements]
@@ -23,9 +24,9 @@
                    #"\'" ""))
 
 (defn format-message-client
-  [[message-id, {:keys [content] :as message}]]
+  [{:keys [content] :as message}]
   (let [reduced-message (select-keys message [:timestamp :from :alias :message-id])
-        js-formatted (clojure.set/rename-keys reduced-message {:message-id :messageId})]
+        js-formatted (clj-set/rename-keys reduced-message {:message-id :messageId})]
     (merge {:text (:text content)} js-formatted)))
 
 (defn messages-format-js
@@ -33,7 +34,7 @@
   (let [chat-keys (keys messages)
         chat-content (mapcat #(get messages %) chat-keys)
         chat-id (first chat-keys)
-        flat-messages (map format-message-client chat-content)
+        flat-messages (map (comp format-message-client second) chat-content)
         payload {:chat chat-id :messages flat-messages}]
     payload))
 
