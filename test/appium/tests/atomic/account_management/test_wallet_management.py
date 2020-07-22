@@ -143,7 +143,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         assets = ['CryptoKitties', 'CryptoStrikers']
         for asset in assets:
             wallet.select_asset(asset)
-        wallet.accounts_status_account.click()
+        wallet.accounts_status_account.click_until_presence_of_element(wallet.collectibles_button)
         wallet.collectibles_button.click()
         for asset in assets:
             if not wallet.element_by_text(asset).is_element_displayed():

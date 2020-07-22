@@ -120,7 +120,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         time.sleep(40)
         send_message = chat_1_sender_message.sign_and_send.click()
         send_message.next_button.click()
-        send_message.sign_transaction()
+        send_message.sign_transaction(default_gas_price=False)
         updated_timestamp_sender = chat_1_sender_message.timestamp_message.text
         if updated_timestamp_sender == timestamp_sender:
             self.errors.append("Timestamp of message is not updated after signing transaction")
@@ -245,7 +245,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
                                    'sharing address')
 
         home_1.just_fyi('Decline transaction request and check that state is changed')
-        chat_1.commands_button.click()
         request_amount = chat_1.get_unique_amount()
         request_transaction = chat_1.request_command.click()
         request_transaction.amount_edit_box.set_value(request_amount)

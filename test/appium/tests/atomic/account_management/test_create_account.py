@@ -90,21 +90,34 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.generate_key_button.click()
         sign_in.next_button.click()
         sign_in.next_button.click()
-        sign_in.create_password_input.set_value('12345')
-
         mismatch_error = "Passwords don't match"
+        cases = ['password is not confirmed', 'password is too short', "passwords don't match"]
+        error = "Can create multiaccount when"
 
+        sign_in.just_fyi('Checking case when %s' % cases[0])
+        sign_in.create_password_input.send_keys('123456')
         sign_in.next_button.click()
-        if sign_in.confirm_your_password_input.is_element_displayed():
-            self.errors.append('Next button is clickable when password is less then 6 symbols')
+        if sign_in.maybe_later_button.is_element_displayed(10):
+            self.driver.fail('%s  %s' % (error, cases[0]))
 
-        sign_in.create_password_input.set_value('123456')
+        sign_in.just_fyi('Checking case when %s'% cases[1])
+        sign_in.create_password_input.send_keys('123456')
+        [field.send_keys('123456') for field in (sign_in.create_password_input, sign_in.confirm_your_password_input)]
+        sign_in.confirm_your_password_input.delete_last_symbols(1)
+        sign_in.create_password_input.delete_last_symbols(1)
         sign_in.next_button.click()
-        sign_in.confirm_your_password_input.set_value('1234567')
-        sign_in.next_button.click()
+        if sign_in.maybe_later_button.is_element_displayed(10):
+            self.driver.fail('%s  %s' % (error, cases[1]))
 
+        sign_in.just_fyi("Checking case %s" % cases[2])
+        sign_in.create_password_input.send_keys('1234565')
+        sign_in.confirm_your_password_input.send_keys('1234567')
         if not sign_in.find_text_part(mismatch_error):
-            self.errors.append("'%s' is not shown")
+            self.errors.append("'%s' is not shown" % mismatch_error)
+        sign_in.next_button.click()
+        if sign_in.maybe_later_button.is_element_displayed(10):
+            self.driver.fail('%s  %s' % (error, cases[2]))
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5414)

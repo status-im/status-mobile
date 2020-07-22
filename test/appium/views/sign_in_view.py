@@ -261,7 +261,7 @@ class SignInView(BaseView):
 
     def create_user(self, password=common_password, keycard=False, enable_notifications=False):
         self.get_started_button.click()
-        self.generate_key_button.click()
+        self.generate_key_button.click_until_presence_of_element(self.next_button)
         self.next_button.click()
         if keycard:
             keycard_flow = self.keycard_storage_button.click()
