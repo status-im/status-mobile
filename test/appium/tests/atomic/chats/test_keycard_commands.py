@@ -14,7 +14,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(6293)
     @marks.critical
     def test_keycard_send_eth_in_1_1_chat(self):
-        sender = transaction_senders['A']
+        sender = transaction_senders['E']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1 = device_1.recover_access(passphrase=sender['passphrase'], keycard=True)
@@ -74,7 +74,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         time.sleep(40)
         send_message = chat_1_sender_message.sign_and_send.click()
         send_message.next_button.click()
-        send_message.sign_transaction(keycard=True)
+        send_message.sign_transaction(keycard=True, default_gas_price=False)
         if chat_1_sender_message.transaction_status.text != 'Pending':
             self.errors.append('Wrong state is shown for outgoing transaction: "Pending" is expected, in fact'
                                ' %s ' % chat_1_sender_message.transaction_status.text)
@@ -98,7 +98,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
     @marks.testrail_id(6294)
     @marks.critical
     def test_keycard_request_and_receive_stt_in_1_1_chat_offline(self):
-        sender = transaction_senders['C']
+        sender = transaction_senders['D']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
 
@@ -154,11 +154,11 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
                                'in fact %s ' % chat_2_sender_message.transaction_status.text)
         send_message = chat_2_sender_message.sign_and_send.click()
         send_message.next_button.click()
-        send_message.sign_transaction(keycard=True)
+        send_message.sign_transaction(keycard=True, default_gas_price=False)
 
         home_2.just_fyi('Check that transaction message is updated with new status after offline')
         chat_2.toggle_airplane_mode()
-        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15, token=True)
+        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, token=True)
         chat_2.toggle_airplane_mode()
         chat_2.connection_status.wait_for_invisibility_of_element(60)
         if chat_2_sender_message.transaction_status.text != 'Confirmed':

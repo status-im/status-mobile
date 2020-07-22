@@ -106,7 +106,7 @@ class NetworkApi(object):
             if int(transaction['confirmations']) >= confirmations:
                 return
             time.sleep(10)
-        pytest.fail('Transaction with amount %s was not confirmed, address is %s' % (amount, address))
+        pytest.fail('Transaction with amount %s was not confirmed, address is %s, still has %s confirmations' % (amount, address, int(transaction['confirmations'])))
 
     def verify_balance_is_updated(self, initial_balance, recipient_address, wait_time=360):
         counter = 0

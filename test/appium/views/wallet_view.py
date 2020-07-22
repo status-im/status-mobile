@@ -544,22 +544,13 @@ class WalletView(BaseView):
         send_transaction_view.chose_recipient_button.click()
 
         recipient = kwargs.get('recipient')
-
-        if '0x' in recipient:
-            send_transaction_view.enter_recipient_address_button.click()
-            send_transaction_view.enter_recipient_address_input.set_value(recipient)
-            send_transaction_view.done_button.click()
-        else:
-            send_transaction_view.recent_recipients_button.click()
-            recent_recipient = send_transaction_view.element_by_text(recipient)
-            send_transaction_view.recent_recipients_button.click_until_presence_of_element(recent_recipient)
-            recent_recipient.click()
+        send_transaction_view.enter_recipient_address_button.click()
+        send_transaction_view.enter_recipient_address_input.set_value(recipient)
+        send_transaction_view.done_button.click()
         if kwargs.get('sign_transaction', True):
             send_transaction_view.sign_transaction_button.click()
-            if kwargs.get('keycard', False):
-                send_transaction_view.sign_transaction(keycard=True)
-            else:
-                send_transaction_view.sign_transaction()
+            send_transaction_view.sign_transaction(keycard=kwargs.get('keycard', False), default_gas_price=kwargs.get('default_gas_price', False))
+
 
     def receive_transaction(self, **kwargs):
         self.receive_transaction_button.click()
