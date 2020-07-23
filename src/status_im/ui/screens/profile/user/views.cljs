@@ -67,8 +67,7 @@
 (defn content []
   (let [{:keys [preferred-name
                 mnemonic
-                keycard-pairing
-                notifications-enabled?]}
+                keycard-pairing]}
         @(re-frame/subscribe [:multiaccount])
         active-contacts-count @(re-frame/subscribe [:contacts/active-count])
         tribute-to-talk       @(re-frame/subscribe [:tribute-to-talk/profile])
@@ -127,17 +126,6 @@
        :accessibility-label :notifications-settings-button
        :chevron             true
        :on-press            #(re-frame/dispatch [:navigate-to :notifications])}]
-     (when (or (and platform/android?
-                    config/local-notifications?)
-               platform/ios?)
-       [quo/list-item
-        {:icon                :main-icons/notification
-         :title               (i18n/label :t/notifications)
-         :accessibility-label :notifications-button
-         :active              notifications-enabled?
-         :on-press            #(re-frame/dispatch
-                                [:multiaccounts.ui/notifications-switched (not notifications-enabled?)])
-         :accessory           :switch}])
      [quo/list-item
       {:icon                :main-icons/mobile
        :title               (i18n/label :t/sync-settings)

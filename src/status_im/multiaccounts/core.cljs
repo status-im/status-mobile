@@ -54,17 +54,6 @@
                                             :dev-mode? dev-mode?
                                             {}))
 
-(fx/defn switch-notifications
-  {:events [:multiaccounts.ui/notifications-switched]}
-  [cofx notifications-enabled?]
-  (fx/merge cofx
-            {(if notifications-enabled?
-               ::notifications/enable
-               ::notifications/disable) nil}
-            (multiaccounts.update/multiaccount-update
-             :notifications-enabled? (boolean notifications-enabled?)
-             {})))
-
 (fx/defn switch-chaos-mode
   [{:keys [db] :as cofx} chaos-mode?]
   (when (:multiaccount db)

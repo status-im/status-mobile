@@ -20,7 +20,7 @@
             [status-im.ui.screens.routing.core :as navigation]
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.chat.image.preview.views :as image-preview]
-            [status-im.ui.screens.notifications-settings.views :as notifications-settings]))
+            [status-im.ui.screens.intro.notifications :as notifications]))
 
 (defonce main-stack (navigation/create-stack))
 (defonce bottom-tabs (navigation/create-bottom-tabs))
@@ -101,4 +101,4 @@
       {:name         :notifications-settings
        :back-handler :noop
        :insets       {:bottom true}
-       :component    notifications-settings/notifications-settings}]]))
+       :component    notifications/notifications}]]))
