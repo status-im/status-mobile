@@ -136,6 +136,8 @@
    "wakuext_declineRequestTransaction" {}
    "wakuext_sendTransaction" {}
    "wakuext_acceptRequestTransaction" {}
+   "wakuext_registerForPushNotifications" {}
+   "wakuext_unregisterFromPushNotifications" {}
    "status_chats" {}
    "wallet_getTransfers" {}
    "wallet_getTokensBalances" {}

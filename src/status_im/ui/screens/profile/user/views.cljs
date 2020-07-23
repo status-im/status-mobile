@@ -121,6 +121,12 @@
        :accessibility-label :appearance-settings-button
        :chevron             true
        :on-press            #(re-frame/dispatch [:navigate-to :appearance])}]
+     [quo/list-item
+      {:icon                :main-icons/notification
+       :title               (i18n/label :t/notifications)
+       :accessibility-label :notifications-settings-button
+       :chevron             true
+       :on-press            #(re-frame/dispatch [:navigate-to :notifications])}]
      (when (or (and platform/android?
                     config/local-notifications?)
                platform/ios?)

@@ -3,7 +3,11 @@
             [status-im.native-module.core :as status]
             ["react-native-push-notification" :as rn-pn]
             [quo.platform :as platform]
+            [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
+            [status-im.utils.handlers :as handlers]
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.waku.core :as waku]
             [status-im.ui.components.react :as react]))
 
 (defn enable-ios-notifications []
@@ -35,3 +39,22 @@
    (if platform/android?
      (status/disable-notifications)
      (disable-ios-notifications))))
+
+(handlers/register-handler-fx
+ ::registered-for-push-notifications
+ (fn [cofx]))
+
+(handlers/register-handler-fx
+ ::unregistered-from-push-notifications
+ (fn [cofx]))
+
+
+(fx/defn handle-enable-notifications-event [cofx]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "registerForPushNotifications")
+                     :params ["token"]
+                     :on-success #(re-frame/dispatch [::registered-for-push-notifications %])}]})
+
+(fx/defn handle-disable-notifications-event [cofx]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "unregisterForPushNotifications")
+                     :params []
+                     :on-success #(re-frame/dispatch [::unregistered-from-push-notifications %])}]})

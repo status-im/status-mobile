@@ -17,6 +17,7 @@
             [status-im.group-chats.core :as group-chats]
             [status-im.i18n :as i18n]
             [status-im.init.core :as init]
+            [status-im.notifications.core :as notifications]
             [status-im.log-level.core :as log-level]
             [status-im.mailserver.constants :as mailserver.constants]
             [status-im.mailserver.core :as mailserver]
@@ -1295,3 +1296,13 @@
                 :chat (chat.loading/load-messages %)
                 :multiaccounts (keycard/multiaccounts-screen-did-load %)
                 nil))))
+
+
+;; Notifications
+
+(handlers/register-handler-fx
+ :notifications.ui/notifications-switched
+ (fn [cofx enabled?]
+   (if enabled?
+     (notifications/handle-enable-notifications-event cofx)
+     (notifications/handle-disable-notifications-event cofx))))
