@@ -8,7 +8,7 @@
             [status-im.ui.components.topbar :as topbar]))
 
 (defn notifications-settings []
-  (let [{:keys [notifications-enabled?
+  (let [{:keys [remote-push-notifications-enabled
                 push-notifications-from-contacts-only]}
         @(re-frame/subscribe [:multiaccount])]
     [react/view {:flex 1}
@@ -19,8 +19,8 @@
        {:size                :small
         :title               (i18n/label :t/notifications)
         :accessibility-label :notifications-button
-        :active              notifications-enabled?
-        :on-press            #(re-frame/dispatch [::notifications/switch (not notifications-enabled?)])
+        :active              remote-push-notifications-enabled
+        :on-press            #(re-frame/dispatch [::notifications/switch (not remote-push-notifications-enabled)])
         :accessory           :switch}]
       [react/view {:height           1
                    :background-color (:ui-02 @colors/theme)
@@ -28,11 +28,11 @@
       [quo/list-header (i18n/label :t/notifications-preferences)]
       [quo/list-item
        {:size                :small
-        :disabled            (not notifications-enabled?)
+        :disabled            (not remote-push-notifications-enabled)
         :title               (i18n/label :t/notifications-non-contacts)
         :accessibility-label :notifications-button
-        :active              (and notifications-enabled?
-                                  (false? push-notifications-from-contacts-only))
+        :active              (and remote-push-notifications-enabled
+                                  (not push-notifications-from-contacts-only))
         :on-press            #(re-frame/dispatch
                                [::notifications/switch-non-contacts (not push-notifications-from-contacts-only)])
         :accessory           :switch}]]]))

@@ -18,7 +18,7 @@
                                  (println "TOKEN " token)))
         :onRegistrationError (fn [error]
                                (log/error "[push-notifications]" error)
-                               (re-frame/dispatch [::enable-error error]))}))
+                               (re-frame/dispatch [::switch-error true error]))}))
 
 (defn disable-ios-notifications []
   (.abandonPermissions ^js rn-pn)
@@ -43,33 +43,35 @@
   [cofx token]
   {::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) "registerForPushNotifications")
                      :params     [token]
-                     :on-success #(log/info "[push-notifications] register-success" %)}]})
+                     :on-success #(log/info "[push-notifications] register-success" %)
+                     :on-error   #(re-frame/dispatch [::switch-error true %])}]})
 
 (fx/defn handle-disable-notifications-event
   {:events [::unregistered-from-push-notifications]}
   [cofx]
   {::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) "unregisterForPushNotifications")
                      :params     []
-                     :on-success #(log/info "[push-notifications] unregister-success" %)}]})
+                     :on-success #(log/info "[push-notifications] unregister-success" %)
+                     :on-error   #(re-frame/dispatch [::switch-error false %])}]})
 
-(fx/defn enable-error
-  {:events [::enable-error]}
-  [{:keys [db] :as cofx} _]
-  ;; NOTE(Ferossgp): Should we alert user about error?
-  (fx/merge cofx
-            (multiaccounts.update/multiaccount-update :notifications-enabled? false {})))
+(fx/defn notification-switch-error
+  {:events [::switch-error]}
+  [cofx enabled?]
+  (multiaccounts.update/optimistic :remote-push-notifications-enabled (not (boolean enabled?))))
 
-;; TODO: add optimistic update in local state, and then update with status-go state
 (fx/defn notification-switch
   {:events [::switch]}
   [{:keys [db] :as cofx} enabled?]
   (fx/merge cofx
-            ;; TODO: use the new key from status-go
-            (multiaccounts.update/multiaccount-update
-             :notifications-enabled? (boolean enabled?) {})
+            (multiaccounts.update/optimistic :remote-push-notifications-enabled (boolean enabled?))
             (if enabled?
               {::enable nil}
               {::disable nil})))
+
+(fx/defn notification-non-contacts-error
+  {:events [::non-contacts-update-error]}
+  [cofx enabled?]
+  (multiaccounts.update/optimistic :push-notifications-from-contacts-only (not (boolean enabled?))))
 
 (fx/defn notification-non-contacts
   {:events [::switch-non-contacts]}
@@ -78,6 +80,8 @@
                  "disablePushNotificationsFromContactsOnly"
                  "enablePushNotificationsFromContactsOnly")]
     (fx/merge cofx
+              (multiaccounts.update/optimistic :push-notifications-from-contacts-only (boolean enabled?))
               {::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) method)
                                  :params     []
-                                 :on-success #(log/info "[push-notifications] contacts-notification-success" %)}]})))
+                                 :on-success #(log/info "[push-notifications] contacts-notification-success" %)
+                                 :on-error   #(re-frame/dispatch [::non-contacts-update-error enabled? %])}]})))
