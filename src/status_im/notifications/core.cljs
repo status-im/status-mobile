@@ -57,21 +57,21 @@
 (fx/defn notification-switch-error
   {:events [::switch-error]}
   [cofx enabled?]
-  (multiaccounts.update/optimistic :remote-push-notifications-enabled? (not (boolean enabled?))))
+  (multiaccounts.update/optimistic cofx :remote-push-notifications-enabled? (not (boolean enabled?))))
 
 (fx/defn notification-switch
   {:events [::switch]}
   [{:keys [db] :as cofx} enabled?]
   (fx/merge cofx
-            (multiaccounts.update/optimistic :remote-push-notifications-enabled? (boolean enabled?))
             (if enabled?
               {::enable nil}
-              {::disable nil})))
+              {::disable nil})
+            (multiaccounts.update/optimistic :remote-push-notifications-enabled? (boolean enabled?))))
 
 (fx/defn notification-non-contacts-error
   {:events [::non-contacts-update-error]}
   [cofx enabled?]
-  (multiaccounts.update/optimistic :push-notifications-from-contacts-only? (not (boolean enabled?))))
+  (multiaccounts.update/optimistic cofx :push-notifications-from-contacts-only? (not (boolean enabled?))))
 
 (fx/defn notification-non-contacts
   {:events [::switch-non-contacts]}
@@ -80,8 +80,9 @@
                  "disablePushNotificationsFromContactsOnly"
                  "enablePushNotificationsFromContactsOnly")]
     (fx/merge cofx
-              (multiaccounts.update/optimistic :push-notifications-from-contacts-only? (boolean enabled?))
               {::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) method)
                                  :params     []
                                  :on-success #(log/info "[push-notifications] contacts-notification-success" %)
-                                 :on-error   #(re-frame/dispatch [::non-contacts-update-error enabled? %])}]})))
+                                 :on-error   #(re-frame/dispatch [::non-contacts-update-error enabled? %])}]}
+
+              (multiaccounts.update/optimistic :push-notifications-from-contacts-only? (boolean enabled?)))))
