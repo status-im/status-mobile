@@ -86,3 +86,41 @@
                                  :on-error   #(re-frame/dispatch [::non-contacts-update-error enabled? %])}]}
 
               (multiaccounts.update/optimistic :push-notifications-from-contacts-only? (boolean enabled?)))))
+
+(fx/defn switch-push-notifications-server-enabled
+  {:events [::switch-push-notifications-server-enabled]}
+  [{:keys [db] :as cofx} enabled?]
+  (let [method (if enabled?
+                 "startPushNotificationsServer"
+                 "stopPushNotificationsServer")]
+    (fx/merge cofx
+              {::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) method)
+                                 :params     []
+                                 :on-success #(log/info "[push-notifications] switch-server-enabled successful" %)
+                                 :on-error   #(re-frame/dispatch [::push-notifications-server-update-error enabled? %])}]}
+
+              (multiaccounts.update/optimistic :push-notifications-server-enabled? (boolean enabled?)))))
+
+(fx/defn switch-send-notifications
+  {:events [::switch-send-push-notifications]}
+  [{:keys [db] :as cofx} enabled?]
+  (let [method (if enabled?
+                 "enableSendingNotifications"
+                 "disableSendingNotifications")]
+    (fx/merge cofx
+              {::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) method)
+                                 :params     []
+                                 :on-success #(log/info "[push-notifications] switch-send-notifications successful" %)
+                                 :on-error   #(re-frame/dispatch [::push-notifications-send-update-error enabled? %])}]}
+
+              (multiaccounts.update/optimistic :send-push-notifications? (boolean enabled?)))))
+
+(fx/defn add-server
+  {:events [::add-server]}
+  [{:keys [db] :as cofx} public-key]
+  (fx/merge cofx
+            {::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) "addPushNotificationsServer")
+                               :params     [public-key]
+                               :on-success #(log/info "[push-notifications] switch-send-notifications successful" %)
+                               :on-error   #(re-frame/dispatch [::push-notifications-send-update-error public-key %])}]}))
+
