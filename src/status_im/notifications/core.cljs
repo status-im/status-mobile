@@ -59,10 +59,12 @@
   (fx/merge cofx
             (multiaccounts.update/multiaccount-update :notifications-enabled? false {})))
 
+;; TODO: add optimistic update in local state, and then update with status-go state
 (fx/defn notification-switch
   {:events [::switch]}
   [{:keys [db] :as cofx} enabled?]
   (fx/merge cofx
+            ;; TODO: use the new key from status-go
             (multiaccounts.update/multiaccount-update
              :notifications-enabled? (boolean enabled?) {})
             (if enabled?
@@ -72,6 +74,10 @@
 (fx/defn notification-non-contacts
   {:events [::switch-non-contacts]}
   [{:keys [db] :as cofx} enabled?]
-  (fx/merge cofx
-            (multiaccounts.update/multiaccount-update
-             :notifications-non-contact? (boolean enabled?) {})))
+  (let [method (if enabled?
+                 "disablePushNotificationsFromContactsOnly"
+                 "enablePushNotificationsFromContactsOnly")]
+    (fx/merge cofx
+              {::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) method)
+                                 :params     []
+                                 :on-success #(log/info "[push-notifications] contacts-notification-success" %)}]})))

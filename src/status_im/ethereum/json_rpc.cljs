@@ -138,6 +138,8 @@
    "wakuext_acceptRequestTransaction" {}
    "wakuext_registerForPushNotifications" {}
    "wakuext_unregisterFromPushNotifications" {}
+   "wakuext_enablePushNotificationsFromContactsOnly" {}
+   "wakuext_disablePushNotificationsFromContactsOnly" {}
    "status_chats" {}
    "wallet_getTransfers" {}
    "wallet_getTokensBalances" {}

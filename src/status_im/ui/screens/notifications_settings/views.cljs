@@ -9,7 +9,7 @@
 
 (defn notifications-settings []
   (let [{:keys [notifications-enabled?
-                notifications-non-contact?]}
+                push-notifications-from-contacts-only]}
         @(re-frame/subscribe [:multiaccount])]
     [react/view {:flex 1}
      [topbar/topbar {:title :t/notification-settings}]
@@ -29,10 +29,10 @@
       [quo/list-item
        {:size                :small
         :disabled            (not notifications-enabled?)
-        :title              (i18n/label :t/notifications-non-contacts)
+        :title               (i18n/label :t/notifications-non-contacts)
         :accessibility-label :notifications-button
         :active              (and notifications-enabled?
-                                  notifications-non-contact?)
+                                  (false? push-notifications-from-contacts-only))
         :on-press            #(re-frame/dispatch
-                               [::notifications/switch-non-contacts (not notifications-enabled?)])
+                               [::notifications/switch-non-contacts (not push-notifications-from-contacts-only)])
         :accessory           :switch}]]]))
