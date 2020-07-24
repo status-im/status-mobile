@@ -6,7 +6,8 @@
                           :or   {size :default}}]
   (merge {:align-items        :center
           :padding-horizontal 8
-          :flex-direction     :row}
+          :flex-direction     :row
+          :justify-content    :space-between}
          (when center?
            {:justify-content :center})
          (when show-border?
@@ -26,6 +27,7 @@
     [react/view {:style (toolbar-container {:show-border? show-border?
                                             :center?      false
                                             :size         size})}
-     (when left left)
-     [react/view {:flex 1}]
-     (when right right)]))
+     [react/view {:flex-shrink 1}
+      (when left left)]
+     [react/view
+      (when right right)]]))
