@@ -92,7 +92,7 @@
    {:on-press
     #(when token
        (re-frame/dispatch [:wallet.send/set-max-amount token]))}
-   [react/view {:style styles/set-max-button}
+   [react/view {:style (styles/set-max-button)}
     [react/text {:style {:color colors/blue}} (i18n/label :t/set-max)]]])
 
 (defn fiat-value [amount {:keys [symbol]} prices wallet-currency]

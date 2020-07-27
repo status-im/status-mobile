@@ -14,7 +14,7 @@
    :padding-top     (when-not small-screen? 16)
    :padding-left    16})
 
-(def set-max-button
+(defn set-max-button []
   {:height             35
    :border-radius      40
    :background-color   colors/blue-light
