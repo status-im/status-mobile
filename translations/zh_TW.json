@@ -501,7 +501,7 @@
     "group-chat-no-contacts": "您還沒有任何好友。 \n邀請您的朋友開始聊天",
     "group-info": "群組資訊",
     "gwei": "Gwei",
-    "hardwallet-dont-ask-card": "不使用卡片進行登入",
+    "keycard-dont-ask-card": "不使用卡片進行登入",
     "hash": "哈希",
     "help": "幫助",
     "help-capitalized": "幫助",

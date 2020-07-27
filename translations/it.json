@@ -507,7 +507,7 @@
     "group-chat-no-contacts": "Non hai ancora alcun contatto. \n Invita i tuoi amici a iniziare a chattare",
     "group-info": "Informazioni sul gruppo",
     "gwei": "Gwei",
-    "hardwallet-dont-ask-card": "Non chiedere Keycard per accedere",
+    "keycard-dont-ask-card": "Non chiedere Keycard per accedere",
     "hash": "Hash",
     "help": "aiuto",
     "help-capitalized": "Aiuto",

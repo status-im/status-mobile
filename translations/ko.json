@@ -501,7 +501,7 @@
     "group-chat-no-contacts": "아직 연락처가 없습니다. \n친구들을 초대하고 채팅을 시작해보세요",
     "group-info": "그룹 정보",
     "gwei": "Gwei",
-    "hardwallet-dont-ask-card": "로그인 시 카드 요청 안함",
+    "keycard-dont-ask-card": "로그인 시 카드 요청 안함",
     "hash": "해시값",
     "help": "도움말",
     "help-capitalized": "도움말",
