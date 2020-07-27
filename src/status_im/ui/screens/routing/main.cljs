@@ -93,10 +93,10 @@
       {:name      :contact-code
        :component wallet.components/contact-code}
       {:name      :qr-scanner
-       :insets    {:top false}
+       :insets    {:top false :bottom false}
        :component qr-scanner/qr-scanner}
       {:name      :image-preview
-       :insets    {:top false}
+       :insets    {:top false :bottom false}
        :component image-preview/preview-image}
       {:name         :notifications-settings
        :back-handler :noop

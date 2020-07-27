@@ -40,7 +40,7 @@
 
 ;; BLACK
 (def black (:black light))                                  ;; Used as the default text color
-(def black-persist (:black light))                          ;; this doesn't with theme
+(def black-persist (:white dark))                           ;; this doesn't with theme
 (def black-transparent (alpha black 0.1))                   ;; Used as background color for rounded button on dark background and as background color for containers like "Backup recovery phrase"
 (def black-transparent-20 (alpha black 0.2))                ; accounts divider
 (def black-transparent-40 (alpha black 0.4))
