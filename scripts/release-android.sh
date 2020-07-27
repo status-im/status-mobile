@@ -63,6 +63,7 @@ if [[ "$(uname -s)" =~ Darwin ]]; then
   )
 else
   nixOpts+=(
+    "--option" "build-use-sandbox" "true"
     "--option" "extra-sandbox-paths" "${KEYSTORE_PATH} ${SECRETS_FILE_PATH}"
   )
 fi
