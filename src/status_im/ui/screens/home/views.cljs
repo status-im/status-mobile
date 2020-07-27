@@ -13,7 +13,11 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
             [quo.core :as quo]
+            [status-im.ui.screens.add-new.new-chat.events :as new-chat]
             [status-im.ui.components.search-input.view :as search-input]
+            [status-im.ui.screens.add-new.new-public-chat.db :as db]
+            [status-im.utils.debounce :as debounce]
+            [status-im.utils.utils :as utils]
             [cljs-bean.core :as bean]
             [status-im.ui.components.topbar :as topbar])
   (:require-macros [status-im.utils.views :as views]))
@@ -90,13 +94,42 @@
     {:search-active? search-active?
      :search-filter  search-filter
      :on-cancel      #(re-frame/dispatch [:search/home-filter-changed nil])
-     :on-blur        #(when-not (seq chats)
-                        (re-frame/dispatch [:search/home-filter-changed nil]))
+     :on-blur        (fn []
+                       (when-not (seq chats)
+                         (re-frame/dispatch [:search/home-filter-changed nil]))
+                       (re-frame/dispatch [::new-chat/clear-new-identity]))
      :on-focus       (fn [search-filter]
                        (when-not search-filter
-                         (re-frame/dispatch [:search/home-filter-changed ""])))
+                         (re-frame/dispatch [:search/home-filter-changed ""])
+                         (re-frame/dispatch [::new-chat/clear-new-identity])))
      :on-change      (fn [text]
-                       (re-frame/dispatch [:search/home-filter-changed text]))}]])
+                       (re-frame/dispatch [:search/home-filter-changed text])
+                       (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
+                       (debounce/debounce-and-dispatch [:new-chat/set-new-identity text] 300))}]])
+
+(defn start-suggestion [search-value]
+  (let [{:keys [state ens-name public-key]}
+        @(re-frame/subscribe [:contacts/new-identity])
+        valid-private? (= state :valid)
+        valid-public?  (db/valid-topic? search-value)]
+    (when (or valid-public? valid-private?)
+      [react/view
+       [quo/list-header (i18n/label :t/search-no-chat-found)]
+       (when valid-private?
+         [quo/list-item {:theme    :accent
+                         :icon     :main-icons/private-chat
+                         :title    (or ens-name (utils/get-shortened-address public-key))
+                         :subtitle (i18n/label :t/join-new-private-chat)
+                         :on-press (fn []
+                                     (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted false] 3000))}])
+       (when valid-public?
+         [quo/list-item {:theme    :accent
+                         :icon     :main-icons/public-chat
+                         :title    (str "#" search-value)
+                         :subtitle (i18n/label :t/join-new-public-chat)
+                         :on-press (fn []
+                                     (re-frame/dispatch [:chat.ui/start-public-chat search-value])
+                                     (re-frame/dispatch [:set :public-group-topic nil]))}])])))
 
 (views/defview chats-list []
   (views/letsubs [loading? [:chats/loading?]
@@ -111,15 +144,17 @@
                (not @search-active?))
         [welcome-blank-page]
         [list/flat-list
-         {:key-fn                         :chat-id
-          :keyboard-should-persist-taps   :always
-          :data                           chats
-          :render-fn                      (fn [home-item] [inner-item/home-list-item home-item])
-          :header                         (when (or (seq chats) @search-active?)
-                                            [search-input-wrapper search-filter chats])
-          :footer                         (if (and (not hide-home-tooltip?) (not @search-active?))
-                                            [home-tooltip-view]
-                                            [react/view {:height 68}])}]))))
+         {:key-fn                       :chat-id
+          :keyboard-should-persist-taps :always
+          :data                         chats
+          :render-fn                    (fn [home-item] [inner-item/home-list-item home-item])
+          :header                       (when (or (seq chats) @search-active?)
+                                          [search-input-wrapper search-filter chats])
+          :empty-component              (when @search-active?
+                                          [start-suggestion search-filter])
+          :footer                       (if (and (not hide-home-tooltip?) (not @search-active?))
+                                          [home-tooltip-view]
+                                          [react/view {:height 68}])}]))))
 
 (views/defview plus-button []
   (views/letsubs [logging-in? [:multiaccounts/login]]

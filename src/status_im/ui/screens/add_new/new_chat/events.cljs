@@ -67,10 +67,10 @@
                                                            new-identity
                                                            @resolve-last-id])}})))))))
 
-(handlers/register-handler-fx
- ::new-chat-focus
- (fn [{:keys [db]}]
-   {:db (dissoc db :contacts/new-identity)}))
+(fx/defn clear-new-identity
+  {:events [::clear-new-identity ::new-chat-focus]}
+  [{:keys [db]}]
+  {:db (dissoc db :contacts/new-identity)})
 
 (defn- get-validation-label [value]
   (case value
