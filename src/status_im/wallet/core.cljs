@@ -25,7 +25,9 @@
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.wallet.prices :as prices]
-            [status-im.wallet.utils :as wallet.utils]))
+            [status-im.wallet.utils :as wallet.utils]
+            [status-im.native-module.core :as status]
+            [status-im.ui.screens.mobile-network-settings.utils :as mobile-network-utils]))
 
 (defn get-balance
   [{:keys [address on-success on-error]}]
@@ -593,3 +595,44 @@
                           :cancel-button-text  (i18n/label :t/no)
                           :on-accept           #(re-frame/dispatch [:wallet.accounts/delete-account account])
                           :on-cancel           #()}})
+
+(re-frame/reg-fx
+ ::stop-wallet
+ (fn []
+   (log/info "stop-wallet fx")
+   (status/stop-wallet)))
+
+(re-frame/reg-fx
+ ::start-wallet
+ (fn []
+   (log/info "start-wallet fx")
+   (status/start-wallet)))
+
+(fx/defn stop-wallet
+  [{:keys [db] :as cofx}]
+  (let []
+    {:db           (assoc db :wallet-service/state :stopped)
+     ::stop-wallet nil}))
+
+(fx/defn start-wallet
+  [{:keys [db] :as cofx}]
+  (let []
+    {:db           (assoc db :wallet-service/state :started)
+     ::start-wallet nil}))
+
+(fx/defn restart-wallet-service
+  [{:keys [db] :as cofx}]
+  (when (:multiaccount db)
+    (let [state            (:wallet-service/state db)
+          syncing-allowed? (mobile-network-utils/syncing-allowed? cofx)]
+      (log/info "restart-wallet-service"
+                "syncing-allowed" syncing-allowed?
+                "state" state)
+      (cond
+        (and (not syncing-allowed?)
+             (not= state :stopped))
+        (stop-wallet cofx)
+
+        (and syncing-allowed?
+             (not= state :started))
+        (start-wallet cofx)))))

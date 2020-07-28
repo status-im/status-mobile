@@ -1100,6 +1100,18 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void stopWallet() {
+        Log.d(TAG, "StopWallet");
+        Statusgo.stopWallet();
+    }
+
+    @ReactMethod
+    public void startWallet() {
+        Log.d(TAG, "StartWallet");
+        Statusgo.startWallet();
+    }
+
+    @ReactMethod
     public void setBlankPreviewFlag(final Boolean blankPreview) {
         final SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.reactContext);
         sharedPrefs.edit().putBoolean("BLANK_PREVIEW", blankPreview).commit();

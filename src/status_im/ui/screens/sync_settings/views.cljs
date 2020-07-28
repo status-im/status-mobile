@@ -13,7 +13,7 @@
     [react/view {:style {:flex 1 :background-color colors/white}}
      [topbar/topbar {:title (i18n/label :t/sync-settings)}]
      [react/scroll-view
-      [quo/list-header (i18n/label :t/message-syncing)]
+      [quo/list-header (i18n/label :t/data-syncing)]
       [quo/list-item {:size                :small
                       :title               (i18n/label :t/mobile-network-settings)
                       :accessibility-label :notifications-button

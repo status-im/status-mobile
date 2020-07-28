@@ -3,11 +3,13 @@
    [status-im.utils.handlers :as handlers]
    [status-im.multiaccounts.update.core :as multiaccounts.update]
    [status-im.utils.fx :as fx]
+   [status-im.wallet.core :as wallet]
    [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
    [status-im.multiaccounts.model :as multiaccounts.model]
    [status-im.navigation :as navigation]
    [status-im.mailserver.core :as mailserver]
-   [status-im.ui.screens.mobile-network-settings.utils :as utils]))
+   [status-im.ui.screens.mobile-network-settings.utils :as utils]
+   [taoensso.timbre :as log]))
 
 (fx/defn sheet-defaults
   [{:keys [db]}]
@@ -34,7 +36,8 @@
 
        logged-in?
        [(mailserver/process-next-messages-request)
-        (bottom-sheet/hide-bottom-sheet)]))))
+        (bottom-sheet/hide-bottom-sheet)
+        (wallet/restart-wallet-service)]))))
 
 (defn apply-settings
   ([sync?] (apply-settings sync? :default))
@@ -44,7 +47,12 @@
            remember-choice?
            (if (not= :default remember?)
              remember?
-             (:mobile-network/remember-choice? db))]
+             (:mobile-network/remember-choice? db))
+           cellular? (utils/cellular? network)]
+       (log/info "apply mobile network settings"
+                 "sunc?" sync?
+                 "remember?" remember?
+                 "cellular?" cellular?)
        (fx/merge
         cofx
         (multiaccounts.update/multiaccount-update
@@ -52,8 +60,9 @@
         (multiaccounts.update/multiaccount-update
          :remember-syncing-choice? (boolean remember-choice?) {})
         (bottom-sheet/hide-bottom-sheet)
-        (when (and (utils/cellular? network) sync?)
-          (mailserver/process-next-messages-request)))))))
+        (when (and cellular? sync?)
+          (mailserver/process-next-messages-request))
+        (wallet/restart-wallet-service))))))
 
 (handlers/register-handler-fx
  :mobile-network/continue-syncing

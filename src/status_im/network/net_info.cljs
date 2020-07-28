@@ -4,7 +4,8 @@
             [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
             [status-im.utils.fx :as fx]
             [status-im.wallet.core :as wallet]
-            ["@react-native-community/netinfo" :default net-info]))
+            ["@react-native-community/netinfo" :default net-info]
+            [taoensso.timbre :as log]))
 
 (fx/defn change-network-status
   [{:keys [db] :as cofx} is-connected?]
@@ -24,13 +25,21 @@
 (fx/defn handle-network-info-change
   {:events [::network-info-changed]}
   [{:keys [db] :as cofx} {:keys [isConnected type details] :as state}]
-  (let [old-network-status (:network-status db)
-        old-network-type (:network/type db)
-        connectivity-status (if isConnected :online :offline)]
+  (let [old-network-status  (:network-status db)
+        old-network-type    (:network/type db)
+        connectivity-status (if isConnected :online :offline)
+        status-changed?     (= connectivity-status old-network-status)
+        type-changed?       (= type old-network-type)]
+    (log/debug "[net-info]"
+               "old-network-status" old-network-status
+               "old-network-type" old-network-type
+               "connectivity-status" connectivity-status
+               "type" type
+               "details" details)
     (fx/merge cofx
-              (when-not (= connectivity-status old-network-status)
+              (when-not status-changed?
                 (change-network-status isConnected))
-              (when-not (= type old-network-type)
+              (when-not type-changed?
                 (change-network-type old-network-type type (:is-connection-expensive details))))))
 
 (defn add-net-info-listener []

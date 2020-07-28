@@ -602,7 +602,7 @@
     :message-not-sent
     :message-options-cancel
     :message-reply
-    :message-syncing
+    :data-syncing
     :messages
     :might-break
     :migrations-failed-content

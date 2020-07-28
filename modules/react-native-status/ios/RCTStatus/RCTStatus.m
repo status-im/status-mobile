@@ -740,6 +740,20 @@ RCT_EXPORT_METHOD(appStateChange:(NSString *)type) {
     StatusgoAppStateChange(type);
 }
 
+RCT_EXPORT_METHOD(stopWallet) {
+#if DEBUG
+    NSLog(@"StopWallet() method called");
+#endif
+    StatusgoStopWallet();
+}
+
+RCT_EXPORT_METHOD(startWallet) {
+#if DEBUG
+    NSLog(@"StartWallet() method called");
+#endif
+    StatusgoStartWallet();
+}
+
 RCT_EXPORT_METHOD(setBlankPreviewFlag:(BOOL *)newValue)
 {
   NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];

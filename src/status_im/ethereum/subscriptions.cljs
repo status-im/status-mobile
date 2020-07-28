@@ -1,6 +1,7 @@
 (ns status-im.ethereum.subscriptions
   (:require [status-im.ethereum.eip55 :as eip55]
             [status-im.wallet.db :as wallet]
+            [status-im.wallet.core :as wallet.core]
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
@@ -59,24 +60,27 @@
   (log/debug "[wallet-subs] recent-history-fetching-ended"
              "accounts" accounts
              "block" blockNumber)
-  {:db (-> db
-           (update-in [:wallet :accounts]
-                      wallet/remove-transactions-since-block blockNumber)
-           (transactions/update-fetching-status accounts :recent? false))
-   :transactions/get-transfers
-   {:chain-tokens (:wallet/all-tokens db)
-    :addresses    (reduce
-                   (fn [v address]
-                     (let [normalized-address
-                           (eip55/address->checksum address)]
-                       (if (contains? v normalized-address)
-                         v
-                         (conj v address))))
-                   []
-                   accounts)
-    :before-block blockNumber
-    :limit        20
-    :historical?  true}})
+  (fx/merge
+   cofx
+   {:db (-> db
+            (update-in [:wallet :accounts]
+                       wallet/remove-transactions-since-block blockNumber)
+            (transactions/update-fetching-status accounts :recent? false))
+    :transactions/get-transfers
+    {:chain-tokens (:wallet/all-tokens db)
+     :addresses    (reduce
+                    (fn [v address]
+                      (let [normalized-address
+                            (eip55/address->checksum address)]
+                        (if (contains? v normalized-address)
+                          v
+                          (conj v address))))
+                    []
+                    accounts)
+     :before-block blockNumber
+     :limit        20
+     :historical?  true}}
+   (wallet.core/restart-wallet-service)))
 
 (fx/defn new-wallet-event
   [cofx {:keys [type blockNumber accounts newTransactions] :as event}]

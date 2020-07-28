@@ -263,6 +263,14 @@
   (log/debug "[native-module] app-state-change")
   (.appStateChange ^js (status) state))
 
+(defn stop-wallet []
+  (log/debug "[native-module] stop-wallet")
+  (.stopWallet ^js (status)))
+
+(defn start-wallet []
+  (log/debug "[native-module] start-wallet")
+  (.startWallet ^js (status)))
+
 (defn set-blank-preview-flag [flag]
   (log/debug "[native-module] set-blank-preview-flag")
   (.setBlankPreviewFlag ^js (status) flag))

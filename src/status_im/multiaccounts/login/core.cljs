@@ -284,6 +284,7 @@
               ;;FIXME
               (when nodes
                 (fleet/set-nodes :eth.contract nodes))
+              (wallet/restart-wallet-service)
               (if login-only?
                 (login-only-events key-uid password save-password?)
                 (create-only-events))

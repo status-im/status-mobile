@@ -60,6 +60,7 @@
 ;;general
 (reg-root-key-sub :sync-state :sync-state)
 (reg-root-key-sub :network-status :network-status)
+(reg-root-key-sub :network/type :network/type)
 (reg-root-key-sub :peers-count :peers-count)
 (reg-root-key-sub :about-app/node-info :node-info)
 (reg-root-key-sub :peers-summary :peers-summary)
@@ -153,7 +154,8 @@
 (reg-root-key-sub :wallet.transactions :wallet.transactions)
 (reg-root-key-sub :wallet/custom-token-screen :wallet/custom-token-screen)
 (reg-root-key-sub :wallet/prepare-transaction :wallet/prepare-transaction)
-
+(reg-root-key-sub :wallet-service/manual-setting :wallet-service/manual-setting)
+(reg-root-key-sub :wallet-service/state :wallet-service/state)
 ;;commands
 (reg-root-key-sub :commands/select-account :commands/select-account)
 
