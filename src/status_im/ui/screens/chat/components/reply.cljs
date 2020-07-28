@@ -7,7 +7,8 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.ui.screens.chat.components.style :as styles]
-            [re-frame.core :as re-frame]))
+            [re-frame.core :as re-frame]
+            [status-im.ui.components.react :as react]))
 
 (def ^:private reply-symbol "↪ ")
 
@@ -26,7 +27,8 @@
 
 (defn reply-message [{:keys [from content]}]
   (let [contact-name       @(re-frame/subscribe [:contacts/contact-name-by-identity from])
-        current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
+        current-public-key @(re-frame/subscribe [:multiaccount/public-key])
+        {:keys [image text]} content]
     [rn/view {:style (styles/reply-container false)}
      [rn/view {:style (styles/reply-content)}
       [quo/text {:weight          :medium
@@ -34,10 +36,17 @@
                  :style           {:line-height 18}
                  :size            :small}
        (format-reply-author from contact-name current-public-key)]
-      [quo/text {:size            :small
-                 :number-of-lines 1
-                 :style           {:line-height 18}}
-       (:text content)]]
+      (if image
+        [react/image {:style  {:width            56
+                               :height           56
+                               :background-color :black
+                               :margin-top       2
+                               :border-radius    4}
+                      :source {:uri image}}]
+        [quo/text {:size            :small
+                   :number-of-lines 1
+                   :style           {:line-height 18}}
+         text])]
      [rn/view
       [pressable/pressable {:on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])
                             :accessibility-label :cancel-message-reply}
