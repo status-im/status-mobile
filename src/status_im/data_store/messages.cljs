@@ -24,7 +24,8 @@
                                 :contentType  :content-type
                                 :clock  :clock-value
                                 :quotedMessage :quoted-message
-                                :outgoingStatus :outgoing-status})
+                                :outgoingStatus :outgoing-status
+                                :audioDurationMs :audio-duration-ms})
 
       (update :outgoing-status keyword)
       (update :command-parameters clojure.set/rename-keys {:transactionHash :transaction-hash

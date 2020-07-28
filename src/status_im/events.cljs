@@ -561,6 +561,11 @@
     (chat.input/send-sticker-message sticker current-chat-id))))
 
 (handlers/register-handler-fx
+ :chat/send-audio
+ (fn [{{:keys [current-chat-id]} :db :as cofx} [_ audio-path duration]]
+   (chat.input/send-audio-message cofx audio-path duration current-chat-id)))
+
+(handlers/register-handler-fx
  :chat/disable-cooldown
  (fn [cofx _]
    (chat/disable-chat-cooldown cofx)))
@@ -1238,7 +1243,8 @@
 (fx/defn on-going-in-background [{:keys [db now]}]
   {:db (-> db
            (dissoc :app-active-since)
-           (assoc :app-in-background-since now))})
+           (assoc :app-in-background-since now))
+   :dispatch-n [[:audio-recorder/on-background] [:audio-message/on-background]]})
 
 (defn app-state-change [state {:keys [db] :as cofx}]
   (let [app-coming-from-background? (= state "active")

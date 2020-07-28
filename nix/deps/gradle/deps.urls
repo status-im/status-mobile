@@ -417,10 +417,10 @@ https://repo.maven.apache.org/maven2/com/google/jimfs/jimfs/1.1/jimfs-1.1.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java-util/3.4.0/protobuf-java-util-3.4.0.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.0.0/protobuf-java-3.0.0.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.4.0/protobuf-java-3.4.0.pom
-https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.12.2/protobuf-java-3.12.2.pom
+https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/4.0.0-rc-2/protobuf-java-4.0.0-rc-2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.0.0/protobuf-parent-3.0.0.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.4.0/protobuf-parent-3.4.0.pom
-https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/3.12.2/protobuf-parent-3.12.2.pom
+https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-parent/4.0.0-rc-2/protobuf-parent-4.0.0-rc-2.pom
 https://repo.maven.apache.org/maven2/com/google/truth/truth-parent/1.0.1/truth-parent-1.0.1.pom
 https://repo.maven.apache.org/maven2/com/google/truth/truth/1.0.1/truth-1.0.1.pom
 https://repo.maven.apache.org/maven2/com/google/zxing/core/3.3.3/core-3.3.3.pom

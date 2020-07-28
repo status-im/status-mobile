@@ -10,6 +10,8 @@
                                          response-to
                                          ens-name
                                          image-path
+                                         audio-path
+                                         audio-duration-ms
                                          message-type
                                          sticker
                                          content-type]
@@ -22,6 +24,8 @@
                                :responseTo response-to
                                :ensName ens-name
                                :imagePath image-path
+                               :audioPath audio-path
+                               :audioDurationMs audio-duration-ms
                                :sticker sticker
                                :contentType content-type}]
                      :on-success

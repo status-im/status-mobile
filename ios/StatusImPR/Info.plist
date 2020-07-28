@@ -83,6 +83,8 @@
 	<string>Location access is required for some DApps to function properly.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Photos access is required to give you the ability to send images.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Need microphone access for sending audio messages.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter-Bold.otf</string>

@@ -6,6 +6,7 @@
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.message-content :as message-content]
             [status-im.constants :as constants]
+            [status-im.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
             ["emojilib" :as emojis]))
@@ -106,7 +107,16 @@
                 (chat.message/send-message {:chat-id      current-chat-id
                                             :content-type constants/content-type-image
                                             :image-path   (string/replace image-path #"file://" "")
-                                            :text         "Update to latest version to see a nice image here!"})))))
+                                            :text         (i18n/label :t/update-to-see-image)})))))
+
+(fx/defn send-audio-message
+  [cofx audio-path duration current-chat-id]
+  (when-not (string/blank? audio-path)
+    (chat.message/send-message cofx {:chat-id           current-chat-id
+                                     :content-type      constants/content-type-audio
+                                     :audio-path        audio-path
+                                     :audio-duration-ms duration
+                                     :text              (i18n/label :t/update-to-listen-audio)})))
 
 (fx/defn send-sticker-message
   [cofx {:keys [hash pack]} current-chat-id]
@@ -115,7 +125,7 @@
                                      :content-type constants/content-type-sticker
                                      :sticker {:hash hash
                                                :pack pack}
-                                     :text    "Update to latest version to see a nice sticker here!"})))
+                                     :text    (i18n/label :t/update-to-see-sticker)})))
 
 (fx/defn send-current-message
   "Sends message from current chat input"

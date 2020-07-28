@@ -87,6 +87,11 @@
                   :accessibility-label :no-messages-text}
       (i18n/label :t/image)]
 
+     (= constants/content-type-audio content-type)
+     [react/text {:style               styles/last-message-text
+                  :accessibility-label :no-messages-text}
+      (i18n/label :t/audio)]
+
      (string/blank? (:text content))
      [react/text {:style styles/last-message-text}
       ""]

@@ -11,6 +11,7 @@
             [status-im.ui.screens.chat.sheets :as sheets]
             [quo.animated :as animated]
             [quo.react-native :as rn]
+            [status-im.ui.screens.chat.audio-message.views :as audio-message]
             [status-im.ui.screens.chat.message.message :as message]
             [status-im.ui.screens.chat.stickers.views :as stickers]
             [status-im.ui.screens.chat.styles.main :as style]
@@ -177,6 +178,8 @@
     [extensions/extensions-view]
     :images
     [image/image-view]
+    :audio
+    [audio-message/audio-message-view]
     nil))
 
 (defn chat []

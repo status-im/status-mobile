@@ -81,6 +81,10 @@ abstract_target 'Status' do
   pod 'SQLCipher', '~>3.0'
   pod 'SSZipArchive'
 
+  permissions_path = '../node_modules/react-native-permissions/ios'
+  pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone.podspec"
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
+
   target 'StatusIm' do
     target 'StatusImTests' do
       inherit! :complete

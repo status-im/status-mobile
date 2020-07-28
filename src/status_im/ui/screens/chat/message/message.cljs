@@ -5,6 +5,7 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
+            [status-im.ui.screens.chat.message.audio :as message.audio]
             [status-im.ui.screens.chat.message.command :as message.command]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.chat.sheets :as sheets]
@@ -289,6 +290,12 @@
                                          {:content (sheets/sticker-long-press message)
                                           :height  64}])}))
 
+(defn message-content-audio
+  [message]
+  [react/touchable-highlight (message.audio/message-press-handlers message)
+   [message-bubble-wrapper message
+    [message.audio/message-content message [message-timestamp message false]]]])
+
 (defn chat-message [{:keys [public? content content-type] :as message}]
   (if (= content-type constants/content-type-command)
     [message.command/command-content message-content-wrapper message]
@@ -313,4 +320,8 @@
                         (not public?))
                  [react/touchable-highlight (image-message-press-handlers message)
                   [message-content-image message]]
-                 [unknown-content-type message])))))])))
+                 (if (and (= content-type constants/content-type-audio)
+                        ;; Disabling audio for public-chats
+                          (not public?))
+                   [message-content-audio message]
+                   [unknown-content-type message]))))))])))

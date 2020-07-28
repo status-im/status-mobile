@@ -103,7 +103,8 @@
    :align-items       :center})
 
 (defn in-input-buttons []
-  {:height 34})
+  {:flex-direction :row
+   :height 34})
 
 (defn send-icon-color []
   colors/white)

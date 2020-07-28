@@ -6,6 +6,7 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.screens.chat.components.style :as styles]
             [status-im.ui.screens.chat.components.reply :as reply]
+            [status-im.utils.utils :as utils.utils]
             [quo.components.animated.pressable :as pressable]
             [quo.animated :as animated]
             [status-im.utils.config :as config]
@@ -37,12 +38,25 @@
       [icons/icon :main-icons/keyboard (styles/icon false)]
       [icons/icon :main-icons/stickers (styles/icon false)])]])
 
+(defn- request-record-audio-permission [set-active panel]
+  (re-frame/dispatch
+   [:request-permissions
+    {:permissions [:record-audio]
+     :on-allowed
+     #(set-active panel)
+     :on-denied
+     #(utils.utils/set-timeout
+       (fn []
+         (utils.utils/show-popup (i18n/label :t/audio-recorder-error)
+                                 (i18n/label :t/audio-recorder-permissions-error)))
+       50)}]))
+
 (defn touchable-audio-icon [{:keys [panel active set-active accessibility-label input-focus]}]
   [pressable/pressable {:type                :scale
                         :accessibility-label accessibility-label
                         :on-press            #(if (= active panel)
                                                 (input-focus)
-                                                (set-active panel))}
+                                                (request-record-audio-permission set-active panel))}
    [rn/view {:style (styles/in-input-touchable-icon)}
     [icons/icon
      (panel->icons panel)
@@ -116,6 +130,7 @@
         [touchable-audio-icon {:panel               :audio
                                :accessibility-label :show-audio-message-icon
                                :active              active-panel
+                               :input-focus         input-focus
                                :set-active          set-active-panel}])]]]])
 
 (defn chat-toolbar []
@@ -151,8 +166,8 @@
                                       one-to-one-chat?
                                       (or config/commands-enabled? mainnet?)
                                       (not reply))
-            show-audio           (and false ;TODO: remove to enable audio icon
-                                      empty-text
+            show-audio           (and empty-text
+                                      (not sending-image)
                                       (not reply)
                                       (not public?))]
         (when-not (= reply @had-reply)

@@ -66,6 +66,7 @@
 ;; RED
 (def red (:red light))                                      ;; Used to highlight errors or "dangerous" actions
 (def red-transparent-10 (alpha red 0.1))                    ;;action-row ;; ttt finish
+(def red-audio-recorder "#fa6565")
 
 ;; GREEN
 (def green "#44d058")                                       ;; icon for successful inboud transaction

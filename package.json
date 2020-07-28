@@ -10,11 +10,13 @@
     "app:android": "react-native run-android"
   },
   "dependencies": {
+    "@react-native-community/audio-toolkit": "git+https://github.com/tbenr/react-native-audio-toolkit.git#v2.0.3-status-v6",
     "@react-native-community/cameraroll": "^1.6.1",
     "@react-native-community/clipboard": "^1.2.2",
     "@react-native-community/hooks": "^2.5.1",
     "@react-native-community/masked-view": "^0.1.6",
     "@react-native-community/netinfo": "^4.4.0",
+    "@react-native-community/slider": "^3.0.0",
     "@react-navigation/bottom-tabs": "^5.7.0",
     "@react-navigation/native": "^5.7.0",
     "@react-navigation/stack": "^5.7.0",
@@ -46,6 +48,7 @@
     "react-native-languages": "^3.0.2",
     "react-native-mail": "git+https://github.com/status-im/react-native-mail.git#v4.0.0-status",
     "react-native-navigation-bar-color": "^2.0.1",
+    "react-native-permissions": "^2.1.5",
     "react-native-reanimated": "^1.7.0",
     "react-native-redash": "^14.2.2",
     "react-native-safe-area-context": "^2.0.0",

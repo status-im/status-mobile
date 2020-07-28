@@ -1169,5 +1169,13 @@
     "private-notifications": "Private notifications",
     "private-notifications-descr": "Status will notify you about new messages. You can edit your notification preferences later in settings.",
     "maybe-later": "Maybe later",
-    "join": "Join"
+    "join": "Join",
+    "audio-recorder-error": "Recorder error",
+    "audio-recorder": "Recorder",
+    "audio-recorder-max-ms-reached": "Maximum recording time reached",
+    "audio-recorder-permissions-error": "You have to give permission to send audio messages",
+    "audio": "Audio",
+    "update-to-see-image": "Update to latest version to see a nice image here!",
+    "update-to-listen-audio": "Update to latest version to listen to an audio message here!",
+    "update-to-see-sticker": "Update to latest version to see a nice sticker here!"
 }

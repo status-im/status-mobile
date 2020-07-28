@@ -4,6 +4,11 @@
 (defn move-file [src dst]
   (.moveFile react-native-fs src dst))
 
+(defn stat [path on-stat on-error]
+  (-> (.stat react-native-fs path)
+      (.then on-stat)
+      (.catch on-error)))
+
 (defn read-file [path encoding on-read on-error]
   (-> (.readFile react-native-fs path encoding)
       (.then on-read)

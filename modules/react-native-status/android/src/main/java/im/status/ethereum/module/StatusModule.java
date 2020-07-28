@@ -1346,5 +1346,33 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
+
+    @ReactMethod
+    public void activateKeepAwake() {
+        final Activity activity = getCurrentActivity();
+
+        if (activity != null) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+            });
+        }
+    }
+
+    @ReactMethod
+    public void deactivateKeepAwake() {
+        final Activity activity = getCurrentActivity();
+
+        if (activity != null) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    activity.getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+            });
+        }
+    }
 }
 

@@ -14,6 +14,7 @@
 (def content-type-command 5)
 (def content-type-system-text 6)
 (def content-type-image 7)
+(def content-type-audio 8)
 
 (def message-type-one-to-one 1)
 (def message-type-public-group 2)

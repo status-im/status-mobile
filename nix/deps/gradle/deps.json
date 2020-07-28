@@ -5794,16 +5794,16 @@
   },
 
   {
-    "path": "com/google/protobuf/protobuf-java/3.12.2/protobuf-java-3.12.2",
+    "path": "com/google/protobuf/protobuf-java/4.0.0-rc-2/protobuf-java-4.0.0-rc-2",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "jar",
     "pom": {
-      "sha1": "da3bb9dce2a722503f0d3e4f3b5eea93f737ba48",
-      "sha256": "1ijicnm83gq33px9c5r4man0n2zw6axrxsqw0jnm1miixyjz08cv"
+      "sha1": "8fab0fe0746b1d370663a3db7dd483c2c4d34a6f",
+      "sha256": "17agfgbdfxdk304fgzk0iwsf7ggwqrwb44b3nnjc0xjdgqlxmzxb"
     },
     "jar": {
-      "sha1": "f0029524002295154c6b546d4e6bd1cfc5081874",
-      "sha256": "186a1lgmcfr3iml7bfxk9gnbsafyxmriqfyglvkwa85d7gwvx1dk"
+      "sha1": "ae590f34383d2d6fde2b3b8e2ffb668e64579099",
+      "sha256": "0al23s9s97sxlrrndb91cnra07fdchbcgvhcacyd6yjzysz55hiw"
     }
   },
 
@@ -5828,12 +5828,12 @@
   },
 
   {
-    "path": "com/google/protobuf/protobuf-parent/3.12.2/protobuf-parent-3.12.2",
+    "path": "com/google/protobuf/protobuf-parent/4.0.0-rc-2/protobuf-parent-4.0.0-rc-2",
     "host": "https://repo.maven.apache.org/maven2",
     "type": "pom",
     "pom": {
-      "sha1": "f5b5d4cb5e6d512f2fac5d2b08e599644a53c087",
-      "sha256": "0md51xi5af8yi9l1dpqbmysrvlll05zpvmalag6p4f6fykwcry05"
+      "sha1": "c5391c7917ca1197cbbda4efc6454a87e7e7107e",
+      "sha256": "0bvynr52xjyd42n23ih635h2cmyillfbac0yjymhlp505f0p1lp0"
     }
   },
 

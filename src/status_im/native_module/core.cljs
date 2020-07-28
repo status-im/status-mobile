@@ -364,3 +364,11 @@
   [key-uid callback]
   (log/debug "[native-module] delete-multiaccount")
   (.deleteMultiaccount ^js (status) key-uid callback))
+
+(defn activate-keep-awake []
+  (log/debug "[native-module] activateKeepAwake")
+  (.activateKeepAwake ^js (status)))
+
+(defn deactivate-keep-awake []
+  (log/debug "[native-module] deactivateKeepAwake")
+  (.deactivateKeepAwake ^js (status)))

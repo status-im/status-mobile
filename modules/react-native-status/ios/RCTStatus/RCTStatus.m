@@ -749,6 +749,20 @@ RCT_EXPORT_METHOD(setBlankPreviewFlag:(BOOL *)newValue)
   [userDefaults synchronize];
 }
 
+RCT_EXPORT_METHOD(activateKeepAwake)
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    });
+}
+
+RCT_EXPORT_METHOD(deactivateKeepAwake)
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    });
+}
+
 //// deviceinfo
 
 - (bool) is24Hour
