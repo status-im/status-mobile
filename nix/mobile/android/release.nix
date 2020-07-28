@@ -28,7 +28,7 @@ let
   # If it is not we use an ad-hoc one generated with default password.
   keystorePath = getConfig "android.keystore-path" keystore;
 
-  baseName = "release-android";
+  baseName = "${buildType}-android";
   name = "status-react-build-${baseName}";
 
   envFileName = 
@@ -72,6 +72,7 @@ in stdenv.mkDerivation rec {
 
   # custom env variables derived from config
   STATUS_GO_SRC_OVERRIDE = getConfig "nimbus.src-override" null;
+  ANDROID_APK_SIGNED = getConfig "android.apk-unsigned" "true";
   ANDROID_ABI_SPLIT = getConfig "android.abi-split" "false";
   ANDROID_ABI_INCLUDE = androidAbiInclude;
 

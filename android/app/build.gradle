@@ -228,6 +228,8 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        /* Caution! In production, you need to generate your own keystore file.
+         * See: https://facebook.github.io/react-native/docs/signed-apk-android */
         release {
             /* environment variables take precedence over gradle.properties file */
             storeFile     file(getEnvOrConfig('KEYSTORE_PATH').replaceAll("~", System.properties['user.home']))
@@ -253,11 +255,11 @@ android {
             resValue "string", "build_config_package", "im.status.ethereum"
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://facebook.github.io/react-native/docs/signed-apk-android.
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            signingConfig signingConfigs.release
+            if (getEnvOrConfig('ANDROID_APK_SIGNED').toBoolean()) {
+                signingConfig signingConfigs.release
+            }
         }
         pr {
             initWith release

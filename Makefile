@@ -159,6 +159,7 @@ release-android: export BUILD_ENV ?= prod
 release-android: export BUILD_TYPE ?= nightly
 release-android: export BUILD_NUMBER ?= $(TMP_BUILD_NUMBER)
 release-android: export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
+release-android: export ANDROID_APK_SIGNED ?= true
 release-android: export ANDROID_ABI_SPLIT ?= false
 release-android: export ANDROID_ABI_INCLUDE ?= armeabi-v7a;arm64-v8a;x86
 release-android: keystore ##@build build release for Android

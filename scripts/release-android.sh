@@ -33,6 +33,7 @@ fi
 config+="status-im.build-type=\"$(must_get_env BUILD_TYPE)\";"
 config+="status-im.build-number=\"$(must_get_env BUILD_NUMBER)\";"
 config+="status-im.android.keystore-path=\"$(must_get_env KEYSTORE_PATH)\";"
+config+="status-im.android.apk-signed=\"$(must_get_env ANDROID_APK_SIGNED)\";"
 config+="status-im.android.abi-split=\"$(must_get_env ANDROID_ABI_SPLIT)\";"
 config+="status-im.android.abi-include=\"$(must_get_env ANDROID_ABI_INCLUDE)\";"
 nixOpts=()
