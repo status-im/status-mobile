@@ -77,8 +77,8 @@
   {:events [::switch-non-contacts]}
   [{:keys [db] :as cofx} enabled?]
   (let [method (if enabled?
-                 "disablePushNotificationsFromContactsOnly"
-                 "enablePushNotificationsFromContactsOnly")]
+                 "enablePushNotificationsFromContactsOnly"
+                 "disablePushNotificationsFromContactsOnly")]
     (fx/merge cofx
               {::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) method)
                                  :params     []

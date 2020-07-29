@@ -39,7 +39,7 @@
         :active              (and remote-push-notifications-enabled?
                                   (not push-notifications-from-contacts-only?))
         :on-press            #(re-frame/dispatch
-                               [::notifications/switch-non-contacts push-notifications-from-contacts-only?])
+                               [::notifications/switch-non-contacts (not push-notifications-from-contacts-only?)])
         :accessory           :switch}]
       [quo/list-item
        {:size                :small
