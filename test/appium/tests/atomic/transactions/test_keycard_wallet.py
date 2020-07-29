@@ -138,7 +138,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction(keycard=True)
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
-        self.network_api.verify_balance_is_updated('0.1', status_account_address)
+        self.network_api.verify_balance_is_updated('0', status_account_address)
 
         wallet_view.just_fyi("Verifying previously sent transaction in new account")
         wallet_view.back_button.click()
@@ -186,3 +186,19 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         if total_eth_from_two_accounts != expected_balance:
             self.driver.fail('Total wallet balance %s != of Status account (%s) + SubAccount (%s)' % (
                 total_eth_from_two_accounts, balance_of_status_account, balance_of_sub_account))
+
+        wallet_view.just_fyi("Check that can set max and send transaction with max amount from subaccount")
+        wallet_view.get_account_by_name(account_name).click()
+        wallet_view.send_transaction_button.click()
+        send_transaction.set_max_button.click()
+        set_amount = float(send_transaction.amount_edit_box.text)
+        if set_amount == 0.0 or set_amount >= balance_of_sub_account:
+            self.driver.fail('Value after setting up max amount is set to %s' % str(set_amount))
+        send_transaction.confirm()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.accounts_button.click()
+        send_transaction.element_by_text('Status account').click()
+        send_transaction.sign_transaction_button.click()
+        send_transaction.sign_transaction(keycard=True)
+        wallet_view.element_by_text('Assets').click()
+        wallet_view.wait_balance_is_equal_expected_amount(asset='ETH', expected_balance=0)

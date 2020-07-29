@@ -84,10 +84,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             device_1.driver.fail("Failed to open chat view after tap on PN")
 
         device_1.just_fyi("Checks there are no PN after message was seen")
-        device_1.click_system_home_button()
-        device_2.click_system_home_button()
-        device_1.open_notification_bar()
-        device_2.open_notification_bar()
+        [device.click_system_home_button() for device in (device_1, device_2)]
+        [device.open_notification_bar() for device in (device_1, device_2)]
         if (device_2.element_by_text_part(message).is_element_displayed()
                 or device_1.element_by_text_part(emoji_unicode).is_element_displayed()):
             self.errors.append("PN are keep staying after message was seen by user")

@@ -569,6 +569,12 @@ class AskMeWhenOnMobileNetworkToggle(BaseButton):
         self.locator = self.Locator.xpath_selector(
             "//*[@text='Ask me when on mobile network']/following-sibling::android.widget.Switch[1]")
 
+class PushNotificationToggle(BaseButton):
+    def __init__(self, driver):
+        super(PushNotificationToggle, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@content-desc='notifications-button']//*[@content-desc='switch']")
+
 class ENSUsernameInChatSettings(BaseElement):
     def __init__(self, driver):
         super(ENSUsernameInChatSettings, self).__init__(driver)
@@ -671,6 +677,9 @@ class ProfileView(BaseView):
         # Mobile Data
         self.use_mobile_data = UseMobileDataToggle(self.driver)
         self.ask_me_when_on_mobile_network = AskMeWhenOnMobileNetworkToggle(self.driver)
+
+        #Push notifications
+        self.push_notification_toggle = PushNotificationToggle(self.driver)
 
     def switch_network(self, network='Mainnet with upstream RPC'):
         self.advanced_button.click()

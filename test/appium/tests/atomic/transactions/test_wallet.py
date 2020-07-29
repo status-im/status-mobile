@@ -571,7 +571,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.back_button.click()
 
         screen = 'sending screen from wallet'
-        sign_in_view.just_fyi('Checking %s on %s' % (errors['sending_screen']['Network fee'],screen))
+        sign_in_view.just_fyi('Checking %s on %s' % (errors['sending_screen']['Network fee'], screen))
         account_name = 'new'
         wallet_view.add_account(account_name)
         wallet_view.get_account_by_name(account_name).click()
@@ -613,7 +613,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.cancel_button.click()
 
         screen = 'sending screen from DApp'
-        sign_in_view.just_fyi('Checking %s on %s' % (errors['sending_screen']['Network fee'],screen))
+        sign_in_view.just_fyi('Checking %s on %s' % (errors['sending_screen']['Network fee'], screen))
         home_view = wallet_view.home_button.click()
         dapp_view = sign_in_view.dapp_tab_button.click()
         dapp_view.select_account_button.click()

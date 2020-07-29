@@ -488,13 +488,13 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5763)
     @marks.medium
-    def test_block_user_from_one_to_one_header(self):
+    def test_block_user_from_one_to_one_header_check_push_notification_service(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         message_before_block_1 = "Before block from %s" % device_1.driver.number
         message_before_block_2 = "Before block from %s" % device_2.driver.number
         message_after_block_2 = "After block from %s" % device_2.driver.number
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
+        home_1, home_2 = device_1.create_user(enable_notifications=True), device_2.create_user()
         profile_1 = home_1.profile_button.click()
         device_2_public_key = home_2.get_public_key_and_username()
         home_2.get_back_to_home_view()
@@ -532,11 +532,12 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.just_fyi('no 1-1, messages from blocked user are hidden in public chat')
         if home_1.get_chat(basic_user['username']).is_element_displayed():
             home_1.driver.fail("Chat with blocked user '%s' is not deleted" % device_2.driver.number)
-        public_chat_after_block = home_1.join_public_chat(chat_name)
-        if public_chat_after_block.chat_element_by_text(message_before_block_2).is_element_displayed():
+        public_chat_after_block_1 = home_1.join_public_chat(chat_name)
+        if public_chat_after_block_1.chat_element_by_text(message_before_block_2).is_element_displayed():
             self.errors.append(
                 "Messages from blocked user '%s' are not cleared in public chat '%s'" % (device_2.driver.number,
                                                                                          chat_name))
+        device_1.click_system_home_button()
 
         device_2.just_fyi('send messages to 1-1 and public chat')
         for _ in range(2):
@@ -550,13 +551,19 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             chat_public_2.chat_message_input.send_keys(message_after_block_2)
             chat_public_2.send_message_button.click()
 
-        device_1.just_fyi("check that new messages didn't arrived from blocked user")
-        if public_chat_after_block.chat_element_by_text(message_after_block_2).is_element_displayed():
+        device_1.just_fyi("check that new messages and push notifications don't arrive from blocked user")
+        device_1.open_notification_bar()
+        if device_1.element_by_text_part(message_after_block_2).is_element_displayed():
+            self.errors.append("Push notification is received from blocked user")
+        device_1.element_by_text_part("Background notification service").click()
+
+        if public_chat_after_block_1.chat_element_by_text(message_after_block_2).is_element_displayed():
             self.errors.append("Message from blocked user '%s' is received" % device_2.driver.number)
-        public_chat_after_block.get_back_to_home_view()
+        public_chat_after_block_1.get_back_to_home_view()
         if home_1.get_chat(basic_user['username']).is_element_displayed():
             device_2.driver.fail("Chat with blocked user is reappeared after receiving new messages")
-        self.drivers[0].close_app()
+        device_1.open_notification_bar()
+        home_1.stop_status_service_button.click()
 
         device_2.just_fyi("send messages when device 1 is offline")
         for _ in range(2):
@@ -569,6 +576,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             chat_2.send_message_button.click()
 
         device_1.just_fyi("reopen app and check that messages from blocked user are not fetched")
+        device_1.click_system_home_button()
         self.drivers[0].launch_app()
         device_1.accept_agreements()
         device_1.sign_in()
@@ -577,9 +585,15 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         home_1.join_public_chat(chat_name)
         home_1.get_chat_view()
         if chat_public_1.chat_element_by_text(message_after_block_2).is_element_displayed():
-            self.errors.append(
-                "Message from blocked user '%s' is received after fetching new messages from offline"
+            self.errors.append("Message from blocked user '%s' is received after fetching new messages from offline"
                 % device_2.driver.number)
+
+        device_1.just_fyi("check that PNs are still enabled in profile after closing 'background notification centre' "
+                          "message and relogin")
+        home_1.profile_button.click()
+        profile_1.push_notification_toggle.scroll_to_element()
+        if not profile_1.push_notification_toggle.is_element_image_equals_template('enabled_toggle.png'):
+            self.errors.append('Toggle is not enabled')
 
         self.errors.verify_no_errors()
 

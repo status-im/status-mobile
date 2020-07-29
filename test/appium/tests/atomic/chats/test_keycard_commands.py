@@ -96,7 +96,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6294)
-    @marks.critical
+    @marks.medium
     def test_keycard_request_and_receive_stt_in_1_1_chat_offline(self):
         sender = transaction_senders['D']
         self.create_drivers(2)
@@ -161,13 +161,9 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, token=True)
         chat_2.toggle_airplane_mode()
         chat_2.connection_status.wait_for_invisibility_of_element(60)
-        if chat_2_sender_message.transaction_status.text != 'Confirmed':
+        if not chat_2.element_by_text('Confirmed').is_element_displayed(30):
             self.errors.append('Wrong state is shown for outgoing transaction: "Confirmed" is expected, in fact'
                                ' %s ' % chat_2_sender_message.transaction_status.text)
-        try:
-            self.network_api.find_transaction_by_unique_amount(recipient_address[2:], amount, token=True)
-        except Failed as e:
-            self.errors.append(e.msg)
         self.errors.verify_no_errors()
 
 

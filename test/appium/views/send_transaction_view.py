@@ -13,7 +13,7 @@ class FirstRecipient(BaseButton):
 class CancelButton(BaseButton):
     def __init__(self, driver):
         super(CancelButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Cancel']")
+        self.locator = self.Locator.text_selector("Cancel")
 
 
 class SignTransactionButton(BaseButton):
@@ -27,6 +27,12 @@ class AmountEditBox(BaseEditBox, BaseButton):
     def __init__(self, driver):
         super(AmountEditBox, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('amount-input')
+
+class SetMaxButton(BaseButton):
+
+    def __init__(self, driver):
+        super(SetMaxButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Set max')
 
 
 class SignInPhraseText(BaseText):
@@ -189,7 +195,7 @@ class ValidationErrorOnSendTransaction(BaseButton):
 class ValidationIconOnSendTransaction(BaseButton):
     def __init__(self, driver):
         super(ValidationIconOnSendTransaction, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@content-desc="custom-gas-fee"]/../android.view.ViewGroup/*[@content-desc="icon"]')
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="custom-gas-fee"]/../android.view.ViewGroup//*[@content-desc="icon"]')
 
 
 
@@ -288,6 +294,7 @@ class SendTransactionView(BaseView):
         self.enter_recipient_address_text = EnterRecipientAddressInputText(self.driver)
         self.recent_recipients_button = RecentRecipientsButton(self.driver)
         self.amount_edit_box = AmountEditBox(self.driver)
+        self.set_max_button = SetMaxButton(self.driver)
         self.validation_error_element = ValidationIconOnSendTransaction(self.driver)
 
         self.network_fee_button = NetworkFeeButton(self.driver)

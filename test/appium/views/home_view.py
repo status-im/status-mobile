@@ -72,6 +72,10 @@ class ChatsMenuInviteFriendsButton(BaseButton):
         super(ChatsMenuInviteFriendsButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('chats-menu-invite-friends-button')
 
+class StopStatusServiceButton(BaseButton):
+    def __init__(self, driver):
+        super(StopStatusServiceButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('STOP')
 
 class UserNameBelowNewChatButton(BaseButton):
     def __init__(self, driver, username_part):
@@ -177,6 +181,7 @@ class HomeView(BaseView):
         self.delete_chat_button = DeleteChatButton(self.driver)
         self.clear_history_button = ClearHistoryButton(self.driver)
         self.mark_all_messages_as_read_button = MarkAllMessagesAsReadButton(self.driver)
+        self.stop_status_service_button = StopStatusServiceButton(self.driver)
 
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing complete:')
