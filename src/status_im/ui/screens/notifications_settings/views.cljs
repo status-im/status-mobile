@@ -72,6 +72,6 @@
                    :disabled (or (not remote-push-notifications-enabled?)
                                  (empty? @server))
                    :on-press #(do
-                               (re-frame/dispatch [::notifications/add-server @server])
-                               (reset! server ""))}
+                                (re-frame/dispatch [::notifications/add-server @server])
+                                (reset! server ""))}
        (i18n/label :t/save)]]]))
