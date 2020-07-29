@@ -43,11 +43,9 @@
         :accessory           :switch}]
       [quo/list-item
        {:size                :small
-        :disabled            (not remote-push-notifications-enabled?)
         :title               (i18n/label :t/send-push-notifications)
         :accessibility-label :send-push-notifications-button
-        :active              (and remote-push-notifications-enabled?
-                                  send-push-notifications?)
+        :active              send-push-notifications?
         :on-press            #(re-frame/dispatch
                                [::notifications/switch-send-push-notifications (not send-push-notifications?)])
         :accessory           :switch}]
