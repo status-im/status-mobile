@@ -10,7 +10,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.utils.config :as config]
             [quo.core :as quo]
-            [reagent.core :as reagent]
             [quo.components.safe-area :as safe-area]))
 
 (defn- topbar [_ {:keys [title] :as opts}]
@@ -66,30 +65,26 @@
   (re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success opts (camera/get-qr-code-data data)]))
 
 (defview qr-scanner []
-  (letsubs [read-once?        (atom false)
+  (letsubs [read-once? (atom false)
             {:keys [height width]} [:dimensions/window]
             camera-flashlight [:wallet.send/camera-flashlight]
-            opts              [:get-screen-params]
-            camera-ref        (atom nil)
-            focus-object      (reagent/atom nil)
-            layout            (atom nil)]
+            opts [:get-screen-params]
+            camera-ref (atom nil)]
     (if config/qr-test-menu-enabled?
       [qr-test-view opts]
       [safe-area/consumer
        (fn [insets]
-         [react/view {:flex 1 :background-color colors/black-persist
+         [react/view {:flex        1 :background-color colors/black-persist
                       :padding-top (:top insets) :padding-bottom (:bottom insets)}
           [topbar camera-flashlight opts]
           [react/with-activity-indicator
            {}
            [camera/camera
-            {:ref                          #(reset! camera-ref %)
-             :style                        {:flex 1}
-             :capture-audio                false
-             :on-layout                    (camera/on-layout layout)
-             :auto-focus-point-of-interest @focus-object
-             :on-tap                       (camera/on-tap camera-ref layout focus-object)
-             :on-bar-code-read             #(when-not @read-once?
-                                              (reset! read-once? true)
-                                              (on-barcode-read opts %))}]]
+            {:ref            #(reset! camera-ref %)
+             :style          {:flex 1}
+             :camera-options {:zoomMode :off}
+             :scan-barcode   true
+             :on-read-code   #(when-not @read-once?
+                                (reset! read-once? true)
+                                (on-barcode-read opts %))}]]
           [viewfinder (int (* 2 (/ (min height width) 3)))]])])))

@@ -239,13 +239,7 @@ PODS:
   - React-jsinspector (0.62.2)
   - react-native-background-timer (2.2.0):
     - React
-  - react-native-camera (3.26.0):
-    - React
-    - react-native-camera/RCT (= 3.26.0)
-    - react-native-camera/RN (= 3.26.0)
-  - react-native-camera/RCT (3.26.0):
-    - React
-  - react-native-camera/RN (3.26.0):
+  - react-native-camera-kit (8.0.4):
     - React
   - react-native-cameraroll (1.6.2):
     - React
@@ -415,7 +409,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
-  - react-native-camera (from `../node_modules/react-native-camera`)
+  - react-native-camera-kit (from `../node_modules/react-native-camera-kit`)
   - "react-native-cameraroll (from `../node_modules/@react-native-community/cameraroll`)"
   - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
   - react-native-mail (from `../node_modules/react-native-mail`)
@@ -510,8 +504,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-background-timer:
     :path: "../node_modules/react-native-background-timer"
-  react-native-camera:
-    :path: "../node_modules/react-native-camera"
+  react-native-camera-kit:
+    :path: "../node_modules/react-native-camera-kit"
   react-native-cameraroll:
     :path: "../node_modules/@react-native-community/cameraroll"
   react-native-image-resizer:
@@ -616,7 +610,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 1540d1c01bb493ae3124ed83351b1b6a155db7da
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
-  react-native-camera: 2b74be8edc1103c4c46d1f4e5f41723d9ff052cc
+  react-native-camera-kit: 498a6d111a904834e0824e9073cfadef7303235f
   react-native-cameraroll: ac69828fc43b9dbf92149714fd739577d38e4448
   react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3
   react-native-mail: 7e37dfbe93ff0d4c7df346b738854dbed533e86f
