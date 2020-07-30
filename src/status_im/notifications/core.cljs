@@ -6,8 +6,12 @@
             ["react-native-push-notification" :as rn-pn]
             [quo.platform :as platform]
             [status-im.utils.fx :as fx]
+            [status-im.utils.config :as config]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.waku.core :as waku]))
+
+(def apn-token-type 1)
+(def firebase-token-type 2)
 
 (defn enable-ios-notifications []
   (.configure
@@ -42,7 +46,7 @@
   {:events [::registered-for-push-notifications]}
   [cofx token]
   {::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) "registerForPushNotifications")
-                     :params     [token]
+                     :params     [token (if platform/ios? config/apn-topic) (if platform/ios? apn-token-type firebase-token-type)]
                      :on-success #(log/info "[push-notifications] register-success" %)
                      :on-error   #(re-frame/dispatch [::switch-error true %])}]})
 
