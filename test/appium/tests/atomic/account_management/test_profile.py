@@ -888,7 +888,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         public_chat_before_sync = 'before-pairing'
         public_chat_after_sync = 'after-pairing'
 
-
         device_1.just_fyi('add contact, start 1-1 chat with basic user')
         device_1_chat = device_1_home.add_contact(basic_user['public_key'])
         device_1_chat.chat_message_input.send_keys(message_before_sync)
@@ -938,7 +937,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         chat = device_2_home.get_chat(basic_user['username']).click()
         if chat.chat_element_by_text(message_before_sync).is_element_displayed():
             self.errors.append('"%s" message sent before pairing is synced' % message_before_sync)
-        if not chat.chat_element_by_text(message_after_sync).is_element_displayed():
+        if not chat.chat_element_by_text(message_after_sync).is_element_displayed(60):
             self.errors.append('"%s" message in 1-1 is not synced' % message_after_sync)
 
         device_1.just_fyi('add new public chat and check that it will be synced with device2')

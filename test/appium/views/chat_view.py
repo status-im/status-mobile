@@ -270,6 +270,10 @@ class ViewProfileButton(BaseButton):
         super(ViewProfileButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@text="View profile"]')
 
+class ViewProfileByAvatarButton(BaseButton):
+    def __init__(self, driver):
+        super(ViewProfileByAvatarButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('member-photo')
 
 class NoMessagesInChatText(BaseText):
     def __init__(self, driver):
@@ -635,6 +639,7 @@ class ChatView(BaseView):
 
         self.chat_settings = ChatSettings(self.driver)
         self.view_profile_button = ViewProfileButton(self.driver)
+        self.view_profile_by_avatar_button = ViewProfileByAvatarButton(self.driver)
         self.user_options = UserOptions(self.driver)
         self.remove_button = RemoveButton(self.driver)
 
@@ -738,7 +743,7 @@ class ChatView(BaseView):
 
     def view_profile_long_press(self, message = str):
         self.chat_element_by_text(message).long_press_element()
-        self.view_profile_button.click()
+        self.view_profile_by_avatar_button.click()
         self.profile_block_contact.wait_for_visibility_of_element(5)
 
     def move_to_messages_by_time_marker(self, marker='Today'):

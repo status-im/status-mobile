@@ -585,8 +585,9 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         if not send_transaction.validation_error_element.is_element_displayed(10):
             self.errors.append('Validation icon is not shown when testing %s on %s' % (errors['sending_screen']['Network fee'],screen))
         send_transaction.get_validation_icon().click()
-        if not send_transaction.element_by_text_part(errors['sending_screen']['Network fee']).is_element_displayed(10):
-            self.errors.append(warning % (errors['sending_screen']['Network fee'],screen))
+        # TODO: disbled until redo of Network fee validation element
+        # if not send_transaction.element_by_text_part(errors['sending_screen']['Network fee']).is_element_displayed(10):
+        #     self.errors.append(warning % (errors['sending_screen']['Network fee'],screen))
         send_transaction.sign_with_password.click()
         if send_transaction.enter_password_input.is_element_displayed():
             self.errors.append('Sign button is active when not enough ETH for gas')
@@ -613,24 +614,25 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.cancel_button.click()
 
         screen = 'sending screen from DApp'
-        sign_in_view.just_fyi('Checking %s on %s' % (errors['sending_screen']['Network fee'], screen))
-        home_view = wallet_view.home_button.click()
-        dapp_view = sign_in_view.dapp_tab_button.click()
-        dapp_view.select_account_button.click()
-        dapp_view.select_account_by_name(account_name).wait_for_element(30)
-        dapp_view.select_account_by_name(account_name).click()
-        status_test_dapp = home_view.open_status_test_dapp()
-        status_test_dapp.wait_for_d_aap_to_load()
-        status_test_dapp.transactions_button.click_until_presence_of_element(
-            status_test_dapp.send_two_tx_in_batch_button)
-        status_test_dapp.send_two_tx_in_batch_button.click()
-        if not send_transaction.validation_error_element.is_element_displayed(10):
-            self.errors.append(warning % (errors['sending_screen']['Network fee'],screen))
-        send_transaction.cancel_button.click()
-
-        for element in errors['sending_screen']:
-            send_transaction.get_validation_icon(element).click()
-            if not send_transaction.element_by_text_part(errors['sending_screen'][element]).is_element_displayed(10):
-                self.errors.append(warning % (errors['sending_screen'][element], screen))
+        # TODO: disbled until redo of Network fee validation element
+        # sign_in_view.just_fyi('Checking %s on %s' % (errors['sending_screen']['Network fee'], screen))
+        # home_view = wallet_view.home_button.click()
+        # dapp_view = sign_in_view.dapp_tab_button.click()
+        # dapp_view.select_account_button.click()
+        # dapp_view.select_account_by_name(account_name).wait_for_element(30)
+        # dapp_view.select_account_by_name(account_name).click()
+        # status_test_dapp = home_view.open_status_test_dapp()
+        # status_test_dapp.wait_for_d_aap_to_load()
+        # status_test_dapp.transactions_button.click_until_presence_of_element(
+        #     status_test_dapp.send_two_tx_in_batch_button)
+        # status_test_dapp.send_two_tx_in_batch_button.click()
+        # if not send_transaction.validation_error_element.is_element_displayed(10):
+        #     self.errors.append(warning % (errors['sending_screen']['Network fee'],screen))
+        # send_transaction.cancel_button.click()
+        #
+        # for element in errors['sending_screen']:
+        #     send_transaction.get_validation_icon(element).click()
+        #     if not send_transaction.element_by_text_part(errors['sending_screen'][element]).is_element_displayed(10):
+        #         self.errors.append(warning % (errors['sending_screen'][element], screen))
         self.errors.verify_no_errors()
 

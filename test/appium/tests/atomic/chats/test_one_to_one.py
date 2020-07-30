@@ -263,6 +263,14 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         if device2_one_to_one_chat.element_by_text_part('Free').is_element_displayed():
             self.errors.append('Stickerpack was not installed')
 
+        device_2_home.just_fyi('check that can navigate to another user profile via long tap on sticker message')
+        device2_one_to_one_chat.cross_icon.click()
+        device2_one_to_one_chat.chat_item.long_press_element()
+        device2_one_to_one_chat.element_by_text('View Details').click()
+        if not device2_one_to_one_chat.profile_block_contact.is_element_displayed():
+            self.errors.append('No navigate to user profile after tapping View Details on sticker message')
+
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6305)
@@ -292,9 +300,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         for message in device_1_chat.image_chat_item, device_1_chat.chat_element_by_text(image_description):
             if not message.is_element_displayed():
                 self.errors.append('Image or description is not shown in chat after sending for sender')
-        # TODO: to investigate after new chat input
-        # if not device_1_chat.image_chat_item.is_element_image_equals_template('message_image_sender.png'):
-        #     self.errors.append("Image doesn't match expected template for sender")
+        if not device_1_chat.image_chat_item.is_element_image_equals_template('message_image_sender.png'):
+            self.errors.append("Image doesn't match expected template for sender")
         device_1_chat.show_images_button.click()
         device_1_chat.image_from_gallery_button.click()
         device_1_chat.click_system_back_button()
@@ -310,13 +317,12 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         for message in device_2_chat.image_chat_item, device_2_chat.chat_element_by_text(image_description):
             if not message.is_element_displayed():
                 self.errors.append('Image or description is not shown in chat after sending for receiver')
-        # TODO: to investigate after new chat input
-        # if not device_2_chat.image_chat_item.is_element_image_equals_template('message_image_receiver.png'):
-        #     self.errors.append("Image doesn't match expected template for receiver")
+        if not device_2_chat.image_chat_item.is_element_image_equals_template('message_image_receiver.png'):
+            self.errors.append("Image doesn't match expected template for receiver")
         device_2_chat.image_chat_item.long_press_element()
-        for element in device_2_chat.reply_message_button, device_2_chat.save_image_button, device_2_chat.view_profile_button:
+        for element in device_2_chat.reply_message_button, device_2_chat.save_image_button:
             if not element.is_element_displayed():
-                self.errors.append('Save and reply are not available on long-press on own image messages')
+                self.errors.append('Save and reply are not available on long-press on received image messages')
 
         device_1_home.just_fyi('save image')
         device_1_chat.save_image_button.click()
