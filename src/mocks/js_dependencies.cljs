@@ -183,6 +183,7 @@
                       :addEventListener (fn []),
                       :removeEventListener (fn [])}}))
 
+(def push-notification-ios #js {})
 ;; Update i18n_resources.cljs
 (defn mock [module]
   (case module
@@ -210,6 +211,7 @@
     "react-native-mail" react-native-mail
     "react-native-image-resizer" image-resizer
     "react-native-haptic-feedback" react-native-haptic-feedback
+    "@react-native-community/push-notification-ios" push-notification-ios
     "./fleets.js" default-fleets
     "./chats.js" default-chats
     "../translations/ar.json" (js/JSON.parse (slurp "./translations/ar.json"))

@@ -13,23 +13,27 @@
 
 (def apn-token-type 1)
 (def firebase-token-type 2)
+(def listeners-added? (atom nil))
 
-(.addEventListener
- ^js pn-ios
- "register"
- (fn [token-data]
-   (let [token (.-token ^js token-data)]
-     (re-frame/dispatch [::registered-for-push-notifications token])
-     (utils/show-popup "TOKEN" token)
-     (println "TOKEN " token))))
-
-(.addEventListener
- ^js pn-ios
- "registrationError"
- (fn [error]
-   (re-frame/dispatch [::switch-error true error])))
+(defn add-event-listeners []
+  (when-not @listeners-added?
+    (reset! listeners-added? true)
+    (.addEventListener
+     ^js pn-ios
+     "register"
+     (fn [token-data]
+       (let [token (.-token ^js token-data)]
+         (re-frame/dispatch [::registered-for-push-notifications token])
+         (utils/show-popup "TOKEN" token)
+         (println "TOKEN " token))))
+    (.addEventListener
+     ^js pn-ios
+     "registrationError"
+     (fn [error]
+       (re-frame/dispatch [::switch-error true error])))))
 
 (defn enable-ios-notifications []
+  (add-event-listeners)
   (-> (.requestPermissions ^js pn-ios)
       (.then #())
       (.catch #())))
