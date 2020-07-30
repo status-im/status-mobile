@@ -167,6 +167,7 @@
                    :save-password? true))
        :keycard/login-with-keycard
        {:multiaccount-data multiaccount-data
+        :key-uid           key-uid
         :password          encryption-public-key
         :chat-key          whisper-private-key}})))
 
