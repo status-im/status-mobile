@@ -3,29 +3,39 @@
             [taoensso.timbre :as log]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as status]
-            ["react-native-push-notification" :as rn-pn]
+            ["@react-native-community/push-notification-ios" :default pn-ios]
             [quo.platform :as platform]
             [status-im.utils.fx :as fx]
             [status-im.utils.config :as config]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.waku.core :as waku]))
+            [status-im.waku.core :as waku]
+            [status-im.utils.utils :as utils]))
 
 (def apn-token-type 1)
 (def firebase-token-type 2)
 
+(.addEventListener
+ ^js pn-ios
+ "register"
+ (fn [token-data]
+   (let [token (.-token ^js token-data)]
+     (re-frame/dispatch [::registered-for-push-notifications token])
+     (utils/show-popup "TOKEN" token)
+     (println "TOKEN " token))))
+
+(.addEventListener
+ ^js pn-ios
+ "registrationError"
+ (fn [error]
+   (re-frame/dispatch [::switch-error true error])))
+
 (defn enable-ios-notifications []
-  (.configure
-   ^js rn-pn
-   #js {:onRegister          (fn [token-data]
-                               (let [token (.-token ^js token-data)]
-                                 (re-frame/dispatch [::registered-for-push-notifications token])
-                                 (println "TOKEN " token)))
-        :onRegistrationError (fn [error]
-                               (log/error "[push-notifications]" error)
-                               (re-frame/dispatch [::switch-error true error]))}))
+  (-> (.requestPermissions ^js pn-ios)
+      (.then #())
+      (.catch #())))
 
 (defn disable-ios-notifications []
-  (.abandonPermissions ^js rn-pn)
+  (.abandonPermissions ^js pn-ios)
   (re-frame/dispatch [::unregistered-from-push-notifications]))
 
 (re-frame/reg-fx
