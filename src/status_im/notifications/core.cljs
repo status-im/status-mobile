@@ -21,11 +21,10 @@
     (.addEventListener
      ^js pn-ios
      "register"
-     (fn [token-data]
-       (let [token (.-token ^js token-data)]
-         (re-frame/dispatch [::registered-for-push-notifications token])
-         (utils/show-popup "TOKEN" token)
-         (println "TOKEN " token))))
+     (fn [token]
+       (re-frame/dispatch [::registered-for-push-notifications token])
+       (utils/show-popup "TOKEN" token)
+       (println "TOKEN " token)))
     (.addEventListener
      ^js pn-ios
      "registrationError"
