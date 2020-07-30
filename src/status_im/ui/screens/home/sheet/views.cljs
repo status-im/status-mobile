@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.home.sheet.views
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
+            [status-im.qr-scanner.core :as qr-scanner]
             [quo.core :as quo]
             [status-im.i18n :as i18n]
             [status-im.utils.config :as config]
@@ -12,6 +13,20 @@
 
 (defn add-new-view []
   [react/view
+   [react/view {:style {:flex-direction  :row
+                        :padding-left    16
+                        :padding-right   8
+                        :justify-content :space-between
+                        :align-items     :center}}
+    [quo/text {:size   :large
+               :weight :bold}
+     (i18n/label :t/open-home)]
+    [quo/button {:type     :icon
+                 :theme    :icon
+                 :on-press #(hide-sheet-and-dispatch
+                             [::qr-scanner/scan-code
+                              {:handler ::qr-scanner/on-scan-success}])}
+     :main-icons/qr]]
    [quo/list-item
     {:theme               :accent
      :title               (i18n/label :t/start-new-chat)

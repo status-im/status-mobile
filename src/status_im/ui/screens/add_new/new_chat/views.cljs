@@ -7,6 +7,7 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [quo.core :as quo]
             [status-im.utils.gfycat.core :as gfycat]
+            [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
@@ -67,7 +68,7 @@
        :modal?      true
        :accessories [{:icon                :qr
                       :accessibility-label :scan-contact-code-button
-                      :handler             #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
+                      :handler             #(re-frame/dispatch [::qr-scanner/scan-code
                                                                 {:title   (i18n/label :t/new-contact)
                                                                  :handler :contact/qr-code-scanned}])}]}]
      [react/view {:flex-direction :row
@@ -115,7 +116,7 @@
        :modal?      true
        :accessories [{:icon                :qr
                       :accessibility-label :scan-contact-code-button
-                      :handler             #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
+                      :handler             #(re-frame/dispatch [::qr-scanner/scan-code
                                                                 {:title        (i18n/label :t/new-contact)
                                                                  :handler      :contact/qr-code-scanned
                                                                  :new-contact? true}])}]}]

@@ -6,8 +6,7 @@
             [quo.core :as quo]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
-            [status-im.utils.utils :as utils.utils]))
+            [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]))
 
 (views/defview assets [address]
   (views/letsubs [{:keys [tokens]} [:wallet/visible-assets-with-values address]
@@ -34,21 +33,6 @@
                      :key-fn    :address
                      :render-fn (render-account field event)}]))
 
-(defn- request-camera-permissions []
-  (let [options {:handler        :wallet.send/qr-scanner-result
-                 :cancel-handler :wallet.send/qr-scanner-cancel
-                 :modal-opened?  true}]
-    (re-frame/dispatch
-     [:request-permissions
-      {:permissions [:camera]
-       :on-allowed #(re-frame/dispatch [:wallet.send/qr-scanner-allowed options])
-       :on-denied
-       #(utils.utils/set-timeout
-         (fn []
-           (utils.utils/show-popup (i18n/label :t/error)
-                                   (i18n/label :t/camera-access-error)))
-         50)}])))
-
 (defn show-accounts-list []
   (re-frame/dispatch [:bottom-sheet/hide])
   (js/setTimeout #(re-frame/dispatch [:bottom-sheet/show-sheet
@@ -66,7 +50,9 @@
                 :icon                :main-icons/qr
                 :theme               :accent
                 :accessibility-label :chose-recipient-scan-qr
-                :on-press            request-camera-permissions}
+                :on-press            #(re-frame/dispatch [:wallet.send/qr-scanner {:handler        :wallet.send/qr-scanner-result
+                                                                                   :cancel-handler :wallet.send/qr-scanner-cancel
+                                                                                   :modal-opened?  true}])}
                {:title               (i18n/label :t/recipient-code)
                 :icon                :main-icons/address
                 :theme               :accent

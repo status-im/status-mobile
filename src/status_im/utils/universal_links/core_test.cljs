@@ -3,6 +3,7 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
             [re-frame.core :as re-frame]
+            [status-im.router.core :as router]
             [status-im.utils.universal-links.core :as links]))
 
 (deftest handle-url-test
@@ -18,54 +19,10 @@
         (testing "it clears the url"
           (is (nil? (get-in (links/handle-url {:db db} "some-url")
                             [:db :universal-links/url]))))
-        (testing "a public chat link"
-          (testing "it joins the chat, short version"
-            (is (get-in (links/handle-url {:db db} "status-im://status")
-                        [:db :chats "status"])))
-          (testing "it joins the chat, short version, https"
-            (is (get-in (links/handle-url {:db db} "https://join.status.im/status")
-                        [:db :chats "status"])))
-          (testing "it joins the chat"
-            (is (get-in (links/handle-url {:db db} "status-im://chat/public/status")
-                        [:db :chats "status"]))))
-        (testing "a browse dapp link"
-          (testing "it open the dapps short version"
-            (is
-             (= "www.cryptokitties.co"
-                (:browser/show-browser-selection (links/handle-url {:db db} "status-im://b/www.cryptokitties.co")))))
-          (testing "it open the dapps short version, https"
-            (is
-             (= "www.cryptokitties.co"
-                (:browser/show-browser-selection (links/handle-url {:db db} "https://join.status.im/b/www.cryptokitties.co")))))
-          (testing "it open the dapps"
-            (is
-             (= "www.cryptokitties.co"
-                (:browser/show-browser-selection (links/handle-url {:db db} "status-im://browse/www.cryptokitties.co"))))))
-        (testing "a user profile link"
-          (testing "it loads the profile, short version"
-            (let [actual (links/handle-url {:db db} "status-im://u/0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073")]
-              (is (= "0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073" (get-in actual [:db :contacts/identity])))))
-          (testing "it loads the profile, short version https"
-            (let [actual (links/handle-url {:db db} "https://join.status.im/u/0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073")]
-              (is (= "0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073" (get-in actual [:db :contacts/identity])))))
-          (testing "it loads the profile"
-            (let [actual (links/handle-url {:db db} "status-im://user/0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073")]
-              (is (= "0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073" (get-in actual [:db :contacts/identity]))))))
-        (testing "Handle a custom string as a an profile link with ens-name"
-          (is (= (get-in (links/handle-url {:db db} "status-im://u/CONTACTCODE")
-                         [:resolve-public-key :contact-identity])
-                 "CONTACTCODE")))
-        (testing "Handle a custom string as a an profile link with ens-name, http"
+        (testing "Handle a custom string"
           (is (= (get-in (links/handle-url {:db db} "https://join.status.im/u/statuse2e")
-                         [:resolve-public-key :contact-identity])
-                 "statuse2e")))
-        (testing "Handle a custom string as a an profile link with ens-name"
-          (is (= (get-in (links/handle-url {:db db} "status-im://user/CONTACTCODE")
-                         [:resolve-public-key :contact-identity])
-                 "CONTACTCODE")))
-        (testing "a not found url"
-          (testing "it does nothing"
-            (is (nil? (links/handle-url {:db db} "status-im://blah/not-existing")))))))))
+                         [::router/handle-uri :uri])
+                 "https://join.status.im/u/statuse2e")))))))
 
 (deftest url-event-listener
   (testing "the url is not nil"

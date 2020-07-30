@@ -10,7 +10,6 @@
             [status-im.multiaccounts.db :as multiaccounts.db]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.utils.utils :as utils.utils]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.screens.wallet.account-settings.views :as account-settings]
             [status-im.ethereum.core :as ethereum]
@@ -19,32 +18,19 @@
             [quo.core :as quo]
             [status-im.ui.components.bottom-panel.views :as bottom-panel]))
 
-(defn- request-camera-permissions []
-  (let [options {:handler :wallet.add-new/qr-scanner-result}]
-    (re-frame/dispatch
-     [:request-permissions
-      {:permissions [:camera]
-       :on-allowed
-       #(re-frame/dispatch [:wallet.add-new/qr-scanner-allowed options])
-       :on-denied
-       #(utils.utils/set-timeout
-         (fn []
-           (utils.utils/show-popup (i18n/label :t/error)
-                                   (i18n/label :t/camera-access-error)))
-         50)}])))
-
 (defn add-account-topbar [type]
   (let [title (case type
                 :generate :t/generate-an-account
-                :watch :t/add-watch-account
-                :seed :t/add-seed-account
-                :key :t/add-private-key-account
+                :watch    :t/add-watch-account
+                :seed     :t/add-seed-account
+                :key      :t/add-private-key-account
                 "")]
     [topbar/topbar
      (merge {:title title}
             (when (= type :watch)
               {:accessories [{:icon    :qr
-                              :handler #(request-camera-permissions)}]}))]))
+                              :handler #(re-frame/dispatch [:wallet.add-new/qr-scanner
+                                                            {:handler :wallet.add-new/qr-scanner-result}])}]}))]))
 
 (defn common-settings [account]
   [react/view {:margin-horizontal 16}

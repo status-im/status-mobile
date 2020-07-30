@@ -8,10 +8,14 @@
             [status-im.i18n :as i18n]
             [status-im.utils.money :as money]
             [status-im.utils.fx :as fx]
+            [status-im.router.core :as router]
+            [status-im.qr-scanner.core :as qr-scaner]
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.navigation :as navigation]
             [clojure.string :as string]
             [status-im.ethereum.stateofus :as stateofus]))
 
+;; FIXME(Ferossgp): Should be part of QR scanner not wallet
 (fx/defn toggle-flashlight
   {:events [:wallet/toggle-flashlight]}
   [{:keys [db]}]
@@ -107,43 +111,42 @@
                                                {:data uri :chain current-chain-id})}))))
       {:ui/show-error (i18n/label :t/wallet-invalid-address {:data uri})})))
 
+(fx/defn qr-scanner-allowed
+  {:events [:wallet.send/qr-scanner]}
+  [{:keys [db] :as cofx} options]
+  (fx/merge cofx
+            (when (:modal-opened? options)
+              {:db (assoc-in db [:wallet/prepare-transaction :modal-opened?] true)})
+            (bottom-sheet/hide-bottom-sheet)
+            (qr-scaner/scan-qr-code options)))
+
 (fx/defn qr-scanner-cancel
   {:events [:wallet.send/qr-scanner-cancel]}
   [{db :db} _]
   {:db (assoc-in db [:wallet/prepare-transaction :modal-opened?] false)})
 
 (fx/defn parse-eip681-uri-and-resolve-ens
-  [{db :db :as cofx} uri]
-  (if-let [message (eip681/parse-uri uri)]
+  {:events [:wallet/parse-eip681-uri-and-resolve-ens]}
+  [{db :db :as cofx} {:keys [message uri paths ens-names error]}]
+  (if-not error
     ;; first we get a vector of ens-names to resolve and a vector of paths of
     ;; these names
-    (let [{:keys [paths ens-names]}
-          (reduce (fn [acc path]
-                    (let [address (get-in message path)]
-                      (if (ens/is-valid-eth-name? address)
-                        (-> acc
-                            (update :paths conj path)
-                            (update :ens-names conj address))
-                        acc)))
-                  {:paths [] :ens-names []}
-                  [[:address] [:function-arguments :address]])]
-      (println "message" message)
-      (if (empty? ens-names)
-        ;; if there are no ens-names, we dispatch request-uri-parsed immediately
-        (request-uri-parsed cofx message uri)
-        {::resolve-addresses
-         {:registry (get ens/ens-registries (ethereum/chain-keyword db))
-          :ens-names ens-names
-          :callback
-          (fn [addresses]
-            (re-frame/dispatch
-             [:wallet/request-uri-parsed
-              ;; we replace ens-names at their path in the message by their
-              ;; actual address
-              (reduce (fn [message [path address]]
-                        (assoc-in message path address))
-                      message
-                      (map vector paths addresses)) uri]))}}))
+    (if (empty? ens-names)
+      ;; if there are no ens-names, we dispatch request-uri-parsed immediately
+      (request-uri-parsed cofx message uri)
+      {::resolve-addresses
+       {:registry (get ens/ens-registries (ethereum/chain-keyword db))
+        :ens-names ens-names
+        :callback
+        (fn [addresses]
+          (re-frame/dispatch
+           [:wallet/request-uri-parsed
+            ;; we replace ens-names at their path in the message by their
+            ;; actual address
+            (reduce (fn [message [path address]]
+                      (assoc-in message path address))
+                    message
+                    (map vector paths addresses)) uri]))}})
     {:ui/show-error (i18n/label :t/wallet-invalid-address {:data uri})}))
 
 (fx/defn qr-scanner-result
@@ -151,7 +154,7 @@
   [cofx data _]
   (fx/merge cofx
             (navigation/navigate-back)
-            (parse-eip681-uri-and-resolve-ens data)
+            (parse-eip681-uri-and-resolve-ens (router/match-eip681 data))
             (fn [{:keys [db]}]
               (when (get-in db [:wallet/prepare-transaction :modal-opened?])
                 {:db (assoc-in db [:wallet/prepare-transaction :modal-opened?] false)}))))

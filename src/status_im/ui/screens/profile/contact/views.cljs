@@ -113,6 +113,7 @@
 
           [react/view {:padding-top 12}
            (for [{:keys [label subtext accessibility-label icon action disabled?]} (actions contact)]
+             ^{:key label}
              (when label
                [quo/list-item {:theme               :accent
                                :title               label

@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.constants :as constants]
+            [status-im.qr-scanner.core :as qr-scaner]
             [status-im.waku.core :as waku]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
@@ -548,21 +549,12 @@
                :amount     amount
                :from-command? true})})
 
-(fx/defn qr-scanner-allowed
-  {:events [:wallet.send/qr-scanner-allowed]}
-  [{:keys [db] :as cofx} options]
-  (fx/merge cofx
-            (when (:modal-opened? options)
-              {:db (assoc-in db [:wallet/prepare-transaction :modal-opened?] true)})
-            (bottom-sheet/hide-bottom-sheet)
-            (navigation/navigate-to-cofx :qr-scanner options)))
-
 (fx/defn view-only-qr-scanner-allowed
-  {:events [:wallet.add-new/qr-scanner-allowed]}
+  {:events [:wallet.add-new/qr-scanner]}
   [{:keys [db] :as cofx} options]
   (fx/merge cofx
             {:db (update-in db [:add-account] dissoc :address)}
-            (navigation/navigate-to-cofx :qr-scanner options)))
+            (qr-scaner/scan-qr-code options)))
 
 (fx/defn wallet-send-set-symbol
   {:events [:wallet.send/set-symbol]}

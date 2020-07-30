@@ -29,7 +29,6 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.pairing.core :as pairing]
             [status-im.privacy-policy.core :as privacy-policy]
-            [status-im.qr-scanner.core :as qr-scanner]
             [status-im.signals.core :as signals]
             [status-im.stickers.core :as stickers]
             [status-im.transport.core :as transport]
@@ -343,25 +342,6 @@
  :browser.bridge.callback/qr-code-canceled
  (fn [cofx [_ qr-code-data _]]
    (browser/handle-canceled-qr-code cofx (:data qr-code-data))))
-
-;; qr-scanner module
-
-(handlers/register-handler-fx
- :qr-scanner.ui/scan-qr-code-pressed
- (fn [cofx [_ opts]]
-   (qr-scanner/scan-qr-code cofx opts)))
-
-(handlers/register-handler-fx
- :qr-scanner.callback/scan-qr-code-success
- (fn [cofx [_ opts data]]
-   (qr-scanner/set-qr-code cofx opts data)))
-
-(handlers/register-handler-fx
- :qr-scanner.callback/scan-qr-code-cancel
- (fn [cofx [_ opts]]
-   (fx/merge cofx
-             (qr-scanner/set-qr-code-cancel opts)
-             (navigation/navigate-back))))
 
 ;; privacy-policy module
 

@@ -10,7 +10,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
             [status-im.ui.screens.wallet.accounts.styles :as styles]
-            [status-im.utils.utils :as utils.utils]
+            [status-im.qr-scanner.core :as qr-scanner]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.keycard.login :as keycard.login])
   (:require-macros [status-im.utils.views :as views]))
@@ -90,20 +90,6 @@
                      :default-separator? false
                      :key-fn             :name
                      :render-fn          (render-asset (:code currency))}]))
-
-(defn- request-camera-permissions []
-  (let [options {:handler :wallet.send/qr-scanner-result}]
-    (re-frame/dispatch
-     [:request-permissions
-      {:permissions [:camera]
-       :on-allowed
-       #(re-frame/dispatch [:wallet.send/qr-scanner-allowed options])
-       :on-denied
-       #(utils.utils/set-timeout
-         (fn []
-           (utils.utils/show-popup (i18n/label :t/error)
-                                   (i18n/label :t/camera-access-error)))
-         50)}])))
 
 (views/defview send-button []
   (views/letsubs [account [:multiaccount/default-account]]
@@ -187,7 +173,9 @@
        [quo/animated-header
         {:extended-header   total-value
          :use-insets        true
-         :right-accessories [{:on-press            #(request-camera-permissions)
+         :right-accessories [{:on-press            #(re-frame/dispatch
+                                                     [::qr-scanner/scan-code
+                                                      {:handler :wallet.send/qr-scanner-result}])
                               :icon                :main-icons/qr
                               :accessibility-label :accounts-qr-code}
                              {:on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet

@@ -1,14 +1,12 @@
 (ns status-im.utils.universal-links.core
-  (:require [cljs.spec.alpha :as spec]
-            [clojure.string :as string]
-            [goog.string :as gstring]
+  (:require [goog.string :as gstring]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.chat.models :as chat]
             [status-im.constants :as constants]
-            [status-im.ethereum.ens :as ens]
+            [status-im.router.core :as router]
+            [status-im.i18n :as i18n]
             [status-im.ethereum.core :as ethereum]
-            [status-im.utils.security :as security]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
             [status-im.navigation :as navigation]
@@ -19,12 +17,6 @@
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link
-
-(def private-chat-regex #".*/chat/private/(.*)$")
-(def public-chat-regex #"(?:https?://join\.)?status[.-]im(?::/)?/(?:chat/public/([a-z0-9\-]+)$|([a-z0-9\-]+))$")
-(def profile-regex #"(?:https?://join\.)?status[.-]im(?::/)?/(?:u/(0x.*)$|u/(.*)$|user/(.*))$")
-(def browse-regex #"(?:https?://join\.)?status[.-]im(?::/)?/(?:b/(.*)$|browse/(.*))$")
-(def referral-link-regex #"(?:https?://join\.)?status[.-]im(?::/)?/(?:referral/(.*))$")
 
 ;; domains should be without the trailing slash
 (def domains {:external "https://join.status.im"
@@ -40,17 +32,6 @@
                   (get domains domain-type)
                   param))
 
-(defn match-url [url regex]
-  (some->> url
-           (re-matches regex)
-           rest
-           reverse
-           (remove nil?)
-           first))
-
-(defn is-request-url? [url]
-  (string/starts-with? url "ethereum:"))
-
 (defn universal-link? [url]
   (boolean
    (re-matches constants/regx-universal-link url)))
@@ -59,51 +40,44 @@
   (boolean
    (re-matches constants/regx-deep-link url)))
 
-(fx/defn handle-browse [cofx url]
+(fx/defn handle-browse [cofx {:keys [url]}]
   (log/info "universal-links: handling browse" url)
-  (when (security/safe-link? url)
-    {:browser/show-browser-selection url}))
+  {:browser/show-browser-selection url})
 
-(fx/defn handle-private-chat [cofx chat-id]
+(fx/defn handle-private-chat [{:keys [db] :as cofx} {:keys [chat-id]}]
   (log/info "universal-links: handling private chat" chat-id)
-  (chat/start-chat cofx chat-id))
+  (when chat-id
+    (if-not (new-chat.db/own-public-key? db chat-id)
+      (chat/start-chat cofx chat-id)
+      {:utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
+                          :content (i18n/label :t/can-not-add-yourself)}})))
 
-(fx/defn handle-public-chat [cofx public-chat]
-  (log/info "universal-links: handling public chat" public-chat)
-  (chat/start-public-chat cofx public-chat {}))
+(fx/defn handle-public-chat [cofx {:keys [topic]}]
+  (log/info "universal-links: handling public chat" topic)
+  (when (seq topic)
+    (chat/start-public-chat cofx topic {})))
 
 (fx/defn handle-view-profile
-  [{:keys [db] :as cofx} {:keys [public-key ens-name]}]
-  (log/info "universal-links: handling view profile" (or ens-name public-key))
+  [{:keys [db] :as cofx} {:keys [public-key]}]
+  (log/info "universal-links: handling view profile" public-key)
   (cond
     (and public-key (new-chat.db/own-public-key? db public-key))
-    (navigation/navigate-to-cofx cofx :my-profile nil)
+    (navigation/navigate-to-cofx cofx :tabs {:screen :profile-stack})
 
     public-key
-    (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key) :profile nil)
+    (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key)
+                                 :tabs
+                                 {:screen :chat-stack
+                                  :params {:screen :profile}})))
 
-    ens-name
-    (let [chain (ethereum/chain-keyword db)]
-      {:resolve-public-key {:chain            chain
-                            :contact-identity ens-name
-                            :cb               (fn [pub-key]
-                                                (cond
-                                                  (and pub-key (new-chat.db/own-public-key? db pub-key))
-                                                  (re-frame/dispatch [:navigate-to :my-profile])
-
-                                                  pub-key
-                                                  (re-frame/dispatch [:chat.ui/show-profile pub-key])
-
-                                                  :else
-                                                  (log/info "universal-link: no pub-key for ens-name " ens-name)))}})))
-
-(fx/defn handle-referrer-url [_ referrer]
-  {::acquisition/check-referrer referrer})
-
-(fx/defn handle-eip681 [cofx url]
+(fx/defn handle-eip681 [cofx data]
   (fx/merge cofx
-            (choose-recipient/parse-eip681-uri-and-resolve-ens url)
+            (choose-recipient/parse-eip681-uri-and-resolve-ens data)
             (navigation/navigate-to-cofx :wallet nil)))
+
+(fx/defn handle-referrer-url [_ {:keys [referrer]}]
+  ;; TODO: Use only for testing
+  {::acquisition/check-referrer referrer})
 
 (defn handle-not-found [full-url]
   (log/info "universal-links: no handler for " full-url))
@@ -115,35 +89,24 @@
     (re-frame/dispatch [:handle-universal-link url])
     (log/debug "universal-links: no url")))
 
+(fx/defn on-handle
+  {:events [::match-value]}
+  [cofx url {:keys [type] :as data}]
+  (case type
+    :public-chat  (handle-public-chat cofx data)
+    :private-chat (handle-private-chat cofx data)
+    :contact      (handle-view-profile cofx data)
+    :browser      (handle-browse cofx data)
+    :eip681       (handle-eip681 cofx data)
+    :referrals    (handle-referrer-url cofx data)
+    (handle-not-found url)))
+
 (fx/defn route-url
   "Match a url against a list of routes and handle accordingly"
-  [cofx url]
-  (cond
-
-    (match-url url referral-link-regex)
-    (handle-referrer-url cofx (match-url url referral-link-regex))
-
-    (match-url url private-chat-regex)
-    (handle-private-chat cofx (match-url url private-chat-regex))
-
-    (spec/valid? :global/public-key (match-url url profile-regex))
-    (handle-view-profile cofx {:public-key (match-url url profile-regex)})
-
-    (or (ens/valid-eth-name-prefix? (match-url url profile-regex))
-        (ens/is-valid-eth-name? (match-url url profile-regex)))
-    (handle-view-profile cofx {:ens-name (match-url url profile-regex)})
-
-    (match-url url browse-regex)
-    (handle-browse cofx (match-url url browse-regex))
-
-    (is-request-url? url)
-    (handle-eip681 cofx url)
-
-    ;; This needs to stay last, as it's a bit of a catch-all regex
-    (match-url url public-chat-regex)
-    (handle-public-chat cofx (match-url url public-chat-regex))
-
-    :else (handle-not-found url)))
+  [{:keys [db]} url]
+  {::router/handle-uri {:chain (ethereum/chain-keyword db)
+                        :uri   url
+                        :cb    #(re-frame/dispatch [::match-value url %])}})
 
 (fx/defn store-url-for-later
   "Store the url in the db to be processed on login"

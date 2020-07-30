@@ -6,6 +6,7 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]
             [clojure.string :as string]
+            [status-im.qr-scanner.core :as qr-scanner]
             [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar]))
 
@@ -61,7 +62,7 @@
                               (i18n/label :t/invalid-format
                                           {:format (i18n/label :t/mailserver-format)}))
             :after          {:icon     :main-icons/qr
-                             :on-press #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
+                             :on-press #(re-frame/dispatch [::qr-scanner/scan-code
                                                             {:title   (i18n/label :t/add-mailserver)
                                                              :handler :mailserver.callback/qr-code-scanned}])}}]]
          (when (and id

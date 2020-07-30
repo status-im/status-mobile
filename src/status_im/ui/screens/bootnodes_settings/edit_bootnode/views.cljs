@@ -5,6 +5,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
             [quo.core :as quo]
+            [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.bootnodes-settings.edit-bootnode.styles
              :as
@@ -55,7 +56,7 @@
                                                 {:format (i18n/label :t/bootnode-format)}))
              :bottom-value        0
              :after               {:icon     :main-icons/qr
-                                   :on-press #(re-frame/dispatch [:qr-scanner.ui/scan-qr-code-pressed
+                                   :on-press #(re-frame/dispatch [::qr-scanner/scan-code
                                                                   {:title   (i18n/label :t/add-bootnode)
                                                                    :handler :bootnodes.callback/qr-code-scanned}])}})]]
          (when id
