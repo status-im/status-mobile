@@ -13,7 +13,7 @@ let
     xcode=0
     iPhoneSDK=0
     export PATH=${xcodeWrapper}/bin:$PATH
-    [[ "$(xcrun xcodebuild -version)" == "Xcode ${_xcodeVersion}"* ]] && xcode=1
+    xcrun xcodebuild -version && xcode=1
     [ $xcode -eq 1 ] && xcrun --sdk iphoneos --show-sdk-version > /dev/null && iPhoneSDK=1
   '';
   _xcodeToolReportScript = tool-name: ''[ $SELECTED -eq 0 ] && echo -e "${NC}- ${RED}[ ] ${tool-name}" || echo -e "${NC}- ${GREEN}[√] ${tool-name}${RED}"'';

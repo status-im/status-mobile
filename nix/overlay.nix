@@ -32,9 +32,12 @@ in {
   gradlePropParser = callPackage ./tools/gradlePropParser.nix { };
 
   # Package version adjustments
-  xcodeWrapper = super.xcodeenv.composeXcodeWrapper { version = "11.5"; };
-  openjdk = super.pkgs.openjdk8_headless;
   nodejs = super.pkgs.nodejs-12_x;
+  openjdk = super.pkgs.openjdk8_headless;
+  xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {
+    version = "11.5";
+    allowHigher = true;
+  };
 
   # Android environement
   androidEnvCustom = callPackage ./pkgs/android-sdk { };
