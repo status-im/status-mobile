@@ -24,6 +24,8 @@
    :positive-02    "rgba(78,188,96,0.1)"   ; Secondary Positive, Supporting color for success illustrations
    :negative-01    "rgba(255,45,85,1)"     ; Primary Negative, text, icons color
    :negative-02    "rgba(255,45,85,0.1))"  ; Secondary Negative, Supporting color for errors illustrations
+   :warning-01     "rgba(255, 202, 15, 1)"
+   :warning-02     "rgba(255, 202, 15, 0.1)"
    :interactive-01 "rgba(67,96,223,1)"     ; Accent color, buttons, own message, actions,active state
    :interactive-02 "rgba(236,239,252,1)"   ; Light Accent, buttons background, actions background, messages
    :interactive-03 "rgba(255,255,255,0.1)" ; Background for interactive above accent
@@ -51,6 +53,8 @@
    :positive-02    "rgba(78,188,96,0.1)"
    :negative-01    "rgba(252,95,95,1)"
    :negative-02    "rgba(252,95,95,0.1)"
+   :warning-01     "rgba(255, 202, 15, 1)"
+   :warning-02     "rgba(255, 202, 15, 0.1)"
    :interactive-01 "rgba(97,119,229,1)"
    :interactive-02 "rgba(35,37,47,1)"
    :interactive-03 "rgba(255,255,255,0.1)"

@@ -50,48 +50,48 @@
 (handlers/register-handler-fx
  :load-kitties
  (fn [{db :db} [_ ids]]
-   {:db (update-in db [:collectibles] merge {ck (sorted-map-by >)})
+   {:db         (update-in db [:collectibles] merge {ck (sorted-map-by >)})
     :http-get-n (mapv (fn [id]
-                        {:url (str "https://api.cryptokitties.co/kitties/" id)
-                         :success-event-creator (fn [o]
-                                                  [:load-collectible-success ck {id (http/parse-payload o)}])
-                         :failure-event-creator (fn [o]
-                                                  [:load-collectible-failure ck {id (http/parse-payload o)}])})
+                        {:url        (str "https://api.cryptokitties.co/kitties/" id)
+                         :on-success (fn [o]
+                                       (re-frame/dispatch [:load-collectible-success ck {id (http/parse-payload o)}]))
+                         :on-error   (fn [o]
+                                       (re-frame/dispatch [:load-collectible-failure ck {id (http/parse-payload o)}]))})
                       ids)}))
 
 (defmethod load-collectibles-fx ck [_ _ items-number address _]
   {:http-get-n (mapv (fn [offset]
-                       {:url (str "https://api.cryptokitties.co/kitties?limit=20&offset="
-                                  offset
-                                  "&owner_wallet_address="
-                                  address
-                                  "&parents=false")
-                        :success-event-creator (fn [o]
-                                                 [:load-kitties (map :id (:kitties (http/parse-payload o)))])
-                        :failure-event-creator (fn [o]
-                                                 [:load-collectibles-failure (http/parse-payload o)])
-                        :timeout-ms            10000})
+                       {:url        (str "https://api.cryptokitties.co/kitties?limit=20&offset="
+                                         offset
+                                         "&owner_wallet_address="
+                                         address
+                                         "&parents=false")
+                        :on-success (fn [o]
+                                      (re-frame/dispatch [:load-kitties (map :id (:kitties (http/parse-payload o)))]))
+                        :on-error   (fn [o]
+                                      (re-frame/dispatch [:load-collectibles-failure (http/parse-payload o)]))
+                        :timeout-ms 10000})
                      (range 0 items-number 20))}) ;; Cryptokitties API limited to 20 items per request
 
 ;; Crypto Strikers
 (def strikers :STRK)
 
 (defmethod load-collectible-fx strikers [_ _ id]
-  {:http-get {:url                   (str "https://us-central1-cryptostrikers-prod.cloudfunctions.net/cards/" id)
-              :success-event-creator (fn [o]
-                                       [:load-collectible-success strikers {id (http/parse-payload o)}])
-              :failure-event-creator (fn [o]
-                                       [:load-collectible-failure strikers {id (http/parse-payload o)}])}})
+  {:http-get {:url        (str "https://us-central1-cryptostrikers-prod.cloudfunctions.net/cards/" id)
+              :on-success (fn [o]
+                            (re-frame/dispatch [:load-collectible-success strikers {id (http/parse-payload o)}]))
+              :on-error   (fn [o]
+                            (re-frame/dispatch [:load-collectible-failure strikers {id (http/parse-payload o)}]))}})
 
 ;;Etheremona
 (def emona :EMONA)
 
 (defmethod load-collectible-fx emona [_ _ id]
-  {:http-get {:url                   (str "https://www.etheremon.com/api/monster/get_data?monster_ids=" id)
-              :success-event-creator (fn [o]
-                                       [:load-collectible-success emona (:data (http/parse-payload o))])
-              :failure-event-creator (fn [o]
-                                       [:load-collectible-failure emona {id (http/parse-payload o)}])}})
+  {:http-get {:url        (str "https://www.etheremon.com/api/monster/get_data?monster_ids=" id)
+              :on-success (fn [o]
+                            (re-frame/dispatch [:load-collectible-success emona (:data (http/parse-payload o))]))
+              :on-error   (fn [o]
+                            (re-frame/dispatch [:load-collectible-failure emona {id (http/parse-payload o)}]))}})
 
 ;;Kudos
 (def kudos :KDO)
@@ -115,11 +115,11 @@
 
 (defmethod load-collectible-fx superrare [_ _ ids]
   {:http-get-n (mapv (fn [id]
-                       {:url id
-                        :success-event-creator (fn [o]
-                                                 [:load-collectible-success superrare {id (http/parse-payload o)}])
-                        :failure-event-creator (fn [o]
-                                                 [:load-collectible-failure superrare {id (http/parse-payload o)}])})
+                       {:url        id
+                        :on-success (fn [o]
+                                      (re-frame/dispatch [:load-collectible-success superrare {id (http/parse-payload o)}]))
+                        :on-error   (fn [o]
+                                      (re-frame/dispatch [:load-collectible-failure superrare {id (http/parse-payload o)}]))})
                      ids)})
 
 (def graphql-url "https://api.pixura.io/graphql")
@@ -137,31 +137,33 @@
             }}}}"))
 
 (defmethod load-collectibles-fx superrare [_ _ _ address _]
-  {:http-post {:url                   graphql-url
-               :data                  (types/clj->json {:query (graphql-query (ethereum/naked-address address))})
-               :opts                  {:headers {"Content-Type" "application/json"}}
-               :success-event-creator (fn [{:keys [response-body]}]
-                                        [:store-collectibles superrare
-                                         (get-in (http/parse-payload response-body) [:data :collectiblesByOwner :collectibles])])
-               :failure-event-creator (fn [{:keys [response-body]}]
-                                        [:load-collectibles-failure (http/parse-payload response-body)])
-               :timeout-ms            10000}})
+  {:http-post {:url        graphql-url
+               :data       (types/clj->json {:query (graphql-query (ethereum/naked-address address))})
+               :opts       {:headers {"Content-Type" "application/json"}}
+               :on-success (fn [{:keys [response-body]}]
+                             (re-frame/dispatch [:store-collectibles superrare
+                                                 (get-in (http/parse-payload response-body)
+                                                         [:data :collectiblesByOwner :collectibles])]))
+               :on-error   (fn [{:keys [response-body]}]
+                             (re-frame/dispatch [:load-collectibles-failure (http/parse-payload response-body)]))
+               :timeout-ms 10000}})
 
 (handlers/register-handler-fx
  :token-uri-success
  (fn [_ [_ tokenId token-uri]]
    {:http-get {:url
                token-uri
-               :success-event-creator
+               :on-success
                (fn [o]
-                 [:load-collectible-success kudos {tokenId (update (http/parse-payload o)
-                                                                   :image
-                                                                   string/replace
-                                                                   #"http:"
-                                                                   "https:")}]) ;; http in mainnet
-               :failure-event-creator
+                 (re-frame/dispatch [:load-collectible-success kudos
+                                     {tokenId (update (http/parse-payload o)
+                                                      :image
+                                                      string/replace
+                                                      #"http:"
+                                                      "https:")}])) ;; http in mainnet
+               :on-error
                (fn [o]
-                 [:load-collectible-failure kudos {tokenId (http/parse-payload o)}])}}))
+                 (re-frame/dispatch [:load-collectible-failure kudos {tokenId (http/parse-payload o)}]))}}))
 
 (handlers/register-handler-fx
  :load-collectible

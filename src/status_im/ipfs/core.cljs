@@ -1,6 +1,7 @@
 (ns status-im.ipfs.core
   (:refer-clojure :exclude [cat])
-  (:require [status-im.utils.fx :as fx]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.utils.fx :as fx]))
 
 ;; we currently use an ipfs gateway but this detail is not relevant
 ;; outside of this namespace
@@ -9,40 +10,13 @@
 
 (fx/defn cat
   [cofx {:keys [hash on-success on-failure]}]
-  {:http-raw-get (cond-> {:url (str ipfs-cat-url hash)
-                          :timeout-ms 5000
-                          :success-event-creator
-                          (fn [{:keys [status body]}]
-                            (if (= 200 status)
-                              (on-success body)
-                              (when on-failure
-                                (on-failure status))))}
-                   on-failure
-                   (assoc :failure-event-creator on-failure))})
-
-(defn- parse-ipfs-add-response
-  [response]
-  (when response
-    (let [{:keys [Name Hash Size]} (js->clj (js/JSON.parse response)
-                                            :keywordize-keys true)]
-      {:name Name
-       :hash Hash
-       :size Size})))
-
-(fx/defn add
-  "Add `value` on ipfs, and returns its b58 encoded CID"
-  [cofx {:keys [value on-success on-failure opts timeout-ms]}]
-  (let [formdata (doto (js/FormData.)
-                   ;; the key is ignored so there is no need to provide one
-                   (.append "file" value))]
-    {:http-raw-post {:url  ipfs-add-url
-                     :body formdata
-                     :opts opts
-                     :timeout-ms (or 25000 timeout-ms)
-                     :on-failure on-failure
-                     :on-success
-                     (fn [{:keys [status body]}]
-                       (if (= 200 status)
-                         (on-success (parse-ipfs-add-response body))
-                         (when on-failure
-                           (on-failure status))))}}))
+  {:http-get (cond-> {:url (str ipfs-cat-url hash)
+                      :timeout-ms 5000
+                      :on-success (fn [{:keys [status body]}]
+                                    (if (= 200 status)
+                                      (re-frame/dispatch (on-success body))
+                                      (when on-failure
+                                        (re-frame/dispatch (on-failure status)))))}
+               on-failure
+               (assoc :on-error
+                      #(re-frame/dispatch (on-failure %))))})

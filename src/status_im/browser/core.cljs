@@ -18,7 +18,7 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.random :as random]
             [status-im.utils.types :as types]
-            [status-im.utils.universal-links.core :as universal-links]
+            [status-im.utils.universal-links.utils :as links]
             [taoensso.timbre :as log]
             [status-im.signing.core :as signing]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
@@ -213,8 +213,8 @@
 
 (fx/defn handle-message-link
   [cofx link]
-  (if (universal-links/universal-link? link)
-    (universal-links/handle-url cofx link)
+  (if (links/universal-link? link)
+    {:dispatch [:universal-links/handle-url link]}
     {:browser/show-browser-selection link}))
 
 (fx/defn update-browser-on-nav-change
@@ -240,10 +240,10 @@
 (fx/defn navigation-state-changed
   [cofx event error?]
   (let [{:strs [url loading title]} (js->clj event)
-        deep-link? (universal-links/deep-link? url)]
-    (if (universal-links/universal-link? url)
+        deep-link?                  (links/deep-link? url)]
+    (if (links/universal-link? url)
       (when-not (and deep-link? platform/ios?) ;; ios webview handles this
-        (universal-links/handle-url cofx url))
+        {:dispatch [:universal-links/handle-url url]})
       (fx/merge cofx
                 (update-browser-option :loading? loading)
                 (update-browser-name title)
@@ -256,8 +256,8 @@
   [cofx url]
   (let [browser (get-current-browser (:db cofx))
         normalized-url (http/normalize-and-decode-url url)]
-    (if (universal-links/universal-link? normalized-url)
-      (universal-links/handle-url cofx normalized-url)
+    (if (links/universal-link? normalized-url)
+      {:dispatch [:universal-links/handle-url normalized-url]}
       (fx/merge cofx
                 (update-browser-option :url-editing? false)
                 (update-browser-history browser normalized-url)
@@ -272,8 +272,8 @@
         browser {:browser-id    (random/id)
                  :history-index 0
                  :history       [normalized-url]}]
-    (if (universal-links/universal-link? normalized-url)
-      (universal-links/handle-url cofx normalized-url)
+    (if (links/universal-link? normalized-url)
+      {:dispatch [:universal-links/handle-url normalized-url]}
       (fx/merge cofx
                 {:db (assoc db :browser/options
                             {:browser-id (:browser-id browser)})}
@@ -472,7 +472,7 @@
    (status/clear-web-data)))
 
 (defn share-link [url]
-  (let [link    (universal-links/generate-link :browse :external url)
+  (let [link    (links/generate-link :browse :external url)
         message (i18n/label :t/share-dapp-text {:link link})]
     (list-selection/open-share {:message message})))
 

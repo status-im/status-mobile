@@ -23,7 +23,7 @@
 
 (fx/defn accept-pack
   {:events [::accept-pack]}
-  [{:keys [db] :as cofx} decision]
+  [{:keys [db] :as cofx}]
   (let [referral (get-in db [:acquisition :referrer])
         payload  {:chat_key    (get-in db [:multiaccount :public-key])
                   :address     (ethereum/default-address db)
@@ -33,4 +33,4 @@
               (gateway/handle-acquisition {:message    payload
                                            :method     "PATCH"
                                            :url        (gateway/get-url :clicks referral)
-                                           :on-success ::claim/success-starter-pack-claim}))))
+                                           :on-success [::claim/success-starter-pack-claim]}))))

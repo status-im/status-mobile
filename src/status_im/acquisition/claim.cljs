@@ -13,6 +13,7 @@
                                        :message (i18n/label :t/starter-pack-received-description)}})
 
 (fx/defn add-tx-watcher
+  {:events [::add-tx-watcher]}
   [cofx tx]
   (transaction/watch-transaction cofx
                                  tx
@@ -26,6 +27,7 @@
   [cofx {:keys [tx]}]
   (fx/merge cofx
             {::persistence/set-watch-tx       tx
-             ::persistence/set-referrer-state :accepted}
-            (add-tx-watcher tx)
+             ::persistence/set-referrer-state (if tx :accepted :claimed)}
+            (when tx
+              (add-tx-watcher tx))
             (notifications/request-permission)))

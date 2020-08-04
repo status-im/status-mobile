@@ -142,9 +142,9 @@
 (fx/defn load-pack
   [cofx url id price]
   {:http-get {:url url
-              :success-event-creator
+              :on-success
               (fn [o]
-                [:stickers/load-sticker-pack-success o id price])}})
+                (re-frame/dispatch [:stickers/load-sticker-pack-success o id price]))}})
 
 (fx/defn load-packs
   [{:keys [db]}]

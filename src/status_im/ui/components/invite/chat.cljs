@@ -9,6 +9,7 @@
             [status-im.acquisition.chat :as acquisition]
             [status-im.ui.components.invite.events :as invite]
             [status-im.i18n :as i18n]
+            [status-im.acquisition.gateway :as gateway]
             [status-im.ui.components.invite.style :as styles]))
 
 (defn messages-wrapper []
@@ -57,7 +58,7 @@
         tokens      (utils/transform-tokens pack)
         reward-text (cstr/join ", " (map (comp name :symbol first) tokens))]
     [rn/view {:style (starter-pack-style)}
-     [rn/view {:style {:padding-right 16}}
+     [rn/view {:style  (styles/reward-tokens-icons (count tokens))}
       (doall
        (for [[{name             :name
                {source :source} :icon} _ idx] tokens]
@@ -88,6 +89,9 @@
 
 (defn reward-messages []
   (let [pending-invite @(re-frame/subscribe [::invite/pending-chat-invite])
+        loading        (#{(get gateway/network-statuses :initiated)
+                          (get gateway/network-statuses :in-flight)}
+                        @(re-frame/subscribe [::gateway/network-status]))
         messages       [{:content [{:type  :text
                                     :value "👋"}]}
                         {:content [{:type  :author
@@ -97,6 +101,7 @@
                                    {:type :pack}
                                    {:type  :button
                                     :value [quo/button {:type     :secondary
+                                                        :loading  loading
                                                         :on-press #(re-frame/dispatch [::acquisition/accept-pack])}
                                             (i18n/label :t/invite-chat-accept)]}]}
                         {:content [{:type  :text

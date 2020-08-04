@@ -53,17 +53,16 @@
                         (when headers
                           {:headers headers}))))
        (.then (fn [^js response]
-                (->
-                 (.text response)
-                 (.then (fn [response-body]
-                          (let [ok?  (.-ok response)
-                                ok?' (if valid-response?
-                                       (and ok? (valid-response? response))
-                                       ok?)]
-                            {:response-body response-body
-                             :ok?           ok?'
-                             :status-text   (.-statusText response)
-                             :status-code   (.-status response)}))))))
+                (-> (.text response)
+                    (.then (fn [response-body]
+                             (let [ok?  (.-ok response)
+                                   ok?' (if valid-response?
+                                          (and ok? (valid-response? response))
+                                          ok?)]
+                               {:response-body response-body
+                                :ok?           ok?'
+                                :status-text   (.-statusText response)
+                                :status-code   (.-status response)}))))))
        (.then (fn [{:keys [ok?] :as data}]
                 (cond
                   (and on-success ok?)
@@ -77,29 +76,6 @@
                  (if on-error
                    (on-error {:response-body error})
                    (utils/show-popup "Error" url (str error))))))))
-
-(defn raw-get
-  "Performs an HTTP GET request and returns raw results :status :headers :body."
-  ([url] (raw-get url nil))
-  ([url on-success] (raw-get url on-success nil))
-  ([url on-success on-error]
-   (raw-get url on-success on-error nil))
-  ([url on-success on-error {:keys [timeout-ms]}]
-   (-> (fetch
-        url
-        (clj->js {:method  "GET"
-                  :headers {"Cache-Control" "no-cache"}
-                  :timeout (or timeout-ms http-request-default-timeout-ms)}))
-       (.then (fn [^js response]
-                (->
-                 (.text response)
-                 (.then (fn [body]
-                          (on-success {:status  (.-status response)
-                                       :headers (response-headers response)
-                                       :body    body}))))))
-       (.catch (or on-error
-                   (fn [error]
-                     (utils/show-popup "Error" url (str error))))))))
 
 (defn get
   "Performs an HTTP GET request"

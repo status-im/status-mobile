@@ -64,10 +64,10 @@
        :on-press            #(re-frame/dispatch [:multiaccounts.ui/hide-home-tooltip])
        :accessibility-label :hide-home-button}
       [icons/icon :main-icons/close-circle {:color colors/gray}]]]]
-   [react/view {:style {:padding-bottom 8}}
+   [react/view
     [react/i18n-text {:style styles/no-chats-text :key :chat-and-transact}]]
    [invite/button]
-   [react/view {:align-items :center :padding-top 8}
+   [react/view {:align-items :center}
     [react/view {:style (styles/hr-wrapper)}]
     [react/i18n-text {:style (styles/or-text) :key :or}]]
    [react/view {:margin-top 16}

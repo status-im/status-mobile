@@ -14,7 +14,7 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.config :as config]
             [status-im.utils.gfycat.core :as gfy]
-            [status-im.utils.universal-links.core :as universal-links]
+            [status-im.utils.universal-links.utils :as universal-links]
             [status-im.ui.components.profile-header.view :as profile-header])
   (:require-macros [status-im.utils.views :as views]))
 

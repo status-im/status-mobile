@@ -5,7 +5,7 @@
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.identicon :as identicon]
-            [status-im.utils.universal-links.core :as universal-links]
+            [status-im.utils.universal-links.utils :as universal-links]
             [status-im.utils.fx :as fx]))
 
 (handlers/register-handler-fx

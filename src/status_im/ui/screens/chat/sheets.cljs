@@ -3,7 +3,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im.utils.universal-links.core :as universal-links]
+            [status-im.utils.universal-links.utils :as universal-links]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.chat.styles.message.sheets :as sheets.styles]

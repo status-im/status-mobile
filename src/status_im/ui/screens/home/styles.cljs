@@ -91,14 +91,14 @@
   {:position         :absolute
    :width            "100%"
    :height           1
-   :top              9
-   :border-top-width 1
-   :border-color     colors/gray-lighter})
+   :top              10
+   :background-color colors/gray-lighter})
 
 (defn or-text []
   {:width            40
    :background-color colors/white
    :font-size        12
+   :line-height      20
    :text-align       :center
    :color            colors/gray})
 

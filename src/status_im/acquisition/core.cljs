@@ -6,6 +6,8 @@
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.contracts :as contracts]
             [status-im.acquisition.chat :as chat]
+            [status-im.acquisition.dapp :as dapp]
+            [status-im.acquisition.claim :as claim]
             [status-im.acquisition.advertiser :as advertiser]
             [status-im.acquisition.persistance :as persistence]
             [status-im.acquisition.gateway :as gateway]
@@ -14,6 +16,7 @@
 (def not-found-code "notfound.click_id")
 (def advertiser-type "advertiser")
 (def chat-type "chat")
+(def dapp-type "dapp")
 
 (fx/defn handle-registration
   [cofx {:keys [message on-success]}]
@@ -59,7 +62,10 @@
                 (advertiser/start-acquisition referrer-meta)
 
                 (= type chat-type)
-                (chat/start-acquisition referrer-meta)))))
+                (chat/start-acquisition referrer-meta)
+
+                (= type dapp-type)
+                (dapp/start-acquisition referrer-meta)))))
 
 (fx/defn outdated-referrer
   {:events [::outdated-referrer]}
@@ -80,13 +86,14 @@
                  referrer
                  (fn [resp] [::referrer-registered referrer resp])
                  (fn [{:keys [code]}] (= code not-found-code))
-                 (fn [resp] [::outdated-referrer resp]))
+                 (fn [resp]
+                   (re-frame/dispatch [::outdated-referrer resp])))
 
                 (= flow-state (:accepted persistence/referrer-state))
                 (fn [_]
                   {::persistence/check-tx-state (fn [tx]
                                                   (when-not (nil? tx)
-                                                    (re-frame/dispatch [::add-tx-watcher tx])))})))))
+                                                    (re-frame/dispatch [::claim/add-tx-watcher tx])))})))))
 
 (re-frame/reg-fx
  ::resolve-contract
@@ -95,7 +102,7 @@
      (when contract
        (if (string/starts-with? contract "0x")
          (on-success contract)
-         (ens/resolver register contract on-success))))))
+         (ens/get-addr register contract on-success))))))
 
 (fx/defn create [{:keys [db]}]
   {::resolve-contract {:chain      (ethereum/chain-keyword db)
@@ -108,3 +115,8 @@
                        :contract   (contracts/get-address db :status/acquisition)
                        :on-success #(re-frame/dispatch [:set-in [:acquisition :contract] %])}
    ::check-referrer   nil})
+
+(re-frame/reg-sub
+ ::metadata
+ (fn [db]
+   (get-in db [:acquisition :metadata])))

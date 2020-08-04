@@ -117,6 +117,7 @@
 (fx/defn handle-url
   "Store url in the database if the user is not logged in, to be processed
   on login, otherwise just handle it"
+  {:events [:universal-links/handle-url]}
   [cofx url]
   (if (multiaccounts.model/logged-in? cofx)
     (route-url cofx url)

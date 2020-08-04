@@ -1,17 +1,23 @@
 (ns status-im.ui.components.invite.events
   (:require [re-frame.core :as re-frame]
             [reagent.ratom :refer [make-reaction]]
+            [taoensso.timbre :as log]
             [status-im.utils.fx :as fx]
             [status-im.utils.config :as config]
+            [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.i18n :as i18n]
+            [status-im.signing.core :as signing]
             [status-im.ethereum.core :as ethereum]
             [status-im.ui.components.react :as react]
             [status-im.navigation :as navigation]
-            [status-im.utils.universal-links.core :as universal-links]
+            [status-im.utils.universal-links.utils :as universal-links]
             [status-im.acquisition.core :as acquisition]
-            [status-im.utils.money :as money]))
+            [status-im.acquisition.persistance :as persistence]
+            [status-im.utils.money :as money]
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
 
-(def privacy-policy-link "https://get.status.im")
+(def privacy-policy-link "https://status.im/referral-program/terms-and-conditions")
 
 (re-frame/reg-fx
  ::share
@@ -28,7 +34,7 @@
         share-link                          (cond-> profile-link
                                               invite-id
                                               (str "?invite=" invite-id))
-        message                             (str "Hey join me on Status: " share-link)]
+        message                             (i18n/label :t/join-me {:url share-link})]
     {::share {:message message}}))
 
 (fx/defn generate-invite
@@ -37,7 +43,7 @@
   (acquisition/handle-registration cofx
                                    {:message    {:address             address
                                                  :interaction_address (get-in db [:multiaccount :public-key])}
-                                    :on-success ::share-link}))
+                                    :on-success [::share-link]}))
 
 (re-frame/reg-sub
  ::pending-chat-invite
@@ -48,7 +54,8 @@
           :as   chat-referrer} (get-in db [:acquisition :chat-referrer chat-id])]
      (and chat-referrer
           (not attributed)
-          (nil? flow-state)))))
+          (or (= flow-state (get persistence/referrer-state :accepted))
+              (nil? flow-state))))))
 
 (fx/defn go-to-invite
   {:events [::open-invite]}
@@ -74,8 +81,30 @@
   [_]
   {::terms-and-conditions nil})
 
-;; Invite reward
+(fx/defn redeem-success
+  {:events [::redeem-success]}
+  [{:keys [db]} account]
+  {:db (assoc-in db [:acquisition :accounts account :bonuses] 0)})
 
+(fx/defn redeem-error
+  {:events [::redeem-error]}
+  [cofx error]
+  {:utils/show-popup {:title   "Error"
+                      :content error}})
+
+(fx/defn redeem-bonus
+  {:events [::redeem-bonus]}
+  [{:keys [db] :as cofx} {:keys [address]}]
+  (fx/merge cofx
+            (bottom-sheet/hide-bottom-sheet)
+            (signing/sign
+             {:tx-obj    {:to   (get-in db [:acquisition :contract])
+                          :from address
+                          :data (abi-spec/encode "withdrawAttributions()" [])}
+              :on-result [::redeem-success address]
+              :on-error  [::redeem-error]})))
+
+;; Invite reward
 
 (re-frame/reg-sub
  :invite/accounts-reward
@@ -91,12 +120,21 @@
 (defn- get-reward [contract address on-success]
   (json-rpc/eth-call
    {:contract   contract
+    :method     "pendingAttributionCnt(address)"
+    :params     [address]
+    :outputs    ["uint256"]
+    :on-success (fn [[response]]
+                  (log/info "Attribution count for" address "=" response)
+                  (on-success :attribution response))})
+  (json-rpc/eth-call
+   {:contract   contract
     :method     "getReferralReward(address,bool)"
     :params     [address false]
     ;; [uint ethAmount, uint tokenLen, uint maxThreshold, uint attribCount]
     :outputs    ["uint256" "uint256" "uint256" "uint256"]
     :on-success (fn [[eth-amount tokens-count max-threshold attrib-count]]
                   (on-success :reward [eth-amount tokens-count max-threshold attrib-count])
+                  (log/info "Reward data for" address "=" eth-amount tokens-count max-threshold attrib-count)
                   (dotimes [id tokens-count]
                     (json-rpc/eth-call
                      {:contract   contract
@@ -104,6 +142,7 @@
                       :params     [address false id]
                       :outputs    ["address" "uint256"]
                       :on-success (fn [token-data]
+                                    (log/info "Token data for" address "token id" id "=" token-data)
                                     (on-success :token token-data))})))}))
 
 (re-frame/reg-fx
@@ -115,25 +154,35 @@
 (fx/defn default-reward-success
   {:events [::default-reward-success]}
   [{:keys [db]} type data]
-  (if (= :reward type)
+  (case type
+    :reward
     (let [[eth-amount tokens-count max-threshold attrib-count] data]
       {:db (assoc-in db [:acquisition :referral-reward] {:eth-amount    (money/wei->ether eth-amount)
                                                          :tokens-count  tokens-count
                                                          :max-threshold max-threshold
                                                          :attrib-count  attrib-count})})
+    :token
     (let [[address amount] data]
-      {:db (assoc-in db [:acquisition :referral-reward :tokens address] (money/wei->ether amount))})))
+      {:db (assoc-in db [:acquisition :referral-reward :tokens address] (money/wei->ether amount))})
+
+    :attribution
+    {:db (assoc-in db [:acquisition :referral-reward :bonuses] data)}))
 
 (fx/defn get-reward-success
   {:events [::get-reward-success]}
   [{:keys [db]} account type data]
-  (if (= :reward type)
+  (case type
+    :reward
     (let [[eth-amount _ max-threshold attrib-count] data]
-      {:db (assoc-in db [:acquisition :accounts account] {:eth-amount    (money/wei->ether eth-amount)
-                                                          :max-threshold max-threshold
-                                                          :attrib-count  attrib-count})})
+      {:db (update-in db [:acquisition :accounts account] merge {:eth-amount    (money/wei->ether eth-amount)
+                                                                 :max-threshold max-threshold
+                                                                 :attrib-count  attrib-count})})
+    :token
     (let [[address amount] data]
-      {:db (assoc-in db [:acquisition :accounts account :tokens address] (money/wei->ether amount))})))
+      {:db (assoc-in db [:acquisition :accounts account :tokens address] (money/wei->ether amount))})
+
+    :attribution
+    {:db (assoc-in db [:acquisition :accounts account :bonuses] data)}))
 
 (re-frame/reg-sub-raw
  ::default-reward
@@ -156,7 +205,6 @@
                   :tokens        (zipmap tokens
                                          (map money/wei->ether tokens-amount))
                   :sticker-packs sticker-packs})})
-
 (re-frame/reg-sub-raw
  ::starter-pack
  (fn [db]

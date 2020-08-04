@@ -9,7 +9,8 @@
             [status-im.ui.screens.wallet.request.views :as request]
             [status-im.ui.screens.profile.user.views :as profile.user]
             ["react-native" :refer (BackHandler)]
-            [status-im.ui.components.invite.advertiser :as invite]
+            [status-im.ui.components.invite.advertiser :as advertiser.invite]
+            [status-im.ui.components.invite.dapp :as dapp.invite]
             [status-im.ui.screens.multiaccounts.recover.views :as multiaccounts.recover]
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.biometric.views :as biometric]
@@ -143,8 +144,11 @@
                    (= :frozen-card view)
                    [frozen-card/frozen-card]
 
-                   (= :accept-invite view)
-                   [invite/accept-popover]
+                   (= :advertiser-invite view)
+                   [advertiser.invite/accept-popover]
+
+                   (= :dapp-invite view)
+                   [dapp.invite/accept-popover]
 
                    :else
                    [view])]]]]])))})))

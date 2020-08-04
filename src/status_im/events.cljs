@@ -57,7 +57,6 @@
             [status-im.constants :as constants]
             [status-im.native-module.core :as status]
             [status-im.ui.components.permissions :as permissions]
-            [status-im.utils.http :as http]
             [status-im.utils.utils :as utils]
             status-im.ui.components.bottom-sheet.core
             status-im.ui.screens.add-new.new-chat.events
@@ -65,6 +64,7 @@
             status-im.ui.screens.group.events
             status-im.utils.universal-links.events
             status-im.search.core
+            status-im.http.core
             status-im.ui.screens.profile.events
             status-im.chat.models.images
             status-im.ui.screens.privacy-and-security-settings.events))
@@ -1106,55 +1106,6 @@
    (let [cur-theme (get-in db [:multiaccount :appearance])]
      (when (or (nil? cur-theme) (zero? cur-theme))
        {::multiaccounts/switch-theme (if (= :dark theme) 2 1)}))))
-
-(defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator timeout-ms]}]
-  (let [on-success #(re-frame/dispatch (success-event-creator %))
-        on-error   (when failure-event-creator #(re-frame/dispatch (failure-event-creator %)))
-        opts       {:valid-response? response-validator
-                    :timeout-ms      timeout-ms}]
-    (http/get url on-success on-error opts)))
-
-(re-frame/reg-fx
- :http-get
- http-get)
-
-(defn- http-raw-get [{:keys [url success-event-creator failure-event-creator timeout-ms]}]
-  (let [on-success #(when-let [event (success-event-creator %)] (re-frame/dispatch event))
-        on-error   (when failure-event-creator #(re-frame/dispatch (failure-event-creator %)))
-        opts       {:timeout-ms timeout-ms}]
-    (http/raw-get url on-success on-error opts)))
-
-(re-frame/reg-fx
- :http-raw-get
- http-raw-get)
-
-(re-frame/reg-fx
- :http-get-n
- (fn [calls]
-   (doseq [call calls]
-     (http-get call))))
-
-(defn- http-post [{:keys [url data response-validator success-event-creator failure-event-creator timeout-ms opts]}]
-  (let [on-success #(re-frame/dispatch (success-event-creator %))
-        on-error   (when failure-event-creator #(re-frame/dispatch (failure-event-creator %)))
-        all-opts   (assoc opts
-                          :valid-response? response-validator
-                          :timeout-ms timeout-ms)]
-    (http/post url data on-success on-error all-opts)))
-
-(re-frame/reg-fx
- :http-post
- http-post)
-
-(defn- http-raw-post [{:keys [url body response-validator on-success on-error timeout-ms opts]}]
-  (let [all-opts   (assoc opts
-                          :valid-response? response-validator
-                          :timeout-ms timeout-ms)]
-    (http/raw-post url body on-success on-error all-opts)))
-
-(re-frame/reg-fx
- :http-raw-post
- http-raw-post)
 
 (re-frame/reg-fx
  :request-permissions-fx

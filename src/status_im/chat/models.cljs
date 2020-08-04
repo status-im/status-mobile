@@ -242,7 +242,7 @@
   [cofx chat-id]
   (fx/merge cofx
             (preload-chat-data chat-id)
-            (navigation/navigate-to-cofx :chat {})))
+            (navigation/navigate-to-cofx :chat-stack {:screen :chat})))
 
 (fx/defn start-chat
   "Start a chat, making sure it exists"
