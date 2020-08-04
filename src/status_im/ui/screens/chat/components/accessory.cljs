@@ -11,23 +11,29 @@
             [quo.components.safe-area :refer [use-safe-area]]))
 
 (def tabbar-height tabs.styles/minimized-tabs-height)
+(def duration 250)
 
 (defn create-pan-responder [y pan-active]
-  (js->clj (.-panHandlers
-            ^js (.create
-                 ^js rn/pan-responder
-                 #js {:onPanResponderGrant   (fn []
-                                               (animated/set-value pan-active 1))
-                      :onPanResponderMove    (fn [_ ^js state]
-                                               (animated/set-value y (.-moveY state)))
-                      :onPanResponderRelease (fn []
-                                               (js/setTimeout
-                                                #(animated/set-value y 0)
-                                                100))
-                      :onPanResponderEnd     (fn []
-                                               (animated/set-value pan-active 0))}))))
+  (when-not platform/android?
+    (js->clj (.-panHandlers
+              ^js (.create
+                   ^js rn/pan-responder
+                   #js {:onPanResponderGrant     (fn []
+                                                   (animated/set-value pan-active 1))
+                        :onPanResponderMove      (fn [_ ^js state]
+                                                   (animated/set-value y (.-moveY state)))
+                        :onPanResponderRelease   (fn []
+                                                   (animated/set-value pan-active 0)
+                                                   (js/setTimeout
+                                                    #(animated/set-value y 0)
+                                                    100))
+                        :onPanResponderTerminate (fn []
+                                                   (animated/set-value pan-active 0)
+                                                   (js/setTimeout
+                                                    #(animated/set-value y 0)
+                                                    100))})))))
 
-(def view
+(def ios-view
   (reagent/adapt-react-class
    (react/memo
     (fn [props]
@@ -39,7 +45,6 @@
              children        :children}           (bean/bean props)
             {keyboard-height       :height
              keyboard-max-height   :max-height
-             duration              :duration
              keyboard-end-position :end-position} (use-keyboard-dimension)
             {:keys [bottom]}                      (use-safe-area)
             {on-layout  :on-layout
@@ -64,15 +69,13 @@
                                    :easing   (:keyboard animated/easings)})
                                 0
                                 panel-on-screen))
-                             [duration panel-on-screen])
+                             [panel-on-screen])
             delta-y         (animated/clamp (animated/add drag-diff animated-y) max-delta 0)
-            on-update       (react/callback
-                             (fn []
-                               (when on-update-inset
-                                 (on-update-inset (+ bar-height panel-height))))
-                             [panel-height bar-height])
+            on-update       (fn []
+                              (when on-update-inset
+                                (on-update-inset (+ bar-height panel-height))))
             children        (react/get-children children)]
-        (react/effect! on-update)
+        (react/effect! on-update [panel-height bar-height])
         (animated/code!
          (fn []
            (when has-panel
@@ -86,12 +89,7 @@
            (animated/delay
             (animated/set anim-visible (if visible 1 0))
             (if visible delay 0)))
-         [visible keyboard-max-height duration])
-        (rn/use-back-handler
-         (fn []
-           (when visible
-             (on-close))
-           visible))
+         [visible keyboard-max-height delay])
         (reagent/as-element
          [animated/view {:style {:position         :absolute
                                  :left             0
@@ -104,3 +102,44 @@
           [rn/view {:style {:flex   1
                             :height (when (pos? panel-height) panel-height)}}
            (second children)]]))))))
+
+(def android-view
+  (reagent/adapt-react-class
+   (react/memo
+    (fn [props]
+      (let [{on-update-inset :onUpdateInset
+             on-close        :onClose
+             has-panel       :hasPanel
+             children        :children}       (bean/bean props)
+            {keyboard-max-height :max-height} (use-keyboard-dimension)
+            {:keys [bottom]}                  (use-safe-area)
+            {on-layout  :on-layout
+             bar-height :height}              (rn/use-layout)
+
+            visible         has-panel
+            panel-on-screen (* -1 (- keyboard-max-height bottom tabbar-height))
+            max-delta       (min 0 (if has-panel panel-on-screen 0))
+            panel-height    (* -1 max-delta)
+            on-update       (fn []
+                              (when on-update-inset
+                                (on-update-inset (+ bar-height panel-height))))
+            children        (react/get-children children)]
+        (react/effect! on-update [panel-height bar-height])
+        (rn/use-back-handler
+         (fn []
+           (when visible
+             (on-close))
+           visible))
+        (reagent/as-element
+         [animated/view {:style {:position         :absolute
+                                 :left             0
+                                 :right            0
+                                 :bottom           0
+                                 :background-color (:ui-background @colors/theme)}}
+          [rn/view {:on-layout on-layout}
+           (first children)]
+          [rn/view {:style {:flex   1
+                            :height (when (pos? panel-height) panel-height)}}
+           (second children)]]))))))
+
+(def view (if platform/android? android-view ios-view))

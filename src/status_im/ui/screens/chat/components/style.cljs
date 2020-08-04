@@ -104,7 +104,8 @@
 
 (defn in-input-buttons []
   {:flex-direction :row
-   :height 34})
+   :height         34
+   :overflow       :hidden})
 
 (defn send-icon-color []
   colors/white)

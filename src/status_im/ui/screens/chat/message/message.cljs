@@ -2,7 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
-            [quo.platform :as platform]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
@@ -341,17 +340,14 @@
   [message-content-wrapper message
    [unknown-content-type message]])
 
-(defn chat-message [message set-active-panel]
+(defn chat-message [message space-keeper]
   [reactions/with-reaction-picker
    {:message         message
     :reactions       @(re-frame/subscribe [:chats/message-reactions (:message-id message)])
     :picker-on-open  (fn []
-                       ;; NOTE(Ferossgp): Because of soft-input adjustResize there are some problems on android
-                       (when (and platform/ios? (pos? @(re-frame/subscribe [:keyboard-height])))
-                         (set-active-panel :keep-space)))
+                       (space-keeper true))
     :picker-on-close (fn []
-                       (when platform/ios?
-                         (set-active-panel nil)))
+                       (space-keeper false))
     :send-emoji      (fn [{:keys [emoji-id]}]
                        (re-frame/dispatch [::models.reactions/send-emoji-reaction
                                            {:message-id (:message-id message)

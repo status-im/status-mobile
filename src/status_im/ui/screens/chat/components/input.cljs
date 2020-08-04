@@ -15,8 +15,7 @@
             [clojure.string :as string]))
 
 (def panel->icons {:extensions :main-icons/commands
-                   :images     :main-icons/photo
-                   :audio      :main-icons/speech})
+                   :images     :main-icons/photo})
 
 (defn touchable-icon [{:keys [panel active set-active accessibility-label]}]
   [pressable/pressable {:type                :scale
@@ -38,6 +37,8 @@
       [icons/icon :main-icons/keyboard (styles/icon false)]
       [icons/icon :main-icons/stickers (styles/icon false)])]])
 
+;; TODO(Ferossgp): Move this into audio panel.
+;; Instead of not changing panel we can show a placeholder with no permission
 (defn- request-record-audio-permission [set-active panel]
   (re-frame/dispatch
    [:request-permissions
@@ -58,9 +59,9 @@
                                                 (input-focus)
                                                 (request-record-audio-permission set-active panel))}
    [rn/view {:style (styles/in-input-touchable-icon)}
-    [icons/icon
-     (panel->icons panel)
-     (styles/icon (= active panel))]]])
+    (if (= active panel)
+      [icons/icon :main-icons/keyboard (styles/icon false)]
+      [icons/icon :main-icons/speech (styles/icon false)])]])
 
 (defn send-button [{:keys [on-send-press]}]
   [pressable/pressable {:type     :scale
