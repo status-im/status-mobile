@@ -45,7 +45,7 @@ in buildGoPackage {
     mkdir ${NIX_GOWORKDIR}
 
     export GO111MODULE=off
-    export GOPATH=${gomobile.dev}:$GOPATH
+    export GOPATH=${gomobile.out}:$GOPATH
     export NIX_GOWORKDIR=${NIX_GOWORKDIR}
 
   '' + optionalString (platform == "android") ''
