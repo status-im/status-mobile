@@ -146,9 +146,9 @@
           :keyboard-should-persist-taps :always
           :data                         chats
           :render-fn                    (fn [home-item] [inner-item/home-list-item home-item])
-          :header                       (when (or (seq chats) @search-active?)
+          :header                       (when (or (seq chats) @search-active? (seq search-filter))
                                           [search-input-wrapper search-filter chats])
-          :empty-component              (when @search-active?
+          :empty-component              (when (or @search-active? (seq search-filter))
                                           [start-suggestion search-filter])
           :footer                       (if (and (not hide-home-tooltip?) (not @search-active?))
                                           [home-tooltip-view]
