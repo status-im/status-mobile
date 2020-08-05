@@ -138,7 +138,8 @@
   (debounce/debounce-and-dispatch [:chat.ui/message-visibility-changed e] 5000))
 
 (defview messages-view
-  [{:keys [group-chat chat-id public?] :as chat} bottom-space pan-handler set-active-panel]
+  [{:keys [group-chat chat-id public?] :as chat} bottom-space
+   pan-handler set-active-panel message-view-height-atom message-view-width-atom]
   (letsubs [messages           [:chats/current-chat-messages-stream]
             no-messages?       [:chats/current-chat-no-messages?]
             current-public-key [:multiaccount/public-key]]
@@ -169,6 +170,11 @@
                                                    :current-public-key current-public-key)
                                             set-active-panel])))
        :on-viewable-items-changed    on-viewable-items-changed
+       :on-layout #(do
+                     (reset! message-view-height-atom
+                             (-> ^js % .-nativeEvent .-layout .-height))
+                     (reset! message-view-width-atom
+                             (-> ^js % .-nativeEvent .-layout .-width)))
        :on-end-reached               #(re-frame/dispatch [:chat.ui/load-more-messages])
        :on-scroll-to-index-failed    #() ;;don't remove this
        :content-container-style      {:padding-top    (+ @bottom-space 16)
@@ -205,7 +211,9 @@
                              (some-> ^js (quo.react/current-ref text-input-ref) .focus))
                            (reset! active-panel panel)
                            (when panel
-                             (js/setTimeout #(react/dismiss-keyboard!) 100)))]
+                             (js/setTimeout #(react/dismiss-keyboard!) 100)))
+        message-view-height (atom nil)
+        message-view-width  (atom nil)]
     (fn []
       (let [{:keys [chat-id show-input? group-chat] :as current-chat}
             @(re-frame/subscribe [:chats/current-chat])]
@@ -215,14 +223,18 @@
           [react/view {:style {:flex 1}}
            (when-not group-chat
              [add-contact-bar chat-id])
-           [messages-view current-chat bottom-space pan-responder set-active-panel]]]
+           [messages-view current-chat bottom-space pan-responder
+            set-active-panel message-view-height message-view-width]]]
          (when show-input?
            [accessory/view {:y               position-y
                             :pan-state       pan-state
                             :has-panel       (boolean @active-panel)
                             :on-close        #(set-active-panel nil)
                             :on-update-inset on-update}
-            [components/chat-toolbar {:active-panel     @active-panel
-                                      :set-active-panel set-active-panel
-                                      :text-input-ref   text-input-ref}]
+            [components/chat-toolbar
+             {:active-panel             @active-panel
+              :set-active-panel         set-active-panel
+              :text-input-ref           text-input-ref
+              :message-view-height-atom message-view-height
+              :message-view-width-atom  message-view-width}]
             [bottom-sheet @active-panel]])]))))

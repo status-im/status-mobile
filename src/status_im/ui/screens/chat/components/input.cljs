@@ -7,12 +7,19 @@
             [status-im.ui.screens.chat.components.style :as styles]
             [status-im.ui.screens.chat.components.reply :as reply]
             [status-im.utils.utils :as utils.utils]
+            [status-im.ui.components.list.views :as list]
+            [quo.components.list.item :as list-item]
+            [status-im.ui.screens.chat.styles.photos :as photo-style]
+            [status-im.chat.models.mentions :as mentions]
+            [status-im.chat.models.input :as input]
+            [status-im.ui.components.react :as components.react]
             [quo.components.animated.pressable :as pressable]
             [quo.animated :as animated]
             [status-im.utils.config :as config]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [taoensso.timbre :as log]))
 
 (def panel->icons {:extensions :main-icons/commands
                    :images     :main-icons/photo
@@ -71,76 +78,188 @@
       :accessibility-label :send-message-button
       :color               (styles/send-icon-color)}]]])
 
-(defn text-input [{:keys [cooldown-enabled? text-value on-text-change set-active-panel text-input-ref]}]
-  [rn/view {:style (styles/text-input-wrapper)}
-   [rn/text-input {:style                  (styles/text-input)
-                   :ref                    text-input-ref
-                   :maxFontSizeMultiplier  1
-                   :accessibility-label    :chat-message-input
-                   :text-align-vertical    :center
-                   :multiline              true
-                   :default-value          text-value
-                   :editable               (not cooldown-enabled?)
-                   :blur-on-submit         false
-                   :auto-focus             false
-                   :on-focus               #(set-active-panel nil)
-                   :on-change              #(on-text-change (.-text ^js (.-nativeEvent ^js %)))
-                   :placeholder-text-color (:text-02 @colors/theme)
-                   :placeholder            (if cooldown-enabled?
-                                             (i18n/label :cooldown/text-input-disabled)
-                                             (i18n/label :t/type-a-message))
-                   :underlineColorAndroid  :transparent
-                   :auto-capitalize        :sentences}]])
+(defn input-part
+  [[part-type part]]
+  (log/info "part" part-type part)
+  (case part-type
+    :mention (if (string/includes? part " ")
+               [:<>
+                [rn/text {:style {:font-size 0}} "@"]
+                [rn/text {:style {:color "#0DA4C9"}}
+                 (str part " ")]]
+               [rn/text {:style {:color "#0DA4C9"}}
+                (str "@" part " ")])
+    :text [rn/text part]
+    :current [rn/text {:style {:color "#0DA4C9"}} part]
+    [rn/text {} "Unkown"]))
 
-(defn chat-input
-  [{:keys [set-active-panel active-panel on-send-press reply
-           show-send show-image show-stickers show-extensions
-           sending-image input-focus show-audio]
-    :as   props}]
-  [rn/view {:style (styles/toolbar)}
-   [rn/view {:style (styles/actions-wrapper (and (not show-extensions)
-                                                 (not show-image)))}
-    (when show-extensions
-      [touchable-icon {:panel               :extensions
-                       :accessibility-label :show-extensions-icon
-                       :active              active-panel
-                       :set-active          set-active-panel}])
-    (when show-image
-      [touchable-icon {:panel               :images
-                       :accessibility-label :show-photo-icon
-                       :active              active-panel
-                       :set-active          set-active-panel}])]
-   [animated/view {:style (styles/input-container)}
-    (when reply
-      [reply/reply-message reply])
-    (when sending-image
-      [reply/send-image sending-image])
-    [rn/view {:style (styles/input-row)}
-     [text-input props]
-     [rn/view {:style (styles/in-input-buttons)}
-      (when show-send
-        [send-button {:on-send-press on-send-press}])
-      (when show-stickers
-        [touchable-stickers-icon {:panel               :stickers
-                                  :accessibility-label :show-stickers-icon
-                                  :active              active-panel
-                                  :input-focus         input-focus
-                                  :set-active          set-active-panel}])
-      (when show-audio
-        [touchable-audio-icon {:panel               :audio
-                               :accessibility-label :show-audio-message-icon
-                               :active              active-panel
-                               :input-focus         input-focus
-                               :set-active          set-active-panel}])]]]])
+(defn get-suggestions
+  "Returns a sorted list of users matching the input"
+  [users input]
+  (when input
+    (let [input (string/lower-case (subs input 1))]
+      (->> (filter (fn [{:keys [alias]}]
+                     (when (string? alias)
+                       (-> alias
+                           string/lower-case
+                           (string/starts-with? input))))
+                   users)
+           (sort-by (comp string/lower-case :alias))
+           seq))))
+
+(defn text-input
+  [{:keys [cooldown-enabled? on-text-change
+           set-active-panel text-input-ref text-input-height-atom]
+    {:keys [before-cursor after-cursor completing? cursor]} :input}]
+  [rn/view {:style (styles/text-input-wrapper)
+            :on-layout #(reset! text-input-height-atom
+                                (-> ^js % .-nativeEvent .-layout .-height))}
+   [rn/text-input
+    {:style                  (styles/text-input)
+     :ref                    text-input-ref
+     :maxFontSizeMultiplier  1
+     :accessibility-label    :chat-message-input
+     :text-align-vertical    :center
+     :multiline              true
+     :editable               (not cooldown-enabled?)
+     :blur-on-submit         false
+     :auto-focus             false
+     :on-focus               #(set-active-panel nil)
+     :on-change              #(on-text-change (.-text ^js (.-nativeEvent ^js %)))
+     :placeholder-text-color (:text-02 @colors/theme)
+     :placeholder            (if cooldown-enabled?
+                               (i18n/label :cooldown/text-input-disabled)
+                               (i18n/label :t/type-a-message))
+     :underlineColorAndroid  :transparent
+     :auto-capitalize        :sentences
+
+     ;; NOTE: the auto-completion isn't going to trigger any
+     ;; event of the text-input component
+     ;; We manage the selection prop to reposition the cursor
+     ;; and we reset the value here
+     :selection
+     (when cursor
+       (clj->js {:start cursor
+                 :end cursor}))
+     :on-selection-change
+     (fn [^js event]
+       (let [^js selection (.-selection (.-nativeEvent event))
+             start (.-start selection)
+             end (.-end selection)]
+         (when (= start end)
+           (re-frame/dispatch-sync
+            [::mentions/selection-change start]))))
+     :on-key-press
+     (fn [^js event]
+       (let [key (.-key (.-nativeEvent event))]
+         (when (= "@" key)
+           (re-frame/dispatch-sync
+            [::mentions/mention-pressed]))))}
+    [:<>
+     (for [[key part]
+           (map-indexed vector before-cursor)]
+       ^{:key (str key part)}
+       [input-part part])
+     (when completing?
+       [input-part  completing?])
+     (for [[key part]
+           (map-indexed vector after-cursor)]
+       ^{:key (str key part)}
+       [input-part part])]]])
+
+(defn mention-item
+  [{:keys [identicon alias public-key]}]
+  [list-item/list-item
+   {:icon [components.react/view {:style {:padding-horizontal 4}}
+           [components.react/image
+            {:source      {:uri identicon}
+             :style       (photo-style/photo photo-style/default-size)
+             :resize-mode :cover}]]
+    :title alias
+    :on-press (fn []
+                (re-frame/dispatch [::mentions/complete-mention alias public-key]))}])
+
+(defn autocomplete-mentions
+  [suggestions !message-view-height message-view-width-atom text-input-height-atom]
+  (when (seq suggestions)
+    (let [height (min (or @!message-view-height 0)
+                      (* 64 (count suggestions)))]
+      (log/info "suggestions" height @!message-view-height)
+      [components.react/view {:style (styles/autocomplete-container @text-input-height-atom)}
+       ;;NOTE: a flatlist needs to be contained within a view with
+       ;;a defined height in order to be scrollable
+       ;;since the suggestions have to fill up to the entire space
+       ;;used by the message-view, we get the height of that view
+       ;;on layout and use it as a maximal height
+       [components.react/view {:style {:height height
+                                       :width  @message-view-width-atom}}
+        [list/flat-list
+         {:keyboardShouldPersistTaps :always
+          :style                     {:background-color :white
+                                      :border-radius    1
+                                      :shadow-radius    12
+                                      :shadow-opacity   0.16
+                                      :shadow-color     "rgba(0, 0, 0, 0.12)"}
+          :data                      suggestions
+          :key-fn                    identity
+          :inverted                  true
+          :render-fn                 #(mention-item %)}]]])))
+
+(defn chat-input []
+  (let [text-input-height-atom (atom 0)]
+    (fn [{:keys [set-active-panel active-panel on-send-press reply
+                 show-send show-image show-stickers show-extensions input
+                 sending-image input-focus show-audio message-view-height-atom message-view-width-atom]
+          :as   props}]
+      [rn/view {:style (styles/toolbar)}
+       [rn/view {:style (styles/actions-wrapper (and (not show-extensions)
+                                                     (not show-image)))}
+        (when show-extensions
+          [touchable-icon {:panel               :extensions
+                           :accessibility-label :show-extensions-icon
+                           :active              active-panel
+                           :set-active          set-active-panel}])
+        (when show-image
+          [touchable-icon {:panel               :images
+                           :accessibility-label :show-photo-icon
+                           :active              active-panel
+                           :set-active          set-active-panel}])]
+       [:<>
+        [components.react/view {}
+         [autocomplete-mentions (:suggestions input) message-view-height-atom message-view-width-atom text-input-height-atom]]
+        [animated/view {:style (styles/input-container)}
+         (when reply
+           [reply/reply-message reply])
+         (when sending-image
+           [reply/send-image sending-image])
+         [rn/view {:style (styles/input-row)}
+          [text-input (assoc props :text-input-height-atom text-input-height-atom)]
+          [rn/view {:style (styles/in-input-buttons)}
+           (when show-send
+             [send-button {:on-send-press on-send-press}])
+           (when show-stickers
+             [touchable-stickers-icon {:panel               :stickers
+                                       :accessibility-label :show-stickers-icon
+                                       :active              active-panel
+                                       :input-focus         input-focus
+                                       :set-active          set-active-panel}])
+           (when show-audio
+             [touchable-audio-icon {:panel               :audio
+                                    :accessibility-label :show-audio-message-icon
+                                    :active              active-panel
+                                    :input-focus         input-focus
+                                    :set-active          set-active-panel}])]]]]])))
 
 (defn chat-toolbar []
   (let [previous-layout (atom nil)
         had-reply       (atom nil)]
-    (fn [{:keys [active-panel set-active-panel text-input-ref]}]
+    (fn [{:keys [active-panel set-active-panel text-input-ref
+                 message-view-height-atom message-view-width-atom]}]
       (let [disconnected?        @(re-frame/subscribe [:disconnected?])
             {:keys [processing]} @(re-frame/subscribe [:multiaccounts/login])
             mainnet?             @(re-frame/subscribe [:mainnet?])
-            input-text           @(re-frame/subscribe [:chats/current-chat-input-text])
+            {:keys [input-text]
+             :as   input}        @(re-frame/subscribe [:chats/current-chat-input])
             cooldown-enabled?    @(re-frame/subscribe [:chats/cooldown-enabled?])
             one-to-one-chat?     @(re-frame/subscribe [:current-chat/one-to-one-chat?])
             public?              @(re-frame/subscribe [:current-chat/public?])
@@ -178,19 +297,23 @@
           (when (seq @previous-layout)
             (rn/configure-next
              (:ease-opacity-200 rn/custom-animations))))
-        [chat-input {:set-active-panel  set-active-panel
-                     :active-panel      active-panel
-                     :text-input-ref    text-input-ref
-                     :input-focus       input-focus
-                     :reply             reply
-                     :on-send-press     #(do (re-frame/dispatch [:chat.ui/send-current-message])
-                                             (clear-input))
-                     :text-value        input-text
-                     :on-text-change    #(re-frame/dispatch [:chat.ui/set-chat-input-text %])
-                     :cooldown-enabled? cooldown-enabled?
-                     :show-send         show-send
-                     :show-stickers     show-stickers
-                     :show-image        show-image
-                     :show-audio        show-audio
-                     :sending-image     sending-image
-                     :show-extensions   show-extensions}]))))
+        [chat-input
+         {:set-active-panel         set-active-panel
+          :active-panel             active-panel
+          :text-input-ref           text-input-ref
+          :input-focus              input-focus
+          :reply                    reply
+          :on-send-press            #(do (re-frame/dispatch [::input/send-current-message-pressed])
+                                         (clear-input))
+          :text-value               input-text
+          :input                    input
+          :on-text-change           #(re-frame/dispatch-sync [::input/input-text-changed %])
+          :cooldown-enabled?        cooldown-enabled?
+          :show-send                show-send
+          :show-stickers            show-stickers
+          :show-image               show-image
+          :show-audio               show-audio
+          :sending-image            sending-image
+          :show-extensions          show-extensions
+          :message-view-height-atom message-view-height-atom
+          :message-view-width-atom  message-view-width-atom}]))))

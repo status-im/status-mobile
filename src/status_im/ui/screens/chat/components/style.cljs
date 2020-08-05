@@ -108,3 +108,13 @@
 
 (defn send-icon-color []
   colors/white)
+
+(defn autocomplete-container [bottom]
+  {:position         :absolute
+   :left             0
+   :right            0
+   :bottom           (+ 16 bottom)
+   :background-color colors/black
+   :flex-direction   :column
+   :border-top-width 1
+   :border-top-color (colors/get-color :ui-01)})

@@ -9,7 +9,9 @@
             [status-im.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
-            ["emojilib" :as emojis]))
+            ["emojilib" :as emojis]
+            [taoensso.timbre :as log]
+            [status-im.chat.models.mentions :as mentions]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
@@ -25,8 +27,14 @@
 (fx/defn set-chat-input-text
   "Set input text for current-chat. Takes db and input text and cofx
   as arguments and returns new fx. Always clear all validation messages."
+  {:events [::input-text-changed]}
   [{{:keys [current-chat-id] :as db} :db} new-input]
-  {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))})
+  {:db (assoc-in db [:chat/inputs current-chat-id :text] new-input)})
+
+(fx/defn clear-input-text
+  [{{:keys [current-chat-id] :as db} :db}]
+  (log/info "clear-input-text" current-chat-id)
+  {:db (assoc-in db [:chat/inputs current-chat-id] nil)})
 
 (defn- start-cooldown [{:keys [db]} cooldowns]
   {:dispatch-later        [{:dispatch [:chat/disable-cooldown]
@@ -95,7 +103,7 @@
                                             :text input-text
                                             :response-to message-id
                                             :ens-name preferred-name})
-                (set-chat-input-text nil)
+                (clear-input-text)
                 (process-cooldown)))))
 
 (fx/defn send-image
@@ -129,8 +137,16 @@
 
 (fx/defn send-current-message
   "Sends message from current chat input"
+  {:events [::send-current-message-pressed]}
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
-  (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])]
-    (fx/merge cofx
-              (send-image)
-              (send-plain-text-message input-text current-chat-id))))
+  (let [{:keys [users] :as input} (get-in db [:chat/inputs current-chat-id])
+        input-text (-> (assoc input :replace-mentions? true)
+                       mentions/recompute-input-text
+                       text->emoji)]
+    (fx/merge
+     cofx
+     {:db (assoc-in db
+                    [:chat/inputs current-chat-id]
+                    {:users users})}
+     (send-image)
+     (send-plain-text-message input-text current-chat-id))))
