@@ -6,6 +6,7 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [quo.core :as quo]
+            [status-im.utils.gfycat.core :as gfycat]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
@@ -94,7 +95,10 @@
        (cond (= state :error)
              (get-validation-label error)
              (= state :valid)
-             (str (when ens-name (str ens-name " • "))
+             (str (if ens-name
+                    ens-name
+                    (gfycat/generate-gfy public-key))
+                  " • "
                   (utils/get-shortened-address public-key))
              :else "")]]
      [list/flat-list {:data                      contacts
