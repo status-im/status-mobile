@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
@@ -30,7 +31,7 @@
                                 (re-frame/dispatch [:search/currency-filter-changed nil])
                                 (reset! search-active? false))}
     [react/view {:flex 1}
-     [topbar/topbar {:title :t/main-currency}]
+     [topbar/topbar {:title (i18n/label :t/main-currency)}]
      [react/view {:flex 1}
       [react/view {:padding-horizontal 16
                    :padding-vertical   10}

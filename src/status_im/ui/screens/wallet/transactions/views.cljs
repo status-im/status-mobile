@@ -6,8 +6,8 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.toolbar.view :as toolbar-old]
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.wallet.transactions.styles :as styles]
             [quo.core :as quo]
             [status-im.ui.components.toolbar :as toolbar])
@@ -212,22 +212,23 @@
    [details-list-row :t/data data]])
 
 (defn details-action [hash url]
-  [(actions/opts [{:label (i18n/label :t/copy-transaction-hash)
-                   :action #(react/copy-to-clipboard hash)}
-                  {:label  (i18n/label :t/open-on-etherscan)
-                   :action #(.openURL ^js react/linking url)}])])
+  [{:label  (i18n/label :t/copy-transaction-hash)
+    :action #(react/copy-to-clipboard hash)}
+   {:label  (i18n/label :t/open-on-etherscan)
+    :action #(.openURL ^js react/linking url)}])
 
 (defview transaction-details-view [hash address]
   (letsubs [{:keys [url type confirmations confirmations-progress
                     date amount-text currency-text]
-             :as transaction}
+             :as   transaction}
             [:wallet.transactions.details/screen hash address]]
     [react/view {:style components.styles/flex}
      ;;TODO options should be replaced by bottom sheet ,and topbar should be used here
-     [toolbar-old/toolbar {}
-      toolbar-old/default-nav-back
-      [toolbar-old/content-title (i18n/label :t/transaction-details)]
-      (when transaction [toolbar-old/actions (details-action hash url)])]
+     [topbar/topbar {:title             (i18n/label :t/transaction-details)
+                     :right-accessories (when transaction
+                                          [{:icon     :main-icons/more
+                                            :on-press #(list-selection/show {:options
+                                                                             (details-action hash url)})}])}]
      [react/scroll-view {:style components.styles/flex}
       [details-header date type amount-text currency-text]
       [details-confirmations confirmations confirmations-progress (= :failed type)]

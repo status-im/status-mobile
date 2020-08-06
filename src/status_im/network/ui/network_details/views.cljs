@@ -19,7 +19,7 @@
           custom?                  (seq (filter #(= (:id %) id) (:custom networks)))]
       [react/view st/container
        [react/view components.styles/flex
-        [topbar/topbar {:title :t/network-details}]
+        [topbar/topbar {:title (i18n/label :t/network-details)}]
         [react/view components.styles/flex
          [network-settings/network-badge
           {:name       name

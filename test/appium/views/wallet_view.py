@@ -88,7 +88,7 @@ class OptionsButton(BaseButton):
 class AccountOptionsButton(BaseButton):
     def __init__(self, driver, account_name):
         super(AccountOptionsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(//*[@text="%s"]/..//*[@content-desc="icon"])[2]' % account_name)
+        self.locator = self.Locator.xpath_selector('(//*[@text="%s"]/../..//*[@content-desc="icon"])[2]' % account_name)
 
 
 class ManageAssetsButton(BaseButton):

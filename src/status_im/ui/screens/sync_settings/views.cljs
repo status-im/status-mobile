@@ -11,7 +11,7 @@
   (views/letsubs [{:keys [syncing-on-mobile-network?]} [:multiaccount]
                   mailserver-id                        [:mailserver/current-id]]
     [react/view {:style {:flex 1 :background-color colors/white}}
-     [topbar/topbar {:title :t/sync-settings}]
+     [topbar/topbar {:title (i18n/label :t/sync-settings)}]
      [react/scroll-view
       [quo/list-header (i18n/label :t/message-syncing)]
       [quo/list-item {:size                :small

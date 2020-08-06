@@ -29,7 +29,7 @@
     (let [custom? (= (get-in manage-network [:chain :value]) :custom)]
       [react/view styles/container
        [react/keyboard-avoiding-view components.styles/flex
-        [topbar/topbar {:title :t/add-network}]
+        [topbar/topbar {:title (i18n/label :t/add-network)}]
         [react/scroll-view
          [react/view styles/edit-network-view
           [react/view {:padding-vertical 8}

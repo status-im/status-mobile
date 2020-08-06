@@ -16,11 +16,9 @@
 
 (defn toolbar []
   [topbar/topbar
-   {:title :t/wallet-assets
+   {:title (i18n/label :t/wallet-assets)
     :navigation
-    {:icon                :main-icons/arrow-left
-     :accessibility-label :back-button
-     :handler             #(re-frame/dispatch [:wallet.settings.ui/navigate-back-pressed])}}])
+    {:on-press  #(re-frame/dispatch [:wallet.settings.ui/navigate-back-pressed])}}])
 
 (defn hide-sheet-and-dispatch [event]
   (re-frame/dispatch [:bottom-sheet/hide])

@@ -19,7 +19,7 @@
                   auth-method              [:auth-method]
                   keycard?                 [:keycard-multiaccount?]]
     [react/view {:flex 1 :background-color colors/white}
-     [topbar/topbar {:title :t/privacy-and-security}]
+     [topbar/topbar {:title (i18n/label :t/privacy-and-security)}]
      [react/scroll-view {:padding-vertical 8}
       [quo/list-header (i18n/label :t/security)]
       [quo/list-item {:size                :small

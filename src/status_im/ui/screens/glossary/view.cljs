@@ -50,7 +50,7 @@
                               :data  v})))]
     [react/view {:flex             1
                  :background-color colors/white}
-     [topbar/topbar {:title :t/glossary}]
+     [topbar/topbar {:title (i18n/label :t/glossary)}]
      [list/section-list
       {:contentContainerStyle       {:padding-horizontal 16
                                      :padding-bottom     16}

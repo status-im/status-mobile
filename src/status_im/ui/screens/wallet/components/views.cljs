@@ -4,7 +4,7 @@
             [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as topbar]
+            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.wallet.components.styles :as styles]
             [quo.core :as quo]
             [status-im.ui.components.colors :as colors]
@@ -15,20 +15,14 @@
   [react/view (styles/separator)])
 
 (defn- recipient-topbar [content]
-  [topbar/toolbar {:transparent? true}
-   [topbar/nav-text
-    {:style   {:margin-left 16}
-     :handler #(do
-                 (re-frame/dispatch [:set-in [:wallet/prepare-transaction :modal-opened?] false])
-                 (re-frame/dispatch [:navigate-back]))}
-    (i18n/label :t/cancel)]
-   [topbar/content-title {}
-    (i18n/label :t/recipient)]
-   [topbar/text-action
-    {:disabled? (string/blank? content)
-     :style     {:margin-right 16}
-     :handler   #(debounce/dispatch-and-chill [:wallet.send/set-recipient content] 3000)}
-    (i18n/label :t/done)]])
+  [topbar/topbar {:navigation        {:label    (i18n/label :t/cancel)
+                                      :on-press #(do
+                                                   (re-frame/dispatch [:set-in [:wallet/prepare-transaction :modal-opened?] false])
+                                                   (re-frame/dispatch [:navigate-back]))}
+                  :title             (i18n/label :t/recipient)
+                  :right-accessories [{:on-press #(debounce/dispatch-and-chill [:wallet.send/set-recipient content] 3000)
+                                       :label    (i18n/label :t/done)
+                                       :disabled (string/blank? content)}]}])
 
 (views/defview contact-code []
   (views/letsubs [content (reagent/atom nil)]

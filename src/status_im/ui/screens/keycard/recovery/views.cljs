@@ -7,7 +7,6 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.toolbar :as bottom-toolbar]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.keycard.pin.views :as pin.views]
@@ -74,16 +73,12 @@
             small-screen? [:dimensions/small-screen?]
             retry-counter [:keycard/retry-counter]]
     [react/view styles/container
-     [toolbar/toolbar
-      {:transparent? true}
-      [toolbar/nav-text
-       {:handler #(re-frame/dispatch [::keycard.recovery/cancel-pressed])
-        :style   {:padding-left 21}}
-       (i18n/label :t/cancel)]
-      (when-not (#{:frozen-card :blocked-card} status)
-        [react/text {:style {:color colors/gray}}
-         (i18n/label :t/step-i-of-n {:number 2
-                                     :step   2})])]
+     [topbar/topbar
+      {:navigation {:on-press #(re-frame/dispatch [::keycard.recovery/cancel-pressed])
+                    :label    (i18n/label :t/cancel)}
+       :title      (when-not (#{:frozen-card :blocked-card} status)
+                     (i18n/label :t/step-i-of-n {:number 2
+                                                 :step   2}))}]
      (case status
        :frozen-card
        [keycard.views/frozen-card]
@@ -114,12 +109,8 @@
             error [:keycard-setup-error]
             {:keys [free-pairing-slots]} [:keycard-application-info]]
     [react/view styles/container
-     [toolbar/toolbar
-      {:transparent? true}
-      toolbar/default-nav-back
-      [react/text {:style {:color colors/gray}}
-       (i18n/label :t/step-i-of-n {:number 2
-                                   :step   1})]]
+     [topbar/topbar {:title (i18n/label :t/step-i-of-n {:number 2
+                                                        :step   1})}]
      [react/view {:flex            1
                   :flex-direction  :column
                   :justify-content :space-between

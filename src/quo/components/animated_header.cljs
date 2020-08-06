@@ -58,6 +58,7 @@
                                                               :offset @offset})}
         [header/header (merge
                         {:get-layout      (fn [el l] (swap! layout assoc el l))
+                         :border-bottom   false
                          :title-component [animated/view {:style (title-style @layout)}
                                            [extended-header {:value     y
                                                              :animation animation

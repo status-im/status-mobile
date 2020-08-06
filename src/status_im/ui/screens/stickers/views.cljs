@@ -60,7 +60,7 @@
   (letsubs [packs [:stickers/all-packs]]
     [react/view styles/screen
      [react/keyboard-avoiding-view components.styles/flex
-      [topbar/topbar {:title :t/sticker-market}]
+      [topbar/topbar {:title (i18n/label :t/sticker-market)}]
       (if (seq packs)
         [react/scroll-view {:keyboard-should-persist-taps :handled :style {:padding 16}}
          [react/view

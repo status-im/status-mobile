@@ -33,7 +33,8 @@
                                  (reset! show-error true))))]
         [rn/keyboard-avoiding-view {:flex 1}
          [topbar/topbar
-          {:navigation
+          {:border-bottom false
+           :navigation
            {:icon                :main-icons/back
             :accessibility-label :back-button
             :handler             #(re-frame/dispatch [:intro-wizard/navigate-back])}}]

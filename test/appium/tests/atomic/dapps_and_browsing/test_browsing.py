@@ -140,11 +140,13 @@ class TestBrowsing(SingleDeviceTestCase):
         home_view = sign_in.create_user()
         daap_view = home_view.dapp_tab_button.click()
         browsing_view = daap_view.open_url('https://www.bbc.com')
+        browsing_view.wait_for_d_aap_to_load()
         browsing_view.url_edit_box_lock_icon.click()
         browsing_view.find_full_text(connection_is_secure_text)
         browsing_view.cross_icon.click()
 
         browsing_view = daap_view.open_url('https://instant.airswap.io')
+        browsing_view.wait_for_d_aap_to_load()
         browsing_view.url_edit_box_lock_icon.click()
         browsing_view.find_full_text(connection_is_secure_text)
 

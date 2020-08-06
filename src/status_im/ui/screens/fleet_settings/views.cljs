@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.fleet-settings.views
   (:require [re-frame.core :as re-frame]
             [status-im.node.core :as node]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -35,7 +36,7 @@
   (views/letsubs [custom-fleets [:fleets/custom-fleets]
                   current-fleet [:fleets/current-fleet]]
     [react/view {:flex 1}
-     [topbar/topbar {:title :t/fleet-settings}]
+     [topbar/topbar {:title (i18n/label :t/fleet-settings)}]
      [react/view styles/wrapper
       [list/flat-list {:data               (fleets custom-fleets)
                        :default-separator? false

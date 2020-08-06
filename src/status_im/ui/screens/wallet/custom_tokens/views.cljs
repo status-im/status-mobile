@@ -23,7 +23,7 @@
   (letsubs [{:keys [contract name symbol decimals in-progress? error error-name error-symbol]}
             [:wallet/custom-token-screen]]
     [react/keyboard-avoiding-view {:flex 1 :background-color colors/white}
-     [topbar/topbar {:title :t/add-custom-token}]
+     [topbar/topbar {:title (i18n/label :t/add-custom-token)}]
      [react/scroll-view {:keyboard-should-persist-taps :handled
                          :style                        {:flex               1
                                                         :padding-horizontal 16}}

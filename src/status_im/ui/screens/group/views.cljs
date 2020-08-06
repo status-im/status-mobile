@@ -6,7 +6,6 @@
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.contact.contact :as contact]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.keyboard-avoid-presentation
@@ -16,8 +15,7 @@
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.search-input.view :as search]
-            [status-im.ui.components.toolbar :as bottom-toolbar]
-            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.group.styles :as styles]
             [quo.core :as quo]
@@ -100,17 +98,11 @@
     (let [save-btn-enabled? (and (spec/valid? :global/not-empty-string group-name) (pos? (count contacts)))]
       [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
        [react/view {:flex 1}
-        [toolbar/toolbar {}
-         toolbar/default-nav-back
-         [react/view {:style styles/toolbar-header-container}
-          [react/view
-           [react/text (i18n/label :t/new-group-chat)]]
-          [react/view
-           [react/text {:style (styles/toolbar-sub-header)}
-            (i18n/label :t/group-chat-members-count
-                        {:selected (inc (count contacts))
-                         :max      constants/max-group-chat-participants})]]]]
-
+        [topbar/topbar {:use-insets false
+                        :title      (i18n/label :t/new-group-chat)
+                        :subtitle   (i18n/label :t/group-chat-members-count
+                                                {:selected (inc (count contacts))
+                                                 :max      constants/max-group-chat-participants})}]
         [react/view {:style {:padding-top 16
                              :flex        1}}
          [react/view {:style {:padding-horizontal 16}}
@@ -130,7 +122,7 @@
                            :bounces                      false
                            :keyboard-should-persist-taps :always
                            :enable-empty-sections        true}]]]
-        [bottom-toolbar/toolbar
+        [toolbar/toolbar
          {:show-border? true
           :left
           [quo/button {:type                :secondary
@@ -165,23 +157,19 @@
   (views/letsubs [contacts                [:contacts/active]
                   selected-contacts-count [:selected-contacts-count]]
     [kb-presentation/keyboard-avoiding-view {:style styles/group-container}
-     [toolbar/toolbar {:border-bottom-color colors/white}
-      toolbar/default-nav-back
-      [react/view {:style styles/toolbar-header-container}
-       [react/view
-        [react/text (i18n/label :t/new-group-chat)]]
-       [react/view
-        [react/text {:style (styles/toolbar-sub-header)}
-         (i18n/label :t/group-chat-members-count
-                     {:selected (inc selected-contacts-count)
-                      :max      constants/max-group-chat-participants})]]]]
+     [topbar/topbar {:use-insets    false
+                     :border-bottom false
+                     :title         (i18n/label :t/new-group-chat)
+                     :subtitle      (i18n/label :t/group-chat-members-count
+                                                {:selected (inc selected-contacts-count)
+                                                 :max      constants/max-group-chat-participants})}]
      [searchable-contact-list
       {:contacts          contacts
        :no-contacts-label (i18n/label :t/group-chat-no-contacts)
        :toggle-fn         group-toggle-contact
        :allow-new-users?  (< selected-contacts-count
                              (dec constants/max-group-chat-participants))}]
-     [bottom-toolbar/toolbar
+     [toolbar/toolbar
       {:show-border? true
        :right
        [quo/button {:type                :secondary
@@ -198,16 +186,12 @@
                   selected-contacts-count [:selected-participants-count]]
     (let [current-participants-count (count (:contacts current-chat))]
       [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
-       [toolbar/toolbar {:border-bottom-color colors/white}
-        toolbar/default-nav-back
-        [react/view {:style styles/toolbar-header-container}
-         [react/view
-          [react/text (i18n/label :t/add-members)]]
-         [react/view
-          [react/text {:style (styles/toolbar-sub-header)}
-           (i18n/label :t/group-chat-members-count
-                       {:selected (+ current-participants-count selected-contacts-count)
-                        :max      constants/max-group-chat-participants})]]]]
+       [topbar/topbar {:use-insets    false
+                       :border-bottom false
+                       :title         (i18n/label :t/add-members)
+                       :subtitle      (i18n/label :t/group-chat-members-count
+                                                  {:selected (+ current-participants-count selected-contacts-count)
+                                                   :max      constants/max-group-chat-participants})}]
        [searchable-contact-list
         {:contacts          contacts
          :no-contacts-label (i18n/label :t/group-chat-all-contacts-invited)
@@ -215,7 +199,7 @@
          :allow-new-users?  (< (+ current-participants-count
                                   selected-contacts-count)
                                constants/max-group-chat-participants)}]
-       [bottom-toolbar/toolbar
+       [toolbar/toolbar
         {:show-border? true
          :center
          [quo/button {:type                :secondary
@@ -229,7 +213,7 @@
                   new-group-chat-name (reagent/atom nil)]
     [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
      [topbar/topbar
-      {:title  :t/edit-group
+      {:title  (i18n/label :t/edit-group)
        :modal? true}]
      [react/scroll-view {:style {:padding 16
                                  :flex    1}}
@@ -242,7 +226,7 @@
         :accessibility-label :new-chat-name
         :return-key-type     :go}]]
      [react/view {:style {:flex 1}}]
-     [bottom-toolbar/toolbar
+     [toolbar/toolbar
       {:show-border? true
        :center
        [quo/button {:type                :secondary

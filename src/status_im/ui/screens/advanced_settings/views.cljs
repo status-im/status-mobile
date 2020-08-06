@@ -128,7 +128,7 @@
                   current-log-level        [:log-level/current-log-level]
                   current-fleet            [:fleets/current-fleet]]
     [react/view {:flex 1}
-     [topbar/topbar {:title :t/advanced}]
+     [topbar/topbar {:title (i18n/label :t/advanced)}]
      [list/flat-list
       {:data      (flat-list-data
                    {:network-name           network-name

@@ -22,7 +22,7 @@
   {:margin-bottom       (:tiny spacing/spacing)
    :height              (:small spacing/spacing)
    :border-bottom-width 1
-   :border-bottom-color (:ui-02 @colors/theme)})
+   :border-bottom-color (:ui-01 @colors/theme)})
 
 (defn header-text []
   {:padding-left     (:base spacing/spacing)

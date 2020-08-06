@@ -10,6 +10,7 @@
   [stack {:initial-route-name :open-dapp
           :header-mode        :none}
    [{:name      :open-dapp
+     :insets    {:top true}
      :style     {:padding-bottom tabbar.styles/tabs-diff}
      :component open-dapp/open-dapp}
     {:name         :browser

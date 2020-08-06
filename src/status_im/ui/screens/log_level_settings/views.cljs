@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.log-level-settings.views
   (:require [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -44,7 +45,7 @@
 (views/defview log-level-settings []
   (views/letsubs [current-log-level [:log-level/current-log-level]]
     [react/view {:flex 1}
-     [topbar/topbar {:title :t/log-level-settings}]
+     [topbar/topbar {:title (i18n/label :t/log-level-settings)}]
      [react/view styles/wrapper
       [list/flat-list {:data               log-levels
                        :default-separator? false

@@ -37,12 +37,12 @@
 (defview multiaccounts []
   (letsubs [multiaccounts [:multiaccounts/multiaccounts]]
     [react/view styles/multiaccounts-view
-     [topbar/topbar {:show-border? true
-                     :navigation   :none
-                     :title        (i18n/label :t/your-keys)
-                     :accessories  [{:icon                :more
-                                     :accessibility-label :your-keys-more-icon
-                                     :handler             #(re-frame/dispatch [:bottom-sheet/show-sheet {:content sheets/actions-sheet}])}]}]
+     [topbar/topbar {:navigation        :none
+                     :title             (i18n/label :t/your-keys)
+                     :right-accessories [{:icon                :more
+                                          :accessibility-label :your-keys-more-icon
+                                          :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                                                    {:content sheets/actions-sheet}])}]}]
      [react/view styles/multiaccounts-container
       [list/flat-list {:data                  (vals multiaccounts)
                        :contentContainerStyle styles/multiaccounts-list-container

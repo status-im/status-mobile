@@ -14,7 +14,7 @@
   (views/letsubs [app-version  [:get-app-short-version]
                   node-version [:get-app-node-version]]
     [react/view {:flex 1 :background-color colors/white}
-     [topbar/topbar {:title :t/about-app}]
+     [topbar/topbar {:title (i18n/label :t/about-app)}]
      [react/scroll-view
       [quo/list-item
        {:size                :small

@@ -10,13 +10,16 @@
 
 (def header-height 56)
 
-(defn header-wrapper-style [{:keys [height border-bottom]}]
+(defn header-wrapper-style [{:keys [height border-bottom background]}]
   (merge
+   (:x-tiny spacing/padding-horizontal)
    {:background-color (:ui-background @colors/theme)
     :height           height}
+   (when background
+     {:background-color background})
    (when border-bottom
      {:border-bottom-width 1
-      :border-bottom-color (:ui-02 @colors/theme)})))
+      :border-bottom-color (:ui-01 @colors/theme)})))
 
 (def absolute-fill {:position :absolute
                     :top      0
@@ -49,9 +52,10 @@
    (case title-align
      :left {:left  (:width left)
             :right (:width right)}
-     {:align-items :center
-      :left        (max (:width left) (:width right))
-      :right       (max (:width left) (:width right))})))
+     {:align-items     :center
+      :justify-content :center
+      :left            (max (:width left) (:width right))
+      :right           (max (:width left) (:width right))})))
 
 (def header-actions-style
   (merge
@@ -59,7 +63,7 @@
     :flex-direction     :row
     :align-items        :center
     :justify-content    :center}
-   (:tiny spacing/padding-horizontal)))
+   (:x-tiny spacing/padding-horizontal)))
 
 (def header-action-placeholder
   {:width (:base spacing/spacing)})
@@ -68,8 +72,9 @@
               :justify-content    :center
               :flex               1})
 
-(defn header-action [{:keys [icon label on-press accessibility-label]}]
-  [button/button (merge {:on-press on-press}
+(defn header-action [{:keys [icon label on-press disabled accessibility-label]}]
+  [button/button (merge {:on-press on-press
+                         :disabled disabled}
                         (cond
                           icon  {:type  :icon
                                  :theme :icon}
@@ -103,19 +108,20 @@
                   :number-of-lines 1}
        title]
       [text/text {:weight          :regular
+                  :color           :secondary
                   :number-of-lines 1}
        subtitle]]
 
      title [text/text {:weight          :bold
-                       :number-of-lines 2
+                       :number-of-lines 0
                        :align           title-align
                        :size            :large}
             title])])
 
-(defn header []
-  (let [layout        (reagent/atom {:left  {:width  8
+(defn header [{:keys [left-width right-width]}]
+  (let [layout        (reagent/atom {:left  {:width  (or left-width 8)
                                              :height header-height}
-                                     :right {:width  8
+                                     :right {:width  (or right-width 8)
                                              :height header-height}
                                      :title {:width  0
                                              :height header-height}})
@@ -130,11 +136,14 @@
                                                     :height height}))))]
     (fn [{:keys [left-accessories left-component border-bottom
                  right-accessories right-component insets get-layout
-                 title subtitle title-component style title-align]
-          :or  {title-align :center}}]
+                 title subtitle title-component style title-align
+                 background]
+          :or   {title-align   :center
+                 border-bottom true}}]
       (let [status-bar-height (get insets :top 0)
             height            (+ header-height status-bar-height)]
         [animated/view {:style (header-wrapper-style {:height        height
+                                                      :background    background
                                                       :border-bottom border-bottom})}
          [rn/view {:pointer-events :box-none
                    :height         status-bar-height}]

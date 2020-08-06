@@ -31,7 +31,7 @@
   (letsubs [blocked-contacts-count [:contacts/blocked-count]
             contacts      [:contacts/active]]
     [react/view {:flex 1}
-     [topbar/topbar {:title :t/contacts}]
+     [topbar/topbar {:title (i18n/label :t/contacts)}]
      [react/scroll-view {:flex 1}
       [add-new-contact]
       (when (pos? blocked-contacts-count)
@@ -59,7 +59,7 @@
   (letsubs [blocked-contacts [:contacts/blocked]]
     [react/view {:flex 1
                  :background-color colors/white}
-     [topbar/topbar {:title :t/blocked-users}]
+     [topbar/topbar {:title (i18n/label :t/blocked-users)}]
      [react/scroll-view {:style {:background-color colors/white
                                  :padding-vertical 8}}
       [list.views/flat-list

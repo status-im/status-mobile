@@ -44,7 +44,7 @@
             view-id [:view-id]
             supported-biometric-auth [:supported-biometric-auth]]
     [react/keyboard-avoiding-view {:style ast/multiaccounts-view}
-     [topbar/topbar {}]
+     [topbar/topbar {:border-bottom false}]
      [react/scroll-view {:keyboardShouldPersistTaps :always
                          :style                     styles/login-view}
       [react/view styles/login-badge-container

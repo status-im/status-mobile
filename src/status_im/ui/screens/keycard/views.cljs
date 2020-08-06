@@ -246,16 +246,6 @@
        :on-press #(.openURL ^js react/linking "https://status.im/faq/#keycard")}
       (i18n/label :t/learn-more)]]]])
 
-(defn- step-view [step]
-  [react/view
-   {:style {:flex            1
-            :justify-content :center
-            :align-items     :center}}
-   [react/text {:style {:typography :title-bold :text-align :center}}
-    (i18n/label :t/keycard-reset-passcode)]
-   [react/text {:style {:color colors/gray}}
-    (i18n/label :t/keycard-enter-new-passcode {:step step})]])
-
 (defview login-pin [{:keys [back-button-handler
                             hide-login-actions?
                             default-enter-step]
@@ -275,30 +265,22 @@
           enter-step                 (or enter-step default-enter-step)]
       [react/view styles/container
        [topbar/topbar
-        {:accessories [(when-not hide-login-actions?
-                         {:icon    :main-icons/more
-                          :handler #(re-frame/dispatch [:keycard.login.pin.ui/more-icon-pressed])})]
-         :content     (cond
-                        (= :reset enter-step)
-                        [step-view 1]
+        (merge
+         {:right-accessories [(when-not hide-login-actions?
+                                {:icon     :main-icons/more
+                                 :on-press #(re-frame/dispatch [:keycard.login.pin.ui/more-icon-pressed])})]
+          :title             (cond
+                               (#{:reset :reset-confirmation} enter-step)
+                               (i18n/label :t/keycard-reset-passcode)
 
-                        (= :reset-confirmation enter-step)
-                        [step-view 2]
-
-                        (and (= :puk enter-step)
-                             (not= :blocked-card status))
-                        [react/view
-                         {:style {:flex            1
-                                  :justify-content :center
-                                  :align-items     :center}}
-                         [react/text {:style {:color colors/gray}}
-                          (i18n/label :t/enter-puk-code)]])
-         :navigation
-         {:icon                :main-icons/arrow-left
-          :accessibility-label :back-button
-          :handler             #(re-frame/dispatch
-                                 [(or back-button-handler
-                                      :keycard.login.pin.ui/cancel-pressed)])}}]
+                               (and (= :puk enter-step)
+                                    (not= :blocked-card status))
+                               (i18n/label :t/enter-puk-code))
+          :navigation {:on-press #(re-frame/dispatch
+                                   [(or back-button-handler
+                                        :keycard.login.pin.ui/cancel-pressed)])}}
+         (when (#{:reset :reset-confirmation} enter-step)
+           {:subtitle (i18n/label :t/keycard-enter-new-passcode {:step (if (= :reset enter-step) 1 2)})}))]
        [react/view {:flex            1
                     :flex-direction  :column
                     :justify-content :space-between

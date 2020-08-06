@@ -48,9 +48,10 @@
                   mailservers             [:mailserver/fleet-mailservers]]
     [react/view {:flex 1}
      [topbar/topbar
-      {:title       :t/offline-messaging-settings
-       :accessories [{:icon    :main-icons/add
-                      :handler #(re-frame/dispatch [:mailserver.ui/add-pressed])}]}]
+      {:title       (i18n/label :t/offline-messaging-settings)
+       :right-accessories
+       [{:icon    :main-icons/add
+         :on-press #(re-frame/dispatch [:mailserver.ui/add-pressed])}]}]
      [react/view styles/wrapper
       [pinned-state preferred-mailserver-id]
       [list/flat-list {:data               (vals mailservers)

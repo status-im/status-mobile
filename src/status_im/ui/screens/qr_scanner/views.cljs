@@ -3,50 +3,46 @@
   (:require [re-frame.core :as re-frame]
             [clojure.string :as string]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.camera :as camera]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.view :as topbar]
             [status-im.ui.screens.qr-scanner.styles :as styles]
             [status-im.ui.components.colors :as colors]
             [status-im.utils.config :as config]
-            [quo.core :as quo]
-            [quo.components.safe-area :as safe-area]))
+            [quo.core :as quo]))
 
 (defn- topbar [_ {:keys [title] :as opts}]
-  [topbar/toolbar
-   {:transparent? true}
-   [topbar/nav-text
-    {:style   {:color colors/white-persist :margin-left 16}
-     :handler #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-cancel opts])}
-    (i18n/label :t/cancel)]
-   [topbar/content-title {:color colors/white-persist}
-    (or title (i18n/label :t/scan-qr))]
-   #_[topbar/actions [{:icon      (if (= :on camera-flashlight)
-                                    :main-icons/flash-active
-                                    :main-icons/flash-inactive)
-                       :icon-opts {:color colors/white}
-                       :handler   #(re-frame/dispatch [:wallet/toggle-flashlight])}]]])
+  [topbar/topbar
+   {:background      colors/black-persist
+    :use-insets      true
+    :border-bottom   false
+    :navigation      :none
+    :left-component  [quo/button {:type     :secondary
+                                  :on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-cancel opts])}
+                      [quo/text {:style {:color colors/white-persist}}
+                       (i18n/label :t/cancel)]]
+    :title-component [quo/text {:style           {:color colors/white-persist}
+                                :weight          :bold
+                                :number-of-lines 1
+                                :align           :center
+                                :size            :large}
+                      (or title (i18n/label :t/scan-qr))]}])
 
 (defn qr-test-view [opts]
   (let [text-value (atom "")]
-    [safe-area/consumer
-     (fn [insets]
-       [react/view {:flex 1 :background-color colors/black-persist
-                    :padding-top (:top insets) :padding-bottom (:bottom insets)}
-        [topbar nil opts]
-        [react/view {:flex            1
-                     :align-items     :center
-                     :justify-content :center}
-         [react/text-input {:multiline      true
-                            :style          {:color colors/white-persist}
-                            :on-change-text #(reset! text-value %)}]
-         [react/view {:flex-direction :row}
-          [quo/button
-           {:on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-cancel opts])}
-           "Cancel"]
-          [quo/button
-           {:on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success opts (when-let [text @text-value] (string/trim text))])}
-           "Ok"]]]])]))
+    [react/view {:flex            1
+                 :align-items     :center
+                 :justify-content :center}
+     [react/text-input {:multiline      true
+                        :style          {:color colors/white-persist}
+                        :on-change-text #(reset! text-value %)}]
+     [react/view {:flex-direction :row}
+      [quo/button
+       {:on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-cancel opts])}
+       "Cancel"]
+      [quo/button
+       {:on-press #(re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success opts (when-let [text @text-value] (string/trim text))])}
+       "Ok"]]]))
 
 (defn corner [border1 border2 corner]
   [react/view (assoc {:border-color colors/white-persist :width 60 :height 60} border1 5 border2 5 corner 32)])
@@ -70,21 +66,20 @@
             camera-flashlight [:wallet.send/camera-flashlight]
             opts [:get-screen-params]
             camera-ref (atom nil)]
-    (if config/qr-test-menu-enabled?
-      [qr-test-view opts]
-      [safe-area/consumer
-       (fn [insets]
-         [react/view {:flex        1 :background-color colors/black-persist
-                      :padding-top (:top insets) :padding-bottom (:bottom insets)}
-          [topbar camera-flashlight opts]
-          [react/with-activity-indicator
-           {}
-           [camera/camera
-            {:ref            #(reset! camera-ref %)
-             :style          {:flex 1}
-             :camera-options {:zoomMode :off}
-             :scan-barcode   true
-             :on-read-code   #(when-not @read-once?
-                                (reset! read-once? true)
-                                (on-barcode-read opts %))}]]
-          [viewfinder (int (* 2 (/ (min height width) 3)))]])])))
+    [react/view {:flex             1
+                 :background-color colors/black-persist}
+     [topbar camera-flashlight opts]
+     (if config/qr-test-menu-enabled?
+       [qr-test-view opts]
+       [react/view {:flex 1}
+        [react/with-activity-indicator
+         {}
+         [camera/camera
+          {:ref            #(reset! camera-ref %)
+           :style          {:flex 1}
+           :camera-options {:zoomMode :off}
+           :scan-barcode   true
+           :on-read-code   #(when-not @read-once?
+                              (reset! read-once? true)
+                              (on-barcode-read opts %))}]]
+        [viewfinder (int (* 2 (/ (min height width) 3)))]])]))

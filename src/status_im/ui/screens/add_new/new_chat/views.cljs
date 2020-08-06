@@ -64,13 +64,14 @@
                   {:keys [state ens-name public-key error]} [:contacts/new-identity]]
     [react/view {:style {:flex 1}}
      [topbar/topbar
-      {:title       :t/new-chat
+      {:title      (i18n/label :t/new-chat)
        :modal?      true
-       :accessories [{:icon                :qr
-                      :accessibility-label :scan-contact-code-button
-                      :handler             #(re-frame/dispatch [::qr-scanner/scan-code
-                                                                {:title   (i18n/label :t/new-contact)
-                                                                 :handler :contact/qr-code-scanned}])}]}]
+       :right-accessories
+       [{:icon                :qr
+         :accessibility-label :scan-contact-code-button
+         :handler             #(re-frame/dispatch [::qr-scanner/scan-code
+                                                   {:title   (i18n/label :t/new-contact)
+                                                    :handler :contact/qr-code-scanned}])}]}]
      [react/view {:flex-direction :row
                   :padding        16}
       [react/view {:flex          1

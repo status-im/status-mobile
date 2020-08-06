@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.network-info.views
   (:require [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.react :as react]
+            [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.ui.components.styles :as components.styles]
             [reagent.core :as reagent]
@@ -81,5 +82,5 @@
 (defn network-info []
   [react/view components.styles/flex
    [topbar/topbar
-    {:title :t/network-info}]
+    {:title (i18n/label :t/network-info)}]
    [check-lag]])

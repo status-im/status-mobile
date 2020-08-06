@@ -6,8 +6,7 @@
             [quo.core :as quo]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.toolbar.view :as not.toolbar]
+            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.profile.tribute-to-talk.styles :as styles])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
@@ -278,15 +277,12 @@
 (defn learn-more [owner?]
   [react/view {:flex 1}
    (when-not owner?
-     [not.toolbar/toolbar nil not.toolbar/default-nav-close
-      [react/view
-       [react/text {:style styles/tribute-to-talk}
-        (i18n/label :t/tribute-to-talk)]
-       [react/text {:style styles/step-n}
-        (i18n/label :t/learn-more)]]])
+     [topbar/topbar {:modal?   true
+                     :title    (i18n/label :t/tribute-to-talk)
+                     :subtitle (i18n/label :t/learn-more)}])
    [react/scroll-view {:content-container-style styles/learn-more-container}
     [react/image {:source (resources/get-image :tribute-to-talk)
-                  :style styles/learn-more-image}]
+                  :style  styles/learn-more-image}]
     [react/text {:style styles/learn-more-title-text}
      (i18n/label :t/tribute-to-talk)]
     [react/view {:style styles/learn-more-text-container-1}
@@ -294,13 +290,13 @@
       (i18n/label (if owner? :t/tribute-to-talk-learn-more-1
                       :t/tribute-to-talk-paywall-learn-more-1))]]
     [separator]
-    [pay-to-chat-message {:snt-amount 1000
-                          :token " SNT"
+    [pay-to-chat-message {:snt-amount    1000
+                          :token         " SNT"
                           :fiat-currency "USD"
-                          :fiat-amount "5"
-                          :style (assoc styles/learn-more-section
-                                        :align-items :flex-start
-                                        :margin-top 24)}]
+                          :fiat-amount   "5"
+                          :style         (assoc styles/learn-more-section
+                                                :align-items :flex-start
+                                                :margin-top 24)}]
     [react/view {:style styles/learn-more-text-container-2}
      [react/text {:style styles/learn-more-text}
       (i18n/label (if owner? :t/tribute-to-talk-learn-more-2
@@ -321,34 +317,34 @@
                       :t/tribute-to-talk-paywall-learn-more-3))]]]])
 
 (defview tribute-to-talk []
-  (letsubs [{:keys [step snt-amount editing?
+  (letsubs [{:keys [step snt-amount
                     fiat-value disable-button? state]}
             [:tribute-to-talk/settings-ui]]
     [react/keyboard-avoiding-view {:style styles/container}
      [react/view {:style {:flex 1}}
-      [not.toolbar/toolbar
-       nil
-       (when-not (= :finish step)
-         (not.toolbar/nav-button
-          (actions/back #(re-frame/dispatch
-                          [:tribute-to-talk.ui/step-back-pressed]))))
-       [react/view
-        [react/text {:style styles/tribute-to-talk}
-         (i18n/label :t/tribute-to-talk)]
-        (when-not (#{:edit :learn-more} step)
-          [react/text {:style styles/step-n}
-           (if (= step :finish)
-             (i18n/label (case state
-                           :completed          :t/completed
-                           :pending            :t/pending
-                           :signing            :t/signing
-                           :transaction-failed :t/transaction-failed
-                           :disabled           :t/disabled))
-             (i18n/label :t/step-i-of-n {:step   ((steps-numbers editing?) step)
-                                         :number (if editing? 2 3)}))])
-        (when (= step :learn-more)
-          [react/text {:style styles/step-n}
-           (i18n/label :t/learn-more)])]]
+      ;; [toolbar/toolbar
+      ;;  nil
+      ;;  (when-not (= :finish step)
+      ;;    (toolbar/nav-button
+      ;;     (actions/back #(re-frame/dispatch
+      ;;                     [:tribute-to-talk.ui/step-back-pressed]))))
+      ;;  [react/view
+      ;;   [react/text {:style styles/tribute-to-talk}
+      ;;    (i18n/label :t/tribute-to-talk)]
+      ;;   (when-not (#{:edit :learn-more} step)
+      ;;     [react/text {:style styles/step-n}
+      ;;      (if (= step :finish)
+      ;;        (i18n/label (case state
+      ;;                      :completed :t/completed
+      ;;                      :pending :t/pending
+      ;;                      :signing :t/signing
+      ;;                      :transaction-failed :t/transaction-failed
+      ;;                      :disabled :t/disabled))
+      ;;        (i18n/label :t/step-i-of-n {:step ((steps-numbers editing?) step)
+      ;;                                    :number (if editing? 2 3)}))])
+      ;;   (when (= step :learn-more)
+      ;;     [react/text {:style styles/step-n}
+      ;;      (i18n/label :t/learn-more)])]]
 
       (case step
         :intro          [intro]

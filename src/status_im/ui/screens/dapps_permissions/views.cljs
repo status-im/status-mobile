@@ -34,7 +34,7 @@
 (views/defview dapps-permissions []
   (views/letsubs [permissions [:dapps/permissions]]
     [react/view {:flex 1 :background-color colors/white}
-     [topbar/topbar {:title :t/dapps-permissions}]
+     [topbar/topbar {:title (i18n/label :t/dapps-permissions)}]
      [list/flat-list
       {:data      (vec (map prepare-items (vals permissions)))
        :key-fn    (fn [_ i] (str i))

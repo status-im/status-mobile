@@ -24,7 +24,7 @@
              remember-syncing-choice?]}
      [:multiaccount]]
     [react/view {:style styles/container}
-     [topbar/topbar {:title :t/mobile-network-settings}]
+     [topbar/topbar {:title (i18n/label :t/mobile-network-settings)}]
      [react/view {:style styles/switch-container}
       [profile.components/settings-switch-item
        {:label-kw  :t/mobile-network-use-mobile

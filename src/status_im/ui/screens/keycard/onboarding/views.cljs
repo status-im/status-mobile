@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.keycard.onboarding.views
   (:require [re-frame.core :as re-frame]
             [status-im.keycard.onboarding :as keycard.onboarding]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar :as bottom-toolbar]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
@@ -93,16 +92,10 @@
             steps [:keycard-flow-steps]
             puk-code [:keycard-puk-code]]
     [react/view styles/container
-     [toolbar/toolbar
-      {:transparent? true}
-      [toolbar/nav-text
-       {:handler #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
-        :style   {:padding-left 21}}
-       (i18n/label :t/cancel)]
-      [react/text {:style               {:color colors/gray}
-                   :accessibility-label :cancel-keycard-setup}
-       (i18n/label :t/step-i-of-n {:step   "2"
-                                   :number steps})]]
+     [topbar/topbar {:navigation {:on-press #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
+                                  :label    (i18n/label :t/cancel)}
+                     :title      (i18n/label :t/step-i-of-n {:step   "2"
+                                                             :number steps})}]
      [react/scroll-view {:content-container-style {:flex-grow       1
                                                    :justify-content :space-between}}
       [react/view {:flex            1
@@ -188,16 +181,11 @@
             small-screen? [:dimensions/small-screen?]
             setup-step [:keycard-setup-step]]
     [react/view styles/container
-     [toolbar/toolbar
-      {:transparent? true}
-      [toolbar/nav-text
-       {:handler #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
-        :style   {:padding-left 21}}
-       (i18n/label :t/cancel)]
-      (when-not (= setup-step :loading-keys)
-        [react/text {:style {:color colors/gray}}
-         (i18n/label :t/step-i-of-n {:number steps
-                                     :step   1})])]
+     [topbar/topbar {:navigation {:on-press #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
+                                  :label    (i18n/label :t/cancel)}
+                     :title      (when-not (= setup-step :loading-keys)
+                                   (i18n/label :t/step-i-of-n {:number steps
+                                                               :step   1}))}]
      [react/view {:flex            1
                   :flex-direction  :column
                   :justify-content :space-between
@@ -234,15 +222,11 @@
 (defview recovery-phrase []
   (letsubs [mnemonic [:keycard-mnemonic]]
     [react/view styles/container
-     [toolbar/toolbar
-      {:transparent? true}
-      [toolbar/nav-text
-       {:handler #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
-        :style   {:padding-left 21}}
-       (i18n/label :t/cancel)]
-      [react/text {:style {:color colors/gray}}
-       (i18n/label :t/step-i-of-n {:step   "3"
-                                   :number "3"})]]
+     [topbar/topbar
+      {:navigation {:on-press #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
+                    :label    (i18n/label :t/cancel)}
+       :title      (i18n/label :t/step-i-of-n {:step   "3"
+                                               :number "3"})}]
      [react/scroll-view {:content-container-style {:flex-grow       1
                                                    :justify-content :space-between}}
       [react/view {:flex-direction :column
@@ -299,15 +283,12 @@
             error [:keycard-recovery-phrase-confirm-error]]
     (let [{:keys [idx]} word]
       [react/view styles/container
-       [toolbar/toolbar
-        {:transparent? true}
-        [toolbar/nav-text
-         {:handler             #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
-          :accessibility-label :cancel-keycard-setup
-          :style               {:padding-left 21}}
-         (i18n/label :t/cancel)]
-        [react/text {:style {:color colors/gray}}
-         (i18n/label :t/step-i-of-n {:step 3 :number 3})]]
+       [topbar/topbar
+        {:navigation {:on-press            #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
+                      :accessibility-label :cancel-keycard-setup
+                      :label               (i18n/label :t/cancel)}
+         :title      (i18n/label :t/step-i-of-n {:step   "3"
+                                                 :number "3"})}]
        [react/view {:flex            1
                     :flex-direction  :column
                     :justify-content :space-between

@@ -80,7 +80,7 @@
     {:color colors/white-persist}]])
 
 (defn- toolbar []
-  [topbar/topbar {:title :t/ens-your-username}])
+  [topbar/topbar {:title (i18n/label :t/ens-your-username)}])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; SEARCH SCREEN
@@ -423,7 +423,7 @@
 (views/defview terms []
   (views/letsubs [{:keys [contract]} [:get-screen-params :ens-terms]]
     [react/scroll-view {:style {:flex 1}}
-     [topbar/topbar {:title :t/ens-terms-registration}]
+     [topbar/topbar {:title (i18n/label :t/ens-terms-registration)}]
      [react/view {:style {:height 136 :background-color colors/gray-lighter :justify-content :center :align-items :center}}
       [react/text {:style {:text-align :center :typography :header :letter-spacing -0.275}}
        (i18n/label :t/ens-terms-header)]]
@@ -680,7 +680,7 @@
 (views/defview main []
   (views/letsubs [{:keys [names multiaccount show? registrations]} [:ens.main/screen]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
-     [topbar/topbar {:title :t/ens-usernames}]
+     [topbar/topbar {:title (i18n/label :t/ens-usernames)}]
      (if (or (seq names) registrations)
        [registered names multiaccount show? registrations]
        [welcome])]))

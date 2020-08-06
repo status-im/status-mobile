@@ -45,9 +45,10 @@
   (views/letsubs [current-network [:networks/current-network]
                   networks        [:get-networks]]
     [react/view components.styles/flex
-     [topbar/topbar {:title       :t/network-settings
-                     :accessories [{:icon    :main-icons/add
-                                    :handler #(re-frame/dispatch [::network/add-network-pressed])}]}]
+     [topbar/topbar {:title       (i18n/label :t/network-settings)
+                     :right-accessories
+                     [{:icon    :main-icons/add
+                       :on-press #(re-frame/dispatch [::network/add-network-pressed])}]}]
      [react/view styles/wrapper
       [list/section-list {:sections           [{:title (i18n/label :t/main-networks)
                                                 :key :mainnet

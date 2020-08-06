@@ -16,7 +16,6 @@
              offline-messaging-settings]
             [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
             [status-im.ui.screens.privacy-and-security-settings.views :as privacy-and-security]
-            [status-im.ui.screens.language-settings.views :as language-settings]
             [status-im.ui.screens.sync-settings.views :as sync-settings]
             [status-im.ui.screens.advanced-settings.views :as advanced-settings]
             [status-im.ui.screens.help-center.views :as help-center]
@@ -84,8 +83,6 @@
      :component privacy-and-security/privacy-and-security}
     {:name      :appearance
      :component appearance/appearance}
-    {:name      :language-settings
-     :component language-settings/language-settings}
     {:name      :sync-settings
      :component sync-settings/sync-settings}
     {:name      :advanced-settings

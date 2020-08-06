@@ -39,11 +39,9 @@
    :max-height         36
    :background-color   colors/gray-lighter
    :padding-horizontal 10
-   :margin-right       16
    :align-items        :center
    :align-self         :center
-   :margin-top         10
-   :margin-left        56})
+   :margin-top         10})
 
 (def url-input
   {:flex                1

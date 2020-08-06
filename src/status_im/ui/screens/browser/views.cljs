@@ -10,8 +10,7 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.toolbar.actions :as actions]
-            [status-im.ui.components.toolbar.view :as toolbar.view]
+            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.webview :as components.webview]
             [status-im.ui.screens.browser.accounts :as accounts]
@@ -51,15 +50,17 @@
         [icons/icon :main-icons/refresh]])]))
 
 (defn toolbar [error? url url-original browser browser-id url-editing? unsafe?]
-  [toolbar.view/toolbar
-   {:browser? true}
-   [toolbar.view/nav-button
-    (actions/close (fn []
-                     (debounce/clear :browser/navigation-state-changed)
-                     (re-frame/dispatch [:navigate-back])
-                     (when error?
-                       (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id]))))]
-   [toolbar-content url url-original browser url-editing? unsafe?]])
+  [topbar/topbar
+   {:navigation  {:icon     :main-icons/close
+                  :on-press (fn []
+                              (debounce/clear :browser/navigation-state-changed)
+                              (re-frame/dispatch [:navigate-back])
+                              (when error?
+                                (re-frame/dispatch [:browser.ui/remove-browser-pressed browser-id])))}
+    :title-align :left
+    :title-component
+    [react/view {:flex 1}
+     [toolbar-content url url-original browser url-editing? unsafe?]]}])
 
 (defn- web-view-error [_ _ desc]
   (reagent/as-element

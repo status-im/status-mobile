@@ -620,6 +620,13 @@
        (assoc :show-input? true)))))
 
 (re-frame/reg-sub
+ :current-chat/metadata
+ :<- [:chats/current-raw-chat]
+ (fn [current-chat]
+   (select-keys current-chat
+                [:public? :group-chat :chat-id :chat-name :color])))
+
+(re-frame/reg-sub
  :current-chat/one-to-one-chat?
  :<- [:chats/current-raw-chat]
  (fn [current-chat]

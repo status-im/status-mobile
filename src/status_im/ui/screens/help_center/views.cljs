@@ -39,7 +39,7 @@
 
 (defn help-center []
   [react/view {:flex 1 :background-color colors/white}
-   [topbar/topbar {:title :t/need-help}]
+   [topbar/topbar {:title (i18n/label :t/need-help)}]
    [list/flat-list
     {:data      data
      :key-fn    (fn [_ i] (str i))

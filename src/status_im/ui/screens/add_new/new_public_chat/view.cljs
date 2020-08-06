@@ -9,7 +9,6 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.add-new.new-public-chat.db :as db]
             [status-im.chat.models :as chat.models]
-            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.icons.vector-icons :as icons])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -80,8 +79,9 @@
 (views/defview new-public-chat []
   (views/letsubs [topic [:public-group-topic]
                   error [:public-chat.new/topic-error-message]]
-    [react/view components.styles/flex
-     [topbar/topbar {:title :t/new-public-group-chat :modal? true}]
+    [react/view {:style {:flex 1}}
+     [topbar/topbar {:title  (i18n/label :t/new-public-group-chat)
+                     :modal? true}]
      [react/scroll-view {:style {:flex 1}}
       [react/view {:padding-horizontal 16}
        [react/view {:align-items :center :padding-vertical 8}
@@ -93,16 +93,16 @@
       [react/view {:margin-top 32}
        (for [[section chats] (chat.models/chats)]
          [react/view
-          [react/view {:margin-right               16 :padding-left 16 :padding-vertical 3
-                       :border-bottom-width        1 :border-bottom-color colors/gray-lighter
-                       :border-top-width           1 :border-top-color colors/gray-lighter
-                       :border-right-width         1 :border-right-color colors/gray-lighter
+          [react/view {:margin-right               16 :padding-left            16 :padding-vertical 3
+                       :border-bottom-width        1  :border-bottom-color     colors/gray-lighter
+                       :border-top-width           1  :border-top-color        colors/gray-lighter
+                       :border-right-width         1  :border-right-color      colors/gray-lighter
                        :border-bottom-right-radius 14 :border-top-right-radius 14}
            [quo/text {:weight :medium} section]]
           [react/view {:flex-direction :row :flex-wrap :wrap :margin-vertical 8 :padding-horizontal 16}
            (let [lang-topic (get-language-topic)
-                 chats (if (and (= section-featured section) lang-topic)
-                         (conj chats lang-topic)
-                         chats)]
+                 chats      (if (and (= section-featured section) lang-topic)
+                              (conj chats lang-topic)
+                              chats)]
              (for [chat chats]
                (render-topic chat)))]])]]]))

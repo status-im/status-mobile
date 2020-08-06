@@ -30,7 +30,7 @@
 (defview reset-card []
   (letsubs [disabled? [:keycard-reset-card-disabled?]]
     [react/view {:flex 1}
-     [topbar/topbar {:title :t/reset-card}]
+     [topbar/topbar {:title (i18n/label :t/reset-card)}]
      [react/view {:flex             1
                   :background-color colors/white}
       [react/view {:margin-top  71
@@ -67,7 +67,7 @@
             puk-retry-counter [:keycard/puk-retry-counter]
             pairing [:keycard-multiaccount-pairing]]
     [react/view {:flex 1}
-     [topbar/topbar {:title :t/status-keycard}]
+     [topbar/topbar {:title (i18n/label :t/status-keycard)}]
      [react/scroll-view {:flex 1}
       [react/view {:margin-top  47
                    :align-items :center}

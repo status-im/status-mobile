@@ -317,10 +317,9 @@
   (letsubs [wizard-state [:intro-wizard/generate-key]]
     [react/view {:style {:flex 1}}
      [topbar/topbar
-      {:navigation
-       {:icon                :main-icons/arrow-left
-        :accessibility-label :back-button
-        :handler             #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
+      {:border-bottom false
+       :navigation
+       {:on-press #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
      [react/view {:style {:flex            1
                           :justify-content :space-between}}
       [top-bar {:step :generate-key}]
@@ -333,9 +332,10 @@
   (letsubs [wizard-state [:intro-wizard/choose-key]]
     [react/view {:style {:flex 1}}
      [topbar/topbar
-      {:navigation
-       {:label    :t/cancel
-        :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
+      {:border-bottom false
+       :navigation
+       {:label    (i18n/label :t/cancel)
+        :on-press #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
      [react/view {:style {:flex 1
                           :justify-content :space-between}}
       [top-bar {:step :choose-key}]
@@ -349,12 +349,9 @@
      [topbar/topbar
       {:navigation
        (if (:recovering? wizard-state)
-         {:label   :t/cancel
-          :accessibility-label :back-button
-          :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}
-         {:icon    :main-icons/arrow-left
-          :accessibility-label :back-button
-          :handler #(re-frame/dispatch [:intro-wizard/navigate-back])})}]
+         {:label   (i18n/label :t/cancel)
+          :on-press #(re-frame/dispatch [:intro-wizard/navigate-back])}
+         {:on-press #(re-frame/dispatch [:intro-wizard/navigate-back])})}]
      [react/view {:style {:flex 1
                           :justify-content :space-between}}
       [top-bar {:step :select-key-storage}]
@@ -366,10 +363,9 @@
   (letsubs [wizard-state [:intro-wizard/enter-phrase]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [topbar/topbar
-      {:navigation
-       {:icon    :main-icons/arrow-left
-        :accessibility-label :back-button
-        :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
+      {:border-bottom false
+       :navigation
+       {:on-press #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
      [react/view {:style {:flex            1
                           :justify-content :space-between}}
       [top-bar {:step :enter-phrase}]
@@ -383,10 +379,9 @@
             existing-account? [:intro-wizard/recover-existing-account?]]
     [react/view {:style {:flex 1}}
      [topbar/topbar
-      {:navigation
-       {:icon    :main-icons/arrow-left
-        :accessibility-label :back-button
-        :handler #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
+      {:border-bottom false
+       :navigation
+       {:on-press #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
      [react/view {:style {:flex 1
                           :justify-content :space-between}}
       [top-bar {:step :recovery-success}]

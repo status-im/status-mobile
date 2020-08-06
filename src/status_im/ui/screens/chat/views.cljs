@@ -30,22 +30,18 @@
             [status-im.ui.screens.chat.components.input :as components]
             [status-im.ui.screens.chat.message.datemark :as message-datemark]))
 
-(defn topbar [current-chat]
-  [topbar/topbar
-   {:content      [toolbar-content/toolbar-content-view]
-    :show-border? true
-    :initial-title-padding 56
-    :navigation   {:icon                :main-icons/arrow-left
-                   :accessibility-label :back-button
-                   :handler
-                   #(re-frame/dispatch [:navigate-to :home])}
-    :accessories  [{:icon                :main-icons/more
-                    :accessibility-label :chat-menu-button
-                    :handler
-                    #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                         {:content (fn []
-                                                     [sheets/actions current-chat])
-                                          :height  256}])}]}])
+(defn topbar []
+  (let [current-chat @(re-frame/subscribe [:current-chat/metadata])]
+    [topbar/topbar
+     {:content           [toolbar-content/toolbar-content-view]
+      :navigation        {:on-press #(re-frame/dispatch [:navigate-to :home])}
+      :right-accessories [{:icon                :main-icons/more
+                           :accessibility-label :chat-menu-button
+                           :on-press
+                           #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                {:content (fn []
+                                                            [sheets/actions current-chat])
+                                                 :height  256}])}]}]))
 
 (defn add-contact-bar [public-key]
   (let [added? @(re-frame/subscribe [:contacts/contact-added? public-key])]
@@ -227,7 +223,7 @@
             @(re-frame/subscribe [:chats/current-chat])]
         [react/view {:style {:flex 1}}
          [connectivity/connectivity
-          [topbar current-chat]
+          [topbar]
           [react/view {:style {:flex 1}}
            (when-not group-chat
              [add-contact-bar chat-id])

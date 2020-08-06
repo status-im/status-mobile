@@ -44,15 +44,15 @@
             keycard? [:keycard-multiaccount?]]
     [react/keyboard-avoiding-view {:flex 1}
      [topbar/topbar
-      (cond-> {:title :t/account-settings}
+      (cond-> {:title (i18n/label :t/account-settings)}
         (and @new-account (not= "" (:name @new-account)))
-        (assoc :accessories [{:label :t/apply
-                              :handler
-                              #(do
-                                 (re-frame/dispatch [:wallet.accounts/save-account
-                                                     account
-                                                     @new-account])
-                                 (reset! new-account nil))}]))]
+        (assoc :right-accessories [{:label (i18n/label :t/apply)
+                                    :on-press
+                                    #(do
+                                       (re-frame/dispatch [:wallet.accounts/save-account
+                                                           account
+                                                           @new-account])
+                                       (reset! new-account nil))}]))]
      [react/scroll-view {:keyboard-should-persist-taps :handled
                          :style                        {:flex 1}}
       [react/view {:padding-bottom 28 :padding-top 10}
