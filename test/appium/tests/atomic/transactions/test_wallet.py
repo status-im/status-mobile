@@ -136,9 +136,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.done_button.click_until_presence_of_element(send_transaction.element_by_text_part('Invalid address'))
         send_transaction.ok_button.click()
         send_transaction.enter_recipient_address_input.set_value('0xDE709F2102306220921060314715629080E2fB77')
-        send_transaction.done_button.click()
-        if not send_transaction.element_by_text_part('Invalid address').is_element_displayed():
-            self.errors.append('Invalid EIP55 address is resolved correctly')
+        send_transaction.done_button.click_until_presence_of_element(send_transaction.element_by_text_part('Invalid address'))
         send_transaction.ok_button.click()
         self.errors.verify_no_errors()
 

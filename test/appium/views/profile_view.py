@@ -63,7 +63,7 @@ class InviteFriendsInContactsButton(BaseButton):
 
     def __init__(self, driver):
         super(InviteFriendsInContactsButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('invite-friends')
+        self.locator = self.Locator.accessibility_id('invite-friends-button')
 
 
 class NetworkSettingsButton(BaseButton):

@@ -316,13 +316,17 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         home = sign_in_view.create_user()
         home.invite_friends_button.click()
+        # TODO: referrals temporal flow
+        home.element_by_text('Invite').click()
         home.share_via_messenger()
-        home.find_text_part("Get Status at http://status.im")
-        home.click_system_back_button()
+        home.find_text_part("Hey join me on Status: https://join.status.im/u/0x")
+        home.click_system_back_button(2)
         home.plus_button.click()
         home.chats_menu_invite_friends_button.click()
+        # TODO: referrals temporal flow
+        home.element_by_text('Invite').click()
         home.share_via_messenger()
-        home.find_text_part("Get Status at http://status.im")
+        home.find_text_part("Hey join me on Status: https://join.status.im/u/0x")
 
     @marks.testrail_id(6312)
     @marks.medium
