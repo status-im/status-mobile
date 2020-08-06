@@ -143,6 +143,7 @@ in stdenv.mkDerivation rec {
     pushd ./android
     ${adhocEnvVars} ${pkgs.gradle}/bin/gradle \
       ${toString gradleOpts} \
+      --console=plain \
       --offline --stacktrace \
       -Dorg.gradle.daemon=false \
       -Dmaven.repo.local='${deps.gradle}' \
