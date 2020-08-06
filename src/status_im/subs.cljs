@@ -41,7 +41,8 @@
             status-im.ui.screens.keycard.subs
             status-im.ui.screens.keycard.settings.subs
             status-im.ui.screens.keycard.pin.subs
-            status-im.ui.screens.keycard.setup.subs))
+            status-im.ui.screens.keycard.setup.subs
+            [taoensso.timbre :as log]))
 
 ;; TOP LEVEL ===========================================================================================================
 
@@ -598,6 +599,9 @@
  :<- [:chats/current-chat-id]
  :<- [:chat/inputs]
  (fn [[chat-id inputs]]
+   (log/info "recompute current-chat-input"
+             "chat-id" chat-id
+             "suggestions" (get-in inputs [chat-id :suggestions]))
    (select-keys
     (get inputs chat-id)
     [:input-text :input-text-empty? :suggestions

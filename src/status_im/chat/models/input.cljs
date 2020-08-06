@@ -28,8 +28,12 @@
   "Set input text for current-chat. Takes db and input text and cofx
   as arguments and returns new fx. Always clear all validation messages."
   {:events [::input-text-changed]}
-  [{{:keys [current-chat-id] :as db} :db} new-input]
-  {:db (assoc-in db [:chat/inputs current-chat-id :text] new-input)})
+  [{{:keys [current-chat-id] :as db} :db :as cofx} new-input last-cursor]
+  (log/info "set-chat-input-text" new-input)
+  (fx/merge
+   cofx
+   {:db (assoc-in db [:chat/inputs current-chat-id :text] new-input)}
+   (mentions/recompute-input last-cursor)))
 
 (fx/defn clear-input-text
   [{{:keys [current-chat-id] :as db} :db}]

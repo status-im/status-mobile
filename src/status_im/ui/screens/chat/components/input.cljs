@@ -107,65 +107,69 @@
            (sort-by (comp string/lower-case :alias))
            seq))))
 
-(defn text-input
-  [{:keys [cooldown-enabled? on-text-change
-           set-active-panel text-input-ref text-input-height-atom]
-    {:keys [before-cursor after-cursor completing? cursor]} :input}]
-  [rn/view {:style (styles/text-input-wrapper)
-            :on-layout #(reset! text-input-height-atom
-                                (-> ^js % .-nativeEvent .-layout .-height))}
-   [rn/text-input
-    {:style                  (styles/text-input)
-     :ref                    text-input-ref
-     :maxFontSizeMultiplier  1
-     :accessibility-label    :chat-message-input
-     :text-align-vertical    :center
-     :multiline              true
-     :editable               (not cooldown-enabled?)
-     :blur-on-submit         false
-     :auto-focus             false
-     :on-focus               #(set-active-panel nil)
-     :on-change              #(on-text-change (.-text ^js (.-nativeEvent ^js %)))
-     :placeholder-text-color (:text-02 @colors/theme)
-     :placeholder            (if cooldown-enabled?
-                               (i18n/label :cooldown/text-input-disabled)
-                               (i18n/label :t/type-a-message))
-     :underlineColorAndroid  :transparent
-     :auto-capitalize        :sentences
+(defn text-input []
+  (let [last-cursor (atom nil)]
+    (fn [{:keys [cooldown-enabled? on-text-change
+                 set-active-panel text-input-ref text-input-height-atom]
+          {:keys [before-cursor after-cursor completing? cursor]} :input}]
+      [rn/view {:style (styles/text-input-wrapper)
+                :on-layout #(reset! text-input-height-atom
+                                    (-> ^js % .-nativeEvent .-layout .-height))}
+       [rn/text-input
+        {:style                  (styles/text-input)
+         :ref                    text-input-ref
+         :maxFontSizeMultiplier  1
+         :accessibility-label    :chat-message-input
+         :text-align-vertical    :center
+         :multiline              true
+         :editable               (not cooldown-enabled?)
+         :blur-on-submit         false
+         :auto-focus             false
+         :on-focus               #(set-active-panel nil)
+         :on-change              #(on-text-change (.-text ^js (.-nativeEvent ^js %)) @last-cursor)
+         :placeholder-text-color (:text-02 @colors/theme)
+         :placeholder            (if cooldown-enabled?
+                                   (i18n/label :cooldown/text-input-disabled)
+                                   (i18n/label :t/type-a-message))
+         :underlineColorAndroid  :transparent
+         :auto-capitalize        :sentences
 
-     ;; NOTE: the auto-completion isn't going to trigger any
-     ;; event of the text-input component
-     ;; We manage the selection prop to reposition the cursor
-     ;; and we reset the value here
-     :selection
-     (when cursor
-       (clj->js {:start cursor
-                 :end cursor}))
-     :on-selection-change
-     (fn [^js event]
-       (let [^js selection (.-selection (.-nativeEvent event))
-             start (.-start selection)
-             end (.-end selection)]
-         (when (= start end)
-           (re-frame/dispatch-sync
-            [::mentions/selection-change start]))))
-     :on-key-press
-     (fn [^js event]
-       (let [key (.-key (.-nativeEvent event))]
-         (when (= "@" key)
-           (re-frame/dispatch-sync
-            [::mentions/mention-pressed]))))}
-    [:<>
-     (for [[key part]
-           (map-indexed vector before-cursor)]
-       ^{:key (str key part)}
-       [input-part part])
-     (when completing?
-       [input-part  completing?])
-     (for [[key part]
-           (map-indexed vector after-cursor)]
-       ^{:key (str key part)}
-       [input-part part])]]])
+         ;; NOTE: the auto-completion isn't going to trigger any
+         ;; event of the text-input component
+         ;; We manage the selection prop to reposition the cursor
+         ;; and we reset the value here
+         :selection
+         (when cursor
+           (clj->js {:start cursor
+                     :end cursor}))
+         :on-selection-change
+         (fn [^js event]
+           (let [^js selection (.-selection (.-nativeEvent event))
+                 start (.-start selection)
+                 end (.-end selection)]
+             (if (= start end)
+               (do
+                 (reset! last-cursor start)
+                 (re-frame/dispatch-sync
+                  [::mentions/selection-change start]))
+               (reset! last-cursor nil))))
+         :on-key-press
+         (fn [^js event]
+           (let [key (.-key (.-nativeEvent event))]
+             (when (= "@" key)
+               (re-frame/dispatch-sync
+                [::mentions/mention-pressed]))))}
+        [:<>
+         (for [[key part]
+               (map-indexed vector before-cursor)]
+           ^{:key (str key part)}
+           [input-part part])
+         (when completing?
+           [input-part  completing?])
+         (for [[key part]
+               (map-indexed vector after-cursor)]
+           ^{:key (str key part)}
+           [input-part part])]]])))
 
 (defn mention-item
   [{:keys [identicon alias public-key]}]
@@ -211,6 +215,7 @@
                  show-send show-image show-stickers show-extensions input
                  sending-image input-focus show-audio message-view-height-atom message-view-width-atom]
           :as   props}]
+      (log/info "redraw chat-input")
       [rn/view {:style (styles/toolbar)}
        [rn/view {:style (styles/actions-wrapper (and (not show-extensions)
                                                      (not show-image)))}
@@ -297,6 +302,7 @@
           (when (seq @previous-layout)
             (rn/configure-next
              (:ease-opacity-200 rn/custom-animations))))
+        (log/info "redraw chat-toolbar")
         [chat-input
          {:set-active-panel         set-active-panel
           :active-panel             active-panel
@@ -307,7 +313,7 @@
                                          (clear-input))
           :text-value               input-text
           :input                    input
-          :on-text-change           #(re-frame/dispatch-sync [::input/input-text-changed %])
+          :on-text-change           #(re-frame/dispatch [::input/input-text-changed %1 %2])
           :cooldown-enabled?        cooldown-enabled?
           :show-send                show-send
           :show-stickers            show-stickers

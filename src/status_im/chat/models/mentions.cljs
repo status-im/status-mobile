@@ -94,6 +94,11 @@
                                  (string/join "|@" mentioned)
                                  " " "\\s")
                            ")")))]
+    (log/info "compute-all-text-parts"
+              "completing?" completing?
+              "completed?" completed?
+              "text" text
+              :suggestions suggestions)
     (cond-> {:users users
              :text text
              :before-cursor (tag-text-parts text-before-cursor
@@ -154,7 +159,9 @@
                         (get-in db [:chat/inputs current-chat-id :users])
                         messages)
                 contacts)]
-    (println :mention mentionable-users)
+    (println :mention-foo mentionable-users
+             "chat-id" current-chat-id
+             "suggestions:" (get-suggestions mentionable-users ""))
     {:db (-> db
              (assoc-in [:chat/inputs current-chat-id :users]
                        mentionable-users)
@@ -172,24 +179,26 @@
    relevant further key-presses would be `Backspace` and ` `"
   {:events [::selection-change]}
   [{{:keys [current-chat-id chats] :as db} :db} cursor]
-  (log/info :selection-changed)
-  (let [input             (-> (get-in db [:chat/inputs current-chat-id])
-                              (compute-all-text-parts cursor))
-        input-text        (recompute-input-text input)
-        input-text-empty? (if (seq input-text)
-                            (-> input-text string/trim string/blank?)
-                            true)]
-    {:db (assoc-in db
-                   [:chat/inputs current-chat-id]
-                   (assoc input
-                          :input-text input-text
-                          :input-text-empty? input-text-empty?))}))
+  (log/info :selection-changed current-chat-id "cursor" cursor)
+  (when cursor
+    (let [input             (-> (get-in db [:chat/inputs current-chat-id])
+                                (compute-all-text-parts cursor))
+          input-text        (recompute-input-text input)
+          input-text-empty? (if (seq input-text)
+                              (-> input-text string/trim string/blank?)
+                              true)]
+      {:db (assoc-in db
+                     [:chat/inputs current-chat-id]
+                     (assoc input
+                            :input-text input-text
+                            :input-text-empty? input-text-empty?))})))
 
 (fx/defn compute-completion
   "When the user selects a suggestions we complete the current mention
    with it."
   {:events [::complete-mention]}
   [{{:keys [current-chat-id] :as db} :db} alias public-key]
+  (log/info "compute-completion")
   (let [{:keys [cursor users before-cursor completing?] :as input}
         (get-in db [:chat/inputs current-chat-id])
         before-cursor
