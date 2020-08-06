@@ -308,6 +308,10 @@
   (log/debug "[native-module] chaos-mode-update")
   (.chaosModeUpdate ^js (status) on on-result))
 
+(defn toggle-webview-debug [on]
+  (log/debug "[native-module] toggle-webview-debug" on)
+  (.toggleWebviewDebug ^js (status) on))
+
 (defn get-nodes-from-contract
   [rpc-endpoint contract-address on-result]
   (log/debug "[native-module] get-nodes-from-contract")

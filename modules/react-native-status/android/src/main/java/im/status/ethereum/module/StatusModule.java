@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+
 import android.preference.PreferenceManager;
 
 import androidx.core.content.FileProvider;
@@ -16,6 +17,7 @@ import androidx.core.content.FileProvider;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.WebView;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebStorage;
@@ -1048,6 +1050,22 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             cookieSyncManager.stopSync();
             cookieSyncManager.sync();
         }
+    }
+
+    @ReactMethod
+    public void toggleWebviewDebug(final boolean val) {
+        Log.d(TAG, "toggleWebviewDebug");
+        final Activity activity = getCurrentActivity();
+        if (activity == null) {
+            return;
+        }
+
+        activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    WebView.setWebContentsDebuggingEnabled(val);
+                }
+        });
     }
 
     @ReactMethod

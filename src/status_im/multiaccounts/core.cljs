@@ -66,6 +66,11 @@
    (native-module/chaos-mode-update on (constantly nil))))
 
 (re-frame/reg-fx
+ ::webview-debug-changed
+ (fn [value]
+   (native-module/toggle-webview-debug value)))
+
+(re-frame/reg-fx
  ::blank-preview-flag-changed
  (fn [flag]
    (native-module/set-blank-preview-flag flag)))
@@ -85,6 +90,15 @@
   (multiaccounts.update/multiaccount-update cofx
                                             :dev-mode? dev-mode?
                                             {}))
+
+(fx/defn switch-webview-debug
+  {:events [:multiaccounts.ui/switch-webview-debug]}
+  [{:keys [db] :as cofx} value]
+  (fx/merge cofx
+            {::webview-debug-changed value}
+            (multiaccounts.update/multiaccount-update
+             :webview-debug (boolean value)
+             {})))
 
 (fx/defn switch-chaos-mode
   [{:keys [db] :as cofx} chaos-mode?]

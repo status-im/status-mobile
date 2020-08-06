@@ -11,7 +11,8 @@
 (defn- normal-mode-settings-data [{:keys [network-name
                                           current-log-level
                                           waku-bloom-filter-mode
-                                          current-fleet]}]
+                                          current-fleet
+                                          webview-debug]}]
   [{:size                 :small
     :title                (i18n/label :t/network)
     :accessibility-label  :network-button
@@ -63,6 +64,15 @@
       #(re-frame/dispatch [:navigate-to :notifications-advanced-settings])
       :chevron             true})
    {:size                   :small
+    :title                   "Webview debug"
+    :accessibility-label     :webview-debug-switch
+    :container-margin-bottom 8
+    :on-press
+    #(re-frame/dispatch
+      [:multiaccounts.ui/switch-webview-debug (not webview-debug)])
+    :accessory               :switch
+    :active                  webview-debug}
+   {:size                    :small
     :title                   (i18n/label :t/waku-bloom-filter-mode)
     :accessibility-label     :waku-bloom-filter-mode-settings-switch
     :container-margin-bottom 8
@@ -71,7 +81,7 @@
       [:multiaccounts.ui/waku-bloom-filter-mode-switched (not waku-bloom-filter-mode)])
     :accessory               :switch
     :active                  waku-bloom-filter-mode}
-   #_{:size                   :small
+   #_{:size                    :small
       :title                   :t/dev-mode
       :accessibility-label     :dev-mode-settings-switch
       :container-margin-bottom 8
@@ -119,7 +129,7 @@
     [quo/list-item props]))
 
 (views/defview advanced-settings []
-  (views/letsubs [{:keys [chaos-mode?]} [:multiaccount]
+  (views/letsubs [{:keys [chaos-mode? webview-debug]} [:multiaccount]
                   network-name             [:network-name]
                   waku-bloom-filter-mode   [:waku/bloom-filter-mode]
                   current-log-level        [:log-level/current-log-level]
@@ -133,6 +143,7 @@
                     :current-fleet          current-fleet
                     :dev-mode?              false
                     :waku-bloom-filter-mode waku-bloom-filter-mode
+                    :webview-debug          webview-debug
                     :chaos-mode?            chaos-mode?})
        :key-fn    (fn [_ i] (str i))
        :render-fn render-item}]]))
