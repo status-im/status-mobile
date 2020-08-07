@@ -1,6 +1,10 @@
 (ns status-im.acquisition.core
   (:require [re-frame.core :as re-frame]
+            [clojure.string :as string]
             [status-im.utils.fx :as fx]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.ens :as ens]
+            [status-im.ethereum.contracts :as contracts]
             [status-im.acquisition.chat :as chat]
             [status-im.acquisition.advertiser :as advertiser]
             [status-im.acquisition.persistance :as persistence]
@@ -84,12 +88,23 @@
                                                   (when-not (nil? tx)
                                                     (re-frame/dispatch [::add-tx-watcher tx])))})))))
 
-(fx/defn create
-  {}
-  [_]
-  {::get-referrer nil})
+(re-frame/reg-fx
+ ::resolve-contract
+ (fn [{:keys [chain contract on-success]}]
+   (let [register (get ens/ens-registries chain)]
+     (when contract
+       (if (string/starts-with? contract "0x")
+         (on-success contract)
+         (ens/resolver register contract on-success))))))
 
-(fx/defn login
-  {}
-  [_]
-  {::check-referrer nil})
+(fx/defn create [{:keys [db]}]
+  {::resolve-contract {:chain      (ethereum/chain-keyword db)
+                       :contract   (contracts/get-address db :status/acquisition)
+                       :on-success #(re-frame/dispatch [:set-in [:acquisition :contract] %])}
+   ::get-referrer     nil})
+
+(fx/defn login [{:keys [db]}]
+  {::resolve-contract {:chain      (ethereum/chain-keyword db)
+                       :contract   (contracts/get-address db :status/acquisition)
+                       :on-success #(re-frame/dispatch [:set-in [:acquisition :contract] %])}
+   ::check-referrer   nil})

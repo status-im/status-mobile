@@ -11,9 +11,8 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.invite.style :as styles]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.invite.events :as events]
+            [status-im.ui.components.invite.events :as invite.events]
             [status-im.ui.components.invite.utils :refer [transform-tokens]]
-            [status-im.utils.config :as config]
             [quo.react-native :as rn]
             [clojure.string :as cstr]))
 
@@ -191,8 +190,8 @@
       (let [accounts        @(re-frame/subscribe [:accounts-without-watch-only])
             default-account @(re-frame/subscribe [:multiaccount/default-account])
             account         (or @account* default-account)
-            reward          @(re-frame/subscribe [::events/default-reward])
-            starter-pack    @(re-frame/subscribe [::events/starter-pack])]
+            reward          @(re-frame/subscribe [::invite.events/default-reward])
+            starter-pack    @(re-frame/subscribe [::invite.events/starter-pack])]
         [rn/view {:flex 1}
          [topbar/topbar {:modal?       true
                          :show-border? true
@@ -210,27 +209,27 @@
             (i18n/label :t/invite-privacy-policy1)
             " "
             [quo/text {:color    :link
-                       :on-press #(re-frame/dispatch [::events/terms-and-conditions])}
+                       :on-press #(re-frame/dispatch [::invite.events/terms-and-conditions])}
              (i18n/label :t/invite-privacy-policy2)]]]]
          [toolbar/toolbar
           {:show-border? true
            :center
            [quo/button {:type     :secondary
-                        :on-press #(re-frame/dispatch [::events/generate-invite
+                        :on-press #(re-frame/dispatch [::invite.events/generate-invite
                                                        {:address (get account :address)}])}
             (i18n/label :t/invite-button)]}]]))))
 
 (defn button []
-  (if-not config/referrals-invite-enabled?
+  (if-not @(re-frame/subscribe [::invite.events/enabled])
     [rn/view {:style {:align-items :center}}
      [rn/view {:style (:tiny spacing/padding-vertical)}
-      [quo/button {:on-press            #(re-frame/dispatch [::events/share-link nil])
+      [quo/button {:on-press            #(re-frame/dispatch [::invite.events/share-link nil])
                    :accessibility-label :invite-friends-button}
        (i18n/label :t/invite-friends)]]]
-    (let [reward @(re-frame/subscribe [::events/default-reward])]
+    (let [reward @(re-frame/subscribe [::invite.events/default-reward])]
       [rn/view {:style {:align-items :center}}
        [rn/view {:style (:tiny spacing/padding-vertical)}
-        [quo/button {:on-press            #(re-frame/dispatch [::events/open-invite])
+        [quo/button {:on-press            #(re-frame/dispatch [::invite.events/open-invite])
                      :accessibility-label :invite-friends-button}
          (i18n/label :t/invite-friends)]]
        [rn/view {:style (merge (:tiny spacing/padding-vertical)
@@ -248,7 +247,7 @@
             (i18n/label :t/invite-reward {:value  (str (get reward :eth-amount) " ETH")})]])]])))
 
 (defn list-item [{:keys [accessibility-label]}]
-  (if-not config/referrals-invite-enabled?
+  (if-not @(re-frame/subscribe [::invite.events/enabled])
     [quo/list-item
      {:theme               :accent
       :title               (i18n/label :t/invite-friends)
@@ -257,8 +256,8 @@
       :on-press            (fn []
                              (re-frame/dispatch [:bottom-sheet/hide])
                              (js/setTimeout
-                              #(re-frame/dispatch [::events/share-link nil]) 250))}]
-    (let [amount @(re-frame/subscribe [::events/default-reward])]
+                              #(re-frame/dispatch [::invite.events/share-link nil]) 250))}]
+    (let [amount @(re-frame/subscribe [::invite.events/default-reward])]
       [quo/list-item
        {:theme               :accent
         :title               (i18n/label :t/invite-friends)
@@ -267,7 +266,7 @@
         :accessibility-label accessibility-label
         :on-press            #(do
                                 (re-frame/dispatch [:bottom-sheet/hide])
-                                (re-frame/dispatch [::events/open-invite]))}])))
+                                (re-frame/dispatch [::invite.events/open-invite]))}])))
 
 
 

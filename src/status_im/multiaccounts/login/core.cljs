@@ -180,6 +180,7 @@
                 (and platform/android?
                      notifications-enabled?)
                 (assoc ::notifications/enable nil))
+              (acquisition/login)
               (initialize-appearance)
               ;; NOTE: initializing mailserver depends on user mailserver
               ;; preference which is why we wait for config callback
@@ -228,24 +229,31 @@
 
 (fx/defn create-only-events
   [{:keys [db] :as cofx}]
-  (let [{:keys [multiaccount :multiaccount/accounts]} db]
+  (let [{:keys [multiaccount multiaccounts :multiaccount/accounts]} db
+        {:keys [creating?]} (:multiaccounts/login db)
+        recovering?         (get-in db [:intro-wizard :recovering?])
+        first-account?      (and creating?
+                                 (not recovering?)
+                                 (empty? multiaccounts))]
     (fx/merge cofx
-              {:db (-> db
-                       (dissoc :multiaccounts/login)
-                       (assoc
-                         ;;NOTE when login the filters are initialized twice
-                         ;;once for contacts and once for chats
-                         ;;when creating an account we do it only once by calling
-                         ;;load-filters directly because we don't have chats and contacts
-                         ;;later on there is a check that filters have been initialized twice
-                         ;;so here we set it at 1 already so that it passes the check once it has
-                         ;;been initialized
-                        :filters/initialized 1))
+              {:db                   (-> db
+                                         (dissoc :multiaccounts/login)
+                                         (assoc
+                                           ;;NOTE when login the filters are initialized twice
+                                           ;;once for contacts and once for chats
+                                           ;;when creating an account we do it only once by calling
+                                           ;;load-filters directly because we don't have chats and contacts
+                                           ;;later on there is a check that filters have been initialized twice
+                                           ;;so here we set it at 1 already so that it passes the check once it has
+                                           ;;been initialized
+                                          :filters/initialized 1))
                :filters/load-filters [[(:waku-enabled multiaccount) []]]}
               (finish-keycard-setup)
-              (protocol/initialize-protocol {:mailservers []
-                                             :mailserver-ranges {}
-                                             :mailserver-topics {}
+              (when first-account?
+                (acquisition/create))
+              (protocol/initialize-protocol {:mailservers        []
+                                             :mailserver-ranges  {}
+                                             :mailserver-topics  {}
                                              :default-mailserver true})
               (multiaccounts/switch-preview-privacy-mode-flag)
               (logging/set-log-level (:log-level multiaccount))
@@ -259,9 +267,6 @@
   (let [{:keys [key-uid password save-password? creating?]} (:multiaccounts/login db)
         multiaccounts                                       (:multiaccounts/multiaccounts db)
         recovering?                                         (get-in db [:intro-wizard :recovering?])
-        first-account?                                      (and creating?
-                                                                 (not recovering?)
-                                                                 (empty? multiaccounts))
         login-only?                                         (not (or creating?
                                                                      recovering?
                                                                      (keycard-setup? cofx)))
@@ -288,9 +293,6 @@
               (if login-only?
                 (login-only-events key-uid password save-password?)
                 (create-only-events))
-              (if first-account?
-                (acquisition/create)
-                (acquisition/login))
               (when recovering?
                 (navigation/navigate-to-cofx :tabs {:screen :chat-stack
                                                     :params {:screen :home}})))))
