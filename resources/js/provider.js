@@ -103,7 +103,7 @@
                     }
                     else
                     {
-                        callback.resolve(data.result);
+                        callback.resolve(data.result.result);
                     }
                 }
                 else if (callback.results)
@@ -183,7 +183,7 @@
          var syncResponse = getSyncResponse({method: method});
          if (syncResponse){
              return new Promise(function (resolve, reject) {
-                                        resolve(syncResponse);
+                                        resolve(syncResponse.result);
                                     });
          }
 
