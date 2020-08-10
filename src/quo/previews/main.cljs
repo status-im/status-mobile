@@ -82,17 +82,20 @@
      (reset! navigation-state state-obj)
      (resolve true))))
 
-(defn preview-screens []
+(defn preview-stack []
   (let [stack (navigation/create-stack)]
-    [navigation/navigation-container
-     {:ref             navigation/set-navigator-ref
-      :initial-state   @navigation-state
-      :on-state-change persist-state!}
-     [stack {}
-      (into [{:name      :main
-              :insets    {:top false}
-              :component main-screen}]
-            screens)]]))
+    [stack {}
+     (into [{:name      :main
+             :insets    {:top false}
+             :component main-screen}]
+           screens)]))
+
+(defn preview-screens []
+  [navigation/navigation-container
+   {:ref             navigation/set-navigator-ref
+    :initial-state   @navigation-state
+    :on-state-change persist-state!}
+   [preview-stack]])
 
 
 

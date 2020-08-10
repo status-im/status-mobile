@@ -20,6 +20,8 @@
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.screens.routing.core :as navigation]
             [status-im.utils.platform :as platform]
+            [quo.previews.main :as quo.preview]
+            [status-im.utils.config :as config]
             [status-im.ui.screens.chat.image.preview.views :as image-preview]
             [status-im.ui.screens.notifications-settings.views :as notifications-settings]))
 
@@ -52,58 +54,63 @@
                        ;; https://github.com/react-navigation/react-navigation/issues/6520
                        (when platform/ios?
                          {:mode :modal}))
-     [(if logged-in?
-        {:name      :tabs
-         :insets    {:top false}
-         :component tabs}
-        {:name      :intro-stack
-         :insets    {:top    false
-                     :bottom true}
-         :component intro-login-stack/intro-stack})
-      {:name      :stickers-pack-modal
-       :component stickers/pack-modal}
-      {:name      :tribute-learn-more
-       :component tr-to-talk/learn-more}
-      {:name         :welcome
-       :back-handler :noop
-       :component    home/welcome}
-      {:name       :new-chat
-       :on-focus   [::new-chat.events/new-chat-focus]
-       :transition :presentation-ios
-       :component  new-chat/new-chat}
-      {:name       :new-contact
-       :on-focus   [::new-chat.events/new-chat-focus]
-       :transition :presentation-ios
-       :component  new-chat/new-contact}
-      {:name       :new-public-chat
-       :transition :presentation-ios
-       :insets     {:bottom true}
-       :component  new-public-chat/new-public-chat}
-      {:name       :edit-group-chat-name
-       :transition :presentation-ios
-       :insets     {:bottom true}
-       :component  group-chat/edit-group-chat-name}
-      {:name       :create-group-chat
-       :transition :presentation-ios
-       :component  chat-stack/new-group-chat}
-      {:name       :referral-invite
-       :transition :presentation-ios
-       :insets     {:bottom true}
-       :component  invite/referral-invite}
-      {:name       :add-participants-toggle-list
-       :on-focus   [::group.events/add-participants-toggle-list]
-       :transition :presentation-ios
-       :insets     {:bottom true}
-       :component  group-chat/add-participants-toggle-list}
-      {:name      :contact-code
-       :component wallet.components/contact-code}
-      {:name      :qr-scanner
-       :insets    {:top false :bottom false}
-       :component qr-scanner/qr-scanner}
-      {:name      :image-preview
-       :insets    {:top false :bottom false}
-       :component image-preview/preview-image}
-      {:name         :notifications-settings
-       :back-handler :noop
-       :insets       {:bottom true}
-       :component    notifications-settings/notifications-settings}]]))
+     (concat
+      [(if logged-in?
+         {:name      :tabs
+          :insets    {:top false}
+          :component tabs}
+         {:name      :intro-stack
+          :insets    {:top    false
+                      :bottom true}
+          :component intro-login-stack/intro-stack})
+       {:name      :stickers-pack-modal
+        :component stickers/pack-modal}
+       {:name      :tribute-learn-more
+        :component tr-to-talk/learn-more}
+       {:name         :welcome
+        :back-handler :noop
+        :component    home/welcome}
+       {:name       :new-chat
+        :on-focus   [::new-chat.events/new-chat-focus]
+        :transition :presentation-ios
+        :component  new-chat/new-chat}
+       {:name       :new-contact
+        :on-focus   [::new-chat.events/new-chat-focus]
+        :transition :presentation-ios
+        :component  new-chat/new-contact}
+       {:name       :new-public-chat
+        :transition :presentation-ios
+        :insets     {:bottom true}
+        :component  new-public-chat/new-public-chat}
+       {:name       :edit-group-chat-name
+        :transition :presentation-ios
+        :insets     {:bottom true}
+        :component  group-chat/edit-group-chat-name}
+       {:name       :create-group-chat
+        :transition :presentation-ios
+        :component  chat-stack/new-group-chat}
+       {:name       :referral-invite
+        :transition :presentation-ios
+        :insets     {:bottom true}
+        :component  invite/referral-invite}
+       {:name       :add-participants-toggle-list
+        :on-focus   [::group.events/add-participants-toggle-list]
+        :transition :presentation-ios
+        :insets     {:bottom true}
+        :component  group-chat/add-participants-toggle-list}
+       {:name      :contact-code
+        :component wallet.components/contact-code}
+       {:name      :qr-scanner
+        :insets    {:top false :bottom false}
+        :component qr-scanner/qr-scanner}
+       {:name      :image-preview
+        :insets    {:top false :bottom false}
+        :component image-preview/preview-image}
+       {:name         :notifications-settings
+        :back-handler :noop
+        :insets       {:bottom true}
+        :component    notifications-settings/notifications-settings}]
+      (when config/quo-preview-enabled?
+        [{:name      :quo-preview
+          :insets    {:top false :bottom false}
+          :component quo.preview/preview-stack}]))]))

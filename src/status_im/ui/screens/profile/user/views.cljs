@@ -115,6 +115,13 @@
        :accessory           (when mnemonic
                               [components.common/counter {:size 22} 1])
        :on-press            #(re-frame/dispatch [:navigate-to :privacy-and-security])}]
+     (when config/quo-preview-enabled?
+       [quo/list-item
+        {:icon                :main-icons/appearance
+         :title               "Quo Preview"
+         :accessibility-label :appearance-settings-button
+         :chevron             true
+         :on-press            #(re-frame/dispatch [:navigate-to :quo-preview])}])
      [quo/list-item
       {:icon                :main-icons/appearance
        :title               (i18n/label :t/appearance)

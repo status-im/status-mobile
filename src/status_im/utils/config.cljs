@@ -40,6 +40,7 @@
 (def keycard-test-menu-enabled? (enabled? (get-config :KEYCARD_TEST_MENU "0")))
 (def qr-test-menu-enabled? (enabled? (get-config :QR_READ_TEST_MENU "0")))
 (def referrals-invite-enabled? (enabled? (get-config :ENABLE_REFERRAL_INVITE "0")))
+(def quo-preview-enabled? (enabled? (get-config :ENABLE_QUO_PREVIEW "0")))
 
 ;; CONFIG VALUES
 (def log-level
