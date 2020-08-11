@@ -2,7 +2,7 @@ import re
 
 from tests import marks, bootnode_address, mailserver_address, camera_access_error_text, \
     photos_access_error_text, test_dapp_url, test_dapp_name, mailserver_ams, mailserver_gc, \
-    mailserver_hk, used_fleet, common_password
+    mailserver_hk, used_fleet, common_password, delete_alert_text
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten
 from views.sign_in_view import SignInView
@@ -25,6 +25,55 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.swipe_down()
         if not profile_view.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
             self.driver.fail('Profile picture was not updated')
+
+    @marks.testrail_id(6318)
+    @marks.medium
+    def test_can_delete_several_multiaccounts(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        profile = sign_in.profile_button.click()
+        profile.logout()
+        if sign_in.ok_button.is_element_displayed():
+            sign_in.ok_button.click()
+        sign_in.your_keys_more_icon.click()
+        sign_in.generate_new_key_button.click()
+        sign_in.generate_key_button.click()
+        sign_in.next_button.click()
+        sign_in.next_button.click()
+        sign_in.create_password_input.set_value(common_password)
+        sign_in.next_button.click()
+        sign_in.confirm_your_password_input.set_value(common_password)
+        sign_in.next_button.click()
+        sign_in.maybe_later_button.click_until_presence_of_element(sign_in.lets_go_button)
+        sign_in.lets_go_button.click()
+
+        sign_in.just_fyi('Delete 2nd multiaccount')
+        public_key, username = sign_in.get_public_key_and_username(return_username=True)
+        profile.privacy_and_security_button.click()
+        profile.delete_my_profile_button.click()
+        for element in (username, delete_alert_text):
+            if not profile.element_by_text(delete_alert_text).is_element_displayed():
+                self.errors.append('Required %s is not shown when deleting multiaccount' % element)
+        profile.delete_profile_button.click()
+        if profile.element_by_text('Profile deleted').is_element_displayed():
+            self.driver.fail('Profile is deleted without confirmation with password')
+        profile.delete_my_profile_password_input.set_value(common_password)
+        profile.delete_profile_button.click_until_presence_of_element(profile.element_by_text('Profile deleted'))
+        profile.ok_button.click()
+
+        sign_in.just_fyi('Delete last multiaccount')
+        sign_in.sign_in()
+        sign_in.profile_button.click()
+        profile.privacy_and_security_button.click()
+        profile.delete_my_profile_button.click()
+        profile.delete_my_profile_password_input.set_value(common_password)
+        profile.delete_profile_button.click()
+        profile.ok_button.click()
+        if not sign_in.get_started_button.is_element_displayed():
+            self.errors.append('No redirected to carousel view after deleting last multiaccount')
+        self.errors.verify_no_errors()
+
+
 
     @marks.testrail_id(5741)
     @marks.high

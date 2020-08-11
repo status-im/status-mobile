@@ -1,6 +1,6 @@
 import time
 
-from tests import marks, camera_access_error_text
+from tests import marks, camera_access_error_text, photos_access_error_text
 from tests.users import basic_user, dummy_user, ens_user_ropsten
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -188,19 +188,80 @@ class TestChatManagement(SingleDeviceTestCase):
         if not warning_text.is_element_displayed():
             self.driver.fail('Error is not shown for invalid public key')
 
-    @marks.testrail_id(5466)
+
+    @marks.testrail_id(6319)
     @marks.medium
-    def test_deny_camera_access_scanning_contact_code(self):
+    def test_deny_access_camera_and_gallery(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
+
+        home.just_fyi("Denying access to camera in universal qr code scanner")
+        home.plus_button.click()
+        home.universal_qr_scanner_button.click()
+        home.deny_button.click()
+        home.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
+        home.ok_button.click()
+        home.get_back_to_home_view()
+
+        home.just_fyi("Denying access to camera in scan chat key view")
         home.plus_button.click()
         contacts_view = home.start_new_chat_button.click()
         contacts_view.scan_contact_code_button.click()
         contacts_view.deny_button.click()
         contacts_view.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
         contacts_view.ok_button.click()
-        contacts_view.scan_contact_code_button.click()
-        contacts_view.deny_button.wait_for_visibility_of_element(2)
+        home.get_back_to_home_view()
+
+        home.just_fyi("Denying access to gallery at attempt to send image")
+        chat = home.add_contact(basic_user['public_key'])
+        chat.show_images_button.click()
+        chat.deny_button.click()
+        chat.image_from_gallery_button.click()
+        chat.deny_button.click()
+        contacts_view.element_by_text(photos_access_error_text).wait_for_visibility_of_element(3)
+        contacts_view.ok_button.click()
+        home.get_back_to_home_view()
+
+        home.just_fyi("Denying access to camera in wallet view")
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.scan_qr_button.click()
+        wallet.deny_button.click()
+        wallet.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
+        wallet.ok_button.click()
+
+        home.just_fyi("Denying access to camera in send transaction > scan address view")
+        wallet.accounts_status_account.click()
+        send_transaction = wallet.send_transaction_button.click()
+        send_transaction.chose_recipient_button.click()
+        send_transaction.scan_qr_code_button.click()
+        send_transaction.deny_button.click()
+        send_transaction.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
+        send_transaction.ok_button.click()
+        wallet.back_button.click()
+
+        home.just_fyi("Allow access to camera in universal qr code scanner and check it in other views")
+        wallet.home_button.click()
+        home.plus_button.click()
+        home.universal_qr_scanner_button.click()
+        home.allow_button.click()
+        if not home.element_by_text('Scan QR code').is_element_displayed():
+            self.errors.append('Scan QR code is not opened after denying and allowing permission to the camera')
+        home.cancel_button.click()
+        wallet = home.wallet_button.click()
+        wallet.scan_qr_button.click()
+        if not home.element_by_text('Scan QR code').is_element_displayed():
+            self.errors.append('Scan QR code is not opened after allowing permission to the camera from univesal QR code'
+                               ' scanner view')
+        wallet.cancel_button.click()
+        wallet.home_button.click()
+        home.get_chat(basic_user['username']).click()
+        chat.show_images_button.click()
+        chat.allow_button.click()
+        if not chat.first_image_from_gallery.is_element_displayed():
+            self.errors.append('Image previews are not shown after denying and allowing access to gallery')
+        self.errors.verify_no_errors()
+
 
     @marks.testrail_id(5757)
     @marks.medium
@@ -590,10 +651,9 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         device_1.just_fyi("check that PNs are still enabled in profile after closing 'background notification centre' "
                           "message and relogin")
-        home_1.profile_button.click()
-        profile_1.push_notification_toggle.scroll_to_element()
-        if not profile_1.push_notification_toggle.is_element_image_equals_template('enabled_toggle.png'):
-            self.errors.append('Toggle is not enabled')
+        device_1.open_notification_bar()
+        if not device_1.element_by_text_part("Background notification service").is_element_displayed():
+            self.errors.append("Background notification service is not started after relogin")
 
         self.errors.verify_no_errors()
 

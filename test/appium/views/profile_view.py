@@ -557,6 +557,24 @@ class PrivacyAndSecurityButton(BaseButton):
         super(PrivacyAndSecurityButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('privacy-and-security-settings-button')
 
+
+class DeleteMyProfileButton(BaseButton):
+    def __init__(self, driver):
+        super(DeleteMyProfileButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Delete my profile')
+
+
+class DeleteMyProfilePasswordInput(BaseEditBox):
+    def __init__(self, driver):
+        super(DeleteMyProfilePasswordInput, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//android.widget.EditText')
+
+
+class DeleteProfileButton(BaseButton):
+    def __init__(self, driver):
+        super(DeleteProfileButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('(//*[@text="Delete profile"])[2]')
+
 class UseMobileDataToggle(BaseButton):
     def __init__(self, driver):
         super(UseMobileDataToggle, self).__init__(driver)
@@ -629,6 +647,9 @@ class ProfileView(BaseView):
         self.dapp_permissions_button = DappPermissionsButton(self.driver)
         self.revoke_access_button = RevokeAccessButton(self.driver)
         self.privacy_and_security_button = PrivacyAndSecurityButton(self.driver)
+        self.delete_my_profile_button = DeleteMyProfileButton(self.driver)
+        self.delete_my_profile_password_input = DeleteMyProfilePasswordInput(self.driver)
+        self.delete_profile_button = DeleteProfileButton(self.driver)
 
         # Backup recovery phrase
         self.backup_recovery_phrase_button = BackupRecoveryPhraseButton(self.driver)

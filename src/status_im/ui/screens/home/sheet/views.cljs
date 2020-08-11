@@ -21,11 +21,12 @@
     [quo/text {:size   :large
                :weight :bold}
      (i18n/label :t/open-home)]
-    [quo/button {:type     :icon
-                 :theme    :icon
-                 :on-press #(hide-sheet-and-dispatch
-                             [::qr-scanner/scan-code
-                              {:handler ::qr-scanner/on-scan-success}])}
+    [quo/button {:type                :icon
+                 :theme               :icon
+                 :accessibility-label :universal-qr-scanner
+                 :on-press            #(hide-sheet-and-dispatch
+                                        [::qr-scanner/scan-code
+                                         {:handler ::qr-scanner/on-scan-success}])}
      :main-icons/qr]]
    [quo/list-item
     {:theme               :accent

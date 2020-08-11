@@ -105,19 +105,3 @@ class TestDApps(SingleDeviceTestCase):
             self.errors.append("Subaccount is not selected after relogin in Dapps!")
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5654)
-    @marks.low
-    def test_can_proceed_dapp_usage_after_transacting_it(self):
-        user = basic_user
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.recover_access(passphrase=user['passphrase'])
-        chat = home_view.join_public_chat(home_view.get_random_chat_name())
-        chat.back_button.click()
-        status_test_dapp = home_view.open_status_test_dapp()
-        status_test_dapp.wait_for_d_aap_to_load()
-        status_test_dapp.assets_button.click()
-        send_transaction_view = status_test_dapp.request_stt_button.click()
-        send_transaction_view.ok_got_it_button.click()
-        send_transaction_view.sign_transaction()
-        if not status_test_dapp.assets_button.is_element_displayed():
-            self.driver.fail('Oops! Cannot proceed to use Status Test Dapp.')

@@ -22,6 +22,11 @@ class DeleteChatButton(BaseButton):
         super(DeleteChatButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id("delete-chat-button")
 
+class UniversalQrCodeScannerButton(BaseButton):
+    def __init__(self, driver):
+        super(UniversalQrCodeScannerButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("universal-qr-scanner")
+
 
 class ClearHistoryButton(BaseButton):
     def __init__(self, driver):
@@ -174,6 +179,7 @@ class HomeView(BaseView):
         self.chat_url_text = ChatUrlText(self.driver)
 
         self.start_new_chat_button = StartNewChatButton(self.driver)
+        self.universal_qr_scanner_button = UniversalQrCodeScannerButton(self.driver)
         self.new_group_chat_button = NewGroupChatButton(self.driver)
         self.join_public_chat_button = JoinPublicChatButton(self.driver)
         self.invite_friends_button = InviteFriendsButton(self.driver)

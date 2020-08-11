@@ -156,22 +156,6 @@ class TestWalletManagement(SingleDeviceTestCase):
                 self.errors.append('Collectibles can be sent from wallet')
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5467)
-    @marks.medium
-    def test_deny_camera_access_scanning_wallet_adders(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        wallet = sign_in.wallet_button.click()
-        wallet.set_up_wallet()
-        wallet.accounts_status_account.click()
-        send_transaction = wallet.send_transaction_button.click()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.scan_qr_code_button.click()
-        send_transaction.deny_button.click()
-        send_transaction.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
-        send_transaction.ok_button.click()
-        send_transaction.scan_qr_code_button.click()
-        send_transaction.deny_button.wait_for_visibility_of_element(2)
 
     @marks.testrail_id(5435)
     @marks.medium
@@ -248,6 +232,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
         wallet_view.collectibles_button.click()
+        wallet_view.cryptokitties_in_collectibles_button.wait_for_element(60)
         wallet_view.cryptokitties_in_collectibles_button.click()
         web_view = wallet_view.view_in_cryptokitties_button.click()
         web_view.element_by_text('cryptokitties.co').click()

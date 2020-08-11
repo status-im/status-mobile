@@ -230,5 +230,6 @@ class TestBrowsing(SingleDeviceTestCase):
             dapp_view.confirm()
             dapp_view.progress_bar.wait_for_invisibility_of_element(20)
             if not dapp_view.web_page.is_element_image_equals_template(urls[url]):
-                self.driver.fail('Web page does not match expected template %s' % urls[url])
+                self.errors.append('Web page does not match expected template %s' % urls[url])
             dapp_view.cross_icon.click()
+        self.errors.verify_no_errors()
