@@ -119,7 +119,8 @@
                          :title    (or ens-name (utils/get-shortened-address public-key))
                          :subtitle (i18n/label :t/join-new-private-chat)
                          :on-press (fn []
-                                     (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted false] 3000))}])
+                                     (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted false] 3000)
+                                     (re-frame/dispatch [:search/home-filter-changed nil]))}])
        (when valid-public?
          [quo/list-item {:theme    :accent
                          :icon     :main-icons/public-chat
@@ -127,7 +128,8 @@
                          :subtitle (i18n/label :t/join-new-public-chat)
                          :on-press (fn []
                                      (re-frame/dispatch [:chat.ui/start-public-chat search-value])
-                                     (re-frame/dispatch [:set :public-group-topic nil]))}])])))
+                                     (re-frame/dispatch [:set :public-group-topic nil])
+                                     (re-frame/dispatch [:search/home-filter-changed nil]))}])])))
 
 (views/defview chats-list []
   (views/letsubs [loading? [:chats/loading?]
