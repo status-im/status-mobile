@@ -54,7 +54,7 @@
     "react-native-reanimated": "^1.7.0",
     "react-native-redash": "^14.2.2",
     "react-native-safe-area-context": "^2.0.0",
-    "react-native-screens": "^2.3.0",
+    "react-native-screens": "^2.10.1",
     "react-native-shake": "^3.3.1",
     "react-native-splash-screen": "^3.2.0",
     "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#v2.5.23",

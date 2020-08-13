@@ -17,6 +17,7 @@
 (def navigation-container (reagent/adapt-react-class NavigationContainer))
 
 (def use-focus-effect useFocusEffect)
+(def use-is-focused react-navigation/useIsFocused)
 (def use-callback useCallback)
 (def use-effect useEffect)
 
@@ -92,14 +93,13 @@
            (handle-on-screen-blur
             (oget props "navigation"))
            (handle-on-screen-focus options)
-           (let [props'   (js->clj props :keywordize-keys true)
-                 focused? (oget props "navigation" "isFocused")]
+           (let [props' (js->clj props :keywordize-keys true)]
              (reagent/as-element
               [react/safe-area-consumer
                (fn [insets]
                  (reagent/as-element
                   [react/view {:style (wrapped-screen-style options insets)}
-                   [component props' (focused?)]]))])))))
+                   [component props']]))])))))
 
 (defn- get-screen [navigator]
   (let [screen (reagent/adapt-react-class (oget navigator "Screen"))]

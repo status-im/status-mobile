@@ -2,6 +2,8 @@
   (:require [quo.animated :as reanimated]
             [quo.core :as quo]
             [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.ui.screens.routing.core :as routing]
             [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
@@ -83,13 +85,19 @@
             (when on-press
               {:on-press #(on-press token)}))]))
 
-(views/defview assets []
-  (views/letsubs [{:keys [tokens]} [:wallet/all-visible-assets-with-values]
-                  currency [:wallet/currency]]
-    [list/flat-list {:data               tokens
-                     :default-separator? false
-                     :key-fn             :name
-                     :render-fn          (render-asset (:code currency))}]))
+(defn assets-impl []
+  (let [focused (routing/use-is-focused)]
+    (when focused
+      (reagent/as-element
+       (let [{:keys [tokens]} @(re-frame/subscribe [:wallet/all-visible-assets-with-values])
+             currency         @(re-frame/subscribe [:wallet/currency])]
+         [list/flat-list {:data               tokens
+                          :default-separator? false
+                          :key-fn             :name
+                          :render-fn          (render-asset (:code currency))}])))))
+
+(def assets
+  (reagent/adapt-react-class assets-impl))
 
 (views/defview send-button []
   (views/letsubs [account [:multiaccount/default-account]]
