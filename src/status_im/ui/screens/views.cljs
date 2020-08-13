@@ -58,7 +58,9 @@
           (merge recover.views/bottom-sheet))]
     [quo/bottom-sheet opts
      (when content
-       [content])]))
+       (if (vector? content)
+         content
+         [content]))]))
 
 (def debug? ^boolean js/goog.DEBUG)
 

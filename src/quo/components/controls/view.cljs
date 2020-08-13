@@ -2,6 +2,7 @@
   (:require [reagent.core :as reagent]
             [cljs-bean.core :as bean]
             [quo.react :as react]
+            [quo.platform :as platform]
             [quo.animated :as animated]
             [quo.gesture-handler :as gh]
             [quo.design-system.colors :as colors]
@@ -10,7 +11,7 @@
 
 (defn control-builder [component]
   (fn [props]
-    (let [{:keys [value onChange disabled]}
+    (let [{:keys [value onChange disabled animated]}
           (bean/bean props)
           state       (animated/use-value 0)
           tap-state   (animated/use-value (:undetermined gh/states))
@@ -25,9 +26,15 @@
                        (fn []
                          (animated/with-spring-transition state (:lazy animated/springs)))
                        [])
-          press-end   (fn []
-                        (when (and (not disabled) onChange)
-                          (onChange (not value))))]
+          press-end   (react/callback
+                       (fn []
+                         (when (and (not disabled) onChange)
+                           (onChange (not value))))
+                       [onChange disabled])
+          pressable   (cond
+                        (not onChange) animated/view
+                        animated       gh/tap-gesture-handler
+                        :else          gh/touchable-highlight)]
       (animated/code!
        (fn []
          (animated/cond* (animated/eq tap-state (:end gh/states))
@@ -40,9 +47,9 @@
          (animated/set state (if (true? value) 1 0)))
        [value])
       (reagent/as-element
-       [gh/tap-gesture-handler (merge tap-handler
-                                      {:shouldCancelWhenOutside true
-                                       :enabled                 (boolean (and onChange (not disabled)))})
+       [pressable (merge tap-handler
+                         {:shouldCancelWhenOutside true
+                          :enabled                 (boolean (and onChange (not disabled)))})
         [animated/view
          [component {:transition transition
                      :hold       hold}]]]))))

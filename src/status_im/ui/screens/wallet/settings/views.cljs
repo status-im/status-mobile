@@ -10,6 +10,8 @@
             [status-im.ui.components.search-input.view :as search-input]
             [status-im.ui.components.colors :as colors]))
 
+(def item-heigth 64)
+
 (defn toolbar []
   [topbar/topbar
    {:title :t/wallet-assets
@@ -23,23 +25,20 @@
   (re-frame/dispatch event))
 
 (defn custom-token-actions-view [{:keys [custom?] :as token}]
-  (fn []
-    [react/view
+  [react/view
+   [quo/list-item
+    {:theme    :accent
+     :title    (i18n/label :t/token-details)
+     :icon     :main-icons/warning
+     :on-press #(hide-sheet-and-dispatch
+                 [:navigate-to :wallet-custom-token-details token])}]
+   (when custom?
      [quo/list-item
-      {:theme    :accent
-       :title    (i18n/label :t/token-details)
-       :icon     :main-icons/warning
+      {:theme    :negative
+       :title    (i18n/label :t/remove-token)
+       :icon     :main-icons/delete
        :on-press #(hide-sheet-and-dispatch
-                   [:navigate-to :wallet-custom-token-details token])}]
-     (when custom?
-       [quo/list-item
-        {:theme    :negative
-         :title    (i18n/label :t/remove-token)
-         :icon     :main-icons/delete
-         :on-press #(hide-sheet-and-dispatch
-                     [:wallet.custom-token.ui/remove-pressed token])}])]))
-
-(def atom-eq (atom {}))
+                   [:wallet.custom-token.ui/remove-pressed token])}])])
 
 (defn render-token [{:keys [symbol name icon color checked?] :as token}]
   [quo/list-item {:active        checked?
@@ -54,14 +53,38 @@
                                    [:wallet.settings/toggle-visible-token (keyword symbol) (not checked?)])
                   :on-long-press #(re-frame/dispatch
                                    [:bottom-sheet/show-sheet
-                                    {:content (custom-token-actions-view token)}])}])
+                                    {:content [custom-token-actions-view token]}])}])
+
+(defn render-header [{:keys [title]}]
+  (when title
+    [quo/list-header title]))
+
+(defn header []
+  [react/view {:margin-top 16}
+   [quo/list-item
+    {:theme    :accent
+     :title    (i18n/label :t/add-custom-token)
+     :icon     :main-icons/add
+     :on-press #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]])
+
+(defn key-fn [{:keys [address checked?]}]
+  (str address checked?))
+
+(defn list-item-layout [_ idx]
+  #js {:length item-heigth
+       :offset (* item-heigth idx)
+       :index  idx})
 
 (defn manage-assets []
   (reagent/with-let [search-active? (reagent/atom false)
                      tokens (re-frame/subscribe [:wallet/filtered-grouped-chain-tokens])]
     (let [{search-filter        :search-filter
            {custom-tokens  true
-            default-tokens nil} :tokens} @tokens]
+            default-tokens nil} :tokens} @tokens
+          sections                       [{:title (when (seq custom-tokens) (i18n/label :t/custom))
+                                           :data  custom-tokens}
+                                          {:title (i18n/label :t/default)
+                                           :data  default-tokens}]]
       [react/view {:style {:flex             1
                            :background-color colors/white}}
        [toolbar]
@@ -78,30 +101,13 @@
            :on-change      (fn [text]
                              (re-frame/dispatch [:search/token-filter-changed text]))}]]
         [list/section-list
-         {:header
-          [react/view {:margin-top 16}
-           [quo/list-item
-            {:theme :accent
-             :title (i18n/label :t/add-custom-token)
-             :icon  :main-icons/add
-             :on-press
-             #(re-frame/dispatch [:navigate-to :wallet-add-custom-token])}]]
-          :sections                    (concat
-                                        (when (seq custom-tokens)
-                                          [{:title (i18n/label :t/custom)
-                                            :data  custom-tokens}])
-                                        [{:title (i18n/label :t/default)
-                                          :data  default-tokens}])
-          :key-fn                      (fn [{:keys [address checked?]}]
-                                         (str address checked?))
-          :get-item-layout             (fn [_ idx]
-                                         #js {:length 64
-                                              :offset (* 64 idx)
-                                              :index  idx})
+         {:header                      [header]
+          :sections                    sections
+          :key-fn                      key-fn
+          :get-item-layout             list-item-layout
           :stickySectionHeadersEnabled false
-          :render-section-header-fn
-          (fn [{:keys [title]}]
-            [quo/list-header title])
+          :remove-clipped-subviews     false
+          :render-section-header-fn    render-header
           :render-fn                   render-token}]]])
     (finally
       (re-frame/dispatch [:search/token-filter-changed nil])
