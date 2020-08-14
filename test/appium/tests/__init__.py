@@ -61,3 +61,5 @@ connection_is_secure_text = "Connection is secure. Make sure you really trust th
 
 test_dapp_url = 'simpledapp.eth'
 test_dapp_name = 'simpledapp.eth'
+
+emojis =  {'thumbs-up': 2, 'thumbs-down': 3, 'love': 1, 'laugh': 4, 'angry': 6, 'sad': 5}

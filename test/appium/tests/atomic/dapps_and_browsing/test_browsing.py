@@ -34,14 +34,15 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view.element_by_text_part('свободную энциклопедию').click()
         browsing_view.element_by_text_part('Свободный контент')
         browsing_view.browser_previous_page_button.click()
+        browsing_view.wait_for_element_starts_with_text('свободную энциклопедию')
 
         browsing_view.just_fyi('Relogin and check that tap on "Next" navigates to next page')
         browsing_view.relogin()
         home_view.dapp_tab_button.click()
         dapp_view.element_by_text_part(ru_url).click()
+        browsing_view.wait_for_element_starts_with_text('свободную энциклопедию')
         browsing_view.browser_next_page_button.click()
-        if not browsing_view.element_by_text_part('Свободный контент').is_element_displayed(20):
-            self.driver.fail("Browser history is not kept after relogin")
+        browsing_view.element_by_text_part('Свободный контент').wait_for_element(30)
 
     @marks.testrail_id(5438)
     @marks.medium

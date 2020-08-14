@@ -299,7 +299,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.errors.append('Send button is shown on watch-only wallet')
         if not wallet_view.element_by_text('Watch-only').is_element_displayed():
             self.errors.append('No "Watch-only" label is shown on watch-only wallet')
-        wallet_view.receive_transaction_button.click()
+        wallet_view.receive_transaction_button.click_until_presence_of_element(wallet_view.address_text.text)
         if wallet_view.address_text.text[2:] != basic_user['address']:
             self.errors.append('Wrong address %s is shown in "Receive" popup for watch-only account ' % wallet_view.address_text.text)
         wallet_view.close_share_popup()

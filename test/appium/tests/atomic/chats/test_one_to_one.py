@@ -300,8 +300,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         for message in device_1_chat.image_chat_item, device_1_chat.chat_element_by_text(image_description):
             if not message.is_element_displayed():
                 self.errors.append('Image or description is not shown in chat after sending for sender')
-        if not device_1_chat.image_chat_item.is_element_image_equals_template('message_image_sender.png'):
-            self.errors.append("Image doesn't match expected template for sender")
         device_1_chat.show_images_button.click()
         device_1_chat.image_from_gallery_button.click()
         device_1_chat.click_system_back_button()
@@ -317,8 +315,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         for message in device_2_chat.image_chat_item, device_2_chat.chat_element_by_text(image_description):
             if not message.is_element_displayed():
                 self.errors.append('Image or description is not shown in chat after sending for receiver')
-        if not device_2_chat.image_chat_item.is_element_image_equals_template('message_image_receiver.png'):
-            self.errors.append("Image doesn't match expected template for receiver")
         device_2_chat.image_chat_item.long_press_element()
         for element in device_2_chat.reply_message_button, device_2_chat.save_image_button:
             if not element.is_element_displayed():
@@ -763,18 +759,19 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 'url': 'https://join.status.im/u/%sinvalid' % ens_user['public_key'],
                 'error': 'Please enter or scan a valid chat key'
             },
-            'ens_another_domain':{
-                'url': ens_user['ens_another_domain'],
-                'username': ens_user['username']
-            },
+            # TODO: comment until clarification case with scanning QR with ENS names only
+            # 'ens_another_domain':{
+            #     'url': ens_user['ens_another_domain'],
+            #     'username': ens_user['username']
+            # },
             'own_profile_key': {
                 'url': basic_user['public_key'],
                 'error': "That's you"
             },
-            'ens_without_stateofus_domain': {
-                'url': ens_user['ens'],
-                'username': ens_user['username']
-            },
+            # 'ens_without_stateofus_domain': {
+            #     'url': ens_user['ens'],
+            #     'username': ens_user['username']
+            # },
             'other_user_profile_key': {
                 'url': ens_user['public_key'],
                 'username': ens_user['username']

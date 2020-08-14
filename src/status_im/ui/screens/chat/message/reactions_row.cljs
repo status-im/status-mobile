@@ -11,7 +11,8 @@
               :style  {:width        16
                        :height       16
                        :margin-right 4}}]
-   [quo/text {:style (styles/reaction-quantity-style {:own own})}
+   [quo/text {:accessibility-label (str "emoji-" emoji-id "-is-own-" own)
+              :style               (styles/reaction-quantity-style {:own own})}
     quantity]])
 
 (defn message-reactions [message reactions]

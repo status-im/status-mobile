@@ -25,7 +25,8 @@
      (for [[id resource] constants/reactions
            :let          [active (own-reactions id)]]
        ^{:key id}
-       [rn/touchable-opacity {:on-press #(send-emoji id)}
+       [rn/touchable-opacity {:accessibility-label (str "pick-emoji-" id)
+                              :on-press             #(send-emoji id)}
         [rn/view {:style (styles/reaction-button active)}
          [rn/image {:source resource
                     :style  {:height 32

@@ -29,7 +29,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         amount = chat_1.get_unique_amount()
 
         home_1.just_fyi('Send %s ETH in 1-1 chat and check it for sender and receiver: Address requested' % amount)
-        chat_1.commands_button.click()
+        chat_1.commands_button.click_until_presence_of_element(chat_1.send_command)
         send_transaction = chat_1.send_command.click()
         if not send_transaction.get_username_in_transaction_bottom_sheet_button(recipient_username).is_element_displayed():
             self.driver.fail('%s is not shown in "Send Transaction" bottom sheet' % recipient_username)

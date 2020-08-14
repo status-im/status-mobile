@@ -3,7 +3,7 @@ import dateutil.parser
 
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
-from tests import common_password
+from tests import emojis
 from views.base_element import BaseButton, BaseEditBox, BaseText, BaseElement
 from views.base_view import BaseView, ProgressBar
 from views.profile_view import ProfilePictureElement, ProfileAddressText
@@ -345,15 +345,7 @@ class ChatElementByText(BaseText):
             except NoSuchElementException:
                 ChatView(self.driver).reconnect()
 
-    @property
-    def status(self):
-        class StatusText(BaseText):
-            def __init__(self, driver, parent_locator: str):
-                super(StatusText, self).__init__(driver)
-                text = "//android.widget.TextView[@text='Not sent. Tap for options']"
-                self.locator = self.Locator.xpath_selector(parent_locator + text)
 
-        return StatusText(self.driver, self.locator.value).wait_for_element(10)
 
     @property
     def image_in_reply(self):
@@ -496,6 +488,27 @@ class ChatElementByText(BaseText):
             return RepliedToUsernameText(self.driver, self.message_locator).text
         except NoSuchElementException:
             return ''
+
+    def emojis_below_message(self, emoji: str = 'thumbs-up', own=True):
+        class EmojisNumber(BaseText):
+            def __init__(self, driver, parent_locator: str):
+                self.own = own
+                self.emoji = emoji
+                self.emojis_id = 'emoji-' + str(emojis[self.emoji]) + '-is-own-' + str(self.own).lower()
+                super(EmojisNumber, self).__init__(driver)
+
+                self.locator = self.Locator.xpath_selector(
+                    parent_locator + '/../..//*[@content-desc="%s"]' % self.emojis_id)
+
+            @property
+            def text(self):
+                try:
+                    text = self.find_element().text
+                    self.driver.info('%s is %s for %s where my reaction is set on message is %s' % (self.name, text, self.emoji, str(self.own)))
+                    return text
+                except NoSuchElementException:
+                    return 0
+        return int(EmojisNumber(self.driver, self.locator.value).text)
 
 
 class EmptyPublicChatMessage(BaseText):
@@ -740,6 +753,14 @@ class ChatView(BaseView):
     def quote_message(self, message = str):
         self.element_by_text_part(message).long_press_element()
         self.reply_message_button.click()
+
+    def set_reaction(self, message: str,  emoji: str = 'thumbs-up'):
+        key = emojis[emoji]
+        self.element_by_text_part(message).long_press_element()
+        element = BaseButton(self.driver)
+        element.locator = element.Locator.accessibility_id('pick-emoji-%s' % key)
+        element.click()
+        element.wait_for_invisibility_of_element()
 
     def view_profile_long_press(self, message = str):
         self.chat_element_by_text(message).long_press_element()
