@@ -124,7 +124,7 @@ public class NewMessageSignalHandler {
     //is probably to pass the universal link as param instead of the chatId.
     public Intent getOpenAppIntent(String chatId) {
         Intent intent = getOpenAppIntent();
-        intent.setData(Uri.parse("status-im://chat/private/" + chatId));
+        intent.setData(Uri.parse("status-im://p/" + chatId));
         return intent;
     }
 
