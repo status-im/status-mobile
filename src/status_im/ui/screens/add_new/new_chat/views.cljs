@@ -64,13 +64,13 @@
                   {:keys [state ens-name public-key error]} [:contacts/new-identity]]
     [react/view {:style {:flex 1}}
      [topbar/topbar
-      {:title      (i18n/label :t/new-chat)
-       :modal?      true
+      {:title  (i18n/label :t/new-chat)
+       :modal? true
        :right-accessories
        [{:icon                :qr
          :accessibility-label :scan-contact-code-button
-         :handler             #(re-frame/dispatch [::qr-scanner/scan-code
-                                                   {:title   (i18n/label :t/new-contact)
+         :on-press            #(re-frame/dispatch [::qr-scanner/scan-code
+                                                   {:title   (i18n/label :t/new-chat)
                                                     :handler :contact/qr-code-scanned}])}]}]
      [react/view {:flex-direction :row
                   :padding        16}
@@ -113,14 +113,15 @@
   (views/letsubs [{:keys [state ens-name public-key error]} [:contacts/new-identity]]
     [react/view {:style {:flex 1}}
      [topbar/topbar
-      {:title       :t/new-contact
-       :modal?      true
-       :accessories [{:icon                :qr
-                      :accessibility-label :scan-contact-code-button
-                      :handler             #(re-frame/dispatch [::qr-scanner/scan-code
-                                                                {:title        (i18n/label :t/new-contact)
-                                                                 :handler      :contact/qr-code-scanned
-                                                                 :new-contact? true}])}]}]
+      {:title  (i18n/label :t/new-contact)
+       :modal? true
+       :right-accessories
+       [{:icon                :qr
+         :accessibility-label :scan-contact-code-button
+         :on-press            #(re-frame/dispatch [::qr-scanner/scan-code
+                                                   {:title        (i18n/label :t/new-contact)
+                                                    :handler      :contact/qr-code-scanned
+                                                    :new-contact? true}])}]}]
      [react/view {:flex-direction :row
                   :padding        16}
       [react/view {:flex          1

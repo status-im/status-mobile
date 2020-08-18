@@ -37,7 +37,7 @@
            :navigation
            {:icon                :main-icons/back
             :accessibility-label :back-button
-            :handler             #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
+            :on-press            #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
          [rn/view {:style {:flex               1
                            :justify-content    :space-between
                            :padding-vertical   16

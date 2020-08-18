@@ -30,8 +30,8 @@
             (when (= type :watch)
               {:right-accessories
                [{:icon     :qr
-                 :handler #(re-frame/dispatch [:wallet.add-new/qr-scanner
-                                               {:handler :wallet.add-new/qr-scanner-result}])}]}))]))
+                 :on-press #(re-frame/dispatch [:wallet.add-new/qr-scanner
+                                                {:handler :wallet.add-new/qr-scanner-result}])}]}))]))
 
 (defn common-settings [account]
   [react/view {:margin-horizontal 16}
