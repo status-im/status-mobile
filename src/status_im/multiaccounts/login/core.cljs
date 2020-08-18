@@ -224,7 +224,7 @@
                  :on-success #(re-frame/dispatch [::get-settings-callback %])}]}
               (when save-password?
                 (keychain/save-user-password key-uid password))
-              (keychain/save-auth-method key-uid (or new-auth-method auth-method)))))
+              (keychain/save-auth-method key-uid (or new-auth-method auth-method keychain/auth-method-none)))))
 
 (fx/defn create-only-events
   [{:keys [db] :as cofx}]
