@@ -254,7 +254,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
         wallet_view.account_name_input.send_keys(account_name)
         wallet_view.account_color_button.select_color_by_position(1)
-        if wallet_view.get_account_options_by_name(account_name).is_element_displayed():
+        if wallet_view.get_account_by_name(account_name).is_element_displayed():
             self.driver.fail('Account is added without password')
         wallet_view.enter_your_password_input.send_keys('000000')
         wallet_view.add_account_generate_account_button.click()
@@ -299,7 +299,7 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.errors.append('Send button is shown on watch-only wallet')
         if not wallet_view.element_by_text('Watch-only').is_element_displayed():
             self.errors.append('No "Watch-only" label is shown on watch-only wallet')
-        wallet_view.receive_transaction_button.click_until_presence_of_element(wallet_view.address_text.text)
+        wallet_view.receive_transaction_button.click_until_presence_of_element(wallet_view.address_text)
         if wallet_view.address_text.text[2:] != basic_user['address']:
             self.errors.append('Wrong address %s is shown in "Receive" popup for watch-only account ' % wallet_view.address_text.text)
         wallet_view.close_share_popup()
@@ -335,7 +335,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
         wallet_view.account_name_input.send_keys(account_name)
         wallet_view.add_account_generate_account_button.click()
-        if wallet_view.get_account_options_by_name(account_name).is_element_displayed():
+        if wallet_view.get_account_by_name(account_name).is_element_displayed():
             self.driver.fail('Account is added without seed phrase')
         wallet_view.enter_seed_phrase_input.set_value(str(wallet_users['C']['passphrase']).upper())
         wallet_view.add_account_generate_account_button.click()
@@ -375,7 +375,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
         wallet_view.account_name_input.send_keys(account_name)
         wallet_view.add_account_generate_account_button.click()
-        if wallet_view.get_account_options_by_name(account_name).is_element_displayed():
+        if wallet_view.get_account_by_name(account_name).is_element_displayed():
             self.driver.fail('Account is added with wrong private key')
         wallet_view.enter_a_private_key_input.set_value(wallet_users['C']['private_key'])
         wallet_view.add_account_generate_account_button.click()

@@ -239,7 +239,7 @@ class AccountElementButton(BaseButton):
     def __init__(self, driver, account_name):
         super(AccountElementButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
-            "//android.widget.HorizontalScrollView//*[@text='%s']/.." % account_name)
+            "//*[@content-desc='accountcard%s']" % account_name)
 
     def color_matches(self, expected_color_image_name: str):
         amount_text = BaseText(self.driver)
@@ -291,7 +291,7 @@ class AddCustomTokenButton(BaseButton):
 class AddAccountButton(BaseButton):
     def __init__(self, driver):
         super(AddAccountButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Add account')
+        self.locator = self.Locator.accessibility_id('add-new-account')
 
 
 class GenerateAnAccountButton(BaseButton):
