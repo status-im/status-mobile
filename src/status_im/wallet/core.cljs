@@ -623,16 +623,9 @@
 (fx/defn restart-wallet-service
   [{:keys [db] :as cofx}]
   (when (:multiaccount db)
-    (let [state            (:wallet-service/state db)
-          syncing-allowed? (mobile-network-utils/syncing-allowed? cofx)]
+    (let [syncing-allowed? (mobile-network-utils/syncing-allowed? cofx)]
       (log/info "restart-wallet-service"
-                "syncing-allowed" syncing-allowed?
-                "state" state)
-      (cond
-        (and (not syncing-allowed?)
-             (not= state :stopped))
-        (stop-wallet cofx)
-
-        (and syncing-allowed?
-             (not= state :started))
-        (start-wallet cofx)))))
+                "syncing-allowed" syncing-allowed?)
+      (if syncing-allowed?
+        (start-wallet cofx)
+        (stop-wallet cofx)))))
