@@ -30,8 +30,8 @@
        [react/view {:style {:flex-direction :row}}
         (if prices-loading?
           [react/small-loading-indicator :colors/white-persist]
-          [react/text {:style                   {:color colors/white-persist :font-weight "500"}
-                       :accessibility-label     "account-total-value"} portfolio-value])
+          [react/text {:style               {:color colors/white-persist :font-weight "500"}
+                       :accessibility-label "account-total-value"} portfolio-value])
         [react/text {:style {:color colors/white-transparent-persist :font-weight "500"}} (str " " (:code currency))]]
        [react/touchable-highlight
         {:on-press #(re-frame/dispatch [:show-popover
@@ -39,10 +39,12 @@
         [icons/icon :main-icons/share {:color colors/white-persist}]]]
       [react/view
        [react/text {:style {:color colors/white-persist :font-weight "500" :line-height 22}} name]
-       [react/text {:number-of-lines 1 :ellipsize-mode :middle
-                    :style {:line-height 22 :font-size 13
-                            :font-family "monospace"
-                            :color colors/white-transparent-70-persist}}
+       [quo/text {:number-of-lines 1
+                  :ellipsize-mode   :middle
+                  :size             :small
+                  :monospace        true
+                  :style            {:line-height 22
+                                     :color       colors/white-transparent-70-persist}}
         address]]]]))
 
 (defn add-card []

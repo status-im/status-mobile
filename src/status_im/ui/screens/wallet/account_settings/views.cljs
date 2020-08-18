@@ -83,12 +83,15 @@
         [property (i18n/label :t/wallet-address)
          [copyable-text/copyable-text-view
           {:copied-text address}
-          [react/text {:style {:margin-top 6 :font-family "monospace"}} address]]]
+          [quo/text {:style     {:margin-top 6}
+                     :monospace true}
+           address]]]
         (when-not (= type :watch)
           [property (i18n/label :t/derivation-path)
            [copyable-text/copyable-text-view
             {:copied-text path}
-            [react/text {:style {:margin-top 6 :font-family "monospace"}} path]]])
+            [quo/text {:style     {:margin-top 6}
+                       :monospace true} path]]])
         (when-not (= type :watch)
           [property (i18n/label :t/storage)
            (i18n/label (if keycard?

@@ -50,18 +50,20 @@
          [react/small-loading-indicator :colors/white-persist]
          [react/text {:style {:font-size 32 :color colors/white-persist :font-weight "600"}} portfolio-value])
        [react/text {:style {:font-size 32 :color colors/white-transparent-persist :font-weight "600"}} (str " " (:code currency))]]
-      [react/text {:number-of-lines 1 :ellipsize-mode :middle
-                   :style           {:width (/ window-width 3)
-                                     :line-height 22 :font-size 13
-                                     :font-family "monospace"
-                                     :color colors/white-transparent-70-persist}}
+      [quo/text {:number-of-lines 1
+                 :ellipsize-mode  :middle
+                 :monospace       true
+                 :size            :small
+                 :style           {:width       (/ window-width 3)
+                                   :line-height 22
+                                   :color       colors/white-transparent-70-persist}}
        (ethereum/normalized-hex address)]]
      [react/view {:position :absolute :top 12 :right 12}
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-popover {:view :share-account :address address}])}
-       [icons/icon :main-icons/share {:color colors/white-persist
+       [icons/icon :main-icons/share {:color               colors/white-persist
                                       :accessibility-label :share-wallet-address-icon}]]]
-     [react/view {:height                     button-group-height :background-color colors/black-transparent-20
-                  :border-bottom-right-radius 8 :border-bottom-left-radius 8 :flex-direction :row}
+     [react/view {:height                     button-group-height :background-color          colors/black-transparent-20
+                  :border-bottom-right-radius 8                   :border-bottom-left-radius 8 :flex-direction :row}
       (if (= type :watch)
         [react/view {:flex 1 :align-items :center :justify-content :center}
          [react/text {:style {:margin-left 8 :color colors/white-persist}}

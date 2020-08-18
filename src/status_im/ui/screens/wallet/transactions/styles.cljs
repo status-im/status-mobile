@@ -47,9 +47,7 @@
    :font-size    16})
 
 (def address-hash
-  {:flex-shrink 1
-   :font-size 16
-   :color     colors/gray})
+  {:flex-shrink 1})
 
 (defn transaction-icon-background [color]
   {:justify-content  :center

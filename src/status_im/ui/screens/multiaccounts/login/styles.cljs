@@ -28,10 +28,7 @@
    :font-weight "500"})
 
 (def login-badge-pubkey
-  {:margin-top  4
-   :text-align  :center
-   :color       colors/gray
-   :font-family "monospace"})
+  {:margin-top 4})
 
 (def password-container
   {:margin-top 24

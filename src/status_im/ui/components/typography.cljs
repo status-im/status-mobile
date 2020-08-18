@@ -1,6 +1,5 @@
 (ns status-im.ui.components.typography
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def default-font-family "Inter")
 (defn default-style []
@@ -37,17 +36,15 @@
                (dissoc style :typography :nested?))]
     (-> style
         (assoc :font-family
-               (if (= (:font-family style) "monospace")
-                 (if platform/ios? "Menlo-Regular" "monospace")
-                 (str default-font-family "-"
-                      (case font-weight
-                        "400" (when-not (= font-style :italic)
-                                "Regular")
-                        "500" "Medium"
-                        "600" "SemiBold"
-                        "700" "Bold")
-                      (when (= font-style :italic)
-                        "Italic"))))
+               (str default-font-family "-"
+                    (case font-weight
+                      "400" (when-not (= font-style :italic)
+                              "Regular")
+                      "500" "Medium"
+                      "600" "SemiBold"
+                      "700" "Bold")
+                    (when (= font-style :italic)
+                      "Italic")))
         (dissoc :font-weight :font-style))))
 
 (defn get-nested-style

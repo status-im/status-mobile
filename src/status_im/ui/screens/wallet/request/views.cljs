@@ -24,11 +24,10 @@
        {:label           :t/wallet-address
         :container-style {:margin-top 12 :margin-bottom 4}
         :copied-text     (eip55/address->checksum address)}
-       [react/text {:number-of-lines     1
-                    :ellipsize-mode      :middle
-                    :accessibility-label :address-text
-                    :style               {:line-height 22 :font-size 15
-                                          :font-family "monospace"}}
+       [quo/text {:number-of-lines     1
+                  :ellipsize-mode      :middle
+                  :accessibility-label :address-text
+                  :monospace           true}
         (eip55/address->checksum address)]]]
      [react/view {:padding-top        12
                   :padding-horizontal 16

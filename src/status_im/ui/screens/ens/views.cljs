@@ -36,16 +36,16 @@
 (defn- section
   [{:keys [title content]}]
   [react/view {:style {:margin-horizontal 16
-                       :align-items :flex-start}}
+                       :align-items       :flex-start}}
    [react/text {:style {:color colors/gray :font-size 15}}
     title]
-   [react/view {:margin-top 8
+   [react/view {:margin-top         8
                 :padding-horizontal 16
-                :padding-vertical 12
-                :border-width 1
-                :border-radius 12
-                :border-color colors/gray-lighter}
-    [react/text {:style {:font-size 15}}
+                :padding-vertical   12
+                :border-width       1
+                :border-radius      12
+                :border-color       colors/gray-lighter}
+    [quo/text {:monospace true}
      content]]])
 
 (defn- domain-label
@@ -320,8 +320,8 @@
                             (i18n/label :t/ens-deposit)]]]
            :right        [react/view {:padding-horizontal 8}
                           [quo/button
-                           {:disabled? (or (not @checked?) (not sufficient-funds?))
-                            :on-press  #(debounce/dispatch-and-chill [::ens/register-name-pressed] 2000)}
+                           {:disabled (or (not @checked?) (not sufficient-funds?))
+                            :on-press #(debounce/dispatch-and-chill [::ens/register-name-pressed] 2000)}
                            (if sufficient-funds?
                              (i18n/label :t/ens-register)
                              (i18n/label :t/not-enough-snt))]]}]]))))

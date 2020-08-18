@@ -3,7 +3,6 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as photos]
-            [status-im.utils.platform :as platform]
             [status-im.ui.components.typography :as typography]))
 
 (defn style-message-text
@@ -235,26 +234,19 @@
     (outgoing-strong-text-style)
     (strong-text-style)))
 
-(def monospace-fonts (if platform/ios? "Courier" "monospace"))
-
 (def code-block-background "#2E386B")
 
 (defn inline-code-style []
-  (update (default-text-style) :style
-          assoc
-          :font-family monospace-fonts
-          :color colors/white-persist
-          :background-color code-block-background))
+  {:color            colors/white-persist
+   :background-color code-block-background})
 
-(def codeblock-style {:style {:padding 10
-                              :background-color code-block-background
-                              :border-radius 4}})
+(def codeblock-style
+  {:padding          10
+   :background-color code-block-background
+   :border-radius    4})
 
 (def codeblock-text-style
-  (update (default-text-style) :style
-          assoc
-          :font-family monospace-fonts
-          :color colors/white))
+  {:color colors/white-persist})
 
 (defn default-blockquote-style []
   {:style {:border-left-width 2

@@ -93,16 +93,25 @@
                    :align-items     :center}
        [input-icon state false]]]
      [react/view {:min-height 30 :justify-content :flex-end}
-      [react/text {:style styles/message}
+      [quo/text {:style styles/message
+                 :size  :small
+                 :align :center
+                 :color :secondary}
        (cond (= state :error)
              (get-validation-label error)
+
              (= state :valid)
              (str (if ens-name
                     ens-name
                     (gfycat/generate-gfy public-key))
-                  " • "
-                  (utils/get-shortened-address public-key))
-             :else "")]]
+                  " • ")
+
+             :else "")
+       (when (= state :valid)
+         [quo/text {:monospace true
+                    :size      :inherit
+                    :color     :inherit}
+          (utils/get-shortened-address public-key)])]]
      [list/flat-list {:data                      contacts
                       :key-fn                    :address
                       :render-fn                 render-row

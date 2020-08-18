@@ -128,11 +128,11 @@
              (i18n/label :t/puk-code)]]
            [react/view {:justify-content :flex-start
                         :flex            1}
-            [react/text {:style               {:typography  :header
-                                               :font-family "monospace"
-                                               :text-align  :center
-                                               :color       colors/blue}
-                         :accessibility-label :puk-code}
+            [quo/text {:color               :link
+                       :align               :center
+                       :size                :large
+                       :monospace           true
+                       :accessibility-label :puk-code}
              puk-code]]]]
          [react/view {:margin-top 16}
           [react/text {:style {:color colors/gray}}
@@ -156,11 +156,11 @@
              (i18n/label :t/pair-code)]]
            [react/view {:justify-content :flex-start
                         :flex            1}
-            [react/text {:style               {:typography  :header
-                                               :text-align  :center
-                                               :font-family "monospace"
-                                               :color       colors/blue}
-                         :accessibility-label :pair-code}
+            [quo/text {:color               :link
+                       :align               :center
+                       :size                :large
+                       :monospace           true
+                       :accessibility-label :pair-code}
              (:password secrets)]]]]
          [react/view {:margin-top 16}
           [react/text {:style {:color colors/gray}}

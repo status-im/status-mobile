@@ -33,7 +33,10 @@
                  :numberOfLines  1}
      ;;TODO this should be done in a subscription
      name]
-    [react/text {:style styles/login-badge-pubkey}
+    [quo/text {:monospace true
+               :align     :center
+               :color     :secondary
+               :style     styles/login-badge-pubkey}
      (utils/get-shortened-address public-key)]]])
 
 (defview login []

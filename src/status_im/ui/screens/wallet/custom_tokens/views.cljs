@@ -48,6 +48,7 @@
         {:on-change-text #(debounce-and-save :contract %)
          :error          error
          :default-value  contract
+         :monospace      true
          :multiline      true
          :height         78
          :auto-focus     false

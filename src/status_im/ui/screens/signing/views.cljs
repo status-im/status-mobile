@@ -40,13 +40,11 @@
     {:title              title
      :title-prefix-width 45
      :size               :small
-     ;; FIXME
      :accessory          :text
-     :accessory-text     [react/text
+     :accessory-text     [quo/text
                           {:ellipsize-mode  :middle
                            :number-of-lines 1
-                           :style           {:font-family "monospace"
-                                             :line-height 22}}
+                           :monospace       true}
                           (displayed-name contact)]}]])
 
 (defn token-item [{:keys [icon color] :as token} display-symbol]

@@ -189,12 +189,12 @@
                      :number-of-lines 1
                      :ellipsize-mode  :middle}
          (gfy/generate-gfy whisper-public-key)]
-        [react/text {:style           {:text-align  :center
-                                       :margin-top  4
-                                       :color       colors/gray
-                                       :font-family "monospace"}
-                     :number-of-lines 1
-                     :ellipsize-mode  :middle}
+        [quo/text {:style           {:margin-top 4}
+                   :monospace       true
+                   :align           :center
+                   :color           :secondary
+                   :number-of-lines 1
+                   :ellipsize-mode  :middle}
          (utils.core/truncate-str address 14 true)]]]
       [react/view {:margin-bottom 50}
        [quo/button {:on-press #(re-frame/dispatch [:keycard.recovery.success/finish-pressed])}

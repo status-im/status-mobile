@@ -15,6 +15,7 @@
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.security :as security]
             [status-im.ui.screens.chat.message.reactions :as reactions]
+            [quo.core :as quo]
             [reagent.core :as reagent])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -59,7 +60,9 @@
     (conj acc literal)
 
     "code"
-    (conj acc [react/text-class (style/inline-code-style) literal])
+    (conj acc [quo/text {:max-font-size-multiplier react/max-font-size-multiplier
+                         :style                    (style/inline-code-style)}
+               literal])
 
     "emph"
     (conj acc [react/text-class (style/emph-style outgoing) literal])
@@ -71,7 +74,7 @@
     (conj acc
           [react/text-class
            {:style
-            {:color (if outgoing colors/white-persist colors/blue)
+            {:color                (if outgoing colors/white-persist colors/blue)
              :text-decoration-line :underline}
             :on-press
             #(when (and (security/safe-link? destination)
@@ -82,16 +85,16 @@
 
     "mention"
     (conj acc [react/text-class
-               {:style {:color (cond
-                                 (= content-type constants/content-type-system-text) colors/black
-                                 outgoing colors/mention-outgoing
-                                 :else colors/mention-incoming)}
+               {:style    {:color (cond
+                                    (= content-type constants/content-type-system-text) colors/black
+                                    outgoing                                            colors/mention-outgoing
+                                    :else                                               colors/mention-incoming)}
                 :on-press (when-not (= content-type constants/content-type-system-text)
                             #(re-frame/dispatch [:chat.ui/show-profile literal]))}
                [mention-element literal]])
     "status-tag"
     (conj acc [react/text-class
-               {:style {:color (if outgoing colors/white-persist colors/blue)
+               {:style {:color                (if outgoing colors/white-persist colors/blue)
                         :text-decoration-line :underline}
                 :on-press
                 #(re-frame/dispatch
@@ -117,8 +120,9 @@
                 (.substring literal 0 (dec (.-length literal)))]])
 
     "codeblock"
-    (conj acc [react/view style/codeblock-style
-               [react/text-class style/codeblock-text-style
+    (conj acc [react/view {:style style/codeblock-style}
+               [quo/text {:max-font-size-multiplier react/max-font-size-multiplier
+                          :style                    style/codeblock-text-style}
                 (.substring literal 0 (dec (.-length literal)))]])
 
     acc))

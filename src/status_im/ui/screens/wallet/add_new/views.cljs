@@ -64,6 +64,7 @@
       {:label               (i18n/label :t/wallet-key-title)
        :auto-focus          false
        :default-value       scanned-address
+       :monospace           true
        :placeholder         (i18n/label :t/enter-address)
        :accessibility-label :add-account-enter-watch-address
        :on-change-text      #(re-frame/dispatch [:set-in [:add-account :address] %])}]
@@ -92,6 +93,7 @@
         :height              95
         :error               account-error
         :accessibility-label :add-account-enter-seed
+        :monospace           true
         :on-change-text
         #(do
            (re-frame/dispatch [:set-in [:add-account :account-error] nil])

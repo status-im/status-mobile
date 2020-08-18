@@ -63,10 +63,12 @@
          [react/text {:style               styles/address-contact
                       :accessibility-label contact-accessibility-label}
           contact])
-       [react/text {:style               styles/address-hash
-                    :ellipsize-mode      "middle"
-                    :number-of-lines     1
-                    :accessibility-label address-accessibility-label}
+       [quo/text {:style               styles/address-hash
+                  :monospace           true
+                  :color               :secondary
+                  :ellipsize-mode      "middle"
+                  :number-of-lines     1
+                  :accessibility-label address-accessibility-label}
         address]]]
      [list/item-icon {:icon      :main-icons/next
                       :style     {:margin-top 10}
@@ -169,18 +171,23 @@
   ([label props-value]
    (details-list-row label props-value nil))
   ([label props-value extra-props-value]
-   (let [[props value] (if (string? props-value)
-                         [nil props-value]
-                         props-value)
+   (let [[props value]             (if (string? props-value)
+                                     [nil props-value]
+                                     props-value)
          [extra-props extra-value] (if (string? extra-props-value)
                                      [nil extra-props-value]
                                      extra-props-value)]
      [react/view {:style styles/details-row}
       [react/i18n-text {:style styles/details-item-label :key label}]
       [react/view {:style styles/details-item-value-wrapper}
-       [react/text (merge {:style styles/details-item-value} props)
+       [quo/text (merge {:size      :small
+                         :monospace true}
+                        props)
         (str (or value "-"))]
-       [react/text (merge {:style styles/details-item-extra-value} extra-props)
+       [quo/text (merge {:size      :small
+                         :color     :secondary
+                         :monospace true}
+                        extra-props)
         (str extra-value)]]])))
 
 (defn details-list
@@ -204,10 +211,10 @@
     (when (or to-wallet to-contact)
       [{:accessibility-label :recipient-address-text}
        to])]
-   [details-list-row :t/gas-limit gas-limit]
-   [details-list-row :t/gas-price gas-price-gwei gas-price-eth]
+   [details-list-row :t/gas-limit [{:monospace true} gas-limit]]
+   [details-list-row :t/gas-price gas-price-gwei [{:monospace false} gas-price-eth]]
    [details-list-row :t/gas-used gas-used]
-   [details-list-row :t/cost-fee cost]
+   [details-list-row :t/cost-fee [{:monospace false} cost]]
    [details-list-row :t/nonce nonce]
    [details-list-row :t/data data]])
 
