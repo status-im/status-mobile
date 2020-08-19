@@ -85,8 +85,9 @@ class TestBrowsing(SingleDeviceTestCase):
         if not dapp_detail.element_by_text("Unable to load page").is_element_displayed():
             self.driver.fail("Failed to open Dapp after 'Continue anyway' tapped")
 
-
+    #TODO: waiting mode
     @marks.testrail_id(6300)
+    @marks.skip
     @marks.medium
     def test_webview_security(self):
         home_view = SignInView(self.driver).create_user()

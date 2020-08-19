@@ -5,10 +5,11 @@ import random
 import string
 from selenium.common.exceptions import TimeoutException
 
-from tests import marks, get_current_time
+from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
-from tests.users import transaction_senders, transaction_recipients, basic_user, ens_user
+from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten
 from views.sign_in_view import SignInView
+from  views.send_transaction_view import SendTransactionView
 
 
 @marks.chat
@@ -803,6 +804,115 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 if not chat_view.element_by_text(url_data[key]['username']).is_element_displayed():
                     self.errors.append('In %s case username not found after scanning' % key)
                 chat_view.back_button.click()
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6322)
+    @marks.medium
+    def test_can_scan_different_links_with_universal_qr_scanner(self):
+        sign_in_view = SignInView(self.driver)
+        user = transaction_senders['C']
+        home_view = sign_in_view.recover_access(user['passphrase'])
+        wallet_view = home_view.wallet_button.click()
+        wallet_view.set_up_wallet()
+        wallet_view.home_button.click()
+        send_transaction_view = SendTransactionView(self.driver)
+
+        url_data = {
+            'ens_without_stateofus_domain_deep_link': {
+                'url': 'https://join.status.im/u/%s' % ens_user_ropsten['ens'],
+                'username': ens_user_ropsten['username']
+            },
+
+            'other_user_profile_key_deep_link': {
+                'url': 'status-im://u/%s' % basic_user['public_key'],
+                'username': basic_user['username']
+            },
+            'other_user_profile_key_deep_link_invalid': {
+                'url': 'https://join.status.im/u/%sinvalid' % ens_user['public_key'],
+                'error': 'Unable to read this code'
+            },
+            'own_profile_key': {
+                'url': user['public_key'],
+                'username': user['username']
+            },
+            'other_user_profile_key': {
+                'url': ens_user['public_key'],
+                'username': ens_user['username']
+            },
+            'validation_wrong_address_transaction': {
+                'url': 'ethereum:0x744d70fdbe2ba4cf95131626614a1763df805b9e@3/transfer?address=blablabla&uint256=1e10',
+                'error': 'Invalid address',
+            },
+            'eip_ens_for_receiver': {
+                'url': 'ethereum:0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=nastya.stateofus.eth&uint256=1e-1',
+                'data': {
+                    'asset': 'STT',
+                    'amount': '0.1',
+                    'address': '0x58d8…F2ff',
+                },
+            },
+            'eip_payment_link': {
+                'url': 'ethereum:pay-0xc55cf4b03948d7ebc8b9e8bad92643703811d162@3/transfer?address=0x3d597789ea16054a084ac84ce87f50df9198f415&uint256=1e1',
+                'data': {
+                    'amount': '10',
+                    'asset': 'STT',
+                    'address': '0x3D59…F415',
+                },
+            },
+            'dapp_deep_link': {
+                'url': 'https://join.status.im/b/simpledapp.eth',
+             },
+            'dapp_deep_link_https': {
+                'url': 'https://join.status.im/b/https://simpledapp.eth',
+            },
+            'public_chat_deep_link': {
+                'url': 'https://join.status.im/baga-ma-2020',
+                'chat_name': 'baga-ma-2020'
+            },
+        }
+
+        for key in url_data:
+            home_view.plus_button.click_until_presence_of_element(home_view.start_new_chat_button)
+            sign_in_view.just_fyi('Checking %s case' % key)
+            home_view.universal_qr_scanner_button.click()
+            if home_view.allow_button.is_element_displayed():
+                home_view.allow_button.click()
+            home_view.enter_qr_edit_box.set_value(url_data[key]['url'])
+            home_view.ok_button.click()
+            from views.chat_view import ChatView
+            chat_view = ChatView(self.driver)
+            if url_data[key].get('error'):
+                if not chat_view.element_by_text_part(url_data[key]['error']).is_element_displayed():
+                    self.errors.append('Expected error %s is not shown' % url_data[key]['error'])
+                chat_view.ok_button.click()
+            if url_data[key].get('username'):
+                if key == 'own_profile_key':
+                    if chat_view.profile_block_contact.is_element_displayed():
+                        self.errors.append('In %s case was not redirected to own profile' % key)
+                else:
+                    if not chat_view.profile_block_contact.is_element_displayed():
+                        self.errors.append('In %s case block user button is not shown' % key)
+                if not chat_view.element_by_text(url_data[key]['username']).is_element_displayed():
+                    self.errors.append('In %s case username not shown' % key)
+            if url_data[key].get('data'):
+                actual_data = send_transaction_view.get_values_from_send_transaction_bottom_sheet()
+                difference_in_data = url_data[key]['data'].items() - actual_data.items()
+                if difference_in_data:
+                    self.errors.append(
+                        'In %s case returned value does not match expected in %s' % (key, repr(difference_in_data)))
+                send_transaction_view.cancel_button.click()
+            if 'dapp' in key:
+                home_view.open_in_status_button.click()
+                if not chat_view.allow_button.is_element_displayed():
+                    self.errors.append('No allow button is shown in case of navigating to Status dapp!')
+                chat_view.cross_icon.click()
+            if 'public' in key:
+                if not chat_view.chat_message_input.is_element_displayed():
+                    self.errors.append('No message input is shown in case of navigating to public chat via deep link!')
+                if not chat_view.element_by_text_part(url_data[key]['chat_name']).is_element_displayed():
+                    self.errors.append('Chat name is not shown in case of navigating to public chat via deep link!')
+            chat_view.get_back_to_home_view()
 
         self.errors.verify_no_errors()
 

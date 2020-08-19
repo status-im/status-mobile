@@ -601,7 +601,7 @@ class WalletView(BaseView):
         if keycard:
             from views.keycard_view import KeycardView
             keycard_view = KeycardView(self.driver)
-            self.add_account_button.click()
+            self.add_account_generate_account_button.click()
             keycard_view.enter_default_pin()
         else:
             self.enter_your_password_input.send_keys(password)
