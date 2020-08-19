@@ -20,53 +20,59 @@
   (letsubs [contact-name [:contacts/contact-name-by-identity from]]
     contact-name))
 
-(defn render-subheader-inline [acc {:keys [type destination literal children]}]
-  (case type
-    "paragraph"
-    (conj acc (reduce
-               (fn [acc e] (render-subheader-inline acc e))
-               [react/text-class " "]
-               children))
+;; if truncated subheader text is too short we won't get ellipsize at the end of text
+(def max-subheader-length 100)
 
-    "blockquote"
-    (conj acc (.substring literal 0 (dec (.-length literal))))
+(defn truncate-literal [literal]
+  (let [size (min max-subheader-length (.-length literal))]
+    {:components (.substring literal 0 size)
+     :length     size}))
 
-    "codeblock"
-    (conj acc (.substring literal 0 (dec (.-length literal))))
+(defn add-parsed-to-subheader [acc {:keys [type destination literal children]}]
+  (let [result (case type
+                 "paragraph"
+                 (reduce
+                  (fn [{:keys [_ length] :as acc-paragraph} parsed-child]
+                    (if (>= length max-subheader-length)
+                      (reduced acc-paragraph)
+                      (add-parsed-to-subheader acc-paragraph parsed-child)))
+                  {:components [react/text-class]
+                   :length     0}
+                  children)
 
-    "mention"
-    (conj acc [react/text-class
-               [mention-element literal]])
+                 "mention"
+                 {:components [react/text-class [mention-element literal]]
+                  :length 4} ;; we can't predict name length so take the smallest possible
 
-    "status-tag"
-    (conj acc [react/text-class
-               "#"
-               literal])
+                 "status-tag"
+                 (truncate-literal (str "#" literal))
 
-    "link"
-    (conj acc destination)
+                 "link"
+                 (truncate-literal destination)
 
-    (conj acc literal)))
+                 (truncate-literal literal))]
+    {:components (conj (:components acc) (:components result))
+     :length     (+ (:length acc) (:length result))}))
 
-(def max-length 40)
+(def subheader-wrapper
+  [react/text-class {:style               styles/last-message-text
+                     :number-of-lines     1
+                     :ellipsize-mode      :tail
+                     :accessibility-label :chat-message-text}])
 
 (defn render-subheader
-  "Render the chat subheader markdown inline, to a maximum of max-length characters"
+  "Render the preview of a last message to a maximum of max-subheader-length characters"
   [parsed-text]
-  (:elements
-   (reduce
-    (fn [{:keys [elements l] :as acc} {:keys [literal] :as e}]
-      (if (> l max-length)
-        (reduced acc)
-        {:elements (render-subheader-inline elements e)
-         :l (+ l (count literal))}))
-    {:length 0
-     :elements
-     [react/text-class {:style               styles/last-message-text
-                        :number-of-lines     1
-                        :ellipsize-mode      :tail
-                        :accessibility-label :chat-message-text}]}
-    parsed-text)))
+  (let [result
+        (reduce
+         (fn [{:keys [_ length] :as acc-text} new-text-chunk]
+           (if (>= length max-subheader-length)
+             (reduced acc-text)
+             (add-parsed-to-subheader acc-text new-text-chunk)))
+         {:components subheader-wrapper
+          :length     0}
+         parsed-text)]
+    (:components result)))
 
 (defn message-content-text [{:keys [content content-type]}]
   [:<>
