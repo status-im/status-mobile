@@ -18,6 +18,7 @@
             [status-im.utils.identicon :as identicon]
             [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
+            [status-im.utils.debounce :refer [dispatch-and-chill]]
             [quo.core :as quo]
             [status-im.ui.screens.intro.carousel :as carousel]
             [status-im.utils.utils :as utils])
@@ -177,7 +178,7 @@
          [toolbar/toolbar
           {:show-border? true
            :right        [quo/button
-                          {:on-press            #(re-frame/dispatch [forward-action])
+                          {:on-press            #(dispatch-and-chill [forward-action] 300)
                            :accessibility-label :onboarding-next-button
                            :disabled            (or processing?
                                                     (and (= step :create-code) weak-password?)
