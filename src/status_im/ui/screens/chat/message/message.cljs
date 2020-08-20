@@ -175,13 +175,13 @@
              (= outgoing-status :not-sent))
     [message-not-sent-text chat-id message-id]))
 
-(defview message-author-name [from alias modal]
-  (letsubs [contact-name [:contacts/raw-contact-name-by-identity from]]
-    (chat.utils/format-author (or contact-name alias) modal)))
+(defview message-author-name [from modal]
+  (letsubs [contact-with-names [:contacts/contact-by-identity from]]
+    (chat.utils/format-author contact-with-names modal)))
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
-  [{:keys [alias first-in-group? display-photo? identicon display-username?
+  [{:keys [first-in-group? display-photo? identicon display-username?
            from outgoing]
     :as   message} content {:keys [modal close-modal]}]
   [react/view {:style               (style/message-wrapper message)
@@ -200,7 +200,7 @@
        [react/touchable-opacity {:style    style/message-author-touchable
                                  :on-press #(do (when modal (close-modal))
                                                 (re-frame/dispatch [:chat.ui/show-profile from]))}
-        [message-author-name from alias modal]])
+        [message-author-name from modal]])
      ;;MESSAGE CONTENT
      [react/view
       content]]]

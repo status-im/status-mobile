@@ -6,7 +6,6 @@
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.contact.contact :as contact]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.keyboard-avoid-presentation
              :as
@@ -23,10 +22,12 @@
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-contact [row]
-  [quo/list-item
-   {:title (contact/format-name row)
-    :icon  [chat-icon/contact-icon-contacts-tab
-            (multiaccounts/displayed-photo row)]}])
+  (let [[first-name second-name] (multiaccounts/contact-two-names row false)]
+    [quo/list-item
+     {:title    first-name
+      :subtitle second-name
+      :icon     [chat-icon/contact-icon-contacts-tab
+                 (multiaccounts/displayed-photo row)]}]))
 
 (defn- on-toggle [allow-new-users? checked? public-key]
   (cond
@@ -52,9 +53,11 @@
 
 (defn- toggle-item []
   (fn [allow-new-users? subs-name {:keys [public-key] :as contact} on-toggle]
-    (let [contact-selected? @(re-frame/subscribe [subs-name public-key])]
+    (let [contact-selected? @(re-frame/subscribe [subs-name public-key])
+          [first-name second-name] (multiaccounts/contact-two-names contact true)]
       [quo/list-item
-       {:title     (contact/format-name contact)
+       {:title     first-name
+        :subtitle  second-name
         :icon      [chat-icon/contact-icon-contacts-tab
                     (multiaccounts/displayed-photo  contact)]
         :on-press  #(on-toggle allow-new-users? contact-selected? public-key)
@@ -83,10 +86,12 @@
 
 (defn filter-contacts [filter-text contacts]
   (let [lower-filter-text (string/lower-case (str filter-text))
-        filter-fn         (fn [{:keys [name alias]}]
+        filter-fn         (fn [{:keys [name alias nickname]}]
                             (or
                              (string/includes? (string/lower-case (str name)) lower-filter-text)
-                             (string/includes? (string/lower-case (str alias)) lower-filter-text)))]
+                             (string/includes? (string/lower-case (str alias)) lower-filter-text)
+                             (when nickname
+                               (string/includes? (string/lower-case (str nickname)) lower-filter-text))))]
     (if filter-text
       (filter filter-fn contacts)
       contacts)))

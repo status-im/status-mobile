@@ -5,7 +5,6 @@
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.contact.contact :as contact]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.ui.components.react :as react]
@@ -16,56 +15,59 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn member-sheet [chat-id member us-admin?]
-  [react/view
-   [quo/list-item
-    {:theme               :accent
-     :icon                [chat-icon/contact-icon-contacts-tab
-                           (multiaccounts/displayed-photo member)]
-     :title               (contact/format-name member)
-     :subtitle            (i18n/label :t/view-profile)
-     :accessibility-label :view-chat-details-button
-     :chevron             true
-     :on-press            #(chat.sheets/hide-sheet-and-dispatch
-                            [:chat.ui/show-profile
-                             (:public-key member)])}]
-   (when (and us-admin?
-              (not (:admin? member)))
+  (let [[first-name _] (multiaccounts/contact-two-names member false)]
+    [react/view
      [quo/list-item
       {:theme               :accent
-       :title               (i18n/label :t/make-admin)
-       :accessibility-label :make-admin
-       :icon                :main-icons/make-admin
-       :on-press            #(chat.sheets/hide-sheet-and-dispatch [:group-chats.ui/make-admin-pressed chat-id (:public-key member)])}])
-   (when-not (:admin? member)
-     [quo/list-item
-      {:theme               :accent
-       :title               (i18n/label :t/remove-from-chat)
-       :accessibility-label :remove-from-chat
-       :icon                :main-icons/remove-contact
-       :on-press            #(chat.sheets/hide-sheet-and-dispatch [:group-chats.ui/remove-member-pressed chat-id (:public-key member)])}])])
+       :icon                [chat-icon/contact-icon-contacts-tab
+                             (multiaccounts/displayed-photo member)]
+       :title               first-name
+       :subtitle            (i18n/label :t/view-profile)
+       :accessibility-label :view-chat-details-button
+       :chevron             true
+       :on-press            #(chat.sheets/hide-sheet-and-dispatch
+                              [:chat.ui/show-profile
+                               (:public-key member)])}]
+     (when (and us-admin?
+                (not (:admin? member)))
+       [quo/list-item
+        {:theme               :accent
+         :title               (i18n/label :t/make-admin)
+         :accessibility-label :make-admin
+         :icon                :main-icons/make-admin
+         :on-press            #(chat.sheets/hide-sheet-and-dispatch [:group-chats.ui/make-admin-pressed chat-id (:public-key member)])}])
+     (when-not (:admin? member)
+       [quo/list-item
+        {:theme               :accent
+         :title               (i18n/label :t/remove-from-chat)
+         :accessibility-label :remove-from-chat
+         :icon                :main-icons/remove-contact
+         :on-press            #(chat.sheets/hide-sheet-and-dispatch [:group-chats.ui/remove-member-pressed chat-id (:public-key member)])}])]))
 
 (defn render-member [chat-id {:keys [public-key] :as member} admin? current-user-identity]
-  [quo/list-item
-   (merge
-    {:title               (contact/format-name member)
-     :accessibility-label :member-item
-     :icon                [chat-icon/contact-icon-contacts-tab
-                           (multiaccounts/displayed-photo member)]
-     :on-press            (when (not= public-key current-user-identity)
-                            #(re-frame/dispatch [:chat.ui/show-profile public-key]))}
-    (when (:admin? member)
-      {:accessory      :text
-       :accessory-text (i18n/label :t/group-chat-admin)})
-    (when (and admin?
-               (not (:admin? member))
-               (not= public-key current-user-identity))
-      {:accessory [quo/button {:on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                         {:content (fn []
-                                                                                     [member-sheet chat-id member admin?])}])
-                               :type                :icon
-                               :theme               :icon
-                               :accessibility-label :menu-option}
-                   :main-icons/more]}))])
+  (let [[first-name second-name] (multiaccounts/contact-two-names member false)]
+    [quo/list-item
+     (merge
+      {:title               first-name
+       :subtitle            second-name
+       :accessibility-label :member-item
+       :icon                [chat-icon/contact-icon-contacts-tab
+                             (multiaccounts/displayed-photo member)]
+       :on-press            (when (not= public-key current-user-identity)
+                              #(re-frame/dispatch [:chat.ui/show-profile public-key]))}
+      (when (:admin? member)
+        {:accessory      :text
+         :accessory-text (i18n/label :t/group-chat-admin)})
+      (when (and admin?
+                 (not (:admin? member))
+                 (not= public-key current-user-identity))
+        {:accessory [quo/button {:on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                                           {:content (fn []
+                                                                                       [member-sheet chat-id member admin?])}])
+                                 :type                :icon
+                                 :theme               :icon
+                                 :accessibility-label :menu-option}
+                     :main-icons/more]}))]))
 
 (defview chat-group-members-view [chat-id admin? current-user-identity]
   (letsubs [members [:contacts/current-chat-contacts]]

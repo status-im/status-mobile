@@ -1543,16 +1543,17 @@
  :<- [:contacts/contacts]
  :<- [:contacts/current-contact-identity]
  (fn [[contacts identity]]
-   (or (contacts identity)
+   (or (get contacts identity)
        (-> identity
            contact.db/public-key->new-contact
            contact.db/enrich-contact))))
 
 (re-frame/reg-sub
  :contacts/contact-by-identity
- :<- [::contacts]
+ :<- [:contacts/contacts]
  (fn [contacts [_ identity]]
-   (get contacts identity)))
+   (or (get contacts identity)
+       (multiaccounts/contact-with-names {:public-key identity}))))
 
 (re-frame/reg-sub
  :contacts/contact-added?
@@ -1562,27 +1563,23 @@
    (contact.db/added? contact)))
 
 (re-frame/reg-sub
- :contacts/raw-contact-name-by-identity
+ :contacts/contact-two-names-by-identity
  (fn [[_ identity] _]
-   [(re-frame/subscribe [:contacts/contact-by-identity identity])])
- (fn [[db-contact] _]
-   (if (and (:ens-verified db-contact) (seq (:name db-contact)))
-     (str "@" (:name db-contact))
-     (:alias db-contact))))
+   [(re-frame/subscribe [:contacts/contact-by-identity identity])
+    (re-frame/subscribe [:multiaccount])])
+ (fn [[contact current-multiaccount] [_ identity]]
+   (let [me? (= (:public-key current-multiaccount) identity)]
+     (if me?
+       [(or (:preferred-name current-multiaccount)
+            (gfycat/generate-gfy identity))]
+       (multiaccounts/contact-two-names contact false)))))
 
 (re-frame/reg-sub
  :contacts/contact-name-by-identity
  (fn [[_ identity] _]
-   [(re-frame/subscribe [:contacts/raw-contact-name-by-identity identity])
-    (re-frame/subscribe [:multiaccount])])
- (fn [[contact-name current-multiaccount] [_ identity]]
-   (let [me? (= (:public-key current-multiaccount) identity)]
-     (if me?
-       (or (:preferred-name current-multiaccount)
-           (gfycat/generate-gfy identity))
-       (or (stateofus/username contact-name)
-           contact-name
-           (gfycat/generate-gfy identity))))))
+   [(re-frame/subscribe [:contacts/contact-two-names-by-identity identity])])
+ (fn [[names] _]
+   (first names)))
 
 (re-frame/reg-sub
  :messages/quote-info
@@ -1612,8 +1609,7 @@
  :<- [::query-current-chat-contacts remove]
  (fn [contacts]
    (->> contacts
-        (filter contact.db/added?)
-        (sort-by (comp clojure.string/lower-case multiaccounts/displayed-name)))))
+        (filter contact.db/added?))))
 
 (re-frame/reg-sub
  :contacts/current-chat-contacts
@@ -1764,16 +1760,19 @@
                 (string/lower-case (or alias
                                        (get-in contacts [chat-id :alias])
                                        (gfycat/generate-gfy chat-id)))
-                "")]
-
+                "")
+        nickname (get-in contacts [chat-id :nickname])]
     (or
      (string/includes? (string/lower-case (str name)) search-filter)
      (string/includes? (string/lower-case alias) search-filter)
+     (when nickname
+       (string/includes? (string/lower-case nickname) search-filter))
      (and
       (get-in contacts [chat-id :ens-verified])
       (string/includes? (string/lower-case
                          (str (get-in contacts [chat-id :name])))
                         search-filter)))))
+
 (re-frame/reg-sub
  :search/filtered-chats
  :<- [:chats/active-chats]

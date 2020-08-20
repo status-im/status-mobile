@@ -27,7 +27,8 @@
                                 :ensVerificationRetries :ens-verification-retries
                                 :lastENSClockValue :last-ens-clock-value
                                 :systemTags :system-tags
-                                :lastUpdated :last-updated})))
+                                :lastUpdated :last-updated
+                                :localNickname :nickname})))
 
 (defn ->rpc [contact]
   (-> contact
@@ -41,7 +42,8 @@
                                 :photo-path :photoPath
                                 :tribute-to-talk :tributeToTalk
                                 :system-tags :systemTags
-                                :last-updated :lastUpdated})))
+                                :last-updated :lastUpdated
+                                :nickname :localNickname})))
 
 (fx/defn fetch-contacts-rpc
   [cofx on-success]

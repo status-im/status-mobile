@@ -73,7 +73,8 @@
       :default-chat-icon-text style/intro-header-icon-text
       :size                   120}]]
    ;; Chat title section
-   [react/text {:style (style/intro-header-chat-name)} (if group-chat chat-name contact-name)]
+   [react/text {:style (style/intro-header-chat-name)}
+    (if group-chat chat-name contact-name)]
    ;; Description section
    (if group-chat
      [chat.group/group-chat-description-container {:chat-id chat-id
@@ -89,9 +90,9 @@
        contact-name)])])
 
 (defn chat-intro-one-to-one [{:keys [chat-id] :as opts}]
-  (let [contact-name @(re-frame/subscribe
-                       [:contacts/contact-name-by-identity chat-id])]
-    (chat-intro (assoc opts :contact-name contact-name))))
+  (let [contact-names @(re-frame/subscribe
+                        [:contacts/contact-two-names-by-identity chat-id])]
+    (chat-intro (assoc opts :contact-name (first contact-names)))))
 
 (defn chat-intro-header-container
   [{:keys [group-chat

@@ -2,7 +2,8 @@
   (:require [reagent.core :as reagent]
             [status-im.ui.components.react :as react]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [re-frame.core :as re-frame]))
 
 (def cnt (reagent/atom 0))
 (defonce cnt-prev (reagent/atom 0))
@@ -14,6 +15,7 @@
 (defn reload []
   (reset! warning? false)
   (reset! label "reloading UI")
+  (re-frame/clear-subscription-cache!)
   (swap! cnt inc))
 
 (defn build-competed []

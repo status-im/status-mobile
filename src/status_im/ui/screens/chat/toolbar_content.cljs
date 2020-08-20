@@ -17,7 +17,11 @@
           (i18n/label-pluralize cnt :t/members-active))))]])
 
 (defn one-to-one-name [from]
-  @(re-frame.core/subscribe [:contacts/contact-name-by-identity from]))
+  (let [[first-name _] @(re-frame.core/subscribe [:contacts/contact-two-names-by-identity from])]
+    [react/text {:style               st/chat-name-text
+                 :number-of-lines     1
+                 :accessibility-label :chat-name-text}
+     first-name]))
 
 (defn contact-indicator [contact-id]
   (let [added? @(re-frame/subscribe [:contacts/contact-added? contact-id])]
@@ -39,12 +43,12 @@
      [react/view {:margin-right 10}
       [chat-icon.screen/chat-icon-view-toolbar chat-id group-chat chat-name color]]
      [react/view {:style st/chat-name-view}
-      [react/text {:style               st/chat-name-text
-                   :number-of-lines     1
-                   :accessibility-label :chat-name-text}
-       (if group-chat
-         chat-name
-         [one-to-one-name chat-id])]
+      (if group-chat
+        [react/text {:style               st/chat-name-text
+                     :number-of-lines     1
+                     :accessibility-label :chat-name-text}
+         chat-name]
+        [one-to-one-name chat-id])
       (when-not group-chat
         [contact-indicator chat-id])
       (when group-chat

@@ -23,7 +23,8 @@
             [quo.previews.main :as quo.preview]
             [status-im.utils.config :as config]
             [status-im.ui.screens.chat.image.preview.views :as image-preview]
-            [status-im.ui.screens.notifications-settings.views :as notifications-settings]))
+            [status-im.ui.screens.notifications-settings.views :as notifications-settings]
+            [status-im.ui.screens.profile.contact.views :as contact]))
 
 (defonce main-stack (navigation/create-stack))
 (defonce bottom-tabs (navigation/create-bottom-tabs))
@@ -82,6 +83,10 @@
         :transition :presentation-ios
         :insets     {:bottom true}
         :component  new-public-chat/new-public-chat}
+       {:name       :nickname
+        :transition :presentation-ios
+        :insets     {:bottom true}
+        :component  contact/nickname}
        {:name       :edit-group-chat-name
         :transition :presentation-ios
         :insets     {:bottom true}

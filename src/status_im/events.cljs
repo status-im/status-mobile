@@ -816,7 +816,7 @@
  :contact.ui/add-to-contact-pressed
  [(re-frame/inject-cofx :random-id-generator)]
  (fn [cofx [_ public-key]]
-   (contact/add-contact cofx public-key)))
+   (contact/add-contact cofx public-key nil)))
 
 (handlers/register-handler-fx
  :contact.ui/block-contact-confirmed
@@ -842,11 +842,11 @@
 (handlers/register-handler-fx
  :contact.ui/contact-code-submitted
  [(re-frame/inject-cofx :random-id-generator)]
- (fn [{{:contacts/keys [new-identity]} :db :as cofx} [_ new-contact?]]
+ (fn [{{:contacts/keys [new-identity]} :db :as cofx} [_ new-contact? nickname]]
    (let [{:keys [public-key ens-name]} new-identity]
      (fx/merge cofx
                #(if new-contact?
-                  (contact/add-contact % public-key)
+                  (contact/add-contact % public-key nickname)
                   (chat/start-chat % public-key))
                #(when new-contact?
                   (navigation/navigate-back %))

@@ -13,17 +13,20 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.add-new.new-chat.styles :as styles]
             [status-im.utils.debounce :as debounce]
-            [status-im.utils.utils :as utils])
+            [status-im.utils.utils :as utils]
+            [reagent.core :as reagent])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-row [row _ _]
-  [quo/list-item
-   {:title    (multiaccounts/displayed-name row)
-    :icon     [chat-icon/contact-icon-contacts-tab
-               (multiaccounts/displayed-photo row)]
-    :chevron  true
-    :on-press #(re-frame/dispatch [:chat.ui/start-chat
-                                   (:public-key row)])}])
+  (let [[first-name second-name] (multiaccounts/contact-two-names row false)]
+    [quo/list-item
+     {:title    first-name
+      :subtitle second-name
+      :icon     [chat-icon/contact-icon-contacts-tab
+                 (multiaccounts/displayed-photo row)]
+      :chevron  true
+      :on-press #(re-frame/dispatch [:chat.ui/start-chat
+                                     (:public-key row)])}]))
 
 (defn- icon-wrapper [color icon]
   [react/view
@@ -36,7 +39,7 @@
    icon])
 
 (defn- input-icon
-  [state new-contact?]
+  [state new-contact? entered-nickname]
   (let [icon (if new-contact? :main-icons/add :main-icons/arrow-right)]
     (case state
       :searching
@@ -45,7 +48,7 @@
 
       :valid
       [react/touchable-highlight
-       {:on-press #(debounce/dispatch-and-chill [:contact.ui/contact-code-submitted new-contact?] 3000)}
+       {:on-press #(debounce/dispatch-and-chill [:contact.ui/contact-code-submitted new-contact? entered-nickname] 3000)}
        [icon-wrapper colors/blue
         [vector-icons/icon icon {:color colors/white-persist}]]]
 
@@ -83,7 +86,7 @@
             (debounce/debounce-and-dispatch [:new-chat/set-new-identity %] 600))
          :on-submit-editing
          #(when (= state :valid)
-            (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted false] 3000))
+            (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted false nil] 3000))
          :placeholder         (i18n/label :t/enter-contact-code)
          :show-cancel         false
          :accessibility-label :enter-contact-code-input
@@ -91,7 +94,7 @@
          :return-key-type     :go}]]
       [react/view {:justify-content :center
                    :align-items     :center}
-       [input-icon state false]]]
+       [input-icon state false nil]]]
      [react/view {:min-height 30 :justify-content :flex-end}
       [quo/text {:style styles/message
                  :size  :small
@@ -118,8 +121,20 @@
                       :enableEmptySections       true
                       :keyboardShouldPersistTaps :always}]]))
 
+(defn- nickname-input [entered-nickname]
+  [quo/text-input
+   {:on-change-text      #(reset! entered-nickname %)
+    :auto-capitalize     :none
+    :max-length          32
+    :auto-focus          false
+    :accessibility-label :nickname-input
+    :placeholder         (i18n/label :t/add-nickname)
+    :return-key-type     :done
+    :auto-correct        false}])
+
 (views/defview new-contact []
-  (views/letsubs [{:keys [state ens-name public-key error]} [:contacts/new-identity]]
+  (views/letsubs [{:keys [state ens-name public-key error]} [:contacts/new-identity]
+                  entered-nickname (reagent/atom "")]
     [react/view {:style {:flex 1}}
      [topbar/topbar
       {:title  (i18n/label :t/new-contact)
@@ -142,7 +157,7 @@
             (debounce/debounce-and-dispatch [:new-chat/set-new-identity %] 600))
          :on-submit-editing
          #(when (= state :valid)
-            (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted true] 3000))
+            (debounce/dispatch-and-chill [:contact.ui/contact-code-submitted true @entered-nickname] 3000))
          :placeholder         (i18n/label :t/enter-contact-code)
          :show-cancel         false
          :accessibility-label :enter-contact-code-input
@@ -150,12 +165,23 @@
          :return-key-type     :go}]]
       [react/view {:justify-content :center
                    :align-items     :center}
-       [input-icon state true]]]
-     [react/view {:min-height 30 :justify-content :flex-end}
-      [react/text {:style styles/message}
+       [input-icon state true @entered-nickname]]]
+     [react/view {:min-height 30 :justify-content :flex-end :margin-bottom 16}
+      [quo/text {:style styles/message
+                 :size  :small
+                 :align :center
+                 :color :secondary}
        (cond (= state :error)
              (get-validation-label error)
              (= state :valid)
              (str (when ens-name (str ens-name " • "))
                   (utils/get-shortened-address public-key))
-             :else "")]]]))
+             :else "")]]
+     [react/text {:style {:margin-horizontal 16 :color colors/gray}}
+      (i18n/label :t/nickname-description)]
+     [react/view {:padding 16}
+
+      [nickname-input entered-nickname]
+      [react/text {:style {:align-self :flex-end :margin-top 16
+                           :color      colors/gray}}
+       (str (count @entered-nickname) " / 32")]]]))

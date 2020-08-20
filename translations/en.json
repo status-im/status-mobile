@@ -770,7 +770,6 @@
     "new-contract": "New Contract",
     "new-group": "New group",
     "new-group-chat": "New group chat",
-    "add-members": "Add members",
     "new-network": "New network",
     "new-pin-description": "Enter new 6-digit passcode",
     "new-public-group-chat": "Join public chat",
@@ -1228,5 +1227,8 @@
     "audio": "Audio",
     "update-to-see-image": "Update to latest version to see a nice image here!",
     "update-to-listen-audio": "Update to latest version to listen to an audio message here!",
-    "update-to-see-sticker": "Update to latest version to see a nice sticker here!"
+    "update-to-see-sticker": "Update to latest version to see a nice sticker here!",
+    "nickname": "Nickname",
+    "add-nickname": "Add a nickname (optional)",
+    "nickname-description": "Nicknames help you identify others in Status.\nOnly you can see the nicknames you’ve added"
 }

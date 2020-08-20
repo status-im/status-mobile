@@ -8,7 +8,40 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
             [status-im.utils.theme :as utils.theme]
-            [status-im.theme.core :as theme]))
+            [status-im.theme.core :as theme]
+            [status-im.utils.utils :as utils]
+            [clojure.string :as string]))
+
+(defn contact-names
+  "Returns map of all existing names for contact"
+  [{:keys [name preferred-name alias public-key ens-verified nickname]}]
+  (let [ens-name (or preferred-name
+                     name)]
+    (cond-> {:nickname         nickname
+             :three-words-name (or alias (gfycat/generate-gfy public-key))}
+      ;; Preferred name is our own otherwise we make sure it's verified
+      (or preferred-name (and ens-verified name))
+      (assoc :ens-name (str "@" (or (stateofus/username ens-name) ens-name))))))
+
+(defn contact-two-names
+  "Returns vector of two names in next order nickname, ens name, three word name, public key"
+  [{:keys [names public-key] :as contact} public-key?]
+  (let [{:keys [nickname ens-name three-words-name]} (or names (contact-names contact))
+        short-public-key (when public-key? (utils/get-shortened-address public-key))]
+    (cond (not (string/blank? nickname))
+          [nickname (or ens-name three-words-name short-public-key)]
+          (not (string/blank? ens-name))
+          [ens-name (or three-words-name short-public-key)]
+          (not (string/blank? three-words-name))
+          [three-words-name short-public-key]
+          :else
+          (when public-key?
+            [short-public-key short-public-key]))))
+
+(defn contact-with-names
+  "Returns contact with :names map "
+  [contact]
+  (assoc contact :names (contact-names contact)))
 
 (defn displayed-name
   "Use preferred name, name or alias in that order"

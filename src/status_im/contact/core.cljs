@@ -12,7 +12,8 @@
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.waku.core :as waku]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [clojure.string :as string]))
 
 (fx/defn load-contacts
   {:events [::contacts-loaded]}
@@ -59,7 +60,9 @@
   [{:keys [db]} contacts]
   {:db (update db :contacts/contacts
                #(reduce (fn [acc {:keys [public-key] :as contact}]
-                          (update acc public-key merge contact))
+                          (-> acc
+                              (update public-key merge contact)
+                              (assoc-in [public-key :nickname] (:nickname contact))))
                         %
                         contacts))})
 
@@ -81,12 +84,15 @@
 
 (fx/defn add-contact
   "Add a contact and set pending to false"
-  [{:keys [db] :as cofx} public-key]
+  [{:keys [db] :as cofx} public-key nickname]
   (when (not= (get-in db [:multiaccount :public-key]) public-key)
-    (let [contact (-> (get-in db [:contacts/contacts public-key]
-                              (build-contact cofx public-key))
-                      (update :system-tags
-                              (fnil #(conj % :contact/added) #{})))]
+    (let [contact (cond-> (get-in db [:contacts/contacts public-key]
+                                  (build-contact cofx public-key))
+                    nickname
+                    (assoc :nickname nickname)
+                    :else
+                    (update :system-tags
+                            (fnil #(conj % :contact/added) #{})))]
       (fx/merge cofx
                 {:db (dissoc db :contacts/new-identity)}
                 (upsert-contact contact)
@@ -179,3 +185,13 @@
                              :ens-verified    true})}
 
             (upsert-contact {:public-key public-key})))
+
+(fx/defn update-nickname
+  {:events [:contacts/update-nickname]}
+  [{:keys [db] :as cofx} public-key nickname]
+  (fx/merge cofx
+            {:db (if (string/blank? nickname)
+                   (update-in db [:contacts/contacts public-key] dissoc :nickname)
+                   (assoc-in db [:contacts/contacts public-key :nickname] nickname))}
+            (upsert-contact {:public-key public-key})
+            (navigation/navigate-back)))
