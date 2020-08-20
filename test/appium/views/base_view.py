@@ -702,9 +702,7 @@ class BaseView(object):
         return AssetButton(self.driver, asset_name)
 
     def open_notification_bar(self):
-        action = TouchAction(self.driver)
-        for i in range(2):
-            action.press(None, 100, 10).move_to(None, 100, 600).perform()
+        self.driver.open_notifications()
 
     def toggle_airplane_mode(self):
         self.airplane_mode_button.click()

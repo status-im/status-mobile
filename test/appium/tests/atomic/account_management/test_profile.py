@@ -365,15 +365,11 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         home = sign_in_view.create_user()
         home.invite_friends_button.click()
-        # TODO: referrals temporal flow
-        home.element_by_text('Invite').click()
         home.share_via_messenger()
         home.find_text_part("Hey join me on Status: https://join.status.im/u/0x")
-        home.click_system_back_button(2)
+        home.click_system_back_button()
         home.plus_button.click()
         home.chats_menu_invite_friends_button.click()
-        # TODO: referrals temporal flow
-        home.element_by_text('Invite').click()
         home.share_via_messenger()
         home.find_text_part("Hey join me on Status: https://join.status.im/u/0x")
 
@@ -1098,8 +1094,9 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         dapp_view_1.element_by_text('Get started').click()
         dapp_view_1.ens_name.set_value(ens_user['ens'])
         expected_text = 'This user name is owned by you and connected with your chat key.'
-        if not dapp_view_1.wait_for_element_starts_with_text(expected_text):
-            sign_in_1.driver.fail("No %s is shown" % expected_text)
+        if not dapp_view_1.element_by_text_part(expected_text).is_element_displayed():
+            dapp_view_1.click_system_back_button()
+            dapp_view_1.wait_for_element_starts_with_text(expected_text)
         dapp_view_1.check_ens_name.click_until_presence_of_element(dapp_view_1.element_by_text('Ok, got it'))
         dapp_view_1.element_by_text('Ok, got it').click()
 
