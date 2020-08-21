@@ -97,7 +97,9 @@
                    {:number      3
                     :description :t/invite-instruction-third}
                    {:number      4
-                    :description :t/invite-instruction-fourth}])
+                    :description :t/invite-instruction-fourth}
+                   {:number      5
+                    :description :t/invite-instruction-fifth}])
 
 (defn- referral-steps []
   [rn/view {:style (styles/invite-instructions)}
