@@ -1,5 +1,5 @@
 (ns status-im.ui.components.tabbar.styles
-  (:require [status-im.ui.components.animation :as animation]
+  (:require [quo.animated :as animated]
             [status-im.ui.components.colors :as colors]
             [status-im.utils.platform :as platform]))
 
@@ -84,17 +84,14 @@
    :shadow-color     (if (colors/dark?)
                        "rgba(0, 0, 0, 0.75)"
                        "rgba(0, 9, 26, 0.12)")
-   :elevation 8
+   :elevation        8
    :background-color colors/white
    :position         :absolute
    :left             0
    :right            0
    :height           tabs-height
    :bottom           inset
-   :transform        [{:translateY
-                       (animation/interpolate visible?
-                                              {:inputRange  [0 1]
-                                               :outputRange [0 tabs-diff]})}]})
+   :transform        [{:translateY (animated/mix visible? tabs-diff 0)}]})
 
 (defn ios-titles-cover [inset]
   {:background-color colors/white
@@ -111,10 +108,7 @@
           :left               0
           :right              0
           :bottom             0
-          :transform          [{:translateY
-                                (animation/interpolate visible
-                                                       {:inputRange  [0 1]
-                                                        :outputRange [0 tabs-height]})}]}
+          :transform          [{:translateY (animated/mix visible 0 tabs-height)}]}
          (when keyboard
            {:position :absolute})))
 

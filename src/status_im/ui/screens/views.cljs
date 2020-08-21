@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.views
   (:require [status-im.utils.universal-links.core :as utils.universal-links]
             [re-frame.core :as re-frame]
+            [cljs-bean.core :refer [bean]]
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.routing.core :as navigation]
@@ -13,7 +14,6 @@
             [status-im.ui.screens.popover.views :as popover]
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im.ui.screens.wallet.send.views :as wallet]
-            [status-im.ui.components.tabbar.core :as tabbar]
             [status-im.ui.components.status-bar.view :as statusbar]
             status-im.ui.screens.wallet.collectibles.etheremon.views
             status-im.ui.screens.wallet.collectibles.cryptostrikers.views
@@ -71,17 +71,8 @@
        (reset! state state-obj)
        (resolve true)))))
 
-(defn get-active-route-name [state]
-  (let [index (get state "index")
-        route (get-in state ["routes" index])]
-    (if-let [state' (get route "state")]
-      (get-active-route-name state')
-      (some-> (get route "name") keyword))))
-
 (defn on-state-change [state]
-  (let [route-name (get-active-route-name (js->clj state))]
-    (tabbar/minimize-bar route-name)
-
+  (let [route-name (navigation/get-active-route-name (bean state))]
     ;; NOTE(Ferossgp): Keycard did-load events backward compatibility
     (re-frame/dispatch [:screens/on-will-focus route-name])
 

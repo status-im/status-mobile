@@ -5,6 +5,7 @@
             ["@react-navigation/stack" :refer (createStackNavigator TransitionPresets)]
             ["@react-navigation/bottom-tabs" :refer (createBottomTabNavigator)]
             [reagent.core :as reagent]
+            [cljs-bean.core :refer [bean]]
             [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
@@ -27,6 +28,12 @@
 (defn remove-back-handler-listener
   [callback]
   (.removeEventListener BackHandler "hardwareBackPress" callback))
+
+(defn get-active-route-name [{:keys [index routes]}]
+  (let [route (bean (get routes index))]
+    (if-let [inner-state (get route :state)]
+      (get-active-route-name (bean inner-state))
+      (some-> (get route :name) keyword))))
 
 (def transition-presets TransitionPresets)
 

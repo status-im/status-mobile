@@ -62,6 +62,7 @@
               :ease-in     (bezier 0.42 0 1 1)
               :ease-out    (bezier 0 0 0.58 1)
               :ease-in-out (bezier 0.42 0 0.58 1)
+              :cubic       (bezier 0.55 0.055 0.675 0.19)
               :keyboard    (bezier 0.17 0.59 0.4 0.77)})
 
 (def springs {:lazy {:damping           50
