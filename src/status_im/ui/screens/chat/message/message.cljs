@@ -124,11 +124,11 @@
     acc))
 
 (defn render-parsed-text [message tree]
-  (reduce (fn [acc e] (render-block message acc e)) [react/view {}] tree))
+  (reduce (fn [acc e] (render-block message acc e)) [:<>] tree))
 
-(defn render-parsed-text-with-timestamp [{:keys [timestamp-str outgoing] :as message} tree]
+(defn render-parsed-text-with-timestamp [{:keys [timestamp-str] :as message} tree]
   (let [elements (render-parsed-text message tree)
-        timestamp [react/text {:style (style/message-timestamp-placeholder outgoing)}
+        timestamp [react/text {:style (style/message-timestamp-placeholder)}
                    (str "  " timestamp-str)]
         last-element (peek elements)]
     ;; Using `nth` here as slightly faster than `first`, roughly 30%

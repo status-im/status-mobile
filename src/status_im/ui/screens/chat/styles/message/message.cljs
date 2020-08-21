@@ -32,11 +32,8 @@
    :align-self :flex-end})
 
 (defn message-timestamp-placeholder
-  [outgoing]
-  (assoc message-timestamp
-         :color (if outgoing
-                  colors/blue
-                  colors/blue-light)))
+  []
+  (merge message-timestamp {:opacity 0}))
 
 (defn message-timestamp-text
   [justify-timestamp? outgoing rtl?]
