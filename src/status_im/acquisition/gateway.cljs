@@ -1,25 +1,29 @@
 (ns status-im.acquisition.gateway
   (:require [re-frame.core :as re-frame]
             [status-im.utils.fx :as fx]
+            [status-im.ethereum.core :as ethereum]
             [status-im.i18n :as i18n]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.waku.core :as waku]
             [status-im.utils.types :as types]))
 
-(def acquisition-gateway "https://test-referral.status.im")
+(def acquisition-gateway {:mainnet "https://get.status.im"
+                          :rinkeby "https://test-referral.status.im"})
 
-(def acquisition-routes {:clicks        (str acquisition-gateway "/clicks")
-                         :registrations (str acquisition-gateway "/registrations")})
+(defn acquisition-routes [network type]
+  (get {:clicks        (str (get acquisition-gateway network) "/clicks")
+        :registrations (str (get acquisition-gateway network) "/registrations")}
+       type))
 
 (def network-statuses {:initiated 1
                        :in-flight 2
                        :error     3
                        :success   4})
 
-(defn get-url [type referral]
+(defn get-url [network [type referral]]
   (if (= type :clicks)
-    (str (get acquisition-routes :clicks) "/" referral)
-    (get acquisition-routes :registrations)))
+    (str (acquisition-routes network :clicks) "/" referral)
+    (acquisition-routes network :registrations)))
 
 (fx/defn handle-error
   {:events [::on-error]}
@@ -32,7 +36,8 @@
 (fx/defn handle-acquisition
   {:events [::handle-acquisition]}
   [{:keys [db] :as cofx} {:keys [message on-success method url]}]
-  (let [msg (types/clj->json message)]
+  (let [msg     (types/clj->json message)
+        network (ethereum/chain-keyword db)]
     {:db             (assoc-in db [:acquisition :network-status]
                                (get network-statuses :initiated))
      ::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) "signMessageWithChatKey")
@@ -42,7 +47,7 @@
                                                         {:chat-key   (get-in db [:multiaccount :public-key])
                                                          :message    msg
                                                          :method     method
-                                                         :url        url
+                                                         :url        (get-url network url)
                                                          :on-success on-success} %])}]}))
 (fx/defn call-acquisition-gateway
   {:events [::call-acquisition-gateway]}
@@ -67,15 +72,16 @@
                                (re-frame/dispatch [::on-error (:error (types/json->clj (get error :response-body)))]))}}))
 
 (fx/defn get-referrer
-  [cofx referrer on-success handled-error handle-error]
-  {:http-get {:url        (get-url :clicks referrer)
-              :on-success (fn [response]
-                            (re-frame/dispatch (on-success (types/json->clj response))))
-              :on-error   (fn [response]
-                            (let [error (types/json->clj response)]
-                              (if (handled-error error)
-                                (handle-error error)
-                                (re-frame/dispatch [::on-error (:error error)]))))}})
+  [{:keys [db]} referrer on-success handled-error handle-error]
+  (let [network (ethereum/chain-keyword db)]
+    {:http-get {:url        (get-url network [:clicks referrer])
+                :on-success (fn [response]
+                              (re-frame/dispatch (on-success (types/json->clj response))))
+                :on-error   (fn [response]
+                              (let [error (types/json->clj response)]
+                                (if (handled-error error)
+                                  (handle-error error)
+                                  (re-frame/dispatch [::on-error (:error error)]))))}}))
 (re-frame/reg-sub
  ::network-status
  (fn [db]

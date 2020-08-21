@@ -32,5 +32,5 @@
               {:db (update db :acquisition dissoc :chat-referrer)}
               (gateway/handle-acquisition {:message    payload
                                            :method     "PATCH"
-                                           :url        (gateway/get-url :clicks referral)
+                                           :url        [:clicks referral]
                                            :on-success [::claim/success-starter-pack-claim]}))))

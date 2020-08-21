@@ -44,10 +44,11 @@
 (re-frame/reg-fx
  ::set-watch-tx
  (fn [tx]
-   (-> ^js async-storage
-       (.setItem tx-store-key tx)
-       (.catch (fn [error]
-                 (log/error "[async-storage]" error))))))
+   (when tx
+     (-> ^js async-storage
+         (.setItem tx-store-key tx)
+         (.catch (fn [error]
+                   (log/error "[async-storage]" error)))))))
 
 (re-frame/reg-fx
  ::chat-initalized!

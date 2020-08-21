@@ -24,7 +24,7 @@
                               {:message    message
                                :on-success on-success
                                :method     "POST"
-                               :url        (gateway/get-url :registrations nil)}))
+                               :url        [:registrations nil]}))
 
 (re-frame/reg-fx
  ::get-referrer

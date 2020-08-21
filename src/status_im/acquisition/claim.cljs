@@ -15,19 +15,19 @@
 (fx/defn add-tx-watcher
   {:events [::add-tx-watcher]}
   [cofx tx]
-  (transaction/watch-transaction cofx
-                                 tx
-                                 {:trigger-fn (constantly true)
-                                  :on-trigger
-                                  (fn []
-                                    {:dispatch [::success-tx-received]})}))
+  (fx/merge cofx
+            {::persistence/set-watch-tx tx}
+            (transaction/watch-transaction tx
+                                           {:trigger-fn (constantly true)
+                                            :on-trigger
+                                            (fn []
+                                              {:dispatch [::success-tx-received]})})))
 
 (fx/defn success-starter-pack-claim
   {:events [::success-starter-pack-claim]}
   [cofx {:keys [tx]}]
   (fx/merge cofx
-            {::persistence/set-watch-tx       tx
-             ::persistence/set-referrer-state (if tx :accepted :claimed)}
+            {::persistence/set-referrer-state (if tx :accepted :claimed)}
             (when tx
               (add-tx-watcher tx))
             (notifications/request-permission)))

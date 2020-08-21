@@ -23,7 +23,7 @@
               (if (= decision :accept)
                 (gateway/handle-acquisition {:message    payload
                                              :method     "PATCH"
-                                             :url        (gateway/get-url :clicks referral)
+                                             :url        [:clicks referral]
                                              :on-success [::claim/success-starter-pack-claim]})
                 {::persistence/set-referrer-state :declined})
               (popover/hide-popover))))
