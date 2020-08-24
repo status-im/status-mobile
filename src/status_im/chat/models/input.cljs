@@ -9,7 +9,8 @@
             [status-im.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
-            ["emojilib" :as emojis]))
+            ["emojilib" :as emojis]
+            [status-im.chat.models.mentions :as mentions]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
@@ -130,7 +131,8 @@
 (fx/defn send-current-message
   "Sends message from current chat input"
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
-  (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])]
+  (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])
+        input-text-with-mentions (mentions/check-mentions cofx input-text)]
     (fx/merge cofx
               (send-image)
-              (send-plain-text-message input-text current-chat-id))))
+              (send-plain-text-message input-text-with-mentions current-chat-id))))

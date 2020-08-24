@@ -51,11 +51,14 @@
 
 (defn get-all-contacts-in-group-chat
   [members admins contacts {:keys [public-key] :as current-account}]
-  (let [current-contact (-> current-account
-                            (select-keys  [:name :preferred-name :public-key :photo-path])
-                            (clojure.set/rename-keys {:name           :alias
-                                                      :preferred-name :name}))
-        all-contacts    (assoc contacts public-key current-contact)]
+  (let [current-contact (some->
+                         current-account
+                         (select-keys [:name :preferred-name :public-key :photo-path])
+                         (clojure.set/rename-keys {:name           :alias
+                                                   :preferred-name :name}))
+        all-contacts    (cond-> contacts
+                          current-contact
+                          (assoc public-key current-contact))]
     (->> members
          (map #(or (get all-contacts %)
                    (public-key->new-contact %)))
