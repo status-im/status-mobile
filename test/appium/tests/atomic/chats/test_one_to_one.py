@@ -203,7 +203,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2_chat.chat_options.click()
         device_2_chat.view_profile_button.click()
 
-        # Skip until edit-profile feature returned
+        # TODO: skip until edit-profile feature returned
 
         # if not device_2_chat.contact_profile_picture.is_element_image_equals_template('sauce_logo.png'):
         #     self.errors.append("Updated profile picture is not shown in one-to-one chat")
@@ -241,7 +241,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         time.sleep(2)
         device_1_public_chat.swipe_left()
         device_1_public_chat.sticker_icon.click()
-        if not device_1_public_chat.chat_item.is_element_displayed():
+        if not device_1_public_chat.sticker_message.is_element_displayed():
             self.errors.append('Sticker was not sent')
         device_1_public_chat.swipe_right()
         if not device_1_public_chat.sticker_icon.is_element_displayed():

@@ -522,6 +522,13 @@ class ChatItem(BaseElement):
         super().__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@content-desc="chat-item"]')
 
+class StikerMessageItem(BaseElement):
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.locator = self.Locator.accessibility_id('sticker-message')
+
+
+
 class ImageChatItem(BaseElement):
     def __init__(self, driver):
         super().__init__(driver)
@@ -607,6 +614,7 @@ class ChatView(BaseView):
         self.no_messages_in_chat = NoMessagesInChatText(self.driver)
         self.empty_public_chat_message = EmptyPublicChatMessage(self.driver)
         self.chat_item = ChatItem(self.driver)
+        self.sticker_message = StikerMessageItem(self.driver)
 
         self.commands_button = CommandsButton(self.driver)
         self.send_command = SendCommand(self.driver)

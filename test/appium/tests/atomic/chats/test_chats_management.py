@@ -1,9 +1,10 @@
 import time
 
 from tests import marks, camera_access_error_text, photos_access_error_text
-from tests.users import basic_user, dummy_user, ens_user_ropsten
+from tests.users import basic_user, dummy_user, ens_user_ropsten, ens_user
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
+from views.chat_view import ChatView
 
 
 @marks.chat
@@ -46,6 +47,91 @@ class TestChatManagement(SingleDeviceTestCase):
                 self.errors.append(
                     'Messages in %s chat are shown after clearing history and relauch' % chat_name)
             chat.get_back_to_home_view()
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6320)
+    @marks.medium
+    def test_can_start_chat_from_suggestions_using_search_chat(self):
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        profile = home.profile_button.click()
+        profile.switch_network()
+        chat_view = ChatView(self.driver)
+        ens_name_status, ens_name_another_domain, public_chat_name = ens_user_ropsten['ens'], \
+                                                                      ens_user['ens_another_domain'], 'some-pub-chat'
+        search_list = {
+            ens_name_status: {
+                'home': {
+                    'Start a new private chat',
+                    'Join a public chat',
+                    '%s.stateofus.eth' % ens_name_status,
+                    '#%s' % ens_name_status
+                },
+                'navigate_to': '%s.stateofus.eth' % ens_name_status,
+                'chat_view': {
+                    chat_view.add_to_contacts,
+                    chat_view.element_by_text('@%s' % ens_name_status),
+                    chat_view.chat_message_input
+                }
+            },
+            ens_name_another_domain: {
+                'home': {
+                    'Start a new private chat',
+                },
+                'home_not_shown': 'Join a public chat',
+                'navigate_to': 'Start a new private chat',
+                'chat_view': {
+                    chat_view.add_to_contacts,
+                    chat_view.element_by_text('@%s' % ens_name_another_domain),
+                    chat_view.chat_message_input
+                },
+            },
+            public_chat_name: {
+                'home': {
+                    'Join a public chat',
+                },
+                'home_not_shown': 'Start a new private chat',
+                'navigate_to': '#%s' % public_chat_name,
+                'chat_view': {
+                    chat_view.element_by_text('#%s' % public_chat_name),
+                    chat_view.chat_message_input
+                },
+            },
+
+        }
+
+        home.just_fyi('Join public chat to have search input on home view')
+        chat_name = home.get_random_chat_name()
+        public_chat = home.join_public_chat(chat_name)
+        public_chat.get_back_to_home_view()
+        home.swipe_down()
+
+        for keyword in search_list:
+            home.just_fyi('Can start chat from searching for %s' % keyword)
+            home.search_by_keyword(keyword)
+            if not home.element_by_text_part('No search results. Do you mean').is_element_displayed():
+                self.errors.append('"No search results" is not shown')
+            if 'home_not_shown' in search_list[keyword]:
+                if home.element_by_text(search_list[keyword]['home_not_shown']).is_element_displayed():
+                    self.errors.append('%s is shown on home view while searching for %s' % (search_list[keyword]['home_not_shown'], keyword))
+            for text in search_list[keyword]['home']:
+                if not home.element_by_text(text).is_element_displayed():
+                    self.errors.append('%s is not shown on home view while searching for %s' % (text, keyword))
+            home.element_by_text(search_list[keyword]['navigate_to']).click()
+            for element in search_list[keyword]['chat_view']:
+                if not element.is_element_displayed():
+                    self.errors.append('Requested %s element is not shown on chat view after navigating from suggestion '
+                                       'for %s' % (element.name, keyword))
+            home.back_button.click()
+
+        home.just_fyi('No suggestion at attempt to search for invalid data')
+        invalid_data = ['   ',  'ab;', '.6', '@ana']
+        for text in invalid_data:
+            home.search_by_keyword(text)
+            if home.element_by_text_part('No search results. Do you mean').is_element_displayed():
+                self.errors.append('"No search results" is shown when searching for invalid value %s' % text)
+            home.cancel_button.click()
 
         self.errors.verify_no_errors()
 

@@ -294,16 +294,17 @@
   (let [pack (get-in content [:sticker :pack])]
     [message-content-wrapper message
      [react/touchable-highlight (when-not modal
-                                  {:on-press      (fn [_]
-                                                    (when pack
-                                                      (re-frame/dispatch [:stickers/open-sticker-pack pack]))
-                                                    (react/dismiss-keyboard!))
-                                   :on-long-press (fn []
-                                                    (on-long-press
-                                                     (when-not outgoing
-                                                       [{:on-press #(when pack
-                                                                      (re-frame/dispatch [:chat.ui/show-profile from]))
-                                                         :label    (i18n/label :t/view-details)}])))})
+                                  {:accessibility-label :sticker-message
+                                   :on-press            (fn [_]
+                                                          (when pack
+                                                            (re-frame/dispatch [:stickers/open-sticker-pack pack]))
+                                                          (react/dismiss-keyboard!))
+                                   :on-long-press       (fn []
+                                                          (on-long-press
+                                                           (when-not outgoing
+                                                             [{:on-press #(when pack
+                                                                            (re-frame/dispatch [:chat.ui/show-profile from]))
+                                                               :label    (i18n/label :t/view-details)}])))})
       [react/image {:style  {:margin 10 :width 140 :height 140}
                     ;;TODO (perf) move to event
                     :source {:uri (contenthash/url (-> content :sticker :hash))}}]]
@@ -332,7 +333,7 @@
    [react/touchable-highlight (when-not modal
                                 {:on-long-press
                                  (fn [] (on-long-press []))})
-    [react/view (style/message-view message)
+    [react/view {:style (style/message-view message) :accessibility-label :audio-message}
      [message.audio/message-content message [message-timestamp message false]]]]
    reaction-picker])
 

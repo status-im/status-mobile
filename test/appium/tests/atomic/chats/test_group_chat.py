@@ -2,6 +2,7 @@ from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from tests.users import transaction_recipients
 from views.sign_in_view import SignInView
+from time import sleep
 
 
 @marks.chat
@@ -362,6 +363,79 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_2_chat.send_message(message_after_unblock)
         if not device_1_chat.chat_element_by_text(message_after_unblock).is_element_displayed(20):
             self.errors.append('User was unblocked, but new messages are not received')
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6317)
+    @marks.medium
+    def test_pair_devices_group_chat_different_messages(self):
+        self.create_drivers(3)
+        device_1, device_2, device_3 = SignInView(self.drivers[0]), SignInView(self.drivers[1]), SignInView(self.drivers[2])
+
+        device_1_home = device_1.create_user()
+        device_1_home.profile_button.click()
+        device_1_profile = device_1_home.get_profile_view()
+        device_1_profile.privacy_and_security_button.click()
+        device_1_profile.backup_recovery_phrase_button.click()
+        device_1_profile.ok_continue_button.click()
+        recovery_phrase = device_1_profile.get_recovery_phrase()
+        device_1_profile.back_button.click()
+        device_1_profile.get_back_to_home_view()
+        device_3_home = device_3.create_user()
+        device_3_chat_key, device_3_username = device_3_home.get_public_key_and_username(return_username=True)
+        device_3.home_button.click()
+        device_1_name, device_2_name, group_chat_name = 'creator', 'paired', 'some group chat'
+
+        device_1.just_fyi('add contact, start group chat')
+        device_1_home.add_contact(device_3_chat_key)
+        device_1_home.back_button.click()
+        device_1_chat = device_1_home.create_group_chat([device_3_username], group_chat_name)
+        device_3_chat = device_3_home.get_chat(group_chat_name).click()
+        device_3_chat.join_chat_button.click()
+
+        device_2.just_fyi('go to profile > Devices, set device name, discover device 2 to device 1')
+        device_2_home = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
+        device_2_profile = device_2_home.get_profile_view()
+        device_2_profile.discover_and_advertise_device(device_2_name)
+        device_1_profile.discover_and_advertise_device(device_1_name)
+        device_1_profile.get_toggle_device_by_name(device_2_name).click()
+        device_1_profile.sync_all_button.click()
+        device_1_profile.sync_all_button.wait_for_visibility_of_element(15)
+
+        device_1.just_fyi('send message to group chat and verify it on all devices')
+        text_message = 'some text'
+        [device.home_button.click() for device in (device_1_profile, device_2_profile)]
+        device_1_chat.send_message(text_message)
+        device_2_chat = device_2_home.get_chat(group_chat_name).click()
+        for chat in device_1_chat, device_2_chat, device_3_chat:
+            if not chat.chat_element_by_text(text_message).is_element_displayed():
+                self.errors.append('Message was sent, but it is not shown')
+
+        # TODO: disabled until #11113 fix
+        # device_1.just_fyi('send image to group chat and verify it on all devices')
+        # device_1_chat.show_images_button.click()
+        # device_1_chat.allow_button.click()
+        # device_1_chat.first_image_from_gallery.click()
+        # device_1_chat.send_message_button.click()
+        # device_1_chat.chat_message_input.click()
+        # for chat in device_1_chat, device_2_chat, device_3_chat:
+        #     if not chat.image_chat_item.is_element_displayed():
+        #         self.errors.append('Image is not shown in chat after sending for sender')
+
+        device_1.just_fyi('send sticker to group chat and verify it on all devices')
+        device_1_chat.profile_button.click()
+        device_1_profile.click_system_back_button(2)
+        device_1_profile.switch_network()
+        device_1_home.get_chat(group_chat_name).click()
+        device_1_chat.show_stickers_button.click()
+        device_1_chat.get_stickers.click()
+        device_1_chat.install_sticker_pack_by_name('Status Cat')
+        device_1_chat.back_button.click()
+        sleep(2)
+        device_1_chat.swipe_left()
+        device_1_chat.sticker_icon.click()
+        if not device_1_chat.sticker_message.is_element_displayed():
+            self.errors.append('Sticker was not sent')
 
         self.errors.verify_no_errors()
 
