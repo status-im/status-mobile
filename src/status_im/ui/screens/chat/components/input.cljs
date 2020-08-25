@@ -6,6 +6,7 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.screens.chat.components.style :as styles]
             [status-im.ui.screens.chat.components.reply :as reply]
+            [status-im.chat.constants :as chat.constants]
             [status-im.utils.utils :as utils.utils]
             [quo.components.animated.pressable :as pressable]
             [quo.animated :as animated]
@@ -86,6 +87,7 @@
                    :auto-focus             false
                    :on-focus               #(set-active-panel nil)
                    :on-change              #(on-text-change (.-text ^js (.-nativeEvent ^js %)))
+                   :max-length             chat.constants/max-text-size
                    :placeholder-text-color (:text-02 @colors/theme)
                    :placeholder            (if cooldown-enabled?
                                              (i18n/label :cooldown/text-input-disabled)
