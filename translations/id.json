@@ -684,7 +684,6 @@
     "message-not-sent": "Pesan tidak terkirim",
     "message-options-cancel": "Membatalkan",
     "message-reply": "Balasan",
-    "message-syncing": "Sinkronisasi pesan",
     "messages": "Pesan",
     "might-break": "Mungkin merusak beberapa ÐApps",
     "migrations-failed-content": "{{message}} \n versi skema: awal {{initial-version}} , {{current-version}} , terakhir {{last-version}} \n\n Beri tahu kami tentang masalah ini di obrolan publik #status. Jika Anda menekan tombol \"Batal\", tidak ada yang terjadi. Jika Anda menekan tombol \" {{erase-multiaccounts-data-button-text}} \", db multiaccount akan dihapus dan Anda akan bisa membuka kunci multiaccount. Semua data multi akun akan hilang.",
