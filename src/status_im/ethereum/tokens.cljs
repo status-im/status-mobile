@@ -448,6 +448,10 @@
                     :name     "Bloom Token"
                     :address  "0x107c4504cd79c5d2696ea0030a8dd4e92601b82e"
                     :decimals 18}
+                   {:symbol   :OXT
+                    :name     "Orchid"
+                    :address  "0x4575f41308EC1483f3d399aa9a2826d74Da13Deb"
+                    :decimals 18}
                    ;; NOTE(goranjovic): the following three tokens are removed from the Manage Assets list
                    ;; and automatically removed from user's selection by a migration. However, we still need
                    ;; them listed here in order to correctly display any previous transactions the user had
