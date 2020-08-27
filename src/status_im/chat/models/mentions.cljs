@@ -103,21 +103,23 @@
   ([text users-fn]
    (replace-mentions text users-fn 0))
   ([text users-fn idx]
-   (let [mention-key-idx (string/index-of text "@" idx)]
-     (if-not mention-key-idx
-       text
-       (let [users (users-fn)
-             {:keys [public-key alias]}
-             (match-mention text users mention-key-idx)]
-         (if-not alias
-           (recur text (fn [] users) (inc mention-key-idx))
-           (let [new-text (string/join
-                           [(subs text 0 (inc mention-key-idx))
-                            public-key
-                            (subs text (+ (inc mention-key-idx)
-                                          (count alias)))])
-                 mention-end (+ (inc mention-key-idx) (count public-key))]
-             (recur new-text (fn [] users) mention-end))))))))
+   (if (string/blank? text)
+     text
+     (let [mention-key-idx (string/index-of text "@" idx)]
+       (if-not mention-key-idx
+         text
+         (let [users (users-fn)
+               {:keys [public-key alias]}
+               (match-mention text users mention-key-idx)]
+           (if-not alias
+             (recur text (fn [] users) (inc mention-key-idx))
+             (let [new-text (string/join
+                             [(subs text 0 (inc mention-key-idx))
+                              public-key
+                              (subs text (+ (inc mention-key-idx)
+                                            (count alias)))])
+                   mention-end (+ (inc mention-key-idx) (count public-key))]
+               (recur new-text (fn [] users) mention-end)))))))))
 
 (defn check-mentions [cofx text]
   (replace-mentions text #(get-mentionable-users cofx)))
