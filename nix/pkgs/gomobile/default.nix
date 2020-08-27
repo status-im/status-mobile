@@ -1,15 +1,16 @@
-{ stdenv, utils, callPackage, fetchgit, buildGoPackage,
+{ stdenv, utils, callPackage, fetchgit, buildGo114Package,
   ncurses5, zlib, makeWrapper, patchelf, androidPkgs, xcodeWrapper
 }:
 
 let
   inherit (stdenv) isDarwin;
   inherit (stdenv.lib) optional optionalString strings;
-in buildGoPackage rec {
+in buildGo114Package rec {
   pname = "gomobile";
-  version = "20200329-${strings.substring 0 7 rev}";
-  rev = "4c31acba000778d337c0e4f32091cc923b3363d2";
-  sha256 = "0k42pn6fq886k9hn85wbgg4h4y1myj7niw0746sn50zfbrmy3s2c";
+  version = "20200622-${strings.substring 0 7 rev}";
+  # WARNING: Next commit removes support for ARM 32 bit builds for iOS
+  rev = "33b80540585f2b31e503da24d6b2a02de3c53ff5";
+  sha256 = "0c9map2vrv34wmaycsv71k4day3b0z5p16yzxmlp8amvqb38zwlm";
 
   goPackagePath = "golang.org/x/mobile";
   subPackages = [ "bind" "cmd/gobind" "cmd/gomobile" ];
