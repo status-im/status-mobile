@@ -325,7 +325,9 @@ public class NewMessageSignalHandler {
 
     private StatusMessage createMessage(JSONObject messageData) {
         try {
-            Person author = getPerson(messageData.getString("from"), messageData.getString("identicon"), messageData.getString("alias"));
+            String ensName = messageData.optString("ensName");
+            String displayName = (ensName.isEmpty()) ? messageData.getString("alias") : ensName;
+            Person author = getPerson(messageData.getString("from"), messageData.getString("identicon"), displayName);
             return new StatusMessage(author,  messageData.getLong("whisperTimestamp"), messageData.getString("text"));
         } catch (JSONException e) {
             Log.e(TAG, "JSON conversion failed: " + e.getMessage());
