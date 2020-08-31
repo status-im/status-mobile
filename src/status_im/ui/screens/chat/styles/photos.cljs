@@ -9,13 +9,15 @@
   {:position      :relative
    :border-radius (radius size)})
 
-(defn photo-border [size]
-  {:position      :absolute
-   :width         size
-   :height        size
-   :border-color  colors/black-transparent
-   :border-width  1
-   :border-radius (radius size)})
+(defn photo-border
+  ([size] (photo-border size :absolute))
+  ([size position]
+   {:position      position
+    :width         size
+    :height        size
+    :border-color  colors/black-transparent
+    :border-width  1
+    :border-radius (radius size)}))
 
 (defn photo [size]
   {:border-radius    (radius size)

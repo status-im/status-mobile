@@ -276,7 +276,8 @@
                            (reset! active-panel panel)
                            (reagent/flush)
                            (when panel
-                             (js/setTimeout #(react/dismiss-keyboard!) 100)))]
+                             (js/setTimeout #(react/dismiss-keyboard!) 100)))
+        on-text-change #(re-frame/dispatch [:chat.ui/set-chat-input-text %])]
     (fn []
       (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as current-chat}
             @(re-frame/subscribe [:chats/current-chat])]
@@ -295,13 +296,21 @@
            [accessory/view {:y               position-y
                             :on-update-inset on-update}
             [invitation-bar chat-id]])
+         ;; NOTE(rasom): on android we have to place `autocomplete-mentions`
+         ;; outside `accessory/view` because otherwise :keyboardShouldPersistTaps
+         ;; :always doesn't work and keyboard is hidden on pressing suggestion.
+         ;; Scrolling of suggestions doesn't work neither in this case.
+         (when platform/android?
+           [components/autocomplete-mentions])
          (when show-input?
            [accessory/view {:y               position-y
                             :pan-state       pan-state
                             :has-panel       (boolean @active-panel)
                             :on-close        #(set-active-panel nil)
                             :on-update-inset on-update}
-            [components/chat-toolbar {:active-panel     @active-panel
-                                      :set-active-panel set-active-panel
-                                      :text-input-ref   text-input-ref}]
+            [components/chat-toolbar
+             {:active-panel             @active-panel
+              :set-active-panel         set-active-panel
+              :text-input-ref           text-input-ref
+              :on-text-change           on-text-change}]
             [bottom-sheet @active-panel]])]))))

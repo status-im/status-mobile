@@ -81,35 +81,46 @@
                 (and (get-in db [:pagination-info current-chat-id :messages-initialized?])
                      (not= session-id
                            (get-in db [:pagination-info current-chat-id :messages-initialized?]))))
-    (let [already-loaded-messages    (get-in db [:messages current-chat-id])
+    (let [already-loaded-messages      (get-in db [:messages current-chat-id])
           loaded-unviewed-messages-ids (get-in db [:chats current-chat-id :loaded-unviewed-messages-ids] #{})
+          users                        (get-in db [:chats current-chat-id :users] {})
           ;; We remove those messages that are already loaded, as we might get some duplicates
           {:keys [all-messages
                   new-messages
                   last-clock-value
-                  unviewed-message-ids]} (reduce (fn [{:keys [last-clock-value all-messages] :as acc}
-                                                      {:keys [clock-value seen message-id] :as message}]
-                                                   (cond-> acc
-                                                     (or (nil? last-clock-value)
-                                                         (> last-clock-value clock-value))
-                                                     (assoc :last-clock-value clock-value)
+                  unviewed-message-ids
+                  users]}
+          (reduce (fn [{:keys [last-clock-value all-messages users] :as acc}
+                       {:keys [clock-value seen message-id alias name identicon from]
+                        :as message}]
+                    (cond-> acc
+                      (and alias (not= alias ""))
+                      (update :users assoc alias {:alias      alias
+                                                  :name       (or name alias)
+                                                  :identicon  identicon
+                                                  :public-key from})
+                      (or (nil? last-clock-value)
+                          (> last-clock-value clock-value))
+                      (assoc :last-clock-value clock-value)
 
-                                                     (not seen)
-                                                     (update :unviewed-message-ids conj message-id)
+                      (not seen)
+                      (update :unviewed-message-ids conj message-id)
 
-                                                     (nil? (get all-messages message-id))
-                                                     (update :new-messages conj message)
+                      (nil? (get all-messages message-id))
+                      (update :new-messages conj message)
 
-                                                     :always
-                                                     (update :all-messages assoc message-id message)))
-                                                 {:all-messages already-loaded-messages
-                                                  :unviewed-message-ids loaded-unviewed-messages-ids
-                                                  :new-messages []}
-                                                 messages)]
+                      :always
+                      (update :all-messages assoc message-id message)))
+                  {:all-messages         already-loaded-messages
+                   :unviewed-message-ids loaded-unviewed-messages-ids
+                   :users                users
+                   :new-messages         []}
+                  messages)]
       (fx/merge cofx
                 {:db (-> db
                          (assoc-in [:pagination-info current-chat-id :cursor-clock-value] (when (seq cursor) (cursor->clock-value cursor)))
                          (assoc-in [:chats current-chat-id :loaded-unviewed-messages-ids] unviewed-message-ids)
+                         (assoc-in [:chats current-chat-id :users] users)
                          (assoc-in [:pagination-info current-chat-id :loading-messages?] false)
                          (assoc-in [:messages current-chat-id] all-messages)
                          (update-in [:message-lists current-chat-id] message-list/add-many new-messages)

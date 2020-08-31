@@ -116,6 +116,7 @@
   [{:keys [db] :as cofx} public-key]
   (when (not= (get-in db [:multiaccount :public-key]) public-key)
     (let [contact (build-contact cofx public-key)]
+      (log/info "create contact" contact)
       (fx/merge cofx
                 {:db (dissoc db :contacts/new-identity)}
                 (upsert-contact contact)))))
@@ -176,15 +177,13 @@
 (fx/defn name-verified
   {:events [:contacts/ens-name-verified]}
   [{:keys [db now] :as cofx} public-key ens-name]
-  (fx/merge cofx
-            {:db (update-in db [:contacts/contacts public-key]
-                            merge
-                            {:name            ens-name
-                             :last-ens-clock-value now
-                             :ens-verified-at now
-                             :ens-verified    true})}
-
-            (upsert-contact {:public-key public-key})))
+  (let [contact (-> (get-in db [:contacts/contacts public-key]
+                            (build-contact cofx public-key))
+                    (assoc :name ens-name
+                           :last-ens-clock-value now
+                           :ens-verified-at now
+                           :ens-verified true))]
+    (upsert-contact cofx contact)))
 
 (fx/defn update-nickname
   {:events [:contacts/update-nickname]}

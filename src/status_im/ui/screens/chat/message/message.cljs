@@ -194,13 +194,13 @@
       [react/view (style/message-author-userpic outgoing)
        (when first-in-group?
          [react/touchable-highlight {:on-press #(do (when modal (close-modal))
-                                                    (re-frame/dispatch [:chat.ui/show-profile from]))}
+                                                    (re-frame/dispatch [:chat.ui/show-profile-without-adding-contact from]))}
           [photos/member-identicon identicon]])])
     [react/view {:style (style/message-author-wrapper outgoing display-photo?)}
      (when display-username?
        [react/touchable-opacity {:style    style/message-author-touchable
                                  :on-press #(do (when modal (close-modal))
-                                                (re-frame/dispatch [:chat.ui/show-profile from]))}
+                                                (re-frame/dispatch [:chat.ui/show-profile-without-adding-contact from]))}
         [message-author-name from modal]])
      ;;MESSAGE CONTENT
      [react/view
@@ -310,7 +310,7 @@
                                                           (on-long-press
                                                            (when-not outgoing
                                                              [{:on-press #(when pack
-                                                                            (re-frame/dispatch [:chat.ui/show-profile from]))
+                                                                            (re-frame/dispatch [:chat.ui/show-profile-without-adding-contact from]))
                                                                :label    (i18n/label :t/view-details)}])))})
       [react/image {:style  {:margin 10 :width 140 :height 140}
                     ;;TODO (perf) move to event

@@ -13,12 +13,10 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.core :as utils]
-            [status-im.utils.datetime :as time])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+            [status-im.utils.datetime :as time]))
 
-(defview mention-element [from]
-  (letsubs [contact-name [:contacts/contact-name-by-identity from]]
-    contact-name))
+(defn mention-element [from]
+  @(re-frame/subscribe [:contacts/contact-name-by-identity from]))
 
 ;; if truncated subheader text is too short we won't get ellipsize at the end of text
 (def max-subheader-length 100)

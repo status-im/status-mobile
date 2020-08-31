@@ -501,6 +501,11 @@
    (chat.message/toggle-expand-message cofx chat-id message-id)))
 
 (handlers/register-handler-fx
+ :chat.ui/select-mention
+ (fn [cofx [_ mention]]
+   (chat.input/select-mention cofx mention)))
+
+(handlers/register-handler-fx
  :chat.ui/set-chat-input-text
  (fn [cofx [_ text]]
    (chat.input/set-chat-input-text cofx text)))

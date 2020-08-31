@@ -118,6 +118,8 @@
 (reg-root-key-sub :chat/memberships :chat/memberships)
 (reg-root-key-sub :camera-roll-photos :camera-roll-photos)
 (reg-root-key-sub :group-chat/invitations :group-chat/invitations)
+(reg-root-key-sub :chats/mention-suggestions :chats/mention-suggestions)
+(reg-root-key-sub :chats/cursor :chats/cursor)
 
 ;;browser
 (reg-root-key-sub :browsers :browser/browsers)
@@ -853,6 +855,43 @@
       (-> transaction
           (wallet.db/get-confirmations current-block)
           (>= transactions/confirmations-count-threshold))})))
+
+(re-frame/reg-sub
+ :chats/mentionable-contacts
+ :<- [:contacts/contacts]
+ (fn [contacts]
+   (reduce
+    (fn [acc [key {:keys [alias name identicon]}]]
+      (if (and alias (not= alias ""))
+        (let [name (string/replace name ".stateofus.eth" "")]
+          (assoc acc alias {:alias      alias
+                            :name       (or name alias)
+                            :identicon  identicon
+                            :public-key key}))
+        acc))
+    {}
+    contacts)))
+
+(re-frame/reg-sub
+ :chats/mentionable-users
+ :<- [:chats/current-chat]
+ :<- [:chats/mentionable-contacts]
+ (fn [[{:keys [users]} contacts]]
+   (merge users contacts)))
+
+(re-frame/reg-sub
+ :chat/mention-suggestions
+ :<- [:chats/current-chat-id]
+ :<- [:chats/mention-suggestions]
+ (fn [[chat-id mentions]]
+   (take 15 (get mentions chat-id))))
+
+(re-frame/reg-sub
+ :chat/cursor
+ :<- [:chats/current-chat-id]
+ :<- [:chats/cursor]
+ (fn [[chat-id cursor]]
+   (get cursor chat-id)))
 
 ;;BOOTNODES ============================================================================================================
 

@@ -69,6 +69,16 @@
                        (update-in [:chats chat-id :loaded-unviewed-messages-ids]
                                   (fnil conj #{}) message-id))}))))
 
+(fx/defn add-sender-to-chat-users
+  [{:keys [db]} {:keys [chat-id alias name identicon from]}]
+  (when (and alias (not= alias ""))
+    {:db (update-in db [:chats chat-id :users] assoc
+                    alias
+                    {:alias      alias
+                     :name       (or name alias)
+                     :identicon  identicon
+                     :public-key from})}))
+
 (fx/defn add-received-message
   [{:keys [db] :as cofx}
    {:keys [chat-id clock-value] :as message}]
@@ -76,21 +86,24 @@
         cursor-clock-value (get-in db [:chats current-chat-id :cursor-clock-value])
         current-chat?      (= chat-id loaded-chat-id)]
     (when current-chat?
-      ;; If we don't have any hidden message or the hidden message is before
-      ;; this one, we add the message to the UI
-      (if (or (not @view.state/first-not-visible-item)
-              (<= (:clock-value @view.state/first-not-visible-item)
-                  clock-value))
-        (add-message cofx {:message       message
-                           :seen-by-user? (and current-chat?
-                                               (= view-id :chat))})
-        ;; Not in the current view, set all-loaded to false
-        ;; and offload to db and update cursor if necessary
-        {:db (cond-> (assoc-in db [:chats chat-id :all-loaded?] false)
-               (>= clock-value cursor-clock-value)
-               (update-in [:chats chat-id] assoc
-                          :cursor (chat-loading/clock-value->cursor clock-value)
-                          :cursor-clock-value clock-value))}))))
+      (fx/merge
+       cofx
+       ;; If we don't have any hidden message or the hidden message is before
+       ;; this one, we add the message to the UI
+       (if (or (not @view.state/first-not-visible-item)
+               (<= (:clock-value @view.state/first-not-visible-item)
+                   clock-value))
+         (add-message {:message       message
+                       :seen-by-user? (and current-chat?
+                                           (= view-id :chat))})
+         ;; Not in the current view, set all-loaded to false
+         ;; and offload to db and update cursor if necessary
+         {:db (cond-> (assoc-in db [:chats chat-id :all-loaded?] false)
+                (>= clock-value cursor-clock-value)
+                (update-in [:chats chat-id] assoc
+                           :cursor (chat-loading/clock-value->cursor clock-value)
+                           :cursor-clock-value clock-value))})
+       (add-sender-to-chat-users message)))))
 
 (defn- message-loaded?
   [{:keys [db]} {:keys [chat-id message-id]}]

@@ -29,6 +29,18 @@
   [{{:keys [current-chat-id] :as db} :db} new-input]
   {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))})
 
+(fx/defn select-mention
+  [{:keys [db] :as cofx} {:keys [name] :as user}]
+  (let [chat-id     (:current-chat-id db)
+        new-text    (mentions/new-input-text-with-mention cofx user)
+        at-sign-idx (get-in db [:chats chat-id :mentions :at-sign-idx])]
+    (fx/merge
+     cofx
+     {:db (-> db
+              (assoc-in [:chats/cursor chat-id] (+ at-sign-idx (count name) 2))
+              (assoc-in [:chats/mention-suggestions chat-id] nil))}
+     (set-chat-input-text new-text))))
+
 (defn- start-cooldown [{:keys [db]} cooldowns]
   {:dispatch-later        [{:dispatch [:chat/disable-cooldown]
                             :ms       (chat.constants/cooldown-periods-ms
@@ -135,4 +147,6 @@
         input-text-with-mentions (mentions/check-mentions cofx input-text)]
     (fx/merge cofx
               (send-image)
-              (send-plain-text-message input-text-with-mentions current-chat-id))))
+              (send-plain-text-message input-text-with-mentions current-chat-id)
+              (mentions/clear-suggestions)
+              (mentions/clear-cursor))))

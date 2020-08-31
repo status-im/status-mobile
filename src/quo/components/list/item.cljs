@@ -64,10 +64,11 @@
                                  :justify-content  :space-between})}]
         children))
 
-(defn- icon-column [{:keys [icon icon-bg-color icon-color size]}]
+(defn- icon-column
+  [{:keys [icon icon-bg-color icon-color size icon-container-style]}]
   (when icon
     (let [icon-size (size->icon-size size)]
-      [rn/view {:style (:tiny spacing/padding-horizontal)}
+      [rn/view {:style (or icon-container-style (:tiny spacing/padding-horizontal))}
        (cond
          (vector? icon)
          icon
@@ -83,7 +84,7 @@
 
 (defn title-column
   [{:keys [title text-color subtitle subtitle-max-lines
-           title-accessibility-label size]}]
+           title-accessibility-label size text-size title-text-weight]}]
   [rn/view {:style (merge (:tiny spacing/padding-horizontal)
                           {:justify-content :center
                            :flex            1})}
@@ -93,28 +94,31 @@
      [:<>
       ;; FIXME(Ferossgp): ReactNative 63 will support view inside text on andrid, remove thess if when migrating
       (if (string? title)
-        [text/text {:weight              :medium
+        [text/text {:weight              (or title-text-weight :medium)
                     :style               {:color text-color}
                     :accessibility-label title-accessibility-label
                     :ellipsize-mode      :tail
-                    :number-of-lines     1}
+                    :number-of-lines     1
+                    :size                text-size}
          title]
         title)
       (if (string? subtitle)
         [text/text {:weight          :regular
                     :color           :secondary
                     :ellipsize-mode  :tail
-                    :number-of-lines subtitle-max-lines}
+                    :number-of-lines subtitle-max-lines
+                    :size            text-size}
          subtitle]
         subtitle)]
 
      title
      (if (string? title)
-       [text/text {:number-of-lines           1
+       [text/text {:weight                    (or title-text-weight :regular)
+                   :number-of-lines           1
                    :style                     {:color text-color}
                    :title-accessibility-label title-accessibility-label
                    :ellipsize-mode            :tail
-                   :size                      (size->single-title-size size)}
+                   :size                      (or text-size (size->single-title-size size))}
         title]
        title))])
 
@@ -147,10 +151,10 @@
                                       :color           (:icon-02 @colors/theme)}]])]))
 
 (defn list-item
-  [{:keys [theme accessory disabled subtitle-max-lines icon title
-           subtitle active on-press on-long-press chevron size
+  [{:keys [theme accessory disabled subtitle-max-lines icon icon-container-style
+           title subtitle active on-press on-long-press chevron size text-size
            accessory-text accessibility-label title-accessibility-label
-           haptic-feedback haptic-type error animated]
+           haptic-feedback haptic-type error animated title-text-weight]
     :or   {subtitle-max-lines 1
            theme              :main
            haptic-feedback    true
@@ -191,8 +195,11 @@
                    :icon-bg-color             icon-bg-color
                    :title-accessibility-label title-accessibility-label
                    :icon                      icon
+                   :icon-container-style      icon-container-style
                    :title                     title
+                   :title-text-weight         title-text-weight
                    :size                      size
+                   :text-size                 text-size
                    :subtitle                  subtitle
                    :subtitle-max-lines        subtitle-max-lines}]
        [right-side {:chevron        chevron

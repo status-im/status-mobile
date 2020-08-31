@@ -21,8 +21,12 @@
                      :all-loaded? true
                      :chats {chat-id {:cursor cursor
                                       :cursor-clock-value cursor-clock-value}}}}
-          message {:chat-id chat-id
-                   :clock-value clock-value}]
+          message {:chat-id     chat-id
+                   :clock-value clock-value
+                   :alias       "alias"
+                   :name        "name"
+                   :identicon   "identicon"
+                   :from        "from"}]
       (testing "not current-chat"
         (is (nil? (message/add-received-message
                    (update cofx :db dissoc :loaded-chat-id)
@@ -32,18 +36,44 @@
       ;; <- top of the chat
       (testing "there's no hidden item"
         (with-redefs [view.state/first-not-visible-item (atom nil)]
-          (is (= :added (message/add-received-message
-                         cofx
-                         message)))))
+          (is (= {:db {:loaded-chat-id  "chat-id",
+                       :current-chat-id "chat-id",
+                       :all-loaded?     true,
+                       :chats
+                       {"chat-id"
+                        {:cursor
+                         "00000000000000000000000000000000000000000000000000090x0000000000000000000000000000000000000000000000000000000000000000",
+                         :cursor-clock-value 9,
+                         :users
+                         {"alias" {:alias      "alias",
+                                   :name       "name",
+                                   :identicon  "identicon",
+                                   :public-key "from"}}}}}}
+                 (message/add-received-message
+                  cofx
+                  message)))))
       ;; <- cursor
       ;; <- first-hidden-item
       ;; <- message
       ;; <- top of the chat
       (testing "the hidden item has a clock value less than the current"
         (with-redefs [view.state/first-not-visible-item (atom {:clock-value (dec clock-value)})]
-          (is (= :added (message/add-received-message
-                         cofx
-                         message)))))
+          (is (= {:db {:loaded-chat-id  "chat-id",
+                       :current-chat-id "chat-id",
+                       :all-loaded?     true,
+                       :chats
+                       {"chat-id"
+                        {:cursor
+                         "00000000000000000000000000000000000000000000000000090x0000000000000000000000000000000000000000000000000000000000000000",
+                         :cursor-clock-value 9,
+                         :users
+                         {"alias" {:alias      "alias",
+                                   :name       "name",
+                                   :identicon  "identicon",
+                                   :public-key "from"}}}}}}
+                 (message/add-received-message
+                  cofx
+                  message)))))
       ;; <- cursor
       ;; <- message
       ;; <- first-hidden-item

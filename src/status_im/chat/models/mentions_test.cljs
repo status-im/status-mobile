@@ -17,6 +17,26 @@
                  {:name       "user3"
                   :alias      "User Number Three"
                   :public-key "0xpk3"}})]
+    (test/testing "empty string"
+      (let [text   ""
+            result (mentions/replace-mentions text users)]
+        (test/is (= result text) (pr-str text))))
+
+    (test/testing "no text"
+      (let [text   nil
+            result (mentions/replace-mentions text users)]
+        (test/is (= result text) (pr-str text))))
+
+    (test/testing "incomlepte mention 1"
+      (let [text   "@"
+            result (mentions/replace-mentions text users)]
+        (test/is (= result text) (pr-str text))))
+
+    (test/testing "incomplete mention 2"
+      (let [text   "@r"
+            result (mentions/replace-mentions text users)]
+        (test/is (= result text) (pr-str text))))
+
     (test/testing "no mentions"
       (let [text   "foo bar @buzz kek @foo"
             result (mentions/replace-mentions text users)]
@@ -26,6 +46,11 @@
       (let [text   "@User Number One"
             result (mentions/replace-mentions text users)]
         (test/is (= result "@0xpk1") (pr-str text))))
+
+    (test/testing "starts with mention, comma after mention"
+      (let [text   "@User Number One,"
+            result (mentions/replace-mentions text users)]
+        (test/is (= result "@0xpk1,") (pr-str text))))
 
     (test/testing "starts with mention but no space after"
       (let [text   "@User Number Onefoo"
@@ -56,6 +81,11 @@
       (let [text   "@User Number One @User Number two"
             result (mentions/replace-mentions text users)]
         (test/is (= result  "@0xpk1 @0xpk2") (pr-str text))))
+
+    (test/testing "two different mentions, separated with comma"
+      (let [text   "@User Number One,@User Number two"
+            result (mentions/replace-mentions text users)]
+        (test/is (= result  "@0xpk1,@0xpk2") (pr-str text))))
 
     (test/testing "two different mentions inside text"
       (let [text   "foo@User Number One bar @User Number two baz"
