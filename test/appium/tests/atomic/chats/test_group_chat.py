@@ -411,16 +411,15 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
             if not chat.chat_element_by_text(text_message).is_element_displayed():
                 self.errors.append('Message was sent, but it is not shown')
 
-        # TODO: disabled until #11113 fix
-        # device_1.just_fyi('send image to group chat and verify it on all devices')
-        # device_1_chat.show_images_button.click()
-        # device_1_chat.allow_button.click()
-        # device_1_chat.first_image_from_gallery.click()
-        # device_1_chat.send_message_button.click()
-        # device_1_chat.chat_message_input.click()
-        # for chat in device_1_chat, device_2_chat, device_3_chat:
-        #     if not chat.image_chat_item.is_element_displayed():
-        #         self.errors.append('Image is not shown in chat after sending for sender')
+        device_1.just_fyi('send image to group chat and verify it on all devices')
+        device_1_chat.show_images_button.click()
+        device_1_chat.allow_button.click()
+        device_1_chat.first_image_from_gallery.click()
+        device_1_chat.send_message_button.click()
+        device_1_chat.chat_message_input.click()
+        for chat in device_1_chat, device_2_chat, device_3_chat:
+            if not chat.image_chat_item.is_element_displayed():
+                self.errors.append('Image is not shown in chat after sending for sender')
 
         device_1.just_fyi('send sticker to group chat and verify it on all devices')
         device_1_chat.profile_button.click()
