@@ -18,6 +18,8 @@
 (def scroll-view (reagent/adapt-react-class (.-ScrollView ^js rn)))
 (def modal (reagent/adapt-react-class (.-Modal ^js rn)))
 
+(def refresh-control (reagent/adapt-react-class (.-RefreshControl ^js rn)))
+
 (def touchable-opacity (reagent/adapt-react-class (.-TouchableOpacity ^js rn)))
 (def touchable-highlight (reagent/adapt-react-class (.-TouchableHighlight ^js rn)))
 (def touchable-without-feedback (reagent/adapt-react-class (.-TouchableWithoutFeedback ^js rn)))

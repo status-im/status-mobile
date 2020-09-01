@@ -6,6 +6,7 @@
             [status-im.ethereum.tokens :as tokens]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.constants :as constants]
+            [status-im.ui.screens.mobile-network-settings.sheets :as sheets]
             [clojure.set :as set]
             [taoensso.timbre :as log]))
 
@@ -23,12 +24,15 @@
 (re-frame/reg-fx
  :wallet/get-prices
  (fn [{:keys [from to mainnet? success-event error-event chaos-mode?]}]
-   (prices/get-prices from
-                      to
-                      mainnet?
-                      #(re-frame/dispatch [success-event %])
-                      #(re-frame/dispatch [error-event %])
-                      chaos-mode?)))
+   (let [milliseconds 1000
+         get-prices   (fn []
+                        (prices/get-prices from
+                                           to
+                                           mainnet?
+                                           #(re-frame/dispatch [success-event %])
+                                           #(re-frame/dispatch [error-event %])
+                                           chaos-mode?))]
+     (js/setTimeout get-prices milliseconds))))
 
 (fx/defn on-update-prices-success
   {:events [::update-prices-success]}
@@ -47,27 +51,32 @@
 
 (fx/defn update-prices
   {:events [:wallet.ui/pull-to-refresh]}
-  [{{:keys [network-status :wallet/all-tokens]
-     {:keys [currency chaos-mode? :wallet/visible-tokens]
+  [{{:keys [network-status :wallet/all-tokens :network/type]
+     {:keys [currency chaos-mode? :wallet/visible-tokens syncing-on-mobile-network?]
       :or   {currency :usd}} :multiaccount :as db} :db}]
   (let [chain    (ethereum/chain-keyword db)
         mainnet? (= :mainnet chain)
         assets   (get visible-tokens chain #{})
         tokens   (tokens-symbols assets all-tokens)
         currency (get constants/currencies currency)]
-    (when (not= network-status :offline)
-      {:wallet/get-prices
-       {:from          (if mainnet?
-                         (conj tokens "ETH")
-                         [(-> (tokens/native-currency chain)
-                              (wallet.utils/exchange-symbol))])
-        :to            [(:code currency)]
-        :mainnet?      mainnet?
-        :success-event ::update-prices-success
-        :error-event   ::update-prices-fail
-        :chaos-mode?   chaos-mode?}
+    (if (and (= type "cellular")
+             (not syncing-on-mobile-network?))
+      (do (re-frame/dispatch [:bottom-sheet/show-sheet
+                              {:content sheets/settings-sheet}])
+          {:db (assoc db :prices-loading? false)})
+      (when (not= network-status :offline)
+        {:wallet/get-prices
+         {:from          (if mainnet?
+                           (conj tokens "ETH")
+                           [(-> (tokens/native-currency chain)
+                                (wallet.utils/exchange-symbol))])
+          :to            [(:code currency)]
+          :mainnet?      mainnet?
+          :success-event ::update-prices-success
+          :error-event   ::update-prices-fail
+          :chaos-mode?   chaos-mode?}
 
-       :db
-       (-> db
-           (clear-error-message :prices-update)
-           (assoc :prices-loading? true))})))
+         :db
+         (-> db
+             (clear-error-message :prices-update)
+             (assoc :prices-loading? true))}))))

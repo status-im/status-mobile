@@ -10,6 +10,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
             [status-im.ui.screens.wallet.accounts.styles :as styles]
+            [status-im.ui.screens.wallet.refresh-control :as rc]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.keycard.login :as keycard.login])
@@ -17,8 +18,7 @@
 
 (views/defview account-card [{:keys [name color address type] :as account}]
   (views/letsubs [currency        [:wallet/currency]
-                  portfolio-value [:account-portfolio-value address]
-                  prices-loading? [:prices-loading?]]
+                  portfolio-value [:account-portfolio-value address]]
     [react/touchable-highlight
      {:on-press            #(re-frame/dispatch [:navigate-to :wallet-account account])
       :accessibility-label (str "accountcard" name)
@@ -28,10 +28,9 @@
      [react/view {:style (styles/card color)}
       [react/view {:flex-direction :row :align-items :center :justify-content :space-between}
        [react/view {:style {:flex-direction :row}}
-        (if prices-loading?
-          [react/small-loading-indicator :colors/white-persist]
-          [react/text {:style               {:color colors/white-persist :font-weight "500"}
-                       :accessibility-label "account-total-value"} portfolio-value])
+        [react/text {:style
+                     {:color colors/white-persist :font-weight "500"}
+                     :accessibility-label "account-total-value"} portfolio-value]
         [react/text {:style {:color colors/white-transparent-persist :font-weight "500"}} (str " " (:code currency))]]
        [react/touchable-highlight
         {:on-press #(re-frame/dispatch [:show-popover
@@ -177,6 +176,8 @@
        [quo/animated-header
         {:extended-header   total-value
          :use-insets        true
+         :refresh              (rc/refresh-control)
+         :on-scroll-begin-drag rc/refresh-action
          :right-accessories [{:on-press            #(re-frame/dispatch
                                                      [::qr-scanner/scan-code
                                                       {:handler :wallet.send/qr-scanner-result}])

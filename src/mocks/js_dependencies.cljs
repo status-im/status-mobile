@@ -21,6 +21,7 @@
                             :ReanimatedModule       {:configureProps (fn [])}}
 
             :View                     {}
+            :RefreshControl           {}
             :FlatList                 {}
             :Text                     {}
             :ProgressBarAndroid       {}

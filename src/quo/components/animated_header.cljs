@@ -44,7 +44,7 @@
         offset          (reagent/atom 0)
         on-layout       (fn [evt]
                           (reset! offset (oget evt "nativeEvent" "layout" "height")))]
-    (fn [{:keys [extended-header] :as props} children]
+    (fn [{:keys [extended-header refresh on-scroll-begin-drag] :as props} children]
       [animated/view {:flex           1
                       :pointer-events :box-none}
        [animated/code {:key  (str @offset)
@@ -66,16 +66,20 @@
                                                              :offset    @offset}]]
                          :title-align     :left}
                         (dissoc props :extended-header))]]
-       (into [animated/scroll-view {:on-scroll           on-scroll
-                                    :style               {:z-index 1}
-                                    :scrollEventThrottle 16}
-              [animated/view {:pointer-events :box-none}
-               [animated/view {:pointer-events :box-none
-                               :on-layout      on-layout}
-                [extended-header {:value     y
-                                  :animation animation
-                                  :offset    @offset}]]]]
-             children)])))
+       (let [scroll-view-options (merge {:on-scroll           on-scroll
+                                         :style               {:z-index 1}
+                                         :scrollEventThrottle 16}
+                                        (when refresh {:refresh-control (refresh)})
+                                        (when on-scroll-begin-drag
+                                          {:on-scroll-begin-drag (on-scroll-begin-drag)}))]
+         (into [animated/scroll-view scroll-view-options
+                [animated/view {:pointer-events :box-none}
+                 [animated/view {:pointer-events :box-none
+                                 :on-layout    on-layout}
+                  [extended-header {:value     y
+                                    :animation animation
+                                    :offset    @offset}]]]]
+               children))])))
 
 (defn header [{:keys [use-insets] :as props} & children]
   (if use-insets

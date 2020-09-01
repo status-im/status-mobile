@@ -14,6 +14,7 @@
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
             [status-im.ui.screens.wallet.accounts.views :as accounts]
             [status-im.ui.screens.wallet.transactions.views :as history]
+            [status-im.ui.screens.wallet.refresh-control :as rc]
             [status-im.utils.money :as money]
             [status-im.wallet.utils :as wallet.utils])
   (:require-macros [status-im.utils.views :as views]))
@@ -41,14 +42,11 @@
 (views/defview account-card [{:keys [address color type] :as account}]
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:account-portfolio-value address]
-                  window-width    [:dimensions/window-width]
-                  prices-loading? [:prices-loading?]]
+                  window-width    [:dimensions/window-width]]
     [react/view {:style (styles/card window-width color)}
      [react/view {:padding 16 :padding-bottom 12 :flex 1 :justify-content :space-between}
       [react/view {:style {:flex-direction :row}}
-       (if prices-loading?
-         [react/small-loading-indicator :colors/white-persist]
-         [react/text {:style {:font-size 32 :color colors/white-persist :font-weight "600"}} portfolio-value])
+       [react/text {:style {:font-size 32 :color colors/white-persist :font-weight "600"}} portfolio-value]
        [react/text {:style {:font-size 32 :color colors/white-transparent-persist :font-weight "600"}} (str " " (:code currency))]]
       [quo/text {:number-of-lines 1
                  :ellipsize-mode  :middle
@@ -196,7 +194,8 @@
          :on-scroll             (animation/event
                                  [{:nativeEvent {:contentOffset {:y scroll-y}}}]
                                  {:useNativeDriver true})
-         :scrollEventThrottle   1}
+         :scrollEventThrottle   1
+         :refresh-control (rc/refresh-control)}
         [react/view {:padding-left 16}
          [react/scroll-view {:horizontal true}
           [react/view {:flex-direction :row :padding-top 8 :padding-bottom 12}
