@@ -24,9 +24,7 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.browser.webview-ref :as webview-ref]
-            [alphabase.base58 :as alphabase.base58]
-            ["eth-phishing-detect" :as eth-phishing-detect]
-            ["hi-base32" :as hi-base32]))
+            ["eth-phishing-detect" :as eth-phishing-detect]))
 
 (fx/defn update-browser-option
   [{:keys [db]} option-key option-value]
@@ -170,16 +168,17 @@
 
 (defmulti storage-gateway :namespace)
 
+(defmethod storage-gateway :ipns
+  [{:keys [hash]}]
+  (str "https://" hash))
+
 (defmethod storage-gateway :ipfs
   [{:keys [hash]}]
-  (let [base32hash (-> (.encode ^js hi-base32 (alphabase.base58/decode hash))
-                       (string/replace #"=" "")
-                       (string/lower-case))]
-    (str base32hash ".infura.status.im")))
+  (contenthash/ipfs-url hash))
 
 (defmethod storage-gateway :swarm
   [{:keys [hash]}]
-  (str "swarm-gateways.net/bzz:/" hash))
+  (str "https://swarm-gateways.net/bzz:/" hash))
 
 (fx/defn resolve-ens-multihash-success
   [{:keys [db] :as cofx} m]
@@ -190,7 +189,7 @@
     (fx/merge cofx
               {:db (-> (update db :browser/options
                                assoc
-                               :url (str "https://" gateway path)
+                               :url (str gateway path)
                                :resolving? false)
                        (assoc-in [:browser/options :resolved-ens host] gateway))})))
 
@@ -223,9 +222,12 @@
         options (get-in cofx [:db :browser/options])
         current-url (:url options)]
     (when (and (not= "about:blank" url) (not= current-url url) (not= (str current-url "/") url))
-
-      (let [resolved-ens (first (filter #(not= (.indexOf ^js url (second %)) -1) (:resolved-ens options)))
-            resolved-url (if resolved-ens (string/replace url (second resolved-ens) (first resolved-ens)) url)]
+      (let [resolved-ens (first (filter (fn [v]
+                                          (not= (.indexOf ^js url (second v)) -1))
+                                        (:resolved-ens options)))
+            resolved-url (if resolved-ens
+                           (http/normalize-url (string/replace url (second resolved-ens) (first resolved-ens)))
+                           url)]
         (fx/merge cofx
                   (update-browser-history browser resolved-url)
                   (handle-pdf url)
@@ -399,9 +401,7 @@
     (cond
       (and (= type constants/history-state-changed)
            (not= "about:blank" url))
-      (fx/merge cofx
-                (update-browser-history browser url)
-                (resolve-url nil))
+      (update-browser-on-nav-change cofx url nil)
 
       (= type constants/web3-send-async-read-only)
       (web3-send-async-read-only cofx dapp-name payload messageId)

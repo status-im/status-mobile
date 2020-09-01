@@ -31,7 +31,7 @@
                                         dapp1-id
                                         {:browser-id dapp1-id
                                          :history-index 0
-                                         :history ["http://cryptokitties.co"]
+                                         :history ["https://cryptokitties.co"]
                                          :dapp? false
                                          :name "Browser"
                                          :timestamp 1}))
@@ -63,12 +63,12 @@
           (let [result-open-existing (browser/open-existing-browser {:db (:db result-open)
                                                                      :now 2}
                                                                     dapp1-id)
-                dapp1-url2 (str "http://" dapp1-url "/nav2")]
+                dapp1-url2 (str "https://" dapp1-url "/nav2")]
             (is (not (has-wrong-properties? result-open-existing
                                             dapp1-id
                                             {:browser-id dapp1-id
                                              :history-index 0
-                                             :history ["http://cryptokitties.co"]
+                                             :history ["https://cryptokitties.co"]
                                              :dapp? false
                                              :name "Browser"
                                              :timestamp 2}))
@@ -89,7 +89,7 @@
                                                 dapp1-id
                                                 {:browser-id dapp1-id
                                                  :history-index 1
-                                                 :history ["http://cryptokitties.co" dapp1-url2]
+                                                 :history ["https://cryptokitties.co" dapp1-url2]
                                                  :dapp? false
                                                  :name "Browser"
                                                  :timestamp 4}))
@@ -102,7 +102,7 @@
                                                     dapp1-id
                                                     {:browser-id dapp1-id
                                                      :history-index 0
-                                                     :history ["http://cryptokitties.co" dapp1-url2]
+                                                     :history ["https://cryptokitties.co" dapp1-url2]
                                                      :dapp? false
                                                      :name "Browser"
                                                      :timestamp 5}))
@@ -115,7 +115,7 @@
                                                       dapp1-id
                                                       {:browser-id dapp1-id
                                                        :history-index 1
-                                                       :history ["http://cryptokitties.co" dapp1-url2]
+                                                       :history ["https://cryptokitties.co" dapp1-url2]
                                                        :dapp? false
                                                        :name "Browser"
                                                        :timestamp 6}))

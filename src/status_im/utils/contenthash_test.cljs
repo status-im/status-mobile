@@ -9,7 +9,11 @@
   (testing "decoding a valid ipfs hash"
     (is (= (contenthash/decode "0xe3010170122029f2d17be6139079dc48696d1f582a8530eb9805b561eda517e22a892c7e3f1f")
            {:namespace :ipfs
-            :hash "QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4"})))
+            :hash "bafybeibj6lixxzqtsb45ysdjnupvqkufgdvzqbnvmhw2kf7cfkesy7r7d4"})))
+  (testing "decoding a valid ipns hash"
+    (is (= (contenthash/decode "0xe5010170000f6170702e756e69737761702e6f7267")
+           {:namespace :ipns
+            :hash "app.uniswap.org"})))
   (testing "decoding a valid swarm hash"
     (is (= (contenthash/decode "0xe40101fa011b20d1de9994b4d039f6548d191eb26786769f580809256b4685ef316805265ea162")
            {:namespace :swarm
@@ -20,23 +24,3 @@
     (is (nil? (contenthash/decode "0xabcdef1234567890"))))
   (testing "decoding nil"
     (is (nil? (contenthash/decode nil)))))
-
-(deftest contenthash-encode
-  (testing "encoding a valid ipfs hash"
-    (is (= (contenthash/encode
-            {:namespace :ipfs
-             :hash "QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4"})
-           "0xe301122029f2d17be6139079dc48696d1f582a8530eb9805b561eda517e22a892c7e3f1f")))
-  (testing "encoding a valid ipfs cid"
-    (is (= (contenthash/encode
-            {:namespace :ipfs
-             :hash "zb2rhZfjRh2FHHB2RkHVEvL2vJnCTcu7kwRqgVsf9gpkLgteo"})
-           "0xe301015512202cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824")))
-  (testing "encoding an invalid ipfs hash"
-    (is (nil? (contenthash/encode {:namespace :ipfs
-                                   :hash "0xe301122029f2d17be6139079dc48696d1f582a8530eb9805b561eda517e2"}))))
-  (testing "encoding random garbage"
-    (is (nil? (contenthash/encode {:namespace :ipfs
-                                   :hash "0xabcdef1234567890"}))))
-  (testing "encoding random garbage"
-    (is (nil? (contenthash/encode nil)))))

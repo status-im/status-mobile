@@ -43,7 +43,7 @@
                           :style             styles/url-input}]
        [react/touchable-highlight {:style    styles/url-text-container
                                    :on-press #(re-frame/dispatch [:browser.ui/url-input-pressed])}
-        [react/text (http/url-host url-original)]])
+        [react/text {:number-of-lines 1} (http/url-host url-original)]])
      (when-not unsafe?
        [react/touchable-highlight {:on-press #(.reload ^js @webview-ref/webview-ref)
                                    :accessibility-label :refresh-page-button}

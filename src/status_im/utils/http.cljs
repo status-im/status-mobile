@@ -112,7 +112,7 @@
        (.catch (or on-error #())))))
 
 (defn normalize-url [url]
-  (str (when (and (string? url) (not (re-find #"^[a-zA-Z-_]+:/" url))) "http://") url))
+  (str (when (and (string? url) (not (re-find #"^[a-zA-Z-_]+:/" url))) "https://") url))
 
 (def normalize-and-decode-url (comp js/decodeURI normalize-url))
 
