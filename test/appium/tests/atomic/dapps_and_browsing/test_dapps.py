@@ -38,6 +38,23 @@ class TestDApps(SingleDeviceTestCase):
         if not status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
             self.driver.fail('Public key is not returned')
 
+    @marks.testrail_id(6323)
+    @marks.medium
+    def test_resolve_ipns_name(self):
+        user = basic_user
+        ipns_url = 'uniswap.eth'
+        sign_in_view = SignInView(self.driver)
+        home_view = sign_in_view.recover_access(passphrase=user['passphrase'])
+        profile_view = home_view.profile_button.click()
+        profile_view.switch_network()
+        self.driver.set_clipboard_text(ipns_url)
+        dapp_view = home_view.dapp_tab_button.click()
+        dapp_view.enter_url_editbox.click()
+        dapp_view.paste_text()
+        dapp_view.confirm()
+        if not dapp_view.allow_button.is_element_displayed():
+            self.driver.fail('No permission is asked for dapp, so IPNS name is not resolved')
+
     @marks.testrail_id(6232)
     @marks.medium
     def test_switching_accounts_in_dapp(self):

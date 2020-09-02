@@ -97,7 +97,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(6294)
     @marks.medium
-    def test_keycard_request_and_receive_stt_in_1_1_chat_offline(self):
+    def test_keycard_request_and_receive_stt_in_1_1_chat_offline_opened_from_push(self):
         sender = transaction_senders['D']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -112,7 +112,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         wallet_1.select_asset('STT')
         wallet_1.home_button.click()
 
-        home_2 = device_2.recover_access(passphrase=sender['passphrase'], keycard=True)
+        home_2 = device_2.recover_access(passphrase=sender['passphrase'], keycard=True, enable_notifications=True)
         wallet_2 = home_2.wallet_button.click()
         wallet_2.set_up_wallet()
         wallet_2.home_button.click()
@@ -125,6 +125,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         profile_2 = wallet_2.profile_button.click()
         profile_2.airplane_mode_button.click()
         device_2.home_button.click()
+        device_2.click_system_home_button()
         chat_element = home_1.get_chat(sender['username'])
         chat_element.wait_for_visibility_of_element(30)
         chat_1 = chat_element.click()
@@ -144,8 +145,11 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         home_2.just_fyi('Check that transaction message is fetched from offline and sign transaction')
         profile_2.airplane_mode_button.click()
-        home_2.connection_status.wait_for_invisibility_of_element(60)
-        home_2.get_chat(recipient_username).click()
+        transaction_request_pn = 'Request transaction'
+        device_2.open_notification_bar()
+        if not device_2.element_by_text(transaction_request_pn).is_element_displayed(60):
+            self.errors.append("Push notification is not received after going back from offline")
+        device_2.element_by_text(transaction_request_pn).click()
         chat_2_sender_message = chat_2.chat_element_by_text('↑ Outgoing transaction')
         if not chat_2_sender_message.is_element_displayed():
                 self.driver.fail('No outgoing transaction in 1-1 chat is shown for sender after requesting STT')

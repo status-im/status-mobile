@@ -25,6 +25,13 @@ class GithubHtmlReport(BaseTestReport):
             passed_tests_html = str()
             if failed_tests:
                 failed_tests_html = self.build_tests_table_html(failed_tests, run_id, failed_tests=True)
+                summary_html += "```\n"
+                ids_failed_test = []
+                for i, test in enumerate(failed_tests):
+                    if test.testrail_case_id:
+                        ids_failed_test.append(test.testrail_case_id)
+                summary_html += 'IDs of failed tests: %s \n' % ', '.join(map(str, ids_failed_test))
+                summary_html += "```\n"
             if passed_tests:
                 passed_tests_html = self.build_tests_table_html(passed_tests, run_id, failed_tests=False)
             return title_html + summary_html + failed_tests_html + passed_tests_html
@@ -55,7 +62,7 @@ class GithubHtmlReport(BaseTestReport):
     def build_test_row_html(self, index, test, run_id):
         test_rail_link = TestrailReport().get_test_result_link(run_id, test.testrail_case_id)
         if test_rail_link:
-            html = "<tr><td><b>%s. <a href=\"%s\">%s</a></b></td></tr>" % (index + 1, test_rail_link, test.name)
+            html = "<tr><td><b>%s. <a href=\"%s\">%s</a>, id: %s </b></td></tr>" % (index + 1, test_rail_link, test.name, test.testrail_case_id)
         else:
             html = "<tr><td><b>%d. %s</b> (TestRail link is not found)</td></tr>" % (index + 1, test.name)
         html += "<tr><td>"

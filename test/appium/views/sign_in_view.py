@@ -281,7 +281,7 @@ class SignInView(BaseView):
         self.profile_button.wait_for_visibility_of_element(30)
         return self.get_home_view()
 
-    def recover_access(self, passphrase: str, password: str = common_password, keycard=False):
+    def recover_access(self, passphrase: str, password: str = common_password, keycard=False, enable_notifications=False):
         self.get_started_button.click_until_presence_of_element(self.access_key_button)
         recover_access_view = self.access_key_button.click()
         recover_access_view.enter_seed_phrase_button.click()
@@ -298,7 +298,10 @@ class SignInView(BaseView):
             recover_access_view.confirm_your_password_input.set_value(password)
             recover_access_view.next_button.click_until_presence_of_element(self.maybe_later_button)
         self.maybe_later_button.wait_for_element(30)
-        self.maybe_later_button.click_until_presence_of_element(self.lets_go_button)
+        if enable_notifications:
+            self.enable_notifications_button.click_until_presence_of_element(self.lets_go_button)
+        else:
+            self.maybe_later_button.click_until_presence_of_element(self.lets_go_button)
         self.lets_go_button.click()
         self.profile_button.wait_for_visibility_of_element(30)
         return self.get_home_view()
