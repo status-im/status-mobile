@@ -386,14 +386,14 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_3.home_button.click()
         device_1_name, device_2_name, group_chat_name = 'creator', 'paired', 'some group chat'
 
-        device_1.just_fyi('add contact, start group chat')
+        device_1.just_fyi('Add contact, start group chat')
         device_1_home.add_contact(device_3_chat_key)
         device_1_home.back_button.click()
         device_1_chat = device_1_home.create_group_chat([device_3_username], group_chat_name)
         device_3_chat = device_3_home.get_chat(group_chat_name).click()
         device_3_chat.join_chat_button.click()
 
-        device_2.just_fyi('go to profile > Devices, set device name, discover device 2 to device 1')
+        device_2.just_fyi('Go to profile > Devices, set device name, discover device 2 to device 1')
         device_2_home = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
         device_2_profile = device_2_home.get_profile_view()
         device_2_profile.discover_and_advertise_device(device_2_name)
@@ -402,7 +402,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1_profile.sync_all_button.click()
         device_1_profile.sync_all_button.wait_for_visibility_of_element(15)
 
-        device_1.just_fyi('send message to group chat and verify it on all devices')
+        device_1.just_fyi('Send message to group chat and verify it on all devices')
         text_message = 'some text'
         [device.home_button.click() for device in (device_1_profile, device_2_profile)]
         device_1_chat.send_message(text_message)
@@ -411,7 +411,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
             if not chat.chat_element_by_text(text_message).is_element_displayed():
                 self.errors.append('Message was sent, but it is not shown')
 
-        device_1.just_fyi('send image to group chat and verify it on all devices')
+        device_1.just_fyi('Send image to group chat and verify it on all devices')
         device_1_chat.show_images_button.click()
         device_1_chat.allow_button.click()
         device_1_chat.first_image_from_gallery.click()
@@ -421,7 +421,15 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
             if not chat.image_chat_item.is_element_displayed():
                 self.errors.append('Image is not shown in chat after sending for sender')
 
-        device_1.just_fyi('send sticker to group chat and verify it on all devices')
+        device_1.just_fyi('Send audio message to group chat and verify it on all devices')
+        device_1_chat.record_audio_message(message_length_in_seconds=3)
+        device_1.send_message_button.click()
+        device_1_chat.chat_message_input.click()
+        for chat in device_1_chat, device_2_chat, device_3_chat:
+            if not chat.play_pause_audio_message_button.is_element_displayed():
+                self.errors.append('Audio message is not shown in chat after sending for sender')
+
+        device_1.just_fyi('Send sticker to group chat and verify it on all devices')
         device_1_chat.profile_button.click()
         device_1_profile.click_system_back_button(2)
         device_1_profile.switch_network()

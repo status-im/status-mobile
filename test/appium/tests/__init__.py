@@ -58,6 +58,7 @@ connection_not_secure_text = "Connection is not secure! " \
                              "Do not sign transactions or send personal data on this site."
 connection_is_secure_text = "Connection is secure. Make sure you really trust this site " \
                             "before signing transactions or entering personal data."
+recorded_error = "You have to give permission to send audio messages"
 
 test_dapp_url = 'simpledapp.eth'
 test_dapp_name = 'simpledapp.eth'

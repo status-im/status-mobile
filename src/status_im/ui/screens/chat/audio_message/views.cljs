@@ -221,7 +221,8 @@
                                                                          :outputRange [styles/rec-button-base-size 16]})]
     [react/touchable-highlight {:on-press #(if (= (:general @state) :recording)
                                              (pause-recording params)
-                                             (start-recording params))}
+                                             (start-recording params))
+                                :accessibility-label :start-stop-audio-recording-button}
      [react/view {:style styles/rec-button-container}
       [react/animated-view {:style (styles/rec-outer-circle outer-scale)}]
       [react/animated-view {:style (styles/rec-inner-circle inner-scale inner-border-radius)}]]]))
@@ -273,7 +274,8 @@
                        :ctrl-buttons-anim-value ctrl-buttons-anim-value
                        :timer timer}]
       [react/view {:style styles/container}
-       [react/text {:style styles/timer} @timer]
+       [react/text {:style styles/timer
+                    :accessibility-label :audio-message-recorded-time} @timer]
        [react/view {:style styles/buttons-container}
         [react/animated-view {:style {:opacity ctrl-buttons-anim-value}}
          [cancel-button (:cancel-disabled? @state) #(stop-recording base-params)]]

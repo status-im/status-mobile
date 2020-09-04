@@ -4,6 +4,7 @@ import dateutil.parser
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 from tests import emojis
+from time import sleep
 from views.base_element import BaseButton, BaseEditBox, BaseText, BaseElement
 from views.base_view import BaseView, ProgressBar
 from views.profile_view import ProfilePictureElement, ProfileAddressText
@@ -598,6 +599,46 @@ class GroupChatInfoView(BaseView):
         return UserNameInGroupInfo(self.driver, username)
 
 
+class AudioMessageButton(BaseButton):
+    def __init__(self, driver):
+        super(AudioMessageButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("show-audio-message-icon")
+
+
+class RecordAudioButton(BaseButton):
+    def __init__(self, driver):
+        super(RecordAudioButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("start-stop-audio-recording-button")
+
+
+class CancelAudioMessageButton(BaseButton):
+    def __init__(self, driver):
+        super(CancelAudioMessageButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("cancel-message-button")
+
+
+class SendAudioMessageButton(BaseButton):
+    def __init__(self, driver):
+        super(SendAudioMessageButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("send-message-button")
+
+
+class PlayPauseAudioMessageButton(BaseButton):
+    def __init__(self, driver):
+        super(PlayPauseAudioMessageButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("play-pause-audio-message-button")
+
+class AudioMessageInChatTimer(BaseText):
+    def __init__(self, driver):
+        super(AudioMessageInChatTimer, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//android.view.ViewGroup[@content-desc="play-pause-audio-message-button"]'
+                                                   '/../..//android.widget.TextView[1]')
+
+
+class AudioMessageRecordedTime(BaseText):
+    def __init__(self, driver):
+        super(AudioMessageRecordedTime, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("audio-message-recorded-time")
 
 
 class ChatView(BaseView):
@@ -633,6 +674,14 @@ class ChatView(BaseView):
         self.save_image_button = SaveImageButton(self.driver)
         self.recent_image_in_gallery = ImageInRecentInGalleryElement(self.driver)
         self.cancel_send_image_button = CancelSendImage(self.driver)
+
+        self.audio_message_button = AudioMessageButton(self.driver)
+        self.record_audio_button = RecordAudioButton(self.driver)
+        self.cancel_audio_message_button = CancelAudioMessageButton(self.driver)
+        self.send_audio_message_button = SendAudioMessageButton(self.driver)
+        self.play_pause_audio_message_button = PlayPauseAudioMessageButton(self.driver)
+        self.audio_message_in_chat_timer = AudioMessageInChatTimer(self.driver)
+        self.audio_message_recorded_time = AudioMessageRecordedTime(self.driver)
 
 
 
@@ -786,6 +835,17 @@ class ChatView(BaseView):
         element.scroll_to_element()
         element.click()
         element.wait_for_invisibility_of_element()
+
+    def record_audio_message(self, message_length_in_seconds=5):
+        self.audio_message_button.click()
+        self.allow_button.click()
+        self.record_audio_button.click()
+        sleep(message_length_in_seconds)
+
+    def play_audio_message(self, listen_time=5):
+        self.play_pause_audio_message_button.click()
+        sleep(listen_time)
+        self.play_pause_audio_message_button.click()
 
     def block_contact(self):
         self.profile_block_contact.click()

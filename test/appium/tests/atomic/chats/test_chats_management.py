@@ -1,6 +1,6 @@
 import time
 
-from tests import marks, camera_access_error_text, photos_access_error_text
+from tests import marks, camera_access_error_text, photos_access_error_text, recorded_error
 from tests.users import basic_user, dummy_user, ens_user_ropsten, ens_user
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -305,6 +305,14 @@ class TestChatManagement(SingleDeviceTestCase):
         chat.image_from_gallery_button.click()
         chat.deny_button.click()
         contacts_view.element_by_text(photos_access_error_text).wait_for_visibility_of_element(3)
+        contacts_view.ok_button.click()
+        home.get_back_to_home_view()
+
+        home.just_fyi("Denying access to audio at attempt to record audio")
+        chat = home.get_chat(basic_user['username']).click()
+        chat.audio_message_button.click()
+        chat.deny_button.click()
+        contacts_view.element_by_text(recorded_error).wait_for_visibility_of_element(3)
         contacts_view.ok_button.click()
         home.get_back_to_home_view()
 
