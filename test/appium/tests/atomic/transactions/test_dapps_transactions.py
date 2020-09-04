@@ -1,12 +1,10 @@
-
 from tests import marks, unique_password, common_password
 from tests.base_test_case import SingleDeviceTestCase
-from tests.users import transaction_senders, transaction_recipients, basic_user
-from views.send_transaction_view import SendTransactionView
+from tests.users import transaction_senders
 from views.sign_in_view import SignInView
-from decimal import Decimal
 
 
+@marks.transaction
 class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(5309)

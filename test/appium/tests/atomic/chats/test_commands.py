@@ -7,7 +7,6 @@ from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
 
-@marks.chat
 @marks.transaction
 class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
@@ -214,12 +213,12 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(6265)
     @marks.critical
-    def test_decline_transactions_in_1_1_chat(self):
+    def test_decline_transactions_in_1_1_chat_push_notification_changing_state(self):
         recipient = transaction_recipients['B']
         sender = transaction_senders['B']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1 = device_1.recover_access(passphrase=sender['passphrase'])
+        home_1 = device_1.recover_access(passphrase=sender['passphrase'], enable_notifications=True)
         home_2 = device_2.recover_access(passphrase=recipient['passphrase'])
         wallet_1, wallet_2 = home_1.wallet_button.click(), home_2.wallet_button.click()
         for wallet in wallet_1, wallet_2:
@@ -236,9 +235,14 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         send_transaction.confirm()
         send_transaction.sign_transaction_button.click()
         chat_1_sender_message = chat_1.chat_element_by_text('↑ Outgoing transaction')
+        home_1.click_system_home_button()
+
+
         chat_2 = home_2.get_chat(sender['username']).click()
         chat_2_receiver_message = chat_2.chat_element_by_text('↓ Incoming transaction')
         chat_2_receiver_message.decline_transaction.click()
+        home_1.open_notification_bar()
+        home_1.element_by_text_part('Request address for transaction declined').wait_and_click()
         for message in chat_1_sender_message, chat_2_receiver_message:
             if not message.contains_text('Transaction declined', 20):
                 self.errors.append('Message status is not updated to  "Transaction declined" for transaction before '
@@ -260,7 +264,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@marks.chat
 @marks.transaction
 class TestCommandsSingleDevices(SingleDeviceTestCase):
 

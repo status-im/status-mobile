@@ -6,8 +6,6 @@ from tests.users import transaction_senders, transaction_recipients, ens_user_ro
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
-
-@marks.chat
 @marks.transaction
 class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
@@ -171,7 +169,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@marks.chat
 @marks.transaction
 class TestCommandsSingleDevices(SingleDeviceTestCase):
 

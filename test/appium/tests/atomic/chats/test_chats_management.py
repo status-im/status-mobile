@@ -7,7 +7,6 @@ from views.sign_in_view import SignInView
 from views.chat_view import ChatView
 
 
-@marks.chat
 class TestChatManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5426)
@@ -520,7 +519,6 @@ class TestChatManagement(SingleDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@marks.chat
 class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5332)

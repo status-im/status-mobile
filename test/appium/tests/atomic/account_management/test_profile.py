@@ -8,8 +8,6 @@ from tests.users import transaction_senders, basic_user, ens_user, ens_user_rops
 from views.sign_in_view import SignInView
 
 
-@marks.all
-@marks.account
 class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5302)
@@ -449,7 +447,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.network_settings_button.scroll_to_element(10, 'up')
         profile_view.find_text_part('custom_ropsten')
 
-    @marks.logcat
     @marks.critical
     @marks.testrail_id(5419)
     def test_logcat_backup_recovery_phrase(self):
@@ -492,7 +489,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5382)
     @marks.high
-    @marks.battery_consumption
     def test_contact_profile_view(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -717,8 +713,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@marks.all
-@marks.account
 class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5432)

@@ -2,15 +2,12 @@
 import emoji
 import random
 from dateutil import parser
-from selenium.common.exceptions import TimeoutException
-from support.utilities import generate_timestamp
 from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 from datetime import datetime, timedelta
 
 
-@marks.chat
 class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5313)
@@ -200,10 +197,9 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         if home_1.home_button.public_unread_messages.is_element_displayed():
             device_1.home_button.click_until_absense_of_element(browser.enter_url_editbox)
         if not chat_1.chat_element_by_text(message).is_element_displayed():
-            self.driver.fail("No message if it received while another tab opened")
+            self.drivers[0].fail("No message if it received while another tab opened")
 
 
-@marks.chat
 class TestPublicChatSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5675)
@@ -221,7 +217,6 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         home_view = chat.get_back_to_home_view()
         if not home_view.element_by_text(tag_message).is_element_displayed():
             self.driver.fail('Could not find the public chat in user chat list.')
-        #if not home_view.chat_name_text.text == tag_message:
 
 
     @marks.testrail_id(6205)

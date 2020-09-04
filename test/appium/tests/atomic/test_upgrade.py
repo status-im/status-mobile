@@ -2,8 +2,8 @@ from tests import marks
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
-@marks.all
-@marks.upgrade
+
+@marks.skip
 class TestUpgradeApplication(SingleDeviceTestCase):
 
     @marks.testrail_id(6284)
@@ -15,7 +15,7 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         old_version = profile.app_version_text.text
         profile.upgrade_app()
 
-        sign_in.driver.launch_app()
+        self.app = sign_in.driver.launch_app()
         home = sign_in.sign_in()
 
         profile = home.profile_button.click()

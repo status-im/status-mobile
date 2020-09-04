@@ -2,7 +2,7 @@ import random
 import string
 
 from support.utilities import get_merged_txs_list
-from tests import marks, unique_password, common_password
+from tests import marks, unique_password
 from tests.base_test_case import SingleDeviceTestCase
 from tests.users import transaction_senders, basic_user, wallet_users, ens_user_ropsten
 from views.send_transaction_view import SendTransactionView

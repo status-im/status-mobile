@@ -7,8 +7,6 @@ from tests import marks
 from tests.base_test_case import NoDeviceTestCase
 
 
-@marks.all
-@marks.translations
 class TestTranslations(NoDeviceTestCase):
 
     @marks.testrail_id(6223)

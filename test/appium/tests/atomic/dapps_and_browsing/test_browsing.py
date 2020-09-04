@@ -6,7 +6,6 @@ from views.dapps_view import DappsView
 import time
 
 
-@pytest.mark.all
 class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(5424)

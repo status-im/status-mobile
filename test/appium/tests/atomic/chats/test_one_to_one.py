@@ -12,7 +12,6 @@ from views.sign_in_view import SignInView
 from  views.send_transaction_view import SendTransactionView
 
 
-@marks.chat
 class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5305)
@@ -621,8 +620,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@marks.all
-@marks.chat
 class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
     @marks.testrail_id(5317)
@@ -683,7 +680,6 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
     @marks.testrail_id(5328)
     @marks.critical
-    @marks.battery_consumption
     def test_send_emoji(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()

@@ -13,7 +13,7 @@ public_keys = pytest_config_global['public_keys'].split()
 repeats = 24 / len(public_keys) if public_keys else 0
 
 
-@pytest.mark.chatbot
+@pytest.mark.skip
 class TestChatBot(SingleDeviceTestCase):
 
     def setup_method(self, method, **kwargs):

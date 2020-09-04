@@ -5,8 +5,6 @@ from views.keycard_view import KeycardView
 from tests.users import basic_user, transaction_senders
 
 
-@marks.all
-@marks.account
 class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(5689)

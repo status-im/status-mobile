@@ -5,8 +5,6 @@ from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
 
 
-@marks.all
-@marks.sign_in
 class TestSignIn(SingleDeviceTestCase):
 
     @marks.testrail_id(5312)
@@ -39,7 +37,6 @@ class TestSignIn(SingleDeviceTestCase):
         sign_in.sign_in_button.click()
         sign_in.find_full_text("Wrong password")
 
-    @marks.logcat
     @marks.testrail_id(5415)
     @marks.critical
     def test_password_in_logcat_sign_in(self):

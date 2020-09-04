@@ -8,8 +8,6 @@ from views.sign_in_view import SignInView
 import time
 
 
-@marks.all
-@marks.account
 class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5335)
@@ -232,12 +230,11 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
         wallet_view.collectibles_button.click()
-        wallet_view.cryptokitties_in_collectibles_button.wait_for_element(60)
-        wallet_view.cryptokitties_in_collectibles_button.click()
+        wallet_view.cryptokitties_in_collectibles_button.wait_and_click(60)
         web_view = wallet_view.view_in_cryptokitties_button.click()
-        web_view.element_by_text('cryptokitties.co').click()
+        web_view.element_by_text('cryptokitties.co').wait_and_click()
         cryptokitty_link = 'https://www.cryptokitties.co/kitty/1338226'
-        if not web_view.element_by_text(cryptokitty_link).is_element_displayed():
+        if not web_view.element_by_text(cryptokitty_link).is_element_displayed(60):
             self.driver.fail('Cryptokitty detail page not opened')
 
 

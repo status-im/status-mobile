@@ -6,8 +6,6 @@ from views.sign_in_view import SignInView
 from tests.users import basic_user
 
 
-@marks.all
-@marks.account
 class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(5356)
@@ -122,7 +120,6 @@ class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(5414)
     @marks.critical
-    @marks.logcat
     def test_password_in_logcat_creating_account(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user(password=unique_password)

@@ -69,7 +69,7 @@ class TestrailReport(BaseTestReport):
         request_body = {'suite_id': self.suite_id,
                         'name': run_name,
                         'milestone_id': self.actual_milestone_id,
-                        'case_ids': self.get_regression_cases(is_pr='PR-' in run_name),
+                        'case_ids': self.get_regression_cases(),
                         'include_all': False}
         run = self.post('add_run/%s' % self.project_id, request_body)
         self.run_id = run['id']
@@ -80,19 +80,16 @@ class TestrailReport(BaseTestReport):
             test_cases.append(self.get('get_cases/%s&suite_id=%s&section_id=%s' % (self.project_id, self.suite_id, section_id)))
         return itertools.chain.from_iterable(test_cases)
 
-    def get_regression_cases(self, is_pr=False):
+    def get_regression_cases(self):
         test_cases = dict()
         test_cases['critical'] = 734
         test_cases['high'] = 735
         test_cases['medium'] = 736
         test_cases['low'] = 737
         case_ids = list()
-        if is_pr:
-            case_ids = [case['id'] for case in self.get_cases([test_cases['critical'], test_cases['high']])]
-        else:
-            for phase in test_cases:
-                for case in self.get_cases([test_cases[phase]]):
-                    case_ids.append(case['id'])
+        for phase in test_cases:
+            for case in self.get_cases([test_cases[phase]]):
+                case_ids.append(case['id'])
         return case_ids
 
     def add_results(self):

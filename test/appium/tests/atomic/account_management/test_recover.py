@@ -8,8 +8,6 @@ from views.sign_in_view import SignInView
 from views.recover_access_view import RecoverAccessView
 
 
-@marks.all
-@marks.account
 class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(6231)
@@ -27,7 +25,6 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
             self.errors.append('Back up seed phrase option is active for recovered account!')
         self.errors.verify_no_errors()
 
-    @marks.logcat
     @marks.testrail_id(5366)
     @marks.critical
     def test_logcat_recovering_account(self):

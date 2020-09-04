@@ -19,7 +19,6 @@ def get_parameters():
 
 class TestAPi(object):
 
-    @marks.api
     @pytest.mark.parametrize('symbol,name,address,decimals', get_parameters())
     @pytest.mark.skip
     def test_tokens_verification(self, symbol, name, address, decimals):

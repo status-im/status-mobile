@@ -275,6 +275,11 @@ class BaseButton(BaseElement):
         self.driver.info('Tap on %s' % self.name)
         return self.navigate()
 
+    def wait_and_click(self, time=30):
+        self.driver.info('Waiting for element %s for max %s sec and click when it is available' % (self.name, time))
+        self.wait_for_visibility_of_element(time)
+        self.click()
+
     def click_until_presence_of_element(self, desired_element, attempts=4):
         counter = 0
         while not desired_element.is_element_present(1) and counter <= attempts:

@@ -4,6 +4,7 @@ from tests.users import transaction_senders
 from views.sign_in_view import SignInView
 
 
+@marks.transaction
 class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(6249)

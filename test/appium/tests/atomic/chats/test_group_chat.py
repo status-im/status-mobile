@@ -5,7 +5,6 @@ from views.sign_in_view import SignInView
 from time import sleep
 
 
-@marks.chat
 class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(3994)

@@ -5,7 +5,6 @@ from tests.users import basic_user
 from views.sign_in_view import SignInView
 
 
-@pytest.mark.all
 class TestDApps(SingleDeviceTestCase):
 
     @marks.testrail_id(5353)
