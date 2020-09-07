@@ -282,6 +282,17 @@
                      (i18n/label :cooldown/warning-message)
                      #())))
 
+(fx/defn show-profile-without-adding-contact
+  {:events [:chat.ui/show-profile-without-adding-contact]}
+  [{:keys [db] :as cofx} identity]
+  (let [my-public-key (get-in db [:multiaccount :public-key])]
+    (if (= my-public-key identity)
+      (navigation/navigate-to-cofx cofx :my-profile nil)
+      (fx/merge
+       cofx
+       {:db (assoc db :contacts/identity identity)}
+       (navigation/navigate-to-cofx :profile nil)))))
+
 (fx/defn show-profile
   {:events [:chat.ui/show-profile]}
   [cofx identity]
