@@ -2,9 +2,8 @@
   (:require [clojure.walk :as w]))
 
 (defn atom? [sub]
-  (or (vector? sub)
-      (and (seq sub)
-           (#{`reagent.core/atom} (first sub)))))
+  (and (seq sub)
+       (#{`reagent.core/atom} (first sub))))
 
 (defn walk-sub [sub form->sym]
   (if (coll? sub)
@@ -24,13 +23,16 @@
                        (map (fn [{:keys [form sym]}]
                               [form sym]))
                        (into {}))]
-    [(mapcat (fn [{:keys [form sym sub]}]
-               (if (vector? sub)
-                 [sym `(re-frame.core/subscribe ~(walk-sub sub form->sym))]
+    [(mapcat (fn [{:keys [form sub]}]
+               (when-not (vector? sub)
                  [form (walk-sub sub form->sym)]))
              pairs)
      (apply concat (keep (fn [{:keys [sym form sub]}]
-                           (when (atom? sub)
+                           (cond
+                             (vector? sub)
+                             [form `(deref (re-frame.core/subscribe ~(walk-sub sub form->sym)))]
+
+                             (atom? sub)
                              [form `(deref ~sym)]))
                          pairs))]))
 
