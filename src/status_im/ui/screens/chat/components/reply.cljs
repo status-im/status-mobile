@@ -8,7 +8,8 @@
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.ui.screens.chat.components.style :as styles]
             [re-frame.core :as re-frame]
-            [status-im.ui.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [clojure.string :as string]))
 
 (def ^:private reply-symbol "↪ ")
 
@@ -25,10 +26,24 @@
            (str reply-symbol (i18n/label :t/You)))
       (format-author (str reply-symbol username))))
 
+(defn get-quoted-text-with-mentions [parsed-text]
+  (string/join
+   (mapv (fn [{:keys [type literal children]}]
+           (cond
+             (= type "paragraph")
+             (get-quoted-text-with-mentions children)
+
+             (= type "mention")
+             @(re-frame/subscribe [:contacts/contact-name-by-identity literal])
+
+             :else
+             literal))
+         parsed-text)))
+
 (defn reply-message [{:keys [from content]}]
   (let [contact-name       @(re-frame/subscribe [:contacts/contact-name-by-identity from])
         current-public-key @(re-frame/subscribe [:multiaccount/public-key])
-        {:keys [image text]} content]
+        {:keys [image parsed-text]} content]
     [rn/view {:style (styles/reply-container false)}
      [rn/view {:style (styles/reply-content)}
       [quo/text {:weight          :medium
@@ -46,7 +61,7 @@
         [quo/text {:size            :small
                    :number-of-lines 1
                    :style           {:line-height 18}}
-         text])]
+         (get-quoted-text-with-mentions parsed-text)])]
      [rn/view
       [pressable/pressable {:on-press            #(re-frame/dispatch [:chat.ui/cancel-message-reply])
                             :accessibility-label :cancel-message-reply}

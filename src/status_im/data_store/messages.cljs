@@ -27,6 +27,7 @@
                                 :outgoingStatus :outgoing-status
                                 :audioDurationMs :audio-duration-ms})
 
+      (update :quoted-message clojure.set/rename-keys {:parsedText :parsed-text})
       (update :outgoing-status keyword)
       (update :command-parameters clojure.set/rename-keys {:transactionHash :transaction-hash
                                                            :commandState :command-state})

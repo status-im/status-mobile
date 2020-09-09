@@ -16,7 +16,8 @@
             [status-im.utils.security :as security]
             [status-im.ui.screens.chat.message.reactions :as reactions]
             [quo.core :as quo]
-            [reagent.core :as reagent])
+            [reagent.core :as reagent]
+            [status-im.ui.screens.chat.components.reply :as components.reply])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]
@@ -33,7 +34,7 @@
                         (:rtl? content))} timestamp-str]))
 
 (defview quoted-message
-  [_ {:keys [from text image]} outgoing current-public-key public?]
+  [_ {:keys [from parsed-text image]} outgoing current-public-key public?]
   (letsubs [contact-name [:contacts/contact-name-by-identity from]]
     [react/view {:style (style/quoted-message-container outgoing)}
      [react/view {:style style/quoted-message-author-container}
@@ -52,7 +53,7 @@
                      :source {:uri image}}]
        [react/text {:style           (style/quoted-message-text outgoing)
                     :number-of-lines 5}
-        text])]))
+        (components.reply/get-quoted-text-with-mentions parsed-text)])]))
 
 (defn render-inline [message-text outgoing content-type acc {:keys [type literal destination]}]
   (case type
@@ -246,7 +247,9 @@
                                                   (on-long-press
                                                    [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
                                                      :label    (i18n/label :t/message-reply)}
-                                                    {:on-press #(react/copy-to-clipboard (get content :text))
+                                                    {:on-press #(react/copy-to-clipboard
+                                                                 (components.reply/get-quoted-text-with-mentions
+                                                                  (get content :parsed-text)))
                                                      :label    (i18n/label :t/sharing-copy-to-clipboard)}]))})
     [react/view (style/message-view message)
      (let [response-to (:response-to content)]
