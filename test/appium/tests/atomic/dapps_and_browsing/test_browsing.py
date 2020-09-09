@@ -1,9 +1,8 @@
-import pytest
 from tests import marks, connection_not_secure_text, connection_is_secure_text, test_dapp_url
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 from views.dapps_view import DappsView
-import time
+from time import sleep
 
 
 class TestBrowsing(SingleDeviceTestCase):
@@ -211,6 +210,8 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(5456)
     @marks.medium
+    @marks.skip
+    # Decicded to leave for manual testing, as there is no simple way of comparing images depending on phone brightness
     def test_can_access_images_by_link(self):
         urls = {
             'https://cdn.dribbble.com/users/45534/screenshots/3142450/logo_dribbble.png':

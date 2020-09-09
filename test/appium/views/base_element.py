@@ -286,7 +286,7 @@ class BaseButton(BaseElement):
             try:
                 self.driver.info('Tap on %s' % self.name)
                 self.find_element().click()
-                self.driver.info('Wait for %s' % desired_element.name)
+                self.driver.info('Wait for %s to be displayed' % desired_element.name)
                 desired_element.wait_for_element(5)
                 return self.navigate()
             except (NoSuchElementException, TimeoutException):
@@ -300,7 +300,7 @@ class BaseButton(BaseElement):
             try:
                 self.driver.info('Tap on %s' % self.name)
                 self.find_element().click()
-                self.driver.info('Wait for %s' % desired_element.name)
+                self.driver.info('Wait for %s to disappear' % desired_element.name)
                 counter += 1
             except (NoSuchElementException, TimeoutException):
                 return self.navigate()

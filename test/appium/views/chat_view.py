@@ -163,6 +163,57 @@ class GroupInfoButton(BaseButton):
         self.wait_for_element().click()
         return self.navigate()
 
+class GroupInviteButton(BaseButton):
+    def __init__(self, driver):
+        super(GroupInviteButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('invite-chat-button')
+
+class GroupInviteLinkText(BaseText):
+    def __init__(self, driver):
+        super(BaseText, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="invitation-link"]/android.widget.TextView')
+
+
+class IntoduceYourselfEditBox(BaseEditBox):
+    def __init__(self, driver):
+        super(IntoduceYourselfEditBox, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('introduce-yourself-input')
+
+
+class RequestMembershipButton(BaseButton):
+    def __init__(self, driver):
+        super(RequestMembershipButton, self).__init__(driver)
+        self.locator = self.Locator.text_selector('Request membership')
+
+
+class GroupMembershipRequestButton(BaseButton):
+    def __init__(self, driver):
+        super(GroupMembershipRequestButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('invitation-requests-button')
+
+
+class AcceptGroupInvitationButton(BaseButton):
+    def __init__(self, driver):
+        super(AcceptGroupInvitationButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('accept-invitation-button')
+
+
+class DeclineGroupInvitationButton(BaseButton):
+    def __init__(self, driver):
+        super(DeclineGroupInvitationButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('decline-invitation-button')
+
+
+class RetryGroupInvitationButton(BaseButton):
+    def __init__(self, driver):
+        super(RetryGroupInvitationButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('retry-button')
+
+class RemoveGroupInvitationButton(BaseButton):
+    def __init__(self, driver):
+        super(RemoveGroupInvitationButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('remove-group-button')
+
 
 class LeaveChatButton(BaseButton):
     def __init__(self, driver):
@@ -309,7 +360,7 @@ class ProfileAddToContactsButton(BaseButton):
 class JoinChatButton(BaseButton):
     def __init__(self, driver):
         super(JoinChatButton, self).__init__(driver)
-        self.locator = self.Locator.text_part_selector('Join group')
+        self.locator = self.Locator.accessibility_id('join-chat-button')
 
 
 class DeclineChatButton(BaseButton):
@@ -551,6 +602,7 @@ class UsernameOptions(BaseButton):
         return ChatView(self.driver)
 
     def click(self):
+        self.scroll_to_element()
         self.wait_for_element().click()
         return self.navigate()
 
@@ -707,6 +759,17 @@ class ChatView(BaseView):
         self.edit_group_chat_name_edit_box = EditGroupChatEditBox(self.driver)
         self.done_button = DoneButton(self.driver)
 
+        # Group invites
+        self.group_invite_button = GroupInviteButton(self.driver)
+        self.group_invite_link_text = GroupInviteLinkText(self.driver)
+        self.introduce_yourself_edit_box = IntoduceYourselfEditBox(self.driver)
+        self.request_membership_button = RequestMembershipButton(self.driver)
+        self.group_membership_request_button = GroupMembershipRequestButton(self.driver)
+        self.accept_group_invitation_button = AcceptGroupInvitationButton(self.driver)
+        self.decline_group_invitation_button = DeclineGroupInvitationButton(self.driver)
+        self.retry_group_invite_button = RetryGroupInvitationButton(self.driver)
+        self.remove_group_invite_button = RemoveGroupInvitationButton(self.driver)
+
         self.chat_settings = ChatSettings(self.driver)
         self.view_profile_button = ViewProfileButton(self.driver)
         self.view_profile_by_avatar_button = ViewProfileByAvatarButton(self.driver)
@@ -752,6 +815,21 @@ class ChatView(BaseView):
         self.edit_group_chat_name_button.click()
         self.edit_group_chat_name_edit_box.set_value(new_chat_name)
         self.done_button.click()
+
+    def get_group_invite_via_group_info(self):
+        self.chat_options.click()
+        self.group_info.click()
+        self.group_invite_button.click()
+        return self.group_invite_link_text.text
+
+    def request_membership_for_group_chat(self, intro_message):
+        self.introduce_yourself_edit_box.set_value(intro_message)
+        self.request_membership_button.click_until_presence_of_element(self.element_by_text('Request pending…'))
+
+    def accept_membership_for_group_chat_via_chat_view(self, username, accept=True):
+        self.group_membership_request_button.click()
+        self.element_by_text(username).click()
+        self.accept_group_invitation_button.click() if accept else self.decline_group_invitation_button.click()
 
     def send_transaction_in_group_chat(self, amount, password, recipient):
         self.commands_button.click()

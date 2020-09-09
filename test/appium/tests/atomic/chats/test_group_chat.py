@@ -1,7 +1,8 @@
 from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
-from tests.users import transaction_recipients
+from tests.users import transaction_recipients, basic_user
 from views.sign_in_view import SignInView
+from views.chat_view import ChatView
 from time import sleep
 
 
@@ -236,6 +237,82 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         if devices_chat[1].chat_element_by_text(message).is_element_displayed():
             self.errors.append("Message '%s' was received by removed member" % message)
         self.errors.verify_no_errors()
+
+
+    @marks.testrail_id(6324)
+    @marks.medium
+    def test_invite_to_group_chat_handling(self):
+        self.create_drivers(3)
+        devices_sign_in, devices_home, devices_key, devices_username, devices_chat = {}, {}, {}, {}, {}
+        for key in self.drivers:
+            devices_sign_in[key] = SignInView(self.drivers[key])
+            devices_home[key] = devices_sign_in[key].create_user()
+            devices_key[key], devices_username[key] = devices_sign_in[key].get_public_key_and_username(True)
+            devices_sign_in[key].home_button.click()
+        [driver.close_app() for driver in (self.drivers[1], self.drivers[2])]
+
+        chat_name = devices_home[0].get_random_chat_name()
+
+        devices_home[0].add_contact(basic_user['public_key'])
+        devices_home[0].get_back_to_home_view()
+        devices_chat[0] = devices_home[0].create_group_chat([basic_user['username']], chat_name)
+        link = devices_chat[0].get_group_invite_via_group_info()
+        devices_chat[0].get_back_to_home_view()
+
+
+        devices_chat[0].just_fyi('Member_1, member_2: both users send requests to join group chat')
+        [sign_in.open_weblink_and_login(link) for sign_in in (devices_sign_in[1], devices_sign_in[2])]
+        introduction_messages = ['message for retrying']
+        for i in range(1,3):
+            devices_home[i].element_by_text_part(chat_name).click()
+            devices_chat[i] = ChatView(self.drivers[i])
+            introduction_messages.append('Please add me, member_%s to your gorgeous group chat' % str(i))
+            devices_chat[i].request_membership_for_group_chat(introduction_messages[i])
+
+        devices_chat[0].just_fyi('Admin: accept request for Member_1 and decline for Member_2')
+        devices_home[0].get_chat(chat_name).click()
+        devices_chat[0].group_membership_request_button.click()
+        devices_chat[0].element_by_text(devices_username[1]).click()
+        if not devices_chat[0].element_by_text_part(introduction_messages[1]).is_element_displayed():
+            self.errors.append('Introduction message is not shown!')
+        devices_chat[0].accept_group_invitation_button.click()
+        devices_chat[0].accept_membership_for_group_chat_via_chat_view(devices_username[2], accept=False)
+        devices_chat[0].click_system_back_button()
+
+        devices_chat[1].just_fyi('Member_1: join chat')
+        devices_chat[1].join_chat_button.click()
+
+        devices_chat[2].just_fyi('Member_2: retry request')
+        devices_chat[2].retry_group_invite_button.click()
+        devices_chat[2].request_membership_for_group_chat(introduction_messages[0])
+
+        devices_chat[2].just_fyi('Admin: decline request for Member_2')
+        devices_chat[0].group_membership_request_button.click()
+        devices_chat[0].element_by_text(devices_username[2]).click()
+        if not devices_chat[0].element_by_text_part(introduction_messages[0]).is_element_displayed():
+            self.errors.append('Introduction message that was set after retrying attempt is not shown for admin!')
+        devices_chat[0].decline_group_invitation_button.click()
+        devices_chat[0].click_system_back_button()
+
+        devices_chat[2].just_fyi('Member_2: remove chat')
+        devices_chat[2].remove_group_invite_button.click()
+
+        devices_chat[2].just_fyi('Double check after relogin')
+        if devices_chat[0].group_membership_request_button.is_element_displayed():
+            self.errors.append('Group membership request is still shown when there are no pending requests anymore')
+        [devices_home[i].relogin() for i in range(0,3)]
+        if devices_home[2].element_by_text_part(chat_name).is_element_displayed():
+            self.errors.append('Group chat was not removed when removing after declining group invite')
+        [home.get_chat(chat_name).click() for home in (devices_home[0], devices_home[1])]
+        if devices_chat[0].group_membership_request_button.is_element_displayed():
+            self.errors.append('Group membership request is shown after relogin when there are no pending requests anymore')
+        join_system_message = devices_chat[0].join_system_message(devices_username[1])
+        for chat in (devices_chat[1], devices_chat[0]):
+            if not chat.chat_element_by_text(join_system_message).is_element_displayed():
+                self.errors.append('%s is not shown after joining to group chat via invite' % join_system_message)
+
+        self.errors.verify_no_errors()
+
 
     @marks.testrail_id(5694)
     @marks.medium

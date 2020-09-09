@@ -342,7 +342,7 @@ class SendTransactionView(BaseView):
             self.network_fee_button.click()
             default_gas_price = self.gas_price_input.text
             self.gas_price_input.clear()
-            self.gas_price_input.set_value(str(float(default_gas_price)+30))
+            self.gas_price_input.set_value(str(int(float(default_gas_price))+30))
             self.update_fee_button.click()
         if keycard:
             keycard_view = self.sign_with_keycard_button.click()

@@ -347,7 +347,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.profile_button.click()
         profile_view.logout()
         self.driver.reset()
-        sign_in_view.accept_agreements()
+        # sign_in_view.accept_agreements()
         sign_in_view.recover_access(recovery_phrase)
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()

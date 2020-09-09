@@ -22,7 +22,8 @@ RERUN_ERRORS = [
     "replacement transaction underpriced",
     "StaleElementReferenceException",
     "'GetStartedButton' is not found on the screen",
-    "'AccessKeyButton' is not found on the screen"
+    "'AccessKeyButton' is not found on the screen",
+    "'SignInPhraseText' is not found on the screen"
 ]
 
 

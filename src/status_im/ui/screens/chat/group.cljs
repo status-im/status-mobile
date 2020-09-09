@@ -13,14 +13,16 @@
 
 (defn join-chat-button [chat-id]
   [quo/button
-   {:type     :secondary
-    :on-press #(debounce/dispatch-and-chill [:group-chats.ui/join-pressed chat-id] 2000)}
+   {:type                :secondary
+    :accessibility-label :join-chat-button
+    :on-press            #(debounce/dispatch-and-chill [:group-chats.ui/join-pressed chat-id] 2000)}
    (i18n/label :t/join-group-chat)])
 
 (defn decline-chat [chat-id]
   [react/touchable-highlight
    {:on-press
-    #(debounce/dispatch-and-chill [:group-chats.ui/leave-chat-confirmed chat-id] 2000)}
+    #(debounce/dispatch-and-chill [:group-chats.ui/leave-chat-confirmed chat-id] 2000)
+    :accessibility-label :decline-chat-button}
    [react/text {:style style/decline-chat}
     (i18n/label :t/group-chat-decline-invitation)]])
 
@@ -49,12 +51,13 @@
        :else
        [react/view
         [react/text (i18n/label :t/introduce-yourself)]
-        [quo/text-input {:placeholder     (i18n/label :t/message)
-                         :on-change-text  #(re-frame/dispatch [:group-chats.ui/update-membership-message %])
-                         :max-length      100
-                         :multiline       true
-                         :default-value   message
-                         :container-style {:margin-top 10 :margin-bottom 16}}]
+        [quo/text-input {:placeholder         (i18n/label :t/message)
+                         :on-change-text      #(re-frame/dispatch [:group-chats.ui/update-membership-message %])
+                         :max-length          100
+                         :multiline           true
+                         :default-value       message
+                         :accessibility-label :introduce-yourself-input
+                         :container-style     {:margin-top 10 :margin-bottom 16}}]
         [react/text {:style {:align-self :flex-end :margin-bottom 30}}
          (str (count message) "/100")]])]))
 

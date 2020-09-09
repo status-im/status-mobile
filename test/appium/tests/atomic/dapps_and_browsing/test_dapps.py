@@ -51,7 +51,7 @@ class TestDApps(SingleDeviceTestCase):
         dapp_view.enter_url_editbox.click()
         dapp_view.paste_text()
         dapp_view.confirm()
-        if not dapp_view.allow_button.is_element_displayed():
+        if not dapp_view.allow_button.is_element_displayed(30):
             self.driver.fail('No permission is asked for dapp, so IPNS name is not resolved')
 
     @marks.testrail_id(6232)

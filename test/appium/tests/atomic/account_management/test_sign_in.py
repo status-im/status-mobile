@@ -16,7 +16,7 @@ class TestSignIn(SingleDeviceTestCase):
         default_username = profile.default_username_text.text
         self.driver.close_app()
         self.driver.launch_app()
-        sign_in.accept_agreements()
+        # sign_in.accept_agreements()
         if not sign_in.element_by_text(default_username).is_element_displayed():
             self.driver.fail('Username is not shown while login')
         sign_in.sign_in()

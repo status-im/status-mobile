@@ -222,8 +222,8 @@ class SignInView(BaseView):
     def __init__(self, driver, skip_popups=True):
         super(SignInView, self).__init__(driver)
         self.driver = driver
-        if skip_popups:
-            self.accept_agreements()
+        # if skip_popups:
+        #     self.accept_agreements()
 
         self.password_input = PasswordInput(self.driver)
         self.recover_account_password_input = RecoverAccountPasswordInput(self.driver)

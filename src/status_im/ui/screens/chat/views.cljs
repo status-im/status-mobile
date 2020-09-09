@@ -227,20 +227,23 @@
                          :right
                          [quo/button
                           {:type     :secondary
+                           :accessibility-label :retry-button
                            :on-press #(re-frame/dispatch [:group-chats.ui/membership-retry])}
                           (i18n/label :t/mailserver-retry)]
                          :left
                          [quo/button
                           {:type     :secondary
+                           :accessibility-label :remove-group-button
                            :on-press #(re-frame/dispatch [:group-chats.ui/remove-chat-confirmed chat-id])}
                           (i18n/label :t/remove-group)]}]
        :else
        [toolbar/toolbar {:show-border? true
                          :center
                          [quo/button
-                          {:type :secondary
-                           :disabled (string/blank? message)
-                           :on-press #(re-frame/dispatch [:send-group-chat-membership-request])}
+                          {:type                :secondary
+                           :accessibility-label :introduce-yourself-button
+                           :disabled            (string/blank? message)
+                           :on-press            #(re-frame/dispatch [:send-group-chat-membership-request])}
                           (i18n/label :t/request-membership)]}])]))
 
 (defn chat []

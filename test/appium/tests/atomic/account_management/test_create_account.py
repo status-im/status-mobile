@@ -65,7 +65,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         shown_username = profile_view.default_username_text.text
         if shown_username != username:
             self.errors.append("Default username '%s' doesn't match '%s'" % (shown_username, username))
-        profile_view.home_button.click()
+        profile_view.home_button.click_until_presence_of_element(home_view.element_by_text('#status'))
         home_view.cross_icon_iside_welcome_screen_button.click()
         for chat in ('#status', '#crypto'):
             home_view.delete_chat_long_press(chat)

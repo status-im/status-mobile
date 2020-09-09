@@ -121,14 +121,14 @@
        :disabled            (not allow-adding-members?)
        :title               (i18n/label :t/accept)
        :subtitle            (when-not allow-adding-members?  (i18n/label :t/members-limit-reached))
-       :accessibility-label :fetch-history-button
+       :accessibility-label :accept-invitation-button
        :icon                :main-icons/checkmark-circle
        :on-press            #(hide-sheet-and-dispatch
                               [:group-chats.ui/add-members-from-invitation id (:public-key contact)])}]
      [quo/list-item
       {:theme               :negative
        :title               (i18n/label :t/decline)
-       :accessibility-label :delete-chat-button
+       :accessibility-label :decline-invitation-button
        :icon                :main-icons/cancel
        :on-press            #(hide-sheet-and-dispatch [:send-group-chat-membership-rejection id])}]]))
 
@@ -160,7 +160,8 @@
           [react/text {:style {:color colors/gray}} (i18n/label :t/group-invite-link)]
           [copyable-text/copyable-text-view
            {:copied-text invite-link}
-           [react/view {:border-width 1 :border-color colors/gray-lighter
+           [react/view {:accessibility-label :invitation-link
+                        :border-width 1 :border-color colors/gray-lighter
                         :justify-content :center :margin-top 10
                         :border-radius 8 :padding-horizontal 16 :padding-vertical 11}
             [react/text invite-link]]]

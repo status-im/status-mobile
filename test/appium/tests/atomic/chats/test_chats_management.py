@@ -598,7 +598,6 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
     def test_block_user_from_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        message_before_block_1 = "Before block from %s" % device_1.driver.number
         message_before_block_2 = "Before block from %s" % device_2.driver.number
         message_after_block_2 = "After block from %s" % device_2.driver.number
         home_1, home_2 = device_1.create_user(), device_2.create_user()
@@ -631,7 +630,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         device_1.just_fyi('check that new messages from blocked user are not delivered')
         self.drivers[0].launch_app()
-        device_1.accept_agreements()
+        # device_1.accept_agreements()
         device_1.sign_in()
         home_1.join_public_chat(chat_name)
         for message in message_before_block_2, message_after_block_2:
@@ -731,7 +730,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.just_fyi("reopen app and check that messages from blocked user are not fetched")
         device_1.click_system_home_button()
         self.drivers[0].launch_app()
-        device_1.accept_agreements()
+        # device_1.accept_agreements()
         device_1.sign_in()
         if home_1.get_chat(basic_user['username']).is_element_displayed():
             self.errors.append("Chat with blocked user is reappeared after fetching new messages from offline")

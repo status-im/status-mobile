@@ -81,13 +81,15 @@ class NetworkApi(object):
                 try:
                     if token:
                         transactions = self.get_token_transactions(address)
+                        additional_info = 'token transactions'
                     else:
                         transactions = self.get_transactions(address)
+                        additional_info = 'ETH transactions'
                 except JSONDecodeError as e:
                     self.log(str(e))
                     continue
-                self.log('Looking for a transaction with unique amount %s in list of transactions, address is %s' %
-                             (amount, address))
+                self.log('Looking for a transaction with unique amount %s in list of %s, address is %s' %
+                             (additional_info, amount, address))
                 try:
                     for transaction in transactions:
                         if float(int(transaction['value']) / 10 ** decimals) == float(amount):
