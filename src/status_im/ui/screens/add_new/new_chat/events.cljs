@@ -43,6 +43,7 @@
            is-ens?        (and (not is-public-key?)
                                (ens/valid-eth-name-prefix? new-identity))
            error          (db/validate-pub-key db new-identity)]
+       (reset! resolve-last-id nil)
        (merge {:db (assoc db
                           :contacts/new-identity
                           {:public-key new-identity

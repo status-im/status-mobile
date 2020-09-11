@@ -104,8 +104,6 @@
                   {:enableURLHandling true
                    :initialState      @state}))
          [main-app-navigator]]
-        [wallet/prepare-transaction]
-        [wallet/request-transaction]
         [wallet/select-account]
         [signing/signing]
         [bottom-sheet]

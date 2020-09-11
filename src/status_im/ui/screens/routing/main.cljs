@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.screens.profile.tribute-to-talk.views :as tr-to-talk]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
-            [status-im.ui.screens.wallet.components.views :as wallet.components]
+            [status-im.ui.screens.wallet.recipient.views :as recipient]
             [status-im.ui.screens.qr-scanner.views :as qr-scanner]
             [status-im.ui.screens.stickers.views :as stickers]
             [status-im.ui.screens.home.views :as home]
@@ -24,7 +24,8 @@
             [status-im.utils.config :as config]
             [status-im.ui.screens.chat.image.preview.views :as image-preview]
             [status-im.ui.screens.profile.contact.views :as contact]
-            [status-im.ui.screens.notifications-settings.views :as notifications-settings]))
+            [status-im.ui.screens.notifications-settings.views :as notifications-settings]
+            [status-im.ui.screens.wallet.send.views :as wallet]))
 
 (defonce main-stack (navigation/create-stack))
 (defonce bottom-tabs (navigation/create-bottom-tabs))
@@ -103,8 +104,14 @@
         :transition :presentation-ios
         :insets     {:bottom true}
         :component  group-chat/add-participants-toggle-list}
-       {:name      :contact-code
-        :component wallet.components/contact-code}
+       {:name       :recipient
+        :transition :presentation-ios
+        :insets     {:bottom true}
+        :component  recipient/recipient}
+       {:name       :new-favourite
+        :transition :presentation-ios
+        :insets     {:bottom true}
+        :component  recipient/new-favourite}
        {:name      :qr-scanner
         :insets    {:top false :bottom false}
         :component qr-scanner/qr-scanner}
@@ -122,7 +129,15 @@
        {:name         :notifications-onboarding
         :back-handler :noop
         :insets       {:bottom true}
-        :component    notifications-settings/notifications-onboarding}]
+        :component    notifications-settings/notifications-onboarding}
+       {:name       :prepare-send-transaction
+        :transition :presentation-ios
+        :insets     {:bottom true}
+        :component  wallet/prepare-send-transaction}
+       {:name       :request-transaction
+        :transition :presentation-ios
+        :insets     {:bottom true}
+        :component  wallet/request-transaction}]
 
       (when config/quo-preview-enabled?
         [{:name      :quo-preview

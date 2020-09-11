@@ -1263,5 +1263,15 @@
     "membership-description": "Group membership requires you to be accepted by the group admin",
     "group-membership-request": "Group membership request",
     "members-limit-reached": "Members limit reached",
+    "favourites": "Favourites",
+    "new-favourite": "New favourite",
+    "add-to-favourites": "Add to favourites",
+    "favourites-empty": "Addresses added to favourites will appear here",
+    "contacts-empty": "Contacts with ENS names will appear here",
+    "my-accounts": "My accounts",
+    "my-accounts-empty": "Your available accounts will appear here",
+    "recent-empty": "Recently used addresses will appear here",
+    "address-or-ens-name": "Address or ENS name",
+    "name-optional": "Name (optional)",
     "mute": "Mute"
 }

@@ -115,6 +115,8 @@
    "wallet_getTransfersByAddress" {}
    "wallet_getCustomTokens" {}
    "wallet_addCustomToken" {}
+   "wallet_addFavourite" {}
+   "wallet_getFavourites" {}
    "wallet_deleteCustomToken" {}
    "browsers_getBrowsers" {}
    "browsers_addBrowser" {}

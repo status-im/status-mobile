@@ -19,7 +19,9 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.money :as money]
             [quo.core :as quo]
-            [status-im.ethereum.core :as ethereum]))
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
+            [status-im.ui.components.topbar :as topbar]))
 
 (defn header [{:keys [label small-screen?]}]
   [react/view (styles/header small-screen?)
@@ -69,23 +71,26 @@
 (defn render-contact [contact from-chat?]
   (if from-chat?
     [quo/list-item {:title    (multiaccounts/displayed-name contact)
-                    :subtitle (:address contact)
+                    :subtitle [quo/text {:monospace true
+                                         :color     :secondary}
+                               (utils/get-shortened-checksum-address (:address contact))]
                     :icon     [chat-icon/contact-icon-contacts-tab
                                (multiaccounts/displayed-photo contact)]}]
     [quo/list-item
-     {:title               (if-not contact
-                             (i18n/label :t/wallet-choose-recipient)
-                             [quo/text {:size      :large
-                                        :monospace true}
-                              (utils/get-shortened-checksum-address
-                               (if (string? contact) contact (:address contact)))])
-      :accessibility-label :choose-recipient-button
-      :on-press            #(do
-                              (re-frame/dispatch [:dismiss-keyboard])
-                              (re-frame/dispatch [:bottom-sheet/show-sheet
-                                                  {:content        sheets/choose-recipient
-                                                   :content-height 200}]))
-      :chevron             true}]))
+     (merge {:title               (if-not contact
+                                    (i18n/label :t/wallet-choose-recipient)
+                                    [quo/text {:size      :large
+                                               :monospace true}
+                                     (utils/get-shortened-checksum-address
+                                      (if (string? contact) contact (:address contact)))])
+             :accessibility-label :choose-recipient-button
+             :on-press            #(do
+                                     (re-frame/dispatch [:dismiss-keyboard])
+                                     (re-frame/dispatch [:wallet.send/navigate-to-recipient-code]))
+             :chevron             true}
+            (when-not contact
+              {:icon  :main-icons/add
+               :theme :accent}))]))
 
 (defn set-max [token]
   [react/touchable-highlight
@@ -102,140 +107,12 @@
       [react/text {:style {:color     colors/gray :margin-left 16 :margin-bottom 8
                            :font-size 15 :line-height 22}}
        (str (i18n/format-currency (* amount price) (:code wallet-currency)) " " (:code wallet-currency))])))
-(views/defview sheet [_]
-  (views/letsubs [{:keys [amount-error amount-text
-                          request?
-                          from token to sign-enabled? from-chat?]
-                   :as   tx}
-                  [:wallet.send/prepare-transaction-with-balance]
-                  prices [:prices]
-                  wallet-currency [:wallet/currency]
-                  window-height [:dimensions/window-height]
-                  window-width [:dimensions/window-width]
-                  keyboard-height [:keyboard-height]]
-    (let [small-screen? (< (- window-height keyboard-height) 450)
-          to-norm       (ethereum/normalized-hex (if (string? to) to (:address to)))]
-      [react/view {:style (styles/sheet small-screen?)}
-       [react/view {:flex-direction :row :padding-horizontal 16 :align-items :center
-                    :margin-top     12   :margin-bottom      4}
-        [react/text-input
-         {:style               {:font-size (if small-screen? 24 38)
-                                :max-width (- (* (/ window-width 4) 3) 106)
-                                :color     (if amount-error colors/red colors/black)}
-          :keyboard-type       :decimal-pad
-          :auto-capitalize     :words
-          :accessibility-label :amount-input
-          :default-value       amount-text
-          :editable            (not request?)
-          :auto-focus          true
-          :on-change-text      #(re-frame/dispatch [:wallet.send/set-amount-text %])
-          :placeholder         "0.0 "}]
-        [asset-selector tx window-width]
-        (when amount-error
-          [tooltip/tooltip (if from
-                             amount-error
-                             (i18n/label :t/select-account-first))
-           {:bottom-value 2
-            :font-size    12}])]
-       [fiat-value amount-text token prices wallet-currency]
-       (when-not (or request? from-chat?)
-         [set-max token])
-       [components/separator]
-       (when-not small-screen?
-         [quo/list-header (i18n/label :t/from)])
-       [react/view {:flex-direction :row :flex 1 :align-items :center}
-        (when small-screen?
-          [react/i18n-text {:style {:width 50 :text-align :right :color colors/gray} :key :t/from}])
-        [react/view {:flex 1}
-         [render-account from token :wallet.send/set-field]]]
-       (when-not small-screen?
-         [quo/list-header
-          (i18n/label :t/to)])
-       [react/view {:flex-direction :row :flex 1 :align-items :center}
-        (when small-screen?
-          [react/i18n-text {:style {:width 50 :text-align :right :color colors/gray} :key :t/to}])
-        [react/view {:flex 1}
-         [render-contact to from-chat?]]]
-       [toolbar/toolbar
-        {:left
-         [quo/button
-          {:type     :secondary
-           :on-press #(re-frame/dispatch [:wallet/cancel-transaction-command])}
-          (i18n/label :t/cancel)]
-         :right
-         [quo/button
-          {:accessibility-label :send-transaction-bottom-sheet
-           :disabled            (not sign-enabled?)
-           :on-press            #(re-frame/dispatch
-                                  [(cond
-                                     request?
-                                     :wallet.ui/sign-transaction-button-clicked-from-request
-                                     from-chat?
-                                     :wallet.ui/sign-transaction-button-clicked-from-chat
-                                     :else
-                                     :wallet.ui/sign-transaction-button-clicked) tx])}
-          (if (and (not request?) from-chat? (not to-norm))
-            (i18n/label :t/wallet-send)
-            (i18n/label :t/next))]}]])))
-(views/defview request-sheet [_]
-  (views/letsubs [{:keys [amount-error amount-text from token sign-enabled?] :as tx}
-                  [:wallet.request/prepare-transaction-with-balance]
-                  window-height [:dimensions/window-height]
-                  window-width [:dimensions/window-width]
-                  prices [:prices]
-                  wallet-currency [:wallet/currency]
-                  keyboard-height [:keyboard-height]]
-    (let [small-screen? (< (- window-height keyboard-height) 450)]
-      [react/view {:style (styles/sheet small-screen?)}
-       [header {:small-screen? small-screen?
-                :label         :t/request-transaction}]
-       [react/view {:flex-direction  :row :padding-horizontal 24 :align-items :center
-                    :margin-vertical (if small-screen? 8 16)}
-        [react/text-input
-         {:style               {:font-size   (if small-screen? 24 38)
-                                :color       (when amount-error colors/red)
-                                :flex-shrink 1}
-          :keyboard-type       :decimal-pad
-          :auto-capitalize     :words
-          :accessibility-label :amount-input
-          :default-value       amount-text
-          :auto-focus          true
-          :on-change-text      #(re-frame/dispatch [:wallet.request/set-amount-text %])
-          :placeholder         "0.0 "}]
-        [asset-selector tx window-width]
-        (when amount-error
-          [tooltip/tooltip amount-error {:bottom-value 2
-                                         :font-size    12}])]
-       [fiat-value amount-text token prices wallet-currency]
-       [components/separator]
-       (when-not small-screen?
-         [quo/list-header
-          (i18n/label :t/to)])
-       [react/view {:flex-direction :row :flex 1 :align-items :center}
-        (when small-screen?
-          [react/i18n-text {:style {:width 50 :text-align :right :color colors/gray} :key :t/to}])
-        [react/view {:flex 1}
-         [render-account from token :wallet.request/set-field]]]
-       [toolbar/toolbar
-        {:left
-         [react/view {:padding-horizontal 8}
-          [quo/button
-           {:type     :secondary
-            :on-press #(re-frame/dispatch [:wallet/cancel-transaction-command])}
-           (i18n/label :t/cancel)]]
-         :right
-         [quo/button
-          {:accessibility-label :request-transaction-bottom-sheet
-           :disabled            (not sign-enabled?)
-           :on-press            #(re-frame/dispatch
-                                  [:wallet.ui/request-transaction-button-clicked tx])}
-          (i18n/label :t/wallet-request)]}]])))
 
 (views/defview select-account-sheet [{:keys [from message]}]
   (views/letsubs [window-height [:dimensions/window-height]
                   keyboard-height [:keyboard-height]]
     (let [small-screen? (< (- window-height keyboard-height) 450)]
-      [react/view {:style (styles/sheet small-screen?)}
+      [react/view {:style (styles/acc-sheet)}
        [header {:small-screen? small-screen?
                 :label         :t/select-account}]
        [react/view {:flex-direction  :row :padding-horizontal 24 :align-items :center
@@ -265,32 +142,144 @@
                                    (:address from)])}
           (i18n/label :t/share)]}]])))
 
-(defview prepare-transaction []
-  (letsubs [tx [:wallet/prepare-transaction]]
-    [bottom-panel/animated-bottom-panel
-     ;;we use select-keys here because we don't want to update view if other keys in map are changed
-     ;; and because modal screen (qr code scanner) can't be opened over bottom sheet we have to use :modal-opened?
-     ;; to hide our transaction panel
-     (when (and tx
-                (not (:modal-opened? tx))
-                (not (:request-command? tx)))
-       (select-keys tx [:from-chat?]))
-     sheet]))
-
-(defview request-transaction []
-  (letsubs [tx [:wallet/prepare-transaction]]
-    [bottom-panel/animated-bottom-panel
-     ;;we use select-keys here because we don't want to update view if other keys in map are changed
-     ;; and because modal screen (qr code scanner) can't be opened over bottom sheet we have to use :modal-opened?
-     ;; to hide our transaction panel
-     (when (and tx
-                (not (:modal-opened? tx))
-                (:request-command? tx))
-       (select-keys tx [:from-chat? :request?]))
-     request-sheet]))
-
 (defview select-account []
   (letsubs [data [:commands/select-account]]
     [bottom-panel/animated-bottom-panel
      data
      select-account-sheet]))
+
+(views/defview request-transaction [_]
+  (views/letsubs [{:keys [amount-error amount-text from token sign-enabled?] :as tx}
+                  [:wallet.request/prepare-transaction-with-balance]
+                  window-width [:dimensions/window-width]
+                  prices [:prices]
+                  wallet-currency [:wallet/currency]]
+    [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
+     [react/view {:flex 1}
+      [topbar/topbar
+       {:navigation    {:on-press
+                        #(do
+                           (re-frame/dispatch [:wallet/cancel-transaction-command])
+                           (re-frame/dispatch [:navigate-back]))}
+        :modal?        true
+        :border-bottom true
+        :title         (i18n/label :t/request-transaction)}]
+      [react/scroll-view {:style                        {:flex 1}
+                          :keyboard-should-persist-taps :handled}
+       [react/view {:style (styles/sheet)}
+        [react/view {:flex-direction  :row :padding-horizontal 24 :align-items :center
+                     :margin-vertical 16}
+         [react/text-input
+          {:style               {:font-size   38
+                                 :color       (when amount-error colors/red)
+                                 :flex-shrink 1}
+           :keyboard-type       :decimal-pad
+           :auto-capitalize     :words
+           :accessibility-label :amount-input
+           :default-value       amount-text
+           :auto-focus          true
+           :on-change-text      #(re-frame/dispatch [:wallet.request/set-amount-text %])
+           :placeholder         "0.0 "}]
+         [asset-selector tx window-width]
+         (when amount-error
+           [tooltip/tooltip amount-error {:bottom-value 2
+                                          :font-size    12}])]
+        [fiat-value amount-text token prices wallet-currency]
+        [components/separator]
+        [quo/list-header
+         (i18n/label :t/to)]
+        [react/view {:flex-direction :row :flex 1 :align-items :center}
+         [react/view {:flex 1}
+          [render-account from token :wallet.request/set-field]]]]]
+      [toolbar/toolbar
+       {:show-border? true
+        :right
+        [quo/button
+         {:type                :secondary
+          :after               :main-icon/next
+          :accessibility-label :request-transaction-bottom-sheet
+          :disabled            (not sign-enabled?)
+          :on-press            #(do
+                                  (re-frame/dispatch
+                                   [:wallet.ui/request-transaction-button-clicked tx])
+                                  (re-frame/dispatch [:navigate-back]))}
+         (i18n/label :t/wallet-request)]}]]]))
+
+(views/defview prepare-send-transaction [_]
+  (views/letsubs [{:keys [amount-error amount-text
+                          request?
+                          from token to sign-enabled? from-chat?]
+                   :as   tx}
+                  [:wallet.send/prepare-transaction-with-balance]
+                  prices [:prices]
+                  wallet-currency [:wallet/currency]
+                  window-width [:dimensions/window-width]]
+    (let [to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))]
+      [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
+       [react/view {:flex 1}
+        [topbar/topbar
+         {:navigation    {:on-press
+                          #(do
+                             (re-frame/dispatch [:wallet/cancel-transaction-command])
+                             (re-frame/dispatch [:navigate-back]))}
+          :modal?        true
+          :border-bottom true
+          :title         (i18n/label :t/send-transaction)}]
+        [react/scroll-view {:style                        {:flex 1}
+                            :keyboard-should-persist-taps :handled}
+         [react/view {:style (styles/sheet)}
+          [react/view {:flex-direction :row :padding-horizontal 16 :align-items :center
+                       :margin-top     12 :margin-bottom 4}
+           [react/text-input
+            {:style               {:font-size 38
+                                   :max-width (- (* (/ window-width 4) 3) 106)
+                                   :color     (if amount-error colors/red colors/black)}
+             :keyboard-type       :decimal-pad
+             :auto-capitalize     :words
+             :accessibility-label :amount-input
+             :default-value       amount-text
+             :editable            (not request?)
+             :auto-focus          true
+             :on-change-text      #(re-frame/dispatch [:wallet.send/set-amount-text %])
+             :placeholder         "0.0 "}]
+           [asset-selector tx window-width]
+           (when amount-error
+             [tooltip/tooltip (if from
+                                amount-error
+                                (i18n/label :t/select-account-first))
+              {:bottom-value 2
+               :font-size    12}])]
+          [fiat-value amount-text token prices wallet-currency]
+          (when-not (or request? from-chat?)
+            [set-max token])
+          [components/separator]
+          [quo/list-header (i18n/label :t/from)]
+          [react/view {:flex-direction :row :flex 1 :align-items :center}
+           [react/view {:flex 1}
+            [render-account from token :wallet.send/set-field]]]
+          [quo/list-header
+           (i18n/label :t/to)]
+          [react/view {:flex-direction :row :flex 1 :align-items :center}
+           [react/view {:flex 1}
+            [render-contact to from-chat?]]]]]
+        [toolbar/toolbar
+         {:show-border? true
+          :right
+          [quo/button
+           {:accessibility-label :send-transaction-bottom-sheet
+            :type                :secondary
+            :after               :main-icon/next
+            :disabled            (not sign-enabled?)
+            :on-press            #(do
+                                    (re-frame/dispatch
+                                     [(cond
+                                        request?
+                                        :wallet.ui/sign-transaction-button-clicked-from-request
+                                        from-chat?
+                                        :wallet.ui/sign-transaction-button-clicked-from-chat
+                                        :else
+                                        :wallet.ui/sign-transaction-button-clicked) tx])
+                                    (re-frame/dispatch [:navigate-back]))}
+           (if (and (not request?) from-chat? (not to-norm))
+             (i18n/label :t/wallet-send)
+             (i18n/label :t/next))]}]]])))

@@ -26,7 +26,8 @@
             [status-im.wallet.prices :as prices]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.native-module.core :as status]
-            [status-im.ui.screens.mobile-network-settings.utils :as mobile-network-utils]))
+            [status-im.ui.screens.mobile-network-settings.utils :as mobile-network-utils]
+            status-im.wallet.recipient.core))
 
 (defn get-balance
   [{:keys [address on-success on-error]}]
@@ -207,6 +208,13 @@
      {:db (assoc db :wallet/all-tokens all-tokens)}
      (when config/erc20-contract-warnings-enabled?
        {:wallet/validate-tokens [default-tokens all-default-tokens]}))))
+
+(fx/defn initialize-favourites
+  [{:keys [db]} favourites]
+  {:db (assoc db :wallet/favourites (reduce (fn [acc {:keys [address] :as favourit}]
+                                              (assoc acc address favourit))
+                                            {}
+                                            favourites))})
 
 (fx/defn update-balances
   [{{:keys [network-status :wallet/all-tokens
@@ -419,7 +427,8 @@
                  :symbol symbol
                  :amount-text amount-text
                  :request? true
-                 :from-chat? true})}))
+                 :from-chat? true})
+     :dispatch [:navigate-to :prepare-send-transaction]}))
 
 (fx/defn sign-transaction-button-clicked-from-request
   {:events  [:wallet.ui/sign-transaction-button-clicked-from-request]}
@@ -513,7 +522,8 @@
                                 (:multiaccount/accounts db))
                          :to contact
                          :symbol :ETH
-                         :from-chat? true})}
+                         :from-chat? true})
+             :dispatch [:navigate-to :prepare-send-transaction]}
       ens-verified
       (assoc ::resolve-address
              {:registry (get ens/ens-registries chain)
@@ -535,7 +545,8 @@
                                contact.db/enrich-contact))
                  :symbol :ETH
                  :from-chat? true
-                 :request-command? true})}))
+                 :request-command? true})
+     :dispatch [:navigate-to :request-transaction]}))
 
 (fx/defn prepare-transaction-from-wallet
   {:events [:wallet/prepare-transaction-from-wallet]}
@@ -545,6 +556,7 @@
                :to         nil
                :symbol     :ETH
                :from-chat? false})
+   :dispatch [:navigate-to :prepare-send-transaction]
    :signing/update-gas-price {:success-event :wallet.send/update-gas-price-success}})
 
 (fx/defn cancel-transaction-command
@@ -595,9 +607,10 @@
   {:events [:wallet.send/navigate-to-recipient-code]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:db (assoc-in db [:wallet/prepare-transaction :modal-opened?] true)}
+            {:db (-> db
+                     (assoc :wallet/recipient {}))}
             (bottom-sheet/hide-bottom-sheet)
-            (navigation/navigate-to-cofx :contact-code nil)))
+            (navigation/navigate-to-cofx :recipient nil)))
 
 (fx/defn show-delete-account-confirmation
   {:events [:wallet.settings/show-delete-account-confirmation]}

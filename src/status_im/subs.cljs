@@ -163,6 +163,8 @@
 (reg-root-key-sub :wallet/prepare-transaction :wallet/prepare-transaction)
 (reg-root-key-sub :wallet-service/manual-setting :wallet-service/manual-setting)
 (reg-root-key-sub :wallet-service/state :wallet-service/state)
+(reg-root-key-sub :wallet/recipient :wallet/recipient)
+(reg-root-key-sub :wallet/favourites :wallet/favourites)
 
 ;;commands
 (reg-root-key-sub :commands/select-account :commands/select-account)
@@ -368,6 +370,12 @@
    (get search :home-filter)))
 
 (re-frame/reg-sub
+ :search/recipient-filter
+ :<- [:ui/search]
+ (fn [search]
+   (get search :recipient-filter)))
+
+(re-frame/reg-sub
  :search/currency-filter
  :<- [:ui/search]
  (fn [search]
@@ -530,6 +538,23 @@
  :<- [:multiaccount/accounts]
  (fn [accounts]
    (filter #(not= (:type %) :watch) accounts)))
+
+(defn filter-recipient-accounts
+  [search-filter {:keys [name]}]
+  (string/includes? (string/lower-case (str name)) search-filter))
+
+(re-frame/reg-sub
+ :accounts-for-recipient
+ :<- [:multiaccount/accounts]
+ :<- [:wallet/prepare-transaction]
+ :<- [:search/recipient-filter]
+ (fn [[accounts {:keys [from]} search-filter]]
+   (let [accounts (remove #(= (:address %) (:address from)) accounts)]
+     (if (string/blank? search-filter)
+       accounts
+       (filter (partial filter-recipient-accounts
+                        (string/lower-case search-filter))
+               accounts)))))
 
 (re-frame/reg-sub
  :add-account-disabled?
@@ -1285,6 +1310,21 @@
  (fn [currency-id]
    (get constants/currencies currency-id)))
 
+(defn filter-recipient-favs
+  [search-filter {:keys [name]}]
+  (string/includes? (string/lower-case (str name)) search-filter))
+
+(re-frame/reg-sub
+ :wallet/favourites-filtered
+ :<- [:wallet/favourites]
+ :<- [:search/recipient-filter]
+ (fn [[favs search-filter]]
+   (let [favs (vals favs)]
+     (if (string/blank? search-filter)
+       favs
+       (filter (partial filter-recipient-favs
+                        (string/lower-case search-filter))
+               favs)))))
 ;;WALLET TRANSACTIONS ==================================================================================================
 
 (re-frame/reg-sub
@@ -1433,6 +1473,17 @@
          vals
          (keep #(enrich-transaction-for-list filters % address))
          (group-transactions-by-date))}))
+
+(re-frame/reg-sub
+ :wallet/recipient-recent-txs
+ (fn [[_ address] _]
+   [(re-frame/subscribe [:wallet.transactions/transactions address])])
+ (fn [[transactions] _]
+   (->> transactions
+        vals
+        (sort-by :timestamp >)
+        (remove #(= (:type %) :pending))
+        (take 3))))
 
 (re-frame/reg-sub
  :wallet.transactions.details/current-transaction
@@ -1619,6 +1670,28 @@
  :<- [:contacts/blocked]
  (fn [blocked-contacts]
    (count blocked-contacts)))
+
+(defn filter-recipient-contacts
+  [search-filter {:keys [names]}]
+  (let [{:keys [nickname three-words-name ens-name]} names]
+    (or
+     (when ens-name
+       (string/includes? (string/lower-case (str ens-name)) search-filter))
+     (string/includes? (string/lower-case three-words-name) search-filter)
+     (when nickname
+       (string/includes? (string/lower-case nickname) search-filter)))))
+
+(re-frame/reg-sub
+ :contacts/active-with-ens-names
+ :<- [:contacts/active]
+ :<- [:search/recipient-filter]
+ (fn [[contacts search-filter]]
+   (let [contacts (filter :ens-verified contacts)]
+     (if (string/blank? search-filter)
+       contacts
+       (filter (partial filter-recipient-contacts
+                        (string/lower-case search-filter))
+               contacts)))))
 
 (re-frame/reg-sub
  :contacts/current-contact

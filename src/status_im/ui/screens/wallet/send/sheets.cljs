@@ -50,9 +50,7 @@
                 :icon                :main-icons/qr
                 :theme               :accent
                 :accessibility-label :chose-recipient-scan-qr
-                :on-press            #(re-frame/dispatch [:wallet.send/qr-scanner {:handler        :wallet.send/qr-scanner-result
-                                                                                   :cancel-handler :wallet.send/qr-scanner-cancel
-                                                                                   :modal-opened?  true}])}
+                :on-press            #(re-frame/dispatch [:wallet.send/qr-scanner {:handler :wallet.send/qr-scanner-result}])}
                {:title               (i18n/label :t/recipient-code)
                 :icon                :main-icons/address
                 :theme               :accent
