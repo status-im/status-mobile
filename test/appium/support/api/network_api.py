@@ -89,7 +89,7 @@ class NetworkApi(object):
                     self.log(str(e))
                     continue
                 self.log('Looking for a transaction with unique amount %s in list of %s, address is %s' %
-                             (additional_info, amount, address))
+                             (amount, additional_info, address))
                 try:
                     for transaction in transactions:
                         if float(int(transaction['value']) / 10 ** decimals) == float(amount):

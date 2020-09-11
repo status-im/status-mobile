@@ -307,7 +307,7 @@ class SignInView(BaseView):
         return self.get_home_view()
 
     def sign_in(self, password=common_password, keycard=False, position=1):
-        self.rooted_device_continue()
+        # self.rooted_device_continue()
         self.multi_account_on_login_button.wait_for_visibility_of_element(10)
         self.get_multiaccount_by_position(position).click()
 

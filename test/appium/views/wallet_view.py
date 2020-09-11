@@ -504,7 +504,7 @@ class WalletView(BaseView):
 
     def get_wallet_address(self, account_name="Status account"):
         self.wallet_account_by_name(account_name).click()
-        self.receive_transaction_button.click()
+        self.receive_transaction_button.click_until_presence_of_element(self.qr_code_image)
         address = self.address_text.text
         self.close_share_popup()
         return address
