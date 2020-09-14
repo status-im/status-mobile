@@ -32,7 +32,7 @@
 
 (defn message-timestamp-placeholder
   []
-  (merge message-timestamp {:opacity 0}))
+  (merge message-timestamp {:opacity 0 :color "rgba(0,0,0,0)"}))
 
 (defn message-timestamp-text
   [justify-timestamp? outgoing rtl?]
