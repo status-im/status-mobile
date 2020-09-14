@@ -118,3 +118,7 @@
 (defn safe-trim [s]
   (when (string? s)
     (string/trim s)))
+
+(defn safe-replace [s m r]
+  (when (string? s)
+    (string/replace s m r)))

@@ -1258,5 +1258,6 @@
     "request-membership": "Request membership",
     "membership-description": "Group membership requires you to be accepted by the group admin",
     "group-membership-request": "Group membership request",
-    "members-limit-reached": "Members limit reached"
+    "members-limit-reached": "Members limit reached",
+    "mute": "Mute"
 }

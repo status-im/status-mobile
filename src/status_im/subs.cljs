@@ -38,6 +38,7 @@
             [status-im.utils.security :as security]
             [status-im.wallet.db :as wallet.db]
             [status-im.wallet.utils :as wallet.utils]
+            [status-im.utils.utils :as utils]
             status-im.ui.screens.keycard.subs
             status-im.ui.screens.keycard.settings.subs
             status-im.ui.screens.keycard.pin.subs
@@ -863,7 +864,7 @@
    (reduce
     (fn [acc [key {:keys [alias name identicon]}]]
       (if (and alias (not= alias ""))
-        (let [name (string/replace name ".stateofus.eth" "")]
+        (let [name (utils/safe-replace name ".stateofus.eth" "")]
           (assoc acc alias {:alias      alias
                             :name       (or name alias)
                             :identicon  identicon

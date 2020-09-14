@@ -80,20 +80,21 @@
 
 (defn render-chat-settings [{:keys [public-key names]}]
   (let [muted? (:muted @(re-frame/subscribe [:chats/chat public-key]))]
-    [quo/list-item
-     {:title               (i18n/label :t/nickname)
-      :size                :small
-      :accessibility-label :profile-nickname-item
-      :accessory           :text
-      :accessory-text      (or (:nickname names) (i18n/label :t/none))
-      :on-press            #(re-frame/dispatch [:navigate-to :nickname])
-      :chevron             true}]
-    [quo/list-item
-     {:title               (i18n/label :mute-chat)
-      :active               muted?
-      :accessibility-label :mute-chat
-      :on-press            #(re-frame/dispatch [::chat.models/mute-chat-toggled public-key (not muted?)])
-      :accessory           :switch}]))
+    [react/view
+     [quo/list-item
+      {:title               (i18n/label :t/nickname)
+       :size                :small
+       :accessibility-label :profile-nickname-item
+       :accessory           :text
+       :accessory-text      (or (:nickname names) (i18n/label :t/none))
+       :on-press            #(re-frame/dispatch [:navigate-to :nickname])
+       :chevron             true}]
+     [quo/list-item
+      {:title               (i18n/label :t/mute)
+       :active               muted?
+       :accessibility-label :mute-chat
+       :on-press            #(re-frame/dispatch [::chat.models/mute-chat-toggled public-key (not muted?)])
+       :accessory           :switch}]]))
 
 (defn chat-settings [contact]
   [react/view

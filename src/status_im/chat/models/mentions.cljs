@@ -3,7 +3,8 @@
             [status-im.utils.fx :as fx]
             [status-im.contact.db :as contact.db]
             [status-im.utils.platform :as platform]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.utils :as utils]))
 
 (def at-sign "@")
 
@@ -36,7 +37,7 @@
           :else users)]
     (reduce
      (fn [acc [key {:keys [alias name identicon]}]]
-       (let [name (string/replace name ".stateofus.eth" "")]
+       (let [name (utils/safe-replace name ".stateofus.eth" "")]
          (assoc acc alias {:alias      alias
                            :name       (or name alias)
                            :identicon  identicon

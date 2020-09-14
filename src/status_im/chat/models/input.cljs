@@ -10,18 +10,18 @@
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
             ["emojilib" :as emojis]
-            [status-im.chat.models.mentions :as mentions]))
+            [status-im.chat.models.mentions :as mentions]
+            [status-im.utils.utils :as utils]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
   [text]
-  (when text
-    (string/replace text
-                    #":([a-z_\-+0-9]*):"
-                    (fn [[original emoji-id]]
-                      (if-let [emoji-map (object/get (.-lib emojis) emoji-id)]
-                        (.-char ^js emoji-map)
-                        original)))))
+  (utils/safe-replace text
+                      #":([a-z_\-+0-9]*):"
+                      (fn [[original emoji-id]]
+                        (if-let [emoji-map (object/get (.-lib emojis) emoji-id)]
+                          (.-char ^js emoji-map)
+                          original))))
 
 (fx/defn set-chat-input-text
   "Set input text for current-chat. Takes db and input text and cofx
@@ -119,7 +119,7 @@
               (when-not (string/blank? image-path)
                 (chat.message/send-message {:chat-id      current-chat-id
                                             :content-type constants/content-type-image
-                                            :image-path   (string/replace image-path #"file://" "")
+                                            :image-path   (utils/safe-replace image-path #"file://" "")
                                             :text         (i18n/label :t/update-to-see-image)})))))
 
 (fx/defn send-audio-message
