@@ -478,12 +478,6 @@
    (get multiaccount :log-level)))
 
 (re-frame/reg-sub
- :waku/enabled
- :<- [:multiaccount]
- (fn [multiaccount]
-   (boolean (get multiaccount :waku-enabled))))
-
-(re-frame/reg-sub
  :waku/bloom-filter-mode
  :<- [:multiaccount]
  (fn [multiaccount]

@@ -34,79 +34,6 @@
    "waku_generateSymKeyFromPassword" {}
    "waku_getSymKey" {}
    "waku_markTrustedPeer" {}
-   "shhext_post" {}
-   "shhext_startMessenger" {}
-   "shhext_sendPairInstallation" {}
-   "shhext_syncDevices" {}
-   "shhext_requestMessages" {}
-   "shhext_sendDirectMessage" {}
-   "shhext_sendPublicMessage" {}
-   "shhext_enableInstallation" {}
-   "shhext_disableInstallation" {}
-   "shhext_sendChatMessage" {}
-   "shhext_confirmJoiningGroup" {}
-   "shhext_addAdminsToGroupChat" {}
-   "shhext_addMembersToGroupChat" {}
-   "shhext_removeMemberFromGroupChat" {}
-   "shhext_leaveGroupChat" {}
-   "shhext_changeGroupChatName" {}
-   "shhext_createGroupChatWithMembers" {}
-   "shhext_createGroupChatFromInvitation" {}
-   "shhext_reSendChatMessage" {}
-   "shhext_getOurInstallations" {}
-   "shhext_setInstallationMetadata" {}
-   "shhext_loadFilters" {}
-   "shhext_loadFilter" {}
-   "shhext_removeFilters" {}
-   "shhext_sendContactUpdate" {}
-   "shhext_sendContactUpdates" {}
-   "shhext_chats" {}
-   "shhext_addSystemMessages" {}
-   "shhext_deleteMessagesFrom" {}
-   "shhext_deleteMessagesByChatID" {}
-   "shhext_deleteMessage" {}
-   "shhext_markMessagesSeen" {}
-   "shhext_markAllRead" {}
-   "shhext_confirmMessagesProcessedByID" {}
-   "shhext_updateMessageOutgoingStatus" {}
-   "shhext_chatMessages" {}
-   "shhext_saveChat" {}
-   "shhext_muteChat" {}
-   "shhext_unmuteChat" {}
-   "shhext_contacts" {}
-   "shhext_prepareContent" {}
-   "shhext_blockContact" {}
-   "shhext_updateMailservers" {}
-   "shhext_sendEmojiReaction" {}
-   "shhext_sendEmojiReactionRetraction" {}
-   "shhext_emojiReactionsByChatID" {}
-   ;;TODO not used anywhere?
-   "shhext_deleteChat" {}
-   "shhext_saveContact" {}
-   "shhext_verifyENSNames" {}
-   "shhext_requestAddressForTransaction" {}
-   "shhext_requestTransaction" {}
-   "shhext_acceptRequestAddressForTransaction" {}
-   "shhext_declineRequestAddressForTransaction" {}
-   "shhext_declineRequestTransaction" {}
-   "shhext_sendTransaction" {}
-   "shhext_acceptRequestTransaction" {}
-   "shhext_signMessageWithChatKey" {}
-   "shhext_sendGroupChatInvitationRequest" {}
-   "shhext_sendGroupChatInvitationRejection" {}
-   "shhext_getGroupChatInvitations" {}
-   "shhext_registerForPushNotifications" {}
-   "shhext_unregisterFromPushNotifications" {}
-   "shhext_enablePushNotificationsFromContactsOnly" {}
-   "shhext_disablePushNotificationsFromContactsOnly" {}
-   "shhext_startPushNotificationsServer" {}
-   "shhext_stopPushNotificationsServer" {}
-   "shhext_disableSendingNotifications" {}
-   "shhext_enableSendingNotifications" {}
-   "shhext_addPushNotificationsServer" {}
-   "shhext_getPushNotificationsServers" {}
-   "shhext_enablePushNotificationsBlockMentions" {}
-   "shhext_disablePushNotificationsBlockMentions" {}
    "wakuext_post" {}
    "wakuext_startMessenger" {}
    "wakuext_sendPairInstallation" {}
@@ -232,10 +159,8 @@
                            updated-delay)))
     on-error))
 
-(defn call-ext-method [waku-enabled? method]
-  (if waku-enabled?
-    (str "wakuext_" method)
-    (str "shhext_" method)))
+(defn call-ext-method [method]
+  (str "wakuext_" method))
 
 (defn call
   [{:keys [method params on-success on-error] :as arg}]

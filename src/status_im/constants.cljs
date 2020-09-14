@@ -117,11 +117,10 @@
              default-networks)))
 
 (def default-multiaccount
-  {:preview-privacy? config/blank-preview?
+  {:preview-privacy?      config/blank-preview?
    :wallet/visible-tokens {:mainnet #{:SNT}}
    :currency :usd
    :appearance 0
-   :waku-enabled true
    :log-level config/log-level
    :webview-allow-permission-requests? false})
 

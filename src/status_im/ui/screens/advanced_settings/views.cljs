@@ -10,7 +10,6 @@
 
 (defn- normal-mode-settings-data [{:keys [network-name
                                           current-log-level
-                                          waku-enabled
                                           waku-bloom-filter-mode
                                           current-fleet]}]
   [{:size                 :small
@@ -63,15 +62,6 @@
       :on-press
       #(re-frame/dispatch [:navigate-to :notifications-advanced-settings])
       :chevron             true})
-   {:size                   :small
-    :title                   (i18n/label :t/waku-enabled)
-    :accessibility-label     :waku-enabled-settings-switch
-    :container-margin-bottom 8
-    :on-press
-    #(re-frame/dispatch
-      [:multiaccounts.ui/waku-enabled-switched (not waku-enabled)])
-    :accessory               :switch
-    :active                  waku-enabled}
    {:size                   :small
     :title                   (i18n/label :t/waku-bloom-filter-mode)
     :accessibility-label     :waku-bloom-filter-mode-settings-switch
@@ -131,7 +121,6 @@
 (views/defview advanced-settings []
   (views/letsubs [{:keys [chaos-mode?]} [:multiaccount]
                   network-name             [:network-name]
-                  waku-enabled             [:waku/enabled]
                   waku-bloom-filter-mode   [:waku/bloom-filter-mode]
                   current-log-level        [:log-level/current-log-level]
                   current-fleet            [:fleets/current-fleet]]
@@ -143,7 +132,6 @@
                     :current-log-level      current-log-level
                     :current-fleet          current-fleet
                     :dev-mode?              false
-                    :waku-enabled           waku-enabled
                     :waku-bloom-filter-mode waku-bloom-filter-mode
                     :chaos-mode?            chaos-mode?})
        :key-fn    (fn [_ i] (str i))

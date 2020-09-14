@@ -10,7 +10,6 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.publisher :as publisher]
             status-im.transport.shh
-            [status-im.waku.core :as waku]
             [taoensso.timbre :as log]))
 
 (defn set-node-info [{:keys [db]} node-info]
@@ -38,7 +37,7 @@
   initializiation is completed, otherwise we might receive messages/topics
   when the state has not been properly initialized."
   [cofx]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "startMessenger")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "startMessenger")
                      :on-success #(do
                                     (log/debug "messenger initialized")
                                     (re-frame/dispatch [::init-whisper]))

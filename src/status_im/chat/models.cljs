@@ -4,7 +4,6 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.transport.filters.core :as transport.filters]
             [status-im.contact.core :as contact.core]
-            [status-im.waku.core :as waku]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
             [status-im.ethereum.json-rpc :as json-rpc]
@@ -156,7 +155,7 @@
   {:events [:chat.ui/mark-all-read-pressed
             :chat.ui/mark-public-all-read]}
   [{:keys [db] :as cofx} chat-id]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "markAllRead")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "markAllRead")
                      :params [chat-id]
                      :on-success #(re-frame/dispatch [::mark-all-read-successful chat-id])}]})
 
@@ -314,7 +313,7 @@
                     :chat-id chat-id}
                    #(re-frame/dispatch [::mute-chat-toggled chat-id muted?]))
       {:db (assoc-in db [:chats chat-id :muted] muted?)
-       ::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) method)
+       ::json-rpc/call [{:method (json-rpc/call-ext-method method)
                          :params [chat-id]
                          :on-error #(re-frame/dispatch [::mute-chat-failed chat-id muted? %])
                          :on-success #(log/info method "successful" chat-id)}]})))

@@ -9,32 +9,31 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.utils.fx :as fx]
             [status-im.utils.handlers :as handlers]
-            [status-im.waku.core :as waku]
             [taoensso.timbre :as log]))
 
 (defn is-public-key? [k]
   (string/starts-with? k "0x"))
 
-(defn load-filters-rpc [waku-enabled? chats on-success on-failure]
-  (json-rpc/call {:method (json-rpc/call-ext-method waku-enabled? "loadFilters")
+(defn load-filters-rpc [chats on-success on-failure]
+  (json-rpc/call {:method (json-rpc/call-ext-method "loadFilters")
                   :params [chats]
                   :on-success                 on-success
                   :on-failure                 on-failure}))
 
-(defn remove-filters-rpc [waku-enabled? chats on-success on-failure]
-  (json-rpc/call {:method (json-rpc/call-ext-method waku-enabled? "removeFilters")
+(defn remove-filters-rpc [chats on-success on-failure]
+  (json-rpc/call {:method (json-rpc/call-ext-method "removeFilters")
                   :params [chats]
                   :on-success                 on-success
                   :on-failure                 on-failure}))
 
 ;; fx functions
 
-(defn load-filter-fx [waku-enabled? filters]
-  {:filters/load-filters [[waku-enabled? filters]]})
+(defn load-filter-fx [filters]
+  {:filters/load-filters [[filters]]})
 
-(defn remove-filter-fx [waku-enabled? filters]
+(defn remove-filter-fx [filters]
   (when (seq filters)
-    {:filters/remove-filters [waku-enabled? filters]}))
+    {:filters/remove-filters [filters]}))
 
 ;; dispatches
 
@@ -258,7 +257,7 @@
         filters (concat
                  (chats->filter-requests chats)
                  (contacts->filter-requests contacts))]
-    (load-filter-fx (waku/enabled? cofx) filters)))
+    (load-filter-fx filters)))
 
 ;; Load functions: utility function to load filters
 
@@ -268,27 +267,27 @@
   (when (and (filters-initialized? db)
              (not (chat-loaded? db chat-id)))
     (let [chat (get-in db [:chats chat-id])]
-      (load-filter-fx (waku/enabled? cofx) (->filter-request chat)))))
+      (load-filter-fx (->filter-request chat)))))
 
 (fx/defn load-chats
   "Check if a filter already exists for that chat, otherw load the filter"
   [{:keys [db] :as cofx} chats]
   (let [chats (filter #(chat-loaded? db (:chat-id %)) chats)]
     (when (and (filters-initialized? db) (seq chats))
-      (load-filter-fx (waku/enabled? cofx) (chats->filter-requests chats)))))
+      (load-filter-fx (chats->filter-requests chats)))))
 
 (fx/defn load-contact
   "Check if we already have a filter for that contact, otherwise load the filter
   if the contact has been added"
   [{:keys [db] :as cofx} contact]
   (when-not (chat-loaded? db (:public-key contact))
-    (load-filter-fx (waku/enabled? cofx) (contacts->filter-requests [contact]))))
+    (load-filter-fx (contacts->filter-requests [contact]))))
 
 (fx/defn load-member
   "Check if we already have a filter for that member, otherwise load the filter, regardless of whether is in our contacts"
   [{:keys [db] :as cofx} public-key]
   (when-not (chat-loaded? db public-key)
-    (load-filter-fx (waku/enabled? cofx) (->filter-request {:chat-id public-key}))))
+    (load-filter-fx (->filter-request {:chat-id public-key}))))
 
 (fx/defn load-members
   "Load multiple members"
@@ -319,7 +318,6 @@
        ;; we exclude the negotiated filters as those are not to be removed
        ;; otherwise we might miss messages
        (remove-filter-fx
-        (waku/enabled? cofx)
         (non-negotiated-filters-for-chat-id db chat-id))))))
 
 ;; reg-fx
@@ -346,10 +344,9 @@
 ;; we should recreate it.
 (re-frame/reg-fx
  :filters/remove-filters
- (fn [[waku-enabled? filters]]
+ (fn [[filters]]
    (log/debug "removing filters" filters)
    (remove-filters-rpc
-    waku-enabled?
     (map ->remove-filter-request filters)
     #(filters-removed! filters)
     #(log/error "remove-filters: failed error" %))))
@@ -357,10 +354,8 @@
 (re-frame/reg-fx
  :filters/load-filters
  (fn [raw-filters]
-   (let [waku-enabled? (first (first raw-filters))
-         all-filters (mapcat second raw-filters)]
+   (let [all-filters (mapcat first raw-filters)]
      (load-filters-rpc
-      waku-enabled?
       all-filters
       #(filters-added! (map responses->filters %))
       #(log/error "load-filters: failed error" %)))))

@@ -17,7 +17,6 @@
             [status-im.utils.security :as security]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [status-im.waku.core :as waku]
             [status-im.wallet.prices :as prices]
             [taoensso.timbre :as log]))
 
@@ -223,7 +222,7 @@
 (fx/defn send-transaction-message
   {:events [:sign/send-transaction-message]}
   [cofx chat-id value contract transaction-hash signature]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "sendTransaction")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "sendTransaction")
                      :params [chat-id value contract transaction-hash
                               (or (:result (types/json->clj signature))
                                   (ethereum/normalized-hex signature))]
@@ -233,7 +232,7 @@
 (fx/defn send-accept-request-transaction-message
   {:events [:sign/send-accept-transaction-message]}
   [cofx message-id transaction-hash signature]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "acceptRequestTransaction")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "acceptRequestTransaction")
                      :params [transaction-hash message-id
                               (or (:result (types/json->clj signature))
                                   (ethereum/normalized-hex signature))]

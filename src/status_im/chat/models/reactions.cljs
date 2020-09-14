@@ -2,7 +2,6 @@
   (:require [status-im.constants :as constants]
             [re-frame.core :as re-frame]
             [status-im.utils.fx :as fx]
-            [status-im.waku.core :as waku]
             [taoensso.timbre :as log]
             [status-im.transport.message.protocol :as message.protocol]
             [status-im.data-store.reactions :as data-store.reactions]))
@@ -38,7 +37,6 @@
   (when-let [current-chat-id (:current-chat-id db)]
     (when-let [session-id (get-in db [:pagination-info current-chat-id :messages-initialized?])]
       (data-store.reactions/reactions-by-chat-id-rpc
-       (waku/enabled? cofx)
        current-chat-id
        cursor
        constants/default-number-of-messages

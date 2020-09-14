@@ -3,7 +3,6 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.constants :as constants]
             [status-im.qr-scanner.core :as qr-scaner]
-            [status-im.waku.core :as waku]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.json-rpc :as json-rpc]
@@ -371,7 +370,7 @@
                                             [to-norm amount-hex])})}))
       {:db db
        ::json-rpc/call
-       [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "requestAddressForTransaction")
+       [{:method (json-rpc/call-ext-method "requestAddressForTransaction")
          :params [(:current-chat-id db)
                   from-address
                   amount
@@ -387,7 +386,7 @@
         identity (:current-chat-id db)]
     (fx/merge cofx
               {:db (dissoc db :wallet/prepare-transaction)
-               ::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "requestTransaction")
+               ::json-rpc/call [{:method (json-rpc/call-ext-method "requestTransaction")
                                  :params [(:public-key to)
                                           amount
                                           (when-not (= symbol :ETH)

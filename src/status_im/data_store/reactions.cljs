@@ -19,13 +19,12 @@
                                 :messageType :message-type
                                 :id          :emoji-reaction-id})))
 
-(defn reactions-by-chat-id-rpc [waku-enabled?
-                                chat-id
+(defn reactions-by-chat-id-rpc [chat-id
                                 cursor
                                 limit
                                 on-success
                                 on-failure]
-  {::json-rpc/call [{:method     (json-rpc/call-ext-method waku-enabled? "emojiReactionsByChatID")
+  {::json-rpc/call [{:method     (json-rpc/call-ext-method "emojiReactionsByChatID")
                      :params     [chat-id cursor limit]
                      :on-success (fn [result]
                                    (on-success (map <-rpc result)))

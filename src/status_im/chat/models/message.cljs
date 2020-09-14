@@ -11,7 +11,6 @@
             [status-im.transport.message.protocol :as protocol]
             [status-im.ui.screens.chat.state :as view.state]
             [status-im.utils.fx :as fx]
-            [status-im.waku.core :as waku]
             [taoensso.timbre :as log]))
 
 (defn- prepare-message
@@ -222,7 +221,7 @@
 (fx/defn resend-message
   [{:keys [db] :as cofx} chat-id message-id]
   (fx/merge cofx
-            {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "reSendChatMessage")
+            {::json-rpc/call [{:method (json-rpc/call-ext-method "reSendChatMessage")
                                :params [message-id]
                                :on-success #(log/debug "re-sent message successfully")
                                :on-error #(log/error "failed to re-send message" %)}]}

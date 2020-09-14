@@ -11,7 +11,6 @@
             [status-im.tribute-to-talk.whitelist :as whitelist]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
-            [status-im.waku.core :as waku]
             [taoensso.timbre :as log]
             [clojure.string :as string]))
 
@@ -78,7 +77,7 @@
 (fx/defn send-contact-request
   [{:keys [db] :as cofx} {:keys [public-key] :as contact}]
   (let [{:keys [name profile-image]} (own-info db)]
-    {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "sendContactUpdate")
+    {::json-rpc/call [{:method (json-rpc/call-ext-method "sendContactUpdate")
                        :params [public-key name profile-image]
                        :on-success #(log/debug "contact request sent" public-key)}]}))
 

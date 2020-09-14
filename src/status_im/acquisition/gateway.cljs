@@ -4,7 +4,6 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.i18n :as i18n]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.waku.core :as waku]
             [status-im.utils.types :as types]))
 
 (def acquisition-gateway {:mainnet "https://get.status.im"
@@ -40,7 +39,7 @@
         network (ethereum/chain-keyword db)]
     {:db             (assoc-in db [:acquisition :network-status]
                                (get network-statuses :initiated))
-     ::json-rpc/call [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) "signMessageWithChatKey")
+     ::json-rpc/call [{:method     (json-rpc/call-ext-method "signMessageWithChatKey")
                        :params     [msg]
                        :on-error   #(re-frame/dispatch [::on-error (i18n/label :t/sign-request-failed)])
                        :on-success #(re-frame/dispatch [::call-acquisition-gateway

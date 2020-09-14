@@ -3,7 +3,6 @@
             [status-im.data-store.messages :as messages]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
-            [status-im.waku.core :as waku]
             [taoensso.timbre :as log]))
 
 (def one-to-one-chat-type 1)
@@ -95,7 +94,7 @@
       (dissoc :chatType :members)))
 
 (fx/defn save-chat [cofx {:keys [chat-id] :as chat} on-success]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "saveChat")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "saveChat")
                      :params [(->rpc chat)]
                      :on-success #(do
                                     (log/debug "saved chat" chat-id "successfuly")
@@ -103,7 +102,7 @@
                      :on-failure #(log/error "failed to save chat" chat-id %)}]})
 
 (fx/defn fetch-chats-rpc [cofx {:keys [on-success]}]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method (waku/enabled? cofx) "chats")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "chats")
                      :params []
                      :on-success #(on-success (map <-rpc %))
                      :on-failure #(log/error "failed to fetch chats" 0 -1 %)}]})

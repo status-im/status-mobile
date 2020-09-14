@@ -619,15 +619,13 @@
       (is (= "mailserver-password"
              (-> (mailserver/connect-to-mailserver {:db db})
                  :shh/generate-sym-key-from-password
-                 second
                  :password))))
     (let [mailserver-with-sym-key-db (assoc-in db
                                                [:mailserver/mailservers :eth.staging "mailserverid" :sym-key-id]
                                                "somesymkeyid")]
       (testing "it does not generate a sym key if already present"
         (is (not (-> (mailserver/connect-to-mailserver {:db mailserver-with-sym-key-db})
-                     :shh/generate-sym-key-from-password
-                     first)))))))
+                     :shh/generate-sym-key-from-password)))))))
 
 (deftest check-existing-gaps
   (testing "no gaps"

@@ -22,7 +22,6 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.random :as rand]
             [status-im.utils.utils :as utils]
-            [status-im.waku.core :as waku]
             [taoensso.timbre :as log]))
 
 ;; How do mailserver work ?
@@ -86,12 +85,12 @@
 
 ;; We now wait for a confirmation from the mailserver before marking the message
 ;; as sent.
-(defn update-mailservers! [waku-enabled? enodes]
+(defn update-mailservers! [enodes]
   (json-rpc/call
-   {:method (json-rpc/call-ext-method waku-enabled? "updateMailservers")
-    :params [enodes]
+   {:method     (json-rpc/call-ext-method "updateMailservers")
+    :params     [enodes]
     :on-success #(log/debug "mailserver: update-mailservers success" %)
-    :on-error #(log/error "mailserver: update-mailservers error" %)}))
+    :on-error   #(log/error "mailserver: update-mailservers error" %)}))
 
 (defn remove-peer! [enode]
   (let [args    {:jsonrpc "2.0"
@@ -116,8 +115,8 @@
 
 (re-frame/reg-fx
  :mailserver/update-mailservers
- (fn [[waku-enabled? enodes]]
-   (update-mailservers! waku-enabled? enodes)))
+ (fn [enodes]
+   (update-mailservers! enodes)))
 
 (defn decrease-limit []
   (max constants/min-limit (/ @limit 2)))
@@ -143,11 +142,9 @@
    (reset! limit (decrease-limit))
    (reset! success-counter 0)))
 
-(defn mark-trusted-peer! [waku-enabled? enode]
+(defn mark-trusted-peer! [enode]
   (json-rpc/call
-   {:method  (if waku-enabled?
-               "waku_markTrustedPeer"
-               "shh_markTrustedPeer")
+   {:method "waku_markTrustedPeer"
     :params [enode]
     :on-success
     #(re-frame/dispatch [:mailserver.callback/mark-trusted-peer-success %])
@@ -156,8 +153,8 @@
 
 (re-frame/reg-fx
  :mailserver/mark-trusted-peer
- (fn [[waku-enabled? enode]]
-   (mark-trusted-peer! waku-enabled? enode)))
+ (fn [enode]
+   (mark-trusted-peer! enode)))
 
 (fx/defn generate-mailserver-symkey
   [{:keys [db] :as cofx} {:keys [password id] :as mailserver}]
@@ -166,14 +163,13 @@
                        :generating-sym-key?]
                    true)
      :shh/generate-sym-key-from-password
-     [(waku/enabled? cofx)
-      {:password    password
-       :on-success
-       (fn [_ sym-key-id]
-         (re-frame/dispatch
-          [:mailserver.callback/generate-mailserver-symkey-success
-           mailserver sym-key-id]))
-       :on-error   #(log/error "mailserver: get-sym-key error" %)}]}))
+     {:password password
+      :on-success
+      (fn [_ sym-key-id]
+        (re-frame/dispatch
+         [:mailserver.callback/generate-mailserver-symkey-success
+          mailserver sym-key-id]))
+      :on-error #(log/error "mailserver: get-sym-key error" %)}}))
 
 (defn registered-peer?
   "truthy if the enode is a registered peer"
@@ -189,8 +185,8 @@
   (let [{:keys [address sym-key-id generating-sym-key?] :as mailserver}
         (fetch-current db)]
     (fx/merge cofx
-              {:db (update-mailserver-state db :added)
-               :mailserver/mark-trusted-peer [(waku/enabled? cofx) address]}
+              {:db                           (update-mailserver-state db :added)
+               :mailserver/mark-trusted-peer address}
               (when-not (or sym-key-id generating-sym-key?)
                 (generate-mailserver-symkey mailserver)))))
 
@@ -207,7 +203,7 @@
       ;; Any message sent before this takes effect will not be marked as sent
       ;; probably we should improve the UX so that is more transparent to the
       ;; user
-      :mailserver/update-mailservers [(waku/enabled? cofx) [address]]}
+      :mailserver/update-mailservers [address]}
      (when-not (or sym-key-id generating-sym-key?)
        (generate-mailserver-symkey mailserver)))))
 
@@ -346,14 +342,13 @@
                        request-id)}))))
 
 (defn request-messages!
-  [waku-enabled?
-   {:keys [sym-key-id address]}
+  [{:keys [sym-key-id address]}
    {:keys [topics cursor to from force-to?] :as request}]
   ;; Add some room to from, unless we break day boundaries so that
   ;; messages that have been received after the last request are also fetched
-  (let [actual-from   (adjust-request-for-transit-time from)
-        actual-limit  (or (:limit request)
-                          @limit)]
+  (let [actual-from  (adjust-request-for-transit-time from)
+        actual-limit (or (:limit request)
+                         @limit)]
     (log/info "mailserver: request-messages for: "
               " topics " topics
               " from " actual-from
@@ -363,34 +358,34 @@
               " cursor " cursor
               " limit " actual-limit)
     (json-rpc/call
-     {:method (json-rpc/call-ext-method waku-enabled? "requestMessages")
-      :params [(cond-> {:topics         topics
-                        :mailServerPeer address
-                        :symKeyID       sym-key-id
-                        :timeout        constants/request-timeout
-                        :limit          actual-limit
-                        :cursor         cursor
-                        :from           actual-from}
-                 force-to?
-                 (assoc :to to))]
+     {:method     (json-rpc/call-ext-method "requestMessages")
+      :params     [(cond-> {:topics         topics
+                            :mailServerPeer address
+                            :symKeyID       sym-key-id
+                            :timeout        constants/request-timeout
+                            :limit          actual-limit
+                            :cursor         cursor
+                            :from           actual-from}
+                     force-to?
+                     (assoc :to to))]
       :on-success (fn [request-id]
                     (log/info "mailserver: messages request success for topic "
                               topics "from" from "to" to)
                     (re-frame/dispatch
                      [:mailserver.callback/request-success
                       {:request-id request-id :topics topics}]))
-      :on-error (fn [error]
-                  (log/error "mailserver: messages request error for topic "
-                             topics ": " error)
-                  (utils/set-timeout
-                   #(re-frame/dispatch
-                     [:mailserver.callback/resend-request {:request-id nil}])
-                   constants/backoff-interval-ms))})))
+      :on-error   (fn [error]
+                    (log/error "mailserver: messages request error for topic "
+                               topics ": " error)
+                    (utils/set-timeout
+                     #(re-frame/dispatch
+                       [:mailserver.callback/resend-request {:request-id nil}])
+                     constants/backoff-interval-ms))})))
 
 (re-frame/reg-fx
  :mailserver/request-messages
- (fn [{:keys [mailserver request waku-enabled?]}]
-   (request-messages! waku-enabled? mailserver request)))
+ (fn [{:keys [mailserver request]}]
+   (request-messages! mailserver request)))
 
 (defn get-mailserver-when-ready
   "return the mailserver if the mailserver is ready"
@@ -458,12 +453,11 @@
             requests   (prepare-messages-requests cofx request-to)]
         (log/debug "Mailserver: planned requests " requests)
         (if-let [request (first requests)]
-          {:db (assoc db
-                      :mailserver/pending-requests (count requests)
-                      :mailserver/current-request request
-                      :mailserver/request-to request-to)
-           :mailserver/request-messages {:waku-enabled? (waku/enabled? cofx)
-                                         :mailserver mailserver
+          {:db                          (assoc db
+                                               :mailserver/pending-requests (count requests)
+                                               :mailserver/current-request request
+                                               :mailserver/request-to request-to)
+           :mailserver/request-messages {:mailserver mailserver
                                          :request    request}}
           {:db (dissoc db
                        :mailserver/pending-requests
@@ -784,8 +778,7 @@
           (when-let [mailserver (get-mailserver-when-ready cofx)]
             (let [request-with-cursor (assoc request :cursor cursor)]
               {:db (assoc db :mailserver/current-request request-with-cursor)
-               :mailserver/request-messages {:waku-enabled? (waku/enabled? cofx)
-                                             :mailserver mailserver
+               :mailserver/request-messages {:mailserver mailserver
                                              :request    request-with-cursor}}))
           (let [{:keys [gap chat-id]} request]
             (fx/merge
@@ -911,14 +904,14 @@
                               (map
                                (fn [{:keys [from to id]}]
                                  [id
-                                  {:from (max from
-                                              (- to constants/max-request-range))
-                                   :to        to
-                                   :force-to? true
-                                   :topics    topics
+                                  {:from       (max from
+                                                    (- to constants/max-request-range))
+                                   :to         to
+                                   :force-to?  true
+                                   :topics     topics
                                    :gap-topics topics
-                                   :chat-id   chat-id
-                                   :gap       id}]))
+                                   :chat-id    chat-id
+                                   :gap        id}]))
                               gaps)
         first-request   (val (first requests))
         current-request (:mailserver/current-request db)]
@@ -929,14 +922,13 @@
       (not current-request)
       (-> (assoc-in [:db :mailserver/current-request] first-request)
           (assoc :mailserver/request-messages
-                 {:waku-enabled? (waku/enabled? cofx)
-                  :mailserver    mailserver
-                  :request       first-request})))))
+                 {:mailserver mailserver
+                  :request    first-request})))))
 
 (fx/defn resend-request
   [{:keys [db] :as cofx} {:keys [request-id]}]
   (let [current-request (:mailserver/current-request db)
-        gap-request? (executing-gap-request? db)]
+        gap-request?    (executing-gap-request? db)]
     ;; no inflight request, do nothing
     (when (and current-request
                ;; the request was never successful
@@ -954,7 +946,7 @@
                   {:db (update db :mailserver/current-request dissoc :attempts)}
                   (change-mailserver))
         (let [mailserver (get-mailserver-when-ready cofx)
-              offline? (= :offline (:network-status db))]
+              offline?   (= :offline (:network-status db))]
           (cond
             (and gap-request? offline?)
             {:db (-> db
@@ -969,12 +961,11 @@
               (log/info "mailserver: message request " request-id
                         "expired for mailserver topic" topics "from" from
                         "to" to "cursor" cursor "limit" (decrease-limit))
-              {:db (update-in db [:mailserver/current-request :attempts] inc)
-               :mailserver/decrease-limit   []
+              {:db                        (update-in db [:mailserver/current-request :attempts] inc)
+               :mailserver/decrease-limit []
                :mailserver/request-messages
-               {:waku-enabled? (waku/enabled? cofx)
-                :mailserver    mailserver
-                :request       (assoc request :limit (decrease-limit))}})
+               {:mailserver mailserver
+                :request    (assoc request :limit (decrease-limit))}})
 
             :else
             {:mailserver/decrease-limit []}))))))

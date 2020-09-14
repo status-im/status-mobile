@@ -2,7 +2,6 @@
   (:require [clojure.set :as clojure.set]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
-            [status-im.waku.core :as waku]
             [taoensso.timbre :as log]))
 
 (defn ->rpc [{:keys [content] :as message}]
@@ -43,61 +42,60 @@
              :outgoing (boolean (:outgoingStatus message)))
       (dissoc :ensName :chatId :text :rtl :responseTo :image :sticker :lineCount :parsedText)))
 
-(defn update-outgoing-status-rpc [waku-enabled? message-id status]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method waku-enabled? "updateMessageOutgoingStatus")
+(defn update-outgoing-status-rpc [message-id status]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "updateMessageOutgoingStatus")
                      :params [message-id status]
                      :on-success #(log/debug "updated message outgoing stauts" message-id status)
                      :on-failure #(log/error "failed to update message outgoing status" message-id status %)}]})
 
-(defn messages-by-chat-id-rpc [waku-enabled?
-                               chat-id
+(defn messages-by-chat-id-rpc [chat-id
                                cursor
                                limit
                                on-success
                                on-failure]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method waku-enabled? "chatMessages")
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "chatMessages")
                      :params [chat-id cursor limit]
                      :on-success (fn [result]
                                    (on-success (update result :messages #(map <-rpc %))))
                      :on-failure on-failure}]})
 
-(defn mark-seen-rpc [waku-enabled? chat-id ids on-success]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method waku-enabled? "markMessagesSeen")
+(defn mark-seen-rpc [chat-id ids on-success]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "markMessagesSeen")
                      :params [chat-id ids]
                      :on-success #(do
                                     (log/debug "successfully marked as seen" %)
                                     (when on-success (on-success chat-id ids %)))
                      :on-failure #(log/error "failed to get messages" %)}]})
 
-(defn delete-message-rpc [waku-enabled? id]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method waku-enabled? "deleteMessage")
+(defn delete-message-rpc [id]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "deleteMessage")
                      :params [id]
                      :on-success #(log/debug "successfully deleted message" id)
                      :on-failure #(log/error "failed to delete message" % id)}]})
 
-(defn delete-messages-from-rpc [waku-enabled? author]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method waku-enabled? "deleteMessagesFrom")
+(defn delete-messages-from-rpc [author]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "deleteMessagesFrom")
                      :params [author]
                      :on-success #(log/debug "successfully deleted messages from" author)
                      :on-failure #(log/error "failed to delete messages from" % author)}]})
 
-(defn delete-messages-by-chat-id-rpc [waku-enabled? chat-id]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method waku-enabled? "deleteMessagesByChatID")
+(defn delete-messages-by-chat-id-rpc [chat-id]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "deleteMessagesByChatID")
                      :params [chat-id]
                      :on-success #(log/debug "successfully deleted messages by chat-id" chat-id)
                      :on-failure #(log/error "failed to delete messages by chat-id" % chat-id)}]})
 
 (fx/defn delete-message [cofx id]
-  (delete-message-rpc (waku/enabled? cofx) id))
+  (delete-message-rpc id))
 
 (fx/defn delete-messages-from [cofx author]
-  (delete-messages-from-rpc (waku/enabled? cofx) author))
+  (delete-messages-from-rpc author))
 
 (fx/defn mark-messages-seen [cofx chat-id ids on-success]
-  (mark-seen-rpc (waku/enabled? cofx) chat-id ids on-success))
+  (mark-seen-rpc chat-id ids on-success))
 
 (fx/defn update-outgoing-status [cofx message-id status]
-  (update-outgoing-status-rpc (waku/enabled? cofx) message-id status))
+  (update-outgoing-status-rpc message-id status))
 
 (fx/defn delete-messages-by-chat-id [cofx chat-id]
-  (delete-messages-by-chat-id-rpc (waku/enabled? cofx) chat-id))
+  (delete-messages-by-chat-id-rpc chat-id))

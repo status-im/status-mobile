@@ -29,8 +29,7 @@
             [status-im.wallet.prices :as prices]
             [status-im.acquisition.core :as acquisition]
             [taoensso.timbre :as log]
-            [status-im.data-store.invitations :as data-store.invitations]
-            [status-im.waku.core :as waku]))
+            [status-im.data-store.invitations :as data-store.invitations]))
 
 (re-frame/reg-fx
  ::login
@@ -168,7 +167,7 @@
 
 (fx/defn get-group-chat-invitations [cofx]
   {::json-rpc/call
-   [{:method     (json-rpc/call-ext-method (waku/enabled? cofx) "getGroupChatInvitations")
+   [{:method     (json-rpc/call-ext-method "getGroupChatInvitations")
      :on-success #(re-frame/dispatch [::initialize-invitations %])}]})
 
 (fx/defn get-settings-callback
@@ -243,11 +242,11 @@
 (fx/defn create-only-events
   [{:keys [db] :as cofx}]
   (let [{:keys [multiaccount multiaccounts :multiaccount/accounts]} db
-        {:keys [creating?]} (:multiaccounts/login db)
-        recovering?         (get-in db [:intro-wizard :recovering?])
-        first-account?      (and creating?
-                                 (not recovering?)
-                                 (empty? multiaccounts))]
+        {:keys [creating?]}                                         (:multiaccounts/login db)
+        recovering?                                                 (get-in db [:intro-wizard :recovering?])
+        first-account?                                              (and creating?
+                                                                         (not recovering?)
+                                                                         (empty? multiaccounts))]
     (fx/merge cofx
               {:db                   (-> db
                                          (dissoc :multiaccounts/login)
@@ -260,7 +259,7 @@
                                            ;;so here we set it at 1 already so that it passes the check once it has
                                            ;;been initialized
                                           :filters/initialized 1))
-               :filters/load-filters [[(:waku-enabled multiaccount) []]]}
+               :filters/load-filters [[]]}
               (finish-keycard-setup)
               (when first-account?
                 (acquisition/create))
