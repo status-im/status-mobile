@@ -89,12 +89,14 @@
        :accessory-text      (or (:nickname names) (i18n/label :t/none))
        :on-press            #(re-frame/dispatch [:navigate-to :nickname])
        :chevron             true}]
-     [quo/list-item
-      {:title               (i18n/label :t/mute)
-       :active               muted?
-       :accessibility-label :mute-chat
-       :on-press            #(re-frame/dispatch [::chat.models/mute-chat-toggled public-key (not muted?)])
-       :accessory           :switch}]]))
+     ;; Mute chat is only supported on ios for now
+     (when platform/ios?
+       [quo/list-item
+        {:title               (i18n/label :t/mute)
+         :active               muted?
+         :accessibility-label :mute-chat
+         :on-press            #(re-frame/dispatch [::chat.models/mute-chat-toggled public-key (not muted?)])
+         :accessory           :switch}])]))
 
 (defn chat-settings [contact]
   [react/view
@@ -205,8 +207,5 @@
                                :on-press            action}]))]
           [react/view styles/contact-profile-details-container
            [profile-details contact]
-          ;; Mute chat is only supported on ios for now
-           (when platform/ios?
-             [react/view {}
-              [chat-settings contact]])]
+           [chat-settings contact]]
           [block-contact-action contact]]]))))
