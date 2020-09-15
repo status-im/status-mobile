@@ -366,14 +366,23 @@ class TestChatManagement(SingleDeviceTestCase):
         chat_name = home.get_random_chat_name()
         public_chat = home.join_public_chat(chat_name)
         public_chat.get_back_to_home_view()
-        for public_key in (basic_user['public_key'], ens_user_ropsten['ens']):
+        for public_key in (basic_user['public_key'], ens_user_ropsten['ens'], dummy_user['public_key']):
             chat = home.add_contact(public_key)
             chat.get_back_to_home_view()
+        profile = home.profile_button.click()
+        profile.open_contact_from_profile(dummy_user['username'])
+        nickname = 'dummy_user'
+        public_chat.set_nickname(nickname)
+        profile.home_button.click()
+        public_chat.get_back_to_home_view()
 
         search_list = {
             basic_user['username']: basic_user['username'],
             ens_user_ropsten['username']: ens_user_ropsten['ens'],
-            chat_name: chat_name
+            chat_name: chat_name,
+            nickname: nickname,
+            dummy_user['username']: nickname,
+            ens_user_ropsten['ens']: ens_user_ropsten['ens']
         }
 
         home.just_fyi('Can search for public chat name, ens name, username')
@@ -523,7 +532,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5332)
     @marks.critical
-    def test_add_and_remove_contact_from_public_chat(self):
+    def test_add_and_remove_contact_with_nickname_from_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()
@@ -546,31 +555,47 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
                         chat_1.element_by_text(username, 'text'),
                         chat_1.add_to_contacts,
                         chat_1.profile_send_message,
-                        chat_1.profile_address_text]:
+                        chat_1.profile_address_text,
+                        chat_1.profile_nickname]:
             if not element.scroll_to_element():
                 self.errors.append('%s is not visible' % element.name)
+        if chat_1.profile_nickname.text != 'None':
+            self.errors.append('Default nickname is %s instead on "None"' % chat_1.profile_nickname.text)
+
+        device_1.just_fyi('Set nickname for user without adding him to contacts, check it in public chat')
+        nickname = 'Name1'
+        chat_1.set_nickname(nickname)
+        chat_1.back_button.click()
+        expected_username = '%s %s' % (nickname, username)
+        if chat_element.username.text != expected_username:
+            self.errors.append('Username %s in public chat does not match expected %s' % (chat_element.username.text, expected_username))
 
         device_1.just_fyi('Add user to contacts, check contact list in Profile')
+        chat_element.member_photo.click()
         chat_1.add_to_contacts.click()
         if not chat_1.remove_from_contacts.is_element_displayed():
-            self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
+             self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
         chat_1.get_back_to_home_view()
         profile_1 = chat_1.profile_button.click()
-        userprofile = profile_1.open_contact_from_profile(username)
+        userprofile = profile_1.open_contact_from_profile(nickname)
         if not userprofile.remove_from_contacts.is_element_displayed():
-            self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
+            self.errors.append("'Add to contacts' is not changed to 'Remove from contacts' in profile contacts")
         profile_1.get_back_to_home_view()
 
         device_1.just_fyi('Check that user is added to contacts below "Start new chat" and you redirected to 1-1 on tap')
         home_1.plus_button.click()
         home_1.start_new_chat_button.click()
-        if not home_1.element_by_text(username).is_element_displayed():
-            home_1.driver.fail('List of contacts below "Start new chat" does not contain added user')
+        for name in (nickname, username):
+            if not home_1.element_by_text(name).is_element_displayed():
+                home_1.driver.fail('List of contacts below "Start new chat" does not contain added user')
         home_1.element_by_text(username).click()
         if not chat_1.chat_message_input.is_element_displayed():
             home_1.driver.fail('No redirect to 1-1 chat if tap on Contact below "Start new chat"')
+        for element in (chat_1.chat_message_input, chat_1.element_by_text(nickname)):
+            if not element.is_element_displayed():
+                self.errors.append('Expected element is not found in 1-1 after adding user to contacts from profile')
         if chat_1.add_to_contacts.is_element_displayed():
-            self.errors.append('"Add to contacts" button is shown in 1-1 after adding user to contacts from profile')
+             self.errors.append('"Add to contacts" button is shown in 1-1 after adding user to contacts from profile')
 
         device_1.just_fyi('Remove user from contacts')
         chat_1.profile_button.click()
@@ -578,6 +603,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         userprofile.remove_from_contacts.click()
         if userprofile.remove_from_contacts.is_element_displayed():
             self.errors.append("'Remove from contacts' is not changed to 'Add to contacts'")
+        if chat_1.profile_nickname.text != nickname:
+            self.errors.append("Nickname is changed after removing user from contacts")
 
         device_1.just_fyi('Check that user is removed from contact list in profile')
         userprofile.back_button.click()
@@ -589,7 +616,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         home_1.get_back_to_home_view()
         home_1.plus_button.click()
         home_1.start_new_chat_button.click()
-        if home_1.get_username_below_start_new_chat_button(username).is_element_displayed():
+        if home_1.get_username_below_start_new_chat_button(nickname).is_element_displayed():
             self.errors.append('List of contacts below "Start new chat" contains removed user')
         self.errors.verify_no_errors()
 

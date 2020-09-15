@@ -232,8 +232,8 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         for message in (yesterday, quiet_time_yesterday):
             if not chat.element_by_text_part(message).is_element_displayed():
                 self.driver.fail('"%s" is not shown' % message)
-        chat.element_starts_with_text("↓ Fetch more messages").click()
-        chat.wait_for_element_starts_with_text("↓ Fetch more messages", 30)
+        chat.element_by_text_part("↓ Fetch more messages").wait_and_click(120)
+        chat.element_by_text_part("↓ Fetch more messages").wait_for_visibility_of_element(180)
         for message in (before_yesterday, quiet_time_before_yesterday):
             if not chat.element_by_text_part(message).is_element_displayed():
                 self.driver.fail('"%s" is not shown' % message)

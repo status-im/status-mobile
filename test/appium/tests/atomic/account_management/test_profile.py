@@ -6,6 +6,7 @@ from tests import marks, bootnode_address, mailserver_address, camera_access_err
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten
 from views.sign_in_view import SignInView
+from time import time
 
 
 class TestProfileSingleDevice(SingleDeviceTestCase):
@@ -115,7 +116,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.just_fyi("Enable mobile network to see popup and stop syncing")
         sign_in_view.toggle_mobile_data()
         sign_in_view.wait_for_element_starts_with_text('Stop syncing').click()
-        if not sign_in_view.wait_for_element_starts_with_text(offline_banner_text, 60):
+        if not sign_in_view.wait_for_element_starts_with_text(offline_banner_text, 120):
             self.driver.fail('No popup about offline history is shown')
         sign_in_view.element_by_text_part(offline_banner_text).click()
         for item in offline_banner_text, "Start syncing", "Go to settings":
@@ -1072,7 +1073,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6226)
     @marks.critical
-    def test_ens_in_public_and_1_1_chats(self):
+    def test_ens_and_nickname_in_public_and_1_1_chats(self):
         self.create_drivers(2)
         device_1, device_2 = self.drivers[0], self.drivers[1]
         sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
@@ -1108,34 +1109,58 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         chat_1 = home_1.join_public_chat(chat_name)
         chat_1.get_back_to_home_view()
         home_1.profile_button.click()
+        ens_name = '@' + user_1['ens']
         profile_1.element_by_text('Your ENS name').click()
-        if profile_1.username_in_ens_chat_settings_text.text != '@' + user_1['ens']:
+        if profile_1.username_in_ens_chat_settings_text.text != ens_name:
             self.errors.append('ENS username is not shown in ENS usernames Chat Settings after enabling')
         profile_1.back_button.click()
         profile_1.home_button.click()
         home_1.get_chat('#' + chat_name).click()
         message_text_2 = 'message test text 1'
         chat_1.send_message(message_text_2)
-        if not chat_2.wait_for_element_starts_with_text('@' + user_1['ens']):
+        if not chat_2.wait_for_element_starts_with_text(ens_name):
             self.errors.append('ENS username is not shown in public chat')
 
         home_2.just_fyi('check that ENS name is shown in 1-1 chat without adding user as contact in header, profile, options')
         chat_2.get_back_to_home_view()
         chat_2_one_to_one = home_2.add_contact(ens_user['public_key'], False)
-        if chat_2_one_to_one.user_name_text.text != '@' + user_1['ens']:
+        if chat_2_one_to_one.user_name_text.text != ens_name:
             self.errors.append('ENS username is not shown in 1-1 chat header')
         chat_2_one_to_one.chat_options.click()
-        if not chat_2_one_to_one.element_by_text('@' + user_1['ens']).is_element_displayed():
+        if not chat_2_one_to_one.element_by_text(ens_name).is_element_displayed():
             self.errors.append('ENS username is not shown in 1-1 chat options')
         chat_2_one_to_one.view_profile_button.click()
-        if not chat_2_one_to_one.element_by_text('@' + user_1['ens']).is_element_displayed():
+        if not chat_2_one_to_one.element_by_text(ens_name).is_element_displayed():
             self.errors.append('ENS username is not shown in user profile')
 
         home_2.just_fyi('add user to contacts and check that ENS name is shown in contact')
         chat_2_one_to_one.profile_add_to_contacts.click()
         profile_2 = chat_2_one_to_one.profile_button.click()
-        profile_2.contacts_button.click()
-        if not profile_2.element_by_text('@' + user_1['ens']).is_element_displayed():
-            self.errors.append('ENS username is not shown in contacts')
+        profile_2.open_contact_from_profile(ens_name)
+
+        home_2.just_fyi('set nickname and recheck username in 1-1 header, profile, options, contacts')
+        nickname = 'test user' + str(round(time()))
+        chat_2.set_nickname(nickname)
+        profile_2.back_button.click()
+        for name in (nickname, ens_name):
+            if not profile_2.element_by_text(name).is_element_displayed():
+                self.errors.append('%s is not shown in contact list' % name)
+        profile_2.home_button.click()
+        if not chat_2_one_to_one.element_by_text(nickname).is_element_displayed():
+            self.errors.append('Nickname for user with ENS is not shown in user profile')
+        chat_2.back_button.click()
+        if chat_2_one_to_one.user_name_text.text != nickname:
+            self.errors.append('Nickname for user with ENS is not shown in 1-1 chat header')
+        chat_2_one_to_one.chat_options.click()
+        if not chat_2_one_to_one.element_by_text(nickname).is_element_displayed():
+            self.errors.append('Nickname for user with ENS is not shown in 1-1 chat options')
+
+        home_2.just_fyi('check nickname in public chat')
+        chat_2.get_back_to_home_view()
+        home_2.get_chat('#' + chat_name).click()
+        chat_element = chat_2.chat_element_by_text(message_text_2)
+        chat_element.find_element()
+        if chat_element.username.text != '%s %s' % (nickname, ens_name):
+            self.errors.append('Nickname for user with ENS is not shown in public chat')
 
         self.errors.verify_no_errors()
