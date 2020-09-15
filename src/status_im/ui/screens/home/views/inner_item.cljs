@@ -122,7 +122,7 @@
                     :accessibility-label :unviewed-messages-public}]
        [badge/message-counter unviewed-messages-count])]))
 
-(def icon-style
+(defn icon-style []
   {:color           colors/black
    :width           15
    :height          15
@@ -147,13 +147,13 @@
                                                :align-items    :center}
                                    (cond
                                      muted
-                                     [icons/icon :main-icons/tiny-muted (assoc icon-style :color colors/gray)]
+                                     [icons/icon :main-icons/tiny-muted (assoc (icon-style) :color colors/gray)]
                                      private-group?
-                                     [icons/icon :main-icons/tiny-group icon-style]
+                                     [icons/icon :main-icons/tiny-group (icon-style)]
                                      public-group?
-                                     [icons/icon :main-icons/tiny-public icon-style]
+                                     [icons/icon :main-icons/tiny-public (icon-style)]
                                      :else
-                                     [icons/icon :main-icons/tiny-new-contact icon-style])
+                                     [icons/icon :main-icons/tiny-new-contact (icon-style)])
                                    [quo/text {:weight              :medium
                                               :color               (when muted :secondary)
                                               :accessibility-label :chat-name-text
