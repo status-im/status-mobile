@@ -176,8 +176,7 @@
        [quo/animated-header
         {:extended-header   total-value
          :use-insets        true
-         :refresh              (rc/refresh-control)
-         :on-scroll-begin-drag rc/refresh-action
+         :refresh           rc/refresh-control
          :right-accessories [{:on-press            #(re-frame/dispatch
                                                      [::qr-scanner/scan-code
                                                       {:handler :wallet.send/qr-scanner-result}])

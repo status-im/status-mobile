@@ -4,12 +4,10 @@
             [quo.react-native :as rn]))
 
 (defn refresh-action []
-  (fn []
-    (when (false? @(re-frame/subscribe [:prices-loading?]))
-      (re-frame/dispatch [:wallet.ui/pull-to-refresh]))))
+  (re-frame/dispatch-sync [:wallet.ui/pull-to-refresh])
+  (reagent/flush))
 
-(defn refresh-control
-  []
-  (fn []
-    (reagent/as-element
-     [rn/refresh-control {:refreshing @(re-frame/subscribe [:prices-loading?])}])))
+(defn refresh-control []
+  (reagent/as-element
+   [rn/refresh-control {:refreshing @(re-frame/subscribe [:prices-loading?])
+                        :onRefresh  refresh-action}]))
