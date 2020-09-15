@@ -5,10 +5,6 @@
                [:italic constants/regx-italic]
                [:backquote constants/regx-backquote]])
 
-(defn should-collapse? [text line-count]
-  (or (<= constants/chars-collapse-threshold (count text))
-      (<= constants/lines-collapse-threshold (inc line-count))))
-
 (defn emoji-only-content?
   "Determines if text is just an emoji"
   [{:keys [text response-to]}]

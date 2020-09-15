@@ -236,28 +236,72 @@
      [react/view
       [render-parsed-text message (:parsed-text content)]]]]])
 
+(def message-height-px 200)
+(def max-message-height-px 150)
+
+(defn on-long-press-fn [on-long-press message content]
+  (on-long-press
+   [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+     :label    (i18n/label :t/message-reply)}
+    {:on-press #(react/copy-to-clipboard
+                 (components.reply/get-quoted-text-with-mentions
+                  (get content :parsed-text)))
+     :label    (i18n/label :t/sharing-copy-to-clipboard)}]))
+
+(defn collapsible-text-message [_ _]
+  (let [collapsed? (reagent/atom false)
+        collapsible? (reagent/atom false)]
+    (fn [{:keys [content outgoing current-public-key public?] :as message} on-long-press modal]
+      [react/touchable-highlight
+       (when-not modal
+         {:on-press      (fn [_]
+                           (react/dismiss-keyboard!))
+          :on-long-press (fn []
+                           (if @collapsed?
+                             (do (reset! collapsed? false)
+                                 (js/setTimeout #(on-long-press-fn on-long-press message content) 200))
+                             (on-long-press-fn on-long-press message content)))})
+       [react/view (assoc (style/message-view message)
+                          :remove-clipped-subviews (not outgoing)
+                          :max-height (when-not (or outgoing modal)
+                                        (if @collapsible?
+                                          (if @collapsed? message-height-px nil)
+                                          message-height-px)))
+        (let [response-to (:response-to content)]
+          [react/view {:on-layout
+                       #(when (and (> (.-nativeEvent.layout.height ^js %) max-message-height-px)
+                                   (not @collapsible?)
+                                   (not outgoing)
+                                   (not modal))
+                          (reset! collapsed? true)
+                          (reset! collapsible? true))}
+           (when (and (seq response-to) (:quoted-message message))
+             [quoted-message response-to (:quoted-message message) outgoing current-public-key public?])
+           [render-parsed-text-with-timestamp message (:parsed-text content)]])
+        (when-not @collapsed?
+          [message-timestamp message true])
+        (when (and @collapsible? (not modal))
+          (if @collapsed?
+            [react/touchable-highlight
+             {:on-press #(swap! collapsed? not)
+              :style {:position :absolute  :bottom 0 :left 0 :right 0 :height 72}}
+             [react/linear-gradient {:colors [(str colors/blue-light "00") colors/blue-light]
+                                     :start {:x 0 :y 0} :end {:x 0 :y 0.9}}
+              [react/view {:height 72 :align-self :center :justify-content :flex-end
+                           :padding-bottom 10}
+               [react/view (style/collapse-button)
+                [vector-icons/icon :main-icons/dropdown
+                 {:color colors/white}]]]]]
+            [react/touchable-highlight {:on-press #(swap! collapsed? not)
+                                        :style {:align-self :center :margin 5}}
+             [react/view (style/collapse-button)
+              [vector-icons/icon :main-icons/dropdown-up
+               {:color colors/white}]]]))]])))
+
 (defmethod ->message constants/content-type-text
-  [{:keys [content outgoing current-public-key public?] :as message} {:keys [on-long-press modal]
-                                                                      :as   reaction-picker}]
+  [message {:keys [on-long-press modal] :as reaction-picker}]
   [message-content-wrapper message
-   [react/touchable-highlight (when-not modal
-                                {:on-press      (fn [_]
-                                                  (react/dismiss-keyboard!))
-                                 :on-long-press (fn []
-                                                  (on-long-press
-                                                   [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-                                                     :label    (i18n/label :t/message-reply)}
-                                                    {:on-press #(react/copy-to-clipboard
-                                                                 (components.reply/get-quoted-text-with-mentions
-                                                                  (get content :parsed-text)))
-                                                     :label    (i18n/label :t/sharing-copy-to-clipboard)}]))})
-    [react/view (style/message-view message)
-     (let [response-to (:response-to content)]
-       [react/view
-        (when (and (seq response-to) (:quoted-message message))
-          [quoted-message response-to (:quoted-message message) outgoing current-public-key public?])
-        [render-parsed-text-with-timestamp message (:parsed-text content)]])
-     [message-timestamp message true]]]
+   [collapsible-text-message message on-long-press modal]
    reaction-picker])
 
 (defmethod ->message constants/content-type-status

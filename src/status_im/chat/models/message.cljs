@@ -2,7 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.chat.models :as chat-model]
             [status-im.chat.models.loading :as chat-loading]
-            [status-im.chat.models.message-content :as message-content]
             [status-im.chat.models.message-list :as message-list]
             [status-im.constants :as constants]
             [status-im.data-store.messages :as data-store.messages]
@@ -14,16 +13,10 @@
             [taoensso.timbre :as log]))
 
 (defn- prepare-message
-  [{:keys [content content-type] :as message} current-chat?]
+  [message current-chat?]
   (cond-> message
     current-chat?
-    (assoc :seen true)
-
-    (and (= constants/content-type-text content-type)
-         (message-content/should-collapse?
-          (:text content)
-          (:line-count content)))
-    (assoc :should-collapse? true)))
+    (assoc :seen true)))
 
 (fx/defn rebuild-message-list
   [{:keys [db]} chat-id]

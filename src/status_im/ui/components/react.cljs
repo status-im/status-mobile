@@ -9,7 +9,8 @@
             ["react-native-image-crop-picker" :default image-picker]
             ["react-native-safe-area-context" :as safe-area-context
              :refer (SafeAreaProvider SafeAreaInsetsContext)]
-            ["@react-native-community/clipboard" :default Clipboard])
+            ["@react-native-community/clipboard" :default Clipboard]
+            ["react-native-linear-gradient" :default LinearGradient])
   (:require-macros [status-im.utils.views :as views]))
 
 (def native-modules (.-NativeModules react-native))
@@ -31,6 +32,8 @@
 (def image-class (reagent/adapt-react-class (.-Image react-native)))
 
 (defn image-get-size [uri callback] (.getSize (.-Image react-native) uri callback))
+
+(def linear-gradient (reagent/adapt-react-class LinearGradient))
 
 (defn valid-source? [source]
   (or (not (map? source))

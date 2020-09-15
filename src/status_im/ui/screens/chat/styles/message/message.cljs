@@ -3,7 +3,8 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as photos]
-            [status-im.ui.components.typography :as typography]))
+            [status-im.ui.components.typography :as typography]
+            [quo.design-system.colors :as quo.colors]))
 
 (defn style-message-text
   [outgoing]
@@ -109,10 +110,20 @@
    :margin-right 12
    :margin-top   (if incoming-group 4 0)})
 
+(defn collapse-button []
+  {:height         24 :width 24 :background-color colors/blue
+   :border-radius  12 :align-items :center :justify-content :center
+   :elevation      4
+   :shadow-opacity 1
+   :shadow-radius  16
+   :shadow-color   (:shadow-01 @quo.colors/theme)
+   :shadow-offset  {:width 0 :height 4}})
+
 (defn message-view
   [{:keys [content-type outgoing group-chat last-in-group?]}]
   (merge
-   {:border-top-left-radius     16
+   {:overflow :hidden
+    :border-top-left-radius     16
     :border-top-right-radius    16
     :border-bottom-right-radius 16
     :border-bottom-left-radius  16
