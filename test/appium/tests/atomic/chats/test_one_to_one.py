@@ -267,7 +267,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device2_one_to_one_chat.cross_icon.click()
         device2_one_to_one_chat.chat_item.long_press_element()
         device2_one_to_one_chat.element_by_text('View Details').click()
-        if not device2_one_to_one_chat.profile_block_contact.is_element_displayed():
+        if not device2_one_to_one_chat.profile_details.is_element_displayed():
             self.errors.append('No navigate to user profile after tapping View Details on sticker message')
 
 
