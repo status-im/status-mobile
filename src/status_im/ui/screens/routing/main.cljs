@@ -115,6 +115,10 @@
         :back-handler :noop
         :insets       {:bottom true}
         :component    notifications-settings/notifications-settings}
+       {:name         :notifications-advanced-settings
+        :back-handler :noop
+        :insets       {:bottom true}
+        :component    notifications-settings/notifications-advanced-settings}
        {:name         :notifications-onboarding
         :back-handler :noop
         :insets       {:bottom true}

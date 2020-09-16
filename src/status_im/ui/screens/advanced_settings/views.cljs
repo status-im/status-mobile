@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [quo.core :as quo]
+            [status-im.utils.platform :as platform]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar])
@@ -55,6 +56,13 @@
     :on-press
     #(re-frame/dispatch [:navigate-to :bootnodes-settings])
     :chevron             true}
+   (when platform/ios?
+     {:size                :small
+      :title               (i18n/label :t/notification-settings)
+      :accessibility-label :advanced-notification-settings
+      :on-press
+      #(re-frame/dispatch [:navigate-to :notifications-advanced-settings])
+      :chevron             true})
    {:size                   :small
     :title                   (i18n/label :t/waku-enabled)
     :accessibility-label     :waku-enabled-settings-switch

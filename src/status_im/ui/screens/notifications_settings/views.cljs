@@ -15,9 +15,7 @@
 
 (defn notifications-settings []
   (let [{:keys [remote-push-notifications-enabled?
-                send-push-notifications?
                 push-notifications-block-mentions?
-                push-notifications-server-enabled?
                 push-notifications-from-contacts-only?]}
         @(re-frame/subscribe [:multiaccount])]
     [react/view {:flex 1}
@@ -26,7 +24,7 @@
                          :content-container-style {:padding-vertical 8}}
       [quo/list-item
        {:size                :small
-        :title               (i18n/label :t/notifications)
+        :title               (i18n/label :t/show-notifications)
         :accessibility-label :notifications-button
         :active              remote-push-notifications-enabled?
         :on-press            #(re-frame/dispatch [::notifications/switch (not remote-push-notifications-enabled?)])
@@ -52,7 +50,17 @@
                                   (not push-notifications-block-mentions?))
         :on-press            #(re-frame/dispatch
                                [::notifications/switch-block-mentions (not push-notifications-block-mentions?)])
-        :accessory           :switch}]
+        :accessory           :switch}]]]))
+
+(defn notifications-advanced-settings []
+  (let [{:keys [remote-push-notifications-enabled?
+                send-push-notifications?
+                push-notifications-server-enabled?]}
+        @(re-frame/subscribe [:multiaccount])]
+    [react/view {:flex 1}
+     [topbar/topbar {:title :t/notification-settings}]
+     [react/scroll-view {:style                   {:flex 1}
+                         :content-container-style {:padding-vertical 8}}
       [quo/list-item
        {:size                :small
         :title               (i18n/label :t/send-push-notifications)
@@ -61,6 +69,9 @@
         :on-press            #(re-frame/dispatch
                                [::notifications/switch-send-push-notifications (not send-push-notifications?)])
         :accessory           :switch}]
+      [quo/list-footer
+       (i18n/label :t/send-push-notifications-description)]
+      [quo/separator {:style {:margin-vertical  8}}]
       [quo/list-item
        {:size                :small
         :title               (i18n/label :t/push-notifications-server-enabled)
