@@ -114,6 +114,41 @@
    :width  16
    :height 16})
 
+(def blocked-access-container
+  {:align-items :center
+   :margin      16})
+
+(def blocked-access-icon-container
+  {:height           40
+   :width            40
+   :background-color colors/blue-light
+   :border-radius    20
+   :align-items      :center
+   :justify-content  :center})
+
+(def blocked-access-camera-icon
+  {:color  colors/blue
+   :width  20
+   :height 20})
+
+(def blocked-access-text-container
+  {:margin-top 16})
+
+(def blocked-access-text
+  {:text-align :center})
+
+(def blocked-access-buttons-container
+  {:flex-direction  :row
+   :justify-content :center
+   :margin-top      16})
+
+(def blocked-access-button-wrapper
+  {:flex              1
+   :margin-horizontal 8})
+
+(def blocked-access-button
+  {:margin-horizontal 8})
+
 (def permissions-panel-wallet-icon-container
   {:height           40
    :width            40

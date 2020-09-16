@@ -14,7 +14,7 @@
   [quo/separator {:style {:margin-vertical  8}}])
 
 (views/defview privacy-and-security []
-  (views/letsubs [{:keys [mnemonic preview-privacy?]} [:multiaccount]
+  (views/letsubs [{:keys [mnemonic preview-privacy? webview-allow-permission-requests?]} [:multiaccount]
                   supported-biometric-auth [:supported-biometric-auth]
                   auth-method              [:auth-method]
                   keycard?                 [:keycard-multiaccount?]]
@@ -63,6 +63,16 @@
                       :on-press                #(re-frame/dispatch
                                                  [:multiaccounts.ui/preview-privacy-mode-switched
                                                   ((complement boolean) preview-privacy?)])}]
+      (when platform/android?
+        [quo/list-item {:size                    :small
+                        :title                   (i18n/label :t/webview-camera-permission-requests)
+                        :active                  webview-allow-permission-requests?
+                        :accessory               :switch
+                        :subtitle                (i18n/label :t/webview-camera-permission-requests-subtitle)
+                        :subtitle-max-lines      2
+                        :on-press                #(re-frame/dispatch
+                                                   [:multiaccounts.ui/webview-permission-requests-switched
+                                                    ((complement boolean) webview-allow-permission-requests?)])}])
       ;; TODO(rasom): remove this condition when kk support will be added
       (when-not keycard?
         [separator])

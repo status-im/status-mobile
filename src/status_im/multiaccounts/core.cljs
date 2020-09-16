@@ -103,6 +103,13 @@
              :preview-privacy? (boolean private?)
              {})))
 
+(fx/defn switch-webview-permission-requests?
+  [{:keys [db] :as cofx} enabled?]
+  (multiaccounts.update/multiaccount-update
+   cofx
+   :webview-allow-permission-requests? (boolean enabled?)
+   {}))
+
 (fx/defn switch-preview-privacy-mode-flag
   [{:keys [db]}]
   (let [private? (get-in db [:multiaccount :preview-privacy?])]

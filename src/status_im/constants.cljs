@@ -122,7 +122,8 @@
    :currency :usd
    :appearance 0
    :waku-enabled true
-   :log-level config/log-level})
+   :log-level config/log-level
+   :webview-allow-permission-requests? false})
 
 (defn default-visible-tokens [chain]
   (get-in default-multiaccount [:wallet/visible-tokens chain]))

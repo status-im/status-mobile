@@ -120,6 +120,11 @@
    (multiaccounts/switch-preview-privacy-mode cofx private?)))
 
 (handlers/register-handler-fx
+ :multiaccounts.ui/webview-permission-requests-switched
+ (fn [cofx [_ enabled?]]
+   (multiaccounts/switch-webview-permission-requests? cofx enabled?)))
+
+(handlers/register-handler-fx
  :multiaccounts.ui/wallet-set-up-confirmed
  (fn [cofx _]
    (multiaccounts/confirm-wallet-set-up cofx)))
