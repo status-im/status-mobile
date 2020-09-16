@@ -427,8 +427,8 @@ class ChatElementByText(BaseText):
         class TimeStampText(BaseText):
             def __init__(self, driver, parent_locator: str):
                 super(TimeStampText, self).__init__(driver)
-                text = "//*[1]/*[1]/*[6]"
-                self.locator = self.Locator.xpath_selector(parent_locator + text)
+                suffix = "//android.widget.TextView)[last()]"
+                self.locator = self.Locator.xpath_selector("(" + parent_locator + suffix)
 
         return TimeStampText(self.driver, self.locator.value)
 
@@ -897,6 +897,10 @@ class ChatView(BaseView):
     def send_message(self, message: str = 'test message'):
         self.chat_message_input.send_keys(message)
         self.send_message_button.click()
+
+    def copy_message_text(self, message_text):
+        self.element_by_text_part(message_text).long_press_element()
+        self.element_by_text('Copy').click()
 
     def quote_message(self, message = str):
         self.element_by_text_part(message).long_press_element()

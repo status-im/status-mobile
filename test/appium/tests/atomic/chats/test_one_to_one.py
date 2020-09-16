@@ -630,29 +630,34 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
         home.join_public_chat(''.join(random.choice(string.ascii_lowercase) for _ in range(7)))
         chat = sign_in.get_chat_view()
-        message_text = 'mmmeowesage_text'
+        message_text = {'text_message': 'mmmeowesage_text'}
+        formatted_message = {'message_with_link':'https://status.im',
+                        'message_with_tag': '#successishere'}
         message_input = chat.chat_message_input
-        message_input.send_keys(message_text)
+        message_input.send_keys(message_text['text_message'])
         chat.send_message_button.click()
 
-        chat.element_by_text_part(message_text).long_press_element()
-        chat.element_by_text('Copy').click()
+        chat.copy_message_text(message_text['text_message'])
 
         message_input.paste_text_from_clipboard()
-        if message_input.text != message_text:
-            self.errors.append('Message text was not copied in a public chat')
+        if message_input.text != message_text['text_message']:
+            self.errors.append('Message %s text was not copied in a public chat' % message_text['text_message'])
+        message_input.clear()
 
-        chat.get_back_to_home_view()
-        home.add_contact(transaction_senders['M']['public_key'])
-        message_input.send_keys(message_text)
-        chat.send_message_button.click()
+        #TODO: uncomment after #11168 and 11161 is fixed
+        #for message in formatted_message:
+        #    message_input.send_keys(formatted_message[message])
+        #    chat.send_message_button.click()
 
-        chat.chat_element_by_text(message_text).long_press_element()
-        chat.element_by_text('Copy').click()
+        #    message_bubble = chat.chat_element_by_text(formatted_message[message])
+        #    message_bubble.timestamp_message.long_press_element()
+        #    chat.element_by_text('Copy').click()
 
-        message_input.paste_text_from_clipboard()
-        if message_input.text != message_text:
-            self.errors.append('Message text was not copied in 1-1 chat')
+        #    message_input.paste_text_from_clipboard()
+        #    if message_input.text != formatted_message[message]:
+        #        self.errors.append('Message %s text was not copied in a public chat' % formatted_message[message])
+        #    message_input.clear()
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5322)
