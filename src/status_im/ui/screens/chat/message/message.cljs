@@ -15,6 +15,7 @@
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.security :as security]
             [status-im.ui.screens.chat.message.reactions :as reactions]
+            [status-im.ui.screens.routing.core :as routing]
             [quo.core :as quo]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.components.reply :as components.reply])
@@ -211,7 +212,7 @@
 
 (defn message-content-image [{:keys [content outgoing]}]
   (let [dimensions (reagent/atom [260 260])
-        uri (:image content)]
+        uri        (:image content)]
     (react/image-get-size
      uri
      (fn [width height]
@@ -219,9 +220,11 @@
          (reset! dimensions [(/ width k) (/ height k)]))))
     (fn []
       [react/view {:style (style/image-content outgoing)}
-       [react/image {:style {:width (first @dimensions) :height (last @dimensions)}
+       [react/image {:style       (merge
+                                   (style/image-message outgoing)
+                                   {:width (first @dimensions) :height (last @dimensions)})
                      :resize-mode :contain
-                     :source {:uri uri}}]])))
+                     :source      {:uri uri}}]])))
 
 (defmulti ->message :content-type)
 
