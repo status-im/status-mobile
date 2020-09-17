@@ -871,8 +871,14 @@
  :chats/mentionable-users
  :<- [:chats/current-chat]
  :<- [:chats/mentionable-contacts]
- (fn [[{:keys [users]} contacts]]
-   (merge users contacts)))
+ :<- [:multiaccount]
+ (fn [[{:keys [users]} contacts {:keys [name preferred-name photo-path public-key]}]]
+   (-> users
+       (merge contacts)
+       (assoc public-key {:alias      name
+                          :name       (or preferred-name name)
+                          :identicon  photo-path
+                          :public-key public-key}))))
 
 (re-frame/reg-sub
  :chat/mention-suggestions

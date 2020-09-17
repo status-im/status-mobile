@@ -26,7 +26,7 @@
                  nil)]
             (reduce
              (fn [acc {:keys [alias public-key identicon name]}]
-               (assoc acc alias
+               (assoc acc public-key
                       {:alias      alias
                        :identicon  identicon
                        :public-key public-key
@@ -34,15 +34,23 @@
              {}
              group-contacts))
 
-          :else users)]
+          :else users)
+        {:keys [name preferred-name public-key photo-path]}
+        (:multiaccount db)]
     (reduce
      (fn [acc [key {:keys [alias name identicon]}]]
        (let [name (utils/safe-replace name ".stateofus.eth" "")]
-         (assoc acc alias {:alias      alias
-                           :name       (or name alias)
-                           :identicon  identicon
-                           :public-key key})))
-     chat-specific-suggestions
+         (assoc acc key
+                {:alias      alias
+                 :name       (or name alias)
+                 :identicon  identicon
+                 :public-key key})))
+     (assoc chat-specific-suggestions
+            public-key
+            {:alias      name
+             :name       (or preferred-name name)
+             :identicon  photo-path
+             :public-key public-key})
      contacts)))
 
 (def ending-chars "[\\s\\.,;:]")
