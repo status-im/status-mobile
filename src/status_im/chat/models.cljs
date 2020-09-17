@@ -289,7 +289,7 @@
   [{:keys [db] :as cofx} identity]
   (let [my-public-key (get-in db [:multiaccount :public-key])]
     (if (= my-public-key identity)
-      (navigation/navigate-to-cofx cofx :my-profile nil)
+      (navigation/navigate-to-cofx cofx :profile-stack {:screen :my-profile})
       (fx/merge
        cofx
        {:db (assoc db :contacts/identity identity)}
