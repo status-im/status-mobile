@@ -94,10 +94,10 @@
                         :as message}]
                     (cond-> acc
                       (and alias (not= alias ""))
-                      (update :users assoc alias {:alias      alias
-                                                  :name       (or name alias)
-                                                  :identicon  identicon
-                                                  :public-key from})
+                      (update :users assoc from {:alias      alias
+                                                 :name       (or name alias)
+                                                 :identicon  identicon
+                                                 :public-key from})
                       (or (nil? last-clock-value)
                           (> last-clock-value clock-value))
                       (assoc :last-clock-value clock-value)

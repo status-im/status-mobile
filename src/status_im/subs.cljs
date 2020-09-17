@@ -150,6 +150,8 @@
 (reg-root-key-sub :contacts/current-contact-identity :contacts/identity)
 (reg-root-key-sub :contacts/new-identity :contacts/new-identity)
 (reg-root-key-sub :group/selected-contacts :group/selected-contacts)
+(reg-root-key-sub :contacts/blocked-set :contacts/blocked)
+
 ;;wallet
 (reg-root-key-sub :wallet :wallet)
 (reg-root-key-sub :prices :prices)
@@ -161,6 +163,7 @@
 (reg-root-key-sub :wallet/prepare-transaction :wallet/prepare-transaction)
 (reg-root-key-sub :wallet-service/manual-setting :wallet-service/manual-setting)
 (reg-root-key-sub :wallet-service/state :wallet-service/state)
+
 ;;commands
 (reg-root-key-sub :commands/select-account :commands/select-account)
 
@@ -856,13 +859,17 @@
  :<- [:contacts/contacts]
  (fn [contacts]
    (reduce
-    (fn [acc [key {:keys [alias name identicon]}]]
-      (if (and alias (not= alias ""))
+    (fn [acc [key {:keys [alias name identicon public-key] :as contact}]]
+      (println :foo alias (contact.db/blocked? contact))
+      (if (and alias
+               (not= alias "")
+               (not (contact.db/blocked? contact)))
         (let [name (utils/safe-replace name ".stateofus.eth" "")]
-          (assoc acc alias {:alias      alias
-                            :name       (or name alias)
-                            :identicon  identicon
-                            :public-key key}))
+          (assoc acc public-key
+                 {:alias      alias
+                  :name       (or name alias)
+                  :identicon  identicon
+                  :public-key key}))
         acc))
     {}
     contacts)))
@@ -871,14 +878,17 @@
  :chats/mentionable-users
  :<- [:chats/current-chat]
  :<- [:chats/mentionable-contacts]
+ :<- [:contacts/blocked-set]
  :<- [:multiaccount]
- (fn [[{:keys [users]} contacts {:keys [name preferred-name photo-path public-key]}]]
-   (-> users
-       (merge contacts)
-       (assoc public-key {:alias      name
-                          :name       (or preferred-name name)
-                          :identicon  photo-path
-                          :public-key public-key}))))
+ (fn [[{:keys [users]} contacts blocked {:keys [name preferred-name photo-path public-key]}]]
+   (apply dissoc
+          (-> users
+              (merge contacts)
+              (assoc public-key {:alias      name
+                                 :name       (or preferred-name name)
+                                 :identicon  photo-path
+                                 :public-key public-key}))
+          blocked)))
 
 (re-frame/reg-sub
  :chat/mention-suggestions

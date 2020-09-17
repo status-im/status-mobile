@@ -45,10 +45,10 @@
                          "00000000000000000000000000000000000000000000000000090x0000000000000000000000000000000000000000000000000000000000000000",
                          :cursor-clock-value 9,
                          :users
-                         {"alias" {:alias      "alias",
-                                   :name       "name",
-                                   :identicon  "identicon",
-                                   :public-key "from"}}}}}}
+                         {"from" {:alias      "alias",
+                                  :name       "name",
+                                  :identicon  "identicon",
+                                  :public-key "from"}}}}}}
                  (message/add-received-message
                   cofx
                   message)))))
@@ -67,10 +67,10 @@
                          "00000000000000000000000000000000000000000000000000090x0000000000000000000000000000000000000000000000000000000000000000",
                          :cursor-clock-value 9,
                          :users
-                         {"alias" {:alias      "alias",
-                                   :name       "name",
-                                   :identicon  "identicon",
-                                   :public-key "from"}}}}}}
+                         {"from" {:alias      "alias",
+                                  :name       "name",
+                                  :identicon  "identicon",
+                                  :public-key "from"}}}}}}
                  (message/add-received-message
                   cofx
                   message)))))

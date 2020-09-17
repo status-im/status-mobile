@@ -72,7 +72,7 @@
   [{:keys [db]} {:keys [chat-id alias name identicon from]}]
   (when (and alias (not= alias ""))
     {:db (update-in db [:chats chat-id :users] assoc
-                    alias
+                    from
                     {:alias      alias
                      :name       (or name alias)
                      :identicon  identicon
