@@ -331,7 +331,7 @@ class TestChatManagement(SingleDeviceTestCase):
         send_transaction.deny_button.click()
         send_transaction.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
         send_transaction.ok_button.click()
-        wallet.back_button.click()
+        wallet.back_button.click_until_absense_of_element(wallet.back_button)
 
         home.just_fyi("Allow access to camera in universal qr code scanner and check it in other views")
         wallet.home_button.click()

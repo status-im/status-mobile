@@ -18,27 +18,19 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
-        send_transaction = wallet_view.send_transaction_button.click()
-        send_transaction.amount_edit_box.click()
-        transaction_amount = send_transaction.get_unique_amount()
-        send_transaction.amount_edit_box.set_value(transaction_amount)
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-
-        send_transaction.just_fyi('Send transaction')
-        send_transaction.enter_recipient_address_input.set_value(recipient['address'])
-        send_transaction.done_button.click()
-        send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction(keycard=True)
+        transaction_amount = wallet_view.get_unique_amount()
+        wallet_view.send_transaction(amount=transaction_amount,
+                                     sign_transaction=True,
+                                     keycard=True,
+                                     recipient='0x%s'%recipient['address'])
         self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
 
-        send_transaction.just_fyi('Check that transaction is appeared in transaction history')
+        wallet_view.just_fyi('Check that transaction is appeared in transaction history')
         transactions_view = wallet_view.transaction_history_button.click()
         transactions_view.transactions_table.find_transaction(amount=transaction_amount)
 
         transactions_view.just_fyi('Check logcat for sensitive data')
-        values_in_logcat = send_transaction.find_values_in_logcat(pin=pin, puk=puk, password=pair_code)
+        values_in_logcat = wallet_view.find_values_in_logcat(pin=pin, puk=puk, password=pair_code)
         if values_in_logcat:
             self.driver.fail(values_in_logcat)
 

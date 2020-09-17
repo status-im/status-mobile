@@ -237,8 +237,9 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_1_sender_message = chat_1.chat_element_by_text('↑ Outgoing transaction')
         home_1.click_system_home_button()
 
-
-        chat_2 = home_2.get_chat(sender['username']).click()
+        from views.chat_view import ChatView
+        chat = ChatView(self.drivers[1])
+        chat_2 = home_2.get_chat(sender['username']).click_until_presence_of_element(chat.chat_message_input)
         chat_2_receiver_message = chat_2.chat_element_by_text('↓ Incoming transaction')
         chat_2_receiver_message.decline_transaction.click()
         home_1.open_notification_bar()

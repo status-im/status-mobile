@@ -941,7 +941,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 if difference_in_data:
                     self.errors.append(
                         'In %s case returned value does not match expected in %s' % (key, repr(difference_in_data)))
-                send_transaction_view.cancel_button.click()
+                send_transaction_view.back_button.click()
             if 'dapp' in key:
                 home_view.open_in_status_button.click()
                 if not chat_view.allow_button.is_element_displayed():

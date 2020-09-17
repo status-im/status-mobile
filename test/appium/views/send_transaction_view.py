@@ -28,6 +28,10 @@ class AmountEditBox(BaseEditBox, BaseButton):
         super(AmountEditBox, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('amount-input')
 
+    def set_value(self, value):
+        BaseEditBox.set_value(self, value)
+        self.driver.press_keycode(66)
+
 class SetMaxButton(BaseButton):
 
     def __init__(self, driver):
@@ -69,7 +73,7 @@ class ChooseRecipientButton(BaseButton):
 class AccountsButton(BaseButton):
     def __init__(self, driver):
         super(AccountsButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('chose-recipient-accounts-button')
+        self.locator = self.Locator.text_selector('My accounts')
 
 
 class EnterRecipientAddressButton(BaseButton):
@@ -81,7 +85,7 @@ class EnterRecipientAddressButton(BaseButton):
 class ScanQRCodeButton(BaseButton):
     def __init__(self, driver):
         super(ScanQRCodeButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('chose-recipient-scan-qr')
+        self.locator = self.Locator.accessibility_id('scan-contact-code-button')
 
 
 class EnterRecipientAddressInput(BaseEditBox):
@@ -170,7 +174,7 @@ class TotalFeeInput(BaseText):
 class ETHroAssetButtonInSelectAssetBottomSheet(BaseButton):
     def __init__(self, driver):
         super(ETHroAssetButtonInSelectAssetBottomSheet, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(//*[@content-desc=":ETH-asset-value"])[2]')
+        self.locator = self.Locator.accessibility_id(':ETH-asset-value')
 
 
 class UpdateFeeButton(BaseButton):
@@ -336,6 +340,12 @@ class SendTransactionView(BaseView):
             from views.wallet_view import WalletView
             wallet_view = WalletView(self.driver)
             wallet_view.ok_got_it_button.click()
+
+    def set_recipient_address(self, address):
+        self.chose_recipient_button.click()
+        self.enter_recipient_address_input.set_value(address)
+        self.enter_recipient_address_input.click()
+        self.done_button.click()
 
     def sign_transaction(self, sender_password: str = common_password, keycard=False, default_gas_price=True):
         if not default_gas_price:

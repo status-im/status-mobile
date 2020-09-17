@@ -540,16 +540,12 @@ class WalletView(BaseView):
         transaction_amount = str(kwargs.get('amount', send_transaction_view.get_unique_amount()))
 
         send_transaction_view.amount_edit_box.set_value(transaction_amount)
-        send_transaction_view.confirm()
-        send_transaction_view.chose_recipient_button.click()
-
-        recipient = kwargs.get('recipient')
-        send_transaction_view.enter_recipient_address_button.click()
-        send_transaction_view.enter_recipient_address_input.set_value(recipient)
-        send_transaction_view.done_button.click()
+        send_transaction_view.set_recipient_address(kwargs.get('recipient'))
         if kwargs.get('sign_transaction', True):
             send_transaction_view.sign_transaction_button.click()
-            send_transaction_view.sign_transaction(keycard=kwargs.get('keycard', False), default_gas_price=kwargs.get('default_gas_price', False))
+            send_transaction_view.sign_transaction(keycard=kwargs.get('keycard', False),
+                                                   default_gas_price=kwargs.get('default_gas_price', False),
+                                                   sender_password=kwargs.get('sender_password', common_password))
 
 
     def receive_transaction(self, **kwargs):

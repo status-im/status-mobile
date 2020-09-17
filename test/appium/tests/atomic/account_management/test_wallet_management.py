@@ -32,11 +32,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.accounts_status_account.click()
         send_transaction = wallet.send_transaction_button.click()
         send_transaction.amount_edit_box.set_value('0')
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(basic_user['address'])
-        send_transaction.done_button.click()
+        send_transaction.set_recipient_address('0x%s' % basic_user['address'])
         send_transaction.sign_transaction_button.click()
         for text in texts:
             if not wallet.element_by_text_part(text).is_element_displayed():
@@ -411,29 +407,20 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.set_up_wallet()
         wallet.accounts_status_account.click()
         send_transaction = wallet.send_transaction_button.click()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value('%s.stateofus.eth' % ens_user['ens'])
-        send_transaction.done_button.click()
+        send_transaction.set_recipient_address('%s.stateofus.eth' % ens_user['ens'])
         formatted_ens_user_address = send_transaction.get_formatted_recipient_address(ens_user['address'])
 
         if send_transaction.enter_recipient_address_text.text != formatted_ens_user_address:
             self.errors.append('ENS address on stateofus.eth is not resolved as recipient')
 
         wallet.just_fyi('checking that ".eth" name will be resolved as recipient')
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(ens_user['ens_another_domain'])
-        send_transaction.done_button.click()
+        send_transaction.set_recipient_address(ens_user['ens_another_domain'])
 
         if send_transaction.enter_recipient_address_text.text != formatted_ens_user_address:
             self.errors.append('ENS address on another domain is not resolved as recipient')
 
         wallet.just_fyi('checking that "stateofus.eth" name without domain will be resolved as recipient')
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(ens_user['ens'])
-        send_transaction.done_button.click()
+        send_transaction.set_recipient_address(ens_user['ens'])
 
         if send_transaction.enter_recipient_address_text.text != formatted_ens_user_address:
             self.errors.append('ENS address "stateofus.eth" without domain is not resolved as recipient')

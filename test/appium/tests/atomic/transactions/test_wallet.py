@@ -22,27 +22,18 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
-        send_transaction = wallet_view.send_transaction_button.click()
-        send_transaction.amount_edit_box.click()
-        transaction_amount = send_transaction.get_unique_amount()
-        send_transaction.amount_edit_box.set_value(transaction_amount)
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
+        transaction_amount = wallet_view.get_unique_amount()
+        wallet_view.send_transaction(amount=transaction_amount,
+                                     sign_transaction=True,
+                                     recipient='0x%s' % recipient['address'],
+                                     sender_password=unique_password )
 
-        send_transaction.just_fyi('Send transaction')
-        send_transaction.enter_recipient_address_input.set_value(recipient['address'])
-        send_transaction.done_button.click()
-        send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction(unique_password)
-        self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
-
-        send_transaction.just_fyi('Check that transaction is appeared in transaction history')
+        wallet_view.just_fyi('Check that transaction is appeared in transaction history')
         transactions_view = wallet_view.transaction_history_button.click()
         transactions_view.transactions_table.find_transaction(amount=transaction_amount)
 
-        transactions_view.just_fyi('Check logcat for sensitive data')
-        values_in_logcat = send_transaction.find_values_in_logcat(password=unique_password)
+        wallet_view.just_fyi('Check logcat for sensitive data')
+        values_in_logcat = wallet_view.find_values_in_logcat(password=unique_password)
         if values_in_logcat:
             self.driver.fail(values_in_logcat)
 
@@ -62,11 +53,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.amount_edit_box.click()
         transaction_amount = send_transaction.get_unique_amount()
         send_transaction.amount_edit_box.set_value(transaction_amount)
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(recipient['address'])
-        send_transaction.done_button.click()
+        send_transaction.set_recipient_address('0x%s' % recipient['address'])
         send_transaction.sign_transaction_button.click()
         send_transaction.sign_with_password.click_until_presence_of_element(send_transaction.enter_password_input)
         send_transaction.enter_password_input.click()
@@ -112,8 +99,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         transactions_view = wallet_view.transaction_history_button.click()
         transactions_view.transactions_table.find_transaction(amount=sending_amount, asset='STT')
 
-
-
     @marks.testrail_id(5461)
     @marks.medium
     def test_send_eth_from_wallet_incorrect_address(self):
@@ -129,17 +114,13 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.amount_edit_box.click()
         transaction_amount = send_transaction.get_unique_amount()
         send_transaction.amount_edit_box.set_value(transaction_amount)
-        send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(recipient['public_key'])
-        send_transaction.done_button.click_until_presence_of_element(send_transaction.element_by_text_part('Invalid address'))
-        send_transaction.ok_button.click()
-        send_transaction.enter_recipient_address_input.set_value('0xDE709F2102306220921060314715629080E2fB77')
-        send_transaction.done_button.click_until_presence_of_element(send_transaction.element_by_text_part('Invalid address'))
-        send_transaction.ok_button.click()
-        self.errors.verify_no_errors()
-
+        for address in (recipient['public_key'], '0xDE709F2102306220921060314715629080E2fB77'):
+            send_transaction.enter_recipient_address_input.set_value(address)
+            send_transaction.enter_recipient_address_input.click()
+            send_transaction.done_button.click()
+            if send_transaction.set_max_button.is_element_displayed():
+                self.driver.fail('Can proceed with wrong address %s in recipient' % address)
 
     @marks.testrail_id(5350)
     @marks.critical
@@ -152,20 +133,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
-        send_transaction = wallet_view.send_transaction_button.click()
-        adi_button = send_transaction.asset_by_name('ADI')
-        send_transaction.select_asset_button.click_until_presence_of_element(send_transaction.eth_asset_in_select_asset_bottom_sheet_button)
-        adi_button.click()
-        send_transaction.amount_edit_box.click()
         amount = '0.0%s' % str(random.randint(10000, 99999)) + '1'
-        send_transaction.amount_edit_box.set_value(amount)
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(recipient['address'])
-        send_transaction.done_button.click()
-        send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction()
+        wallet_view.send_transaction(amount=amount,
+                                     recipient='0x%s' % recipient['address'],
+                                     asset_name='ADI')
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True, decimals=7)
 
 
@@ -253,10 +224,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.toggle_airplane_mode()
         wallet_view.accounts_status_account.click_until_presence_of_element(wallet_view.send_transaction_button)
         send_transaction = wallet_view.send_transaction_button.click()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.accounts_button.click()
-        send_transaction.element_by_text("Status account").click()
-        send_transaction.amount_edit_box.click()
+        send_transaction.set_recipient_address('0x%s' % basic_user['address'])
         send_transaction.amount_edit_box.set_value("0")
         send_transaction.confirm()
         send_transaction.sign_transaction_button.click()
@@ -468,7 +436,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                     if not wallet_view.element_by_text_part(error).is_element_displayed():
                         self.errors.append(
                             'Expected error %s is not shown' % error)
-                send_transaction_view.cancel_button.click()
+                if send_transaction_view.back_button.is_element_displayed():
+                    send_transaction_view.back_button.click()
+                else:
+                    wallet_view.cancel_button.click()
 
         self.errors.verify_no_errors()
 
@@ -499,13 +470,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         if not wallet_view.asset_by_name(symbol).is_element_displayed():
             self.errors.append('Custom token is not shown on Wallet view')
         wallet_view.accounts_status_account.click()
-        send_transaction = wallet_view.send_transaction_button.click()
-        token_element = send_transaction.asset_by_name(symbol)
-        send_transaction.select_asset_button.click_until_presence_of_element(token_element)
-        if not token_element.is_element_displayed():
-            self.errors.append('Custom token is not shown on Send Transaction view')
-        send_transaction.cancel_button.click_until_absense_of_element(token_element)
-
         recipient = "0x" + basic_user['address']
         amount = '0.0%s' % str(random.randint(10000, 99999)) + '1'
         wallet_view.send_transaction(asset_name=symbol, amount=amount, recipient=recipient)
@@ -565,8 +529,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.amount_edit_box.set_value(str(initial_amount_ADI) + '1')
         if not send_transaction.element_by_text(errors['send_transaction_screen']['insufficient_funds']).is_element_displayed():
             self.errors.append(warning % (errors['send_transaction_screen']['insufficient_funds'], screen))
-        send_transaction.cancel_button.click()
-        wallet_view.back_button.click()
+        send_transaction.back_button.click(2)
 
         screen = 'sending screen from wallet'
         sign_in_view.just_fyi('Checking %s on %s' % (errors['sending_screen']['Network fee'], screen))
@@ -575,10 +538,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.get_account_by_name(account_name).click()
         wallet_view.send_transaction_button.click()
         send_transaction.amount_edit_box.set_value('0')
-        send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_button.click()
-        send_transaction.enter_recipient_address_input.set_value(ens_user_ropsten['ens'])
-        send_transaction.done_button.click()
+        send_transaction.set_recipient_address(ens_user_ropsten['ens'])
         send_transaction.next_button.click()
         if not send_transaction.validation_error_element.is_element_displayed(10):
             self.errors.append('Validation icon is not shown when testing %s on %s' % (errors['sending_screen']['Network fee'],screen))
@@ -612,25 +572,18 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.cancel_button.click()
 
         screen = 'sending screen from DApp'
-        # TODO: disbled until redo of Network fee validation element
-        # sign_in_view.just_fyi('Checking %s on %s' % (errors['sending_screen']['Network fee'], screen))
-        # home_view = wallet_view.home_button.click()
-        # dapp_view = sign_in_view.dapp_tab_button.click()
-        # dapp_view.select_account_button.click()
-        # dapp_view.select_account_by_name(account_name).wait_for_element(30)
-        # dapp_view.select_account_by_name(account_name).click()
-        # status_test_dapp = home_view.open_status_test_dapp()
-        # status_test_dapp.wait_for_d_aap_to_load()
-        # status_test_dapp.transactions_button.click_until_presence_of_element(
-        #     status_test_dapp.send_two_tx_in_batch_button)
-        # status_test_dapp.send_two_tx_in_batch_button.click()
-        # if not send_transaction.validation_error_element.is_element_displayed(10):
-        #     self.errors.append(warning % (errors['sending_screen']['Network fee'],screen))
-        # send_transaction.cancel_button.click()
-        #
-        # for element in errors['sending_screen']:
-        #     send_transaction.get_validation_icon(element).click()
-        #     if not send_transaction.element_by_text_part(errors['sending_screen'][element]).is_element_displayed(10):
-        #         self.errors.append(warning % (errors['sending_screen'][element], screen))
+        sign_in_view.just_fyi('Checking %s on %s' % (errors['sending_screen']['Network fee'], screen))
+        home_view = wallet_view.home_button.click()
+        dapp_view = sign_in_view.dapp_tab_button.click()
+        dapp_view.select_account_button.click()
+        dapp_view.select_account_by_name(account_name).wait_for_element(30)
+        dapp_view.select_account_by_name(account_name).click()
+        status_test_dapp = home_view.open_status_test_dapp()
+        status_test_dapp.wait_for_d_aap_to_load()
+        status_test_dapp.transactions_button.click_until_presence_of_element(
+            status_test_dapp.send_two_tx_in_batch_button)
+        status_test_dapp.send_two_tx_in_batch_button.click()
+        if not send_transaction.validation_error_element.is_element_displayed(10):
+            self.errors.append(warning % (errors['sending_screen']['Network fee'],screen))
         self.errors.verify_no_errors()
 
