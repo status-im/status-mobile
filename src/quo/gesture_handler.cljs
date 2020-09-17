@@ -6,6 +6,7 @@
             ["react-native-gesture-handler"
              :refer (TapGestureHandler PanGestureHandler LongPressGestureHandler
                                        PureNativeButton TouchableWithoutFeedback TouchableOpacity
+                                       PinchGestureHandler
                                        TouchableHighlight
                                        createNativeWrapper State NativeViewGestureHandler
                                        FlatList ScrollView)]))
@@ -31,6 +32,8 @@
 
 (def touchable-without-feedback
   (reagent/adapt-react-class touchable-without-feedback-class))
+
+(def pinch-gesture-handler (reagent/adapt-react-class PinchGestureHandler))
 
 (def touchable-highlight-class (reagent/adapt-react-class TouchableHighlight))
 

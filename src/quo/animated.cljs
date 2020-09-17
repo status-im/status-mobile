@@ -12,6 +12,7 @@
 (def create-animated-component (comp reagent/adapt-react-class (.-createAnimatedComponent animated)))
 
 (def view (reagent/adapt-react-class (.-View animated)))
+(def image (reagent/adapt-react-class (.-Image animated)))
 (def text (reagent/adapt-react-class (.-Text animated)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView animated)))
 (def code (reagent/adapt-react-class (.-Code animated)))
@@ -145,7 +146,13 @@
 
 (def extrapolate {:clamp (oget animated "Extrapolate" "CLAMP")})
 
+(def decay (.-decay animated))
 ;; utilities
+
+
+(def pinch-began (.-pinchBegan redash))
+(def pinch-active (.-pinchActive redash))
+(def pinch-end (.-pinchEnd redash))
 
 (def clamp (oget redash "clamp"))
 (def diff-clamp (.-diffClamp ^js redash))
@@ -202,6 +209,24 @@
   (let [gesture (.useGestureHandler ^js redash (clj->js opts))]
     {:onHandlerStateChange (.-onHandlerStateChange ^js gesture)
      :onGestureEvent       (.-onGestureEvent ^js gesture)}))
+
+(defn use-pinch-gesture-handler []
+  (let [^js gesture (.usePinchGestureHandler ^js redash)]
+    {:number-of-pointers (.-numberOfPointers gesture)
+     :scale              (.-scale gesture)
+     :state              (.-state gesture)
+     :gesture-handler    {:onHandlerStateChange (-> gesture .-gestureHandler .-onHandlerStateChange)
+                          :onGestureEvent       (-> gesture .-gestureHandler .-onGestureEvent)}
+     :focal              (.-focal gesture)}))
+
+(defn use-pan-gesture-handler []
+  (let [^js gesture (.usePanGestureHandler ^js redash)]
+    {:position        (.-position gesture)
+     :translation     (.-translation gesture)
+     :velocity        (.-velocity gesture)
+     :state           (.-state gesture)
+     :gesture-handler {:onHandlerStateChange (-> gesture .-gestureHandler .-onHandlerStateChange)
+                       :onGestureEvent       (-> gesture .-gestureHandler .-onGestureEvent)}}))
 
 (defn snap-point [value velocity snap-points]
   (.snapPoint ^js redash value velocity (to-array snap-points)))

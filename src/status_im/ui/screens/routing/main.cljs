@@ -109,6 +109,8 @@
         :insets    {:top false :bottom false}
         :component qr-scanner/qr-scanner}
        {:name      :image-preview
+        :options   {:gestureEnabled     false
+                    :cardOverlayEnabled false}
         :insets    {:top false :bottom false}
         :component image-preview/preview-image}
        {:name         :notifications-settings

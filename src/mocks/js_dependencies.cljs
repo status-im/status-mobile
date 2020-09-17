@@ -152,6 +152,7 @@
                                                      :View                    #js {}
                                                      :ScrollView              #js {}
                                                      :Text                    #js {}
+                                                     :Image                   #js {}
                                                      :Extrapolate             #js {:CLAMP nil}
                                                      :Code                    #js {}}
                                   :Easing       #js {:bezier identity
@@ -171,6 +172,7 @@
                                        :LongPressGestureHandler  #js {}
                                        :TouchableWithoutFeedback #js {}
                                        :NativeViewGestureHandler #js {}
+                                       :PinchGestureHandler      #js {}
                                        :FlatList                 #js {}
                                        :ScrollView               #js {}
                                        :TouchableOpacity         #js {}
