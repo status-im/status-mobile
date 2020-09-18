@@ -107,7 +107,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                 self.errors.append('Transactions senders do not match!')
             if tx_to != expected_txs_list[tx_hash]['to']:
                 self.errors.append('Transactions recipients do not match!')
-            transactions_details.back_button.click()
+            transactions_details.back_button.click_until_presence_of_element(wallet_view.send_transaction_button)
 
         self.errors.verify_no_errors()
 

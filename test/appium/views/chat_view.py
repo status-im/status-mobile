@@ -249,6 +249,10 @@ class UnblockContactButton(BaseButton):
         super(UnblockContactButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('unblock-contact')
 
+    def click(self):
+        self.scroll_to_element()
+        self.wait_for_element().click()
+
 
 class LeaveButton(BaseButton):
     def __init__(self, driver):
@@ -361,6 +365,11 @@ class ProfileBlockContactButton(BaseButton):
     def __init__(self, driver):
         super(ProfileBlockContactButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('block-contact')
+
+    def click(self):
+        self.scroll_to_element()
+        self.wait_for_element().click()
+
 
 class ProfileAddToContactsButton(BaseButton):
     def __init__(self, driver):
