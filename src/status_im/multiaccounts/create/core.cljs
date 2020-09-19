@@ -253,6 +253,8 @@
                   :signing-phrase        signing-phrase
                   :send-push-notifications? true
                   :installation-id       (random-guid-generator)
+                  ;; default mailserver (history node) setting
+                  :use-mailservers?      true
                   :recovered             (or recovered (get-in db [:intro-wizard :recovering?]))}
                  constants/default-multiaccount)
           ;; The address from which we derive any chat

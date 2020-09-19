@@ -238,6 +238,11 @@
    (mailserver/retry-next-messages-request cofx)))
 
 (handlers/register-handler-fx
+ :mailserver.ui/use-history-switch-pressed
+ (fn [cofx [_ use-mailservers?]]
+   (mailserver/update-use-mailservers cofx use-mailservers?)))
+
+(handlers/register-handler-fx
  :mailserver/check-connection-timeout
  (fn [cofx _]
    (mailserver/check-connection cofx)))

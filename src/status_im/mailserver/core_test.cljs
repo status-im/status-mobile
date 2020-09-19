@@ -334,7 +334,8 @@
         :peers-summary (if registered-peer?
                          [{:id "mailserver-id" :enode "enode://mailserver-id@ip"}]
                          [])
-        :multiaccount {:fleet :eth.staging}
+        :multiaccount {:fleet :eth.staging
+                       :use-mailservers? true}
         :mailserver/current-id "mailserver-a"
         :mailserver/mailservers {:eth.staging {"mailserver-a" {:sym-key-id sym-key
                                                                :address "enode://mailserver-id@ip"}}}}})
@@ -611,7 +612,8 @@
                                            :password "mailserver-password"}}}
             :multiaccount
             {:fleet :eth.staging
-             :pinned-mailservers {:eth.staging "mailserverid"}}}]
+             :pinned-mailservers {:eth.staging "mailserverid"}
+             :use-mailservers? true}}]
     (testing "it adds the peer"
       (is (= "mailserver-address"
              (:mailserver/add-peer (mailserver/connect-to-mailserver {:db db})))))
@@ -625,7 +627,12 @@
                                                "somesymkeyid")]
       (testing "it does not generate a sym key if already present"
         (is (not (-> (mailserver/connect-to-mailserver {:db mailserver-with-sym-key-db})
-                     :shh/generate-sym-key-from-password)))))))
+                     :shh/generate-sym-key-from-password)))))
+
+    (testing "it returns noops when use-mailservers? is false"
+      (let [no-mailservers-cofx {:db (assoc-in db [:multiaccount :use-mailservers?] false)}]
+        (is (= (mailserver/connect-to-mailserver no-mailservers-cofx)
+               no-mailservers-cofx))))))
 
 (deftest check-existing-gaps
   (testing "no gaps"
