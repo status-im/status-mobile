@@ -58,10 +58,10 @@
              ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts % {:logout? false}])
              :ui/listen-to-window-dimensions-change nil
              ::network/listen-to-network-info       nil
-             :keycard/register-card-events       nil
-             :keycard/check-nfc-support          nil
-             :keycard/check-nfc-enabled          nil
-             :keycard/retrieve-pairings          nil}
+             :keycard/register-card-events          nil
+             :keycard/check-nfc-support             nil
+             :keycard/check-nfc-enabled             nil
+             :keycard/retrieve-pairings             nil}
             (initialize-app-db)))
 
 (re-frame/reg-fx

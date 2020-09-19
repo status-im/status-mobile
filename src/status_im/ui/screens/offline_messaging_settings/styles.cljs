@@ -5,15 +5,10 @@
 (def wrapper
   {:flex             1})
 
-(def mailserver-item-inner
-  {:padding-horizontal 16})
-
-(styles/defn mailserver-item [pinned?]
+(styles/defn mailserver-item []
   {:flex-direction     :row
    :align-items        :center
-   :opacity            (if pinned?
-                         1
-                         0.4)
+   :justify-content    :space-between
    :padding-horizontal 16
    :ios                {:height 64}
    :android            {:height 56}})
@@ -31,21 +26,24 @@
    :align-items      :center
    :justify-content  :center})
 
-(defn mailserver-icon [connected?]
-  (hash-map :color
-            (if connected? colors/white-persist colors/gray)))
+(def switch-container
+  {:height 52})
 
-(def mailserver-pinned
-  {:padding-horizontal 16
-   :flex-direction     :row
-   :align-items        :center
-   :padding-vertical   5})
+(def automatic-selection-container
+  {:border-top-width 1
+   :border-top-color colors/gray-lighter
+   :margin-top 16})
 
-(def mailserver-pinned-checkbox-container
-  {:width           40
-   :height          40
-   :align-items     :center
-   :justify-content :center})
+(def explanation-text
+  {:color colors/gray})
 
-(def mailserver-pinned-text-container
-  {:padding-horizontal 15})
+(def use-history-explanation-text-container
+  {:margin-right     16
+   :margin-left      16
+   :margin-top       8
+   :margin-bottom    16})
+
+(def history-nodes-label
+  {:color colors/gray
+   :padding-horizontal 16
+   :margin-top 48})

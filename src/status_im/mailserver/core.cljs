@@ -220,21 +220,24 @@
    Peer summary will change and we will receive a signal from status go when
    this is successful
    A connection-check is made after `connection timeout` is reached and
-   mailserver-state is changed to error if it is not connected by then"
+   mailserver-state is changed to error if it is not connected by then
+   No attempt is made if mailserver usage is disabled"
   {:events [:mailserver.ui/reconnect-mailserver-pressed]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [address]} (fetch-current db)
+  (let [{:keys [address]}       (fetch-current db)
         {:keys [peers-summary]} db
-        added?       (registered-peer? peers-summary address)
-        gap-request? (executing-gap-request? db)]
+        use-mailservers?        (get-in db [:multiaccount :use-mailservers?])
+        added?                  (registered-peer? peers-summary address)
+        gap-request?            (executing-gap-request? db)]
     (fx/merge cofx
-              {:db (cond-> (dissoc db :mailserver/current-request)
-                     gap-request?
-                     (-> (assoc :mailserver/fetching-gaps-in-progress {})
-                         (dissoc :mailserver/planned-gap-requests)))}
-              (if added?
-                (mark-trusted-peer)
-                (add-peer)))))
+              (when use-mailservers?
+                {:db (cond-> (dissoc db :mailserver/current-request)
+                       gap-request?
+                       (-> (assoc :mailserver/fetching-gaps-in-progress {})
+                           (dissoc :mailserver/planned-gap-requests)))}
+                (if added?
+                  (mark-trusted-peer)
+                  (add-peer))))))
 
 (defn pool-size [fleet-size]
   (.ceil js/Math (/ fleet-size 4)))
@@ -299,7 +302,7 @@
           (mark-trusted-peer cofx)
           mailserver-removed?
           (connect-to-mailserver cofx)))
-        ;; if there is no current mailserver defined,
+        ;; if there is no current mailserver defined
         ;; we set it first
       (set-current-mailserver cofx))))
 
@@ -488,6 +491,10 @@
               (update-in [:mailserver/mailservers current-fleet id]
                          dissoc :generating-sym-key?))}
      (process-next-messages-request))))
+
+(fx/defn update-use-mailservers
+  [cofx use-mailservers?]
+  (multiaccounts.update/multiaccount-update cofx :use-mailservers? use-mailservers? {}))
 
 (fx/defn change-mailserver
   "mark mailserver status as `:error` if custom mailserver is used
@@ -1124,11 +1131,14 @@
   (let [{:keys [address]} (fetch-current db)
         pinned-mailservers (get-in db [:multiaccount :pinned-mailservers])
         ;; Check if previous mailserver was pinned
-        pinned?  (get pinned-mailservers current-fleet)]
+        pinned?  (get pinned-mailservers current-fleet)
+        use-mailservers? (get-in db [:multiaccount :use-mailservers?])]
     (fx/merge cofx
               {:db (assoc db :mailserver/current-id mailserver-id)
                :mailserver/remove-peer address}
-              (connect-to-mailserver)
+
+              (when use-mailservers? (connect-to-mailserver))
+
               (when pinned?
                 (multiaccounts.update/multiaccount-update
                  :pinned-mailservers (assoc pinned-mailservers

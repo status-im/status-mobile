@@ -252,7 +252,9 @@
                   :latest-derived-path   0
                   :signing-phrase        signing-phrase
                   :send-push-notifications? true
-                  :installation-id       (random-guid-generator)}
+                  :installation-id       (random-guid-generator)
+                  ;; default mailserver (history node) setting
+                  :use-mailservers?      true}
                  constants/default-multiaccount)
           ;; The address from which we derive any chat
           ;; account/encryption keys

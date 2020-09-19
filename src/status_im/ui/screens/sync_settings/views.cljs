@@ -8,7 +8,8 @@
             [status-im.ui.components.topbar :as topbar]))
 
 (views/defview sync-settings []
-  (views/letsubs [{:keys [syncing-on-mobile-network?]} [:multiaccount]
+  (views/letsubs [{:keys [syncing-on-mobile-network?
+                          use-mailservers?]}           [:multiaccount]
                   mailserver-id                        [:mailserver/current-id]]
     [react/view {:style {:flex 1 :background-color colors/white}}
      [topbar/topbar {:title (i18n/label :t/sync-settings)}]
@@ -28,7 +29,7 @@
                       :title               (i18n/label :t/offline-messaging)
                       :on-press            #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
                       :accessory           :text
-                      :accessory-text      mailserver-id
+                      :accessory-text      (when use-mailservers? mailserver-id)
                       :chevron             true}]
       ;; TODO(Ferossgp): Devider componemt
       [react/view {:height           1
