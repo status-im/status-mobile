@@ -720,7 +720,23 @@
                    {:address  "0xa7fc5d2453e3f68af0cc1b78bcfee94a1b293650"
                     :symbol   :SPIKE
                     :name     "Spiking"
-                    :decimals 10}])
+                    :decimals 10}
+                   {:address  "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+                    :symbol   :UNI
+                    :name     "Uniswap"
+                    :decimals 18}
+                   {:address  "0xc00e94cb662c3520282e6f5717214004a7f26888"
+                    :symbol   :COMP
+                    :name     "Compound"
+                    :decimals 18}
+                   {:address  "0xba100000625a3754423978a60c9317c58a424e3d"
+                    :symbol   :BAL
+                    :name     "Balancer"
+                    :decimals 18}
+                   {:address  "0x8ab7404063ec4dbcfd4598215992dc3f8ec853d7"
+                    :symbol   :AKRO
+                    :name     "Akropolis"
+                    :decimals 18}])
    :testnet
    (resolve-icons :testnet
                   [{:name     "Status Test Token"
