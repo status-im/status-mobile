@@ -6675,9 +6675,9 @@ react-native-touch-id@^4.4.1:
   resolved "https://registry.yarnpkg.com/react-native-touch-id/-/react-native-touch-id-4.4.1.tgz#8b1bb2d04c30bac36bb9696d2d723e719c4a8b08"
   integrity sha512-1jTl8fC+0fxvqegy/XXTyo6vMvPhjzkoDdaqoYZx0OH8AT250NuXnNPyKktvigIcys3+2acciqOeaCall7lrvg==
 
-"react-native-webview@git+https://github.com/status-im/react-native-webview.git#v10.2.3_7":
+"react-native-webview@git+https://github.com/status-im/react-native-webview.git#v10.2.3_8":
   version "10.3.1"
-  resolved "git+https://github.com/status-im/react-native-webview.git#ab267cbf0091899762c257d34ab5b11d656fdf09"
+  resolved "git+https://github.com/status-im/react-native-webview.git#1c0359625f2c084a6f985a93e9d33c2de41924bc"
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
