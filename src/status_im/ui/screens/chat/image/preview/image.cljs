@@ -7,6 +7,9 @@
             [quo.vectors :as vec]
             [quo.gesture-handler :as gh]))
 
+(def min-scale 1)
+(def max-scale 3)
+
 (defn decay
   [position velocity clock]
   (let [state  #js {:finished (animated/value 0)
@@ -30,17 +33,15 @@
         y (decay (.-y position) (.-y velocity) (.-y clock))]
     #js {:x x
          :y y}))
-(def min-scale 1)
-(def max-scale 3)
+
 (defn use-pinch
-  [pinch pan translate translation-y scale min-vec max-vec canvas]
+  [pinch pan translate translation-y scale min-vec max-vec center]
   (let [should-decay  (animated/use-value 0)
         clock         (vec/create (animated/clock) (animated/clock))
         offset        (vec/create-value 0 0)
         scale-offset  (animated/value 1)
         origin        (vec/create-value 0 0)
         translation   (vec/create-value 0 0)
-        center        (vec/divide canvas 2)
         adjustedFocal (vec/sub (:focal pinch) (vec/add center offset))
         clamped       (vec/sub
                        (vec/clamp (vec/add offset (:translation pan)) min-vec max-vec)
@@ -101,7 +102,8 @@
      [])))
 
 (defn pinch-zoom [props]
-  (let [{source        :source
+  (let [{uri           :uri
+         on-close      :onClose
          screen-height :screenHeight
          screen-width  :screenWidth
          width         :width
@@ -114,16 +116,37 @@
          :as                 pan} (animated/use-pan-gesture-handler)
         translate                 (vec/create-value 0 0)
         translation-y             (animated/use-value 0)
-        drag-scale                (animated/interpolate translation-y
+        translate-y               (animated/use-value 0)
+        scale                     (animated/use-value 1)
+        clock                     (animated/use-clock)
+        swipe-scale               (animated/interpolate translate-y
                                                         {:inputRange  [0 screen-height]
                                                          :outputRange [1 0.1]
                                                          :extrapolate (:clamp animated/extrapolate)})
-        scale                     (animated/use-value 1)
-        clock                     (animated/use-clock)
         canvas                    (vec/create screen-width screen-height)
+        center                    (vec/divide canvas 2)
         min-vec                   (vec/min* (vec/multiply -0.5 canvas (animated/sub scale 1)) 0)
-        max-vec                   (vec/max* (vec/minus min-vec) 0)]
-    (use-pinch pinch pan translate translation-y scale min-vec max-vec canvas)
+        max-vec                   (vec/max* (vec/minus min-vec) 0)
+        snap-to                   (animated/snap-point translate-y (.-x (:velocity pan)) [0 (.-y center)])]
+
+    (use-pinch pinch pan translate translation-y scale min-vec max-vec center)
+    (animated/code!
+     (fn []
+       (animated/block
+        [(animated/on-change
+          translation-y
+          (animated/cond* (animated/eq (:state pan) (:active gh/states))
+                          (animated/set translate-y (animated/clamp translation-y 0 screen-height))))
+         (animated/cond* (animated/and* (animated/eq (:state pan) (:end gh/states))
+                                        (animated/neq translation-y 0))
+                         [(animated/set translate-y (animated/re-timing {:clock clock
+                                                                         :from  translate-y
+                                                                         :to    snap-to}))
+                          (animated/cond* (animated/and* (animated/not* (animated/clock-running clock))
+                                                         (animated/eq translate-y (.-y center)))
+                                          [(animated/call* [] on-close)])])]))
+     [on-close])
+
     (reagent/as-element
      [animated/view {:style {:align-items     :center
                              :justify-content :center
@@ -135,7 +158,10 @@
                               :bottom           0
                               :left             0
                               :right            0
-                              :opacity          drag-scale
+                              :opacity          (animated/interpolate translate-y
+                                                                      {:inputRange  [0 (* screen-height 0.25)]
+                                                                       :outputRange [1 0.1]
+                                                                       :extrapolate (:clamp animated/extrapolate)})
                               :background-color :black}}]
       [gh/pan-gesture-handler (merge {:ref                  pan-ref
                                       :min-dist             10
@@ -156,17 +182,16 @@
                                  :left            0
                                  :right           0
                                  :overflow        "hidden"
-                                 :transform       [{:scale drag-scale}
-                                                   {:translateY (animated/interpolate translation-y
-                                                                                      {:inputRange  [0 screen-height]
-                                                                                       :outputRange [0 screen-height]
-                                                                                       :extrapolate (:clamp animated/extrapolate)})}]
+                                 :transform       [{:scale swipe-scale} 
+                                                   {:translateY (animated/multiply translate-y
+                                                                                   (animated/sub 2 swipe-scale))}]
                                  :justify-content :center
                                  :align-items     :center}}
-          [animated/image {:source source
-                           :style  {:resize-mode "contain"
-                                    :width       width
-                                    :height      height
-                                    :transform   [{:translateX (.-x translate)}
-                                                  {:translateY (.-y translate)}
-                                                  {:scale scale}]}}]]]]]])))
+          (when (string? uri)
+            [animated/image {:source {:uri uri}
+                             :style  {:resize-mode "contain"
+                                      :width       width
+                                      :height      height
+                                      :transform   [{:translateX (.-x translate)}
+                                                    {:translateY (.-y translate)}
+                                                    {:scale scale}]}}])]]]]])))
