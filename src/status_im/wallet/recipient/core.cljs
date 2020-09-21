@@ -104,7 +104,8 @@
                        :name     (or name "")}]
     (fx/merge cofx
               {:db (assoc-in db [:wallet/favourites address] new-favourite)
-               ::focus-input (get-in db [:wallet/recipient :inp-ref])
+               ;;android
+               :dispatch-later [{:ms 1000 :dispatch [:wallet.recipient/focus-input]}]
                ::json-rpc/call [{:method "wallet_addFavourite"
                                  :params [new-favourite]
                                  :on-success #()}]}
