@@ -15,7 +15,7 @@
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.security :as security]
             [status-im.ui.screens.chat.message.reactions :as reactions]
-            [status-im.ui.screens.routing.core :as routing]
+            [status-im.ui.screens.chat.image.preview.views :as image-preview]
             [quo.core :as quo]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.components.reply :as components.reply])
@@ -210,21 +210,32 @@
    [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])
 
-(defn message-content-image [{:keys [content outgoing]}]
+(defn message-content-image [{:keys [content outgoing] :as message} {:keys [on-long-press]}]
   (let [dimensions (reagent/atom [260 260])
+        visible    (reagent/atom false)
         uri        (:image content)]
     (react/image-get-size
      uri
      (fn [width height]
-       (let [k (/ (max width height) 260)]
-         (reset! dimensions [(/ width k) (/ height k)]))))
+       (reset! dimensions [width height])))
     (fn []
-      [react/view {:style (style/image-content outgoing)}
-       [react/image {:style       (merge
-                                   (style/image-message outgoing)
-                                   {:width (first @dimensions) :height (last @dimensions)})
-                     :resize-mode :contain
-                     :source      {:uri uri}}]])))
+      (let [k (/ (max (first @dimensions) (second @dimensions)) 260)]
+       [:<>
+        [image-preview/preview-image {:visible    @visible
+                                      :on-close   #(reset! visible false)
+                                      :message    message
+                                      :dimensions @dimensions}]
+        [react/touchable-highlight {:on-press      (fn []
+                                                     (reset! visible true)
+                                                     (react/dismiss-keyboard!))
+                                    :on-long-press on-long-press}
+         [react/view {:style (style/image-content outgoing)}
+          [react/image {:style       (merge
+                                      (style/image-message outgoing)
+                                      {:width  (/ (first @dimensions) k)
+                                       :height (/ (second @dimensions) k)})
+                        :resize-mode :contain
+                        :source      {:uri uri}}]]]]))))
 
 (defmulti ->message :content-type)
 
@@ -367,18 +378,13 @@
 (defmethod ->message constants/content-type-image [{:keys [content] :as message} {:keys [on-long-press modal]
                                                                                   :as   reaction-picker}]
   [message-content-wrapper message
-   [react/touchable-highlight (when-not modal
-                                {:on-press      (fn [_]
-                                                  (when (:image content)
-                                                    (re-frame/dispatch [:navigate-to :image-preview message]))
-                                                  (react/dismiss-keyboard!))
-                                 :on-long-press (fn []
-                                                  (on-long-press
-                                                   [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-                                                     :label    (i18n/label :t/message-reply)}
-                                                    {:on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
-                                                     :label    (i18n/label :t/save)}]))})
-    [message-content-image message]]
+   [message-content-image message {:modal modal
+                                   :on-long-press (fn []
+                                                    (on-long-press
+                                                     [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                                       :label    (i18n/label :t/message-reply)}
+                                                      {:on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
+                                                       :label    (i18n/label :t/save)}]))}]
    reaction-picker])
 
 (defmethod ->message constants/content-type-audio [message {:keys [on-long-press modal]
