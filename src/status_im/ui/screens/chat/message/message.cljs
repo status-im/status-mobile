@@ -220,22 +220,22 @@
        (reset! dimensions [width height])))
     (fn []
       (let [k (/ (max (first @dimensions) (second @dimensions)) 260)]
-       [:<>
-        [image-preview/preview-image {:visible    @visible
-                                      :on-close   #(reset! visible false)
-                                      :message    message
-                                      :dimensions @dimensions}]
-        [react/touchable-highlight {:on-press      (fn []
-                                                     (reset! visible true)
-                                                     (react/dismiss-keyboard!))
-                                    :on-long-press on-long-press}
-         [react/view {:style (style/image-content outgoing)}
-          [react/image {:style       (merge
-                                      (style/image-message outgoing)
-                                      {:width  (/ (first @dimensions) k)
-                                       :height (/ (second @dimensions) k)})
-                        :resize-mode :contain
-                        :source      {:uri uri}}]]]]))))
+        [:<>
+         [image-preview/preview-image {:visible    @visible
+                                       :on-close   #(reset! visible false)
+                                       :message    message
+                                       :dimensions @dimensions}]
+         [react/touchable-highlight {:on-press      (fn []
+                                                      (reset! visible true)
+                                                      (react/dismiss-keyboard!))
+                                     :on-long-press on-long-press}
+          [react/view {:style (style/image-content outgoing)}
+           [react/image {:style       (merge
+                                       (style/image-message outgoing)
+                                       {:width  (/ (first @dimensions) k)
+                                        :height (/ (second @dimensions) k)})
+                         :resize-mode :contain
+                         :source      {:uri uri}}]]]]))))
 
 (defmulti ->message :content-type)
 

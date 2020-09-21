@@ -2,13 +2,14 @@
   (:require [reagent.core :as reagent]
             [cljs-bean.core :as bean]
             [quo.react :as react]
-            [quo.react-native :as rn]
             [quo.animated :as animated]
             [quo.vectors :as vec]
             [quo.gesture-handler :as gh]))
 
 (def min-scale 1)
 (def max-scale 3)
+(def snap-duration 150)
+(def swipe-close-at 0.4)
 
 (defn decay
   [position velocity clock]
@@ -35,13 +36,15 @@
          :y y}))
 
 (defn use-pinch
-  [pinch pan translate translation-y scale min-vec max-vec center]
+  [pinch pan translate translation-y scale min-vec canvas]
   (let [should-decay  (animated/use-value 0)
         clock         (vec/create (animated/clock) (animated/clock))
         offset        (vec/create-value 0 0)
         scale-offset  (animated/value 1)
         origin        (vec/create-value 0 0)
         translation   (vec/create-value 0 0)
+        max-vec       (vec/minus min-vec)
+        center        (vec/divide canvas 2)
         adjustedFocal (vec/sub (:focal pinch) (vec/add center offset))
         clamped       (vec/sub
                        (vec/clamp (vec/add offset (:translation pan)) min-vec max-vec)
@@ -110,8 +113,8 @@
          height        :height}   (bean/bean props)
         pinch-ref                 (react/create-ref nil)
         pan-ref                   (react/create-ref nil)
-        {:keys [gesture-handler]
-         :as   pinch}             (animated/use-pinch-gesture-handler)
+        {gesture-handler :gesture-handler
+         :as             pinch}   (animated/use-pinch-gesture-handler)
         {pan-gesture-handler :gesture-handler
          :as                 pan} (animated/use-pan-gesture-handler)
         translate                 (vec/create-value 0 0)
@@ -120,30 +123,37 @@
         scale                     (animated/use-value 1)
         clock                     (animated/use-clock)
         swipe-scale               (animated/interpolate translate-y
-                                                        {:inputRange  [0 screen-height]
-                                                         :outputRange [1 0.1]
+                                                        {:inputRange  [0 (* 1.5 screen-height)]
+                                                         :outputRange [1 0]
                                                          :extrapolate (:clamp animated/extrapolate)})
         canvas                    (vec/create screen-width screen-height)
-        center                    (vec/divide canvas 2)
-        min-vec                   (vec/min* (vec/multiply -0.5 canvas (animated/sub scale 1)) 0)
-        max-vec                   (vec/max* (vec/minus min-vec) 0)
-        snap-to                   (animated/snap-point translate-y (.-x (:velocity pan)) [0 (.-y center)])]
+        norm-scale                (animated/sub scale 1)
+        min-x                     (animated/cond* (animated/greater (animated/multiply width norm-scale) screen-width)
+                                                  (animated/sub screen-width (animated/multiply width norm-scale)))
+        min-y                     (animated/cond* (animated/greater (animated/multiply height norm-scale) screen-height)
+                                                  (animated/sub screen-height (animated/multiply height norm-scale)))
+        min-offset-vec            (vec/create min-x min-y)
+        snap-to                   (animated/snap-point translate-y
+                                                       (.-y (:velocity pan))
+                                                       [0 (.-y canvas)])]
 
-    (use-pinch pinch pan translate translation-y scale min-vec max-vec center)
+    (use-pinch pinch pan translate translation-y scale min-offset-vec canvas)
     (animated/code!
      (fn []
        (animated/block
         [(animated/on-change
           translation-y
           (animated/cond* (animated/eq (:state pan) (:active gh/states))
-                          (animated/set translate-y (animated/clamp translation-y 0 screen-height))))
+                          [(animated/call* [translation-y] println)
+                           (animated/set translate-y (animated/clamp translation-y 0 screen-height))]))
          (animated/cond* (animated/and* (animated/eq (:state pan) (:end gh/states))
                                         (animated/neq translation-y 0))
-                         [(animated/set translate-y (animated/re-timing {:clock clock
-                                                                         :from  translate-y
-                                                                         :to    snap-to}))
+                         [(animated/set translate-y (animated/re-timing {:clock    clock
+                                                                         :from     translate-y
+                                                                         :duration snap-duration
+                                                                         :to       snap-to}))
                           (animated/cond* (animated/and* (animated/not* (animated/clock-running clock))
-                                                         (animated/eq translate-y (.-y center)))
+                                                         (animated/eq translate-y (.-y canvas)))
                                           [(animated/call* [] on-close)])])]))
      [on-close])
 
@@ -160,14 +170,14 @@
                               :right            0
                               :opacity          (animated/interpolate translate-y
                                                                       {:inputRange  [0 (* screen-height 0.25)]
-                                                                       :outputRange [1 0.1]
+                                                                       :outputRange [1 0]
                                                                        :extrapolate (:clamp animated/extrapolate)})
                               :background-color :black}}]
       [gh/pan-gesture-handler (merge {:ref                  pan-ref
                                       :min-dist             10
                                       :avg-touches          true
                                       :simultaneousHandlers pinch-ref}
-                                              pan-gesture-handler)
+                                     pan-gesture-handler)
        [animated/view {:style {:position "absolute"
                                :top      0
                                :bottom   0
@@ -181,8 +191,7 @@
                                  :bottom          0
                                  :left            0
                                  :right           0
-                                 :overflow        "hidden"
-                                 :transform       [{:scale swipe-scale} 
+                                 :transform       [{:scale swipe-scale}
                                                    {:translateY (animated/multiply translate-y
                                                                                    (animated/sub 2 swipe-scale))}]
                                  :justify-content :center
