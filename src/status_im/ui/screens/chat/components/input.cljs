@@ -79,7 +79,7 @@
       :color               (styles/send-icon-color)}]]])
 
 (defn text-input
-  [{:keys [cooldown-enabled? text-value on-text-change set-active-panel text-input-ref]}]
+  [{:keys [cooldown-enabled? input-with-mentions on-text-change set-active-panel text-input-ref]}]
   (let [cursor            @(re-frame/subscribe [:chat/cursor])
         mentionable-users @(re-frame/subscribe [:chats/mentionable-users])]
     [rn/view {:style (styles/text-input-wrapper)}
@@ -90,7 +90,6 @@
        :accessibility-label    :chat-message-input
        :text-align-vertical    :center
        :multiline              true
-       :default-value          text-value
        :editable               (not cooldown-enabled?)
        :blur-on-submit         false
        :auto-focus             false
@@ -146,7 +145,20 @@
            ;; `on-change`, that's why mention suggestions are calculated
            ;; on `on-change`
            (when platform/android?
-             (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))}]]))
+             (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))}
+      ;; NOTE(rasom): reduce was used instead of for here because although
+      ;; each text component was given a unique id it still would mess with
+      ;; colors on Android. In case if entire component is built without lists
+      ;; inside it works just fine on both platforms.
+      (reduce
+       (fn [acc [type text]]
+         (conj
+          acc
+          [rn/text (when (= type :mention)
+                     {:style {:color "#0DA4C9"}})
+           text]))
+       [:<>]
+       input-with-mentions)]]))
 
 (defn mention-item
   [[_ {:keys [identicon alias name] :as user}]]
@@ -248,7 +260,10 @@
       (let [disconnected?        @(re-frame/subscribe [:disconnected?])
             {:keys [processing]} @(re-frame/subscribe [:multiaccounts/login])
             mainnet?             @(re-frame/subscribe [:mainnet?])
-            input-text           @(re-frame/subscribe [:chats/current-chat-input-text])
+            input-text
+            @(re-frame/subscribe [:chats/current-chat-input-text])
+            input-with-mentions
+            @(re-frame/subscribe [:chat/input-with-mentions])
             cooldown-enabled?    @(re-frame/subscribe [:chats/cooldown-enabled?])
             one-to-one-chat?     @(re-frame/subscribe [:current-chat/one-to-one-chat?])
             {:keys [public?
@@ -295,6 +310,7 @@
                      :on-send-press            #(do (re-frame/dispatch [:chat.ui/send-current-message])
                                                     (clear-input))
                      :text-value               input-text
+                     :input-with-mentions      input-with-mentions
                      :on-text-change           on-text-change
                      :cooldown-enabled?        cooldown-enabled?
                      :show-send                show-send

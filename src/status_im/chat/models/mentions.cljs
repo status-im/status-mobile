@@ -85,7 +85,9 @@
                  (string/lower-case name)
                  searched-text)
                 name)]
-       (assoc acc k (assoc user :match match))
+       (assoc acc k (assoc user
+                           :match match
+                           :searched-text searched-text))
        acc))
    {}
    users))
@@ -169,6 +171,120 @@
     (- (check-for-at-sign new-text)
        (check-for-at-sign previous-text))))
 
+(defn get-at-sign-idxs
+  ([text start]
+   (get-at-sign-idxs text start 0 []))
+  ([text start from idxs]
+   (if-let [idx (string/index-of text at-sign from)]
+     (recur text start (inc idx) (conj idxs (+ start idx)))
+     idxs)))
+
+(defn calc-at-idxs
+  [{:keys [at-idxs new-text previous-text start]}]
+  (let [new-idxs     (get-at-sign-idxs new-text start)
+        new-idx-cnt  (count new-idxs)
+        last-new-idx (when (pos? new-idx-cnt)
+                       (nth new-idxs (dec new-idx-cnt)))
+        new-text-len (count new-text)
+        old-text-len (count previous-text)
+        old-end      (+ start old-text-len)]
+    (if-not (seq at-idxs)
+      (map (fn [idx]
+             {:from     idx
+              :checked? false})
+           new-idxs)
+      (let [diff (- new-text-len old-text-len)
+            {:keys [state added?]}
+            (->> at-idxs
+                 (keep (fn [{:keys [from to] :as entry}]
+                         (let [to+1 (inc to)]
+                           (cond
+                             ;; starts after change
+                             (>= from old-end)
+                             (assoc entry
+                                    :from (+ from diff)
+                                    :to (+ to diff))
+
+                             ;; starts and end before change
+                             (and
+                              (< from start)
+                              (or
+                               ;; is not checked yet
+                               (not to+1)
+                               (< to+1 start)))
+                             entry
+
+                             ;; starts before change intersects with it 
+                             (and (< from start)
+                                  (>= to+1 start))
+                             {:from     from
+                              :checked? false}
+
+                             ;; starts in changed part of text
+                             :else nil))))
+                 (reduce
+                  (fn [{:keys [state added?] :as acc} {:keys [from] :as entry}]
+                    (if (and last-new-idx
+                             (> from last-new-idx)
+                             (not added?))
+                      {:state  (conj
+                                (into state (map (fn [idx]
+                                                   {:from     idx
+                                                    :checked? false})
+                                                 new-idxs))
+                                entry)
+                       :added? true}
+                      (update acc :state conj entry)))
+                  {:state []}))]
+        (if added?
+          state
+          (into state (map (fn [idx]
+                             {:from     idx
+                              :checked? false})
+                           new-idxs)))))))
+
+(defn check-entry
+  [text {:keys [from checked?] :as entry} users-fn]
+  (if checked?
+    entry
+    (let [{:keys [match]}
+          (match-mention (str text "@") (users-fn) from)]
+      (if match
+        {:from from
+         :to (+ from (count match))
+         :checked? true
+         :mention? true}
+        {:from from
+         :to (count text)
+         :checked? true
+         :mention false}))))
+
+(defn check-idx-for-mentions [text idxs users-fn]
+  (let [idxs
+        (reduce
+         (fn [acc {:keys [from] :as entry}]
+           (let [previous-entry-idx (dec (count acc))
+                 new-entry          (check-entry text entry users-fn)]
+             (cond-> acc
+               (and (>= previous-entry-idx 0)
+                    (not (get-in acc [previous-entry-idx :mention?])))
+               (assoc-in [previous-entry-idx :to] (dec from))
+
+               (>= previous-entry-idx 0)
+               (assoc-in [previous-entry-idx :next-at-idx] from)
+
+               :always
+               (conj (dissoc new-entry :next-at-idx)))))
+         []
+         idxs)]
+    (when (seq idxs)
+      (let [last-idx (dec (count idxs))]
+        (if (get-in idxs [last-idx :mention?])
+          idxs
+          (-> idxs
+              (assoc-in [last-idx :to] (dec (count text)))
+              (assoc-in [last-idx :checked?] false)))))))
+
 (fx/defn on-text-input
   {:events [::on-text-input]}
   [{:keys [db] :as cofx} {:keys [new-text previous-text start end] :as args}]
@@ -182,12 +298,59 @@
         chat-id        (:current-chat-id db)
         change         (at-sign-change normalized-previous-text new-text)
         previous-state (get-in db [:chats chat-id :mentions])
+        text     (get-in db [:chat/inputs chat-id :input-text])
         new-state (-> previous-state
                       (update :at-sign-counter + change)
                       (merge args)
-                      (assoc :previous-text normalized-previous-text))]
+                      (assoc :previous-text normalized-previous-text))
+        old-at-idxs (:at-idxs new-state)
+        new-at-idxs (calc-at-idxs new-state)
+        new-state (assoc new-state :at-idxs new-at-idxs)]
     (log/debug "[mentions] on-text-input state" new-state)
     {:db (assoc-in db [:chats chat-id :mentions] new-state)}))
+
+(defn calculate-input [text [first-idx :as idxs]]
+  (if-not first-idx
+    [[:text text]]
+    (let [idx-cnt (count idxs)
+          last-from (get-in idxs [(dec idx-cnt) :from])]
+      (reduce
+       (fn [acc {:keys [from to next-at-idx mention?]}]
+         (cond
+           (and mention? next-at-idx)
+           (into acc [[:mention (subs text from (inc to))]
+                      [:text (subs text (inc to) next-at-idx)]])
+
+           (and mention? (= last-from from))
+           (into acc [[:mention (subs text from (inc to))]
+                      [:text (subs text (inc to))]])
+
+           :else
+           (conj acc [:text (subs text from (inc to))])))
+       (let [first-from (:from first-idx)]
+         (if (zero? first-from)
+           []
+           [[:text (subs text 0 first-from)]]))
+       idxs))))
+
+(fx/defn recheck-at-idxs
+  [{:keys [db]} mentionable-users]
+  (let [chat-id  (:current-chat-id db)
+        text     (get-in db [:chat/inputs chat-id :input-text])
+        {:keys [new-text at-sign-counter start end] :as state}
+        (get-in db [:chats chat-id :mentions])
+        new-at-idxs (check-idx-for-mentions
+                     text
+                     (:at-idxs state)
+                     (fn [] mentionable-users))
+        calculated-input (calculate-input text new-at-idxs)]
+    (log/debug "[mentions] new-at-idxs" new-at-idxs calculated-input)
+    {:db (-> db
+             (update-in
+              [:chats chat-id :mentions]
+              assoc
+              :at-idxs new-at-idxs)
+             (assoc-in [:chats/input-with-mentions chat-id] calculated-input))}))
 
 (fx/defn calculate-suggestion
   {:events [::calculate-suggestions]}
@@ -200,8 +363,16 @@
     (log/debug "[mentions] calculate suggestions"
                "state" state)
     (if-not (pos? at-sign-counter)
-      {:db (assoc-in db [:chats/mention-suggestions chat-id] nil)}
-      (let [addition?     (<= start end)
+      {:db (-> db
+               (assoc-in [:chats/mention-suggestions chat-id] nil)
+               (assoc-in [:chats chat-id :mentions :at-idxs] nil)
+               (assoc-in [:chats/input-with-mentions chat-id] [[:text text]]))}
+      (let [new-at-idxs (check-idx-for-mentions
+                         text
+                         (:at-idxs state)
+                         (fn [] mentionable-users))
+            calculated-input (calculate-input text new-at-idxs)
+            addition?     (<= start end)
             end           (if addition?
                             (+ start (count new-text))
                             start)
@@ -216,21 +387,24 @@
                    "end" end
                    "searched-text" (pr-str searched-text)
                    "mentions" (count mentions))
+        (log/debug "[mentions] new-at-idxs" new-at-idxs calculated-input)
         {:db (-> db
                  (update-in [:chats chat-id :mentions]
                             assoc
                             :at-sign-idx at-sign-idx
+                            :at-idxs new-at-idxs
                             :mention-end end)
+                 (assoc-in [:chats/input-with-mentions chat-id] calculated-input)
                  (assoc-in [:chats/mention-suggestions chat-id] mentions))}))))
 
 (defn new-input-text-with-mention
   [{:keys [db]} {:keys [name]}]
   (let [chat-id (:current-chat-id db)
         text    (get-in db [:chat/inputs chat-id :input-text])
-        {:keys [mention-end at-sign-idx] :as state}
+        {:keys [mention-end at-sign-idx]}
         (get-in db [:chats chat-id :mentions])]
     (log/debug "[mentions] clear suggestions"
-               "state" state)
+               "state" new-input-text-with-mention)
     (string/join
      [(subs text 0 (inc at-sign-idx))
       name
@@ -247,6 +421,7 @@
   (let [chat-id (:current-chat-id db)]
     {:db (-> db
              (update-in [:chats chat-id] dissoc :mentions)
+             (update :chats/input-with-mentions dissoc chat-id)
              (update :chats/mention-suggestions dissoc chat-id))}))
 
 (fx/defn clear-cursor

@@ -30,7 +30,7 @@
   {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))})
 
 (fx/defn select-mention
-  [{:keys [db] :as cofx} {:keys [name] :as user}]
+  [{:keys [db] :as cofx} {:keys [alias name searched-text match] :as user}]
   (let [chat-id     (:current-chat-id db)
         new-text    (mentions/new-input-text-with-mention cofx user)
         at-sign-idx (get-in db [:chats chat-id :mentions :at-sign-idx])]
@@ -39,7 +39,17 @@
      {:db (-> db
               (assoc-in [:chats/cursor chat-id] (+ at-sign-idx (count name) 2))
               (assoc-in [:chats/mention-suggestions chat-id] nil))}
-     (set-chat-input-text new-text))))
+     (set-chat-input-text new-text)
+     ;; NOTE(roman): on-text-input event is not dispatched when we change input
+     ;; programmatically, so we have to call `on-text-input` manually 
+     (mentions/on-text-input
+      (let [match-len (count match)
+            searched-text-len (count searched-text)]
+        {:new-text      (subs match searched-text-len)
+         :previous-text ""
+         :start         (+ at-sign-idx searched-text-len 1)
+         :end           (+ at-sign-idx match-len 1)}))
+     (mentions/recheck-at-idxs {alias user}))))
 
 (defn- start-cooldown [{:keys [db]} cooldowns]
   {:dispatch-later        [{:dispatch [:chat/disable-cooldown]

@@ -121,7 +121,7 @@
 (reg-root-key-sub :group-chat/invitations :group-chat/invitations)
 (reg-root-key-sub :chats/mention-suggestions :chats/mention-suggestions)
 (reg-root-key-sub :chats/cursor :chats/cursor)
-
+(reg-root-key-sub :chats/input-with-mentions :chats/input-with-mentions)
 ;;browser
 (reg-root-key-sub :browsers :browser/browsers)
 (reg-root-key-sub :browser/options :browser/options)
@@ -901,6 +901,13 @@
  :chat/cursor
  :<- [:chats/current-chat-id]
  :<- [:chats/cursor]
+ (fn [[chat-id cursor]]
+   (get cursor chat-id)))
+
+(re-frame/reg-sub
+ :chat/input-with-mentions
+ :<- [:chats/current-chat-id]
+ :<- [:chats/input-with-mentions]
  (fn [[chat-id cursor]]
    (get cursor chat-id)))
 
