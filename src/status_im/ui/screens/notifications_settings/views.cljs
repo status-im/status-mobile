@@ -19,7 +19,7 @@
                 push-notifications-from-contacts-only?]}
         @(re-frame/subscribe [:multiaccount])]
     [react/view {:flex 1}
-     [topbar/topbar {:title :t/notification-settings}]
+     [topbar/topbar {:title (i18n/label :t/notification-settings)}]
      [react/scroll-view {:style                   {:flex 1}
                          :content-container-style {:padding-vertical 8}}
       [quo/list-item
@@ -58,7 +58,7 @@
                 push-notifications-server-enabled?]}
         @(re-frame/subscribe [:multiaccount])]
     [react/view {:flex 1}
-     [topbar/topbar {:title :t/notification-settings}]
+     [topbar/topbar {:title (i18n/label :t/notification-settings)}]
      [react/scroll-view {:style                   {:flex 1}
                          :content-container-style {:padding-vertical 8}}
       [quo/list-item
