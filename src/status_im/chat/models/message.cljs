@@ -64,12 +64,14 @@
 (fx/defn add-sender-to-chat-users
   [{:keys [db]} {:keys [chat-id alias name identicon from]}]
   (when (and alias (not= alias ""))
-    {:db (update-in db [:chats chat-id :users] assoc
-                    from
-                    {:alias      alias
-                     :name       (or name alias)
-                     :identicon  identicon
-                     :public-key from})}))
+    (let [nickname (get-in db [:contacts/contacts from :nickname])]
+      {:db (update-in db [:chats chat-id :users] assoc
+                      from
+                      {:alias      alias
+                       :name       (or name alias)
+                       :identicon  identicon
+                       :public-key from
+                       :nickname   nickname})})))
 
 (fx/defn add-received-message
   [{:keys [db] :as cofx}

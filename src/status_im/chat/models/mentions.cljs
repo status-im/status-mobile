@@ -72,9 +72,15 @@
 
 (defn get-suggestions [users searched-text]
   (reduce
-   (fn [acc [k {:keys [alias name] :as user}]]
+   (fn [acc [k {:keys [alias name nickname] :as user}]]
      (if-let [match
               (cond
+                (and nickname
+                     (string/starts-with?
+                      (string/lower-case nickname)
+                      searched-text))
+                (or alias name)
+
                 (and alias
                      (string/starts-with?
                       (string/lower-case alias)
@@ -330,7 +336,7 @@
               :at-idxs new-at-idxs)
              (assoc-in [:chats/input-with-mentions chat-id] calculated-input))}))
 
-(fx/defn calculate-suggestion
+(fx/defn calculate-suggestions
   {:events [::calculate-suggestions]}
   [{:keys [db] :as cofx} mentionable-users]
   (let [chat-id  (:current-chat-id db)
@@ -441,6 +447,6 @@
                          :start end
                          :end end
                          :new-text "")}
-         (calculate-suggestion mentionable-users))
+         (calculate-suggestions mentionable-users))
         (clear-suggestions cofx)))))
 

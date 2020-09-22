@@ -3,6 +3,7 @@
             [quo.react-native :as rn]
             [quo.react :as react]
             [quo.platform :as platform]
+            [quo.components.text :as text]
             [quo.design-system.colors :as colors]
             [status-im.ui.screens.chat.components.style :as styles]
             [status-im.ui.screens.chat.components.reply :as reply]
@@ -196,9 +197,8 @@
        input-with-mentions)]]))
 
 (defn mention-item
-  [[_ {:keys [identicon alias name] :as user}]]
-  (let [title name
-        subtitle? (not= alias name)]
+  [[_ {:keys [identicon alias name nickname] :as user}]]
+  (let [ens-name? (not= alias name)]
     [list-item/list-item
      (cond-> {:icon
               [rn/view {:style {}}
@@ -211,13 +211,31 @@
               :icon-container-style {}
               :size                 :small
               :text-size            :small
-              :title                title
+              :title
+              [text/text
+               {:weight              :medium
+                :ellipsize-mode      :tail
+                :number-of-lines     1
+                :size                :small}
+               (if nickname
+                 nickname
+                 name)
+               (when nickname
+                 [text/text
+                  {:weight          :regular
+                   :color           :secondary
+                   :ellipsize-mode  :tail
+                   :size            :small}
+                  " "
+                  (when ens-name?
+                    "@")
+                  name])]
               :title-text-weight    :medium
               :on-press
               (fn []
                 (re-frame/dispatch [:chat.ui/select-mention user]))}
 
-       subtitle?
+       ens-name?
        (assoc :subtitle alias))]))
 
 (def chat-input-height (reagent/atom nil))

@@ -87,7 +87,7 @@
   (when (not= (get-in db [:multiaccount :public-key]) public-key)
     (let [contact (cond-> (get-in db [:contacts/contacts public-key]
                                   (build-contact cofx public-key))
-                    nickname
+                    (and nickname (not (string/blank? nickname)))
                     (assoc :nickname nickname)
                     :else
                     (update :system-tags
@@ -187,9 +187,12 @@
 (fx/defn update-nickname
   {:events [:contacts/update-nickname]}
   [{:keys [db] :as cofx} public-key nickname]
-  (fx/merge cofx
-            {:db (if (string/blank? nickname)
-                   (update-in db [:contacts/contacts public-key] dissoc :nickname)
-                   (assoc-in db [:contacts/contacts public-key :nickname] nickname))}
-            (upsert-contact {:public-key public-key})
-            (navigation/navigate-back)))
+  (let [contact (-> (build-contact cofx public-key)
+                    (merge (get-in db [:contacts/contacts public-key])))]
+    (fx/merge cofx
+              {:db (assoc-in db [:contacts/contacts public-key]
+                             (if (string/blank? nickname)
+                               (dissoc contact :nickname)
+                               (assoc contact :nickname nickname)))}
+              (upsert-contact {:public-key public-key})
+              (navigation/navigate-back))))

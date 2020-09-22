@@ -92,24 +92,26 @@
           (reduce (fn [{:keys [last-clock-value all-messages users] :as acc}
                        {:keys [clock-value seen message-id alias name identicon from]
                         :as message}]
-                    (cond-> acc
-                      (and alias (not= alias ""))
-                      (update :users assoc from {:alias      alias
-                                                 :name       (or name alias)
-                                                 :identicon  identicon
-                                                 :public-key from})
-                      (or (nil? last-clock-value)
-                          (> last-clock-value clock-value))
-                      (assoc :last-clock-value clock-value)
+                    (let [nickname (get-in db [:contacts/contacts from :nickname])]
+                      (cond-> acc
+                        (and alias (not= alias ""))
+                        (update :users assoc from {:alias      alias
+                                                   :name       (or name alias)
+                                                   :identicon  identicon
+                                                   :public-key from
+                                                   :nickname   nickname})
+                        (or (nil? last-clock-value)
+                            (> last-clock-value clock-value))
+                        (assoc :last-clock-value clock-value)
 
-                      (not seen)
-                      (update :unviewed-message-ids conj message-id)
+                        (not seen)
+                        (update :unviewed-message-ids conj message-id)
 
-                      (nil? (get all-messages message-id))
-                      (update :new-messages conj message)
+                        (nil? (get all-messages message-id))
+                        (update :new-messages conj message)
 
-                      :always
-                      (update :all-messages assoc message-id message)))
+                        :always
+                        (update :all-messages assoc message-id message))))
                   {:all-messages         already-loaded-messages
                    :unviewed-message-ids loaded-unviewed-messages-ids
                    :users                users

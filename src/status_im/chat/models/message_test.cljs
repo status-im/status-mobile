@@ -48,7 +48,8 @@
                          {"from" {:alias      "alias",
                                   :name       "name",
                                   :identicon  "identicon",
-                                  :public-key "from"}}}}}}
+                                  :public-key "from"
+                                  :nickname    nil}}}}}}
                  (message/add-received-message
                   cofx
                   message)))))
@@ -70,7 +71,8 @@
                          {"from" {:alias      "alias",
                                   :name       "name",
                                   :identicon  "identicon",
-                                  :public-key "from"}}}}}}
+                                  :public-key "from"
+                                  :nickname   nil}}}}}}
                  (message/add-received-message
                   cofx
                   message)))))

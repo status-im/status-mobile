@@ -884,7 +884,7 @@
  :<- [:contacts/contacts]
  (fn [contacts]
    (reduce
-    (fn [acc [key {:keys [alias name identicon public-key] :as contact}]]
+    (fn [acc [key {:keys [alias name identicon public-key nickname] :as contact}]]
       (if (and alias
                (not= alias "")
                (not (contact.db/blocked? contact)))
@@ -893,6 +893,7 @@
                  {:alias      alias
                   :name       (or name alias)
                   :identicon  identicon
+                  :nickname   nickname
                   :public-key key}))
         acc))
     {}
