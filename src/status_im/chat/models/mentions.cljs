@@ -151,26 +151,6 @@
 (defn check-mentions [cofx text]
   (replace-mentions text #(get-mentionable-users cofx)))
 
-(defn check-for-at-sign
-  ([text]
-   (check-for-at-sign text 0 0))
-  ([text from cnt]
-   (if-let [idx (string/index-of text at-sign from)]
-     (recur text (inc idx) (inc cnt))
-     cnt)))
-
-(defn at-sign-change [previous-text new-text]
-  (cond
-    (= "" previous-text)
-    (check-for-at-sign new-text)
-
-    (= "" new-text)
-    (- (check-for-at-sign previous-text))
-
-    :else
-    (- (check-for-at-sign new-text)
-       (check-for-at-sign previous-text))))
-
 (defn get-at-sign-idxs
   ([text start]
    (get-at-sign-idxs text start 0 []))
@@ -296,11 +276,9 @@
           previous-text
           (subs previous-text start end))
         chat-id        (:current-chat-id db)
-        change         (at-sign-change normalized-previous-text new-text)
         previous-state (get-in db [:chats chat-id :mentions])
         text     (get-in db [:chat/inputs chat-id :input-text])
         new-state (-> previous-state
-                      (update :at-sign-counter + change)
                       (merge args)
                       (assoc :previous-text normalized-previous-text))
         old-at-idxs (:at-idxs new-state)
@@ -337,7 +315,7 @@
   [{:keys [db]} mentionable-users]
   (let [chat-id  (:current-chat-id db)
         text     (get-in db [:chat/inputs chat-id :input-text])
-        {:keys [new-text at-sign-counter start end] :as state}
+        {:keys [new-text start end] :as state}
         (get-in db [:chats chat-id :mentions])
         new-at-idxs (check-idx-for-mentions
                      text
@@ -357,12 +335,12 @@
   [{:keys [db] :as cofx} mentionable-users]
   (let [chat-id  (:current-chat-id db)
         text     (get-in db [:chat/inputs chat-id :input-text])
-        {:keys [new-text at-sign-counter start end] :as state}
+        {:keys [new-text at-idxs start end] :as state}
         (get-in db [:chats chat-id :mentions])
         new-text (or new-text text)]
     (log/debug "[mentions] calculate suggestions"
                "state" state)
-    (if-not (pos? at-sign-counter)
+    (if-not (seq at-idxs)
       {:db (-> db
                (assoc-in [:chats/mention-suggestions chat-id] nil)
                (assoc-in [:chats chat-id :mentions :at-idxs] nil)
@@ -382,8 +360,10 @@
             (when (and (not (> at-sign-idx start))
                        (not (> (- end at-sign-idx) 100)))
               (get-suggestions mentionable-users searched-text))]
-        (log/debug "[mentions] mention detected"
+        (log/debug "[mentions] mention check"
                    "addition" addition?
+                   "at-sign-idx" at-sign-idx
+                   "start" start
                    "end" end
                    "searched-text" (pr-str searched-text)
                    "mentions" (count mentions))
@@ -419,10 +399,18 @@
   [{:keys [db]}]
   (log/debug "[mentions] clear suggestions")
   (let [chat-id (:current-chat-id db)]
-    {:db (-> db
-             (update-in [:chats chat-id] dissoc :mentions)
-             (update :chats/input-with-mentions dissoc chat-id)
-             (update :chats/mention-suggestions dissoc chat-id))}))
+    {:db (update db :chats/mention-suggestions dissoc chat-id)}))
+
+(fx/defn clear-mentions
+  [{:keys [db] :as cofx}]
+  (log/debug "[mentions] clear mentions")
+  (let [chat-id (:current-chat-id db)]
+    (fx/merge
+     cofx
+     {:db (-> db
+              (update-in [:chats chat-id] dissoc :mentions)
+              (update :chats/input-with-mentions dissoc chat-id))}
+     (clear-suggestions))))
 
 (fx/defn clear-cursor
   {:events [::clear-cursor]}
@@ -430,3 +418,29 @@
   (log/debug "[mentions] clear cursor")
   {:db
    (update db :chats/cursor dissoc (:current-chat-id db))})
+
+(fx/defn check-selection
+  {:events [::on-selection-change]}
+  [{:keys [db] :as cofx}
+   {:keys [start end] :as selection}
+   mentionable-users]
+  (let [chat-id (:current-chat-id db)
+        {:keys [mention-end at-idxs]}
+        (get-in db [:chats chat-id :mentions])]
+    (when (seq at-idxs)
+      (if (some
+           (fn [{:keys [from to] :as idx}]
+             (when (and (not (< start from))
+                        (<= (dec end) to))
+               idx))
+           at-idxs)
+        (fx/merge
+         cofx
+         {:db (update-in db [:chats chat-id :mentions]
+                         assoc
+                         :start end
+                         :end end
+                         :new-text "")}
+         (calculate-suggestion mentionable-users))
+        (clear-suggestions cofx)))))
+

@@ -158,5 +158,5 @@
     (fx/merge cofx
               (send-image)
               (send-plain-text-message input-text-with-mentions current-chat-id)
-              (mentions/clear-suggestions)
+              (mentions/clear-mentions)
               (mentions/clear-cursor))))

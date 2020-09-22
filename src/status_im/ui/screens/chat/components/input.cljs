@@ -81,7 +81,9 @@
 (defn text-input
   [{:keys [cooldown-enabled? input-with-mentions on-text-change set-active-panel text-input-ref]}]
   (let [cursor            @(re-frame/subscribe [:chat/cursor])
-        mentionable-users @(re-frame/subscribe [:chats/mentionable-users])]
+        mentionable-users @(re-frame/subscribe [:chats/mentionable-users])
+        timeout-id        (atom nil)
+        last-text-change  (atom nil)]
     [rn/view {:style (styles/text-input-wrapper)}
      [rn/text-input
       {:style                  (styles/text-input)
@@ -112,15 +114,48 @@
            :end   cursor}))
 
        :on-selection-change
-       (fn [_]
-         ;; NOTE(rasom): we have to reset `cursor` value when user starts using
-         ;; text-input because otherwise cursor will stay in the same position
-         (when (and cursor platform/android?)
-           (re-frame/dispatch [::mentions/clear-cursor])))
+       (fn [args]
+         (let [selection (.-selection ^js (.-nativeEvent ^js args))
+               start     (.-start selection)
+               end       (.-end selection)]
+           ;; NOTE(rasom): on iOS we do not dispatch this event immediately
+           ;; because it is needed only in case if selection is changed without
+           ;; typing. Timeout might be canceled on `on-change`.
+           (when platform/ios?
+             (reset!
+              timeout-id
+              (utils.utils/set-timeout
+               #(re-frame/dispatch [::mentions/on-selection-change
+                                    {:start start
+                                     :end   end}
+                                    mentionable-users])
+               50)))
+           ;; NOTE(rasom): on Android we dispatch event only in case if there
+           ;; was no text changes during last 50ms. `on-selection-change` is
+           ;; dispatched after `on-change`, that's why there is no another way
+           ;; to know whether selection was changed without typing.
+           (when (and platform/android?
+                      (or (not @last-text-change)
+                          (< 50 (- (js/Date.now) @last-text-change))))
+             (re-frame/dispatch [::mentions/on-selection-change
+                                 {:start start
+                                  :end   end}
+                                 mentionable-users]))
+           ;; NOTE(rasom): we have to reset `cursor` value when user starts using
+           ;; text-input because otherwise cursor will stay in the same position
+           (when (and cursor platform/android?)
+             (re-frame/dispatch [::mentions/clear-cursor]))))
 
        :on-change
        (fn [args]
          (let [text (.-text ^js (.-nativeEvent ^js args))]
+           ;; NOTE(rasom): on iOS `on-selection-change` is canceled in case if it
+           ;; happens during typing because it is not needed for mention
+           ;; suggestions calculation
+           (when (and platform/ios? @timeout-id)
+             (utils.utils/clear-timeout @timeout-id))
+           (when platform/android?
+             (reset! last-text-change (js/Date.now)))
            (on-text-change text)
            ;; NOTE(rasom): on iOS `on-change` is dispatched after `on-text-input`,
            ;; that's why mention suggestions are calculated on `on-change`

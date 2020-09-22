@@ -885,7 +885,6 @@
  (fn [contacts]
    (reduce
     (fn [acc [key {:keys [alias name identicon public-key] :as contact}]]
-      (println :foo alias (contact.db/blocked? contact))
       (if (and alias
                (not= alias "")
                (not (contact.db/blocked? contact)))
