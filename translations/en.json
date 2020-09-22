@@ -1273,5 +1273,6 @@
     "recent-empty": "Recently used addresses will appear here",
     "address-or-ens-name": "Address or ENS name",
     "name-optional": "Name (optional)",
-    "mute": "Mute"
+    "mute": "Mute",
+    "warning-sending-to-contract-descr": "The address you entered is a smart contract, sending funds to this address may result in loss of funds. To interact with a DApp, open the DApp in the Status DApp Browser."
 }

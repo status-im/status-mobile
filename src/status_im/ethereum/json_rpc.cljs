@@ -25,6 +25,7 @@
    "eth_getBlockByNumber" {}
    "eth_newBlockFilter" {:subscription? true}
    "eth_newFilter" {:subscription? true}
+   "eth_getCode" {}
    "eth_syncing" {}
    "net_version" {}
    "web3_clientVersion" {}

@@ -55,7 +55,7 @@
 
 (fx/defn set-recipient
   {:events [::recipient-address-resolved]}
-  [{:keys [db]} raw-recipient id]
+  [{:keys [db] :as cofx} raw-recipient id]
   (when (or (not id) (= id @resolve-last-id))
     (reset! resolve-last-id nil)
     (let [chain (ethereum/chain-keyword db)
@@ -64,9 +64,17 @@
         (ethereum/address? recipient)
         (let [checksum (eip55/address->checksum recipient)]
           (if (eip55/valid-address-checksum? checksum)
-            {:db       (-> db
-                           (assoc-in [:wallet/recipient :searching] false)
-                           (assoc-in [:wallet/recipient :resolved-address] checksum))}
+            (fx/merge cofx
+                      {:db       (-> db
+                                     (assoc-in [:wallet/recipient :searching] false)
+                                     (assoc-in [:wallet/recipient :resolved-address] checksum))}
+                      (json-rpc/call
+                       {:method            "eth_getCode"
+                        :params            [checksum "latest"]
+                        :on-success        #(when (not= "0x" %)
+                                              (utils/show-popup (i18n/label :t/warning)
+                                                                (i18n/label :t/warning-sending-to-contract-descr)))
+                        :number-of-retries 3}))
             {:ui/show-error (i18n/label :t/wallet-invalid-address-checksum {:data recipient})
              :db (assoc-in db [:wallet/recipient :searching] false)}))
         (and (not (string/blank? recipient)) (ens/valid-eth-name-prefix? recipient))
