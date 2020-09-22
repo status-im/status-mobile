@@ -43,7 +43,7 @@
     [react/view {:border-color colors/gray-lighter :border-radius 36 :border-width 1 :padding-horizontal 8 :padding-vertical 5}
      [react/text {:style {:color colors/blue :typography :main-medium}} (str "#" topic)]]]])
 
-(def lang-names {"es" "status-spanish"
+(def lang-names {"es" "status-espanol"
                  "pt" "statusbrasil"
                  "de" "status-german"
                  "fr" "status-french"
