@@ -36,6 +36,9 @@
              (= type "mention")
              @(re-frame/subscribe [:contacts/contact-name-by-identity literal])
 
+             (seq children)
+             (get-quoted-text-with-mentions children)
+
              :else
              literal))
          parsed-text)))
