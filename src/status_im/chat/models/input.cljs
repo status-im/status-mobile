@@ -123,14 +123,16 @@
 
 (fx/defn send-image
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
-  (let [image-path (get-in db [:chats current-chat-id :metadata :sending-image :uri])]
+  (let [images (get-in db [:chats current-chat-id :metadata :sending-image])]
     (fx/merge cofx
               {:db (update-in db [:chats current-chat-id :metadata] dissoc :sending-image)}
-              (when-not (string/blank? image-path)
-                (chat.message/send-message {:chat-id      current-chat-id
-                                            :content-type constants/content-type-image
-                                            :image-path   (utils/safe-replace image-path #"file://" "")
-                                            :text         (i18n/label :t/update-to-see-image)})))))
+              (chat.message/send-messages
+               (mapv (fn [{:keys [uri]}]
+                       {:chat-id      current-chat-id
+                        :content-type constants/content-type-image
+                        :image-path   (utils/safe-replace uri #"file://" "")
+                        :text         (i18n/label :t/update-to-see-image)})
+                     images)))))
 
 (fx/defn send-audio-message
   [cofx audio-path duration current-chat-id]

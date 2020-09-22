@@ -99,7 +99,7 @@
   {:events [:chat.ui/image-selected]}
   [{:keys [db]} uri]
   (let [current-chat-id (:current-chat-id db)]
-    {:db (assoc-in db [:chats current-chat-id :metadata :sending-image :uri] uri)}))
+    {:db (update-in db [:chats current-chat-id :metadata :sending-image] conj {:uri uri})}))
 
 (fx/defn chat-open-image-picker
   {:events [:chat.ui/open-image-picker]}
