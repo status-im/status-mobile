@@ -9,7 +9,9 @@
 (def min-scale 1)
 (def max-scale 3)
 (def snap-duration 150)
-(def swipe-close-at 0.4)
+(def overscale-duration 150)
+(def swipe-close-at 0.6)
+(def overdrag-factor 0.2)
 
 (defn decay
   [position velocity clock]
@@ -17,7 +19,7 @@
                     :position (animated/value 0)
                     :time     (animated/value 0)
                     :velocity (animated/value 0)}
-        config #js {:deceleration 0.998}]
+        config #js {:deceleration 0.98}]
     (animated/block
      [(animated/cond* (animated/not* (animated/clock-running clock))
                       [(animated/set (.-finished state) 0)
@@ -36,54 +38,59 @@
          :y y}))
 
 (defn use-pinch
-  [pinch pan translate translation-y scale min-vec canvas]
-  (let [should-decay  (animated/use-value 0)
-        clock         (vec/create (animated/clock) (animated/clock))
-        offset        (vec/create-value 0 0)
-        scale-offset  (animated/value 1)
-        origin        (vec/create-value 0 0)
-        translation   (vec/create-value 0 0)
-        max-vec       (vec/minus min-vec)
-        center        (vec/divide canvas 2)
-        adjustedFocal (vec/sub (:focal pinch) (vec/add center offset))
-        clamped       (vec/sub
-                       (vec/clamp (vec/add offset (:translation pan)) min-vec max-vec)
-                       offset)
-        pinch-began   (animated/pinch-began (:state pinch))
-        pinch-active  (animated/pinch-active (:state pinch) (:number-of-pointers pinch))
-        pinch-end     (animated/pinch-end (:state pinch) (:number-of-pointers pinch))]
+  [pinch pan translate translation scale min-vec canvas]
+  (let [should-decay      (animated/use-value 0)
+        scale-clock       (animated/clock)
+        clock             (vec/create (animated/clock) (animated/clock))
+        offset            (vec/create-value 0 0)
+        scale-offset      (animated/value 1)
+        origin            (vec/create-value 0 0)
+        local-translation (vec/create-value 0 0)
+        max-vec           (vec/minus min-vec)
+        center            (vec/divide canvas 2)
+        adjustedFocal     (vec/sub (:focal pinch) (vec/add center offset))
+        clamped           (vec/sub
+                           (vec/clamp (vec/add offset (:translation pan)) min-vec max-vec)
+                           offset)
+        overdrag-vector   (vec/create (animated/cond* (animated/eq (.-x clamped) 0) overdrag-factor 1)
+                                      (animated/cond* (animated/eq (.-y clamped) 0) overdrag-factor 1))
+        pinch-began       (animated/pinch-began (:state pinch))
+        pinch-active      (animated/pinch-active (:state pinch) (:number-of-pointers pinch))
+        pinch-end         (animated/pinch-end (:state pinch) (:number-of-pointers pinch))]
     (animated/code!
      (fn []
        (animated/block
         [(animated/cond* (animated/eq (:state pan) (:active gh/states))
-                         [(animated/set translation-y (animated/sub (.-y (:translation pan)) (.-y clamped)))
-                          (vec/set translation clamped)])
+                         [(vec/set translation (vec/sub (:translation pan) clamped))
+                          (vec/set local-translation
+                                   (vec/multiply (:translation pan) overdrag-vector))])
          (animated/cond* pinch-began (vec/set origin adjustedFocal))
          (animated/cond* pinch-active
                          (vec/set
-                          translation
+                          local-translation
                           (vec/add
                            (vec/sub adjustedFocal origin)
                            origin
                            (vec/multiply -1 (:scale pinch) origin))))
          (animated/cond* (animated/and*
-                          (animated/or* (animated/eq (:state pinch) (:undetermined gh/states))
-                                        pinch-end)
+                          (animated/or*
+                           (animated/eq (:state pinch) (:undetermined gh/states))
+                           pinch-end)
                           (animated/or*
                            (animated/eq (:state pan) (:undetermined gh/states))
                            (animated/eq (:state pan) (:end gh/states))))
-                         [(animated/set scale-offset scale)
-                          (animated/cond* (animated/and*
-                                           (animated/not* (animated/less scale-offset min-scale))
-                                           (animated/not* (animated/greater scale-offset max-scale)))
-                                          (vec/set offset (vec/add offset translation)))
+                         [(animated/set scale-offset (animated/clamp scale min-scale max-scale))
+                          (vec/set offset (vec/add offset (vec/multiply local-translation
+                                                                        (vec/divide scale-offset scale))))
+                          (animated/cond* (animated/not* (animated/eq scale scale-offset))
+                                          (animated/set scale (animated/re-timing {:clock    scale-clock
+                                                                                   :from     scale
+                                                                                   :duration overscale-duration
+                                                                                   :to       scale-offset})))
+                          (animated/set should-decay 1)
                           (animated/set (:scale pinch) 1)
-                          (vec/set translation 0)
-                          (vec/set (:focal pinch) 0)
-                          (animated/cond* (animated/less scale-offset min-scale)
-                                          (animated/set scale-offset min-scale))
-                          (animated/cond* (animated/greater scale-offset max-scale)
-                                          (animated/set scale-offset max-scale))])
+                          (vec/set local-translation 0)
+                          (vec/set (:focal pinch) 0)])
          (animated/cond* (animated/or* (animated/eq (:state pan) (:active gh/states))
                                        pinch-active)
                          [(animated/stop-clock (.-x clock))
@@ -100,8 +107,11 @@
                                    (decay-vector offset (:velocity pan) clock)
                                    min-vec
                                    max-vec)))
-         (animated/set scale (animated/multiply (:scale pinch) scale-offset))
-         (vec/set translate (vec/add translation offset))]))
+         (animated/call* [(animated/clock-running scale-clock)] println)
+         (animated/cond* (animated/not* (animated/clock-running scale-clock))
+                         (animated/set scale (animated/multiply (:scale pinch) scale-offset)))
+
+         (vec/set translate (vec/add local-translation offset))]))
      [])))
 
 (defn pinch-zoom [props]
@@ -118,7 +128,7 @@
         {pan-gesture-handler :gesture-handler
          :as                 pan} (animated/use-pan-gesture-handler)
         translate                 (vec/create-value 0 0)
-        translation-y             (animated/use-value 0)
+        translation               (vec/create-value 0)
         translate-y               (animated/use-value 0)
         scale                     (animated/use-value 1)
         clock                     (animated/use-clock)
@@ -133,27 +143,27 @@
         min-y                     (animated/cond* (animated/greater (animated/multiply height norm-scale) screen-height)
                                                   (animated/sub screen-height (animated/multiply height norm-scale)))
         min-offset-vec            (vec/create min-x min-y)
+        close-at                  (animated/multiply (.-y canvas) swipe-close-at)
         snap-to                   (animated/snap-point translate-y
                                                        (.-y (:velocity pan))
-                                                       [0 (.-y canvas)])]
+                                                       [0 close-at])]
 
-    (use-pinch pinch pan translate translation-y scale min-offset-vec canvas)
+    (use-pinch pinch pan translate translation scale min-offset-vec canvas)
     (animated/code!
      (fn []
        (animated/block
         [(animated/on-change
-          translation-y
+          (.-y translation)
           (animated/cond* (animated/eq (:state pan) (:active gh/states))
-                          [(animated/call* [translation-y] println)
-                           (animated/set translate-y (animated/clamp translation-y 0 screen-height))]))
+                          [(animated/set translate-y (animated/clamp (.-y translation) 0 screen-height))]))
          (animated/cond* (animated/and* (animated/eq (:state pan) (:end gh/states))
-                                        (animated/neq translation-y 0))
+                                        (animated/neq (.-y translation) 0))
                          [(animated/set translate-y (animated/re-timing {:clock    clock
                                                                          :from     translate-y
                                                                          :duration snap-duration
                                                                          :to       snap-to}))
                           (animated/cond* (animated/and* (animated/not* (animated/clock-running clock))
-                                                         (animated/eq translate-y (.-y canvas)))
+                                                         (animated/eq translate-y close-at))
                                           [(animated/call* [] on-close)])])]))
      [on-close])
 
@@ -191,9 +201,6 @@
                                  :bottom          0
                                  :left            0
                                  :right           0
-                                 :transform       [{:scale swipe-scale}
-                                                   {:translateY (animated/multiply translate-y
-                                                                                   (animated/sub 2 swipe-scale))}]
                                  :justify-content :center
                                  :align-items     :center}}
           (when (string? uri)
@@ -203,4 +210,8 @@
                                       :height      height
                                       :transform   [{:translateX (.-x translate)}
                                                     {:translateY (.-y translate)}
-                                                    {:scale scale}]}}])]]]]])))
+                                                    {:scale scale}
+                                                    ;; Swipe to dismiss transformations
+                                                    {:translateY (animated/multiply translate-y
+                                                                                    (animated/sub 2 swipe-scale))}
+                                                    {:scale swipe-scale}]}}])]]]]])))
