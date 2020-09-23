@@ -707,10 +707,10 @@ class ProfileView(BaseView):
         self.network_settings_button.click()
         network_button = NetworkSettingsButton.NetworkButton(self.driver, network)
         network_button.click()
-        self.connect_button.click()
-        self.confirm_button.click()
+        self.connect_button.click_until_presence_of_element(self.confirm_button)
         from views.sign_in_view import SignInView
         signin_view = SignInView(self.driver)
+        self.confirm_button.click_until_absense_of_element(self.confirm_button)
         signin_view.sign_in()
 
     def open_contact_from_profile(self, username):
@@ -780,7 +780,8 @@ class ProfileView(BaseView):
 
     def logout(self):
         self.logout_button.click()
-        return self.logout_dialog.logout_button.click()
+        self.logout_dialog.logout_button.click()
+        self.logout_button.wait_for_invisibility_of_element(30)
 
     def mail_server_by_name(self, server_name):
         return MailServerElement(self.driver, server_name)

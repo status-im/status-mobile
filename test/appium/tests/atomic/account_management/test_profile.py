@@ -814,39 +814,40 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.get_back_to_home_view()
         profile_1.home_button.click()
 
-        profile_1.just_fyi('start chat with user2 and check that all messages are delivered')
-        chat_1 = home_1.add_contact(public_key)
-        message = 'test message'
-        chat_1.chat_message_input.send_keys(message)
-        chat_1.send_message_button.click()
-        chat_2 = home_2.get_chat(username_1).click()
-        chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
-        message_1 = 'new message'
-        chat_2.chat_message_input.send_keys(message_1)
-        chat_2.send_message_button.click()
-        chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element()
-
-        profile_1.just_fyi('delete custom mailserver')
-        chat_1.profile_button.click()
-        profile_1.sync_settings_button.click()
-        profile_1.mail_server_button.click()
-        profile_1.element_by_text(mailserver).scroll_to_element()
-        profile_1.element_by_text(mailserver).click()
-        profile_1.confirm_button.click()
-        profile_1.element_by_text(server_name).scroll_to_element()
-        profile_1.element_by_text(server_name).click()
-        profile_1.mail_server_delete_button.scroll_to_element()
-        profile_1.mail_server_delete_button.click()
-        profile_1.mail_server_confirm_delete_button.click()
-        if profile_1.element_by_text(server_name).is_element_displayed():
-            self.errors.append('Deleted custom mailserver is shown')
-        profile_1.get_back_to_home_view()
-        profile_1.relogin()
-        chat_1.profile_button.click()
-        profile_1.sync_settings_button.click()
-        profile_1.mail_server_button.click()
-        if profile_1.element_by_text(server_name).is_element_displayed():
-            self.errors.append('Deleted custom mailserver is shown after relogin')
+        # TODO: disabled due to 10065
+        # profile_1.just_fyi('start chat with user2 and check that all messages are delivered')
+        # chat_1 = home_1.add_contact(public_key)
+        # message = 'test message'
+        # chat_1.chat_message_input.send_keys(message)
+        # chat_1.send_message_button.click()
+        # chat_2 = home_2.get_chat(username_1).click()
+        # chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
+        # message_1 = 'new message'
+        # chat_2.chat_message_input.send_keys(message_1)
+        # chat_2.send_message_button.click()
+        # chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element()
+        #
+        # profile_1.just_fyi('delete custom mailserver')
+        # chat_1.profile_button.click()
+        # profile_1.sync_settings_button.click()
+        # profile_1.mail_server_button.click()
+        # profile_1.element_by_text(mailserver).scroll_to_element()
+        # profile_1.element_by_text(mailserver).click()
+        # profile_1.confirm_button.click()
+        # profile_1.element_by_text(server_name).scroll_to_element()
+        # profile_1.element_by_text(server_name).click()
+        # profile_1.mail_server_delete_button.scroll_to_element()
+        # profile_1.mail_server_delete_button.click()
+        # profile_1.mail_server_confirm_delete_button.click()
+        # if profile_1.element_by_text(server_name).is_element_displayed():
+        #     self.errors.append('Deleted custom mailserver is shown')
+        # profile_1.get_back_to_home_view()
+        # profile_1.relogin()
+        # chat_1.profile_button.click()
+        # profile_1.sync_settings_button.click()
+        # profile_1.mail_server_button.click()
+        # if profile_1.element_by_text(server_name).is_element_displayed():
+        #     self.errors.append('Deleted custom mailserver is shown after relogin')
 
         self.errors.verify_no_errors()
 
@@ -946,7 +947,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_2_profile = device_2_home.get_profile_view()
         device_2_profile.discover_and_advertise_device(device_2_name)
         device_1_profile.discover_and_advertise_device(device_1_name)
-        device_1_profile.get_toggle_device_by_name(device_2_name).click()
+        device_1_profile.get_toggle_device_by_name(device_2_name).wait_and_click()
         device_1_profile.sync_all_button.click()
         device_1_profile.sync_all_button.wait_for_visibility_of_element(15)
 
@@ -1097,7 +1098,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_1.just_fyi('check ENS name wallet address and public key')
         profile_1.element_by_text(user_1['ens']).click()
         for text in ('10 SNT, deposit unlocked', user_1['address'].lower(), user_1['public_key'] ):
-            if not profile_1.element_by_text_part(text).is_element_displayed():
+            if not profile_1.element_by_text_part(text).is_element_displayed(40):
                 self.errors.append('%s text is not shown' % text)
         dapp_view_1.get_back_to_home_view()
         profile_1.home_button.click()

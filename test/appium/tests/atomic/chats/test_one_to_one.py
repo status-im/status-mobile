@@ -928,10 +928,10 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 chat_view.ok_button.click()
             if url_data[key].get('username'):
                 if key == 'own_profile_key':
-                    if chat_view.profile_block_contact.is_element_displayed():
+                    if chat_view.profile_nickname.is_element_displayed():
                         self.errors.append('In %s case was not redirected to own profile' % key)
                 else:
-                    if not chat_view.profile_block_contact.is_element_displayed():
+                    if not chat_view.profile_nickname.is_element_displayed():
                         self.errors.append('In %s case block user button is not shown' % key)
                 if not chat_view.element_by_text(url_data[key]['username']).is_element_displayed():
                     self.errors.append('In %s case username not shown' % key)

@@ -33,6 +33,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         send_transaction = wallet.send_transaction_button.click()
         send_transaction.amount_edit_box.set_value('0')
         send_transaction.set_recipient_address('0x%s' % basic_user['address'])
+        send_transaction.next_button.click_until_presence_of_element(send_transaction.sign_transaction_button)
         send_transaction.sign_transaction_button.click()
         for text in texts:
             if not wallet.element_by_text_part(text).is_element_displayed():
@@ -221,7 +222,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         signin_view = SignInView(self.driver)
         home_view = signin_view.recover_access(passphrase=passphrase)
         profile = home_view.profile_button.click()
-        profile.switch_network('Mainnet with upstream RPC')
+        profile.switch_network()
         wallet_view = profile.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
