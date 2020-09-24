@@ -736,7 +736,11 @@
                    {:address  "0x8ab7404063ec4dbcfd4598215992dc3f8ec853d7"
                     :symbol   :AKRO
                     :name     "Akropolis"
-                    :decimals 18}])
+                    :decimals 18}
+                   {:address  "0x9ba00d6856a4edf4665bca2c2309936572473b7e"
+                    :symbol   :aUSDC
+                    :name     "Aave Interest bearing USDC"
+                    :decimals 6}])
    :testnet
    (resolve-icons :testnet
                   [{:name     "Status Test Token"
