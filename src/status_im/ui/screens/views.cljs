@@ -15,11 +15,6 @@
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im.ui.screens.wallet.send.views :as wallet]
             [status-im.ui.components.status-bar.view :as statusbar]
-            status-im.ui.screens.wallet.collectibles.etheremon.views
-            status-im.ui.screens.wallet.collectibles.cryptostrikers.views
-            status-im.ui.screens.wallet.collectibles.cryptokitties.views
-            status-im.ui.screens.wallet.collectibles.superrare.views
-            status-im.ui.screens.wallet.collectibles.kudos.views
             [status-im.ui.components.colors :as colors]
             [status-im.keycard.test-menu :as keycard.test-menu]
             [quo.core :as quo]

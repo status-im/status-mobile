@@ -88,7 +88,7 @@
 
 (defn- validate-token-symbol!
   [{:keys [address symbol]}]
-  (when-not (= symbol :DCN) ;; ignore this symbol because it has weird symbol
+  (when-not (or (= symbol :DCN) (= symbol :SUPRR)) ;; ignore this symbol because it has weird symbol
     (json-rpc/eth-call
      {:contract address
       :method "symbol()"

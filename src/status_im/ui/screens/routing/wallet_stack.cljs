@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.routing.wallet-stack
   (:require [status-im.ui.screens.currency-settings.views :as currency-settings]
-            [status-im.ui.screens.wallet.collectibles.views :as collectibles]
             [status-im.ui.screens.wallet.settings.views :as wallet-settings]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
@@ -29,8 +28,6 @@
      :component add-account/pin}
     {:name      :account-settings
      :component account-settings/account-settings}
-    {:name      :collectibles-list
-     :component collectibles/collectibles-list}
     {:name      :wallet-transaction-details
      :component wallet-transactions/transaction-details}
     {:name      :wallet-settings-assets

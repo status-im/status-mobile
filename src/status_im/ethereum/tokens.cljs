@@ -485,6 +485,10 @@
                     :nft?    true
                     :name    "SupeRare"
                     :address "0x41a322b28d0ff354040e2cbc676f0320d8c8850d"}
+                   {:symbol  :SUPRR
+                    :nft?    true
+                    :name    "SuperRare"
+                    :address "0xb932a70a57673d89f4acffbe830e8ed7f75fb9e0"}
                    {:symbol  :KDO
                     :nft?    true
                     :name    "KudosToken"
