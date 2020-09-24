@@ -153,10 +153,9 @@
 (fx/defn send-current-message
   "Sends message from current chat input"
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
-  (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])
-        input-text-with-mentions (mentions/check-mentions cofx input-text)]
+  (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])]
     (fx/merge cofx
               (send-image)
-              (send-plain-text-message input-text-with-mentions current-chat-id)
+              (send-plain-text-message input-text current-chat-id)
               (mentions/clear-mentions)
               (mentions/clear-cursor))))
