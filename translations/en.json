@@ -1203,6 +1203,7 @@
     "cant-report-bug": "Can't report a bug",
     "mail-should-be-configured": "Mail client should be configured",
     "check-on-etherscan": "Check on etherscan",
+    "check-on-opensea": "Check on opensea",
     "transactions-load-more": "Load more",
     "private-key": "Private key",
     "generate-an-account": "Generate an account",

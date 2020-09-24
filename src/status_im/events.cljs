@@ -48,7 +48,6 @@
             [taoensso.timbre :as log]
             status-im.waku.core
             status-im.wallet.choose-recipient.core
-            status-im.wallet.collectibles.core
             status-im.wallet.accounts.core
             status-im.popover.core
             [status-im.keycard.core :as keycard]

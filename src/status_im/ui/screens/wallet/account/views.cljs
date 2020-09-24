@@ -80,25 +80,37 @@
        colors/white-persist
        #(re-frame/dispatch [:show-popover {:view :share-account :address address}])]]]))
 
-(defn render-collectible [address]
-  (fn [{:keys [name icon amount] :as collectible}]
-    (let [items-number (money/to-fixed amount)
-          details?     (pos? items-number)]
-      [quo/list-item
-       {:title          (wallet.utils/display-symbol collectible)
-        :subtitle       name
-        :icon           [list/item-image icon]
-        :on-press       (when details?
-                          #(re-frame/dispatch
-                            [:show-collectibles-list collectible address]))
-        :chevron        :true
-        :accessory      :text
-        :accessory-text items-number}])))
+(defn render-collectible [{:keys [name icon amount] :as collectible}]
+  (let [items-number (money/to-fixed amount)]
+    [quo/list-item
+     {:title          (wallet.utils/display-symbol collectible)
+      :subtitle       name
+      :icon           [list/item-image icon]
+      :accessory      :text
+      :accessory-text items-number}]))
 
 (views/defview transactions [address]
   (views/letsubs [{:keys [transaction-history-sections]}
                   [:wallet.transactions.history/screen address]]
     [history/history-list transaction-history-sections address]))
+
+(defn collectibles-link []
+  [react/touchable-highlight
+   {:on-press #(re-frame/dispatch [:browser.ui/open-url "https://opensea.io/account/"])}
+   [react/view
+    {:style {:flex             1
+             :padding-horizontal 14
+             :flex-direction   :row
+             :align-items :center
+             :background-color colors/blue-light
+             :height           52}}
+    [icons/tiny-icon
+     :tiny-icons/tiny-external
+     {:color           colors/blue
+      :container-style {:margin-right 5}}]
+    [react/text
+     {:style {:color colors/blue}}
+     (i18n/label :t/check-on-opensea)]]])
 
 (views/defview assets-and-collections [address]
   (views/letsubs [{:keys [tokens nfts]} [:wallet/visible-assets-with-values address]
@@ -116,14 +128,16 @@
                           :key-fn             :name
                           :render-fn          (accounts/render-asset (:code currency))}]
          (= tab :nft)
-         (if (seq nfts)
-           [list/flat-list {:data               nfts
-                            :default-separator? false
-                            :key-fn             :name
-                            :render-fn          (render-collectible address)}]
-           [react/view {:align-items :center :margin-top 32}
-            [react/text {:style {:color colors/gray}}
-             (i18n/label :t/no-collectibles)]])
+         [react/view
+          [collectibles-link]
+          (if (seq nfts)
+            [list/flat-list {:data               nfts
+                             :default-separator? false
+                             :key-fn             :name
+                             :render-fn          render-collectible}]
+            [react/view {:align-items :center :margin-top 32}
+             [react/text {:style {:color colors/gray}}
+              (i18n/label :t/no-collectibles)]])]
          (= tab :history)
          [transactions address])])))
 
