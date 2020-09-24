@@ -203,7 +203,8 @@
   (let [all-default-tokens (get tokens/all-default-tokens
                                 (ethereum/chain-keyword db))
         default-tokens (utils.core/index-by :address all-default-tokens)
-        all-tokens     (merge default-tokens (rpc->token custom-tokens))]
+        ;;we want to override custom-tokens by default
+        all-tokens     (merge (rpc->token custom-tokens) default-tokens)]
     (merge
      {:db (assoc db :wallet/all-tokens all-tokens)}
      (when config/erc20-contract-warnings-enabled?
