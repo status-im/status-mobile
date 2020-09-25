@@ -94,12 +94,12 @@
                         :as message}]
                     (let [nickname (get-in db [:contacts/contacts from :nickname])]
                       (cond-> acc
-                        (and alias (not= alias ""))
-                        (update :users assoc from {:alias      alias
-                                                   :name       (or name alias)
-                                                   :identicon  identicon
-                                                   :public-key from
-                                                   :nickname   nickname})
+                        #_(and alias (not= alias ""))
+                        #_(update :users assoc from {:alias      alias
+                                                     :name       (or name alias)
+                                                     :identicon  identicon
+                                                     :public-key from
+                                                     :nickname   nickname})
                         (or (nil? last-clock-value)
                             (> last-clock-value clock-value))
                         (assoc :last-clock-value clock-value)
@@ -114,7 +114,7 @@
                         (update :all-messages assoc message-id message))))
                   {:all-messages         already-loaded-messages
                    :unviewed-message-ids loaded-unviewed-messages-ids
-                   :users                users
+                   ;;:users                users
                    :new-messages         []}
                   messages)]
       (fx/merge cofx

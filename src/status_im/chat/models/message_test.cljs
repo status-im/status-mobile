@@ -44,12 +44,12 @@
                         {:cursor
                          "00000000000000000000000000000000000000000000000000090x0000000000000000000000000000000000000000000000000000000000000000",
                          :cursor-clock-value 9,
-                         :users
-                         {"from" {:alias      "alias",
-                                  :name       "name",
-                                  :identicon  "identicon",
-                                  :public-key "from"
-                                  :nickname    nil}}}}}}
+                         #_:users
+                         #_{"from" {:alias      "alias",
+                                    :name       "name",
+                                    :identicon  "identicon",
+                                    :public-key "from"
+                                    :nickname    nil}}}}}}
                  (message/add-received-message
                   cofx
                   message)))))
@@ -67,12 +67,12 @@
                         {:cursor
                          "00000000000000000000000000000000000000000000000000090x0000000000000000000000000000000000000000000000000000000000000000",
                          :cursor-clock-value 9,
-                         :users
-                         {"from" {:alias      "alias",
-                                  :name       "name",
-                                  :identicon  "identicon",
-                                  :public-key "from"
-                                  :nickname   nil}}}}}}
+                         #_:users
+                         #_{"from" {:alias      "alias",
+                                    :name       "name",
+                                    :identicon  "identicon",
+                                    :public-key "from"
+                                    :nickname   nil}}}}}}
                  (message/add-received-message
                   cofx
                   message)))))
