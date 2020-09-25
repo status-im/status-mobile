@@ -195,16 +195,16 @@
                                 :subtitle second-name})}
 
           [react/view {:padding-top 12}
-           (for [{:keys [label subtext accessibility-label icon action disabled?]} (actions contact)]
+           (for [{:keys [label subtext accessibility-label icon action disabled?]} (actions contact)
+                 :when label]
              ^{:key label}
-             (when label
-               [quo/list-item {:theme               :accent
-                               :title               label
-                               :subtitle            subtext
-                               :icon                icon
-                               :accessibility-label accessibility-label
-                               :disabled            disabled?
-                               :on-press            action}]))]
+             [quo/list-item {:theme               :accent
+                             :title               label
+                             :subtitle            subtext
+                             :icon                icon
+                             :accessibility-label accessibility-label
+                             :disabled            disabled?
+                             :on-press            action}])]
           [react/view styles/contact-profile-details-container
            [profile-details contact]
            [chat-settings contact]]

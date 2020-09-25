@@ -255,13 +255,14 @@
           [rn/view {:style {:flex-direction  :row
                             :justify-content :center}}
            [rn/view {:style (styles/home-tokens-icons (count tokens))}
-            (for [[{name             :name
-                    {source :source} :icon} _ i] tokens]
-              ^{:key name}
-              [rn/view {:style (styles/home-token-icon-style i)}
-               [rn/image {:source (if (fn? source) (source) source)
-                          :style  {:width  20
-                                   :height 20}}]])]
+            (doall
+             (for [[{name             :name
+                     {source :source} :icon} _ i] tokens]
+               ^{:key name}
+               [rn/view {:style (styles/home-token-icon-style i)}
+                [rn/image {:source (if (fn? source) (source) source)
+                           :style  {:width  20
+                                    :height 20}}]]))]
            [quo/text {:align :center}
             (i18n/label :t/invite-reward)]])]])))
 

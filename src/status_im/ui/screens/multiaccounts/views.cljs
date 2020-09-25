@@ -46,7 +46,7 @@
      [react/view styles/multiaccounts-container
       [list/flat-list {:data                  (vals multiaccounts)
                        :contentContainerStyle styles/multiaccounts-list-container
-                       :key-fn                :address
+                       :key-fn                (comp str :address)
                        :render-fn             multiaccount-view}]]
      [toolbar/toolbar
       {:show-border? true
