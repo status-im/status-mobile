@@ -16,6 +16,7 @@
     (fx/merge cofx
               {::logout                              nil
                ::multiaccounts/webview-debug-changed false
+               ::disable-local-notifications          nil
                :keychain/clear-user-password         key-uid
                ::init/open-multiaccounts             #(re-frame/dispatch [::init/initialize-multiaccounts % {:logout? logout?}])}
               (notifications/logout-disable)
@@ -23,6 +24,11 @@
               (transport/stop-whisper)
               (chaos-mode/stop-checking)
               (init/initialize-app-db))))
+
+(re-frame/reg-fx
+ ::disable-local-notifications
+ (fn []
+   (status/stop-local-notifications)))
 
 (fx/defn logout
   {:events [:logout :multiaccounts.logout.ui/logout-confirmed]}

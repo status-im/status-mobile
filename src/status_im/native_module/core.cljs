@@ -271,6 +271,14 @@
   (log/debug "[native-module] start-wallet")
   (.startWallet ^js (status)))
 
+(defn stop-local-notifications []
+  (log/debug "[native-module] stop-local-notifications")
+  (.stopLocalNotifications ^js (status)))
+
+(defn start-local-notifications []
+  (log/debug "[native-module] start-local-notifications")
+  (.startLocalNotifications ^js (status)))
+
 (defn set-blank-preview-flag [flag]
   (log/debug "[native-module] set-blank-preview-flag")
   (.setBlankPreviewFlag ^js (status) flag))

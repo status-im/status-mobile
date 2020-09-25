@@ -115,6 +115,7 @@
 
       :always
       (assoc :WalletConfig {:Enabled true}
+             :LocalNotificationsConfig {:Enabled true}
              :BrowsersConfig {:Enabled true}
              :PermissionsConfig {:Enabled true}
              :MailserversConfig {:Enabled true}

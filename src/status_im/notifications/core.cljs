@@ -4,6 +4,7 @@
             [status-im.utils.fx :as fx]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             ["@react-native-community/push-notification-ios" :default pn-ios]
+            [status-im.notifications.android :as pn-android]
             [status-im.native-module.core :as status]
             [quo.platform :as platform]
             [status-im.utils.config :as config]
@@ -64,7 +65,10 @@
  ::enable
  (fn [_]
    (if platform/android?
-     (status/enable-notifications)
+     (do
+       (pn-android/create-channel {:channel-id   "status-im-notifications"
+                                   :channel-name "Status push notifications"})
+       (status/enable-notifications))
      (enable-ios-notifications))))
 
 (re-frame/reg-fx
@@ -224,3 +228,37 @@
                      :on-success #(do
                                     (log/info "[push-notifications] servers fetched" %)
                                     (re-frame/dispatch [::servers-fetched %]))}]})
+
+;; Wallet transactions
+
+(fx/defn handle-preferences-load
+  {:events [::preferences-loaded]}
+  [{:keys [db]} preferences]
+  {:db (assoc db :push-notifications/preferences preferences)})
+
+(fx/defn load-notification-preferences
+  {:events [::load-notification-preferences]}
+  [cofx]
+  {::json-rpc/call [{:method     "localnotifications_notificationPreferences"
+                     :params     []
+                     :on-success #(re-frame/dispatch [::preferences-loaded %])}]})
+
+(defn preference= [x y]
+  (and (= (:service x) (:service y))
+       (= (:event x) (:event y))
+       (= (:identifier x) (:identifier y))))
+
+(defn- update-preference [all new]
+  (conj (filter (comp not (partial preference= new)) all) new))
+
+(fx/defn switch-transaction-notifications
+  {:events [::switch-transaction-notifications]}
+  [{:keys [db] :as cofx} enabled?]
+  {:db             (update db :push-notifications/preferences update-preference {:enabled    (not enabled?)
+                                                                                 :service    "wallet"
+                                                                                 :event      "transaction"
+                                                                                 :identifier "all"})
+   ::json-rpc/call [{:method     "localnotifications_switchWalletNotifications"
+                     :params     [(not enabled?)]
+                     :on-success #(log/info "[push-notifications] switch-transaction-notifications successful" %)
+                     :on-error   #(log/error "[push-notifications] switch-transaction-notifications error" %)}]})

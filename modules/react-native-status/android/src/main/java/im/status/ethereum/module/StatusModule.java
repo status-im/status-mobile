@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Build;
 import android.os.Environment;
 
@@ -162,6 +163,18 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                     newMessageSignalHandler.handleNewMessageSignal(jsonEvent);
                 }
             }
+
+            if(eventType.equals("local-notifications")) {
+                Context ctx = this.getReactApplicationContext();
+                Intent intent = new Intent(ctx, LocalNotificationsService.class);
+                Bundle bundle = new Bundle();
+
+                bundle.putString("event", jsonEventString);
+                intent.putExtras(bundle);
+
+                ctx.startService(intent);
+            }
+
             WritableMap params = Arguments.createMap();
             params.putString("jsonEvent", jsonEventString);
             this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
@@ -1135,6 +1148,18 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     public void startWallet() {
         Log.d(TAG, "StartWallet");
         Statusgo.startWallet();
+    }
+
+    @ReactMethod
+    public void stopLocalNotifications() {
+        Log.d(TAG, "stopLocalNotifications");
+        Statusgo.stopLocalNotifications();
+    }
+
+    @ReactMethod
+    public void startLocalNotifications() {
+        Log.d(TAG, "startLocalNotifications");
+        Statusgo.startLocalNotifications();
     }
 
     @ReactMethod

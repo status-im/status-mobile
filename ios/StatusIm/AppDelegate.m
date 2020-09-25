@@ -171,5 +171,18 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 {
  [RNCPushNotificationIOS didReceiveLocalNotification:notification];
 }
+// Manage notifications while app is in the foreground
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+{
+  NSDictionary *userInfo = notification.request.content.userInfo;
+  
+  NSString *notificationType = userInfo[@"notificationType"]; // check your notification type
+  if (![notificationType  isEqual: @"local-notification"]) { // we silence all notifications which are not local
+    completionHandler(UNNotificationPresentationOptionNone);
+    return;
+  }
+ 
+  completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
+}
 
 @end

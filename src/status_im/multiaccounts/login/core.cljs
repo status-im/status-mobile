@@ -36,6 +36,11 @@
  (fn [[key-uid account-data hashed-password]]
    (status/login key-uid account-data hashed-password)))
 
+(re-frame/reg-fx
+ ::enable-local-notifications
+ (fn []
+   (status/start-local-notifications)))
+
 (defn rpc->accounts [accounts]
   (reduce (fn [acc {:keys [chat type wallet] :as account}]
             (if chat
@@ -58,8 +63,10 @@
   [{:keys [db] :as cofx} accounts custom-tokens favourites new-account?]
   (fx/merge
    cofx
-   {:db (assoc db :multiaccount/accounts
-               (rpc->accounts accounts))}
+   {:db                          (assoc db :multiaccount/accounts
+                                        (rpc->accounts accounts))
+    ;; NOTE: Local notifications should be enabled only after wallet was started
+    ::enable-local-notifications nil}
    (wallet/initialize-tokens custom-tokens)
    (wallet/initialize-favourites favourites)
    (wallet/update-balances nil new-account?)
@@ -180,12 +187,12 @@
 (fx/defn get-settings-callback
   {:events [::get-settings-callback]}
   [{:keys [db] :as cofx} settings]
-  (let [{:keys [notifications-enabled?]
+  (let [{:keys          [notifications-enabled?]
          :networks/keys [current-network networks]
-         :as settings}
+         :as            settings}
         (data-store.settings/rpc->settings settings)
         multiaccount (dissoc settings :networks/current-network :networks/networks)
-        network-id (str (get-in networks [current-network :config :NetworkId]))]
+        network-id   (str (get-in networks [current-network :config :NetworkId]))]
     (fx/merge cofx
               (cond-> {:db (-> db
                                (dissoc :multiaccounts/login)
@@ -242,6 +249,7 @@
                  :on-success #(re-frame/dispatch [::protocol/initialize-protocol {:mailservers (or % [])}])}
                 {:method     "settings_getSettings"
                  :on-success #(re-frame/dispatch [::get-settings-callback %])}]}
+              (notifications/load-notification-preferences)
               (when save-password?
                 (keychain/save-user-password key-uid password))
               (keychain/save-auth-method key-uid (or new-auth-method auth-method keychain/auth-method-none)))))

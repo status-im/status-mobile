@@ -1,5 +1,6 @@
 (ns status-im.utils.universal-links.core
   (:require [goog.string :as gstring]
+            [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.chat.models :as chat]
@@ -84,6 +85,20 @@
   ;; TODO: Use only for testing
   {::acquisition/check-referrer referrer})
 
+(defn existing-account? [{:keys [db]} address]
+  (when address
+    (some #(when (= (string/lower-case (:address %))
+                    (string/lower-case address)) %)
+          (:multiaccount/accounts db))))
+
+(fx/defn handle-wallet-account [cofx {address :account}]
+  (when-let [account (existing-account? cofx address)]
+    (navigation/navigate-to-cofx cofx
+                                 :tabs
+                                 {:screen :wallet-stack
+                                  :params {:screen :wallet-account
+                                           :params account}})))
+
 (defn handle-not-found [full-url]
   (log/info "universal-links: no handler for " full-url))
 
@@ -98,13 +113,14 @@
   {:events [::match-value]}
   [cofx url {:keys [type] :as data}]
   (case type
-    :group-chat   (handle-group-chat cofx data)
-    :public-chat  (handle-public-chat cofx data)
-    :private-chat (handle-private-chat cofx data)
-    :contact      (handle-view-profile cofx data)
-    :browser      (handle-browse cofx data)
-    :eip681       (handle-eip681 cofx data)
-    :referrals    (handle-referrer-url cofx data)
+    :group-chat     (handle-group-chat cofx data)
+    :public-chat    (handle-public-chat cofx data)
+    :private-chat   (handle-private-chat cofx data)
+    :contact        (handle-view-profile cofx data)
+    :browser        (handle-browse cofx data)
+    :eip681         (handle-eip681 cofx data)
+    :referrals      (handle-referrer-url cofx data)
+    :wallet-account (handle-wallet-account cofx data)
     (handle-not-found url)))
 
 (fx/defn route-url

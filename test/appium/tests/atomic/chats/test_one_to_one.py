@@ -47,6 +47,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         default_username_1 = profile_1.default_username_text.text
         profile_1.settings_button.click()
         profile_1.profile_notifications_button.click()
+        profile_1.profile_notifications_toggle_button.click()
         device_1_home = profile_1.get_back_to_home_view()
         device_2_public_key = device_2_home.get_public_key_and_username()
 

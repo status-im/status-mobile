@@ -754,6 +754,22 @@ RCT_EXPORT_METHOD(startWallet) {
     StatusgoStartWallet();
 }
 
+RCT_EXPORT_METHOD(stopLocalNotifications) {
+#if DEBUG
+    NSLog(@"StopLocalNotifications() method called");
+#endif
+StatusgoStopLocalNotifications();
+}
+
+RCT_EXPORT_METHOD(startLocalNotifications) {
+#if DEBUG
+    NSLog(@"StartLocalNotifications() method called");
+#endif
+StatusgoStartLocalNotifications();
+}
+
+
+
 RCT_EXPORT_METHOD(setBlankPreviewFlag:(BOOL *)newValue)
 {
   NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];

@@ -32,6 +32,7 @@
 (def image-class (reagent/adapt-react-class (.-Image react-native)))
 
 (defn image-get-size [uri callback] (.getSize (.-Image react-native) uri callback))
+(defn resolve-asset-source [uri] (js->clj (.resolveAssetSource (.-Image react-native) uri) :keywordize-keys true))
 
 (def linear-gradient (reagent/adapt-react-class LinearGradient))
 

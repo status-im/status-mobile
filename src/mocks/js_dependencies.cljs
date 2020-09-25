@@ -18,6 +18,7 @@
 
 (def react-native
   (clj->js {:NativeModules {:RNGestureHandlerModule {:Direction (fn [])}
+                            :PushNotifications      {}
                             :ReanimatedModule       {:configureProps (fn [])}}
 
             :View                     {}

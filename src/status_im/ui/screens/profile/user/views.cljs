@@ -3,7 +3,6 @@
             [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [quo.core :as quo]
-            [status-im.notifications.core :as notifications]
             [status-im.ui.components.colors :as colors]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.common.common :as components.common]
@@ -98,7 +97,6 @@
 (defn content []
   (let [{:keys [preferred-name
                 mnemonic
-                notifications-enabled?
                 keycard-pairing]}
         @(re-frame/subscribe [:multiaccount])
         chain                 @(re-frame/subscribe [:chain-keyword])
@@ -153,23 +151,12 @@
           :accessibility-label :appearance-settings-button
           :chevron             true
           :on-press            #(re-frame/dispatch [:navigate-to :appearance])}]
-        (if platform/ios?
-          [quo/list-item
-           {:icon                :main-icons/notification
-            :title               (i18n/label :t/notifications)
-            :accessibility-label :notifications-settings-button
-            :chevron             true
-            :on-press            #(re-frame/dispatch [:navigate-to :notifications])}]
-          (when (and platform/android?
-                     config/local-notifications?)
-            [quo/list-item
-             {:icon                :main-icons/notification
-              :title               (i18n/label :t/notifications)
-              :accessibility-label :notifications-settings-button
-              :active              notifications-enabled?
-              :on-press            #(re-frame/dispatch
-                                     [::notifications/switch (not notifications-enabled?)])
-              :accessory           :switch}]))
+        [quo/list-item
+         {:icon                :main-icons/notification
+          :title               (i18n/label :t/notifications)
+          :accessibility-label :notifications-settings-button
+          :chevron             true
+          :on-press            #(re-frame/dispatch [:navigate-to :notifications])}]
         [quo/list-item
          {:icon                :main-icons/mobile
           :title               (i18n/label :t/sync-settings)

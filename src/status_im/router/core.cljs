@@ -44,6 +44,7 @@
                                   "browser/"              browser-extractor
                                   ["p/" :chat-id]         :private-chat
                                   "g/"                    group-chat-extractor
+                                  ["wallet/" :account]    :wallet-account
                                   ["u/" :user-id]         :user
                                   ["user/" :user-id]      :user
                                   ["referral/" :referrer] :referrals}
@@ -168,6 +169,10 @@
   {:type     :referrals
    :referrer referrer})
 
+(defn match-wallet-account [{:keys [account]}]
+  {:type    :wallet-account
+   :account (when account (string/lower-case account))})
+
 (defn handle-uri [chain uri cb]
   (let [{:keys [handler route-params query-params]} (match-uri uri)]
     (log/info "[router] uri " uri " matched " handler " with " route-params)
@@ -195,6 +200,9 @@
 
       (= handler :referrals)
       (cb (match-referral route-params))
+
+      (= handler :wallet-account)
+      (cb (match-wallet-account route-params))
 
       (ethereum/address? uri)
       (cb (address->eip681 uri))

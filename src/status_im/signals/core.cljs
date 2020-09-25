@@ -6,6 +6,7 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.transport.filters.core :as transport.filters]
             [status-im.transport.message.core :as transport.message]
+            [status-im.notifications.local :as local-notifications]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
@@ -61,4 +62,5 @@
       "whisper.filter.added" (transport.filters/handle-negotiated-filter cofx (js->clj event-js :keywordize-keys true))
       "messages.new" (transport.message/process-response cofx event-js)
       "wallet" (ethereum.subscriptions/new-wallet-event cofx (js->clj event-js :keywordize-keys true))
+      "local-notifications" (local-notifications/process cofx (js->clj event-js :keywordize-keys true))
       (log/debug "Event " type " not handled"))))

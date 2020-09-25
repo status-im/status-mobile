@@ -109,6 +109,8 @@
    "wakuext_enablePushNotificationsBlockMentions" {}
    "wakuext_disablePushNotificationsBlockMentions" {}
    "status_chats" {}
+   "localnotifications_switchWalletNotifications" {}
+   "localnotifications_notificationPreferences" {}
    "wallet_getTransfers" {}
    "wallet_getTokensBalances" {}
    "wallet_getBlocksByAddress" {}

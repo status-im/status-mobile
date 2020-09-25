@@ -4,6 +4,7 @@
             [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [quo.core :as quo]
+            [quo.platform :as platform]
             [quo.design-system.colors :as quo-colors]
             [status-im.notifications.core :as notifications]
             [status-im.ui.components.colors :as colors]
@@ -13,44 +14,79 @@
 
 (defonce server (reagent/atom ""))
 
-(defn notifications-settings []
+(defn local-notifications []
+  [:<>
+   (let [{:keys [enabled]} @(re-frame/subscribe [:notifications/wallet-transactions])]
+     [quo/separator {:color (:ui-02 @quo-colors/theme)
+                     :style {:margin-vertical 8}}]
+     [quo/list-header (i18n/label :t/local-notifications)]
+     [quo/list-item
+      {:size                :small
+       :title               (i18n/label :t/notifications-transactions)
+       :accessibility-label :notifications-button
+       :active              enabled
+       :on-press            #(re-frame/dispatch
+                              [::notifications/switch-transaction-notifications enabled])
+       :accessory           :switch}])])
+
+(defn notifications-settings-ios []
   (let [{:keys [remote-push-notifications-enabled?
                 push-notifications-block-mentions?
                 push-notifications-from-contacts-only?]}
         @(re-frame/subscribe [:multiaccount])]
-    [react/view {:flex 1}
-     [topbar/topbar {:title (i18n/label :t/notification-settings)}]
-     [react/scroll-view {:style                   {:flex 1}
-                         :content-container-style {:padding-vertical 8}}
-      [quo/list-item
-       {:size                :small
-        :title               (i18n/label :t/show-notifications)
-        :accessibility-label :notifications-button
-        :active              remote-push-notifications-enabled?
-        :on-press            #(re-frame/dispatch [::notifications/switch (not remote-push-notifications-enabled?)])
-        :accessory           :switch}]
-      [react/view {:height           1
-                   :background-color (:ui-02 @quo-colors/theme)
-                   :margin-vertical  8}]
-      [quo/list-header (i18n/label :t/notifications-preferences)]
-      [quo/list-item
-       {:size                :small
-        :title               (i18n/label :t/notifications-non-contacts)
-        :accessibility-label :notifications-button
-        :active              (and remote-push-notifications-enabled?
-                                  (not push-notifications-from-contacts-only?))
-        :on-press            #(re-frame/dispatch
-                               [::notifications/switch-non-contacts (not push-notifications-from-contacts-only?)])
-        :accessory           :switch}]
-      [quo/list-item
-       {:size                :small
-        :title               (i18n/label :t/allow-mention-notifications)
-        :accessibility-label :notifications-button
-        :active              (and remote-push-notifications-enabled?
-                                  (not push-notifications-block-mentions?))
-        :on-press            #(re-frame/dispatch
-                               [::notifications/switch-block-mentions (not push-notifications-block-mentions?)])
-        :accessory           :switch}]]]))
+    [:<>
+     [quo/list-item
+      {:size                :small
+       :title               (i18n/label :t/show-notifications)
+       :accessibility-label :notifications-button
+       :active              remote-push-notifications-enabled?
+       :on-press            #(re-frame/dispatch [::notifications/switch (not remote-push-notifications-enabled?)])
+       :accessory           :switch}]
+     [quo/separator {:color (:ui-02 @quo-colors/theme)
+                     :style {:margin-vertical 8}}]
+     [quo/list-header (i18n/label :t/notifications-preferences)]
+     [quo/list-item
+      {:size                :small
+       :title               (i18n/label :t/notifications-non-contacts)
+       :accessibility-label :notifications-button
+       :active              (and remote-push-notifications-enabled?
+                                 (not push-notifications-from-contacts-only?))
+       :on-press            #(re-frame/dispatch
+                              [::notifications/switch-non-contacts (not push-notifications-from-contacts-only?)])
+       :accessory           :switch}]
+     [quo/list-item
+      {:size                :small
+       :title               (i18n/label :t/allow-mention-notifications)
+       :accessibility-label :notifications-button
+       :active              (and remote-push-notifications-enabled?
+                                 (not push-notifications-block-mentions?))
+       :on-press            #(re-frame/dispatch
+                              [::notifications/switch-block-mentions (not push-notifications-block-mentions?)])
+       :accessory           :switch}]
+     [local-notifications]]))
+
+(defn notifications-settings-android []
+  (let [{:keys [notifications-enabled?]}
+        @(re-frame/subscribe [:multiaccount])]
+    [:<>
+     [quo/list-item
+      {:icon                :main-icons/notification
+       :title               (i18n/label :t/notifications)
+       :accessibility-label :notifications-settings-button
+       :active              notifications-enabled?
+       :on-press            #(re-frame/dispatch
+                              [::notifications/switch (not notifications-enabled?)])
+       :accessory           :switch}]
+     [local-notifications]]))
+
+(defn notifications-settings []
+  [react/view {:flex 1}
+   [topbar/topbar {:title (i18n/label :t/notification-settings)}]
+   [react/scroll-view {:style                   {:flex 1}
+                       :content-container-style {:padding-vertical 8}}
+    (if platform/ios?
+      [notifications-settings-ios]
+      [notifications-settings-android])]])
 
 (defn notifications-advanced-settings []
   (let [{:keys [remote-push-notifications-enabled?

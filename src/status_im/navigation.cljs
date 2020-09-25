@@ -28,15 +28,19 @@
    (log/debug :navigate-replace view-id params)
    (navigation/navigate-replace (name view-id) params)))
 
+(defn- all-screens-params [db view screen-params]
+  (cond-> db
+    (and (seq screen-params) (:screen screen-params) (:params screen-params))
+    (all-screens-params (:screen screen-params) (:params screen-params))
+
+    (seq screen-params)
+    (assoc-in [:navigation/screen-params view] screen-params)))
+
 (fx/defn navigate-to-cofx
   [{:keys [db]} go-to-view-id screen-params]
   {:db
-   (cond-> (assoc db :view-id go-to-view-id)
-     ;; TODO: Inspect the need of screen-params
-     (and (seq screen-params) (:screen screen-params) (:params screen-params))
-     (assoc-in [:navigation/screen-params (:screen screen-params)] (:params screen-params))
-     (seq screen-params)
-     (assoc-in [:navigation/screen-params go-to-view-id] screen-params))
+   (-> (assoc db :view-id go-to-view-id)
+       (all-screens-params go-to-view-id screen-params))
    ::navigate-to [go-to-view-id screen-params]})
 
 (fx/defn navigate-to

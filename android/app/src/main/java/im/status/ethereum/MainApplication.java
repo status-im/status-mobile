@@ -18,6 +18,7 @@ import java.util.List;
 
 import im.status.ethereum.keycard.RNStatusKeycardPackage;
 import im.status.ethereum.module.StatusPackage;
+import im.status.ethereum.pushnotifications.PushNotificationPackage;
 
 public class MainApplication extends MultiDexApplication implements ReactApplication {
 
@@ -30,10 +31,12 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
         @Override
         protected List<ReactPackage> getPackages() {
             StatusPackage statusPackage = new StatusPackage(RootUtil.isDeviceRooted());
+
             List<ReactPackage> packages = new PackageList(this).getPackages();
             packages.add(statusPackage);
             packages.add(new ReactNativeDialogsPackage());
             packages.add(new RNStatusKeycardPackage());
+            packages.add(new PushNotificationPackage());
             return packages;
         }
 

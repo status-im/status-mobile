@@ -790,7 +790,7 @@
                    {:name     "Status Test Token"
                     :symbol   :STT
                     :decimals 18
-                    :address  "0x43d5adc3b49130a575ae6e4b00dfa4bc55c71621"}])
+                    :address  "0xc55cf4b03948d7ebc8b9e8bad92643703811d162"}])
 
    :xdai
    (resolve-icons :xdai
@@ -800,6 +800,18 @@
                     :address  "0x3e50bf6703fc132a94e4baff068db2055655f11b"}])
 
    :custom []})
+
+(defn normalize-chain [tokens]
+  (reduce (fn [acc {:keys [address] :as token}]
+            (assoc acc address token))
+          {}
+          tokens))
+
+(def all-tokens-normalized
+  (reduce-kv (fn [m k v]
+               (assoc m k (normalize-chain v)))
+             {}
+             all-default-tokens))
 
 (defn nfts-for [all-tokens]
   (filter :nft? (vals all-tokens)))

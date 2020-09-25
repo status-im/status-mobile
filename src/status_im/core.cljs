@@ -11,6 +11,7 @@
             [reagent.core :as reagent]
             [reagent.impl.batching :as batching]
             [status-im.i18n :as i18n]
+            [status-im.notifications.local :as notifications]
             [status-im.native-module.core :as status]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.views :as views]
@@ -87,4 +88,7 @@
   (when platform/android?
     (status/set-soft-input-mode status/adjust-resize))
   (.registerComponent ^js app-registry "StatusIm" #(reagent/reactify-component root))
+  (notifications/listen-notifications)
+  (when platform/android?
+    (.registerHeadlessTask ^js app-registry "LocalNotifications" notifications/handle))
   (snoopy/subscribe!))
