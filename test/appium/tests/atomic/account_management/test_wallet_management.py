@@ -215,8 +215,10 @@ class TestWalletManagement(SingleDeviceTestCase):
         if not wallet_view.element_by_text('1').is_element_displayed():
             self.driver.fail('User collectibles amount does not match')
 
+    # TODO: redo to open with Opensea
     @marks.testrail_id(5346)
     @marks.high
+    @marks.skip
     def test_collectible_from_wallet_opens_in_browser_view(self):
         passphrase = wallet_users['F']['passphrase']
         signin_view = SignInView(self.driver)
