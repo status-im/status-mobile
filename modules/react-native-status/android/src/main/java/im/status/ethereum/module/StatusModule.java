@@ -19,6 +19,11 @@ import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebStorage;
+import android.content.Context;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.EditText;
+import android.view.inputmethod.InputMethodManager;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -30,6 +35,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIBlock;
+import com.facebook.react.uimanager.NativeViewHierarchyManager;
 
 import statusgo.SignalHandler;
 import statusgo.Statusgo;
@@ -1385,6 +1393,25 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                 }
             });
         }
+    }
+
+    @ReactMethod
+    public void resetKeyboardInputCursor(final int reactTagToReset, final int selection) {
+        UIManagerModule uiManager = getReactApplicationContext().getNativeModule(UIManagerModule.class);
+        uiManager.addUIBlock(new UIBlock() {
+            @Override
+            public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+                InputMethodManager imm = (InputMethodManager) getReactApplicationContext().getBaseContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    View viewToReset = nativeViewHierarchyManager.resolveView(reactTagToReset);
+                    imm.restartInput(viewToReset);
+                    try {
+                      EditText textView = (EditText) viewToReset;
+                      textView.setSelection(selection);
+                    } catch (Exception e) {}
+                }
+            }
+        });
     }
 }
 

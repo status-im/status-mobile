@@ -506,8 +506,8 @@
 
 (handlers/register-handler-fx
  :chat.ui/select-mention
- (fn [cofx [_ mention]]
-   (chat.input/select-mention cofx mention)))
+ (fn [cofx [_ text-input-ref mention]]
+   (chat.input/select-mention cofx text-input-ref mention)))
 
 (handlers/register-handler-fx
  :chat.ui/set-chat-input-text

@@ -1,10 +1,14 @@
 (ns status-im.chat.models.mentions
   (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [status-im.utils.fx :as fx]
             [status-im.contact.db :as contact.db]
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.native-module.core :as status]
+            [quo.react-native :as rn]
+            [quo.react :as react]))
 
 (def at-sign "@")
 
@@ -450,3 +454,14 @@
          (calculate-suggestions mentionable-users))
         (clear-suggestions cofx)))))
 
+(re-frame/reg-fx
+ ::reset-text-input-cursor
+ (fn [[ref cursor]]
+   (when ref
+     (status/reset-keyboard-input
+      (rn/find-node-handle (react/current-ref ref))
+      cursor))))
+
+(fx/defn reset-text-input-cursor
+  [_ ref cursor]
+  {::reset-text-input-cursor [ref cursor]})

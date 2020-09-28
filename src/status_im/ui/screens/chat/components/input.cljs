@@ -197,7 +197,7 @@
        input-with-mentions)]]))
 
 (defn mention-item
-  [[_ {:keys [identicon alias name nickname] :as user}]]
+  [text-input-ref [_ {:keys [identicon alias name nickname] :as user}]]
   (let [ens-name? (not= alias name)]
     [list-item/list-item
      (cond-> {:icon
@@ -233,14 +233,14 @@
               :title-text-weight    :medium
               :on-press
               (fn []
-                (re-frame/dispatch [:chat.ui/select-mention user]))}
+                (re-frame/dispatch [:chat.ui/select-mention text-input-ref user]))}
 
        ens-name?
        (assoc :subtitle alias))]))
 
 (def chat-input-height (reagent/atom nil))
 
-(defn autocomplete-mentions []
+(defn autocomplete-mentions [text-input-ref]
   (let [suggestions @(re-frame/subscribe [:chat/mention-suggestions])]
     (when (and (seq suggestions) @chat-input-height)
       (let [height (+ 16 (* 52 (min 4.5 (count suggestions))))]
@@ -254,7 +254,7 @@
             :header                    [rn/view {:style {:height 8}}]
             :data                      suggestions
             :key-fn                    first
-            :render-fn                 #(mention-item %)}]]]))))
+            :render-fn                 #(mention-item text-input-ref %)}]]]))))
 
 (defn chat-input
   [{:keys [set-active-panel active-panel on-send-press reply

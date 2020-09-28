@@ -301,7 +301,7 @@
          ;; :always doesn't work and keyboard is hidden on pressing suggestion.
          ;; Scrolling of suggestions doesn't work neither in this case.
          (when platform/android?
-           [components/autocomplete-mentions])
+           [components/autocomplete-mentions text-input-ref])
          (when show-input?
            [accessory/view {:y               position-y
                             :pan-state       pan-state

@@ -380,3 +380,8 @@
 (defn deactivate-keep-awake []
   (log/debug "[native-module] deactivateKeepAwake")
   (.deactivateKeepAwake ^js (status)))
+
+(defn reset-keyboard-input [input selection]
+  (log/debug "[native-module] resetKeyboardInput")
+  (when platform/android?
+    (.resetKeyboardInputCursor ^js (status) input selection)))
