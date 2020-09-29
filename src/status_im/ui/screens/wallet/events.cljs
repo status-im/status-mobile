@@ -17,8 +17,3 @@
  ::wallet-add-custom-token
  (fn [{:keys [db]}]
    {:db (dissoc db :wallet/custom-token-screen)}))
-
-(handlers/register-handler-fx
- :prices-loading?
- (fn [{:keys [db]}]
-   {:db (assoc db :prices-loading? true)}))

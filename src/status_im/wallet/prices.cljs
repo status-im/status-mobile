@@ -24,15 +24,12 @@
 (re-frame/reg-fx
  :wallet/get-prices
  (fn [{:keys [from to mainnet? success-event error-event chaos-mode?]}]
-   (let [milliseconds 1000
-         get-prices   (fn []
-                        (prices/get-prices from
-                                           to
-                                           mainnet?
-                                           #(re-frame/dispatch [success-event %])
-                                           #(re-frame/dispatch [error-event %])
-                                           chaos-mode?))]
-     (js/setTimeout get-prices milliseconds))))
+   (prices/get-prices from
+                      to
+                      mainnet?
+                      #(re-frame/dispatch [success-event %])
+                      #(re-frame/dispatch [error-event %])
+                      chaos-mode?)))
 
 (fx/defn on-update-prices-success
   {:events [::update-prices-success]}
