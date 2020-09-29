@@ -250,9 +250,7 @@
   [{:keys [db] :as cofx}]
   (let [{:keys [multiaccount multiaccounts :multiaccount/accounts]} db
         {:keys [creating?]}                                         (:multiaccounts/login db)
-        recovering?                                                 (get-in db [:intro-wizard :recovering?])
         first-account?                                              (and creating?
-                                                                         (not recovering?)
                                                                          (empty? multiaccounts))]
     (fx/merge cofx
               {:db                   (-> db
