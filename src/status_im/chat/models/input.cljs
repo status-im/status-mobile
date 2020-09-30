@@ -51,12 +51,14 @@
      ;; NOTE(roman): on-text-input event is not dispatched when we change input
      ;; programmatically, so we have to call `on-text-input` manually 
      (mentions/on-text-input
-      (let [match-len (count match)
-            searched-text-len (count searched-text)]
-        {:new-text      (subs match searched-text-len)
-         :previous-text ""
-         :start         (+ at-sign-idx searched-text-len 1)
-         :end           (+ at-sign-idx match-len 1)}))
+      (let [match-len         (count match)
+            searched-text-len (count searched-text)
+            start             (inc at-sign-idx)
+            end               (+ start match-len)]
+        {:new-text      match
+         :previous-text searched-text
+         :start         start
+         :end           end}))
      (mentions/recheck-at-idxs {alias user}))))
 
 (defn- start-cooldown [{:keys [db]} cooldowns]

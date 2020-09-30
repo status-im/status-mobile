@@ -10,7 +10,8 @@
             [status-im.transport.message.protocol :as protocol]
             [status-im.ui.screens.chat.state :as view.state]
             [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.chat.models.mentions :as mentions]))
 
 (defn- prepare-message
   [message current-chat?]
@@ -67,11 +68,12 @@
     (let [nickname (get-in db [:contacts/contacts from :nickname])]
       {:db (update-in db [:chats chat-id :users] assoc
                       from
-                      {:alias      alias
-                       :name       (or name alias)
-                       :identicon  identicon
-                       :public-key from
-                       :nickname   nickname})})))
+                      (mentions/add-searchable-phrases
+                       {:alias      alias
+                        :name       (or name alias)
+                        :identicon  identicon
+                        :public-key from
+                        :nickname   nickname}))})))
 
 (fx/defn add-received-message
   [{:keys [db] :as cofx}

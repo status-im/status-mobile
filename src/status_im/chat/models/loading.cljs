@@ -10,7 +10,8 @@
             [status-im.chat.models.reactions :as reactions]
             [status-im.chat.models.message-list :as message-list]
             [taoensso.timbre :as log]
-            [status-im.chat.models.message-seen :as message-seen]))
+            [status-im.chat.models.message-seen :as message-seen]
+            [status-im.chat.models.mentions :as mentions]))
 
 (defn cursor->clock-value
   [^js cursor]
@@ -95,11 +96,13 @@
                     (let [nickname (get-in db [:contacts/contacts from :nickname])]
                       (cond-> acc
                         (and alias (not= alias ""))
-                        (update :users assoc from {:alias      alias
-                                                   :name       (or name alias)
-                                                   :identicon  identicon
-                                                   :public-key from
-                                                   :nickname   nickname})
+                        (update :users assoc from
+                                (mentions/add-searchable-phrases
+                                 {:alias      alias
+                                  :name       (or name alias)
+                                  :identicon  identicon
+                                  :public-key from
+                                  :nickname   nickname}))
                         (or (nil? last-clock-value)
                             (> last-clock-value clock-value))
                         (assoc :last-clock-value clock-value)

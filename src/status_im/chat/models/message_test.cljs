@@ -45,11 +45,12 @@
                          "00000000000000000000000000000000000000000000000000090x0000000000000000000000000000000000000000000000000000000000000000",
                          :cursor-clock-value 9,
                          :users
-                         {"from" {:alias      "alias",
-                                  :name       "name",
-                                  :identicon  "identicon",
-                                  :public-key "from"
-                                  :nickname    nil}}}}}}
+                         {"from" {:alias              "alias",
+                                  :name               "name",
+                                  :identicon          "identicon",
+                                  :public-key         "from"
+                                  :nickname           nil
+                                  :searchable-phrases ["alias" "name"]}}}}}}
                  (message/add-received-message
                   cofx
                   message)))))
@@ -68,11 +69,12 @@
                          "00000000000000000000000000000000000000000000000000090x0000000000000000000000000000000000000000000000000000000000000000",
                          :cursor-clock-value 9,
                          :users
-                         {"from" {:alias      "alias",
-                                  :name       "name",
-                                  :identicon  "identicon",
-                                  :public-key "from"
-                                  :nickname   nil}}}}}}
+                         {"from" {:alias              "alias",
+                                  :name               "name",
+                                  :identicon          "identicon",
+                                  :public-key         "from"
+                                  :nickname           nil
+                                  :searchable-phrases ["alias" "name"]}}}}}}
                  (message/add-received-message
                   cofx
                   message)))))

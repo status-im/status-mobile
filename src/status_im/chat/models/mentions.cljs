@@ -76,25 +76,33 @@
 
 (defn get-suggestions [users searched-text]
   (reduce
-   (fn [acc [k {:keys [alias name nickname] :as user}]]
+   (fn [acc [k {:keys [alias name nickname searchable-phrases] :as user}]]
      (if-let [match
-              (cond
-                (and nickname
-                     (string/starts-with?
-                      (string/lower-case nickname)
-                      searched-text))
-                (or alias name)
+              (if (seq searchable-phrases)
+                (when (some
+                       (fn [s]
+                         (string/starts-with?
+                          (string/lower-case s)
+                          searched-text))
+                       searchable-phrases)
+                  (or name alias))
+                (cond
+                  (and nickname
+                       (string/starts-with?
+                        (string/lower-case nickname)
+                        searched-text))
+                  (or name alias)
 
-                (and alias
-                     (string/starts-with?
-                      (string/lower-case alias)
-                      searched-text))
-                alias
+                  (and alias
+                       (string/starts-with?
+                        (string/lower-case alias)
+                        searched-text))
+                  alias
 
-                (string/starts-with?
-                 (string/lower-case name)
-                 searched-text)
-                name)]
+                  (string/starts-with?
+                   (string/lower-case name)
+                   searched-text)
+                  name))]
        (assoc acc k (assoc user
                            :match match
                            :searched-text searched-text))
@@ -465,3 +473,17 @@
 (fx/defn reset-text-input-cursor
   [_ ref cursor]
   {::reset-text-input-cursor [ref cursor]})
+
+(defn add-searchable-phrases
+  [{:keys [alias name nickname] :as user}]
+  (reduce
+   (fn [user s]
+     (if (nil? s)
+       user
+       (let [new-words (concat
+                        [s]
+                        (rest (string/split s " ")))]
+         (update user :searchable-phrases (fnil concat []) new-words))))
+   user
+   [alias name nickname]))
+
