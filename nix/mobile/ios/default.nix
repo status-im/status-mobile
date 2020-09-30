@@ -1,5 +1,5 @@
 { callPackage, lib, mkShell, deps, pkgs
-, status-go, status-go-shared, status-go-nim-status, fastlane }:
+, status-go-shared, status-go-nim-status, fastlane }:
 
 let
   inherit (lib) catAttrs unique;

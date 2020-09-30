@@ -1,7 +1,7 @@
 { lib, pkgs, deps, callPackage, mkShell
 , nim-status-android-all 
 , status-go-android-all
-, status-go, androidPkgs, androidShell }:
+, androidPkgs, androidShell }:
 
 let
   # For generating a temporary keystore for local development
@@ -15,7 +15,7 @@ let
 
   # TARGETS
   release = callPackage ./release.nix {
-    inherit keystore jsbundle status-go watchmanFactory 
+    inherit keystore jsbundle watchmanFactory 
     status-go-android-all nim-status-android-all;
   };
 
@@ -43,7 +43,6 @@ in {
       export STATUS_NIX_MAVEN_REPO="${deps.gradle}"
 
       # required by some makefile targets
-      export STATUS_GO_ANDROID_LIBDIR=${status-go}
       export STATUS_GO_ANDROID_ALL_LIBDIR=${status-go-android-all}
       export NIM_STATUS_ANDROID_ALL_LIBDIR=${nim-status-android-all}
 

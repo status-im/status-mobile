@@ -2,7 +2,7 @@
   watchmanFactory, androidPkgs, patchMavenSources,
   nim-status-android-all,
   status-go-android-all,
-  keystore, jsbundle, status-go }:
+  keystore, jsbundle}:
 
 {
   # Value for BUILD_ENV checked by Clojure code at compile time
@@ -86,7 +86,6 @@ in stdenv.mkDerivation rec {
   ANDROID_NDK_ROOT = "${androidPkgs}/ndk-bundle";
 
   # Used by the Android Gradle build script in android/build.gradle
-  STATUS_GO_ANDROID_LIBDIR = "${status-go}";
   STATUS_GO_ANDROID_ALL_LIBDIR = "${status-go-android-all}";
   NIM_STATUS_ANDROID_ALL_LIBDIR = "${nim-status-android-all}";
 

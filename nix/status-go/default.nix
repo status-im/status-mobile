@@ -38,15 +38,11 @@ in rec {
     inherit meta source;
   };
 
-  mobile = callPackage ./mobile {
-    inherit meta source goBuildFlags goBuildLdFlags;
-  };
-
   nim-status = callPackage ./nim-status {
     inherit meta source shared;
   };
 
   shell = mkShell {
-    inputsFrom = [ mobile.android mobile.ios ];
+    inputsFrom = [ shared.android-all shared.ios-all nim-status.android-all nim-status.ios-all ];
   };
 }

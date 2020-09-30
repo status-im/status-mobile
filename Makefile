@@ -191,11 +191,20 @@ jsbundle-ios: ##@jsbundle Compile JavaScript and Clojure into index.ios.js
 
 status-go-android: SHELL := /bin/sh
 status-go-android: ##@status-go Compile status-go for Android app
-	nix/scripts/build.sh targets.status-go.mobile.android
+	nix/scripts/build.sh targets.status-go.shared.android-all
 
 status-go-ios: SHELL := /bin/sh
 status-go-ios: ##@status-go Compile status-go for iOS app
-	nix/scripts/build.sh targets.status-go.mobile.ios
+	nix/scripts/build.sh targets.status-go.shared.ios-all
+
+nim-status-android: SHELL := /bin/sh
+nim-status-android: ##@status-go Compile nim-status for Android app
+	nix/scripts/build.sh targets.status-go.nim-status.android-all
+
+nim-status-ios: SHELL := /bin/sh
+nim-status-ios: ##@status-go Compile nim-status for iOS app
+	nix/scripts/build.sh targets.status-go.nim-status.ios-all
+
 
 #--------------
 # Watch, Build & Review changes

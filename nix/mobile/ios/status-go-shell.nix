@@ -1,5 +1,5 @@
 #
-# This prepares status-go build file called Statusgo.framework for XCode.
+# This prepares status-go build libs for XCode.
 # It copies the status-go build result to 'modules/react-native-status/ios/RCTStatus'.
 #
 

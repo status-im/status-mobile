@@ -46,7 +46,6 @@ let
       buildInputs = with pkgs; [ gradle maven goMavenResolver ];
       inputsFrom = [ node-sh ];
       shellHook = ''
-        export STATUS_GO_ANDROID_LIBDIR="DUMMY"
         export STATUS_NIX_MAVEN_REPO="${pkgs.deps.gradle}"
         export ANDROID_SDK_ROOT="${pkgs.androidPkgs}"
         export ANDROID_NDK_ROOT="${pkgs.androidPkgs}/ndk-bundle"
@@ -64,7 +63,6 @@ let
     # helpers for use with target argument
     ios = targets.mobile.ios.shell;
     android = targets.mobile.android.shell;
-    status-go = targets.status-go.mobile.android;
   };
 
   # for merging the default shell with others
