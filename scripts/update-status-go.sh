@@ -20,6 +20,7 @@ HELP_MESSAGE=$(cat <<-END
 This is a tool for upgrading status-go to a given version in:
 ${VERSION_FILE}
 Which is then used by Nix derivations to build status-go for the app.
+If the given name matches both a branch and a tag the tag is used.
 
 Usage:
     ${SCRIPT_FILE} {version}
@@ -55,7 +56,18 @@ if [[ "${STATUS_GO_VERSION}" = PR-* ]]; then
 fi
 
 # ls-remote finds only tags, branches, and pull requests, but can't find commits
-STATUS_GO_COMMIT_SHA1=$(git ls-remote ${REPO_URL} ${STATUS_GO_VERSION} | cut -f1)
+STATUS_GO_MATCHING_REFS=$(git ls-remote ${REPO_URL} ${STATUS_GO_VERSION})
+
+# It's possible that there's both a branch and a tag matching the given version
+STATUS_GO_TAG_SHA1=$(echo "${STATUS_GO_MATCHING_REFS}" | grep 'refs/tags' | cut -f1)
+STATUS_GO_BRANCH_SHA1=$(echo "${STATUS_GO_MATCHING_REFS}" | grep 'refs/heads' | cut -f1)
+
+# Prefer tag over branch if both are found
+if [[ -n "${STATUS_GO_TAG_SHA1}" ]]; then
+    STATUS_GO_COMMIT_SHA1="${STATUS_GO_TAG_SHA1}"
+else
+    STATUS_GO_COMMIT_SHA1="${STATUS_GO_BRANCH_SHA1}"
+fi
 
 if [[ -z "${STATUS_GO_COMMIT_SHA1}" ]]; then
     echo "ERROR: Failed to find a SHA1 for rev '${STATUS_GO_VERSION}'."
