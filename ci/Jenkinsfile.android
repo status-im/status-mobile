@@ -101,11 +101,13 @@ pipeline {
               } else { /* if no universal is available pick first */
                 env.PKG_URL = urls.first()
               }
-              if (utils.isNightlyBuild()) {
-                env.DIAWI_URL = android.uploadToDiawi()
-              }
+              jenkins.setBuildDesc(APK: env.PKG_URL)
+              /* e2e builds get tested in SauceLabs */
               if (utils.isE2EBuild()) {
                 env.SAUCE_URL = android.uploadToSauceLabs()
+              }
+              if (utils.isNightlyBuild()) {
+                env.DIAWI_URL = android.uploadToDiawi()
               }
             }
           }

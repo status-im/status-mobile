@@ -99,8 +99,9 @@ pipeline {
           steps {
             script {
               env.PKG_URL = s3.uploadArtifact(api)
+              jenkins.setBuildDesc(IPA: env.PKG_URL)
               /* e2e builds get tested in SauceLabs */
-              if (btype == 'e2e') {
+              if (utils.isE2EBuild()) {
                 env.SAUCE_URL = ios.uploadToSauceLabs()
               } else {
                 env.DIAWI_URL = ios.uploadToDiawi()
