@@ -12,8 +12,9 @@
 (def subtitle-margin 4)
 
 (defn container-style [{:keys [animation minimized]}]
-  (merge {:flex-direction :row
-          :align-items    :center}
+  (merge {:flex-direction   :row
+          :padding-vertical 4
+          :align-items      :center}
          (if-not minimized
            (:base spacing/padding-horizontal)
            {:opacity animation})))
@@ -36,7 +37,8 @@
          (when-not minimized
            {:padding-top    subtitle-margin})))
 
-(defn extended-header [{:keys [title photo color subtitle subtitle-icon on-press monospace]}]
+(defn extended-header [{:keys [title photo color subtitle subtitle-icon on-press monospace bottom-separator]
+                        :or {bottom-separator true}}]
   (fn [{:keys [animation minimized]}]
     (let [wrapper (if on-press
                     [rn/touchable-opacity {:on-press on-press}]
@@ -78,5 +80,5 @@
                subtitle]])]]
          (when-not minimized
            [animated/view {:pointer-events :none
-                           :style          (header-bottom-separator)}])]]))))
+                           :style          (when bottom-separator (header-bottom-separator))}])]]))))
 

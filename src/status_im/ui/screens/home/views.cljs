@@ -19,7 +19,8 @@
             [status-im.utils.utils :as utils]
             [cljs-bean.core :as bean]
             [status-im.ui.components.invite.views :as invite]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.plus-button :as components.plus-button])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn welcome-image-wrapper []
@@ -158,16 +159,11 @@
 
 (views/defview plus-button []
   (views/letsubs [logging-in? [:multiaccounts/login]]
-    [react/view styles/action-button-container
-     [quo/button {:type                :scale
-                  :accessibility-label :new-chat-button
-                  :on-press            (when-not logging-in?
-                                         #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))}
-      [react/view (styles/action-button)
-       (if logging-in?
-         [react/activity-indicator {:color     colors/white-persist
-                                    :animating true}]
-         [icons/icon :main-icons/add {:color colors/white-persist}])]]]))
+    [components.plus-button/plus-button
+     {:on-press (when-not logging-in?
+                  #(re-frame/dispatch [:bottom-sheet/show-sheet :add-new {}]))
+      :loading logging-in?
+      :accessibility-label :new-chat-button}]))
 
 (defn home []
   [react/keyboard-avoiding-view {:style styles/home-container}

@@ -271,7 +271,6 @@
                                  (js/setTimeout #(on-long-press-fn on-long-press message content) 200))
                              (on-long-press-fn on-long-press message content)))})
        [react/view (assoc (style/message-view message)
-                          :remove-clipped-subviews (not outgoing)
                           :max-height (when-not (or outgoing modal)
                                         (if @collapsible?
                                           (if @collapsed? message-height-px nil)

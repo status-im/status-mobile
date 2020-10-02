@@ -123,6 +123,7 @@
 (reg-root-key-sub :chats/mention-suggestions :chats/mention-suggestions)
 (reg-root-key-sub :chats/cursor :chats/cursor)
 (reg-root-key-sub :chats/input-with-mentions :chats/input-with-mentions)
+(reg-root-key-sub :inactive-chat-id :inactive-chat-id)
 ;;browser
 (reg-root-key-sub :browsers :browser/browsers)
 (reg-root-key-sub :browser/options :browser/options)
@@ -612,8 +613,8 @@
  :chats/active-chats
  :<- [::chats]
  (fn [chats]
-   (reduce-kv (fn [acc id {:keys [is-active] :as chat}]
-                (if is-active
+   (reduce-kv (fn [acc id {:keys [is-active profile-public-key] :as chat}]
+                (if (and is-active (not profile-public-key))
                   (assoc acc id chat)
                   acc))
               {}
@@ -650,9 +651,10 @@
  :chats/current-chat
  :<- [:chats/current-raw-chat]
  :<- [:multiaccount/public-key]
+ :<- [:inactive-chat-id]
  (fn [[{:keys [group-chat] :as current-chat}
-       my-public-key]]
-   (when current-chat
+       my-public-key inactive-chat-id]]
+   (when (and current-chat (= (:chat-id current-chat) inactive-chat-id))
      (cond-> current-chat
        (chat.models/public-chat? current-chat)
        (assoc :show-input? true)
@@ -812,7 +814,7 @@
 
 (re-frame/reg-sub
  :chats/sending-image
- :<- [:chats/current-chat]
+ :<- [:chats/current-raw-chat]
  (fn [{:keys [metadata]}]
    (get-in metadata [:sending-image])))
 

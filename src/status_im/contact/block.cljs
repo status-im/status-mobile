@@ -7,12 +7,6 @@
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]))
 
-(fx/defn remove-current-chat-id
-  [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (dissoc db :current-chat-id)}
-            (navigation/navigate-to-cofx :home {})))
-
 (fx/defn clean-up-chat
   [{:keys [db] :as cofx}
    public-key
@@ -48,7 +42,7 @@
                      public-key)
                     (assoc :last-updated now)
                     (update :system-tags (fnil conj #{}) :contact/blocked))
-        from-one-to-one-chat? (not (get-in db [:chats (:current-chat-id db) :group-chat]))]
+        from-one-to-one-chat? (not (get-in db [:chats (:inactive-chat-id db) :group-chat]))]
     (fx/merge cofx
               {:db (-> db
                        ;; add the contact to blocked contacts
@@ -61,7 +55,7 @@
                                                  (re-frame/dispatch [:hide-popover])))
               ;; reset navigation to avoid going back to non existing one to one chat
               (if from-one-to-one-chat?
-                remove-current-chat-id
+                (navigation/navigate-to-cofx :home {})
                 (navigation/navigate-back)))))
 
 (fx/defn unblock-contact

@@ -2,7 +2,6 @@
   (:require [status-im.ui.screens.profile.user.views :as profile.user]
             [status-im.ui.screens.ens.views :as ens]
             [status-im.ui.screens.contacts-list.views :as contacts-list]
-            [status-im.ui.screens.profile.contact.views :as profile.contact]
             [status-im.ui.screens.bootnodes-settings.edit-bootnode.views
              :as
              edit-bootnode]
@@ -65,9 +64,6 @@
      :component ens/name-details}
     {:name      :blocked-users-list
      :component contacts-list/blocked-users-list}
-    {:name      :profile
-     :insets    {:top false}
-     :component profile.contact/profile}
     {:name      :bootnodes-settings
      :component bootnodes-settings/bootnodes-settings}
     {:name      :installations

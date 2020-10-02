@@ -17,42 +17,48 @@
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
             [status-im.utils.platform :as platform]
             [reagent.core :as reagent]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [quo.components.list.item :as list-item]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.screens.profile.status :as my-status]
+            [status-im.ui.screens.chat.views :as chat.views])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn actions
-  [{:keys [public-key added? tribute-to-talk] :as contact}]
-  (let [{:keys [tribute-status tribute-label]} tribute-to-talk]
-    (concat [(cond-> {:label               (i18n/label :t/send-message)
-                      :icon                :main-icons/message
-                      :action              #(re-frame/dispatch [:contact.ui/send-message-pressed {:public-key public-key}])
-                      :accessibility-label :start-conversation-button}
-               (not (#{:none :paid} tribute-status))
-               (assoc :subtext tribute-label))]
-            ;;TODO hide temporary for v1
-            #_{:label               (i18n/label :t/send-transaction)
-               :icon                :main-icons/send
-               :action              #(re-frame/dispatch [:profile/send-transaction public-key])
-               :accessibility-label :send-transaction-button}
-            (if added?
-              [{:label               (i18n/label :t/remove-from-contacts)
-                :icon                :main-icons/remove-contact
-                :accessibility-label :in-contacts-button
-                :action              #(re-frame/dispatch [:contact.ui/remove-contact-pressed contact])}]
-              ;; TODO sheets temporary disabled
-                                        ;:action              #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                        ;                                          {:content        sheets/remove-contact
-                                        ;                                           :content-height 150}
-                                        ;                                          contact])
-              [{:label               (i18n/label :t/add-to-contacts)
-                :icon                :main-icons/add-contact
-                :accessibility-label :add-to-contacts-button
-                :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])}]))))
-                ;; TODO sheets temporary disabled
-                ;:action              #(re-frame/dispatch [:bottom-sheet/show-sheet
-                ;                                          {:content sheets/add-contact
-                ;                                           :content-height 150}
-                ;                                          contact])
+  [{:keys [public-key added? blocked?] :as contact} muted?]
+  (concat [{:label               (i18n/label :t/chat)
+            :icon                :main-icons/message
+            :action              #(re-frame/dispatch [:contact.ui/send-message-pressed {:public-key public-key}])
+            :accessibility-label :start-conversation-button}]
+          (if added?
+            [{:label               (i18n/label :t/remove-from-contacts)
+              :icon                :main-icons/remove-contact
+              :selected            true
+              :accessibility-label :in-contacts-button
+              :action              #(re-frame/dispatch [:contact.ui/remove-contact-pressed contact])}]
+            [{:label               (i18n/label :t/add-to-contacts)
+              :icon                :main-icons/add-contact
+              :accessibility-label :add-to-contacts-button
+              :action              #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])}])
+          (when platform/ios?
+            [{:label               (i18n/label (if muted? :t/unmute :t/mute))
+              :icon                :main-icons/notification
+              :accessibility-label :mute-chat
+              :selected            muted?
+              :action              #(re-frame/dispatch [::chat.models/mute-chat-toggled public-key (not muted?)])}])
+          [{:label               (i18n/label (if blocked? :t/unblock :t/block))
+            :negative            true
+            :selected            blocked?
+            :icon                :main-icons/cancel
+            :action              (if blocked?
+                                   #(re-frame/dispatch [:contact.ui/unblock-contact-pressed public-key])
+                                   #(re-frame/dispatch [:show-popover
+                                                        {:view             sheets/block-contact
+                                                         :prevent-closing? true
+                                                         :public-key       public-key}]))
+            :accessibility-label (if blocked?
+                                   :unblock-contact
+                                   :block-contact)}]))
 
 (defn render-detail [{:keys [public-key names name] :as detail}]
   [quo/list-item
@@ -78,49 +84,15 @@
        (i18n/label :t/profile-details)]]
      [render-detail contact]]))
 
-(defn render-chat-settings [{:keys [public-key names]}]
-  (let [muted? (:muted @(re-frame/subscribe [:chats/chat public-key]))]
-    [react/view
-     [quo/list-item
-      {:title               (i18n/label :t/nickname)
-       :size                :small
-       :accessibility-label :profile-nickname-item
-       :accessory           :text
-       :accessory-text      (or (:nickname names) (i18n/label :t/none))
-       :on-press            #(re-frame/dispatch [:navigate-to :nickname])
-       :chevron             true}]
-     ;; Mute chat is only supported on ios for now
-     (when platform/ios?
-       [quo/list-item
-        {:title               (i18n/label :t/mute)
-         :active               muted?
-         :accessibility-label :mute-chat
-         :on-press            #(re-frame/dispatch [::chat.models/mute-chat-toggled public-key (not muted?)])
-         :accessory           :switch}])]))
-
-(defn chat-settings [contact]
-  [react/view
-   [quo/list-header
-    [quo/text {:accessibility-label :chat-settings
-               :color               :inherit}
-     (i18n/label :t/chat-settings)]]
-   [render-chat-settings contact]])
-
-;; TODO: List item
-(defn block-contact-action [{:keys [blocked? public-key]}]
-  [react/touchable-highlight {:on-press (if blocked?
-                                          #(re-frame/dispatch [:contact.ui/unblock-contact-pressed public-key])
-                                          #(re-frame/dispatch [:show-popover
-                                                               {:view             sheets/block-contact
-                                                                :prevent-closing? true
-                                                                :public-key       public-key}]))}
-   [react/text {:style               styles/block-action-label
-                :accessibility-label (if blocked?
-                                       :unblock-contact
-                                       :block-contact)}
-    (if blocked?
-      (i18n/label :t/unblock-contact)
-      (i18n/label :t/block-contact))]])
+(defn nickname-settings [{:keys [names]}]
+  [quo/list-item
+   {:title               (i18n/label :t/nickname)
+    :size                :small
+    :accessibility-label :profile-nickname-item
+    :accessory           :text
+    :accessory-text      (or (:nickname names) (i18n/label :t/none))
+    :on-press            #(re-frame/dispatch [:navigate-to :nickname])
+    :chevron             true}])
 
 (defn save-nickname [public-key nickname]
   (re-frame/dispatch [:contacts/update-nickname public-key nickname]))
@@ -167,45 +139,75 @@
   (views/letsubs [{:keys [public-key names]} [:contacts/current-contact]]
     [nickname-view public-key names]))
 
+(defn button-item [{:keys [icon label action selected negative]}]
+  [react/touchable-highlight {:on-press action :style {:flex 1}
+                              :accessibility-label (str label "-item-button")}
+   [react/view {:flex 1 :align-items :center}
+    [list-item/icon-column {:icon icon
+                            :size :small
+                            :icon-bg-color (if negative
+                                             (if selected colors/red colors/red-light)
+                                             (if selected colors/blue colors/blue-light))
+                            :icon-color (if negative
+                                          (if selected colors/white colors/red)
+                                          (if selected colors/white colors/blue))}]
+    [react/text {:style {:text-align :center :color  (if negative colors/red colors/blue)
+                         :font-size 12 :line-height 16 :margin-top 6}
+                 :number-of-lines 2}
+     label]]])
+
+(defn status []
+  (let [messages @(re-frame/subscribe [:chats/current-chat-messages-stream])
+        no-messages?       @(re-frame/subscribe [:chats/current-chat-no-messages?])]
+    (if no-messages?
+      [react/view {:padding-horizontal 32 :margin-top 32}
+       [react/view (styles/updates-descr-cont)
+        [react/text {:style {:color colors/gray :line-height 22}}
+         (i18n/label :t/status-updates-descr)]]]
+      [list/flat-list
+       {:key-fn                    #(or (:message-id %) (:value %))
+        :ref                       #(reset! my-status/messages-list-ref %)
+        :on-viewable-items-changed chat.views/on-viewable-items-changed
+        :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages])
+        :on-scroll-to-index-failed #()                      ;;don't remove this
+        :render-fn                 my-status/render-message
+        :data                      messages}])))
+
 (views/defview profile []
   (views/letsubs [{:keys [public-key name ens-verified]
                    :as   contact}  [:contacts/current-contact]]
-    (let [[first-name second-name] (multiaccounts/contact-two-names contact true)
+    (let [muted? (:muted @(re-frame/subscribe [:chats/chat public-key]))
+          [first-name second-name] (multiaccounts/contact-two-names contact true)
           on-share #(re-frame/dispatch [:show-popover (merge
                                                        {:view    :share-chat-key
                                                         :address public-key}
                                                        (when (and ens-verified name)
                                                          {:ens-name name}))])]
       (when contact
-        [react/view
-         {:style
-          (merge {:flex 1})}
+        [react/view {:flex 1}
          [quo/animated-header
-          {:use-insets        true
+          {:use-insets        false
            :right-accessories [{:icon     :main-icons/share
+                                :accessibility-label :share-button
                                 :on-press on-share}]
-           :left-accessories  [{:icon                :main-icons/arrow-left
+           :left-accessories  [{:icon                :main-icons/close
                                 :accessibility-label :back-button
                                 :on-press            #(re-frame/dispatch [:navigate-back])}]
            :extended-header   (profile-header/extended-header
                                {:on-press on-share
+                                :bottom-separator false
                                 :title    first-name
                                 :photo    (multiaccounts/displayed-photo contact)
                                 :monospace (not ens-verified)
                                 :subtitle second-name})}
-
-          [react/view {:padding-top 12}
-           (for [{:keys [label subtext accessibility-label icon action disabled?]} (actions contact)
+          [react/view {:height 1 :background-color colors/gray-lighter :margin-top 8}]
+          [nickname-settings contact]
+          [react/view {:height 1 :background-color colors/gray-lighter}]
+          [react/view {:padding-top 17 :flex-direction :row :align-items :stretch :flex 1}
+           (for [{:keys [label] :as action} (actions contact muted?)
                  :when label]
              ^{:key label}
-             [quo/list-item {:theme               :accent
-                             :title               label
-                             :subtitle            subtext
-                             :icon                icon
-                             :accessibility-label accessibility-label
-                             :disabled            disabled?
-                             :on-press            action}])]
-          [react/view styles/contact-profile-details-container
-           [profile-details contact]
-           [chat-settings contact]]
-          [block-contact-action contact]]]))))
+             [button-item action])]
+          [react/view {:height 1 :background-color colors/gray-lighter :margin-top 16}]
+          [status]]]))))
+

@@ -1245,10 +1245,24 @@
  (fn [{:keys [db]} [_ dimensions]]
    {:db (assoc db :dimensions/window (dimensions/window dimensions))}))
 
+(fx/defn reset-current-profile-chat [{:keys [db] :as cofx} public-key]
+  (let [chat-id (chat/profile-chat-topic public-key)]
+    (when-not (= (:current-chat-id db) chat-id)
+      (fx/merge cofx
+                (chat/start-public-chat chat-id {:dont-navigate? true :profile-public-key public-key})
+                (chat/offload-all-messages)
+                (chat/preload-chat-data chat-id)))))
+
+(fx/defn reset-current-chat [{:keys [db] :as cofx} chat-id]
+  (when-not (= (:current-chat-id db) chat-id)
+    (fx/merge cofx
+              (chat/offload-all-messages)
+              (chat/preload-chat-data chat-id))))
+
 ;; NOTE: Will be removed with the keycard PR
 (handlers/register-handler-fx
  :screens/on-will-focus
- (fn [cofx [_ view-id]]
+ (fn [{:keys [db] :as cofx} [_ view-id]]
    (fx/merge cofx
              #(case view-id
                 :keycard-settings (keycard/settings-screen-did-load %)
@@ -1257,10 +1271,28 @@
                 :keycard-login-pin (keycard/enter-pin-screen-did-load %)
                 :add-new-account-pin (keycard/enter-pin-screen-did-load %)
                 :keycard-authentication-method (keycard/authentication-method-screen-did-load %)
-                ;; We need this as if you click on universal-links you transition
-                ;; from chat to chat, and therefore we won't be loading new
-                ;; messages
-                :chat (chat.loading/load-messages %)
+                (:chat :group-chat-profile) (reset-current-chat % (get db :inactive-chat-id))
                 :multiaccounts (keycard/multiaccounts-screen-did-load %)
                 (:wallet-stack :wallet) (wallet.events/wallet-will-focus %)
+                (:my-profile :profile-stack)
+                (reset-current-profile-chat % (get-in % [:db :multiaccount :public-key]))
+                :profile
+                (reset-current-profile-chat % (get-in % [:db :contacts/identity]))
+                nil))))
+
+(handlers/register-handler-fx
+ :screens/tab-will-change
+ (fn [{:keys [db] :as cofx} [_ view-id]]
+   (fx/merge cofx
+             #(case view-id
+                ;;when we back to chat we want to show inactive chat
+                :chat
+                (reset-current-chat % (get db :inactive-chat-id))
+
+                (:my-profile :profile-stack)
+                (reset-current-profile-chat % (get-in % [:db :multiaccount :public-key]))
+
+                :profile
+                (reset-current-profile-chat % (get-in % [:db :contacts/identity]))
+
                 nil))))

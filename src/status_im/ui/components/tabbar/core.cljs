@@ -75,7 +75,7 @@
 (def tabs
   (reagent/adapt-react-class
    (fn [props]
-     (let [{:keys [navigate index route]} (bean props)
+     (let [{:keys [navigate index route state]} (bean props)
            {:keys [keyboard-shown]
             :or   {keyboard-shown false}} (when platform/android? (rn/use-keyboard))
            {:keys [bottom]}               (safe-area/use-safe-area)
@@ -99,7 +99,10 @@
             [tab
              {:icon                icon
               :label               title
-              :on-press            #(navigate (name nav-stack))
+              :on-press            #(let [view-id (navigation/get-index-route-name route-index (bean state))]
+                                      (re-frame/dispatch-sync [:screens/tab-will-change view-id])
+                                      (reagent/flush)
+                                      (navigate (name nav-stack)))
               :accessibility-label accessibility-label
               :count-subscription  count-subscription
               :active?             (= (str index) (str route-index))
@@ -113,5 +116,6 @@
         index    (get state :index)]
     (reagent/as-element
      [tabs {:navigate navigate
+            :state    (oget props "state")
             :route    (navigation/get-active-route-name state)
             :index    index}])))

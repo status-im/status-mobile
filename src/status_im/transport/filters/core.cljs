@@ -12,7 +12,9 @@
             [taoensso.timbre :as log]))
 
 (defn is-public-key? [k]
-  (string/starts-with? k "0x"))
+  (and
+   (string? k)
+   (string/starts-with? k "0x")))
 
 (defn load-filters-rpc [chats on-success on-failure]
   (json-rpc/call {:method (json-rpc/call-ext-method "loadFilters")

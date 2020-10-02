@@ -8,10 +8,12 @@
 (def one-to-one-chat-type 1)
 (def public-chat-type 2)
 (def private-group-chat-type 3)
+(def profile-chat-type 4)
 
-(defn type->rpc [{:keys [public? group-chat] :as chat}]
+(defn type->rpc [{:keys [public? group-chat profile-public-key] :as chat}]
   (assoc chat :chatType (cond
                           public? public-chat-type
+                          profile-public-key profile-chat-type
                           group-chat private-group-chat-type
                           :else one-to-one-chat-type)))
 
@@ -21,6 +23,7 @@
                                          :chat-name (str "#" name)
                                          :public? true
                                          :group-chat true)
+    (= profile-chat-type chatType) (assoc chat :public? true)
     (= private-group-chat-type chatType) (assoc chat
                                                 :chat-name name
                                                 :public? false
@@ -72,7 +75,8 @@
                                 :last-message :lastMessage
                                 :deleted-at-clock-value :deletedAtClockValue
                                 :is-active :active
-                                :last-clock-value :lastClockValue})
+                                :last-clock-value :lastClockValue
+                                :profile-public-key :profile})
       (dissoc :public? :group-chat :messages
               :might-have-join-time-messages?
               :loaded-unviewed-messages-ids
@@ -89,7 +93,8 @@
                                 :lastMessage :last-message
                                 :active :is-active
                                 :lastClockValue :last-clock-value
-                                :invitationAdmin :invitation-admin})
+                                :invitationAdmin :invitation-admin
+                                :profile :profile-public-key})
       (update :last-message #(when % (messages/<-rpc %)))
       (dissoc :chatType :members)))
 

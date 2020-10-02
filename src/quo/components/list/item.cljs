@@ -64,7 +64,7 @@
                                  :justify-content  :space-between})}]
         children))
 
-(defn- icon-column
+(defn icon-column
   [{:keys [icon icon-bg-color icon-color size icon-container-style]}]
   (when icon
     (let [icon-size (size->icon-size size)]

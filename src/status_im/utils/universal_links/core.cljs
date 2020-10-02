@@ -72,9 +72,8 @@
 
     public-key
     (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key)
-                                 :tabs
-                                 {:screen :chat-stack
-                                  :params {:screen :profile}})))
+                                 :profile
+                                 {})))
 
 (fx/defn handle-eip681 [cofx data]
   (fx/merge cofx

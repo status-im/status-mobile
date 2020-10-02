@@ -81,6 +81,7 @@
     "blank-keycard-text": "You can proceed with your keycard once you've generated your keys and name",
     "blank-keycard-title": "Looks like you’ve tapped \na blank keycard",
     "block": "Block",
+    "unblock": "Unblock",
     "block-contact": "Block this user",
     "block-contact-details": "Blocking will delete this user's previous messages and stop new ones from reaching you",
     "blocked-users": "Blocked users",
@@ -276,6 +277,7 @@
     "data": "Data",
     "datetime-ago": "ago",
     "datetime-ago-format": "{{number}} {{time-intervals}} {{ago}}",
+    "datetime-ago-format-short": "{{number}}{{time-intervals}}",
     "datetime-day": {
         "one": "day",
         "other": "days"
@@ -291,6 +293,22 @@
     "datetime-second": {
         "one": "second",
         "other": "seconds"
+    },
+    "datetime-day-short": {
+        "one": "D",
+        "other": "D"
+    },
+    "datetime-hour-short": {
+        "one": "H",
+        "other": "H"
+    },
+    "datetime-minute-short": {
+        "one": "M",
+        "other": "M"
+    },
+    "datetime-second-short": {
+        "one": "S",
+        "other": "S"
     },
     "datetime-today": "today",
     "datetime-yesterday": "yesterday",
@@ -1279,8 +1297,16 @@
     "address-or-ens-name": "Address or ENS name",
     "name-optional": "Name (optional)",
     "mute": "Mute",
+    "unmute": "Unmute",
     "scan-tokens": "Scan tokens",
+    "my-status": "My status",
     "warning-sending-to-contract-descr": "The address you entered is a smart contract, sending funds to this address may result in loss of funds. To interact with a DApp, open the DApp in the Status DApp Browser.",
+    "contacts-descr": "Your contacts will appear here. You will receive status updates from anyone you add as a contact",
+    "status-updates-descr": "Status updates will appear here. Add the profile as a contact to receive updates on your timeline.",
+    "whats-on-your-mind": "What’s on your mind…",
     "cant-open-public-chat": "Can't open public chat",
-    "invalid-public-chat-topic": "Invalid public chat topic"
+    "invalid-public-chat-topic": "Invalid public chat topic",
+    "now": "Now",
+    "statuses-my-profile-descr": "Status updates are messages you publish to your profile. They can be viewed by anyone visiting your profile inside Status",
+    "new-status": "New status"
 }

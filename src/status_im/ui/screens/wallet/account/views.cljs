@@ -15,7 +15,8 @@
             [status-im.ui.screens.wallet.accounts.views :as accounts]
             [status-im.ui.screens.wallet.transactions.views :as history]
             [status-im.utils.money :as money]
-            [status-im.wallet.utils :as wallet.utils])
+            [status-im.wallet.utils :as wallet.utils]
+            [status-im.ui.components.tabs :as tabs])
   (:require-macros [status-im.utils.views :as views]))
 
 (def state (reagent/atom {:tab :assets}))
@@ -118,9 +119,9 @@
     (let [{:keys [tab]} @state]
       [react/view {:flex 1}
        [react/view {:flex-direction :row :margin-bottom 8 :padding-horizontal 4}
-        [accounts/tab-title state :assets (i18n/label :t/wallet-assets) (= tab :assets)]
-        [accounts/tab-title state :nft (i18n/label :t/wallet-collectibles) (= tab :nft)]
-        [accounts/tab-title state :history (i18n/label :t/history) (= tab :history)]]
+        [tabs/tab-title state :assets (i18n/label :t/wallet-assets) (= tab :assets)]
+        [tabs/tab-title state :nft (i18n/label :t/wallet-collectibles) (= tab :nft)]
+        [tabs/tab-title state :history (i18n/label :t/history) (= tab :history)]]
        (cond
          (= tab :assets)
          [list/flat-list {:data               tokens

@@ -162,9 +162,10 @@
 
 (fx/defn add-public-chat
   "Adds new public group chat to db"
-  [cofx topic]
+  [cofx topic profile-public-key]
   (upsert-chat cofx
                {:chat-id                        topic
+                :profile-public-key             profile-public-key
                 :is-active                      true
                 :name                           topic
                 :chat-name                      (str "#" topic)
@@ -243,8 +244,9 @@
 
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
-  [cofx chat-id]
+  [{db :db :as cofx} chat-id]
   (fx/merge cofx
+            {:db (assoc db :inactive-chat-id chat-id)}
             (preload-chat-data chat-id)
             (navigation/navigate-to-cofx :chat-stack {:screen :chat})))
 
@@ -260,15 +262,18 @@
               (transport.filters/load-chat chat-id)
               (navigate-to-chat chat-id))))
 
+(defn profile-chat-topic [public-key]
+  (str "@" public-key))
+
 (fx/defn start-public-chat
   "Starts a new public chat"
-  [cofx topic {:keys [dont-navigate?]}]
-  (if (new-public-chat.db/valid-topic? topic)
+  [cofx topic {:keys [dont-navigate? profile-public-key]}]
+  (if (or (new-public-chat.db/valid-topic? topic) profile-public-key)
     (if (active-chat? cofx topic)
       (when-not dont-navigate?
         (navigate-to-chat cofx topic))
       (fx/merge cofx
-                (add-public-chat topic)
+                (add-public-chat topic profile-public-key)
                 (transport.filters/load-chat topic)
                 #(when-not dont-navigate?
                    (navigate-to-chat % topic))))

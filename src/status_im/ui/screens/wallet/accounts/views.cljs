@@ -58,17 +58,6 @@
      [icons/icon :main-icons/add {:color colors/blue}]]
     [react/text {:style {:color colors/blue}} (i18n/label :t/add-account)]]])
 
-(defn tab-title [state key label active?]
-  [react/view {:align-items :center}
-   [react/touchable-highlight {:on-press #(swap! state assoc :tab key)
-                               :underlay-color colors/gray-lighter
-                               :style {:border-radius 8}}
-    [react/view {:padding-horizontal 12 :padding-vertical 9}
-     [react/text {:style {:font-weight "500" :color (if active? colors/black colors/gray) :line-height 22}}
-      label]]]
-   (when active?
-     [react/view {:width 24 :height 3 :border-radius 4 :background-color colors/blue}])])
-
 (defn render-asset [currency & [on-press]]
   (fn [{:keys [icon decimals amount color value] :as token}]
     [quo/list-item

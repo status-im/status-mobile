@@ -142,6 +142,15 @@
                                             :image-path   (utils/safe-replace image-path #"file://" "")
                                             :text         (i18n/label :t/update-to-see-image)})))))
 
+(fx/defn send-my-status-message
+  "when not empty, proceed by sending text message with public key topic"
+  {:events [:profile.ui/send-my-status-message]}
+  [{{:keys [current-chat-id] :as db} :db :as cofx}]
+  (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])]
+    (fx/merge cofx
+              (send-image)
+              (send-plain-text-message input-text current-chat-id))))
+
 (fx/defn send-audio-message
   [cofx audio-path duration current-chat-id]
   (when-not (string/blank? audio-path)

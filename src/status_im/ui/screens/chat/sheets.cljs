@@ -159,7 +159,7 @@
        :accessibility-label :delete-transaccent-button
        :on-press            #(hide-sheet-and-dispatch [:chat.ui/delete-message chat-id message-id])}]]))
 
-(defn image-long-press [{:keys [content identicon from outgoing] :as message} from-preview?]
+(defn image-long-press [{:keys [content identicon from outgoing cant-be-replied] :as message} from-preview?]
   (fn []
     (let [contact-name @(re-frame/subscribe [:contacts/contact-name-by-identity from])]
       [react/view
@@ -177,14 +177,15 @@
                                    (when from-preview?
                                      (re-frame/dispatch [:navigate-back]))
                                    (hide-sheet-and-dispatch [:chat.ui/show-profile from]))}])
-       [quo/list-item
-        {:theme    :accent
-         :title    (i18n/label :t/message-reply)
-         :icon     :main-icons/reply
-         :on-press #(do
-                      (when from-preview?
-                        (re-frame/dispatch [:navigate-back]))
-                      (hide-sheet-and-dispatch [:chat.ui/reply-to-message message]))}]
+       (when-not cant-be-replied
+         [quo/list-item
+          {:theme    :accent
+           :title    (i18n/label :t/message-reply)
+           :icon     :main-icons/reply
+           :on-press #(do
+                        (when from-preview?
+                          (re-frame/dispatch [:navigate-back]))
+                        (hide-sheet-and-dispatch [:chat.ui/reply-to-message message]))}])
        ;; we have only base64 string for image, so we need to find a way how to copy it
        #_[quo/list-item
           {:theme    :accent

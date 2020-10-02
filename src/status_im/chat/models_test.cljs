@@ -49,7 +49,7 @@
   (with-redefs [gfycat/generate-gfy (constantly "generated")
                 identicon/identicon (constantly "generated")]
     (let [topic "topic"
-          fx (chat/add-public-chat {:db {}} topic)
+          fx (chat/add-public-chat {:db {}} topic nil)
           chat (get-in fx [:db :chats topic])]
       (testing "it sets the name"
         (is (= topic (:name chat))))

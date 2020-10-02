@@ -28,7 +28,7 @@
       add-timestamp))
 
 ;; any message that comes after this amount of ms will be grouped separately
-(def ^:private group-ms 60000)
+(def ^:private group-ms 300000)
 
 (defn same-group?
   "Whether a message is in the same group as the one after it.

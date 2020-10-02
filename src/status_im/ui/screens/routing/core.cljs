@@ -35,6 +35,12 @@
       (get-active-route-name (bean inner-state))
       (some-> (get route :name) keyword))))
 
+(defn get-index-route-name [index {:keys [routes]}]
+  (let [route (bean (get routes index))]
+    (if-let [inner-state (get route :state)]
+      (get-active-route-name (bean inner-state))
+      (some-> (get route :name) keyword))))
+
 (def transition-presets TransitionPresets)
 
 (def modal-presentation-ios (merge (js->clj (.-ModalPresentationIOS ^js transition-presets))

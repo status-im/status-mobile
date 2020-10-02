@@ -16,10 +16,10 @@
 (def hour (* 1000 60 60))
 (def day (* hour 24))
 (def week (* 7 day))
-(def units [{:name :t/datetime-second :limit 60 :in-second 1}
-            {:name :t/datetime-minute :limit 3600 :in-second 60}
-            {:name :t/datetime-hour :limit 86400 :in-second 3600}
-            {:name :t/datetime-day :limit nil :in-second 86400}])
+(def units [{:name :t/datetime-second-short :limit 60 :in-second 1}
+            {:name :t/datetime-minute-short :limit 3600 :in-second 60}
+            {:name :t/datetime-hour-short :limit 86400 :in-second 3600}
+            {:name :t/datetime-day-short :limit nil :in-second 86400}])
 
 (def time-zone-offset (hours (- (/ (.getTimezoneOffset ^js (js/Date.)) 60))))
 
@@ -113,23 +113,23 @@
 
 (defn format-time-ago [diff unit]
   (let [name (label-pluralize diff (:name unit))]
-    (label :t/datetime-ago-format {:ago (label :t/datetime-ago)
-                                   :number diff
-                                   :time-intervals name})))
+    (if (= :t/datetime-second-short (:name unit))
+      (label :t/now)
+      (label :t/datetime-ago-format-short {:ago (label :t/datetime-ago)
+                                           :number diff
+                                           :time-intervals name}))))
 (defn seconds-ago [time]
   (t/in-seconds (t/interval time (t/now))))
 
 (defn time-ago [time]
-  (let [diff (seconds-ago time)]
-    (if (< diff 60)
-      (label :t/active-online)
-      (let [unit (first (drop-while #(and (>= diff (:limit %))
-                                          (:limit %))
-                                    units))]
-        (-> (/ diff (:in-second unit))
-            Math/floor
-            int
-            (format-time-ago unit))))))
+  (let [diff (seconds-ago time)
+        unit (first (drop-while #(and (>= diff (:limit %))
+                                      (:limit %))
+                                units))]
+    (-> (/ diff (:in-second unit))
+        Math/floor
+        int
+        (format-time-ago unit))))
 
 (defn to-date [ms]
   (from-long ms))
