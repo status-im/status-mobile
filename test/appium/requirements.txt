@@ -44,7 +44,7 @@ scrypt==0.8.6
 selenium==3.14.1
 six==1.10.0
 toolz==0.9.0
-urllib3==1.24.3
+urllib3==1.25.9
 yarl==0.12.0
 zbarlight==2.3
 docker
