@@ -38,7 +38,6 @@
           {:target :react-native
            :output-dir "app"
            :init-fn status-im.core/init
-           :closure-defines {"status-im.utils.config/INFURA_TOKEN" #shadow/env "INFURA_TOKEN"}
            :dev {:devtools {:after-load status-im.reloader/reload
                             :preloads [re-frisk-remote.preload]}
                  :compiler-options {:closure-defines
@@ -50,7 +49,8 @@
                  :local-ip #shadow/env "SHADOW_HOST"}
            :chunks {:fleets status-im.default-fleet/default-fleets
                     :chats status-im.chat.default-chats/default-chats}
-           :release {:compiler-options {:output-feature-set :es6
+           :release {:closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
+                     :compiler-options {:output-feature-set :es6
                                         ;;disable for android build as there
                                         ;;is an intermittent warning with deftype
                                         :warnings-as-errors false
@@ -67,8 +67,8 @@
           {:output-to     "target/test/test.js"
            :output-dir    "target/test"
            :optimizations :simple
-           :closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
            :target        :node-test
+           :closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
            :compiler-options {;; needed because we override require and it
                               ;; messes with source-map which reports callstack
                               ;; exceeded exceptions instead of real issues
