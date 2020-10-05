@@ -19,6 +19,9 @@ let
     toLower optionalString stringLength assertMsg
     getConfig makeLibraryPath assertEnvVarSet elem;
 
+  # Pass secretsFile for INFURA_TOKEN to jsbundle build
+  builtJsBundle = jsbundle { inherit secretsFile; };
+
   buildType = getConfig "build-type" "release";
   buildNumber = getConfig "build-number" 9999;
   gradleOpts = getConfig "android.gradle-opts" null;
@@ -98,7 +101,7 @@ in stdenv.mkDerivation rec {
     cp -bf ./${envFileName} ./.env
 
     # Copy index.js and app/ input files
-    cp -ra --no-preserve=ownership ${jsbundle}/* ./
+    cp -ra --no-preserve=ownership ${builtJsBundle}/* ./
 
     # Copy android/ directory
     mkdir -p ./android/build

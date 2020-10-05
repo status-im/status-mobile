@@ -4,6 +4,9 @@
 
 { stdenv, lib, deps, pkgs }:
 
+# Path to the file containing secret environment variables
+{ secretsFile ? "" }:
+
 stdenv.mkDerivation {
   name = "status-react-build-jsbundle-android";
   src =
@@ -36,8 +39,18 @@ stdenv.mkDerivation {
         };
     };
   buildInputs = with pkgs; [ clojure nodejs bash git openjdk];
+  phases = [
+    "unpackPhase" "secretsPhase" "patchPhase"
+    "configurePhase" "buildPhase" "installPhase"
+  ];
 
-  phases = [ "unpackPhase" "patchPhase" "configurePhase" "buildPhase" "installPhase" ];
+  # For optional INFURA_TOKEN variable
+  secretsPhase = if (secretsFile != "") then ''
+    source "${secretsFile}"
+  '' else ''
+    echo "No secrets provided!"
+  '';
+
   # Patching shadow-cljs.edn so it uses the local maven repo of dependencies provided by Nix
   patchPhase =
     let anchor = ''{:source-paths ["src" "test/cljs"]'';
