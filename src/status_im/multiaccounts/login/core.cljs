@@ -55,14 +55,14 @@
 
 (fx/defn initialize-wallet
   {:events [::initialize-wallet]}
-  [{:keys [db] :as cofx} accounts custom-tokens favourites]
+  [{:keys [db] :as cofx} accounts custom-tokens favourites new-account?]
   (fx/merge
    cofx
    {:db (assoc db :multiaccount/accounts
                (rpc->accounts accounts))}
    (wallet/initialize-tokens custom-tokens)
    (wallet/initialize-favourites favourites)
-   (wallet/update-balances nil)
+   (wallet/update-balances nil new-account?)
    (prices/update-prices)))
 
 (fx/defn login
@@ -264,6 +264,7 @@
                                            ;;so here we set it at 1 already so that it passes the check once it has
                                            ;;been initialized
                                           :filters/initialized 1))
+               :dispatch-later [{:ms 2000 :dispatch [::initialize-wallet accounts nil nil (:recovered multiaccount)]}]
                :filters/load-filters [[]]}
               (finish-keycard-setup)
               (when first-account?
@@ -273,8 +274,7 @@
                                              :mailserver-topics  {}
                                              :default-mailserver true})
               (multiaccounts/switch-preview-privacy-mode-flag)
-              (logging/set-log-level (:log-level multiaccount))
-              (initialize-wallet accounts nil nil))))
+              (logging/set-log-level (:log-level multiaccount)))))
 
 (defn- keycard-setup? [cofx]
   (boolean (get-in cofx [:db :keycard :flow])))

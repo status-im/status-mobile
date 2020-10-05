@@ -201,7 +201,7 @@
       (fx/merge cofx
                 {:db (update-in db [:add-account :account] merge account)}
                 (save-new-account)
-                (wallet/update-balances nil)
+                (wallet/update-balances nil true)
                 (prices/update-prices)
                 (navigation/navigate-back)))))
 

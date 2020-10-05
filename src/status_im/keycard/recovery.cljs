@@ -148,7 +148,8 @@
                 whisper-private-key
                 encryption-public-key
                 instance-uid
-                key-uid]} multiaccount
+                key-uid
+                recovered]} multiaccount
         {:keys [pairing paired-on]} secrets
         {:keys [name photo-path]}
         (if (nil? name)
@@ -167,7 +168,8 @@
                          (assoc-in [:keycard :setup-step] nil)
                          (dissoc :intro-wizard))}
                 (multiaccounts.create/on-multiaccount-created
-                 {:derived              {constants/path-wallet-root-keyword
+                 {:recovered            (or recovered (get-in db [:intro-wizard :recovering?]))
+                  :derived              {constants/path-wallet-root-keyword
                                          {:public-key wallet-root-public-key
                                           :address    (eip55/address->checksum wallet-root-address)}
                                          constants/path-whisper-keyword
@@ -268,6 +270,7 @@
    {:db (update-in db [:keycard :multiaccount]
                    (fn [multiacc]
                      (assoc multiacc
+                            :recovered true
                             :name whisper-name
                             :photo-path photo-path)))}
    (create-keycard-multiaccount)))

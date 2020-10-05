@@ -218,15 +218,14 @@
                                             favourites))})
 
 (fx/defn update-balances
+  {:events [:wallet/update-balances]}
   [{{:keys [network-status :wallet/all-tokens
             multiaccount :multiaccount/accounts] :as db} :db
-    :as cofx} addresses]
+    :as cofx} addresses init?]
   (let [addresses (or addresses (map (comp string/lower-case :address) accounts))
         {:keys [:wallet/visible-tokens]} multiaccount
         chain     (ethereum/chain-keyword db)
         assets    (get visible-tokens chain)
-        init?     (or (empty? assets)
-                      (= assets (constants/default-visible-tokens chain)))
         tokens    (->> (vals all-tokens)
                        (remove #(or (:hidden? %)
                                     ;;if not init remove not visible tokens
@@ -267,12 +266,14 @@
   [{{:keys [multiaccount] :as db} :db :as cofx} symbol checked?]
   (let [chain          (ethereum/chain-keyword db)
         visible-tokens (get multiaccount :wallet/visible-tokens)]
-    (multiaccounts.update/multiaccount-update
-     cofx
-     :wallet/visible-tokens (update visible-tokens
-                                    chain
-                                    #(set-checked % symbol checked?))
-     {})))
+    (fx/merge cofx
+              (multiaccounts.update/multiaccount-update
+               :wallet/visible-tokens (update visible-tokens
+                                              chain
+                                              #(set-checked % symbol checked?))
+               {})
+              #(when checked?
+                 (update-balances % nil nil)))))
 
 (fx/defn toggle-visible-token
   [cofx symbol checked?]
@@ -315,9 +316,7 @@
 
 (fx/defn add-custom-token
   [cofx {:keys [symbol]}]
-  (fx/merge cofx
-            (update-toggle-in-settings symbol true)
-            (update-balances nil)))
+  (update-toggle-in-settings cofx symbol true))
 
 (fx/defn remove-custom-token
   [cofx {:keys [symbol]}]

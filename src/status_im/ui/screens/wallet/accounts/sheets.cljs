@@ -20,6 +20,13 @@
                               [:navigate-to :wallet-settings-assets])}]
      [quo/list-item
       {:theme               :accent
+       :title               (i18n/label :t/scan-tokens)
+       :icon                :main-icons/refresh
+       :accessibility-label :wallet-manage-assets
+       :on-press            #(hide-sheet-and-dispatch
+                              [:wallet/update-balances nil true])}]
+     [quo/list-item
+      {:theme               :accent
        :title               (i18n/label :t/set-currency)
        :icon                :main-icons/language
        :accessibility-label :wallet-set-currency

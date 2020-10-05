@@ -1277,9 +1277,9 @@
 
 (defn get-asset-amount [balances sym]
   (reduce #(if-let [^js bl (get %2 sym)]
-             (.plus ^js %1 bl)
+             (.plus ^js (or ^js %1 ^js (money/bignumber 0)) bl)
              %1)
-          ^js (money/bignumber 0)
+          nil
           balances))
 
 (re-frame/reg-sub

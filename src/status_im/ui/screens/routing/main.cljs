@@ -11,7 +11,6 @@
             [status-im.ui.screens.routing.intro-login-stack :as intro-login-stack]
             [status-im.ui.screens.routing.chat-stack :as chat-stack]
             [status-im.ui.screens.routing.wallet-stack :as wallet-stack]
-            [status-im.ui.screens.wallet.events :as wallet.events]
             [status-im.ui.screens.group.views :as group-chat]
             [status-im.ui.screens.group.events :as group.events]
             [status-im.ui.screens.routing.profile-stack :as profile-stack]
@@ -43,7 +42,6 @@
      :insets    {:top false}
      :component browser-stack/browser-stack}
     {:name      :wallet-stack
-     :on-focus  [::wallet.events/wallet-stack]
      :insets    {:top false}
      :component wallet-stack/wallet-stack}
     {:name      :profile-stack
