@@ -225,8 +225,7 @@
         {:keys [:wallet/visible-tokens]} multiaccount
         chain     (ethereum/chain-keyword db)
         assets    (get visible-tokens chain)
-        init?     (or (empty? assets)
-                      (= assets (constants/default-visible-tokens chain)))
+        init?     (empty? assets)
         tokens    (->> (vals all-tokens)
                        (remove #(or (:hidden? %)
                                     ;;if not init remove not visible tokens
