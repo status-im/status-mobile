@@ -55,14 +55,14 @@
 
 (fx/defn initialize-wallet
   {:events [::initialize-wallet]}
-  [{:keys [db] :as cofx} accounts custom-tokens favourites]
+  [{:keys [db] :as cofx} accounts custom-tokens favourites new-account?]
   (fx/merge
    cofx
    {:db (assoc db :multiaccount/accounts
                (rpc->accounts accounts))}
    (wallet/initialize-tokens custom-tokens)
    (wallet/initialize-favourites favourites)
-   (wallet/update-balances nil)
+   (wallet/update-balances nil new-account?)
    (prices/update-prices)))
 
 (fx/defn login
@@ -276,7 +276,7 @@
                                              :default-mailserver true})
               (multiaccounts/switch-preview-privacy-mode-flag)
               (logging/set-log-level (:log-level multiaccount))
-              (initialize-wallet accounts nil nil))))
+              (initialize-wallet accounts nil nil true))))
 
 (defn- keycard-setup? [cofx]
   (boolean (get-in cofx [:db :keycard :flow])))

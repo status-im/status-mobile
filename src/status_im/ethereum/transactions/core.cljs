@@ -228,7 +228,8 @@
                                               (conj acc address)
                                               acc))
                                           #{}
-                                          transfers))))
+                                          transfers))
+                         nil))
 
                   (< (count transfers) limit)
                   (conj (tx-history-end-reached checksum)))]
