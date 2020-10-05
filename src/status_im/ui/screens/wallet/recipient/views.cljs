@@ -89,7 +89,6 @@
       :subtitle second-name
       :on-press #(do
                    (some-> ^js @scroll-view-ref (.scrollTo #js {:x 0 :animated true}))
-                   (re-frame/dispatch [:wallet.recipient/focus-input])
                    (re-frame/dispatch [:wallet.recipient/address-changed name]))
       :icon     [chat-icon/contact-icon-contacts-tab
                  (multiaccounts/displayed-photo contact)]}]))
@@ -119,9 +118,7 @@
     [quo/list-item
      {:title     [quo/text {:monospace true}
                   (utils/get-shortened-checksum-address address)]
-      :on-press  #(do
-                    (re-frame/dispatch [:wallet.recipient/focus-input])
-                    (re-frame/dispatch [:wallet.recipient/address-changed address]))
+      :on-press  #(re-frame/dispatch [:wallet.recipient/address-changed address])
       :size      :small
       :accessory [react/text {:style {:flex-shrink 1
                                       :color       colors/gray}}
@@ -248,9 +245,8 @@
          (i18n/label :t/add)]}]]]))
 
 (views/defview recipient []
-  (views/letsubs [{:keys [address resolved-address searching] :as recip} [:wallet/recipient]
-                  search-filter [:search/recipient-filter]
-                  input-focused? (reagent/atom false)]
+  (views/letsubs [{:keys [address resolved-address searching]} [:wallet/recipient]
+                  search-filter [:search/recipient-filter]]
     (let [disabled? (or searching (not resolved-address))]
       [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
        [react/view {:flex 1}
@@ -270,10 +266,6 @@
              (i18n/label :t/paste)]]
            [quo/text-input
             {:multiline           true
-             :get-ref             #(when (and recip %)
-                                     (re-frame/dispatch [:set-in [:wallet/recipient :inp-ref] %]))
-             :on-focus            #(reset! input-focused? true)
-             :on-blur             #(reset! input-focused? false)
              :default-value       address
              :height              70
              :placeholder         (i18n/label :t/recipient-code-placeholder)
@@ -297,21 +289,20 @@
                            :color     :inherit}
                  (utils/get-shortened-address resolved-address)]]))]
           [accordion search-filter]]]
-        (when @input-focused?
-          [toolbar/toolbar
-           {:show-border? true
-            :left
-            [quo/button
-             {:accessibility-label :participant-add-to-favs
-              :type                :secondary
-              :disabled            disabled?
-              :on-press            #(re-frame/dispatch [:navigate-to :new-favourite])}
-             (i18n/label :t/add-to-favourites)]
-            :right
-            [quo/button
-             {:accessibility-label :participant-done
-              :type                :secondary
-              :after               :main-icons/next
-              :disabled            disabled?
-              :on-press            #(re-frame/dispatch [:wallet.send/set-recipient resolved-address])}
-             (i18n/label :t/done)]}])]])))
+        [toolbar/toolbar
+         {:show-border? true
+          :left
+          [quo/button
+           {:accessibility-label :participant-add-to-favs
+            :type                :secondary
+            :disabled            disabled?
+            :on-press            #(re-frame/dispatch [:navigate-to :new-favourite])}
+           (i18n/label :t/add-to-favourites)]
+          :right
+          [quo/button
+           {:accessibility-label :participant-done
+            :type                :secondary
+            :after               :main-icons/next
+            :disabled            disabled?
+            :on-press            #(re-frame/dispatch [:wallet.send/set-recipient resolved-address])}
+           (i18n/label :t/done)]}]]])))

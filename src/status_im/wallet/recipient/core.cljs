@@ -23,35 +23,14 @@
 
 (re-frame/reg-fx
  :wallet.recipient/address-paste
- (fn [inp-ref]
+ (fn []
    (react/get-from-clipboard
-    #(do
-       (when inp-ref (.focus inp-ref))
-       (re-frame/dispatch [:wallet.recipient/address-changed (string/trim %)])))))
-
-(re-frame/reg-fx
- :wallet.recipient/address-paste
- (fn [inp-ref]
-   (react/get-from-clipboard
-    #(do
-       (when inp-ref (.focus inp-ref))
-       (re-frame/dispatch [:wallet.recipient/address-changed (string/trim %)])))))
-
-(re-frame/reg-fx
- ::focus-input
- (fn [inp-ref]
-   (when inp-ref
-     (.focus inp-ref))))
-
-(fx/defn focus-input
-  {:events [:wallet.recipient/focus-input]}
-  [{:keys [db]}]
-  {::focus-input (get-in db [:wallet/recipient :inp-ref])})
+    #(re-frame/dispatch [:wallet.recipient/address-changed (string/trim %)]))))
 
 (fx/defn address-paste-pressed
   {:events [:wallet.recipient/address-paste-pressed]}
-  [{:keys [db]}]
-  {:wallet.recipient/address-paste (get-in db [:wallet/recipient :inp-ref])})
+  [_]
+  {:wallet.recipient/address-paste nil})
 
 (fx/defn set-recipient
   {:events [::recipient-address-resolved]}
@@ -77,7 +56,8 @@
                         :number-of-retries 3}))
             {:ui/show-error (i18n/label :t/wallet-invalid-address-checksum {:data recipient})
              :db (assoc-in db [:wallet/recipient :searching] false)}))
-        (and (not (string/blank? recipient)) (ens/valid-eth-name-prefix? recipient))
+        (and (not (string/blank? recipient)) (not (string/starts-with? recipient "0x"))
+             (ens/valid-eth-name-prefix? recipient))
         (let [ens-name (if (= (.indexOf ^js recipient ".") -1)
                          (stateofus/subdomain recipient)
                          recipient)]
@@ -112,8 +92,6 @@
                        :name     (or name "")}]
     (fx/merge cofx
               {:db (assoc-in db [:wallet/favourites address] new-favourite)
-               ;;android
-               :dispatch-later [{:ms 1000 :dispatch [:wallet.recipient/focus-input]}]
                ::json-rpc/call [{:method "wallet_addFavourite"
                                  :params [new-favourite]
                                  :on-success #()}]}
