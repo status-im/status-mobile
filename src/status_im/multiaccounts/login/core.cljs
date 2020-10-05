@@ -266,6 +266,7 @@
                                            ;;so here we set it at 1 already so that it passes the check once it has
                                            ;;been initialized
                                           :filters/initialized 1))
+               :dispatch-later [{:ms 3000 :dispatch [::initialize-wallet accounts nil nil true]}]
                :filters/load-filters [[]]}
               (finish-keycard-setup)
               (when first-account?
@@ -275,8 +276,7 @@
                                              :mailserver-topics  {}
                                              :default-mailserver true})
               (multiaccounts/switch-preview-privacy-mode-flag)
-              (logging/set-log-level (:log-level multiaccount))
-              (initialize-wallet accounts nil nil true))))
+              (logging/set-log-level (:log-level multiaccount)))))
 
 (defn- keycard-setup? [cofx]
   (boolean (get-in cofx [:db :keycard :flow])))
