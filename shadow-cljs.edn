@@ -41,6 +41,7 @@
            :dev {:devtools {:after-load status-im.reloader/reload
                             :build-notify status-im.reloader/build-notify
                             :preloads [re-frisk-remote.preload]}
+                 :closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
                  :compiler-options {:output-feature-set :es5
                                     :closure-defines
                                     {re-frame.trace/trace-enabled? true}

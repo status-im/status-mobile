@@ -17,7 +17,7 @@
 ;; NOTE(oskarth): Feature flag deprecation lifecycles. We want to make sure
 ;; flags stay up to date and are removed once behavior introduced is stable.
 
-(goog-define INFURA_TOKEN "40ec14d9d9384d52b7fbcfecdde4e2c0")
+(goog-define INFURA_TOKEN "d3633f237cbd4649a639067d1807584c")
 
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))
