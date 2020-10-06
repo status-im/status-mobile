@@ -266,7 +266,7 @@
                                            ;;so here we set it at 1 already so that it passes the check once it has
                                            ;;been initialized
                                           :filters/initialized 1))
-               :dispatch-later [{:ms 3000 :dispatch [::initialize-wallet accounts nil nil true]}]
+               :dispatch-later [{:ms 2000 :dispatch [::initialize-wallet accounts nil nil (:recovered multiaccount)]}]
                :filters/load-filters [[]]}
               (finish-keycard-setup)
               (when first-account?
