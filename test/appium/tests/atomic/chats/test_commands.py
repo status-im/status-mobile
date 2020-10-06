@@ -21,7 +21,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         home_1, home_2 = device_1_sign_in.get_home_view(), device_2_sign_in.get_home_view()
         profile_2 = home_2.profile_button.click()
         device_2_username = profile_2.default_username_text.text
-        profile_2.switch_network('Mainnet with upstream RPC')
+        profile_2.switch_network()
 
         chat_2 = home_2.add_contact(sender['public_key'])
         chat_2.send_message("Hey there!")

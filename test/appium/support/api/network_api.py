@@ -32,13 +32,19 @@ class NetworkApi(object):
             return requests.request('GET', url=method, headers=self.headers).json()['result']
         except TypeError as e:
             self.log("Check response from etherscan API. Returned values do not match expected. %s" % e)
+        except JSONDecodeError as e:
+            self.log(str(e))
+            pass
 
     def get_token_transactions(self, address: str) -> List[dict]:
         method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc&apikey=%s' % (address, self.api_key)
         try:
             return requests.request('GET', url=method, headers=self.headers).json()['result']
         except TypeError as e:
-            self.log("Check response from etherscan API. Returned values do not match expected. %s" % e)
+            self.log("Check response from etherscan API. Returned values do not match expected. %s" % str(e))
+        except JSONDecodeError as e:
+            self.log(str(e))
+            pass
 
     def is_transaction_successful(self, transaction_hash: str) -> int:
         method = self.network_url + 'module=transaction&action=getstatus&txhash=%s' % transaction_hash

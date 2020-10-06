@@ -227,15 +227,17 @@
                      :align-items    :center :height 40 :margin-vertical 8}
          [quo/text (i18n/label :t/address-or-ens-name)]]
         [quo/text-input
-         {:multiline     true
-          :default-value resolved-address
-          :height        70
-          :editable      false}]]
+         {:multiline           true
+          :default-value       resolved-address
+          :height              70
+          :editable            false
+          :accessibility-label :fav-address}]]
        [react/view {:height 16}]
        [quo/list-header (i18n/label :t/name-optional)]
        [react/view {:padding-horizontal 16}
-        [quo/text-input {:show-cancel    false
-                         :on-change-text #(reset! fav-name %)}]]]
+        [quo/text-input {:show-cancel         false
+                         :accessibility-label :fav-name
+                         :on-change-text       #(reset! fav-name %)}]]]
       [toolbar/toolbar
        {:show-border? true
         :center

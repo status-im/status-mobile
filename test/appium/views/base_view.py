@@ -652,6 +652,8 @@ class BaseView(object):
 
     def close_share_popup(self):
         TouchAction(self.driver).tap(None, 255, 104, 1).perform()
+        time.sleep(3)
+
 
     def get_public_key_and_username(self, return_username=False):
         profile_view = self.profile_button.click()

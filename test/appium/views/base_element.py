@@ -125,6 +125,10 @@ class BaseElement(object):
             raise NoSuchElementException(
                 "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
 
+    def scroll_and_click(self):
+        self.scroll_to_element()
+        self.click()
+
     def is_element_present(self, sec=5):
         try:
             self.driver.info('Wait for %s' % self.name)

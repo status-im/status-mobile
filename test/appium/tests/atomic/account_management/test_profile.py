@@ -450,6 +450,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.critical
     @marks.testrail_id(5419)
+    @marks.flaky
     def test_logcat_backup_recovery_phrase(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
@@ -806,15 +807,16 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.mail_server_address_input.clear()
         profile_1.mail_server_address_input.set_value(mailserver_address)
         profile_1.save_button.click()
-        profile_1.mail_server_by_name(server_name).click()
-        profile_1.mail_server_connect_button.click()
-        profile_1.confirm_button.click()
-        if profile_1.element_by_text_part("Error connecting").is_element_displayed(40):
-            profile_1.retry_to_connect_to_mailserver()
-        profile_1.get_back_to_home_view()
-        profile_1.home_button.click()
-
         # TODO: disabled due to 10065
+        # profile_1.mail_server_by_name(server_name).click()
+        # profile_1.mail_server_connect_button.click()
+        # profile_1.confirm_button.click()
+        # if profile_1.element_by_text_part("Error connecting").is_element_displayed(40):
+        #     profile_1.retry_to_connect_to_mailserver()
+        # profile_1.get_back_to_home_view()
+        # profile_1.home_button.click()
+
+
         # profile_1.just_fyi('start chat with user2 and check that all messages are delivered')
         # chat_1 = home_1.add_contact(public_key)
         # message = 'test message'

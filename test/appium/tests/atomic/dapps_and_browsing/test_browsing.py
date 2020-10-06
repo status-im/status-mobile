@@ -2,7 +2,6 @@ from tests import marks, connection_not_secure_text, connection_is_secure_text, 
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 from views.dapps_view import DappsView
-from time import sleep
 
 
 class TestBrowsing(SingleDeviceTestCase):
@@ -73,15 +72,19 @@ class TestBrowsing(SingleDeviceTestCase):
     def test_open_blocked_site(self):
         home_view = SignInView(self.driver).create_user()
         daap_view = home_view.dapp_tab_button.click()
-        dapp_detail = daap_view.open_url('https://www.cryptokitties.domainname')
-        dapp_detail.find_text_part('This site is blocked')
-        if dapp_detail.browser_refresh_page_button.is_element_displayed():
-            self.driver.fail("Refresh button is present in blocked site")
-        dapp_detail.go_back_button.click()
-        daap_view.element_by_text("Browser").click()
-        dapp_detail.continue_anyway_button.click()
-        if not dapp_detail.element_by_text("Unable to load page").is_element_displayed():
-            self.driver.fail("Failed to open Dapp after 'Continue anyway' tapped")
+        for url in ('metamask.site', 'https://www.cryptokitties.domainname'):
+            dapp_detail = daap_view.open_url(url)
+            dapp_detail.find_text_part('This site is blocked')
+            if dapp_detail.browser_refresh_page_button.is_element_displayed():
+                self.errors.append("Refresh button is present in blocked site")
+            dapp_detail.go_back_button.click()
+            daap_view.element_by_text("Browser").click()
+            dapp_detail.continue_anyway_button.click()
+            if dapp_detail.element_by_text('This site is blocked').is_element_displayed():
+                self.errors.append("Failed to open Dapp after 'Continue anyway' tapped for %s" % url)
+            daap_view.cross_icon.click()
+        self.errors.verify_no_errors()
+
 
     #TODO: waiting mode
     @marks.testrail_id(6300)

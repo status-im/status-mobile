@@ -28,8 +28,8 @@ desktop/                        @vkjr
 modules/react-native-desktop*/  @vkjr
 modules/react-native-desktop*/  @vkjr
 
-/doc        @oskarth @yenda @jeluard
+/doc          @oskarth @yenda @jeluard
 
-/deployment @vkjr
+/deployment   @vkjr
 
-/test/appium/    @antdanchenko @churik
+/test/appium/ @churik

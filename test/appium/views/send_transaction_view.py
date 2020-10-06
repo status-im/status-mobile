@@ -196,19 +196,39 @@ class ValidationErrorOnSendTransaction(BaseButton):
         super(ValidationErrorOnSendTransaction, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='%s']/../*[@content-desc='icon']" % field)
 
+
 class ValidationIconOnSendTransaction(BaseButton):
     def __init__(self, driver):
         super(ValidationIconOnSendTransaction, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[@content-desc="custom-gas-fee"]/../android.view.ViewGroup//*[@content-desc="icon"]')
 
 
-
 class ShareButton(BaseButton):
-
     def __init__(self, driver):
         super(ShareButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('share-address-button')
 
+class RecipientAddToFavoritesButton(BaseButton):
+    def __init__(self, driver):
+        super(RecipientAddToFavoritesButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('participant-add-to-favs')
+
+class RecipientDoneButton(BaseButton):
+    def __init__(self, driver):
+        super(RecipientDoneButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('participant-done')
+
+
+class NewFavoriteNameInput(BaseEditBox):
+    def __init__(self, driver):
+        super(NewFavoriteNameInput, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('fav-name')
+
+
+class NewFavoriteAddFavorite(BaseButton):
+    def __init__(self, driver):
+        super(NewFavoriteAddFavorite, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('add-fav')
 
 class OnboardingMessage(BaseElement):
     def __init__(self, driver):
@@ -335,6 +355,12 @@ class SendTransactionView(BaseView):
         self.select_button = SelectButton(self.driver)
         self.request_transaction_button = RequestTransactionButtonBottomSheet(self.driver)
 
+        # Elements on set recipient screen
+        self.recipient_add_to_favorites = RecipientAddToFavoritesButton(self.driver)
+        self.recipient_done = RecipientDoneButton(self.driver)
+        self.new_favorite_name_input = NewFavoriteNameInput(self.driver)
+        self.new_favorite_add_favorite = NewFavoriteAddFavorite(self.driver)
+
     def complete_onboarding(self):
         if self.onboarding_message.is_element_displayed():
             from views.wallet_view import WalletView
@@ -395,3 +421,8 @@ class SendTransactionView(BaseView):
             data['gas_price'] = self.gas_price_input.text
             self.cancel_button.click()
         return data
+
+    def add_to_favorites(self, name):
+        self.recipient_add_to_favorites.click()
+        self.new_favorite_name_input.set_value(name)
+        self.new_favorite_add_favorite.click()
