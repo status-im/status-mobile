@@ -12,6 +12,163 @@
 
 (def at-sign "@")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn re-pos [re s]
+  (loop [res [] s s last-idx 0]
+    (if-let [m (.exec re s)]
+      (let [new-idx (.-index m)
+            idx     (+ last-idx new-idx)
+            c       (get m 0)]
+        (recur (conj res [idx c]) (subs s (inc new-idx)) (inc idx)))
+      res)))
+
+(defn check-style-tag [text idxs idx]
+  (let [[pos c]       (get idxs idx)
+        [pos2 c2]     (get idxs (inc idx))
+        [pos3 c3]     (get idxs (+ 2 idx))
+        prev-c        (get text (dec pos))
+        len           (cond
+                        (and (= c c2 c3)
+                             (= pos (dec pos2) (- pos3 2)))
+                        3
+                        (and (= c c2)
+                             (= pos (dec pos2)))
+                        2
+                        :else 1)
+        next-idx      (inc (first (get idxs (+ idx (dec len)))))
+        next-c        (get text next-idx)
+        can-be-end?   (if (= 1 len)
+                        (and prev-c
+                             (not (string/blank? prev-c))
+                             (or (nil? next-c)
+                                 (string/blank? next-c)))
+                        (and prev-c
+                             (not (string/blank? prev-c))))
+        can-be-start? (and next-c
+                           (not (string/blank? next-c)))]
+    [len can-be-start? can-be-end?]))
+
+(defn clear-pending-at-signs
+  [data from]
+  (let [{:keys [pending]} (get data at-sign)
+        new-idxs          (filter (partial > from) pending)]
+    (-> data
+        (update at-sign dissoc :pending)
+        (update-in [at-sign :checked]
+                   (fn [checked]
+                     ;; NOTE(rasom): there might be stack overflow without doall
+                     (doall
+                      ((fnil concat []) checked new-idxs)))))))
+
+(defn apply-style-tag [data idx pos c len start? end?]
+  (let [was-started?   (get data c)
+        tripple-tilde? (and (= "~" c) (= 3 len))]
+    (cond
+      (and was-started? end?)
+      (let [old-len (:len was-started?)
+            tag-len (cond
+                      (and tripple-tilde?
+                           (= 3 old-len))
+                      2
+
+                      (>= old-len len)
+                      len
+
+                      :else
+                      old-len)
+            old-idx (:idx was-started?)]
+        {:data     (-> data
+                       (dissoc c)
+                       (clear-pending-at-signs old-idx))
+         :next-idx (+ idx tag-len)})
+
+      start?
+      {:data     (-> data
+                     (assoc c {:len len
+                               :idx pos})
+                     (clear-pending-at-signs pos))
+       :next-idx (+ idx len)}
+
+      :else
+      {:data     data
+       :next-idx (+ idx len)})))
+
+(defn code-tag-len [idxs idx]
+  (let [[pos c]   (get idxs idx)
+        [pos2 c2] (get idxs (inc idx))
+        [pos3 c3] (get idxs (+ 2 idx))]
+    (cond
+      (and (= c c2 c3)
+           (= pos (dec pos2) (- pos3 2)))
+      3
+      (and (= c c2)
+           (= pos (dec pos2)))
+      2
+      :else 1)))
+
+(defn get-at-signs
+  ([text]
+   (let [idxs (re-pos #"[@~\\*_\n>`]{1}" text)]
+     (loop [data nil
+            idx  0]
+       (let [quote-started? (get data ">")
+             [pos c]        (get idxs idx)
+             styling-tag?   (get #{"*" "_" "~"} c)
+             code-tag?      (= "`" c)
+             quote?         (= ">" c)
+             at-sign?       (= at-sign c)
+             newline?       (= "\n" c)]
+         (if (nil? c)
+           (let [{:keys [checked pending]} (get data at-sign)]
+             (concat checked pending))
+           (cond
+             newline?
+             (let [prev-newline (first (get data :newline))]
+               (recur
+                (cond-> (update data :newline (fnil conj '()) pos)
+                  (and quote-started?
+                       prev-newline
+                       (string/blank? (subs text prev-newline (dec pos))))
+                  (dissoc ">"))
+                (inc idx)))
+
+             quote-started?
+             (recur data (inc idx))
+
+             quote?
+             (let [prev-newlines (take 2 (get data :newline))]
+               (if (or (zero? pos)
+                       (and (= 1 (count prev-newlines))
+                            (string/blank? (subs text 0 (dec pos))))
+                       (and (= 2 (count prev-newlines))
+                            (string/blank? (subs text (first prev-newlines) (dec pos)))))
+                 (recur (-> data
+                            (dissoc :newline "*" "_" "~" "`")
+                            (assoc ">" {:idx pos})) (inc idx))
+                 (recur data (inc idx))))
+
+             at-sign?
+             (recur (update-in data [at-sign :pending] (fnil conj []) pos)
+                    (inc idx))
+
+             code-tag?
+             (let [len (code-tag-len idxs idx)
+                   {:keys [data next-idx]}
+                   (apply-style-tag data idx pos c len true true)]
+               (recur data next-idx))
+
+             styling-tag?
+             (let [[len can-be-start? can-be-end?]
+                   (check-style-tag text idxs idx)
+                   {:keys [data next-idx]}
+                   (apply-style-tag data idx pos c len can-be-start? can-be-end?)]
+               (recur data next-idx))
+
+             :else (recur data (inc idx)))))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn get-mentionable-users
   [{{:keys          [current-chat-id]
      :contacts/keys [contacts] :as db} :db}]
@@ -144,11 +301,13 @@
 
 (defn replace-mentions
   ([text users-fn]
-   (replace-mentions text users-fn 0))
-  ([text users-fn idx]
-   (if (string/blank? text)
+   (let [idxs (get-at-signs text)]
+     (replace-mentions text users-fn idxs 0)))
+  ([text users-fn idxs diff]
+   (if (or (string/blank? text)
+           (empty? idxs))
      text
-     (let [mention-key-idx (string/index-of text at-sign idx)]
+     (let [mention-key-idx (- (first idxs) diff)]
        (if-not mention-key-idx
          text
          (let [users (users-fn)]
@@ -157,14 +316,14 @@
              (let [{:keys [public-key match]}
                    (match-mention text users mention-key-idx)]
                (if-not match
-                 (recur text (fn [] users) (inc mention-key-idx))
+                 (recur text (fn [] users) (rest idxs) diff)
                  (let [new-text (string/join
                                  [(subs text 0 (inc mention-key-idx))
                                   public-key
                                   (subs text (+ (inc mention-key-idx)
-                                                (count match)))])
-                       mention-end (+ (inc mention-key-idx) (count public-key))]
-                   (recur new-text (fn [] users) mention-end)))))))))))
+                                                (count match)))])]
+                   (recur new-text (fn [] users) (rest idxs)
+                          (+ diff (- (count text) (count new-text))))))))))))))
 
 (defn check-mentions [cofx text]
   (replace-mentions text #(get-mentionable-users cofx)))
@@ -486,4 +645,3 @@
          (update user :searchable-phrases (fnil concat []) new-words))))
    user
    [alias name nickname]))
-

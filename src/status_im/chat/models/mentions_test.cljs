@@ -105,4 +105,150 @@
             exprected-result (string/join
                               " "
                               (repeat 1000 "@0xpk1 @0xpk2"))]
-        (test/is (= exprected-result result))))))
+        (test/is (= exprected-result result))))
+    (test/testing "markdown"
+      (test/testing "single * case 1"
+        (let [text "*@user2*"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "single * case 2"
+        (let [text "*@user2 *"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result  "*@0xpk2 *") (pr-str text))))
+
+      (test/testing "single * case 3"
+        (let [text "a*@user2*"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "single * case 4"
+        (let [text "*@user2 foo*foo"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result "*@0xpk2 foo*foo") (pr-str text))))
+
+      (test/testing "single * case 5"
+        (let [text "a *@user2*"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "single * case 6"
+        (let [text "*@user2 foo*"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "single * case 7"
+        (let [text "@user2 *@user2 foo* @user2"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result "@0xpk2 *@user2 foo* @0xpk2") (pr-str text))))
+
+      (test/testing "single * case 8"
+        (let [text "*@user2 foo**@user2 foo*"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "single * case 9"
+        (let [text "*@user2 foo***@user2 foo* @user2"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result "*@user2 foo***@user2 foo* @0xpk2") (pr-str text))))
+
+      (test/testing "double * case 1"
+        (let [text "**@user2**"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "double * case 2"
+        (let [text "**@user2 **"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result  "**@0xpk2 **") (pr-str text))))
+
+      (test/testing "double * case 3"
+        (let [text "a**@user2**"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "double * case 4"
+        (let [text "**@user2 foo**foo"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result "**@user2 foo**foo") (pr-str text))))
+
+      (test/testing "double * case 5"
+        (let [text "a **@user2**"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "double * case 6"
+        (let [text "**@user2 foo**"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "double * case 7"
+        (let [text "@user2 **@user2 foo** @user2"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result "@0xpk2 **@user2 foo** @0xpk2") (pr-str text))))
+
+      (test/testing "double * case 8"
+        (let [text "**@user2 foo****@user2 foo**"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "double * case 9"
+        (let [text "**@user2 foo*****@user2 foo** @user2"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result "**@user2 foo*****@user2 foo** @0xpk2") (pr-str text))))
+
+      (test/testing "tripple * case 1"
+        (let [text "***@user2 foo***@user2 foo*"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result "***@user2 foo***@0xpk2 foo*") (pr-str text))))
+
+      (test/testing "tripple ~ case 1"
+        (let [text "~~~@user2 foo~~~@user2 foo~"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "quote case 1"
+        (let [text ">@user2"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "quote case 2"
+        (let [text "\n>@user2"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "quote case 3"
+        (let [text "\n> @user2 \n   \n @user2"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result "\n> @user2 \n   \n @0xpk2") (pr-str text))))
+
+      (test/testing "quote case 4"
+        (let [text ">@user2\n\n>@user2"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "quote case 5"
+        (let [text "***hey\n\n>@user2\n\n@user2 foo***"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result "***hey\n\n>@user2\n\n@0xpk2 foo***")
+                   (pr-str text))))
+
+      (test/testing "code case 1"
+        (let [text "` @user2 `"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "code case 2"
+        (let [text "` @user2 `"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "code case 3"
+        (let [text "``` @user2 ```"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result text) (pr-str text))))
+
+      (test/testing "code case 4"
+        (let [text "` ` @user2 ``"
+              result (mentions/replace-mentions text users)]
+          (test/is (= result  "` ` @0xpk2 ``") (pr-str text)))))))
