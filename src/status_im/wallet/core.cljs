@@ -265,12 +265,14 @@
   [{{:keys [multiaccount] :as db} :db :as cofx} symbol checked?]
   (let [chain          (ethereum/chain-keyword db)
         visible-tokens (get multiaccount :wallet/visible-tokens)]
-    (multiaccounts.update/multiaccount-update
-     cofx
-     :wallet/visible-tokens (update visible-tokens
-                                    chain
-                                    #(set-checked % symbol checked?))
-     {})))
+    (fx/merge cofx
+              (multiaccounts.update/multiaccount-update
+               :wallet/visible-tokens (update visible-tokens
+                                              chain
+                                              #(set-checked % symbol checked?))
+               {})
+              #(when checked?
+                 (update-balances % nil nil)))))
 
 (fx/defn toggle-visible-token
   [cofx symbol checked?]

@@ -67,7 +67,8 @@
             status-im.ui.screens.profile.events
             status-im.chat.models.images
             status-im.ui.screens.privacy-and-security-settings.events
-            [status-im.data-store.invitations :as data-store.invitations]))
+            [status-im.data-store.invitations :as data-store.invitations]
+            [status-im.ui.screens.wallet.events :as wallet.events]))
 
 ;; init module
 (handlers/register-handler-fx
@@ -1256,4 +1257,5 @@
                 ;; messages
                 :chat (chat.loading/load-messages %)
                 :multiaccounts (keycard/multiaccounts-screen-did-load %)
+                (:wallet-stack :wallet) (wallet.events/wallet-will-focus %)
                 nil))))

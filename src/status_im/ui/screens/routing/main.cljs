@@ -43,7 +43,6 @@
      :insets    {:top false}
      :component browser-stack/browser-stack}
     {:name      :wallet-stack
-     :on-focus  [::wallet.events/wallet-stack]
      :insets    {:top false}
      :component wallet-stack/wallet-stack}
     {:name      :profile-stack
