@@ -315,9 +315,7 @@
 
 (fx/defn add-custom-token
   [cofx {:keys [symbol]}]
-  (fx/merge cofx
-            (update-toggle-in-settings symbol true)
-            (update-balances nil nil)))
+  (update-toggle-in-settings cofx symbol true))
 
 (fx/defn remove-custom-token
   [cofx {:keys [symbol]}]
