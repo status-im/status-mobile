@@ -12,7 +12,7 @@
      :db       (if (or wallet-set-up-passed? sign-phrase-showed?)
                  db
                  (assoc db :popover/popover {:view [signing-phrase/signing-phrase]}
-                         :wallet/sign-phrase-showed? true))}))
+                        :wallet/sign-phrase-showed? true))}))
 
 (handlers/register-handler-fx
  ::wallet-add-custom-token
