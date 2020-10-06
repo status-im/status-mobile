@@ -645,7 +645,7 @@
                     :decimals 9
                     :symbol   :XRL
                     :name     "RIALTO"}
-                   {:address  "0xC011A72400E58ecD99Ee497CF89E3775d4bd732F"
+                   {:address  "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F"
                     :decimals 18
                     :symbol   :SNX
                     :name     "Synthetix Network Token"}
@@ -709,7 +709,7 @@
                     :symbol   :DTA
                     :name     "Data Token"
                     :decimals 18}
-                   {:address  "0x57ab1e02fee23774580c119740129eac7081e9d3"
+                   {:address  "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51"
                     :symbol   :sUSD
                     :name     "Synth sUSD"
                     :decimals 18}
