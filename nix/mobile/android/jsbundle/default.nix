@@ -47,6 +47,7 @@ stdenv.mkDerivation {
   # For optional INFURA_TOKEN variable
   secretsPhase = if (secretsFile != "") then ''
     source "${secretsFile}"
+    ${lib.checkEnvVarSet "INFURA_TOKEN"}
   '' else ''
     echo "No secrets provided!"
   '';

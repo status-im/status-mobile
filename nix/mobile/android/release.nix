@@ -17,7 +17,7 @@ assert (lib.stringLength watchmanSockPath) > 0 -> stdenv.isDarwin;
 let
   inherit (lib)
     toLower optionalString stringLength assertMsg
-    getConfig makeLibraryPath assertEnvVarSet elem;
+    getConfig makeLibraryPath checkEnvVarSet elem;
 
   # Pass secretsFile for INFURA_TOKEN to jsbundle build
   builtJsBundle = jsbundle { inherit secretsFile; };
@@ -87,8 +87,8 @@ in stdenv.mkDerivation rec {
   STATUS_GO_ANDROID_LIBDIR = "${status-go}";
 
   phases = [
-    "unpackPhase" "secretsPhase" "secretsCheckPhase"
-    "keystorePhase" "buildPhase" "checkPhase" "installPhase"
+    "unpackPhase" "secretsPhase" "keystorePhase"
+    "buildPhase" "checkPhase" "installPhase"
   ];
 
   unpackPhase = ''
@@ -119,6 +119,9 @@ in stdenv.mkDerivation rec {
   # if secretsFile is not set we use generate keystore
   secretsPhase = if (secretsFile != "") then ''
     source "${secretsFile}"
+    ${checkEnvVarSet "KEYSTORE_ALIAS"}
+    ${checkEnvVarSet "KEYSTORE_PASSWORD"}
+    ${checkEnvVarSet "KEYSTORE_KEY_PASSWORD"}
   '' else keystore.shellHook;
 
   # if keystorePath is set copy it into build directory
@@ -127,11 +130,6 @@ in stdenv.mkDerivation rec {
   ''
     export KEYSTORE_PATH="$PWD/status-im.keystore"
     cp -a --no-preserve=ownership "${keystorePath}" "$KEYSTORE_PATH"
-  '';
-  secretsCheckPhase = ''
-    ${assertEnvVarSet "KEYSTORE_ALIAS"}
-    ${assertEnvVarSet "KEYSTORE_PASSWORD"}
-    ${assertEnvVarSet "KEYSTORE_KEY_PASSWORD"}
   '';
   buildPhase = let
     adhocEnvVars = optionalString stdenv.isLinux
