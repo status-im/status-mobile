@@ -167,7 +167,8 @@
                          (assoc-in [:keycard :setup-step] nil)
                          (dissoc :intro-wizard))}
                 (multiaccounts.create/on-multiaccount-created
-                 {:derived              {constants/path-wallet-root-keyword
+                 {:recovered            (get-in db [:intro-wizard :recovering?])
+                  :derived              {constants/path-wallet-root-keyword
                                          {:public-key wallet-root-public-key
                                           :address    (eip55/address->checksum wallet-root-address)}
                                          constants/path-whisper-keyword

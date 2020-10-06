@@ -218,7 +218,7 @@
 (fx/defn on-multiaccount-created
   [{:keys [signing-phrase random-guid-generator db] :as cofx}
    {:keys [address chat-key keycard-instance-uid key-uid
-           keycard-pairing keycard-paired-on mnemonic public-key]
+           keycard-pairing keycard-paired-on mnemonic recovered]
     :as multiaccount}
    password
    {:keys [save-mnemonic? login?] :or {login? true save-mnemonic? false}}]
@@ -253,7 +253,7 @@
                   :signing-phrase        signing-phrase
                   :send-push-notifications? true
                   :installation-id       (random-guid-generator)
-                  :recovered (get-in db [:intro-wizard :recovering?])}
+                  :recovered             (or recovered (get-in db [:intro-wizard :recovering?]))}
                  constants/default-multiaccount)
           ;; The address from which we derive any chat
           ;; account/encryption keys
