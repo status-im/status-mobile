@@ -1,10 +1,7 @@
-{ pkgs, stdenv, lib, fetchFromGitHub, buildGoPackage
+{ pkgs, stdenv, lib, fetchFromGitHub
 # Dependencies
 , xcodeWrapper
-, git, shared, go, androidPkgs
-# metadata and status-go source
-, meta, source
-# build parameters
+, git, androidPkgs
 , platform ? "android"
 , arch ? "386"
 , api ? "23" }:
@@ -19,7 +16,10 @@ let
   ANDROID_NDK_HOME = "${androidPkgs}/ndk-bundle";
 
   nimIosPatch = pkgs.fetchurl { url = "https://patch-diff.githubusercontent.com/raw/nim-lang/Nim/pull/15268.patch"; sha256 = "04jg0ngqlyzwrc19rafx4s257my6bhd27myv4p78hmsyzhp36za6"; };
-  patchedNim = pkgs.nim.overrideAttrs (_: { version = "pr-15268"; patches = [ nimIosPatch ]; });
+  patchedNim = pkgs.nim.overrideAttrs (_: { 
+    version = "pr-15268"; 
+    patches = [ nimIosPatch ]; 
+  });
 
   targetArchMap = rec {
     "386" = "i686";
@@ -57,20 +57,20 @@ let
   iosSdk = if arch == "386" then "iphonesimulator" else "iphoneos";
   iosArch = getAttr arch iosArchMap;
 
-  compilerFlags = "switch(\"passC\", \""  +(concatStringsSep " " 
-  (if platform == "android" || platform == "androideabi"then
-    [("-isysroot " + ANDROID_NDK_HOME + "/sysroot") ("-target ${androidTarget}" + api)]
-    else
-    ["-isysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -arch ${iosArch}"]
-    )) +"\")";
+  isAndroid = lib.hasPrefix "android" platform;
+  isIOS = platform == "ios";
 
-  linkerFlags =  "switch(\"passL\", \""  +(concatStringsSep " "   
-    (if platform == "android" then
-    [("--sysroot " + ANDROID_NDK_HOME + "/platforms/android-${api}/arch-${ldArch}")
-    "-target ${androidTarget}"]
-    else
-    ["--sysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -arch ${iosArch}"]
-    )) + "\")";
+  compilerFlags = if isAndroid then
+    "-isysroot ${ANDROID_NDK_HOME}/sysroot -target ${androidTarget}${api}"
+    else if isIOS then
+    "-isysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -arch ${iosArch}"
+    else throw "Unsupported platform!";
+
+    linkerFlags = if isAndroid then
+    "--sysroot ${ANDROID_NDK_HOME}/platforms/android-${api}/arch-${ldArch} -target ${androidTarget}"
+    else if isIOS then
+    "--sysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -arch ${iosArch}"
+    else throw "Unsupported platform!";
 
     compilerVars = if platform == "android" || platform == "androideabi" then
       "PATH=${ANDROID_NDK_HOME + "/toolchains/llvm/prebuilt/${osId}-${osArch}/bin"}:$PATH "
@@ -84,27 +84,24 @@ let
 
 in stdenv.mkDerivation rec {
   name = "nim-status"; # TODO: use pname and version
-  inherit compilerFlags linkerFlags osId compilerVars 
-    nimCpu nimPlatform arPath ranlibPath;
-  buildInputs = with pkgs; [ git coreutils findutils gnugrep gnumake gcc patchedNim ];
+  buildInputs = with pkgs; [ patchedNim ];
   src = fetchFromGitHub {
     owner = "status-im";
     repo = "nim-status";
     name = "nim-status";
     rev = "113ab223795fa44f9f6d3ecb9a0da7e033022ea9";
     sha256 = "19nvn8b0n1r4nqjiq14057iwyr2m4a37i33yvf3ngjik26jyyzxk";
-    #fetchSubmodules = true;
   };
 
   phases = [ "unpackPhase" "preBuildPhase" "buildPhase" "installPhase" ];
 
   preBuildPhase = ''
-    echo $compilerFlags >> config.nims
-    echo $linkerFlags >> config.nims
+    echo 'switch("passC", "${compilerFlags}")' >> config.nims
+    echo 'switch("passL", "${linkerFlags}")' >> config.nims
   '';
 
   buildPhase = ''
-    echo "os_id: " $osId
+    echo "os_id: " ${osId}
     export PATH=.:$PATH
     ln -s ${arPath} ar
     ln -s ${ranlibPath} ranlib
@@ -112,8 +109,8 @@ in stdenv.mkDerivation rec {
     nim c \
       --app:staticLib \
       --header \
-      $nimCpu \
-      $nimPlatform \
+      ${nimCpu} \
+      ${nimPlatform} \
       --noMain \
       --nimcache:nimcache/nim_status \
       -o:build/libnim_status.a \

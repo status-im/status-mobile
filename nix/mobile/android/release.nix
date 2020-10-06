@@ -1,7 +1,7 @@
 { stdenv, pkgs, deps, lib, config, callPackage,
   watchmanFactory, androidPkgs, patchMavenSources,
-  nim-status-android-all,
-  status-go-android-all,
+  nim-status,
+  status-go,
   keystore, jsbundle}:
 
 {
@@ -86,8 +86,8 @@ in stdenv.mkDerivation rec {
   ANDROID_NDK_ROOT = "${androidPkgs}/ndk-bundle";
 
   # Used by the Android Gradle build script in android/build.gradle
-  STATUS_GO_ANDROID_ALL_LIBDIR = "${status-go-android-all}";
-  NIM_STATUS_ANDROID_ALL_LIBDIR = "${nim-status-android-all}";
+  STATUS_GO_ANDROID_LIBDIR = "${status-go}";
+  NIM_STATUS_ANDROID_LIBDIR = "${nim-status}";
 
   phases = [
     "unpackPhase" "secretsPhase" "secretsCheckPhase"

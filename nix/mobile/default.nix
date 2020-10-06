@@ -1,4 +1,4 @@
-{ config, lib, stdenvNoCC, callPackage, mkShell, status-go }:
+{ config, lib, stdenvNoCC, callPackage, mkShell, status-go, nim-status }:
 
 let
   inherit (lib) catAttrs concatStrings optional unique;
@@ -6,14 +6,14 @@ let
   fastlane = callPackage ./fastlane { };
 
   android = callPackage ./android {
-    status-go-android-all = status-go.shared.android-all;
-    nim-status-android-all = status-go.nim-status.android-all;
+    status-go = status-go.android;
+    nim-status = nim-status.android;
   };
 
   ios = callPackage ./ios {
     inherit fastlane;
-    status-go-shared = status-go.shared.ios-all;
-    status-go-nim-status = status-go.nim-status.ios-all;
+    status-go = status-go.ios;
+    nim-status = nim-status.ios;
   };
 
   selectedSources = [

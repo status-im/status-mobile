@@ -1,6 +1,6 @@
 { lib, pkgs, deps, callPackage, mkShell
-, nim-status-android-all 
-, status-go-android-all
+, nim-status
+, status-go
 , androidPkgs, androidShell }:
 
 let
@@ -16,7 +16,7 @@ let
   # TARGETS
   release = callPackage ./release.nix {
     inherit keystore jsbundle watchmanFactory 
-    status-go-android-all nim-status-android-all;
+    status-go nim-status;
   };
 
 in {
@@ -43,8 +43,8 @@ in {
       export STATUS_NIX_MAVEN_REPO="${deps.gradle}"
 
       # required by some makefile targets
-      export STATUS_GO_ANDROID_ALL_LIBDIR=${status-go-android-all}
-      export NIM_STATUS_ANDROID_ALL_LIBDIR=${nim-status-android-all}
+      export STATUS_GO_ANDROID_LIBDIR=${status-go}
+      export NIM_STATUS_ANDROID_LIBDIR=${nim-status}
 
       # check if node modules changed and if so install them
       $STATUS_REACT_HOME/nix/scripts/node_modules.sh ${deps.nodejs-patched}

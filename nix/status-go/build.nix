@@ -10,10 +10,28 @@
 , api ? "23" }:
 
 let
-  inherit (lib) attrNames getAttr strings concatStringsSep concatMapStrings;
+  inherit (lib) attrNames attrValues getAttr mapAttrs strings concatStringsSep concatMapStrings;
 
   removeReferences = [ go ];
   removeExpr = refs: ''remove-references-to ${concatMapStrings (ref: " -t ${ref}") refs}'';
+
+  # Params to be set at build time, important for About section and metrics
+  goBuildParams = {
+    GitCommit = source.rev;
+    Version = source.cleanVersion;
+  };
+
+  # These are necessary for status-go to show correct version
+  paramsLdFlags = attrValues (mapAttrs (name: value:
+    "-X github.com/status-im/status-go/params.${name}=${value}"
+  ) goBuildParams);
+
+  goBuildLdFlags = paramsLdFlags ++ [
+    "-s" # -s disabled symbol table
+    "-w" # -w disables DWARF debugging information
+  ];
+
+  goBuildFlags = [ "-v" ];
 
   targetArchMap = rec {
     "386" = "i686";
@@ -35,58 +53,64 @@ let
 
   androidTarget = targetArch + "-linux-" + platform;
 
+  isAndroid = lib.hasPrefix "android" platform;
+  isIOS = platform == "ios";
+
   iosArchMap = {
     "386" = "x86_64";
     "arm" = "armv7";
     "arm64" = "arm64";
   };
+
   iosSdk = if arch == "386" then "iphonesimulator" else "iphoneos";
   iosArch = getAttr arch iosArchMap;
-  compilerFlags = if platform == "android" || platform == "androideabi" then
-  "\"-isysroot $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/${osId}-${osArch}/sysroot -target ${androidTarget}${api}\""
-  else
-  "\"-isysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -miphonesimulator-version-min=7.0 -fembed-bitcode -arch ${iosArch}\"";
 
-  linkerFlags = if platform == "android" || platform == "androideabi" then
+  compilerFlags = if isAndroid then
+  "\"-isysroot $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/${osId}-${osArch}/sysroot -target ${androidTarget}${api}\""
+  else if isIOS then
+  "\"-isysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -miphonesimulator-version-min=7.0 -fembed-bitcode -arch ${iosArch}\""
+  else throw "Unsupported platform!";
+
+  linkerFlags = if isAndroid then
   "\" --sysroot $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/${osId}-${osArch}/sysroot \
   -target ${androidTarget}${api} -v -Wl,-soname,libstatus.so\""
-  else
-  "\"--sysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -miphonesimulator-version-min=7.0 -fembed-bitcode -arch ${iosArch}\"";
+  else if isIOS then
+  "\"--sysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -miphonesimulator-version-min=7.0 -fembed-bitcode -arch ${iosArch}\""
+  else throw "Unsupported platform!";
 
-  buildMode = if platform == "ios" then "c-archive" else "c-shared";
-  libraryFileName = if platform == "ios" then "./libstatus.a" else "./libstatus.so";
+  #linkerFlags = linkerFlags1 + (concatStringsSep " " goBuildLdFlags);
 
-  compilerVars = if platform == "android" || platform == "androideabi" then
+  buildMode = if isIOS then "c-archive" else "c-shared";
+  libraryFileName = if isIOS then "./libstatus.a" else "./libstatus.so";
+
+  compilerVars = if isAndroid then
       ''
         export CC=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/${osId}-${osArch}/bin/clang
         export CXX=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/${osId}-${osArch}/bin/clang++
         export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/${osId}-${osArch}/bin:$PATH
-      '' else ''
+      '' 
+      else if isIOS then ''
         export PATH=${xcodeWrapper}/bin:$PATH 
         export CC=$(xcrun --sdk ${iosSdk} --find clang) 
         export CXX=$(xcrun --sdk ${iosSdk} --find clang++)
-        '';
-  goOs = if platform == "android" || platform == "androideabi" then
-    "android"
-    else "darwin";
+        ''
+      else throw "Unsupported platform!";
 
-  goArch = if platform == "android" || platform == "androideabi" then
-  if arch == "386" then "386" 
-  else if platform == "androideabi" then "arm "else "arm64"
-    else
-    if arch == "386" then "amd64" else 
-    if arch == "arm" then "arm" else "arm64";
+  goOs = if isAndroid then "android" else "darwin";
 
-  goTags = if platform == "android" || platform == "androideabi" then
-  ""
-  else " -tags ios ";
+  goArch = if isAndroid then arch
+  else if isIOS then (
+    if arch == "386" then "amd64" 
+    else arch
+  )
+  else throw "Unsupported platform!";
+
+  goTags = if isAndroid then "" else " -tags ios ";
 
 in buildGo114Package rec {
   pname = source.repo;
   version = "${source.cleanVersion}-${source.shortRev}-${platform}-${arch}";
 
-  inherit meta compilerVars goOs goArch goTags targetArch platform ldArch buildMode 
-  compilerFlags linkerFlags libraryFileName;
   inherit (source) src goPackagePath ;
 
   ANDROID_HOME = androidPkgs;
@@ -107,7 +131,6 @@ in buildGo114Package rec {
     export GOOS=${goOs} GOARCH=${goArch} API=${api}
     export TARGET=${targetArch}-linux-${platform}
 
-    #export LIBRARY_PATH=$ANDROID_NDK_HOME/platforms/android-$API/arch-${ldArch}/usr/lib
     export CGO_CFLAGS=${compilerFlags}
     export CGO_LDFLAGS=${linkerFlags}
     export CGO_ENABLED=1
