@@ -15,8 +15,7 @@ let
 
   # TARGETS
   release = callPackage ./release.nix {
-    inherit keystore jsbundle watchmanFactory 
-    status-go nim-status;
+    inherit keystore jsbundle watchmanFactory status-go nim-status;
   };
 
 in {

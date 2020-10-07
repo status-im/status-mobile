@@ -41,6 +41,16 @@ in {
     allowHigher = true;
   };
 
+  # Nim patch
+  patchedNim = super.pkgs.nim.overrideAttrs (_: { 
+    version = "pr-15268"; 
+    patches = [ (super.pkgs.fetchurl { 
+      url = "https://patch-diff.githubusercontent.com/raw/nim-lang/Nim/pull/15268.patch"; 
+      sha256 = "04jg0ngqlyzwrc19rafx4s257my6bhd27myv4p78hmsyzhp36za6";
+    })]; 
+  });
+
+
   # Android environement
   androidEnvCustom = callPackage ./pkgs/android-sdk { };
   androidPkgs = self.androidEnvCustom.licensedPkgs;
