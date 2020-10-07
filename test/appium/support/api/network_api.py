@@ -55,7 +55,8 @@ class NetworkApi(object):
         for i in range(5):
             try:
                 return int(requests.request('GET', method, headers=self.headers).json()["result"])
-            except ValueError:
+            except JSONDecodeError as e:
+                self.log(str(e))
                 time.sleep(5)
                 pass
 
