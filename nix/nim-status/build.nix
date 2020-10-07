@@ -59,22 +59,22 @@ let
     "-isysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -arch ${iosArch}"
     else throw "Unsupported platform!";
 
-    linkerFlags = if isAndroid then
-    "--sysroot ${ANDROID_NDK_HOME}/platforms/android-${api}/arch-${ldArch} -target ${androidTarget}"
-    else if isIOS then
-    "--sysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -arch ${iosArch}"
+  linkerFlags = if isAndroid then
+  "--sysroot ${ANDROID_NDK_HOME}/platforms/android-${api}/arch-${ldArch} -target ${androidTarget}"
+  else if isIOS then
+  "--sysroot $(xcrun --sdk ${iosSdk} --show-sdk-path) -fembed-bitcode -arch ${iosArch}"
+  else throw "Unsupported platform!";
+
+  compilerVars = if isAndroid then
+      "PATH=${ANDROID_NDK_HOME + "/toolchains/llvm/prebuilt/${osId}-${osArch}/bin"}:$PATH "
+    else if isIOS then 
+      "PATH=${xcodeWrapper}/bin:$PATH \ 
+      CC=$(xcrun --sdk ${iosSdk} --find clang) \
+      CXX=$(xcrun --sdk ${iosSdk} --find clang++) "
     else throw "Unsupported platform!";
 
-    compilerVars = if isAndroid then
-        "PATH=${ANDROID_NDK_HOME + "/toolchains/llvm/prebuilt/${osId}-${osArch}/bin"}:$PATH "
-      else if isIOS then 
-        "PATH=${xcodeWrapper}/bin:$PATH \ 
-        CC=$(xcrun --sdk ${iosSdk} --find clang) \
-        CXX=$(xcrun --sdk ${iosSdk} --find clang++) "
-      else throw "Unsupported platform!";
+  androidToolPathPrefix = "${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/${osId}-${osArch}/bin/${targetArch}-linux-${platform}";
 
-    androidToolPathPrefix = "${ANDROID_NDK_HOME + "/toolchains/llvm/prebuilt/${osId}-${osArch}/bin/${targetArch}-linux-${platform}"}";
- 
   src = fetchFromGitHub {
     owner = "status-im";
     repo = "nim-status";
