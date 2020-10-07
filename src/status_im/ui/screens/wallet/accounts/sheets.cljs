@@ -22,7 +22,7 @@
       {:theme               :accent
        :title               (i18n/label :t/scan-tokens)
        :icon                :main-icons/refresh
-       :accessibility-label :wallet-manage-assets
+       :accessibility-label :wallet-scan-token
        :on-press            #(hide-sheet-and-dispatch
                               [:wallet/update-balances nil true])}]
      [quo/list-item
