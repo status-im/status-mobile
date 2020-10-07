@@ -900,6 +900,9 @@
 					"-lc++",
 					"-ObjC",
 					"-lnim_status",
+          "-lssl",
+          "-lcrypto",
+          "-lpcre",
 					"-lstatus",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
@@ -963,6 +966,9 @@
 					"-ObjC",
 					"-lstatus",
 					"-lnim_status",
+          "-lssl",
+          "-lcrypto",
+          "-lpcre",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = StatusIm;
@@ -1030,6 +1036,9 @@
 					"-ObjC",
 					"-lstatus",
 					"-lnim_status",
+          "-lssl",
+          "-lcrypto",
+          "-lpcre",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum.pr;
 				PRODUCT_NAME = "Status PR";
@@ -1091,6 +1100,9 @@
 					"-ObjC",
 					"-lstatus",
 					"-lnim_status",
+          "-lssl",
+          "-lcrypto",
+          "-lpcre",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum.pr;
 				PRODUCT_NAME = "Status PR";

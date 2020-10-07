@@ -237,7 +237,7 @@ RCT_EXPORT_METHOD(deleteMultiaccount:(NSString *)keyUID
     NSLog(@"MultiAccountImportPrivateKey() method called");
 #endif
     NSURL *multiaccountKeystoreDir = [self getKeyStoreDir:keyUID];
-    NSString *result = toObjCStr(deleteMultiaccount(fromObjCStr(keyUID), fromObjCStr(multiaccountKeystoreDir.path)));
+    NSString *result = toObjCStr(deleteMultiAccount(fromObjCStr(keyUID), fromObjCStr(multiaccountKeystoreDir.path)));
     callback(@[result]);
 }
 
@@ -677,8 +677,7 @@ RCT_EXPORT_METHOD(callRPC:(NSString *)payload
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(generateAlias:(NSString *)publicKey) {
   const char * publicKeyStr = fromObjCStr(publicKey);
-  struct GoString goString = {publicKeyStr, strlen(publicKeyStr)};
-  return toObjCStr(generateAlias(goString));
+  return toObjCStr(generateAlias(publicKeyStr));
 }
 
 RCT_EXPORT_METHOD(generateAliasAsync:(NSString *)publicKey
@@ -688,8 +687,7 @@ RCT_EXPORT_METHOD(generateAliasAsync:(NSString *)publicKey
 #endif
 
     const char * publicKeyStr = fromObjCStr(publicKey);
-    struct GoString goString = {publicKeyStr, strlen(publicKeyStr)};
-    NSString *result = toObjCStr(generateAlias(goString));
+    NSString *result = toObjCStr(generateAlias(publicKeyStr));
     callback(@[result]);
 }
 
@@ -698,8 +696,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(identicon:(NSString *)publicKey) {
     return toObjCStr("");
   }
   const char * publicKeyStr = fromObjCStr(publicKey);
-  struct GoString goString = {publicKeyStr, strlen(publicKeyStr)};
-  return toObjCStr(identicon(goString));
+  return toObjCStr(identicon(publicKeyStr));
 }
 
 RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
@@ -718,8 +715,7 @@ RCT_EXPORT_METHOD(identiconAsync:(NSString *)publicKey
 #endif
 
     const char * publicKeyStr = fromObjCStr(publicKey);
-    struct GoString goString = {publicKeyStr, strlen(publicKeyStr)};
-    NSString *result = toObjCStr(identicon(goString));
+    NSString *result = toObjCStr(identicon(publicKeyStr));
     callback(@[result]);
 }
 
@@ -729,9 +725,8 @@ RCT_EXPORT_METHOD(generateAliasAndIdenticonAsync:(NSString *)publicKey
     NSLog(@"generateAliasAndIdenticonAsync() method called");
 #endif
     const char * publicKeyStr = fromObjCStr(publicKey);
-    struct GoString goString = {publicKeyStr, strlen(publicKeyStr)};
-    NSString *identiconResult = toObjCStr(identicon(goString));
-    NSString *aliasResult = toObjCStr(generateAlias(goString));
+    NSString *identiconResult = toObjCStr(identicon(publicKeyStr));
+    NSString *aliasResult = toObjCStr(generateAlias(publicKeyStr));
     callback(@[aliasResult, identiconResult]);
 }
 

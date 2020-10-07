@@ -169,8 +169,7 @@ jstring Java_im_status_NimStatus_sendTransaction(JNIEnv* env, jobject thiz, jstr
 jstring Java_im_status_NimStatus_generateAlias(JNIEnv* env, jobject thiz, jstring jpublicKey) {
 
   const char * publicKey = (*env)->GetStringUTFChars(env, jpublicKey, 0);
-  struct GoString goString = {publicKey, strlen(publicKey)};
-  const char * result = generateAlias(goString);
+  const char * result = generateAlias(publicKey);
   (*env)->ReleaseStringUTFChars(env, jpublicKey, publicKey);
   return (*env)->NewStringUTF(env, result);
 }
@@ -180,8 +179,7 @@ jstring Java_im_status_NimStatus_identicon(JNIEnv* env, jobject thiz, jstring jp
     return (*env)->NewStringUTF(env, "");
   }
   const char * publicKey = (*env)->GetStringUTFChars(env, jpublicKey, 0);
-  struct GoString goString = {publicKey, strlen(publicKey)};
-  const char * result = identicon(goString);
+  const char * result = identicon(publicKey);
   (*env)->ReleaseStringUTFChars(env, jpublicKey, publicKey);
   return (*env)->NewStringUTF(env, result);
 }
@@ -532,7 +530,7 @@ jstring Java_im_status_NimStatus_deleteMultiaccount(JNIEnv* env, jobject thiz,
                                                     jstring jpath) {
   const char * keyUID = (*env)->GetStringUTFChars(env, jkeyUID, 0);
   const char * path = (*env)->GetStringUTFChars(env, jpath, 0);
-  const char * result = deleteMultiaccount(keyUID, path);
+  const char * result = deleteMultiAccount(keyUID, path);
 
   (*env)->ReleaseStringUTFChars(env, jkeyUID, keyUID);
   (*env)->ReleaseStringUTFChars(env, jpath, path);
