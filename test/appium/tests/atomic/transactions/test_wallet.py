@@ -78,7 +78,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view.just_fyi('Go back to online and check that balance is updated')
         sign_in_view.toggle_airplane_mode()
         wallet_view.wait_balance_is_changed('ETH')
-        wallet_view.wait_balance_is_changed('STT')
+        wallet_view.scan_tokens('STT')
 
         sign_in_view.just_fyi('Send some tokens to other account')
         recipient = "0x" + basic_user['address']

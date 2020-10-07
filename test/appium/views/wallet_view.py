@@ -97,6 +97,12 @@ class ManageAssetsButton(BaseButton):
         self.locator = self.Locator.accessibility_id('wallet-manage-assets')
 
 
+class ScanTokensButton(BaseButton):
+    def __init__(self, driver):
+        super(ScanTokensButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('wallet-scan-token')
+
+
 class STTCheckBox(BaseButton):
     def __init__(self, driver):
         super(STTCheckBox, self).__init__(driver)
@@ -391,6 +397,7 @@ class WalletView(BaseView):
         self.send_request_button = SendRequestButton(self.driver)
         self.options_button = OptionsButton(self.driver)
         self.manage_assets_button = ManageAssetsButton(self.driver)
+        self.scan_tokens_button = ScanTokensButton(self.driver)
         self.stt_check_box = STTCheckBox(self.driver)
         self.all_assets_full_names = AssetFullNameInAssets(self.driver)
         self.all_assets_symbols = AssetSymbolInAssets(self.driver)
@@ -445,11 +452,13 @@ class WalletView(BaseView):
     def get_account_options_by_name(self, account_name='Status account'):
         return AccountOptionsButton(self.driver, account_name)
 
-
     def get_asset_amount_by_name(self, asset: str):
         asset_value = AssetText(self.driver, asset)
         asset_value.scroll_to_element()
-        return float(asset_value.text.split()[0])
+        try:
+            return float(asset_value.text.split()[0])
+        except ValueError:
+            return 0.0
 
     def verify_currency_balance(self, expected_rate: int, errors: list):
         usd = self.get_usd_total_value()
@@ -470,9 +479,9 @@ class WalletView(BaseView):
                 counter += 10
                 time.sleep(10)
                 self.swipe_down()
-                self.driver.info('Waiting %s seconds for %s balance update' % (counter,asset))
+                self.driver.info('Waiting %s seconds for %s balance update to be equal to %s' % (counter,asset, expected_balance))
             else:
-                self.driver.info('Transaction received, balance updated!')
+                self.driver.info('Balance for %s is equal to %s' % (asset, expected_balance))
                 return
 
     def wait_balance_is_changed(self, asset ='ETH', initial_balance=0, wait_time=300):
@@ -527,6 +536,26 @@ class WalletView(BaseView):
         for asset in args:
             self.asset_checkbox_by_name(asset).click()
         self.cross_icon.click()
+
+    def scan_tokens(self, *args):
+        self.multiaccount_more_options.click()
+        self.scan_tokens_button.click()
+        counter = 0
+        if args:
+            for asset in args:
+                while True:
+                    if counter >= 20:
+                        self.driver.fail('Balance of %s is not changed during 20 seconds!' % asset)
+                    elif self.get_asset_amount_by_name(asset) == 0.0:
+                        self.multiaccount_more_options.click()
+                        self.scan_tokens_button.click()
+                        self.driver.info('Trying to scan for tokens one more time and waiting %s seconds for %s '
+                                         'to update' % (counter, asset))
+                        time.sleep(5)
+                        counter += 5
+                    else:
+                        self.driver.info('Balance of %s is updated!' % asset)
+                        return self
 
     def send_transaction(self, **kwargs):
         send_transaction_view = self.send_transaction_button.click()

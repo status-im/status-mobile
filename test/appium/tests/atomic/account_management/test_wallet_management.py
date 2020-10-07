@@ -208,6 +208,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         profile = home_view.profile_button.click()
         wallet_view = profile.wallet_button.click()
         wallet_view.set_up_wallet()
+        wallet_view.scan_tokens()
         wallet_view.accounts_status_account.click()
         wallet_view.collectibles_button.click()
         if not wallet_view.element_by_text('KDO').is_element_displayed():

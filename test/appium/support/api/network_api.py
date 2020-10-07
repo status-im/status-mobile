@@ -135,10 +135,20 @@ class NetworkApi(object):
             errors.append('Recipients balance is not updated on etherscan')
 
     def faucet(self, address):
-        return requests.request('GET', '%s/0x%s' % (self.faucet_url, address)).json()
+        try:
+            self.log("Trying to get funds from %s" % self.faucet_url)
+            return requests.request('GET', '%s/0x%s' % (self.faucet_url, address)).json()
+        except JSONDecodeError as e:
+            self.log(str(e))
+            pass
 
     def faucet_backup(self, address):
-        return requests.request('GET', '%s/0x%s' % (self.faucet_backup_url, address)).json()
+        try:
+            self.log("Trying to get funds from %s" % self.faucet_backup_url)
+            return requests.request('GET', '%s/0x%s' % (self.faucet_backup_url, address)).json()
+        except JSONDecodeError as e:
+            self.log(str(e))
+            pass
 
     def get_donate(self, address, external_faucet=True, wait_time=300):
         initial_balance = self.get_balance(address)
