@@ -160,6 +160,11 @@
         return sendAPIrequest('qr-code', {regex: regex});
     };
 
+    EthereumProvider.prototype.on = function (type, handler)
+    {
+        console.log("Not supported by Status")
+    }
+
     EthereumProvider.prototype.request = function (requestArguments)
     {
          if (!requestArguments) {
