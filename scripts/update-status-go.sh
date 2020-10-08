@@ -5,7 +5,7 @@ if [[ ! -x "$(command -v nix-prefetch-url)" ]] && [[ -z "${IN_NIX_SHELL}" ]]; th
     exit 1
 fi
 
-set -eof pipefail
+set -ef
 
 GIT_ROOT="$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)"
 VERSION_FILE="${GIT_ROOT}/status-go-version.json"
