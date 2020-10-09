@@ -1,12 +1,12 @@
-Status é uma ferramenta de comunicação segura e privada. Converse com os seus amigos, armazene ativos e explore o futuro da web sem que os seus dados sejam explorados.
+Status es una herramienta de comunicación segura y privada. Chatea con amigos, almacena activos y explora el futuro de la web sin ser explotado por tu información personal.
 
-Com a Status, apenas você controlas as suas informações.
+Solo tú controlas tu información, con Status.
 
-CONVERSA
-A Status remove terceiros centralizados das suas mensagens. Não é apenas o seu conteúdo que está protegido, mas também os seus metadados - para uma privacidade máxima.
+CHAT
+Status  quita de en medio terceros centralizados a tus mensajes. No sólo tu contenido es protegido, sino también tu metadata: por máxima privacidad.
 
-TRANSACIONA
-Armazene ativos digitais na sua carteira Status. Envie e solicite tokens aos seus amigos, ou transacione com aplicações descentralizadas.
+TRANSFIERE
+Almacena activos digitales en tu monedero Status  (ERC20 and ERC721). Envía y recibe monedas de tus amigos, o transfiere activos con aplicaciónes descentralizadas.
 
 EXPLORA
-Acesse à aplicações baseadas na Ethereum na web3. Joge jogos, troce ativos digitais e muito mais.
+Accede a aplicaciones basadas en Ethereum de la Web3. Juega, intercambia bienes digitales y más.
