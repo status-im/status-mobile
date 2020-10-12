@@ -95,11 +95,5 @@ abstract_target 'Status' do
   target 'StatusImPR' do
   end
   
-  add_flipper_pods!
-  post_install do |installer|
-    flipper_post_install(installer)
-  end
-
-
   use_native_modules!
 end
