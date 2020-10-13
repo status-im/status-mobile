@@ -50,7 +50,7 @@
 (def command-state-transaction-sent 7)
 
 (def min-password-length 6)
-(def max-group-chat-participants 10)
+(def max-group-chat-participants 20)
 (def default-number-of-messages 20)
 
 (def mailserver-password "status-offline-inbox")
