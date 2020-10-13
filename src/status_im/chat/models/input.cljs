@@ -11,7 +11,8 @@
             [status-im.utils.fx :as fx]
             ["emojilib" :as emojis]
             [status-im.chat.models.mentions :as mentions]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.types :as types]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
@@ -159,6 +160,17 @@
                                      :sticker {:hash hash
                                                :pack pack}
                                      :text    (i18n/label :t/update-to-see-sticker)})))
+
+(fx/defn send-extension-command
+  {:events [:send-extension-command]}
+  [{{:keys [current-chat-id] :as db} :db :as cofx} extension]
+  (let [preferred-name (get-in db [:multiaccount :preferred-name])]
+    (fx/merge cofx
+              (chat.message/send-message {:chat-id      current-chat-id
+                                          :content-type constants/content-type-extension
+                                          :extension    extension
+                                          :text         (str "install " (:id extension))
+                                          :ens-name     preferred-name}))))
 
 (fx/defn send-current-message
   "Sends message from current chat input"

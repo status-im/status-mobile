@@ -16,6 +16,7 @@
 (def content-type-system-text 6)
 (def content-type-image 7)
 (def content-type-audio 8)
+(def content-type-extension 9)
 
 (def emoji-reaction-love 1)
 (def emoji-reaction-thumbs-up  2)

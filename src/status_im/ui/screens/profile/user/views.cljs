@@ -104,6 +104,11 @@
                               (i18n/label :t/none))
        :chevron             true
        :on-press            #(re-frame/dispatch [:navigate-to :contacts-list])}]
+     [quo/list-item
+      {:title               "Extensions"
+       :icon                :main-icons/commands
+       :chevron             true
+       :on-press            #(re-frame/dispatch [:navigate-to :extensions])}]
      [react/view {:padding-top 16}
       [quo/list-header (i18n/label :t/settings)]]
      [quo/list-item

@@ -24,7 +24,8 @@
             [status-im.ui.screens.chat.image.preview.views :as image-preview]
             [status-im.ui.screens.profile.contact.views :as contact]
             [status-im.ui.screens.notifications-settings.views :as notifications-settings]
-            [status-im.ui.screens.wallet.send.views :as wallet]))
+            [status-im.ui.screens.wallet.send.views :as wallet]
+            [status-im.ui.screens.chat.extensions.views :as extensions]))
 
 (defonce main-stack (navigation/create-stack))
 (defonce bottom-tabs (navigation/create-bottom-tabs))
@@ -135,7 +136,11 @@
        {:name       :request-transaction
         :transition :presentation-ios
         :insets     {:bottom true}
-        :component  wallet/request-transaction}]
+        :component  wallet/request-transaction}
+       {:name       :extensions
+        :transition :presentation-ios
+        :insets     {:bottom true}
+        :component  extensions/extensions-screen}]
 
       (when config/quo-preview-enabled?
         [{:name      :quo-preview

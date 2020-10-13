@@ -39,7 +39,8 @@
    :theme-dark         (js/require "../resources/images/ui/theme-dark.png")
    :theme-light        (js/require "../resources/images/ui/theme-light.png")
    :theme-system       (js/require "../resources/images/ui/theme-system.png")
-   :notifications      (js/require "../resources/images/ui/notifications.png")})
+   :notifications      (js/require "../resources/images/ui/notifications.png")
+   :extensions         (js/require "../resources/images/ui/extensions.png")})
 
 (defn get-theme-image [k]
   (get ui (when (colors/dark?) (keyword (str (name k) "-dark"))) (get ui k)))

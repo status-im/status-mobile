@@ -14,6 +14,7 @@
                                          audio-duration-ms
                                          message-type
                                          sticker
+                                         extension
                                          content-type]
                                   :as message}]
   {::json-rpc/call [{:method (json-rpc/call-ext-method
@@ -26,6 +27,7 @@
                                :audioPath audio-path
                                :audioDurationMs audio-duration-ms
                                :sticker sticker
+                               :extension extension
                                :contentType content-type}]
                      :on-success
                      #(re-frame/dispatch [:transport/message-sent % 1])

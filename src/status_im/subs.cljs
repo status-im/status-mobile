@@ -209,6 +209,34 @@
 ;; push notifications
 (reg-root-key-sub :push-notifications/servers :push-notifications/servers)
 
+(reg-root-key-sub :extensions :extensions)
+
+(re-frame/reg-sub
+ :extension-by-id
+ :<- [:extensions]
+ (fn [extensions [_ id]]
+   (get extensions id)))
+
+(defn find-hooks [type]
+  (fn [ext]
+    (when-let [hook (some #(do (println "TYPE " (:type %) ) (when (= type (:type %)) %)) (:hooks ext))]
+      (-> ext
+          (dissoc :hooks)
+          (assoc :hook hook)))))
+
+(re-frame/reg-sub
+ :extensions-hooks-command
+ :<- [:extensions]
+ (fn [extensions]
+   (remove nil? (map (find-hooks "CHAT_COMMAND") (vals extensions)))))
+
+(re-frame/reg-sub
+ :extension-command-hook-by-id
+ (fn [[_ id] _]
+   [(re-frame/subscribe [:extension-by-id id])])
+ (fn [[extension]]
+   (:hook ((find-hooks "CHAT_COMMAND") extension))))
+
 ;;GENERAL ==============================================================================================================
 
 (re-frame/reg-sub

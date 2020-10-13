@@ -210,7 +210,8 @@
                                                      :enabled  (and (not disable-drag?)
                                                                     (not= sheet-height max-height))})
          [animated/view {:height sheet-height}
-          [animated/scroll-view {:bounces        false
+          [animated/scroll-view {:keyboard-should-persist-taps :handled
+                                 :bounces        false
                                  :flex           1
                                  :scroll-enabled (= sheet-height max-height)}
            [animated/view {:style     {:padding-top    styles/vertical-padding

@@ -34,6 +34,7 @@
                        :text (:text message)
                        :image (:image message)
                        :sticker (:sticker message)
+                       :extension (:extension message)
                        :ens-name (:ensName message)
                        :line-count (:lineCount message)
                        :parsed-text (:parsedText message)
