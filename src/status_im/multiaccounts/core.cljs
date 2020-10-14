@@ -9,6 +9,7 @@
             [status-im.utils.theme :as utils.theme]
             [status-im.theme.core :as theme]
             [status-im.utils.utils :as utils]
+            [quo.platform :as platform]
             [clojure.string :as string]))
 
 (defn contact-names
@@ -68,7 +69,8 @@
 (re-frame/reg-fx
  ::webview-debug-changed
  (fn [value]
-   (native-module/toggle-webview-debug value)))
+   (when platform/android?
+     (native-module/toggle-webview-debug value))))
 
 (re-frame/reg-fx
  ::blank-preview-flag-changed
