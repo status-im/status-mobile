@@ -17,6 +17,7 @@
                                :parsed-text "parsed-text"
                                :rtl? false
                                :image nil
+                               :extension nil
                                :response-to "a"}
                      :whisper-timestamp 1
                      :outgoing-status :sending
