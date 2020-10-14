@@ -22,8 +22,9 @@ function ExtensionView () {
     if (value.length > 0) {
       setTodos([...todos, { text: value, key: Date.now(), checked: false }]);
       setValue("");
-      inp.current.focus();
     }
+    inp.current.clear();
+    inp.current.focus();
   };
 
   const handleDeleteTodo = (id) => {
@@ -55,17 +56,17 @@ function ExtensionView () {
         <TextInput
           style={styles.textInput}
           autoFocus={true}
-          multiline={true}
+          multiline={false}
           onChangeText={(value) => setValue(value)}
           onSubmitEditing={(event) => handleAddTodo()}
+          blurOnSubmit={false}
           placeholder={"Todo"}
           placeholderTextColor="gray"
           ref={inp}
-          value={value}
         />
         <TouchableOpacity onPress={() => handleAddTodo()}>
           <View style={{ marginLeft: 10, paddingHorizontal: 10}}>
-            <Text style={{ fontSize: 30 }}>+</Text>
+            <Text style={{ fontSize: 30, color: "#4360df" }}>+</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -82,7 +83,7 @@ function ExtensionView () {
         ))}
       </ScrollView>
       <TouchableOpacity style={{alignSelf: "center"}} onPress={() => handleSend()}>
-          <Text style={{ fontSize: 30 }}>Send</Text>
+          <Text style={{ fontSize: 24, marginTop: 20, color: "#4360df" }}>Send</Text>
         </TouchableOpacity>
     </View>
   );
@@ -102,16 +103,17 @@ function MessageView (props) {
   };
 
   return (
-  <View style={{padding: 10, borderWidth: 1, borderColor: "#939ba1", borderRadius: 8}}
+  <View style={{padding: 20, backgroundColor:  (props.outgoing) ? "#4360df" : "", borderRadius: 20}}
   key={props.id}>
-  <Text>Todo</Text>
+  <Text style={{color: (props.outgoing) ? "white" : "black", fontWeight: "bold"}}>Todo</Text>
     <View style={{marginTop: 10}} >
         {todos.map((task) => (
+        <TouchableOpacity onPress={() => handleChecked(task.key)}>
            <View style={{flexDirection: "row", marginBottom: 15}} key={task.key}>
-            <TouchableOpacity onPress={() => handleChecked(task.key)}>
+
                 <View
                   style={{
-                    borderColor: "gray",
+                    borderColor: (props.outgoing) ? "white" : "black",
                     borderWidth: 1,
                     width: 20,
                     height: 20,
@@ -119,11 +121,12 @@ function MessageView (props) {
                     justifyContent: "center"
                   }}
                 >
-                  <Text>{task.checked ? "V" : ""}</Text>
+                  <Text style={{color: (props.outgoing) ? "white" : "black"}}>{task.checked ? "V" : ""}</Text>
                 </View>
-              </TouchableOpacity>
-           <Text style={{width: 200, marginLeft: 10}}>{task.text}</Text>
+
+           <Text style={{width: 200, marginLeft: 10, color: (props.outgoing) ? "white" : "black"}}>{task.text}</Text>
            </View>
+           </TouchableOpacity>
         ))}
       </View>
       </View>
@@ -137,10 +140,8 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    fontSize: 25,
-    paddingLeft: 10,
-    borderWidth: 1,
-    borderColor: "gray"
+    fontSize: 20,
+    paddingLeft: 10
   },
   taskWrapper: {
     marginTop: "5%",

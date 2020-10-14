@@ -1,15 +1,17 @@
 (ns status-im.extensions.core
-  (:require ["extension" :default test-extension]
+  (:require ["status-extension-todolist" :default status-extension-todolist]
             [status-im.utils.fx :as fx]
             [cljs-bean.core :as bean]
             [re-frame.core :as re-frame]))
 
 (def extensions [{:id          "test.todo-extension"
-                  :name        "TODO"
+                  :color       "#7CDA00"
+                  :icon        (js/require "../resources/images/extensions/todo.png")
+                  :name        "ToDoList"
                   :author      "andrey.stateofus.eth"
                   :version     "1.0"
                   :description "Test extension test test"
-                  :hooks       (bean/->clj test-extension)}])
+                  :hooks       (bean/->clj status-extension-todolist)}])
 
 (defn send-command [ext]
   (fn [params]

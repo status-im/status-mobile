@@ -38,10 +38,13 @@
         [react/touchable-highlight
          {:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                          {:content (fn [] [(reagent/adapt-react-class (get-in ext [:hook :view]))])}])}
-         [react/view {:width              128 :height 128 :justify-content :flex-end
+         [react/view {:width              128 :height 128 :justify-content :space-between
                       :padding-horizontal 10 :padding-vertical 12
-                      :align-items        :center
-                      :border-radius      16 :margin-left 8 :border-color colors/gray-lighter :border-width 1}
+                      :border-radius      16 :margin-left 8 :background-color (colors/alpha (:color ext) 0.2)}
+          [react/image {:source (:icon ext)
+                        :resize-mode :center
+                        :style       {:width  40
+                                      :height 40}}]
           [react/text {:typography :medium} (:name ext)]]])
       [react/touchable-highlight
        {:on-press #(re-frame/dispatch [:navigate-to :extensions])}
@@ -52,9 +55,12 @@
         [react/image {:source (resources/get-image :extensions)}]
         [react/text {:typography :medium :style {:color colors/blue}} "Add extensions"]]]]]))
 
-(defn render-item [{:keys [name author version description id] :as ext}]
+(defn render-item [{:keys [name author version description id color icon] :as ext}]
   [quo/list-item
-   {:icon      [chat-icon.screen/custom-icon-view-list name (rand-nth colors/account-colors)]
+   {:icon      [react/image {:source icon
+                             :resize-mode :center
+                             :style       {:width  40
+                                           :height 40}}]
     :title     (str name " " version)
     :subtitle  (str "Author: " author)
     :active    (boolean @(re-frame/subscribe [:extension-by-id id]))

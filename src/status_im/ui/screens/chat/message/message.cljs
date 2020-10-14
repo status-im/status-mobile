@@ -370,7 +370,8 @@
         hook @(re-frame/subscribe [:extension-command-hook-by-id id])]
     (when hook
       [message-content-wrapper message
-       [(reagent/adapt-react-class (:messageView hook)) {:params (js/JSON.parse params) :id id}]
+       [(reagent/adapt-react-class (:messageView hook)) {:params (js/JSON.parse params) :id id
+                                                         :outgoing outgoing}]
        reaction-picker])))
 
 (defmethod ->message constants/content-type-image [{:keys [content] :as message} {:keys [on-long-press modal]
