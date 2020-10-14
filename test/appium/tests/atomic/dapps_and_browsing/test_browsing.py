@@ -205,11 +205,15 @@ class TestBrowsing(SingleDeviceTestCase):
     def test_refresh_button_browsing_app_webview(self):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()
-        status_test_dapp = home_view.open_status_test_dapp()
-        status_test_dapp.transactions_button.click()
-        status_test_dapp.find_full_text('Sign message')
-        status_test_dapp.browser_refresh_page_button.click()
-        status_test_dapp.find_full_text('defaultAccount')
+        daap_view = home_view.dapp_tab_button.click()
+        browsing_view = daap_view.open_url('app.uniswap.org')
+        browsing_view.allow_button.click()
+        browsing_view.find_full_text('Select a token').click()
+        browsing_view.find_text_part("Token Name")
+        browsing_view.browser_refresh_page_button.click()
+        if browsing_view.element_by_text_part("Token Name").is_element_displayed():
+            self.driver.fail("Page failed to be refreshed")
+
 
     @marks.testrail_id(5456)
     @marks.medium

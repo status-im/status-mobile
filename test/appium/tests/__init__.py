@@ -60,6 +60,7 @@ connection_is_secure_text = "Connection is secure. Make sure you really trust th
                             "before signing transactions or entering personal data."
 recorded_error = "You have to give permission to send audio messages"
 
+test_dapp_web_url = "status-im.github.io/dapp"
 test_dapp_url = 'simpledapp.eth'
 test_dapp_name = 'simpledapp.eth'
 

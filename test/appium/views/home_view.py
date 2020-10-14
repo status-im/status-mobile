@@ -244,9 +244,9 @@ class HomeView(BaseView):
         self.confirm_until_presence_of_element(chat_view.chat_message_input)
         return chat_view
 
-    def open_status_test_dapp(self, allow_all=True):
+    def open_status_test_dapp(self, url=test_dapp_url, allow_all=True):
         dapp_view = self.dapp_tab_button.click()
-        dapp_view.open_url(test_dapp_url)
+        dapp_view.open_url(url)
         status_test_dapp = dapp_view.get_status_test_dapp_view()
         status_test_dapp.allow_button.wait_for_element(20)
         if allow_all:
