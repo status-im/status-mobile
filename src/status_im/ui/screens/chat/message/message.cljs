@@ -362,10 +362,9 @@
      reaction-picker]))
 
 (defmethod ->message constants/content-type-extension
-  [{:keys [content from outgoing]
+  [{:keys [content outgoing]
     :as   message}
-   {:keys [on-long-press modal]
-    :as   reaction-picker}]
+   reaction-picker]
   (let [{:keys [id params]} (:extension content)
         hook @(re-frame/subscribe [:extension-command-hook-by-id id])]
     (when hook

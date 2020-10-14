@@ -9,7 +9,6 @@
             [status-im.extensions.core :as extensions]
             [status-im.ui.components.list.views :as list]
             [quo.core :as quo]
-            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [reagent.core :as reagent]))
 
 (defn extensions-view []
@@ -55,7 +54,7 @@
         [react/image {:source (resources/get-image :extensions)}]
         [react/text {:typography :medium :style {:color colors/blue}} "Add extensions"]]]]]))
 
-(defn render-item [{:keys [name author version description id color icon] :as ext}]
+(defn render-item [{:keys [name author version id icon] :as ext}]
   [quo/list-item
    {:icon      [react/image {:source icon
                              :resize-mode :center

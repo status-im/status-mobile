@@ -219,7 +219,7 @@
 
 (defn find-hooks [type]
   (fn [ext]
-    (when-let [hook (some #(do (println "TYPE " (:type %) ) (when (= type (:type %)) %)) (:hooks ext))]
+    (when-let [hook (some #(do (println "TYPE " (:type %)) (when (= type (:type %)) %)) (:hooks ext))]
       (-> ext
           (dissoc :hooks)
           (assoc :hook hook)))))

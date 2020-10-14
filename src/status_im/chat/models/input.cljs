@@ -11,8 +11,7 @@
             [status-im.utils.fx :as fx]
             ["emojilib" :as emojis]
             [status-im.chat.models.mentions :as mentions]
-            [status-im.utils.utils :as utils]
-            [status-im.utils.types :as types]))
+            [status-im.utils.utils :as utils]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
