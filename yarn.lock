@@ -7446,6 +7446,10 @@ static-extend@^0.1.1:
     define-property "^0.2.5"
     object-copy "^0.1.0"
 
+"status-extension-standups@git+https://github.com/flexsurfer/status-extension-standups.git#v1.0.1":
+  version "1.0.1"
+  resolved "git+https://github.com/flexsurfer/status-extension-standups.git#d247ab0a4e22ab8508ab3535bf8d5956198726d1"
+
 "status-extension-todolist@git+https://github.com/flexsurfer/status-extension-todolist.git#v1.0.1":
   version "1.0.1"
   resolved "git+https://github.com/flexsurfer/status-extension-todolist.git#4ded9dcde69d422dbb94503f472ddbba4f7b2b56"

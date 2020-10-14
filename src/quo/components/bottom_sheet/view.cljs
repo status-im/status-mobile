@@ -217,7 +217,7 @@
            [animated/view {:style     {:padding-top    styles/vertical-padding
                                        :padding-bottom (+ styles/vertical-padding
                                                           (if (and platform/ios? keyboard-shown)
-                                                            keyboard-height
+                                                            (+ keyboard-height (:bottom safe-area))
                                                             (:bottom safe-area)))}
                            :on-layout #(reset! height (.-nativeEvent.layout.height ^js %))}
             (into [:<>]

@@ -318,7 +318,6 @@
             input-with-mentions
             @(re-frame/subscribe [:chat/input-with-mentions])
             cooldown-enabled?    @(re-frame/subscribe [:chats/cooldown-enabled?])
-            one-to-one-chat?     @(re-frame/subscribe [:current-chat/one-to-one-chat?])
             {:keys [public?
                     chat-id]}    @(re-frame/subscribe [:current-chat/metadata])
             reply                @(re-frame/subscribe [:chats/reply-message])
@@ -339,7 +338,6 @@
                                       (not reply)
                                       (not public?))
             show-extensions      (and empty-text
-                                      one-to-one-chat?
                                       (or config/commands-enabled? mainnet?)
                                       (not reply))
             show-audio           (and empty-text

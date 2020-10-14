@@ -6,33 +6,36 @@
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.extensions.core :as extensions]
+            [status-im.extensions.list :as extensions]
             [status-im.ui.components.list.views :as list]
             [quo.core :as quo]
             [reagent.core :as reagent]))
 
 (defn extensions-view []
-  (let [extensions @(re-frame/subscribe [:extensions-hooks-command])]
+  (let [extensions @(re-frame/subscribe [:extensions-hooks-command])
+        one-to-one-chat? @(re-frame/subscribe [:current-chat/one-to-one-chat?])]
     [react/scroll-view {:horizontal true :style {:flex 1} :showsHorizontalScrollIndicator false}
      [react/view {:style {:flex-direction :row}}
-      [react/touchable-highlight
-       {:on-press #(re-frame/dispatch [:wallet/prepare-transaction-from-chat])}
-       [react/view {:width              128 :height 128 :justify-content :space-between
-                    :padding-horizontal 10 :padding-vertical 12
-                    :background-color   (colors/alpha colors/purple 0.2) :border-radius 16 :margin-left 8}
-        [react/view {:background-color colors/purple :width 40 :height 40 :border-radius 20 :align-items :center
-                     :justify-content  :center}
-         [icons/icon :main-icons/send {:color colors/white}]]
-        [react/text {:typography :medium} (i18n/label :t/send-transaction)]]]
-      [react/touchable-highlight
-       {:on-press #(re-frame/dispatch [:wallet/prepare-request-transaction-from-chat])}
-       [react/view {:width              128 :height 128 :justify-content :space-between
-                    :padding-horizontal 10 :padding-vertical 12
-                    :background-color   (colors/alpha colors/orange 0.2) :border-radius 16 :margin-left 8}
-        [react/view {:background-color colors/orange :width 40 :height 40 :border-radius 20 :align-items :center
-                     :justify-content  :center}
-         [icons/icon :main-icons/receive {:color colors/white}]]
-        [react/text {:typography :medium} (i18n/label :t/request-transaction)]]]
+      (when one-to-one-chat?
+        [react/touchable-highlight
+         {:on-press #(re-frame/dispatch [:wallet/prepare-transaction-from-chat])}
+         [react/view {:width              128 :height 128 :justify-content :space-between
+                      :padding-horizontal 10 :padding-vertical 12
+                      :background-color   (colors/alpha colors/purple 0.2) :border-radius 16 :margin-left 8}
+          [react/view {:background-color colors/purple :width 40 :height 40 :border-radius 20 :align-items :center
+                       :justify-content  :center}
+           [icons/icon :main-icons/send {:color colors/white}]]
+          [react/text {:typography :medium} (i18n/label :t/send-transaction)]]])
+      (when one-to-one-chat?
+        [react/touchable-highlight
+         {:on-press #(re-frame/dispatch [:wallet/prepare-request-transaction-from-chat])}
+         [react/view {:width              128 :height 128 :justify-content :space-between
+                      :padding-horizontal 10 :padding-vertical 12
+                      :background-color   (colors/alpha colors/orange 0.2) :border-radius 16 :margin-left 8}
+          [react/view {:background-color colors/orange :width 40 :height 40 :border-radius 20 :align-items :center
+                       :justify-content  :center}
+           [icons/icon :main-icons/receive {:color colors/white}]]
+          [react/text {:typography :medium} (i18n/label :t/request-transaction)]]])
       (for [ext extensions]
         [react/touchable-highlight
          {:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet

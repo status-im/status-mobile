@@ -171,6 +171,11 @@
                                           :text         (str "install " (:id extension))
                                           :ens-name     preferred-name}))))
 
+(fx/defn send-chat-message
+  {:events [:send-plain-text-message]}
+  [{{:keys [current-chat-id] :as db} :db :as cofx} message]
+  (send-plain-text-message cofx message current-chat-id))
+
 (fx/defn send-current-message
   "Sends message from current chat input"
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
