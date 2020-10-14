@@ -503,7 +503,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1_chat.chat_message_input.click()
         for chat in device_1_chat, device_2_chat, device_3_chat:
             if not chat.play_pause_audio_message_button.is_element_displayed():
-                self.errors.append('Audio message is not shown in chat after sending for sender')
+                self.errors.append('Audio message is not shown in chat after sending!')
 
         device_1.just_fyi('Send sticker to group chat and verify it on all devices')
         device_1_chat.profile_button.click()

@@ -157,7 +157,7 @@ class TestBrowsing(SingleDeviceTestCase):
         home_view = sign_in.create_user()
         dapp_view = home_view.dapp_tab_button.click()
         browsing_view = dapp_view.open_url('google.com')
-        browsing_view.cross_icon.click()
+        browsing_view.back_button.click()
         dapp_view = DappsView(self.driver)
         browser_entry = dapp_view.remove_browser_entry_long_press('Google')
         home_view.relogin()
@@ -166,7 +166,7 @@ class TestBrowsing(SingleDeviceTestCase):
             self.errors.append('The browser entry is present after re-login')
         for entry in ('google.com', 'status.im'):
             browsing_view = dapp_view.open_url(entry)
-            browsing_view.cross_icon.click()
+            browsing_view.back_button.click()
         dapp_view.remove_browser_entry_long_press('status', clear_all=True)
         home_view.relogin()
         home_view.dapp_tab_button.click()

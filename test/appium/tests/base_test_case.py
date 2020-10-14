@@ -59,7 +59,7 @@ class AbstractTestCase:
         desired_caps['build'] = pytest_config_global['build']
         desired_caps['name'] = test_suite_data.current_test.name
         desired_caps['platformName'] = 'Android'
-        desired_caps['appiumVersion'] = '1.16.0'
+        desired_caps['appiumVersion'] = '1.18.1'
         desired_caps['platformVersion'] = '10.0'
         desired_caps['deviceName'] = 'Android GoogleAPI Emulator'
         desired_caps['deviceOrientation'] = "portrait"

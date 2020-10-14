@@ -514,7 +514,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         send_transaction.just_fyi('Set contact')
         send_transaction.chose_recipient_button.click()
-        send_transaction.element_by_text('Contacts').click()
+        send_transaction.element_by_text('Contacts').scroll_and_click()
         send_transaction.element_by_text(nickname).scroll_and_click()
         send_transaction.recipient_done.click()
         if send_transaction.enter_recipient_address_text.text != \
@@ -530,6 +530,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.ok_button.click()
         send_transaction.element_by_text('↑ 2 STT').scroll_and_click()
         send_transaction.add_to_favorites(recent_add_to_fav_name)
+        wallet_view.element_by_text('Recent').click()
 
         send_transaction.just_fyi('Scan code, add it to favorites and recheck that it is preserved')
         send_transaction.scan_qr_code_button.click()

@@ -262,7 +262,7 @@ class SignInView(BaseView):
     def create_user(self, password=common_password, keycard=False, enable_notifications=False):
         self.get_started_button.click()
         self.generate_key_button.click_until_presence_of_element(self.next_button)
-        self.next_button.click()
+        self.next_button.click_until_absense_of_element(self.element_by_text_part('Choose a chat name'))
         if keycard:
             keycard_flow = self.keycard_storage_button.click()
             keycard_flow.confirm_pin_and_proceed()

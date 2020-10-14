@@ -81,6 +81,7 @@
                                         (re-frame/dispatch
                                          [::delete-profile/delete-profile @password])
                                         (reset! password nil))
-                           :theme    :negative
+                           :theme               :negative
+                           :accessibility-label :delete-profile-confirm
                            :disabled ((complement valid-password?) @password)}
                (i18n/label :t/delete-profile)]]])]]))))

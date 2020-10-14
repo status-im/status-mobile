@@ -573,7 +573,7 @@ class DeleteMyProfilePasswordInput(BaseEditBox):
 class DeleteProfileButton(BaseButton):
     def __init__(self, driver):
         super(DeleteProfileButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(//*[@text="Delete profile"])[2]')
+        self.locator = self.Locator.accessibility_id('delete-profile-confirm')
 
 class UseMobileDataToggle(BaseButton):
     def __init__(self, driver):

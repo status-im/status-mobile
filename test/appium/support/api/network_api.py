@@ -54,11 +54,13 @@ class NetworkApi(object):
         method = self.network_url + 'module=account&action=balance&address=0x%s&tag=latest&apikey=%s' % (address , self.api_key)
         for i in range(5):
             try:
-                return int(requests.request('GET', method, headers=self.headers).json()["result"])
+                self.log('Trying to get balance for %s, attempt %s' % (address, i + 1))
+                balance = requests.request('GET', method, headers=self.headers).json()["result"]
+                self.log('Balance is %s Gwei' % balance)
+                return int(balance)
             except JSONDecodeError as e:
                 self.log(str(e))
                 time.sleep(5)
-                pass
 
     def get_latest_block_number(self) -> int:
         method = self.network_url + 'module=proxy&action=eth_blockNumber'

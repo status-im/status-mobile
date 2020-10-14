@@ -127,6 +127,7 @@ class DappsView(BaseView):
         self.enter_url_editbox.click()
         self.enter_url_editbox.send_keys(url)
         self.confirm()
+        self.progress_bar.wait_for_invisibility_of_element(50)
         return self.get_base_web_view()
 
     def get_browser_entry(self, name):

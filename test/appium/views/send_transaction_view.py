@@ -69,6 +69,10 @@ class ChooseRecipientButton(BaseButton):
         super(ChooseRecipientButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('choose-recipient-button')
 
+    def click(self):
+        self.click_until_presence_of_element(AccountsButton(self.driver))
+        return self.navigate()
+
 
 class AccountsButton(BaseButton):
     def __init__(self, driver):
