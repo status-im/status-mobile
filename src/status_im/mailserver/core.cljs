@@ -100,7 +100,7 @@
         payload (.stringify js/JSON (clj->js args))]
     (status/call-private-rpc payload
                              (handlers/response-handler
-                              #(log/debug "mailserver: remove-peer success" %)
+                              #(log/info "mailserver: remove-peer success" %)
                               #(log/error "mailserver: remove-peer error" %)))))
 
 (re-frame/reg-fx
@@ -214,6 +214,21 @@
       current-request
       [:from :to :force-to? :topics :chat-id])))
 
+(fx/defn disconnect-from-mailserver
+  [{:keys [db] :as cofx}]
+  (let [{:keys [address]}       (fetch-current db)
+        {:keys [peers-summary]} db
+        gap-request?            (executing-gap-request? db)]
+    {:db (cond-> (dissoc db :mailserver/current-request)
+           gap-request?
+           (-> (assoc :mailserver/fetching-gaps-in-progress {})
+               (dissoc :mailserver/planned-gap-requests)))
+
+     :mailserver/remove-peer address}))
+
+(defn fetch-use-mailservers? [{:keys [db]}]
+  (get-in db [:multiaccount :use-mailservers?]))
+
 (fx/defn connect-to-mailserver
   "Add mailserver as a peer using `::add-peer` cofx and generate sym-key when
    it doesn't exists
@@ -226,7 +241,7 @@
   [{:keys [db] :as cofx}]
   (let [{:keys [address]}       (fetch-current db)
         {:keys [peers-summary]} db
-        use-mailservers?        (get-in db [:multiaccount :use-mailservers?])
+        use-mailservers?        (fetch-use-mailservers? cofx)
         added?                  (registered-peer? peers-summary address)
         gap-request?            (executing-gap-request? db)]
     (fx/merge cofx
@@ -449,6 +464,7 @@
   (when (and
          (:filters/initialized db)
          (mobile-network-utils/syncing-allowed? cofx)
+         (fetch-use-mailservers? cofx)
          (not (:mailserver/current-request db)))
     (when-let [mailserver (get-mailserver-when-ready cofx)]
       (let [request-to (or (:mailserver/request-to db)
@@ -494,13 +510,22 @@
 
 (fx/defn update-use-mailservers
   [cofx use-mailservers?]
-  (multiaccounts.update/multiaccount-update cofx :use-mailservers? use-mailservers? {}))
+  (fx/merge cofx
+            (multiaccounts.update/multiaccount-update :use-mailservers? use-mailservers? {})
+            (if use-mailservers?
+              (connect-to-mailserver)
+              (disconnect-from-mailserver))))
 
 (fx/defn change-mailserver
   "mark mailserver status as `:error` if custom mailserver is used
   otherwise try to reconnect to another mailserver"
   [{:keys [db] :as cofx}]
-  (when-not (zero? (:peers-count db))
+  (when (and (fetch-use-mailservers? cofx)
+             ;; For some reason the tests are checking
+             ;; for non-zero, so nil value is ok, not
+             ;; sure is intentional, but will leave it as it is
+             ;; instead of using pos?
+             (not (zero? (:peers-count db))))
     (if-let [preferred-mailserver (preferred-mailserver-id db)]
       (let [current-fleet (node/current-fleet-key db)]
         {:db
@@ -532,7 +557,8 @@
   ;; check if logged into multiaccount
   (when (contains? db :multiaccount)
     (let [last-connection-attempt (:mailserver/last-connection-attempt db)]
-      (when (<= (- now last-connection-attempt))
+      (when (and (fetch-use-mailservers? cofx)
+                 (<= (- now last-connection-attempt)))
         (fx/merge cofx
                   (when (not= :connected (:mailserver/state db))
                     (change-mailserver)))))))
@@ -1132,7 +1158,7 @@
         pinned-mailservers (get-in db [:multiaccount :pinned-mailservers])
         ;; Check if previous mailserver was pinned
         pinned?  (get pinned-mailservers current-fleet)
-        use-mailservers? (get-in db [:multiaccount :use-mailservers?])]
+        use-mailservers? (fetch-use-mailservers? cofx)]
     (fx/merge cofx
               {:db (assoc db :mailserver/current-id mailserver-id)
                :mailserver/remove-peer address}

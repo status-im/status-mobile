@@ -35,12 +35,14 @@
 (deftest change-mailserver
   (testing "we are offline"
     (testing "it does not change mailserver"
-      (is (not (mailserver/change-mailserver {:db {:peers-count 0}})))))
+      (is (not (mailserver/change-mailserver {:db {:multiaccount {:use-mailservers? true}
+                                                   :peers-count 0}})))))
   (testing "we are online"
     (testing "there's a preferred mailserver"
       (testing "it shows the popup"
         (is (:ui/show-confirmation (mailserver/change-mailserver
                                     {:db {:multiaccount {:fleet :staging
+                                                         :use-mailservers? true
                                                          :pinned-mailservers {:staging "id"}}
                                           :peers-count 1}})))))
     (testing "there's not a preferred mailserver"
@@ -49,12 +51,14 @@
                (get-in
                 (mailserver/change-mailserver
                  {:db {:mailserver/mailservers {:staging {:a "b"}}
-                       :multiaccount {:fleet :staging}
+                       :multiaccount {:use-mailservers? true
+                                      :fleet :staging}
                        :peers-count 1}})
                 [::json-rpc/call 0 :method]))))
       (testing "it does not show the popup"
         (is (not (:ui/show-confirmation (mailserver/change-mailserver
-                                         {:db {:peers-count 1}}))))))))
+                                         {:db {:multiaccount {:use-mailservers? true}
+                                               :peers-count 1}}))))))))
 
 (deftest test-registered-peer?
   (testing "Peer is registered"
@@ -355,7 +359,8 @@
       (testing "it changes mailserver"
         (is (= "mailservers_ping"
                (-> (mailserver/resend-request
-                    {:db {:mailserver/current-request
+                    {:db {:multiaccount {:use-mailservers? true}
+                          :mailserver/current-request
                           {:attempts constants/maximum-number-of-attempts}}}
                     {})
                    ::json-rpc/call

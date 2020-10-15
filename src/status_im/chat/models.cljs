@@ -170,7 +170,7 @@
                 :group-chat                     true
                 :contacts                       #{}
                 :public?                        true
-                :might-have-join-time-messages? true
+                :might-have-join-time-messages? (get-in cofx [:multiaccount :use-mailservers?])
                 :unviewed-messages-count        0
                 :loaded-unviewed-messages-ids   #{}}
                nil))
