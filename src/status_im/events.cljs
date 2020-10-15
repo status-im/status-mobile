@@ -687,7 +687,7 @@
 (handlers/register-handler-fx
  :browser/extension-message-received
  (fn [cofx [_ message]]
-    (browser/process-extension-message cofx message)))
+   (browser/process-extension-message cofx message)))
 
 (handlers/register-handler-fx
  :browser/error-occured

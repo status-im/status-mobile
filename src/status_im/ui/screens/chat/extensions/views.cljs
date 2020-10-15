@@ -108,5 +108,5 @@
                      :padding-bottom          40
                      :height (/ window-height 2)
                      :flex 1}}
-         [sheet]])
+        [sheet]])
      window-height]))
