@@ -338,7 +338,7 @@
                                       (not reply)
                                       (not public?))
             show-extensions      (and empty-text
-                                      (or config/commands-enabled? mainnet?)
+                                      ;(or config/commands-enabled? mainnet?)
                                       (not reply))
             show-audio           (and empty-text
                                       (not sending-image)

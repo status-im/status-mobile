@@ -7458,9 +7458,9 @@ static-extend@^0.1.1:
   version "1.0.2"
   resolved "git+https://github.com/flexsurfer/status-extension-todolist.git#0a63b37d36c31690dfa42f387975f52067c0d610"
 
-"status-extension-tornado@git+https://github.com/flexsurfer/status-extension-tornado.git#v1.0.0":
-  version "1.0.0"
-  resolved "git+https://github.com/flexsurfer/status-extension-tornado.git#d40762ce47b4306906df83eb016d78b56b947d9f"
+"status-extension-tornado@git+https://github.com/flexsurfer/status-extension-tornado.git#v1.0.1":
+  version "1.0.1"
+  resolved "git+https://github.com/flexsurfer/status-extension-tornado.git#7aed70c98ad37b68ec753d4125e1ee721655b17d"
 
 "statuses@>= 1.5.0 < 2", statuses@~1.5.0:
   version "1.5.0"
