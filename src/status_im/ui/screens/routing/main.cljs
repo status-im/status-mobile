@@ -140,7 +140,11 @@
        {:name       :extensions
         :transition :presentation-ios
         :insets     {:bottom true}
-        :component  extensions/extensions-screen}]
+        :component  extensions/extensions-screen}
+       {:name       :extension
+        :transition :presentation-ios
+        :insets     {:bottom true}
+        :component  extensions/extension-screen}]
 
       (when config/quo-preview-enabled?
         [{:name      :quo-preview

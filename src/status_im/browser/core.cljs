@@ -390,6 +390,18 @@
             (browser.permissions/send-response-to-bridge permission message-id true nil)
             (browser.permissions/process-next-permission dapp-name)))
 
+(fx/defn process-extension-message
+  [{:keys [db] :as cofx} message]
+  (let [{:keys [type permission payload messageId params]} (js->clj message :keywordize-keys true)
+        message-id (str "ext" messageId)]
+    (println "process-extension-message " type)
+    (cond
+      (= type constants/web3-send-async-read-only)
+      (web3-send-async cofx payload message-id)
+
+      (= type constants/api-request)
+      (browser.permissions/send-response-to-bridge cofx permission message-id true (browser.permissions/get-permission-data cofx permission)))))
+
 (fx/defn process-bridge-message
   [{:keys [db] :as cofx} message]
   (let [browser (get-current-browser db)
@@ -437,12 +449,15 @@
 (re-frame/reg-fx
  :browser/send-to-bridge
  (fn [message]
-   (let [^js webview @webview-ref/webview-ref
-         msg (str "ReactNativeWebView.onMessage('"
-                  (types/clj->json message)
-                  "');")]
-     (when (and message webview)
-       (.injectJavaScript webview msg)))))
+   (println "SEND TO BRIDGE" (:messageId message))
+   (if (string/starts-with? (:messageId message) "ext")
+     (re-frame/dispatch [:extension/send-to-bridge message])
+     (let [^js webview @webview-ref/webview-ref
+           msg (str "ReactNativeWebView.onMessage('"
+                    (types/clj->json message)
+                    "');")]
+       (when (and message webview)
+         (.injectJavaScript webview msg))))))
 
 (re-frame/reg-fx
  :browser/call-rpc

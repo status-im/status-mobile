@@ -19,7 +19,8 @@
             [status-im.keycard.test-menu :as keycard.test-menu]
             [quo.core :as quo]
             [status-im.utils.config :as config]
-            [status-im.reloader :as reloader]))
+            [status-im.reloader :as reloader]
+            [status-im.ui.screens.chat.extensions.views :as extensions]))
 
 (defn on-sheet-cancel []
   (re-frame/dispatch [:bottom-sheet/hide]))
@@ -99,6 +100,7 @@
                   {:enableURLHandling true
                    :initialState      @state}))
          [main-app-navigator]]
+        [extensions/extension-sheet]
         [wallet/select-account]
         [signing/signing]
         [bottom-sheet]

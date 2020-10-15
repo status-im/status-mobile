@@ -1,6 +1,7 @@
 (ns status-im.extensions.list
   (:require ["status-extension-todolist" :default status-extension-todolist]
             ["status-extension-standups" :default status-extension-standups]
+            ["status-extension-tornado" :default status-extension-tornado]
             [cljs-bean.core :as bean]))
 
 (def extensions [{:id          "test.todo-extension"
@@ -18,4 +19,13 @@
                   :author      "andrey.stateofus.eth"
                   :version     "1.0"
                   :description "Test extension test test"
-                  :hooks       (bean/->clj status-extension-standups)}])
+                  :hooks       (bean/->clj status-extension-standups)}
+                 {:id          "test.tornado-extension"
+                  :color       "#94febf"
+                  :icon        (js/require "../resources/images/extensions/tornado.jpg")
+                  :name        "Tornado.cash"
+                  :author      "andrey.stateofus.eth"
+                  :version     "1.0"
+                  :description "Test extension test test"
+                  :theme       :dark
+                  :hooks       (bean/->clj status-extension-tornado)}])

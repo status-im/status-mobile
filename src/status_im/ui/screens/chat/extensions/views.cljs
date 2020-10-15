@@ -9,7 +9,8 @@
             [status-im.extensions.list :as extensions]
             [status-im.ui.components.list.views :as list]
             [quo.core :as quo]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [status-im.ui.components.bottom-panel.views :as bottom-panel]))
 
 (defn extensions-view []
   (let [extensions @(re-frame/subscribe [:extensions-hooks-command])
@@ -38,14 +39,14 @@
           [react/text {:typography :medium} (i18n/label :t/request-transaction)]]])
       (for [ext extensions]
         [react/touchable-highlight
-         {:on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                         {:content (fn [] [(reagent/adapt-react-class (get-in ext [:hook :view]))])}])}
+         {:on-press #(re-frame/dispatch [:set :current-extension-sheet (fn [] [(reagent/adapt-react-class (get-in ext [:hook :view]))])])}
          [react/view {:width              128 :height 128 :justify-content :space-between
                       :padding-horizontal 10 :padding-vertical 12
                       :border-radius      16 :margin-left 8 :background-color (colors/alpha (:color ext) 0.2)}
           [react/image {:source (:icon ext)
                         :resize-mode :center
-                        :style       {:width  40
+                        :style       {:border-radius 20
+                                      :width  40
                                       :height 40}}]
           [react/text {:typography :medium} (:name ext)]]])
       [react/touchable-highlight
@@ -61,7 +62,8 @@
   [quo/list-item
    {:icon      [react/image {:source icon
                              :resize-mode :center
-                             :style       {:width  40
+                             :style       {:border-radius 20
+                                           :width  40
                                            :height 40}}]
     :title     (str name " " version)
     :subtitle  (str "Author: " author)
@@ -79,3 +81,32 @@
     {:key-fn    :id
      :data      extensions/extensions
      :render-fn (fn [ext] [render-item ext])}]])
+
+(defn extension-screen []
+  (let [{:keys [ext view]} @(re-frame/subscribe [:get-screen-params])]
+    [react/view (merge {:flex 1}
+                       (when (= (:theme ext) :dark)
+                         {:background-color colors/black}))
+     [topbar/topbar
+      (merge {:modal?        true
+              :border-bottom false
+              :title         (:name ext)})]
+     [react/scroll-view
+      (when view
+        [view])]]))
+
+(defn extension-sheet []
+  (let [sheet @(re-frame/subscribe [:current-extension-sheet])
+        {window-height :height} @(re-frame/subscribe [:dimensions/window])]
+    [bottom-panel/bottom-panel
+     sheet
+     (fn [sheet]
+       [react/view {:style
+                    {:background-color        colors/white
+                     :border-top-right-radius 16
+                     :border-top-left-radius  16
+                     :padding-bottom          40
+                     :height (/ window-height 2)
+                     :flex 1}}
+         [sheet]])
+     window-height]))

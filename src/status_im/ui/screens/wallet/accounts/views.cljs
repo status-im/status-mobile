@@ -12,7 +12,9 @@
             [status-im.ui.screens.wallet.accounts.styles :as styles]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.wallet.utils :as wallet.utils]
-            [status-im.keycard.login :as keycard.login])
+            [status-im.keycard.login :as keycard.login]
+            [status-im.react-native.resources :as resources]
+            [reagent.core :as reagent])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview account-card [{:keys [name color address type] :as account}]
@@ -172,6 +174,31 @@
         [quo/text {:color :secondary}
          (i18n/label :t/wallet-total-value)]])]))
 
+(defn extensions-view []
+  (let [extensions @(re-frame/subscribe [:extensions-hooks-wallet])]
+    [react/scroll-view {:horizontal true :style {:flex 1} :showsHorizontalScrollIndicator false}
+     (for [ext extensions]
+       [react/touchable-highlight
+        {:on-press #(re-frame/dispatch [:navigate-to :extension {:view (fn [] [(reagent/adapt-react-class (get-in ext [:hook :view]))])
+                                                                 :ext ext}])}
+        [react/view {:height 60 :justify-content :space-between  :flex-direction :row
+                     :padding-horizontal 10 :padding-vertical 12 :align-items :center
+                     :border-radius      16 :margin-left 8 :background-color (colors/alpha (:color ext) 0.2)}
+         [react/image {:source (:icon ext)
+                       :resize-mode :center
+                       :style       {:border-radius 20
+                                     :width  40
+                                     :height 40}}]
+         [react/text {:typography :medium :style {:margin-left 5}} (:name ext)]]])
+     [react/touchable-highlight
+      {:on-press #(re-frame/dispatch [:navigate-to :extensions])}
+      [react/view {:height 60 :justify-content :space-between
+                   :padding-horizontal 10 :padding-vertical 12 :flex-direction :row
+                   :align-items        :center
+                   :border-radius      16 :margin-left 8 :border-color colors/gray-lighter :border-width 1 :margin-right 8}
+       [react/image {:source (resources/get-image :extensions)}]
+       [react/text {:typography :medium :style {:color colors/blue}} "Add extensions"]]]]))
+
 (defn accounts-overview []
   (fn []
     (let [{:keys [mnemonic]} @(re-frame/subscribe [:multiaccount])]
@@ -189,6 +216,7 @@
                               :icon                :main-icons/more
                               :accessibility-label :accounts-more-options}]}
         [accounts]
+        [extensions-view]
         [assets]
         [react/view {:height 68}]]
        [send-button]])))

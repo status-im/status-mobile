@@ -7446,13 +7446,21 @@ static-extend@^0.1.1:
     define-property "^0.2.5"
     object-copy "^0.1.0"
 
-"status-extension-standups@git+https://github.com/flexsurfer/status-extension-standups.git#v1.0.1":
-  version "1.0.1"
-  resolved "git+https://github.com/flexsurfer/status-extension-standups.git#d247ab0a4e22ab8508ab3535bf8d5956198726d1"
+"status-ethereum-provider@git+https://github.com/flexsurfer/status-ethereum-provider.git#v1.0.0":
+  version "1.0.0"
+  resolved "git+https://github.com/flexsurfer/status-ethereum-provider.git#d6ff0f727b8033d7e8f7b14d769ac9e9dfaf565c"
 
-"status-extension-todolist@git+https://github.com/flexsurfer/status-extension-todolist.git#v1.0.1":
-  version "1.0.1"
-  resolved "git+https://github.com/flexsurfer/status-extension-todolist.git#4ded9dcde69d422dbb94503f472ddbba4f7b2b56"
+"status-extension-standups@git+https://github.com/flexsurfer/status-extension-standups.git#v1.0.2":
+  version "1.0.2"
+  resolved "git+https://github.com/flexsurfer/status-extension-standups.git#230690d31a121717de3595b0434c1a37ef4680e4"
+
+"status-extension-todolist@git+https://github.com/flexsurfer/status-extension-todolist.git#v1.0.2":
+  version "1.0.2"
+  resolved "git+https://github.com/flexsurfer/status-extension-todolist.git#0a63b37d36c31690dfa42f387975f52067c0d610"
+
+"status-extension-tornado@git+https://github.com/flexsurfer/status-extension-tornado.git#v1.0.0":
+  version "1.0.0"
+  resolved "git+https://github.com/flexsurfer/status-extension-tornado.git#d40762ce47b4306906df83eb016d78b56b947d9f"
 
 "statuses@>= 1.5.0 < 2", statuses@~1.5.0:
   version "1.5.0"

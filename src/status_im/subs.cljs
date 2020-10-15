@@ -210,6 +210,7 @@
 (reg-root-key-sub :push-notifications/servers :push-notifications/servers)
 
 (reg-root-key-sub :extensions :extensions)
+(reg-root-key-sub :current-extension-sheet :current-extension-sheet)
 
 (re-frame/reg-sub
  :extension-by-id
@@ -229,6 +230,12 @@
  :<- [:extensions]
  (fn [extensions]
    (remove nil? (map (find-hooks "CHAT_COMMAND") (vals extensions)))))
+
+(re-frame/reg-sub
+ :extensions-hooks-wallet
+ :<- [:extensions]
+ (fn [extensions]
+   (remove nil? (map (find-hooks "WALLET_MAIN_SCREEN_WINDOW") (vals extensions)))))
 
 (re-frame/reg-sub
  :extension-command-hook-by-id
