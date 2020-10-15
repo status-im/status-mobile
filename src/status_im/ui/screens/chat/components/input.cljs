@@ -11,7 +11,6 @@
             [status-im.utils.utils :as utils.utils]
             [quo.components.animated.pressable :as pressable]
             [quo.animated :as animated]
-            [status-im.utils.config :as config]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [clojure.string :as string]
