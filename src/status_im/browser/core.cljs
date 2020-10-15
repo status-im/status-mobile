@@ -449,8 +449,7 @@
 (re-frame/reg-fx
  :browser/send-to-bridge
  (fn [message]
-   (println "SEND TO BRIDGE" (:messageId message))
-   (if (string/starts-with? (:messageId message) "ext")
+   (if (and (string? (:messageId message)) (string/starts-with? (:messageId message) "ext"))
      (re-frame/dispatch [:extension/send-to-bridge message])
      (let [^js webview @webview-ref/webview-ref
            msg (str "ReactNativeWebView.onMessage('"
