@@ -131,7 +131,9 @@
 
 (defn with-precision [n decimals]
   (when-let [^js bn (bignumber n)]
-    (.round bn decimals)))
+    bn
+    ;; (.round bn decimals)
+    ))
 
 (defn sufficient-funds? [^js amount ^js balance]
   (when (and amount balance)

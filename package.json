@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "react-native start",
+    "patch": "patch-package",
     "app:compile:android": "shadow-cljs compile android",
     "app:watch": "shadow-cljs watch android",
     "app:packager": "react-native start --host 0.0.0.0 --port 8081",
@@ -67,6 +68,7 @@
     "status-extension-standups": "git+https://github.com/flexsurfer/status-extension-standups.git#v1.0.2",
     "status-extension-todolist": "git+https://github.com/flexsurfer/status-extension-todolist.git#v1.0.2",
     "status-extension-tornado": "git+https://github.com/flexsurfer/status-extension-tornado.git#v1.0.1",
+    "status-extension-uniswap": "git+https://github.com/Ferossgp/uniswap.git#v0.0.6",
     "tdigest": "^0.1.1",
     "web3-utils": "^1.2.1"
   },
@@ -80,6 +82,7 @@
     "coveralls": "^3.0.4",
     "jest": "^25.1.0",
     "nyc": "^14.1.1",
+    "patch-package": "^6.2.2",
     "process": "0.11.10",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#v2.0.2-status",
     "shadow-cljs": "^2.10.14"

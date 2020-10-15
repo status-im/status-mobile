@@ -2,6 +2,7 @@
   (:require ["status-extension-todolist" :default status-extension-todolist]
             ["status-extension-standups" :default status-extension-standups]
             ["status-extension-tornado" :default status-extension-tornado]
+            ["status-extension-uniswap" :default status-extension-uniswap]
             [cljs-bean.core :as bean]))
 
 (def extensions [{:id          "test.todo-extension"
@@ -28,4 +29,13 @@
                   :version     "1.0"
                   :description "Test extension test test"
                   :theme       :dark
-                  :hooks       (bean/->clj status-extension-tornado)}])
+                  :hooks       (bean/->clj status-extension-tornado)}
+
+                 {:id          "test.uniswap-extension"
+                  :color       "#FDEAF1"
+                  :icon        (js/require "../resources/images/extensions/uniswap.png")
+                  :name        "Uniswap"
+                  :author      "design.stateofus.eth"
+                  :version     "1.0"
+                  :description "Test extension uniswap dex"
+                  :hooks       (bean/->clj status-extension-uniswap)}])

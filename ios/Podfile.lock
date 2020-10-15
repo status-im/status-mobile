@@ -1,5 +1,7 @@
 PODS:
   - boost-for-react-native (1.63.0)
+  - BVLinearGradient (2.5.6):
+    - React
   - CocoaAsyncSocket (7.6.4)
   - CocoaLibEvent (1.0.0)
   - DoubleConversion (1.1.6)
@@ -70,9 +72,9 @@ PODS:
   - OpenSSL-Universal (1.0.2.19):
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
-  - Permission-Camera (2.1.5):
+  - Permission-Camera (2.2.2):
     - RNPermissions
-  - Permission-Microphone (2.1.5):
+  - Permission-Microphone (2.2.2):
     - RNPermissions
   - RCTRequired (0.62.2)
   - RCTTypeSafety (0.62.2):
@@ -237,28 +239,28 @@ PODS:
     - React-cxxreact (= 0.62.2)
     - React-jsi (= 0.62.2)
   - React-jsinspector (0.62.2)
-  - react-native-background-timer (2.2.0):
-    - React
+  - react-native-background-timer (2.4.1):
+    - React-Core
   - react-native-camera-kit (8.0.4):
     - React
-  - react-native-cameraroll (1.6.2):
+  - react-native-cameraroll (1.8.1):
     - React
-  - react-native-image-resizer (1.2.3):
-    - React
+  - react-native-image-resizer (1.3.0):
+    - React-Core
   - react-native-mail (4.0.0):
     - React
   - react-native-netinfo (4.7.0):
     - React
-  - react-native-safe-area-context (2.0.0):
+  - react-native-safe-area-context (2.0.3):
     - React
   - react-native-shake (3.4.0):
     - React
-  - react-native-slider (3.0.0):
+  - react-native-slider (3.0.3):
     - React
   - react-native-splash-screen (3.2.0):
     - React
-  - react-native-webview (10.3.1):
-    - React
+  - react-native-webview (10.9.2):
+    - React-Core
   - React-RCTActionSheet (0.62.2):
     - React-Core/RCTActionSheetHeaders (= 0.62.2)
   - React-RCTAnimation (0.62.2):
@@ -322,15 +324,15 @@ PODS:
     - React
   - ReactNativeDarkMode (0.2.2):
     - React
-  - RNCAsyncStorage (1.11.0):
+  - RNCAsyncStorage (1.12.1):
+    - React-Core
+  - RNCClipboard (1.5.0):
+    - React-Core
+  - RNCMaskedView (0.1.10):
     - React
-  - RNCClipboard (1.2.2):
+  - RNCPushNotificationIOS (1.5.0):
     - React
-  - RNCMaskedView (0.1.9):
-    - React
-  - RNCPushNotificationIOS (1.4.1):
-    - React
-  - RNDeviceInfo (5.6.1):
+  - RNDeviceInfo (5.6.5):
     - React
   - RNFS (2.16.6):
     - React
@@ -349,13 +351,13 @@ PODS:
     - React
   - RNLanguages (3.0.2):
     - React
-  - RNPermissions (2.1.5):
+  - RNPermissions (2.2.2):
+    - React-Core
+  - RNReactNativeHapticFeedback (1.10.0):
     - React
-  - RNReactNativeHapticFeedback (1.9.0):
+  - RNReanimated (1.13.1):
     - React
-  - RNReanimated (1.13.0):
-    - React
-  - RNScreens (2.10.1):
+  - RNScreens (2.11.0):
     - React
   - RNSVG (9.13.6):
     - React
@@ -373,6 +375,7 @@ PODS:
     - Yoga (~> 1.14)
 
 DEPENDENCIES:
+  - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
@@ -473,6 +476,8 @@ SPEC REPOS:
     - YogaKit
 
 EXTERNAL SOURCES:
+  BVLinearGradient:
+    :path: "../node_modules/react-native-linear-gradient"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   FBLazyVector:
@@ -588,6 +593,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
@@ -603,8 +609,8 @@ SPEC CHECKSUMS:
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: d6cca0516fb0ca3697a5b2e199ea83dfc7133411
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
-  Permission-Camera: afad27bf90337684d4a86f3825112d648c8c4d3b
-  Permission-Microphone: 0ffabc3fe1c75cfb260525ee3f529383c9f4368c
+  Permission-Camera: 5d2aaf95592660b6dcb5e8d1d90ed5d0156cad02
+  Permission-Microphone: a0e56790d61392c31627df33328fef079ad46fa8
   RCTRequired: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
   RCTTypeSafety: 93006131180074cffa227a1075802c89a49dd4ce
   React: 29a8b1a02bd764fb7644ef04019270849b9a7ac3
@@ -614,17 +620,17 @@ SPEC CHECKSUMS:
   React-jsi: b6dc94a6a12ff98e8877287a0b7620d365201161
   React-jsiexecutor: 1540d1c01bb493ae3124ed83351b1b6a155db7da
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
-  react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
+  react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
   react-native-camera-kit: 498a6d111a904834e0824e9073cfadef7303235f
-  react-native-cameraroll: ac69828fc43b9dbf92149714fd739577d38e4448
-  react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3
+  react-native-cameraroll: e2917a5e62da9f10c3d525e157e25e694d2d6dfa
+  react-native-image-resizer: a79bcffdef1b52160ff91db0d6fa24816a4ff332
   react-native-mail: 7e37dfbe93ff0d4c7df346b738854dbed533e86f
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
-  react-native-safe-area-context: 60f654e00b6cc416573f6d5dbfce3839958eb57a
+  react-native-safe-area-context: 14c793e8b0bfe51e74dcdbe75dd14ee7498b88b8
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
-  react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
+  react-native-slider: e99fc201cefe81270fc9d81714a7a0f5e566b168
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
-  react-native-webview: 40bbeb6d011226f34cb83f845aeb0fdf515cfc5f
+  react-native-webview: 4e96d493f9f90ba4f03b28933f30b2964df07e39
   React-RCTActionSheet: f41ea8a811aac770e0cc6e0ad6b270c644ea8b7c
   React-RCTAnimation: 49ab98b1c1ff4445148b72a3d61554138565bad0
   React-RCTBlob: a332773f0ebc413a0ce85942a55b064471587a71
@@ -637,20 +643,20 @@ SPEC CHECKSUMS:
   ReactCommon: ed4e11d27609d571e7eee8b65548efc191116eb3
   ReactNativeAudioToolkit: de9610f323e855ac6574be8c99621f3d57c5df06
   ReactNativeDarkMode: 0178ffca3b10f6a7c9f49d6f9810232b328fa949
-  RNCAsyncStorage: d059c3ee71738c39834a627476322a5a8cd5bf36
-  RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
-  RNCMaskedView: 71fc32d971f03b7f03d6ab6b86b730c4ee64f5b6
-  RNCPushNotificationIOS: c145c6253ea016e5efeff604f2720736b4a596f7
-  RNDeviceInfo: b6e650fbd234732c759544218657d549b4339038
+  RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
+  RNCClipboard: c7abea1baea58adca5c1f29e56dd5261837b4892
+  RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
+  RNCPushNotificationIOS: ef00b111c849a9bb5dbc86d40cf91acb8b262772
+  RNDeviceInfo: c5f8f3a456adcbba405ace475254b08febc4c095
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
   RNImageCropPicker: 38865ab4af1b0b2146ad66061196bc0184946855
   RNKeychain: 216f37338fcb9e5c3a2530f1e3295f737a690cb1
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
-  RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
-  RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
-  RNReanimated: 89f5e0a04d1dd52fbf27e7e7030d8f80a646a3fc
-  RNScreens: b748efec66e095134c7166ca333b628cd7e6f3e2
+  RNPermissions: 5df468064df661a4c8c017e2791ce90d7695eea5
+  RNReactNativeHapticFeedback: 22c5ecf474428766c6b148f96f2ff6155cd7225e
+  RNReanimated: dd8c286ab5dd4ba36d3a7fef8bff7e08711b5476
+  RNScreens: 0e91da98ab26d5d04c7b59a9b6bd694124caf88c
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
