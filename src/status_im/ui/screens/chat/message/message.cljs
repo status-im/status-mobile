@@ -42,7 +42,8 @@
        from
        contact-name
        current-public-key
-       (partial style/quoted-message-author outgoing)]]
+       (partial style/quoted-message-author outgoing)
+       outgoing]]
      (if (and image
               ;; Disabling images for public-chats
               (not public?))

@@ -28,7 +28,7 @@
                             :font-weight "400"}}
         first-name]))))
 
-(defn format-reply-author [from username current-public-key style]
+(defn format-reply-author [from username current-public-key style outgoing]
   (let [contact-name (str reply-symbol username)]
     (or (and (= from current-public-key)
              [react/text {:style (style true)}
@@ -43,7 +43,9 @@
                                                   :line-height 18
                                                   :font-weight "500"})}
              (or (stateofus/username trimmed-name) trimmed-name)])
-          [react/text {:style (merge {:color       colors/gray
+          [react/text {:style (merge {:color       (if outgoing
+                                                     colors/white-transparent-70-persist
+                                                     colors/gray)
                                       :font-size   12
                                       :line-height 18
                                       :font-weight "400"})}
