@@ -104,12 +104,9 @@
 
 (def group-chat-join-container
   {:flex            1
+   :padding-bottom  40
    :align-items     :center
    :justify-content :center})
-
-(def decline-chat
-  {:color colors/blue
-   :margin-bottom 40})
 
 (def are-you-friends-bubble
   {:border-radius      8

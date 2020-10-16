@@ -35,6 +35,8 @@
 (def invitation-state-requested 1)
 (def invitation-state-rejected  2)
 (def invitation-state-approved  3)
+(def invitation-state-granted 4)
+(def invitation-state-removed 5)
 
 (def message-type-one-to-one 1)
 (def message-type-public-group 2)

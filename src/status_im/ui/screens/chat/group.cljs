@@ -19,12 +19,11 @@
    (i18n/label :t/join-group-chat)])
 
 (defn decline-chat [chat-id]
-  [react/touchable-highlight
-   {:on-press
-    #(debounce/dispatch-and-chill [:group-chats.ui/leave-chat-confirmed chat-id] 2000)
-    :accessibility-label :decline-chat-button}
-   [react/text {:style style/decline-chat}
-    (i18n/label :t/group-chat-decline-invitation)]])
+  [quo/button
+   {:type                :secondary
+    :accessibility-label :decline-chat-button
+    :on-press            #(debounce/dispatch-and-chill [:group-chats.ui/leave-chat-confirmed chat-id] 2000)}
+   (i18n/label :t/group-chat-decline-invitation)])
 
 (defn request-membership [{:keys [state introduction-message] :as invitation}]
   (let [{:keys [message retry?]} @(re-frame/subscribe [:chats/current-chat-membership])]
@@ -64,10 +63,11 @@
 (defview group-chat-footer
   [chat-id invitation-admin]
   (letsubs [{:keys [joined?]} [:group-chat/inviter-info chat-id]
+            removed? [:group-chat/removed-from-current-chat?]
             invitations [:group-chat/invitations-by-chat-id chat-id]]
     (if invitation-admin
       [request-membership (first invitations)]
-      (when-not joined?
+      (when (and (not joined?) (not removed?))
         [react/view {:style style/group-chat-join-footer}
          [react/view {:style style/group-chat-join-container}
           [join-chat-button chat-id]

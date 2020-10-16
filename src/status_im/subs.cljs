@@ -15,6 +15,7 @@
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
             [status-im.group-chats.db :as group-chats.db]
+            [status-im.group-chats.core :as group-chat]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.db :as multiaccounts.db]
@@ -866,6 +867,13 @@
    [(re-frame/subscribe [:group-chat/invitations-by-chat-id chat-id])])
  (fn [[invitations]]
    (filter #(= constants/invitation-state-requested (:state %)) invitations)))
+
+(re-frame/reg-sub
+ :group-chat/removed-from-current-chat?
+ :<- [:chats/current-raw-chat]
+ :<- [:multiaccount/public-key]
+ (fn [[current-chat pk]]
+   (group-chat/member-removed? current-chat pk)))
 
 (re-frame/reg-sub
  :chats/transaction-status

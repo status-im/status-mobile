@@ -168,3 +168,11 @@
                                                      (assoc acc id inv))
                                                    %
                                                    invitations))})
+
+(defn member-removed? [{:keys [membership-update-events]} pk]
+  (->> membership-update-events
+       (filter #(contains? (set (:members %)) pk))
+       (sort-by :clockValue >)
+       first
+       :type
+       (= constants/invitation-state-removed)))
