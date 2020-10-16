@@ -38,6 +38,23 @@ If copying from Nix Cache times out you can adjust the timeout by changing [`nix
 stalled-download-timeout = 9001
 ```
 
+## NDK Bundle Download Failures
+
+There is a known issue([#11111](https://github.com/status-im/status-react/issues/11111)) where the fetching of Android NDK Bundle from our own cache host fails in various different ways:
+```
+unable to download 'https://nix-cache.status.im/nar/64g5wharwjj040rg1v8jnc5qhv1hkgds.nar':
+  HTTP error 200 (curl error: Stream error in the HTTP/2 framing layer)
+```
+```
+unable to download 'https://nix-cache.status.im/nar/64g5wharwjj040rg1v8jnc5qhv1hkgds.nar':
+  HTTP error 200 (curl error: Transferred a partial file)
+```
+```
+NAR for '/nix/store/psx79cnz1khfjlzkw3j8x9sb1jhk1v1a-ndk-bundle-21.0.6113669' fetched from 'https://nix-cache.status.im' is incomplete
+```
+Currently the simplest temporary solution is to edit `nix/nix.conf` and comment out the `extra-substituters` line.
+This should allow Nix to download the NDK Bundle directly from Google servers rather than from our own cache.
+
 ## `extra-sandbox-paths` Is a Restricted Setting
 
 When building Android on NixOS you might encounter the following error:
