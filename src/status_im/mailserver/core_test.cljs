@@ -637,7 +637,7 @@
     (testing "it returns noops when use-mailservers? is false"
       (let [no-mailservers-cofx {:db (assoc-in db [:multiaccount :use-mailservers?] false)}]
         (is (= (mailserver/connect-to-mailserver no-mailservers-cofx)
-               no-mailservers-cofx))))))
+               nil))))))
 
 (deftest check-existing-gaps
   (testing "no gaps"
