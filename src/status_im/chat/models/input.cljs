@@ -133,14 +133,17 @@
 
 (fx/defn send-image
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
-  (let [image-path (get-in db [:chats current-chat-id :metadata :sending-image :uri])]
+  (let [images (get-in db [:chats current-chat-id :metadata :sending-image])]
     (fx/merge cofx
+              ;; NOTE(Ferossgp): Ideally here and for all other types of message we should dissoc on success only
               {:db (update-in db [:chats current-chat-id :metadata] dissoc :sending-image)}
-              (when-not (string/blank? image-path)
-                (chat.message/send-message {:chat-id      current-chat-id
-                                            :content-type constants/content-type-image
-                                            :image-path   (utils/safe-replace image-path #"file://" "")
-                                            :text         (i18n/label :t/update-to-see-image)})))))
+              (chat.message/send-messages
+               (map (fn [[_ {:keys [uri]}]]
+                      {:chat-id      current-chat-id
+                       :content-type constants/content-type-image
+                       :image-path   (utils/safe-replace uri #"file://" "")
+                       :text         (i18n/label :t/update-to-see-image)})
+                    images)))))
 
 (fx/defn send-my-status-message
   "when not empty, proceed by sending text message with public key topic"

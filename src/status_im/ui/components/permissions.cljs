@@ -6,13 +6,14 @@
   {:read-external-storage  (cond
                              platform/android? (.-READ_EXTERNAL_STORAGE (.-ANDROID PERMISSIONS)))
    :write-external-storage (cond
-                             platform/android? (.-WRITE_EXTERNAL_STORAGE (.-ANDROID PERMISSIONS)))
+                             platform/android? (.-WRITE_EXTERNAL_STORAGE (.-ANDROID PERMISSIONS))
+                             platform/ios?     (.-PHOTO_LIBRARY (.-IOS PERMISSIONS)))
    :camera                 (cond
                              platform/android? (.-CAMERA (.-ANDROID PERMISSIONS))
-                             platform/ios? (.-CAMERA (.-IOS PERMISSIONS)))
+                             platform/ios?     (.-CAMERA (.-IOS PERMISSIONS)))
    :record-audio           (cond
                              platform/android? (.-RECORD_AUDIO (.-ANDROID PERMISSIONS))
-                             platform/ios? (.-MICROPHONE (.-IOS PERMISSIONS)))})
+                             platform/ios?     (.-MICROPHONE (.-IOS PERMISSIONS)))})
 
 (defn all-granted? [permissions]
   (let [permission-vals (distinct (vals permissions))]

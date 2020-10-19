@@ -287,7 +287,7 @@
      {:style (styles/input-container)}
      (when reply
        [reply/reply-message reply])
-     (when sending-image
+     (when (seq sending-image)
        [reply/send-image sending-image])
      [rn/view {:style (styles/input-row)}
       [text-input props]

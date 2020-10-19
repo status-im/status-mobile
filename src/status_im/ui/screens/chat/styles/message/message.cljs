@@ -301,9 +301,21 @@
     (outgoing-blockquote-text-style)
     (default-blockquote-text-style)))
 
-(defn image-content [outgoing]
-  {:overflow                   :hidden
+(defn image-message
+  [{:keys [outgoing width height]}]
+  {:overflow                   "hidden"
    :border-top-left-radius     16
    :border-top-right-radius    16
    :border-bottom-left-radius  (if outgoing 16 4)
-   :border-bottom-right-radius (if outgoing 4 16)})
+   :border-bottom-right-radius (if outgoing 4 16)
+   :width                      width
+   :height                     height})
+
+(defn image-message-border [opts]
+  (merge (image-message opts)
+         {:position         :absolute
+          :top              0
+          :left             0
+          :background-color "transparent"
+          :border-width     1
+          :border-color     colors/black-transparent}))

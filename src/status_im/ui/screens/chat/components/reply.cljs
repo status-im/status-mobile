@@ -71,13 +71,17 @@
        [icons/icon :main-icons/close-circle {:container-style (styles/close-button)
                                              :color           (:icon-01 @colors/theme)}]]]]))
 
-(defn send-image [{:keys [uri]}]
+(defn send-image [images]
   [rn/view {:style (styles/reply-container true)}
-   [rn/view {:style (styles/reply-content)}
-    [rn/image {:source {:uri uri}
-               :style  {:width         56
-                        :height        56
-                        :border-radius 4}}]]
+   [rn/scroll-view {:horizontal true
+                    :style      (styles/reply-content)}
+    (for [{:keys [uri]} (vals images)]
+      ^{:key uri}
+      [rn/image {:source {:uri uri}
+                 :style  {:width         56
+                          :height        56
+                          :border-radius 4
+                          :margin-right  4}}])]
    [rn/view
     [pressable/pressable {:on-press            #(re-frame/dispatch [:chat.ui/cancel-sending-image])
                           :accessibility-label :cancel-send-image}

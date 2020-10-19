@@ -218,19 +218,29 @@
    [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])
 
-(defn message-content-image [{:keys [content outgoing]}]
+(defn message-content-image [{:keys [content outgoing] :as message} {:keys [on-long-press]}]
   (let [dimensions (reagent/atom [260 260])
-        uri (:image content)]
+        uri        (:image content)]
     (react/image-get-size
      uri
      (fn [width height]
-       (let [k (/ (max width height) 260)]
-         (reset! dimensions [(/ width k) (/ height k)]))))
+       (reset! dimensions [width height])))
     (fn []
-      [react/view {:style (style/image-content outgoing)}
-       [react/image {:style {:width (first @dimensions) :height (last @dimensions)}
-                     :resize-mode :contain
-                     :source {:uri uri}}]])))
+      (let [k          (/ (max (first @dimensions) (second @dimensions)) 260)
+            style-opts {:outgoing outgoing
+                        :width    (/ (first @dimensions) k)
+                        :height   (/ (second @dimensions) k)}]
+        [react/touchable-highlight {:on-press      (fn []
+                                                     (when (:image content)
+                                                       (re-frame/dispatch [:navigate-to :image-preview message]))
+                                                     (react/dismiss-keyboard!))
+                                    :on-long-press on-long-press}
+         [react/view {:style (style/image-message style-opts)}
+          [react/image {:style       {:width  (/ (first @dimensions) k)
+                                      :height (/ (second @dimensions) k)}
+                        :resize-mode :contain
+                        :source      {:uri uri}}]
+          [react/view {:style (style/image-message-border style-opts)}]]]))))
 
 (defmulti ->message :content-type)
 
@@ -372,18 +382,13 @@
 (defmethod ->message constants/content-type-image [{:keys [content] :as message} {:keys [on-long-press modal]
                                                                                   :as   reaction-picker}]
   [message-content-wrapper message
-   [react/touchable-highlight (when-not modal
-                                {:on-press      (fn [_]
-                                                  (when (:image content)
-                                                    (re-frame/dispatch [:navigate-to :image-preview message]))
-                                                  (react/dismiss-keyboard!))
-                                 :on-long-press (fn []
-                                                  (on-long-press
-                                                   [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-                                                     :label    (i18n/label :t/message-reply)}
-                                                    {:on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
-                                                     :label    (i18n/label :t/save)}]))})
-    [message-content-image message]]
+   [message-content-image message {:modal modal
+                                   :on-long-press (fn []
+                                                    (on-long-press
+                                                     [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                                       :label    (i18n/label :t/message-reply)}
+                                                      {:on-press #(re-frame/dispatch [:chat.ui/save-image-to-gallery (:image content)])
+                                                       :label    (i18n/label :t/save)}]))}]
    reaction-picker])
 
 (defmethod ->message constants/content-type-audio [message {:keys [on-long-press modal]

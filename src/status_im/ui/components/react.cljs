@@ -192,9 +192,9 @@
 (defn show-image-picker
   ([images-fn]
    (show-image-picker images-fn nil))
-  ([images-fn media-type]
+  ([images-fn {:keys [multiple media-type]}]
    (->  ^js image-picker
-        (.openPicker (clj->js {:multiple false :mediaType (or media-type "any")}))
+        (.openPicker (clj->js {:multiple multiple :mediaType (or media-type "any")}))
         (.then images-fn)
         (.catch show-access-error))))
 

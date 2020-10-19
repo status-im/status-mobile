@@ -233,8 +233,12 @@
             (rebuild-message-list chat-id)))
 
 (fx/defn send-message
-  [{:keys [db now] :as cofx} {:keys [chat-id] :as message}]
-  (protocol/send-chat-message cofx message))
+  [{:keys [db now] :as cofx} message]
+  (protocol/send-chat-messages cofx [message]))
+
+(fx/defn send-messages
+  [{:keys [db now] :as cofx} messages]
+  (protocol/send-chat-messages cofx messages))
 
 (fx/defn toggle-expand-message
   [{:keys [db]} chat-id message-id]
