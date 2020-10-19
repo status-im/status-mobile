@@ -244,8 +244,8 @@
         use-mailservers?        (fetch-use-mailservers? cofx)
         added?                  (registered-peer? peers-summary address)
         gap-request?            (executing-gap-request? db)]
-    (fx/merge cofx
-              (when use-mailservers?
+    (when use-mailservers?
+      (fx/merge cofx
                 {:db (cond-> (dissoc db :mailserver/current-request)
                        gap-request?
                        (-> (assoc :mailserver/fetching-gaps-in-progress {})
