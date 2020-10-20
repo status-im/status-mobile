@@ -10,7 +10,6 @@
             [status-im.contact.db :as contact.db]
             [status-im.ens.core :as ens]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.stateofus :as stateofus]
             [status-im.ethereum.tokens :as tokens]
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
@@ -2077,14 +2076,6 @@
                                 (string/ends-with? screen-snt-amount ".")))))))))
 
 ;;ENS ==================================================================================================================
-
-(re-frame/reg-sub
- :ens.stateofus/registrar
- :<- [:current-network]
- (fn [network]
-   (let [chain (ethereum/network->chain-keyword network)]
-     (get stateofus/registrars chain))))
-
 (re-frame/reg-sub
  :multiaccount/usernames
  :<- [:multiaccount]
@@ -2116,18 +2107,18 @@
 (re-frame/reg-sub
  :ens/checkout-screen
  :<- [:ens/registration]
- :<- [:ens.stateofus/registrar]
+ :<- [:current-network]
  :<- [:multiaccount/default-account]
  :<- [:multiaccount/public-key]
  :<- [:chain-id]
  :<- [:balance-default]
  (fn [[{:keys [custom-domain? username]}
-       registrar default-account public-key chain-id balance]]
+       network default-account public-key chain-id balance]]
    {:address           (ethereum/normalized-hex (:address default-account))
     :username          username
     :public-key        public-key
     :custom-domain?    custom-domain?
-    :contract          registrar
+    :network           network
     :amount-label      (ens-amount-label chain-id)
     :sufficient-funds? (money/sufficient-funds?
                         (money/formatted->internal (money/bignumber 10) :SNT 18)

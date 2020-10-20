@@ -69,8 +69,11 @@
 
 (re-frame/reg-fx
  ::get-expiration-time
- (fn [[registrar label-hash cb]]
-   (stateofus/get-expiration-time registrar label-hash cb)))
+ (fn [[chain label-hash cb]]
+   (stateofus/get-registrar
+    chain
+    (fn [registrar]
+      (stateofus/get-expiration-time registrar label-hash cb)))))
 
 (fx/defn set-state
   {:events [::name-resolved]}
@@ -166,19 +169,21 @@
         address (ethereum/default-address db)
         chain (ethereum/chain-keyword db)
         chain-id (ethereum/chain-id db)
-        contract (get stateofus/registrars chain)
         amount (registration-cost chain-id)
         {:keys [x y]} (ethereum/coordinates public-key)]
-    (signing/eth-transaction-call
-     cofx
-     {:contract   (contracts/get-address db :status/snt)
-      :method     "approveAndCall(address,uint256,bytes)"
-      :params     [contract
-                   (money/unit->token amount 18)
-                   (abi-spec/encode "register(bytes32,address,bytes32,bytes32)"
-                                    [(ethereum/sha3 username) address x y])]
-      :on-result  [:update-ens-tx-state-and-redirect :submitted username custom-domain?]
-      :on-error   [::on-registration-failure]})))
+    (stateofus/get-registrar
+     chain
+     (fn [contract]
+       (signing/eth-transaction-call
+        cofx
+        {:contract   (contracts/get-address db :status/snt)
+         :method     "approveAndCall(address,uint256,bytes)"
+         :params     [contract
+                      (money/unit->token amount 18)
+                      (abi-spec/encode "register(bytes32,address,bytes32,bytes32)"
+                                       [(ethereum/sha3 username) address x y])]
+         :on-result  [:update-ens-tx-state-and-redirect :submitted username custom-domain?]
+         :on-error   [::on-registration-failure]})))))
 
 (defn- valid-custom-domain? [username]
   (and (ens/is-valid-eth-name? username)
@@ -280,11 +285,10 @@
   {:events [::navigate-to-name]}
   [{:keys [db] :as cofx} username]
   (let [chain (ethereum/chain-keyword db)
-        registry (get ens/ens-registries chain)
-        registrar (get stateofus/registrars chain)]
+        registry (get ens/ens-registries chain)]
     (fx/merge cofx
               {::get-expiration-time
-               [registrar
+               [chain
                 (-> username
                     stateofus/username
                     ethereum/sha3)

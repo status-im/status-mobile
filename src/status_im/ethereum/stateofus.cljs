@@ -1,6 +1,7 @@
 (ns status-im.ethereum.stateofus
   (:require [clojure.string :as string]
-            [status-im.ethereum.json-rpc :as json-rpc]))
+            [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.ethereum.ens :as ens]))
 
 (def domain "stateofus.eth")
 
@@ -24,11 +25,28 @@
   (when (and name (string/ends-with? name domain))
     (first (string/split name "."))))
 
-(def registrars
+(def old-registrars
   {:mainnet "0xDB5ac1a559b02E12F29fC0eC0e37Be8E046DEF49"
    ;;NOTE: can be enabled for testing builds
    ;;:testnet "0x11d9F481effd20D76cEE832559bd9Aca25405841"
    })
+
+(def registrars-cache (atom {}))
+
+(defn get-registrar [chain callback]
+  (if-let [contract (get @registrars-cache chain)]
+    (callback contract)
+    (let [registry (get ens/ens-registries chain)]
+      (ens/get-owner
+       registry
+       domain
+       (fn [addr]
+         (let [addr (or addr (get old-registrars chain))]
+           (swap! registrars-cache assoc chain addr)
+           (callback addr)))))))
+
+(defn get-cached-registrar [chain]
+  (get @registrars-cache chain))
 
 (defn lower-case? [s]
   (when s
