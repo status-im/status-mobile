@@ -3,11 +3,8 @@
             [status-im.chat.models.loading :as chat-loading]
             [status-im.chat.models.message :as message]
             [status-im.chat.models.message-list :as models.message-list]
-            [status-im.constants :as constants]
             [status-im.ui.screens.chat.state :as view.state]
-            [status-im.utils.datetime :as time]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im.utils.identicon :as identicon]))
+            [status-im.utils.datetime :as time]))
 
 (deftest add-received-message-test
   (with-redefs [message/add-message (constantly :added)]
@@ -153,129 +150,6 @@
                                                                    :from "a"
                                                                    :clock-value 0
                                                                    :chat-id "a"}))))
-
-(deftest add-own-received-message
-  (let [db {:multiaccount {:public-key "me"}
-            :view-id :chat
-            :loaded-chat-id "chat-id"
-            :current-chat-id "chat-id"
-            :messages {"chat-id" {}}
-            :chats {"chat-id" {}}}]
-    (testing "a message coming from you!"
-      (let [actual (message/receive-one {:db db}
-                                        {:from "me"
-                                         :message-type constants/message-type-one-to-one
-                                         :timestamp 0
-                                         :whisper-timestamp 0
-                                         :message-id "id"
-                                         :chat-id "chat-id"
-                                         :outgoing true
-                                         :content "b"
-                                         :clock-value 1})
-            message (get-in actual [:db :messages "chat-id" "id"])]
-        (testing "it adds the message"
-          (is message))))))
-
-(deftest receive-group-chats
-  (let [cofx                 {:db {:chats {"chat-id" {:contacts #{"present"}
-                                                      :members-joined #{"a"}}}
-                                   :multiaccount {:public-key "a"}
-                                   :loaded-chat-id "chat-id"
-                                   :current-chat-id "chat-id"
-                                   :view-id :chat}}
-        cofx-without-member  (update-in cofx [:db :chats "chat-id" :members-joined] disj "a")
-        valid-message        {:chat-id     "chat-id"
-                              :from        "present"
-                              :message-type constants/message-type-private-group
-                              :message-id  "1"
-                              :clock-value 1
-                              :whisper-timestamp 0
-                              :timestamp   0}
-        bad-chat-id-message  {:chat-id     "bad-chat-id"
-                              :from        "present"
-                              :message-type constants/message-type-private-group
-                              :message-id  "1"
-                              :clock-value 1
-                              :whisper-timestamp 0
-                              :timestamp   0}
-        bad-from-message     {:chat-id     "chat-id"
-                              :from        "not-present"
-                              :message-type constants/message-type-private-group
-                              :message-id  "1"
-                              :clock-value 1
-                              :whisper-timestamp 0
-                              :timestamp   0}]
-    (testing "a valid message"
-      (is (get-in (message/receive-one cofx valid-message) [:db :messages "chat-id" "1"])))
-    (testing "a message from someone not in the list of participants"
-      (is (not (message/receive-one cofx bad-from-message))))
-    (testing "a message with non existing chat-id"
-      (is (not (message/receive-one cofx bad-chat-id-message))))
-    (testing "a message from a delete chat"
-      (is (not (message/receive-one cofx-without-member valid-message))))))
-
-(deftest receive-public-chats
-  (let [cofx                 {:db {:chats {"chat-id" {:public? true}}
-                                   :multiaccount {:public-key "a"}
-                                   :loaded-chat-id "chat-id"
-                                   :current-chat-id "chat-id"
-                                   :view-id :chat}}
-        valid-message        {:chat-id     "chat-id"
-                              :from        "anyone"
-                              :message-type constants/message-type-public-group
-                              :message-id  "1"
-                              :clock-value 1
-                              :whisper-timestamp 0
-                              :timestamp   0}
-        bad-chat-id-message  {:chat-id     "bad-chat-id"
-                              :from        "present"
-                              :message-type constants/message-type-public-group
-                              :message-id  "1"
-                              :clock-value 1
-                              :whisper-timestamp 0
-                              :timestamp   0}]
-    (testing "a valid message"
-      (is (get-in (message/receive-one cofx valid-message) [:db :messages "chat-id" "1"])))
-    (testing "a message with non existing chat-id"
-      (is (not (message/receive-one cofx bad-chat-id-message))))))
-
-(deftest receive-one-to-one
-  (with-redefs [gfycat/generate-gfy (constantly "generated")
-                identicon/identicon (constantly "generated")]
-
-    (let [cofx                 {:db {:chats {"matching" {}}
-                                     :multiaccount {:public-key "me"}
-                                     :current-chat-id "matching"
-                                     :loaded-chat-id "matching"
-                                     :view-id :chat}}
-          valid-message        {:chat-id     "matching"
-                                :from        "matching"
-                                :message-type constants/message-type-one-to-one
-                                :message-id  "1"
-                                :clock-value 1
-                                :whisper-timestamp 0
-                                :timestamp   0}
-          own-message          {:chat-id     "matching"
-                                :from        "me"
-                                :message-type constants/message-type-one-to-one
-                                :message-id  "1"
-                                :clock-value 1
-                                :whisper-timestamp 0
-                                :timestamp   0}
-
-          bad-chat-id-message  {:chat-id     "bad-chat-id"
-                                :from        "not-matching"
-                                :message-type constants/message-type-one-to-one
-                                :message-id  "1"
-                                :clock-value 1
-                                :whisper-timestamp 0
-                                :timestamp   0}]
-      (testing "a valid message"
-        (is (get-in (message/receive-one cofx valid-message) [:db :messages "matching" "1"])))
-      (testing "our own message"
-        (is (get-in (message/receive-one cofx own-message) [:db :messages "matching" "1"])))
-      (testing "a message with non matching chat-id"
-        (is (not (get-in (message/receive-one cofx bad-chat-id-message) [:db :messages "not-matching" "1"])))))))
 
 (deftest delete-message
   (with-redefs [time/day-relative (constantly "day-relative")

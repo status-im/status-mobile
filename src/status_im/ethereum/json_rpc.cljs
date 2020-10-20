@@ -115,6 +115,14 @@
    "multiaccounts_getIdentityImage" {}
    "multiaccounts_storeIdentityImage" {}
    "multiaccounts_deleteIdentityImage" {}
+   "wakuext_createCommunity" {}
+   "wakuext_createCommunityChat" {}
+   "wakuext_inviteUserToCommunity" {}
+   "wakuext_joinCommunity" {}
+   "wakuext_leaveCommunity" {}
+   "wakuext_communities" {}
+   "wakuext_importCommunity" {}
+   "wakuext_exportCommunity" {}
    "status_chats" {}
    "localnotifications_switchWalletNotifications" {}
    "localnotifications_notificationPreferences" {}

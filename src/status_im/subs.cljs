@@ -14,6 +14,7 @@
             [status-im.ethereum.transactions.core :as transactions]
             [status-im.fleet.core :as fleet]
             [status-im.group-chats.db :as group-chats.db]
+            [status-im.communities.core :as communities]
             [status-im.group-chats.core :as group-chat]
             [status-im.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
@@ -217,7 +218,57 @@
 (reg-root-key-sub :push-notifications/preferences :push-notifications/preferences)
 
 (reg-root-key-sub :acquisition :acquisition)
+
+;; communities
+(re-frame/reg-sub
+ :communities
+ (fn [db]
+   (cond
+     config/communities-management-enabled?
+     (:communities db)
+     config/communities-enabled?
+    ;; If no management enabled, only return status-community
+     (select-keys (:communities db) [constants/status-community-id])
+     :else
+     [])))
+
+(re-frame/reg-sub
+ :communities/community
+ :<- [:communities]
+ (fn [communities [_ id]]
+   (get communities id)))
+
+(re-frame/reg-sub
+ :communities/status-community
+ :<- [:search/home-filter]
+ :<- [:communities]
+ (fn [[search-filter communities]]
+   (let [status-community (get communities constants/status-community-id)]
+     (when (and (:joined status-community)
+                (or (string/blank? search-filter)
+                    (string/includes? (string/lower-case
+                                       (get-in status-community [:description :identity :display-name])) search-filter)))
+       status-community))))
+
+(re-frame/reg-sub
+ :communities/current-community
+ :<- [:communities]
+ :<- [:chats/current-raw-chat]
+ (fn [[communities {:keys [community-id]}]]
+   (get communities community-id)))
+
+(re-frame/reg-sub
+ :communities/unviewed-count
+ (fn [[_ community-id]]
+   [(re-frame/subscribe [:chats/by-community-id community-id])])
+ (fn [[chats]]
+   (reduce (fn [acc {:keys [unviewed-messages-count]}]
+             (+ acc (or unviewed-messages-count 0)))
+           0
+           chats)))
+
 ;;GENERAL ==============================================================================================================
+
 
 (re-frame/reg-sub
  :multiaccount/logged-in?
@@ -617,6 +668,16 @@
    (get chats chat-id)))
 
 (re-frame/reg-sub
+ :chats/by-community-id
+ :<- [:chats/active-chats]
+ (fn [chats [_ community-id]]
+   (->> chats
+        (keep (fn [[_ chat]]
+                (when (= (:community-id chat) community-id)
+                  chat)))
+        (sort-by :timestamp >))))
+
+(re-frame/reg-sub
  :chats/current-chat-ui-props
  :<- [::chat-ui-props]
  :<- [:chats/current-chat-id]
@@ -678,8 +739,11 @@
  :<- [:chats/current-raw-chat]
  :<- [:multiaccount/public-key]
  :<- [:inactive-chat-id]
+ :<- [:communities/current-community]
  (fn [[{:keys [group-chat] :as current-chat}
-       my-public-key inactive-chat-id]]
+       my-public-key
+       inactive-chat-id
+       community]]
    (when (and current-chat (= (:chat-id current-chat) inactive-chat-id))
      (cond-> current-chat
        (chat.models/public-chat? current-chat)
@@ -690,6 +754,10 @@
        (assoc :show-input? true
               :joined? true)
 
+       (and (chat.models/community-chat? current-chat)
+            (communities/can-post? community my-public-key (:chat-id current-chat)))
+       (assoc :show-input? true)
+
        (not group-chat)
        (assoc :show-input? true)))))
 
@@ -698,7 +766,14 @@
  :<- [:chats/current-raw-chat]
  (fn [current-chat]
    (select-keys current-chat
-                [:public? :group-chat :chat-id :chat-name :color :invitation-admin])))
+                [:community-id
+                 :public?
+                 :group-chat
+                 :chat-type
+                 :chat-id
+                 :chat-name
+                 :color
+                 :invitation-admin])))
 
 (re-frame/reg-sub
  :current-chat/one-to-one-chat?
@@ -2011,7 +2086,10 @@
                            (vals chats))
                           (vals chats))]
 
-     (sort-by :timestamp > filtered-chats))))
+     (sort-by :timestamp > (filter (fn [{:keys [community-id]}]
+                                     ;; Ignore communities
+                                     (not community-id))
+                                   filtered-chats)))))
 
 (defn extract-currency-attributes [currency]
   (let [{:keys [code display-name]} (val currency)]

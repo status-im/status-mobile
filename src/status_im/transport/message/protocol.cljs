@@ -9,6 +9,7 @@
                              text
                              response-to
                              ens-name
+                             community-id
                              image-path
                              audio-path
                              audio-duration-ms
@@ -21,6 +22,7 @@
    :imagePath       image-path
    :audioPath       audio-path
    :audioDurationMs audio-duration-ms
+   :communityId     community-id
    :sticker         sticker
    :contentType     content-type})
 

@@ -20,7 +20,8 @@
   (when-not (= json "undefined")
     (try
       (js->clj (.parse js/JSON json))
-      (catch js/Error _ (when (string? json) json)))))
+      (catch js/Error _
+        (when (string? json) json)))))
 
 (def serialize clj->json)
 (defn deserialize [o] (try (json->clj o)

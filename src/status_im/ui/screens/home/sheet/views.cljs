@@ -47,6 +47,13 @@
      :accessibility-label :join-public-chat-button
      :icon                :main-icons/public-chat
      :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-public-chat])}]
+   (when config/communities-enabled?
+     [quo/list-item
+      {:theme               :accent
+       :title               (i18n/label :t/communities-alpha)
+       :accessibility-label :communities-button
+       :icon                :main-icons/communities
+       :on-press            #(hide-sheet-and-dispatch [:navigate-to :communities])}])
    [invite/list-item
     {:accessibility-label :chats-menu-invite-friends-button}]])
 

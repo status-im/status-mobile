@@ -2,12 +2,12 @@
   (:require [re-frame.core :as re-frame]
             [quo.core :as quo]
             [status-im.ui.components.react :as react]
+            [status-im.constants :as constants]
             [status-im.utils.universal-links.utils :as links]
             [status-im.ui.screens.chat.styles.main :as style]
             [status-im.i18n :as i18n]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.colors :as colors]
-            [status-im.constants :as constants]
             [status-im.utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -83,18 +83,33 @@
                               :size      :small
                               :color     colors/gray}]])
 
-(defview no-messages-group-chat-description-container [chat-id]
+(defn calculate-quiet-time [highest-request-to
+                            lowest-request-from]
+  (let [quiet-hours (quot (- highest-request-to lowest-request-from)
+                          (* 60 60))]
+    (if (<= quiet-hours 24)
+      (i18n/label :t/quiet-hours
+                  {:quiet-hours quiet-hours})
+      (i18n/label :t/quiet-days
+                  {:quiet-days (quot quiet-hours 24)}))))
+
+(defview no-messages-community-chat-description-container [chat-id]
+  (letsubs [{:keys [highest-request-to lowest-request-from]}
+            [:mailserver/ranges-by-chat-id chat-id]]
+    [react/text {:style (merge style/intro-header-description
+                               {:margin-bottom 36})}
+     (let [quiet-time (calculate-quiet-time highest-request-to
+                                            lowest-request-from)]
+       (i18n/label :t/empty-chat-description-community
+                   {:quiet-hours quiet-time}))]))
+
+(defview no-messages-private-group-chat-description-container [chat-id]
   (letsubs [{:keys [highest-request-to lowest-request-from]}
             [:mailserver/ranges-by-chat-id chat-id]]
     [react/nested-text {:style (merge style/intro-header-description
                                       {:margin-bottom 36})}
-     (let [quiet-hours (quot (- highest-request-to lowest-request-from)
-                             (* 60 60))
-           quiet-time  (if (<= quiet-hours 24)
-                         (i18n/label :t/quiet-hours
-                                     {:quiet-hours quiet-hours})
-                         (i18n/label :t/quiet-days
-                                     {:quiet-days (quot quiet-hours 24)}))]
+     (let [quiet-time (calculate-quiet-time highest-request-to
+                                            lowest-request-from)]
        (i18n/label :t/empty-chat-description-public
                    {:quiet-hours quiet-time}))
      [{:style    {:color colors/blue}
@@ -143,20 +158,23 @@
    (i18n/label :t/membership-description)])
 
 (defn group-chat-description-container
-  [{:keys [public?
-           invitation-admin
+  [{:keys [invitation-admin
            chat-id
            chat-name
+           chat-type
            loading-messages?
            no-messages?]}]
   (cond loading-messages?
         group-chat-description-loading
 
-        (and no-messages? public?)
-        [no-messages-group-chat-description-container chat-id]
+        (and no-messages? (= chat-type constants/public-chat-type))
+        [no-messages-private-group-chat-description-container chat-id]
+
+        (and no-messages? (= chat-type constants/community-chat-type))
+        [no-messages-community-chat-description-container chat-id]
 
         invitation-admin
         [group-chat-membership-description]
 
-        (not public?)
+        (= chat-type constants/private-group-chat-type)
         [group-chat-inviter-description-container chat-id chat-name]))

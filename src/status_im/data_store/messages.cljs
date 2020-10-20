@@ -11,6 +11,7 @@
            :sticker (:sticker content))
     :always
     (clojure.set/rename-keys {:chat-id :chatId
+                              :community-id :communityId
                               :clock-value :clock})))
 
 (defn <-rpc [message]
@@ -20,6 +21,7 @@
                                 :commandParameters :command-parameters
                                 :messageType :message-type
                                 :localChatId :chat-id
+                                :communityId :community-id
                                 :contentType  :content-type
                                 :clock  :clock-value
                                 :quotedMessage :quoted-message
@@ -27,7 +29,7 @@
                                 :audioDurationMs :audio-duration-ms
                                 :new :new?})
 
-      (update :quoted-message clojure.set/rename-keys {:parsedText :parsed-text})
+      (update :quoted-message clojure.set/rename-keys {:parsedText :parsed-text :communityId :community-id})
       (update :outgoing-status keyword)
       (update :command-parameters clojure.set/rename-keys {:transactionHash :transaction-hash
                                                            :commandState :command-state})

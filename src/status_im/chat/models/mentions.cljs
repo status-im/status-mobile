@@ -1,6 +1,7 @@
 (ns status-im.chat.models.mentions
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
             [status-im.utils.fx :as fx]
             [status-im.contact.db :as contact.db]
             [status-im.utils.platform :as platform]
@@ -172,11 +173,11 @@
 (defn get-mentionable-users
   [{{:keys          [current-chat-id]
      :contacts/keys [contacts] :as db} :db}]
-  (let [{:keys [group-chat public? users] :as chat}
+  (let [{:keys [chat-type users] :as chat}
         (get-in db [:chats current-chat-id])
         chat-specific-suggestions
         (cond
-          (and group-chat (not public?))
+          (= chat-type constants/private-group-chat-type)
           (let [{:keys [public-key]} (:multiaccount db)
                 all-contacts (:contacts/contacts db)
                 group-contacts

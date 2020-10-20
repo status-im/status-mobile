@@ -24,13 +24,6 @@
                            (second name)
                            (first name)))]]))
 
-(defn dapp-badge [{:keys [online-view-wrapper online-view online-dot-left online-dot-right]}]
-  [react/view online-view-wrapper
-   [react/view online-view
-    [react/view
-     [react/view online-dot-left]
-     [react/view online-dot-right]]]])
-
 (defn chat-icon-view
   [chat-id group-chat name styles]
   [react/view (:container styles)
@@ -43,10 +36,6 @@
   [chat-id group-chat name color]
   [chat-icon-view chat-id group-chat name
    {:container              styles/container-chat-toolbar
-    :online-view-wrapper    styles/online-view-wrapper
-    :online-view            styles/online-view
-    :online-dot-left        styles/online-dot-left
-    :online-dot-right       styles/online-dot-right
     :size                   36
     :chat-icon              styles/chat-icon-chat-toolbar
     :default-chat-icon      (styles/default-chat-icon-chat-toolbar color)
@@ -56,10 +45,6 @@
   [chat-id group-chat name color]
   [chat-icon-view chat-id group-chat name
    {:container              styles/container-chat-list
-    :online-view-wrapper    styles/online-view-wrapper
-    :online-view            styles/online-view
-    :online-dot-left        styles/online-dot-left
-    :online-dot-right       styles/online-dot-right
     :size                   40
     :chat-icon              styles/chat-icon-chat-list
     :default-chat-icon      (styles/default-chat-icon-chat-list color)
@@ -69,10 +54,6 @@
   [chat-id group-chat name color]
   [chat-icon-view chat-id group-chat name
    {:container              styles/container-chat-list
-    :online-view-wrapper    styles/online-view-wrapper
-    :online-view            styles/online-view
-    :online-dot-left        styles/online-dot-left
-    :online-dot-right       styles/online-dot-right
     :size                   40
     :chat-icon              styles/chat-icon-chat-list
     :default-chat-icon      (styles/default-chat-icon-chat-list color)
@@ -85,13 +66,9 @@
                             :default-chat-icon-text (styles/default-chat-icon-text (or size 40))}]])
 
 (defn contact-icon-view
-  [{:keys [name dapp?] :as contact} {:keys [container] :as styles}]
+  [contact {:keys [container] :as styles}]
   [react/view container
-   (if dapp?
-     [default-chat-icon name styles]
-     [photos/photo (multiaccounts/displayed-photo contact) styles])
-   (when dapp?
-     [dapp-badge styles])])
+   [photos/photo (multiaccounts/displayed-photo contact) styles]])
 
 (defn contact-icon-contacts-tab [photo-path]
   [react/view  styles/container-chat-list
@@ -100,10 +77,6 @@
 (defn dapp-icon-permission [contact size]
   [contact-icon-view contact
    {:container              {:width size :height size}
-    :online-view-wrapper    styles/online-view-wrapper
-    :online-view            styles/online-view
-    :online-dot-left        styles/online-dot-left
-    :online-dot-right       styles/online-dot-right
     :size                   size
     :chat-icon              (styles/custom-size-icon size)
     :default-chat-icon      (styles/default-chat-icon-profile colors/default-chat-color size)
@@ -118,9 +91,6 @@
 
 (defn profile-icon-view [photo-path name color edit? size override-styles]
   (let [styles (merge {:container              {:width size :height size}
-                       :online-view            styles/online-view-profile
-                       :online-dot-left        styles/online-dot-left-profile
-                       :online-dot-right       styles/online-dot-right-profile
                        :size                   size
                        :chat-icon              styles/chat-icon-profile
                        :default-chat-icon      (styles/default-chat-icon-profile color size)

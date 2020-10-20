@@ -8,6 +8,7 @@
               :color "color"
               :contacts #{"a" "b" "c" "d"}
               :last-clock-value 10
+              :chat-type 3
               :admins #{"a" "b"}
               :members-joined #{"a" "c"}
               :name "name"
@@ -70,6 +71,7 @@
                        :color "color"
                        :chat-name "name"
                        :contacts #{"a" "b" "c" "d"}
+                       :chat-type 3
                        :last-clock-value 10
                        :last-message nil
                        :admins #{"a" "b"}

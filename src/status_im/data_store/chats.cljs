@@ -2,41 +2,41 @@
   (:require [clojure.set :as clojure.set]
             [status-im.data-store.messages :as messages]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.constants :as constants]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
-(def one-to-one-chat-type 1)
-(def public-chat-type 2)
-(def private-group-chat-type 3)
-(def profile-chat-type 4)
-(def timeline-chat-type 5)
-
-(defn type->rpc [{:keys [public? group-chat profile-public-key timeline?] :as chat}]
-  (assoc chat :chatType (cond
-                          profile-public-key profile-chat-type
-                          timeline? timeline-chat-type
-                          public? public-chat-type
-                          group-chat private-group-chat-type
-                          :else one-to-one-chat-type)))
+(defn type->rpc [{:keys [chat-type public? group-chat profile-public-key timeline?] :as chat}]
+  (if chat-type
+    (assoc chat :chatType chat-type)
+    (assoc chat :chatType (cond
+                            profile-public-key constants/profile-chat-type
+                            timeline? constants/timeline-chat-type
+                            public? constants/public-chat-type
+                            group-chat constants/private-group-chat-type
+                            :else constants/one-to-one-chat-type))))
 
 (defn rpc->type [{:keys [chatType name] :as chat}]
   (cond
-    (or (= public-chat-type chatType)
-        (= profile-chat-type chatType)
-        (= timeline-chat-type chatType)) (assoc chat
-                                                :chat-name (str "#" name)
-                                                :public? true
-                                                :group-chat true
-                                                :timeline? (= timeline-chat-type chatType))
-    (= private-group-chat-type chatType) (assoc chat
-                                                :chat-name name
-                                                :public? false
-                                                :group-chat true)
+    (or (= constants/public-chat-type chatType)
+        (= constants/profile-chat-type chatType)
+        (= constants/timeline-chat-type chatType)) (assoc chat
+                                                          :chat-name (str "#" name)
+                                                          :public? true
+                                                          :group-chat true
+                                                          :timeline? (= constants/timeline-chat-type chatType))
+    (= constants/community-chat-type chatType) (assoc chat
+                                                      :chat-name name
+                                                      :group-chat true)
+    (= constants/private-group-chat-type chatType) (assoc chat
+                                                          :chat-name name
+                                                          :public? false
+                                                          :group-chat true)
     :else (assoc chat :public? false :group-chat false)))
 
-(defn- marshal-members [{:keys [admins contacts members-joined chatType] :as chat}]
+(defn- marshal-members [{:keys [admins contacts members-joined chat-type] :as chat}]
   (cond-> chat
-    (= chatType private-group-chat-type)
+    (= chat-type constants/private-group-chat-type)
     (assoc :members (map #(hash-map :id %
                                     :admin (boolean (admins %))
                                     :joined (boolean (members-joined %))) contacts))
@@ -45,23 +45,23 @@
 
 (defn- unmarshal-members [{:keys [members chatType] :as chat}]
   (cond
-    (= public-chat-type chatType) (assoc chat
-                                         :contacts #{}
-                                         :admins #{}
-                                         :members-joined #{})
-    (= private-group-chat-type chatType) (merge chat
-                                                (reduce (fn [acc member]
-                                                          (cond-> acc
-                                                            (:admin member)
-                                                            (update :admins conj (:id member))
-                                                            (:joined member)
-                                                            (update :members-joined conj (:id member))
-                                                            :always
-                                                            (update :contacts conj (:id member))))
-                                                        {:admins #{}
-                                                         :members-joined #{}
-                                                         :contacts #{}}
-                                                        members))
+    (= constants/public-chat-type chatType) (assoc chat
+                                                   :contacts #{}
+                                                   :admins #{}
+                                                   :members-joined #{})
+    (= constants/private-group-chat-type chatType) (merge chat
+                                                          (reduce (fn [acc member]
+                                                                    (cond-> acc
+                                                                      (:admin member)
+                                                                      (update :admins conj (:id member))
+                                                                      (:joined member)
+                                                                      (update :members-joined conj (:id member))
+                                                                      :always
+                                                                      (update :contacts conj (:id member))))
+                                                                  {:admins #{}
+                                                                   :members-joined #{}
+                                                                   :contacts #{}}
+                                                                  members))
     :else
     (assoc chat
            :contacts #{(:id chat)}
@@ -70,20 +70,21 @@
 
 (defn- ->rpc [chat]
   (-> chat
-      type->rpc
       marshal-members
       (update :last-message messages/->rpc)
+      type->rpc
       (clojure.set/rename-keys {:chat-id :id
                                 :membership-update-events :membershipUpdateEvents
                                 :unviewed-messages-count :unviewedMessagesCount
                                 :last-message :lastMessage
+                                :community-id :communityId
                                 :deleted-at-clock-value :deletedAtClockValue
                                 :is-active :active
                                 :last-clock-value :lastClockValue
                                 :profile-public-key :profile})
       (dissoc :public? :group-chat :messages
               :might-have-join-time-messages?
-              :loaded-unviewed-messages-ids
+              :loaded-unviewed-messages-ids :chat-type
               :contacts :admins :members-joined)))
 
 (defn <-rpc [chat]
@@ -91,8 +92,10 @@
       rpc->type
       unmarshal-members
       (clojure.set/rename-keys {:id :chat-id
+                                :communityId :community-id
                                 :membershipUpdateEvents :membership-update-events
                                 :deletedAtClockValue :deleted-at-clock-value
+                                :chatType :chat-type
                                 :unviewedMessagesCount :unviewed-messages-count
                                 :lastMessage :last-message
                                 :active :is-active
@@ -100,7 +103,7 @@
                                 :invitationAdmin :invitation-admin
                                 :profile :profile-public-key})
       (update :last-message #(when % (messages/<-rpc %)))
-      (dissoc :chatType :members)))
+      (dissoc :members)))
 
 (fx/defn save-chat [cofx {:keys [chat-id] :as chat} on-success]
   {::json-rpc/call [{:method (json-rpc/call-ext-method "saveChat")

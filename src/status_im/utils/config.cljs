@@ -46,6 +46,10 @@
 (def referrals-invite-enabled? (enabled? (get-config :ENABLE_REFERRAL_INVITE "0")))
 (def quo-preview-enabled? (enabled? (get-config :ENABLE_QUO_PREVIEW "0")))
 (def google-free (enabled? (get-config :GOOGLE_FREE "0")))
+(def communities-enabled? (enabled? (get-config :COMMUNITIES_ENABLED "0")))
+(def communities-management-enabled? (and (enabled? (get-config :COMMUNITIES_MANAGEMENT_ENABLED "0"))
+                                          communities-enabled?))
+
 ;; CONFIG VALUES
 (def log-level
   (string/upper-case (get-config :LOG_LEVEL "")))

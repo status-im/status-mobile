@@ -154,7 +154,6 @@
         :transition :presentation-ios
         :insets     {:bottom true}
         :component  contact/profile}]
-
       (when config/quo-preview-enabled?
         [{:name      :quo-preview
           :insets    {:top false :bottom false}

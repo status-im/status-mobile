@@ -234,12 +234,12 @@
 
 (fx/defn connect-to-mailserver
   "Add mailserver as a peer using `::add-peer` cofx and generate sym-key when
-   it doesn't exists
-   Peer summary will change and we will receive a signal from status go when
-   this is successful
-   A connection-check is made after `connection timeout` is reached and
-   mailserver-state is changed to error if it is not connected by then
-   No attempt is made if mailserver usage is disabled"
+  it doesn't exists
+  Peer summary will change and we will receive a signal from status go when
+  this is successful
+  A connection-check is made after `connection timeout` is reached and
+  mailserver-state is changed to error if it is not connected by then
+  No attempt is made if mailserver usage is disabled"
   {:events [:mailserver.ui/reconnect-mailserver-pressed]}
   [{:keys [db] :as cofx}]
   (let [{:keys [address]}       (fetch-current db)

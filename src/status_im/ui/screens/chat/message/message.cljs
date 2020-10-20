@@ -2,6 +2,9 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.i18n :as i18n]
+            [status-im.communities.core :as communities]
+            [status-im.utils.config :as config]
+            [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
@@ -10,6 +13,7 @@
             [status-im.ui.screens.chat.message.command :as message.command]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.chat.sheets :as sheets]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.utils.contenthash :as contenthash]
@@ -209,6 +213,64 @@
   (letsubs [contact-with-names [:multiaccount/contact]]
     (chat.utils/format-author contact-with-names opts)))
 
+(defview community-content [{:keys [community-id] :as message}]
+  (letsubs [{:keys [joined verified] :as community} [:communities/community community-id]]
+    (when (and
+           config/communities-enabled?
+           community)
+      [react/view {:style (assoc (style/message-wrapper message)
+                                 :margin-vertical 10
+                                 :width 271)}
+       (when verified
+         [react/view {:border-right-width 1
+                      :border-left-width 1
+                      :border-top-width 1
+                      :border-left-color colors/gray-lighter
+                      :border-right-color colors/gray-lighter
+                      :border-top-left-radius 10
+                      :border-top-right-radius 10
+                      :padding-vertical 8
+                      :padding-horizontal 15
+                      :border-top-color colors/gray-lighter}
+          [react/text {:style {:font-size 13
+                               :color colors/blue}} (i18n/label :t/communities-verified)]])
+
+       [react/view {:flex-direction :row
+                    :padding-vertical 12
+                    :border-top-left-radius (when-not verified 10)
+                    :border-top-right-radius (when-not verified 10)
+                    :border-right-width 1
+                    :border-left-width 1
+                    :border-top-width 1
+                    :border-color colors/gray-lighter}
+
+        [react/view {:width 62
+                     :padding-left 14}
+         (if (= community-id constants/status-community-id)
+           [react/image {:source (resources/get-image :status-logo)
+                         :style {:width 40
+                                 :height 40}}]
+
+           (let [display-name (get-in community [:description :identity :display-name])]
+             [chat-icon/chat-icon-view-chat-list
+              display-name
+              true
+              display-name
+              colors/default-community-color]))]
+        [react/view {:padding-right 14}
+         [react/text {:style {:font-weight "700"
+                              :font-size 17}}
+          (get-in community [:description :identity :display-name])]
+         [react/text (get-in community [:description :identity :description])]]]
+       [react/view {:border-width 1
+                    :padding-vertical 8
+                    :border-bottom-left-radius 10
+                    :border-bottom-right-radius 10
+                    :border-color colors/gray-lighter}
+        [react/touchable-highlight {:on-press #(re-frame/dispatch [(if joined ::communities/leave ::communities/join) (:id community)])}
+         [react/text {:style {:text-align :center
+                              :color colors/blue}} (if joined (i18n/label :t/leave) (i18n/label :t/join))]]]])))
+
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
   [{:keys [first-in-group? display-photo? display-username?
@@ -355,6 +417,10 @@
   [message-content-wrapper message
    [collapsible-text-message message on-long-press modal]
    reaction-picker])
+
+(defmethod ->message constants/content-type-community
+  [message]
+  [community-content message])
 
 (defmethod ->message constants/content-type-status
   [{:keys [content content-type] :as message}]

@@ -4,6 +4,7 @@
             [status-im.ui.screens.chat.views :as chat]
             [status-im.ui.screens.group.views :as group]
             [status-im.ui.screens.referrals.public-chat :as referrals.public-chat]
+            [status-im.ui.screens.communities.views :as communities]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
             [status-im.ui.screens.stickers.views :as stickers]))
@@ -19,6 +20,14 @@
      :component home/home}
     {:name      :referral-enclav
      :component referrals.public-chat/view}
+    {:name       :communities
+     :transition :presentation-ios
+     :insets     {:bottom true}
+     :component  communities/communities}
+    {:name       :community
+     :transition :presentation-ios
+     :insets     {:bottom true}
+     :component  communities/community}
     {:name      :chat
      :component chat/chat}
     {:name      :group-chat-profile

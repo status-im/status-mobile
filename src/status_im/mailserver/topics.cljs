@@ -96,7 +96,7 @@
 (fx/defn update-many [cofx mailserver-topics]
   (apply fx/merge cofx (map (partial update-topic true) mailserver-topics)))
 
-(fx/defn delete [{:keys [db] :as cofx} {:keys [chat-id filter-id]}]
+(fx/defn delete [{:keys [db] :as cofx} {:keys [filter-id]}]
   (when-let [matching-topics (filter (fn [{:keys [filter-ids] :as topic}]
                                        (if (not filter-ids)
                                          (do (log/warn "topic not initialized, removing" topic)

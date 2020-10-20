@@ -74,10 +74,10 @@
 
 (defn chat-intro [{:keys [chat-id
                           chat-name
+                          chat-type
                           group-chat
                           invitation-admin
                           contact-name
-                          public?
                           color
                           loading-messages?
                           no-messages?]}]
@@ -99,7 +99,7 @@
                                                    :invitation-admin invitation-admin
                                                    :loading-messages? loading-messages?
                                                    :chat-name chat-name
-                                                   :public? public?
+                                                   :chat-type chat-type
                                                    :no-messages? no-messages?}]
      [react/text {:style (assoc style/intro-header-description
                                 :margin-bottom 32)}
@@ -115,6 +115,7 @@
 
 (defn chat-intro-header-container
   [{:keys [group-chat invitation-admin
+           chat-type
            might-have-join-time-messages?
            color chat-id chat-name
            public?]}
@@ -128,6 +129,7 @@
          {:chat-id chat-id
           :group-chat group-chat
           :invitation-admin invitation-admin
+          :chat-type chat-type
           :chat-name chat-name
           :public? public?
           :color color
@@ -170,7 +172,7 @@
 
 (defn messages-view
   [{:keys [chat bottom-space pan-responder space-keeper]}]
-  (let [{:keys [group-chat chat-id public? invitation-admin]} chat
+  (let [{:keys [group-chat chat-id chat-type public? invitation-admin]} chat
 
         messages           @(re-frame/subscribe [:chats/current-chat-messages-stream])
         no-messages?       @(re-frame/subscribe [:chats/current-chat-no-messages?])
@@ -180,11 +182,11 @@
       pan-responder
       {:key-fn                       #(or (:message-id %) (:value %))
        :ref                          #(reset! messages-list-ref %)
-       :header                       (when (and group-chat (not public?))
+       :header                       (when (= chat-type constants/private-group-chat-type)
                                        [chat.group/group-chat-footer chat-id invitation-admin])
        :footer                       [:<>
                                       [chat-intro-header-container chat no-messages?]
-                                      (when (and (not group-chat) (not public?))
+                                      (when (= chat-type constants/one-to-one-chat-type)
                                         [invite.chat/reward-messages])]
        :data                         messages
        :inverted                     true

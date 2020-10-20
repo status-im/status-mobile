@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.react :as react]
+            [status-im.constants :as constants]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.utils.universal-links.utils :as universal-links]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
@@ -78,6 +79,27 @@
        :icon                :main-icons/delete
        :on-press            #(re-frame/dispatch [:chat.ui/remove-chat-pressed chat-id])}]]))
 
+(defn community-chat-accents []
+  (fn [{:keys [chat-id group-chat chat-name color]}]
+    [react/view
+     [quo/list-item
+      {:theme    :accent
+       :title    chat-name
+       :icon     [chat-icon/chat-icon-view-chat-sheet
+                  chat-id group-chat chat-name color]}]
+     [quo/list-item
+      {:theme               :accent
+       :title               (i18n/label :t/mark-all-read)
+       :accessibility-label :mark-all-read-button
+       :icon                :main-icons/check
+       :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-pressed chat-id])}]
+     [quo/list-item
+      {:theme               :accent
+       :title               (i18n/label :t/clear-history)
+       :accessibility-label :clear-history-button
+       :icon                :main-icons/close
+       :on-press            #(re-frame/dispatch [:chat.ui/clear-history-pressed chat-id])}]]))
+
 (defn group-chat-accents []
   (fn [{:keys [chat-id group-chat chat-name color invitation-admin]}]
     (let [{:keys [joined?]} @(re-frame/subscribe [:group-chat/inviter-info chat-id])]
@@ -117,11 +139,20 @@
              :icon                :main-icons/arrow-left
              :on-press            #(re-frame/dispatch [:group-chats.ui/leave-chat-pressed chat-id])}])]))))
 
-(defn actions [{:keys [public? group-chat]
+(defn actions [{:keys [chat-type]
                 :as current-chat}]
   (cond
-    public?    [public-chat-accents current-chat]
-    group-chat [group-chat-accents current-chat]
+    (#{constants/public-chat-type
+       constants/profile-chat-type
+       constants/timeline-chat-type} chat-type)
+    [public-chat-accents current-chat]
+
+    (= chat-type constants/community-chat-type)
+    [community-chat-accents current-chat]
+
+    (= chat-type constants/private-group-chat-type)
+    [group-chat-accents current-chat]
+
     :else      [one-to-one-chat-accents current-chat]))
 
 (defn options [chat-id message-id]

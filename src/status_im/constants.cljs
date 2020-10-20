@@ -14,6 +14,7 @@
 (def content-type-system-text 6)
 (def content-type-image 7)
 (def content-type-audio 8)
+(def content-type-community 9)
 
 (def emoji-reaction-love 1)
 (def emoji-reaction-thumbs-up  2)
@@ -21,6 +22,13 @@
 (def emoji-reaction-laugh 4)
 (def emoji-reaction-sad 5)
 (def emoji-reaction-angry 6)
+
+(def one-to-one-chat-type 1)
+(def public-chat-type 2)
+(def private-group-chat-type 3)
+(def profile-chat-type 4)
+(def timeline-chat-type 5)
+(def community-chat-type 6)
 
 (def reactions {emoji-reaction-love        (:love resources/reactions)
                 emoji-reaction-thumbs-up   (:thumbs-up resources/reactions)
@@ -199,3 +207,5 @@
 (def faq "https://status.im/faq/")
 (def faq-keycard (str faq "#keycard"))
 (def keycard-integration-link "https://status.im/keycard-integration")
+
+(def status-community-id "0x039b2da47552aa117a96ea8f1d4d108ba66637c7517a3c94a57b99dbb8a002eda2")

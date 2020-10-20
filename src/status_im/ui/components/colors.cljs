@@ -94,6 +94,7 @@
 (def mention-outgoing "#9EE8FA")
 (def text black)
 (def text-gray gray)
+(def default-community-color "#773377")
 
 (def default-chat-color "#a187d5")                          ;; legacy
 

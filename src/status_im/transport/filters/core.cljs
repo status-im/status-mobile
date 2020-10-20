@@ -2,6 +2,7 @@
   "This namespace is used to handle filters loading and unloading from statusgo"
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im.constants :as constants]
             [status-im.contact.db :as contact.db]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.mailserver.core :as mailserver]
@@ -65,10 +66,8 @@
 (fx/defn upsert-group-chat-topics
   "Update topics for each member of the group chat"
   [{:keys [db] :as cofx}]
-  (let [group-chats (filter (fn [{:keys [group-chat
-                                         public?]}]
-                              (and group-chat
-                                   (not public?)))
+  (let [group-chats (filter (fn [{:keys [chat-type]}]
+                              (= chat-type constants/private-group-chat-type))
                             (vals (:chats db)))]
     (apply fx/merge
            cofx
@@ -195,12 +194,12 @@
 
 ;; shh filters
 
-(defn- responses->filters [{:keys [negotiated
-                                   discovery
-                                   filterId
-                                   chatId
-                                   topic
-                                   identity]}]
+(defn responses->filters [{:keys [negotiated
+                                  discovery
+                                  filterId
+                                  chatId
+                                  topic
+                                  identity]}]
   {:chat-id (if (not= identity "") (str "0x" identity) chatId)
    :id chatId
    :filter-id filterId
@@ -231,6 +230,9 @@
             (when (new-filters? db filters)
               (mailserver/process-next-messages-request))
             (set-filters-initialized)))
+
+(fx/defn handle-filters [cofx filters]
+  (handle-filters-added cofx (map responses->filters filters)))
 
 (fx/defn handle-filters-removed
   "Called when we remove a filter from status-go, it will update the mailserver

@@ -6,6 +6,7 @@
             [re-frame.core :as re-frame]
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
+            [status-im.ui.screens.communities.views :as communities]
             [status-im.ui.screens.wallet.request.views :as request]
             [status-im.ui.screens.profile.user.views :as profile.user]
             ["react-native" :refer (BackHandler)]
@@ -146,6 +147,9 @@
 
                    (= :advertiser-invite view)
                    [advertiser.invite/accept-popover]
+
+                   (= :export-community view)
+                   [communities/export-community]
 
                    (= :dapp-invite view)
                    [dapp.invite/accept-popover]

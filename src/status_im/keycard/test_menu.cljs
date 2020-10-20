@@ -5,7 +5,7 @@
 (defn button [label accessibility-label handler]
   [react/view
    {:style {:width           50
-            :height          40
+            :height          30
             :justify-content :center
             :align-items     :center}}
    [react/text
@@ -16,7 +16,7 @@
 (defn test-menu []
   [react/view
    {:style {:position        :absolute
-            :top             100
+            :top             70
             :right           0
             :width           50
             :justify-content :center
