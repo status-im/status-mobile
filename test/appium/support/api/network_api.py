@@ -29,7 +29,9 @@ class NetworkApi(object):
     def get_transactions(self, address: str) -> List[dict]:
         method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc&apikey=%s' % (address, self.api_key)
         try:
-            return requests.request('GET', url=method, headers=self.headers).json()['result']
+            transactions_response = requests.request('GET', url=method, headers=self.headers).json()
+            if transactions_response:
+                return transactions_response['result']
         except TypeError as e:
             self.log("Check response from etherscan API. Returned values do not match expected. %s" % e)
         except JSONDecodeError as e:
@@ -39,7 +41,9 @@ class NetworkApi(object):
     def get_token_transactions(self, address: str) -> List[dict]:
         method = self.network_url + 'module=account&action=tokentx&address=0x%s&sort=desc&apikey=%s' % (address, self.api_key)
         try:
-            return requests.request('GET', url=method, headers=self.headers).json()['result']
+            transactions_response = requests.request('GET', url=method, headers=self.headers).json()
+            if transactions_response:
+                return transactions_response['result']
         except TypeError as e:
             self.log("Check response from etherscan API. Returned values do not match expected. %s" % str(e))
         except JSONDecodeError as e:
@@ -55,9 +59,11 @@ class NetworkApi(object):
         for i in range(5):
             try:
                 self.log('Trying to get balance for %s, attempt %s' % (address, i + 1))
-                balance = requests.request('GET', method, headers=self.headers).json()["result"]
-                self.log('Balance is %s Gwei' % balance)
-                return int(balance)
+                balance_json = requests.request('GET', method, headers=self.headers).json()
+                if balance_json:
+                    balance = balance_json["result"]
+                    self.log('Balance is %s Gwei' % balance)
+                    return int(balance)
             except JSONDecodeError as e:
                 self.log(str(e))
                 time.sleep(5)
@@ -107,7 +113,7 @@ class NetworkApi(object):
                                 (amount, address))
                             return transaction
                 except TypeError as e:
-                    self.log("Failed iterate transactions " + str(e))
+                    self.log("Failed iterate transactions: " + str(e))
                     continue
 
     def wait_for_confirmation_of_transaction(self, address, amount, confirmations=12, token=False):
@@ -123,13 +129,13 @@ class NetworkApi(object):
         counter = 0
         while True:
             if counter >= wait_time:
-                pytest.fail('Balance is not changed during %s seconds, funds were not received!' % wait_time)
+                pytest.fail('Balance is not changed during %s seconds' % wait_time)
             elif initial_balance == self.get_balance(recipient_address):
                 counter += 10
                 time.sleep(10)
-                self.log('Waiting %s seconds for funds' % counter)
+                self.log('Waiting %s seconds for for changing account balance from %s' % (counter, initial_balance))
             else:
-                self.log('Transaction is received')
+                self.log('Balance is updated!')
                 return
 
     def verify_balance_is(self, expected_balance: int, recipient_address: str, errors: list):

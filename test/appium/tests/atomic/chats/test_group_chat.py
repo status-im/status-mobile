@@ -1,6 +1,6 @@
 from tests import marks
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
-from tests.users import transaction_recipients, basic_user
+from tests.users import transaction_senders, basic_user
 from views.sign_in_view import SignInView
 from views.chat_view import ChatView
 from time import sleep
@@ -527,28 +527,32 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
 
     @marks.testrail_id(5721)
     @marks.medium
-    def test_cant_add_more_ten_participants_to_group_chat(self):
+    def test_cant_add_more_twenty_participants_to_group_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
+        users = [transaction_senders['A'], transaction_senders['B'], transaction_senders['C'], transaction_senders['D'],
+                 transaction_senders['E'], transaction_senders['F'], transaction_senders['G'], transaction_senders['H'],
+                 transaction_senders['I'], transaction_senders['K'], transaction_senders['L'], transaction_senders['M'],
+                 transaction_senders['N'], transaction_senders['O'], transaction_senders['P'], transaction_senders['Q'],
+                 transaction_senders['R'], transaction_senders['S'], transaction_senders['T'], transaction_senders['U'],
+                 ]
         usernames = []
 
-        home.just_fyi('Add 10 users to contacts')
-        for user in transaction_recipients:
-            home.add_contact(transaction_recipients[user]['public_key'])
-            usernames.append(transaction_recipients[user]['username'])
+        home.just_fyi('Add 20 users to contacts')
+        for user in users:
+            home.add_contact(user['public_key'])
+            usernames.append(user['username'])
             home.get_back_to_home_view()
 
         home.just_fyi('Create group chat with max amount of users')
         chat = home.create_group_chat(usernames, 'some_group_chat')
-        if chat.element_by_text(transaction_recipients['J']['username']).is_element_displayed():
-            self.errors.append('11 users are in chat (10 users and admin)!')
 
         home.just_fyi('Verify that can not add more users via group info')
         chat.chat_options.click()
         group_info_view = chat.group_info.click()
         if group_info_view.add_members.is_element_displayed():
             self.errors.append('Add members button is displayed when max users are added in chat')
-        if not group_info_view.element_by_text_part('10 members').is_element_displayed():
+        if not group_info_view.element_by_text_part('20 members').is_element_displayed():
             self.errors.append('Amount of users is not shown on Group info screen')
 
         self.errors.verify_no_errors()

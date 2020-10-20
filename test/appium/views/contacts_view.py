@@ -44,9 +44,9 @@ class UsernameCheckbox(BaseButton):
     def click(self):
         self.driver.info('Click %s username checkbox' % self.username)
         try:
-                self.scroll_to_element().click()
+                self.scroll_to_element(20).click()
         except NoSuchElementException:
-                self.scroll_to_element(direction='up').click()
+                self.scroll_to_element(direction='up', depth=20).click()
 
 
 class ChatNameEditBox(BaseEditBox):

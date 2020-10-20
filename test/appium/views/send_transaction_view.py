@@ -416,7 +416,7 @@ class SendTransactionView(BaseView):
         data = {
             'amount': self.amount_edit_box.text,
             'asset': self.asset_text.text,
-            'address':  self.recipient_text.text
+            'address':  self.enter_recipient_address_text.text
         }
         if gas:
             self.sign_transaction_button.click_until_presence_of_element(self.sign_with_password)

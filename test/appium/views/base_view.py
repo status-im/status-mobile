@@ -353,10 +353,10 @@ class AirplaneModeButton(BaseButton):
         self.driver.press_keycode(4)
 
 
-class SearchChatInput(BaseEditBox):
+class SearchInput(BaseEditBox):
     def __init__(self, driver):
         super().__init__(driver)
-        self.locator = self.Locator.text_selector('Search')
+        self.locator = self.Locator.accessibility_id('search-input')
 
 
 class BaseView(object):
@@ -393,7 +393,7 @@ class BaseView(object):
         self.cross_icon_iside_welcome_screen_button = CrossIconInWelcomeScreen(self.driver)
         self.status_in_background_button = StatusInBackgroundButton(self.driver)
         self.cancel_button = CancelButton(self.driver)
-        self.search_chat_input = SearchChatInput(self.driver)
+        self.search_input = SearchInput(self.driver)
         self.share_button = ShareButton(self.driver)
 
         # external browser
@@ -731,8 +731,8 @@ class BaseView(object):
 
     def search_by_keyword(self, keyword):
         self.driver.info('Search for %s' % keyword)
-        self.search_chat_input.click()
-        self.search_chat_input.send_keys(keyword)
+        self.search_input.click()
+        self.search_input.send_keys(keyword)
 
     # Method-helper
     def write_page_source_to_file(self, full_path_to_file):

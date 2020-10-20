@@ -112,7 +112,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.set_up_wallet()
         status_account_address = wallet_view.get_wallet_address()[2:]
         wallet_view.back_button.click()
-        self.network_api.get_donate(status_account_address)
+        self.network_api.get_donate(status_account_address, external_faucet=False)
         wallet_view.wait_balance_is_changed()
         account_name = 'subaccount'
         wallet_view.add_account(account_name, keycard=True)

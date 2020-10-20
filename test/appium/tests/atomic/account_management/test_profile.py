@@ -1075,7 +1075,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6226)
     @marks.critical
-    def test_ens_and_nickname_in_public_and_1_1_chats(self):
+    def test_ens_mentions_and_nickname_in_public_and_1_1_chats(self):
         self.create_drivers(2)
         device_1, device_2 = self.drivers[0], self.drivers[1]
         sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
@@ -1123,9 +1123,23 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if not chat_2.wait_for_element_starts_with_text(ens_name):
             self.errors.append('ENS username is not shown in public chat')
 
+        home_2.just_fyi('check that can mention user with ENS name')
+        # chat_2.chat_message_input.send_keys('@' + user_1['username'][0:4])
+        # chat_2.search_user_in_mention_suggestion_list(user_1['ens']).click()
+        chat_2.select_mention_from_suggestion_list(user_1['ens'])
+        if chat_2.chat_message_input.text != ens_name + ' ':
+            self.errors.append('ENS username is not resolved in chat input after selecting it in mention suggestions list!')
+        chat_2.send_message_button.click()
+        chat_2.element_starts_with_text(ens_name,'button').click()
+        for element in (chat_2.element_by_text(user_1['username']), chat_2.add_to_contacts):
+            if not element.is_element_displayed():
+                self.errors.append('Was not redirected to user profile after tappin on mention!')
+        chat_1.element_starts_with_text(user_1['ens'] +'.stateofus.eth','button').click()
+        if not profile_1.privacy_and_security_button.is_element_displayed():
+                self.errors.append('Was not redirected to own profile after tapping on mention of myself from another user!')
+
         home_2.just_fyi('check that ENS name is shown in 1-1 chat without adding user as contact in header, profile, options')
-        chat_2.get_back_to_home_view()
-        chat_2_one_to_one = home_2.add_contact(ens_user['public_key'], False)
+        chat_2_one_to_one = chat_2.profile_send_message.click()
         if chat_2_one_to_one.user_name_text.text != ens_name:
             self.errors.append('ENS username is not shown in 1-1 chat header')
         chat_2_one_to_one.chat_options.click()

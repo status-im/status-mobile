@@ -245,7 +245,8 @@
     (when (and (seq suggestions) @chat-input-height)
       (let [height (+ 16 (* 52 (min 4.5 (count suggestions))))]
         [rn/view
-         {:style (styles/autocomplete-container @chat-input-height)}
+         {:style               (styles/autocomplete-container @chat-input-height)
+          :accessibility-label :suggestions-list}
          [rn/view
           {:style {:height height}}
           [list/flat-list

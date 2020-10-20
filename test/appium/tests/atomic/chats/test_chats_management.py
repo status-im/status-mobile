@@ -400,8 +400,8 @@ class TestChatManagement(SingleDeviceTestCase):
 
         home.just_fyi('Can search for public chat while offline')
         home.toggle_airplane_mode()
-        home.search_chat_input.click()
-        home.search_chat_input.send_keys(chat_name)
+        home.search_input.click()
+        home.search_input.send_keys(chat_name)
         search_results = home.chat_name_text.find_elements()
         if not search_results:
             self.errors.append('No search results after searching by %s keyword' % chat_name)
@@ -532,27 +532,35 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5332)
     @marks.critical
-    def test_add_and_remove_contact_with_nickname_from_public_chat(self):
+    def test_add_and_remove_mention_contact_with_nickname_from_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
         home_1, home_2 = device_1.create_user(), device_2.create_user()
+        public_key_2, username_2 = home_2.get_public_key_and_username(return_username=True)
+        home_2.get_back_to_home_view()
         chat_name = 'testaddcontact'
 
         device_1.just_fyi('join same public chat')
         chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
         message = 'test message' + str(round(time.time()))
+        chat_2.send_message(message)
 
-        chat_2.chat_message_input.send_keys(message)
-        chat_2.send_message_button.click()
+        home_2.just_fyi('check that can mention user with 3-random name in public chat')
+        chat_1.select_mention_from_suggestion_list(username_2, typed_search_pattern=username_2[0:4])
+        if chat_1.chat_message_input.text != '@' + username_2 + ' ':
+            self.errors.append('3-random username is not resolved in chat input after selecting it in mention suggestions list!')
+        chat_1.send_message_button.click()
+        chat_1.chat_element_by_text(username_2).click()
+        chat_1.profile_add_to_contacts.wait_for_visibility_of_element(20)
+        chat_1.back_button.click()
         chat_2.driver.quit()
 
         device_1.just_fyi('Tap on userpic and check redirect to user profile')
         chat_element = chat_1.chat_element_by_text(message)
         chat_element.find_element()
-        username = chat_element.username.text
         chat_element.member_photo.click()
         for element in [chat_1.contact_profile_picture,
-                        chat_1.element_by_text(username, 'text'),
+                        chat_1.element_by_text(username_2, 'text'),
                         chat_1.add_to_contacts,
                         chat_1.profile_send_message,
                         chat_1.profile_address_text,
@@ -566,16 +574,33 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         nickname = 'Name1'
         chat_1.set_nickname(nickname)
         chat_1.back_button.click()
-        expected_username = '%s %s' % (nickname, username)
+        expected_username = '%s %s' % (nickname, username_2)
         if chat_element.username.text != expected_username:
             self.errors.append('Username %s in public chat does not match expected %s' % (chat_element.username.text, expected_username))
 
-        device_1.just_fyi('Add user to contacts, check contact list in Profile')
+        device_1.just_fyi('Add user to contacts, mention it by nickname check contact list in Profile')
         chat_element.member_photo.click()
         chat_1.add_to_contacts.click()
         if not chat_1.remove_from_contacts.is_element_displayed():
              self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
+        chat_1.back_button.click()
+
+        home_2.just_fyi('check that can mention user with nickname in public chat')
+        chat_1.select_mention_from_suggestion_list(username_in_list=nickname + ' ' +username_2,
+                                                   typed_search_pattern=nickname[0:2])
+        if chat_1.chat_message_input.text != '@' + username_2 + ' ':
+            self.errors.append('3-random username is not resolved in chat input after selecting it in mention '
+                               'suggestions list by nickname!')
+        additional_text = 'and more'
+        chat_1.send_as_keyevent(additional_text)
+        chat_1.send_message_button.click()
+        chat_1.chat_element_by_text('%s %s' % (nickname, additional_text)).click()
+        for element in (chat_1.element_by_text(username_2), chat_1.remove_from_contacts):
+            if not element.is_element_displayed():
+                self.errors.append('Was not redirected to user profile after tapping on mention by nickname!')
         chat_1.get_back_to_home_view()
+
+        device_1.just_fyi('check contact list in Profile after setting nickname')
         profile_1 = chat_1.profile_button.click()
         userprofile = profile_1.open_contact_from_profile(nickname)
         if not userprofile.remove_from_contacts.is_element_displayed():
@@ -585,10 +610,10 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.just_fyi('Check that user is added to contacts below "Start new chat" and you redirected to 1-1 on tap')
         home_1.plus_button.click()
         home_1.start_new_chat_button.click()
-        for name in (nickname, username):
+        for name in (nickname, username_2):
             if not home_1.element_by_text(name).is_element_displayed():
                 home_1.driver.fail('List of contacts below "Start new chat" does not contain added user')
-        home_1.element_by_text(username).click()
+        home_1.element_by_text(username_2).click()
         if not chat_1.chat_message_input.is_element_displayed():
             home_1.driver.fail('No redirect to 1-1 chat if tap on Contact below "Start new chat"')
         for element in (chat_1.chat_message_input, chat_1.element_by_text(nickname)):
@@ -599,7 +624,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         device_1.just_fyi('Remove user from contacts')
         chat_1.profile_button.click()
-        userprofile = profile_1.open_contact_from_profile(username)
+        userprofile = profile_1.open_contact_from_profile(username_2)
         userprofile.remove_from_contacts.click()
         if userprofile.remove_from_contacts.is_element_displayed():
             self.errors.append("'Remove from contacts' is not changed to 'Add to contacts'")
@@ -608,7 +633,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         device_1.just_fyi('Check that user is removed from contact list in profile')
         userprofile.back_button.click()
-        if profile_1.element_by_text(username).is_element_displayed():
+        if profile_1.element_by_text(username_2).is_element_displayed():
             self.errors.append('List of contacts in profile contains removed user')
         profile_1.home_button.click()
         if not chat_1.add_to_contacts.is_element_displayed():

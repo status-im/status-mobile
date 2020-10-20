@@ -354,11 +354,8 @@ class ProfileSendMessageButton(BaseButton):
         super(ProfileSendMessageButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('start-conversation-button')
 
-
-class ProfileSendTransactionButton(BaseButton):
-    def __init__(self, driver):
-        super(ProfileSendTransactionButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('send-transaction-button')
+    def navigate(self):
+        return ChatView(self.driver)
 
 
 class ProfileBlockContactButton(BaseButton):
@@ -401,7 +398,7 @@ class MakeAdminButton(BaseButton):
         self.locator = self.Locator.accessibility_id('make-admin')
 
 
-class ChatElementByText(BaseText):
+class ChatElementByText(BaseElement):
     def __init__(self, driver, text):
         super(ChatElementByText, self).__init__(driver)
         self.message_text = text
@@ -600,7 +597,6 @@ class StikerMessageItem(BaseElement):
         self.locator = self.Locator.accessibility_id('sticker-message')
 
 
-
 class ImageChatItem(BaseElement):
     def __init__(self, driver):
         super().__init__(driver)
@@ -656,6 +652,7 @@ class DoneButton(BaseButton):
         super(DoneButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id("done")
 
+
 class GroupChatInfoView(BaseView):
     def __init__(self, driver):
         super(GroupChatInfoView, self).__init__(driver)
@@ -699,6 +696,7 @@ class PlayPauseAudioMessageButton(BaseButton):
     def __init__(self, driver):
         super(PlayPauseAudioMessageButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id("play-pause-audio-message-button")
+
 
 class AudioMessageInChatTimer(BaseText):
     def __init__(self, driver):
@@ -801,7 +799,6 @@ class ChatView(BaseView):
         # Contact's profile
         self.contact_profile_picture = ProfilePictureElement(self.driver)
         self.profile_send_message = ProfileSendMessageButton(self.driver)
-        self.profile_send_transaction = ProfileSendTransactionButton(self.driver)
         self.profile_address_text = ProfileAddressText(self.driver)
         self.profile_block_contact = ProfileBlockContactButton(self.driver)
         self.profile_add_to_contacts = ProfileAddToContactsButton(self.driver)
@@ -939,6 +936,18 @@ class ChatView(BaseView):
         element.scroll_to_element()
         element.click()
         element.wait_for_invisibility_of_element()
+
+    def search_user_in_mention_suggestion_list(self, username):
+        element = BaseButton(self.driver)
+        element.locator = element.Locator.xpath_selector(
+            "//*[@content-desc='suggestions-list']//*[@text='%s']" % username)
+        element.wait_for_visibility_of_element(10)
+        return element
+
+    def select_mention_from_suggestion_list(self, username_in_list, typed_search_pattern = ''):
+        self.chat_message_input.set_value('@' + typed_search_pattern)
+        self.chat_message_input.click()
+        self.search_user_in_mention_suggestion_list(username_in_list).click()
 
     def record_audio_message(self, message_length_in_seconds=5):
         self.audio_message_button.click()

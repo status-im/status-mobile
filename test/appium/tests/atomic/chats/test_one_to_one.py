@@ -373,7 +373,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2.home_button.click()
         home_2.get_chat(default_username_1).click()
         chat_2.play_audio_message(listen_time)
-        if chat_2.audio_message_in_chat_timer.text not in ("00:05", "00:06", "00:07"):
+        if chat_2.audio_message_in_chat_timer.text not in ("00:05", "00:06", "00:07", "00:08"):
             self.errors.append("Listened 5 seconds but timer shows different listened time in audio message")
 
         self.errors.verify_no_errors()

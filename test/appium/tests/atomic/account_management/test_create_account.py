@@ -60,7 +60,7 @@ class TestCreateAccount(SingleDeviceTestCase):
                 self.errors.append("'%s' text is not shown" % text)
         for chat in ('#status', '#crypto'):
             sign_in.element_by_text(chat).click()
-            sign_in.back_button.click_until_presence_of_element(home_view.search_chat_input)
+            sign_in.back_button.click_until_presence_of_element(home_view.search_input)
         profile_view = home_view.profile_button.click()
         shown_username = profile_view.default_username_text.text
         if shown_username != username:
