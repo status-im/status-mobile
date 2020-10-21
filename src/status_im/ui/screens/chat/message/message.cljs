@@ -63,7 +63,8 @@
 
     "code"
     (conj acc [quo/text {:max-font-size-multiplier react/max-font-size-multiplier
-                         :style                    (style/inline-code-style)}
+                         :style                    (style/inline-code-style)
+                         :monospace                true}
                literal])
 
     "emph"
@@ -71,6 +72,12 @@
 
     "strong"
     (conj acc [react/text-class (style/strong-style outgoing) literal])
+
+    "strong-emph"
+    (conj acc [quo/text (style/strong-emph-style outgoing) literal])
+
+    "del"
+    (conj acc [react/text-class (style/strikethrough-style outgoing) literal])
 
     "link"
     (conj acc
@@ -124,7 +131,8 @@
     "codeblock"
     (conj acc [react/view {:style style/codeblock-style}
                [quo/text {:max-font-size-multiplier react/max-font-size-multiplier
-                          :style                    style/codeblock-text-style}
+                          :style                    style/codeblock-text-style
+                          :monospace                true}
                 (.substring literal 0 (dec (.-length literal)))]])
 
     acc))

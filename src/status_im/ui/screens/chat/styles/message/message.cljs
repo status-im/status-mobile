@@ -245,6 +245,16 @@
     (outgoing-strong-text-style)
     (strong-text-style)))
 
+(defn strong-emph-style [outgoing]
+  (update (strong-style outgoing) :style
+          assoc :font-style :italic))
+
+(defn strikethrough-style [outgoing]
+  (cond-> (update (default-text-style) :style
+                  assoc :text-decoration-line :line-through)
+    outgoing
+    (update :style assoc :color colors/white-persist)))
+
 (def code-block-background "#2E386B")
 
 (defn inline-code-style []
