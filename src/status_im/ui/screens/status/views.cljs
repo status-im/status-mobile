@@ -13,6 +13,7 @@
             [status-im.ui.screens.status.styles :as styles]
             [status-im.ui.screens.chat.views :as chat.views]
             [status-im.ui.components.plus-button :as components.plus-button]
+            [status-im.ui.screens.chat.image.preview.views :as preview]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.components.tabs :as tabs]
             [status-im.utils.contenthash :as contenthash]
@@ -53,13 +54,19 @@
                        :justify-content  :center}
            [icons/icon :main-icons/close-circle {:color colors/white-persist}]]])])))
 
-(defn image-message [{:keys [content] :as message}]
-  [react/touchable-highlight {:on-press (fn [_]
-                                          (when (:image content)
-                                            (re-frame/dispatch [:navigate-to :image-preview
-                                                                (assoc message :cant-be-replied true)]))
-                                          (react/dismiss-keyboard!))}
-   [message-content-image (:image content) false]])
+(defn image-message []
+  (let [visible (reagent/atom false)]
+    (fn [{:keys [content] :as message}]
+      [:<>
+       [preview/preview-image {:message   (assoc message :cant-be-replied true)
+                               :visible   @visible
+                               :can-reply false
+                               :on-close  #(do (reset! visible false)
+                                               (reagent/flush))}]
+       [react/touchable-highlight {:on-press (fn [_]
+                                               (reset! visible true)
+                                               (react/dismiss-keyboard!))}
+        [message-content-image (:image content) false]]])))
 
 (defn message-item [{:keys [content-type content from last-in-group? timestamp identicon outgoing] :as message} timeline? account]
   [react/view (when last-in-group?

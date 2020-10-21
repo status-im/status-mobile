@@ -121,7 +121,7 @@
     {:font-scale (.-fontScale window)
      :height     (.-height ^js window)
      :scale      (.-scale ^js window)
-     :width      (.-window ^js window)}))
+     :width      (.-width ^js window)}))
 
 (def use-back-handler (.-useBackHandler hooks))
 

@@ -6613,6 +6613,10 @@ react-native-image-resizer@^1.2.3:
   resolved "https://registry.yarnpkg.com/react-native-image-resizer/-/react-native-image-resizer-1.2.3.tgz#21cb2b158ff950e55a0fc01c2cb61375bd5a03ba"
   integrity sha512-RDPNJglRmWDZ/7hvu+CbpsKYl6AQmseL8cWX4UkLAHxQWNc5ZdYhP/9avC5xCfyiwkRw+Zmkmv78HO0kt0ewhQ==
 
+"react-native-image-viewing@git+https://github.com/Ferossgp/react-native-image-viewing.git#v0.2.1":
+  version "0.2.1"
+  resolved "git+https://github.com/Ferossgp/react-native-image-viewing.git#8ef67cdce7b7c66065a939847e45db71347c678e"
+
 react-native-iphone-x-helper@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.2.1.tgz#645e2ffbbb49e80844bb4cbbe34a126fda1e6772"

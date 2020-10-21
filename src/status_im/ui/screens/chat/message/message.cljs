@@ -15,6 +15,7 @@
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.security :as security]
             [status-im.ui.screens.chat.message.reactions :as reactions]
+            [status-im.ui.screens.chat.image.preview.views :as preview]
             [quo.core :as quo]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.components.reply :as components.reply]
@@ -226,6 +227,7 @@
 
 (defn message-content-image [{:keys [content outgoing] :as message} {:keys [on-long-press]}]
   (let [dimensions (reagent/atom [260 260])
+        visible    (reagent/atom false)
         uri        (:image content)]
     (react/image-get-size
      uri
@@ -236,17 +238,21 @@
             style-opts {:outgoing outgoing
                         :width    (/ (first @dimensions) k)
                         :height   (/ (second @dimensions) k)}]
-        [react/touchable-highlight {:on-press      (fn []
-                                                     (when (:image content)
-                                                       (re-frame/dispatch [:navigate-to :image-preview message]))
-                                                     (react/dismiss-keyboard!))
-                                    :on-long-press on-long-press}
-         [react/view {:style (style/image-message style-opts)}
-          [react/image {:style       {:width  (/ (first @dimensions) k)
-                                      :height (/ (second @dimensions) k)}
-                        :resize-mode :contain
-                        :source      {:uri uri}}]
-          [react/view {:style (style/image-message-border style-opts)}]]]))))
+        [:<>
+         [preview/preview-image {:message  message
+                                 :visible  @visible
+                                 :on-close #(do (reset! visible false)
+                                                (reagent/flush))}]
+         [react/touchable-highlight {:on-press      (fn []
+                                                      (reset! visible true)
+                                                      (react/dismiss-keyboard!))
+                                     :on-long-press on-long-press}
+          [react/view {:style (style/image-message style-opts)}
+           [react/image {:style       {:width  (/ (first @dimensions) k)
+                                       :height (/ (second @dimensions) k)}
+                         :resize-mode :contain
+                         :source      {:uri uri}}]
+           [react/view {:style (style/image-message-border style-opts)}]]]]))))
 
 (defmulti ->message :content-type)
 

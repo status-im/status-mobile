@@ -21,7 +21,6 @@
             [status-im.utils.platform :as platform]
             [quo.previews.main :as quo.preview]
             [status-im.utils.config :as config]
-            [status-im.ui.screens.chat.image.preview.views :as image-preview]
             [status-im.ui.screens.profile.contact.views :as contact]
             [status-im.ui.screens.notifications-settings.views :as notifications-settings]
             [status-im.ui.screens.wallet.send.views :as wallet]
@@ -122,9 +121,6 @@
        {:name      :qr-scanner
         :insets    {:top false :bottom false}
         :component qr-scanner/qr-scanner}
-       {:name      :image-preview
-        :insets    {:top false :bottom false}
-        :component image-preview/preview-image}
        {:name         :notifications-settings
         :back-handler :noop
         :insets       {:bottom true}
