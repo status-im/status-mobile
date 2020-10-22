@@ -3,8 +3,8 @@ import string
 
 from support.utilities import get_merged_txs_list
 from tests import marks, unique_password
-from tests.base_test_case import SingleDeviceTestCase
-from tests.users import transaction_senders, basic_user, wallet_users, ens_user_ropsten
+from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
+from tests.users import transaction_senders, basic_user, wallet_users, ens_user_ropsten, transaction_recipients
 from views.send_transaction_view import SendTransactionView
 from views.sign_in_view import SignInView
 
@@ -672,3 +672,49 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             self.errors.append(warning % (errors['sending_screen']['Network fee'],screen))
         self.errors.verify_no_errors()
 
+
+class TestTransactionWalletMultipleDevice(MultipleDeviceTestCase):
+
+    @marks.testrail_id(6330)
+    @marks.medium
+    def test_can_send_all_tokens_via_max_option(self):
+        sender = transaction_senders['V']
+        receiver = transaction_recipients['K']
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+
+        device_1_home, device_2_home = device_1.recover_access(sender['passphrase']), \
+                                       device_2.recover_access(receiver['passphrase'])
+
+        wallet_view_serder = device_1_home.wallet_button.click()
+        wallet_view_serder.set_up_wallet()
+        wallet_view_receiver = device_2_home.wallet_button.click()
+        wallet_view_receiver.set_up_wallet()
+
+        if wallet_view_receiver.asset_by_name('STT').is_element_present(10):
+            initial_balance = wallet_view_receiver.get_asset_amount_by_name("STT")
+        else:
+            initial_balance = '0'
+
+        device_1.just_fyi("Sending token amount to device who will use Set Max option for token")
+        amount = '0.012345678912345678'
+        wallet_view_serder.accounts_status_account.click()
+        wallet_view_serder.send_transaction(asset_name='STT', amount=amount, recipient=receiver['address'], default_gas_price=False)
+        wallet_view_receiver.wait_balance_is_changed(asset='STT', initial_balance=initial_balance, scan_tokens=True)
+        wallet_view_receiver.accounts_status_account.click()
+
+        device_1.just_fyi("Send all tokens via Set Max option")
+        send_transaction_view = wallet_view_receiver.send_transaction_button.click()
+        send_transaction_view.select_asset_button.click()
+        asset_name = 'STT'
+        asset_button = send_transaction_view.asset_by_name(asset_name)
+        send_transaction_view.select_asset_button.click_until_presence_of_element(
+            send_transaction_view.eth_asset_in_select_asset_bottom_sheet_button)
+        asset_button.click()
+        send_transaction_view.set_max_button.click()
+        send_transaction_view.set_recipient_address(sender['address'])
+        send_transaction_view.sign_transaction_button.click()
+        send_transaction_view.sign_transaction(default_gas_price=False)
+        wallet_view_receiver.back_button.click()
+        initial_balance = float(initial_balance) + float(amount)
+        wallet_view_receiver.wait_balance_is_changed(asset='STT', initial_balance=str(initial_balance), scan_tokens=True)

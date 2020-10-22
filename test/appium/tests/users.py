@@ -341,6 +341,15 @@ transaction_recipients['J']['username'] = "Seashell Amazing Gemsbuck"
 transaction_recipients['J']['address'] = "0xa03a75b7888cac24b35b4d1f5924406f3b491795"
 transaction_recipients['J']['public_key'] = "0x04e7e481932714c1a13ffb29fc79446ee9f30d27b4dec47af9dcd20c68a771c2520a0e" \
                                             "7a80804ff59a750693492a65be9682d0b850b4080d976cf9e43ff37ec841"
+
+transaction_recipients['K'] = dict()
+transaction_recipients['K']['passphrase'] = "core orphan clerk involve trade admit exhibit valid short canvas disorder world"
+transaction_recipients['K']['username'] = "Upright Authorized Waterstrider"
+transaction_recipients['K']['address'] = "0x6a1aC3a7a5A064FF6E0f169E0d384703245556b4"
+transaction_recipients['K']['public_key'] = "0x04d1c98a6e25a7ea0241349a41709c5dc51c7c1d59224076d13d1ebe16671eedc8f" \
+                                            "3b23ab95db679a9124752ed77339424034fd9a12f0184894c0d7a25710d2f3c"
+
+
 recovery_users = {
     "radar blur cabbage chef fix engine embark joy scheme fiction master release":
         "0xaC39b311DCEb2A4b2f5d8461c1cdaF756F4F7Ae9",

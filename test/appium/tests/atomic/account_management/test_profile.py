@@ -661,7 +661,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         mailserver = mailserver_1 if profile_view.element_by_text(mailserver_2).is_element_present() else mailserver_2
         profile_view.mail_server_button.click()
         profile_view.mail_server_auto_selection_button.click()
-        profile_view.element_by_text(mailserver).click()
+        profile_view.mail_server_by_name(mailserver).click()
         profile_view.confirm_button.click()
 
         profile_view.just_fyi('check that mailserver is pinned')
@@ -670,17 +670,12 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append('"%s" mailserver is not pinned' % mailserver)
         profile_view.get_back_to_home_view()
 
-        profile_view.just_fyi('relogin and check that settings are preserved')
+        profile_view.just_fyi('Relogin and check that settings are preserved')
         home_view.relogin()
         home_view.profile_button.click()
         profile_view.sync_settings_button.click()
         if not profile_view.element_by_text(mailserver).is_element_displayed():
             self.errors.append('"%s" mailserver is not pinned' % mailserver)
-        profile_view.mail_server_button.click()
-        profile_view.mail_server_auto_selection_button.click()
-        profile_view.element_by_text(mailserver).click()
-        if profile_view.confirm_button.is_element_displayed():
-            self.errors.append('can select mailserver with "Autoselection" switched on')
 
         self.errors.verify_no_errors()
 
@@ -791,7 +786,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         # TODO: temporary pin mailserver to avoid issue 9269 - should be disabled after fix
         mailserver = mailserver_1 if profile_1.element_by_text(mailserver_2).is_element_present() else mailserver_2
         profile_1.mail_server_auto_selection_button.click()
-        profile_1.element_by_text(mailserver).click()
+        profile_1.mail_server_by_name(mailserver).click()
         profile_1.confirm_button.click()
         profile_1.just_fyi('add custom mailserver (check address/name validation) and connect to it')
         profile_1.plus_button.click()

@@ -404,7 +404,8 @@ class MailServerAddressInput(BaseEditBox):
 class MailServerAutoSelectionButton(BaseButton):
     def __init__(self, driver):
         super(MailServerAutoSelectionButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("checkbox")
+        self.locator = self.Locator.xpath_selector("//*[@text='Automatic selection']/following-sibling::*[1]")
+
 
 
 class MailServerElement(BaseButton):
@@ -415,8 +416,10 @@ class MailServerElement(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@content-desc='mailserver-item']//*[@text='%s']" % server_name)
 
     def click(self):
-        self.scroll_to_element().click()
+        size = self.driver.get_window_size()
+        self.driver.swipe(500, size["height"]*0.8, 500, size["height"]*0.05)
         self.driver.info('Tap on "%s" mailserver value' % self.server_name)
+        self.find_element().click()
 
 
 class MailServerConnectButton(BaseButton):

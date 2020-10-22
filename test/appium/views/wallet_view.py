@@ -484,7 +484,7 @@ class WalletView(BaseView):
                 self.driver.info('Balance for %s is equal to %s' % (asset, expected_balance))
                 return
 
-    def wait_balance_is_changed(self, asset ='ETH', initial_balance=0, wait_time=300):
+    def wait_balance_is_changed(self, asset ='ETH', initial_balance=0, wait_time=300, scan_tokens=False):
         counter = 0
         while True:
             if counter >= wait_time:
@@ -497,6 +497,8 @@ class WalletView(BaseView):
             elif not self.asset_by_name(asset).is_element_present(10):
                 counter += 10
                 time.sleep(10)
+                if scan_tokens:
+                    self.scan_tokens()
                 self.swipe_down()
                 self.driver.info('Waiting %s seconds for %s to display asset' % (counter, asset))
             else:
