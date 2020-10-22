@@ -46,7 +46,7 @@
            (callback addr)))))))
 
 (defn get-cached-registrar [chain]
-  (get @registrars-cache chain))
+  (get @registrars-cache chain (get old-registrars chain)))
 
 (defn lower-case? [s]
   (when s

@@ -16,7 +16,8 @@
             [status-im.utils.config :as config]
             [status-im.utils.gfycat.core :as gfy]
             [status-im.utils.universal-links.utils :as universal-links]
-            [status-im.ui.components.profile-header.view :as profile-header])
+            [status-im.ui.components.profile-header.view :as profile-header]
+            [status-im.ethereum.stateofus :as stateofus])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview share-chat-key []
@@ -71,7 +72,8 @@
         @(re-frame/subscribe [:multiaccount])
         active-contacts-count @(re-frame/subscribe [:contacts/active-count])
         tribute-to-talk       @(re-frame/subscribe [:tribute-to-talk/profile])
-        registrar             @(re-frame/subscribe [:ens.stateofus/registrar])]
+        chain                 @(re-frame/subscribe [:current-network])
+        registrar             (stateofus/get-cached-registrar chain)]
     [:<>
      [quo/list-item
       (cond-> {:title                (or (when registrar preferred-name)
