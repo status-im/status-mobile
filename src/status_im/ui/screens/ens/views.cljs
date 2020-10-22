@@ -279,7 +279,7 @@
   (let  [checked? (reagent/atom false)]
     (fn []
       (let [{:keys [username address custom-domain? public-key
-                    network amount-label sufficient-funds?]}
+                    chain amount-label sufficient-funds?]}
             @(re-frame/subscribe [:ens/checkout-screen])]
         [react/keyboard-avoiding-view {:flex 1}
          [toolbar]
@@ -306,7 +306,7 @@
                                  :typography :main-medium}}
              (domain-label custom-domain?)]
             [react/view {:flex 1 :min-width 24}]]]
-          [registration checked? (stateofus/get-cached-registrar network) address public-key]]
+          [registration checked? (stateofus/get-cached-registrar chain) address public-key]]
          [toolbar/toolbar
           {:show-border? true
            :size         :large

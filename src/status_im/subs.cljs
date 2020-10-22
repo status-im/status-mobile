@@ -290,6 +290,12 @@
             :rpc-network? (get-in network [:config :UpstreamConfig :Enabled])))))
 
 (re-frame/reg-sub
+ :chain-keyword
+ :<- [:current-network]
+ (fn [network]
+   (ethereum/network->chain-keyword network)))
+
+(re-frame/reg-sub
  :chain-name
  :<- [:current-network]
  (fn [network]
@@ -2107,18 +2113,18 @@
 (re-frame/reg-sub
  :ens/checkout-screen
  :<- [:ens/registration]
- :<- [:current-network]
+ :<- [:chain-keyword]
  :<- [:multiaccount/default-account]
  :<- [:multiaccount/public-key]
  :<- [:chain-id]
  :<- [:balance-default]
  (fn [[{:keys [custom-domain? username]}
-       network default-account public-key chain-id balance]]
+       chain default-account public-key chain-id balance]]
    {:address           (ethereum/normalized-hex (:address default-account))
     :username          username
     :public-key        public-key
     :custom-domain?    custom-domain?
-    :network           network
+    :chain             chain
     :amount-label      (ens-amount-label chain-id)
     :sufficient-funds? (money/sufficient-funds?
                         (money/formatted->internal (money/bignumber 10) :SNT 18)

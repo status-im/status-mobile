@@ -1112,9 +1112,11 @@
 (fx/defn delete
   [{:keys [db] :as cofx} id]
   (if (can-delete? db id)
-    {:db (update-in db
-                    [:mailserver/mailservers (node/current-fleet-key db)]
-                    dissoc id)
+    {:db (-> db
+             (update-in
+              [:mailserver/mailservers (node/current-fleet-key db)]
+              dissoc id)
+             (dissoc :mailserver.edit/mailserver))
      ::json-rpc/call
      [{:method "mailservers_deleteMailserver"
        :params [(name id)]

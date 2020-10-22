@@ -72,7 +72,7 @@
         @(re-frame/subscribe [:multiaccount])
         active-contacts-count @(re-frame/subscribe [:contacts/active-count])
         tribute-to-talk       @(re-frame/subscribe [:tribute-to-talk/profile])
-        chain                 @(re-frame/subscribe [:current-network])
+        chain                 @(re-frame/subscribe [:chain-keyword])
         registrar             (stateofus/get-cached-registrar chain)]
     [:<>
      [quo/list-item
