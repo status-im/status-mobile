@@ -17,7 +17,7 @@
    {:testnet "0xf852198d0385c4b871e0b91804ecd47c6ba97351"
     :mainnet "0x110101156e8F0743948B2A61aFcf3994A8Fb172e"}
    :status/acquisition
-   {:rinkeby "0xf8Ea093cE1441ad51EDD4C0FD15410b457e88906"
+   {:rinkeby "statusreferrals.eth"
     :mainnet "statusreferrals.eth"}})
 
 (defn get-address
