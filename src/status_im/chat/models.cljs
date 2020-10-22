@@ -15,7 +15,8 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
             [status-im.chat.models.loading :as loading]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [status-im.ui.screens.add-new.new-public-chat.db :as new-public-chat.db]))
 
 (defn chats []
   (:chats (types/json->clj (js/require "./chats.js"))))
@@ -262,14 +263,17 @@
 (fx/defn start-public-chat
   "Starts a new public chat"
   [cofx topic {:keys [dont-navigate?]}]
-  (if (active-chat? cofx topic)
-    (when-not dont-navigate?
-      (navigate-to-chat cofx topic))
-    (fx/merge cofx
-              (add-public-chat topic)
-              (transport.filters/load-chat topic)
-              #(when-not dont-navigate?
-                 (navigate-to-chat % topic)))))
+  (if (new-public-chat.db/valid-topic? topic)
+    (if (active-chat? cofx topic)
+      (when-not dont-navigate?
+        (navigate-to-chat cofx topic))
+      (fx/merge cofx
+                (add-public-chat topic)
+                (transport.filters/load-chat topic)
+                #(when-not dont-navigate?
+                   (navigate-to-chat % topic))))
+    {:utils/show-popup {:title   (i18n/label :t/cant-open-public-chat)
+                        :content (i18n/label :t/invalid-public-chat-topic)}}))
 
 (fx/defn disable-chat-cooldown
   "Turns off chat cooldown (protection against message spamming)"

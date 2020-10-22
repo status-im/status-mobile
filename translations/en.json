@@ -1280,5 +1280,7 @@
     "name-optional": "Name (optional)",
     "mute": "Mute",
     "scan-tokens": "Scan tokens",
-    "warning-sending-to-contract-descr": "The address you entered is a smart contract, sending funds to this address may result in loss of funds. To interact with a DApp, open the DApp in the Status DApp Browser."
+    "warning-sending-to-contract-descr": "The address you entered is a smart contract, sending funds to this address may result in loss of funds. To interact with a DApp, open the DApp in the Status DApp Browser.",
+    "cant-open-public-chat": "Can't open public chat",
+    "invalid-public-chat-topic": "Invalid public chat topic"
 }
