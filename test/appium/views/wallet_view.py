@@ -198,10 +198,10 @@ class CollectiblesButton(BaseButton):
         self.locator = self.Locator.text_selector('Collectibles')
 
 
-class CryptoKittiesInCollectiblesButton(BaseButton):
-    def __init__(self, driver):
-        super(CryptoKittiesInCollectiblesButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('CryptoKitties')
+class NumberInCollectiblesButton(BaseButton):
+    def __init__(self, driver, name):
+        super(NumberInCollectiblesButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="%s"]//following-sibling::android.widget.TextView' % name)
 
 
 class ViewInCryptoKittiesButton(BaseButton):
@@ -422,7 +422,7 @@ class WalletView(BaseView):
         self.multiaccount_more_options = MultiaccountMoreOptions(self.driver)
         self.accounts_status_account = AccountElementButton(self.driver, account_name="Status account")
         self.collectibles_button = CollectiblesButton(self.driver)
-        self.cryptokitties_in_collectibles_button = CryptoKittiesInCollectiblesButton(self.driver)
+        self.cryptokitties_in_collectibles_number = NumberInCollectiblesButton(self.driver, 'CryptoKitties')
         self.view_in_cryptokitties_button = ViewInCryptoKittiesButton(self.driver)
         self.set_currency_button = SetCurrencyButton(self.driver)
         self.add_account_button = AddAccountButton(self.driver)

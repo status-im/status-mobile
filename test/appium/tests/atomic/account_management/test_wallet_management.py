@@ -216,11 +216,9 @@ class TestWalletManagement(SingleDeviceTestCase):
         if not wallet_view.element_by_text('1').is_element_displayed():
             self.driver.fail('User collectibles amount does not match')
 
-    # TODO: redo to open with Opensea
     @marks.testrail_id(5346)
     @marks.high
-    @marks.skip
-    def test_collectible_from_wallet_opens_in_browser_view(self):
+    def test_collectible_from_wallet(self):
         passphrase = wallet_users['F']['passphrase']
         signin_view = SignInView(self.driver)
         home_view = signin_view.recover_access(passphrase=passphrase)
@@ -228,14 +226,20 @@ class TestWalletManagement(SingleDeviceTestCase):
         profile.switch_network()
         wallet_view = profile.wallet_button.click()
         wallet_view.set_up_wallet()
+        wallet_view.scan_tokens()
         wallet_view.accounts_status_account.click()
         wallet_view.collectibles_button.click()
-        wallet_view.cryptokitties_in_collectibles_button.wait_and_click(60)
-        web_view = wallet_view.view_in_cryptokitties_button.click()
-        web_view.element_by_text('cryptokitties.co').wait_and_click()
-        cryptokitty_link = 'https://www.cryptokitties.co/kitty/1338226'
-        if not web_view.element_by_text(cryptokitty_link).is_element_displayed(60):
-            self.driver.fail('Cryptokitty detail page not opened')
+
+        wallet_view.just_fyi('Check collectibles amount in wallet')
+        wallet_view.cryptokitties_in_collectibles_number.wait_for_visibility_of_element(30)
+        if wallet_view.cryptokitties_in_collectibles_number.text != '1':
+            self.errors.append('Wrong number is shown on CK assets: %s' % wallet_view.cryptokitties_in_collectibles_number.text)
+
+        wallet_view.just_fyi('Check "Open in OpenSea"')
+        wallet_view.element_by_text('Check on opensea').click()
+        if not wallet_view.allow_button.is_element_displayed(20):
+            self.errors.append('OpenSea app is not opened when navigating from wallet')
+        self.errors.verify_no_errors()
 
 
     @marks.testrail_id(6224)
