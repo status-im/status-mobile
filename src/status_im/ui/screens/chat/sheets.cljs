@@ -8,6 +8,8 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.chat.styles.message.sheets :as sheets.styles]
+            [status-im.ui.components.permissions :as permissions]
+            [quo.platform :as platform]
             [quo.core :as quo]))
 
 (defn hide-sheet-and-dispatch [event]
@@ -219,3 +221,18 @@
          :on-press (fn []
                      (re-frame/dispatch [:bottom-sheet/hide])
                      (list-selection/open-share {:message (:image content)}))}]]))
+
+(defn image-permissions [scope]
+  (fn []
+    [:<>
+     (when (and platform/ios? scope)
+       [quo/list-item
+        {:theme    :accent
+         :on-press #(permissions/request-permissions {:permission [:photo-library]})
+         :title    (i18n/label :t/permissions-more-photos)
+         :icon     :main-icons/gallery}])
+     [quo/list-item
+      {:theme    :accent
+       :title    (i18n/label :t/permissions-settings)
+       :icon     :main-icons/settings
+       :on-press react/open-settings}]]))

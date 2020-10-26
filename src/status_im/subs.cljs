@@ -27,6 +27,7 @@
             #_[status-im.tribute-to-talk.core :as tribute-to-talk]
             [status-im.tribute-to-talk.db :as tribute-to-talk.db]
             [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.permissions :as permissions]
             [status-im.ui.screens.add-new.new-public-chat.db :as db]
             [status-im.ui.screens.mobile-network-settings.utils
              :as
@@ -90,6 +91,7 @@
 (reg-root-key-sub :app-active-since :app-active-since)
 (reg-root-key-sub :connectivity/ui-status-properties :connectivity/ui-status-properties)
 (reg-root-key-sub :logged-in-since :logged-in-since)
+(reg-root-key-sub :app/permissions :app/permissions)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network
@@ -2509,3 +2511,10 @@
  :<- [:multiaccount]
  (fn [multiaccount]
    (pos? (count (get multiaccount :images)))))
+
+
+(re-frame/reg-sub
+ :permission/all-granted?
+ :<- [:app/permissions]
+ (fn [app-permissions permissions]
+   (permissions/check-granted app-permissions permissions)))

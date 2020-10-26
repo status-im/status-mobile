@@ -7,10 +7,18 @@
             [reagent.core :as reagent]
             [quo.components.animated.pressable :as pressable]
             [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
             [quo.design-system.colors :as colors]
-            [quo.core :as quo]
+            [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.utils.utils :as utils]
-            [status-im.i18n :as i18n]))
+            [quo.core :as quo]))
+
+(def camera-roll-permissions [:read-external-storage :write-external-storage :photo-library])
+
+(defn grant-permissions []
+  (permissions/request-permissions
+   {:permissions camera-roll-permissions
+    :on-denied   react/open-settings}))
 
 (defn take-picture []
   (permissions/request-permissions
@@ -24,7 +32,7 @@
 
 (defn show-image-picker []
   (permissions/request-permissions
-   {:permissions [:read-external-storage :write-external-storage]
+   {:permissions [:read-external-storage :write-external-storage :photo-library]
     :on-allowed  #(re-frame/dispatch [:chat.ui/open-image-picker])
     :on-denied   (fn []
                    (utils/set-timeout
@@ -32,7 +40,12 @@
                                        (i18n/label :t/external-storage-denied))
                     50))}))
 
-(defn buttons []
+(defn get-camera-roll []
+  (permissions/request-permissions
+   {:permissions camera-roll-permissions
+    :on-allowed  #(re-frame/dispatch [:chat.ui/camera-roll-get-photos 20])}))
+
+(defn buttons [granted-scope]
   [react/view
    [pressable/pressable {:type                :scale
                          :accessibility-label :take-picture
@@ -44,7 +57,34 @@
                           :accessibility-label :open-gallery
                           :type                :scale}
      [react/view {:style {:padding 10}}
-      [icons/icon :main-icons/gallery]]]]])
+      [icons/icon :main-icons/gallery]]]]
+   [react/view {:style {:flex 1}}]
+   [react/view {:style {:padding-top 8}}
+    [pressable/pressable {:on-press            #(re-frame/dispatch
+                                                 [:bottom-sheet/show-sheet
+                                                  {:content        (sheets/image-permissions granted-scope)
+                                                   :content-height 200}])
+                          :accessibility-label :open-scope-permission
+                          :type                :scale}
+     [react/view {:style {:padding 10}}
+      [icons/icon :main-icons/more]]]]])
+
+(defn no-permissions []
+  [react/view {:style {:flex    1
+                       :padding 8}}
+   [react/view {:style {:border-radius    16
+                        :flex             1
+                        :background-color "rgba(0, 0, 0, 0.86);"
+                        :justifyContent   :center
+                        :align-items      :center}}
+    [icons/icon :main-icons/photo {:color (:icon-02 @colors/theme)}]
+    [quo/text {:align :center
+               :color :secondary
+               :style {:padding-vertical 8}}
+     (i18n/label :t/permissions-photos)]
+    [quo/button {:type     :secondary
+                 :on-press grant-permissions}
+     (i18n/label :t/permissions-photos-grant)]]])
 
 (defn image-preview [uri all-selected first? panel-height]
   (let [wh           (/ (- panel-height 8) 2)
@@ -99,7 +139,7 @@
   {:component-did-mount
    (fn []
      (permissions/request-permissions
-      {:permissions [:read-external-storage :write-external-storage]
+      {:permissions [:read-external-storage :write-external-storage :photo-library]
        :on-allowed  #(re-frame/dispatch [:chat.ui/camera-roll-get-photos 20])
        :on-denied   (fn []
                       (utils/set-timeout
@@ -108,7 +148,11 @@
                        50))}))}
   [react/animated-view {:style {:background-color (:ui-background @colors/theme)
                                 :flex             1}}
-   [react/scroll-view {:horizontal true :style {:flex 1}}
-    [react/view {:flex 1 :flex-direction :row :margin-horizontal 4}
-     [buttons]
-     [photos]]]])
+   (if-not @(re-frame/subscribe [:permission/all-granted? camera-roll-permissions])
+     [react/view {:flex 1 :flex-direction :row :margin-left 4}
+      [buttons true]
+      [no-permissions]]
+     [react/scroll-view {:horizontal true :style {:flex 1}}
+      [react/view {:flex 1 :flex-direction :row :margin-horizontal 4}
+       [buttons true]
+       [photos]]])])

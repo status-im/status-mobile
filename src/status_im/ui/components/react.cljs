@@ -89,6 +89,9 @@
 (def dismiss-keyboard! #(.dismiss ^js Keyboard))
 (def linking (.-Linking react-native))
 
+(defn open-settings []
+  (.openSettings ^js linking))
+
 (def max-font-size-multiplier 1.25)
 
 (defn prepare-text-props [props]

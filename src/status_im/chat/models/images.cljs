@@ -93,7 +93,12 @@
      :on-allowed  (fn []
                     (-> (.getPhotos CameraRoll #js {:first num :assetType "Photos" :groupTypes "All"})
                         (.then #(re-frame/dispatch [:on-camera-roll-get-photos (:edges (types/js->clj %))]))
-                        (.catch #(log/warn "could not get cameraroll photos"))))})))
+                        (.catch #(log/warn "could not get cameraroll photos" %))))})))
+
+(fx/defn library-permission
+  {:events [:chat.ui/library-permission]}
+  [{:keys [db]} result]
+  {:db db})
 
 (fx/defn image-captured
   {:events [:chat.ui/image-captured]}

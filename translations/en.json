@@ -753,6 +753,10 @@
     "message-options-cancel": "Cancel",
     "message-reply": "Reply",
     "data-syncing": "Data syncing",
+    "permissions-more-photos": "Select more phtotos",
+    "permissions-settings": "Change settings",
+    "permissions-photos": "Give permission to access  your photos and  they will appear here",
+    "permissions-photo-grant": "Grant permissions",
     "messages": "Messages",
     "chat-is-a-contact": "Contact",
     "chat-is-not-a-contact": "Not a contact",
