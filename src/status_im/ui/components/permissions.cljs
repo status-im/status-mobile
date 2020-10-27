@@ -30,9 +30,9 @@
 
 (defn check-granted [all permissions]
   (when (and (map? all) (seq permissions))
-   (let [to-check-keys (mapv permissions-map permissions)
-         to-check      (select-keys all to-check-keys)]
-     (all-granted? to-check))))
+    (let [to-check-keys (mapv permissions-map permissions)
+          to-check      (select-keys all to-check-keys)]
+      (all-granted? to-check))))
 
 (defn request-permissions
   [{:keys [permissions on-allowed on-denied]
