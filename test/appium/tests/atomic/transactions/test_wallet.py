@@ -247,16 +247,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         wallet_view.just_fyi("Send transaction to new account")
         wallet_view.accounts_status_account.click()
-        send_transaction = wallet_view.send_transaction_button.click()
-        send_transaction.amount_edit_box.click()
-        transaction_amount = send_transaction.get_unique_amount()
-        send_transaction.amount_edit_box.set_value(transaction_amount)
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.accounts_button.click()
-        send_transaction.element_by_text(account_name).click()
-        send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction()
+
+        transaction_amount = '0.0%s' % str(random.randint(10000, 99999)) + '1'
+        wallet_view.send_transaction(account_name=account_name,
+                                     amount=transaction_amount)
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
         self.network_api.verify_balance_is_updated('0.1', status_account_address)
 
@@ -273,16 +267,9 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         wallet_view.just_fyi("Sending eth from new account to main account")
         updated_balance = self.network_api.get_balance(status_account_address)
-        wallet_view.send_transaction_button.click()
-        send_transaction.amount_edit_box.click()
-        transaction_amount_1 = round(float(transaction_amount) * 0.05, 11)
-        send_transaction.amount_edit_box.set_value(str(transaction_amount_1))
-        send_transaction.confirm()
-        send_transaction.chose_recipient_button.click()
-        send_transaction.accounts_button.click()
-        send_transaction.element_by_text('Status account').click()
-        send_transaction.sign_transaction_button.click()
-        send_transaction.sign_transaction()
+        transaction_amount_1 = round(float(transaction_amount) * 0.1, 12)
+        send_transaction = wallet_view.send_transaction(account_name='Status account',
+                                                        amount=transaction_amount_1)
         send_transaction.back_button.click()
         sub_account_address = wallet_view.get_wallet_address(account_name)[2:]
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)

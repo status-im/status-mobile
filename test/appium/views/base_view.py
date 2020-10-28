@@ -120,13 +120,20 @@ class HomeButton(TabButton):
         from views.home_view import HomeView
         return HomeView(self.driver)
 
-    def click(self):
+    def click(self, desired_view='home'):
         from views.home_view import PlusButton
-        self.click_until_presence_of_element(PlusButton(self.driver))
+        from views.chat_view import ChatMessageInput, ProfileNicknameOtherUser
+        if desired_view == 'home':
+            element = PlusButton(self.driver)
+        elif desired_view == 'chat':
+            element = ChatMessageInput(self.driver)
+        elif desired_view == 'other_user_profile':
+            element = ProfileNicknameOtherUser(self.driver)
+        self.click_until_presence_of_element(element)
         return self.navigate()
 
-class ShareButton(BaseButton):
 
+class ShareButton(BaseButton):
     def __init__(self, driver):
         super(ShareButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('share-my-contact-code-button')
