@@ -45,6 +45,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         profile_1 = device_1_home.profile_button.click()
         default_username_1 = profile_1.default_username_text.text
+        profile_1.settings_button.click()
         profile_1.profile_notifications_button.click()
         device_1_home = profile_1.get_back_to_home_view()
         device_2_public_key = device_2_home.get_public_key_and_username()
@@ -267,7 +268,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device2_one_to_one_chat.cross_icon.click()
         device2_one_to_one_chat.chat_item.long_press_element()
         device2_one_to_one_chat.element_by_text('View Details').click()
-        if not device2_one_to_one_chat.profile_details.is_element_displayed():
+        if not device2_one_to_one_chat.profile_add_to_contacts.is_element_displayed():
             self.errors.append('No navigate to user profile after tapping View Details on sticker message')
 
 
@@ -915,7 +916,8 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         for key in url_data:
             home_view.plus_button.click_until_presence_of_element(home_view.start_new_chat_button)
             sign_in_view.just_fyi('Checking %s case' % key)
-            home_view.universal_qr_scanner_button.click()
+            if home_view.universal_qr_scanner_button.is_element_displayed():
+                home_view.universal_qr_scanner_button.click()
             if home_view.allow_button.is_element_displayed():
                 home_view.allow_button.click()
             home_view.enter_qr_edit_box.set_value(url_data[key]['url'])

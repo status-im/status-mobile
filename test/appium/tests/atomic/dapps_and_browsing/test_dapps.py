@@ -84,6 +84,7 @@ class TestDApps(SingleDeviceTestCase):
         dapp_view.select_account_by_name(account_name).wait_for_element(30)
         dapp_view.select_account_by_name(account_name).click()
         profile_view = dapp_view.profile_button.click()
+        profile_view.settings_button.click()
         profile_view.privacy_and_security_button.click()
         profile_view.dapp_permissions_button.click()
         if profile_view.element_by_text(test_dapp_name).is_element_displayed():

@@ -16,6 +16,7 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.recover_access(passphrase=basic_user['passphrase'], password=unique_password)
         profile_view = sign_in.profile_button.click()
+        profile_view.settings_button.click()
         profile_view.privacy_and_security_button.click()
         profile_view.backup_recovery_phrase_button.click()
         if profile_view.profile_button.counter.is_element_displayed():

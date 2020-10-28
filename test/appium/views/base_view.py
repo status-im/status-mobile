@@ -173,8 +173,8 @@ class ProfileButton(TabButton):
         return ProfileView(self.driver)
 
     def click(self):
-        from views.profile_view import PrivacyAndSecurityButton
-        self.click_until_presence_of_element(PrivacyAndSecurityButton(self.driver))
+        from views.profile_view import ContactsButton
+        self.click_until_presence_of_element(ContactsButton(self.driver))
         return self.navigate()
 
 
@@ -628,7 +628,7 @@ class BaseView(object):
         raw_public_key = bytearray.fromhex(public_key.replace('0x04', ''))
         return datatypes.PublicKey(raw_public_key).to_address()[2:]
 
-    def get_back_to_home_view(self, times_to_click_on_back_btn=5):
+    def get_back_to_home_view(self, times_to_click_on_back_btn=3):
         counter = 0
         while BackButton(self.driver).is_element_displayed(2):
             try:
@@ -723,6 +723,7 @@ class BaseView(object):
 
     def open_universal_web_link(self, deep_link):
         start_web_browser(self.driver)
+        self.driver.info('Open %s web link via web browser' % deep_link)
         self.driver.get(deep_link)
 
     def upgrade_app(self):

@@ -498,6 +498,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         chat.chat_options.click()
         chat.view_profile_button.click_until_presence_of_element(chat.remove_from_contacts)
         chat.set_nickname(nickname)
+        chat.back_button.click()
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.add_account(account_name=account_name)

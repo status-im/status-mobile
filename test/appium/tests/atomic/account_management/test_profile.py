@@ -48,6 +48,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         sign_in.just_fyi('Delete 2nd multiaccount')
         public_key, username = sign_in.get_public_key_and_username(return_username=True)
+        profile.settings_button.click()
         profile.privacy_and_security_button.click()
         profile.delete_my_profile_button.click()
         for element in (username, delete_alert_text):
@@ -63,6 +64,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in.just_fyi('Delete last multiaccount')
         sign_in.sign_in()
         sign_in.profile_button.click()
+        profile.settings_button.click()
         profile.privacy_and_security_button.click()
         profile.delete_my_profile_button.click()
         profile.delete_my_profile_password_input.set_value(common_password)
@@ -87,6 +89,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         sign_in_view.just_fyi("Check that selected option is stored in Profile")
         profile_view = sign_in_view.profile_button.click()
+        profile_view.settings_button.click()
         profile_view.sync_settings_button.click()
         profile_view.element_by_text('Mobile data').click()
         if not profile_view.use_mobile_data.attribute_value('checked'):
@@ -137,6 +140,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view = sign_in_view.profile_button.click()
 
         sign_in_view.just_fyi("Check default preferences")
+        profile_view.settings_button.click()
         profile_view.sync_settings_button.click()
         profile_view.element_by_text('Mobile data').click()
 
@@ -335,6 +339,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
+        profile_view.settings_button.click()
         profile_view.privacy_and_security_button.click()
         profile_view.backup_recovery_phrase_button.click()
         profile_view.ok_continue_button.click()
@@ -382,9 +387,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.switch_network()
         home.profile_button.click()
         profile.contacts_button.click()
-        for element in [profile.invite_friends_in_contact_button, profile.add_new_contact_button]:
-            if not element.is_element_displayed():
-                self.driver.fail('No expected element on contacts view')
+        if not profile.add_new_contact_button.is_element_displayed():
+            self.driver.fail('No expected element on contacts view')
 
         users = {
             'scanning_ens_with_stateofus_domain_deep_link': {
@@ -406,11 +410,14 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         }
 
-        home.just_fyi('Add contactx  and check that they appear in Contacts view')
+        home.just_fyi('Add contact  and check that they appear in Contacts view')
+        from views.chat_view import ChatView
         for key in users:
-            contact_view = profile.add_new_contact_button.click()
+            profile.plus_button.click()
             sign_in_view.just_fyi('Checking %s case' % key)
             if 'scanning' in key:
+                from views.contacts_view import ContactsView
+                contact_view = ContactsView(self.driver)
                 contact_view.scan_contact_code_button.click()
                 if contact_view.allow_button.is_element_displayed():
                     contact_view.allow_button.click()
@@ -419,14 +426,13 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             else:
                 contact_view.public_key_edit_box.click()
                 contact_view.public_key_edit_box.send_keys(users[key]['contact_code'])
-                contact_view.confirm_until_presence_of_element(profile.add_new_contact_button)
+                contact_view.confirm_until_presence_of_element(profile.settings_button)
             if not profile.element_by_text(users[key]['username']).is_element_displayed():
                 self.errors.append('In %s case username not found in contact view after scanning' % key)
 
         home.just_fyi('Remove contact and check that it disappeared')
         user_to_remove = '@%s' % ens_user['ens_another_domain']
         profile.element_by_text(user_to_remove).click()
-        from views.chat_view import ChatView
         profile_user_to_remove = ChatView(self.driver)
         profile_user_to_remove.remove_from_contacts.click()
         profile_user_to_remove.back_button.click()
@@ -441,6 +447,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
+        profile_view.settings_button.click()
         profile_view.add_custom_network()
         sign_in_view.sign_in()
         profile_view = sign_in_view.profile_button.click()
@@ -455,6 +462,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
+        profile_view.settings_button.click()
         profile_view.privacy_and_security_button.click()
         profile_view.backup_recovery_phrase_button.click()
         profile_view.ok_continue_button.click()
@@ -478,6 +486,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
+        profile_view.settings_button.click()
         profile_view.help_button.click()
         base_web_view = profile_view.faq_button.click()
         base_web_view.open_in_webview()
@@ -499,9 +508,9 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         chat_view = home_view.get_chat_view()
         chat_view.chat_options.click_until_presence_of_element(chat_view.view_profile_button)
         chat_view.view_profile_button.click()
-        for text in basic_user['username'], 'Remove from contacts', 'Send message', 'Block this user':
-            if not chat_view.element_by_text(text).scroll_to_element():
-                self.errors.append('%s is not visible' % text)
+        for element in (chat_view.profile_block_contact, chat_view.remove_from_contacts, chat_view.profile_send_message):
+            if not element.is_element_displayed():
+                self.errors.append('Expected %s is not visible' % element.locator)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5368)
@@ -510,6 +519,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
         profile_view = sign_in_view.profile_button.click()
+        profile_view.settings_button.click()
         profile_view.advanced_button.click()
         for text in 'INFO', used_fleet:
             if not profile_view.element_by_text(text).is_element_displayed():
@@ -582,6 +592,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         base_web_view.click_system_back_button()
         home_view = signin_view.create_user()
         profile = home_view.profile_button.click()
+        profile.settings_button.click()
         about_view = profile.about_button.click()
         about_view.privacy_policy_button.click()
 
@@ -601,6 +612,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         home_view.open_status_test_dapp()
         home_view.cross_icon.click()
         profile_view = home_view.profile_button.click()
+        profile_view.settings_button.click()
         profile_view.privacy_and_security_button.click()
         profile_view.dapp_permissions_button.click()
         profile_view.element_by_text(test_dapp_name).click()
@@ -628,6 +640,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()
         profile_view = home_view.profile_button.click()
+        profile_view.settings_button.click()
         profile_view.about_button.click()
         app_version = profile_view.app_version_text.text
         node_version = profile_view.node_version_text.text
@@ -654,6 +667,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view = home_view.profile_button.click()
 
         profile_view.just_fyi('pin mailserver')
+        profile_view.settings_button.click()
         profile_view.sync_settings_button.click()
         mailserver_1 = profile_view.return_mailserver_name(mailserver_gc, used_fleet)
         mailserver_2 = profile_view.return_mailserver_name(mailserver_ams, used_fleet)
@@ -724,6 +738,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         username_1, username_2 = profile_1.default_username_text.text, profile_2.default_username_text.text
 
         profile_1.just_fyi('Add custom bootnode, enable bootnodes and check validation')
+        profile_1.settings_button.click()
         profile_1.advanced_button.click()
         profile_1.bootnodes_button.click()
         profile_1.add_bootnode_button.click()
@@ -779,6 +794,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         username_1 = profile_1.default_username_text.text
 
         profile_1.just_fyi('disable autoselection')
+        profile_1.settings_button.click()
         profile_1.sync_settings_button.click()
         profile_1.mail_server_button.click()
         mailserver_1 = profile_1.return_mailserver_name(mailserver_hk, used_fleet)
@@ -858,6 +874,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1 = home_1.profile_button.click()
 
         profile_1.just_fyi('add non-working mailserver and connect to it')
+        profile_1.settings_button.click()
         profile_1.sync_settings_button.click()
         profile_1.mail_server_button.click()
         profile_1.plus_button.click()
@@ -917,6 +934,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_home = device_1.create_user()
         device_1_home.profile_button.click()
         device_1_profile = device_1_home.get_profile_view()
+        device_1_profile.settings_button.click()
         device_1_profile.privacy_and_security_button.click()
         device_1_profile.backup_recovery_phrase_button.click()
         device_1_profile.ok_continue_button.click()
@@ -1001,6 +1019,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         device_1_home = device_1.create_user()
         device_1_home.profile_button.click()
         device_1_profile = device_1_home.get_profile_view()
+        device_1_profile.settings_button.click()
         device_1_profile.privacy_and_security_button.click()
         device_1_profile.backup_recovery_phrase_button.click()
         recovery_phrase = device_1_profile.backup_recovery_phrase()
@@ -1082,6 +1101,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1 = sign_in_1.profile_button.click()
         profile_1.switch_network('Mainnet with upstream RPC')
         home_1.profile_button.click()
+        profile_1.settings_button.click()
         dapp_view_1 = profile_1.ens_usernames_button.click()
         dapp_view_1.element_by_text('Get started').click()
         dapp_view_1.ens_name.set_value(ens_user['ens'])
@@ -1119,18 +1139,16 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('ENS username is not shown in public chat')
 
         home_2.just_fyi('check that can mention user with ENS name')
-        # chat_2.chat_message_input.send_keys('@' + user_1['username'][0:4])
-        # chat_2.search_user_in_mention_suggestion_list(user_1['ens']).click()
         chat_2.select_mention_from_suggestion_list(user_1['ens'])
         if chat_2.chat_message_input.text != ens_name + ' ':
             self.errors.append('ENS username is not resolved in chat input after selecting it in mention suggestions list!')
         chat_2.send_message_button.click()
         chat_2.element_starts_with_text(ens_name,'button').click()
-        for element in (chat_2.element_by_text(user_1['username']), chat_2.add_to_contacts):
+        for element in (chat_2.element_by_text(user_1['username']), chat_2.profile_add_to_contacts):
             if not element.is_element_displayed():
-                self.errors.append('Was not redirected to user profile after tappin on mention!')
+                self.errors.append('Was not redirected to user profile after tapping on mention!')
         chat_1.element_starts_with_text(user_1['ens'] +'.stateofus.eth','button').click()
-        if not profile_1.privacy_and_security_button.is_element_displayed():
+        if not profile_1.settings_button.is_element_displayed():
                 self.errors.append('Was not redirected to own profile after tapping on mention of myself from another user!')
 
         home_2.just_fyi('check that ENS name is shown in 1-1 chat without adding user as contact in header, profile, options')
@@ -1146,6 +1164,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         home_2.just_fyi('add user to contacts and check that ENS name is shown in contact')
         chat_2_one_to_one.profile_add_to_contacts.click()
+        chat_2.back_button.click()
         profile_2 = chat_2_one_to_one.profile_button.click()
         profile_2.open_contact_from_profile(ens_name)
 
@@ -1157,9 +1176,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             if not profile_2.element_by_text(name).is_element_displayed():
                 self.errors.append('%s is not shown in contact list' % name)
         profile_2.home_button.click()
-        if not chat_2_one_to_one.element_by_text(nickname).is_element_displayed():
-            self.errors.append('Nickname for user with ENS is not shown in user profile')
-        chat_2.back_button.click()
         if chat_2_one_to_one.user_name_text.text != nickname:
             self.errors.append('Nickname for user with ENS is not shown in 1-1 chat header')
         chat_2_one_to_one.chat_options.click()

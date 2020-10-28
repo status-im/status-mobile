@@ -326,7 +326,7 @@ class TestChatManagement(SingleDeviceTestCase):
         home.just_fyi("Denying access to camera in send transaction > scan address view")
         wallet.accounts_status_account.click()
         send_transaction = wallet.send_transaction_button.click()
-        send_transaction.chose_recipient_button.click()
+        send_transaction.chose_recipient_button.scroll_and_click()
         send_transaction.scan_qr_code_button.click()
         send_transaction.deny_button.click()
         send_transaction.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
@@ -551,7 +551,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('3-random username is not resolved in chat input after selecting it in mention suggestions list!')
         chat_1.send_message_button.click()
         chat_1.chat_element_by_text(username_2).click()
-        chat_1.profile_add_to_contacts.wait_for_visibility_of_element(20)
+        chat_1.profile_send_message.wait_for_visibility_of_element(20)
         chat_1.back_button.click()
         chat_2.driver.quit()
 
@@ -561,9 +561,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_element.member_photo.click()
         for element in [chat_1.contact_profile_picture,
                         chat_1.element_by_text(username_2, 'text'),
-                        chat_1.add_to_contacts,
+                        chat_1.profile_add_to_contacts,
                         chat_1.profile_send_message,
-                        chat_1.profile_address_text,
                         chat_1.profile_nickname]:
             if not element.scroll_to_element():
                 self.errors.append('%s is not visible' % element.name)
@@ -580,7 +579,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         device_1.just_fyi('Add user to contacts, mention it by nickname check contact list in Profile')
         chat_element.member_photo.click()
-        chat_1.add_to_contacts.click()
+        chat_1.profile_add_to_contacts.click()
         if not chat_1.remove_from_contacts.is_element_displayed():
              self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
         chat_1.back_button.click()

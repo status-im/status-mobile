@@ -64,7 +64,7 @@ class TestDeepLinks(SingleDeviceTestCase):
         deep_link = 'status-im://u/%s' % basic_user['public_key']
         sign_in_view.open_weblink_and_login(deep_link)
         profile_view = sign_in_view.get_profile_view()
-        profile_view.privacy_and_security_button.wait_for_element()
+        profile_view.settings_button.wait_for_element()
         if profile_view.default_username_text.text != basic_user['username'] \
                 or not profile_view.contacts_button.is_element_displayed() \
                 or not profile_view.share_my_profile_button.is_element_displayed():

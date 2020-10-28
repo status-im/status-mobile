@@ -342,7 +342,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         if device_1_chat.profile_block_contact.is_element_displayed():
             self.errors.append("Admin is redirected to own profile on tapping own username from group info")
         group_info_view.get_user_from_group_info(device_2_username).click()
-        if not device_1_chat.profile_details.is_element_displayed():
+        if not device_1_chat.profile_block_contact.is_element_displayed():
             self.errors.append("Admin is not redirected to user profile on tapping member username from group info")
         device_1_chat.back_button.click()
 
@@ -451,6 +451,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1_home = device_1.create_user()
         device_1_home.profile_button.click()
         device_1_profile = device_1_home.get_profile_view()
+        device_1_profile.settings_button.click()
         device_1_profile.privacy_and_security_button.click()
         device_1_profile.backup_recovery_phrase_button.click()
         device_1_profile.ok_continue_button.click()

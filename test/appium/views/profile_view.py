@@ -52,7 +52,7 @@ class AddNewContactButton(BaseButton):
 
     def __init__(self, driver):
         super(AddNewContactButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('add-new-contact-button')
+        self.locator = self.Locator.text_selector('Add contact')
 
     def navigate(self):
         from views.contacts_view import ContactsView
@@ -530,8 +530,13 @@ class SyncAllButton(BaseButton):
 class ContactsButton(BaseButton):
     def __init__(self, driver):
         super(ContactsButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('contacts-button')
+        self.locator = self.Locator.accessibility_id('Contacts-item-button')
 
+
+class SettingsButton(BaseButton):
+    def __init__(self, driver):
+        super(SettingsButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('Settings-item-button')
 
 class BlockedUsersButton(BaseButton):
     def __init__(self, driver):
@@ -670,6 +675,7 @@ class ProfileView(BaseView):
         self.faq_button = FaqButton(self.driver)
         self.about_button = AboutButton(self.driver)
         self.sync_settings_button = SyncSettingsButton(self.driver)
+        self.settings_button = SettingsButton(self.driver)
 
         # Bootnodes
         self.bootnodes_button = BootnodesButton(self.driver)
@@ -706,6 +712,7 @@ class ProfileView(BaseView):
         self.push_notification_toggle = PushNotificationToggle(self.driver)
 
     def switch_network(self, network='Mainnet with upstream RPC'):
+        self.settings_button.click()
         self.advanced_button.click()
         self.network_settings_button.click()
         network_button = NetworkSettingsButton.NetworkButton(self.driver, network)
@@ -782,6 +789,7 @@ class ProfileView(BaseView):
         self.remove_picture_button.click()
 
     def logout(self):
+        self.settings_button.click()
         self.logout_button.click()
         self.logout_dialog.logout_button.click()
         self.logout_button.wait_for_invisibility_of_element(30)
@@ -794,6 +802,7 @@ class ProfileView(BaseView):
 
     def discover_and_advertise_device(self, device_name):
         self.profile_button.click()
+        self.settings_button.click()
         self.sync_settings_button.click()
         self.devices_button.scroll_to_element()
         self.devices_button.click()
@@ -817,6 +826,7 @@ class ProfileView(BaseView):
         profile = self.profile_button.click()
         profile.switch_network('Mainnet with upstream RPC')
         self.profile_button.click()
+        self.settings_button.click()
         dapp_view = self.ens_usernames_button.click()
         dapp_view.element_by_text('Get started').click()
         dapp_view.ens_name.set_value(name)
