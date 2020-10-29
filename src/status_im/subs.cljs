@@ -44,7 +44,8 @@
             status-im.ui.screens.keycard.pin.subs
             status-im.ui.screens.keycard.setup.subs
             [status-im.chat.models.mentions :as mentions]
-            [status-im.notifications.core :as notifications]))
+            [status-im.notifications.core :as notifications]
+            [clojure.set :as clojure.set]))
 
 ;; TOP LEVEL ===========================================================================================================
 
@@ -468,6 +469,16 @@
    public-key))
 
 (re-frame/reg-sub
+ :multiaccount/contact
+ :<- [:multiaccount]
+ (fn [current-account]
+   (some->
+    current-account
+    (select-keys [:name :preferred-name :public-key :photo-path])
+    (clojure.set/rename-keys {:name :alias})
+    (multiaccounts/contact-with-names))))
+
+(re-frame/reg-sub
  :multiaccount/preferred-name
  :<- [:multiaccount]
  (fn [{:keys [preferred-name]}]
@@ -618,8 +629,8 @@
  :chats/active-chats
  :<- [::chats]
  (fn [chats]
-   (reduce-kv (fn [acc id {:keys [is-active profile-public-key] :as chat}]
-                (if (and is-active (not profile-public-key))
+   (reduce-kv (fn [acc id {:keys [is-active profile-public-key timeline?] :as chat}]
+                (if (and is-active (not profile-public-key) (not timeline?))
                   (assoc acc id chat)
                   acc))
               {}
@@ -778,6 +789,16 @@
        (chat.db/add-datemarks)
        (hydrate-messages messages)
        (chat.db/add-gaps messages-gaps range all-loaded? public?))))
+
+(re-frame/reg-sub
+ :chats/timeline-messages-stream
+ :<- [:chats/message-list]
+ :<- [:chats/current-chat-messages]
+ :<- [:chats/current-raw-chat]
+ (fn [[message-list messages {:keys [timeline?]}]]
+   (when timeline?
+     (-> (models.message-list/->seq message-list)
+         (hydrate-messages messages)))))
 
 (re-frame/reg-sub
  :chats/photo-path

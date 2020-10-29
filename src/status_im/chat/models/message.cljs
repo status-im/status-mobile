@@ -58,7 +58,9 @@
                                  (update-in [:messages chat-id] assoc message-id prepared-message)
                                  (update-in [:message-lists chat-id] message-list/add prepared-message))
                        (and (not seen-by-user?)
-                            (not= from current-public-key))
+                            (not= from current-public-key)
+                            (not (get-in db [:chats chat-id :profile-public-key]))
+                            (not (get-in db [:chats chat-id :timeline?])))
                        (update-in [:chats chat-id :loaded-unviewed-messages-ids]
                                   (fnil conj #{}) message-id))}))))
 
@@ -146,19 +148,24 @@
                         :unviewed-messages-count (inc current-count))}))))
 
 (fx/defn receive-one
+  {:events [::receive-one]}
   [{:keys [db] :as cofx} {:keys [message-id] :as message}]
   (when-let [chat-id (extract-chat-id cofx message)]
-    (let [message-with-chat-id (assoc message :chat-id chat-id)]
-      (when-not (earlier-than-deleted-at? cofx message-with-chat-id)
-        (if (message-loaded? cofx message-with-chat-id)
-          ;; If the message is already loaded, it means it's an update, that
-          ;; happens when a message that was missing a reply had the reply
-          ;; coming through, in which case we just insert the new message
-          {:db (assoc-in db [:messages chat-id message-id] message-with-chat-id)}
-          (fx/merge cofx
-                    (add-received-message message-with-chat-id)
-                    (update-unviewed-count message-with-chat-id)
-                    (chat-model/join-time-messages-checked chat-id)))))))
+    (fx/merge cofx
+              ;;If its a profile updates we want to add this message to the timeline as well
+              #(when (get-in cofx [:db :chats chat-id :profile-public-key])
+                 {:dispatch [::receive-one (assoc message :chat-id chat-model/timeline-chat-id)]})
+              #(let [message-with-chat-id (assoc message :chat-id chat-id)]
+                 (when-not (earlier-than-deleted-at? cofx message-with-chat-id)
+                   (if (message-loaded? cofx message-with-chat-id)
+                     ;; If the message is already loaded, it means it's an update, that
+                     ;; happens when a message that was missing a reply had the reply
+                     ;; coming through, in which case we just insert the new message
+                     {:db (assoc-in db [:messages chat-id message-id] message-with-chat-id)}
+                     (fx/merge cofx
+                               (add-received-message message-with-chat-id)
+                               (update-unviewed-count message-with-chat-id)
+                               (chat-model/join-time-messages-checked chat-id))))))))
 
 ;;TODO currently we process every message, we need to precess them by batches
 ;;or better move processing to status-go

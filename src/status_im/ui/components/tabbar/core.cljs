@@ -17,8 +17,8 @@
 
 (defn main-tab? [view-id]
   (contains?
-   #{:chat-stack :browser-stack :wallet-stack :profile-stack
-     :home :wallet :open-dapp :my-profile :wallet-onboarding-setup}
+   #{:chat-stack :browser-stack :wallet-stack :profile-stack :status-stack
+     :status :home :wallet :open-dapp :my-profile :wallet-onboarding-setup}
    view-id))
 
 (def tabs-list-data
@@ -40,7 +40,11 @@
      :content             {:title (i18n/label :t/profile)
                            :icon  :main-icons/user-profile}
      :count-subscription  :get-profile-unread-messages-number
-     :accessibility-label :profile-tab-button}]
+     :accessibility-label :profile-tab-button}
+    {:nav-stack           :status-stack
+     :content             {:title (i18n/label :t/status)
+                           :icon  :main-icons/status}
+     :accessibility-label :status-tab-button}]
    (remove nil?)
    (map-indexed vector)))
 

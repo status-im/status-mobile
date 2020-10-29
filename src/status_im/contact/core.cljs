@@ -63,7 +63,8 @@
                               (update public-key merge contact)
                               (assoc-in [public-key :nickname] (:nickname contact))))
                         %
-                        contacts))})
+                        contacts))
+   :dispatch-n (map (fn [{:keys [public-key]}] [:start-profile-chat public-key]) contacts)})
 
 (fx/defn upsert-contact
   [{:keys [db] :as cofx}
@@ -93,7 +94,8 @@
                     (update :system-tags
                             (fnil #(conj % :contact/added) #{})))]
       (fx/merge cofx
-                {:db (dissoc db :contacts/new-identity)}
+                {:db (dissoc db :contacts/new-identity)
+                 :dispatch [:start-profile-chat public-key]}
                 (upsert-contact contact)
                 (whitelist/add-to-whitelist public-key)
                 (send-contact-request contact)
@@ -107,7 +109,8 @@
                             :system-tags
                             (fnil #(disj % :contact/added) #{}))]
     (fx/merge cofx
-              {:db (assoc-in db [:contacts/contacts public-key] new-contact)}
+              {:db (assoc-in db [:contacts/contacts public-key] new-contact)
+               :dispatch [:chat/remove-update-chat public-key]}
               (contacts-store/save-contact new-contact))))
 
 (fx/defn create-contact

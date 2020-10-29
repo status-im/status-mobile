@@ -1307,14 +1307,14 @@
     "unmute": "Unmute",
     "scan-tokens": "Scan tokens",
     "my-status": "My status",
-    "warning-sending-to-contract-descr": "The address you entered is a smart contract, sending funds to this address may result in loss of funds. To interact with a DApp, open the DApp in the Status DApp Browser.",
     "contacts-descr": "Your contacts will appear here. You will receive status updates from anyone you add as a contact",
     "status-updates-descr": "Status updates will appear here. Add the profile as a contact to receive updates on your timeline.",
     "whats-on-your-mind": "What’s on your mind…",
     "cant-open-public-chat": "Can't open public chat",
     "invalid-public-chat-topic": "Invalid public chat topic",
     "now": "Now",
-    "statuses-my-profile-descr": "Status updates are messages you publish to your profile. They can be viewed by anyone visiting your profile inside Status",
+    "statuses-my-status-descr": "Share what’s on your mind. Anyone visiting your profile will be able to see your status. People who add you as their contact will receive your updates on their timeline",
+    "statuses-descr": "Share what’s on your mind and stay updated with your contacts",
     "new-status": "New status",
     "chat-link-previews": "Chat link previews",
     "you-can-choose-preview-websites" : "You can choose which of the following websites can preview link of descriptions and pictures in chats",
@@ -1325,5 +1325,6 @@
     "dont-ask": "Don't ask me again",
     "enable-link-previews": "Enable link previews in chat?",
     "once-enabled-share-metadata": "Once enabled, links posted in the chat may share your metadata with the site",
-    "external-storage-denied": "Access to external storage is denied"
+    "external-storage-denied": "Access to external storage is denied",
+    "timeline": "Timeline"
 }

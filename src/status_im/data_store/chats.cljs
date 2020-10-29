@@ -9,21 +9,25 @@
 (def public-chat-type 2)
 (def private-group-chat-type 3)
 (def profile-chat-type 4)
+(def timeline-chat-type 5)
 
-(defn type->rpc [{:keys [public? group-chat profile-public-key] :as chat}]
+(defn type->rpc [{:keys [public? group-chat profile-public-key timeline?] :as chat}]
   (assoc chat :chatType (cond
-                          public? public-chat-type
                           profile-public-key profile-chat-type
+                          timeline? timeline-chat-type
+                          public? public-chat-type
                           group-chat private-group-chat-type
                           :else one-to-one-chat-type)))
 
 (defn rpc->type [{:keys [chatType name] :as chat}]
   (cond
-    (= public-chat-type chatType) (assoc chat
-                                         :chat-name (str "#" name)
-                                         :public? true
-                                         :group-chat true)
-    (= profile-chat-type chatType) (assoc chat :public? true)
+    (or (= public-chat-type chatType)
+        (= profile-chat-type chatType)
+        (= timeline-chat-type chatType)) (assoc chat
+                                                :chat-name (str "#" name)
+                                                :public? true
+                                                :group-chat true
+                                                :timeline? (= timeline-chat-type chatType))
     (= private-group-chat-type chatType) (assoc chat
                                                 :chat-name name
                                                 :public? false

@@ -119,7 +119,10 @@
                                            :number diff
                                            :time-intervals name}))))
 (defn seconds-ago [time]
-  (t/in-seconds (t/interval time (t/now))))
+  (let [now (t/now)]
+    (if (<= (.getTime ^js time) (.getTime ^js now))
+      (t/in-seconds (t/interval time now))
+      0)))
 
 (defn time-ago [time]
   (let [diff (seconds-ago time)

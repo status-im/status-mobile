@@ -140,10 +140,13 @@
   [{:keys [db]} uri]
   (let [current-chat-id (:current-chat-id db)
         images          (get-in db [:chats current-chat-id :metadata :sending-image])]
-    (when (and (< (count images) max-images-batch)
-               (not (get images uri)))
-      {:db              (update-in db [:chats current-chat-id :metadata :sending-image] assoc uri {:uri uri})
-       ::image-selected uri})))
+    (if (get-in db [:chats current-chat-id :timeline?])
+      {:db              (update-in db [:chats current-chat-id :metadata :sending-image] {uri {:uri uri}})
+       ::image-selected uri}
+      (when (and (< (count images) max-images-batch)
+                 (not (get images uri)))
+        {:db              (update-in db [:chats current-chat-id :metadata :sending-image] assoc uri {:uri uri})
+         ::image-selected uri}))))
 
 (fx/defn save-image-to-gallery
   {:events [:chat.ui/save-image-to-gallery]}

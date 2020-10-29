@@ -20,7 +20,7 @@
             [clojure.string :as string]
             [quo.components.list.item :as list-item]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.screens.profile.status :as my-status]
+            [status-im.ui.screens.status.views :as status.views]
             [status-im.ui.screens.chat.views :as chat.views])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -158,19 +158,21 @@
 
 (defn status []
   (let [messages @(re-frame/subscribe [:chats/current-chat-messages-stream])
-        no-messages?       @(re-frame/subscribe [:chats/current-chat-no-messages?])]
-    (if no-messages?
-      [react/view {:padding-horizontal 32 :margin-top 32}
-       [react/view (styles/updates-descr-cont)
-        [react/text {:style {:color colors/gray :line-height 22}}
-         (i18n/label :t/status-updates-descr)]]]
+        no-messages? @(re-frame/subscribe [:chats/current-chat-no-messages?])
+        {:keys [profile-public-key]} @(re-frame/subscribe [:chats/current-raw-chat])]
+    (when profile-public-key
       [list/flat-list
        {:key-fn                    #(or (:message-id %) (:value %))
-        :ref                       #(reset! my-status/messages-list-ref %)
+        :header                    (when no-messages?
+                                     [react/view {:padding-horizontal 32 :margin-top 32}
+                                      [react/view (styles/updates-descr-cont)
+                                       [react/text {:style {:color colors/gray :line-height 22}}
+                                        (i18n/label :t/status-updates-descr)]]])
+        :ref                       #(reset! status.views/messages-list-ref %)
         :on-viewable-items-changed chat.views/on-viewable-items-changed
         :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages])
         :on-scroll-to-index-failed #()                      ;;don't remove this
-        :render-fn                 my-status/render-message
+        :render-fn                 (status.views/render-message false nil)
         :data                      messages}])))
 
 (views/defview profile []

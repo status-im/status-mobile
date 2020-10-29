@@ -68,7 +68,8 @@
             status-im.chat.models.images
             status-im.ui.screens.privacy-and-security-settings.events
             [status-im.data-store.invitations :as data-store.invitations]
-            [status-im.ui.screens.wallet.events :as wallet.events]))
+            [status-im.ui.screens.wallet.events :as wallet.events]
+            [status-im.contact.db :as contact.db]))
 
 ;; init module
 (handlers/register-handler-fx
@@ -484,7 +485,12 @@
 (handlers/register-handler-fx
  :chat.ui/remove-chat
  (fn [cofx [_ chat-id]]
-   (chat/remove-chat cofx chat-id)))
+   (chat/remove-chat cofx chat-id true)))
+
+(handlers/register-handler-fx
+ :chat/remove-update-chat
+ (fn [cofx [_ update-public-key]]
+   (chat/remove-chat cofx (chat/profile-chat-topic update-public-key) false)))
 
 (handlers/register-handler-fx
  :chat.ui/clear-history
@@ -1249,9 +1255,20 @@
   (let [chat-id (chat/profile-chat-topic public-key)]
     (when-not (= (:current-chat-id db) chat-id)
       (fx/merge cofx
-                (chat/start-public-chat chat-id {:dont-navigate? true :profile-public-key public-key})
+                (chat/start-profile-chat public-key)
                 (chat/offload-all-messages)
                 (chat/preload-chat-data chat-id)))))
+
+(fx/defn reset-current-timeline-chat [{:keys [db] :as cofx}]
+  (let [profile-chats (conj (map :public-key (contact.db/get-active-contacts (:contacts/contacts db)))
+                            (get-in db [:multiaccount :public-key]))]
+    (when-not (= (:current-chat-id db) chat/timeline-chat-id)
+      (fx/merge cofx
+                (fn [cofx]
+                  (apply fx/merge cofx (map chat/start-profile-chat profile-chats)))
+                (chat/start-timeline-chat)
+                (chat/offload-all-messages)
+                (chat/preload-chat-data chat/timeline-chat-id)))))
 
 (fx/defn reset-current-chat [{:keys [db] :as cofx} chat-id]
   (when-not (= (:current-chat-id db) chat-id)
@@ -1274,8 +1291,8 @@
                 (:chat :group-chat-profile) (reset-current-chat % (get db :inactive-chat-id))
                 :multiaccounts (keycard/multiaccounts-screen-did-load %)
                 (:wallet-stack :wallet) (wallet.events/wallet-will-focus %)
-                (:my-profile :profile-stack)
-                (reset-current-profile-chat % (get-in % [:db :multiaccount :public-key]))
+                (:status :status-stack)
+                (reset-current-timeline-chat %)
                 :profile
                 (reset-current-profile-chat % (get-in % [:db :contacts/identity]))
                 nil))))
@@ -1289,8 +1306,8 @@
                 :chat
                 (reset-current-chat % (get db :inactive-chat-id))
 
-                (:my-profile :profile-stack)
-                (reset-current-profile-chat % (get-in % [:db :multiaccount :public-key]))
+                (:status :status-stack)
+                (reset-current-timeline-chat %)
 
                 :profile
                 (reset-current-profile-chat % (get-in % [:db :contacts/identity]))

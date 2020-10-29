@@ -14,7 +14,6 @@
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
-            [status-im.chat.models.loading :as loading]
             [status-im.utils.types :as types]
             [status-im.ui.screens.add-new.new-public-chat.db :as new-public-chat.db]))
 
@@ -51,6 +50,12 @@
         (not (public-chat? chat))))
   ([cofx chat-id]
    (group-chat? (get-chat cofx chat-id))))
+
+(defn timeline-chat?
+  ([chat]
+   (:timeline? chat))
+  ([cofx chat-id]
+   (timeline-chat? (get-chat cofx chat-id))))
 
 (defn set-chat-ui-props
   "Updates ui-props in active chat by merging provided kvs into them"
@@ -97,7 +102,7 @@
 
 (fx/defn ensure-chat
   "Add chat to db and update"
-  [{:keys [db] :as cofx} {:keys [chat-id] :as chat-props}]
+  [{:keys [db] :as cofx} {:keys [chat-id timeline?] :as chat-props}]
   (let [chat (merge
               (or (get (:chats db) chat-id)
                   (create-new-chat chat-id cofx))
@@ -106,7 +111,7 @@
         public? (public-chat? chat)]
     (fx/merge cofx
               {:db (update-in db [:chats chat-id] merge chat)}
-              (when (and public? new?)
+              (when (and public? new? (not timeline?))
                 (transport.filters/load-chat chat-id)))))
 
 (defn map-chats [{:keys [db] :as cofx}]
@@ -162,9 +167,10 @@
 
 (fx/defn add-public-chat
   "Adds new public group chat to db"
-  [cofx topic profile-public-key]
+  [cofx topic profile-public-key timeline?]
   (upsert-chat cofx
                {:chat-id                        topic
+                :timeline?                      timeline?
                 :profile-public-key             profile-public-key
                 :is-active                      true
                 :name                           topic
@@ -206,14 +212,14 @@
 
 (fx/defn remove-chat
   "Removes chat completely from app, producing all necessary effects for that"
-  [{:keys [db now] :as cofx} chat-id]
+  [{:keys [db now] :as cofx} chat-id navigate-home?]
   (fx/merge cofx
             (mailserver/remove-gaps chat-id)
             (mailserver/remove-range chat-id)
             (deactivate-chat chat-id)
             (clear-history chat-id)
             (transport.filters/stop-listening chat-id)
-            (when (not (= (:view-id db) :home))
+            (when (and navigate-home? (not (= (:view-id db) :home)))
               (navigation/navigate-to-cofx :home {}))))
 
 (fx/defn offload-all-messages
@@ -232,15 +238,15 @@
   [{:keys [db] :as cofx} chat-id]
   (let [old-current-chat-id (:current-chat-id db)]
     (fx/merge cofx
+              {:dispatch [:load-messages]}
               (when-not (= old-current-chat-id chat-id)
                 (offload-all-messages))
               (fn [{:keys [db]}]
                 {:db (assoc db :current-chat-id chat-id)})
               ;; Group chat don't need this to load as all the loading of topics
               ;; happens on membership changes
-              (when-not (group-chat? cofx chat-id)
-                (transport.filters/load-chat chat-id))
-              (loading/load-messages))))
+              (when-not (or (group-chat? cofx chat-id) (timeline-chat? cofx chat-id))
+                (transport.filters/load-chat chat-id)))))
 
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
@@ -262,6 +268,8 @@
               (transport.filters/load-chat chat-id)
               (navigate-to-chat chat-id))))
 
+(def timeline-chat-id "@timeline")
+
 (defn profile-chat-topic [public-key]
   (str "@" public-key))
 
@@ -273,12 +281,28 @@
       (when-not dont-navigate?
         (navigate-to-chat cofx topic))
       (fx/merge cofx
-                (add-public-chat topic profile-public-key)
+                (add-public-chat topic profile-public-key false)
                 (transport.filters/load-chat topic)
                 #(when-not dont-navigate?
                    (navigate-to-chat % topic))))
     {:utils/show-popup {:title   (i18n/label :t/cant-open-public-chat)
                         :content (i18n/label :t/invalid-public-chat-topic)}}))
+
+(fx/defn start-profile-chat
+  "Starts a new profile chat"
+  {:events [:start-profile-chat]}
+  [cofx profile-public-key]
+  (let [topic (profile-chat-topic profile-public-key)]
+    (when-not (active-chat? cofx topic)
+      (fx/merge cofx
+                (add-public-chat topic profile-public-key false)
+                (transport.filters/load-chat topic)))))
+
+(fx/defn start-timeline-chat
+  "Starts a new timeline chat"
+  [cofx]
+  (when-not (active-chat? cofx timeline-chat-id)
+    (add-public-chat cofx timeline-chat-id nil true)))
 
 (fx/defn disable-chat-cooldown
   "Turns off chat cooldown (protection against message spamming)"

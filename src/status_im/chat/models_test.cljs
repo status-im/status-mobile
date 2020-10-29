@@ -49,7 +49,7 @@
   (with-redefs [gfycat/generate-gfy (constantly "generated")
                 identicon/identicon (constantly "generated")]
     (let [topic "topic"
-          fx (chat/add-public-chat {:db {}} topic nil)
+          fx (chat/add-public-chat {:db {}} topic nil nil)
           chat (get-in fx [:db :chats topic])]
       (testing "it sets the name"
         (is (= topic (:name chat))))
@@ -107,16 +107,16 @@
                                           "3" {:clock-value 2}}}
                       :chats {chat-id {:last-message {:clock-value 10}}}}}]
     (testing "it deletes all the messages"
-      (let [actual (chat/remove-chat cofx chat-id)]
+      (let [actual (chat/remove-chat cofx chat-id true)]
         (is (= {} (get-in actual [:db :messages chat-id])))))
     (testing "it sets a deleted-at-clock-value equal to the last message clock-value"
-      (let [actual (chat/remove-chat cofx chat-id)]
+      (let [actual (chat/remove-chat cofx chat-id true)]
         (is (= 10 (get-in actual [:db :chats chat-id :deleted-at-clock-value])))))
     (testing "it sets the chat as inactive"
-      (let [actual (chat/remove-chat cofx chat-id)]
+      (let [actual (chat/remove-chat cofx chat-id true)]
         (is (= false (get-in actual [:db :chats chat-id :is-active])))))
     (testing "it makes the relevant json-rpc calls"
-      (let [actual (chat/remove-chat cofx chat-id)]
+      (let [actual (chat/remove-chat cofx chat-id true)]
         (is (::json-rpc/call actual))
         (is (= 4 (count (::json-rpc/call actual))))))))
 

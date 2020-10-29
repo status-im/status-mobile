@@ -160,8 +160,12 @@
   [{:keys [chat-id
            group-chat
            members-joined
+           timeline?
            public?]}]
   (cond
+    ;;ignore timeline chats
+    timeline?
+    nil
     (not group-chat)
     ;; Some legacy one-to-one chats (bots), have not a public key for id, we exclude those
     (when (is-public-key? chat-id)

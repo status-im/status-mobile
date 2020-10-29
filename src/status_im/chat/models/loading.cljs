@@ -152,6 +152,7 @@
                     (mailserver/load-gaps-fx current-chat-id)))))))
 
 (fx/defn load-messages
+  {:events [:load-messages]}
   [{:keys [db now] :as cofx}]
   (when-let [current-chat-id (:current-chat-id db)]
     (if-not (get-in db [:pagination-info current-chat-id :messages-initialized?])

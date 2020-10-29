@@ -132,14 +132,14 @@
                 (process-cooldown)))))
 
 (fx/defn send-image
-  [{{:keys [current-chat-id] :as db} :db :as cofx}]
+  [{{:keys [current-chat-id] :as db} :db :as cofx} chat-id]
   (let [images (get-in db [:chats current-chat-id :metadata :sending-image])]
     (fx/merge cofx
               ;; NOTE(Ferossgp): Ideally here and for all other types of message we should dissoc on success only
               {:db (update-in db [:chats current-chat-id :metadata] dissoc :sending-image)}
               (chat.message/send-messages
                (map (fn [[_ {:keys [uri]}]]
-                      {:chat-id      current-chat-id
+                      {:chat-id      chat-id
                        :content-type constants/content-type-image
                        :image-path   (utils/safe-replace uri #"file://" "")
                        :text         (i18n/label :t/update-to-see-image)})
@@ -149,10 +149,11 @@
   "when not empty, proceed by sending text message with public key topic"
   {:events [:profile.ui/send-my-status-message]}
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
-  (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])]
+  (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])
+        chat-id (chat/profile-chat-topic (get-in db [:multiaccount :public-key]))]
     (fx/merge cofx
-              (send-image)
-              (send-plain-text-message input-text current-chat-id))))
+              (send-image chat-id)
+              (send-plain-text-message input-text chat-id))))
 
 (fx/defn send-audio-message
   [cofx audio-path duration current-chat-id]
@@ -178,7 +179,7 @@
   (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])
         input-text-with-mentions (mentions/check-mentions cofx input-text)]
     (fx/merge cofx
-              (send-image)
+              (send-image current-chat-id)
               (send-plain-text-message input-text-with-mentions current-chat-id)
               (mentions/clear-mentions)
               (mentions/clear-cursor))))
