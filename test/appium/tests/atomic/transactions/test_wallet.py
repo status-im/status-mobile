@@ -216,20 +216,26 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5407)
     @marks.medium
-    def test_cant_send_transaction_in_offline_mode(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.toggle_airplane_mode()
-        wallet_view.accounts_status_account.click_until_presence_of_element(wallet_view.send_transaction_button)
-        send_transaction = wallet_view.send_transaction_button.click()
+    def test_offline_can_login_cant_send_transaction(self):
+        home = SignInView(self.driver).create_user()
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.toggle_airplane_mode()
+        wallet.accounts_status_account.click_until_presence_of_element(wallet.send_transaction_button)
+        send_transaction = wallet.send_transaction_button.click()
         send_transaction.set_recipient_address('0x%s' % basic_user['address'])
         send_transaction.amount_edit_box.set_value("0")
         send_transaction.confirm()
         send_transaction.sign_transaction_button.click()
         if send_transaction.sign_with_password.is_element_displayed():
             self.driver.fail("Sign transaction button is active in offline mode")
+        self.driver.close_app()
+        self.driver.launch_app()
+        SignInView(self.driver).sign_in()
+        home.home_button.wait_for_visibility_of_element()
+        connection_text = home.connection_status.text
+        if connection_text != 'Offline':
+            self.driver.fail("Connection status text '%s' doesn't match expected 'Offline'" % connection_text)
 
     @marks.testrail_id(6225)
     @marks.medium
@@ -403,8 +409,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             wallet_view.scan_qr_button.click()
             if wallet_view.allow_button.is_element_displayed():
                 wallet_view.allow_button.click()
-            wallet_view.enter_qr_edit_box.set_value(url_data[key]['url'])
-            wallet_view.ok_button.click()
+            wallet_view.enter_qr_edit_box.scan_qr(url_data[key]['url'])
             if url_data[key].get('error'):
                 if not wallet_view.element_by_text_part(url_data[key]['error']).is_element_displayed():
                     self.errors.append('Expected error %s is not shown' % url_data[key]['error'])
@@ -520,11 +525,17 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.add_to_favorites(recent_add_to_fav_name)
         wallet_view.element_by_text('Recent').click()
 
-        send_transaction.just_fyi('Scan code, add it to favorites and recheck that it is preserved')
+        send_transaction.just_fyi('Scan invalid QR')
         send_transaction.scan_qr_code_button.click()
         send_transaction.allow_button.click(1)
-        wallet_view.enter_qr_edit_box.set_value(basic_user['address'])
+        wallet_view.enter_qr_edit_box.scan_qr('something%s' % basic_user['address'])
+        if not send_transaction.element_by_text_part('Invalid address').is_element_displayed(10):
+            self.driver.fail('No error is shown at attempt to scan invalid address')
         wallet_view.ok_button.click()
+
+        send_transaction.just_fyi('Scan code, add it to favorites and recheck that it is preserved')
+        send_transaction.scan_qr_code_button.click()
+        wallet_view.enter_qr_edit_box.scan_qr(basic_user['address'])
         send_transaction.add_to_favorites(basic_add_to_fav_name)
         send_transaction.element_by_text('Favourites').scroll_and_click()
         for name in (recent_add_to_fav_name, basic_add_to_fav_name):

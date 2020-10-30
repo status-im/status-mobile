@@ -808,7 +808,6 @@ class ProfileView(BaseView):
         return SyncedDeviceToggle(self.driver, device_name)
 
     def discover_and_advertise_device(self, device_name):
-        self.profile_button.click()
         self.settings_button.click()
         self.sync_settings_button.click()
         self.devices_button.scroll_to_element()

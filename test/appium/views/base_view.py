@@ -332,14 +332,19 @@ class StatusInBackgroundButton(BaseButton):
         super(StatusInBackgroundButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector('//*[contains(@content-desc,"Status")]')
 
+
 class EnterQRcodeEditBox(BaseEditBox):
     def __init__(self, driver):
         super(EnterQRcodeEditBox, self).__init__(driver)
         self.locator = self.Locator.text_selector('Message')
 
+    def scan_qr(self, value):
+        self.set_value(value)
+        OkButton(self.driver).click()
+
 
 class OkGotItButton(BaseButton):
-    def __init__(self,driver):
+    def __init__(self, driver):
         super(OkGotItButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Okay, got it']")
 
@@ -354,6 +359,7 @@ class AirplaneModeButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@content-desc='Airplane mode']")
 
     def click(self):
+        self.driver.info('Turning on airplane mode')
         action = TouchAction(self.driver)
         action.press(None, 50, 0).move_to(None, 50, 300).perform()
         super(AirplaneModeButton, self).click()

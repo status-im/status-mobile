@@ -118,15 +118,6 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5414)
-    @marks.critical
-    def test_password_in_logcat_creating_account(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user(password=unique_password)
-        values_in_logcat = sign_in.find_values_in_logcat(password=unique_password)
-        if values_in_logcat:
-            self.driver.fail(values_in_logcat)
-
     @marks.testrail_id(5718)
     @marks.medium
     def test_special_characters_in_password_when_creating_new_account(self):

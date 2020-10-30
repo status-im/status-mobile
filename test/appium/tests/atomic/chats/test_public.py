@@ -37,7 +37,6 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('No redirect to chat if tap on #status chat')
         status_chat.get_back_to_home_view()
 
-
         public_chat_name = home_1.get_random_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(public_chat_name), home_2.join_public_chat(public_chat_name)
 

@@ -10,6 +10,25 @@ from views.recover_access_view import RecoverAccessView
 
 class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
 
+    @marks.testrail_id(5394)
+    @marks.high
+    def test_account_recovery_with_uppercase_recovery_phrase_logcat(self):
+        user = transaction_senders['A']
+        passphrase = user['passphrase']
+        password = unique_password
+        capitalized_passphrase = passphrase.upper()
+        signin_view = SignInView(self.driver)
+        signin_view.recover_access(capitalized_passphrase, password=password)
+        profile_view = signin_view.profile_button.click()
+        username = profile_view.default_username_text.text
+        public_key = signin_view.get_public_key_and_username()
+        if username != user['username'] or public_key != user['public_key']:
+            self.driver.fail('Incorrect user was recovered')
+        values_in_logcat = signin_view.find_values_in_logcat(passphrase=capitalized_passphrase, password=password)
+        if values_in_logcat:
+            self.driver.fail(values_in_logcat)
+
+
     @marks.testrail_id(6231)
     @marks.medium
     def test_no_backup_seedphrase_option_for_recovered_account(self):
@@ -24,19 +43,6 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
         profile_view.backup_recovery_phrase_button.click()
         if not profile_view.backup_recovery_phrase_button.is_element_displayed():
             self.errors.append('Back up seed phrase option is active for recovered account!')
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5366)
-    @marks.critical
-    def test_logcat_recovering_account(self):
-        sign_in = SignInView(self.driver)
-        sign_in.recover_access(passphrase=basic_user['passphrase'], password=unique_password)
-        values_in_logcat = sign_in.find_values_in_logcat(passphrase=basic_user['passphrase'], password=unique_password)
-        if values_in_logcat:
-            self.driver.fail(values_in_logcat)
-
-
-class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
 
     @marks.testrail_id(5363)
     @marks.high
@@ -133,19 +139,6 @@ class TestRecoverAccessFromSignInScreen(SingleDeviceTestCase):
         if not home_view.profile_button.is_element_displayed():
             self.driver.fail('Something went wrong. Probably, could not reach the home screen out.')
 
-    @marks.testrail_id(5394)
-    @marks.high
-    def test_account_recovery_with_uppercase_recovery_phrase(self):
-        user = transaction_senders['A']
-        passphrase = user['passphrase']
-        capitalized_passphrase = passphrase.upper()
-        signin_view = SignInView(self.driver)
-        signin_view.recover_access(capitalized_passphrase)
-        profile_view = signin_view.profile_button.click()
-        username = profile_view.default_username_text.text
-        public_key = signin_view.get_public_key_and_username()
-        if username != user['username'] or public_key != user['public_key']:
-            self.driver.fail('Incorrect user was recovered')
 
     @marks.testrail_id(5719)
     @marks.medium

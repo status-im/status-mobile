@@ -19,6 +19,8 @@ ens_user_ropsten = dict()
 ens_user_ropsten['ens'] = 'nastya'
 ens_user_ropsten['username'] = 'Thoughtful Stupendous Graywolf'
 ens_user_ropsten['address'] = '0x58d8c3D70ce4FA4b9fb10a665C8712238746F2ff'
+ens_user_ropsten['public_key']  = '0x045efbcc044e5ae21ac3cf111ea6df6186e0cc50a2cd747f52a56d19ce516e683c66cb47f4b0a211108' \
+                                  '59aea9592dfba1e0bf4af11ff3eab995f844b3673643bf1'
 
 dummy_user = dict()
 dummy_user['username'] = "Vain Wordy Hagfish"

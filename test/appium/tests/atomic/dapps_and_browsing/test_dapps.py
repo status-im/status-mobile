@@ -1,5 +1,4 @@
-import pytest
-from tests import marks, test_dapp_url, test_dapp_name
+from tests import marks, test_dapp_name
 from tests.base_test_case import SingleDeviceTestCase
 from tests.users import basic_user
 from views.sign_in_view import SignInView

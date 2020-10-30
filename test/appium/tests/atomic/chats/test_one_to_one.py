@@ -95,43 +95,46 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5310)
     @marks.critical
-    def test_offline_messaging_1_1_chat(self):
+    def test_offline_is_shown_messaging_1_1_chat(self):
         self.create_drivers(2)
-        sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user()
+        home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
         public_key_1 = home_1.get_public_key_and_username()
         home_1.home_button.click()
 
-        home_1.toggle_airplane_mode()  # airplane mode on primary device
-
+        home_1.just_fyi('turn on airplane mode and check that offline status is shown on home view')
+        home_1.toggle_airplane_mode()
+        home_1.connection_status.wait_for_visibility_of_element(15)
+        if home_1.connection_status.text != 'Offline':
+            self.errors.append('Offline status is not shown in home screen')
         profile_2 = home_2.profile_button.click()
         username_2 = profile_2.default_username_text.text
         profile_2.get_back_to_home_view()
         chat_2 = home_2.add_contact(public_key_1)
         message_1 = 'test message'
-        chat_2.chat_message_input.send_keys(message_1)
-        chat_2.send_message_button.click()
-        chat_2.toggle_airplane_mode()  # airplane mode on secondary device
+        chat_2.send_message(message_1)
 
-        home_1.toggle_airplane_mode()  # turning on WiFi connection on primary device
+        home_2.just_fyi('turn on airplane mode and check that offline status is shown on chat view')
+        chat_2.toggle_airplane_mode()
+        chat_2.element_by_text('Offline').wait_for_visibility_of_element(15)
+        if chat_2.connection_status.text != 'Offline':
+            self.errors.append('Offline status is not shown in 1-1 chat')
 
+        home_1.just_fyi('go back online and check that 1-1 chat will be fetched')
+        home_1.toggle_airplane_mode()
         home_1.connection_status.wait_for_invisibility_of_element(30)
         chat_element = home_1.get_chat(username_2)
         chat_element.wait_for_visibility_of_element(30)
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element(2)
 
-        chat_2.toggle_airplane_mode()  # turning on WiFi connection on secondary device
-        home_1.toggle_airplane_mode()  # airplane mode on primary device
-
+        home_1.just_fyi('checking offline fetching for another message')
+        chat_2.toggle_airplane_mode()
+        home_1.toggle_airplane_mode()
         chat_2.element_by_text('Connecting to peers...').wait_for_invisibility_of_element(60)
         chat_2.connection_status.wait_for_invisibility_of_element(60)
         message_2 = 'one more message'
-        chat_2.chat_message_input.send_keys(message_2)
-        chat_2.send_message_button.click_until_absense_of_element(chat_2.send_message_button)
-
-        home_1.toggle_airplane_mode()  # turning on WiFi connection on primary device
-
+        chat_2.send_message(message_2)
+        home_1.toggle_airplane_mode()
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_2).wait_for_visibility_of_element(180)
 
@@ -737,41 +740,45 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
     @marks.testrail_id(5403)
     @marks.critical
-    def test_start_chat_with_ens(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        profile = home.profile_button.click()
-        profile.switch_network('Mainnet with upstream RPC')
-        chat = home.add_contact(ens_user['ens'])
-        if not chat.element_by_text("@" + ens_user['ens']).is_element_displayed():
-            self.driver.fail('Wrong user is resolved from username when starting 1-1 chat.')
+    def test_start_chat_with_ens_mention_in_one_to_one(self):
+        home = SignInView(self.driver).create_user()
 
-    @marks.testrail_id(5326)
-    @marks.critical
-    def test_offline_status(self):
-        sign_in = SignInView(self.driver)
-        home_view = sign_in.create_user()
-
-        home_view.airplane_mode_button.click()
-
-        chat = home_view.add_contact(transaction_senders['C']['public_key'])
-        chat.element_by_text('Offline').wait_for_visibility_of_element(15)
-        if chat.connection_status.text != 'Offline':
-            self.errors.append('Offline status is not shown in 1-1 chat')
+        home.just_fyi('Start new chat with public key and check user profile from 1-1 header > options')
+        chat = home.add_contact(ens_user_ropsten['public_key'])
+        chat.chat_options.click_until_presence_of_element(chat.view_profile_button)
+        chat.view_profile_button.click()
+        for element in (chat.profile_block_contact, chat.remove_from_contacts, chat.profile_send_message):
+            if not element.is_element_displayed():
+                self.errors.append('Expected %s is not visible' % element.locator)
         chat.get_back_to_home_view()
 
-        if home_view.connection_status.text != 'Offline':
-            self.errors.append('Offline status is not shown in home screen')
+        home.just_fyi('Start new chat with ENS and check that ENS is resolved')
+        ens = ens_user_ropsten['ens']
+        home.add_contact(ens, add_in_contacts=False)
+        if not chat.element_by_text("@" + ens).is_element_displayed():
+            self.driver.fail('Wrong user is resolved from username when starting 1-1 chat.')
 
-        public_chat = home_view.join_public_chat(home_view.get_random_chat_name())
-        if public_chat.connection_status.text != 'Offline':
-            self.errors.append('Offline status is not shown in a public chat')
+        home.just_fyi('Mention user by ENS in 1-1 chat')
+        message = '@%s hey!' % ens
+        chat.send_message(message)
+        chat.chat_element_by_text(message).click()
+        if not chat.profile_block_contact.is_element_displayed():
+            self.errors.append('No redirect to user profile after tapping on message with mention (ENS) in 1-1 chat')
+
+        home.just_fyi('Set nickname and mention user by nickname in 1-1 chat')
+        russian_nickname = 'МОЙ дорогой ДРУх'
+        chat.set_nickname(russian_nickname)
+        chat.back_button.click()
+        chat.select_mention_from_suggestion_list(russian_nickname + ' @' + ens)
+        chat.chat_element_by_text('%s hey!' % russian_nickname).click()
+        if not chat.profile_block_contact.is_element_displayed():
+            self.errors.append('No redirect to user profile after tapping on message with mention (nickname) in 1-1 chat')
         self.errors.verify_no_errors()
 
 
     @marks.testrail_id(6298)
     @marks.medium
-    def test_can_scan_qr_with_chat_key_from_new_contact_view(self):
+    def test_can_scan_qr_with_chat_key_from_home_start_chat(self):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(basic_user['passphrase'])
         profile = home_view.profile_button.click()
@@ -828,12 +835,11 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         for key in url_data:
             home_view.plus_button.click_until_presence_of_element(home_view.start_new_chat_button)
             contact_view = home_view.start_new_chat_button.click()
-            sign_in_view.just_fyi('Checking %s case' % key)
+            sign_in_view.just_fyi('Checking scanning qr for "%s" case' % key)
             contact_view.scan_contact_code_button.click()
             if contact_view.allow_button.is_element_displayed():
                 contact_view.allow_button.click()
-            contact_view.enter_qr_edit_box.set_value(url_data[key]['url'])
-            contact_view.ok_button.click()
+            contact_view.enter_qr_edit_box.scan_qr(url_data[key]['url'])
             from views.chat_view import ChatView
             chat_view = ChatView(self.driver)
             if url_data[key].get('error'):
@@ -842,11 +848,10 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 chat_view.ok_button.click()
             if url_data[key].get('username'):
                 if not chat_view.chat_message_input.is_element_displayed():
-                    self.errors.append('In %s case chat input is not found after scanning' % key)
+                    self.errors.append('In "%s" case chat input is not found after scanning, so no redirect to 1-1' % key)
                 if not chat_view.element_by_text(url_data[key]['username']).is_element_displayed():
-                    self.errors.append('In %s case username not found after scanning' % key)
+                    self.errors.append('In "%s" case "%s" not found after scanning' % (key, url_data[key]['username']))
                 chat_view.back_button.click()
-
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6322)
@@ -921,8 +926,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 home_view.universal_qr_scanner_button.click()
             if home_view.allow_button.is_element_displayed():
                 home_view.allow_button.click()
-            home_view.enter_qr_edit_box.set_value(url_data[key]['url'])
-            home_view.ok_button.click()
+            home_view.enter_qr_edit_box.scan_qr(url_data[key]['url'])
             from views.chat_view import ChatView
             chat_view = ChatView(self.driver)
             if url_data[key].get('error'):

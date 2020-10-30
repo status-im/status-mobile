@@ -9,27 +9,15 @@ class TestSignIn(SingleDeviceTestCase):
 
     @marks.testrail_id(5312)
     @marks.critical
-    def test_login_with_new_account(self):
+    def test_login_with_new_account_logcat(self):
         sign_in = SignInView(self.driver)
-        sign_in.create_user()
+        password = unique_password
+        sign_in.create_user(password=password)
         profile = sign_in.profile_button.click()
         default_username = profile.default_username_text.text
-        self.driver.close_app()
-        self.driver.launch_app()
-        # sign_in.accept_agreements()
-        if not sign_in.element_by_text(default_username).is_element_displayed():
-            self.driver.fail('Username is not shown while login')
-        sign_in.sign_in()
-        if not sign_in.home_button.is_element_displayed():
-            self.driver.fail('User is not logged in')
-
-    @marks.testrail_id(5463)
-    @marks.medium
-    def test_login_with_incorrect_password(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        profile = sign_in.profile_button.click()
         profile.logout()
+
+        sign_in.just_fyi('Check that cannot login with incorrect password')
         if sign_in.ok_button.is_element_displayed():
             sign_in.ok_button.click()
         sign_in.multi_account_on_login_button.click()
@@ -37,28 +25,15 @@ class TestSignIn(SingleDeviceTestCase):
         sign_in.sign_in_button.click()
         sign_in.find_full_text("Wrong password")
 
-    @marks.testrail_id(5415)
-    @marks.critical
-    def test_password_in_logcat_sign_in(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user(password=unique_password)
-        profile = sign_in.profile_button.click()
-        profile.logout()
-        sign_in.sign_in()
-        values_in_logcat = sign_in.find_values_in_logcat(password=unique_password)
+        sign_in.just_fyi('Checking username and login')
+        if not sign_in.element_by_text(default_username).is_element_displayed():
+            self.driver.fail('Username is not shown while login')
+        sign_in.password_input.set_value(password)
+        sign_in.sign_in_button.click()
+
+        sign_in.just_fyi('Checking logcat that no password during creating new user and login')
+        if not sign_in.home_button.is_element_displayed(10):
+            self.driver.fail('User is not logged in')
+        values_in_logcat = sign_in.find_values_in_logcat(password=password)
         if values_in_logcat:
             self.driver.fail(values_in_logcat)
-
-    @marks.testrail_id(5327)
-    @marks.medium
-    def test_offline_login(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        self.driver.close_app()
-        sign_in.toggle_airplane_mode()
-        self.driver.launch_app()
-        home = sign_in.sign_in()
-        home.home_button.wait_for_visibility_of_element()
-        connection_text = sign_in.connection_status.text
-        if connection_text != 'Offline':
-            self.driver.fail("Connection status text '%s' doesn't match expected 'Offline'" % connection_text)

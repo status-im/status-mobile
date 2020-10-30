@@ -69,10 +69,11 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(6210)
     @marks.high
-    def test_open_blocked_site(self):
+    def test_open_blocked_secure_not_secure_sites(self):
         home_view = SignInView(self.driver).create_user()
         daap_view = home_view.dapp_tab_button.click()
         for url in ('metamask.site', 'https://www.cryptokitties.domainname'):
+            daap_view.just_fyi('Checking blocked website %s' % url)
             dapp_detail = daap_view.open_url(url)
             dapp_detail.find_text_part('This site is blocked')
             if dapp_detail.browser_refresh_page_button.is_element_displayed():
@@ -83,6 +84,21 @@ class TestBrowsing(SingleDeviceTestCase):
             if dapp_detail.element_by_text('This site is blocked').is_element_displayed():
                 self.errors.append("Failed to open Dapp after 'Continue anyway' tapped for %s" % url)
             daap_view.cross_icon.click()
+
+        daap_view.just_fyi('Checking connection is not secure warning')
+        browsing_view = daap_view.open_url('http://www.dvwa.co.uk')
+        browsing_view.url_edit_box_lock_icon.click_until_presence_of_element(
+            browsing_view.element_by_text(connection_not_secure_text))
+        browsing_view.cross_icon.click()
+
+        for url in ('https://www.bbc.com', 'https://instant.airswap.io'):
+            daap_view.just_fyi('Checking connection is secure for %s' % url)
+            browsing_view = daap_view.open_url(url)
+            browsing_view.wait_for_d_aap_to_load()
+            browsing_view.url_edit_box_lock_icon.click_until_presence_of_element(
+                browsing_view.element_by_text(connection_is_secure_text))
+            browsing_view.cross_icon.click()
+
         self.errors.verify_no_errors()
 
 
@@ -125,30 +141,6 @@ class TestBrowsing(SingleDeviceTestCase):
             self.errors.append("URL spoof due to port timeout \n")
 
         self.errors.verify_no_errors()
-
-    @marks.testrail_id(5430)
-    @marks.medium
-    def test_connection_is_not_secure(self):
-        sign_in = SignInView(self.driver)
-        home_view = sign_in.create_user()
-        daap_view = home_view.dapp_tab_button.click()
-        browsing_view = daap_view.open_url('http://www.dvwa.co.uk')
-        browsing_view.url_edit_box_lock_icon.click_until_presence_of_element(browsing_view.element_by_text(connection_not_secure_text))
-
-    @marks.testrail_id(5402)
-    @marks.high
-    def test_connection_is_secure(self):
-        sign_in = SignInView(self.driver)
-        home_view = sign_in.create_user()
-        daap_view = home_view.dapp_tab_button.click()
-        browsing_view = daap_view.open_url('https://www.bbc.com')
-        browsing_view.wait_for_d_aap_to_load()
-        browsing_view.url_edit_box_lock_icon.click_until_presence_of_element(browsing_view.element_by_text(connection_is_secure_text))
-        browsing_view.cross_icon.click()
-
-        browsing_view = daap_view.open_url('https://instant.airswap.io')
-        browsing_view.wait_for_d_aap_to_load()
-        browsing_view.url_edit_box_lock_icon.click_until_presence_of_element(browsing_view.element_by_text(connection_is_secure_text))
 
     @marks.testrail_id(5390)
     @marks.high
