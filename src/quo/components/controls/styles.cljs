@@ -2,14 +2,16 @@
   (:require [quo.animated :as animated]
             [quo.design-system.colors :as colors]))
 
-(defn switch-style [state]
+(defn switch-style [state disabled]
   {:width            52
    :height           28
    :border-radius    14
    :padding          4
    :background-color (animated/mix-color state
                                          (:ui-01 @colors/theme)
-                                         (:interactive-01 @colors/theme))})
+                                         (if disabled
+                                           (:interactive-04 @colors/theme)
+                                           (:interactive-01 @colors/theme)))})
 
 (defn switch-bullet-style [state hold]
   {:width            20
@@ -24,14 +26,16 @@
    :shadow-color     (:shadow-01 @colors/theme)
    :shadow-offset    {:width 0 :height 4}})
 
-(defn radio-style [state]
+(defn radio-style [state disabled]
   {:width            20
    :height           20
    :border-radius    10
    :padding          4
    :background-color (animated/mix-color state
                                          (:ui-01 @colors/theme)
-                                         (:interactive-01 @colors/theme))})
+                                         (if disabled
+                                           (:interactive-04 @colors/theme)
+                                           (:interactive-01 @colors/theme)))})
 
 (defn radio-bullet-style [state hold]
   {:width            12
@@ -46,7 +50,7 @@
    :shadow-color     (:shadow-01 @colors/theme)
    :shadow-offset    {:width 0 :height 4}})
 
-(defn checkbox-style [state]
+(defn checkbox-style [state disabled]
   {:width            18
    :height           18
    :border-radius    4
@@ -54,7 +58,9 @@
    :align-items      :center
    :background-color (animated/mix-color state
                                          (:ui-01 @colors/theme)
-                                         (:interactive-01 @colors/theme))})
+                                         (if disabled
+                                           (:interactive-04 @colors/theme)
+                                           (:interactive-01 @colors/theme)))})
 
 (defn check-icon-style [state hold]
   {:opacity       (animated/mix hold 1 0.6)

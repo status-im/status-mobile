@@ -45,22 +45,23 @@
                                        :enabled                 (boolean (and onChange (not disabled)))})
         [animated/view
          [component {:transition transition
-                     :hold       hold}]]]))))
+                     :hold       hold
+                     :disabled   disabled}]]]))))
 
-(defn switch-view [{:keys [transition hold]}]
-  [animated/view {:style               (styles/switch-style transition)
+(defn switch-view [{:keys [transition hold disabled]}]
+  [animated/view {:style               (styles/switch-style transition disabled)
                   :accessibility-label :switch
                   :accessibility-role  :switch}
    [animated/view {:style (styles/switch-bullet-style transition hold)}]])
 
-(defn radio-view [{:keys [transition hold]}]
-  [animated/view {:style (styles/radio-style transition)
+(defn radio-view [{:keys [transition hold disabled]}]
+  [animated/view {:style (styles/radio-style transition disabled)
                   :accessibility-label :radio
                   :accessibility-role  :radio}
    [animated/view {:style (styles/radio-bullet-style transition hold)}]])
 
-(defn checkbox-view [{:keys [transition hold]}]
-  [animated/view {:style               (styles/checkbox-style transition)
+(defn checkbox-view [{:keys [transition hold disabled]}]
+  [animated/view {:style               (styles/checkbox-style transition disabled)
                   :accessibility-label :checkbox
                   :accessibility-role  :checkbox}
    [animated/view {:style (styles/check-icon-style transition hold)}

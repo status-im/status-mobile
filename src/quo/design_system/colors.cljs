@@ -29,6 +29,7 @@
    :interactive-01 "rgba(67,96,223,1)"     ; Accent color, buttons, own message, actions,active state
    :interactive-02 "rgba(236,239,252,1)"   ; Light Accent, buttons background, actions background, messages
    :interactive-03 "rgba(255,255,255,0.1)" ; Background for interactive above accent
+   :interactive-04 "rgba(147,155,161,1)"   ; Disabled state
    :ui-background  "rgba(255,255,255,1)"   ; Default view background
    :ui-01          "rgba(238,242,245,1)"   ; Secondary background
    :ui-02          "rgba(0,0,0,0.1)"       ; Deviders
@@ -59,6 +60,7 @@
    :interactive-01 "rgba(97,119,229,1)"
    :interactive-02 "rgba(35,37,47,1)"
    :interactive-03 "rgba(255,255,255,0.1)"
+   :interactive-04 "rgba(131,140,145,1)"
    :ui-background  "rgba(20,20,20,1)"
    :ui-01          "rgba(37,37,40,1)"
    :ui-02          "rgba(0,0,0,0.1)"
