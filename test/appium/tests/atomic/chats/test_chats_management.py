@@ -277,8 +277,7 @@ class TestChatManagement(SingleDeviceTestCase):
     @marks.testrail_id(6319)
     @marks.medium
     def test_deny_access_camera_and_gallery(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
+        home = SignInView(self.driver).create_user()
 
         home.just_fyi("Denying access to camera in universal qr code scanner")
         home.plus_button.click()
@@ -297,18 +296,19 @@ class TestChatManagement(SingleDeviceTestCase):
         contacts_view.ok_button.click()
         home.get_back_to_home_view()
 
-        home.just_fyi("Denying access to gallery at attempt to send image")
+        # TODO: blocked due to 11354
+        # home.just_fyi("Denying access to gallery at attempt to send image")
         chat = home.add_contact(basic_user['public_key'])
-        chat.show_images_button.click()
-        chat.deny_button.click()
-        chat.image_from_gallery_button.click()
-        chat.deny_button.click()
-        contacts_view.element_by_text(photos_access_error_text).wait_for_visibility_of_element(3)
-        contacts_view.ok_button.click()
-        home.get_back_to_home_view()
+        # chat.show_images_button.click()
+        # chat.deny_button.click()
+        # chat.image_from_gallery_button.click()
+        # chat.deny_button.click()
+        # contacts_view.element_by_text(photos_access_error_text).wait_for_visibility_of_element(3)
+        # contacts_view.ok_button.click()
+        # home.get_back_to_home_view()
 
         home.just_fyi("Denying access to audio at attempt to record audio")
-        chat = home.get_chat(basic_user['username']).click()
+        # chat = home.get_chat(basic_user['username']).click()
         chat.audio_message_button.click()
         chat.deny_button.click()
         contacts_view.element_by_text(recorded_error).wait_for_visibility_of_element(3)

@@ -204,7 +204,7 @@ class HomeView(BaseView):
     def get_username_below_start_new_chat_button(self, username_part):
         return UserNameBelowNewChatButton(self.driver, username_part)
 
-    def add_contact(self, public_key, add_in_contacts=True):
+    def add_contact(self, public_key, add_in_contacts=True, nickname=''):
         self.plus_button.click_until_presence_of_element(self.start_new_chat_button)
         contacts_view = self.start_new_chat_button.click()
         contacts_view.public_key_edit_box.click()
@@ -213,6 +213,11 @@ class HomeView(BaseView):
         contacts_view.confirm_until_presence_of_element(one_to_one_chat.chat_message_input)
         if add_in_contacts:
             one_to_one_chat.add_to_contacts.click()
+        if nickname:
+            one_to_one_chat.chat_options.click()
+            one_to_one_chat.view_profile_button.click()
+            one_to_one_chat.set_nickname(nickname)
+            one_to_one_chat.back_button.click()
         return one_to_one_chat
 
     def start_1_1_chat(self, username):

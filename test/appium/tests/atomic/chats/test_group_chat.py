@@ -444,13 +444,12 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6317)
     @marks.medium
-    def test_pair_devices_group_chat_different_messages(self):
+    def test_pair_devices_group_chat_different_messages_nicknames(self):
         self.create_drivers(3)
         device_1, device_2, device_3 = SignInView(self.drivers[0]), SignInView(self.drivers[1]), SignInView(self.drivers[2])
 
         device_1_home = device_1.create_user()
-        device_1_home.profile_button.click()
-        device_1_profile = device_1_home.get_profile_view()
+        device_1_profile = device_1_home.profile_button.click()
         device_1_profile.settings_button.click()
         device_1_profile.privacy_and_security_button.click()
         device_1_profile.backup_recovery_phrase_button.click()
@@ -464,7 +463,8 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1_name, device_2_name, group_chat_name = 'creator', 'paired', 'some group chat'
 
         device_1.just_fyi('Add contact, start group chat')
-        device_1_home.add_contact(device_3_chat_key)
+        nickname = 'my_tester'
+        device_1_home.add_contact(device_3_chat_key,nickname=nickname)
         device_1_home.back_button.click()
         device_1_chat = device_1_home.create_group_chat([device_3_username], group_chat_name)
         device_3_chat = device_3_home.get_chat(group_chat_name).click()
@@ -472,21 +472,32 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         device_2.just_fyi('Go to profile > Devices, set device name, discover device 2 to device 1')
         device_2_home = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
-        device_2_profile = device_2_home.get_profile_view()
+        device_2_profile = device_2_home.profile_button.click()
         device_2_profile.discover_and_advertise_device(device_2_name)
+        device_1.profile_button.click()
         device_1_profile.discover_and_advertise_device(device_1_name)
         device_1_profile.get_toggle_device_by_name(device_2_name).click()
         device_1_profile.sync_all_button.click()
         device_1_profile.sync_all_button.wait_for_visibility_of_element(15)
+        device_1_profile.click_system_back_button(2)
 
         device_1.just_fyi('Send message to group chat and verify it on all devices')
         text_message = 'some text'
-        [device.home_button.click() for device in (device_1_profile, device_2_profile)]
+        device_1_profile.home_button.click(desired_view='chat')
+        device_2_profile.home_button.click()
         device_1_chat.send_message(text_message)
         device_2_chat = device_2_home.get_chat(group_chat_name).click()
         for chat in device_1_chat, device_2_chat, device_3_chat:
             if not chat.chat_element_by_text(text_message).is_element_displayed():
                 self.errors.append('Message was sent, but it is not shown')
+
+        device_3.just_fyi('Send message to group chat as member and verify nickname on it')
+        message_from_member = 'member1'
+        device_3_chat.send_message(message_from_member)
+        device_1_chat.chat_element_by_text(message_from_member).wait_for_visibility_of_element(20)
+        for chat in device_1_chat, device_2_chat:
+            if not chat.chat_element_by_text(message_from_member).username != '%s %s' % (nickname, device_3_username):
+                self.errors.append('Nickname is not shown in group chat')
 
         device_1.just_fyi('Send image to group chat and verify it on all devices')
         device_1_chat.show_images_button.click()
@@ -508,7 +519,6 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         device_1.just_fyi('Send sticker to group chat and verify it on all devices')
         device_1_chat.profile_button.click()
-        device_1_profile.click_system_back_button(2)
         device_1_profile.switch_network()
         device_1_home.get_chat(group_chat_name).click()
         device_1_chat.show_stickers_button.click()
