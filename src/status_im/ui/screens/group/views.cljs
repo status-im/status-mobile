@@ -100,7 +100,7 @@
 (views/defview new-group []
   (views/letsubs [contacts   [:selected-group-contacts]
                   group-name [:new-chat-name]]
-    (let [save-btn-enabled? (and (spec/valid? :global/not-empty-string group-name) (pos? (count contacts)))]
+    (let [group-name-empty? (not (spec/valid? :global/not-empty-string group-name))]
       [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
        [react/view {:flex 1}
         [topbar/topbar {:use-insets false
@@ -138,7 +138,7 @@
           :right
           [quo/button {:type                :secondary
                        :accessibility-label :create-group-chat-button
-                       :disabled            (not save-btn-enabled?)
+                       :disabled            group-name-empty?
                        :on-press            #(debounce/dispatch-and-chill [:group-chats.ui/create-pressed group-name]
                                                                           300)}
            (i18n/label :t/create-group-chat)]}]]])))
@@ -180,7 +180,6 @@
        [quo/button {:type                :secondary
                     :after               :main-icon/next
                     :accessibility-label :next-button
-                    :disabled            (zero? selected-contacts-count)
                     :on-press            #(re-frame/dispatch [:navigate-to :new-group])}
         (i18n/label :t/next)]}]]))
 
