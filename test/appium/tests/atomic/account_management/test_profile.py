@@ -1183,7 +1183,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         for name in (nickname, ens_name):
             if not profile_2.element_by_text(name).is_element_displayed():
                 self.errors.append('%s is not shown in contact list' % name)
-        profile_2.home_button.click()
+        profile_2.home_button.click(desired_view='chat')
         if chat_2_one_to_one.user_name_text.text != nickname:
             self.errors.append('Nickname for user with ENS is not shown in 1-1 chat header')
         chat_2_one_to_one.chat_options.click()
