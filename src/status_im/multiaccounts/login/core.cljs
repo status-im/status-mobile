@@ -29,7 +29,8 @@
             [status-im.wallet.prices :as prices]
             [status-im.acquisition.core :as acquisition]
             [taoensso.timbre :as log]
-            [status-im.data-store.invitations :as data-store.invitations]))
+            [status-im.data-store.invitations :as data-store.invitations]
+            [status-im.chat.models.link-preview :as link-preview]))
 
 (re-frame/reg-fx
  ::login
@@ -217,7 +218,8 @@
               (mobile-network/on-network-status-change)
               (get-group-chat-invitations)
               (logging/set-log-level (:log-level multiaccount))
-              (multiaccounts/switch-preview-privacy-mode-flag))))
+              (multiaccounts/switch-preview-privacy-mode-flag)
+              (link-preview/request-link-preview-whitelist))))
 
 (defn get-new-auth-method [auth-method save-password?]
   (when save-password?
@@ -282,6 +284,7 @@
                                              :mailserver-topics  {}
                                              :default-mailserver true})
               (multiaccounts/switch-preview-privacy-mode-flag)
+              (link-preview/request-link-preview-whitelist)
               (logging/set-log-level (:log-level multiaccount)))))
 
 (defn- keycard-setup? [cofx]

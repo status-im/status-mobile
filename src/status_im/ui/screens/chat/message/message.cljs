@@ -17,7 +17,8 @@
             [status-im.ui.screens.chat.message.reactions :as reactions]
             [quo.core :as quo]
             [reagent.core :as reagent]
-            [status-im.ui.screens.chat.components.reply :as components.reply])
+            [status-im.ui.screens.chat.components.reply :as components.reply]
+            [status-im.ui.screens.chat.message.link-preview :as link-preview])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]
@@ -213,7 +214,8 @@
         [message-author-name from modal]])
      ;;MESSAGE CONTENT
      [react/view
-      content]]]
+      content]
+     [link-preview/link-preview-wrapper (:links (:content message)) outgoing]]]
    ; delivery status
    [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])

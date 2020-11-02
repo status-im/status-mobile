@@ -124,7 +124,9 @@
    :currency :usd
    :appearance 0
    :log-level config/log-level
-   :webview-allow-permission-requests? false})
+   :webview-allow-permission-requests? false
+   :link-previews-enabled-sites #{}
+   :link-preview-request-enabled true})
 
 (defn default-visible-tokens [chain]
   (get-in default-multiaccount [:wallet/visible-tokens chain]))

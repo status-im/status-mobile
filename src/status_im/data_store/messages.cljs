@@ -37,10 +37,11 @@
                        :ens-name (:ensName message)
                        :line-count (:lineCount message)
                        :parsed-text (:parsedText message)
+                       :links (:links message)
                        :rtl? (:rtl message)
                        :response-to (:responseTo message)}
              :outgoing (boolean (:outgoingStatus message)))
-      (dissoc :ensName :chatId :text :rtl :responseTo :image :sticker :lineCount :parsedText)))
+      (dissoc :ensName :chatId :text :rtl :responseTo :image :sticker :lineCount :parsedText :links)))
 
 (defn update-outgoing-status-rpc [message-id status]
   {::json-rpc/call [{:method (json-rpc/call-ext-method "updateMessageOutgoingStatus")

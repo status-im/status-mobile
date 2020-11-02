@@ -1315,5 +1315,14 @@
     "invalid-public-chat-topic": "Invalid public chat topic",
     "now": "Now",
     "statuses-my-profile-descr": "Status updates are messages you publish to your profile. They can be viewed by anyone visiting your profile inside Status",
-    "new-status": "New status"
+    "new-status": "New status",
+    "chat-link-previews": "Chat link previews",
+    "you-can-choose-preview-websites" : "You can choose which of the following websites can preview link of descriptions and pictures in chats",
+    "previewing-may-share-metadata" : "Previewing links from these websites may share your metadata with their owners",
+    "websites" : "Websites",
+    "enable-all" : "Enable all",
+    "warning-sending-to-contract-descr": "The address you entered is a smart contract, sending funds to this address may result in loss of funds. To interact with a DApp, open the DApp in the Status DApp Browser.",
+    "dont-ask": "Don't ask me again",
+    "enable-link-previews": "Enable link previews in chat?",
+    "once-enabled-share-metadata": "Once enabled, links posted in the chat may share your metadata with the site"
 }

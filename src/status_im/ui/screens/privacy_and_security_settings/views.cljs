@@ -63,6 +63,11 @@
                       :on-press                #(re-frame/dispatch
                                                  [:multiaccounts.ui/preview-privacy-mode-switched
                                                   ((complement boolean) preview-privacy?)])}]
+      [quo/list-item {:size                    :small
+                      :title                   (i18n/label :t/chat-link-previews)
+                      :chevron                 true
+                      :on-press                #(re-frame/dispatch [:navigate-to :link-previews-settings])
+                      :accessibility-label    :chat-link-previews}]
       (when platform/android?
         [quo/list-item {:size                    :small
                         :title                   (i18n/label :t/webview-camera-permission-requests)

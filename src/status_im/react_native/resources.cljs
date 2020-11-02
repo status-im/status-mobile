@@ -34,6 +34,8 @@
    :dapp-store         (js/require "../resources/images/ui/dapp-store.png")
    :ens-header         (js/require "../resources/images/ui/ens-header.png")
    :ens-header-dark    (js/require "../resources/images/ui/ens-header-dark.png")
+   :unfurl             (js/require "../resources/images/ui/unfurl.png")
+   :unfurl-dark        (js/require "../resources/images/ui/unfurl-dark.png")
    :new-chat-header    (js/require "../resources/images/ui/new-chat-header.png")
    :onboarding-phone   (js/require "../resources/images/ui/onboarding-phone.png")
    :theme-dark         (js/require "../resources/images/ui/theme-dark.png")

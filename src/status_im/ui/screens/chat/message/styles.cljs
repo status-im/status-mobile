@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.chat.message.styles
   (:require [quo.design-system.colors :as colors]
-            [status-im.ui.screens.chat.styles.photos :as photos]))
+            [status-im.ui.screens.chat.styles.photos :as photos]
+            [status-im.ui.components.colors :as components.colors]))
 
 (defn picker-wrapper-style [{:keys [display-photo? outgoing]}]
   (merge {:flex-direction :row
@@ -84,3 +85,43 @@
            {:background-color (:interactive-02 @colors/theme)
             ;; FIXME: Use broder color here
             :border-color     "rgba(67, 96, 223, 0.2)"})))
+
+(defn link-preview-request-wrapper []
+  {:border-radius    16
+   :border-width     1
+   :border-color     components.colors/gray-lighter
+   :margin-vertical  4
+   :background-color (:ui-background @colors/theme)})
+
+(def link-preview-request-image
+  {:width 132
+   :height 94
+   :align-self :center})
+
+(defn link-preview-wrapper [outgoing]
+  {:overflow                   :hidden
+   :border-top-left-radius     16
+   :border-top-right-radius    16
+   :border-bottom-left-radius  (if outgoing 16 4)
+   :border-bottom-right-radius (if outgoing 4 16)
+   :border-width               1
+   :border-color               components.colors/gray-lighter
+   :margin-vertical            4
+   :background-color           (:ui-background @colors/theme)})
+
+(defn link-preview-image [outgoing]
+  {:height                     170
+   :overflow                   :hidden
+   :border-top-left-radius     16
+   :border-top-right-radius    16
+   :border-bottom-left-radius  (if outgoing 16 4)
+   :border-bottom-right-radius (if outgoing 4 16)})
+
+(def link-preview-title
+  {:margin-horizontal 12
+   :margin-top        10})
+
+(def link-preview-site
+  {:margin-horizontal 12
+   :margin-top        2
+   :margin-bottom     10})

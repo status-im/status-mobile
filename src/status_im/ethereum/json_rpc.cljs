@@ -81,6 +81,8 @@
    "wakuext_sendEmojiReaction" {}
    "wakuext_sendEmojiReactionRetraction" {}
    "wakuext_emojiReactionsByChatID" {}
+   "wakuext_getLinkPreviewWhitelist" {}
+   "wakuext_getLinkPreviewData" {}
    ;;TODO not used anywhere?
    "wakuext_deleteChat" {}
    "wakuext_saveContact" {}
