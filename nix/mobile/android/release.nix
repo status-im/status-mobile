@@ -100,6 +100,9 @@ in stdenv.mkDerivation rec {
     # Ensure we have the right .env file
     cp -bf ./${envFileName} ./.env
 
+    # Export all vars from .env file 
+    export $(cut -d= -f1 .env)   
+
     # Copy index.js and app/ input files
     cp -ra --no-preserve=ownership ${builtJsBundle}/* ./
 

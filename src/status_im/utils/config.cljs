@@ -40,7 +40,7 @@
 (def qr-test-menu-enabled? (enabled? (get-config :QR_READ_TEST_MENU "0")))
 (def referrals-invite-enabled? (enabled? (get-config :ENABLE_REFERRAL_INVITE "0")))
 (def quo-preview-enabled? (enabled? (get-config :ENABLE_QUO_PREVIEW "0")))
-
+(def google-free (enabled? (get-config :GOOGLE_FREE "0")))
 ;; CONFIG VALUES
 (def log-level
   (string/upper-case (get-config :LOG_LEVEL "")))

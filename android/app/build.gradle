@@ -123,6 +123,11 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 
+/**
+ * Exclude google library so we can publish to external android stores
+ */
+def googleFree = project.env.get("GOOGLE_FREE", false)
+
 def getVersionCode = { ->
     new ByteArrayOutputStream().withStream { stdOut ->
         if (project.hasProperty("versionCode")) {

@@ -11,6 +11,7 @@
             [status-im.acquisition.advertiser :as advertiser]
             [status-im.acquisition.persistance :as persistence]
             [status-im.acquisition.gateway :as gateway]
+            [status-im.utils.config :as config]
             [status-im.acquisition.install-referrer :as install-referrer]))
 
 (def not-found-code "notfound.click_id")
@@ -105,16 +106,18 @@
          (ens/get-addr register contract on-success))))))
 
 (fx/defn create [{:keys [db]}]
-  {::resolve-contract {:chain      (ethereum/chain-keyword db)
-                       :contract   (contracts/get-address db :status/acquisition)
-                       :on-success #(re-frame/dispatch [:set-in [:acquisition :contract] %])}
-   ::get-referrer     nil})
+  (when-not config/google-free
+    {::resolve-contract {:chain      (ethereum/chain-keyword db)
+                         :contract   (contracts/get-address db :status/acquisition)
+                         :on-success #(re-frame/dispatch [:set-in [:acquisition :contract] %])}
+     ::get-referrer     nil}))
 
 (fx/defn login [{:keys [db]}]
-  {::resolve-contract {:chain      (ethereum/chain-keyword db)
-                       :contract   (contracts/get-address db :status/acquisition)
-                       :on-success #(re-frame/dispatch [:set-in [:acquisition :contract] %])}
-   ::check-referrer   nil})
+  (when-not config/google-free
+    {::resolve-contract {:chain      (ethereum/chain-keyword db)
+                         :contract   (contracts/get-address db :status/acquisition)
+                         :on-success #(re-frame/dispatch [:set-in [:acquisition :contract] %])}
+     ::check-referrer   nil}))
 
 (re-frame/reg-sub
  ::metadata
