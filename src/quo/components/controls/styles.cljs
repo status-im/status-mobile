@@ -50,7 +50,7 @@
    :shadow-color     (:shadow-01 @colors/theme)
    :shadow-offset    {:width 0 :height 4}})
 
-(defn checkbox-style [state disabled]
+(defn animated-checkbox-style [state disabled]
   {:width            18
    :height           18
    :border-radius    4
@@ -62,6 +62,21 @@
                                            (:interactive-04 @colors/theme)
                                            (:interactive-01 @colors/theme)))})
 
-(defn check-icon-style [state hold]
+(defn checkbox-style [value disabled]
+  {:width            18
+   :height           18
+   :border-radius    4
+   :justify-content  :center
+   :align-items      :center
+   :background-color (if value
+                       (if disabled
+                         (:interactive-04 @colors/theme)
+                         (:interactive-01 @colors/theme))
+                       (:ui-01 @colors/theme))})
+
+(defn animated-check-icon-style [state hold]
   {:opacity       (animated/mix hold 1 0.6)
    :transform     [{:scale (animated/mix state 0.0001 1)}]})
+
+(defn check-icon-style [value]
+  {:opacity (if value 1 0)})

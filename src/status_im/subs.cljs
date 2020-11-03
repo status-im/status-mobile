@@ -1090,6 +1090,12 @@
 ;;PROFILE ==============================================================================================================
 
 (re-frame/reg-sub
+ :mnemonic
+ :<- [:multiaccount]
+ (fn [{:keys [mnemonic]}]
+   mnemonic))
+
+(re-frame/reg-sub
  :get-profile-unread-messages-number
  :<- [:multiaccount]
  (fn [{:keys [mnemonic]}]

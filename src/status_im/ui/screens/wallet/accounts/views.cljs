@@ -163,7 +163,7 @@
 
 (defn accounts-overview []
   (fn []
-    (let [{:keys [mnemonic]} @(re-frame/subscribe [:multiaccount])]
+    (let [mnemonic @(re-frame/subscribe [:mnemonic])]
       [react/view {:flex 1}
        [quo/animated-header
         {:extended-header   total-value

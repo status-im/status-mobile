@@ -2,6 +2,7 @@
   (:require [reagent.core :as reagent]
             [cljs-bean.core :as bean]
             [quo.react :as react]
+            [quo.react-native :as rn]
             [quo.animated :as animated]
             [quo.gesture-handler :as gh]
             [quo.design-system.colors :as colors]
@@ -60,13 +61,27 @@
                   :accessibility-role  :radio}
    [animated/view {:style (styles/radio-bullet-style transition hold)}]])
 
-(defn checkbox-view [{:keys [transition hold disabled]}]
-  [animated/view {:style               (styles/checkbox-style transition disabled)
-                  :accessibility-label :checkbox
-                  :accessibility-role  :checkbox}
-   [animated/view {:style (styles/check-icon-style transition hold)}
+(defn checkbox-view [props]
+  (let [{:keys [value onChange disabled]} (bean/bean props)]
+    (reagent/as-element
+     [rn/touchable-highlight
+      {:on-press (when onChange onChange)}
+      [rn/view {:style               (styles/checkbox-style value disabled)
+                :accessibility-label :checkbox
+                :accessibility-role  :checkbox}
+       [rn/view {:style (styles/check-icon-style value)}
+        [icons/tiny-icon :tiny-icons/tiny-check {:color colors/white}]]]])))
+
+(defn animated-checkbox-view [{:keys [transition hold disabled]}]
+  [animated/view
+   {:style               (styles/animated-checkbox-style transition disabled)
+    :accessibility-label :checkbox
+    :accessibility-role  :checkbox}
+   [animated/view {:style (styles/animated-check-icon-style transition hold)}
     [icons/tiny-icon :tiny-icons/tiny-check {:color colors/white}]]])
 
 (def switch (reagent/adapt-react-class (react/memo (control-builder switch-view))))
 (def radio (reagent/adapt-react-class (react/memo (control-builder radio-view))))
-(def checkbox (reagent/adapt-react-class (react/memo (control-builder checkbox-view))))
+(def animated-checkbox
+  (reagent/adapt-react-class (react/memo (control-builder animated-checkbox-view))))
+(def checkbox (reagent/adapt-react-class (react/memo checkbox-view)))

@@ -129,14 +129,17 @@
    [icon-column props]
    [title-column props]])
 
-(defn right-side [{:keys [chevron active accessory accessory-text]}]
+(defn right-side [{:keys [chevron active accessory accessory-text animated-accessory?]}]
   (when (or chevron accessory)
     [rn/view {:style {:align-items    :center
                       :flex-direction :row}}
      [rn/view {:style (:tiny spacing/padding-horizontal)}
       (case accessory
         :radio    [controls/radio {:value active}]
-        :checkbox [controls/checkbox {:value active}]
+        :checkbox [(if animated-accessory?
+                     controls/animated-checkbox
+                     controls/checkbox)
+                   {:value active}]
         :switch   [controls/switch {:value active}]
         :text     [text/text {:color           :secondary
                               :number-of-lines 1}
@@ -154,7 +157,7 @@
   [{:keys [theme accessory disabled subtitle-max-lines icon icon-container-style
            title subtitle active on-press on-long-press chevron size text-size
            accessory-text accessibility-label title-accessibility-label
-           haptic-feedback haptic-type error animated title-text-weight]
+           haptic-feedback haptic-type error animated animated-accessory? title-text-weight]
     :or   {subtitle-max-lines 1
            theme              :main
            haptic-feedback    true
@@ -202,11 +205,12 @@
                    :text-size                 text-size
                    :subtitle                  subtitle
                    :subtitle-max-lines        subtitle-max-lines}]
-       [right-side {:chevron        chevron
-                    :active         active
-                    :on-press       on-press
-                    :accessory-text accessory-text
-                    :accessory      accessory}]]]
+       [right-side {:chevron             chevron
+                    :active              active
+                    :on-press            on-press
+                    :accessory-text      accessory-text
+                    :animated-accessory? animated-accessory?
+                    :accessory           accessory}]]]
      (when error
        [tooltip/tooltip (merge {:bottom-value 0}
                                (when accessibility-label
