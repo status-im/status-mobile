@@ -42,6 +42,7 @@ staging_fleet = 'eth.staging'
 prod_fleet = 'eth.prod'
 # This fleet is used in the tests
 used_fleet = staging_fleet
+geth_log_emulator_path = '/storage/emulated/0/Android/data/im.status.ethereum/files/Download/geth.log'
 
 mailserver_ams = 'mail-01.do-ams3'
 mailserver_hk = 'mail-01.ac-cn-hongkong-c'
@@ -65,3 +66,4 @@ test_dapp_url = 'simpledapp.eth'
 test_dapp_name = 'simpledapp.eth'
 
 emojis =  {'thumbs-up': 2, 'thumbs-down': 3, 'love': 1, 'laugh': 4, 'angry': 6, 'sad': 5}
+

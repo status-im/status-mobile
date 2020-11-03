@@ -202,7 +202,14 @@ class LogLevelSetting(BaseButton):
 
     def __init__(self, driver):
         super(LogLevelSetting, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@content-desc="log-level-settings-button"]/android.widget.TextView[2]')
+        self.locator = self.Locator.accessibility_id('log-level-settings-button')
+
+
+class FleetSettingButton(BaseButton):
+
+    def __init__(self, driver):
+        super(FleetSettingButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('fleet-settings-button')
 
 
 class BackupRecoveryPhraseButton(BaseButton):
@@ -653,7 +660,8 @@ class ProfileView(BaseView):
         self.profile_notifications_button = PrifileNotificationsButton(self.driver)
         self.profile_notifications_toggle_button = PrifileNotificationsToggleButton(self.driver)
         self.advanced_button = AdvancedButton(self.driver)
-        self.log_level_setting = LogLevelSetting(self.driver)
+        self.log_level_setting_button = LogLevelSetting(self.driver)
+        self.fleet_setting_button = FleetSettingButton(self.driver)
         self.debug_mode_toggle = DebugModeToggle(self.driver)
         self.contacts_button = ContactsButton(self.driver)
         self.blocked_users_button = BlockedUsersButton(self.driver)

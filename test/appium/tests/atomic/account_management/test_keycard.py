@@ -200,7 +200,7 @@ class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(5758)
     @marks.high
-    def test_can_recover_keycard_account_card_pairing(self):
+    def test_keycard_can_recover_keycard_account_card_pairing(self):
         sign_in = SignInView(self.driver)
         recovered_user = transaction_senders['A']
 
@@ -242,6 +242,72 @@ class TestCreateAccount(SingleDeviceTestCase):
             self.driver.fail('Keycard user is not logged in')
 
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(6243)
+    @marks.medium
+    def test_keycard_can_recover_keycard_account_offline_and_add_watch_only_acc(self):
+        sign_in = SignInView(self.driver)
+        recovered_user = transaction_senders['A']
+        sign_in.toggle_airplane_mode()
+
+        sign_in.just_fyi('Recover multiaccount offline')
+        sign_in.get_started_button.click_until_presence_of_element(sign_in.access_key_button)
+        sign_in.access_key_button.click()
+        sign_in.recover_with_keycard_button.click()
+        keycard_view = sign_in.begin_recovery_button.click()
+        keycard_view.connect_pairing_card_button.click()
+        keycard_view.pair_code_input.set_value(pair_code)
+        sign_in.pair_to_this_device_button.click()
+        keycard_view.enter_default_pin()
+        sign_in.home_button.wait_for_visibility_of_element(30)
+        wallet_view = sign_in.wallet_button.click()
+        wallet_view.set_up_wallet()
+
+        sign_in.just_fyi('Relogin offline')
+        self.driver.close_app()
+        self.driver.launch_app()
+        sign_in.sign_in(keycard=True)
+        if not sign_in.home_button.is_element_displayed(10):
+            self.driver.fail('Keycard user is not logged in')
+
+        sign_in.just_fyi('Turn off airplane mode and turn on cellular network')
+        sign_in.toggle_airplane_mode()
+        sign_in.toggle_mobile_data()
+        sign_in.element_by_text_part('Stop syncing').wait_and_click(60)
+        sign_in.wallet_button.click()
+        if wallet_view.asset_by_name('LXS').is_element_displayed():
+            self.errors.append('Token balance is fetched while on cellular network!')
+
+        wallet_view.just_fyi('Add watch-only account when on cellular network')
+        wallet_view.add_account_button.click()
+        wallet_view.add_watch_only_address_button.click()
+        wallet_view.enter_address_input.send_keys(basic_user['address'])
+        account_name = 'watch-only'
+        wallet_view.account_name_input.send_keys(account_name)
+        wallet_view.add_account_generate_account_button.click()
+        account_button = wallet_view.get_account_by_name(account_name)
+        if not account_button.is_element_displayed():
+            self.driver.fail('Account was not added')
+        # TODO: not working in keycard - token balance is fetched. blecked due to issue
+        # if wallet_view.asset_by_name('ADI').is_element_displayed():
+        #     self.errors.append('Tokens are visible after adding account on cellular network!')
+
+        wallet_view.just_fyi('Check that balance is changed after go back to WI-FI')
+        sign_in.toggle_mobile_data()
+        for asset in ('LXS', 'ADI', 'STT'):
+            wallet_view.wait_balance_is_changed(asset, wait_time=60)
+
+        wallet_view.just_fyi('Delete watch-only account')
+        wallet_view.get_account_by_name(account_name).click()
+        wallet_view.get_account_options_by_name(account_name).click()
+        wallet_view.account_settings_button.click()
+        wallet_view.delete_account_button.click()
+        wallet_view.yes_button.click()
+        if wallet_view.get_account_by_name(account_name).is_element_displayed(20):
+            self.errors.append('Account was not deleted')
+
+        self.errors.verify_no_errors()
+
 
     @marks.testrail_id(6311)
     @marks.medium

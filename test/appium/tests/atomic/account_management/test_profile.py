@@ -504,16 +504,49 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile_view.find_full_text('#status')
 
     @marks.testrail_id(5368)
-    @marks.high
-    def test_log_level_and_fleet(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        profile_view = sign_in_view.profile_button.click()
-        profile_view.settings_button.click()
-        profile_view.advanced_button.click()
-        for text in 'INFO', used_fleet:
-            if not profile_view.element_by_text(text).is_element_displayed():
+    @marks.medium
+    def test_change_log_level_and_fleet(self):
+        home = SignInView(self.driver).create_user()
+        profile = home.profile_button.click()
+        profile.settings_button.click()
+        profile.advanced_button.click()
+        default_log_level = 'INFO'
+        for text in default_log_level, used_fleet:
+             if not profile.element_by_text(text).is_element_displayed():
                 self.errors.append('%s is not selected by default' % text)
+        if home.find_values_in_geth('lvl=trce', 'lvl=dbug'):
+           self.errors.append('"%s" is set, but found another entries!' % default_log_level)
+        if not home.find_values_in_geth('lvl=info'):
+           self.errors.append('"%s" is set, but no entries are found!' % default_log_level)
+
+        home.just_fyi('Set another loglevel and check that changes are applied')
+        profile.log_level_setting_button.click()
+        changed_log_level = 'TRACE'
+        profile.element_by_text(changed_log_level).click_until_presence_of_element(profile.confirm_button)
+        profile.confirm_button.click()
+        SignInView(self.driver).sign_in()
+        home.profile_button.click()
+        profile.settings_button.click()
+        profile.advanced_button.click()
+        if not profile.element_by_text(changed_log_level).is_element_displayed():
+            self.errors.append('"%s" is not selected after change' % changed_log_level)
+        if not home.find_values_in_geth('lvl=trc'):
+            self.errors.append('"%s" is set, but no entries are found!' % changed_log_level)
+
+        home.just_fyi('Set another fleet and check that changes are applied')
+        profile.fleet_setting_button.click()
+        changed_fleet = 'eth.prod'
+        profile.element_by_text(changed_fleet).click_until_presence_of_element(profile.confirm_button)
+        profile.confirm_button.click()
+        SignInView(self.driver).sign_in()
+        home.profile_button.click()
+        profile.settings_button.click()
+        profile.advanced_button.click()
+        if not profile.element_by_text(changed_fleet).is_element_displayed():
+            self.errors.append('"%s" fleet is not selected after change' % changed_fleet)
+        if not home.find_values_in_geth(changed_fleet):
+            self.errors.append('"%s" is set, but no entry is found!' % changed_fleet)
+
         self.errors.verify_no_errors()
 
 

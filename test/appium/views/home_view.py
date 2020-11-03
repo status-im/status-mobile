@@ -230,15 +230,16 @@ class HomeView(BaseView):
     def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat'):
         self.plus_button.click()
         contacts_view = self.new_group_chat_button.click()
-        for user_name in user_names_to_add:
-            if len(user_names_to_add) > 5:
-                from views.chat_view import ChatView
-                contact_view_with_search = ChatView(self.driver)
-                contact_view_with_search.search_by_keyword(user_name[:4])
-                contacts_view.get_username_checkbox(user_name).click()
-                contact_view_with_search.search_input.clear()
-            else:
-                contacts_view.get_username_checkbox(user_name).click()
+        if user_names_to_add:
+            for user_name in user_names_to_add:
+                if len(user_names_to_add) > 5:
+                    from views.chat_view import ChatView
+                    contact_view_with_search = ChatView(self.driver)
+                    contact_view_with_search.search_by_keyword(user_name[:4])
+                    contacts_view.get_username_checkbox(user_name).click()
+                    contact_view_with_search.search_input.clear()
+                else:
+                    contacts_view.get_username_checkbox(user_name).click()
         contacts_view.next_button.click()
         contacts_view.chat_name_editbox.send_keys(group_chat_name)
         contacts_view.create_button.click()

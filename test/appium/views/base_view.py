@@ -13,7 +13,7 @@ from io import BytesIO
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 
 from support.device_apps import start_web_browser
-from tests import common_password, pytest_config_global
+from tests import common_password, pytest_config_global, geth_log_emulator_path
 from views.base_element import BaseButton, BaseElement, BaseEditBox, BaseText
 
 
@@ -556,7 +556,7 @@ class BaseView(object):
         return element
 
     def wait_for_element_starts_with_text(self, text, wait_time=60):
-        self.driver.info("Looking for full text: '%s'" % text)
+        self.driver.info("Looking for element, start with text: '%s'" % text)
         element = BaseElement(self.driver)
         element.locator = element.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % text)
         return element.wait_for_element(wait_time)
@@ -712,6 +712,18 @@ class BaseView(object):
             if re.findall(r'\W%s$|\W%s\W' % (value, value), logcat):
                 items_in_logcat.append('%s in logcat!!!' % key.capitalize())
         return items_in_logcat
+
+    def find_values_in_geth(self, *args):
+        b64_log = self.driver.pull_file(geth_log_emulator_path)
+        file = base64.b64decode(b64_log)
+        result = False
+        for value in args:
+            self.driver.info('Checking for %s entry' % value)
+            if re.findall('%s*' % value, file.decode("utf-8")):
+                self.driver.info('%s was found in geth.log' % value)
+                result = True
+        return result
+
 
     def asset_by_name(self, asset_name):
         return AssetButton(self.driver, asset_name)
