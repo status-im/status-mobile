@@ -158,8 +158,8 @@
          (fn [{:keys [min-block] :as acc}
               {:keys [block hash]}]
            (cond
-             (or (nil? min-block) (> min-block block))
-             {:min-block                 block
+             (or (nil? min-block) (> min-block (js/parseInt block)))
+             {:min-block                 (js/parseInt block)
               :min-block-transfers-count 1}
 
              (and (= min-block block)
@@ -168,7 +168,8 @@
 
              :else acc))
          {:min-block
-          (get-min-known-block db address)
+          (when-let [min-block-string (get-min-known-block db address)]
+            (js/parseInt min-block-string))
 
           :min-block-transfers-count
           (min-block-transfers-count db address)}
