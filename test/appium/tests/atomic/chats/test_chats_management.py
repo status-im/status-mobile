@@ -634,7 +634,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         userprofile.back_button.click()
         if profile_1.element_by_text(username_2).is_element_displayed():
             self.errors.append('List of contacts in profile contains removed user')
-        profile_1.home_button.click()
+        profile_1.home_button.click(desired_view='chat')
         if not chat_1.add_to_contacts.is_element_displayed():
             self.errors.append('"Add to contacts" button is not shown in 1-1 after removing user from contacts')
         home_1.get_back_to_home_view()

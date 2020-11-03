@@ -129,7 +129,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         transactions_view = wallet_1.transaction_history_button.click()
         transactions_view.transactions_table.find_transaction(amount=amount)
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
-        wallet_1.home_button.click()
+        wallet_1.home_button.click(desired_view="chat")
 
         home_1.just_fyi("Check 'Confirmed' state for sender")
         if chat_1_sender_message.transaction_status.text != 'Confirmed':
