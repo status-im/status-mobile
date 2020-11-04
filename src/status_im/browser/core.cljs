@@ -314,6 +314,13 @@
                 :id      (int id)
                 :result  result}}})
 
+(defn normalize-message
+  "NOTE (andrey) there is no spec for this, so this implementation just to be compatible with MM"
+  [message]
+  (if (ethereum/hex-to-utf8 message)
+    message
+    (ethereum/utf8-to-hex message)))
+
 (defn normalize-sign-message-params
   "NOTE (andrey) we need this function, because params may be mixed up"
   [params]
@@ -321,9 +328,9 @@
     (when (and (string? first-param) (string? second-param))
       (cond
         (ethereum/address? first-param)
-        [first-param second-param]
+        [first-param (normalize-message second-param)]
         (ethereum/address? second-param)
-        [second-param first-param]))))
+        [second-param (normalize-message first-param)]))))
 
 (fx/defn send-to-bridge
   [cofx message]
