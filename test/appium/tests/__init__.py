@@ -51,8 +51,7 @@ mailserver_ams_01 = 'mail-01.do-ams3.{}'.format(used_fleet)
 camera_access_error_text = "To grant the required camera permission, please go to your system settings " \
                            "and make sure that Status > Camera is selected."
 
-photos_access_error_text = "To grant the required photos permission, please go to your system settings " \
-                           "and make sure that Status > Photos is selected."
+photos_access_error_text = "Access to external storage is denied"
 delete_alert_text = "Warning: If you don’t have your seed phrase written down, you will lose access to your funds after you delete your profile"
 
 connection_not_secure_text = "Connection is not secure! " \

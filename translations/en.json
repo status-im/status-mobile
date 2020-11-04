@@ -1324,5 +1324,6 @@
     "warning-sending-to-contract-descr": "The address you entered is a smart contract, sending funds to this address may result in loss of funds. To interact with a DApp, open the DApp in the Status DApp Browser.",
     "dont-ask": "Don't ask me again",
     "enable-link-previews": "Enable link previews in chat?",
-    "once-enabled-share-metadata": "Once enabled, links posted in the chat may share your metadata with the site"
+    "once-enabled-share-metadata": "Once enabled, links posted in the chat may share your metadata with the site",
+    "external-storage-denied": "Access to external storage is denied"
 }

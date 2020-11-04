@@ -8,18 +8,31 @@
             [re-frame.core :as re-frame]
             [quo.design-system.colors :as colors]
             [status-im.chat.models.images :as images]
-            [quo.core :as quo]))
+            [quo.core :as quo]
+            [status-im.utils.utils :as utils]
+            [status-im.i18n :as i18n]))
 
 (defn take-picture []
   (permissions/request-permissions
    {:permissions [:camera]
     :on-allowed  (fn []
-                   (react/show-image-picker-camera #(re-frame/dispatch [:chat.ui/image-captured (.-path %)]) {}))}))
+                   (react/show-image-picker-camera
+                    #(re-frame/dispatch [:chat.ui/image-captured (.-path %)]) {}))
+    :on-denied   (fn []
+                   (utils/set-timeout
+                    #(utils/show-popup (i18n/label :t/error)
+                                       (i18n/label :t/camera-access-error))
+                    50))}))
 
 (defn show-image-picker []
   (permissions/request-permissions
    {:permissions [:read-external-storage :write-external-storage]
-    :on-allowed  #(re-frame/dispatch [:chat.ui/open-image-picker])}))
+    :on-allowed  #(re-frame/dispatch [:chat.ui/open-image-picker])
+    :on-denied   (fn []
+                   (utils/set-timeout
+                    #(utils/show-popup (i18n/label :t/error)
+                                       (i18n/label :t/external-storage-denied))
+                    50))}))
 
 (defn buttons []
   [react/view
@@ -85,10 +98,16 @@
             [image-preview second-img selected false height])]))]))
 
 (defview image-view []
-  {:component-did-mount (fn []
-                          (permissions/request-permissions
-                           {:permissions [:read-external-storage :write-external-storage]
-                            :on-allowed  #(re-frame/dispatch [:chat.ui/camera-roll-get-photos 20])}))}
+  {:component-did-mount
+   (fn []
+     (permissions/request-permissions
+      {:permissions [:read-external-storage :write-external-storage]
+       :on-allowed  #(re-frame/dispatch [:chat.ui/camera-roll-get-photos 20])
+       :on-denied   (fn []
+                      (utils/set-timeout
+                       #(utils/show-popup (i18n/label :t/error)
+                                          (i18n/label :t/external-storage-denied))
+                       50))}))}
   [react/animated-view {:style {:background-color (:ui-background @colors/theme)
                                 :flex             1}}
    [react/scroll-view {:horizontal true :style {:flex 1}}
