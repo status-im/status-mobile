@@ -192,7 +192,7 @@
       :color      colors/blue-persist
       :wallet     true
       :path       constants/path-default-wallet
-      :name       "Status account"})
+      :name       (i18n/label :t/ethereum-account)})
    (let [{:keys [public-key address name photo-path]}
          (get-in multiaccount [:derived constants/path-whisper-keyword])]
      {:public-key public-key

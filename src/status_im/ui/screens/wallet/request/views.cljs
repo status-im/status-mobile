@@ -21,7 +21,7 @@
          (- @width 32)
          (eip681/generate-uri address {:chain-id chain-id})])
       [copyable-text/copyable-text-view
-       {:label           :t/wallet-address
+       {:label           :t/ethereum-address
         :container-style {:margin-top 12 :margin-bottom 4}
         :copied-text     (eip55/address->checksum address)}
        [quo/text {:number-of-lines     1

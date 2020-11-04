@@ -1325,5 +1325,8 @@
     "enable-link-previews": "Enable link previews in chat?",
     "once-enabled-share-metadata": "Once enabled, links posted in the chat may share your metadata with the site",
     "external-storage-denied": "Access to external storage is denied",
-    "timeline": "Timeline"
+    "timeline": "Timeline",
+    "ethereum-account": "Ethereum account",
+    "ethereum-address":"Ethereum address",
+    "default-assets": "Default ERC20 and ERC721"
 }
