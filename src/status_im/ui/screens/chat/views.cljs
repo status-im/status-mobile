@@ -154,47 +154,62 @@
                   first-not-visible)))))
   (debounce/debounce-and-dispatch [:chat.ui/message-visibility-changed e] 5000))
 
-(defn messages-view
-  [{:keys [chat bottom-space pan-responder space-keeper]}]
-  (let [{:keys [group-chat chat-id public? invitation-admin]} chat
+(defn messages-view[_]
+  (let [scroll-pos (reagent/atom nil)
+        scroll-height (reagent/atom nil)
+        scroll-height-last (reagent/atom nil)]
+    (fn [{:keys [chat bottom-space pan-responder space-keeper]}]
+      (let [{:keys [group-chat chat-id public? invitation-admin]} chat
 
-        messages           @(re-frame/subscribe [:chats/current-chat-messages-stream])
-        no-messages?       @(re-frame/subscribe [:chats/current-chat-no-messages?])
-        current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
-    [list/flat-list
-     (merge
-      pan-responder
-      {:key-fn                       #(or (:message-id %) (:value %))
-       :ref                          #(reset! messages-list-ref %)
-       :header                       (when (and group-chat (not public?))
-                                       [chat.group/group-chat-footer chat-id invitation-admin])
-       :footer                       [:<>
-                                      [chat-intro-header-container chat no-messages?]
-                                      (when (and (not group-chat) (not public?))
-                                        [invite.chat/reward-messages])]
-       :data                         messages
-       :inverted                     true
-       :render-fn                    (fn [{:keys [outgoing type] :as message} idx]
-                                       (if (= type :datemark)
-                                         [message-datemark/chat-datemark (:value message)]
-                                         (if (= type :gap)
-                                           [gap/gap message idx messages-list-ref]
-                                        ; message content
-                                           [message/chat-message
-                                            (assoc message
-                                                   :incoming-group (and group-chat (not outgoing))
-                                                   :group-chat group-chat
-                                                   :public? public?
-                                                   :current-public-key current-public-key)
-                                            space-keeper])))
-       :on-viewable-items-changed    on-viewable-items-changed
-       :on-end-reached               #(re-frame/dispatch [:chat.ui/load-more-messages])
-       :on-scroll-to-index-failed    #() ;;don't remove this
-       :content-container-style      {:padding-top    (+ bottom-space 16)
-                                      :padding-bottom 16}
-       :scrollIndicatorInsets        {:top bottom-space}
-       :keyboardDismissMode          "interactive"
-       :keyboard-should-persist-taps :handled})]))
+            messages           @(re-frame/subscribe [:chats/current-chat-messages-stream])
+            no-messages?       @(re-frame/subscribe [:chats/current-chat-no-messages?])
+            current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
+        [list/flat-list
+         (merge
+          pan-responder
+          {:key-fn                       #(or (:message-id %) (:value %))
+           :ref                          #(reset! messages-list-ref %)
+           :header                       (when (and group-chat (not public?))
+                                           [chat.group/group-chat-footer chat-id invitation-admin])
+           :footer                       [:<>
+                                          [chat-intro-header-container chat no-messages?]
+                                          (when (and (not group-chat) (not public?))
+                                            [invite.chat/reward-messages])]
+           :data                         messages
+           :inverted                     true
+           :render-fn                    (fn [{:keys [outgoing type] :as message} idx]
+                                           (if (= type :datemark)
+                                             [message-datemark/chat-datemark (:value message)]
+                                             (if (= type :gap)
+                                               [gap/gap message idx messages-list-ref]
+                                            ; message content
+                                               [message/chat-message
+                                                (assoc message
+                                                       :incoming-group (and group-chat (not outgoing))
+                                                       :group-chat group-chat
+                                                       :public? public?
+                                                       :current-public-key current-public-key)
+                                                space-keeper])))
+           :on-viewable-items-changed    on-viewable-items-changed
+           :on-end-reached               #(re-frame/dispatch [:chat.ui/load-more-messages])
+           :on-scroll-to-index-failed    #() ;;don't remove this
+           :content-container-style      {:padding-top    (+ bottom-space 16)
+                                          :padding-bottom 16}
+           :scrollIndicatorInsets        {:top bottom-space}
+           :keyboardDismissMode          "interactive"
+           :keyboard-should-persist-taps :handled
+           :on-scroll #(do
+                         (println "HEI" (.-nativeEvent.contentSize.height ^js %))
+                         (reset! scroll-height (.-nativeEvent.contentSize.height ^js %))
+                         (reset! scroll-pos (.-nativeEvent.contentOffset.y ^js %)))
+           :on-content-size-change (fn [w h]
+                                     (println "EV" w h)
+                                     (when (and @messages-list-ref @scroll-pos @scroll-height)
+                                       (println "OFFS" @scroll-pos)
+                                       (.scrollToOffset @messages-list-ref #js
+                                           {:offset (+ @scroll-pos (- h @scroll-height))
+                                            :animated false}))
+                                     (reset! scroll-height-last h))})]))))
 
 (defn bottom-sheet [input-bottom-sheet]
   (case input-bottom-sheet
