@@ -677,7 +677,11 @@ RCT_EXPORT_METHOD(callRPC:(NSString *)payload
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(generateAlias:(NSString *)publicKey) {
   const char * publicKeyStr = fromObjCStr(publicKey);
-  return toObjCStr(generateAlias(publicKeyStr));
+
+  setupForeignThreadGc();
+  NSString * result = toObjCStr(generateAlias(publicKeyStr));
+  tearDownForeignThreadGc();
+  return result;
 }
 
 RCT_EXPORT_METHOD(generateAliasAsync:(NSString *)publicKey
@@ -687,7 +691,9 @@ RCT_EXPORT_METHOD(generateAliasAsync:(NSString *)publicKey
 #endif
 
     const char * publicKeyStr = fromObjCStr(publicKey);
+    setupForeignThreadGc();
     NSString *result = toObjCStr(generateAlias(publicKeyStr));
+    tearDownForeignThreadGc();
     callback(@[result]);
 }
 
@@ -696,7 +702,10 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(identicon:(NSString *)publicKey) {
     return toObjCStr("");
   }
   const char * publicKeyStr = fromObjCStr(publicKey);
-  return toObjCStr(identicon(publicKeyStr));
+  setupForeignThreadGc();
+  NSString * result = toObjCStr(identicon(publicKeyStr));
+  tearDownForeignThreadGc();
+  return result;
 }
 
 RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
@@ -715,7 +724,9 @@ RCT_EXPORT_METHOD(identiconAsync:(NSString *)publicKey
 #endif
 
     const char * publicKeyStr = fromObjCStr(publicKey);
+    setupForeignThreadGc();
     NSString *result = toObjCStr(identicon(publicKeyStr));
+    tearDownForeignThreadGc();
     callback(@[result]);
 }
 
@@ -725,8 +736,13 @@ RCT_EXPORT_METHOD(generateAliasAndIdenticonAsync:(NSString *)publicKey
     NSLog(@"generateAliasAndIdenticonAsync() method called");
 #endif
     const char * publicKeyStr = fromObjCStr(publicKey);
+    setupForeignThreadGc();
     NSString *identiconResult = toObjCStr(identicon(publicKeyStr));
+    tearDownForeignThreadGc();
+
+    setupForeignThreadGc();
     NSString *aliasResult = toObjCStr(generateAlias(publicKeyStr));
+    tearDownForeignThreadGc();
     callback(@[aliasResult, identiconResult]);
 }
 
