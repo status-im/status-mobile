@@ -237,7 +237,7 @@ class TestWalletManagement(SingleDeviceTestCase):
 
         wallet_view.just_fyi('Check "Open in OpenSea"')
         wallet_view.element_by_text('Check on opensea').click()
-        if not wallet_view.allow_button.is_element_displayed(20):
+        if not wallet_view.allow_button.is_element_displayed(40):
             self.errors.append('OpenSea app is not opened when navigating from wallet')
         self.errors.verify_no_errors()
 

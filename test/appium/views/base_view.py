@@ -180,8 +180,8 @@ class ProfileButton(TabButton):
         return ProfileView(self.driver)
 
     def click(self):
-        from views.profile_view import ContactsButton
-        self.click_until_presence_of_element(ContactsButton(self.driver))
+        from views.profile_view import PrivacyAndSecurityButton
+        self.click_until_presence_of_element(PrivacyAndSecurityButton(self.driver))
         return self.navigate()
 
 

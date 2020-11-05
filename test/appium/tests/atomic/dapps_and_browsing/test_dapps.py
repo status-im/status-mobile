@@ -83,7 +83,6 @@ class TestDApps(SingleDeviceTestCase):
         dapp_view.select_account_by_name(account_name).wait_for_element(30)
         dapp_view.select_account_by_name(account_name).click()
         profile_view = dapp_view.profile_button.click()
-        profile_view.settings_button.click()
         profile_view.privacy_and_security_button.click()
         profile_view.dapp_permissions_button.click()
         if profile_view.element_by_text(test_dapp_name).is_element_displayed():
@@ -93,7 +92,7 @@ class TestDApps(SingleDeviceTestCase):
         profile_view.dapp_tab_button.click()
         if not status_test_dapp.element_by_text(account_name).is_element_displayed():
             self.errors.append("No expected account %s is shown in authorize web3 popup for wallet" % account_name)
-        status_test_dapp.allow_button.click()
+        status_test_dapp.allow_button.wait_and_click()
         dapp_view.profile_button.click()
         profile_view.element_by_text(test_dapp_name).click()
         for text in 'Chat key', account_name:
