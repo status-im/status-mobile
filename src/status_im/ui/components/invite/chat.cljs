@@ -56,9 +56,13 @@
 (defn starter-pack []
   (let [pack        @(re-frame/subscribe [::invite/starter-pack])
         tokens      (utils/transform-tokens pack)
-        reward-text (cstr/join ", " (map (comp name :symbol first) tokens))]
+        reward-text (->> tokens
+                         (map (comp :symbol first))
+                         (filter (comp not nil?))
+                         (map name)
+                         (cstr/join ", "))]
     [rn/view {:style (starter-pack-style)}
-     [rn/view {:style  (styles/reward-tokens-icons (count tokens))}
+     [rn/view {:style (styles/reward-tokens-icons (count tokens))}
       (doall
        (for [[{name             :name
                {source :source} :icon} _ idx] tokens]
