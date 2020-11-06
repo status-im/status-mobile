@@ -173,7 +173,8 @@ class BaseElement(object):
         return attribute_state
 
     # Method-helper for renew screenshots in case if changed
-    def save_new_screenshot_of_element(self, full_path_to_file: str):
+    def save_new_screenshot_of_element(self, name: str):
+        full_path_to_file = os.sep.join(__file__.split(os.sep)[:-1]) + '/elements_templates/%s' % name
         screen = Image.open(BytesIO(base64.b64decode(self.find_element().screenshot_as_base64)))
         screen.save(full_path_to_file)
 

@@ -459,6 +459,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             self.errors.append('Decimals for custom token was not set')
         token_view.add_button.click()
         token_view.back_button.click()
+        wallet_view.asset_by_name(symbol).scroll_to_element()
         if not wallet_view.asset_by_name(symbol).is_element_displayed():
             self.errors.append('Custom token is not shown on Wallet view')
         wallet_view.accounts_status_account.click()
