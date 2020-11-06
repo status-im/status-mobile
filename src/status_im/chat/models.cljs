@@ -185,12 +185,15 @@
 
 (fx/defn clear-history
   "Clears history of the particular chat"
-  [{:keys [db] :as cofx} chat-id]
-  (let [{:keys [last-message
+  [{:keys [db] :as cofx} chat-id remove-chat?]
+  (let [{:keys [last-message public?
                 deleted-at-clock-value]} (get-in db [:chats chat-id])
-        last-message-clock-value (or (:clock-value last-message)
-                                     deleted-at-clock-value
-                                     (utils.clocks/send 0))]
+        last-message-clock-value (if (and public? remove-chat?)
+                                   0
+                                   (or (:clock-value last-message)
+                                       deleted-at-clock-value
+                                       (utils.clocks/send 0)))]
+    (println :FOOO last-message-clock-value public? remove-chat?)
     (fx/merge
      cofx
      {:db            (-> db
@@ -217,7 +220,7 @@
             (mailserver/remove-gaps chat-id)
             (mailserver/remove-range chat-id)
             (deactivate-chat chat-id)
-            (clear-history chat-id)
+            (clear-history chat-id true)
             (transport.filters/stop-listening chat-id)
             (when (and navigate-home? (not (= (:view-id db) :home)))
               (navigation/navigate-to-cofx :home {}))))

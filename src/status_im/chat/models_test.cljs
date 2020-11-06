@@ -68,16 +68,16 @@
                       :chats {chat-id {:last-message            {:clock-value 10}
                                        :unviewed-messages-count 1}}}}]
     (testing "it deletes all the messages"
-      (let [actual (chat/clear-history cofx chat-id)]
+      (let [actual (chat/clear-history cofx chat-id true)]
         (is (= {} (get-in actual [:db :messages chat-id])))))
     (testing "it deletes all the message groups"
-      (let [actual (chat/clear-history cofx chat-id)]
+      (let [actual (chat/clear-history cofx chat-id true)]
         (is (= nil (get-in actual [:db :message-lists chat-id])))))
     (testing "it deletes unviewed messages set"
-      (let [actual (chat/clear-history cofx chat-id)]
+      (let [actual (chat/clear-history cofx chat-id true)]
         (is (= 0 (get-in actual [:db :chats chat-id :unviewed-messages-count])))))
     (testing "it sets a deleted-at-clock-value equal to the last message clock-value"
-      (let [actual (chat/clear-history cofx chat-id)]
+      (let [actual (chat/clear-history cofx chat-id true)]
         (is (= 10 (get-in actual [:db :chats chat-id :deleted-at-clock-value])))))
     (testing "it does not override the deleted-at-clock-value when there are no messages"
       (let [actual (chat/clear-history (update-in cofx
@@ -85,7 +85,8 @@
                                                   assoc
                                                   :last-message nil
                                                   :deleted-at-clock-value 100)
-                                       chat-id)]
+                                       chat-id
+                                       true)]
         (is (= 100 (get-in actual [:db :chats chat-id :deleted-at-clock-value])))))
     (testing "it set the deleted-at-clock-value to now the chat has no messages nor previous deleted-at"
       (with-redefs [utils.clocks/send (constantly 42)]
@@ -93,10 +94,11 @@
                                                     [:db :chats chat-id]
                                                     assoc
                                                     :last-message nil)
-                                         chat-id)]
+                                         chat-id
+                                         true)]
           (is (= 42 (get-in actual [:db :chats chat-id :deleted-at-clock-value]))))))
     (testing "it adds the relevant rpc calls"
-      (let [actual (chat/clear-history cofx chat-id)]
+      (let [actual (chat/clear-history cofx chat-id true)]
         (is (::json-rpc/call actual))
         (is (= 2 (count (::json-rpc/call actual))))))))
 

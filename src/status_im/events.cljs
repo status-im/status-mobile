@@ -495,7 +495,7 @@
 (handlers/register-handler-fx
  :chat.ui/clear-history
  (fn [cofx [_ chat-id]]
-   (chat/clear-history cofx chat-id)))
+   (chat/clear-history cofx chat-id false)))
 
 (handlers/register-handler-fx
  :chat.ui/resend-message
