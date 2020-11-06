@@ -295,6 +295,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         wallet_view.just_fyi('Check that balance is changed after go back to WI-FI')
         sign_in.toggle_mobile_data()
         for asset in ('LXS', 'ADI', 'STT'):
+            wallet_view.asset_by_name(asset).scroll_to_element()
             wallet_view.wait_balance_is_changed(asset, wait_time=60)
 
         wallet_view.just_fyi('Delete watch-only account')
