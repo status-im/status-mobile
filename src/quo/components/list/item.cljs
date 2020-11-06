@@ -84,10 +84,13 @@
 
 (defn title-column
   [{:keys [title text-color subtitle subtitle-max-lines
-           title-accessibility-label size text-size title-text-weight]}]
+           title-accessibility-label size text-size title-text-weight
+           right-side-present?]}]
   [rn/view {:style (merge (:tiny spacing/padding-horizontal)
-                          {:justify-content :center
-                           :flex            1})}
+                          ;; make left-side title grow if nothing is present on right-side
+                          (when-not right-side-present?
+                            {:flex            1
+                             :justify-content :center}))}
    (cond
 
      (and title subtitle)
@@ -124,15 +127,25 @@
 
 (defn left-side [props]
   [rn/view {:style {:flex-direction :row
-                    :flex           1
+                    ;; Occupy only content width, never grow, but shrink if need be
+                    :flex-grow      0
+                    :flex-shrink    1
                     :align-items    :center}}
    [icon-column props]
    [title-column props]])
 
 (defn right-side [{:keys [chevron active accessory accessory-text animated-accessory?]}]
   (when (or chevron accessory)
-    [rn/view {:style {:align-items    :center
-                      :flex-direction :row}}
+    [rn/view {:style {:align-items     :center
+                      :justify-content :flex-end
+                      :flex-direction  :row
+                      ;; Grow to occupy full space, shrink when need be, but always maitaining 16px left gutter
+                      :flex-grow       1
+                      :flex-shrink     1
+                      :margin-left     16
+                      ;; When the left-side leaves no room for right-side, the rendered element is pushed out. A flex-basis ensures that there is some room reserved.
+                      ;; The number 80px was determined by trial and error.
+                      :flex-basis      80}}
      [rn/view {:style (:tiny spacing/padding-horizontal)}
       (case accessory
         :radio    [controls/radio {:value active}]
@@ -142,6 +155,7 @@
                    {:value active}]
         :switch   [controls/switch {:value active}]
         :text     [text/text {:color           :secondary
+                              :ellipsize-mode  :middle
                               :number-of-lines 1}
                    accessory-text]
         accessory)]
@@ -204,7 +218,8 @@
                    :size                      size
                    :text-size                 text-size
                    :subtitle                  subtitle
-                   :subtitle-max-lines        subtitle-max-lines}]
+                   :subtitle-max-lines        subtitle-max-lines
+                   :right-side-present?       (or accessory chevron)}]
        [right-side {:chevron             chevron
                     :active              active
                     :on-press            on-press
