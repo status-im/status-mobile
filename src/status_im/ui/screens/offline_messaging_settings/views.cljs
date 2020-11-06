@@ -57,23 +57,24 @@
        [{:icon    :main-icons/add-circle
          :on-press #(re-frame/dispatch [:mailserver.ui/add-pressed])}]}]
 
-     [react/view {:style styles/switch-container}
-      [profile.components/settings-switch-item
-       {:label-kw  :t/offline-messaging-use-history-nodes
-        :value     use-mailservers?
-        :action-fn #(re-frame/dispatch [:mailserver.ui/use-history-switch-pressed (not use-mailservers?)])}]]
-     [react/view {:style styles/use-history-explanation-text-container}
-      [react/text {:style styles/explanation-text}
-       (i18n/label :t/offline-messaging-use-history-explanation)]]
+     [react/scroll-view
+      [react/view {:style styles/switch-container}
+       [profile.components/settings-switch-item
+        {:label-kw  :t/offline-messaging-use-history-nodes
+         :value     use-mailservers?
+         :action-fn #(re-frame/dispatch [:mailserver.ui/use-history-switch-pressed (not use-mailservers?)])}]]
+      [react/view {:style styles/use-history-explanation-text-container}
+       [react/text {:style styles/explanation-text}
+        (i18n/label :t/offline-messaging-use-history-explanation)]]
 
-     (when use-mailservers?
-       [:<>
-        [pinned-state preferred-mailserver-id]
+      (when use-mailservers?
+        [:<>
+         [pinned-state preferred-mailserver-id]
 
-        [react/text {:style styles/history-nodes-label}
-         (i18n/label :t/history-nodes)]
-        [list/flat-list {:data               (vals mailservers)
-                         :default-separator? false
-                         :key-fn             :name
-                         :render-fn          (render-row current-mailserver-id
-                                                         preferred-mailserver-id)}]])]))
+         [react/text {:style styles/history-nodes-label}
+          (i18n/label :t/history-nodes)]
+         [list/flat-list {:data               (vals mailservers)
+                          :default-separator? false
+                          :key-fn             :name
+                          :render-fn          (render-row current-mailserver-id
+                                                          preferred-mailserver-id)}]])]]))

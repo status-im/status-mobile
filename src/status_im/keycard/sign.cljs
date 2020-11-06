@@ -129,7 +129,7 @@
   (let [{:keys [result error]} (types/json->clj result)
         message (get-in db [:signing/sign :formatted-data :message])
         currency-contract (:currency message)]
-    (when-not (or (:receiver message) (:code message))
+    (when currency-contract
       (json-rpc/eth-call {:contract currency-contract
                           :method "decimals()"
                           :outputs ["uint8"]
