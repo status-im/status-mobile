@@ -2,6 +2,28 @@
   (:require [quo.animated :as animated]
             [status-im.ui.components.colors :as colors]))
 
+(def dot-size 6)
+
+(def dot-container
+  {:height             200
+   :flex-direction     :column
+   :flex-wrap          :wrap
+   :padding-horizontal 8})
+
+(defn dot-selector []
+  {:flex-direction  :row
+   :justify-content :space-between
+   :align-items     :center})
+
+(defn dot-style [selected]
+  {:background-color  (if selected colors/blue colors/blue-light)
+   :overflow          :hidden
+   :opacity           1
+   :margin-horizontal 3
+   :width             dot-size
+   :height            dot-size
+   :border-radius     3})
+
 (defn container [{:keys [minimized]}]
   (when-not minimized
     {:padding-bottom     8
@@ -25,33 +47,83 @@
    :bottom          0
    :left            0})
 
-(defn card-common []
-  {:margin-vertical   16
-   :margin-horizontal 8
-   :width             156
-   :height            145
-   :shadow-offset     {:width 0 :height 2}
-   :shadow-radius     8
-   :shadow-opacity    1
-   :shadow-color      (if (colors/dark?)
-                        "rgba(0, 0, 0, 0.75)"
-                        "rgba(0, 9, 26, 0.12)")
-   :elevation         3
-   :border-radius     8})
+(def card-margin 8)
+(defn page-width [card-width]
+  (+ card-width (* card-margin 2)))
 
-(defn card [color]
-  (merge (card-common)
+(defn card-common [card-width]
+  {:margin            card-margin
+   :width             card-width
+   :height            82
+   :border-radius     16})
+
+(defn card [color card-width]
+  (merge (card-common card-width)
          {:background-color   color
           :justify-content    :space-between
           :padding-horizontal 12
           :padding-top        12
-          :padding-bottom     6}))
+          :padding-bottom     10}))
 
-(defn add-card []
-  (merge (card-common)
+(defn add-card [card-width]
+  (merge (card-common card-width)
          {:background-color colors/white
+          :flex-direction  :row
+          :border-width     1
+          :border-color     colors/gray-lighter
           :justify-content  :center
           :align-items      :center}))
+
+(def add-text
+  {:color colors/blue
+   :margin-left 8
+   :font-weight "500"
+   :font-size 15
+   :line-height 22})
+
+(def card-name
+  {:color colors/white-persist
+   :font-weight "500"
+   :font-size 15
+   :line-height 22})
+
+(def card-address
+  {:number-of-lines 1
+   :ellipsize-mode   :middle
+   :size             :small
+   :monospace        true
+   :style            {:width 110
+                      :font-size 15
+                      :line-height 22
+                      :color       colors/white-transparent-70-persist}})
+
+(def card-value
+  {:color colors/white-persist
+   :font-size 22
+   :font-weight "500"})
+
+(def card-value-currency
+  {:color colors/white-persist
+   :font-size 22
+   :font-weight "500"})
+
+(def card-icon-more
+  {:border-radius 32
+   :width         36
+   :height        36
+   :justify-content :center
+   :align-items     :center
+   :background-color colors/black-transparent})
+
+(def card-icon-type
+  {:border-radius 32
+   :width         36
+   :height        36
+   :justify-content :center
+   :align-items     :center
+   :margin-left :auto
+   :margin-right 12
+   :background-color colors/white-persist})
 
 (def send-button-container
   {:position        :absolute

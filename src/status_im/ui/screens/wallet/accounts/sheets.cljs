@@ -48,7 +48,7 @@
                                 [:navigate-to :profile-stack {:screen  :backup-seed
                                                               :initial false}])}])]))
 
-(defn send-receive [account type]
+(defn account-card-actions [account type]
   [react/view
    (when-not (= type :watch)
      [quo/list-item
@@ -60,9 +60,9 @@
                               [:wallet/prepare-transaction-from-wallet account])}])
    [quo/list-item
     {:theme               :accent
-     :title               (i18n/label :t/receive)
-     :icon                :main-icons/receive
-     :accessibility-label :receive-transaction-button
+     :title               (i18n/label :t/share)
+     :icon                :main-icons/share
+     :accessibility-label :share-account-button
      :on-press            #(hide-sheet-and-dispatch
                             [:show-popover {:view    :share-account
                                             :address (:address account)}])}]])

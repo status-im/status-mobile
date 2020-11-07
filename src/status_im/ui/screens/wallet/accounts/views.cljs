@@ -2,6 +2,7 @@
   (:require [quo.animated :as reanimated]
             [quo.core :as quo]
             [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
             [status-im.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
@@ -15,48 +16,49 @@
             [status-im.keycard.login :as keycard.login])
   (:require-macros [status-im.utils.views :as views]))
 
-(views/defview account-card [{:keys [name color address type] :as account}]
+(views/defview account-card [{:keys [name color address type] :as account} keycard? card-width]
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:account-portfolio-value address]
                   prices-loading? [:prices-loading?]]
     [react/touchable-highlight
      {:on-press            #(re-frame/dispatch [:navigate-to :wallet-account account])
-      :accessibility-label (str "accountcard" name)
-      :on-long-press       #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                {:content        (fn [] [sheets/send-receive account type])
-                                                 :content-height 130}])}
-     [react/view {:style (styles/card color)}
+      :accessibility-label (str "accountcard" name)}
+     [react/view {:style (styles/card color card-width)}
+      [react/view {:flex-direction :row :align-items :center :justify-content :space-between}
+       [react/text {:style styles/card-name} name]
+       [quo/text styles/card-address
+        address]]
       [react/view {:flex-direction :row :align-items :center :justify-content :space-between}
        [react/view {:style {:flex-direction :row}}
         (if prices-loading?
           [react/small-loading-indicator :colors/white-persist]
-          [react/text {:style               {:color colors/white-persist :font-weight "500"}
+          [react/text {:style styles/card-value
                        :accessibility-label "account-total-value"} portfolio-value])
-        [react/text {:style {:color colors/white-transparent-persist :font-weight "500"}} (str " " (:code currency))]]
-       [react/touchable-highlight
-        {:on-press #(re-frame/dispatch [:show-popover
-                                        {:view :share-account :address address}])}
-        [icons/icon :main-icons/share {:color colors/white-persist}]]]
-      [react/view
-       [react/text {:style {:color colors/white-persist :font-weight "500" :line-height 22}} name]
-       [quo/text {:number-of-lines 1
-                  :ellipsize-mode   :middle
-                  :size             :small
-                  :monospace        true
-                  :style            {:line-height 22
-                                     :color       colors/white-transparent-70-persist}}
-        address]]]]))
+        [react/text {:style styles/card-value-currency} (str " " (:code currency))]]
+       (let [icon (cond
+                    (= type :watch)
+                    :main-icons/show
 
-(defn add-card []
+                    (and (not= type :watch) keycard?)
+                    :main-icons/keycard-account)]
+         (when icon
+           [icons/icon icon {:container-style styles/card-icon-type
+                             :color color}]))
+       [react/touchable-highlight
+        {:style styles/card-icon-more
+         :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                        {:content        (fn [] [sheets/account-card-actions account type])
+                                         :content-height 130}])}
+        [icons/icon :main-icons/more {:color colors/white-persist}]]]]]))
+
+(defn add-card [card-width]
   [react/touchable-highlight {:on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                                         {:content        sheets/add-account
                                                                          :content-height 260}])
                               :accessibility-label "add-new-account"}
-   [react/view {:style (styles/add-card)}
-    [react/view {:width       40 :height 40 :justify-content :center :border-radius 20
-                 :align-items :center :background-color colors/blue-transparent-10 :margin-bottom 8}
-     [icons/icon :main-icons/add {:color colors/blue}]]
-    [react/text {:style {:color colors/blue}} (i18n/label :t/add-account)]]])
+   [react/view {:style (styles/add-card card-width)}
+    [icons/icon :main-icons/add-circle {:color colors/blue}]
+    [react/text {:style styles/add-text} (i18n/label :t/add-account)]]])
 
 (defn render-asset [currency & [on-press]]
   (fn [{:keys [icon decimals amount color value] :as token}]
@@ -96,16 +98,46 @@
       [react/view (styles/send-button)
        [icons/icon :main-icons/send {:color colors/white-persist}]]]]))
 
+(defn dot []
+  (fn [{:keys [selected]}]
+    [react/view {:style (styles/dot-style selected)}]))
+
+(defn dots-selector [{:keys [n selected]}]
+  [react/view {:style (styles/dot-selector)}
+   (for [i (range n)]
+     ^{:key i}
+     [dot {:selected (= selected i)}])])
+
 (views/defview accounts []
-  (views/letsubs [accounts [:multiaccount/accounts]]
-    [react/scroll-view {:horizontal                        true
-                        :shows-horizontal-scroll-indicator false}
-     [react/view {:flex-direction     :row
-                  :padding-horizontal 8}
-      (for [account accounts]
-        ^{:key account}
-        [account-card account])
-      [add-card]]]))
+  (views/letsubs [accounts [:multiaccount/accounts]
+                  keycard? [:keycard-multiaccount?]
+                  window-width [:dimensions/window-width]
+                  index (reagent/atom 0)]
+    (let [card-width (quot window-width 1.1)
+          page-width (styles/page-width card-width)]
+      [react/view {:style {:align-items     :center
+                           :flex            1
+                           :justify-content :flex-end}}
+       [react/scroll-view {:horizontal                        true
+                           :deceleration-rate                 "fast"
+                           :snap-to-interval                  page-width
+                           :snap-to-alignment                 "left"
+                           :shows-horizontal-scroll-indicator false
+                           :scroll-event-throttle             64
+                           :on-scroll                         #(let [x (.-nativeEvent.contentOffset.x ^js %)]
+                                                                 (reset! index (Math/max (Math/round (/ x page-width)) 0)))}
+        [react/view styles/dot-container
+         (doall
+          (for [account accounts]
+            ^{:key account}
+            [account-card account keycard? card-width]))
+         [add-card card-width]]]
+       (let [columns (Math/ceil (/ (inc (count accounts)) 2))
+             totalwidth  (* (styles/page-width card-width) columns)
+             n (Math/ceil (/ totalwidth window-width))]
+         (when (> n 1)
+           [dots-selector {:selected @index
+                           :n        n}]))])))
 
 (views/defview total-value [{:keys [animation minimized]}]
   (views/letsubs [currency           [:wallet/currency]
