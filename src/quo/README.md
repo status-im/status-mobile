@@ -1,13 +1,13 @@
 # Status Quo Components
-All components in **Quo** should be independent of the app state. They should be pure,
-and easy to reason about. This is required to make the library independent and
-easily pulled off as a separate repository when needed.
-Do avoid high coupling and direct use of internal styling, the components should be
-exported via namespace `quo.core` and used by status app only from here. This will
+All components in **Quo** should be independent of the app state. They should be _pure_ 
+and _easy to reason about_. Avoiding the app state is also required to make the library 
+independent and easy to be pulled off as a separate repository when needed. 
+To avoid high coupling and direct use of internal styling, the components should be
+exported via namespace `quo.core` and used by the Status app only from there. This will
 allow a more flexible way to update components without possible breakages into the
 app style.
 
-**Quo** components should and not have any dependency on the status app, this
+**Quo** components should not have any dependency on the Status app, this
 will avoid circular dependency and also benefit the independence of the components.
 
 All components are stored inside `components` namespaces. They are stateless and do
@@ -39,8 +39,8 @@ system to be used in too many way which can creating disjointed experiences.
 - Avoid external margins for atom components, it can be added on the wrapper
 where they are used but can't be removed without overriding.
 [Max Stoiber article on margins](https://mxstbr.com/thoughts/margin)
-- Design reusable components into [Layout Isolated Components](https://visly.app/blog/layout-isolated-components)
-(Article more relates to web, but ideas fits also to mobile dev**
+- Design reusable components into [Layout Isolated Components](https://visly.app/blogposts/layout-isolated-components)
+(Article more relates to web, but ideas fits also to mobile development)
 - Explicit is better than implicit, do not rely on platform default, if you expect
 a specific value, then override it
 
