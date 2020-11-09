@@ -715,10 +715,10 @@
  :<- [:multiaccount/public-key]
  :<- [::reactions]
  :<- [:chats/current-chat-id]
- (fn [[current-public-key reactions chat-id] [_ message-id]]
+ (fn [[current-public-key reactions current-chat-id] [_ message-id chat-id]]
    (models.reactions/message-reactions
     current-public-key
-    (get-in reactions [chat-id message-id]))))
+    (get-in reactions [(or chat-id current-chat-id) message-id]))))
 
 (re-frame/reg-sub
  :chats/messages-gaps

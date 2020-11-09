@@ -38,7 +38,8 @@
         visible          (reagent/atom false)
         actions          (reagent/atom nil)
         position         (reagent/atom {})]
-    (fn [{:keys [message reactions outgoing outgoing-status render send-emoji retract-emoji picker-on-open picker-on-close]}]
+    (fn [{:keys [message reactions outgoing outgoing-status render send-emoji retract-emoji picker-on-open
+                 picker-on-close timeline]}]
       (let [own-reactions  (reduce (fn [acc {:keys [emoji-id own]}]
                                      (if own (conj acc emoji-id) acc))
                                    [] reactions)
@@ -70,7 +71,7 @@
                                                        (and outgoing (= outgoing-status :sent)))
                                                (reset! actions act)
                                                (get-picker-position ref on-open)))}]]
-          [reaction-row/message-reactions message reactions]]
+          [reaction-row/message-reactions message reactions timeline]]
          [rn/modal {:visible          @visible
                     :on-request-close on-close
                     :on-show          (fn []
@@ -86,6 +87,7 @@
                                   :on-close       on-close
                                   :actions        @actions
                                   :own-reactions  own-reactions
+                                  :timeline       timeline
                                   :send-emoji     (fn [emoji]
                                                     (on-close)
                                                     (js/setTimeout #(on-emoji-press emoji)

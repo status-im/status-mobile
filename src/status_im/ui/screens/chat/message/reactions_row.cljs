@@ -15,9 +15,9 @@
               :style               (styles/reaction-quantity-style {:own own})}
     quantity]])
 
-(defn message-reactions [message reactions]
+(defn message-reactions [message reactions timeline]
   (when (seq reactions)
-    [rn/view {:style (styles/reactions-row message)}
+    [rn/view {:style (styles/reactions-row message timeline)}
      (for [emoji-reaction reactions]
        ^{:key (str emoji-reaction)}
        [reaction message emoji-reaction])]))

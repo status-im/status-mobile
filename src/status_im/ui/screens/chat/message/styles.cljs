@@ -3,7 +3,7 @@
             [status-im.ui.screens.chat.styles.photos :as photos]
             [status-im.ui.components.colors :as components.colors]))
 
-(defn picker-wrapper-style [{:keys [display-photo? outgoing]}]
+(defn picker-wrapper-style [{:keys [display-photo? outgoing timeline]}]
   (merge {:flex-direction :row
           :flex           1
           :padding-top    4
@@ -11,19 +11,23 @@
          (if outgoing
            {:justify-content :flex-end}
            {:justify-content :flex-start})
-         (if display-photo?
-           {:padding-left (+ 16 photos/default-size)}
-           {:padding-left 8})))
+         (when-not timeline
+           (if display-photo?
+             {:padding-left (+ 16 photos/default-size)}
+             {:padding-left 8}))))
 
-(defn container-style [{:keys [outgoing]}]
+(defn container-style [{:keys [outgoing timeline]}]
   (merge {:border-top-left-radius     16
           :border-top-right-radius    16
           :border-bottom-right-radius 16
           :border-bottom-left-radius  16
           :background-color           (:ui-background @colors/theme)}
-         (if outgoing
-           {:border-top-right-radius 4}
-           {:border-top-left-radius 4})))
+         (if timeline
+           {:border-top-left-radius 16
+            :border-top-right-radius 4}
+           (if outgoing
+             {:border-top-right-radius 4}
+             {:border-top-left-radius 4}))))
 
 (defn reactions-picker-row []
   {:flex-direction     :row
@@ -62,13 +66,13 @@
                   colors/white
                   (:text-01 @colors/theme))})
 
-(defn reactions-row [{:keys [outgoing display-photo?]}]
+(defn reactions-row [{:keys [outgoing display-photo?]} timeline]
   (merge {:flex-direction :row
           :padding-right  8}
-         (if outgoing
+         (if (and outgoing (not timeline))
            {:justify-content :flex-end}
            {:justify-content :flex-start})
-         (if display-photo?
+         (if (or display-photo? timeline)
            {:padding-left (+ 16 photos/default-size)}
            {:padding-left 8})))
 
