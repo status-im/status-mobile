@@ -83,7 +83,8 @@ pipeline {
         ]) {
           dir('test/appium/tests') {
             sh """
-              python3 -m pytest -n24 \
+              python3 -m pytest \
+                --numprocesses 16 \
                 --rerun_count=2 \
                 --testrail_report=True \
                 -m "${params.TEST_MARKERS}" \

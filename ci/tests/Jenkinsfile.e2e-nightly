@@ -47,10 +47,12 @@ pipeline {
         ]) {
           dir('test/appium/tests') {
             sh """
-              python3 -m pytest -m testrail_id \
-                -m "not upgrade" \
-                -n24 --rerun_count=2 \
+              python3 -m pytest \
+                --numprocesses 16 \
+                --rerun_count=2 \
                 --testrail_report=True \
+                -m testrail_id \
+                -m "not upgrade" \
                 --network=${params.NETWORK} \
                 --apk=${params.APK_NAME}
             """

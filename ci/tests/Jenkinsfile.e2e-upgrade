@@ -51,8 +51,10 @@ pipeline {
         ]) {
           dir('test/appium/tests') {
             sh """
-              python3 -m pytest -m upgrade \
-                -n24 --rerun_count=2 \
+              python3 -m pytest \
+                -m upgrade \
+                --numprocesses 16 \
+                --rerun_count=2 \
                 --testrail_report=True \
                 --network=${params.NETWORK} \
                 --apk=${params.APK_NAME} \
