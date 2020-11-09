@@ -69,36 +69,30 @@ def upload_to_saucelabs(file)
   end
 end
 
-# Helper which acts like a Python context manager
-def with(ctx)
-    yield ctx.setup
-ensure
-    ctx.teardown
-end
-
-# Creates temporary keychain for build duration
+# Creates and unlocks a keychain into which Fastlane match imports signing keys and certs.
 class Keychain
-  attr_accessor :name, :path, :pass
+  attr_accessor :name, :pass
 
   def initialize(name)
-    # We use epoch time to void clashes with CI builds
-    @name = "#{name}_#{Time.now.to_f}.keychain-db"
-    @path = "~/Library/Keychains/#{@name}"
-    @pass = rand().to_s
+    # Local devs will not have KEYCHAIN_PASSWORD set, and will be prompted for password.
+    return "login.keychain-db" unless ENV['KEYCHAIN_PASSWORD']
+    # We user the same keychain every time because we need to set a default.
+    @name = "#{name}.keychain-db"
+    @pass = ENV['KEYCHAIN_PASSWORD']
     Fastlane::Actions::CreateKeychainAction.run(
       name: @name,
       password: @pass,
       unlock: true,
+      # Fastlane can't find the signing cert without setting a default.
+      default_keychain: true,
+      # Deleting the keychain would cause race condition for parallel jobs.
+      require_create: false,
       # Lock it up after 25 minutes just in case we don't delete it.
-      timeout: 1500,
-      # Setting a default can cause a race condition with parallel jobs.
-      default_keychain: false,
+      lock_when_sleeps: true,
+      lock_after_timeout: true,
+      timeout: 1500
     )
   end
-
-  # for use in with()
-  def setup; self end
-  def teardown; Fastlane::Actions::DeleteKeychainAction.run(name: @name) end
 end
 
 # builds an ios app with ad-hoc configuration and put it
@@ -115,33 +109,33 @@ def build_ios_adhoc(readonly: false, pr_build: false)
   scheme = pr_build ? 'StatusImPR' : 'StatusIm'
   app_id = pr_build ? 'im.status.ethereum.pr' : 'im.status.ethereum'
 
-  with Keychain.new('adhoc') do |kc|
-    match(
-      type: 'adhoc',
-      readonly: readonly,
-      app_identifier: app_id,
-      force_for_new_devices: true,
-      keychain_name: kc.name,
-      keychain_password: kc.pass
-    )
+  kc = Keychain.new('fastlane')
 
-    build_ios_app(
-      scheme: scheme,
-      workspace: 'ios/StatusIm.xcworkspace',
-      configuration: 'Release',
-      clean: true,
-      export_method: 'ad-hoc',
-      output_name: 'StatusIm',
-      output_directory: 'status-ios',
-      export_options: {
-        signingStyle: 'manual',
-        provisioningProfiles: {
-          "im.status.ethereum": "match AdHoc im.status.ethereum",
-          "im.status.ethereum.pr": "match AdHoc im.status.ethereum.pr"
-        }
+  match(
+    type: 'adhoc',
+    readonly: readonly,
+    app_identifier: app_id,
+    force_for_new_devices: true,
+    keychain_name: kc.name,
+    keychain_password: kc.pass
+  )
+
+  build_ios_app(
+    scheme: scheme,
+    workspace: 'ios/StatusIm.xcworkspace',
+    configuration: 'Release',
+    clean: true,
+    export_method: 'ad-hoc',
+    output_name: 'StatusIm',
+    output_directory: 'status-ios',
+    export_options: {
+      signingStyle: 'manual',
+      provisioningProfiles: {
+        "im.status.ethereum": "match AdHoc im.status.ethereum",
+        "im.status.ethereum.pr": "match AdHoc im.status.ethereum.pr"
       }
-    )
-  end
+    }
+  )
 end
 
 # builds an ios app with e2e configuration and put it
@@ -151,37 +145,37 @@ def build_ios_e2e
   showsdks_output = sh('xcodebuild', '-showsdks')
   simulator_sdk = showsdks_output.scan(/iphonesimulator\d\d?\.\d\d?/).first
 
-  with Keychain.new('adhoc') do |kc|
-    match(
-      type: 'adhoc',
-      readonly: true,
-      force_for_new_devices: true,
-      keychain_name: kc.name,
-      keychain_password: kc.pass
-    )
+  kc = Keychain.new('fastlane')
 
-    build_ios_app(
-      # Creating a build for the iOS Simulator
-      # 1. https://medium.com/rocket-fuel/fastlane-to-the-simulator-87549b2601b9
-      sdk: simulator_sdk,
-      destination: 'generic/platform=iOS Simulator',
-      # 2. fixing compilations issues as stated in https://stackoverflow.com/a/20505258
-      #    it looks like i386 isn't supported by React Native
-      xcargs: 'ARCHS="x86_64" ONLY_ACTIVE_ARCH=NO',
-      # 3. directory where to up StatusIm.app
-      derived_data_path: 'status-ios',
-      output_name: 'StatusIm.app',
-      # -------------------------------------
-      # Normal stuff
-      scheme: 'StatusIm',
-      workspace: 'ios/StatusIm.xcworkspace',
-      configuration: 'Release',
-      # Simulator apps can't be archived...
-      skip_archive: true,
-      # ...and we don't need an .ipa file for them, because we use .app directly
-      skip_package_ipa: true
-    )
-  end
+  match(
+    type: 'adhoc',
+    readonly: true,
+    force_for_new_devices: true,
+    keychain_name: kc.name,
+    keychain_password: kc.pass
+  )
+
+  build_ios_app(
+    # Creating a build for the iOS Simulator
+    # 1. https://medium.com/rocket-fuel/fastlane-to-the-simulator-87549b2601b9
+    sdk: simulator_sdk,
+    destination: 'generic/platform=iOS Simulator',
+    # 2. fixing compilations issues as stated in https://stackoverflow.com/a/20505258
+    #    it looks like i386 isn't supported by React Native
+    xcargs: 'ARCHS="x86_64" ONLY_ACTIVE_ARCH=NO',
+    # 3. directory where to up StatusIm.app
+    derived_data_path: 'status-ios',
+    output_name: 'StatusIm.app',
+    # -------------------------------------
+    # Normal stuff
+    scheme: 'StatusIm',
+    workspace: 'ios/StatusIm.xcworkspace',
+    configuration: 'Release',
+    # Simulator apps can't be archived...
+    skip_archive: true,
+    # ...and we don't need an .ipa file for them, because we use .app directly
+    skip_package_ipa: true
+  )
 
   zip(
     path: 'status-ios/Build/Products/Release-iphonesimulator/StatusIm.app',
@@ -231,30 +225,30 @@ platform :ios do
 
   desc '`fastlane ios release` builds a release & uploads it to TestFlight'
   lane :release do
-    with Keychain.new('adhoc') do |kc|
-      match(
-        type: 'appstore',
-        readonly: true,
-        app_identifier: 'im.status.ethereum',
-        keychain_name: kc.name,
-        keychain_password: kc.pass
-      )
+    kc = Keychain.new('fastlane')
 
-      build_ios_app(
-        scheme: 'StatusIm',
-        workspace: 'ios/StatusIm.xcworkspace',
-        configuration: 'Release',
-        clean: true,
-        export_method: 'app-store',
-        output_directory: 'status-ios',
-        include_symbols: false,
-        export_options: {
-          "combileBitcode": true,
-          "uploadBitcode": false,
-          "ITSAppUsesNonExemptEncryption": false
-        }
-      )
-    end
+    match(
+      type: 'appstore',
+      readonly: true,
+      app_identifier: 'im.status.ethereum',
+      keychain_name: kc.name,
+      keychain_password: kc.pass
+    )
+
+    build_ios_app(
+      scheme: 'StatusIm',
+      workspace: 'ios/StatusIm.xcworkspace',
+      configuration: 'Release',
+      clean: true,
+      export_method: 'app-store',
+      output_directory: 'status-ios',
+      include_symbols: false,
+      export_options: {
+        "combileBitcode": true,
+        "uploadBitcode": false,
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    )
 
     upload_to_testflight(
       ipa: 'status-ios/StatusIm.ipa',
