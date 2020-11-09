@@ -323,14 +323,14 @@
 
 (defn normalize-sign-message-params
   "NOTE (andrey) we need this function, because params may be mixed up"
-  [params]
+  [params typed?]
   (let [[first-param second-param] params]
     (when (and (string? first-param) (string? second-param))
       (cond
         (ethereum/address? first-param)
-        [first-param (normalize-message second-param)]
+        [first-param (if typed? second-param (normalize-message second-param))]
         (ethereum/address? second-param)
-        [second-param (normalize-message first-param)]))))
+        [second-param (if typed? second-param (normalize-message first-param))]))))
 
 (fx/defn send-to-bridge
   [cofx message]
@@ -339,20 +339,21 @@
 (fx/defn web3-send-async
   [cofx {:keys [method params id] :as payload} message-id]
   (let [message?      (constants/web3-sign-message? method)
-        dapps-address (get-in cofx [:db :multiaccount :dapps-address])]
+        dapps-address (get-in cofx [:db :multiaccount :dapps-address])
+        typed? (not= constants/web3-personal-sign method)]
     (if (or message? (= constants/web3-send-transaction method))
       (let [[address data] (cond (and (= method constants/web3-keycard-sign-typed-data)
                                       (not (vector? params)))
                                  ;; We don't use signer argument for keycard sign-typed-data
                                  ["0x0" params]
-                                 message? (normalize-sign-message-params params)
+                                 message? (normalize-sign-message-params params typed?)
                                  :else [nil nil])]
         (when (or (not message?) (and address data))
           (signing/sign cofx (merge
                               (if message?
                                 {:message {:address address
                                            :data data
-                                           :typed? (not= constants/web3-personal-sign method)
+                                           :typed? typed?
                                            :pinless? (= method constants/web3-keycard-sign-typed-data)
                                            :from dapps-address}}
                                 {:tx-obj  (update (first params) :from #(or % dapps-address))})
