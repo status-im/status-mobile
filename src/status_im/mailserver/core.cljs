@@ -7,7 +7,6 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.i18n :as i18n]
             [status-im.mailserver.constants :as constants]
-            [status-im.mailserver.topics :as mailserver.topics]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as status]
@@ -909,26 +908,6 @@
                            {:error mailserver-error})
       :on-accept #(re-frame/dispatch [:mailserver.ui/retry-request-pressed])
       :confirm-button-text (i18n/label :t/mailserver-request-retry)}}))
-
-(fx/defn fetch-history
-  "Retrive a list of topics given a chat id, set them to the specified
-  time interval and start a mailserver request"
-  [{:keys [db] :as cofx} chat-id {:keys [from to]}]
-  (let [topics  (mailserver.topics/topics-for-chat
-                 db
-                 chat-id)]
-    (log/debug "fetch-history" "chat-id:" chat-id "from-timestamp:"
-               from "topics:" topics)
-    (fx/merge cofx
-              {:db (reduce
-                    (fn [db topic]
-                      (cond-> (assoc-in db [:mailserver/requests-from topic] from)
-
-                        to
-                        (assoc-in [:mailserver/requests-to topic] to)))
-                    db
-                    topics)}
-              (process-next-messages-request))))
 
 (fx/defn fill-the-gap
   [{:keys [db] :as cofx} {:keys [gaps topics chat-id]}]

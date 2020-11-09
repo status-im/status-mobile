@@ -429,7 +429,6 @@
     :export-account
     :failed
     :faq
-    :fetch-history
     :fetch-messages
     :find
     :finish

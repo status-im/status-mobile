@@ -249,11 +249,6 @@
    (mailserver/check-connection cofx)))
 
 (handlers/register-handler-fx
- :mailserver/fetch-history
- (fn [cofx [_ chat-id from-timestamp]]
-   (mailserver/fetch-history cofx chat-id {:from from-timestamp})))
-
-(handlers/register-handler-fx
  :mailserver.callback/generate-mailserver-symkey-success
  (fn [cofx [_ mailserver sym-key-id]]
    (mailserver/add-mailserver-sym-key cofx mailserver sym-key-id)))
@@ -380,28 +375,6 @@
                            :on-accept           #(do
                                                    (re-frame/dispatch [:bottom-sheet/hide])
                                                    (re-frame/dispatch [:chat.ui/clear-history chat-id]))}}))
-
-(handlers/register-handler-fx
- :chat.ui/fetch-history-pressed
- (fn [{:keys [now] :as cofx} [_ chat-id]]
-   (mailserver/fetch-history cofx chat-id
-                             {:from (- (quot now 1000) mailserver.constants/one-day)})))
-
-(handlers/register-handler-fx
- :chat.ui/fetch-history-pressed48-60
- (fn [{:keys [now] :as cofx} [_ chat-id]]
-   (let [now (quot now 1000)]
-     (mailserver/fetch-history cofx chat-id
-                               {:from (- now (* 2.5 mailserver.constants/one-day))
-                                :to   (- now (* 2 mailserver.constants/one-day))}))))
-
-(handlers/register-handler-fx
- :chat.ui/fetch-history-pressed84-96
- (fn [{:keys [now] :as cofx} [_ chat-id]]
-   (let [now (quot now 1000)]
-     (mailserver/fetch-history cofx chat-id
-                               {:from (- now (* 4 mailserver.constants/one-day))
-                                :to   (- now (* 3.5 mailserver.constants/one-day))}))))
 
 (handlers/register-handler-fx
  :chat.ui/fill-gaps

@@ -38,12 +38,6 @@
        :icon                :main-icons/close
        :on-press            #(re-frame/dispatch [:chat.ui/clear-history-pressed chat-id])}]
      [quo/list-item
-      {:theme               :accent
-       :title               (i18n/label :t/fetch-history)
-       :accessibility-label :fetch-history-button
-       :icon                :main-icons/arrow-down
-       :on-press            #(hide-sheet-and-dispatch [:chat.ui/fetch-history-pressed chat-id])}]
-     [quo/list-item
       {:theme               :negative
        :title               (i18n/label :t/delete-chat)
        :accessibility-label :delete-chat-button
@@ -77,12 +71,6 @@
        :accessibility-label :clear-history-button
        :icon                :main-icons/close
        :on-press            #(re-frame/dispatch [:chat.ui/clear-history-pressed chat-id])}]
-     [quo/list-item
-      {:theme               :accent
-       :title               (i18n/label :t/fetch-history)
-       :accessibility-label :fetch-history-button
-       :icon                :main-icons/arrow-down
-       :on-press            #(hide-sheet-and-dispatch [:chat.ui/fetch-history-pressed chat-id])}]
      [quo/list-item
       {:theme               :negative
        :title               (i18n/label :t/delete-chat)
@@ -121,12 +109,6 @@
            :accessibility-label :clear-history-button
            :icon                :main-icons/close
            :on-press            #(re-frame/dispatch [:chat.ui/clear-history-pressed chat-id])}]
-         [quo/list-item
-          {:theme               :accent
-           :title               (i18n/label :t/fetch-history)
-           :accessibility-label :fetch-history-button
-           :icon                :main-icons/arrow-down
-           :on-press            #(hide-sheet-and-dispatch [:chat.ui/fetch-history-pressed chat-id])}]
          (when joined?
            [quo/list-item
             {:theme               :negative
