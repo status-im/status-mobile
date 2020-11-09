@@ -10,6 +10,9 @@ class OptionsButton(BaseButton):
         self.locator = self.Locator.xpath_selector(
             '(//android.view.ViewGroup[@content-desc="icon"])[2]')
 
+    def click(self):
+        self.click_until_presence_of_element(OptionsButton.CopyTransactionHashButton(self.driver))
+
     class CopyTransactionHashButton(BaseButton):
         def __init__(self, driver):
             super(OptionsButton.CopyTransactionHashButton, self).__init__(driver)

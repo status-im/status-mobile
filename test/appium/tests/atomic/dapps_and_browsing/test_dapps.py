@@ -93,7 +93,7 @@ class TestDApps(SingleDeviceTestCase):
         if not status_test_dapp.element_by_text(account_name).is_element_displayed():
             self.errors.append("No expected account %s is shown in authorize web3 popup for wallet" % account_name)
         status_test_dapp.allow_button.wait_and_click()
-        dapp_view.profile_button.click()
+        dapp_view.profile_button.click(desired_element_text='DApp permissions')
         profile_view.element_by_text(test_dapp_name).click()
         for text in 'Chat key', account_name:
             if not dapp_view.element_by_text(text).is_element_displayed():
@@ -110,7 +110,6 @@ class TestDApps(SingleDeviceTestCase):
         sign_in_view.just_fyi('Relogin and check multiaccount loads fine')
         send_transaction_view.cancel_button.click()
         sign_in_view.profile_button.click()
-        sign_in_view.get_back_to_home_view()
         sign_in_view.relogin()
         sign_in_view.wallet_button.click()
         if not wallet_view.element_by_text(account_name).is_element_displayed():

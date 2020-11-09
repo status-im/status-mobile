@@ -149,8 +149,8 @@ class DappTabButton(TabButton):
         return DappsView(self.driver)
 
     def click(self):
-        from views.dapps_view import EnterUrlEditbox
-        self.click_until_presence_of_element(EnterUrlEditbox(self.driver))
+        from views.dapps_view import SelectAccountButton
+        self.click_until_presence_of_element(SelectAccountButton(self.driver))
         return self.navigate()
 
 
@@ -179,9 +179,13 @@ class ProfileButton(TabButton):
         from views.profile_view import ProfileView
         return ProfileView(self.driver)
 
-    def click(self):
+    def click(self, desired_element_text = 'privacy'):
         from views.profile_view import PrivacyAndSecurityButton
-        self.click_until_presence_of_element(PrivacyAndSecurityButton(self.driver))
+        if desired_element_text == 'privacy':
+            self.click_until_presence_of_element(PrivacyAndSecurityButton(self.driver))
+        else:
+            base_view = BaseView(self.driver)
+            self.click_until_presence_of_element(base_view.element_by_text_part(desired_element_text))
         return self.navigate()
 
 

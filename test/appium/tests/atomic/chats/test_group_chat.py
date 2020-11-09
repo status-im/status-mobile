@@ -253,7 +253,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         chat_name = devices_home[0].get_random_chat_name()
 
-        devices_chat[0].just_fyi('Create group chats without members')
+        devices_home[0].just_fyi('Create group chats without members')
         devices_chat[0] = devices_home[0].create_group_chat([], chat_name)
         link = devices_chat[0].get_group_invite_via_group_info()
         devices_chat[0].get_back_to_home_view()
