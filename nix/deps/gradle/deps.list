@@ -297,8 +297,8 @@ com.facebook.soloader:nativeloader:0.8.2
 com.facebook.soloader:soloader:0.8.0
 com.facebook.soloader:soloader:0.8.2
 com.facebook.yoga:proguard-annotations:1.14.1
-com.github.status-im.status-keycard-java:android:3.0.1
-com.github.status-im.status-keycard-java:lib:3.0.1
+com.github.status-im.status-keycard-java:android:3.0.4
+com.github.status-im.status-keycard-java:lib:3.0.4
 com.github.status-im:function:0.0.1
 com.github.yalantis:ucrop:2.2.5-native
 com.googlecode.json-simple:json-simple:1.1

@@ -59,9 +59,6 @@
 
 (defn get-application-info
   [{:keys [pairing on-success on-failure]}]
-  ;; NOTE: if the card fails to get application info in the middle of the call
-  ;; it doesn't returns a Tar was lost. error properly
-  ;; https://github.com/status-im/react-native-status-keycard/blob/master/android/src/main/java/im/status/ethereum/keycard/SmartCard.java#L235
 
   (.. status-keycard
       (getApplicationInfo (str pairing))
@@ -69,10 +66,7 @@
               (let [info (-> response
                              (js->clj :keywordize-keys true)
                              (update :key-uid ethereum/normalized-hex))]
-                (if (and pairing (nil? (:pin-retry-counter info)))
-                  (on-failure (clj->js {:message "Tag was lost."
-                                        :code "android.nfc.TagLostException"}))
-                  (on-success info)))))
+                (on-success info))))
       (catch on-failure)))
 
 (defn install-applet [{:keys [on-success on-failure]}]

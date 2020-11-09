@@ -3542,30 +3542,30 @@
   },
 
   {
-    "path": "com/github/status-im/status-keycard-java/android/3.0.1/android-3.0.1",
+    "path": "com/github/status-im/status-keycard-java/android/3.0.4/android-3.0.4",
     "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
     "type": "jar",
     "pom": {
-      "sha1": "e84c8fef96ee43bb485ca30bab3736fadf956e4d",
-      "sha256": "0ahqp7lsanj8x8k46sz5kmv7yz081r5j5vd8nly1ri5vj88nrj3y"
+      "sha1": "e6e1933d85ac05b51953effc21ab893679f5864b",
+      "sha256": "1y9kqp3qgx3kqaf6vm6iwphdj8caqd9x6kncjsnp6f0nirp5ijzq"
     },
     "jar": {
-      "sha1": "d3055cf1607314c5ea4fa6fc3a259267dfad97ef",
-      "sha256": "0dv0lm2x85ijk8kaxb3fylmkp4hjgd8da3d95m5zhw82wbl4n1ca"
+      "sha1": "dca6e47e087a649643bbad1c1feb4b0b5e1aaf45",
+      "sha256": "0krxjj5h5zmap4645llscwkmyszm8qyngwg8vi8ds1mf2kp0jaz1"
     }
   },
 
   {
-    "path": "com/github/status-im/status-keycard-java/lib/3.0.1/lib-3.0.1",
+    "path": "com/github/status-im/status-keycard-java/lib/3.0.4/lib-3.0.4",
     "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
     "type": "jar",
     "pom": {
-      "sha1": "89f8e7342acca331648f4fe82c4471ebbfa2064c",
-      "sha256": "14g7c5x2mdf1fa48sb0c9hg1crr9xq4dz812kdnydylp108ln5gj"
+      "sha1": "718d3d286d53186552a84cee1a1283e0975da789",
+      "sha256": "0s2mbx1638qig4m802rf0ill9bghgga8w3ld0vpcz6x7h2kmvv6g"
     },
     "jar": {
-      "sha1": "eb2728acc9f601ba1ee4750804104795524e31fd",
-      "sha256": "19dk9752cga9dliv8n3sw3lxk41kamz6vxmkn0v6qxx14ll80mgi"
+      "sha1": "b2afa2711a9898d9aeb188195edde53c00984543",
+      "sha256": "16c7r0667pbgljx1p8zmvahv1igcnway1qjqprbn0n4ny1vy2imm"
     }
   },
 
