@@ -64,7 +64,10 @@
                               (assoc-in [public-key :nickname] (:nickname contact))))
                         %
                         contacts))
-   :dispatch-n (map (fn [{:keys [public-key]}] [:start-profile-chat public-key]) contacts)})
+   :dispatch-n (map (fn [{:keys [public-key] :as contact}]
+                      (when (contact.db/added? contact)
+                        [:start-profile-chat public-key]))
+                    contacts)})
 
 (fx/defn upsert-contact
   [{:keys [db] :as cofx}

@@ -271,7 +271,7 @@
               (transport.filters/load-chat chat-id)
               (navigate-to-chat chat-id))))
 
-(def timeline-chat-id "@timeline")
+(def timeline-chat-id "@timeline70bd746ddcc12beb96b2c9d572d0784ab137ffc774f5383e50585a932080b57cca0484b259e61cecbaa33a4c98a300a")
 
 (defn profile-chat-topic [public-key]
   (str "@" public-key))
