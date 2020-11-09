@@ -88,10 +88,11 @@
     [ask-user? [:link-preview/link-preview-request-enabled]
      whitelist [:link-preview/whitelist]
      enabled-sites   [:link-preview/enabled-sites]]
-    (let [link-info (previewable-link links whitelist enabled-sites)
-          {:keys [link whitelisted enabled]} link-info]
-      (when (and link whitelisted)
-        (if enabled
-          [link-preview-loader link outgoing]
-          (when ask-user?
-            [link-preview-enable-request]))))))
+    (when links
+      (let [link-info (previewable-link links whitelist enabled-sites)
+            {:keys [link whitelisted enabled]} link-info]
+        (when (and link whitelisted)
+          (if enabled
+            [link-preview-loader link outgoing]
+            (when ask-user?
+              [link-preview-enable-request])))))))

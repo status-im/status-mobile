@@ -16,7 +16,8 @@
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.components.tabs :as tabs]
             [status-im.utils.contenthash :as contenthash]
-            [status-im.multiaccounts.core :as multiaccounts]))
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.ui.screens.chat.message.link-preview :as link-preview]))
 
 (defonce messages-list-ref (atom nil))
 (def image-max-dimension 260)
@@ -84,7 +85,9 @@
        (datetime/time-ago (datetime/to-date timestamp))]]
      (if (= content-type constants/content-type-image)
        [image-message message]
-       [message/render-parsed-text (assoc message :outgoing false) (:parsed-text content)])]]])
+       [react/view
+        [message/render-parsed-text (assoc message :outgoing false) (:parsed-text content)]
+        [link-preview/link-preview-wrapper (:links content) outgoing]])]]])
 
 (defn render-message [timeline? account]
   (fn [{:keys [type] :as message} idx]
