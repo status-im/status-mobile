@@ -71,16 +71,18 @@
                 :flex-direction     :row
                 :background-color   (when (and timeline? outgoing) colors/blue-light)
                 :padding-horizontal 16}
-    [react/view {:padding-top 2 :padding-right 8}
-     (if outgoing
-       [photos/member-identicon (multiaccounts/displayed-photo account)]
-       [photos/member-identicon identicon])]
+    [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/show-profile-without-adding-contact from])}
+     [react/view {:padding-top 2 :padding-right 8}
+      (if outgoing
+        [photos/member-identicon (multiaccounts/displayed-photo account)]
+        [photos/member-identicon identicon])]]
     [react/view {:flex 1}
      [react/view {:flex-direction  :row
                   :justify-content :space-between}
-      (if outgoing
-        [message/message-my-name {:profile? true :you? false}]
-        [message/message-author-name from {:profile? true}])
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/show-profile-without-adding-contact from])}
+       (if outgoing
+         [message/message-my-name {:profile? true :you? false}]
+         [message/message-author-name from {:profile? true}])]
       [react/text {:style {:font-size 10 :color colors/gray}}
        (datetime/time-ago (datetime/to-date timestamp))]]
      (if (= content-type constants/content-type-image)
