@@ -47,13 +47,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         send_message.next_button.click()
         send_message.sign_transaction()
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15)
-        if chat_1_sender_message.transaction_status.text != 'Confirmed':
-            self.errors.append('Wrong state is shown for outgoing from Ropsten transaction: "Confirmed" is expected, '
-                               'in fact %s ' % chat_1_sender_message.transaction_status.text)
-
-        if chat_2_request_message.transaction_status.text == 'Confirmed':
-            self.errors.append('Sent from Ropsten transaction is shown as confirmed!')
-
+        [message.transaction_status.wait_for_element_text('Confirmed') for message in (chat_1_sender_message, chat_2_request_message)]
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6253)
@@ -87,18 +81,14 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_1_sender_message = chat_1.chat_element_by_text('↑ Outgoing transaction')
         if not chat_1_sender_message.is_element_displayed():
             self.driver.fail('No message is shown after sending ETH in 1-1 chat for sender')
-        if chat_1_sender_message.transaction_status.text != 'Address requested':
-            self.errors.append('Wrong state is shown for outgoing transaction: "Address requested" is expected, in fact'
-                               ' %s ' % chat_1_sender_message.transaction_status.text)
+        chat_1_sender_message.transaction_status.wait_for_element_text('Address requested')
 
         chat_2 = home_2.get_chat(sender['username']).click()
         chat_2_receiver_message = chat_2.chat_element_by_text('↓ Incoming transaction')
         timestamp_sender = chat_1_sender_message.timestamp_message.text
         if not chat_2_receiver_message.is_element_displayed():
             self.driver.fail('No message about incoming transaction in 1-1 chat is shown for receiver')
-        if chat_2_receiver_message.transaction_status.text != 'Address requested':
-            self.errors.append('Wrong state is shown for incoming transaction: "Address requested" is expected, in fact'
-                               ' %s' % chat_2_receiver_message.transaction_status.text)
+        chat_2_receiver_message.transaction_status.wait_for_element_text('Address requested')
 
         home_2.just_fyi('Accept and share address for sender and receiver')
         for text in ('Accept and share address', 'Decline'):
@@ -108,12 +98,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         if not select_account_bottom_sheet.get_account_in_select_account_bottom_sheet_button('Status').is_element_displayed():
             self.errors.append('Not expected value in "From" in "Select account": "Status" is expected')
         select_account_bottom_sheet.select_button.click()
-        if chat_2_receiver_message.transaction_status.text != "Shared 'Status account'":
-            self.errors.append('Wrong state is shown for incoming transaction: "Shared \'Status account\' is expected, '
-                               'in fact  %s ' %  chat_2_receiver_message.transaction_status.text)
-        if chat_1_sender_message.transaction_status.text != 'Address request accepted':
-            self.errors.append('Wrong state is shown for outgoing transaction: "Address request accepted" is expected, '
-                               'in fact %s ' % chat_1_sender_message.transaction_status.text)
+        chat_2_receiver_message.transaction_status.wait_for_element_text("Shared 'Status account'")
+        chat_1_sender_message.transaction_status.wait_for_element_text('Address request accepted')
 
         home_1.just_fyi("Sign and send transaction and check that timestamp on message is updated")
         time.sleep(40)
@@ -132,9 +118,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         wallet_1.home_button.click(desired_view="chat")
 
         home_1.just_fyi("Check 'Confirmed' state for sender")
-        if chat_1_sender_message.transaction_status.text != 'Confirmed':
-            self.errors.append('Wrong state is shown for outgoing transaction: "Confirmed" is expected, in fact'
-                               ' %s ' % chat_1_sender_message.transaction_status.text)
+        chat_1_sender_message.transaction_status.wait_for_element_text('Confirmed')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6263)
@@ -190,9 +174,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_2_sender_message = chat_2.chat_element_by_text('↑ Outgoing transaction')
         if not chat_2_sender_message.is_element_displayed():
                 self.driver.fail('No outgoing transaction in 1-1 chat is shown for sender after requesting STT')
-        if chat_2_sender_message.transaction_status.text != 'Address received':
-            self.errors.append('Wrong state is shown for outgoing transaction: "Address request accepted" is expected, '
-                               'in fact %s ' % chat_2_sender_message.transaction_status.text)
+        chat_2_sender_message.transaction_status.wait_for_element_text('Address received')
         send_message = chat_2_sender_message.sign_and_send.click()
         send_message.next_button.click()
         send_message.sign_transaction(default_gas_price=False)
@@ -202,9 +184,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15, token=True)
         chat_2.toggle_airplane_mode()
         chat_2.connection_status.wait_for_invisibility_of_element(30)
-        if chat_2_sender_message.transaction_status.text != 'Confirmed':
-            self.errors.append('Wrong state is shown for outgoing transaction: "Confirmed" is expected, in fact'
-                               ' %s ' % chat_2_sender_message.transaction_status.text)
+        chat_2_sender_message.transaction_status.wait_for_element_text('Confirmed')
         try:
             self.network_api.find_transaction_by_unique_amount(recipient_address[2:], amount, token=True)
         except Failed as e:
@@ -289,8 +269,4 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         send_transaction.sign_transaction(default_gas_price=False)
         chat_sender_message = chat.chat_element_by_text('↑ Outgoing transaction')
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15)
-        if chat_sender_message.transaction_status.text != 'Confirmed':
-            self.errors.append('Wrong state is shown for outgoing transaction to ENS: "Confirmed" is expected, '
-                               'in fact %s ' % chat_sender_message.transaction_status.text)
-
-        self.errors.verify_no_errors()
+        chat_sender_message.transaction_status.wait_for_element_text('Confirmed')

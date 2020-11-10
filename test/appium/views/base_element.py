@@ -269,6 +269,19 @@ class BaseText(BaseElement):
         self.driver.info('%s is %s' % (self.name, text))
         return text
 
+    def wait_for_element_text(self, text, wait_time=30):
+        counter = 0
+        while True:
+            if counter >= wait_time:
+                self.driver.fail(
+                    "'%s' is not equal to expected '%s' in %s sec" % (self.find_element().text, text, wait_time))
+            elif self.find_element().text != text:
+                counter += 10
+                time.sleep(10)
+                self.driver.info('Wait for text element %s to be equal to %s' % (self.name, text))
+            else:
+                self.driver.info('Element %s text is equal to %s' % (self.name, text))
+                return
 
 class BaseButton(BaseElement):
 

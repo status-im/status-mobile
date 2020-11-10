@@ -68,7 +68,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.delete_my_profile_password_input.set_value(common_password)
         profile.delete_profile_button.click()
         profile.ok_button.click()
-        if not sign_in.get_started_button.is_element_displayed():
+        if not sign_in.get_started_button.is_element_displayed(20):
             self.errors.append('No redirected to carousel view after deleting last multiaccount')
         self.errors.verify_no_errors()
 
