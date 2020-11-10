@@ -24,7 +24,8 @@
                                 :clock  :clock-value
                                 :quotedMessage :quoted-message
                                 :outgoingStatus :outgoing-status
-                                :audioDurationMs :audio-duration-ms})
+                                :audioDurationMs :audio-duration-ms
+                                :new :new?})
 
       (update :quoted-message clojure.set/rename-keys {:parsedText :parsed-text})
       (update :outgoing-status keyword)

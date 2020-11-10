@@ -128,7 +128,7 @@
     (= constants/message-type-one-to-one message-type) from))
 
 (fx/defn update-unviewed-count
-  [{:keys [db] :as cofx} {:keys [chat-id from message-type message-id]}]
+  [{:keys [db] :as cofx} {:keys [chat-id from message-type message-id new?]}]
   (when-not (= message-type constants/message-type-private-group-system-message)
     (let [{:keys [current-chat-id view-id]} db
           chat-view?         (= :chat view-id)
@@ -142,7 +142,7 @@
         (fx/merge cofx
                   (data-store.messages/mark-messages-seen current-chat-id [message-id] nil))
 
-        :else
+        new?
         {:db (update-in db [:chats chat-id]
                         assoc
                         :unviewed-messages-count (inc current-count))}))))
