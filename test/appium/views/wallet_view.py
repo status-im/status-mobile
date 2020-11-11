@@ -420,7 +420,7 @@ class WalletView(BaseView):
 
         # elements for multiaccount
         self.multiaccount_more_options = MultiaccountMoreOptions(self.driver)
-        self.accounts_status_account = AccountElementButton(self.driver, account_name="Status account")
+        self.accounts_status_account = AccountElementButton(self.driver, account_name=self.status_account_name)
         self.collectibles_button = CollectiblesButton(self.driver)
         self.cryptokitties_in_collectibles_number = NumberInCollectiblesButton(self.driver, 'CryptoKitties')
         self.view_in_cryptokitties_button = ViewInCryptoKittiesButton(self.driver)
@@ -449,7 +449,8 @@ class WalletView(BaseView):
         import re
         return float(re.sub('[~,]', '', self.usd_total_value.text))
 
-    def get_account_options_by_name(self, account_name='Status account'):
+    def get_account_options_by_name(self, account_name=''):
+        account_name = self.status_account_name if not account_name else account_name
         return AccountOptionsButton(self.driver, account_name)
 
     def get_asset_amount_by_name(self, asset: str):
@@ -513,7 +514,8 @@ class WalletView(BaseView):
         self.ok_got_it_button.click()
         return phrase
 
-    def get_wallet_address(self, account_name="Status account"):
+    def get_wallet_address(self, account_name=''):
+        account_name = self.status_account_name if not account_name else account_name
         self.wallet_account_by_name(account_name).click()
         self.receive_transaction_button.click_until_presence_of_element(self.qr_code_image)
         address = self.address_text.text

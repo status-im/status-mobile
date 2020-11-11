@@ -1,4 +1,4 @@
-from tests import marks, connection_not_secure_text, connection_is_secure_text, test_dapp_url
+from tests import marks, connection_not_secure_text, connection_is_secure_text
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 from views.dapps_view import DappsView

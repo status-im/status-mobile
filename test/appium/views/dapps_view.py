@@ -2,7 +2,6 @@ from views.base_element import BaseButton, BaseEditBox, BaseElement
 from views.base_view import BaseView
 from views.home_view import ChatElement
 
-
 class DiscoverDappsButton(BaseButton):
     def __init__(self, driver):
         super(DiscoverDappsButton, self).__init__(driver)
@@ -118,7 +117,7 @@ class DappsView(BaseView):
         #select account
         self.select_account_button = SelectAccountButton(self.driver)
         self.select_account_radio_button = SelectAccountRadioButton(self.driver,
-                                                                    account_name='Status account')
+                                                                    account_name=self.status_account_name)
         #permissions window
         self.always_allow_radio_button = AlwaysAllowRadioButton(self.driver)
         self.close_web3_permissions_window_button = CrossCloseWeb3PermissionButton(self.driver)
@@ -140,7 +139,8 @@ class DappsView(BaseView):
         self.clear_all_d_app_button if clear_all else self.remove_d_app_button.click()
         return entry
 
-    def select_account_by_name(self, account_name='Status account'):
+    def select_account_by_name(self, account_name=''):
+        account_name = self.status_account_name if not account_name else account_name
         return SelectAccountRadioButton(self.driver, account_name)
 
     def set_primary_ens_username(self, ens_name):

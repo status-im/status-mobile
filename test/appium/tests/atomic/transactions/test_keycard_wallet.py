@@ -141,7 +141,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         updated_balance = self.network_api.get_balance(status_account_address)
         transaction_amount_1 = round(float(transaction_amount) * 0.1, 11)
         wallet_view.wait_balance_is_changed()
-        send_transaction = wallet_view.send_transaction(account_name='Status account',
+        send_transaction = wallet_view.send_transaction(account_name=wallet_view.status_account_name,
                                                         amount=transaction_amount_1,
                                                         keycard=True)
         send_transaction.back_button.click()
@@ -178,7 +178,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.confirm()
         send_transaction.chose_recipient_button.click()
         send_transaction.accounts_button.click()
-        send_transaction.element_by_text('Status account').click()
+        send_transaction.element_by_text(wallet_view.status_account_name).click()
         send_transaction.sign_transaction_button.click()
         send_transaction.sign_transaction(keycard=True)
         wallet_view.element_by_text('Assets').click()

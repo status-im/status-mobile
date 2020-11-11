@@ -274,7 +274,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.just_fyi("Sending eth from new account to main account")
         updated_balance = self.network_api.get_balance(status_account_address)
         transaction_amount_1 = round(float(transaction_amount) * 0.1, 12)
-        send_transaction = wallet_view.send_transaction(account_name='Status account',
+        send_transaction = wallet_view.send_transaction(account_name=wallet_view.status_account_name,
                                                         amount=transaction_amount_1)
         send_transaction.back_button.click()
         sub_account_address = wallet_view.get_wallet_address(account_name)[2:]

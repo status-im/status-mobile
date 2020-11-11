@@ -1,7 +1,8 @@
 import asyncio
 import logging
 from datetime import datetime
-
+import os
+import json
 from support.appium_container import AppiumContainer
 from support.test_data import TestSuiteData
 
@@ -64,5 +65,8 @@ test_dapp_web_url = "status-im.github.io/dapp"
 test_dapp_url = 'simpledapp.eth'
 test_dapp_name = 'simpledapp.eth'
 
-emojis =  {'thumbs-up': 2, 'thumbs-down': 3, 'love': 1, 'laugh': 4, 'angry': 6, 'sad': 5}
+emojis = {'thumbs-up': 2, 'thumbs-down': 3, 'love': 1, 'laugh': 4, 'angry': 6, 'sad': 5}
 
+
+with open(os.sep.join(__file__.split(os.sep)[:-1]) + '/../../../translations/en.json') as json_file:
+    transl = json.load(json_file)

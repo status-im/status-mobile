@@ -13,7 +13,7 @@ from io import BytesIO
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 
 from support.device_apps import start_web_browser
-from tests import common_password, pytest_config_global, geth_log_emulator_path
+from tests import common_password, pytest_config_global, geth_log_emulator_path, transl
 from views.base_element import BaseButton, BaseElement, BaseEditBox, BaseText
 
 
@@ -430,6 +430,10 @@ class BaseView(object):
             'text': BaseText
         }
 
+    @property
+    def status_account_name(self):
+        return self.get_translation_by_key('ethereum-account')
+
     def accept_agreements(self):
         iterations = int()
         self.close_native_device_dialog("Messages has stopped")
@@ -443,6 +447,9 @@ class BaseView(object):
                 except (NoSuchElementException, TimeoutException):
                     pass
             iterations += 1
+
+    def get_translation_by_key(self, id):
+        return transl[id]
 
     def rooted_device_continue(self):
         try:
@@ -557,6 +564,12 @@ class BaseView(object):
         self.driver.info("Looking for full text: '%s'" % text)
         element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % text)
+        return element
+
+    def find_element_by_translation_id(self, id, element_type='base'):
+        self.driver.info("Looking element by id: '%s'" % id)
+        element = self.element_types[element_type](self.driver)
+        element.locator = element.Locator.translation_id_selector(id)
         return element
 
     def wait_for_element_starts_with_text(self, text, wait_time=60):

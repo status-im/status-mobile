@@ -617,7 +617,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     def test_dapps_permissions(self):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()
-        account_name = 'Status account'
+        account_name = home_view.status_account_name
 
         home_view.just_fyi('open Status Test Dapp, allow all and check permissions in Profile')
         home_view.open_status_test_dapp()

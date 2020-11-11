@@ -56,7 +56,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         if not select_account_bottom_sheet.get_account_in_select_account_bottom_sheet_button('Status').is_element_displayed():
             self.errors.append('Not expected value in "From" in "Select account": "Status" is expected')
         select_account_bottom_sheet.select_button.click()
-        chat_2_receiver_message.transaction_status.wait_for_element_text("Shared 'Status account'")
+        chat_2_receiver_message.transaction_status.wait_for_element_text("Shared '%s'" % home_1.status_account_name)
         chat_1_sender_message.transaction_status.wait_for_element_text('Address request accepted')
 
         home_1.just_fyi("Sign and send transaction and check that timestamp on message is updated")

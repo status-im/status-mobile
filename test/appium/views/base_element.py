@@ -12,6 +12,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
+from tests import transl
 
 
 class BaseElement(object):
@@ -45,6 +46,11 @@ class BaseElement(object):
         def webview_selector(cls, value):
             xpath_expression = '//*[@text="{0}"] | //*[@content-desc="{desc}"]'.format(value, desc=value)
             return cls(MobileBy.XPATH, xpath_expression)
+
+        @classmethod
+        def translation_id_selector(cls, id):
+            text = transl[id]
+            return BaseElement.Locator.xpath_selector('//*[@text="' + text + '"]')
 
         def __str__(self, *args, **kwargs):
             return "%s:%s" % (self.by, self.value)

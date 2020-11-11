@@ -62,7 +62,7 @@ class TestDApps(SingleDeviceTestCase):
 
         wallet_view.just_fyi('create new account in multiaccount')
         wallet_view.set_up_wallet()
-        status_account = 'Status account'
+        status_account = home_view.status_account_name
         account_name = 'Subaccount'
         wallet_view.add_account(account_name)
         address = wallet_view.get_wallet_address(account_name)

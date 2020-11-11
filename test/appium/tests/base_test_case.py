@@ -11,6 +11,7 @@ from appium import webdriver
 from appium.webdriver.common.mobileby import MobileBy
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
+from tests import transl
 
 from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
@@ -39,6 +40,9 @@ class AbstractTestCase:
         sys.stdout = sys.stderr
         print("SauceOnDemandSessionID=%s job-name=%s" % (driver.session_id,
                                                          pytest_config_global['build']))
+
+    def get_translation_by_key(self, key):
+        return transl[key]
 
     def add_local_devices_to_capabilities(self):
         updated_capabilities = list()
