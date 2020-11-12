@@ -272,7 +272,7 @@
              :text-align-vertical :top
              :on-change-text      #(do
                                      (re-frame/dispatch [:set-in [:wallet/recipient :searching] :searching])
-                                     (debounce/debounce-and-dispatch [:wallet.recipient/address-changed %] 600))
+                                     (debounce/debounce-and-dispatch [:wallet.recipient/address-changed (utils/safe-trim %)] 600))
              :accessibility-label :recipient-address-input}]]
           [react/view {:align-items :center :height 30 :padding-bottom 8}
            (if searching
