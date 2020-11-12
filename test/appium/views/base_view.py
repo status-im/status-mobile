@@ -188,6 +188,20 @@ class ProfileButton(TabButton):
             self.click_until_presence_of_element(base_view.element_by_text_part(desired_element_text))
         return self.navigate()
 
+class StatusButton(TabButton):
+    def __init__(self, driver):
+        super(StatusButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('status-tab-button')
+
+    def navigate(self):
+        from views.chat_view import ChatView
+        return ChatView(self.driver)
+
+    def click(self):
+        self.driver.info('Tap on %s' % self.name)
+        from views.chat_view import AddNewStatusButton
+        self.click_until_presence_of_element(AddNewStatusButton(self.driver))
+        return self.navigate()
 
 class SaveButton(BaseButton):
     def __init__(self, driver):
@@ -384,6 +398,7 @@ class BaseView(object):
         self.wallet_button = WalletButton(self.driver)
         self.profile_button = ProfileButton(self.driver)
         self.dapp_tab_button = DappTabButton(self.driver)
+        self.status_button = StatusButton(self.driver)
 
         self.yes_button = YesButton(self.driver)
         self.no_button = NoButton(self.driver)

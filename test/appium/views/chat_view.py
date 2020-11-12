@@ -40,6 +40,11 @@ class CancelSendImage(BaseEditBox):
         self.locator = self.Locator.accessibility_id('cancel-send-image')
 
 
+class ViewImageOptions(BaseEditBox):
+    def __init__(self, driver):
+        super(ViewImageOptions, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@content-desc="icon"]/android.widget.ImageView')
+
 class AddToContacts(BaseButton):
     def __init__(self, driver):
         super(AddToContacts, self).__init__(driver)
@@ -341,7 +346,7 @@ class FirstElementFromGalleryButton(BaseButton):
 class ViewProfileButton(BaseButton):
     def __init__(self, driver):
         super(ViewProfileButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="View profile"]')
+        self.locator = self.Locator.translation_id_selector('view-profile')
 
 class ViewProfileByAvatarButton(BaseButton):
     def __init__(self, driver):
@@ -717,6 +722,29 @@ class AudioMessageRecordedTime(BaseText):
         self.locator = self.Locator.accessibility_id("audio-message-recorded-time")
 
 
+class MyStatusEditBox(BaseEditBox):
+    def __init__(self, driver):
+        super(MyStatusEditBox, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("my-status-input")
+
+
+class AddNewStatusButton(BaseButton):
+    def __init__(self, driver):
+        super(AddNewStatusButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("plus-button")
+
+class OpenImagesPanelButton(BaseButton):
+    def __init__(self, driver):
+        super(OpenImagesPanelButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("open-images-panel-button")
+
+
+class SendMyStatusButton(BaseButton):
+    def __init__(self, driver):
+        super(SendMyStatusButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("send-my-status-button")
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super(ChatView, self).__init__(driver)
@@ -750,6 +778,7 @@ class ChatView(BaseView):
         self.save_image_button = SaveImageButton(self.driver)
         self.recent_image_in_gallery = ImageInRecentInGalleryElement(self.driver)
         self.cancel_send_image_button = CancelSendImage(self.driver)
+        self.view_image_options = ViewImageOptions(self.driver)
 
         self.audio_message_button = AudioMessageButton(self.driver)
         self.record_audio_button = RecordAudioButton(self.driver)
@@ -758,8 +787,6 @@ class ChatView(BaseView):
         self.play_pause_audio_message_button = PlayPauseAudioMessageButton(self.driver)
         self.audio_message_in_chat_timer = AudioMessageInChatTimer(self.driver)
         self.audio_message_recorded_time = AudioMessageRecordedTime(self.driver)
-
-
 
         self.chat_options = ChatMenuButton(self.driver)
         self.members_button = MembersButton(self.driver)
@@ -811,8 +838,13 @@ class ChatView(BaseView):
         self.profile_details = ProfileDetailsOtherUser(self.driver)
         self.profile_nickname = ProfileNicknameOtherUser(self.driver)
         self.profile_nickname_button = ProfileNicknameOtherUserButton(self.driver)
-
         self.nickname_input_field = NicknameInputOtherUser(self.driver)
+
+        #Timeline
+        self.timeline_add_new_status_button = AddNewStatusButton(self.driver)
+        self.timeline_my_status_editbox = MyStatusEditBox(self.driver)
+        self.timeline_open_images_panel_button = OpenImagesPanelButton(self.driver)
+        self.timeline_send_my_status_button = SendMyStatusButton(self.driver)
 
     def delete_chat(self):
         self.chat_options.click()
@@ -982,6 +1014,18 @@ class ChatView(BaseView):
         timestamp = datetime.strptime("%s:%s" % (sent_time_object.hour, sent_time_object.minute), '%H:%M').strftime("%I:%M %p")
         timestamp = timestamp[1:] if timestamp[0] == '0' else timestamp
         return timestamp
+
+    def set_new_status(self, status='something is happening', image=False):
+
+        self.timeline_add_new_status_button.click_until_presence_of_element(self.timeline_my_status_editbox)
+        self.timeline_my_status_editbox.set_value(status)
+
+        if image:
+            self.timeline_open_images_panel_button.click()
+            if self.allow_button.is_element_present():
+                self.allow_button.click()
+            self.first_image_from_gallery.click()
+        self.timeline_send_my_status_button.click()
 
     # Group chat system messages
     @staticmethod

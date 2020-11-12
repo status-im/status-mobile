@@ -241,10 +241,11 @@ class TestChatManagement(SingleDeviceTestCase):
 
         home.join_public_chat(public[1:])
         chat.get_back_to_home_view()
+        message = 'test message'
         for chat_name in one_to_one, public, group:
             chat = home.get_chat(chat_name).click()
             chat.just_fyi('Sending message to %s chat' % chat_name)
-            chat.chat_message_input.send_keys('test message')
+            chat.chat_message_input.send_keys(message)
             chat.send_message_button.click()
             chat.just_fyi('Deleting %s chat' % chat_name)
             chat.leave_chat() if chat_name == group else chat.delete_chat()
@@ -258,6 +259,11 @@ class TestChatManagement(SingleDeviceTestCase):
         for chat_name in one_to_one, public, group:
             if home.get_chat(chat_name).is_element_displayed():
                 self.errors.append('Deleted %s is shown after re-login, but the chat has been deleted' % chat_name)
+        sign_in.just_fyi('Rejoin public chat and check that messages are fetched again')
+        public_chat = home.join_public_chat(public[1:])
+        if not public_chat.chat_element_by_text(message).is_element_displayed(20):
+            self.errors.append('Messages are not fetched when rejoining public chat after deleting')
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5464)

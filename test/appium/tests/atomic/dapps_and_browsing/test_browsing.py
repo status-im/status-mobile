@@ -165,16 +165,6 @@ class TestBrowsing(SingleDeviceTestCase):
         if not dapp_view.element_by_text('Browser history will appear here').is_element_displayed():
             self.errors.append('Browser history is not empty')
 
-    @marks.testrail_id(5320)
-    @marks.critical
-    def test_open_google_com_via_open_dapp(self):
-        sign_in_view = SignInView(self.driver)
-        home = sign_in_view.create_user()
-        open_dapp_view = home.dapp_tab_button.click()
-        open_dapp_view.open_url('google.com')
-        browsing_view = open_dapp_view.get_base_web_view()
-        browsing_view.element_by_text('Google').wait_for_element(30)
-
     @marks.testrail_id(5321)
     @marks.critical
     def test_back_forward_buttons_browsing_website(self):

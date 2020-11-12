@@ -53,7 +53,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             if not chat_2_receiver_message.contains_text(text):
                 self.driver.fail("Transaction message doesn't contain required option %s" % text)
         select_account_bottom_sheet = chat_2_receiver_message.accept_and_share_address.click()
-        if not select_account_bottom_sheet.get_account_in_select_account_bottom_sheet_button('Status').is_element_displayed():
+        if not select_account_bottom_sheet.get_account_in_select_account_bottom_sheet_button(wallet_1.status_account_name).is_element_displayed():
             self.errors.append('Not expected value in "From" in "Select account": "Status" is expected')
         select_account_bottom_sheet.select_button.click()
         chat_2_receiver_message.transaction_status.wait_for_element_text("Shared '%s'" % home_1.status_account_name)
