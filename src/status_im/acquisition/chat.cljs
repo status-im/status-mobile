@@ -8,18 +8,20 @@
             [status-im.chat.models :as chat]))
 
 (fx/defn start-acquisition
-  [{:keys [db] :as cofx} {:keys [key] :as referrer}]
-  {:db                             (assoc-in db [:acquisition :chat-referrer key] referrer)
+  [{:keys [db]} {:keys [key id] :as referrer} public]
+  {:db                             (assoc-in db [:acquisition :chat-referrer (or key id)] referrer)
    ::persistence/chat-initialized? (fn [state]
                                      (when-not (= "initialized" state)
-                                       (re-frame/dispatch [::start-chat referrer])))})
+                                       (re-frame/dispatch [::start-chat referrer public])))})
 
 (fx/defn start-chat
   {:events [::start-chat]}
-  [cofx {:keys [key] :as referrer}]
+  [cofx {:keys [key id]} public]
   (fx/merge cofx
             {::persistence/chat-initalized! true}
-            (chat/start-chat key)))
+            (if public
+              (chat/start-public-chat id nil)
+              (chat/start-chat key))))
 
 (fx/defn accept-pack
   {:events [::accept-pack]}

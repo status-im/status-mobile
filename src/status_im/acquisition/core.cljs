@@ -17,6 +17,7 @@
 (def not-found-code "notfound.click_id")
 (def advertiser-type "advertiser")
 (def chat-type "chat")
+(def chat-public-type "public-chat")
 (def dapp-type "dapp")
 
 (fx/defn handle-registration
@@ -62,8 +63,8 @@
                 (= type advertiser-type)
                 (advertiser/start-acquisition referrer-meta)
 
-                (= type chat-type)
-                (chat/start-acquisition referrer-meta)
+                (#{chat-type chat-public-type} type)
+                (chat/start-acquisition referrer-meta (= type chat-public-type))
 
                 (= type dapp-type)
                 (dapp/start-acquisition referrer-meta)))))
