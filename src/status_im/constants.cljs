@@ -93,7 +93,7 @@
     :config         {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
                      :DataDir        "/ethereum/testnet_rpc"
                      :UpstreamConfig {:Enabled true
-                                      :URL     (str "https://ropsten.infura.io/v3/" config/INFURA_TOKEN)}}}
+                                      :URL     config/ROPSTEN_RPC_URL}}}
    {:id             "rinkeby_rpc",
     :etherscan-link "https://rinkeby.etherscan.io/address/",
     :name           "Rinkeby with upstream RPC",

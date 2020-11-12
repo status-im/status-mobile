@@ -1,4 +1,4 @@
-library 'status-react-jenkins@v1.2.6'
+library 'status-react-jenkins@feature/add-ropsten-rpc-url'
 
 pipeline {
   agent { label 'linux' }

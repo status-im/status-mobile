@@ -52,6 +52,9 @@ fi
 if [[ -n "${INFURA_TOKEN}" ]]; then
   append_env_export 'INFURA_TOKEN'
 fi
+if [[ -n "${ROPSTEN_RPC_ENDPOINT}" ]]; then
+  append_env_export 'ROPSTEN_RPC_ENDPOINT'
+fi
 # If no secrets were passed there's no need to pass the 'secretsFile'.
 if [[ -s "${SECRETS_FILE_PATH}" ]]; then
   nixOpts+=("--argstr" "secretsFile" "${SECRETS_FILE_PATH}")

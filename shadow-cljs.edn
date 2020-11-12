@@ -41,7 +41,8 @@
            :dev {:devtools {:after-load status-im.reloader/reload
                             :build-notify status-im.reloader/build-notify
                             :preloads [re-frisk-remote.preload]}
-                 :closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
+                 :closure-defines {status-im.utils.config/ROPSTEN_RPC_URL #shadow/env "ROPSTEN_RPC_URL"
+                                   status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
                  :compiler-options {:output-feature-set :es5
                                     :closure-defines
                                     {re-frame.trace/trace-enabled? true}
@@ -53,7 +54,8 @@
                  :local-ip #shadow/env "SHADOW_HOST"}
            :chunks {:fleets status-im.default-fleet/default-fleets
                     :chats status-im.chat.default-chats/default-chats}
-           :release {:closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
+           :release {:closure-defines {status-im.utils.config/ROPSTEN_RPC_URL #shadow/env "ROPSTEN_RPC_URL"
+                                       status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
                      :compiler-options {:output-feature-set :es6
                                         ;;disable for android build as there
                                         ;;is an intermittent warning with deftype
@@ -72,7 +74,8 @@
            :output-dir    "target/test"
            :optimizations :simple
            :target        :node-test
-           :closure-defines {status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
+           :closure-defines {status-im.utils.config/ROPSTEN_RPC_URL #shadow/env "ROPSTEN_RPC_URL"
+                             status-im.utils.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"}
            :compiler-options {;; needed because we override require and it
                               ;; messes with source-map which reports callstack
                               ;; exceeded exceptions instead of real issues
