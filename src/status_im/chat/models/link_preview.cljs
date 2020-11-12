@@ -23,16 +23,17 @@
             {::json-rpc/call [{:method     (json-rpc/call-ext-method "getLinkPreviewData")
                                :params     [link]
                                :on-success #(re-frame/dispatch [::cache-link-preview-data link %])
-                               :on-error   #(log/error "Can't get preview data for " link)}]}))
+                               :on-error   #(re-frame/dispatch [::cache-link-preview-data
+                                                                link
+                                                                {:error (str  "Can't get preview data for " link)}])}]}))
 
 (fx/defn cache-link-preview-data
   {:events [::cache-link-preview-data]}
-  [{{:keys [multiaccount]} :db :as cofx} site {:keys [error] :as data}]
-  (when-not error
-    (multiaccounts.update/optimistic
-     cofx
-     :link-previews-cache
-     (assoc (get multiaccount :link-previews-cache {}) site data))))
+  [{{:keys [multiaccount]} :db :as cofx} site data]
+  (multiaccounts.update/optimistic
+   cofx
+   :link-previews-cache
+   (assoc (get multiaccount :link-previews-cache {}) site data)))
 
 (fx/defn should-suggest-link-preview
   {:events [::should-suggest-link-preview]}

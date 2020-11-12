@@ -59,29 +59,29 @@
 
 (defview link-preview-loader [link outgoing]
   (letsubs [cache [:link-preview/cache]]
-    (let [{:keys [site title thumbnailUrl] :as preview-data} (get cache link)]
+    (let [{:keys [site title thumbnailUrl error] :as preview-data} (get cache link)]
       (if (not preview-data)
         (do
           (re-frame/dispatch
            [::link-preview/load-link-preview-data link])
           nil)
+        (when-not error
+          [react/touchable-highlight
+           {:on-press #(when (and (security/safe-link? link))
+                         (re-frame/dispatch
+                          [:browser.ui/message-link-pressed link]))}
 
-        [react/touchable-highlight
-         {:on-press #(when (and (security/safe-link? link))
-                       (re-frame/dispatch
-                        [:browser.ui/message-link-pressed link]))}
-
-         [react/view (styles/link-preview-wrapper outgoing)
-          [react/image {:source              {:uri thumbnailUrl}
-                        :style               (styles/link-preview-image outgoing)
-                        :accessibility-label :member-photo}]
-          [quo/text {:size :small
-                     :style styles/link-preview-title}
-           title]
-          [quo/text {:size :small
-                     :color :secondary
-                     :style styles/link-preview-site}
-           site]]]))))
+           [react/view (styles/link-preview-wrapper outgoing)
+            [react/image {:source              {:uri thumbnailUrl}
+                          :style               (styles/link-preview-image outgoing)
+                          :accessibility-label :member-photo}]
+            [quo/text {:size :small
+                       :style styles/link-preview-title}
+             title]
+            [quo/text {:size :small
+                       :color :secondary
+                       :style styles/link-preview-site}
+             site]]])))))
 
 (defview link-preview-wrapper [links outgoing]
   (letsubs
