@@ -14,9 +14,9 @@
 (defn copy-image [base64 on-success on-error]
   (when platform/ios?
     (let [image (subs base64 prefix-count (count base64))]
-     (-> (.copyImage ^js clipboard-manager image)
-         (.then (comp on-success types/js->clj))
-         (.catch (comp on-error types/js->clj))))))
+      (-> (.copyImage ^js clipboard-manager image)
+          (.then (comp on-success types/js->clj))
+          (.catch (comp on-error types/js->clj))))))
 
 (defn paste [on-success on-error]
   (when platform/ios?

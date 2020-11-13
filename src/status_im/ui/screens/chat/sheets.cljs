@@ -7,7 +7,9 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.chat.styles.message.sheets :as sheets.styles]
-            [quo.core :as quo]))
+            [status-im.clipboard.core :as clipboard]
+            [quo.core :as quo]
+            [quo.platform :as platform]))
 
 (defn hide-sheet-and-dispatch [event]
   (re-frame/dispatch [:bottom-sheet/hide])
@@ -165,14 +167,14 @@
          :on-press #(do
                       (hide)
                       (re-frame/dispatch [:chat.ui/reply-to-message message]))}])
-     ;; we have only base64 string for image, so we need to find a way how to copy it
-     #_[quo/list-item
+     (when platform/ios?
+       ;; NOTE: Android does not have a centralized method for images in clipboard
+       [quo/list-item
         {:theme    :accent
-         :title    :t/sharing-copy-to-clipboard
+         :title    (i18n/label :t/sharing-copy-to-clipboard)
          :icon     :main-icons/copy
          :on-press (fn []
-                     (re-frame/dispatch [:bottom-sheet/hide])
-                     (react/copy-to-clipboard (:image content)))}]
+                     (hide-sheet-and-dispatch [::clipboard/copy-image (:image content)]))}])
      [quo/list-item
       {:theme    :accent
        :title    (i18n/label :t/save)
