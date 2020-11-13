@@ -53,7 +53,7 @@ pipeline {
             sh """
               python3 -m pytest \
                 -m upgrade \
-                --numprocesses 16 \
+                --numprocesses 15 \
                 --rerun_count=2 \
                 --testrail_report=True \
                 --network=${params.NETWORK} \
