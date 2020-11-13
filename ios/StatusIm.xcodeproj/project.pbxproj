@@ -38,6 +38,10 @@
 		3AAD2AD324A3A60E0075D594 /* Inter-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 693A62DB37BC4CD5A30E5C96 /* Inter-SemiBold.otf */; };
 		3AAD2AD424A3A60E0075D594 /* Inter-SemiBoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = A4F2BBE8D4DD4140A6CCAC39 /* Inter-SemiBoldItalic.otf */; };
 		3ABC7AF8245FF85900612C45 /* InterStatus-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9C76AF5A418D4D65A4CAD1D9 /* InterStatus-Regular.otf */; };
+		3AC0858725514D69004E9E8A /* ClipboardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC0858625514D69004E9E8A /* ClipboardManager.swift */; };
+		3AC0858825514D69004E9E8A /* ClipboardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC0858625514D69004E9E8A /* ClipboardManager.swift */; };
+		3AC0858B25514DDB004E9E8A /* ClipboardReactModuleExports.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC0858A25514DDB004E9E8A /* ClipboardReactModuleExports.m */; };
+		3AC0858C25514DDB004E9E8A /* ClipboardReactModuleExports.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AC0858A25514DDB004E9E8A /* ClipboardReactModuleExports.m */; };
 		57C854A7993C47A3B1AECD32 /* Inter-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = C6B1215047604CD59A4C74D6 /* Inter-MediumItalic.otf */; };
 		70ADBB5ECF934DCF8A0E4919 /* Inter-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1426DF592BA248FC81D955CB /* Inter-Regular.otf */; };
 		74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */; };
@@ -130,6 +134,9 @@
 		3A8F8EA924A4D31600BF206D /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		3AAD2ADC24A3A60E0075D594 /* Status PR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Status PR.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3AB1C3AD245C043900098F67 /* StatusIm-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "StatusIm-Bridging-Header.h"; sourceTree = "<group>"; };
+		3AC0858625514D69004E9E8A /* ClipboardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardManager.swift; sourceTree = "<group>"; };
+		3AC0858A25514DDB004E9E8A /* ClipboardReactModuleExports.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClipboardReactModuleExports.m; sourceTree = "<group>"; };
+		3AC0859625517C10004E9E8A /* ClipboardReactModuleExports.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ClipboardReactModuleExports.h; sourceTree = "<group>"; };
 		3F224519278D376B19F4CA2B /* Pods-Status-StatusIm-StatusImTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusIm-StatusImTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Status-StatusIm-StatusImTests/Pods-Status-StatusIm-StatusImTests.release.xcconfig"; sourceTree = "<group>"; };
 		439B6B4B407A4E2AACAFE5BE /* RCTStatus.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTStatus.xcodeproj; path = "../modules/react-native-status/ios/RCTStatus/RCTStatus.xcodeproj"; sourceTree = "<group>"; };
 		4C16DE0B1F89508700AA10DB /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -272,6 +279,16 @@
 			path = StatusImPR;
 			sourceTree = "<group>";
 		};
+		3AC0858325514C5B004E9E8A /* ClipboardImage */ = {
+			isa = PBXGroup;
+			children = (
+				3AC0858625514D69004E9E8A /* ClipboardManager.swift */,
+				3AC0858A25514DDB004E9E8A /* ClipboardReactModuleExports.m */,
+				3AC0859625517C10004E9E8A /* ClipboardReactModuleExports.h */,
+			);
+			path = ClipboardImage;
+			sourceTree = "<group>";
+		};
 		5C1C8762251D6EF495FB2384 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -304,6 +321,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				3AC0858325514C5B004E9E8A /* ClipboardImage */,
 				3AAD2AB624A3A5F10075D594 /* StatusImPR */,
 				13B07FAE1A68108700A75B9A /* StatusIm */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -771,8 +789,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3AC0858725514D69004E9E8A /* ClipboardManager.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				3A2626CF245C3F2200D5F94B /* Dummy.swift in Sources */,
+				3AC0858B25514DDB004E9E8A /* ClipboardReactModuleExports.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -781,8 +801,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3AC0858825514D69004E9E8A /* ClipboardManager.swift in Sources */,
 				3AAD2ABC24A3A60E0075D594 /* AppDelegate.m in Sources */,
 				3AAD2ABD24A3A60E0075D594 /* Dummy.swift in Sources */,
+				3AC0858C25514DDB004E9E8A /* ClipboardReactModuleExports.m in Sources */,
 				3AAD2ABE24A3A60E0075D594 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
