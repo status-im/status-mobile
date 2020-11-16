@@ -136,7 +136,10 @@
     :params [(namehash ens-name)]
     :on-success
     (fn [hash]
-      (cb hash))}))
+      (cb hash))
+    ;;at some point infura started to return execution reverted error instead of "0x" result
+    ;;our code expects "0x" result
+    :on-error #(cb "0x")}))
 
 (def ABI-hash "0x2203ab56")
 (def pubkey-hash "0xc8690233")
