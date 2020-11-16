@@ -327,9 +327,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             if not message.is_element_displayed():
                 self.errors.append('Image or description is not shown in chat after sending for receiver')
 
-        device_2_home.just_fyi('Open image, view user profile and check status')
-        device_2_chat.image_chat_item.click()
-        device_2_chat.view_image_options.click()
+        device_2_home.just_fyi('View user profile and check status')
+        device_2_chat.chat_options.click()
         device_2_chat.view_profile_button.click()
         device_2_chat.element_by_text(device_1_status).scroll_to_element()
         device_2_chat.back_button.click()

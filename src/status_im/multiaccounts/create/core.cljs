@@ -116,10 +116,9 @@
   [{:keys [db] :as cofx}]
   (let  [step (get-in db [:intro-wizard :step])]
     (fx/merge cofx
-              (when-not (= :generate-key step)
-                {:db (assoc-in db [:intro-wizard :step] (decrement-step step))})
-              (when (= :generate-key-step)
-                {:db (dissoc db :intro-wizard)}))))
+              (if (or (= step :enter-phrase) (= :generate-key step))
+                #(prepare-intro-wizard %)
+                {:db (assoc-in db [:intro-wizard :step] (decrement-step step))}))))
 
 (fx/defn intro-step-back
   {:events [:intro-wizard/navigate-back]}
