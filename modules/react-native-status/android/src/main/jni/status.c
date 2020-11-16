@@ -180,24 +180,14 @@ jstring Java_im_status_NimStatus_sendTransaction(JNIEnv* env, jobject thiz, jstr
 
 jstring Java_im_status_NimStatus_generateAlias(JNIEnv* env, jobject thiz, jstring jpublicKey) {
 
-  __android_log_print(ANDROID_LOG_VERBOSE, "StatusModule", "before generatealias 1");
   const char * publicKey = (*env)->GetStringUTFChars(env, jpublicKey, 0);
-  __android_log_print(ANDROID_LOG_VERBOSE, "StatusModule", "before generatealias 2 %s", publicKey);
 
 
   setupForeignThreadGc();
   const char * result = generateAlias(publicKey);
   tearDownForeignThreadGc();
 
-  __android_log_print(ANDROID_LOG_VERBOSE, "StatusModule", "after generatealias 1");
-  if (result == NULL) {
-    __android_log_print(ANDROID_LOG_VERBOSE, "StatusModule", "after generatealias 2 NULL");
-  }
-  else {
-    __android_log_print(ANDROID_LOG_VERBOSE, "StatusModule", "after generatealias 2 %s", result);
-  }
   (*env)->ReleaseStringUTFChars(env, jpublicKey, publicKey);
-  __android_log_print(ANDROID_LOG_VERBOSE, "StatusModule", "after generatealias 4");
   return (*env)->NewStringUTF(env, result);
 }
 
