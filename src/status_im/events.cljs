@@ -1184,14 +1184,19 @@
                        (dissoc :app-in-background-since)
                        (assoc :app-active-since now))}
               (mailserver/process-next-messages-request)
+              (wallet/restart-wallet-service true false)
               #(when requires-bio-auth
                  (biometric/authenticate % on-biometric-auth-result authentication-options)))))
 
-(fx/defn on-going-in-background [{:keys [db now]}]
-  {:db (-> db
-           (dissoc :app-active-since)
-           (assoc :app-in-background-since now))
-   :dispatch-n [[:audio-recorder/on-background] [:audio-message/on-background]]})
+(fx/defn on-going-in-background
+  [{:keys [db now] :as cofx}]
+  (fx/merge
+   cofx
+   {:db         (-> db
+                    (dissoc :app-active-since)
+                    (assoc :app-in-background-since now))
+    :dispatch-n [[:audio-recorder/on-background] [:audio-message/on-background]]}
+   (wallet/clear-timeouts)))
 
 (defn app-state-change [state {:keys [db] :as cofx}]
   (let [app-coming-from-background? (= state "active")

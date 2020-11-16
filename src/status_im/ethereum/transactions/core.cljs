@@ -222,6 +222,12 @@
                   (seq transfers)
                   (concat (mapv add-transfer transfers))
 
+                  (seq transfers)
+                  (concat
+                   (mapv (fn [{:keys [hash]}]
+                           (wallet/stop-watching-tx hash))
+                         transfers))
+
                   true
                   (conj (wallet/update-balances
                          (into [] (reduce (fn [acc {:keys [address block]}]

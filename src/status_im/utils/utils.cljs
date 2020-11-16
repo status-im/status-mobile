@@ -103,6 +103,13 @@
 (defn clear-timeout [id]
   (.clearTimeout background-timer id))
 
+(re-frame/reg-fx
+ ::clear-timeouts
+ (fn [ids]
+   (doseq [id ids]
+     (when id
+       (clear-timeout id)))))
+
 (defn set-interval [cb ms]
   (.setInterval background-timer cb ms))
 

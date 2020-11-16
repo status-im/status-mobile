@@ -10,7 +10,8 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.wallet.transactions.styles :as styles]
             [quo.core :as quo]
-            [status-im.ui.components.toolbar :as toolbar])
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.wallet.core :as wallet])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- transaction-icon
@@ -95,6 +96,20 @@
        {:style {:color colors/blue}}
        (i18n/label :t/check-on-etherscan)]]]))
 
+(defn refresh []
+  [react/touchable-highlight
+   {:on-press #(re-frame/dispatch [::wallet/restart])}
+   [react/view
+    {:style {:flex               1
+             :padding-horizontal 14
+             :flex-direction     :row
+             :align-items        :center
+             :background-color   colors/blue-light
+             :height             52}}
+    [react/text
+     {:style {:color colors/blue}}
+     (i18n/label :t/refresh)]]])
+
 (defn history-list
   [transactions-history-sections address]
   (let [fetching-recent-history? @(re-frame/subscribe [:wallet/fetching-recent-tx-history? address])
@@ -102,6 +117,7 @@
         all-fetched?             @(re-frame/subscribe [:wallet/tx-history-fetched? address])]
     [react/view components.styles/flex
      [etherscan-link address]
+     [refresh]
      (when fetching-recent-history?
        [react/view
         {:style {:flex            1

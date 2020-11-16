@@ -11,7 +11,8 @@
             [status-im.ui.screens.chat.state :as view.state]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
-            [status-im.chat.models.mentions :as mentions]))
+            [status-im.chat.models.mentions :as mentions]
+            [clojure.string :as string]))
 
 (defn- prepare-message
   [message current-chat?]
@@ -147,6 +148,15 @@
                         assoc
                         :unviewed-messages-count (inc current-count))}))))
 
+(fx/defn check-for-incoming-tx
+  [cofx {{:keys [transaction-hash]} :command-parameters}]
+  (when (and transaction-hash
+             (not (string/blank? transaction-hash)))
+    ;; NOTE(rasom): dispatch later is needed because of circular dependency
+    {:dispatch-later
+     [{:dispatch [:watch-tx transaction-hash]
+       :ms       20}]}))
+
 (fx/defn receive-one
   {:events [::receive-one]}
   [{:keys [db] :as cofx} {:keys [message-id] :as message}]
@@ -165,7 +175,8 @@
                      (fx/merge cofx
                                (add-received-message message-with-chat-id)
                                (update-unviewed-count message-with-chat-id)
-                               (chat-model/join-time-messages-checked chat-id))))))))
+                               (chat-model/join-time-messages-checked chat-id)
+                               (check-for-incoming-tx message-with-chat-id))))))))
 
 ;;TODO currently we process every message, we need to precess them by batches
 ;;or better move processing to status-go

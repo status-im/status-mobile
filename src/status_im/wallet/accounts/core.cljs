@@ -183,7 +183,7 @@
       (fx/merge cofx
                 {::json-rpc/call [{:method     "accounts_saveAccounts"
                                    :params     [[account]]
-                                   :on-success #()}]
+                                   :on-success #(re-frame/dispatch [::wallet/restart])}]
                  :db (-> db
                          (assoc :multiaccount/accounts new-accounts)
                          (dissoc :add-account))}

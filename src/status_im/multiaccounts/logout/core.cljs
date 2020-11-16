@@ -8,7 +8,8 @@
             [status-im.utils.fx :as fx]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.keychain.core :as keychain]
-            [status-im.notifications.core :as notifications]))
+            [status-im.notifications.core :as notifications]
+            [status-im.wallet.core :as wallet]))
 
 (fx/defn logout-method
   [{:keys [db] :as cofx} {:keys [auth-method logout?]}]
@@ -22,6 +23,7 @@
               (notifications/logout-disable)
               (keychain/save-auth-method key-uid auth-method)
               (transport/stop-whisper)
+              (wallet/clear-timeouts)
               (chaos-mode/stop-checking)
               (init/initialize-app-db))))
 

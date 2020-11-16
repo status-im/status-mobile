@@ -1326,5 +1326,6 @@
     "timeline": "Timeline",
     "ethereum-account": "Ethereum account",
     "ethereum-address":"Ethereum address",
-    "default-assets": "Default ERC20 and ERC721"
+    "default-assets": "Default ERC20 and ERC721",
+    "refresh": "Refresh"
 }

@@ -65,7 +65,8 @@
    {:db (-> db
             (update-in [:wallet :accounts]
                        wallet/remove-transactions-since-block blockNumber)
-            (transactions/update-fetching-status accounts :recent? false))
+            (transactions/update-fetching-status accounts :recent? false)
+            (dissoc :wallet/waiting-for-recent-history?))
     :transactions/get-transfers
     {:chain-tokens (:wallet/all-tokens db)
      :addresses    (reduce
@@ -80,7 +81,7 @@
      :before-block blockNumber
      :limit        20
      :historical?  true}}
-   (wallet.core/restart-wallet-service)))
+   (wallet.core/restart-wallet-service false false)))
 
 (fx/defn new-wallet-event
   [cofx {:keys [type blockNumber accounts newTransactions] :as event}]

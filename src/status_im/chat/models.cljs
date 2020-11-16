@@ -193,7 +193,6 @@
                                    (or (:clock-value last-message)
                                        deleted-at-clock-value
                                        (utils.clocks/send 0)))]
-    (println :FOOO last-message-clock-value public? remove-chat?)
     (fx/merge
      cofx
      {:db            (-> db

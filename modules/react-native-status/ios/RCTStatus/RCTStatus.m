@@ -747,11 +747,11 @@ RCT_EXPORT_METHOD(stopWallet) {
     StatusgoStopWallet();
 }
 
-RCT_EXPORT_METHOD(startWallet) {
+RCT_EXPORT_METHOD(startWallet:(BOOL)watchNewBlocks) {
 #if DEBUG
     NSLog(@"StartWallet() method called");
 #endif
-    StatusgoStartWallet();
+    StatusgoStartWallet(watchNewBlocks);
 }
 
 RCT_EXPORT_METHOD(stopLocalNotifications) {

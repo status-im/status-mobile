@@ -16,8 +16,6 @@
             [status-im.utils.utils :as utils.utils]
             [taoensso.timbre :as log]
             [status-im.wallet.db :as wallet.db]
-            [status-im.ethereum.abi-spec :as abi-spec]
-            [status-im.signing.core :as signing]
             [clojure.string :as string]
             [status-im.contact.db :as contact.db]
             [status-im.ethereum.ens :as ens]
@@ -350,42 +348,6 @@
   [{:keys [db]} amount]
   {:db (assoc-in db [:wallet/prepare-transaction :amount-text] amount)})
 
-(fx/defn sign-transaction-button-clicked-from-chat
-  {:events  [:wallet.ui/sign-transaction-button-clicked-from-chat]}
-  [{:keys [db] :as cofx} {:keys [to amount from token]}]
-  (let [{:keys [symbol address]} token
-        amount-hex (str "0x" (abi-spec/number-to-hex amount))
-        to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))
-        from-address (:address from)
-        identity (:current-chat-id db)
-        db (dissoc db :wallet/prepare-transaction)]
-    (if to-norm
-      (fx/merge
-       cofx
-       {:db db}
-       (signing/sign {:tx-obj (if (= symbol :ETH)
-                                {:to    to-norm
-                                 :from  from-address
-                                 :chat-id  identity
-                                 :command? true
-                                 :value amount-hex}
-                                {:to       (ethereum/normalized-hex address)
-                                 :from     from-address
-                                 :chat-id  identity
-                                 :command? true
-                                 :data     (abi-spec/encode
-                                            "transfer(address,uint256)"
-                                            [to-norm amount-hex])})}))
-      {:db db
-       ::json-rpc/call
-       [{:method (json-rpc/call-ext-method "requestAddressForTransaction")
-         :params [(:current-chat-id db)
-                  from-address
-                  amount
-                  (when-not (= symbol :ETH)
-                    address)]
-         :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})))
-
 (fx/defn request-transaction-button-clicked-from-chat
   {:events  [:wallet.ui/request-transaction-button-clicked]}
   [{:keys [db] :as cofx} {:keys [to amount from token]}]
@@ -429,57 +391,6 @@
                  :request? true
                  :from-chat? true})
      :dispatch [:navigate-to :prepare-send-transaction]}))
-
-(fx/defn sign-transaction-button-clicked-from-request
-  {:events  [:wallet.ui/sign-transaction-button-clicked-from-request]}
-  [{:keys [db] :as cofx} {:keys [amount from token]}]
-  (let [{:keys [request-parameters chat-id]} (:wallet/prepare-transaction db)
-        {:keys [symbol address]} token
-        amount-hex (str "0x" (abi-spec/number-to-hex amount))
-        to-norm (:address request-parameters)
-        from-address (:address from)]
-    (fx/merge cofx
-              {:db (dissoc db :wallet/prepare-transaction)}
-              (fn [cofx]
-                (signing/sign
-                 cofx
-                 {:tx-obj (if (= symbol :ETH)
-                            {:to    to-norm
-                             :from  from-address
-                             :message-id (:id request-parameters)
-                             :chat-id chat-id
-                             :command? true
-                             :value amount-hex}
-                            {:to       (ethereum/normalized-hex address)
-                             :from     from-address
-                             :command? true
-                             :message-id (:id request-parameters)
-                             :chat-id chat-id
-                             :data     (abi-spec/encode
-                                        "transfer(address,uint256)"
-                                        [to-norm amount-hex])})})))))
-
-(fx/defn sign-transaction-button-clicked
-  {:events [:wallet.ui/sign-transaction-button-clicked]}
-  [{:keys [db] :as cofx} {:keys [to amount from token gas gasPrice]}]
-  (let [{:keys [symbol address]} token
-        amount-hex   (str "0x" (abi-spec/number-to-hex amount))
-        to-norm      (ethereum/normalized-hex (if (string? to) to (:address to)))
-        from-address (:address from)]
-    (fx/merge cofx
-              {:db (dissoc db :wallet/prepare-transaction)}
-              (signing/sign
-               {:tx-obj (merge {:from     from-address
-                                ;;gas and gasPrice from qr (eip681)
-                                :gas      gas
-                                :gasPrice gasPrice}
-                               (if (= symbol :ETH)
-                                 {:to    to-norm
-                                  :value amount-hex}
-                                 {:to   (ethereum/normalized-hex address)
-                                  :data (abi-spec/encode
-                                         "transfer(address,uint256)"
-                                         [to-norm amount-hex])}))}))))
 
 (fx/defn set-and-validate-amount-request
   {:events [:wallet.request/set-and-validate-amount]}
@@ -629,28 +540,106 @@
 
 (re-frame/reg-fx
  ::start-wallet
- (fn []
-   (log/info "start-wallet fx")
-   (status/start-wallet)))
+ (fn [watch-new-blocks?]
+   (log/info "start-wallet fx" watch-new-blocks?)
+   (status/start-wallet watch-new-blocks?)))
+
+(def ms-10-min (* 10 60 1000))
+(def ms-20-min (* 20 60 1000))
 
 (fx/defn stop-wallet
   [{:keys [db] :as cofx}]
-  (let []
-    {:db           (assoc db :wallet-service/state :stopped)
+  (let [state (get db :wallet-service/state)
+        old-timeout (get db :wallet-service/restart-timeout)
+        timeout (or
+                 old-timeout
+                 (utils.utils/set-timeout
+                  #(re-frame.core/dispatch [::restart])
+                  ms-20-min))]
+    {:db           (-> db
+                       (assoc :wallet-service/state :stopped)
+                       (assoc :wallet-service/restart-timeout timeout))
      ::stop-wallet nil}))
 
 (fx/defn start-wallet
-  [{:keys [db] :as cofx}]
-  (let []
-    {:db           (assoc db :wallet-service/state :started)
-     ::start-wallet nil}))
+  [{:keys [db] :as cofx} watch-new-blocks?]
+  (let [old-timeout (get db :wallet-service/restart-timeout)
+        state       (get db :wallet-service/state)
+        timeout     (utils.utils/set-timeout
+                     #(re-frame.core/dispatch [::restart])
+                     ms-20-min)]
+    {:db            (-> db
+                        (assoc :wallet-service/state :started)
+                        (assoc :wallet-service/restart-timeout timeout))
+     ::start-wallet watch-new-blocks?
+     ::utils.utils/clear-timeouts
+     [old-timeout]}))
 
 (fx/defn restart-wallet-service
-  [{:keys [db] :as cofx}]
-  (when (:multiaccount db)
-    (let [syncing-allowed? (mobile-network-utils/syncing-allowed? cofx)]
+  [{:keys [db] :as cofx} force-start? watch-new-blocks?]
+  (when (or force-start? (:multiaccount db))
+    (let [watching-txs? (get db :wallet/watch-txs)
+          waiting? (get db :wallet/waiting-for-recent-history?)
+          syncing-allowed? (mobile-network-utils/syncing-allowed? cofx)]
       (log/info "restart-wallet-service"
-                "syncing-allowed" syncing-allowed?)
-      (if syncing-allowed?
-        (start-wallet cofx)
+                "force-start?" force-start?
+                "watching-txs?" watching-txs?
+                "syncing-allowed?" syncing-allowed?
+                "watch-new-blocks?" watch-new-blocks?)
+      (if (and syncing-allowed?
+               (or
+                waiting?
+                force-start?
+                watching-txs?))
+        (start-wallet cofx (boolean (or watch-new-blocks? watching-txs?)))
         (stop-wallet cofx)))))
+
+(fx/defn restart
+  {:events [::restart]}
+  [{:keys [db] :as cofx}]
+  (fx/merge
+   {:db (dissoc db :wallet-service/restart-timeout)}
+   (restart-wallet-service true false)))
+
+(fx/defn watch-tx
+  {:events [:watch-tx]}
+  [{:keys [db] :as cofx} tx-id]
+  (let [txs         (get db :wallet/watch-txs)
+        old-timeout (get db :wallet-service/restart-timeout)
+        timeout     (utils.utils/set-timeout
+                     (fn []
+                       (re-frame.core/dispatch [::stop-watching-txs]))
+                     ms-10-min)]
+    (fx/merge
+     {:db (-> db
+              (update :wallet/watch-txs (fnil conj #{}) tx-id)
+              (assoc :wallet/watch-txs-timeout timeout))
+      ::utils.utils/clear-timeouts
+      [old-timeout]}
+     (restart-wallet-service true true))))
+
+(fx/defn stop-watching-txs
+  {:events [::stop-watching-txs]}
+  [{:keys [db] :as cofx}]
+  (fx/merge
+   {:db (dissoc db
+                :wallet/watch-txs
+                :wallet/watch-txs-timeout)}
+   (restart-wallet-service false false)))
+
+(fx/defn stop-watching-tx
+  [{:keys [db] :as cofx} tx]
+  (let [txs (get db :wallet/watch-txs)
+        new-txs ((fnil disj #{}) txs tx)]
+    (when (get txs tx)
+      (if (empty? new-txs)
+        (stop-watching-txs cofx)
+        {:db (assoc db :wallet/watch-txs new-txs)}))))
+
+(fx/defn clear-timeouts
+  [{:keys [db]}]
+  (let [watch-timeout-id (get db :wallet/watch-txs-timeout)
+        restart-timeout-id (get db :wallet-service/restart-timeout)]
+    {:db                          (dissoc db :wallet/watch-txs-timeout
+                                          :wallet-service/restart-timeout)
+     ::utils.utils/clear-timeouts [watch-timeout-id restart-timeout-id]}))

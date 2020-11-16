@@ -310,14 +310,15 @@
                                :card-read-in-progress?
                                :pin
                                :multiaccount)
-                       (assoc :logged-in-since now))
+                       (assoc :logged-in-since now)
+                       (assoc :wallet/waiting-for-recent-history? true))
                ::json-rpc/call
                [{:method     "web3_clientVersion"
                  :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]}
               ;;FIXME
               (when nodes
                 (fleet/set-nodes :eth.contract nodes))
-              (wallet/restart-wallet-service)
+              (wallet/restart-wallet-service true false)
               (if login-only?
                 (login-only-events key-uid password save-password?)
                 (create-only-events))
