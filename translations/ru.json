@@ -339,11 +339,11 @@
         "other": "дней"
     },
     "datetime-day-short": {
-        "zero": "ноль",
-        "one": "один",
-        "few": "несколько",
-        "many": "много",
-        "other": "другой"
+        "zero": "Д",
+        "one": "Д",
+        "few": "Д",
+        "many": "Д",
+        "other": "Д"
     },
     "datetime-hour": {
         "zero": "часов",
@@ -353,11 +353,11 @@
         "other": "часов"
     },
     "datetime-hour-short": {
-        "zero": "ноль",
-        "one": "один",
-        "few": "несколько",
-        "many": "много",
-        "other": "другой"
+        "zero": "Ч",
+        "one": "Ч",
+        "few": "Ч",
+        "many": "Ч",
+        "other": "Ч"
     },
     "datetime-minute": {
         "zero": "минут",
@@ -367,11 +367,11 @@
         "other": "минуты"
     },
     "datetime-minute-short": {
-        "zero": "ноль",
-        "one": "один",
-        "few": "несколько",
-        "many": "много",
-        "other": "другой"
+        "zero": "М",
+        "one": "М",
+        "few": "М",
+        "many": "М",
+        "other": "М"
     },
     "datetime-second": {
         "zero": "секунд",
@@ -381,11 +381,11 @@
         "other": "секунды"
     },
     "datetime-second-short": {
-        "zero": "ноль",
-        "one": "один",
-        "few": "несколько",
-        "many": "много",
-        "other": "другой"
+        "zero": "С",
+        "one": "С",
+        "few": "С",
+        "many": "С",
+        "other": "С"
     },
     "datetime-today": "сегодня",
     "datetime-yesterday": "вчера",
