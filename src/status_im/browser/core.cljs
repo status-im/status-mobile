@@ -317,7 +317,7 @@
 (defn normalize-message
   "NOTE (andrey) there is no spec for this, so this implementation just to be compatible with MM"
   [message]
-  (if (ethereum/hex-to-utf8 message)
+  (if (string/starts-with? message "0x")
     message
     (ethereum/utf8-to-hex message)))
 
@@ -330,7 +330,7 @@
         (ethereum/address? first-param)
         [first-param (if typed? second-param (normalize-message second-param))]
         (ethereum/address? second-param)
-        [second-param (if typed? second-param (normalize-message first-param))]))))
+        [second-param (if typed? first-param (normalize-message first-param))]))))
 
 (fx/defn send-to-bridge
   [cofx message]
