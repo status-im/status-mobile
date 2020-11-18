@@ -24,6 +24,8 @@
         (if resize? maximum-image-size-px height)
         60
         (fn [^js resized-image]
+          (log/info "resized-image" (js/JSON.stringify resized-image))
+          (log/info "resized-image-2" (. resized-image -size))
           (let [path (.-path resized-image)
                 path (if (string/starts-with? path "file") path (str "file://" path))]
             (cb path)))
