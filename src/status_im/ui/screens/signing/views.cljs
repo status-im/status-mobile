@@ -15,6 +15,7 @@
             [status-im.utils.security :as security]
             [status-im.ui.screens.signing.sheets :as sheets]
             [status-im.ethereum.tokens :as tokens]
+            [status-im.utils.types :as types]
             [clojure.string :as string]
             [quo.core :as quo]
             [quo.gesture-handler :as gh]
@@ -192,20 +193,12 @@
 
 (defn signature-request-footer [keycard-step small-screen?]
   (fn []
-    [react/view {:style {:padding-horizontal 16}}
+    [react/view {:style {:padding 16 :align-items :center}}
      [react/view {:style {:flex-direction :row}}
       [terminal-button {:disabled? (= keycard-step :success)
                         :height    (if small-screen? 52 64)
                         :on-press  #(re-frame/dispatch [:show-popover {:view :transaction-data}])}
-       (i18n/label :t/show-transaction-data)]]
-     [react/view {:margin-top     8
-                  :flex-direction :row
-                  :margin-bottom  16}
-      [terminal-button {:theme     :negative
-                        :disabled? (= keycard-step :success)
-                        :height    64
-                        :on-press  #(re-frame/dispatch [:signing.ui/cancel-is-pressed])}
-       (i18n/label :t/decline)]]]))
+       (i18n/label :t/show-transaction-data)]]]))
 
 (defn signature-request [{:keys [formatted-data account fiat-amount fiat-currency keycard-step]}
                          connected?
@@ -218,30 +211,34 @@
        :connected?    connected?
        :on-cancel     #(re-frame/dispatch [:signing.ui/cancel-is-pressed])
        :params
-       (if (:receiver message)
-         {:header (redeem-tx-header account (:receiver message) small-screen?)
-          :title (i18n/label :t/confirmation-request)
-          :small-screen? small-screen?
-          :state-translations {:init {:title :t/keycard-redeem-tx
-                                      :description :t/keycard-redeem-tx-desc}}}
-         {:title (i18n/label :t/confirmation-request)
-          :header (signature-request-header (:formatted-amount message)
-                                            (:formatted-currency message)
-                                            small-screen? fiat-amount fiat-currency)
-          :footer (signature-request-footer keycard-step small-screen?)
-          :small-screen? small-screen?})}]]))
+       (cond
+         (:receiver message) {:title (i18n/label :t/confirmation-request)
+                              :header (redeem-tx-header account (:receiver message) small-screen?)
+                              :footer (signature-request-footer keycard-step small-screen?)
+                              :small-screen? small-screen?
+                              :state-translations {:init {:title :t/keycard-redeem-tx
+                                                          :description :t/keycard-redeem-tx-desc}}}
+         (:currency message) {:title (i18n/label :t/confirmation-request)
+                              :header (signature-request-header (:formatted-amount message)
+                                                                (:formatted-currency message)
+                                                                small-screen? fiat-amount fiat-currency)
+                              :footer (signature-request-footer keycard-step small-screen?)
+                              :small-screen? small-screen?}
+         :else {:title (i18n/label :t/confirmation-request)
+                :header (signature-request-header (:formatted-amount message)
+                                                  (:formatted-currency message)
 
-(defn- transaction-data-item [{:keys [label data]}]
-  [react/view
-   [react/text {:style {:font-size     17
-                        :line-height   20
-                        :margin-bottom 8
-                        :color         colors/gray}}
-    label]
-   [react/text {:style {:font-size     17
-                        :line-height   20
-                        :margin-bottom 24}}
-    data]])
+                                                  small-screen? fiat-amount fiat-currency)
+                :footer (signature-request-footer keycard-step small-screen?)
+                :small-screen? small-screen?})}]]))
+
+(defn- transaction-data-item [data]
+  (let [text (types/clj->pretty-json data 2)]
+    [react/view
+     [react/text {:style {:font-size     17
+                          :line-height   20
+                          :margin-bottom 24}}
+      text]]))
 
 (views/defview transaction-data []
   (views/letsubs
@@ -257,8 +254,7 @@
                                  :padding-horizontal 16
                                  :padding-vertical   10
                                  :margin-vertical    14}}
-      [transaction-data-item {:label "Label"
-                              :data  formatted-data}]]
+      [transaction-data-item formatted-data]]
      [separator]
      [react/view {:style {:margin-horizontal 8
                           :margin-vertical   16}}

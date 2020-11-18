@@ -10,8 +10,11 @@
 (defn js->clj [data]
   (cljs.core/js->clj data :keywordize-keys true))
 
+(defn clj->pretty-json [data spaces]
+  (.stringify js/JSON (clj-bean/->js data) nil spaces))
+
 (defn clj->json [data]
-  (.stringify js/JSON (clj-bean/->js data)))
+  (clj->pretty-json data 0))
 
 (defn json->clj [json]
   (when-not (= json "undefined")
