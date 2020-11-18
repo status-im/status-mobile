@@ -5,8 +5,6 @@
 # the repo. Unless a later match takes precedence,
 # @global-owner1 and @global-owner2 will be requested for
 # review when someone opens a pull request.
-*       @status-im/status-core
-
 /ci                 @jakubgs
 /fastlane           @jakubgs
 /scripts            @jakubgs
@@ -23,13 +21,5 @@
 /.github/   @jakubgs
 
 /components @status-im/status-core-ui
-
-desktop/                        @vkjr
-modules/react-native-desktop*/  @vkjr
-modules/react-native-desktop*/  @vkjr
-
-/doc          @oskarth @yenda @jeluard
-
-/deployment   @vkjr
 
 /test/appium/ @churik
