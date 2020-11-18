@@ -140,4 +140,4 @@
 (defn hex->text
   "Converts a hexstring to UTF8 text."
   [data]
-  (hex-to-utf8 data))
+  (or (hex-to-utf8 data) data))
