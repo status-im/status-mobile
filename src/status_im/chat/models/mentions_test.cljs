@@ -4,19 +4,18 @@
             [cljs.test :as test :include-macros true]))
 
 (test/deftest test-replace-mentions
-  (let [users (fn []
-                {"User Number One"
-                 {:name       "User Number One"
-                  :alias      "User Number One"
-                  :public-key "0xpk1"}
-                 "User Number Two"
-                 {:name       "user2"
-                  :alias      "User Number Two"
-                  :public-key "0xpk2"}
-                 "User Number Three"
-                 {:name       "user3"
-                  :alias      "User Number Three"
-                  :public-key "0xpk3"}})]
+  (let [users {"User Number One"
+               {:name       "User Number One"
+                :alias      "User Number One"
+                :public-key "0xpk1"}
+               "User Number Two"
+               {:name       "user2"
+                :alias      "User Number Two"
+                :public-key "0xpk2"}
+               "User Number Three"
+               {:name       "user3"
+                :alias      "User Number Three"
+                :public-key "0xpk3"}}]
     (test/testing "empty string"
       (let [text   ""
             result (mentions/replace-mentions text users)]

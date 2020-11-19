@@ -231,7 +231,7 @@
         lcase-text  (string/lower-case text)]
     (re-find regex lcase-text)))
 
-(defn get-suggestions [users searched-text]
+(defn get-user-suggestions [users searched-text]
   (reduce
    (fn [acc [k {:keys [alias name nickname searchable-phrases] :as user}]]
      (if-let [match
@@ -272,26 +272,26 @@
    (match-mention text users mention-key-idx (inc mention-key-idx) []))
   ([text users mention-key-idx next-word-idx words]
    (when-let [word (re-find word-regex (subs text next-word-idx))]
-     (let [new-words       (conj words word)
-           searched-text   (let [text      (-> new-words
-                                               string/join
-                                               string/lower-case
-                                               string/trim)
-                                 last-char (dec (count text))]
-                             (if (re-matches ending-chars-regex (str (nth text last-char nil)))
-                               (subs text 0 last-char)
-                               text))
-           suggestions     (get-suggestions users searched-text)
-           suggestions-cnt (count suggestions)]
-       (cond (zero? suggestions-cnt)
+     (let [new-words            (conj words word)
+           searched-text        (let [text      (-> new-words
+                                                    string/join
+                                                    string/lower-case
+                                                    string/trim)
+                                      last-char (dec (count text))]
+                                  (if (re-matches ending-chars-regex (str (nth text last-char nil)))
+                                    (subs text 0 last-char)
+                                    text))
+           user-suggestions     (get-user-suggestions users searched-text)
+           user-suggestions-cnt (count user-suggestions)]
+       (cond (zero? user-suggestions-cnt)
              nil
 
-             (and (= 1 suggestions-cnt)
-                  (mentioned? (second (first suggestions))
+             (and (= 1 user-suggestions-cnt)
+                  (mentioned? (second (first user-suggestions))
                               (subs text (inc mention-key-idx))))
-             (second (first suggestions))
+             (second (first user-suggestions))
 
-             (> suggestions-cnt 1)
+             (> user-suggestions-cnt 1)
              (let [word-len        (count word)
                    text-len        (count text)
                    next-word-start (+ next-word-idx word-len)]
@@ -300,33 +300,32 @@
                                 next-word-start new-words))))))))
 
 (defn replace-mentions
-  ([text users-fn]
+  ([text users]
    (let [idxs (get-at-signs text)]
-     (replace-mentions text users-fn idxs 0)))
-  ([text users-fn idxs diff]
+     (replace-mentions text users idxs 0)))
+  ([text users idxs diff]
    (if (or (string/blank? text)
            (empty? idxs))
      text
      (let [mention-key-idx (- (first idxs) diff)]
        (if-not mention-key-idx
          text
-         (let [users (users-fn)]
-           (if-not (seq users)
-             text
-             (let [{:keys [public-key match]}
-                   (match-mention text users mention-key-idx)]
-               (if-not match
-                 (recur text (fn [] users) (rest idxs) diff)
-                 (let [new-text (string/join
-                                 [(subs text 0 (inc mention-key-idx))
-                                  public-key
-                                  (subs text (+ (inc mention-key-idx)
-                                                (count match)))])]
-                   (recur new-text (fn [] users) (rest idxs)
-                          (+ diff (- (count text) (count new-text))))))))))))))
+         (if-not (seq users)
+           text
+           (let [{:keys [public-key match]}
+                 (match-mention text users mention-key-idx)]
+             (if-not match
+               (recur text users (rest idxs) diff)
+               (let [new-text (string/join
+                               [(subs text 0 (inc mention-key-idx))
+                                public-key
+                                (subs text (+ (inc mention-key-idx)
+                                              (count match)))])]
+                 (recur new-text users (rest idxs)
+                        (+ diff (- (count text) (count new-text)))))))))))))
 
 (defn check-mentions [cofx text]
-  (replace-mentions text #(get-mentionable-users cofx)))
+  (replace-mentions text (get-mentionable-users cofx)))
 
 (defn get-at-sign-idxs
   ([text start]
@@ -401,14 +400,14 @@
                            new-idxs)))))))
 
 (defn check-entry
-  [text {:keys [from checked?] :as entry} users-fn]
+  [text {:keys [from checked?] :as entry} mentionable-users]
   (if checked?
     entry
-    (let [{:keys [match]}
-          (match-mention (str text "@") (users-fn) from)]
-      (if match
+    (let [{user-match :match}
+          (match-mention (str text "@") mentionable-users from)]
+      (if user-match
         {:from from
-         :to (+ from (count match))
+         :to (+ from (count user-match))
          :checked? true
          :mention? true}
         {:from from
@@ -416,12 +415,13 @@
          :checked? true
          :mention false}))))
 
-(defn check-idx-for-mentions [text idxs users-fn]
+(defn check-idx-for-mentions
+  [text idxs mentionable-users]
   (let [idxs
         (reduce
          (fn [acc {:keys [from] :as entry}]
            (let [previous-entry-idx (dec (count acc))
-                 new-entry          (check-entry text entry users-fn)]
+                 new-entry          (check-entry text entry mentionable-users)]
              (cond-> acc
                (and (>= previous-entry-idx 0)
                     (not (get-in acc [previous-entry-idx :mention?])))
@@ -497,7 +497,7 @@
         new-at-idxs (check-idx-for-mentions
                      text
                      (:at-idxs state)
-                     (fn [] mentionable-users))
+                     mentionable-users)
         calculated-input (calculate-input text new-at-idxs)]
     (log/debug "[mentions] new-at-idxs" new-at-idxs calculated-input)
     {:db (-> db
@@ -524,8 +524,8 @@
                (assoc-in [:chats/input-with-mentions chat-id] [[:text text]]))}
       (let [new-at-idxs (check-idx-for-mentions
                          text
-                         (:at-idxs state)
-                         (fn [] mentionable-users))
+                         at-idxs
+                         mentionable-users)
             calculated-input (calculate-input text new-at-idxs)
             addition?     (<= start end)
             end           (if addition?
@@ -536,7 +536,7 @@
             mentions
             (when (and (not (> at-sign-idx start))
                        (not (> (- end at-sign-idx) 100)))
-              (get-suggestions mentionable-users searched-text))]
+              (get-user-suggestions mentionable-users searched-text))]
         (log/debug "[mentions] mention check"
                    "addition" addition?
                    "at-sign-idx" at-sign-idx

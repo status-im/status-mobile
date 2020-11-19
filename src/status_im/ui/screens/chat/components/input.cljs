@@ -79,6 +79,80 @@
       :accessibility-label :send-message-button
       :color               (styles/send-icon-color)}]]])
 
+(defn selection [cursor]
+  ;; NOTE(rasom): In case if mention is added on pressing suggestion and
+  ;; it is placed inside some text we have to specify `:selection` on
+  ;; Android to ensure that cursor is added after the mention, not after
+  ;; the last char in input. On iOS it works that way without this code
+  (when (and cursor platform/android?)
+    (clj->js {:start cursor :end cursor})))
+
+(defn on-selection-change [cursor timeout-id last-text-change mentionable-users args]
+  (let [selection (.-selection ^js (.-nativeEvent ^js args))
+        start     (.-start selection)
+        end       (.-end selection)]
+    ;; NOTE(rasom): on iOS we do not dispatch this event immediately
+    ;; because it is needed only in case if selection is changed without
+    ;; typing. Timeout might be canceled on `on-change`.
+    (when platform/ios?
+      (reset!
+       timeout-id
+       (utils.utils/set-timeout
+        #(re-frame/dispatch [::mentions/on-selection-change
+                             {:start start
+                              :end   end}
+                             mentionable-users])
+        50)))
+    ;; NOTE(rasom): on Android we dispatch event only in case if there
+    ;; was no text changes during last 50ms. `on-selection-change` is
+    ;; dispatched after `on-change`, that's why there is no another way
+    ;; to know whether selection was changed without typing.
+    (when (and platform/android?
+               (or (not @last-text-change)
+                   (< 50 (- (js/Date.now) @last-text-change))))
+      (re-frame/dispatch [::mentions/on-selection-change
+                          {:start start
+                           :end   end}
+                          mentionable-users]))
+    ;; NOTE(rasom): we have to reset `cursor` value when user starts using
+    ;; text-input because otherwise cursor will stay in the same position
+    (when (and cursor platform/android?)
+      (re-frame/dispatch [::mentions/clear-cursor]))))
+
+(defn on-change [on-text-change last-text-change timeout-id  mentionable-users args]
+  (let [text (.-text ^js (.-nativeEvent ^js args))]
+    ;; NOTE(rasom): on iOS `on-selection-change` is canceled in case if it
+    ;; happens during typing because it is not needed for mention
+    ;; suggestions calculation
+    (when (and platform/ios? @timeout-id)
+      (utils.utils/clear-timeout @timeout-id))
+    (when platform/android?
+      (reset! last-text-change (js/Date.now)))
+    (on-text-change text)
+    ;; NOTE(rasom): on iOS `on-change` is dispatched after `on-text-input`,
+    ;; that's why mention suggestions are calculated on `on-change`
+    (when platform/ios?
+      (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))
+
+(defn on-text-input [mentionable-users args]
+  (let [native-event  (.-nativeEvent ^js args)
+        text          (.-text ^js native-event)
+        previous-text (.-previousText ^js native-event)
+        range         (.-range ^js native-event)
+        start         (.-start ^js range)
+        end           (.-end ^js range)]
+    (re-frame/dispatch
+     [::mentions/on-text-input
+      {:new-text      text
+       :previous-text previous-text
+       :start         start
+       :end           end}])
+    ;; NOTE(rasom): on Android `on-text-input` is dispatched after
+    ;; `on-change`, that's why mention suggestions are calculated
+    ;; on `on-change`
+    (when platform/android?
+      (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))
+
 (defn text-input
   [{:keys [cooldown-enabled? input-with-mentions on-text-change set-active-panel text-input-ref]}]
   (let [cursor            @(re-frame/subscribe [:chat/cursor])
@@ -87,101 +161,29 @@
         last-text-change  (atom nil)]
     [rn/view {:style (styles/text-input-wrapper)}
      [rn/text-input
-      {:style                  (styles/text-input)
-       :ref                    text-input-ref
-       :maxFontSizeMultiplier  1
-       :accessibility-label    :chat-message-input
-       :text-align-vertical    :center
-       :multiline              true
-       :editable               (not cooldown-enabled?)
-       :blur-on-submit         false
-       :auto-focus             false
-       :on-focus               #(set-active-panel nil)
-       :max-length             chat.constants/max-text-size
-       :placeholder-text-color (:text-02 @colors/theme)
-       :placeholder            (if cooldown-enabled?
-                                 (i18n/label :cooldown/text-input-disabled)
-                                 (i18n/label :t/type-a-message))
-       :underlineColorAndroid  :transparent
-       :auto-capitalize        :sentences
-       :selection
-       ;; NOTE(rasom): In case if mention is added on pressing suggestion and
-       ;; it is placed inside some text we have to specify `:selection` on
-       ;; Android to ensure that cursor is added after the mention, not after
-       ;; the last char in input. On iOS it works that way without this code
-       (when (and cursor platform/android?)
-         (clj->js
-          {:start cursor
-           :end   cursor}))
-
-       :on-selection-change
-       (fn [args]
-         (let [selection (.-selection ^js (.-nativeEvent ^js args))
-               start     (.-start selection)
-               end       (.-end selection)]
-           ;; NOTE(rasom): on iOS we do not dispatch this event immediately
-           ;; because it is needed only in case if selection is changed without
-           ;; typing. Timeout might be canceled on `on-change`.
-           (when platform/ios?
-             (reset!
-              timeout-id
-              (utils.utils/set-timeout
-               #(re-frame/dispatch [::mentions/on-selection-change
-                                    {:start start
-                                     :end   end}
-                                    mentionable-users])
-               50)))
-           ;; NOTE(rasom): on Android we dispatch event only in case if there
-           ;; was no text changes during last 50ms. `on-selection-change` is
-           ;; dispatched after `on-change`, that's why there is no another way
-           ;; to know whether selection was changed without typing.
-           (when (and platform/android?
-                      (or (not @last-text-change)
-                          (< 50 (- (js/Date.now) @last-text-change))))
-             (re-frame/dispatch [::mentions/on-selection-change
-                                 {:start start
-                                  :end   end}
-                                 mentionable-users]))
-           ;; NOTE(rasom): we have to reset `cursor` value when user starts using
-           ;; text-input because otherwise cursor will stay in the same position
-           (when (and cursor platform/android?)
-             (re-frame/dispatch [::mentions/clear-cursor]))))
-
-       :on-change
-       (fn [args]
-         (let [text (.-text ^js (.-nativeEvent ^js args))]
-           ;; NOTE(rasom): on iOS `on-selection-change` is canceled in case if it
-           ;; happens during typing because it is not needed for mention
-           ;; suggestions calculation
-           (when (and platform/ios? @timeout-id)
-             (utils.utils/clear-timeout @timeout-id))
-           (when platform/android?
-             (reset! last-text-change (js/Date.now)))
-           (on-text-change text)
-           ;; NOTE(rasom): on iOS `on-change` is dispatched after `on-text-input`,
-           ;; that's why mention suggestions are calculated on `on-change`
-           (when platform/ios?
-             (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))
-
-       :on-text-input
-       (fn [args]
-         (let [native-event  (.-nativeEvent ^js args)
-               text          (.-text ^js native-event)
-               previous-text (.-previousText ^js native-event)
-               range         (.-range ^js native-event)
-               start         (.-start ^js range)
-               end           (.-end ^js range)]
-           (re-frame/dispatch
-            [::mentions/on-text-input
-             {:new-text      text
-              :previous-text previous-text
-              :start         start
-              :end           end}])
-           ;; NOTE(rasom): on Android `on-text-input` is dispatched after
-           ;; `on-change`, that's why mention suggestions are calculated
-           ;; on `on-change`
-           (when platform/android?
-             (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))}
+      {:style                    (styles/text-input)
+       :ref                      text-input-ref
+       :max-font-size-multiplier 1
+       :accessibility-label      :chat-message-input
+       :text-align-vertical      :center
+       :multiline                true
+       :editable                 (not cooldown-enabled?)
+       :blur-on-submit           false
+       :auto-focus               false
+       :on-focus                 #(set-active-panel nil)
+       :max-length               chat.constants/max-text-size
+       :placeholder-text-color   (:text-02 @colors/theme)
+       :placeholder              (if cooldown-enabled?
+                                   (i18n/label :cooldown/text-input-disabled)
+                                   (i18n/label :t/type-a-message))
+       :underline-color-android  :transparent
+       :auto-capitalize          :sentences
+       :selection                (selection cursor)
+       :on-selection-change      (partial on-selection-change
+                                          cursor timeout-id last-text-change mentionable-users)
+       :on-change                (partial on-change
+                                          on-text-change last-text-change timeout-id mentionable-users)
+       :on-text-input            (partial on-text-input mentionable-users)}
       ;; NOTE(rasom): reduce was used instead of for here because although
       ;; each text component was given a unique id it still would mess with
       ;; colors on Android. In case if entire component is built without lists
