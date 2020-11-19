@@ -3,6 +3,7 @@
             [status-im.utils.fx :as fx]
             ["@react-native-community/cameraroll" :as CameraRoll]
             [status-im.utils.types :as types]
+            [status-im.utils.config :as config]
             [status-im.ui.components.permissions :as permissions]
             [status-im.ui.components.react :as react]
             [status-im.utils.image-processing :as image-processing]
@@ -11,7 +12,6 @@
             [status-im.utils.platform :as platform]))
 
 (def maximum-image-size-px 2000)
-(def max-images-batch 5)
 
 (defn- resize-and-call [uri cb]
   (react/image-get-size
@@ -63,7 +63,7 @@
       (when (and platform/ios? (pos? (count images)))
         (re-frame/dispatch [:chat.ui/clear-sending-images]))
       (doseq [^js result (if platform/ios?
-                           (take max-images-batch images)
+                           (take config/max-images-batch images)
                            [images])]
         (resize-and-call (.-path result)
                          #(re-frame/dispatch [:chat.ui/image-selected (result->id result) %]))))
@@ -132,7 +132,7 @@
   [{:keys [db]}]
   (let [current-chat-id (:current-chat-id db)
         images          (get-in db [:chats current-chat-id :metadata :sending-image])]
-    (when (< (count images) max-images-batch)
+    (when (< (count images) config/max-images-batch)
       {::chat-open-image-picker nil})))
 
 (fx/defn camera-roll-pick
@@ -143,7 +143,7 @@
     (if (get-in db [:chats current-chat-id :timeline?])
       {:db              (update-in db [:chats current-chat-id :metadata :sending-image] {uri {:uri uri}})
        ::image-selected uri}
-      (when (and (< (count images) max-images-batch)
+      (when (and (< (count images) config/max-images-batch)
                  (not (get images uri)))
         {:db              (update-in db [:chats current-chat-id :metadata :sending-image] assoc uri {:uri uri})
          ::image-selected uri}))))

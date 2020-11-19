@@ -3,11 +3,11 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.permissions :as permissions]
+            [status-im.utils.config :as config]
             [reagent.core :as reagent]
             [quo.components.animated.pressable :as pressable]
             [re-frame.core :as re-frame]
             [quo.design-system.colors :as colors]
-            [status-im.chat.models.images :as images]
             [quo.core :as quo]
             [status-im.utils.utils :as utils]
             [status-im.i18n :as i18n]))
@@ -51,7 +51,7 @@
 (defn image-preview [uri all-selected first? panel-height]
   (let [wh           (/ (- panel-height 8) 2)
         selected     (get all-selected uri)
-        max-selected (>= (count all-selected) images/max-images-batch)]
+        max-selected (>= (count all-selected) config/max-images-batch)]
     [react/touchable-highlight {:on-press #(if selected
                                              (re-frame/dispatch [:chat.ui/image-unselected uri])
                                              (re-frame/dispatch [:chat.ui/camera-roll-pick uri]))
