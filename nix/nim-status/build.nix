@@ -59,6 +59,12 @@ let
   isIOS = platform == "ios";
 
 
+  buildType = lib.getConfig "build-type" "";
+  nimOverride = ./nim_status.nim;
+  applyNimOverride = 
+    if (lib.elem buildType ["release" "nightly"]) then
+    "cp ${nimOverride} src/nim_status/c/nim_status.nim" else "";
+
   routeHeader = builtins.readFile ./route.h;
 
   iosIncludes = stdenv.mkDerivation {
@@ -223,7 +229,7 @@ in stdenv.mkDerivation rec {
 
     ${createNimbleLink}
 
-
+    ${applyNimOverride}
 
 
     patchShebangs .
