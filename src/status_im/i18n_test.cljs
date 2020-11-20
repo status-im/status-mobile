@@ -471,6 +471,7 @@
     :help-center
     :hide-content-when-switching-apps
     :history
+    :history-nodes
     :hold-card
     :home
     :hooks
@@ -667,8 +668,6 @@
     :notify
     :off
     :offline
-    :offline-messaging
-    :offline-messaging-settings
     :ok
     :ok-continue
     :ok-got-it
