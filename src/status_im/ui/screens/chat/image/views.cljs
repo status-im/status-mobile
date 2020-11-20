@@ -15,9 +15,7 @@
 (defn take-picture []
   (permissions/request-permissions
    {:permissions [:camera]
-    :on-allowed  (fn []
-                   (react/show-image-picker-camera
-                    #(re-frame/dispatch [:chat.ui/image-captured (.-path %)]) {}))
+    :on-allowed  #(re-frame/dispatch [:chat.ui/show-image-picker-camera])
     :on-denied   (fn []
                    (utils/set-timeout
                     #(utils/show-popup (i18n/label :t/error)

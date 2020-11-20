@@ -54,6 +54,12 @@
          #(log/error "could not resize image" %)))))))
 
 (re-frame/reg-fx
+ ::chat-open-image-picker-camera
+ (fn []
+   (react/show-image-picker-camera
+    #(re-frame/dispatch [:chat.ui/image-captured (.-path %)]) {})))
+
+(re-frame/reg-fx
  ::chat-open-image-picker
  (fn []
    (react/show-image-picker
@@ -91,8 +97,12 @@
 
 (fx/defn image-captured
   {:events [:chat.ui/image-captured]}
-  [_ uri]
-  {::image-selected uri})
+  [{:keys [db]} uri]
+  (let [current-chat-id (:current-chat-id db)
+        images          (get-in db [:chats current-chat-id :metadata :sending-image])]
+    (when (and (< (count images) config/max-images-batch)
+               (not (get images uri)))
+      {::image-selected uri})))
 
 (fx/defn camera-roll-get-photos
   {:events [:chat.ui/camera-roll-get-photos]}
@@ -134,6 +144,14 @@
         images          (get-in db [:chats current-chat-id :metadata :sending-image])]
     (when (< (count images) config/max-images-batch)
       {::chat-open-image-picker nil})))
+
+(fx/defn chat-show-image-picker-camera
+  {:events [:chat.ui/show-image-picker-camera]}
+  [{:keys [db]}]
+  (let [current-chat-id (:current-chat-id db)
+        images          (get-in db [:chats current-chat-id :metadata :sending-image])]
+    (when (< (count images) config/max-images-batch)
+      {::chat-open-image-picker-camera nil})))
 
 (fx/defn camera-roll-pick
   {:events [:chat.ui/camera-roll-pick]}

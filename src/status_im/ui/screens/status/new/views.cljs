@@ -15,14 +15,11 @@
             [status-im.ui.screens.status.views :as status.views]
             [status-im.ui.screens.status.new.styles :as styles]))
 
-(defn take-picture []
-  (react/show-image-picker-camera #(re-frame/dispatch [:chat.ui/image-captured (.-path %)]) {}))
-
 (defn buttons []
   [react/view styles/buttons
    [pressable/pressable {:type                :scale
                          :accessibility-label :take-picture
-                         :on-press            take-picture}
+                         :on-press  #(re-frame/dispatch [:chat.ui/show-image-picker-camera])}
     [icons/icon :main-icons/camera]]
    [react/view {:style {:padding-top 8}}
     [pressable/pressable {:on-press            #(re-frame/dispatch [:chat.ui/open-image-picker])
