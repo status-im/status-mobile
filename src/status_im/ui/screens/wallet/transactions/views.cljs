@@ -39,42 +39,51 @@
 (defn render-transaction
   [{:keys [label contact address contact-accessibility-label
            address-accessibility-label currency-text amount-text
-           time-formatted on-touch-fn type]}]
-  [list/touchable-item on-touch-fn
-   [react/view {:accessibility-label :transaction-item}
-    [list/item
-     (when type
-       [list/item-icon (transaction-type->icon (keyword type))])
-     [list/item-content
-      [react/view {:style styles/amount-time}
-       [react/nested-text {:style           styles/tx-amount
-                           :ellipsize-mode  "tail"
-                           :number-of-lines 1}
-        [{:accessibility-label :amount-text}
-         amount-text]
-        " "
-        [{:accessibility-label :currency-text}
-         currency-text]]
-       [react/text {:style styles/tx-time}
-        time-formatted]]
-      [react/view {:style styles/address-row}
-       [react/text {:style styles/address-label}
-        label]
-       (when contact
-         [react/text {:style               styles/address-contact
-                      :accessibility-label contact-accessibility-label}
-          contact])
-       [quo/text {:style               styles/address-hash
-                  :monospace           true
-                  :color               :secondary
-                  :ellipsize-mode      "middle"
-                  :number-of-lines     1
-                  :accessibility-label address-accessibility-label}
-        address]]]
-     [list/item-icon {:icon      :main-icons/next
-                      :style     {:margin-top 10}
-                      :icon-opts (merge styles/forward
-                                        {:accessibility-label :show-transaction-button})}]]]])
+           time-formatted on-touch-fn type hash]}]
+  [react/view
+   [list/touchable-item on-touch-fn
+    [react/view {:accessibility-label :transaction-item}
+     [list/item
+      (when type
+        [list/item-icon (transaction-type->icon (keyword type))])
+      [list/item-content
+       [react/view {:style styles/amount-time}
+        [react/nested-text {:style           styles/tx-amount
+                            :ellipsize-mode  "tail"
+                            :number-of-lines 1}
+         [{:accessibility-label :amount-text}
+          amount-text]
+         " "
+         [{:accessibility-label :currency-text}
+          currency-text]]
+        [react/text {:style styles/tx-time}
+         time-formatted]]
+       [react/view {:style styles/address-row}
+        [react/text {:style styles/address-label}
+         label]
+        (when contact
+          [react/text {:style               styles/address-contact
+                       :accessibility-label contact-accessibility-label}
+           contact])
+        [quo/text {:style               styles/address-hash
+                   :monospace           true
+                   :color               :secondary
+                   :ellipsize-mode      "middle"
+                   :number-of-lines     1
+                   :accessibility-label address-accessibility-label}
+         address]]]
+      [list/item-icon {:icon      :main-icons/next
+                       :style     {:margin-top 10}
+                       :icon-opts (merge styles/forward
+                                         {:accessibility-label :show-transaction-button})}]]]]
+   (when (= type :pending)
+     [react/view {:flex-direction :row :padding 16 :justify-content :space-between}
+      [quo/button
+       {:on-press #(re-frame/dispatch [:signing.ui/increase-gas-pressed hash])}
+       (i18n/label :t/increase-gas)]
+      [quo/button
+       {:on-press #(re-frame/dispatch [:signing.ui/cancel-transaction-pressed hash])}
+       (i18n/label :t/cancel)]])])
 
 (defn etherscan-link [address]
   (let [link @(re-frame/subscribe [:wallet/etherscan-link address])]

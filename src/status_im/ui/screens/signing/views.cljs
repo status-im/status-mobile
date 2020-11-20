@@ -69,7 +69,7 @@
 
 (defn header
   [{:keys [in-progress?] :as sign}
-   {:keys [contact amount approve?]}
+   {:keys [contact amount approve? cancel? hash]}
    display-symbol fee fee-display-symbol]
   [react/view styles/header
    (when sign
@@ -78,8 +78,15 @@
        [icons/icon :main-icons/back]]])
    [react/view {:flex 1}
     (if amount
-      [react/text {:style {:typography :title-bold}} (str (if approve? (i18n/label :t/authorize) (i18n/label :t/sending))
-                                                          " " amount " " display-symbol)]
+      [react/text {:style {:typography :title-bold}} (str (cond approve?
+                                                                (i18n/label :t/authorize)
+                                                                cancel?
+                                                                (i18n/label :t/cancelling)
+                                                                :else
+                                                                (i18n/label :t/sending))
+                                                          (if cancel?
+                                                            (str " " (utils/get-shortened-address hash))
+                                                            (str " " amount " " display-symbol)))]
       [react/text {:style {:typography :title-bold}} (i18n/label :t/contract-interaction)])
     (if sign
       [react/nested-text {:style           {:color colors/gray}
@@ -386,7 +393,7 @@
       :accessory-text network-name}]))
 
 (views/defview sheet
-  [{:keys [from contact amount token] :as tx}]
+  [{:keys [from contact amount token cancel?] :as tx}]
   (views/letsubs [fee                   [:signing/fee]
                   sign                  [:signing/sign]
                   chain                 [:ethereum/chain-keyword]
@@ -413,9 +420,12 @@
           [contact-item (i18n/label :t/from) from]
           [separator]
           [contact-item (i18n/label :t/to) contact]
-          [separator]
-          [token-item token display-symbol]
-          [amount-item prices wallet-currency amount amount-error display-symbol fee-display-symbol prices-loading?]
+          (when-not cancel?
+            [separator])
+          (when-not cancel?
+            [token-item token display-symbol])
+          (when-not cancel?
+            [amount-item prices wallet-currency amount amount-error display-symbol fee-display-symbol prices-loading?])
           [separator]
           [fee-item prices wallet-currency fee-display-symbol fee gas-error gas-error-state prices-loading?]
           (when (= :gas-is-set gas-error-state)
@@ -438,7 +448,7 @@
   (views/letsubs [tx [:signing/tx]]
     [bottom-panel/animated-bottom-panel
      ;;we use select-keys here because we don't want to update view if other keys in map are changed
-     (when tx (select-keys tx [:from :contact :amount :token :approve? :message]))
+     (when tx (select-keys tx [:from :contact :amount :token :approve? :message :cancel? :hash]))
      #(if (:message %)
         [message-sheet]
         [sheet %])]))

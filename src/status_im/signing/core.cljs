@@ -19,7 +19,8 @@
             [status-im.utils.utils :as utils]
             [status-im.wallet.prices :as prices]
             [status-im.wallet.core :as wallet]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [clojure.set :as clojure.set]))
 
 (re-frame/reg-fx
  :signing/send-transaction-fx
@@ -103,24 +104,29 @@
                                          :cb       #(re-frame/dispatch [:signing/transaction-completed % tx-obj-to-send hashed-password])}})))))
 
 (fx/defn prepare-unconfirmed-transaction
-  [{:keys [db now]} hash {:keys [value gasPrice gas data to from] :as tx} symbol amount]
+  [{:keys [db now]} new-tx-hash {:keys [value gasPrice gas data to from hash]} symbol amount]
   (log/debug "[signing] prepare-unconfirmed-transaction")
   (let [token (tokens/symbol->token (:wallet/all-tokens db) symbol)
-        from  (eip55/address->checksum from)]
-    {:db (assoc-in db [:wallet :accounts from :transactions hash]
-                   {:timestamp (str now)
-                    :to        to
-                    :from      from
-                    :type      :pending
-                    :hash      hash
-                    :data      data
-                    :token     token
-                    :symbol    symbol
-                    :value     (if token
-                                 (money/unit->token amount (:decimals token))
-                                 (money/to-fixed (money/bignumber value)))
-                    :gas-price (money/to-fixed (money/bignumber gasPrice))
-                    :gas-limit (money/to-fixed (money/bignumber gas))})}))
+        from  (eip55/address->checksum from)
+        ;;if there is a hash in the tx object that means we resending transaction
+        old-tx-hash hash]
+    {:db (-> db
+             ;;remove old transaction, because we replace it with the new one
+             (update-in [:wallet :accounts from :transactions] dissoc old-tx-hash)
+             (assoc-in [:wallet :accounts from :transactions new-tx-hash]
+                       {:timestamp (str now)
+                        :to        to
+                        :from      from
+                        :type      :pending
+                        :hash      new-tx-hash
+                        :data      data
+                        :token     token
+                        :symbol    symbol
+                        :value     (if token
+                                     (money/unit->token amount (:decimals token))
+                                     (money/to-fixed (money/bignumber value)))
+                        :gas-price (money/to-fixed (money/bignumber gasPrice))
+                        :gas-limit (money/to-fixed (money/bignumber gas))}))}))
 
 (defn get-method-type [data]
   (cond
@@ -148,15 +154,17 @@
              :token    token
              :symbol   symbol}))))))
 
-(defn parse-tx-obj [db {:keys [from to value data]}]
-  (merge {:from {:address from}}
+(defn parse-tx-obj [db {:keys [from to value data cancel? hash]}]
+  (merge {:from    {:address from}
+          :cancel? cancel?
+          :hash    hash}
          (if (nil? to)
            {:contact {:name (i18n/label :t/new-contract)}}
            (let [eth-value  (when value (money/bignumber value))
                  eth-amount (when eth-value (money/to-fixed (money/wei->ether eth-value)))
                  token      (get-transfer-token db to data)]
              (cond
-               (and eth-amount (or (not (zero? eth-amount)) (nil? data)))
+               (and eth-amount (or (not (.equals ^js (money/bignumber 0)  ^js eth-amount)) (nil? data)))
                {:to      to
                 :contact (get-contact db to)
                 :symbol  :ETH
@@ -468,3 +476,40 @@
                                   :data (abi-spec/encode
                                          "transfer(address,uint256)"
                                          [to-norm amount-hex])}))}))))
+
+(re-frame/reg-fx
+ :signing/get-transaction-by-hash-fx
+ (fn [[hash handler]]
+   (json-rpc/call
+    {:method     "eth_getTransactionByHash"
+     :params     [hash]
+     :on-success handler})))
+
+(fx/defn cancel-transaction-pressed
+  {:events [:signing.ui/cancel-transaction-pressed]}
+  [_ hash]
+  {:signing/get-transaction-by-hash-fx [hash #(re-frame/dispatch [:signing/cancel-transaction %])]})
+
+(fx/defn increase-gas-pressed
+  {:events [:signing.ui/increase-gas-pressed]}
+  [_ hash]
+  {:signing/get-transaction-by-hash-fx [hash #(re-frame/dispatch [:signing/increase-gas %])]})
+
+(fx/defn cancel-transaction
+  {:events [:signing/cancel-transaction]}
+  [cofx {:keys [from nonce hash]}]
+  (when (and from nonce hash)
+    (sign cofx {:tx-obj {:from    from
+                         :to      from
+                         :nonce   nonce
+                         :value   "0x0"
+                         :cancel? true
+                         :hash    hash}})))
+
+(fx/defn increase-gas
+  {:events [:signing/increase-gas]}
+  [cofx {:keys [from nonce] :as tx}]
+  (when (and from nonce)
+    (sign cofx {:tx-obj (-> tx
+                            (select-keys [:from :to :value :input :gas :nonce :hash])
+                            (clojure.set/rename-keys {:input :data}))})))

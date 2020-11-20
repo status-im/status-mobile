@@ -103,4 +103,4 @@
 
 (views/defview animated-bottom-panel [val signing-view]
   (views/letsubs [{window-height :height} [:dimensions/window]]
-    [bottom-panel (when val (select-keys val [:from :contact :amount :token :approve? :message])) signing-view window-height]))
+    [bottom-panel (when val (select-keys val [:from :contact :amount :token :approve? :message :cancel? :hash])) signing-view window-height]))

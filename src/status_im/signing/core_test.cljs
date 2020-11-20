@@ -24,7 +24,7 @@
         (testing "qieue is empty"
           (is (= (get-in sign-first [:db :signing/queue]) '())))
         (testing "first tx object is parsed"
-          (is (= (dissoc (get-in sign-first [:db :signing/tx]) :token)
+          (is (= (dissoc (get-in sign-first [:db :signing/tx]) :token :hash :cancel?)
                  (merge first-tx
                         {:from {:address nil}
                          :gas nil
@@ -49,7 +49,7 @@
             (testing "qieue is empty"
               (is (= (get-in first-discarded [:db :signing/queue]) '())))
             (testing "second tx object is parsed"
-              (is (= (dissoc (get-in first-discarded [:db :signing/tx]) :token)
+              (is (= (dissoc (get-in first-discarded [:db :signing/tx]) :token :hash :cancel?)
                      (merge second-tx
                             {:from {:address nil}
                              :gas nil

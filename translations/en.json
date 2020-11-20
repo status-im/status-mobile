@@ -1327,5 +1327,7 @@
     "ethereum-account": "Ethereum account",
     "ethereum-address":"Ethereum address",
     "default-assets": "Default ERC20 and ERC721",
+    "increase-gas": "Increase Gas",
+    "cancelling": "Cancelling",
     "refresh": "Refresh"
 }
