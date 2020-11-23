@@ -404,15 +404,14 @@ class MailServerAddressInput(BaseEditBox):
 
     def __init__(self, driver):
         super(MailServerAddressInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//*[@text='Mailserver address']/following-sibling::*[1]/android.widget.EditText")
+        self.locator = self.Locator.translation_id_selector('mailserver-address',
+                                                            suffix='/following-sibling::*[1]/android.widget.EditText')
 
 
 class MailServerAutoSelectionButton(BaseButton):
     def __init__(self, driver):
         super(MailServerAutoSelectionButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Automatic selection']/following-sibling::*[1]")
-
 
 
 class MailServerElement(BaseButton):

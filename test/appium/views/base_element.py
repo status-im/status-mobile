@@ -48,9 +48,9 @@ class BaseElement(object):
             return cls(MobileBy.XPATH, xpath_expression)
 
         @classmethod
-        def translation_id_selector(cls, id):
+        def translation_id_selector(cls, id, suffix=''):
             text = transl[id]
-            return BaseElement.Locator.xpath_selector('//*[@text="' + text + '"]')
+            return BaseElement.Locator.xpath_selector('//*[@text="' + text + '"]' + suffix)
 
         def __str__(self, *args, **kwargs):
             return "%s:%s" % (self.by, self.value)

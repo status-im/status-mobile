@@ -38,6 +38,7 @@ class TestDApps(SingleDeviceTestCase):
 
     @marks.testrail_id(6323)
     @marks.medium
+    @marks.flaky
     def test_resolve_ipns_name(self):
         user = basic_user
         ipns_url = 'uniswap.eth'
