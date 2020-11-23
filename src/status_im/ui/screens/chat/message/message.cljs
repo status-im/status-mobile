@@ -29,11 +29,25 @@
 (defn message-timestamp
   ([message]
    [message-timestamp message false])
-  ([{:keys [timestamp-str outgoing content]} justify-timestamp?]
-   [react/text {:style (style/message-timestamp-text
-                        justify-timestamp?
-                        outgoing
-                        (:rtl? content))} timestamp-str]))
+  ([{:keys [timestamp-str outgoing content outgoing-status]} justify-timestamp?]
+   [react/view (when justify-timestamp?
+                 {:align-self                       :flex-end
+                  :position                         :absolute
+                  :bottom                           9       ; 6 Bubble bottom, 3 message baseline
+                  (if (:rtl? content) :left :right) 12
+                  :flex-direction                   :row
+                  :align-items                      :flex-end})
+    (when (and outgoing justify-timestamp?)
+      [vector-icons/icon (case outgoing-status
+                           :sending :tiny-icons/tiny-pending
+                           :sent :tiny-icons/tiny-sent
+                           :not-sent :tiny-icons/tiny-warning
+                           :tiny-icons/tiny-pending)
+       {:width  16
+        :height 12
+        :color  colors/white}])
+    [react/text {:style (style/message-timestamp-text outgoing)}
+     timestamp-str]]))
 
 (defview quoted-message
   [_ {:keys [from parsed-text image]} outgoing current-public-key public?]
@@ -142,10 +156,10 @@
 (defn render-parsed-text [message tree]
   (reduce (fn [acc e] (render-block message acc e)) [:<>] tree))
 
-(defn render-parsed-text-with-timestamp [{:keys [timestamp-str] :as message} tree]
+(defn render-parsed-text-with-timestamp [{:keys [timestamp-str outgoing] :as message} tree]
   (let [elements (render-parsed-text message tree)
         timestamp [react/text {:style (style/message-timestamp-placeholder)}
-                   (str "  " timestamp-str)]
+                   (str (if outgoing "        " "  ") timestamp-str)]
         last-element (peek elements)]
     ;; Using `nth` here as slightly faster than `first`, roughly 30%
     ;; It's worth considering pure js structures for this code path as

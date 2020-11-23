@@ -69,7 +69,7 @@
    (if (or (= command-state constants/command-state-request-address-for-transaction-declined)
            (= command-state constants/command-state-request-transaction-declined)
            (= :failed transaction-type))
-     [vector-icons/icon :tiny-icons/tiny-warning
+     [vector-icons/icon :tiny-icons/tiny-warning-background
       {:width 16
        :height 16
        :container-style {:margin-right 6}}]

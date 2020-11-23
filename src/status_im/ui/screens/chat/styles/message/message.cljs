@@ -28,23 +28,19 @@
      :align-items    align}))
 
 (def message-timestamp
-  {:font-size  10
-   :align-self :flex-end})
+  {:font-size  10})
 
 (defn message-timestamp-placeholder
   []
   (merge message-timestamp {:opacity 0 :color "rgba(0,0,0,0)"}))
 
 (defn message-timestamp-text
-  [justify-timestamp? outgoing rtl?]
+  [outgoing]
   (merge message-timestamp
          {:line-height 10
           :color       (if outgoing
                          colors/white-transparent-70-persist
-                         colors/gray)}
-         (when justify-timestamp? {:position              :absolute
-                                   :bottom                9 ; 6 Bubble bottom, 3 message baseline
-                                   (if rtl? :left :right) 12})))
+                         colors/gray)}))
 
 (defn message-wrapper [{:keys [outgoing]}]
   (merge {:flex-direction :column}
