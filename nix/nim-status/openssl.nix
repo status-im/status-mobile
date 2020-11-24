@@ -109,7 +109,10 @@ in stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p $out
-    cp libcrypto.a $out
-    cp libssl.a $out
+    mkdir $out/include
+    mkdir $out/lib
+    cp -r include/* $out/include/
+    cp libcrypto.a $out/lib
+    cp libssl.a $out/lib
   '';
 }

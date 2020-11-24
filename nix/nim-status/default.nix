@@ -10,8 +10,8 @@ let
 in rec {
   srcRaw = pkgs.fetchgit {
     url = "https://github.com/status-im/nim-status";
-    rev = "867c59524773a0610d1dbf25c706dd7637ae0199";
-    sha256 = "04bxc3q9khkiriwkc65g2qx8vak3cjq5la5vzlr0g3az9y4v1ygb";
+    rev = "6b82c0f9d608ce1f78f1bdabfd434ad4b7a2ea39";
+    sha256 = "1gn9rbv4ndz5xfd8h9cvwffcadh7lx4xx7zdvy9w5bd29li3i3p6";
     fetchSubmodules = true;
   };
 
@@ -57,18 +57,21 @@ in rec {
     inherit srcRaw; 
     platform = "android"; 
     arch = "386"; 
+    openssl = openssl-android-x86;
     pcre = pcre-android-x86;
   };
   android-arm = callPackage ./build.nix { 
     inherit srcRaw;
     platform = "androideabi"; 
     arch = "arm";
+    openssl = openssl-android-arm;
     pcre = pcre-android-arm;
   };
   android-arm64 = callPackage ./build.nix {
     inherit srcRaw; 
     platform = "android"; 
     arch = "arm64";
+    openssl = openssl-android-arm64;
     pcre = pcre-android-arm64;
   };
 
@@ -76,18 +79,21 @@ in rec {
     inherit srcRaw; 
     platform = "ios"; 
     arch = "386"; 
+    openssl = openssl-ios-x86;
     pcre = pcre-ios-x86;
   };
   ios-arm = callPackage ./build.nix {
     inherit srcRaw; 
     platform = "ios"; 
     arch = "arm"; 
+    openssl = openssl-ios-arm;
     pcre = pcre-ios-arm;
   };
   ios-arm64 = callPackage ./build.nix {
     inherit srcRaw; 
     platform = "ios"; 
     arch = "arm64"; 
+    openssl = openssl-ios-arm64;
     pcre = pcre-ios-arm64;
   };
 
@@ -102,22 +108,20 @@ in rec {
       mkdir $out/arm64-v8a
 
       ln -s ${android-x86}/* $out/x86
-      ln -s ${openssl-android-x86}/libcrypto.a $out/x86/libcrypto.a
-      ln -s ${openssl-android-x86}/libssl.a $out/x86/libssl.a
-      ln -s ${pcre-android-x86}/libpcre.a $out/x86/libpcre.a
+      ln -s ${openssl-android-x86}/lib/libcrypto.a $out/x86/libcrypto.a
+      ln -s ${openssl-android-x86}/lib/libssl.a $out/x86/libssl.a
+      ln -s ${pcre-android-x86}/lib/libpcre.a $out/x86/libpcre.a
 
       ln -s ${android-arm}/* $out/armeabi-v7a
-      ln -s ${openssl-android-arm}/libcrypto.a $out/armeabi-v7a/libcrypto.a
-      ln -s ${openssl-android-arm}/libssl.a $out/armeabi-v7a/libssl.a
-      ln -s ${pcre-android-arm}/libpcre.a $out/armeabi-v7a/libpcre.a
+      ln -s ${openssl-android-arm}/lib/libcrypto.a $out/armeabi-v7a/libcrypto.a
+      ln -s ${openssl-android-arm}/lib/libssl.a $out/armeabi-v7a/libssl.a
+      ln -s ${pcre-android-arm}/lib/libpcre.a $out/armeabi-v7a/libpcre.a
 
 
       ln -s ${android-arm64}/* $out/arm64-v8a
-      ln -s ${openssl-android-arm64}/libcrypto.a $out/arm64-v8a/libcrypto.a
-      ln -s ${openssl-android-arm64}/libssl.a $out/arm64-v8a/libssl.a
-      ln -s ${pcre-android-arm64}/libpcre.a $out/arm64-v8a/libpcre.a
-                      
-
+      ln -s ${openssl-android-arm64}/lib/libcrypto.a $out/arm64-v8a/libcrypto.a
+      ln -s ${openssl-android-arm64}/lib/libssl.a $out/arm64-v8a/libssl.a
+      ln -s ${pcre-android-arm64}/lib/libpcre.a $out/arm64-v8a/libpcre.a
     '';
   };
 
@@ -137,19 +141,19 @@ in rec {
            ${ios-arm64}/libnim_status.a \
            -output $out/libnim_status.a
 
-      lipo -create ${openssl-ios-x86}/libssl.a \
-           ${openssl-ios-arm}/libssl.a \
-           ${openssl-ios-arm64}/libssl.a \
+      lipo -create ${openssl-ios-x86}/lib/libssl.a \
+           ${openssl-ios-arm}/lib/libssl.a \
+           ${openssl-ios-arm64}/lib/libssl.a \
            -output $out/libssl.a
 
-      lipo -create ${openssl-ios-x86}/libcrypto.a \
-           ${openssl-ios-arm}/libcrypto.a \
-           ${openssl-ios-arm64}/libcrypto.a \
+      lipo -create ${openssl-ios-x86}/lib/libcrypto.a \
+           ${openssl-ios-arm}/lib/libcrypto.a \
+           ${openssl-ios-arm64}/lib/libcrypto.a \
            -output $out/libcrypto.a
 
-      lipo -create ${pcre-ios-x86}/libpcre.a \
-           ${pcre-ios-arm}/libpcre.a \
-           ${pcre-ios-arm64}/libpcre.a \
+      lipo -create ${pcre-ios-x86}/lib/libpcre.a \
+           ${pcre-ios-arm}/lib/libpcre.a \
+           ${pcre-ios-arm64}/lib/libpcre.a \
            -output $out/libpcre.a
 
       echo -e "#if TARGET_CPU_X86_64\n" >> $out/nim_status.h
