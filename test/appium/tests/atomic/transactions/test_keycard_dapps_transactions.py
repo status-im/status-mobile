@@ -9,12 +9,10 @@ class TestTransactionDApp(SingleDeviceTestCase):
 
     @marks.testrail_id(6249)
     @marks.critical
-    def test_keycard_send_transaction_from_daap(self):
+    def test_keycard_request_stt_from_daap(self):
         sender = transaction_senders['K']
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.recover_access(sender['passphrase'], keycard=True)
-        address = sender['address']
-        initial_balance = self.network_api.get_balance(address)
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
@@ -23,7 +21,6 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
         send_transaction_view.sign_transaction(keycard=True)
-        self.network_api.verify_balance_is_updated(initial_balance, address)
         status_test_dapp.wallet_button.click()
 
         send_transaction_view.just_fyi('Verify that wallet balance is updated')

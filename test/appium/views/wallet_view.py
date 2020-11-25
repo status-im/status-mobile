@@ -496,6 +496,11 @@ class WalletView(BaseView):
                 self.swipe_down()
                 self.driver.info('Waiting %s seconds for %s to update' % (counter,asset))
             elif not self.asset_by_name(asset).is_element_present(10):
+                # temp until Refresh button will be included in pull-to refresh
+                self.accounts_status_account.click()
+                self.transaction_history_button.click()
+                self.find_element_by_translation_id('refresh').click()
+                self.back_button.click()
                 counter += 10
                 time.sleep(10)
                 if scan_tokens:
