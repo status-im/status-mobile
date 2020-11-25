@@ -5,10 +5,35 @@
             [status-im.native-module.core :as status]
             [status-im.ethereum.core :as ethereum]
             [status-im.keycard.keycard :as keycard]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.platform :as platform]))
 
-(defonce event-emitter (.-DeviceEventEmitter rn))
+(defonce event-emitter (if platform/ios?
+                         (new (.-NativeEventEmitter rn) status-keycard)
+                         (.-DeviceEventEmitter rn)))
+
 (defonce active-listeners (atom []))
+
+(defn start-nfc [{:keys [on-success on-failure prompt-message]}]
+  (log/debug "start-nfc")
+  (.. status-keycard
+      (startNFC (str prompt-message))
+      (then on-success)
+      (catch on-failure)))
+
+(defn stop-nfc [{:keys [on-success on-failure error-message]}]
+  (log/debug "stop-nfc")
+  (.. status-keycard
+      (stopNFC (str error-message))
+      (then on-success)
+      (catch on-failure)))
+
+(defn set-nfc-message [{:keys [on-success on-failure status-message]}]
+  (log/debug "set-nfc-message")
+  (.. status-keycard
+      (setNFCMessage (str status-message))
+      (then on-success)
+      (catch on-failure)))
 
 (defn check-nfc-support [{:keys [on-success]}]
   (.. status-keycard
@@ -24,7 +49,7 @@
   (.openNfcSettings status-keycard))
 
 (defn remove-event-listeners []
-  (doseq [event ["keyCardOnConnected" "keyCardOnDisconnected"]]
+  (doseq [event ["keyCardOnConnected" "keyCardOnDisconnected", "keyCardOnNFCUserCancelled", "keyCardOnNFCTimeout"]]
     (.removeAllListeners ^js event-emitter event)))
 
 (defn remove-event-listener
@@ -38,6 +63,14 @@
 (defn on-card-disconnected
   [callback]
   (.addListener ^js event-emitter "keyCardOnDisconnected" callback))
+
+(defn on-nfc-user-cancelled
+  [callback]
+  (.addListener ^js event-emitter "keyCardOnNFCUserCancelled" callback))
+
+(defn on-nfc-timeout
+  [callback]
+  (.addListener ^js event-emitter "keyCardOnNFCTimeout" callback))
 
 (defn on-nfc-enabled
   [callback]
@@ -54,6 +87,8 @@
   (reset! active-listeners
           [(on-card-connected (:on-card-connected args))
            (on-card-disconnected (:on-card-disconnected args))
+           (on-nfc-user-cancelled (:on-nfc-user-cancelled args))
+           (on-nfc-timeout (:on-nfc-timeout args))
            (on-nfc-enabled (:on-nfc-enabled args))
            (on-nfc-disabled (:on-nfc-disabled args))]))
 
@@ -226,6 +261,12 @@
 
 (defrecord RealKeycard []
   keycard/Keycard
+  (keycard/start-nfc [this args]
+    (start-nfc args))
+  (keycard/stop-nfc [this args]
+    (stop-nfc args))
+  (keycard/set-nfc-message [this args]
+    (set-nfc-message args))
   (keycard/check-nfc-support [this args]
     (check-nfc-support args))
   (keycard/check-nfc-enabled [this args]

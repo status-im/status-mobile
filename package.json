@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "react-native start",
+    "ios": "react-native run-ios",
     "app:compile:android": "shadow-cljs compile android",
     "app:watch": "shadow-cljs watch android",
     "app:packager": "react-native start --host 0.0.0.0 --port 8081",
@@ -60,7 +61,7 @@
     "react-native-screens": "^2.10.1",
     "react-native-shake": "^3.3.1",
     "react-native-splash-screen": "^3.2.0",
-    "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#v2.5.28",
+    "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#v2.5.30",
     "react-native-svg": "^9.8.4",
     "react-native-touch-id": "^4.4.1",
     "react-native-webview": "git+https://github.com/status-im/react-native-webview.git#v10.9.2",

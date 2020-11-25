@@ -9,6 +9,7 @@
             [status-im.ethereum.tokens :as tokens]
             [status-im.keycard.common :as keycard.common]
             [status-im.i18n.i18n :as i18n]
+            [status-im.keycard.card :as keycard.card]
             [status-im.native-module.core :as status]
             [status-im.signing.keycard :as signing.keycard]
             [status-im.utils.fx :as fx]
@@ -203,6 +204,8 @@
                                   :formatted-data (if typed? (types/json->clj data) (ethereum/hex->text data))
                                   :keycard-step (when pinless? :connect)})}
        (when pinless?
+         (keycard.card/start-nfc {:on-success #(re-frame/dispatch [:keycard.callback/start-nfc-success])
+                                  :on-failure #(re-frame/dispatch [:keycard.callback/start-nfc-failure])})
          (signing.keycard/hash-message {:data data
                                         :typed? true
                                         :on-completed #(re-frame/dispatch [:keycard/store-hash-and-sign-typed %])})))

@@ -11,7 +11,6 @@
             [status-im.ui.components.qr-code-viewer.views :as qr-code-viewer]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.user.styles :as styles]
-            [status-im.utils.platform :as platform]
             [status-im.utils.config :as config]
             [status-im.utils.gfycat.core :as gfy]
             [status-im.utils.universal-links.utils :as universal-links]
@@ -128,9 +127,7 @@
        :accessibility-label :sync-settings-button
        :chevron             true
        :on-press            #(re-frame/dispatch [:navigate-to :sync-settings])}]
-     (when (and (or platform/android?
-                    config/keycard-test-menu-enabled?)
-                keycard-pairing)
+     (when keycard-pairing
        [quo/list-item
         {:icon                :main-icons/keycard
          :title               (i18n/label :t/keycard)

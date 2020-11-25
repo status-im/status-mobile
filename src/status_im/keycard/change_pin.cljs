@@ -96,23 +96,27 @@
   {:events [:keycard.callback/on-change-pin-error]}
   [{:keys [db] :as cofx} error]
   (log/debug "[keycard] change pin error" error)
-  (let [tag-was-lost? (= "Tag was lost." (:error error))
-        pairing       (common/get-pairing db)]
+  (let [tag-was-lost? (common/tag-lost? (:error error))
+        pairing       (common/get-pairing db)
+        pin-retries (common/pin-retries (:error error))]
     (fx/merge cofx
               (if tag-was-lost?
                 (fx/merge cofx
                           {:db (assoc-in db [:keycard :pin :status] nil)}
                           (common/set-on-card-connected :keycard/change-pin))
-                (if (re-matches common/pin-mismatch-error (:error error))
+                (if-not (nil? pin-retries)
                   (fx/merge cofx
-                            {:db (update-in db [:keycard :pin] merge {:status       :error
-                                                                      :enter-step   :current
-                                                                      :puk          []
-                                                                      :current      []
-                                                                      :original     []
-                                                                      :confirmation []
-                                                                      :sign         []
-                                                                      :error-label  :t/pin-mismatch})}
-                            (navigation/navigate-to-cofx :enter-pin-settings nil)
-                            (common/get-application-info pairing nil))
+                            {:db (-> db
+                                     (assoc-in [:keycard :application-info :pin-retry-counter] pin-retries)
+                                     (update-in [:keycard :pin] assoc
+                                                :status       :error
+                                                :enter-step   :current
+                                                :puk          []
+                                                :current      []
+                                                :original     []
+                                                :confirmation []
+                                                :sign         []
+                                                :error-label  :t/pin-mismatch))}
+                            (when (zero? pin-retries) (common/frozen-keycard-popup))
+                            (navigation/navigate-to-cofx :enter-pin-settings nil))
                   (common/show-wrong-keycard-alert true))))))

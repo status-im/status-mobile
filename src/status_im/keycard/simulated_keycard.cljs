@@ -14,6 +14,7 @@
 
 (def initial-state
   {:card-connected?  false
+   :nfc-started? false
    :application-info {:initialized? false}})
 
 (defonce state (atom initial-state))
@@ -68,6 +69,16 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn start-nfc [{:keys [on-success]}]
+  (when (get @state :card-connected?) (connect-card))
+  (later #(on-success true)))
+
+(defn stop-nfc [{:keys [on-success]}]
+  (later #(on-success true)))
+
+(defn set-nfc-message [{:keys [on-success]}]
+  (later #(on-success true)))
+
 (defn check-nfc-support [{:keys [on-success]}]
   (later #(on-success true)))
 
@@ -87,18 +98,22 @@
     id))
 
 (defn register-card-events [args]
+  (log/debug "register-card-events")
   (on-card-connected (:on-card-connected args))
   (on-card-disconnected (:on-card-disconnected args)))
 
 (defn remove-event-listener [id]
+  (log/debug "remove-event-listener")
   (swap! state update :on-card-connected dissoc id)
   (swap! state update :on-card-disconnected dissoc id))
 
 (defn remove-event-listeners []
+  (log/debug "remove-event-listeners")
   (swap! state dissoc :on-card-connected)
   (swap! state dissoc :on-card-disconnected))
 
 (defn get-application-info [{:keys [on-success]}]
+  (log/debug "get-application-info")
   (later #(on-success (get @state :application-info))))
 
 (defn install-applet [_])
@@ -390,6 +405,15 @@
 
 (defrecord SimulatedKeycard []
   keycard/Keycard
+  (keycard/start-nfc [this args]
+    (log/debug "simulated card start-nfc")
+    (start-nfc args))
+  (keycard/stop-nfc [this args]
+    (log/debug "simulated card stop-nfc")
+    (stop-nfc args))
+  (keycard/set-nfc-message [this args]
+    (log/debug "simulated card set-nfc-message")
+    (set-nfc-message args))
   (keycard/check-nfc-support [this args]
     (log/debug "simulated card check-nfc-support")
     (check-nfc-support args))

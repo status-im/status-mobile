@@ -135,18 +135,19 @@
   (let [pairing   (common/get-pairing db)
         reset-pin (get-in db [:keycard :pin :reset])]
     (fx/merge cofx
-              {:keycard/get-application-info
-               {:pairing pairing}
-
-               :db
-               (update-in db [:keycard :pin] merge
-                          {:status       :after-unblocking
-                           :enter-step   :login
-                           :login        reset-pin
-                           :confirmation []
-                           :puk          []
-                           :puk-restore? true
-                           :error-label  nil})}
+              {:db
+               (-> db
+                   (update-in [:keycard :application-info] assoc
+                              :puk-retry-counter 5
+                              :pin-retry-counter 3)
+                   (update-in [:keycard :pin] assoc
+                              :status       :after-unblocking
+                              :enter-step   :login
+                              :login        reset-pin
+                              :confirmation []
+                              :puk          []
+                              :puk-restore? true
+                              :error-label  nil))}
               (common/hide-connection-sheet)
               (common/clear-on-card-connected)
               (common/clear-on-card-read))))
@@ -155,19 +156,20 @@
   {:events [:keycard.callback/on-unblock-pin-error]}
   [{:keys [db] :as cofx} error]
   (let [pairing       (common/get-pairing db)
-        tag-was-lost? (common/tag-lost? (:error error))]
+        tag-was-lost? (common/tag-lost? (:error error))
+        puk-retries (common/pin-retries (:error error))]
     (log/debug "[keycard] unblock pin error" error)
     (when-not tag-was-lost?
       (fx/merge cofx
-                {:keycard/get-application-info
-                 {:pairing pairing}
+                {:db
+                 (-> db
+                     (assoc-in [:keycard :application-info :puk-retry-counter] puk-retries)
+                     (update-in [:keycard :pin] merge
+                                {:status      (if (zero? puk-retries) :blocked-card :error)
+                                 :error-label :t/puk-mismatch
+                                 :enter-step  :puk
+                                 :puk         []}))}
 
-                 :db
-                 (update-in db [:keycard :pin] merge
-                            {:status      :error
-                             :error-label :t/puk-mismatch
-                             :enter-step  :puk
-                             :puk         []})}
                 (common/hide-connection-sheet)))))
 
 (fx/defn clear-on-verify-handlers
@@ -188,8 +190,9 @@
               (common/clear-on-card-read)
               ;; TODO(Ferossgp): Each pin input should handle this event on it's own,
               ;; now for simplicity do not hide bottom sheet when generating key
-              ;; but should be refactored.
-              (when-not (= on-verified :keycard/generate-and-load-key)
+              ;; and exporting key but should be refactored.
+              (when-not (contains? #{:keycard/generate-and-load-key
+                                     :wallet.accounts/generate-new-keycard-account} on-verified)
                 (common/hide-connection-sheet))
               (when-not (contains? #{:keycard/unpair
                                      :keycard/generate-and-load-key
@@ -207,28 +210,30 @@
   (let [tag-was-lost?       (common/tag-lost? (:error error))
         setup?              (boolean (get-in db [:keycard :setup-step]))
         on-verified-failure (get-in db [:keycard :pin :on-verified-failure])
-        exporting?          (get-in db [:keycard :on-export-success])]
+        exporting?          (get-in db [:keycard :on-export-success])
+        pin-retries (common/pin-retries (:error error))]
     (log/debug "[keycard] verify pin error" error)
     (when-not tag-was-lost?
-      (if (re-matches common/pin-mismatch-error (:error error))
+      (if-not (nil? pin-retries)
         (fx/merge cofx
-                  {:db (update-in db [:keycard :pin]
-                                  merge
-                                  {:status       :error
-                                   :enter-step   :current
-                                   :puk          []
-                                   :current      []
-                                   :original     []
-                                   :confirmation []
-                                   :sign         []
-                                   :error-label  :t/pin-mismatch})}
+                  {:db (-> db
+                           (assoc-in [:keycard :application-info :pin-retry-counter] pin-retries)
+                           (update-in [:keycard :pin] assoc
+                                      :status       :error
+                                      :enter-step   :current
+                                      :puk          []
+                                      :current      []
+                                      :original     []
+                                      :confirmation []
+                                      :sign         []
+                                      :error-label  :t/pin-mismatch))}
                   (common/hide-connection-sheet)
                   (when (and (not setup?)
                              (not on-verified-failure))
                     (if exporting?
                       (navigation/navigate-back)
                       (navigation/navigate-to-cofx :enter-pin-settings nil)))
-                  (common/get-application-info (common/get-pairing db) nil)
+                  (when (zero? pin-retries) (common/frozen-keycard-popup))
                   (when on-verified-failure
                     (fn [_] {:utils/dispatch-later
                              [{:dispatch [on-verified-failure]
@@ -414,7 +419,7 @@
                                                 (assoc-in [:keycard :setup-step] next-step)
                                                 (assoc-in [:keycard :secrets :pairing] pairing)
                                                 (assoc-in [:keycard :secrets :paired-on] paired-on))}
-              (common/hide-connection-sheet)
+              (when-not (and (= flow :recovery) (= next-step :card-ready)) (common/hide-connection-sheet))
               (when multiaccount
                 (set-multiaccount-pairing multiaccount pairing paired-on))
               (when (= flow :login)
@@ -525,6 +530,21 @@
   (log/debug "[keycard] card disconnected")
   {:db (assoc-in db [:keycard :card-connected?] false)})
 
+(fx/defn on-nfc-user-cancelled
+  {:events [:keycard.callback/on-nfc-user-cancelled]}
+  [{:keys [db]} _]
+  (log/debug "[keycard] nfc user cancelled")
+  {:dispatch [:signing.ui/cancel-is-pressed]})
+
+(fx/defn on-nfc-timeout
+  {:events [:keycard.callback/on-nfc-timeout]}
+  [{:keys [db]} _]
+  (log/debug "[keycard] nfc timeout")
+  {:db (-> db
+           (assoc-in [:keycard :nfc-running?] false)
+           (assoc-in [:keycard :card-connected?] false))
+   :keycard/start-nfc nil})
+
 (fx/defn on-register-card-events
   {:events [:keycard.callback/on-register-card-events]}
   [{:keys [db]} listeners]
@@ -553,3 +573,39 @@
   [{:keys [db]} step]
   (when-not (empty? (get-in db [:keycard :pin step]))
     {:db (update-in db [:keycard :pin step] pop)}))
+
+(fx/defn start-nfc
+  {:events [:keycard.ui/start-nfc]}
+  [cofx]
+  {:keycard/start-nfc nil})
+
+(fx/defn stop-nfc
+  {:events [:keycard.ui/stop-nfc]}
+  [cofx]
+  {:keycard/stop-nfc nil
+   :keycard.callback/on-card-disconnected nil})
+
+(fx/defn start-nfc-success
+  {:events [:keycard.callback/start-nfc-success]}
+  [{:keys [db]} _]
+  (log/debug "[keycard] nfc started success")
+  {:db (assoc-in db [:keycard :nfc-running?] true)})
+
+(fx/defn start-nfc-failure
+  {:events [:keycard.callback/start-nfc-failure]}
+  [{:keys [db]} _]
+  (log/debug "[keycard] nfc failed starting")) ;; leave current value on :nfc-running
+
+(fx/defn stop-nfc-success
+  {:events [:keycard.callback/stop-nfc-success]}
+  [{:keys [db]} _]
+  (log/debug "[keycard] nfc stopped success")
+  (log/debug "[keycard] setting card-connected? and nfc-running? to false")
+  {:db (-> db
+           (assoc-in [:keycard :nfc-running?] false)
+           (assoc-in [:keycard :card-connected?] false))})
+
+(fx/defn stop-nfc-failure
+  {:events [:keycard.callback/stop-nfc-failure]}
+  [{:keys [db]} _]
+  (log/debug "[keycard] nfc failed stopping")) ;; leave current value on :nfc-running

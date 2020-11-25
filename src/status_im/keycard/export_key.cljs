@@ -8,26 +8,29 @@
   {:events [:keycard.callback/on-export-key-error]}
   [{:keys [db] :as cofx} error]
   (log/debug "[keycard] export key error" error)
-  (let [tag-was-lost? (common/tag-lost? (:error error))]
+  (let [tag-was-lost? (common/tag-lost? (:error error))
+        pin-retries (common/pin-retries (:error error))]
     (cond tag-was-lost?
           (fx/merge cofx
                     {:db (assoc-in db [:keycard :pin :status] nil)}
                     (common/set-on-card-connected :wallet.accounts/generate-new-keycard-account))
 
-          (re-matches common/pin-mismatch-error (:error error))
+          (not (nil? pin-retries))
           (fx/merge cofx
-                    {:db (update-in db [:keycard :pin] merge {:status       :error
-                                                              :enter-step   :export-key
-                                                              :puk          []
-                                                              :current      []
-                                                              :original     []
-                                                              :confirmation []
-                                                              :sign         []
-                                                              :export-key   []
-                                                              :error-label  :t/pin-mismatch})}
+                    {:db (-> db
+                             (assoc-in [:keycard :application-info :pin-retry-counter] pin-retries)
+                             (update-in [:keycard :pin] assoc
+                                        :status       :error
+                                        :enter-step   :export-key
+                                        :puk          []
+                                        :current      []
+                                        :original     []
+                                        :confirmation []
+                                        :sign         []
+                                        :export-key   []
+                                        :error-label  :t/pin-mismatch))}
                     (common/hide-connection-sheet)
-                    (common/get-application-info (common/get-pairing db) nil))
-
+                    (when (zero? pin-retries) (common/frozen-keycard-popup)))
           :else
           (fx/merge cofx
                     (common/show-wrong-keycard-alert true)

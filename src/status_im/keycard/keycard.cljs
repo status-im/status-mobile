@@ -1,6 +1,9 @@
 (ns status-im.keycard.keycard)
 
 (defprotocol Keycard
+  (start-nfc [this args])
+  (stop-nfc [this args])
+  (set-nfc-message [this args])
   (check-nfc-support [this args])
   (check-nfc-enabled [this args])
   (open-nfc-settings [this])

@@ -198,20 +198,20 @@
   [{:keys [db] :as cofx} error]
   (log/debug "[keycard] sign error: " error)
   (let [tag-was-lost? (common/tag-lost? (:error error))
-        pin-retries (get-in db [:keycard :application-info :pin-retry-counter])]
+        pin-retries (common/pin-retries (:error error))]
     (when-not tag-was-lost?
-      (if (re-matches common/pin-mismatch-error (:error error))
+      (if (not (nil? pin-retries))
         (fx/merge cofx
                   {:db (-> db
-                           (assoc-in [:keycard :application-info :pin-retry-counter] (dec pin-retries))
-                           (update-in [:keycard :pin] merge {:status      :error
-                                                             :sign        []
-                                                             :error-label :t/pin-mismatch})
+                           (assoc-in [:keycard :application-info :pin-retry-counter] pin-retries)
+                           (update-in [:keycard :pin] assoc
+                                      :status      :error
+                                      :sign        []
+                                      :error-label :t/pin-mismatch)
                            (assoc-in [:signing/sign :keycard-step] :pin))}
                   (common/hide-connection-sheet)
-                  (common/get-application-info (common/get-pairing db) nil)
-                  (when (zero? (dec pin-retries))
-                    (common/frozen-keycard-popup)))
+                  (when (zero? pin-retries) (common/frozen-keycard-popup)))
+
         (fx/merge cofx
                   (common/hide-connection-sheet)
                   (common/show-wrong-keycard-alert true))))))

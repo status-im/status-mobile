@@ -5,7 +5,7 @@
 (deftest test-show-connection-sheet
   (testing "the card is not connected yet"
     (let [db  {:keycard {:card-connected? false}}
-          res (common/show-connection-sheet
+          res (common/show-connection-sheet-component
                {:db db}
                {:on-card-connected :do-something
                 :handler           (fn [{:keys [db]}]
@@ -16,7 +16,7 @@
       (is (true? (get-in res [:db :bottom-sheet/show?])))))
   (testing "the card is connected before the interaction"
     (let [db  {:keycard {:card-connected? true}}
-          res (common/show-connection-sheet
+          res (common/show-connection-sheet-component
                {:db db}
                {:on-card-connected :do-something
                 :handler           (fn [{:keys [db]}]
@@ -30,13 +30,13 @@
     (is
      (thrown?
       js/Error
-      (common/show-connection-sheet
+      (common/show-connection-sheet-component
        {:db {}}
        {:handler (fn [_])}))))
   (testing "handler is not specified"
     (is
      (thrown?
       js/Error
-      (common/show-connection-sheet
+      (common/show-connection-sheet-component
        {:db {}}
        {:on-card-connected :do-something})))))

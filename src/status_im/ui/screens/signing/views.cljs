@@ -16,6 +16,7 @@
             [status-im.ui.screens.signing.sheets :as sheets]
             [status-im.ethereum.tokens :as tokens]
             [status-im.utils.types :as types]
+            [status-im.utils.platform :as platform]
             [clojure.string :as string]
             [quo.core :as quo]
             [quo.gesture-handler :as gh]
@@ -107,8 +108,9 @@
                   enter-step [:keycard/pin-enter-step]
                   status [:keycard/pin-status]
                   retry-counter [:keycard/retry-counter]]
-    (let [enter-step (or enter-step :sign)]
-      [react/view
+    (let [enter-step (or enter-step :sign)
+          margin-bottom (if platform/ios? 40 0)]
+      [react/view {:margin-bottom margin-bottom}
        [pin.views/pin-view
         {:pin           pin
          :retry-counter retry-counter

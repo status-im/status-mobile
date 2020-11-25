@@ -12,11 +12,9 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.intro.styles :as styles]
-            [status-im.utils.config :as config]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.utils.gfycat.core :as gfy]
             [status-im.utils.identicon :as identicon]
-            [status-im.utils.platform :as platform]
             [status-im.utils.security :as security]
             [status-im.utils.debounce :refer [dispatch-and-chill]]
             [quo.core :as quo]
@@ -103,10 +101,7 @@
       {:accessibility-label (keyword (str "select-storage-" type))
        :on-press #(re-frame/dispatch
                    [:intro-wizard/on-key-storage-selected
-                    (if (or platform/android?
-                            config/keycard-test-menu-enabled?)
-                      type
-                      :default)])}
+                    type])}
       [react/view (assoc (styles/list-item selected?)
                          :align-items :flex-start
                          :padding-top 16

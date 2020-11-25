@@ -31,6 +31,7 @@
          disable-drag?      :disableDrag?
          show-handle?       :showHandle?
          visible?           :visible?
+         transparent        :transparent
          backdrop-dismiss?  :backdropDismiss?
          back-button-cancel :backButtonCancel
          children           :children
@@ -189,6 +190,7 @@
                                        (when back-button-cancel
                                          (close-sheet)))}
       [rn/view {:style          styles/container
+                :opacity        (if transparent 0 1)
                 :pointer-events :box-none}
        [gesture-handler/tap-gesture-handler (merge {:enabled backdrop-dismiss?}
                                                    tap-gesture-handler)

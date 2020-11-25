@@ -40,6 +40,9 @@
 		57C854A7993C47A3B1AECD32 /* Inter-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = C6B1215047604CD59A4C74D6 /* Inter-MediumItalic.otf */; };
 		68E19BBDF749E72ED1F9DEF5 /* libPods-Status-StatusIm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 132CE3B093884B0FB239A0AB /* libPods-Status-StatusIm.a */; };
 		6C137817D5298C82BC79177C /* libPods-Status-StatusImPR.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D4CB5416994C913628B8754 /* libPods-Status-StatusImPR.a */; };
+		65F6941925780A4F00A45E76 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F6941825780A4F00A45E76 /* Bridge.swift */; };
+		65F6941A25780A4F00A45E76 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F6941825780A4F00A45E76 /* Bridge.swift */; };
+		65F6941B25780A4F00A45E76 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F6941825780A4F00A45E76 /* Bridge.swift */; };
 		70ADBB5ECF934DCF8A0E4919 /* Inter-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1426DF592BA248FC81D955CB /* Inter-Regular.otf */; };
 		74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */; };
 		8391E8E0E93C41A98AAA6631 /* Inter-SemiBoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = A4F2BBE8D4DD4140A6CCAC39 /* Inter-SemiBoldItalic.otf */; };
@@ -124,6 +127,11 @@
 		4C16DE0B1F89508700AA10DB /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		4E586E1B0E544F64AA9F5BD1 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		5D4CB5416994C913628B8754 /* libPods-Status-StatusImPR.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Status-StatusImPR.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E9C2936B3890356C5BE1078 /* Pods-StatusIm-StatusImTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StatusIm-StatusImTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-StatusIm-StatusImTests/Pods-StatusIm-StatusImTests.debug.xcconfig"; sourceTree = "<group>"; };
+		65F693BD2578002500A45E76 /* CoreNFC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreNFC.framework; path = System/Library/Frameworks/CoreNFC.framework; sourceTree = SDKROOT; };
+		65F693BF2578003600A45E76 /* CoreNFC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreNFC.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/iOSSupport/System/Library/Frameworks/CoreNFC.framework; sourceTree = DEVELOPER_DIR; };
+		65F6941725780A4E00A45E76 /* StatusImTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "StatusImTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		65F6941825780A4F00A45E76 /* Bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bridge.swift; sourceTree = "<group>"; };
 		69291A6222A63434694EA2A6 /* Pods-Status-StatusImPR.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Status-StatusImPR.release.xcconfig"; path = "Pods/Target Support Files/Pods-Status-StatusImPR/Pods-Status-StatusImPR.release.xcconfig"; sourceTree = "<group>"; };
 		693A62DB37BC4CD5A30E5C96 /* Inter-SemiBold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.otf"; path = "../resources/fonts/Inter-SemiBold.otf"; sourceTree = "<group>"; };
 		74B758FB20D7C00B003343C3 /* launch-image-universal.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "launch-image-universal.storyboard"; sourceTree = "<group>"; };
@@ -279,6 +287,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				65F6941825780A4F00A45E76 /* Bridge.swift */,
 				3AAD2AB624A3A5F10075D594 /* StatusImPR */,
 				13B07FAE1A68108700A75B9A /* StatusIm */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -287,6 +296,7 @@
 				A97BA941B2FB44B4B66EE6D3 /* Frameworks */,
 				1E7837547A9A40E18AD63CF3 /* Resources */,
 				5C1C8762251D6EF495FB2384 /* Pods */,
+				65F6941725780A4E00A45E76 /* StatusImTests-Bridging-Header.h */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -314,6 +324,8 @@
 		A97BA941B2FB44B4B66EE6D3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				65F693BD2578002500A45E76 /* CoreNFC.framework */,
+				65F693BF2578003600A45E76 /* CoreNFC.framework */,
 				3A8F8EA924A4D31600BF206D /* GameKit.framework */,
 				4C16DE0B1F89508700AA10DB /* JavaScriptCore.framework */,
 				B24FC7FE1DE7195F00D694FF /* MessageUI.framework */,
@@ -724,6 +736,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65F6941A25780A4F00A45E76 /* Bridge.swift in Sources */,
 				00E356F31AD99517003FC87E /* StatusImTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -732,6 +745,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65F6941925780A4F00A45E76 /* Bridge.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				3A2626CF245C3F2200D5F94B /* Dummy.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
@@ -742,6 +756,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65F6941B25780A4F00A45E76 /* Bridge.swift in Sources */,
 				3AAD2ABC24A3A60E0075D594 /* AppDelegate.m in Sources */,
 				3AAD2ABD24A3A60E0075D594 /* Dummy.swift in Sources */,
 				3AAD2ABE24A3A60E0075D594 /* main.m in Sources */,
@@ -766,6 +781,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_ID_SUFFIX = .debug;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = DTX7Z4U3YA;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -777,13 +793,16 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = StatusImTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "StatusImTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StatusIm.app/StatusIm";
 			};
 			name = Debug;
@@ -795,6 +814,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_ID_SUFFIX = "";
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = DTX7Z4U3YA;
@@ -803,13 +823,15 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = StatusImTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "StatusImTests-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StatusIm.app/StatusIm";
 			};
 			name = Release;
@@ -1137,7 +1159,7 @@
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios/**",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
@@ -1211,7 +1233,7 @@
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios/**",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",

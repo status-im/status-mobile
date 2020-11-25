@@ -123,7 +123,7 @@
 
       (and (zero? pin-retry-counter)
            (or (nil? puk-retry-counter)
-               (= 5 puk-retry-counter)))
+               (pos? puk-retry-counter)))
       nil #_(frozen-keycard-popup cofx)
 
       :else

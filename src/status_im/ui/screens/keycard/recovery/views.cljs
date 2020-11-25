@@ -135,7 +135,8 @@
            (i18n/label :t/keycard-free-pairing-slots {:n free-pairing-slots})]])]
       [react/view
        [react/view {:padding         16
-                    :justify-content :center}
+                    :justify-content :center
+                    :margin-bottom   100}
         [quo/text-input
          {:on-change-text    #(re-frame/dispatch [:keycard.onboarding.pair.ui/input-changed %])
           :auto-focus        true

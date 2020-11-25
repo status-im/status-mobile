@@ -10,7 +10,6 @@
             [status-im.utils.security]
             [status-im.ui.components.colors :as colors]
             [quo.core :as quo]
-            [status-im.utils.platform :as platform]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.icons :as icons]))
 
@@ -52,7 +51,6 @@
       ;; Show manage storage link when on login screen, only on android devices
       ;; and the selected account is not paired with keycard
       (when (and (= view-id :login)
-                 platform/android?
                  (not acc-to-login-keycard-pairing))
         [quo/list-item
          {:theme               :accent
@@ -67,23 +65,21 @@
         :accessibility-label :enter-seed-phrase-button
         :icon                :main-icons/text
         :on-press            #(hide-sheet-and-dispatch [::multiaccounts.recover/enter-phrase-pressed])}]
-      (when (or platform/android?
-                config/keycard-test-menu-enabled?)
-        [quo/list-item
-         {:theme               :accent
-          :title               (i18n/label :t/recover-with-keycard)
-          :accessibility-label :recover-with-keycard-button
-          :icon                [react/view {:border-width     1
-                                            :border-radius    20
-                                            :border-color     colors/blue-light
-                                            :background-color colors/blue-light
-                                            :justify-content  :center
-                                            :align-items      :center
-                                            :width            40
-                                            :height           40}
-                                [react/image {:source (resources/get-image :keycard-logo-blue)
-                                              :style  {:width 24 :height 24}}]]
-          :on-press            #(hide-sheet-and-dispatch [::keycard/recover-with-keycard-pressed])}])
+      [quo/list-item
+       {:theme               :accent
+        :title               (i18n/label :t/recover-with-keycard)
+        :accessibility-label :recover-with-keycard-button
+        :icon                [react/view {:border-width     1
+                                          :border-radius    20
+                                          :border-color     colors/blue-light
+                                          :background-color colors/blue-light
+                                          :justify-content  :center
+                                          :align-items      :center
+                                          :width            40
+                                          :height           40}
+                              [react/image {:source (resources/get-image :keycard-logo-blue)
+                                            :style  {:width 24 :height 24}}]]
+        :on-press            #(hide-sheet-and-dispatch [::keycard/recover-with-keycard-pressed])}]
       (when config/database-management-enabled?
         [quo/list-item {:theme               :accent
                         :on-press            #(hide-sheet-and-dispatch [:multiaccounts.login.ui/import-db-submitted])

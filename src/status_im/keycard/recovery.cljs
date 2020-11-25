@@ -215,6 +215,7 @@
                                      (update :instance-uid #(get-in db [:keycard :multiaccount :instance-uid] %))))
                        (assoc-in [:keycard :multiaccount-wallet-address] (:wallet-address account-data))
                        (assoc-in [:keycard :multiaccount-whisper-public-key] (:whisper-public-key account-data))
+                       (assoc-in [:keycard :pin :status] nil)
                        (assoc-in [:keycard :application-info :key-uid]
                                  (ethereum/normalized-hex (:key-uid account-data)))
                        (update :keycard dissoc :recovery-phrase)
@@ -246,6 +247,7 @@
     (fx/merge cofx
               {:db                  (-> db
                                         (assoc-in [:keycard :multiaccount :instance-uid] instance-uid)
+                                        (assoc-in [:keycard :pin :status] :verifying)
                                         (assoc-in [:keycard :secrets] {:pairing   pairing'
                                                                        :paired-on (utils.datetime/timestamp)}))
                :keycard/get-keys {:pairing    pairing'

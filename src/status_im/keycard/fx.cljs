@@ -3,9 +3,57 @@
             [status-im.utils.types :as types]
             [status-im.keycard.card :as card]
             [status-im.native-module.core :as status]
-            [status-im.utils.platform :as platform]
             ["react-native" :refer (BackHandler)]
+            [taoensso.timbre :as log]
             ["@react-native-community/async-storage" :default AsyncStorage]))
+
+(re-frame/reg-fx
+ :keycard/start-nfc
+ (fn []
+   (log/debug "fx start-nfc")
+   (card/start-nfc
+    {:on-success #(re-frame/dispatch [:keycard.callback/start-nfc-success])
+     :on-failure #(re-frame/dispatch [:keycard.callback/start-nfc-failure])})))
+
+(re-frame/reg-fx
+ :keycard/stop-nfc
+ (fn []
+   (log/debug "fx stop-nfc")
+   (card/stop-nfc
+    {:on-success #(re-frame/dispatch [:keycard.callback/stop-nfc-success])
+     :on-failure #(re-frame/dispatch [:keycard.callback/stop-nfc-failure])})))
+
+(re-frame/reg-fx
+ :keycard/set-nfc-message
+ card/set-nfc-message)
+
+(re-frame/reg-fx
+ :keycard/start-nfc-and-show-connection-sheet
+ (fn [args]
+   (log/debug "fx start-nfc-and-show-connection-sheet")
+   (card/start-nfc
+    {:on-success
+     (fn []
+       (log/debug "nfc started successfully. next: show-connection-sheet")
+       (re-frame/dispatch [:keycard.callback/start-nfc-success])
+       (re-frame/dispatch [:keycard.callback/show-connection-sheet args]))
+     :on-failure
+     (fn []
+       (log/debug "nfc failed star starting. not calling show-connection-sheet")
+       (re-frame/dispatch [:keycard.callback/start-nfc-failure]))})))
+
+(re-frame/reg-fx
+ :keycard/stop-nfc-and-hide-connection-sheet
+ (fn []
+   (log/debug "fx stop-nfc-and-hide-connection-sheet")
+   (card/stop-nfc
+    {:on-success
+     (fn []
+       (re-frame/dispatch [:keycard.callback/stop-nfc-success])
+       (re-frame/dispatch [:keycard.callback/hide-connection-sheet]))
+     :on-failure
+     (fn []
+       (re-frame/dispatch [:keycard.callback/stop-nfc-failure]))})))
 
 (re-frame/reg-fx
  :keycard/get-application-info
@@ -112,11 +160,10 @@
 (re-frame/reg-fx
  :keycard/retrieve-pairings
  (fn []
-   (when platform/android?
-     (.. AsyncStorage
-         (getItem "status-keycard-pairings")
-         (then #(re-frame/dispatch [:keycard.callback/on-retrieve-pairings-success
-                                    (types/deserialize %)]))))))
+   (.. AsyncStorage
+       (getItem "status-keycard-pairings")
+       (then #(re-frame/dispatch [:keycard.callback/on-retrieve-pairings-success
+                                  (types/deserialize %)])))))
 
 ;; TODO: Should act differently on different views
 (re-frame/reg-fx

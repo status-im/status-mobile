@@ -124,7 +124,7 @@
      [topbar/topbar
       {:navigation :none
        :right-accessories
-       [{:label   :t/cancel
+       [{:label   (i18n/label :t/cancel)
          :on-press #(re-frame/dispatch [:keycard/new-account-pin-sheet-hide])}]}]
      [pin.views/pin-view
       {:pin               pin
