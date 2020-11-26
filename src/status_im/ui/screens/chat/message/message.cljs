@@ -261,7 +261,8 @@
                                                       (reset! visible true)
                                                       (react/dismiss-keyboard!))
                                      :on-long-press on-long-press}
-          [react/view {:style (style/image-message style-opts)}
+          [react/view {:style (style/image-message style-opts)
+                       :accessibility-label :message-image}
            [react/image {:style       {:width  (/ (first @dimensions) k)
                                        :height (/ (second @dimensions) k)}
                          :resize-mode :contain

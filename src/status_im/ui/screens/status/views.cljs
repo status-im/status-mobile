@@ -42,7 +42,8 @@
                             :border-color  colors/black-transparent
                             :overflow      :hidden
                             :border-radius 16
-                            :margin-top    8}}
+                            :margin-top    8}
+                    :accessibility-label :message-image}
         [react/image {:style       {:width (first @dimensions) :height (last @dimensions)}
                       :resize-mode :contain
                       :source      {:uri uri}}]]
