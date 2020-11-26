@@ -109,6 +109,7 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5358)
     @marks.medium
+    @marks.transaction
     def test_backup_recovery_phrase_warning_from_wallet(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
@@ -274,8 +275,7 @@ class TestWalletManagement(SingleDeviceTestCase):
     @marks.testrail_id(6244)
     @marks.high
     def test_add_and_delete_watch_only_account_to_multiaccount_instance(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
+        sign_in_view = SignInView(self.driver).create_user()
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
 
@@ -314,6 +314,10 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet_view.yes_button.click()
         if account_button.is_element_displayed():
             self.driver.fail('Account was not deleted')
+
+        # forcing app to update balance
+        wallet_view.put_app_to_background_and_back()
+
         for asset in ('ETH', 'ADI', 'STT'):
             wallet_view.wait_balance_is_equal_expected_amount(asset, 0)
 

@@ -375,7 +375,7 @@ class SendTransactionView(BaseView):
         self.chose_recipient_button.click()
         self.enter_recipient_address_input.set_value(address)
         self.enter_recipient_address_input.click()
-        self.done_button.click()
+        self.done_button.click_until_absense_of_element(self.done_button)
 
     def sign_transaction(self, sender_password: str = common_password, keycard=False, default_gas_price=True):
         if not default_gas_price:

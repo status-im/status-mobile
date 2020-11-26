@@ -425,6 +425,11 @@ class ChatElementByText(BaseElement):
             except NoSuchElementException:
                 ChatView(self.driver).reconnect()
 
+    def click_on_text(self):
+        self.locator = self.Locator.xpath_selector(self.message_locator +
+                                                   "/ancestor::android.view.ViewGroup[@content-desc='chat-item']/android.view.ViewGroup")
+        self.click()
+
 
 
     @property
@@ -611,7 +616,7 @@ class StikerMessageItem(BaseElement):
 class ImageChatItem(BaseElement):
     def __init__(self, driver):
         super().__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@content-desc="chat-item"]//android.widget.ImageView')
+        self.locator = self.Locator.accessibility_id('message-image')
 
 
 class HistoryTimeMarker(BaseText):

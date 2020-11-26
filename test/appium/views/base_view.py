@@ -515,6 +515,11 @@ class BaseView(object):
         for _ in range(times):
             self.driver.press_keycode(4)
 
+    def put_app_to_background_and_back(self, time_in_background=1):
+        self.driver.press_keycode(187)
+        time.sleep(time_in_background)
+        self.status_in_background_button.click()
+
     def click_system_home_button(self):
         self.driver.info('Press system Home button')
         self.driver.press_keycode(3)
@@ -706,7 +711,7 @@ class BaseView(object):
         profile_view.share_my_profile_button.click()
         profile_view.public_key_text.wait_for_visibility_of_element()
         public_key = profile_view.public_key_text.text
-        self.close_share_popup()
+        self.click_system_back_button()
         user_data = (public_key, default_username) if return_username else public_key
         return user_data
 

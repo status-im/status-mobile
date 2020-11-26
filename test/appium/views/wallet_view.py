@@ -493,7 +493,8 @@ class WalletView(BaseView):
             elif self.asset_by_name(asset).is_element_present() and self.get_asset_amount_by_name(asset) == initial_balance:
                 counter += 10
                 time.sleep(10)
-                self.swipe_down()
+                # temp until Refresh button will be included in pull-to refresh
+                self.put_app_to_background_and_back()
                 self.driver.info('Waiting %s seconds for %s to update' % (counter,asset))
             elif not self.asset_by_name(asset).is_element_present(10):
                 # temp until Refresh button will be included in pull-to refresh
@@ -585,7 +586,7 @@ class WalletView(BaseView):
         else:
             send_transaction_view.set_recipient_address(kwargs.get('recipient'))
         if kwargs.get('sign_transaction', True):
-            send_transaction_view.sign_transaction_button.click()
+            send_transaction_view.sign_transaction_button.click_until_presence_of_element(send_transaction_view.network_fee_button)
             send_transaction_view.sign_transaction(keycard=kwargs.get('keycard', False),
                                                    default_gas_price=kwargs.get('default_gas_price', False),
                                                    sender_password=kwargs.get('sender_password', common_password))

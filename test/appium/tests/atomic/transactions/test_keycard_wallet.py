@@ -104,6 +104,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6292)
+    @marks.transaction
     @marks.medium
     def test_keycard_send_funds_between_accounts_in_multiaccount_instance(self):
         sign_in_view = SignInView(self.driver)

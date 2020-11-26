@@ -356,6 +356,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.sign_in(position=2, keycard=True)
         sign_in.wallet_button.click()
         wallet_view.set_up_wallet()
+        wallet_view.wait_balance_is_changed('ETH')
         wallet_view.accounts_status_account.click()
         transaction_amount_keycard = wallet_view.get_unique_amount()
         wallet_view.send_transaction(amount=transaction_amount_keycard, recipient=recipient, keycard=True, sign_transaction=True)

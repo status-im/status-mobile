@@ -238,6 +238,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
             self.driver.fail("Connection status text '%s' doesn't match expected 'Offline'" % connection_text)
 
     @marks.testrail_id(6225)
+    @marks.transaction
     @marks.medium
     def test_send_funds_between_accounts_in_multiaccount_instance(self):
         sign_in_view = SignInView(self.driver)
@@ -462,6 +463,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.asset_by_name(symbol).scroll_to_element()
         if not wallet_view.asset_by_name(symbol).is_element_displayed():
             self.errors.append('Custom token is not shown on Wallet view')
+        wallet_view.accounts_status_account.scroll_to_element(direction='up')
         wallet_view.accounts_status_account.click()
         recipient = "0x" + basic_user['address']
         amount = '0.0%s' % str(random.randint(10000, 99999)) + '1'

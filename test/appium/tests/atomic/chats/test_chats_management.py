@@ -594,11 +594,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         additional_text = 'and more'
         chat_1.send_as_keyevent(additional_text)
         chat_1.send_message_button.click()
-        chat_1.chat_element_by_text('%s %s' % (nickname, additional_text)).click()
-        for element in (chat_1.element_by_text(username_2), chat_1.remove_from_contacts):
-            if not element.is_element_displayed():
-                self.errors.append('Was not redirected to user profile after tapping on mention by nickname!')
-        chat_1.get_back_to_home_view()
+        if not chat_1.chat_element_by_text('%s %s' % (nickname, additional_text)).is_element_displayed():
+            self.errors.append("Nickname is not resolved on send message")
 
         device_1.just_fyi('check contact list in Profile after setting nickname')
         profile_1 = chat_1.profile_button.click()
