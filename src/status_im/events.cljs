@@ -1184,7 +1184,7 @@
                        (dissoc :app-in-background-since)
                        (assoc :app-active-since now))}
               (mailserver/process-next-messages-request)
-              (wallet/restart-wallet-service true false)
+              (wallet/restart-wallet-service {:force-start? true})
               #(when requires-bio-auth
                  (biometric/authenticate % on-biometric-auth-result authentication-options)))))
 

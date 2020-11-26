@@ -169,6 +169,7 @@
 (reg-root-key-sub :wallet-service/state :wallet-service/state)
 (reg-root-key-sub :wallet/recipient :wallet/recipient)
 (reg-root-key-sub :wallet/favourites :wallet/favourites)
+(reg-root-key-sub :wallet/refreshing-history? :wallet/refreshing-history?)
 
 ;;commands
 (reg-root-key-sub :commands/select-account :commands/select-account)

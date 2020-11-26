@@ -37,7 +37,7 @@
        logged-in?
        [(mailserver/process-next-messages-request)
         (bottom-sheet/hide-bottom-sheet)
-        (wallet/restart-wallet-service false false)]))))
+        (wallet/restart-wallet-service-default)]))))
 
 (defn apply-settings
   ([sync?] (apply-settings sync? :default))
@@ -62,7 +62,7 @@
         (bottom-sheet/hide-bottom-sheet)
         (when (and cellular? sync?)
           (mailserver/process-next-messages-request))
-        (wallet/restart-wallet-service false false))))))
+        (wallet/restart-wallet-service-default))))))
 
 (handlers/register-handler-fx
  :mobile-network/continue-syncing

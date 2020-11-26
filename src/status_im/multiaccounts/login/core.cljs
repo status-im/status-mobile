@@ -318,7 +318,7 @@
               ;;FIXME
               (when nodes
                 (fleet/set-nodes :eth.contract nodes))
-              (wallet/restart-wallet-service true false)
+              (wallet/restart-wallet-service {:force-start? true})
               (if login-only?
                 (login-only-events key-uid password save-password?)
                 (create-only-events))

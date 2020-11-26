@@ -576,7 +576,8 @@
      [old-timeout]}))
 
 (fx/defn restart-wallet-service
-  [{:keys [db] :as cofx} force-start? watch-new-blocks?]
+  [{:keys [db] :as cofx}
+   {:keys [force-start? watch-new-blocks? ignore-syncing-settings?]}]
   (when (or force-start? (:multiaccount db))
     (let [watching-txs? (get db :wallet/watch-txs)
           waiting? (get db :wallet/waiting-for-recent-history?)
@@ -586,7 +587,8 @@
                 "watching-txs?" watching-txs?
                 "syncing-allowed?" syncing-allowed?
                 "watch-new-blocks?" watch-new-blocks?)
-      (if (and syncing-allowed?
+      (if (and (or syncing-allowed?
+                   ignore-syncing-settings?)
                (or
                 waiting?
                 force-start?
@@ -594,12 +596,32 @@
         (start-wallet cofx (boolean (or watch-new-blocks? watching-txs?)))
         (stop-wallet cofx)))))
 
+(fx/defn restart-wallet-service-default
+  [cofx]
+  (restart-wallet-service cofx nil))
+
 (fx/defn restart
   {:events [::restart]}
   [{:keys [db] :as cofx}]
-  (fx/merge
-   {:db (dissoc db :wallet-service/restart-timeout)}
-   (restart-wallet-service true false)))
+  (restart-wallet-service cofx {:force-start? true}))
+
+(def pull-to-refresh-cooldown-period (* 1 60 1000))
+
+(fx/defn restart-on-pull
+  {:events [:wallet.ui/pull-to-refresh-history]}
+  [{:keys [db now] :as cofx}]
+  (let [last-pull (get db :wallet/last-pull-time)
+        watching? (get db :wallet/watch-txs)]
+    (when (and (not watching?)
+               (or (not last-pull)
+                   (> (- now last-pull) pull-to-refresh-cooldown-period)))
+      (fx/merge
+       {:db (assoc db
+                   :wallet/last-pull-time now
+                   :wallet/refreshing-history? true)}
+       (restart-wallet-service
+        {:force-start?             true
+         :ignore-syncing-settings? true})))))
 
 (fx/defn watch-tx
   {:events [:watch-tx]}
@@ -616,7 +638,8 @@
               (assoc :wallet/watch-txs-timeout timeout))
       ::utils.utils/clear-timeouts
       [old-timeout]}
-     (restart-wallet-service true true))))
+     (restart-wallet-service {:force-start?      true
+                              :watch-new-blocks? true}))))
 
 (fx/defn stop-watching-txs
   {:events [::stop-watching-txs]}
@@ -625,7 +648,7 @@
    {:db (dissoc db
                 :wallet/watch-txs
                 :wallet/watch-txs-timeout)}
-   (restart-wallet-service false false)))
+   (restart-wallet-service-default)))
 
 (fx/defn stop-watching-tx
   [{:keys [db] :as cofx} tx]

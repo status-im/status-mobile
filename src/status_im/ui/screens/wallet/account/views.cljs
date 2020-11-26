@@ -16,7 +16,9 @@
             [status-im.ui.screens.wallet.transactions.views :as history]
             [status-im.utils.money :as money]
             [status-im.wallet.utils :as wallet.utils]
-            [status-im.ui.components.tabs :as tabs])
+            [status-im.ui.components.tabs :as tabs]
+            [quo.react-native :as rn]
+            [status-im.utils.utils :as utils.utils])
   (:require-macros [status-im.utils.views :as views]))
 
 (def state (reagent/atom {:tab :assets}))
@@ -185,6 +187,29 @@
             (styles/bottom-send-recv-buttons-lower anim-y button-group-height)
             #(reset! to-show false))))))))
 
+;; Note(rasom): sometimes `refreshing` might get stuck on iOS if action happened
+;; too fast. By updating this atom in 1s we ensure that `refreshing?` property
+;; is updated properly in this case.
+(def updates-counter (reagent/atom 0))
+
+(defn schedule-counter-reset []
+  (utils.utils/set-timeout
+   (fn []
+     (swap! updates-counter inc)
+     (when @(re-frame/subscribe [:wallet/refreshing-history?])
+       (schedule-counter-reset)))
+   1000))
+
+(defn refresh-action []
+  (schedule-counter-reset)
+  (re-frame/dispatch [:wallet.ui/pull-to-refresh-history]))
+
+(defn refresh-control [refreshing?]
+  (reagent/as-element
+   [rn/refresh-control
+    {:refreshing (boolean refreshing?)
+     :onRefresh  refresh-action}]))
+
 (views/defview account []
   (views/letsubs [{:keys [name address] :as account} [:multiaccount/current-account]]
     (let [anim-y (animation/create-value button-group-height)
@@ -197,7 +222,11 @@
          :on-scroll             (animation/event
                                  [{:nativeEvent {:contentOffset {:y scroll-y}}}]
                                  {:useNativeDriver true})
-         :scrollEventThrottle   1}
+         :scrollEventThrottle   1
+         :refreshControl        (refresh-control
+                                 (and
+                                  @updates-counter
+                                  @(re-frame/subscribe [:wallet/refreshing-history?])))}
         [react/view {:padding-left 16}
          [react/scroll-view {:horizontal true}
           [react/view {:flex-direction :row :padding-top 8 :padding-bottom 12}
