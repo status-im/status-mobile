@@ -45,7 +45,11 @@
             view-id [:view-id]
             supported-biometric-auth [:supported-biometric-auth]]
     [react/keyboard-avoiding-view {:style ast/multiaccounts-view}
-     [topbar/topbar {:border-bottom false}]
+     [topbar/topbar {:border-bottom     false
+                     :right-accessories [{:icon     :more
+                                          :on-press #(do
+                                                       (react/dismiss-keyboard!)
+                                                       (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))}]}]
      [react/scroll-view {:keyboardShouldPersistTaps :always
                          :style                     styles/login-view}
       [react/view styles/login-badge-container
@@ -93,18 +97,10 @@
         [react/i18n-text {:style styles/processing :key :processing}]])
 
      [toolbar/toolbar
-      {:show-border? true
-       :size         :large
-       :left
-       [quo/button
-        {:type     :secondary
-         :on-press #(do
-                      (react/dismiss-keyboard!)
-                      (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))}
-        (i18n/label :t/access-existing-keys)]
-       :right
+      {:size :large
+       :center
        [react/view {:padding-horizontal 8}
         [quo/button
          {:disabled (or (not sign-in-enabled?) processing)
           :on-press #(login-multiaccount @password-text-input)}
-         (i18n/label :t/submit)]]}]]))
+         (i18n/label :t/sign-in)]]}]]))

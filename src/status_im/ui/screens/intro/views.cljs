@@ -372,7 +372,7 @@
       [top-bar {:step :enter-phrase}]
       [enter-phrase wizard-state]
       [bottom-bar (merge {:step :enter-phrase
-                          :forward-action  :multiaccounts.recover/enter-phrase-next-pressed}
+                          :forward-action :multiaccounts.recover/enter-phrase-next-pressed}
                          wizard-state)]]]))
 
 (defview wizard-recovery-success []

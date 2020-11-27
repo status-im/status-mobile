@@ -4,6 +4,7 @@
             [status-im.ui.screens.progress.views :as progress]
             [status-im.ui.screens.multiaccounts.views :as multiaccounts]
             [status-im.ui.screens.intro.views :as intro]
+            [status-im.keycard.core :as keycard.core]
             [status-im.ui.screens.keycard.onboarding.views :as keycard.onboarding]
             [status-im.ui.screens.keycard.recovery.views :as keycard.recovery]
             [status-im.ui.screens.keycard.views :as keycard]
@@ -61,7 +62,7 @@
        :back-handler :noop
        :component    intro/wizard-recovery-success}
       {:name         :keycard-onboarding-intro
-       :back-handler :noop
+       :back-handler keycard.core/onboarding-intro-back-handler
        :component    keycard.onboarding/intro}
       {:name         :keycard-onboarding-puk-code
        :back-handler :noop

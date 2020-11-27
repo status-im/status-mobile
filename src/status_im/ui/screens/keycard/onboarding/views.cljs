@@ -16,12 +16,15 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview intro []
-  (letsubs [flow [:keycard-flow]]
+  (letsubs [flow [:keycard-flow]
+            {:keys [from-key-storage-and-migration?]} [:keycard]]
     [react/view styles/container
-     [topbar/topbar]
+     (when-not from-key-storage-and-migration?
+       [topbar/topbar])
      [react/view {:flex            1
                   :justify-content :space-between
-                  :align-items     :center}
+                  :align-items     :center
+                  :margin-top      (when from-key-storage-and-migration? 80)}
       [react/view {:align-items :center}
        [react/view
         [react/view {:align-items     :center

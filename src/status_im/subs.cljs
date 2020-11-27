@@ -107,6 +107,8 @@
 (reg-root-key-sub :multiaccount :multiaccount)
 (reg-root-key-sub :multiaccount/accounts :multiaccount/accounts)
 (reg-root-key-sub :get-recover-multiaccount :multiaccounts/recover)
+(reg-root-key-sub :multiaccounts/key-storage :multiaccounts/key-storage)
+
 ;;chat
 (reg-root-key-sub ::cooldown-enabled? :chat/cooldown-enabled?)
 (reg-root-key-sub ::chats :chats)
@@ -338,6 +340,19 @@
  :<- [:multiaccounts/multiaccounts]
  (fn [[intro-wizard multiaccounts]]
    (recover/existing-account? (:root-key intro-wizard) multiaccounts)))
+
+(defn login-ma-keycard-pairing
+  "Compute the keycard-pairing value of the multiaccount selected for login"
+  [db _]
+  (when-let [acc-to-login (-> db :multiaccounts/login)]
+    (-> db
+        :multiaccounts/multiaccounts
+        (get (:key-uid acc-to-login))
+        :keycard-pairing)))
+
+(re-frame/reg-sub
+ :intro-wizard/acc-to-login-keycard-pairing
+ login-ma-keycard-pairing)
 
 (re-frame/reg-sub
  :current-network

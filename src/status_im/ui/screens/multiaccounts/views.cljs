@@ -6,6 +6,7 @@
             [status-im.ui.screens.multiaccounts.styles :as styles]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
+            [status-im.utils.security :as security]
             [status-im.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.topbar :as topbar]
@@ -56,3 +57,29 @@
                       {:on-press #(re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed])
                        :type     :secondary}
                       (i18n/label :t/access-existing-keys)]}]]))
+
+(defn seed-phrase-input [{:keys [on-change-event
+                                 seed-word-count
+                                 seed-shape-invalid?]}]
+  [react/view {:flex               1
+               :justify-content    :center
+               :padding-horizontal 16}
+   [quo/text-input
+    {:show-cancel         false
+     :auto-correct        false
+     :placeholder         (i18n/label :t/seed-phrase-placeholder)
+     :monospace           true
+     :multiline           true
+     :auto-focus          true
+     :accessibility-label :passphrase-input
+     :on-change-text      #(re-frame/dispatch (conj on-change-event (security/mask-data %)))}]
+   ;; word counter view
+   [react/view {:align-items :flex-end}
+    [react/view {:flex-direction   :row
+                 :align-items      :center
+                 :padding-vertical 8
+                 :opacity          (if seed-word-count 1 0)}
+     [quo/text {:color (if seed-shape-invalid? :secondary :main)
+                :size  :small}
+      (when-not seed-shape-invalid? "✓ ")
+      (i18n/label-pluralize seed-word-count :t/words-n)]]]])

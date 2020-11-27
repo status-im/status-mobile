@@ -15,6 +15,12 @@
             [taoensso.timbre :as log]
             [clojure.string :as string]))
 
+;; validate that the given mnemonic was generated from Status Dictionary
+(re-frame/reg-fx
+ ::validate-mnemonic
+ (fn [[passphrase callback]]
+   (native-module/validate-mnemonic passphrase callback)))
+
 (defn contact-names
   "Returns map of all existing names for contact"
   [{:keys [name preferred-name alias public-key ens-verified nickname]}]
@@ -163,7 +169,7 @@
 (defn clean-path [path]
   (if path
     (string/replace-first path #"file://" "")
-    (log/warn "[nativ-module] Empty path was provided")))
+    (log/warn "[native-module] Empty path was provided")))
 
 (fx/defn save-profile-picture
   {:events [::save-profile-picture]}
@@ -201,3 +207,7 @@
   {:events [::update-local-picture]}
   [cofx pics]
   (multiaccounts.update/optimistic cofx :images pics))
+
+(comment
+  ;; Test seed for Dim Venerated Yaffle, it's not here by mistake, this is just a test account
+  (native-module/validate-mnemonic "rocket mixed rebel affair umbrella legal resemble scene virus park deposit cargo" prn))

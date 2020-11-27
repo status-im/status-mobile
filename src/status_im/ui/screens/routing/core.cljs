@@ -55,10 +55,14 @@
     (fn []
       (log/debug :on-screen-focus name)
       (let [on-back-press (fn []
-                            (when (and back-handler
-                                       (not= back-handler :noop))
-                              (re-frame/dispatch back-handler))
-                            (boolean back-handler))]
+                            (if (fn? back-handler)
+                              (back-handler)
+                              (do
+                                (when (and back-handler
+                                           (vector? back-handler)
+                                           (not= back-handler :noop))
+                                  (re-frame/dispatch back-handler))
+                                (boolean back-handler))))]
         (when on-focus (re-frame/dispatch on-focus))
         (add-back-handler-listener on-back-press)
         (fn []

@@ -16,7 +16,7 @@
             [status-im.wallet.core :as wallet]
             [clojure.string :as string]
             [status-im.utils.security :as security]
-            [status-im.multiaccounts.recover.core :as recover]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ethereum.mnemonic :as mnemonic]
             [taoensso.timbre :as log]
             [status-im.wallet.prices :as prices]
@@ -151,10 +151,10 @@
 
 (fx/defn import-new-account-seed
   [{:keys [db]} passphrase hashed-password]
-  {:db                         (assoc-in db [:add-account :step] :generating)
-   ::recover/validate-mnemonic [(security/safe-unmask-data passphrase)
-                                #(re-frame/dispatch [:wallet.accounts/seed-validated
-                                                     % passphrase hashed-password])]})
+  {:db                               (assoc-in db [:add-account :step] :generating)
+   ::multiaccounts/validate-mnemonic [(security/safe-unmask-data passphrase)
+                                      #(re-frame/dispatch [:wallet.accounts/seed-validated
+                                                           % passphrase hashed-password])]})
 
 (fx/defn new-account-seed-validated
   {:events [:wallet.accounts/seed-validated]}

@@ -6,6 +6,7 @@
             [status-im.ethereum.mnemonic :as mnemonic]
             [status-im.keycard.nfc :as nfc]
             [status-im.i18n :as i18n]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.native-module.core :as status]
             [status-im.popover.core :as popover]
@@ -23,11 +24,6 @@
   [multiaccounts key-uid]
   {:pre [(not (nil? key-uid))]}
   (contains? multiaccounts key-uid))
-
-(re-frame/reg-fx
- ::validate-mnemonic
- (fn [[passphrase callback]]
-   (status/validate-mnemonic passphrase callback)))
 
 (defn check-phrase-warnings [recovery-phrase]
   (cond (string/blank? recovery-phrase) :t/required-field))
@@ -87,7 +83,7 @@
 
 (re-frame/reg-fx
  ::import-multiaccount
- (fn [{:keys [passphrase password]}]
+ (fn [{:keys [passphrase password success-event]}]
    (log/debug "[recover] ::import-multiaccount")
    (status/multiaccount-import-mnemonic
     passphrase
@@ -113,8 +109,7 @@
                       (update derived-data
                               constants/path-whisper-keyword
                               merge {:name name :identicon identicon})]
-                  (re-frame/dispatch [::import-multiaccount-success
-                                      root-data derived-data-extended]))))))))))))
+                  (re-frame/dispatch [success-event root-data derived-data-extended]))))))))))))
 
 (fx/defn show-existing-multiaccount-alert
   [_ key-uid]
@@ -168,22 +163,24 @@
     (if-not (string/blank? (:error (types/json->clj phrase-warnings)))
       (popover/show-popover cofx {:view :custom-seed-phrase})
       (when (mnemonic/valid-length? passphrase)
-        {::import-multiaccount {:passphrase (mnemonic/sanitize-passphrase passphrase)
-                                :password   password}}))))
+        {::import-multiaccount {:passphrase    (mnemonic/sanitize-passphrase passphrase)
+                                :password      password
+                                :success-event ::import-multiaccount-success}}))))
 
 (fx/defn seed-phrase-next-pressed
   {:events [:multiaccounts.recover/enter-phrase-next-pressed]}
   [{:keys [db] :as cofx}]
   (let [{:keys [passphrase]} (:intro-wizard db)]
-    {::validate-mnemonic [passphrase #(re-frame/dispatch [:multiaccounts.recover/phrase-validated %])]}))
+    {::multiaccounts/validate-mnemonic [passphrase #(re-frame/dispatch [:multiaccounts.recover/phrase-validated %])]}))
 
 (fx/defn continue-to-import-mnemonic
   {:events [::continue-pressed]}
   [{:keys [db] :as cofx}]
   (let [{:keys [password passphrase]} (:multiaccounts/recover db)]
     (fx/merge cofx
-              {::import-multiaccount {:passphrase passphrase
-                                      :password   password}}
+              {::import-multiaccount {:passphrase    passphrase
+                                      :password      password
+                                      :success-event ::import-multiaccount-success}}
               (popover/hide-popover))))
 
 (fx/defn dec-step
