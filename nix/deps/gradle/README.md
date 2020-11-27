@@ -42,3 +42,34 @@ dr-xr-xr-x  3 root root  3 Jan  1  1970 commons-cli
 # Dependencies
 
 One dependency these scripts require is the [go-maven-resolver](https://github.com/status-im/go-maven-resolver) which turns a list of packages into list of all URLs of POMs for them and their dependencies.
+
+# Known Issues
+
+One edge case that is currently not handled by this setup is an addition of a new dependency that requires a version of Gradle we don't have. In that case running `make nix-update-gradle` would fail with:
+```
+AILURE: Build failed with an exception.
+
+* What went wrong:
+A problem occurred configuring project ':react-native-example-project'.
+> Could not resolve all artifacts for configuration ':react-native-example-project:classpath'.
+   > Could not find com.android.tools.build:gradle:3.4.0.
+     Searched in the following locations:
+       - file:/nix/store/34a4qd5qhg2a9kq6a0q9lp7hgmi48q4x-status-react-maven-deps/com/android/tools/build/gradle/3.4.0/gradle-3.4.0.pom
+       - file:/nix/store/34a4qd5qhg2a9kq6a0q9lp7hgmi48q4x-status-react-maven-deps/com/android/tools/build/gradle/3.4.0/gradle-3.4.0.jar
+     Required by:
+         project :react-native-example-project
+```
+This happens because `get_projects.sh` and `get_deps.sh` depend on running Gradle to generate their output, and that will not work because Gradle cannot find the matching JAR for the new dependency.
+
+A manual solution would involve adding that specific Gradle version into `deps.urls`:
+```
+echo com.android.tools.build:gradle:3.4.0 | go-maven-resolver >> nix/deps/gradle/deps.urls
+```
+Then you'll need to remove duplicates and sort `deps.urls`:
+```
+sort -o nix/deps/gradle/deps.urls nix/deps/gradle/deps.urls
+```
+And finally generate the `deps.json` for Nix using:
+```
+nix/deps/gradle/generate.sh gen_deps_json
+```

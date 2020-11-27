@@ -26,6 +26,45 @@ DEPS_JSON="${CUR_DIR}/deps.json"
 # Raise limit of file descriptors
 ulimit -n 16384
 
+# Generate list of Gradle sub-projects.
+function gen_proj_list() {
+    ${CUR_DIR}/get_projects.sh | sort -u -o ${PROJ_LIST}
+    echo -e "Found ${GRN}$(wc -l < ${PROJ_LIST})${RST} sub-projects..."
+}
+
+# Check each sub-project in parallel, the ":" is for local deps.
+function gen_deps_list() {
+    PROJECTS=$(cat ${PROJ_LIST})
+    ${CUR_DIR}/get_deps.sh ":" ${PROJECTS[@]} | sort -uV -o ${DEPS_LIST}
+    echo -e "${CLR}Found ${GRN}$(wc -l < ${DEPS_LIST})${RST} direct dependencies..."
+}
+
+# Find download URLs for each dependency.
+function gen_deps_urls() {
+    cat ${DEPS_LIST} | go-maven-resolver | sort -uV -o ${DEPS_URLS}
+    echo -e "${CLR}Found ${GRN}$(wc -l < ${DEPS_URLS})${RST} dependency URLs..."
+}
+
+# Generate the JSON that Nix will consume.
+function gen_deps_json() {
+    # Open the Nix attribute set.
+    echo -n "[" > ${DEPS_JSON}
+
+    # Format URLs into a Nix consumable file.
+    URLS=$(cat ${DEPS_URLS})
+    parallel --will-cite --keep-order \
+        "${CUR_DIR}/url2json.sh" \
+        ::: ${URLS} \
+        >> ${DEPS_JSON}
+
+    # Drop tailing comma on last object, stupid JSON
+    sed -i '$ s/},/}/' ${DEPS_JSON}
+
+    # Close the Nix attribute set
+    echo "]" >> ${DEPS_JSON}
+}
+
+# ------------------------------------------------------------------------------
 echo "Regenerating Nix files..."
 
 # Gradle needs to be run in 'android' subfolder
@@ -34,37 +73,18 @@ cd $GIT_ROOT/android
 # Stop gradle daemons to avoid locking
 ./gradlew --stop >/dev/null
 
-# Generate list of Gradle sub-projects ----------------------------------------
-${CUR_DIR}/get_projects.sh | sort -u -o ${PROJ_LIST}
+# A way to run a specific stage of generation
+if [[ -n "${1}" ]] && type ${1} > /dev/null; then
+    ${1}; exit 0
+elif [[ -n "${1}" ]]; then
+    echo "No such function: ${1}"; exit 1
+fi
 
-echo -e "Found ${GRN}$(wc -l < ${PROJ_LIST})${RST} sub-projects..."
-
-# Check each sub-project in parallel, the ":" is for local deps ---------------
-PROJECTS=$(cat ${PROJ_LIST})
-${CUR_DIR}/get_deps.sh ":" ${PROJECTS[@]} | sort -uV -o ${DEPS_LIST}
-
-echo -e "${CLR}Found ${GRN}$(wc -l < ${DEPS_LIST})${RST} direct dependencies..."
-
-# Find download URLs for each dependency --------------------------------------
-cat ${DEPS_LIST} | go-maven-resolver | sort -uV -o ${DEPS_URLS}
-
-echo -e "${CLR}Found ${GRN}$(wc -l < ${DEPS_URLS})${RST} dependency URLs..."
-
-# Open the Nix attribute set --------------------------------------------------
-echo -n "[" > ${DEPS_JSON}
-
-# Format URLs into a Nix consumable file.
-URLS=$(cat ${DEPS_URLS})
-parallel --will-cite --keep-order \
-    "${CUR_DIR}/url2json.sh" \
-    ::: ${URLS} \
-    >> ${DEPS_JSON}
-
-# Drop tailing comma on last object, stupid JSON
-sed -i '$ s/},/}/' ${DEPS_JSON}
-
-# Close the Nix attribute set
-echo "]" >> ${DEPS_JSON}
+# Run each stage in order
+gen_proj_list
+gen_deps_list
+gen_deps_urls
+gen_deps_json
 
 REL_DEPS_JSON=$(realpath --relative-to=${PWD} ${DEPS_JSON})
 echo -e "${CLR}Generated Nix deps file: ${REL_DEPS_JSON#../}"
