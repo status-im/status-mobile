@@ -17,12 +17,12 @@ PODS:
     - Flipper-Folly (~> 2.2)
     - Flipper-RSocket (~> 1.1)
   - Flipper-DoubleConversion (1.1.7)
-  - Flipper-Folly (2.2.0):
+  - Flipper-Folly (2.3.0):
     - boost-for-react-native
     - CocoaLibEvent (~> 1.0)
     - Flipper-DoubleConversion
     - Flipper-Glog
-    - OpenSSL-Universal (= 1.0.2.19)
+    - OpenSSL-Universal (= 1.0.2.20)
   - Flipper-Glog (0.3.6)
   - Flipper-PeerTalk (0.0.4)
   - Flipper-RSocket (1.1.0):
@@ -69,9 +69,18 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - OpenSSL-Universal (1.0.2.19):
-    - OpenSSL-Universal/Static (= 1.0.2.19)
-  - OpenSSL-Universal/Static (1.0.2.19)
+  - libwebp (1.1.0):
+    - libwebp/demux (= 1.1.0)
+    - libwebp/mux (= 1.1.0)
+    - libwebp/webp (= 1.1.0)
+  - libwebp/demux (1.1.0):
+    - libwebp/webp
+  - libwebp/mux (1.1.0):
+    - libwebp/demux
+  - libwebp/webp (1.1.0)
+  - OpenSSL-Universal (1.0.2.20):
+    - OpenSSL-Universal/Static (= 1.0.2.20)
+  - OpenSSL-Universal/Static (1.0.2.20)
   - Permission-Camera (2.1.5):
     - RNPermissions
   - Permission-Microphone (2.1.5):
@@ -334,6 +343,10 @@ PODS:
     - React
   - RNDeviceInfo (5.6.1):
     - React
+  - RNFastImage (8.3.4):
+    - React-Core
+    - SDWebImage (~> 5.8)
+    - SDWebImageWebPCoder (~> 0.6.1)
   - RNFS (2.16.6):
     - React
   - RNGestureHandler (1.8.0):
@@ -361,13 +374,19 @@ PODS:
     - React
   - RNSVG (9.13.6):
     - React
+  - SDWebImage (5.10.0):
+    - SDWebImage/Core (= 5.10.0)
+  - SDWebImage/Core (5.10.0)
+  - SDWebImageWebPCoder (0.6.1):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.7)
   - SQLCipher (3.4.2):
     - SQLCipher/standard (= 3.4.2)
   - SQLCipher/common (3.4.2)
   - SQLCipher/standard (3.4.2):
     - SQLCipher/common
   - SSZipArchive (2.2.3)
-  - TOCropViewController (2.5.4)
+  - TOCropViewController (2.5.5)
   - TouchID (4.4.1):
     - React
   - Yoga (1.14.0)
@@ -442,6 +461,7 @@ DEPENDENCIES:
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
+  - RNFastImage (from `../node_modules/react-native-fast-image`)
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
@@ -469,7 +489,10 @@ SPEC REPOS:
     - Flipper-PeerTalk
     - Flipper-RSocket
     - FlipperKit
+    - libwebp
     - OpenSSL-Universal
+    - SDWebImage
+    - SDWebImageWebPCoder
     - SQLCipher
     - SSZipArchive
     - TOCropViewController
@@ -566,6 +589,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/push-notification-ios"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
+  RNFastImage:
+    :path: "../node_modules/react-native-fast-image"
   RNFS:
     :path: "../node_modules/react-native-fs"
   RNGestureHandler:
@@ -601,14 +626,15 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 5465d51ccfeecb7faa12f9ae0024f2044ce4044e
   Flipper: 1670db365568191bd123a0c905b834e77ba9e3d3
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
-  Flipper-Folly: c12092ea368353b58e992843a990a3225d4533c3
+  Flipper-Folly: e4493b013c02d9347d5e0cb4d128680239f6c78a
   Flipper-Glog: 1dfd6abf1e922806c52ceb8701a3599a79a200a6
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: afd4259ef9eadeeb2d30250b37d95cb3b6b97a69
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: d6cca0516fb0ca3697a5b2e199ea83dfc7133411
-  OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
+  libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
+  OpenSSL-Universal: ff34003318d5e1163e9529b08470708e389ffcdd
   Permission-Camera: afad27bf90337684d4a86f3825112d648c8c4d3b
   Permission-Microphone: 0ffabc3fe1c75cfb260525ee3f529383c9f4368c
   RCTRequired: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
@@ -648,6 +674,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: 71fc32d971f03b7f03d6ab6b86b730c4ee64f5b6
   RNCPushNotificationIOS: c145c6253ea016e5efeff604f2720736b4a596f7
   RNDeviceInfo: b6e650fbd234732c759544218657d549b4339038
+  RNFastImage: d4870d58f5936111c56218dbd7fcfc18e65b58ff
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
   RNImageCropPicker: 38865ab4af1b0b2146ad66061196bc0184946855
@@ -658,9 +685,11 @@ SPEC CHECKSUMS:
   RNReanimated: 89f5e0a04d1dd52fbf27e7e7030d8f80a646a3fc
   RNScreens: b748efec66e095134c7166ca333b628cd7e6f3e2
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
+  SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
+  SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
-  TOCropViewController: 2a1ae1242600b1f2d996fd91a5268b2309a33b5c
+  TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a

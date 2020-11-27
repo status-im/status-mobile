@@ -25,32 +25,36 @@
             [status-im.chat.models :as chat]))
 
 (defonce messages-list-ref (atom nil))
-(def image-max-dimension 260)
+(def image-max-dimension 192)
 
 (defn message-content-image [uri _]
-  (let [dimensions (reagent/atom [image-max-dimension image-max-dimension])]
-    (react/image-get-size
-     uri
-     (fn [width height]
-       (let [k (/ (max width height) image-max-dimension)]
-         (reset! dimensions [(/ width k) (/ height k)]))))
+  (let [dimensions (reagent/atom [nil image-max-dimension])
+        initialized? (reagent/atom nil)]
+    (when-not @initialized?
+      (react/image-get-size
+       uri
+       (fn [width height]
+         (reset! initialized? true)
+         (when (< width height)
+           (let [k (/ height image-max-dimension)]
+             (when (not= (/ width k) (first @dimensions))
+               (reset! dimensions [(/ width k) image-max-dimension])))))))
     (fn [uri show-close?]
-      [react/view
-       [react/view {:style {:width         (first @dimensions)
-                            :height        (last @dimensions)
-                            :border-width  1
-                            :border-color  colors/black-transparent
-                            :overflow      :hidden
-                            :border-radius 16
-                            :margin-top    8}
-                    :accessibility-label :message-image}
-        [react/image {:style       {:width (first @dimensions) :height (last @dimensions)}
-                      :resize-mode :contain
-                      :source      {:uri uri}}]]
+      [react/view {:style {:width (first @dimensions)
+                           :border-width  1
+                           :border-color  colors/black-transparent
+                           :border-radius 16
+                           :margin-top    8}
+                   :accessibility-label :message-image}
+       [react/fast-image {:style       {:width (first @dimensions)
+                                        :height (last @dimensions)
+                                        :border-radius 16}
+                          :resize-mode :cover
+                          :source      {:uri uri}}]
        (when show-close?
          [react/touchable-highlight {:on-press            #(re-frame/dispatch [:chat.ui/cancel-sending-image])
                                      :accessibility-label :cancel-send-image
-                                     :style               {:left (- (first @dimensions) 28) :top 12 :position :absolute}}
+                                     :style               {:right 4 :top 12 :position :absolute}}
           [react/view {:width            24
                        :height           24
                        :background-color colors/black-persist
@@ -115,7 +119,7 @@
          [react/touchable-highlight (when-not modal
                                       {:on-long-press #(on-long-press-fn on-long-press content false)})
           [message/render-parsed-text (assoc message :outgoing false) (:parsed-text content)]])
-       [link-preview/link-preview-wrapper (:links content) outgoing]]]]))
+       [link-preview/link-preview-wrapper (:links content) outgoing true]]]]))
 
 (defn render-message [timeline? account]
   (fn [{:keys [type] :as message} idx]
@@ -125,7 +129,7 @@
          (if (= type :gap)
            (if timeline?
              nil
-             [gap/gap message idx messages-list-ref])
+             [gap/gap message idx messages-list-ref true])
            ; message content
            (let [chat-id (chat/profile-chat-topic (:from message))]
              [react/view (merge {:accessibility-label :chat-item}

@@ -234,24 +234,32 @@
      ;;MESSAGE CONTENT
      [react/view
       content]
-     [link-preview/link-preview-wrapper (:links (:content message)) outgoing]]]
+     [link-preview/link-preview-wrapper (:links (:content message)) outgoing false]]]
    ; delivery status
    [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])
 
+(def image-max-width 260)
+(def image-max-height 192)
+
 (defn message-content-image [{:keys [content outgoing] :as message} {:keys [on-long-press]}]
-  (let [dimensions (reagent/atom [260 260])
-        visible    (reagent/atom false)
-        uri        (:image content)]
-    (react/image-get-size
-     uri
-     (fn [width height]
-       (reset! dimensions [width height])))
+  (let [dimensions (reagent/atom [image-max-width image-max-height])
+        initialized? (reagent/atom nil)
+        visible (reagent/atom false)
+        uri (:image content)]
+    (when-not @initialized?
+      (react/image-get-size
+       uri
+       (fn [width height]
+         (reset! initialized? true)
+         (when (< width height)
+           (let [k (/ height image-max-height)]
+             (when (not= (/ width k) (first @dimensions))
+               (reset! dimensions [(/ width k) image-max-height])))))))
     (fn []
-      (let [k          (/ (max (first @dimensions) (second @dimensions)) 260)
-            style-opts {:outgoing outgoing
-                        :width    (/ (first @dimensions) k)
-                        :height   (/ (second @dimensions) k)}]
+      (let [style-opts {:outgoing outgoing
+                        :width    (first @dimensions)
+                        :height   (second @dimensions)}]
         [:<>
          [preview/preview-image {:message  message
                                  :visible  @visible
@@ -261,13 +269,11 @@
                                                       (reset! visible true)
                                                       (react/dismiss-keyboard!))
                                      :on-long-press on-long-press}
-          [react/view {:style (style/image-message style-opts)
+          [react/view {:style               (style/image-message-border style-opts)
                        :accessibility-label :message-image}
-           [react/image {:style       {:width  (/ (first @dimensions) k)
-                                       :height (/ (second @dimensions) k)}
-                         :resize-mode :contain
-                         :source      {:uri uri}}]
-           [react/view {:style (style/image-message-border style-opts)}]]]]))))
+           [react/fast-image {:style       (style/image-message style-opts)
+                              :resize-mode :cover
+                              :source      {:uri uri}}]]]]))))
 
 (defmulti ->message :content-type)
 

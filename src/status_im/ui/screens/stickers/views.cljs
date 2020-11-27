@@ -12,8 +12,8 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- thumbnail-icon [uri size]
-  [react/image {:style  {:width size :height size :border-radius (/ size 2)}
-                :source {:uri uri}}])
+  [react/fast-image {:style  {:width size :height size :border-radius (/ size 2)}
+                     :source {:uri uri}}])
 
 (defn- installed-icon []
   [react/view styles/installed-icon
@@ -45,7 +45,7 @@
 (defn pack-badge [{:keys [name author price thumbnail preview id installed owned pending]}]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :stickers-pack {:id id}])}
    [react/view {:margin-bottom 27}
-    [react/image {:style {:height 200 :border-radius 20} :source {:uri (contenthash/url preview)}}]
+    [react/fast-image {:style {:height 200 :border-radius 20} :source {:uri (contenthash/url preview)}}]
     [react/view {:height 64 :align-items :center :flex-direction :row}
      [thumbnail-icon (contenthash/url thumbnail) 40]
      [react/view {:padding-horizontal 16 :flex 1}
@@ -94,8 +94,8 @@
           [react/view {:flex-direction :row :flex-wrap :wrap}
            (for [{:keys [hash]} stickers]
              ^{:key hash}
-             [react/image {:style (styles/sticker-image sticker-icon-size)
-                           :source {:uri (contenthash/url hash)}}])]]]]
+             [react/fast-image {:style (styles/sticker-image sticker-icon-size)
+                                :source {:uri (contenthash/url hash)}}])]]]]
        [react/view {:flex 1 :align-items :center :justify-content :center}
         [react/activity-indicator {:animating true}]])]))
 

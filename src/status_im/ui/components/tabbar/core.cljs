@@ -36,15 +36,15 @@
      :content             {:title (i18n/label :t/wallet)
                            :icon  :main-icons/wallet}
      :accessibility-label :wallet-tab-button}
+    {:nav-stack           :status-stack
+     :content             {:title (i18n/label :t/status)
+                           :icon  :main-icons/status}
+     :accessibility-label :status-tab-button}
     {:nav-stack           :profile-stack
      :content             {:title (i18n/label :t/profile)
                            :icon  :main-icons/user-profile}
      :count-subscription  :get-profile-unread-messages-number
-     :accessibility-label :profile-tab-button}
-    {:nav-stack           :status-stack
-     :content             {:title (i18n/label :t/status)
-                           :icon  :main-icons/status}
-     :accessibility-label :status-tab-button}]
+     :accessibility-label :profile-tab-button}]
    (remove nil?)
    (map-indexed vector)))
 

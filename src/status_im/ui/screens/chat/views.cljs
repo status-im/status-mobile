@@ -178,7 +178,7 @@
                                        (if (= type :datemark)
                                          [message-datemark/chat-datemark (:value message)]
                                          (if (= type :gap)
-                                           [gap/gap message idx messages-list-ref]
+                                           [gap/gap message idx messages-list-ref false]
                                         ; message content
                                            [message/chat-message
                                             (assoc message
