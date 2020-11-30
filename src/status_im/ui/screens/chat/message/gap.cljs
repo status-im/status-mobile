@@ -19,7 +19,7 @@
       (re-frame/dispatch [:chat.ui/fill-gaps ids]))))
 
 (views/defview gap
-  [{:keys [gaps first-gap?]} idx list-ref]
+  [{:keys [gaps first-gap?]} idx list-ref timeline]
   (views/letsubs [range [:chats/range]
                   {:keys [might-have-join-time-messages?]} [:chats/current-raw-chat]
                   in-progress? [:chats/fetching-gap-in-progress?
@@ -40,8 +40,8 @@
              [react/nested-text
               {:style (style/gap-text connected?)}
               (i18n/label (if first-gap?
-                            :t/load-more-messages
-                            :t/fetch-messages))
+                            (if timeline :t/load-more-timeline :t/load-more-messages)
+                            (if timeline :t/fetch-timeline :t/fetch-messages)))
               (when first-gap?
                 [{:style style/date}
                  (let [date (datetime/timestamp->long-date

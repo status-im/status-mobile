@@ -25,32 +25,50 @@
             [status-im.chat.models :as chat]))
 
 (defonce messages-list-ref (atom nil))
-(def image-max-dimension 260)
+(def image-max-dimension 192)
+(def image-sizes (atom {}))
+
+(defn image-set-size [dimensions uri]
+  (fn [width height]
+    (swap! image-sizes assoc uri {:initialized? true})
+    (when (< width height)
+      ;; if width less than the height we reduce width proportionally to height
+      (let [k (/ height image-max-dimension)]
+        (when (not= (/ width k) (first @dimensions))
+          (swap! image-sizes assoc uri {:width (/ width k)})
+          (reset! dimensions [(/ width k) image-max-dimension]))))))
 
 (defn message-content-image [uri _]
-  (let [dimensions (reagent/atom [image-max-dimension image-max-dimension])]
-    (react/image-get-size
-     uri
-     (fn [width height]
-       (let [k (/ (max width height) image-max-dimension)]
-         (reset! dimensions [(/ width k) (/ height k)]))))
+  (let [stored-image (get @image-sizes uri)
+        dimensions (reagent/atom [nil image-max-dimension])]
+    (if stored-image
+      (reset! dimensions [(:width stored-image) image-max-dimension])
+      (js/setTimeout #(react/image-get-size uri (image-set-size dimensions uri)) 20))
     (fn [uri show-close?]
-      [react/view
-       [react/view {:style {:width         (first @dimensions)
-                            :height        (last @dimensions)
-                            :border-width  1
-                            :border-color  colors/black-transparent
-                            :overflow      :hidden
-                            :border-radius 16
-                            :margin-top    8}
-                    :accessibility-label :message-image}
-        [react/image {:style       {:width (first @dimensions) :height (last @dimensions)}
-                      :resize-mode :contain
-                      :source      {:uri uri}}]]
+      [react/view {:style               {:width         (first @dimensions)
+                                         :height        image-max-dimension
+                                         :overflow      :hidden
+                                         :border-radius 16
+                                         :margin-top    8}
+                   :accessibility-label :message-image}
+       [react/image {:style       {:width  (first @dimensions)
+                                   :height image-max-dimension}
+                     :cache       :force-cache
+                     :resize-mode :cover
+                     :source      {:uri uri}}]
+       [react/view {:border-width     1
+                    :top              0
+                    :left             0
+                    :width            (first @dimensions)
+                    :height           image-max-dimension
+                    :border-radius    16
+                    :position         :absolute
+                    :background-color :transparent
+                    :border-color     colors/black-transparent}]
        (when show-close?
          [react/touchable-highlight {:on-press            #(re-frame/dispatch [:chat.ui/cancel-sending-image])
                                      :accessibility-label :cancel-send-image
-                                     :style               {:left (- (first @dimensions) 28) :top 12 :position :absolute}}
+                                     :style               {:right 4 :top 12 :position :absolute}}
           [react/view {:width            24
                        :height           24
                        :background-color colors/black-persist
@@ -82,12 +100,12 @@
                                    :on-long-press #(on-long-press-fn on-long-press content true)}
         [message-content-image (:image content) false]]])))
 
-(defn message-item [timeline? account]
+(defn message-item [account]
   (fn [{:keys [content-type content from timestamp identicon outgoing] :as message}
        {:keys [modal on-long-press close-modal]}]
     [react/view (merge {:padding-vertical   8
                         :flex-direction     :row
-                        :background-color   (if (and timeline? outgoing) colors/blue-light colors/white)
+                        :background-color   (when modal colors/white)
                         :padding-horizontal 16}
                        (when modal
                          {:border-radius 16}))
@@ -115,7 +133,7 @@
          [react/touchable-highlight (when-not modal
                                       {:on-long-press #(on-long-press-fn on-long-press content false)})
           [message/render-parsed-text (assoc message :outgoing false) (:parsed-text content)]])
-       [link-preview/link-preview-wrapper (:links content) outgoing]]]]))
+       [link-preview/link-preview-wrapper (:links content) outgoing true]]]]))
 
 (defn render-message [timeline? account]
   (fn [{:keys [type] :as message} idx]
@@ -125,7 +143,7 @@
          (if (= type :gap)
            (if timeline?
              nil
-             [gap/gap message idx messages-list-ref])
+             [gap/gap message idx messages-list-ref true])
            ; message content
            (let [chat-id (chat/profile-chat-topic (:from message))]
              [react/view (merge {:accessibility-label :chat-item}
@@ -151,7 +169,7 @@
                                                         :chat-id           chat-id
                                                         :emoji-id          emoji-id
                                                         :emoji-reaction-id emoji-reaction-id}]))
-                :render          (message-item timeline? account)}]]))))]))
+                :render          (message-item account)}]]))))]))
 
 (def state (reagent/atom {:tab :timeline}))
 

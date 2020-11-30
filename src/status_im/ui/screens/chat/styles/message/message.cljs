@@ -299,7 +299,7 @@
 
 (defn image-message
   [{:keys [outgoing width height]}]
-  {:overflow                   "hidden"
+  {:overflow                   :hidden
    :border-top-left-radius     16
    :border-top-right-radius    16
    :border-bottom-left-radius  (if outgoing 16 4)
@@ -309,9 +309,9 @@
 
 (defn image-message-border [opts]
   (merge (image-message opts)
-         {:position         :absolute
+         {:border-width     1
           :top              0
           :left             0
-          :background-color "transparent"
-          :border-width     1
+          :position         :absolute
+          :background-color :transparent
           :border-color     colors/black-transparent}))

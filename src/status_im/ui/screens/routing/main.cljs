@@ -46,12 +46,12 @@
     {:name      :wallet-stack
      :insets    {:top false}
      :component wallet-stack/wallet-stack}
-    {:name      :profile-stack
-     :insets    {:top false}
-     :component profile-stack/profile-stack}
     {:name      :status-stack
      :insets    {:top false}
-     :component status-stack/status-stack}]])
+     :component status-stack/status-stack}
+    {:name      :profile-stack
+     :insets    {:top false}
+     :component profile-stack/profile-stack}]])
 
 (views/defview get-main-component [_]
   (views/letsubs [logged-in? [:multiaccount/logged-in?]]

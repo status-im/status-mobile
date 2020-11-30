@@ -82,10 +82,9 @@
          [react/view {:style (merge style styles/item-checkbox)}
           [radio/radio (:checked? props)]])])
 
-;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn- wrap-render-fn [f]
   (fn [^js data]
-    (reagent/as-element (f (.-item data) (.-index data) (.-separators data)))))
+    (reagent/as-element [f (.-item data) (.-index data) (.-separators data)])))
 
 (defn- wrap-key-fn [f]
   (fn [data index]
@@ -135,8 +134,8 @@
 (defn- wrap-render-section-header-fn [f]
   (fn [^js data]
     (let [^js section (.-section data)]
-      (reagent/as-element (f {:title (.-title section)
-                              :data  (.-data section)})))))
+      (reagent/as-element [f {:title (.-title section)
+                              :data  (.-data section)}]))))
 
 (defn- default-render-section-header [{:keys [title data]}]
   (when (seq data)
@@ -150,7 +149,7 @@
      (assoc (dissoc props :render-fn) :renderItem (wrap-render-fn f))
      props)
    :data to-array))
-;;TODO DEPRECATED, use status-im.ui.components.list-item.views
+
 (defn section-list
   "A wrapper for SectionList.
    To render something on empty sections, use renderSectionFooter and conditionaly

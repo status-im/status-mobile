@@ -4,8 +4,8 @@
             [quo.react-native :as rn]
             [quo.core :as quo]))
 
-(defn reaction [{:keys [outgoing]} {:keys [own emoji-id quantity]}]
-  [rn/view {:style (styles/reaction-style {:outgoing outgoing
+(defn reaction [{:keys [outgoing]} {:keys [own emoji-id quantity]} timeline]
+  [rn/view {:style (styles/reaction-style {:outgoing (and outgoing (not timeline))
                                            :own      own})}
    [rn/image {:source (get constants/reactions emoji-id)
               :style  {:width        16
@@ -20,4 +20,4 @@
     [rn/view {:style (styles/reactions-row message timeline)}
      (for [emoji-reaction reactions]
        ^{:key (str emoji-reaction)}
-       [reaction message emoji-reaction])]))
+       [reaction message emoji-reaction timeline])]))

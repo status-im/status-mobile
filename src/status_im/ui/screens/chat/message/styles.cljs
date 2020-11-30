@@ -73,7 +73,7 @@
            {:justify-content :flex-end}
            {:justify-content :flex-start})
          (if (or display-photo? timeline)
-           {:padding-left (+ 16 photos/default-size)}
+           {:padding-left (+ 16 photos/default-size (when timeline 8))}
            {:padding-left 8})))
 
 (defn reaction-button [active]
@@ -102,12 +102,12 @@
    :height 94
    :align-self :center})
 
-(defn link-preview-wrapper [outgoing]
+(defn link-preview-wrapper [outgoing timeline]
   {:overflow                   :hidden
    :border-top-left-radius     16
    :border-top-right-radius    16
-   :border-bottom-left-radius  (if outgoing 16 4)
-   :border-bottom-right-radius (if outgoing 4 16)
+   :border-bottom-left-radius  (if timeline 16 (if outgoing 16 4))
+   :border-bottom-right-radius (if timeline 16 (if outgoing 4 16))
    :border-width               1
    :border-color               components.colors/gray-lighter
    :margin-vertical            4

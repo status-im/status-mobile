@@ -57,7 +57,7 @@
                 :type     :secondary}
     (i18n/label :t/dont-ask)]])
 
-(defview link-preview-loader [link outgoing]
+(defview link-preview-loader [link outgoing timeline]
   (letsubs [cache [:link-preview/cache]]
     (let [{:keys [site title thumbnailUrl error] :as preview-data} (get cache link)]
       (if (not preview-data)
@@ -71,7 +71,7 @@
                          (re-frame/dispatch
                           [:browser.ui/message-link-pressed link]))}
 
-           [react/view (styles/link-preview-wrapper outgoing)
+           [react/view (styles/link-preview-wrapper outgoing timeline)
             [react/image {:source              {:uri thumbnailUrl}
                           :style               (styles/link-preview-image outgoing)
                           :accessibility-label :member-photo}]
@@ -83,7 +83,7 @@
                        :style styles/link-preview-site}
              site]]])))))
 
-(defview link-preview-wrapper [links outgoing]
+(defview link-preview-wrapper [links outgoing timeline]
   (letsubs
     [ask-user? [:link-preview/link-preview-request-enabled]
      whitelist [:link-preview/whitelist]
@@ -93,6 +93,6 @@
             {:keys [link whitelisted enabled]} link-info]
         (when (and link whitelisted)
           (if enabled
-            [link-preview-loader link outgoing]
+            [link-preview-loader link outgoing timeline]
             (when ask-user?
               [link-preview-enable-request])))))))

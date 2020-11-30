@@ -5,6 +5,7 @@
             [status-im.ui.components.typography :as typography]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
+            ["react" :as reactjs]
             ["react-native" :as react-native :refer (Keyboard)]
             ["react-native-image-crop-picker" :default image-picker]
             ["react-native-safe-area-context" :as safe-area-context
@@ -29,7 +30,8 @@
 
 (def text-class (reagent/adapt-react-class (.-Text react-native)))
 (def text-input-class (reagent/adapt-react-class (.-TextInput react-native)))
-(def image-class (reagent/adapt-react-class (.-Image react-native)))
+
+(def image-class (reagent/adapt-react-class (reactjs/memo (.-Image react-native))))
 
 (defn image-get-size [uri callback] (.getSize (.-Image react-native) uri callback))
 (defn resolve-asset-source [uri] (js->clj (.resolveAssetSource (.-Image react-native) uri) :keywordize-keys true))
