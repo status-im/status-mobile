@@ -121,23 +121,15 @@
   {:width  36
    :height 36})
 
-(defn profile-icon-mask [size]
-  {:height           size
-   :width            size
+(defn chat-icon-profile-edit []
+  {:width            24
+   :height           24
+   :border-radius    12
+   :border-width     1
+   :border-color     colors/white-persist
+   :background-color colors/blue
+   :justify-content  :center
+   :align-items      :center
    :position         :absolute
-   :z-index          1
-   :background-color colors/black
-   :opacity          0.4
-   :border-radius    50})
-
-(defn profile-icon-edit-text-containter [size]
-  {:height          size
-   :width           size
-   :position        :absolute
-   :z-index         2
-   :align-items     :center
-   :justify-content :center})
-
-(def profile-icon-edit-text
-  {:color            colors/white
-   :background-color :transparent})
+   :bottom           -2
+   :right            -2})

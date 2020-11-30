@@ -16,6 +16,7 @@
             [status-im.utils.gfycat.core :as gfy]
             [status-im.utils.universal-links.utils :as universal-links]
             [status-im.ui.components.profile-header.view :as profile-header]
+            [status-im.ui.screens.profile.user.edit-picture :as edit]
             [status-im.utils.utils :as utils]
             [status-im.ethereum.stateofus :as stateofus])
   (:require-macros [status-im.utils.views :as views]))
@@ -167,10 +168,11 @@
   (fn []
     (let [{:keys [public-key ens-verified preferred-name]
            :as   account} @(re-frame/subscribe [:multiaccount])
-          on-share #(re-frame/dispatch [:show-popover
-                                        {:view     :share-chat-key
-                                         :address  public-key
-                                         :ens-name preferred-name}])]
+          on-share        #(re-frame/dispatch [:show-popover
+                                               {:view     :share-chat-key
+                                                :address  public-key
+                                                :ens-name preferred-name}])
+          has-picture     @(re-frame/subscribe [:profile/has-picture])]
       [react/view {:flex 1}
        [quo/animated-header
         {:right-accessories [{:accessibility-label :share-header-button
@@ -178,11 +180,13 @@
                               :on-press            on-share}]
          :use-insets        true
          :extended-header   (profile-header/extended-header
-                             {:on-press         on-share
-                              :title            (multiaccounts/displayed-name account)
-                              :photo            (multiaccounts/displayed-photo account)
-                              :monospace        (not ens-verified)
-                              :subtitle         (if (and ens-verified public-key)
-                                                  (gfy/generate-gfy public-key)
-                                                  (utils/get-shortened-address public-key))})}
+                             {:on-press  on-share
+                              :on-edit   #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                              {:content (edit/bottom-sheet has-picture)}])
+                              :title     (multiaccounts/displayed-name account)
+                              :photo     (multiaccounts/displayed-photo account)
+                              :monospace (not ens-verified)
+                              :subtitle  (if (and ens-verified public-key)
+                                           (gfy/generate-gfy public-key)
+                                           (utils/get-shortened-address public-key))})}
         [content]]])))

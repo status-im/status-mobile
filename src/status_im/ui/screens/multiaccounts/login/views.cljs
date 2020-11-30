@@ -24,14 +24,12 @@
 (defn multiaccount-login-badge [{:keys [public-key name] :as multiaccount}]
   [react/view styles/login-badge
    [photos/photo
-    ;;TODO this should be done in a subscription
     (multiaccounts/displayed-photo multiaccount)
     {:size styles/login-badge-image-size}]
    [react/view
     [react/text {:style          styles/login-badge-name
                  :ellipsize-mode :middle
                  :numberOfLines  1}
-     ;;TODO this should be done in a subscription
      name]
     [quo/text {:monospace true
                :align     :center

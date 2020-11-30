@@ -166,8 +166,8 @@
    {:should-component-update
     (fn [_ [_ old-account] [_ new-account]]
       (and (not (nil? new-account))
-           (and (not (:photo-path old-account))
-                (nil? (:photo-path new-account)))))
+           (and (not (:identicon old-account))
+                (nil? (:identicon new-account)))))
 
     :reagent-render
     (fn [account small-screen?]

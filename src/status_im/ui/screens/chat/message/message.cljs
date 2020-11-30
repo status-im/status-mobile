@@ -211,7 +211,8 @@
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"
-  [{:keys [first-in-group? display-photo? identicon display-username?
+  [{:keys [first-in-group? display-photo? display-username?
+           identicon
            from outgoing]
     :as   message} content {:keys [modal close-modal]}]
   [react/view {:style               (style/message-wrapper message)
@@ -224,7 +225,7 @@
        (when first-in-group?
          [react/touchable-highlight {:on-press #(do (when modal (close-modal))
                                                     (re-frame/dispatch [:chat.ui/show-profile-without-adding-contact from]))}
-          [photos/member-identicon identicon]])])
+          [photos/member-photo from identicon]])])
     [react/view {:style (style/message-author-wrapper outgoing display-photo?)}
      (when display-username?
        [react/touchable-opacity {:style    style/message-author-touchable

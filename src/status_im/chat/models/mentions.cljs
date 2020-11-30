@@ -196,7 +196,7 @@
              group-contacts))
 
           :else users)
-        {:keys [name preferred-name public-key photo-path]}
+        {:keys [name preferred-name public-key]}
         (:multiaccount db)]
     (reduce
      (fn [acc [key {:keys [alias name identicon]}]]
@@ -210,7 +210,6 @@
             public-key
             {:alias      name
              :name       (or preferred-name name)
-             :identicon  photo-path
              :public-key public-key})
      contacts)))
 

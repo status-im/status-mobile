@@ -80,11 +80,11 @@
                          public-key (get-in derived-data [constants/path-whisper-keyword :public-key])]
                      (status/gfycat-identicon-async
                       public-key
-                      (fn [name photo-path]
+                      (fn [name identicon]
                         (let [derived-whisper (derived-data constants/path-whisper-keyword)
                               derived-data-extended (assoc-in derived-data
                                                               [constants/path-whisper-keyword]
-                                                              (merge derived-whisper {:name name :photo-path photo-path}))]
+                                                              (merge derived-whisper {:name name :identicon identicon}))]
                           (re-frame/dispatch [::store-multiaccount-success
                                               key-code derived-data-extended]))))))]
     {::store-multiaccount [selected-id key-uid hashed-password callback]}))
@@ -192,12 +192,12 @@
       :wallet     true
       :path       constants/path-default-wallet
       :name       (i18n/label :t/ethereum-account)})
-   (let [{:keys [public-key address name photo-path]}
+   (let [{:keys [public-key address name identicon]}
          (get-in multiaccount [:derived constants/path-whisper-keyword])]
      {:public-key public-key
       :address    (eip55/address->checksum address)
       :name       name
-      :photo-path photo-path
+      :identicon identicon
       :path       constants/path-whisper
       :chat       true})])
 
@@ -221,10 +221,10 @@
     :as multiaccount}
    password
    {:keys [save-mnemonic? login?] :or {login? true save-mnemonic? false}}]
-  (let [[wallet-account {:keys [public-key photo-path name]} :as accounts-data] (prepare-accounts-data multiaccount)
+  (let [[wallet-account {:keys [public-key identicon name]} :as accounts-data] (prepare-accounts-data multiaccount)
         multiaccount-data {:name       name
                            :address    address
-                           :photo-path photo-path
+                           :identicon identicon
                            :key-uid    key-uid
                            :keycard-pairing keycard-pairing}
         keycard-multiaccount? (boolean keycard-pairing)
@@ -243,7 +243,7 @@
                                         constants/path-wallet-root-keyword
                                         :address])
                   :name                  name
-                  :photo-path            photo-path
+                  :identicon            identicon
                   ;; public key of the chat account
                   :public-key            public-key
                   ;; default address for Dapps
@@ -269,7 +269,7 @@
         db (assoc db
                   :multiaccounts/login {:key-uid    key-uid
                                         :name       name
-                                        :photo-path photo-path
+                                        :identicon identicon
                                         :password   password
                                         :creating?  true
                                         :processing true}

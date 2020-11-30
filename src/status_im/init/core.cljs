@@ -27,9 +27,8 @@
   [cofx {:keys [logout?]}]
   (let [{{:multiaccounts/keys [multiaccounts]} :db} cofx]
     (when (and (seq multiaccounts) (not logout?))
-      (let [{:keys [key-uid public-key photo-path name]}
-            (first (sort-by :timestamp > (vals multiaccounts)))]
-        (multiaccounts.login/open-login cofx key-uid photo-path name public-key)))))
+      (let [multiaccount (first (sort-by :timestamp > (vals multiaccounts)))]
+        (multiaccounts.login/open-login cofx multiaccount)))))
 
 (fx/defn initialize-multiaccounts
   {:events [::initialize-multiaccounts]}

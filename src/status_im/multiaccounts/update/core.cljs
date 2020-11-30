@@ -5,9 +5,9 @@
 
 (fx/defn send-multiaccount-update [{:keys [db] :as cofx}]
   (let [multiaccount (:multiaccount db)
-        {:keys [name preferred-name photo-path address]} multiaccount]
+        {:keys [name preferred-name address]} multiaccount]
     {::json-rpc/call [{:method (json-rpc/call-ext-method "sendContactUpdates")
-                       :params [(or preferred-name name) photo-path]
+                       :params [(or preferred-name name) ""]
                        :on-success #(log/debug "sent contact update")}]}))
 
 (fx/defn multiaccount-update
@@ -30,7 +30,7 @@
                    :params [setting setting-value]
                    :on-success on-success}]}
                 (when (and (not dont-sync?)
-                           (#{:name :photo-path :prefered-name} setting))
+                           (#{:name :prefered-name} setting))
                   (send-multiaccount-update))))))
 
 (fx/defn clean-seed-phrase

@@ -4,8 +4,6 @@
             [status-im.data-store.contacts :as contacts-store]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.mailserver.core :as mailserver]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.transport.filters.core :as transport.filters]
             [status-im.tribute-to-talk.db :as tribute-to-talk]
             [status-im.tribute-to-talk.whitelist :as whitelist]
@@ -44,16 +42,10 @@
 
 (defn- own-info
   [db]
-  (let [{:keys [name preferred-name photo-path address]} (:multiaccount db)]
+  (let [{:keys [name preferred-name identicon address]} (:multiaccount db)]
     {:name          (or preferred-name name)
-     :profile-image photo-path
+     :profile-image identicon
      :address       address}))
-
-(fx/defn handle-update-from-contact-request [{:keys [db] :as cofx} {:keys [last-updated photo-path]}]
-  (when (> last-updated (get-in db [:multiaccount :last-updated]))
-    (fx/merge cofx
-              (multiaccounts.update/multiaccount-update :last-updated last-updated {:dont-sync? true})
-              (multiaccounts.update/multiaccount-update :photo-path photo-path {:dont-sync? true}))))
 
 (fx/defn ensure-contacts
   [{:keys [db]} contacts]
@@ -125,37 +117,6 @@
       (fx/merge cofx
                 {:db (dissoc db :contacts/new-identity)}
                 (upsert-contact contact)))))
-
-(fx/defn handle-contact-update
-  [{{:contacts/keys [contacts] :as db} :db :as cofx}
-   public-key
-   timestamp
-   {:keys [name profile-image address] :as m}]
-  ;; We need to convert to timestamp ms as before we were using now in ms to
-  ;; set last updated
-  ;; Using whisper timestamp mostly works but breaks in a few scenarios:
-  ;; 2 updates sent in the same second
-  ;; when using multi-device & clocks are out of sync
-  ;; Using logical clocks is probably the correct way to handle it, but an overkill
-  ;; for now
-  (let [timestamp-ms       (* timestamp 1000)
-        prev-last-updated  (get-in db [:contacts/contacts public-key :last-updated])
-        current-public-key (multiaccounts.model/current-public-key cofx)]
-    (when (and (not= current-public-key public-key)
-               (< prev-last-updated timestamp-ms))
-      (let [contact          (get contacts public-key)
-
-            ;; Backward compatibility with <= 0.9.21, as they don't send
-            ;; address in contact updates
-            contact-props
-            (cond-> {:public-key   public-key
-                     :photo-path   profile-image
-                     :name         name
-                     :last-updated timestamp-ms
-                     :system-tags  (conj (get contact :system-tags #{})
-                                         :contact/request-received)}
-              address (assoc :address address))]
-        (upsert-contact cofx contact-props)))))
 
 (fx/defn initialize-contacts [cofx]
   (contacts-store/fetch-contacts-rpc cofx #(re-frame/dispatch [::contacts-loaded %])))

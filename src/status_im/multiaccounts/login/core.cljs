@@ -19,7 +19,6 @@
             [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
-            [status-im.utils.identicon :as identicon]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.logging.core :as logging]
             [status-im.utils.security :as security]
@@ -76,7 +75,7 @@
 (fx/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
   [{:keys [db]}]
-  (let [{:keys [key-uid password name photo-path]} (:multiaccounts/login db)]
+  (let [{:keys [key-uid password name identicon]} (:multiaccounts/login db)]
     {:db (-> db
              (assoc-in [:multiaccounts/login :processing] true)
              (dissoc :intro-wizard)
@@ -84,7 +83,7 @@
      ::login [key-uid
               (types/clj->json {:name       name
                                 :key-uid    key-uid
-                                :photo-path photo-path})
+                                :identicon  identicon})
               (ethereum/sha3 (security/safe-unmask-data password))]}))
 
 (fx/defn finish-keycard-setup
@@ -227,6 +226,7 @@
               (mobile-network/on-network-status-change)
               (get-group-chat-invitations)
               (logging/set-log-level (:log-level multiaccount))
+              (multiaccounts/get-profile-picture)
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist))))
 
@@ -337,19 +337,12 @@
                 (navigation/navigate-to-cofx :tabs {:screen :chat-stack
                                                     :params {:screen :home}})))))
 
+;; FIXME(Ferossgp): We should not copy keys as we denormalize the database,
+;; this create desync between actual accounts and the one on login causing broken state
 (fx/defn open-login
-  [{:keys [db] :as cofx} key-uid photo-path name public-key]
+  [{:keys [db] :as cofx} {:keys [key-uid] :as multiaccount}]
   (fx/merge cofx
-            {:db (-> db
-                     (update :multiaccounts/login assoc
-                             :public-key public-key
-                             :key-uid key-uid
-                             :photo-path photo-path
-                             :name name)
-                     (assoc :profile/photo-added? (= (identicon/identicon public-key) photo-path))
-                     (update :multiaccounts/login dissoc
-                             :error
-                             :password))}
+            {:db (assoc db :multiaccounts/login multiaccount)}
             (keychain/get-auth-method key-uid)))
 
 (fx/defn open-login-callback

@@ -108,11 +108,11 @@
                  public-key (get-in derived-data [constants/path-whisper-keyword :public-key])]
              (status/gfycat-identicon-async
               public-key
-              (fn [name photo-path]
+              (fn [name identicon]
                 (let [derived-data-extended
                       (update derived-data
                               constants/path-whisper-keyword
-                              merge {:name name :photo-path photo-path})]
+                              merge {:name name :identicon identicon})]
                   (re-frame/dispatch [::import-multiaccount-success
                                       root-data derived-data-extended]))))))))))))
 

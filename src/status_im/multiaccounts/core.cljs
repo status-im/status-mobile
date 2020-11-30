@@ -2,7 +2,9 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
+            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.native-module.core :as native-module]
+            [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
@@ -10,6 +12,7 @@
             [status-im.theme.core :as theme]
             [status-im.utils.utils :as utils]
             [quo.platform :as platform]
+            [taoensso.timbre :as log]
             [clojure.string :as string]))
 
 (defn contact-names
@@ -54,12 +57,23 @@
         (str "@" (or username ens-name)))
       (or alias (gfycat/generate-gfy public-key)))))
 
+(def photo-quality-thumbnail :thumbnail)
+(def photo-quality-large :large)
+
 (defn displayed-photo
-  "If a photo-path is set use it, otherwise fallback on identicon or generate"
-  [{:keys [photo-path identicon public-key]}]
-  (or photo-path
-      identicon
-      (identicon/identicon public-key)))
+  "If a photo, a image or an images array is set use it, otherwise fallback on identicon or generate"
+  [{:keys [images identicon public-key]}]
+  (cond
+    (pos? (count images))
+    (:uri (or (photo-quality-thumbnail images)
+              (photo-quality-large images)
+              (first images)))
+
+    (not (string/blank? identicon))
+    identicon
+
+    :else
+    (identicon/identicon public-key)))
 
 (re-frame/reg-fx
  ::chaos-mode-changed
@@ -145,3 +159,45 @@
   (fx/merge cofx
             {::switch-theme theme}
             (multiaccounts.update/multiaccount-update :appearance theme {})))
+
+(defn clean-path [path]
+  (if path
+    (string/replace-first path #"file://" "")
+    (log/warn "[nativ-module] Empty path was provided")))
+
+(fx/defn save-profile-picture
+  {:events [::save-profile-picture]}
+  [cofx path ax ay bx by]
+  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
+    (fx/merge cofx
+              {::json-rpc/call [{:method     "multiaccounts_storeIdentityImage"
+                                 :params     [key-uid (clean-path path) ax ay bx by]
+                                 ;; NOTE: In case of an error we can show a toast error
+                                 :on-success #(re-frame/dispatch [::update-local-picture %])}]}
+              (multiaccounts.update/optimistic :images [{:url  path
+                                                         :type (name photo-quality-large)}])
+              (bottom-sheet/hide-bottom-sheet))))
+
+(fx/defn delete-profile-picture
+  {:events [::delete-profile-picture]}
+  [cofx name]
+  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
+    (fx/merge cofx
+              {::json-rpc/call [{:method     "multiaccounts_deleteIdentityImage"
+                                 :params     [key-uid]
+                                 ;; NOTE: In case of an error we could fallback to previous image in UI with a toast error
+                                 :on-success #(log/info "[multiaccount] Delete profile image" %)}]}
+              (multiaccounts.update/optimistic :images nil)
+              (bottom-sheet/hide-bottom-sheet))))
+
+(fx/defn get-profile-picture
+  [cofx]
+  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
+    {::json-rpc/call [{:method     "multiaccounts_getIdentityImages"
+                       :params     [key-uid]
+                       :on-success #(re-frame/dispatch [::update-local-picture %])}]}))
+
+(fx/defn store-profile-picture
+  {:events [::update-local-picture]}
+  [cofx pics]
+  (multiaccounts.update/optimistic cofx :images pics))

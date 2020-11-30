@@ -99,7 +99,6 @@
 (reg-root-key-sub :my-profile/advanced? :my-profile/advanced?)
 (reg-root-key-sub :my-profile/editing? :my-profile/editing?)
 (reg-root-key-sub :my-profile/profile :my-profile/profile)
-(reg-root-key-sub :profile/photo-added? :profile/photo-added?)
 
 ;;multiaccount
 (reg-root-key-sub :multiaccounts/multiaccounts :multiaccounts/multiaccounts)
@@ -275,9 +274,9 @@
  :intro-wizard/recovery-success
  :<- [:intro-wizard]
  (fn [wizard-state]
-   {:pubkey (get-in wizard-state [:derived constants/path-whisper-keyword :public-key])
-    :name (get-in wizard-state [:derived constants/path-whisper-keyword :name])
-    :photo-path (get-in wizard-state [:derived constants/path-whisper-keyword :photo-path])
+   {:pubkey      (get-in wizard-state [:derived constants/path-whisper-keyword :public-key])
+    :name        (get-in wizard-state [:derived constants/path-whisper-keyword :name])
+    :identicon   (get-in wizard-state [:derived constants/path-whisper-keyword :identicon])
     :processing? (:processing? wizard-state)}))
 
 (re-frame/reg-sub
@@ -477,7 +476,7 @@
  (fn [current-account]
    (some->
     current-account
-    (select-keys [:name :preferred-name :public-key :photo-path])
+    (select-keys [:name :preferred-name :public-key :identicon :image :images])
     (clojure.set/rename-keys {:name :alias})
     (multiaccounts/contact-with-names))))
 
@@ -811,13 +810,16 @@
 
 (re-frame/reg-sub
  :chats/photo-path
- :<- [:contacts/contacts]
+ :<- [::contacts]
  :<- [:multiaccount]
- (fn [[contacts multiaccount] [_ id]]
-   (multiaccounts/displayed-photo (or (get contacts id)
-                                      (when (= id (:public-key multiaccount))
-                                        multiaccount)
-                                      (contact.db/public-key->new-contact id)))))
+ (fn [[contacts multiaccount] [_ id identicon]]
+   (let [contact (or (get contacts id)
+                     (when (= id (:public-key multiaccount)
+                              multiaccount))
+                     (if identicon
+                       {:identicon identicon}
+                       (contact.db/public-key->new-contact id)))]
+     (multiaccounts/displayed-photo contact))))
 
 (re-frame/reg-sub
  :chats/unread-messages-number
@@ -935,10 +937,13 @@
  :<- [:contacts/contacts]
  (fn [contacts]
    (reduce
-    (fn [acc [key {:keys [alias name identicon public-key nickname] :as contact}]]
+    (fn [acc [key {:keys [alias name added? blocked? identicon public-key nickname]}]]
       (if (and alias
                (not= alias "")
-               (not (contact.db/blocked? contact)))
+               (or name
+                   nickname
+                   added?)
+               (not blocked?))
         (let [name (utils/safe-replace name ".stateofus.eth" "")]
           (assoc acc public-key
                  (mentions/add-searchable-phrases
@@ -957,14 +962,13 @@
  :<- [:chats/mentionable-contacts]
  :<- [:contacts/blocked-set]
  :<- [:multiaccount]
- (fn [[{:keys [users]} contacts blocked {:keys [name preferred-name photo-path public-key]}]]
+ (fn [[{:keys [users]} contacts blocked {:keys [name preferred-name public-key]}]]
    (apply dissoc
           (-> users
               (merge contacts)
               (assoc public-key (mentions/add-searchable-phrases
                                  {:alias      name
                                   :name       (or preferred-name name)
-                                  :identicon  photo-path
                                   :public-key public-key})))
           blocked)))
 
@@ -1844,8 +1848,11 @@
 (re-frame/reg-sub
  :contacts/contact-by-address
  :<- [:contacts/contacts]
- (fn [contacts [_ address]]
-   (contact.db/find-contact-by-address contacts address)))
+ :<- [:multiaccount/contact]
+ (fn [[contacts multiaccount] [_ address]]
+   (if (ethereum/address= address (:public-key multiaccount))
+     multiaccount
+     (contact.db/find-contact-by-address contacts address))))
 
 (re-frame/reg-sub
  :contacts/contacts-by-address
@@ -2416,3 +2423,9 @@
    (first (filter #(notifications/preference= % {:service    "wallet"
                                                  :event      "transaction"
                                                  :identifier "all"}) pref))))
+
+(re-frame/reg-sub
+ :profile/has-picture
+ :<- [:multiaccount]
+ (fn [multiaccount]
+   (pos? (count (get multiaccount :images)))))

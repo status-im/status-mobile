@@ -19,7 +19,6 @@
                        #{}
                        %))
       (clojure.set/rename-keys {:id :public-key
-                                :photoPath :photo-path
                                 :tributeToTalk :tribute-to-talk
                                 :ensVerifiedAt :ens-verified-at
                                 :ensVerified :ens-verified
@@ -38,7 +37,6 @@
                                 :ens-verified-at :ensVerifiedAt
                                 :last-ens-clock-value :lastENSClockValue
                                 :ens-verification-retries :ensVerificationRetries
-                                :photo-path :photoPath
                                 :tribute-to-talk :tributeToTalk
                                 :system-tags :systemTags
                                 :last-updated :lastUpdated

@@ -183,7 +183,7 @@
                  (let [derived-data-extended
                        (update derived-data
                                constants/path-whisper-keyword
-                               merge {:name name :photo-path photo-path})]
+                               merge {:name name :identicon photo-path})]
                    (reset! derived-acc
                            {:root-key root-data
                             :derived  derived-data-extended})))))))))))

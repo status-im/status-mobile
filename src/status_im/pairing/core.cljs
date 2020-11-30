@@ -171,9 +171,9 @@
 
 (defn send-installation-messages [{:keys [db]}]
   (let [multiaccount                             (:multiaccount db)
-        {:keys [name preferred-name photo-path]} multiaccount]
+        {:keys [name preferred-name identicon]} multiaccount]
     {::json-rpc/call [{:method     (json-rpc/call-ext-method "syncDevices")
-                       :params     [(or preferred-name name) photo-path]
+                       :params     [(or preferred-name name) identicon]
                        :on-success #(log/debug "successfully synced devices")}]}))
 
 (defn installation<-rpc [{:keys [metadata id enabled]}]

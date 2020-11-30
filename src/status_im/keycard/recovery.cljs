@@ -137,7 +137,7 @@
   (let [{{:keys [multiaccount secrets flow]} :keycard} db
         {:keys [address
                 name
-                photo-path
+                identicon
                 public-key
                 whisper-public-key
                 wallet-public-key
@@ -149,14 +149,14 @@
                 encryption-public-key
                 instance-uid
                 key-uid
-                recovered]} multiaccount
-        {:keys [pairing paired-on]} secrets
-        {:keys [name photo-path]}
+                recovered]}                            multiaccount
+        {:keys [pairing paired-on]}                    secrets
+        {:keys [name identicon]}
         (if (nil? name)
           ;; name might have been generated during recovery via passphrase
           (get-in db [:intro-wizard :derived constants/path-whisper-keyword])
           {:name       name
-           :photo-path photo-path})]
+           :identicon identicon})]
     ;; if a name is still `nil` we have to generate it before multiaccount's
     ;; creation otherwise spec validation will fail
     (if (nil? name)
@@ -176,7 +176,7 @@
                                          {:public-key whisper-public-key
                                           :address    (eip55/address->checksum whisper-address)
                                           :name       name
-                                          :photo-path photo-path}
+                                          :identicon identicon}
                                          constants/path-default-wallet-keyword
                                          {:public-key wallet-public-key
                                           :address    (eip55/address->checksum wallet-address)}}
@@ -264,7 +264,7 @@
   {:events [::on-name-and-photo-generated]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)
                   (re-frame/inject-cofx ::multiaccounts.create/get-signing-phrase)]}
-  [{:keys [db] :as cofx} whisper-name photo-path]
+  [{:keys [db] :as cofx} whisper-name identicon]
   (fx/merge
    cofx
    {:db (update-in db [:keycard :multiaccount]
@@ -272,5 +272,5 @@
                      (assoc multiacc
                             :recovered true
                             :name whisper-name
-                            :photo-path photo-path)))}
+                            :identicon identicon)))}
    (create-keycard-multiaccount)))

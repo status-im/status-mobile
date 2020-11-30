@@ -20,8 +20,8 @@
     (get contacts public-key
          (public-key->new-contact public-key))))
 
-(defn- contact-by-address [[_ contact] address]
-  (when (ethereum/address= (:address contact) address)
+(defn- contact-by-address [[addr contact] address]
+  (when (ethereum/address= addr address)
     contact))
 
 (defn find-contact-by-address [contacts address]
@@ -54,7 +54,7 @@
   [members admins contacts {:keys [public-key] :as current-account}]
   (let [current-contact (some->
                          current-account
-                         (select-keys [:name :preferred-name :public-key :photo-path])
+                         (select-keys [:name :preferred-name :public-key :identicon])
                          (clojure.set/rename-keys {:name           :alias
                                                    :preferred-name :name}))
         all-contacts    (cond-> contacts

@@ -139,14 +139,13 @@
 (handlers/register-handler-fx
  :multiaccounts.login.ui/multiaccount-selected
  (fn [{:keys [db] :as cofx} [_ key-uid]]
-   (let [{:keys [photo-path name public-key]}
-         (get-in db [:multiaccounts/multiaccounts key-uid])]
+   (let [multiaccount (get-in db [:multiaccounts/multiaccounts key-uid])]
      (fx/merge
       cofx
       {:db (-> db
                (dissoc :intro-wizard)
                (update :keycard dissoc :application-info))}
-      (multiaccounts.login/open-login key-uid photo-path name public-key)))))
+      (multiaccounts.login/open-login multiaccount)))))
 
 (handlers/register-handler-fx
  :login/filters-initialized

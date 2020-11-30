@@ -311,11 +311,11 @@
   [{:keys [db] :as cofx} data]
   (let [{:keys [key-uid encryption-public-key whisper-private-key]
          :as   account-data}      (js->clj data :keywordize-keys true)
-        {:keys [photo-path name]} (get-in db [:multiaccounts/multiaccounts key-uid])
+        {:keys [identicon name]} (get-in db [:multiaccounts/multiaccounts key-uid])
         key-uid                   (get-in db [:keycard :application-info :key-uid])
         multiaccount-data         (types/clj->json {:name       name
                                                     :key-uid    key-uid
-                                                    :photo-path photo-path})
+                                                    :identicon identicon})
         save-keys?                (get-in db [:multiaccounts/login :save-password?])]
     (fx/merge cofx
               {:db
@@ -328,7 +328,7 @@
                    (update :multiaccounts/login assoc
                            :password encryption-public-key
                            :key-uid key-uid
-                           :photo-path photo-path
+                           :identicon identicon
                            :name name))
 
                :keycard/get-application-info {:pairing (get-pairing db key-uid)}

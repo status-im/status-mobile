@@ -145,13 +145,13 @@
   [{:keys [db] :as cofx} key-uid [encryption-public-key whisper-private-key :as creds]]
   (if (nil? creds)
     (navigation/navigate-to-cofx cofx :keycard-login-pin nil)
-    (let [{:keys [photo-path name]} (get-in db [:multiaccounts/multiaccounts key-uid])
-          multiaccount-data         (types/clj->json {:name       name
-                                                      :key-uid    key-uid
-                                                      :photo-path photo-path})
-          account-data {:key-uid               key-uid
-                        :encryption-public-key encryption-public-key
-                        :whisper-private-key   whisper-private-key}]
+    (let [{:keys [identicon name]} (get-in db [:multiaccounts/multiaccounts key-uid])
+          multiaccount-data        (types/clj->json {:name      name
+                                                     :key-uid   key-uid
+                                                     :identicon identicon})
+          account-data             {:key-uid               key-uid
+                                    :encryption-public-key encryption-public-key
+                                    :whisper-private-key   whisper-private-key}]
       {:db
        (-> db
            (assoc-in [:keycard :pin :status] nil)
@@ -162,7 +162,7 @@
            (update :multiaccounts/login assoc
                    :password encryption-public-key
                    :key-uid key-uid
-                   :photo-path photo-path
+                   :identicon identicon
                    :name name
                    :save-password? true))
        :keycard/login-with-keycard

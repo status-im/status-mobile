@@ -18,7 +18,7 @@
             [status-im.chat.models.mentions :as mentions]
             [status-im.ui.components.list.views :as list]
             [quo.components.list.item :as list-item]
-            [status-im.ui.screens.chat.styles.photos :as photo-style]
+            [status-im.ui.screens.chat.photos :as photos]
             [reagent.core :as reagent]))
 
 (def panel->icons {:extensions :main-icons/commands
@@ -199,18 +199,10 @@
        input-with-mentions)]]))
 
 (defn mention-item
-  [[_ {:keys [identicon alias name nickname] :as user}] _ _ text-input-ref]
+  [[public-key {:keys [alias name nickname] :as user}] _ _ text-input-ref]
   (let [ens-name? (not= alias name)]
     [list-item/list-item
-     (cond-> {:icon
-              [rn/view {:style {}}
-               [rn/image
-                {:source      {:uri identicon}
-                 :style       (photo-style/photo-border
-                               photo-style/default-size
-                               nil)
-                 :resize-mode :cover}]]
-              :icon-container-style {}
+     (cond-> {:icon [photos/member-photo public-key]
               :size                 :small
               :text-size            :small
               :title

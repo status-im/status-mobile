@@ -376,7 +376,7 @@
                          wizard-state)]]]))
 
 (defview wizard-recovery-success []
-  (letsubs [{:keys [pubkey processing? name photo-path]} [:intro-wizard/recovery-success]
+  (letsubs [{:keys [pubkey processing? name identicon]} [:intro-wizard/recovery-success]
             existing-account? [:intro-wizard/recover-existing-account?]]
     [react/view {:style {:flex 1}}
      [topbar/topbar
@@ -386,7 +386,7 @@
      [react/view {:style {:flex 1
                           :justify-content :space-between}}
       [top-bar {:step :recovery-success}]
-      [recovery-success pubkey name photo-path]
+      [recovery-success pubkey name identicon]
       [bottom-bar {:step              :recovery-success
                    :forward-action    :multiaccounts.recover/re-encrypt-pressed
                    :processing?       processing?

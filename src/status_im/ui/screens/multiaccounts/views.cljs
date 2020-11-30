@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.ui.screens.chat.photos :as photos]
+            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.multiaccounts.styles :as styles]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -14,10 +15,10 @@
             [status-im.react-native.resources :as resources]))
 
 (defn multiaccount-view
-  [{:keys [key-uid photo-path name keycard-pairing]}]
+  [{:keys [key-uid name keycard-pairing] :as account}]
   [quo/list-item {:on-press  #(re-frame/dispatch
                                [:multiaccounts.login.ui/multiaccount-selected key-uid])
-                  :icon      [photos/photo photo-path {:size styles/multiaccount-image-size}]
+                  :icon      [photos/photo (multiaccounts/displayed-photo account) {:size styles/multiaccount-image-size}]
                   :title     name
                   :accessory (when keycard-pairing
                                [react/view {:justify-content  :center

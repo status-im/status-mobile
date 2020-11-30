@@ -14,11 +14,11 @@
     (let [cofx {:db {:multiaccounts/login {:key-uid "key-uid"
                                            :password "password"
                                            :name "user"
-                                           :photo-path "photo"}}}
+                                           :identicon "photo"}}}
           efx (login.core/login cofx)]
       (testing "Change multiaccount."
         (is (= (::login.core/login efx)
-               ["key-uid" "{\"name\":\"user\",\"key-uid\":\"key-uid\",\"photo-path\":\"photo\"}" (ethereum/sha3 "password")])))
+               ["key-uid" "{\"name\":\"user\",\"key-uid\":\"key-uid\",\"identicon\":\"photo\"}" (ethereum/sha3 "password")])))
       (testing "start activity indicator"
         (is (= (get-in efx [:db :multiaccounts/login :processing]) true))))))
 

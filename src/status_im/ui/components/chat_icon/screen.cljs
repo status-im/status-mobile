@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame.core]
             [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.chat-icon.styles :as styles]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
@@ -125,11 +126,9 @@
                        :default-chat-icon      (styles/default-chat-icon-profile color size)
                        :default-chat-icon-text (styles/default-chat-icon-text size)} override-styles)]
     [react/view (:container styles)
-     (when edit?
-       [react/view (styles/profile-icon-mask size)])
-     (when edit?
-       [react/view (styles/profile-icon-edit-text-containter size)
-        [react/i18n-text {:style styles/profile-icon-edit-text :key :edit}]])
      (if (and photo-path (seq photo-path))
        [photos/photo photo-path styles]
-       [default-chat-icon name styles])]))
+       [default-chat-icon name styles])
+     (when edit?
+       [react/view {:style (styles/chat-icon-profile-edit)}
+        [icons/tiny-icon :tiny-icons/tiny-edit {:color colors/white-persist}]])]))

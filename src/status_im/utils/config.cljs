@@ -55,6 +55,8 @@
 (def pow-target (js/parseFloat (get-config :POW_TARGET "0.0001")))
 (def pow-time (js/parseInt (get-config :POW_TIME "1")))
 (def max-installations 2)
+; currently not supported in status-go
+(def enable-remove-profile-picture? false)
 
 (def verify-transaction-chain-id (js/parseInt (get-config :VERIFY_TRANSACTION_CHAIN_ID "1")))
 (def verify-transaction-url (if (= :mainnet (ethereum/chain-id->chain-keyword verify-transaction-chain-id))

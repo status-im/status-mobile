@@ -111,6 +111,10 @@
    "wakuext_getPushNotificationsServers" {}
    "wakuext_enablePushNotificationsBlockMentions" {}
    "wakuext_disablePushNotificationsBlockMentions" {}
+   "multiaccounts_getIdentityImages" {}
+   "multiaccounts_getIdentityImage" {}
+   "multiaccounts_storeIdentityImage" {}
+   "multiaccounts_deleteIdentityImage" {}
    "status_chats" {}
    "localnotifications_switchWalletNotifications" {}
    "localnotifications_notificationPreferences" {}
