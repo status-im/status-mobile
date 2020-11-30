@@ -1,4 +1,4 @@
-name: Zenhub integration PR
+name: Zenhub integration branch
 on:
   create:
   workflow_dispatch:
@@ -7,7 +7,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: James1x0/zenhub-automations@0e172d60e0e608a51be3a2441625d5c04666c246
+      - uses: status-im/zenhub-automations@d49b0468b49e8df5d40bfba622b87f9a5af5bbcd
         with:
           GITHUB_TOKEN:  ${{ secrets.GITHUB_TOKEN }}
           ZENHUB_API_KEY: ${{ secrets.ZENHUB_TOKEN }}
