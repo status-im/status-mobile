@@ -1,0 +1,17 @@
+name: Zenhub integration PR
+on:
+  pull_request:
+    branches: [ develop ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: James1x0/zenhub-automations@0e172d60e0e608a51be3a2441625d5c04666c246
+        with:
+          GITHUB_TOKEN:  ${{ secrets.GITHUB_TOKEN }}
+          ZENHUB_API_KEY: ${{ secrets.ZENHUB_TOKEN }}
+          PR_COLUMN: Z2lkOi8vcmFwdG9yL1BpcGVsaW5lLzMyODI1Mg
+          INPROG_COLUM: Z2lkOi8vcmFwdG9yL1BpcGVsaW5lLzMyODI1Mg
+          REVIEW_COLUMN: Z2lkOi8vcmFwdG9yL1BpcGVsaW5lLzIyNjk0MTA
