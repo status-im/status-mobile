@@ -348,6 +348,9 @@ class ViewProfileButton(BaseButton):
         super(ViewProfileButton, self).__init__(driver)
         self.locator = self.Locator.translation_id_selector('view-profile')
 
+    def navigate(self):
+        return ChatView(self.driver)
+
 class ViewProfileByAvatarButton(BaseButton):
     def __init__(self, driver):
         super(ViewProfileByAvatarButton, self).__init__(driver)
