@@ -519,6 +519,10 @@ class BaseView(object):
         self.driver.info('Press system Home button')
         self.driver.press_keycode(3)
 
+    def put_app_to_background(self):
+        self.driver.info('App to background')
+        self.driver.press_keycode(187)
+
     def cut_text(self):
         self.driver.info('Cut text')
         self.driver.press_keycode(277)

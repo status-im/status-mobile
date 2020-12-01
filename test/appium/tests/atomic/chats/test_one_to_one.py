@@ -303,7 +303,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_home.just_fyi('send image in 1-1 chat from Gallery, check options for sender')
         image_description = 'description'
         device_1_chat.show_images_button.click()
-        # device_1_chat.allow_button.click()
         device_1_chat.first_image_from_gallery.click()
         if not device_1_chat.cancel_send_image_button.is_element_displayed():
             self.errors.append("Can't cancel sending images, expected image preview is not shown!")
@@ -336,7 +335,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             element.scroll_to_element()
             if not element.is_element_displayed():
                 self.drivers[0].fail('Status of another user not shown when open another user profile')
-        #device_2_chat.element_by_text(device_1_status).scroll_to_element()
         device_2_chat.back_button.click()
 
         device_2_home.just_fyi('check options on long-press image for receiver')

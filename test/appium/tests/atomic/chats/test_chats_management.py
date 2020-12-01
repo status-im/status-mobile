@@ -782,7 +782,6 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1.just_fyi("reopen app and check that messages from blocked user are not fetched")
         device_1.click_system_home_button()
         self.drivers[0].launch_app()
-        # device_1.accept_agreements()
         device_1.sign_in()
         if home_1.get_chat(basic_user['username']).is_element_displayed():
             self.errors.append("Chat with blocked user is reappeared after fetching new messages from offline")

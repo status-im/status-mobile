@@ -608,6 +608,11 @@ class PushNotificationToggle(BaseButton):
         self.locator = self.Locator.xpath_selector(
             "//*[@content-desc='notifications-button']//*[@content-desc='switch']")
 
+class WalletTransactionsButton(BaseButton):
+    def __init__(self, driver):
+        super(WalletTransactionsButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("notifications-button")
+
 class ENSUsernameInChatSettings(BaseElement):
     def __init__(self, driver):
         super(ENSUsernameInChatSettings, self).__init__(driver)
@@ -718,6 +723,7 @@ class ProfileView(BaseView):
 
         #Push notifications
         self.push_notification_toggle = PushNotificationToggle(self.driver)
+        self.wallet_push_notifications = WalletTransactionsButton(self.driver)
 
     def switch_network(self, network='Mainnet with upstream RPC'):
         self.advanced_button.click()

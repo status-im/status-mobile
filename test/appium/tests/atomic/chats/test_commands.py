@@ -56,8 +56,13 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         sender = transaction_senders['A']
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1 = device_1.recover_access(passphrase=sender['passphrase'])
-        home_2 = device_2.create_user()
+        home_1 = device_1.recover_access(passphrase=sender['passphrase'], enable_notifications=True)
+        home_2 = device_2.create_user(enable_notifications=True)
+        for home in home_1, home_2:
+            profile = home.profile_button.click()
+            profile.profile_notifications_button.click()
+            profile.wallet_push_notifications.click()
+
         recipient_public_key, recipient_username = home_2.get_public_key_and_username(return_username=True)
         wallet_1, wallet_2 = home_1.wallet_button.click(), home_2.wallet_button.click()
         for wallet in (wallet_1, wallet_2):
@@ -115,11 +120,20 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         wallet_1.accounts_status_account.click()
         transactions_view = wallet_1.transaction_history_button.click()
         transactions_view.transactions_table.find_transaction(amount=amount)
-        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
-        wallet_1.home_button.click(desired_view="chat")
 
-        home_1.just_fyi("Check 'Confirmed' state for sender")
-        chat_1_sender_message.transaction_status.wait_for_element_text('Confirmed')
+        for wallet in wallet_1, wallet_2:
+            wallet.put_app_to_background()
+        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
+        for device in device_1, device_2:
+            device.open_notification_bar()
+
+        device_2.status_in_background_button.click()
+        time.sleep(20)
+        
+        # wallet_1.home_button.click(desired_view="chat")
+        #
+        # home_1.just_fyi("Check 'Confirmed' state for sender")
+        # chat_1_sender_message.transaction_status.wait_for_element_text('Confirmed')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6263)
