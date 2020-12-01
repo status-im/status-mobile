@@ -49,7 +49,7 @@ let
   # paths don't like slashes in them
   dropSlashes = builtins.replaceStrings [ "/" ] [ "_" ];
   # if version doesn't match this it's probably a commit, it's lax semver
-  versionRegex = "^v?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+[[:alnum:]_.-]*$";
+  versionRegex = "^v?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+[[:alnum:]+_.-]*$";
   sanitizeVersion = version:
     if (builtins.match versionRegex version) != null
     # Geth forces a 'v' prefix for all versions
