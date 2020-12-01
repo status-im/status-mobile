@@ -99,7 +99,7 @@
   {:events [:chat.ui/image-captured]}
   [{:keys [db]} uri]
   (let [current-chat-id (:current-chat-id db)
-        images          (get-in db [:chats current-chat-id :metadata :sending-image])]
+        images          (get-in db [:chat/inputs current-chat-id :metadata :sending-image])]
     (when (and (< (count images) config/max-images-batch)
                (not (get images uri)))
       {::image-selected uri})))
@@ -118,7 +118,7 @@
   {:events [:chat.ui/clear-sending-images]}
   [{:keys [db]}]
   (let [current-chat-id (:current-chat-id db)]
-    {:db (update-in db [:chats current-chat-id :metadata] assoc :sending-image {})}))
+    {:db (update-in db [:chat/inputs current-chat-id :metadata] assoc :sending-image {})}))
 
 (fx/defn cancel-sending-image
   {:events [:chat.ui/cancel-sending-image]}
@@ -129,19 +129,19 @@
   {:events [:chat.ui/image-selected]}
   [{:keys [db]} original uri]
   (let [current-chat-id (:current-chat-id db)]
-    {:db (update-in db [:chats current-chat-id :metadata :sending-image original] merge {:uri uri})}))
+    {:db (update-in db [:chat/inputs current-chat-id :metadata :sending-image original] merge {:uri uri})}))
 
 (fx/defn image-unselected
   {:events [:chat.ui/image-unselected]}
   [{:keys [db]} original]
   (let [current-chat-id (:current-chat-id db)]
-    {:db (update-in db [:chats current-chat-id :metadata :sending-image] dissoc original)}))
+    {:db (update-in db [:chat/inputs current-chat-id :metadata :sending-image] dissoc original)}))
 
 (fx/defn chat-open-image-picker
   {:events [:chat.ui/open-image-picker]}
   [{:keys [db]}]
   (let [current-chat-id (:current-chat-id db)
-        images          (get-in db [:chats current-chat-id :metadata :sending-image])]
+        images          (get-in db [:chat/inputs current-chat-id :metadata :sending-image])]
     (when (< (count images) config/max-images-batch)
       {::chat-open-image-picker nil})))
 
@@ -149,7 +149,7 @@
   {:events [:chat.ui/show-image-picker-camera]}
   [{:keys [db]}]
   (let [current-chat-id (:current-chat-id db)
-        images          (get-in db [:chats current-chat-id :metadata :sending-image])]
+        images          (get-in db [:chat/inputs current-chat-id :metadata :sending-image])]
     (when (< (count images) config/max-images-batch)
       {::chat-open-image-picker-camera nil})))
 
@@ -157,9 +157,9 @@
   {:events [:chat.ui/camera-roll-pick]}
   [{:keys [db]} uri]
   (let [current-chat-id (:current-chat-id db)
-        images          (get-in db [:chats current-chat-id :metadata :sending-image])]
+        images          (get-in db [:chat/inputs current-chat-id :metadata :sending-image])]
     (if (get-in db [:chats current-chat-id :timeline?])
-      {:db              (assoc-in db [:chats current-chat-id :metadata :sending-image] {})
+      {:db              (assoc-in db [:chat/inputs current-chat-id :metadata :sending-image] {})
        ::image-selected uri}
       (when (and (< (count images) config/max-images-batch)
                  (not (get images uri)))

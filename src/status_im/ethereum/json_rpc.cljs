@@ -45,6 +45,7 @@
    "wakuext_enableInstallation" {}
    "wakuext_disableInstallation" {}
    "wakuext_sendChatMessage" {}
+   "wakuext_sendChatMessages" {}
    "wakuext_confirmJoiningGroup" {}
    "wakuext_addAdminsToGroupChat" {}
    "wakuext_addMembersToGroupChat" {}

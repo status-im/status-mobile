@@ -124,7 +124,7 @@
 (reg-root-key-sub :group-chat/invitations :group-chat/invitations)
 (reg-root-key-sub :chats/mention-suggestions :chats/mention-suggestions)
 (reg-root-key-sub :chats/cursor :chats/cursor)
-(reg-root-key-sub :chats/input-with-mentions :chats/input-with-mentions)
+(reg-root-key-sub :chat/inputs-with-mentions :chat/inputs-with-mentions)
 (reg-root-key-sub :inactive-chat-id :inactive-chat-id)
 ;;browser
 (reg-root-key-sub :browsers :browser/browsers)
@@ -651,11 +651,17 @@
    (get chats current-chat-id)))
 
 (re-frame/reg-sub
- :chats/current-chat-input-text
+ :chats/current-chat-inputs
  :<- [:chats/current-chat-id]
  :<- [:chat/inputs]
  (fn [[chat-id inputs]]
-   (get-in inputs [chat-id :input-text])))
+   (get inputs chat-id)))
+
+(re-frame/reg-sub
+ :chats/current-chat-input-text
+ :<- [:chats/current-chat-inputs]
+ (fn [input]
+   (:input-text input)))
 
 (re-frame/reg-sub
  :chats/current-chat-membership
@@ -835,15 +841,15 @@
 
 (re-frame/reg-sub
  :chats/reply-message
- :<- [:chats/current-chat]
+ :<- [:chats/current-chat-inputs]
  (fn [{:keys [metadata]}]
    (:responding-to-message metadata)))
 
 (re-frame/reg-sub
  :chats/sending-image
- :<- [:chats/current-raw-chat]
+ :<- [:chats/current-chat-inputs]
  (fn [{:keys [metadata]}]
-   (get-in metadata [:sending-image])))
+   (:sending-image metadata)))
 
 (re-frame/reg-sub
  :public-chat.new/topic-error-message
@@ -977,7 +983,7 @@
 (re-frame/reg-sub
  :chat/input-with-mentions
  :<- [:chats/current-chat-id]
- :<- [:chats/input-with-mentions]
+ :<- [:chat/inputs-with-mentions]
  (fn [[chat-id cursor]]
    (get cursor chat-id)))
 

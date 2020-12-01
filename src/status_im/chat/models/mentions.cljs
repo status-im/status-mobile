@@ -505,7 +505,7 @@
               [:chats chat-id :mentions]
               assoc
               :at-idxs new-at-idxs)
-             (assoc-in [:chats/input-with-mentions chat-id] calculated-input))}))
+             (assoc-in [:chat/inputs-with-mentions chat-id] calculated-input))}))
 
 (fx/defn calculate-suggestions
   {:events [::calculate-suggestions]}
@@ -521,7 +521,7 @@
       {:db (-> db
                (assoc-in [:chats/mention-suggestions chat-id] nil)
                (assoc-in [:chats chat-id :mentions :at-idxs] nil)
-               (assoc-in [:chats/input-with-mentions chat-id] [[:text text]]))}
+               (assoc-in [:chat/inputs-with-mentions chat-id] [[:text text]]))}
       (let [new-at-idxs (check-idx-for-mentions
                          text
                          at-idxs
@@ -551,7 +551,7 @@
                             :at-sign-idx at-sign-idx
                             :at-idxs new-at-idxs
                             :mention-end end)
-                 (assoc-in [:chats/input-with-mentions chat-id] calculated-input)
+                 (assoc-in [:chat/inputs-with-mentions chat-id] calculated-input)
                  (assoc-in [:chats/mention-suggestions chat-id] mentions))}))))
 
 (defn new-input-text-with-mention
@@ -586,7 +586,7 @@
      cofx
      {:db (-> db
               (update-in [:chats chat-id] dissoc :mentions)
-              (update :chats/input-with-mentions dissoc chat-id))}
+              (update :chat/inputs-with-mentions dissoc chat-id))}
      (clear-suggestions))))
 
 (fx/defn clear-cursor

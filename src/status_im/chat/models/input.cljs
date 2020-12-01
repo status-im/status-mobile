@@ -49,7 +49,7 @@
      ;; keyboard's cursor position to be changed before the next input.
      (mentions/reset-text-input-cursor text-input-ref cursor)
      ;; NOTE(roman): on-text-input event is not dispatched when we change input
-     ;; programmatically, so we have to call `on-text-input` manually 
+     ;; programmatically, so we have to call `on-text-input` manually
      (mentions/on-text-input
       (let [match-len         (count match)
             searched-text-len (count searched-text)
@@ -99,51 +99,60 @@
   (let [current-chat-id (:current-chat-id db)]
     (fx/merge cofx
               {:db (-> db
-                       (assoc-in [:chats current-chat-id :metadata :responding-to-message]
+                       (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message]
                                  message)
-                       (update-in [:chats current-chat-id :metadata]
+                       (update-in [:chat/inputs current-chat-id :metadata]
                                   dissoc :sending-image))})))
 
 (fx/defn cancel-message-reply
   "Cancels stage message reply"
   [{:keys [db]}]
   (let [current-chat-id (:current-chat-id db)]
-    {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-message] nil)}))
+    {:db (assoc-in db [:chat/inputs current-chat-id :metadata :responding-to-message] nil)}))
 
-(fx/defn send-plain-text-message
-  "when not empty, proceed by sending text message"
-  [{:keys [db] :as cofx} input-text current-chat-id]
+(defn build-text-message
+  [{:keys [db]} input-text current-chat-id]
   (when-not (string/blank? input-text)
     (let [{:keys [message-id]}
-          (get-in db [:chats current-chat-id :metadata :responding-to-message])
+          (get-in db [:chat/inputs current-chat-id :metadata :responding-to-message])
           preferred-name (get-in db [:multiaccount :preferred-name])
           emoji? (message-content/emoji-only-content? {:text input-text
                                                        :response-to message-id})]
-      (fx/merge cofx
-                {:db (assoc-in db [:chats current-chat-id :metadata :responding-to-message] nil)}
-                (chat.message/send-message {:chat-id      current-chat-id
-                                            :content-type (if emoji?
-                                                            constants/content-type-emoji
-                                                            constants/content-type-text)
-                                            :text input-text
-                                            :response-to message-id
-                                            :ens-name preferred-name})
-                (set-chat-input-text nil)
-                (process-cooldown)))))
+      {:chat-id      current-chat-id
+       :content-type (if emoji?
+                       constants/content-type-emoji
+                       constants/content-type-text)
+       :text input-text
+       :response-to message-id
+       :ens-name preferred-name})))
 
-(fx/defn send-image
-  [{{:keys [current-chat-id] :as db} :db :as cofx} chat-id]
-  (let [images (get-in db [:chats current-chat-id :metadata :sending-image])]
+(defn build-image-messages
+  [{{:keys [current-chat-id] :as db} :db} chat-id]
+  (let [images (get-in db [:chat/inputs current-chat-id :metadata :sending-image])]
+    (mapv (fn [[_ {:keys [uri]}]]
+            {:chat-id      chat-id
+             :content-type constants/content-type-image
+             :image-path   (utils/safe-replace uri #"file://" "")
+             :text         (i18n/label :t/update-to-see-image)})
+          images)))
+
+(fx/defn clean-input [{:keys [db] :as cofx}]
+  (let [current-chat-id (:current-chat-id db)]
     (fx/merge cofx
-              ;; NOTE(Ferossgp): Ideally here and for all other types of message we should dissoc on success only
-              {:db (update-in db [:chats current-chat-id :metadata] dissoc :sending-image)}
-              (chat.message/send-messages
-               (map (fn [[_ {:keys [uri]}]]
-                      {:chat-id      chat-id
-                       :content-type constants/content-type-image
-                       :image-path   (utils/safe-replace uri #"file://" "")
-                       :text         (i18n/label :t/update-to-see-image)})
-                    images)))))
+              {:db (-> db
+                       (assoc-in [:chat/inputs current-chat-id :metadata :sending-image] nil)
+                       (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil))}
+              (set-chat-input-text nil))))
+
+(fx/defn send-messages [{:keys [db] :as cofx} input-text current-chat-id]
+  (let [image-messages (build-image-messages cofx current-chat-id)
+        text-message (build-text-message cofx input-text current-chat-id)
+        messages (keep identity (conj image-messages text-message))]
+    (when (seq messages)
+      (fx/merge cofx
+                (clean-input cofx)
+                (process-cooldown)
+                (chat.message/send-messages messages)))))
 
 (fx/defn send-my-status-message
   "when not empty, proceed by sending text message with public key topic"
@@ -151,9 +160,7 @@
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
   (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])
         chat-id (chat/profile-chat-topic (get-in db [:multiaccount :public-key]))]
-    (fx/merge cofx
-              (send-image chat-id)
-              (send-plain-text-message input-text chat-id))))
+    (send-messages cofx input-text chat-id)))
 
 (fx/defn send-audio-message
   [cofx audio-path duration current-chat-id]
@@ -179,7 +186,6 @@
   (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])
         input-text-with-mentions (mentions/check-mentions cofx input-text)]
     (fx/merge cofx
-              (send-image current-chat-id)
-              (send-plain-text-message input-text-with-mentions current-chat-id)
+              (send-messages input-text-with-mentions current-chat-id)
               (mentions/clear-mentions)
               (mentions/clear-cursor))))

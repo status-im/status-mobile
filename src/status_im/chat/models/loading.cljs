@@ -43,16 +43,17 @@
       (let [last-element-clock-value (:clock-value (.-item last-element))
             chat-id (:chat-id (.-item last-element))]
         (when (and last-element-clock-value
-                   (get-in db [:chats chat-id :messages-initialized?]))
+                   (get-in db [:pagination-info chat-id :messages-initialized?]))
           (let [new-messages (reduce-kv (fn [acc message-id {:keys [clock-value] :as v}]
                                           (if (<= last-element-clock-value clock-value)
                                             (assoc acc message-id v)
                                             acc))
                                         {}
-                                        (get-in db [:chats chat-id :messages]))]
+                                        (get-in db [:messages chat-id]))]
             {:db (-> db
                      (assoc-in [:messages chat-id] new-messages)
                      (assoc-in [:pagination-info chat-id] {:all-loaded? false
+                                                           :messages-initialized? true
                                                            :cursor (clock-value->cursor last-element-clock-value)})
                      (assoc-in [:message-lists chat-id] (message-list/add-many nil (vals new-messages))))}))))))
 
