@@ -97,7 +97,7 @@ class TransactionTable(BaseElement):
                 element.find_element()
                 return element
             except NoSuchElementException:
-                time.sleep(5)
+                time.sleep(20)
                 self.refresh_transactions()
         self.driver.fail('Transaction %s %s was not found on Wallet/Transaction screen' %(amount, asset))
 

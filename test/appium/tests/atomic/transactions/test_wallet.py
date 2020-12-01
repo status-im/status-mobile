@@ -79,6 +79,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view.toggle_airplane_mode()
         wallet_view.wait_balance_is_changed('ETH')
         wallet_view.scan_tokens('STT')
+        initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
 
         sign_in_view.just_fyi('Send some tokens to other account')
         recipient = "0x" + basic_user['address']
@@ -91,7 +92,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, confirmations=6, token=True)
 
         sign_in_view.just_fyi('Change that balance is updated')
-        initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
         sign_in_view.toggle_airplane_mode()
 
         sign_in_view.just_fyi('Check that transaction is appeared in transaction history')
