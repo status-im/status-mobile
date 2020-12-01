@@ -53,6 +53,8 @@
     [react/view {:style styles/wrapper}
      [topbar/topbar
       {:title (i18n/label :t/history-nodes)
+       ;; Navigate to profile as we might be coming from home to this view
+       :navigation {:on-press #(re-frame/dispatch [:navigate-to :profile-stack {:screen :sync-settings}])}
        :right-accessories
        [{:icon    :main-icons/add-circle
          :on-press #(re-frame/dispatch [:mailserver.ui/add-pressed])}]}]

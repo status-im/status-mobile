@@ -518,6 +518,30 @@
               (connect-to-mailserver)
               (disconnect-from-mailserver))))
 
+(defonce showing-connection-error-popup? (atom false))
+
+(defn show-connection-error! [db current-fleet preferred-mailserver]
+  (reset! showing-connection-error-popup? true)
+  (assoc db :ui/show-confirmation
+         {:title               (i18n/label :t/mailserver-error-title)
+          :content             (i18n/label :t/mailserver-error-content)
+          :confirm-button-text (i18n/label :t/mailserver-pick-another)
+          :on-cancel           #(do
+                                  (reset! showing-connection-error-popup? false)
+                                  (re-frame/dispatch [:mailserver.ui/dismiss-connection-error true]))
+          :on-accept           #(do
+                                  (reset! showing-connection-error-popup? false)
+                                  (re-frame/dispatch [:mailserver.ui/dismiss-connection-error true])
+                                  (re-frame/dispatch [:navigate-to :profile-stack {:screen :offline-messaging-settings}]))
+          :extra-options       [{:text    (i18n/label :t/mailserver-retry)
+                                 :onPress #(do
+                                             (reset! showing-connection-error-popup? false)
+                                             (re-frame/dispatch
+                                              [:mailserver.ui/connect-confirmed
+                                               current-fleet
+                                               preferred-mailserver]))
+                                 :style   "default"}]}))
+
 (fx/defn change-mailserver
   "mark mailserver status as `:error` if custom mailserver is used
   otherwise try to reconnect to another mailserver"
@@ -532,22 +556,9 @@
       (let [error-dismissed? (connection-error-dismissed db)
             current-fleet (node/current-fleet-key db)]
         ;; Error connecting to the mail server
-        {:db
-         (update-mailserver-state db :error)
-         :ui/show-confirmation
-         (when-not error-dismissed?
-           {:title               (i18n/label :t/mailserver-error-title)
-            :content             (i18n/label :t/mailserver-error-content)
-            :confirm-button-text (i18n/label :t/mailserver-pick-another)
-            :on-cancel           #(re-frame/dispatch [:mailserver.ui/dismiss-connection-error true])
-            :on-accept           #(re-frame/dispatch
-                                   [:navigate-to :offline-messaging-settings])
-            :extra-options       [{:text    (i18n/label :t/mailserver-retry)
-                                   :onPress #(re-frame/dispatch
-                                              [:mailserver.ui/connect-confirmed
-                                               current-fleet
-                                               preferred-mailserver])
-                                   :style   "default"}]})})
+        (cond->  {:db (update-mailserver-state db :error)}
+          (not (or error-dismissed? @showing-connection-error-popup?))
+          (show-connection-error! current-fleet preferred-mailserver)))
       (let [{:keys [address]} (fetch-current db)]
         (fx/merge cofx
                   {:mailserver/remove-peer address}

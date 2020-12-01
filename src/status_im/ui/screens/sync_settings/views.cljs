@@ -14,7 +14,8 @@
                   current-fleet                       [:fleets/current-fleet]
                   mailservers                         [:mailserver/mailservers]]
     [react/view {:style {:flex 1 :background-color colors/white}}
-     [topbar/topbar {:title (i18n/label :t/sync-settings)}]
+     [topbar/topbar {:title (i18n/label :t/sync-settings)
+                     :navigation {:on-press #(re-frame/dispatch [:navigate-to :profile-stack {:screen :my-profile}])}}]
      [react/scroll-view
       [quo/list-header (i18n/label :t/data-syncing)]
       [quo/list-item {:size                :small
