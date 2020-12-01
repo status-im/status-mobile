@@ -174,8 +174,10 @@
 
 (handlers/register-handler-fx
  :mailserver.ui/add-pressed
- (fn [cofx _]
-   (navigation/navigate-to-cofx cofx :edit-mailserver nil)))
+ (fn [{:keys [db] :as cofx} _]
+   (fx/merge cofx
+             {:db (dissoc db :mailserver.edit/mailserver)}
+             (navigation/navigate-to-cofx :edit-mailserver nil))))
 
 (handlers/register-handler-fx
  :mailserver.ui/save-pressed
