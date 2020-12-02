@@ -12,17 +12,16 @@
 
 (defonce search-active? (reagent/atom false))
 
-(defn render-currency [current-currency-id]
-  (fn [{:keys [id code display-name]}]
-    (let [selected? (= id current-currency-id)]
-      [react/touchable-highlight
-       {:on-press            #(re-frame/dispatch [:wallet.settings.ui/currency-selected id])
-        :accessibility-label :currency-item}
-       [react/view styles/currency-item
-        [react/text {:style styles/currency-name-text}
-         (str display-name " (" code ")")]
-        (when selected?
-          [vector-icons/icon :main-icons/check {:color :active}])]])))
+(defn render-currency [{:keys [id code display-name]} _ _ current-currency-id]
+  (let [selected? (= id current-currency-id)]
+    [react/touchable-highlight
+     {:on-press            #(re-frame/dispatch [:wallet.settings.ui/currency-selected id])
+      :accessibility-label :currency-item}
+     [react/view styles/currency-item
+      [react/text {:style styles/currency-name-text}
+       (str display-name " (" code ")")]
+      (when selected?
+        [vector-icons/icon :main-icons/check {:color :active}])]]))
 
 (views/defview currency-settings []
   (views/letsubs [currency-id [:wallet.settings/currency]
@@ -48,5 +47,6 @@
                                                        vals
                                                        (sort #(compare (:code %1) (:code %2))))
                        :key-fn                    :code
-                       :render-fn                 (render-currency currency-id)
+                       :render-data               currency-id
+                       :render-fn                 render-currency
                        :keyboardShouldPersistTaps :always}]]]))

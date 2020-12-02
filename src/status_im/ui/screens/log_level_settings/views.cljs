@@ -16,17 +16,16 @@
 (defn change-log-level [log-level]
   (re-frame/dispatch [:log-level.ui/log-level-selected log-level]))
 
-(defn render-row [current-log-level]
-  (fn [{:keys [name value] :as log-level}]
-    (let [current? (= value current-log-level)]
-      [react/touchable-highlight
-       {:on-press #(change-log-level log-level)
-        :accessibility-label :log-level-item}
-       [react/view styles/log-level-item
-        [log-level-icon current?]
-        [react/view styles/log-level-item-inner
-         [react/text {:style styles/log-level-item-name-text}
-          name]]]])))
+(defn render-row [{:keys [name value] :as log-level} _ _ current-log-level]
+  (let [current? (= value current-log-level)]
+    [react/touchable-highlight
+     {:on-press #(change-log-level log-level)
+      :accessibility-label :log-level-item}
+     [react/view styles/log-level-item
+      [log-level-icon current?]
+      [react/view styles/log-level-item-inner
+       [react/text {:style styles/log-level-item-name-text}
+        name]]]]))
 
 (def log-levels
   [{:name "DISABLED"
@@ -50,4 +49,5 @@
       [list/flat-list {:data               log-levels
                        :default-separator? false
                        :key-fn             :name
-                       :render-fn          (render-row current-log-level)}]]]))
+                       :render-data        current-log-level
+                       :render-fn          render-row}]]]))

@@ -28,18 +28,17 @@
 (def mainnet?
   #{"mainnet" "mainnet_rpc"})
 
-(defn render-network [current-network]
-  (fn [{:keys [id name] :as network}]
-    (let [connected? (= id current-network)]
-      [list/touchable-item #(re-frame/dispatch [::network/network-entry-pressed network])
-       [react/view styles/network-item
-        [network-icon connected? 40]
-        [react/view {:padding-horizontal 16}
-         [react/text {:style styles/network-item-name-text} name]
-         (when connected?
-           [react/text {:style               styles/network-item-connected-text
-                        :accessibility-label :connected-text}
-            (i18n/label :t/connected)])]]])))
+(defn render-network [{:keys [id name] :as network} _ _ current-network]
+  (let [connected? (= id current-network)]
+    [list/touchable-item #(re-frame/dispatch [::network/network-entry-pressed network])
+     [react/view styles/network-item
+      [network-icon connected? 40]
+      [react/view {:padding-horizontal 16}
+       [react/text {:style styles/network-item-name-text} name]
+       (when connected?
+         [react/text {:style               styles/network-item-connected-text
+                      :accessibility-label :connected-text}
+          (i18n/label :t/connected)])]]]))
 
 (views/defview network-settings []
   (views/letsubs [current-network [:networks/current-network]
@@ -61,4 +60,5 @@
                                                 :data (:custom networks)}]
                           :key-fn             :id
                           :default-separator? true
-                          :render-fn          (render-network current-network)}]]]))
+                          :render-data        current-network
+                          :render-fn          render-network}]]]))

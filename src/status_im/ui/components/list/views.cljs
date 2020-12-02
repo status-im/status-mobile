@@ -82,9 +82,9 @@
          [react/view {:style (merge style styles/item-checkbox)}
           [radio/radio (:checked? props)]])])
 
-(defn- wrap-render-fn [f]
+(defn- wrap-render-fn [f render-data]
   (fn [^js data]
-    (reagent/as-element [f (.-item data) (.-index data) (.-separators data)])))
+    (reagent/as-element [f (.-item data) (.-index data) (.-separators data) render-data])))
 
 (defn- wrap-key-fn [f]
   (fn [data index]
@@ -96,10 +96,10 @@
 (def default-separator [react/view styles/separator])
 
 (defn- base-list-props
-  [{:keys [key-fn render-fn empty-component header footer separator default-separator?]}]
+  [{:keys [key-fn render-fn empty-component header footer separator default-separator? render-data]}]
   (let [separator (or separator (when (and platform/ios? default-separator?) default-separator))]
     (merge (when key-fn            {:keyExtractor (wrap-key-fn key-fn)})
-           (when render-fn         {:renderItem (wrap-render-fn render-fn)})
+           (when render-fn         {:renderItem (wrap-render-fn render-fn render-data)})
            (when separator         {:ItemSeparatorComponent (fn [] (reagent/as-element separator))})
            (when empty-component   {:ListEmptyComponent (fn [] (reagent/as-element empty-component))})
            ;; header and footer not wrapped in anonymous function to prevent re-creation on every re-render
@@ -146,7 +146,7 @@
 (defn- wrap-per-section-render-fn [props]
   (update
    (if-let [f (:render-fn props)]
-     (assoc (dissoc props :render-fn) :renderItem (wrap-render-fn f))
+     (assoc (dissoc props :render-fn :render-data) :renderItem (wrap-render-fn f (:render-data props)))
      props)
    :data to-array))
 

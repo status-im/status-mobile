@@ -154,6 +154,20 @@
                   first-not-visible)))))
   (debounce/debounce-and-dispatch [:chat.ui/message-visibility-changed e] 5000))
 
+(defn render-fn [{:keys [outgoing type] :as message} idx _ {:keys [group-chat public? current-public-key space-keeper]}]
+  (if (= type :datemark)
+    [message-datemark/chat-datemark (:value message)]
+    (if (= type :gap)
+      [gap/gap message idx messages-list-ref false]
+      ; message content
+      [message/chat-message
+       (assoc message
+              :incoming-group (and group-chat (not outgoing))
+              :group-chat group-chat
+              :public? public?
+              :current-public-key current-public-key)
+       space-keeper])))
+
 (defn messages-view
   [{:keys [chat bottom-space pan-responder space-keeper]}]
   (let [{:keys [group-chat chat-id public? invitation-admin]} chat
@@ -174,19 +188,11 @@
                                         [invite.chat/reward-messages])]
        :data                         messages
        :inverted                     true
-       :render-fn                    (fn [{:keys [outgoing type] :as message} idx]
-                                       (if (= type :datemark)
-                                         [message-datemark/chat-datemark (:value message)]
-                                         (if (= type :gap)
-                                           [gap/gap message idx messages-list-ref false]
-                                        ; message content
-                                           [message/chat-message
-                                            (assoc message
-                                                   :incoming-group (and group-chat (not outgoing))
-                                                   :group-chat group-chat
-                                                   :public? public?
-                                                   :current-public-key current-public-key)
-                                            space-keeper])))
+       :render-data                  {:group-chat         group-chat
+                                      :public?            public?
+                                      :current-public-key current-public-key
+                                      :space-keeper       space-keeper}
+       :render-fn                    render-fn
        :on-viewable-items-changed    on-viewable-items-changed
        :on-end-reached               #(re-frame/dispatch [:chat.ui/load-more-messages])
        :on-scroll-to-index-failed    #() ;;don't remove this

@@ -54,7 +54,7 @@
          :icon                :main-icons/remove-contact
          :on-press            #(chat.sheets/hide-sheet-and-dispatch [:group-chats.ui/remove-member-pressed chat-id (:public-key member)])}])]))
 
-(defn render-member [chat-id {:keys [public-key] :as member} admin? current-user-identity]
+(defn render-member [{:keys [public-key] :as member} _ _ {:keys [chat-id admin? current-user-identity]}]
   (let [[first-name second-name] (multiaccounts/contact-two-names member false)]
     [quo/list-item
      (merge
@@ -82,9 +82,12 @@
 (defview chat-group-members-view [chat-id admin? current-user-identity]
   (letsubs [members [:contacts/current-chat-contacts]]
     (when (seq members)
-      [list/flat-list {:data      members
-                       :key-fn    :address
-                       :render-fn #(render-member chat-id % admin? current-user-identity)}])))
+      [list/flat-list {:data        members
+                       :key-fn      :address
+                       :render-data {:chat-id               chat-id
+                                     :admin?                admin?
+                                     :current-user-identity current-user-identity}
+                       :render-fn   render-member}])))
 
 (defn members-list [{:keys [chat-id admin? current-pk allow-adding-members?]}]
   [react/view

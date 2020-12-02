@@ -121,7 +121,7 @@
      [list/section-list
       {:sections   transactions-history-sections
        :key-fn     :hash
-       :render-fn  #(render-transaction %)
+       :render-fn  render-transaction
        :empty-component
        [react/i18n-text {:style styles/empty-text
                          :key   (if (or fetching-recent-history? fetching-more-history?)

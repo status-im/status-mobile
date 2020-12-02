@@ -60,25 +60,22 @@
     [icons/icon :main-icons/add-circle {:color colors/blue}]
     [react/text {:style styles/add-text} (i18n/label :t/add-account)]]])
 
-(defn render-asset [currency & [on-press]]
-  (fn [{:keys [icon decimals amount color value] :as token}]
-    [quo/list-item
-     (merge {:title               [quo/text {:weight :medium}
-                                   [quo/text {:weight :inherit}
-                                    (str (if amount
-                                           (wallet.utils/format-amount amount decimals)
-                                           "...")
-                                         " ")]
-                                   [quo/text {:color  :secondary
-                                              :weight :inherit}
-                                    (wallet.utils/display-symbol token)]]
-             :subtitle            (str (if value value "...") " " currency)
-             :accessibility-label (str (:symbol token)  "-asset-value")
-             :icon                (if icon
-                                    [list/item-image icon]
-                                    [chat-icon/custom-icon-view-list (:name token) color])}
-            (when on-press
-              {:on-press #(on-press token)}))]))
+(defn render-asset [{:keys [icon decimals amount color value] :as token} _ _ currency]
+  [quo/list-item
+   {:title               [quo/text {:weight :medium}
+                          [quo/text {:weight :inherit}
+                           (str (if amount
+                                  (wallet.utils/format-amount amount decimals)
+                                  "...")
+                                " ")]
+                          [quo/text {:color  :secondary
+                                     :weight :inherit}
+                           (wallet.utils/display-symbol token)]]
+    :subtitle            (str (if value value "...") " " currency)
+    :accessibility-label (str (:symbol token)  "-asset-value")
+    :icon                (if icon
+                           [list/item-image icon]
+                           [chat-icon/custom-icon-view-list (:name token) color])}])
 
 (views/defview assets []
   (views/letsubs [{:keys [tokens]} [:wallet/all-visible-assets-with-values]
@@ -86,7 +83,8 @@
     [list/flat-list {:data               tokens
                      :default-separator? false
                      :key-fn             :name
-                     :render-fn          (render-asset (:code currency))}]))
+                     :render-data        (:code currency)
+                     :render-fn          render-asset}]))
 
 (views/defview send-button []
   (views/letsubs [account [:multiaccount/default-account]]

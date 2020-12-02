@@ -24,26 +24,26 @@
     [react/text {:style styles/explanation-text}
      (i18n/label :t/mailserver-automatic-switch-explanation)]]])
 
-(defn render-row [current-mailserver-id pinned?]
-  (fn [{:keys [name id user-defined]}]
-    (let [connected? (= id current-mailserver-id)
-          visible? (or pinned? ; show everything when auto selection is turned off
-                       (and (not pinned?) ; auto selection turned on
-                            (= current-mailserver-id id) ; show only the selected server
-                            ))]
-      (when visible?
-        [react/touchable-highlight
-         {:on-press (when pinned? #(if user-defined
-                                     (re-frame/dispatch [:mailserver.ui/user-defined-mailserver-selected id])
-                                     (re-frame/dispatch [:mailserver.ui/default-mailserver-selected id])))
-          :accessibility-label :mailserver-item}
-         [react/view (styles/mailserver-item)
-          [react/text {:style styles/mailserver-item-name-text}
-           name]
+(defn render-row [{:keys [name id user-defined]} _ _ {:keys [current-mailserver-id preferred-mailserver-id]}]
+  (let [pinned? preferred-mailserver-id
+        connected? (= id current-mailserver-id)
+        visible? (or pinned? ; show everything when auto selection is turned off
+                     (and (not pinned?) ; auto selection turned on
+                          (= current-mailserver-id id)))] ; show only the selected server
 
-          (if pinned?
-            [radio/radio connected?]
-            [vector-icons/icon :check {:color colors/blue}])]]))))
+    (when visible?
+      [react/touchable-highlight
+       {:on-press (when pinned? #(if user-defined
+                                   (re-frame/dispatch [:mailserver.ui/user-defined-mailserver-selected id])
+                                   (re-frame/dispatch [:mailserver.ui/default-mailserver-selected id])))
+        :accessibility-label :mailserver-item}
+       [react/view (styles/mailserver-item)
+        [react/text {:style styles/mailserver-item-name-text}
+         name]
+
+        (if pinned?
+          [radio/radio connected?]
+          [vector-icons/icon :check {:color colors/blue}])]])))
 
 (views/defview offline-messaging-settings []
   (views/letsubs [current-mailserver-id      [:mailserver/current-id]
@@ -78,5 +78,6 @@
          [list/flat-list {:data               (vals mailservers)
                           :default-separator? false
                           :key-fn             :name
-                          :render-fn          (render-row current-mailserver-id
-                                                          preferred-mailserver-id)}]])]]))
+                          :render-data        {:current-mailserver-id current-mailserver-id
+                                               :preferred-mailserver-id preferred-mailserver-id}
+                          :render-fn          render-row}]])]]))

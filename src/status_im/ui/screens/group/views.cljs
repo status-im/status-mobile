@@ -64,18 +64,18 @@
         :active    contact-selected?
         :accessory :checkbox}])))
 
-(defn- group-toggle-contact [allow-new-users? contact]
+(defn- group-toggle-contact [contact _ _ allow-new-users?]
   [toggle-item allow-new-users? :is-contact-selected? contact on-toggle])
 
-(defn- group-toggle-participant [allow-new-users? contact]
+(defn- group-toggle-participant [contact _ _ allow-new-users?]
   [toggle-item allow-new-users? :is-participant-selected? contact on-toggle-participant])
 
-(defn toggle-list [{:keys [contacts render-fn]}]
-  [react/scroll-view {:flex 1}
-   [list/flat-list {:data                      contacts
-                    :key-fn                    :public-key
-                    :render-fn                 render-fn
-                    :keyboardShouldPersistTaps :always}]])
+(defn toggle-list [{:keys [contacts render-fn render-data]}]
+  [list/flat-list {:data                      contacts
+                   :key-fn                    :public-key
+                   :render-data               render-data
+                   :render-fn                 render-fn
+                   :keyboardShouldPersistTaps :always}])
 
 (defn no-contacts [{:keys [no-contacts]}]
   [react/view {:style styles/no-contacts}
@@ -153,8 +153,9 @@
        [react/view {:style {:flex             1
                             :padding-vertical 8}}
         (if (seq contacts)
-          [toggle-list {:contacts  (filter-contacts @search-value contacts)
-                        :render-fn (partial toggle-fn allow-new-users?)}]
+          [toggle-list {:contacts    (filter-contacts @search-value contacts)
+                        :render-data allow-new-users?
+                        :render-fn   toggle-fn}]
           [no-contacts {:no-contacts no-contacts-label}])]])))
 
 ;; Start group chat

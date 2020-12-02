@@ -129,7 +129,8 @@
          [list/flat-list {:data               tokens
                           :default-separator? false
                           :key-fn             :name
-                          :render-fn          (accounts/render-asset (:code currency))}]
+                          :render-data        (:code currency)
+                          :render-fn          accounts/render-asset}]
          (= tab :nft)
          [react/view
           [collectibles-link]

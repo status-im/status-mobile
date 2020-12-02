@@ -172,7 +172,7 @@
         :on-viewable-items-changed chat.views/on-viewable-items-changed
         :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages])
         :on-scroll-to-index-failed #()                      ;;don't remove this
-        :render-fn                 (status.views/render-message false nil)
+        :render-fn                 status.views/render-message
         :data                      messages}])))
 
 (views/defview profile []

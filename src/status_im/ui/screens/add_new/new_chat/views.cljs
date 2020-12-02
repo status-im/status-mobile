@@ -17,7 +17,7 @@
             [reagent.core :as reagent])
   (:require-macros [status-im.utils.views :as views]))
 
-(defn- render-row [row _ _]
+(defn- render-row [row]
   (let [[first-name second-name] (multiaccounts/contact-two-names row false)]
     [quo/list-item
      {:title    first-name

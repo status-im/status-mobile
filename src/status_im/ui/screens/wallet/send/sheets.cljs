@@ -11,27 +11,26 @@
 (views/defview assets [address]
   (views/letsubs [{:keys [tokens]} [:wallet/visible-assets-with-values address]
                   currency [:wallet/currency]]
-    (let [render (wallet.accounts/render-asset
-                  (:code currency)
-                  #(re-frame/dispatch [:wallet.send/set-symbol (:symbol %)]))]
-      [:<>
-       (for [token tokens]
-         ^{:key (str (:symbol token))}
-         [render token])])))
+    [:<>
+     (for [token tokens]
+       ^{:key (str (:symbol token))}
+       [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet.send/set-symbol (:symbol token)])}
+        [wallet.accounts/render-asset token nil nil (:code currency)]])]))
 
-(defn render-account [field event]
-  (fn [account]
-    [quo/list-item
-     {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
-      :title    (:name account)
-      :on-press #(re-frame/dispatch [event field account])}]))
+(defn render-account [account _ _ {:keys [field event]}]
+  [quo/list-item
+   {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
+    :title    (:name account)
+    :on-press #(re-frame/dispatch [event field account])}])
 
 (views/defview accounts-list [field event]
   (views/letsubs [accounts [:multiaccount/accounts]
                   accounts-whithout-watch [:accounts-without-watch-only]]
     [list/flat-list {:data      (if (= :to field) accounts accounts-whithout-watch)
                      :key-fn    :address
-                     :render-fn (render-account field event)}]))
+                     :render-data {:field field
+                                   :event event}
+                     :render-fn render-account}]))
 
 (defn show-accounts-list []
   (re-frame/dispatch [:bottom-sheet/hide])

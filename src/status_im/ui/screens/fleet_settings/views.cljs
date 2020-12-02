@@ -17,17 +17,16 @@
 (defn change-fleet [fleet]
   (re-frame/dispatch [:fleet.ui/fleet-selected fleet]))
 
-(defn render-row [current-fleet]
-  (fn [fleet]
-    (let [current? (= fleet current-fleet)]
-      [react/touchable-highlight
-       {:on-press #(change-fleet fleet)
-        :accessibility-label :fleet-item}
-       [react/view styles/fleet-item
-        [fleet-icon current?]
-        [react/view styles/fleet-item-inner
-         [react/text {:style styles/fleet-item-name-text}
-          fleet]]]])))
+(defn render-row [fleet _ _ current-fleet]
+  (let [current? (= fleet current-fleet)]
+    [react/touchable-highlight
+     {:on-press #(change-fleet fleet)
+      :accessibility-label :fleet-item}
+     [react/view styles/fleet-item
+      [fleet-icon current?]
+      [react/view styles/fleet-item-inner
+       [react/text {:style styles/fleet-item-name-text}
+        fleet]]]]))
 
 (defn fleets [custom-fleets]
   (map name (keys (node/fleets {:custom-fleets custom-fleets}))))
@@ -41,4 +40,5 @@
       [list/flat-list {:data               (fleets custom-fleets)
                        :default-separator? false
                        :key-fn             identity
-                       :render-fn          (render-row (name current-fleet))}]]]))
+                       :render-data        (name current-fleet)
+                       :render-fn          render-row}]]]))

@@ -132,6 +132,9 @@
                                      (re-frame/dispatch [:set :public-group-topic nil])
                                      (re-frame/dispatch [:search/home-filter-changed nil]))}])])))
 
+(defn render-fn [home-item]
+  [inner-item/home-list-item home-item])
+
 (views/defview chats-list []
   (views/letsubs [loading? [:chats/loading?]
                   {:keys [chats search-filter]} [:home-items]
@@ -148,7 +151,7 @@
          {:key-fn                       :chat-id
           :keyboard-should-persist-taps :always
           :data                         chats
-          :render-fn                    (fn [home-item] [inner-item/home-list-item home-item])
+          :render-fn                    render-fn
           :header                       (when (or (seq chats) @search-active? (seq search-filter))
                                           [search-input-wrapper search-filter chats])
           :empty-component              (when (or @search-active? (seq search-filter))

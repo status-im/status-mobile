@@ -199,7 +199,7 @@
        input-with-mentions)]]))
 
 (defn mention-item
-  [text-input-ref [_ {:keys [identicon alias name nickname] :as user}]]
+  [[_ {:keys [identicon alias name nickname] :as user}] _ _ text-input-ref]
   (let [ens-name? (not= alias name)]
     [list-item/list-item
      (cond-> {:icon
@@ -257,7 +257,8 @@
             :header                    [rn/view {:style {:height 8}}]
             :data                      suggestions
             :key-fn                    first
-            :render-fn                 #(mention-item text-input-ref %)}]]]))))
+            :render-data               text-input-ref
+            :render-fn                 mention-item}]]]))))
 
 (defn chat-input
   [{:keys [set-active-panel active-panel on-send-press reply

@@ -135,41 +135,39 @@
           [message/render-parsed-text (assoc message :outgoing false) (:parsed-text content)]])
        [link-preview/link-preview-wrapper (:links content) outgoing true]]]]))
 
-(defn render-message [timeline? account]
-  (fn [{:keys [type] :as message} idx]
-    [(fn []
-       (if (= type :datemark)
-         nil
-         (if (= type :gap)
-           (if timeline?
-             nil
-             [gap/gap message idx messages-list-ref true])
-           ; message content
-           (let [chat-id (chat/profile-chat-topic (:from message))]
-             [react/view (merge {:accessibility-label :chat-item}
-                                (when (:last-in-group? message)
-                                  {:padding-bottom      8
-                                   :margin-bottom       8
-                                   :border-bottom-width 1
-                                   :border-bottom-color colors/gray-lighter}))
-              [reactions/with-reaction-picker
-               {:message         message
-                :timeline        true
-                :reactions       @(re-frame/subscribe [:chats/message-reactions (:message-id message)])
-                :picker-on-open  (fn [])
-                :picker-on-close (fn [])
-                :send-emoji      (fn [{:keys [emoji-id]}]
-                                   (re-frame/dispatch [::models.reactions/send-emoji-reaction
-                                                       {:message-id (:message-id message)
-                                                        :chat-id    chat-id
-                                                        :emoji-id   emoji-id}]))
-                :retract-emoji   (fn [{:keys [emoji-id emoji-reaction-id]}]
-                                   (re-frame/dispatch [::models.reactions/send-emoji-reaction-retraction
-                                                       {:message-id        (:message-id message)
-                                                        :chat-id           chat-id
-                                                        :emoji-id          emoji-id
-                                                        :emoji-reaction-id emoji-reaction-id}]))
-                :render          (message-item account)}]]))))]))
+(defn render-message [{:keys [type] :as message} idx _ {:keys [timeline account]}]
+  (if (= type :datemark)
+    nil
+    (if (= type :gap)
+      (if timeline
+        nil
+        [gap/gap message idx messages-list-ref true])
+      ; message content
+      (let [chat-id (chat/profile-chat-topic (:from message))]
+        [react/view (merge {:accessibility-label :chat-item}
+                           (when (:last-in-group? message)
+                             {:padding-bottom      8
+                              :margin-bottom       8
+                              :border-bottom-width 1
+                              :border-bottom-color colors/gray-lighter}))
+         [reactions/with-reaction-picker
+          {:message         message
+           :timeline        true
+           :reactions       @(re-frame/subscribe [:chats/message-reactions (:message-id message)])
+           :picker-on-open  (fn [])
+           :picker-on-close (fn [])
+           :send-emoji      (fn [{:keys [emoji-id]}]
+                              (re-frame/dispatch [::models.reactions/send-emoji-reaction
+                                                  {:message-id (:message-id message)
+                                                   :chat-id    chat-id
+                                                   :emoji-id   emoji-id}]))
+           :retract-emoji   (fn [{:keys [emoji-id emoji-reaction-id]}]
+                              (re-frame/dispatch [::models.reactions/send-emoji-reaction-retraction
+                                                  {:message-id        (:message-id message)
+                                                   :chat-id           chat-id
+                                                   :emoji-id          emoji-id
+                                                   :emoji-reaction-id emoji-reaction-id}]))
+           :render          (message-item account)}]]))))
 
 (def state (reagent/atom {:tab :timeline}))
 
@@ -207,7 +205,9 @@
             (i18n/label :t/statuses-my-status-descr))]]]
        [list/flat-list
         {:key-fn                    #(or (:message-id %) (:value %))
-         :render-fn                 (render-message (= :timeline (:tab @state)) account)
+         :render-data               {:timeline (= :timeline (:tab @state))
+                                     :account  account}
+         :render-fn                 render-message
          :data                      messages
          :on-viewable-items-changed chat.views/on-viewable-items-changed
          :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages])
