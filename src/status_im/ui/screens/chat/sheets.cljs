@@ -174,7 +174,8 @@
          :title    (i18n/label :t/sharing-copy-to-clipboard)
          :icon     :main-icons/copy
          :on-press (fn []
-                     (hide-sheet-and-dispatch [::clipboard/copy-image (:image content)]))}])
+                     (hide)
+                     (re-frame/dispatch [::clipboard/copy-image (:image content)]))}])
      [quo/list-item
       {:theme    :accent
        :title    (i18n/label :t/save)

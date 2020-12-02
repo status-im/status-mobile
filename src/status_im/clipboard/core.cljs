@@ -4,8 +4,7 @@
             [status-im.utils.types :as types]
             [quo.platform :as platform]
             [status-im.utils.fx :as fx]
-            [taoensso.timbre :as log]
-            [reagent.ratom :refer [make-reaction]]))
+            [taoensso.timbre :as log]))
 
 (def clipboard-manager (when platform/ios? (.-MediaClipboard ^js NativeModules)))
 
@@ -60,6 +59,6 @@
   {::copy-image base64})
 
 (fx/defn paste-image-event
-  {:events [::paste-image]}
+  {:events [::paste]}
   [_ on-success]
   {::paste on-success})

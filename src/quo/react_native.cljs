@@ -23,7 +23,9 @@
 (def touchable-highlight (reagent/adapt-react-class (.-TouchableHighlight ^js rn)))
 (def touchable-without-feedback (reagent/adapt-react-class (.-TouchableWithoutFeedback ^js rn)))
 (def text-input (reagent/adapt-react-class  (.-TextInput ^js rn)))
-
+(def quo-text-input (if platform/ios?
+                      (reagent/adapt-react-class (.requireNativeComponent ^js rn "RNQuoTextView"))
+                      text-input))
 (def keyboard-avoiding-view-class (reagent/adapt-react-class (.-KeyboardAvoidingView ^js rn)))
 
 (defn keyboard-avoiding-view []

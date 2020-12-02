@@ -131,6 +131,10 @@
 		38A44830EC5708E89387F641 /* Pods-StatusIm.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StatusIm.release.xcconfig"; path = "Pods/Target Support Files/Pods-StatusIm/Pods-StatusIm.release.xcconfig"; sourceTree = "<group>"; };
 		3A2626CE245C3F2200D5F94B /* Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dummy.swift; sourceTree = "<group>"; };
 		3A6406FB24A3ADF90046ED37 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3A7CD29B255D64C300E0959C /* RNQuoTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNQuoTextView.h; sourceTree = "<group>"; };
+		3A7CD29C255D677600E0959C /* RNQuoTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNQuoTextView.m; sourceTree = "<group>"; };
+		3A7CD29F255D69C100E0959C /* RNQuoTextViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNQuoTextViewManager.m; sourceTree = "<group>"; };
+		3A7CD2A2255D69CF00E0959C /* RNQuoTextViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNQuoTextViewManager.h; sourceTree = "<group>"; };
 		3A8F8EA924A4D31600BF206D /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		3AAD2ADC24A3A60E0075D594 /* Status PR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Status PR.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3AB1C3AD245C043900098F67 /* StatusIm-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "StatusIm-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -271,6 +275,17 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		3A7CD298255D645900E0959C /* QuoTextInput */ = {
+			isa = PBXGroup;
+			children = (
+				3A7CD29B255D64C300E0959C /* RNQuoTextView.h */,
+				3A7CD29F255D69C100E0959C /* RNQuoTextViewManager.m */,
+				3A7CD2A2255D69CF00E0959C /* RNQuoTextViewManager.h */,
+				3A7CD29C255D677600E0959C /* RNQuoTextView.m */,
+			);
+			path = QuoTextInput;
+			sourceTree = "<group>";
+		};
 		3AAD2AB624A3A5F10075D594 /* StatusImPR */ = {
 			isa = PBXGroup;
 			children = (
@@ -321,6 +336,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				3A7CD298255D645900E0959C /* QuoTextInput */,
 				3AC0858325514C5B004E9E8A /* ClipboardImage */,
 				3AAD2AB624A3A5F10075D594 /* StatusImPR */,
 				13B07FAE1A68108700A75B9A /* StatusIm */,
@@ -789,11 +805,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A7CD2A0255D69C100E0959C /* RNQuoTextViewManager.m in Sources */,
 				3AC0858725514D69004E9E8A /* ClipboardManager.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				3A2626CF245C3F2200D5F94B /* Dummy.swift in Sources */,
 				3AC0858B25514DDB004E9E8A /* ClipboardReactModuleExports.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				3A7CD29D255D677600E0959C /* RNQuoTextView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -801,11 +819,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A7CD2A1255D69C100E0959C /* RNQuoTextViewManager.m in Sources */,
 				3AC0858825514D69004E9E8A /* ClipboardManager.swift in Sources */,
 				3AAD2ABC24A3A60E0075D594 /* AppDelegate.m in Sources */,
 				3AAD2ABD24A3A60E0075D594 /* Dummy.swift in Sources */,
 				3AC0858C25514DDB004E9E8A /* ClipboardReactModuleExports.m in Sources */,
 				3AAD2ABE24A3A60E0075D594 /* main.m in Sources */,
+				3A7CD29E255D677600E0959C /* RNQuoTextView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

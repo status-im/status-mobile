@@ -169,3 +169,9 @@
   {:events [:chat.ui/save-image-to-gallery]}
   [_ base64-uri]
   {::save-image-to-gallery base64-uri})
+
+
+(fx/defn paste-image
+  {:events [::paste-image]}
+  [_ path]
+  {::image-selected path})
