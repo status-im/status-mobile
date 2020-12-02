@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: status-im/zenhub-automations@0fc7ccad52dad46a776f6f6377feaa3993cc37b5
+      - uses: status-im/zenhub-automations@0master
         if: github.event.pull_request.draft == false
         with:
           GITHUB_TOKEN:  ${{ secrets.GITHUB_TOKEN }}
