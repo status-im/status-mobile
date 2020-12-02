@@ -6,8 +6,14 @@
 
 stdenv.mkDerivation {
   name = "${deps.nodejs.name}-patched";
-
-  phases = [ "unpackPhase" "patchPhase" "installPhase" ];
+  phases = [
+    "unpackPhase"
+    "patchGradlePhase"
+    "patchBuildIdPhase"
+    "patchHermesPhase"
+    "patchJavaPhase"
+    "installPhase"
+  ];
 
   # First symlink all modules as is
   # WARNING: Metro has issues when dealing with symlinks!
@@ -19,10 +25,10 @@ stdenv.mkDerivation {
     cp -r ${deps.nodejs}/node_modules/.bin ./node_modules/
   '';
 
-  # Then patch the modules that have build.gradle files
-  patchPhase = ''
-    # Patch maven and google central repositories with our own local directories.
-    # This prevents the builder from downloading Maven artifacts
+  # Patch build.gradle files in 'react-native-*' dependencies to replace
+  # maven and google central repositories with our own local directories.
+  # This prevents the builder from downloading Maven artifacts
+  patchGradlePhase = ''
     for modBuildGradle in $(find -L ./node_modules -name build.gradle); do
       relativeToNode=''${modBuildGradle#*node_modules/}
       moduleName=''${relativeToNode%%/*}
@@ -33,26 +39,26 @@ stdenv.mkDerivation {
       fi
       ${patchMavenSources} $modBuildGradle
     done
-
-    patchShebangs ./node_modules
-
-    # Do not add a BuildId to the generated libraries, for reproducibility
+  '';
+  # Do not add a BuildId to the generated libraries, for reproducibility
+  patchBuildIdPhase = ''
     substituteInPlace ./node_modules/react-native/ReactAndroid/src/main/jni/Application.mk --replace \
         '-Wl,--build-id' \
         '-Wl,--build-id=none'
-
-    # Fix bugs in Hermes usage:
-    # https://github.com/facebook/react-native/issues/25601#issuecomment-510856047
-    # - Make PR builds also count as release builds
-    # - Fix issue where hermes command is being called with same input/output file
+  '';
+  # Fix bugs in Hermes usage:
+  # https://github.com/facebook/react-native/issues/25601#issuecomment-510856047
+  # - Make PR builds also count as release builds
+  # - Fix issue where hermes command is being called with same input/output file
+  patchHermesPhase = ''
     substituteInPlace ./node_modules/react-native/react.gradle --replace \
         'targetName.toLowerCase().contains("release")' \
         '!targetName.toLowerCase().contains("debug")'
-
-    # Patch Java files in modules which are not yet ported to AndroidX
+  '';
+  # Patch Java files in modules which are not yet ported to AndroidX
+  patchJavaPhase = ''
     ${nodejs}/bin/node ./node_modules/jetifier/bin/jetify
   '';
-
   installPhase = ''
     mkdir -p $out
     cp -R node_modules $out/
