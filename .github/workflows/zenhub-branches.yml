@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: status-im/zenhub-automations@0master
+      - uses: status-im/zenhub-automations@master
         with:
           GITHUB_TOKEN:  ${{ secrets.GITHUB_TOKEN }}
           ZENHUB_API_KEY: ${{ secrets.ZENHUB_TOKEN }}
