@@ -1,7 +1,7 @@
 import time
 
 from tests import marks, camera_access_error_text, photos_access_error_text, recorded_error
-from tests.users import basic_user, dummy_user, ens_user_ropsten, ens_user
+from tests.users import basic_user, dummy_user, ens_user_ropsten, ens_user, ens_user_message_sender
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
 from views.chat_view import ChatView
@@ -58,7 +58,7 @@ class TestChatManagement(SingleDeviceTestCase):
         profile.switch_network()
         chat_view = ChatView(self.driver)
         ens_name_status, ens_name_another_domain, public_chat_name = ens_user_ropsten['ens'], \
-                                                                      ens_user['ens_another_domain'], 'some-pub-chat'
+                                                                     ens_user['ens_another_domain'], 'some-pub-chat'
         search_list = {
             ens_name_status: {
                 'home': {
@@ -113,19 +113,21 @@ class TestChatManagement(SingleDeviceTestCase):
                 self.errors.append('"No search results" is not shown')
             if 'home_not_shown' in search_list[keyword]:
                 if home.element_by_text(search_list[keyword]['home_not_shown']).is_element_displayed():
-                    self.errors.append('%s is shown on home view while searching for %s' % (search_list[keyword]['home_not_shown'], keyword))
+                    self.errors.append('%s is shown on home view while searching for %s' % (
+                    search_list[keyword]['home_not_shown'], keyword))
             for text in search_list[keyword]['home']:
                 if not home.element_by_text(text).is_element_displayed():
                     self.errors.append('%s is not shown on home view while searching for %s' % (text, keyword))
             home.element_by_text(search_list[keyword]['navigate_to']).click()
             for element in search_list[keyword]['chat_view']:
                 if not element.is_element_displayed():
-                    self.errors.append('Requested %s element is not shown on chat view after navigating from suggestion '
-                                       'for %s' % (element.name, keyword))
+                    self.errors.append(
+                        'Requested %s element is not shown on chat view after navigating from suggestion '
+                        'for %s' % (element.name, keyword))
             home.back_button.click()
 
         home.just_fyi('No suggestion at attempt to search for invalid data')
-        invalid_data = ['   ',  'ab;', '.6', '@ana']
+        invalid_data = ['   ', 'ab;', '.6', '@ana']
         for text in invalid_data:
             home.search_by_keyword(text)
             if home.element_by_text_part('No search results. Do you mean').is_element_displayed():
@@ -279,7 +281,6 @@ class TestChatManagement(SingleDeviceTestCase):
         if not warning_text.is_element_displayed():
             self.driver.fail('Error is not shown for invalid public key')
 
-
     @marks.testrail_id(6319)
     @marks.medium
     def test_deny_access_camera_and_gallery(self):
@@ -345,8 +346,9 @@ class TestChatManagement(SingleDeviceTestCase):
         wallet = home.wallet_button.click()
         wallet.scan_qr_button.click()
         if not home.element_by_text('Scan QR code').is_element_displayed():
-            self.errors.append('Scan QR code is not opened after allowing permission to the camera from univesal QR code'
-                               ' scanner view')
+            self.errors.append(
+                'Scan QR code is not opened after allowing permission to the camera from univesal QR code'
+                ' scanner view')
         wallet.cancel_button.click()
         wallet.home_button.click()
         home.get_chat(basic_user['username']).click()
@@ -355,7 +357,6 @@ class TestChatManagement(SingleDeviceTestCase):
         if not chat.first_image_from_gallery.is_element_displayed():
             self.errors.append('Image previews are not shown after denying and allowing access to gallery')
         self.errors.verify_no_errors()
-
 
     @marks.testrail_id(5757)
     @marks.medium
@@ -396,7 +397,7 @@ class TestChatManagement(SingleDeviceTestCase):
             for element in search_results:
                 if search_list[keyword] not in element.text:
                     self.errors.append("'%s' is shown on the home screen after searching by '%s' keyword" %
-                                            (element.text, keyword))
+                                       (element.text, keyword))
             home.cancel_button.click()
 
         home.just_fyi('Can search for public chat while offline')
@@ -496,10 +497,11 @@ class TestChatManagement(SingleDeviceTestCase):
         chat_view.profile_details.click()
         chat_view.share_button.click()
         chat_view.share_via_messenger()
-        if not chat_view.element_by_text_part('https://join.status.im/u/%s' % dummy_user["public_key"]).is_element_present():
-             self.errors.append("Can't share public key of contact")
+        if not chat_view.element_by_text_part(
+                'https://join.status.im/u/%s' % dummy_user["public_key"]).is_element_present():
+            self.errors.append("Can't share public key of contact")
         for _ in range(2):
-             chat_view.click_system_back_button()
+            chat_view.click_system_back_button()
 
         sign_in.just_fyi('Join to public chat and share link to it via messenger')
         chat_view.get_back_to_home_view()
@@ -509,9 +511,9 @@ class TestChatManagement(SingleDeviceTestCase):
         public_chat.share_chat_button.click()
         public_chat.share_via_messenger()
         if not chat_view.element_by_text_part('https://join.status.im/%s' % public_chat_name).is_element_present():
-             self.errors.append("Can't share link to public chat")
+            self.errors.append("Can't share link to public chat")
         for _ in range(2):
-             chat_view.click_system_back_button()
+            chat_view.click_system_back_button()
         chat_view.get_back_to_home_view()
 
         sign_in.just_fyi('Open URL and share link to it via messenger')
@@ -549,7 +551,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         home_2.just_fyi('check that can mention user with 3-random name in public chat')
         chat_1.select_mention_from_suggestion_list(username_2, typed_search_pattern=username_2[0:4])
         if chat_1.chat_message_input.text != '@' + username_2 + ' ':
-            self.errors.append('3-random username is not resolved in chat input after selecting it in mention suggestions list!')
+            self.errors.append(
+                '3-random username is not resolved in chat input after selecting it in mention suggestions list!')
         chat_1.send_message_button.click()
         chat_1.chat_element_by_text(username_2).click()
         chat_1.profile_send_message.wait_for_visibility_of_element(20)
@@ -576,17 +579,18 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_1.back_button.click()
         expected_username = '%s %s' % (nickname, username_2)
         if chat_element.username.text != expected_username:
-            self.errors.append('Username %s in public chat does not match expected %s' % (chat_element.username.text, expected_username))
+            self.errors.append('Username %s in public chat does not match expected %s' % (
+            chat_element.username.text, expected_username))
 
         device_1.just_fyi('Add user to contacts, mention it by nickname check contact list in Profile')
         chat_element.member_photo.click()
         chat_1.profile_add_to_contacts.click()
         if not chat_1.remove_from_contacts.is_element_displayed():
-             self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
+            self.errors.append("'Add to contacts' is not changed to 'Remove from contacts'")
         chat_1.back_button.click()
 
         home_2.just_fyi('check that can mention user with nickname in public chat')
-        chat_1.select_mention_from_suggestion_list(username_in_list=nickname + ' ' +username_2,
+        chat_1.select_mention_from_suggestion_list(username_in_list=nickname + ' ' + username_2,
                                                    typed_search_pattern=nickname[0:2])
         if chat_1.chat_message_input.text != '@' + username_2 + ' ':
             self.errors.append('3-random username is not resolved in chat input after selecting it in mention '
@@ -604,7 +608,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             self.errors.append("'Add to contacts' is not changed to 'Remove from contacts' in profile contacts")
         profile_1.get_back_to_home_view()
 
-        device_1.just_fyi('Check that user is added to contacts below "Start new chat" and you redirected to 1-1 on tap')
+        device_1.just_fyi(
+            'Check that user is added to contacts below "Start new chat" and you redirected to 1-1 on tap')
         home_1.plus_button.click()
         home_1.start_new_chat_button.click()
         for name in (nickname, username_2):
@@ -617,7 +622,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             if not element.is_element_displayed():
                 self.errors.append('Expected element is not found in 1-1 after adding user to contacts from profile')
         if chat_1.add_to_contacts.is_element_displayed():
-             self.errors.append('"Add to contacts" button is shown in 1-1 after adding user to contacts from profile')
+            self.errors.append('"Add to contacts" button is shown in 1-1 after adding user to contacts from profile')
 
         device_1.just_fyi('Remove user from contacts')
         chat_1.profile_button.click()
@@ -787,7 +792,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         home_1.get_chat_view()
         if chat_public_1.chat_element_by_text(message_after_block_2).is_element_displayed():
             self.errors.append("Message from blocked user '%s' is received after fetching new messages from offline"
-                % device_2.driver.number)
+                               % device_2.driver.number)
 
         device_1.just_fyi("check that PNs are still enabled in profile after closing 'background notification centre' "
                           "message and relogin")
@@ -840,7 +845,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_public_1.send_message(message_from_sender)
         chat_public_2.quote_message(message_from_sender)
         if chat_public_2.quote_username_in_message_input.text != ("↪ " + device_1_username):
-            self.errors.append(" %s is not displayed in reply quote snippet replying to own message " % device_1_username)
+            self.errors.append(
+                " %s is not displayed in reply quote snippet replying to own message " % device_1_username)
 
         device_1.just_fyi('Message receiver verifies reply is present in received message')
         chat_public_2.send_message(message_from_receiver)
@@ -904,17 +910,21 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         [chat_public_1.set_reaction(message_from_sender, emoji) for emoji in emojis_from_sender]
         emojis_from_receiver = ['angry', 'sad']
         [chat_public_2.set_reaction(message_from_sender, emoji) for emoji in emojis_from_receiver]
-        message_receiver=chat_public_2.chat_element_by_text(message_from_sender)
+        message_receiver = chat_public_2.chat_element_by_text(message_from_sender)
         for emoji in emojis_from_sender:
             if message_sender.emojis_below_message(emoji) != 1:
-                self.errors.append('Counter is not updated on own message after tapping %s for sender in pub chat' % emoji)
+                self.errors.append(
+                    'Counter is not updated on own message after tapping %s for sender in pub chat' % emoji)
             if message_receiver.emojis_below_message(emoji, own=False) != 1:
-                self.errors.append('Counter is not updated on received message after tapping %s for receiver in pub chat' % emoji)
+                self.errors.append(
+                    'Counter is not updated on received message after tapping %s for receiver in pub chat' % emoji)
         for emoji in emojis_from_receiver:
             if message_sender.emojis_below_message(emoji, own=False) != 1:
-                self.errors.append('Counter is not updated on own message after tapping %s for receiver in pub chat' % emoji)
+                self.errors.append(
+                    'Counter is not updated on own message after tapping %s for receiver in pub chat' % emoji)
             if message_receiver.emojis_below_message(emoji) != 1:
-                self.errors.append('Counter is not updated on received message after tapping %s for sender in pub chat' % emoji)
+                self.errors.append(
+                    'Counter is not updated on received message after tapping %s for sender in pub chat' % emoji)
 
         device_1_chat.just_fyi('Unset emoji and check that it is not shown anymore')
         chat_public_1.set_reaction(message_from_sender, 'love')
@@ -956,7 +966,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('1-1 chat: another user profile is opened on long tap on received message')
         device_2_chat.click_system_back_button(2)
 
-        device_1.just_fyi('Public chat: send message and verify that user profile can be opened on long press on message')
+        device_1.just_fyi(
+            'Public chat: send message and verify that user profile can be opened on long press on message')
         chat_name = device_1.get_random_chat_name()
         for home in home_1, home_2:
             home.join_public_chat(chat_name)
@@ -968,5 +979,92 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_public_1.view_profile_long_press(message_from_receiver)
         if not chat_public_1.remove_from_contacts.is_element_displayed():
             self.errors.append('Public chat: another user profile is not opened on long tap on received message')
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6326)
+    @marks.medium
+    def test_mention_users_not_in_chats_if_not_in_contacts(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        home_1, home_2 = device_1.create_user(), device_2.recover_access(
+            passphrase=ens_user_message_sender['passphrase'])
+
+        profile_2 = home_2.profile_button.click()
+        profile_2.switch_network()
+
+        home_2.profile_button.click()
+
+        home_2.just_fyi('Set ENS name so its visible in chats')
+        dapp_view = profile_2.ens_usernames_button.click()
+        dapp_view.element_by_text('Get started').click()
+        dapp_view.ens_name.set_value(ens_user_message_sender['ens'])
+        dapp_view.check_ens_name.click()
+        dapp_view.element_by_text('Ok, got it').click()
+
+        device_1.just_fyi('Both devices joining the same public chat and send messages')
+        chat_name = device_1.get_random_chat_name()
+        own_default_username = home_1.get_public_key_and_username(return_username=True)
+        home_1.home_button.click()
+        chat_1 = home_1.join_public_chat(chat_name)
+        profile_2.home_button.click()
+        chat_2 = home_2.join_public_chat(chat_name)
+        message = 'From ' + ens_user_message_sender['ens'] + ' message'
+        chat_2.send_message(message)
+        username_value = '@' + ens_user_message_sender['ens']
+
+        self.drivers[1].close_app()
+        self.drivers[1].launch_app()
+        device_2.back_button.click()
+        device_2.your_keys_more_icon.click()
+        device_2.generate_new_key_button.click()
+        device_2.generate_key_button.click()
+        device_2.create_user(second_user=True)
+        home_2.join_public_chat(chat_name)
+        newusermessage = 'Newusermessage2'
+        chat_2.send_message(newusermessage)
+        random_username = chat_1.chat_element_by_text(newusermessage).username.text
+
+        chat_1.wait_ens_name_resolved_in_chat(message=message, username_value=username_value)
+        device_1.just_fyi('Set nickname for ENS user')
+
+        chat_1.view_profile_long_press(message)
+        nickname = 'nicknamefortestuser'
+        chat_1.set_nickname(nickname)
+        chat_1.back_button.click()
+        ens_nickname_value = nickname + " @" + ens_user_message_sender['ens']
+        chat_1.wait_ens_name_resolved_in_chat(message=message, username_value=ens_nickname_value)
+
+        device_1.just_fyi('Check there is ENS+Nickname user in separate 1-1 chat')
+        chat_1.get_back_to_home_view()
+        home_1.add_contact(public_key=basic_user['public_key'])
+        chat_1.chat_message_input.send_keys('@')
+        if not (chat_1.search_user_in_mention_suggestion_list(ens_nickname_value).is_element_displayed() or
+                chat_1.search_user_in_mention_suggestion_list(
+                    ens_user_message_sender['username']).is_element_displayed()):
+            self.errors.append('ENS-owner user is not available in mention suggestion list')
+        device_1.just_fyi('Check there is own username is present in any 1-1 chat')
+        if not chat_1.search_user_in_mention_suggestion_list(own_default_username[1]).is_element_displayed():
+            self.errors.append('Own username is not available in mention suggestion list')
+
+        device_1.just_fyi('Check there is no random user in different public chat')
+        chat_1.get_back_to_home_view(2)
+        chat_1 = home_1.join_public_chat(chat_name + "2")
+        chat_1.chat_message_input.send_keys('@')
+        if chat_1.search_user_in_mention_suggestion_list(random_username).is_element_displayed():
+            self.errors.append('Random user from public chat is in mention suggestion list another public chat')
+
+        device_1.just_fyi('Check there is ENS+Nickname user in Group chat and no random user')
+        chat_1.get_back_to_home_view(2)
+        home_1.add_contact(ens_user_message_sender['public_key'])
+        chat_1.get_back_to_home_view(2)
+        home_1.create_group_chat(user_names_to_add=[nickname])
+        chat_1.chat_message_input.send_keys('@')
+        if chat_1.search_user_in_mention_suggestion_list(random_username).is_element_displayed():
+            self.errors.append('Random user from public chat is in mention suggestion list of Group chat')
+        if not (chat_1.search_user_in_mention_suggestion_list(ens_nickname_value).is_element_displayed() or
+                chat_1.search_user_in_mention_suggestion_list(
+                    ens_user_message_sender['username']).is_element_displayed()):
+            self.errors.append('ENS-owner user is not available in mention suggestion list of Group chat')
 
         self.errors.verify_no_errors()

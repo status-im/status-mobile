@@ -22,6 +22,14 @@ ens_user_ropsten['address'] = '0x58d8c3D70ce4FA4b9fb10a665C8712238746F2ff'
 ens_user_ropsten['public_key']  = '0x045efbcc044e5ae21ac3cf111ea6df6186e0cc50a2cd747f52a56d19ce516e683c66cb47f4b0a211108' \
                                   '59aea9592dfba1e0bf4af11ff3eab995f844b3673643bf1'
 
+ens_user_message_sender = dict()
+ens_user_message_sender['ens'] = 'ensmessenger'
+ens_user_message_sender['username'] = 'Glaring Plush Arkshell'
+ens_user_message_sender['passphrase'] = 'tribe life dune clog throw situate robust gospel panic blanket timber eagle'
+ens_user_message_sender['address'] = '0x75fF623fe856012b0667876582038A63F4004184'
+ens_user_message_sender['public_key']  = '0x0471e18b2a9867161383919d85741389a829299ae0833c23e003818c1222942f5dddcbb792daee7c88' \
+                                 'e8a30ee44c00d03240a971d90d76ed8200b75572241da9ef'
+
 dummy_user = dict()
 dummy_user['username'] = "Vain Wordy Hagfish"
 dummy_user['passphrase'] = "near broom kiss excess sad switch slab melt trade crash spare dinner"

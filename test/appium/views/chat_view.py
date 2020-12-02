@@ -1,5 +1,6 @@
 from datetime import datetime
 import dateutil.parser
+import time
 
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
@@ -750,6 +751,13 @@ class SendMyStatusButton(BaseButton):
         self.locator = self.Locator.accessibility_id("send-my-status-button")
 
 
+class UserInMentionSuggestionList(BaseButton):
+    def __init__(self, driver, username):
+        super(UserInMentionSuggestionList, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@content-desc='suggestions-list']//*[@text='%s']" % username)
+
+
 class ChatView(BaseView):
     def __init__(self, driver):
         super(ChatView, self).__init__(driver)
@@ -970,6 +978,19 @@ class ChatView(BaseView):
         self.view_profile_by_avatar_button.click()
         self.profile_block_contact.wait_for_visibility_of_element(5)
 
+    def wait_ens_name_resolved_in_chat(self, message = str, username_value = str):
+        # self.view_profile_by_avatar_button.click()
+        counter = 0
+        while True:
+            if counter >= 120:
+                self.driver.fail('Username not updated to %s %s' % (60, username_value))
+            elif not (self.chat_element_by_text(message).username.text == username_value):
+                counter += 5
+                time.sleep(5)
+            else:
+                return
+        # self.profile_block_contact.wait_for_visibility_of_element(5)
+
     def move_to_messages_by_time_marker(self, marker='Today'):
         self.driver.info("Moving to messages by time marker: '%s'" % marker)
         HistoryTimeMarker(self.driver, marker).scroll_to_element(depth=50, direction='up')
@@ -983,16 +1004,12 @@ class ChatView(BaseView):
         element.wait_for_invisibility_of_element()
 
     def search_user_in_mention_suggestion_list(self, username):
-        element = BaseButton(self.driver)
-        element.locator = element.Locator.xpath_selector(
-            "//*[@content-desc='suggestions-list']//*[@text='%s']" % username)
-        element.wait_for_visibility_of_element(10)
-        return element
+        return UserInMentionSuggestionList(self.driver, username)
 
     def select_mention_from_suggestion_list(self, username_in_list, typed_search_pattern = ''):
         self.chat_message_input.set_value('@' + typed_search_pattern)
         self.chat_message_input.click()
-        self.search_user_in_mention_suggestion_list(username_in_list).click()
+        self.search_user_in_mention_suggestion_list(username_in_list).wait_for_visibility_of_element(10).click()
 
     def record_audio_message(self, message_length_in_seconds=5):
         self.audio_message_button.click()
