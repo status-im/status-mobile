@@ -557,8 +557,12 @@
                   #(re-frame.core/dispatch [::restart])
                   ms-20-min))]
     {:db           (-> db
+                       (update :wallet dissoc :fetching)
                        (assoc :wallet-service/state :stopped)
-                       (assoc :wallet-service/restart-timeout timeout))
+                       (assoc :wallet-service/restart-timeout timeout)
+                       (dissoc :wallet/recent-history-fetching-started?
+                               :wallet/waiting-for-recent-history?
+                               :wallet/refreshing-history?))
      ::stop-wallet nil}))
 
 (fx/defn start-wallet
@@ -620,9 +624,11 @@
 (fx/defn restart-on-pull
   {:events [:wallet.ui/pull-to-refresh-history]}
   [{:keys [db now] :as cofx}]
-  (let [last-pull (get db :wallet/last-pull-time)
-        watching? (get db :wallet/watch-txs)]
+  (let [last-pull         (get db :wallet/last-pull-time)
+        watching?         (get db :wallet/watch-txs)
+        fetching-history? (get db :wallet/recent-history-fetching-started?)]
     (when (and (not watching?)
+               (not fetching-history?)
                (or (not last-pull)
                    (> (- now last-pull) pull-to-refresh-cooldown-period)))
       (fx/merge

@@ -171,6 +171,7 @@
 (reg-root-key-sub :wallet/favourites :wallet/favourites)
 (reg-root-key-sub :wallet/refreshing-history? :wallet/refreshing-history?)
 (reg-root-key-sub :wallet/buy-crypto-hidden :wallet/buy-crypto-hidden)
+(reg-root-key-sub :wallet/fetching-error :wallet/fetching-error)
 
 ;;commands
 (reg-root-key-sub :commands/select-account :commands/select-account)

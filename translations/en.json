@@ -1349,5 +1349,6 @@
     "has-permissions": "has permission to access",
     "connect-wallet": "Connect wallet",
     "open-chat": "Open chat",
-    "favourite-description": "Your favourite websites will appear here"
+    "favourite-description": "Your favourite websites will appear here",
+    "transfers-fetching-failure": "Transfers history could not be updated. Check your connection and pull down to try again"
 }

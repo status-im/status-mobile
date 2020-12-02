@@ -18,6 +18,7 @@
             [status-im.wallet.utils :as wallet.utils]
             [status-im.ui.components.tabs :as tabs]
             [quo.react-native :as rn]
+            [quo.design-system.colors :as quo-colors]
             [status-im.utils.utils :as utils.utils])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -212,7 +213,8 @@
      :onRefresh  refresh-action}]))
 
 (views/defview account []
-  (views/letsubs [{:keys [name address] :as account} [:multiaccount/current-account]]
+  (views/letsubs [{:keys [name address] :as account} [:multiaccount/current-account]
+                  fetching-error [:wallet/fetching-error]]
     (let [anim-y (animation/create-value button-group-height)
           scroll-y (animation/create-value 0)]
       (anim-listener anim-y scroll-y)
@@ -228,6 +230,30 @@
                                  (and
                                   @updates-counter
                                   @(re-frame/subscribe [:wallet/refreshing-history?])))}
+        (when fetching-error
+          [react/view {:style {:flex 1
+                               :align-items :center
+                               :margin 8}}
+           [icons/icon
+            :main-icons/warning
+            {:color           :red
+             :container-style {:background-color (quo-colors/get-color :negative-02)
+                               :height           40
+                               :width            40
+                               :border-radius    20
+                               :align-items      :center
+                               :justify-content  :center}}]
+           [react/view
+            {:style {:justify-content   :center
+                     :align-items       :center
+                     :margin-top        8
+                     :margin-horizontal 67.5
+                     :text-align        :center}}
+            [quo/text
+             {:color :secondary
+              :size  :small
+              :style {:text-align :center}}
+             (i18n/label :t/transfers-fetching-failure)]]])
         [react/view {:padding-left 16}
          [react/scroll-view {:horizontal true}
           [react/view {:flex-direction :row :padding-top 8 :padding-bottom 12}

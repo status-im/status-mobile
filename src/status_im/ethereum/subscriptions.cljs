@@ -59,7 +59,9 @@
   [{:keys [db]} accounts]
   (log/debug "[wallet-subs] recent-history-fetching-started"
              "accounts" accounts)
-  {:db (transactions/update-fetching-status db accounts :recent? true)})
+  {:db (-> db
+           (transactions/update-fetching-status accounts :recent? true)
+           (assoc :wallet/recent-history-fetching-started? true))})
 
 (fx/defn recent-history-fetching-ended
   [{:keys [db] :as cofx} {:keys [accounts blockNumber]}]
@@ -73,7 +75,9 @@
                        wallet/remove-transactions-since-block blockNumber)
             (transactions/update-fetching-status accounts :recent? false)
             (dissoc :wallet/waiting-for-recent-history?
-                    :wallet/refreshing-history?))
+                    :wallet/refreshing-history?
+                    :wallet/fetching-error
+                    :wallet/recent-history-fetching-started?))
     :transactions/get-transfers
     {:chain-tokens (:wallet/all-tokens db)
      :addresses    (reduce
@@ -90,6 +94,13 @@
      :historical?  true}}
    (wallet.core/restart-wallet-service-default)))
 
+(fx/defn fetching-error
+  [{:keys [db] :as cofx} {:keys [message]}]
+  (fx/merge
+   cofx
+   {:db               (assoc db :wallet/fetching-error message)}
+   (wallet.core/stop-wallet)))
+
 (fx/defn new-wallet-event
   [cofx {:keys [type blockNumber accounts newTransactions] :as event}]
   (log/debug "[wallet-subs] new-wallet-event"
@@ -101,4 +112,5 @@
     "reorg" (reorg cofx event)
     "recent-history-fetching" (recent-history-fetching-started cofx accounts)
     "recent-history-ready" (recent-history-fetching-ended cofx event)
+    "fetching-history-error" (fetching-error cofx event)
     (log/warn ::unknown-wallet-event :type type :event event)))
