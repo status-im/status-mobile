@@ -51,24 +51,24 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
         signin_view.access_key_button.click()
         recover_access_view = RecoverAccessView(self.driver)
         validations = [
-            # empty value
             {
+                'case': 'empty value',
                 'phrase': '    ',
                 'element to check': recover_access_view.warnings.invalid_recovery_phrase,
                 'validation message': 'Required field',
                 'words count': 1,
                 'popup': False
             },
-            # invalid seed phrase
             {
+                'case': '1 word seed',
                 'phrase': 'a',
                 'element to check': recover_access_view.warnings.invalid_recovery_phrase,
-                'validation message': 'Seed phrase is invalid',
+                'validation message': '',
                 'words count': 1,
                 'popup' : False
             },
-            # mnemonic but checksum validation fails
             {
+                'case': 'mnemonic but checksum validation fails',
                 'phrase': 'one two three four five six seven eight nine ten eleven twelve',
                 'element to check': recover_access_view.warnings.invalid_recovery_phrase,
                 'validation message': '',
@@ -84,8 +84,8 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
             self.errors.append("Possible to create account with empty seed phrase")
 
         signin_view = SignInView(self.driver, skip_popups=False)
-        # we're performing the same steps changing only phrase per attempt
         for validation in validations:
+            recover_access_view.just_fyi("Checking %s" % validation.get('case'))
             phrase, elm, msg, words_count, popup = validation.get('phrase'), \
                                             validation.get('element to check'), \
                                             validation.get('validation message'), \
@@ -98,9 +98,9 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
 
             recover_access_view.send_as_keyevent(phrase)
 
-            # TODO: still disabled because tooltips are not visible
-            # if msg and not elm.is_element_displayed():
-            #     self.errors.append('"{}" message is not shown'.format(msg))
+            if msg:
+                if not recover_access_view.element_by_text(msg).is_element_displayed():
+                    self.errors.append('"{}" message is not shown'.format(msg))
 
             recover_access_view.just_fyi('check that words count is shown')
             if words_count == 1:

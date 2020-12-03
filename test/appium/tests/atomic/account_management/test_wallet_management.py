@@ -153,51 +153,6 @@ class TestWalletManagement(SingleDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-    @marks.testrail_id(5435)
-    @marks.medium
-    @marks.skip
-    # TODO: e2e blocker: 9225 (should be updated and enabled)
-    def test_filter_transactions_history(self):
-        user = wallet_users['C']
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(passphrase=user['passphrase'])
-        wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.accounts_status_account.click()
-        transaction_history = wallet_view.transaction_history_button.click()
-        transaction_history.filters_button.click()
-        for filter_name in 'Outgoing', 'Pending', 'Failed':
-            transaction_history.filter_checkbox(filter_name).click()
-        wallet_view.done_button.click()
-        for i in range(transaction_history.transactions_table.get_transactions_number()):
-            details = transaction_history.transactions_table.transaction_by_index(i).click()
-            if details.get_recipient_address() != '0x' + user['address'] \
-                    or details.element_by_text('Failed').is_element_displayed():
-                self.driver.fail('Incoming transactions are not filtered')
-            details.back_button.click()
-
-        transaction_history.filters_button.click()
-        for filter_name in 'Outgoing', 'Incoming':
-            transaction_history.filter_checkbox(filter_name).click()
-        wallet_view.done_button.click()
-        for i in range(transaction_history.transactions_table.get_transactions_number()):
-            details = transaction_history.transactions_table.transaction_by_index(i).click()
-            if details.get_sender_address() != '0x' + user['address'] \
-                    or details.element_by_text('Failed').is_element_displayed():
-                self.driver.fail('Outgoing transactions are not filtered')
-            details.back_button.click()
-
-        transaction_history.filters_button.click()
-        for filter_name in 'Outgoing', 'Failed':
-            transaction_history.filter_checkbox(filter_name).click()
-        wallet_view.done_button.click()
-        for i in range(transaction_history.transactions_table.get_transactions_number()):
-            details = transaction_history.transactions_table.transaction_by_index(i).click()
-            if not details.element_by_text('Failed').is_element_displayed():
-                self.driver.fail('Failed transactions are not filtered')
-            details.back_button.click()
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(5381)
     @marks.high
     def test_user_can_see_all_own_assets_after_account_recovering(self):
@@ -458,8 +413,6 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.manage_assets_button.click()
         for keyword in search_list_assets:
             home.search_by_keyword(keyword)
-            # TODO: remove time sleep after 10957 is closed
-            time.sleep(5)
             if keyword == 'ad':
                 search_elements = wallet.all_assets_full_names.find_elements()
             else:

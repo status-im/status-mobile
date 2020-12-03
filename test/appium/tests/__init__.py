@@ -36,9 +36,9 @@ pair_code= '000000'
 
 bootnode_address = "enode://a8a97f126f5e3a340cb4db28a1187c325290ec08b2c9a6b1f19845ac86c46f9fac2ba13328822590" \
                    "fd3de3acb09cc38b5a05272e583a2365ad1fa67f66c55b34@167.99.210.203:30404"
-# referred to https://github.com/status-im/status-react/blob/1ea49a80fc915aa3174ecfd9649c3bab6480d30d/src/status_im/constants.cljs#L40
-mailserver_address = "enode://ee2b53b0ace9692167a410514bca3024695dbf0e1a68e1dff9716da620efb195f04a4b9e873fb9b74ac84de80" \
-                     "1106c465b8e2b6c4f0d93b8749d1578bfcaf03e:status-offline-inbox@104.197.238.144:443"
+# referred to https://github.com/status-im/status-react/blob/develop/resources/config/fleets.json
+mailserver_address = "enode://69f72baa7f1722d111a8c9c68c39a31430e9d567695f6108f31ccb6cd8f0adff4991e7fdca8fa770e75bc8a511" \
+                     "a87d24690cbc80e008175f40c157d6f6788d48:status-offline-inbox@206.189.240.16:443"
 staging_fleet = 'eth.staging'
 prod_fleet = 'eth.prod'
 # This fleet is used in the tests

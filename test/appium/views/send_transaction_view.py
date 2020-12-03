@@ -392,6 +392,8 @@ class SendTransactionView(BaseView):
             self.enter_password_input.send_keys(sender_password)
             self.sign_button.click_until_absense_of_element(self.sign_button)
         self.ok_button.wait_for_element(120)
+        if self.element_by_text_part('Transaction failed').is_element_displayed():
+            self.driver.fail('Transaction failed')
         self.ok_button.click()
 
     def get_transaction_fee_total(self):

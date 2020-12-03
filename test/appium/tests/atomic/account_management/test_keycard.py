@@ -288,9 +288,6 @@ class TestCreateAccount(SingleDeviceTestCase):
         account_button = wallet_view.get_account_by_name(account_name)
         if not account_button.is_element_displayed():
             self.driver.fail('Account was not added')
-        # TODO: not working in keycard - token balance is fetched. blecked due to issue
-        # if wallet_view.asset_by_name('ADI').is_element_displayed():
-        #     self.errors.append('Tokens are visible after adding account on cellular network!')
 
         wallet_view.just_fyi('Check that balance is changed after go back to WI-FI')
         sign_in.toggle_mobile_data()

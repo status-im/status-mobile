@@ -289,19 +289,20 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_1_home.just_fyi('set status in profile')
         device_1_status = 'Hey hey hey'
         timeline = device_1.status_button.click()
-        timeline.set_new_status(device_1_status)
-        if not timeline.element_by_text(device_1_status).is_element_displayed():
-            self.drivers[0].fail('Status is not set')
+        timeline.set_new_status(device_1_status, image=True)
+        for element in timeline.element_by_text(device_1_status), timeline.image_chat_item:
+            if not element.is_element_displayed():
+                self.drivers[0].fail('Status is not set')
+
         device_1_public_key, device_1_username = device_1_profile.get_public_key_and_username(return_username=True)
-        image_description = 'description'
         [home.click() for home in [device_1_profile.home_button, device_2_profile.home_button]]
 
         device_1_home.just_fyi('start 1-1 chat')
         device_1_chat = device_1_home.add_contact(device_2_public_key)
 
         device_1_home.just_fyi('send image in 1-1 chat from Gallery, check options for sender')
+        image_description = 'description'
         device_1_chat.show_images_button.click()
-        device_1_chat.allow_button.click()
         device_1_chat.first_image_from_gallery.click()
         if not device_1_chat.cancel_send_image_button.is_element_displayed():
             self.errors.append("Can't cancel sending images, expected image preview is not shown!")
@@ -329,8 +330,11 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         device_2_home.just_fyi('View user profile and check status')
         device_2_chat.chat_options.click()
-        device_2_chat.view_profile_button.click()
-        device_2_chat.element_by_text(device_1_status).scroll_to_element()
+        timeline_device_1 = device_2_chat.view_profile_button.click()
+        for element in timeline_device_1.element_by_text(device_1_status), timeline_device_1.image_chat_item:
+            element.scroll_to_element()
+            if not element.is_element_displayed():
+                self.drivers[0].fail('Status of another user not shown when open another user profile')
         device_2_chat.back_button.click()
 
         device_2_home.just_fyi('check options on long-press image for receiver')
@@ -609,9 +613,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('Timestamp is not displayed in 1-1 chat for the recipient')
         if device_2_chat.chat_element_by_text(message).member_photo.is_element_displayed():
             self.errors.append('Member photo is displayed in 1-1 chat for the recipient')
-        # TODO: disabled due to issue 'yesterday' is shown, can't emulate manually
-        # for chat in device_1_chat, device_2_chat:
-        #     chat.verify_message_is_under_today_text(message, self.errors)
+        for chat in device_1_chat, device_2_chat:
+            chat.verify_message_is_under_today_text(message, self.errors)
 
         device_1_chat.just_fyi('check user picture and timestamps in chat for sender and recipient in public chat')
         chat_name = device_1_home.get_random_chat_name()
@@ -631,9 +634,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
             self.errors.append('Timestamp is not displayed in public chat for the recipient')
         if not device_1_chat.chat_element_by_text(message).member_photo.is_element_displayed():
             self.errors.append('Member photo is not displayed in public chat for the recipient')
-        # TODO: disabled due to issue 'yesterday' is shown, can't emulate manually
-        # for chat in device_1_chat, device_2_chat:
-        #     chat.verify_message_is_under_today_text(message, self.errors)
+        for chat in device_1_chat, device_2_chat:
+            chat.verify_message_is_under_today_text(message, self.errors)
 
         self.errors.verify_no_errors()
 
@@ -650,7 +652,9 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
         chat = sign_in.get_chat_view()
         message_text = {'text_message': 'mmmeowesage_text'}
         formatted_message = {'message_with_link':'https://status.im',
-                        'message_with_tag': '#successishere'}
+                             #TODO: blocked with 11161
+                             #'message_with_tag': '#successishere'
+                             }
         message_input = chat.chat_message_input
         message_input.send_keys(message_text['text_message'])
         chat.send_message_button.click()
@@ -662,19 +666,18 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             self.errors.append('Message %s text was not copied in a public chat' % message_text['text_message'])
         message_input.clear()
 
-        #TODO: uncomment after #11168 and 11161 is fixed
-        #for message in formatted_message:
-        #    message_input.send_keys(formatted_message[message])
-        #    chat.send_message_button.click()
+        for message in formatted_message:
+           message_input.send_keys(formatted_message[message])
+           chat.send_message_button.click()
 
-        #    message_bubble = chat.chat_element_by_text(formatted_message[message])
-        #    message_bubble.timestamp_message.long_press_element()
-        #    chat.element_by_text('Copy').click()
+           message_bubble = chat.chat_element_by_text(formatted_message[message])
+           message_bubble.timestamp_message.long_press_element()
+           chat.element_by_text('Copy').click()
 
-        #    message_input.paste_text_from_clipboard()
-        #    if message_input.text != formatted_message[message]:
-        #        self.errors.append('Message %s text was not copied in a public chat' % formatted_message[message])
-        #    message_input.clear()
+           message_input.paste_text_from_clipboard()
+           if message_input.text != formatted_message[message]:
+               self.errors.append('Message %s text was not copied in a public chat' % formatted_message[message])
+           message_input.clear()
 
         self.errors.verify_no_errors()
 

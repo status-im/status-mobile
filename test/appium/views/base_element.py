@@ -48,8 +48,10 @@ class BaseElement(object):
             return cls(MobileBy.XPATH, xpath_expression)
 
         @classmethod
-        def translation_id_selector(cls, id, suffix=''):
+        def translation_id_selector(cls, id, suffix='', uppercase = False):
             text = transl[id]
+            if uppercase:
+                text = transl[id].upper()
             return BaseElement.Locator.xpath_selector('//*[@text="' + text + '"]' + suffix)
 
         def __str__(self, *args, **kwargs):

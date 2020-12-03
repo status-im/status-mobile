@@ -804,10 +804,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.just_fyi('disable autoselection')
         profile_1.sync_settings_button.click()
         profile_1.mail_server_button.click()
-        mailserver_1 = profile_1.return_mailserver_name(mailserver_hk, used_fleet)
-        mailserver_2 = profile_1.return_mailserver_name(mailserver_ams, used_fleet)
-        # TODO: temporary pin mailserver to avoid issue 9269 - should be disabled after fix
-        mailserver = mailserver_1 if profile_1.element_by_text(mailserver_2).is_element_present() else mailserver_2
+        mailserver = profile_1.return_mailserver_name(mailserver_hk, used_fleet)
         profile_1.mail_server_auto_selection_button.click()
         profile_1.mail_server_by_name(mailserver).click()
         profile_1.confirm_button.click()
@@ -815,59 +812,58 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.plus_button.click()
         server_name = 'test'
         profile_1.save_button.click()
-        if profile_1.element_by_text(mailserver_ams).is_element_displayed():
+        if profile_1.element_by_text(mailserver).is_element_displayed():
             self.errors.append('Could add custom mailserver with empty address and name')
         profile_1.specify_name_input.set_value(server_name)
         profile_1.mail_server_address_input.set_value(mailserver_address[:-3])
         profile_1.save_button.click()
-        if profile_1.element_by_text(mailserver_2).is_element_displayed():
+        if not profile_1.element_by_text_part("Invalid format").is_element_displayed():
             self.errors.append('could add custom mailserver with invalid address')
         profile_1.mail_server_address_input.clear()
         profile_1.mail_server_address_input.set_value(mailserver_address)
         profile_1.save_button.click()
-        # TODO: disabled due to 10065
-        # profile_1.mail_server_by_name(server_name).click()
-        # profile_1.mail_server_connect_button.click()
-        # profile_1.confirm_button.click()
-        # if profile_1.element_by_text_part("Error connecting").is_element_displayed(40):
-        #     profile_1.retry_to_connect_to_mailserver()
-        # profile_1.get_back_to_home_view()
-        # profile_1.home_button.click()
+        profile_1.mail_server_by_name(server_name).click()
+        profile_1.mail_server_connect_button.click()
+        profile_1.confirm_button.click()
+        if profile_1.element_by_text_part("Error connecting").is_element_displayed(40):
+            profile_1.retry_to_connect_to_mailserver()
+        profile_1.get_back_to_home_view()
+        profile_1.home_button.click()
 
 
-        # profile_1.just_fyi('start chat with user2 and check that all messages are delivered')
-        # chat_1 = home_1.add_contact(public_key)
-        # message = 'test message'
-        # chat_1.chat_message_input.send_keys(message)
-        # chat_1.send_message_button.click()
-        # chat_2 = home_2.get_chat(username_1).click()
-        # chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
-        # message_1 = 'new message'
-        # chat_2.chat_message_input.send_keys(message_1)
-        # chat_2.send_message_button.click()
-        # chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element()
-        #
-        # profile_1.just_fyi('delete custom mailserver')
-        # chat_1.profile_button.click()
-        # profile_1.sync_settings_button.click()
-        # profile_1.mail_server_button.click()
-        # profile_1.element_by_text(mailserver).scroll_to_element()
-        # profile_1.element_by_text(mailserver).click()
-        # profile_1.confirm_button.click()
-        # profile_1.element_by_text(server_name).scroll_to_element()
-        # profile_1.element_by_text(server_name).click()
-        # profile_1.mail_server_delete_button.scroll_to_element()
-        # profile_1.mail_server_delete_button.click()
-        # profile_1.mail_server_confirm_delete_button.click()
-        # if profile_1.element_by_text(server_name).is_element_displayed():
-        #     self.errors.append('Deleted custom mailserver is shown')
-        # profile_1.get_back_to_home_view()
-        # profile_1.relogin()
-        # chat_1.profile_button.click()
-        # profile_1.sync_settings_button.click()
-        # profile_1.mail_server_button.click()
-        # if profile_1.element_by_text(server_name).is_element_displayed():
-        #     self.errors.append('Deleted custom mailserver is shown after relogin')
+        profile_1.just_fyi('start chat with user2 and check that all messages are delivered')
+        chat_1 = home_1.add_contact(public_key)
+        message = 'test message'
+        chat_1.chat_message_input.send_keys(message)
+        chat_1.send_message_button.click()
+        chat_2 = home_2.get_chat(username_1).click()
+        chat_2.chat_element_by_text(message).wait_for_visibility_of_element()
+        message_1 = 'new message'
+        chat_2.chat_message_input.send_keys(message_1)
+        chat_2.send_message_button.click()
+        chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element()
+
+        profile_1.just_fyi('delete custom mailserver')
+        chat_1.profile_button.click()
+        profile_1.sync_settings_button.click()
+        profile_1.mail_server_button.click()
+        profile_1.element_by_text(mailserver).scroll_to_element()
+        profile_1.element_by_text(mailserver).click()
+        profile_1.confirm_button.click()
+        profile_1.element_by_text(server_name).scroll_to_element()
+        profile_1.element_by_text(server_name).click()
+        profile_1.mail_server_delete_button.scroll_to_element()
+        profile_1.mail_server_delete_button.click()
+        profile_1.mail_server_confirm_delete_button.click()
+        if profile_1.element_by_text(server_name).is_element_displayed():
+            self.errors.append('Deleted custom mailserver is shown')
+        profile_1.get_back_to_home_view()
+        profile_1.relogin()
+        chat_1.profile_button.click()
+        profile_1.sync_settings_button.click()
+        profile_1.mail_server_button.click()
+        if profile_1.element_by_text(server_name).is_element_displayed():
+            self.errors.append('Deleted custom mailserver is shown after relogin')
 
         self.errors.verify_no_errors()
 
@@ -876,59 +872,55 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
     @marks.flaky
     def test_can_not_connect_to_mailserver(self):
         self.create_drivers(2)
-        sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = sign_in_1.create_user(), sign_in_2.create_user()
+        home_1, home_2= SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
         profile_1 = home_1.profile_button.click()
 
         profile_1.just_fyi('add non-working mailserver and connect to it')
         profile_1.sync_settings_button.click()
         profile_1.mail_server_button.click()
+        profile_1.mail_server_auto_selection_button.click()
         profile_1.plus_button.click()
         server_name = 'test'
         profile_1.specify_name_input.set_value(server_name)
         profile_1.mail_server_address_input.set_value(mailserver_address.replace('4','5'))
         profile_1.save_button.click()
-        profile_1.mail_server_auto_selection_button.click()
         profile_1.mail_server_by_name(server_name).click()
         profile_1.mail_server_connect_button.click()
         profile_1.confirm_button.click()
-        if not profile_1.element_by_text_part('Error connecting').is_element_displayed(30):
-            sign_in_1.driver.fail("No popup with 'Error connecting' is shown")
-        profile_1.element_by_text('CANCEL').click()
 
-        # TODO: blocked by 10065
-        # profile_1.home_button.click()
-        # home_2.just_fyi('send several messages to public channel')
-        # public_chat_name = home_2.get_random_chat_name()
-        # message = 'test_message'
-        # public_chat_2 = home_2.join_public_chat(public_chat_name)
-        # public_chat_2.chat_message_input.send_keys(message)
-        # public_chat_2.send_message_button.click()
-        # public_chat_2.back_button.click()
-        #
-        # profile_1.just_fyi('join same public chat and try to reconnect via "Tap to reconnect" and check "Connecting"')
-        # profile_1.home_button.click()
-        # home_1.join_public_chat(public_chat_name)
-        # public_chat_1 = home_1.get_chat_view()
-        # chat_state = 'Could not connect to mailserver. Tap to reconnect'
-        # public_chat_1.element_by_text(chat_state).click()
-        # if not public_chat_1.element_by_text_part('Connecting').is_element_displayed():
-        #     self.errors.append("Indicator doesn't show 'Connecting'")
+        profile_1.just_fyi('check that popup "Error connecting" will not reappear if tap on "Cancel"')
+        profile_1.find_element_by_translation_id('mailserver-error-title').wait_for_element(30)
+        profile_1.cancel_button.click()
+        profile_1.home_button.click()
 
-        # profile_1.just_fyi('check that can RETRY to connect')
-        # for _ in range(2):
-        #     public_chat_1.element_by_text('RETRY').wait_for_element(30)
-        #     public_chat_1.element_by_text('RETRY').click()
-        #
-        # profile_1.just_fyi('check that can pick another mailserver and receive messages')
-        # public_chat_1.element_by_text('PICK ANOTHER').is_element_displayed(30)
-        # public_chat_1.element_by_text_part('PICK ANOTHER').click()
-        # mailserver = profile_1.return_mailserver_name(mailserver_ams, used_fleet)
-        # profile_1.element_by_text(mailserver).click()
-        # profile_1.confirm_button.click()
-        # profile_1.home_button.click()
-        # if not public_chat_1.chat_element_by_text(message).is_element_displayed(30):
-        #     self.errors.append("Chat history wasn't fetched")
+        home_2.just_fyi('send several messages to public channel')
+        public_chat_name = home_2.get_random_chat_name()
+        message = 'test_message'
+        public_chat_2 = home_2.join_public_chat(public_chat_name)
+        public_chat_2.chat_message_input.send_keys(message)
+        public_chat_2.send_message_button.click()
+        public_chat_2.back_button.click()
+
+        profile_1.just_fyi('join same public chat and try to reconnect via "Tap to reconnect" and check "Connecting"')
+        profile_1.home_button.click()
+        public_chat_1 = home_1.join_public_chat(public_chat_name)
+        public_chat_1.relogin()
+        if not public_chat_1.element_by_text_part("Connecting").is_element_displayed(20):
+            self.errors.append("Indicator doesn't show 'Connecting'")
+
+        profile_1.just_fyi('check that can RETRY to connect')
+        for _ in range(2):
+            public_chat_1.find_element_by_translation_id('mailserver-retry', 'button', uppercase=True).wait_and_click()
+
+        profile_1.just_fyi('check that can pick another mailserver and receive messages')
+        public_chat_1.find_element_by_translation_id('mailserver-pick-another', 'button', uppercase=True).wait_and_click()
+        mailserver = profile_1.return_mailserver_name(mailserver_ams, used_fleet)
+        profile_1.element_by_text(mailserver).click()
+        profile_1.confirm_button.click()
+        profile_1.home_button.click()
+        home_1.get_chat(public_chat_name).click()
+        if not public_chat_1.chat_element_by_text(message).is_element_displayed(30):
+            self.errors.append("Chat history wasn't fetched")
 
         self.errors.verify_no_errors()
 

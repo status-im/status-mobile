@@ -524,6 +524,10 @@ class BaseView(object):
         self.driver.info('Press system Home button')
         self.driver.press_keycode(3)
 
+    def put_app_to_background(self):
+        self.driver.info('App to background')
+        self.driver.press_keycode(187)
+
     def cut_text(self):
         self.driver.info('Cut text')
         self.driver.press_keycode(277)
@@ -586,10 +590,10 @@ class BaseView(object):
         element.locator = element.Locator.xpath_selector("//*[starts-with(@text,'%s')]" % text)
         return element
 
-    def find_element_by_translation_id(self, id, element_type='base'):
+    def find_element_by_translation_id(self, id, element_type='base', uppercase=False):
         self.driver.info("Looking element by id: '%s'" % id)
         element = self.element_types[element_type](self.driver)
-        element.locator = element.Locator.translation_id_selector(id)
+        element.locator = element.Locator.translation_id_selector(id, uppercase=uppercase)
         return element
 
     def wait_for_element_starts_with_text(self, text, wait_time=60):
