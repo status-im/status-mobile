@@ -15,6 +15,10 @@
 		3870E1E692E24133A80B07DE /* Inter-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 693A62DB37BC4CD5A30E5C96 /* Inter-SemiBold.otf */; };
 		393D26E3080B443A998F4A2F /* Inter-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = B07176ACDAA1422E8F0A3D6B /* Inter-Italic.otf */; };
 		3A2626CF245C3F2200D5F94B /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2626CE245C3F2200D5F94B /* Dummy.swift */; };
+		3A7CD29D255D677600E0959C /* RNQuoTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7CD29C255D677600E0959C /* RNQuoTextView.m */; };
+		3A7CD29E255D677600E0959C /* RNQuoTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7CD29C255D677600E0959C /* RNQuoTextView.m */; };
+		3A7CD2A0255D69C100E0959C /* RNQuoTextViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7CD29F255D69C100E0959C /* RNQuoTextViewManager.m */; };
+		3A7CD2A1255D69C100E0959C /* RNQuoTextViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7CD29F255D69C100E0959C /* RNQuoTextViewManager.m */; };
 		3A8F8EAA24A4D31600BF206D /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A8F8EA924A4D31600BF206D /* GameKit.framework */; };
 		3AAD2ABC24A3A60E0075D594 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		3AAD2ABD24A3A60E0075D594 /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2626CE245C3F2200D5F94B /* Dummy.swift */; };
@@ -598,7 +602,6 @@
 				3AAD2ACF24A3A60E0075D594 /* Inter-Italic.otf in Resources */,
 				3AAD2AD024A3A60E0075D594 /* Inter-Medium.otf in Resources */,
 				3AAD2AD124A3A60E0075D594 /* Inter-MediumItalic.otf in Resources */,
-				3A6406FF24A3ADF90046ED37 /* Info.plist in Resources */,
 				3AAD2AD224A3A60E0075D594 /* Inter-Regular.otf in Resources */,
 				3AAD2AD324A3A60E0075D594 /* Inter-SemiBold.otf in Resources */,
 				3AAD2AD424A3A60E0075D594 /* Inter-SemiBoldItalic.otf in Resources */,

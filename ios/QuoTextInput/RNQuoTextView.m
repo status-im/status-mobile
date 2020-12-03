@@ -31,31 +31,29 @@
 
 @implementation RNQuoTextView
 {
-    RCTUITextView *_backedTextInputView;
+  RCTUITextView *_backedTextInputView;
 }
 
 UITextPosition *selectionStart;
-UITextPosition* beginning;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   if (self = [super initWithBridge:bridge]) {
     self.blurOnSubmit = NO;
-
+    
     _backedTextInputView = [[RCTUITextView alloc] initWithFrame:self.bounds];
     _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _backedTextInputView.textInputDelegate = self;
-
-  
+    _backedTextInputView.selectable = YES;
+    
+    [self addSubview:_backedTextInputView];
+    
     UITapGestureRecognizer *tapGesture = [ [UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
     tapGesture.numberOfTapsRequired = 2;
     
-
-            [_backedTextInputView addGestureRecognizer:tapGesture];
-         
-    [self addSubview:_backedTextInputView];
+    [_backedTextInputView addGestureRecognizer:tapGesture];
   }
-
+  
   return self;
 }
 
@@ -64,140 +62,106 @@ UITextPosition* beginning;
   return _backedTextInputView;
 }
 
-#pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-  RCTDirectEventBlock onScroll = self.onScroll;
-
-  if (onScroll) {
-    CGPoint contentOffset = scrollView.contentOffset;
-    CGSize contentSize = scrollView.contentSize;
-    CGSize size = scrollView.bounds.size;
-    UIEdgeInsets contentInset = scrollView.contentInset;
-
-    onScroll(@{
-      @"contentOffset": @{
-        @"x": @(contentOffset.x),
-        @"y": @(contentOffset.y)
-      },
-      @"contentInset": @{
-        @"top": @(contentInset.top),
-        @"left": @(contentInset.left),
-        @"bottom": @(contentInset.bottom),
-        @"right": @(contentInset.right)
-      },
-      @"contentSize": @{
-        @"width": @(contentSize.width),
-        @"height": @(contentSize.height)
-      },
-      @"layoutMeasurement": @{
-        @"width": @(size.width),
-        @"height": @(size.height)
-      },
-      @"zoomScale": @(scrollView.zoomScale ?: 1),
-    });
-  }
-}
-
 NSString *const CUSTOM_SELECTOR = @"_CUSTOM_SELECTOR_";
 
 - (void)tappedMenuItem:(NSString *)eventType
 {
-    RCTTextSelection *selection = self.selection;
-    
-    NSUInteger start = selection.start;
-    NSUInteger end = selection.end - selection.start;
-    
-    self.onItemPress(@{
-        @"content": [[self.attributedText string] substringWithRange:NSMakeRange(start, end)],
-        @"eventType": eventType,
-        @"selectionStart": @(start),
-        @"selectionEnd": @(selection.end)
-    });
-    
-    [_backedTextInputView setSelectedTextRange:nil notifyDelegate:false];
+  RCTTextSelection *selection = self.selection;
+  
+  NSUInteger start = selection.start;
+  NSUInteger end = selection.end - selection.start;
+  
+  self.onItemPress(@{
+    @"content": [[self.attributedText string] substringWithRange:NSMakeRange(start, end)],
+    @"eventType": eventType,
+    @"selectionStart": @(start),
+    @"selectionEnd": @(selection.end)
+                   });
+  
+  [_backedTextInputView setSelectedTextRange:nil notifyDelegate:false];
 }
 
 -(void) _handleGesture
 {
-    if (!_backedTextInputView.isFirstResponder) {
-        [_backedTextInputView becomeFirstResponder];
-    }
-    
-    UIMenuController *menuController = [UIMenuController sharedMenuController];
-    
-    if (menuController.isMenuVisible) return;
-    
-    NSMutableArray *menuControllerItems = [NSMutableArray arrayWithCapacity:self.menuItems.count];
-    
-    for(NSDictionary *menuItem in self.menuItems) {
+  if (!_backedTextInputView.isFirstResponder) {
+    [_backedTextInputView becomeFirstResponder];
+  }
+  
+  UIMenuController *menuController = [UIMenuController sharedMenuController];
+  
+  if (menuController.isMenuVisible) return;
+  
+  NSMutableArray *menuControllerItems = [NSMutableArray arrayWithCapacity:self.menuItems.count];
+  
+  for(NSDictionary *menuItem in self.menuItems) {
+    if(![menuItem[@"type"] isEqualToString:@"Paste"]){
       NSString *sel = [NSString stringWithFormat:@"%@%@", CUSTOM_SELECTOR, menuItem[@"type"]];
       UIMenuItem *item = [[UIMenuItem alloc] initWithTitle: menuItem[@"title"]
-                                                      action: NSSelectorFromString(sel)];
-        
-        [menuControllerItems addObject: item];
+                                                    action: NSSelectorFromString(sel)];
+      
+      [menuControllerItems addObject: item];
     }
-    menuController.menuItems = menuControllerItems;
-    [menuController setTargetRect:self.bounds inView:self];
-    [menuController setMenuVisible:YES animated:YES];
+    
+  }
+  
+  menuController.menuItems = menuControllerItems;
+  [menuController setTargetRect:self.bounds inView:self];
+  [menuController setMenuVisible:YES animated:YES];
 }
 
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel
 {
-    if ([super methodSignatureForSelector:sel]) {
-        return [super methodSignatureForSelector:sel];
-    }
-    return [super methodSignatureForSelector:@selector(tappedMenuItem:)];
+  if ([super methodSignatureForSelector:sel]) {
+    return [super methodSignatureForSelector:sel];
+  }
+  return [super methodSignatureForSelector:@selector(tappedMenuItem:)];
 }
 
 - (void)forwardInvocation:(NSInvocation *)invocation
 {
-    NSString *sel = NSStringFromSelector([invocation selector]);
-    NSRange match = [sel rangeOfString:CUSTOM_SELECTOR];
-    if (match.location == 0) {
-        [self tappedMenuItem:[sel substringFromIndex:17]];
-    } else {
-        [super forwardInvocation:invocation];
-    }
+  NSString *sel = NSStringFromSelector([invocation selector]);
+  NSRange match = [sel rangeOfString:CUSTOM_SELECTOR];
+  
+  if ([invocation selector] == @selector(paste:)) {
+    [self tappedMenuItem:@"Paste"];
+  }else if (match.location == 0) {
+    [self tappedMenuItem:[sel substringFromIndex:17]];
+  } else {
+    [super forwardInvocation:invocation];
+  }
 }
 
 -(void) handleTap: (UITapGestureRecognizer *) gesture
 {
-    [_backedTextInputView select:self];
-    [_backedTextInputView selectAll:self];
-    [self _handleGesture];
+  [_backedTextInputView select:self];
+  [_backedTextInputView selectAll:self];
+  [self _handleGesture];
 }
 
 
 - (BOOL)canBecomeFirstResponder
 {
-    return YES;
+  return YES;
 }
+
+#pragma mark - Context Menu
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
   NSString *sel = NSStringFromSelector(action);
   NSRange match = [sel rangeOfString:CUSTOM_SELECTOR];
-  NSString * pasteImage = [NSString stringWithFormat:@"%@%@", CUSTOM_SELECTOR, @"PasteImage"];
-  UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-  bool imagePaste = pasteboard.hasImages;
-  
-  if (action == @selector(paste:) && imagePaste) {
-    return NO;
-  }
- 
-  if (sel == pasteImage && !imagePaste) {
-    return NO;
-  }
   
   if (match.location == 0) {
     return YES;
   }
   
+  if (action == @selector(paste:)) {
+    return YES;
+  }
+  
   return [super canPerformAction:action withSender:sender];
+  
 }
-
 
 @end

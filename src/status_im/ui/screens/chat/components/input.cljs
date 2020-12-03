@@ -155,7 +155,7 @@
     (when platform/android?
       (re-frame/dispatch [::mentions/calculate-suggestions mentionable-users]))))
 
-(defn on-paste-image [{:keys [type value]}]
+(defn on-paste [{:keys [type value]}]
   (when (= type "image/png")
     (re-frame/dispatch [::images/paste-image value])))
 
@@ -169,12 +169,10 @@
      [rn/quo-text-input
       {:style                    (styles/text-input)
        :ref                      text-input-ref
-       :menuItems                #js [ #js {:title "Paste"
-                                            :type  "PasteImage"}]
-       :onItemPress              #(do
-                                    (prn (.-nativeEvent %))
-                                    (when (= "PasteImage" (.-eventType (.-nativeEvent %)))
-                                      (re-frame/dispatch [::clipboard/paste on-paste-image])))
+       :menuItems                #js [#js {:title "Paste"
+                                           :type  "Paste"}]
+       :onItemPress              #(when (= "Paste" (.-eventType (.-nativeEvent %)))
+                                    (re-frame/dispatch [::clipboard/paste on-paste]))
        :max-font-size-multiplier 1
        :accessibility-label      :chat-message-input
        :text-align-vertical      :center
@@ -192,9 +190,9 @@
        :auto-capitalize          :sentences
        :selection                (selection cursor)
        :on-selection-change      (partial on-selection-change
-                                    cursor timeout-id last-text-change mentionable-users)
+                                          cursor timeout-id last-text-change mentionable-users)
        :on-change                (partial on-change
-                                    on-text-change last-text-change timeout-id mentionable-users)
+                                          on-text-change last-text-change timeout-id mentionable-users)
        :on-text-input            (partial on-text-input mentionable-users)}
       ;; NOTE(rasom): reduce was used instead of for here because although
       ;; each text component was given a unique id it still would mess with
