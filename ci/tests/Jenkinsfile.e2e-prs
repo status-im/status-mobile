@@ -80,6 +80,10 @@ pipeline {
             credentialsId: 'etherscan-api-key',
             variable: 'ETHERSCAN_API_KEY'
           ),
+          string(
+            credentialsId: 'infura-e2e-token',
+            variable: 'WEB3_INFURA_PROJECT_ID'
+          ),
         ]) {
           dir('test/appium/tests') {
             sh """

@@ -8,14 +8,14 @@ from json import JSONDecodeError
 from decimal import Decimal
 from os import environ
 import tests
-
+import support.api.web3_api as w3
 
 class NetworkApi(object):
 
     def __init__(self):
         self.network_url = 'http://api-%s.etherscan.io/api?' % tests.pytest_config_global['network']
         self.faucet_url = 'https://faucet-ropsten.status.im/donate'
-        self.faucet_backup_url = 'https://faucet.ropsten.be/donate'
+        self.faucet_backup_address = w3.account_address
         self.headers = {
         'User-Agent':"Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit\
         /537.36 (KHTML, like Gecko) Chrome\/77.0.3865.90 Safari\/537.36", }
@@ -155,20 +155,17 @@ class NetworkApi(object):
             pass
 
     def faucet_backup(self, address):
-        try:
-            self.log("Trying to get funds from %s" % self.faucet_backup_url)
-            return requests.request('GET', '%s/0x%s' % (self.faucet_backup_url, address)).json()
-        except JSONDecodeError as e:
-            self.log(str(e))
-            pass
+            self.log("Trying to get funds from %s" % self.faucet_backup_address)
+            address = "0x" + address
+            w3.donate_testnet_eth(address=address, amount=0.005, inscrease_default_gas_price=10)
 
-    def get_donate(self, address, external_faucet=True, wait_time=300):
+    def get_donate(self, address, external_faucet=False, wait_time=300):
         initial_balance = self.get_balance(address)
         counter = 0
         if initial_balance < 1000000000000000000:
             if external_faucet:
                 self.faucet_backup(address)
-            response = self.faucet(address)
+            self.faucet(address)
             while True:
                 if counter >= wait_time:
                     pytest.fail("Donation was not received during %s seconds!" % wait_time)
@@ -177,7 +174,7 @@ class NetworkApi(object):
                     time.sleep(10)
                     self.log('Waiting %s seconds for donation' % counter)
                 else:
-                    self.log('Got %s for %s' % (response["amount_eth"], address))
+                    self.log('Got %s Gwei for %s' % (self.get_balance(address), address))
                     return
 
     def start_chat_bot(self, chat_name: str, messages_number: int, interval: int = 1) -> list:
