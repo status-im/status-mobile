@@ -20,26 +20,32 @@
   [{:keys [db]} id handler]
   {:db (assoc-in db [:ethereum/subscriptions id] handler)})
 
+(fx/defn max-known-block
+  [{:keys [db]} block-number]
+  {:db (assoc db :wallet/max-known-block block-number)})
+
 (fx/defn new-block
   [{:keys [db] :as cofx} historical? block-number accounts transactions-per-account]
   (log/debug "[wallet-subs] new-block"
              "accounts" accounts
              "block" block-number
-             "transactions-per-account" transactions-per-account)
-  (fx/merge cofx
-            (cond-> {}
-              (not historical?)
-              (assoc :db (assoc db :ethereum/current-block block-number))
+             "transactions-per-account" transactions-per-account
+             "max-known-block" (:wallet/max-known-block db))
+  (when (>= block-number (:wallet/max-known-block db))
+    (fx/merge cofx
+              (cond-> {}
+                (not historical?)
+                (assoc :db (assoc db :ethereum/current-block block-number))
 
-              ;;NOTE only get transfers if the new block contains some
-              ;;     from/to one of the multiaccount accounts
-              (not-empty accounts)
-              (assoc :transactions/get-transfers
-                     {:chain-tokens (:wallet/all-tokens db)
-                      :addresses    accounts
-                      :before-block block-number
-                      :historical?  historical?}))
-            (transactions/check-watched-transactions)))
+                ;;NOTE only get transfers if the new block contains some
+                ;;     from/to one of the multiaccount accounts
+                (not-empty accounts)
+                (assoc :transactions/get-transfers
+                       {:chain-tokens (:wallet/all-tokens db)
+                        :addresses    accounts
+                        :before-block block-number
+                        :historical?  historical?}))
+              (transactions/check-watched-transactions))))
 
 (fx/defn reorg
   [{:keys [db] :as cofx} {:keys [blockNumber accounts]}]
@@ -91,6 +97,7 @@
   (case type
     "newblock" (new-block cofx false blockNumber accounts newTransactions)
     "history" (new-block cofx true blockNumber accounts nil)
+    "maxKnownBlock" (max-known-block cofx blockNumber)
     "reorg" (reorg cofx event)
     "recent-history-fetching" (recent-history-fetching-started cofx accounts)
     "recent-history-ready" (recent-history-fetching-ended cofx event)
