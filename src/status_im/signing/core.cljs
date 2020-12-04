@@ -232,7 +232,9 @@
   {:events [:sign/send-transaction-message]}
   [cofx chat-id value contract transaction-hash signature]
   {::json-rpc/call [{:method (json-rpc/call-ext-method "sendTransaction")
-                     :params [chat-id value contract transaction-hash
+                     ;; We make sure `value` is serialized as string, and not
+                     ;; as an integer or big-int
+                     :params [chat-id (str value) contract transaction-hash
                               (or (:result (types/json->clj signature))
                                   (ethereum/normalized-hex signature))]
                      :on-success
