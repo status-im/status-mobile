@@ -106,6 +106,43 @@ class TestrailReport(BaseTestReport):
                     'comment': '%s' % ('# Error: \n %s \n' % emoji.demojize(last_testrun.error)) + devices + test_steps if last_testrun.error
                     else devices + test_steps}
             self.post(method, data=data)
+        self.change_test_run_description()
+
+    def change_test_run_description(self):
+        tests = self.get_all_tests()
+        passed_tests = self.get_passed_tests()
+        failed_tests = self.get_failed_tests()
+        if len(tests) > 0:
+            description_title = "# %.0f%% of end-end tests have passed\n" % (len(passed_tests) / len(tests) * 100)
+            description_title += "\n"
+            description_title += "Total executed tests: %d\n" % len(tests)
+            description_title += "Failed tests: %d\n" % len(failed_tests)
+            description_title += "Passed tests: %d\n" % len(passed_tests)
+            description_title += "\n"
+            ids_failed_test = []
+            description = ''
+            if failed_tests:
+                for i, test in enumerate(failed_tests):
+                    last_testrun = test.testruns[-1]
+                    test_rail_link = self.get_test_result_link(self.run_id, test.testrail_case_id)
+                    ids_failed_test.append(test.testrail_case_id)
+                    case_title = '\n'
+                    case_title += '-------\n'
+                    case_title += "### %s) ID %s: [%s](%s) \n" % (i + 1, test.testrail_case_id, test.name, test_rail_link)
+                    error ="```%s```\n" % last_testrun.error[:255]
+                    for job_id, f in last_testrun.jobs.items():
+                             case_info = "Logs for device %d: [steps](%s), [failure screenshot](%s)"\
+                                         % (f,
+                                            self.get_sauce_job_url(job_id),
+                                            self.get_sauce_final_screenshot_url(job_id))
+
+                    description += case_title + error + case_info
+            description_title += '## Failed tests: %s \n' % ', '.join(map(str, ids_failed_test))
+            final_description = description_title + description
+
+        request_body = {'description': final_description}
+        return self.post('update_run/%s' % self.run_id, request_body)
+
 
     def get_run_results(self):
         return self.get('get_results_for_run/%s' % self.run_id)

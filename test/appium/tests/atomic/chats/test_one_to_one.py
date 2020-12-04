@@ -978,4 +978,3 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
             chat_view.get_back_to_home_view()
 
         self.errors.verify_no_errors()
-
