@@ -1,5 +1,7 @@
 (ns status-im.utils.config
   (:require [clojure.string :as string]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.ens :as ens]
             ["react-native-config" :default react-native-config]))
 
 (def config
@@ -19,6 +21,8 @@
 
 (goog-define INFURA_TOKEN "d3633f237cbd4649a639067d1807584c")
 
+(def mainnet-rpc-url (str "https://mainnet.infura.io/v3/" INFURA_TOKEN))
+(def testnet-rpc-url (str "https://ropsten.infura.io/v3/" INFURA_TOKEN))
 (def bootnodes-settings-enabled? (enabled? (get-config :BOOTNODES_SETTINGS_ENABLED "1")))
 (def rpc-networks-only? (enabled? (get-config :RPC_NETWORKS_ONLY "1")))
 (def mailserver-confirmations-enabled? (enabled? (get-config :MAILSERVER_CONFIRMATIONS_ENABLED)))
@@ -51,3 +55,83 @@
 (def pow-target (js/parseFloat (get-config :POW_TARGET "0.0001")))
 (def pow-time (js/parseInt (get-config :POW_TIME "1")))
 (def max-installations 2)
+
+(def verify-transaction-chain-id (js/parseInt (get-config :VERIFY_TRANSACTION_CHAIN_ID "1")))
+(def verify-transaction-url (if (= :mainnet (ethereum/chain-id->chain-keyword verify-transaction-chain-id))
+                              mainnet-rpc-url
+                              testnet-rpc-url))
+
+(def verify-ens-chain-id (js/parseInt (get-config :VERIFY_ENS_CHAIN_ID "1")))
+(def verify-ens-url (if (= :mainnet (ethereum/chain-id->chain-keyword verify-ens-chain-id))
+                      mainnet-rpc-url
+                      testnet-rpc-url))
+(def verify-ens-contract-address (get-config :VERIFY_ENS_CONTRACT_ADDRESS ((ethereum/chain-id->chain-keyword verify-ens-chain-id) ens/ens-registries)))
+
+(def default-multiaccount
+  {:preview-privacy?      blank-preview?
+   :wallet/visible-tokens {:mainnet #{:SNT}}
+   :currency :usd
+   :appearance 0
+   :log-level log-level
+   :webview-allow-permission-requests? false
+   :link-previews-enabled-sites #{}
+   :link-preview-request-enabled true})
+
+(defn default-visible-tokens [chain]
+  (get-in default-multiaccount [:wallet/visible-tokens chain]))
+
+(def mainnet-networks
+  [{:id             "mainnet_rpc",
+    :etherscan-link "https://etherscan.io/address/",
+    :name           "Mainnet with upstream RPC",
+    :config         {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
+                     :DataDir        "/ethereum/mainnet_rpc"
+                     :UpstreamConfig {:Enabled true
+                                      :URL mainnet-rpc-url}}}])
+
+(def sidechain-networks
+  [{:id     "xdai_rpc",
+    :name   "xDai Chain",
+    :config {:NetworkId      (ethereum/chain-keyword->chain-id :xdai)
+             :DataDir        "/ethereum/xdai_rpc"
+             :UpstreamConfig {:Enabled true
+                              :URL     "https://dai.poa.network"}}}
+   {:id     "poa_rpc",
+    :name   "POA Network",
+    :config {:NetworkId      (ethereum/chain-keyword->chain-id :poa)
+             :DataDir        "/ethereum/poa_rpc"
+             :UpstreamConfig {:Enabled true
+                              :URL     "https://core.poa.network"}}}])
+
+(def testnet-networks
+  [{:id             "testnet_rpc",
+    :etherscan-link "https://ropsten.etherscan.io/address/",
+    :name           "Ropsten with upstream RPC",
+    :config         {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
+                     :DataDir        "/ethereum/testnet_rpc"
+                     :UpstreamConfig {:Enabled true
+                                      :URL testnet-rpc-url}}}
+   {:id             "rinkeby_rpc",
+    :etherscan-link "https://rinkeby.etherscan.io/address/",
+    :name           "Rinkeby with upstream RPC",
+    :config         {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
+                     :DataDir        "/ethereum/rinkeby_rpc"
+                     :UpstreamConfig {:Enabled true
+                                      :URL     (str "https://rinkeby.infura.io/v3/" INFURA_TOKEN)}}}
+   {:id             "goerli_rpc",
+    :etherscan-link "https://goerli.etherscan.io/address/",
+    :name           "Goerli with upstream RPC",
+    :config         {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
+                     :DataDir        "/ethereum/goerli_rpc"
+                     :UpstreamConfig {:Enabled true
+                                      :URL     "https://goerli.blockscout.com/"}}}])
+
+(def default-networks
+  (concat testnet-networks mainnet-networks sidechain-networks))
+
+(def default-networks-by-id
+  (into {}
+        (map (fn [{:keys [id] :as network}]
+               [id network])
+             default-networks)))
+

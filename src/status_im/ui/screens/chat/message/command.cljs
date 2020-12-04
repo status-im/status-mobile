@@ -224,7 +224,9 @@
           :incoming (str "↓ " (i18n/label :t/incoming-transaction)))]
        [command-transaction-info contract value]
        [command-status-and-timestamp
-        command-state direction address timestamp-str (:type transaction)]
+        ;; If :type is nil it most likely means the transaction is pending, as those
+        ;; are not stored and will be gone after logout
+        command-state direction address timestamp-str (or (:type transaction) :pending)]
        (when (not outgoing)
          (cond
            (= command-state constants/command-state-request-transaction)

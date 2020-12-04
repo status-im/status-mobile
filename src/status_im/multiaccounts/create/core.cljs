@@ -255,7 +255,7 @@
                   ;; default mailserver (history node) setting
                   :use-mailservers?      true
                   :recovered             (or recovered (get-in db [:intro-wizard :recovering?]))}
-                 constants/default-multiaccount)
+                 config/default-multiaccount)
           ;; The address from which we derive any chat
           ;; account/encryption keys
           eip1581-address
@@ -275,11 +275,11 @@
                                         :processing true}
                   :multiaccount new-multiaccount
                   :multiaccount/accounts [wallet-account]
-                  :networks/current-network constants/default-network
-                  :networks/networks (data-store.settings/rpc->networks constants/default-networks))
+                  :networks/current-network config/default-network
+                  :networks/networks (data-store.settings/rpc->networks config/default-networks))
         settings (assoc new-multiaccount
-                        :networks/current-network constants/default-network
-                        :networks/networks constants/default-networks)]
+                        :networks/current-network config/default-network
+                        :networks/networks config/default-networks)]
     (fx/merge cofx
               {:db db}
               (if keycard-multiaccount?

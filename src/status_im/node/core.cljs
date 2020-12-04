@@ -1,7 +1,5 @@
 (ns status-im.node.core
   (:require [re-frame.core :as re-frame]
-            [status-im.constants :as constants]
-            [status-im.ethereum.ens :as ens]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.native-module.core :as status]
             [status-im.utils.config :as config]
@@ -130,10 +128,10 @@
               :InstallationID             installation-id
               :MaxMessageDeliveryAttempts config/max-message-delivery-attempts
               :MailServerConfirmations    config/mailserver-confirmations-enabled?
-              :VerifyTransactionURL       constants/mainnet-rpc-url
-              :VerifyENSURL               constants/mainnet-rpc-url
-              :VerifyENSContractAddress   (:mainnet ens/ens-registries)
-              :VerifyTransactionChainID   1
+              :VerifyTransactionURL       config/verify-transaction-url
+              :VerifyENSURL               config/verify-ens-url
+              :VerifyENSContractAddress   config/verify-ens-contract-address
+              :VerifyTransactionChainID   config/verify-transaction-chain-id
               :DataSyncEnabled            true
               :PFSEnabled                 true}
              :RequireTopics (get-topics current-network)

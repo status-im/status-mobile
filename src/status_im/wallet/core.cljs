@@ -1,7 +1,7 @@
 (ns status-im.wallet.core
   (:require [re-frame.core :as re-frame]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.constants :as constants]
+            [status-im.utils.config :as config]
             [status-im.qr-scanner.core :as qr-scaner]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip55 :as eip55]
@@ -9,7 +9,6 @@
             [status-im.ethereum.tokens :as tokens]
             [status-im.i18n :as i18n]
             [status-im.navigation :as navigation]
-            [status-im.utils.config :as config]
             [status-im.utils.core :as utils.core]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]
@@ -243,7 +242,7 @@
         :db                         (prices/clear-error-message db :balance-update)}
        (when-not assets
          (multiaccounts.update/multiaccount-update
-          :wallet/visible-tokens (assoc visible-tokens chain (or (constants/default-visible-tokens chain)
+          :wallet/visible-tokens (assoc visible-tokens chain (or (config/default-visible-tokens chain)
                                                                  #{}))
           {}))))))
 
@@ -300,7 +299,7 @@
   [{:keys [db] :as cofx} balances]
   (let [chain (ethereum/chain-keyword db)
         visible-tokens (get-in db [:multiaccount :wallet/visible-tokens])
-        chain-visible-tokens (into (or (constants/default-visible-tokens chain)
+        chain-visible-tokens (into (or (config/default-visible-tokens chain)
                                        #{})
                                    (flatten (map keys (vals balances))))]
     (fx/merge cofx

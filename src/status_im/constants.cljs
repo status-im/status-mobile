@@ -1,8 +1,6 @@
 (ns status-im.constants
-  (:require [status-im.ethereum.core :as ethereum]
-            [status-im.react-native.resources :as resources]
-            [status-im.i18n :as i18n]
-            [status-im.utils.config :as config]))
+  (:require [status-im.react-native.resources :as resources]
+            [status-im.i18n :as i18n]))
 
 (def ethereum-rpc-url "http://localhost:8545")
 
@@ -57,79 +55,7 @@
 
 (def mailserver-password "status-offline-inbox")
 
-(def default-network config/default-network)
-
 (def system "system")
-
-(def mainnet-rpc-url (str "https://mainnet.infura.io/v3/" config/INFURA_TOKEN))
-
-(def mainnet-networks
-  [{:id             "mainnet_rpc",
-    :etherscan-link "https://etherscan.io/address/",
-    :name           "Mainnet with upstream RPC",
-    :config         {:NetworkId      (ethereum/chain-keyword->chain-id :mainnet)
-                     :DataDir        "/ethereum/mainnet_rpc"
-                     :UpstreamConfig {:Enabled true
-                                      :URL mainnet-rpc-url}}}])
-
-(def sidechain-networks
-  [{:id     "xdai_rpc",
-    :name   "xDai Chain",
-    :config {:NetworkId      (ethereum/chain-keyword->chain-id :xdai)
-             :DataDir        "/ethereum/xdai_rpc"
-             :UpstreamConfig {:Enabled true
-                              :URL     "https://dai.poa.network"}}}
-   {:id     "poa_rpc",
-    :name   "POA Network",
-    :config {:NetworkId      (ethereum/chain-keyword->chain-id :poa)
-             :DataDir        "/ethereum/poa_rpc"
-             :UpstreamConfig {:Enabled true
-                              :URL     "https://core.poa.network"}}}])
-
-(def testnet-networks
-  [{:id             "testnet_rpc",
-    :etherscan-link "https://ropsten.etherscan.io/address/",
-    :name           "Ropsten with upstream RPC",
-    :config         {:NetworkId      (ethereum/chain-keyword->chain-id :testnet)
-                     :DataDir        "/ethereum/testnet_rpc"
-                     :UpstreamConfig {:Enabled true
-                                      :URL     (str "https://ropsten.infura.io/v3/" config/INFURA_TOKEN)}}}
-   {:id             "rinkeby_rpc",
-    :etherscan-link "https://rinkeby.etherscan.io/address/",
-    :name           "Rinkeby with upstream RPC",
-    :config         {:NetworkId      (ethereum/chain-keyword->chain-id :rinkeby)
-                     :DataDir        "/ethereum/rinkeby_rpc"
-                     :UpstreamConfig {:Enabled true
-                                      :URL     (str "https://rinkeby.infura.io/v3/" config/INFURA_TOKEN)}}}
-   {:id             "goerli_rpc",
-    :etherscan-link "https://goerli.etherscan.io/address/",
-    :name           "Goerli with upstream RPC",
-    :config         {:NetworkId      (ethereum/chain-keyword->chain-id :goerli)
-                     :DataDir        "/ethereum/goerli_rpc"
-                     :UpstreamConfig {:Enabled true
-                                      :URL     "https://goerli.blockscout.com/"}}}])
-
-(def default-networks
-  (concat testnet-networks mainnet-networks sidechain-networks))
-
-(def default-networks-by-id
-  (into {}
-        (map (fn [{:keys [id] :as network}]
-               [id network])
-             default-networks)))
-
-(def default-multiaccount
-  {:preview-privacy?      config/blank-preview?
-   :wallet/visible-tokens {:mainnet #{:SNT}}
-   :currency :usd
-   :appearance 0
-   :log-level config/log-level
-   :webview-allow-permission-requests? false
-   :link-previews-enabled-sites #{}
-   :link-preview-request-enabled true})
-
-(defn default-visible-tokens [chain]
-  (get-in default-multiaccount [:wallet/visible-tokens chain]))
 
 (def currencies
   {:aed {:id :aed :code "AED" :display-name (i18n/label :t/currency-display-name-aed) :symbol "د.إ"}

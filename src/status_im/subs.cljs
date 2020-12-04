@@ -1269,7 +1269,7 @@
  :wallet/etherscan-link
  (fn [db [_ address]]
    (let [network (:networks/current-network db)
-         link    (get-in constants/default-networks-by-id
+         link    (get-in config/default-networks-by-id
                          [network :etherscan-link])]
      (when link
        (str link address)))))
@@ -2367,7 +2367,7 @@
  :get-networks
  :<- [:networks/networks]
  (fn [networks]
-   (let [networks (map (label-networks (into #{} (map :id constants/default-networks))) (sort-by :name (vals networks)))
+   (let [networks (map (label-networks (into #{} (map :id config/default-networks))) (sort-by :name (vals networks)))
          types    [:mainnet :testnet :custom]]
      (zipmap
       types
