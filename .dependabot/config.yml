@@ -13,7 +13,7 @@ update_configs:
           update_type: "security"
   # Keep /mobile/js_files/yarn.lock up to date, batching pull requests weekly
   - package_manager: "javascript"
-    directory: "/mobile/js_files"
+    directory: "/"
     update_schedule: "weekly"
     allowed_updates:
     - match:
