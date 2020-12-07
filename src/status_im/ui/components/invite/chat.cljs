@@ -92,31 +92,35 @@
         nil))]])
 
 (defn reward-messages []
-  (let [pending-invite @(re-frame/subscribe [::invite/pending-chat-invite])
-        loading        (#{(get gateway/network-statuses :initiated)
-                          (get gateway/network-statuses :in-flight)}
-                        @(re-frame/subscribe [::gateway/network-status]))
-        messages       [{:content [{:type  :text
-                                    :value "👋"}]}
-                        {:content [{:type  :author
-                                    :value (i18n/label :t/invite-chat-name)}
-                                   {:type  :text
-                                    :value (i18n/label :t/invite-chat-intro)}
-                                   {:type :pack}
-                                   {:type  :button
-                                    :value [quo/button {:type     :secondary
-                                                        :loading  loading
-                                                        :on-press #(re-frame/dispatch [::acquisition/accept-pack])}
-                                            (i18n/label :t/invite-chat-accept)]}]}
-                        {:content [{:type  :text
-                                    :value (i18n/label :t/invite-chat-rule)}]}
-                        {:content [{:type  :text
-                                    :value [:<>
-                                            (i18n/label :t/invite-privacy-policy1) " "
-                                            [quo/text {:color    :link
-                                                       :on-press #(re-frame/dispatch [::invite/terms-and-conditions])}
-                                             (i18n/label :t/invite-privacy-policy2)]]}]}]]
-    (when pending-invite
+  (let [has-invite @(re-frame/subscribe [::invite/has-chat-invite])
+        loading    (#{(get gateway/network-statuses :initiated)
+                      (get gateway/network-statuses :in-flight)}
+                    @(re-frame/subscribe [::gateway/network-status]))
+        pending    @(re-frame/subscribe [::invite/pending-reward])
+        messages   [{:content [{:type  :text
+                                :value "👋"}]}
+                    {:content [{:type  :author
+                                :value (i18n/label :t/invite-chat-name)}
+                               {:type  :text
+                                :value (i18n/label :t/invite-chat-intro)}
+                               {:type :pack}
+                               {:type  :button
+                                :value [quo/button {:type     :secondary
+                                                    :loading  loading
+                                                    :disabled pending
+                                                    :on-press #(re-frame/dispatch [::acquisition/accept-pack])}
+                                        (if pending
+                                          (i18n/label :t/invite-chat-pending)
+                                          (i18n/label :t/invite-chat-accept))]}]}
+                    {:content [{:type  :text
+                                :value (i18n/label :t/invite-chat-rule)}]}
+                    {:content [{:type  :text
+                                :value [:<>
+                                        (i18n/label :t/invite-privacy-policy1) " "
+                                        [quo/text {:color    :link
+                                                   :on-press #(re-frame/dispatch [::invite/terms-and-conditions])}
+                                         (i18n/label :t/invite-privacy-policy2)]]}]}]]
+    (when has-invite
       [rn/view {:style (messages-wrapper)}
        (for [message messages]
          [render-message message])])))

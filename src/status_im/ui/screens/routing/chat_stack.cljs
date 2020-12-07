@@ -3,6 +3,7 @@
             [status-im.ui.screens.home.views :as home]
             [status-im.ui.screens.chat.views :as chat]
             [status-im.ui.screens.group.views :as group]
+            [status-im.ui.screens.referrals.public-chat :as referrals.public-chat]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
             [status-im.ui.screens.stickers.views :as stickers]))
@@ -16,6 +17,8 @@
    [{:name      :home
      :style     {:padding-bottom tabbar.styles/tabs-diff}
      :component home/home}
+    {:name      :referral-enclav
+     :component referrals.public-chat/view}
     {:name      :chat
      :component chat/chat}
     {:name      :group-chat-profile

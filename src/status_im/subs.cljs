@@ -216,6 +216,7 @@
 (reg-root-key-sub :push-notifications/servers :push-notifications/servers)
 (reg-root-key-sub :push-notifications/preferences :push-notifications/preferences)
 
+(reg-root-key-sub :acquisition :acquisition)
 ;;GENERAL ==============================================================================================================
 
 (re-frame/reg-sub

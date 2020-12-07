@@ -19,7 +19,8 @@
    (-> ^js async-storage
        (.setItem referrer-flow-state-key (get referrer-state decision))
        (.then (fn []
-                (re-frame/dispatch [:set-in [:acquisition :flow-state] decision])))
+                (re-frame/dispatch [:set-in [:acquisition :flow-state]
+                                    (get referrer-state decision)])))
        (.catch (fn [error]
                  (log/error "[async-storage]" error))))))
 

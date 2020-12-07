@@ -23,7 +23,7 @@
   (and (= (:error a) (:error b))
        (or (and (nil? (:amount a))
                 (nil? (:amount b)))
-           (.eq (:amount a) (:amount b)))))
+           (.eq ^js (:amount a) (:amount b)))))
 
 (deftest test-parse-amount
   (testing "test amount parsing"

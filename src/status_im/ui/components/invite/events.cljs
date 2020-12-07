@@ -46,16 +46,31 @@
                                     :on-success [::share-link]}))
 
 (re-frame/reg-sub
- ::pending-chat-invite
- (fn [db]
-   (let [chat-id               (get db :current-chat-id)
-         {:keys [flow-state]}  (get db :acquisition)
-         {:keys [attributed]
-          :as   chat-referrer} (get-in db [:acquisition :chat-referrer chat-id])]
+ ::has-chat-invite
+ :<- [:chats/current-chat-id]
+ :<- [:acquisition]
+ (fn [[chat-id acquisition]]
+   (let [{:keys [flow-state attributed]} acquisition
+         chat-referrer                   (get-in acquisition [:chat-referrer chat-id])]
      (and chat-referrer
           (not attributed)
-          (or (= flow-state (get persistence/referrer-state :accepted))
-              (nil? flow-state))))))
+          (nil? flow-state)))))
+
+(re-frame/reg-sub
+ ::pending-reward
+ :<- [:acquisition]
+ (fn [{:keys [flow-state]}]
+   (= flow-state (get persistence/referrer-state :accepted))))
+
+(re-frame/reg-sub
+ ::has-public-chat-invite
+ :<- [:acquisition]
+ (fn [acquisition]
+   (let [{:keys [metadata flow-state attributed]} acquisition
+         {:keys [type]}                           metadata]
+     (and (= type "public-chat")
+          (not attributed)
+          (nil? flow-state)))))
 
 (fx/defn go-to-invite
   {:events [::open-invite]}

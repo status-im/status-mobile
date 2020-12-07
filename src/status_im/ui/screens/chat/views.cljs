@@ -37,7 +37,7 @@
 (defn topbar []
   (let [current-chat @(re-frame/subscribe [:current-chat/metadata])]
     [topbar/topbar
-     {:content           [toolbar-content/toolbar-content-view]
+     {:content           [toolbar-content/toolbar-content-view current-chat]
       :navigation        {:on-press #(re-frame/dispatch [:navigate-to :home])}
       :right-accessories [{:icon                :main-icons/more
                            :accessibility-label :chat-menu-button

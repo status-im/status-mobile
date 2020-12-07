@@ -9,6 +9,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
+            [status-im.ui.screens.referrals.home-item :as referral-item]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
             [quo.core :as quo]
@@ -18,6 +19,7 @@
             [status-im.utils.debounce :as debounce]
             [status-im.utils.utils :as utils]
             [cljs-bean.core :as bean]
+            [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button])
@@ -45,8 +47,7 @@
     [react/i18n-text {:style styles/welcome-text-description
                       :key   :welcome-to-status-description}]]
    [react/view {:align-items :center :margin-bottom 50}
-    [quo/button {:on-press #(re-frame/dispatch [:navigate-reset {:index               0
-                                                                 :routes [{:name :tabs}]}])
+    [quo/button {:on-press            #(re-frame/dispatch [::multiaccounts.login/welcome-lets-go])
                  :accessibility-label :lets-go-button}
      (i18n/label :t/lets-go)]]])
 
@@ -152,8 +153,9 @@
           :keyboard-should-persist-taps :always
           :data                         chats
           :render-fn                    render-fn
-          :header                       (when (or (seq chats) @search-active? (seq search-filter))
-                                          [search-input-wrapper search-filter chats])
+          :header                       [:<> (when (or (seq chats) @search-active? (seq search-filter))
+                                               [search-input-wrapper search-filter chats])
+                                         [referral-item/list-item]]
           :empty-component              (when (or @search-active? (seq search-filter))
                                           [start-suggestion search-filter])
           :footer                       (if (and (not hide-home-tooltip?) (not @search-active?))

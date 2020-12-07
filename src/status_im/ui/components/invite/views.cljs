@@ -176,7 +176,11 @@
 
 (defn friend-reward-item [starter-pack-amount description]
   (let [tokens      (transform-tokens starter-pack-amount)
-        reward-text (cstr/join ", " (map (comp name :symbol first) tokens))]
+        reward-text (->> tokens
+                         (map (comp :symbol first))
+                         (filter (comp not nil?))
+                         (map name)
+                         (cstr/join ", "))]
     [rn/view {}
      [rn/view {:style styles/reward-item-title}
       [quo/text {:weight :medium}

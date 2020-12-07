@@ -6,6 +6,7 @@
             ["@react-native-community/push-notification-ios" :default pn-ios]
             [status-im.notifications.android :as pn-android]
             [status-im.native-module.core :as status]
+            [status-im.notifications.local :as local]
             [quo.platform :as platform]
             [status-im.utils.config :as config]
             [status-im.ethereum.json-rpc :as json-rpc]))
@@ -57,9 +58,10 @@
 
 (re-frame/reg-fx
  ::local-notification
- (fn [{:keys [title message]}]
-   (log/info {:title   title
-              :message message})))
+ (fn [props]
+   (if platform/ios?
+     (local/local-push-ios props)
+     (local/local-push-android props))))
 
 (re-frame/reg-fx
  ::enable

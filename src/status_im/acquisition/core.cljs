@@ -5,6 +5,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.contracts :as contracts]
+            [status-im.acquisition.notifications :as notifications]
             [status-im.acquisition.chat :as chat]
             [status-im.acquisition.dapp :as dapp]
             [status-im.acquisition.claim :as claim]
@@ -58,7 +59,8 @@
   [{:keys [db] :as cofx} referrer {:keys [type attributed] :as referrer-meta}]
   (when-not attributed
     (fx/merge cofx
-              {:db (assoc-in db [:acquisition :metadata] referrer-meta)}
+              {:db (assoc-in db [:acquisition :metadata] referrer-meta)
+               ::notifications/create-channel nil}
               (cond
                 (= type advertiser-type)
                 (advertiser/start-acquisition referrer-meta)
@@ -95,7 +97,7 @@
                 (fn [_]
                   {::persistence/check-tx-state (fn [tx]
                                                   (when-not (nil? tx)
-                                                    (re-frame/dispatch [::claim/add-tx-watcher tx])))})))))
+                                                    (re-frame/dispatch [::claim/check-transaction-receipt tx])))})))))
 
 (re-frame/reg-fx
  ::resolve-contract
