@@ -775,6 +775,8 @@
     "seed-phrase-content": "A set of friendly-to-read words, randomly selected from the BIP39 standard list and used to recover or access your Ethereum account on other wallets and devices. Also referred to as a “mnemonic phrase,” “recovery phrase” or “wallet backup” across the crypto ecosystem. Most crypto apps use this same standard to generate accounts.",
     "wallet-key-title": "Account address",
     "wallet-key-content": "A 64 character hex address based on the Ethereum standard and beginning with 0x. Public-facing, your account address is shared with others when you want to receive funds. Also referred to as an “Ethereum address” or “wallet address.”",
+    "buy-crypto-title": "Looks like your wallet is empty",
+    "buy-crypto-description": "Find a dapp to buy crypto now",
     "network": "Network",
     "network-chain": "Network chain",
     "network-details": "Network details",

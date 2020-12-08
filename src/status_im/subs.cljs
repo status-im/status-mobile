@@ -171,6 +171,7 @@
 (reg-root-key-sub :wallet/recipient :wallet/recipient)
 (reg-root-key-sub :wallet/favourites :wallet/favourites)
 (reg-root-key-sub :wallet/refreshing-history? :wallet/refreshing-history?)
+(reg-root-key-sub :wallet/buy-crypto-hidden :wallet/buy-crypto-hidden)
 
 ;;commands
 (reg-root-key-sub :commands/select-account :commands/select-account)
