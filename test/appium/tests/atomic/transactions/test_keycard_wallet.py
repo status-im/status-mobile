@@ -120,12 +120,13 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         wallet_view.just_fyi("Send transaction to new account")
         wallet_view.accounts_status_account.click()
-        transaction_amount = '0.05'
+        transaction_amount = '0.002'
+        initial_balance = self.network_api.get_balance(status_account_address)
         send_transaction = wallet_view.send_transaction(account_name=account_name,
                                      amount=transaction_amount,
                                      keycard=True)
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
-        self.network_api.verify_balance_is_updated('0.1', status_account_address)
+        self.network_api.verify_balance_is_updated(str(initial_balance), status_account_address)
 
         wallet_view.just_fyi("Verifying previously sent transaction in new account")
         send_transaction.back_button.click()
@@ -161,6 +162,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.back_button.click()
         balance_of_sub_account = float(self.network_api.get_balance(sub_account_address)) / 1000000000000000000
         balance_of_status_account = float(self.network_api.get_balance(status_account_address)) / 1000000000000000000
+        wallet_view.scan_tokens()
         total_eth_from_two_accounts = float(wallet_view.get_asset_amount_by_name('ETH'))
         expected_balance = self.network_api.get_rounded_balance(total_eth_from_two_accounts,
                                                                 (balance_of_status_account + balance_of_sub_account))

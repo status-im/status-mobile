@@ -133,7 +133,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
-        amount = '0.0%s' % str(random.randint(10000, 99999)) + '1'
+        amount = '0.000%s' % str(random.randint(10000, 99999)) + '1'
         wallet_view.send_transaction(amount=amount,
                                      recipient='0x%s' % recipient['address'],
                                      asset_name='ADI')
@@ -254,12 +254,13 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         wallet_view.just_fyi("Send transaction to new account")
         wallet_view.accounts_status_account.click()
+        initial_balance = self.network_api.get_balance(status_account_address)
 
-        transaction_amount = '0.0%s' % str(random.randint(10000, 99999)) + '1'
+        transaction_amount = '0.000%s' % str(random.randint(10000, 99999)) + '1'
         wallet_view.send_transaction(account_name=account_name,
                                      amount=transaction_amount)
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
-        self.network_api.verify_balance_is_updated('0.1', status_account_address)
+        self.network_api.verify_balance_is_updated(str(initial_balance), status_account_address)
 
         wallet_view.just_fyi("Verifying previously sent transaction in new account")
         wallet_view.back_button.click()
@@ -294,6 +295,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.back_button.click()
         balance_of_sub_account = float(self.network_api.get_balance(sub_account_address)) / 1000000000000000000
         balance_of_status_account = float(self.network_api.get_balance(status_account_address)) / 1000000000000000000
+        wallet_view.scan_tokens()
         total_eth_from_two_accounts = float(wallet_view.get_asset_amount_by_name('ETH'))
         expected_balance = self.network_api.get_rounded_balance(total_eth_from_two_accounts,
                                                                 (balance_of_status_account + balance_of_sub_account))
@@ -466,7 +468,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.accounts_status_account.scroll_to_element(direction='up')
         wallet_view.accounts_status_account.click()
         recipient = "0x" + basic_user['address']
-        amount = '0.0%s' % str(random.randint(10000, 99999)) + '1'
+        amount = '0.000%s' % str(random.randint(10000, 99999)) + '1'
         wallet_view.send_transaction(asset_name=symbol, amount=amount, recipient=recipient)
         # TODO: disabled due to 10838
         # transactions_view = wallet_view.transaction_history_button.click()
@@ -606,7 +608,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         send_transaction.select_asset_button.click_until_presence_of_element(send_transaction.eth_asset_in_select_asset_bottom_sheet_button)
         adi_button.click()
         send_transaction.amount_edit_box.click()
-        amount = '0.0%s' % str(random.randint(100000, 999999)) + '1'
+        amount = '0.000%s' % str(random.randint(100000, 999999)) + '1'
         send_transaction.amount_edit_box.set_value(amount)
         if not send_transaction.element_by_text(errors['send_transaction_screen']['too_precise']).is_element_displayed():
             self.errors.append(warning % (errors['send_transaction_screen']['too_precise'], screen))

@@ -118,7 +118,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         if wallet.backup_recovery_phrase_warning_text.is_element_present():
             self.driver.fail("'Back up your seed phrase' warning is shown on Wallet while no funds are present")
         address = wallet.get_wallet_address()
-        self.network_api.get_donate(address[2:], external_faucet=True, wait_time=60)
+        self.network_api.get_donate(address[2:], external_faucet=True, wait_time=200)
         wallet.back_button.click()
         wallet.wait_balance_is_changed()
         if not wallet.backup_recovery_phrase_warning_text.is_element_present(30):
