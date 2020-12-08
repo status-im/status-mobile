@@ -879,3 +879,20 @@
               {:from 2
                :to   8}
               #{"chat1"}))))))
+
+(deftest sort-mailserver-test
+  (testing "it orders them by whether they have failed first and by rtts"
+    (let [now                 (inc constants/cooloff-period)
+          mailserver-failures {:a 1
+                               :b 0}
+          cofx {:now now
+                :db {:mailserver/failures mailserver-failures}}
+          mailserver-pings [{:address :a :rttMs 2}
+                            {:address :b :rttMs 3}
+                            {:address :d :rttMs 1}
+                            {:address :e :rttMs 4}]
+          expected-order  [{:address :d :rttMs 1}
+                           {:address :b :rttMs 3}
+                           {:address :e :rttMs 4}
+                           {:address :a :rttMs 2}]]
+      (is (= expected-order (mailserver/sort-mailservers cofx mailserver-pings))))))

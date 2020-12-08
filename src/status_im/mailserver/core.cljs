@@ -100,10 +100,11 @@
                  :method  "admin_removePeer"
                  :params  [enode]}
         payload (.stringify js/JSON (clj->js args))]
-    (status/call-private-rpc payload
-                             (handlers/response-handler
-                              #(log/info "mailserver: remove-peer success" %)
-                              #(log/error "mailserver: remove-peer error" %)))))
+    (when enode
+      (status/call-private-rpc payload
+                               (handlers/response-handler
+                                #(log/info "mailserver: remove-peer success" %)
+                                #(log/error "mailserver: remove-peer error" %))))))
 
 (re-frame/reg-fx
  :mailserver/add-peer
@@ -272,6 +273,31 @@
                        :on-success
                        #(re-frame/dispatch [::get-latency-callback %])}]}))
 
+(fx/defn log-mailserver-failure [{:keys [db now]}]
+  (when-let [mailserver (fetch-current db)]
+    {:db (assoc-in db [:mailserver/failures (:address mailserver)] now)}))
+
+(defn sort-mailservers
+  "Sort mailservers sorts the mailservers by recent failures, and by rtt
+  for breaking ties"
+  [{:keys [now db]} mailservers]
+  (let [mailserver-failures (:mailserver/failures db)
+        sort-fn (fn [a b]
+                  (let [failures-a (get mailserver-failures (:address a))
+                        failures-b (get mailserver-failures (:address b))
+                        has-a-failed? (boolean
+                                       (and failures-a (<= (- now failures-a) constants/cooloff-period)))
+                        has-b-failed? (boolean
+                                       (and failures-b (<= (- now failures-b) constants/cooloff-period)))]
+                    ;; If both have failed, or none of them, then compare rtt
+                    (cond
+                      (= has-a-failed? has-b-failed?)
+                      (compare (:rttMs a) (:rttMs b))
+                     ;; Otherwise prefer the one that has not failed recently
+                      has-a-failed? 1
+                      has-b-failed? -1)))]
+    (sort sort-fn mailservers)))
+
 (fx/defn set-current-mailserver-with-lowest-latency
   "Picks a random mailserver amongs the ones with the lowest latency
    The results with error are ignored
@@ -281,7 +307,7 @@
   (let [successful-pings (remove :error latency-results)]
     (when (seq successful-pings)
       (let [address (-> (take (pool-size (count successful-pings))
-                              (sort-by :rttMs successful-pings))
+                              (sort-mailservers cofx successful-pings))
                         rand-nth
                         :address)
             mailserver-id (mailserver-address->id db address)]
@@ -575,10 +601,14 @@
   (when (contains? db :multiaccount)
     (let [last-connection-attempt (:mailserver/last-connection-attempt db)]
       (when (and (fetch-use-mailservers? cofx)
-                 (<= (- now last-connection-attempt)))
-        (fx/merge cofx
-                  (when (not= :connected (:mailserver/state db))
-                    (change-mailserver)))))))
+                 ;; We are not connected
+                 (not= :connected (:mailserver/state db))
+                 ;; We either never tried to connect to this peer
+                 (or (nil? last-connection-attempt)
+                     ;; Or 30 seconds have passed and no luck
+                     (<= (- now last-connection-attempt) (* constants/connection-timeout 3))))
+        ;; Then we change mailserver
+        (change-mailserver cofx)))))
 
 (fx/defn reset-request-to
   [{:keys [db]}]
@@ -974,6 +1004,7 @@
                          (:attempts current-request))
         (fx/merge cofx
                   {:db (update db :mailserver/current-request dissoc :attempts)}
+                  (log-mailserver-failure)
                   (change-mailserver))
         (let [mailserver (get-mailserver-when-ready cofx)
               offline?   (= :offline (:network-status db))]

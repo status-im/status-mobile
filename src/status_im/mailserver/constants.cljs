@@ -11,6 +11,9 @@
 (def max-limit 1000)
 (def backoff-interval-ms 3000)
 (def default-limit max-limit)
+;; If a mailserver fails, how long before we should consider them again
+;; for selection, in ms
+(def cooloff-period 120000)
 (def connection-timeout
   "Time after which mailserver connection is considered to have failed"
   10000)
