@@ -485,15 +485,18 @@ class WalletView(BaseView):
                 self.driver.info('Balance for %s is equal to %s' % (asset, expected_balance))
                 return
 
-    def wait_balance_is_changed(self, asset ='ETH', initial_balance=0, wait_time=300, scan_tokens=False):
+    def wait_balance_is_changed(self, asset ='ETH', initial_balance=0, wait_time=400, scan_tokens=False):
         counter = 0
         while True:
             if counter >= wait_time:
                 self.driver.fail('Balance is not changed during %s seconds!' % wait_time)
             elif self.asset_by_name(asset).is_element_present() and self.get_asset_amount_by_name(asset) == initial_balance:
+                if not self.transaction_history_button.is_element_displayed():
+                    self.wallet_account_by_name(self.status_account_name).click()
+                self.swipe_down()
                 counter += 10
                 time.sleep(10)
-                self.put_app_to_background_and_back()
+                [self.wallet_button.click() for _ in range(2)]
                 self.driver.info('Waiting %s seconds for %s to update' % (counter,asset))
             elif not self.asset_by_name(asset).is_element_present(10):
                 counter += 10

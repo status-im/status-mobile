@@ -133,7 +133,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.accounts_status_account.click()
-        amount = '0.000%s' % str(random.randint(10000, 99999)) + '1'
+        amount = '0.000%s' % str(random.randint(100, 999)) + '1'
         wallet_view.send_transaction(amount=amount,
                                      recipient='0x%s' % recipient['address'],
                                      asset_name='ADI')
@@ -246,7 +246,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
         status_account_address = wallet_view.get_wallet_address()[2:]
-        wallet_view.back_button.click()
+       # wallet_view.back_button.click()
         self.network_api.get_donate(status_account_address, external_faucet=True)
         wallet_view.wait_balance_is_changed()
         account_name = 'subaccount'
@@ -277,7 +277,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         updated_balance = self.network_api.get_balance(status_account_address)
         transaction_amount_1 = round(float(transaction_amount) * 0.1, 12)
         send_transaction = wallet_view.send_transaction(account_name=wallet_view.status_account_name,
-                                                        amount=transaction_amount_1)
+                                                        amount=transaction_amount_1,
+                                                        default_gas_price=True)
         send_transaction.back_button.click()
         sub_account_address = wallet_view.get_wallet_address(account_name)[2:]
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)

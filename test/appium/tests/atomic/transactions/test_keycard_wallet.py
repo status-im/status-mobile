@@ -107,12 +107,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
     @marks.transaction
     @marks.medium
     def test_keycard_send_funds_between_accounts_in_multiaccount_instance(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user(keycard=True)
+        sign_in_view = SignInView(self.driver).create_user(keycard=True)
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
         status_account_address = wallet_view.get_wallet_address()[2:]
-        wallet_view.back_button.click()
         self.network_api.get_donate(status_account_address, external_faucet=True)
         wallet_view.wait_balance_is_changed()
         account_name = 'subaccount'
@@ -145,7 +143,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.wait_balance_is_changed()
         send_transaction = wallet_view.send_transaction(account_name=wallet_view.status_account_name,
                                                         amount=transaction_amount_1,
-                                                        keycard=True)
+                                                        keycard=True,
+                                                        default_gas_price=True)
         send_transaction.back_button.click()
         sub_account_address = wallet_view.get_wallet_address(account_name)[2:]
         self.network_api.wait_for_confirmation_of_transaction(sub_account_address, transaction_amount_1)

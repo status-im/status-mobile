@@ -671,33 +671,37 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     @marks.medium
     @marks.flaky
     def test_use_pinned_mailserver(self):
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.create_user()
-        profile_view = home_view.profile_button.click()
+        home = SignInView(self.driver).create_user()
+        profile = home.profile_button.click()
 
-        profile_view.just_fyi('pin mailserver')
-        profile_view.sync_settings_button.click()
-        mailserver_1 = profile_view.return_mailserver_name(mailserver_gc, used_fleet)
-        mailserver_2 = profile_view.return_mailserver_name(mailserver_ams, used_fleet)
-        # TODO: temporary to avoid issue 9269 - should be disabled after fix
-        mailserver = mailserver_1 if profile_view.element_by_text(mailserver_2).is_element_present() else mailserver_2
-        profile_view.mail_server_button.click()
-        profile_view.mail_server_auto_selection_button.click()
-        profile_view.mail_server_by_name(mailserver).click()
-        profile_view.confirm_button.click()
+        profile.just_fyi('pin history node')
+        profile.sync_settings_button.click()
+        node_gc, node_ams, node_hk = [profile.return_mailserver_name(history_node_name, used_fleet) for history_node_name in (mailserver_gc, mailserver_ams, mailserver_hk)]
+        h_node = node_ams
+        profile.mail_server_button.click()
+        profile.mail_server_auto_selection_button.click()
+        profile.mail_server_by_name(h_node).click()
+        profile.confirm_button.click()
+        if profile.find_element_by_translation_id("mailserver-error-title").is_element_displayed(10):
+            h_node = node_hk
+            profile.find_element_by_translation_id("mailserver-pick-another", uppercase=True).click()
+            profile.mail_server_by_name(h_node).click()
+            profile.confirm_button.click()
+            if profile.find_element_by_translation_id("mailserver-error-title").is_element_displayed(10):
+                self.driver.fail("Couldn't connect to any history node")
 
-        profile_view.just_fyi('check that mailserver is pinned')
-        profile_view.back_button.click()
-        if not profile_view.element_by_text(mailserver).is_element_displayed():
-            self.errors.append('"%s" mailserver is not pinned' % mailserver)
-        profile_view.get_back_to_home_view()
+        profile.just_fyi('check that history node is pinned')
+        profile.back_button.click()
+        if not profile.element_by_text(h_node).is_element_displayed():
+            self.errors.append('"%s" history node is not pinned' % h_node)
+        profile.get_back_to_home_view()
 
-        profile_view.just_fyi('Relogin and check that settings are preserved')
-        home_view.relogin()
-        home_view.profile_button.click()
-        profile_view.sync_settings_button.click()
-        if not profile_view.element_by_text(mailserver).is_element_displayed():
-            self.errors.append('"%s" mailserver is not pinned' % mailserver)
+        profile.just_fyi('Relogin and check that settings are preserved')
+        home.relogin()
+        home.profile_button.click()
+        profile.sync_settings_button.click()
+        if not profile.element_by_text(h_node).is_element_displayed():
+            self.errors.append('"%s" history node is not pinned' % h_node)
 
         self.errors.verify_no_errors()
 
@@ -918,7 +922,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.element_by_text(mailserver).click()
         profile_1.confirm_button.click()
         profile_1.home_button.click()
-        home_1.get_chat(public_chat_name).click()
+        home_1.get_chat('#%s' % public_chat_name).click()
         if not public_chat_1.chat_element_by_text(message).is_element_displayed(30):
             self.errors.append("Chat history wasn't fetched")
 
