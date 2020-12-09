@@ -70,13 +70,19 @@
                        :params [allowed-permissions]
                        :on-success #()}]}))
 
-(fx/defn revoke-dapp-permissions
+(fx/defn revoke-permissions
+  {:events [:browser/revoke-dapp-permissions]}
   [{:keys [db] :as cofx} dapp]
   (fx/merge cofx
-            {:db            (update-in db [:dapps/permissions] dissoc dapp)
+            {:db             (update-in db [:dapps/permissions] dissoc dapp)
              ::json-rpc/call [{:method "permissions_deleteDappPermissions"
                                :params [dapp]
-                               :on-success #()}]}
+                               :on-success #()}]}))
+
+(fx/defn revoke-dapp-permissions
+  [cofx dapp]
+  (fx/merge cofx
+            (revoke-permissions dapp)
             (navigation/navigate-back)))
 
 (fx/defn clear-dapps-permissions

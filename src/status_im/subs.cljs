@@ -130,6 +130,7 @@
 (reg-root-key-sub :browsers :browser/browsers)
 (reg-root-key-sub :browser/options :browser/options)
 (reg-root-key-sub :dapps/permissions :dapps/permissions)
+(reg-root-key-sub :bookmarks :bookmarks/bookmarks)
 
 ;;stickers
 (reg-root-key-sub :stickers/selected-pack :stickers/selected-pack)
@@ -1033,7 +1034,7 @@
  :browser/browsers-vals
  :<- [:browser/browsers]
  (fn [browsers]
-   (sort-by :timestamp > (vals browsers))))
+   (vals browsers)))
 
 (re-frame/reg-sub
  :get-current-browser

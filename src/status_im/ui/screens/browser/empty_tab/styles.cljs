@@ -1,17 +1,13 @@
-(ns status-im.ui.screens.browser.open-dapp.styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.styles :as components.styles]
-            [status-im.utils.styles :as styles]))
+(ns status-im.ui.screens.browser.empty-tab.styles
+  (:require [status-im.ui.components.colors :as colors]))
 
-(styles/defn input []
-  {:border-radius      components.styles/border-radius
-   :background-color   colors/gray-lighter
-   :margin-horizontal  16
-   :margin-bottom      9
-   :margin-top         24
-   :height             36
-   :padding-horizontal 14
-   :android            {:padding 0}})
+(def input
+  {:height  36
+   :padding 0})
+
+(def input-container-style
+  {:margin-horizontal 16
+   :margin-vertical   10})
 
 (defn browser-icon-container []
   {:width            40
@@ -24,7 +20,7 @@
 (defn dapp-store-container []
   {:margin             16
    :border-color       colors/gray-lighter
-   :margin-top         8
+   :margin-top         18
    :border-width       1
    :border-radius      12
    :padding-vertical   16

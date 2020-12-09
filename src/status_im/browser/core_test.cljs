@@ -33,8 +33,7 @@
                                          :history-index 0
                                          :history ["https://cryptokitties.co"]
                                          :dapp? false
-                                         :name "Browser"
-                                         :timestamp 1}))
+                                         :name "Browser"}))
             "some properties of the browser are not correct")
 
         (testing "then a second dapp"
@@ -49,8 +48,7 @@
                                             {:browser-id dapp2-id
                                              :history-index 0
                                              :history ["http://test2.com"]
-                                             :dapp? false
-                                             :timestamp 2}))
+                                             :dapp? false}))
                 "some properties of the browser are not correct")
 
             (testing "then removes the second dapp"
@@ -70,8 +68,7 @@
                                              :history-index 0
                                              :history ["https://cryptokitties.co"]
                                              :dapp? false
-                                             :name "Browser"
-                                             :timestamp 2}))
+                                             :name "Browser"}))
                 "some properties of the browser are not correct")
             (is (nil? (browser/navigate-to-next-page result-open-existing))
                 "nothing should happen if user tries to navigate to next page")
@@ -91,8 +88,7 @@
                                                  :history-index 1
                                                  :history ["https://cryptokitties.co" dapp1-url2]
                                                  :dapp? false
-                                                 :name "Browser"
-                                                 :timestamp 4}))
+                                                 :name "Browser"}))
                     "some properties of the browser are not correct")
 
                 (testing "then navigates to previous page"
@@ -104,8 +100,7 @@
                                                      :history-index 0
                                                      :history ["https://cryptokitties.co" dapp1-url2]
                                                      :dapp? false
-                                                     :name "Browser"
-                                                     :timestamp 5}))
+                                                     :name "Browser"}))
                         "some properties of the browser are not correct")
 
                     (testing "then navigates to next page")
@@ -117,6 +112,5 @@
                                                        :history-index 1
                                                        :history ["https://cryptokitties.co" dapp1-url2]
                                                        :dapp? false
-                                                       :name "Browser"
-                                                       :timestamp 6}))
+                                                       :name "Browser"}))
                           "some properties of the browser are not correct"))))))))))))

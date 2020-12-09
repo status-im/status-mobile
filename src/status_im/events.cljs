@@ -725,11 +725,6 @@
    (browser/open-url cofx url)))
 
 (handlers/register-handler-fx
- :browser.ui/open-modal-chat-button-pressed
- (fn [cofx [_ host]]
-   (browser/open-chat-from-browser cofx host)))
-
-(handlers/register-handler-fx
  :dapps/revoke-access
  (fn [cofx [_ dapp]]
    (browser.permissions/revoke-dapp-permissions cofx dapp)))

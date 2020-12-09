@@ -24,7 +24,8 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
             [status-im.browser.webview-ref :as webview-ref]
-            ["eth-phishing-detect" :as eth-phishing-detect]))
+            ["eth-phishing-detect" :as eth-phishing-detect]
+            [status-im.utils.debounce :as debounce]))
 
 (fx/defn update-browser-option
   [{:keys [db]} option-key option-value]
@@ -114,9 +115,9 @@
                                        :cb       resolve-ens-contenthash-callback}}))
 
 (fx/defn update-browser
-  [{:keys [db now]}
+  [{:keys [db]}
    {:keys [browser-id] :as browser}]
-  (let [updated-browser (-> (assoc browser :timestamp now)
+  (let [updated-browser (-> browser
                             (update-dapp-name)
                             (check-if-phishing-url))]
     {:db            (update-in db
@@ -125,6 +126,35 @@
      ::json-rpc/call [{:method "browsers_addBrowser"
                        :params [(select-keys updated-browser [:browser-id :timestamp :name :dapp? :history :history-index])]
                        :on-success #()}]}))
+
+(fx/defn store-bookmark
+  {:events [:browser/store-bookmark]}
+  [{:keys [db]}
+   {:keys [url] :as bookmark}]
+  {:db            (assoc-in db [:bookmarks/bookmarks url] bookmark)
+   ::json-rpc/call [{:method "browsers_storeBookmark"
+                     :params [bookmark]
+                     :on-success #()}]})
+
+(fx/defn update-bookmark
+  {:events [:browser/update-bookmark]}
+  [{:keys [db]}
+   {:keys [url] :as bookmark}]
+  {:db            (update-in db
+                             [:bookmarks/bookmarks url]
+                             merge bookmark)
+   ::json-rpc/call [{:method "browsers_updateBookmark"
+                     :params [url bookmark]
+                     :on-success #()}]})
+
+(fx/defn delete-bookmark
+  {:events [:browser/delete-bookmark]}
+  [{:keys [db]}
+   url]
+  {:db            (update db :bookmarks/bookmarks dissoc url)
+   ::json-rpc/call [{:method "browsers_deleteBookmark"
+                     :params [url]
+                     :on-success #()}]})
 
 (defn can-go-back? [{:keys [history-index]}]
   (pos? history-index))
@@ -221,7 +251,7 @@
   (let [browser (get-current-browser (:db cofx))
         options (get-in cofx [:db :browser/options])
         current-url (:url options)]
-    (when (and (not= "about:blank" url) (not= current-url url) (not= (str current-url "/") url))
+    (when (and (not (string/blank? url)) (not= "about:blank" url) (not= current-url url) (not= (str current-url "/") url))
       (let [resolved-ens (first (filter (fn [v]
                                           (not= (.indexOf ^js url (second v)) -1))
                                         (:resolved-ens options)))
@@ -417,21 +447,6 @@
       (= type constants/api-request)
       (browser.permissions/process-permission cofx dapp-name permission messageId params))))
 
-(defn filter-letters-numbers-and-replace-dot-on-dash
-  [^js value]
-  (let [cc (.charCodeAt value 0)]
-    (cond (or (and (> cc 96) (< cc 123))
-              (and (> cc 64) (< cc 91))
-              (and (> cc 47) (< cc 58)))
-          value
-          (= cc 46)
-          "-")))
-
-(fx/defn open-chat-from-browser
-  [cofx host]
-  (let [topic (string/lower-case (apply str (map filter-letters-numbers-and-replace-dot-on-dash host)))]
-    {:dispatch [:chat.ui/start-public-chat topic nil]}))
-
 (re-frame/reg-fx
  :browser/resolve-ens-content
  (fn [{:keys [registry ens-name cb]}]
@@ -495,3 +510,9 @@
             #(when (= (:view-id db) :browser)
                (merge (navigation/navigate-back %)
                       {:dispatch [:browser.ui/browser-item-selected (get-in db [:browser/options :browser-id])]}))))
+
+(fx/defn open-empty-tab
+  {:events [:browser.ui/open-empty-tab]}
+  [cofx]
+  (debounce/clear :browser/navigation-state-changed)
+  (navigation/navigate-to-cofx cofx :empty-tab nil))

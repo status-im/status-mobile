@@ -11,7 +11,7 @@
    :justify-content    :space-between
    :border-top-color   colors/gray-lighter
    :border-top-width   1
-   :padding-horizontal 32})
+   :padding-horizontal 24})
 
 (def disabled-button
   {:opacity 0.4})
@@ -41,7 +41,8 @@
    :padding-horizontal 10
    :align-items        :center
    :align-self         :center
-   :margin-top         10})
+   :margin-horizontal  16
+   :margin-vertical    10})
 
 (def url-input
   {:flex                1

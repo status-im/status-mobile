@@ -64,7 +64,8 @@
                          :top              -3
                          :z-index          3
                          :height           3
-                         :background-color colors/white}}
+                         :background-color colors/white}
+                 :accessibility-label :loading-indicator}
      [react/animated-view {:style (animated-bar-style blue-bar-left-margin
                                                       parent-width
                                                       colors/blue)}]

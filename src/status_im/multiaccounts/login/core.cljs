@@ -115,6 +115,15 @@
                          all-stored-browsers)]
     {:db (assoc db :browser/browsers browsers)}))
 
+(fx/defn initialize-bookmarks
+  {:events [::initialize-bookmarks]}
+  [{:keys [db]} stored-bookmarks]
+  (let [bookmarks (reduce (fn [acc {:keys [url] :as bookmark}]
+                            (assoc acc url bookmark))
+                          {}
+                          stored-bookmarks)]
+    {:db (assoc db :bookmarks/bookmarks bookmarks)}))
+
 (fx/defn initialize-invitations
   {:events [::initialize-invitations]}
   [{:keys [db]} invitations]
@@ -245,6 +254,8 @@
                  :on-success #(re-frame/dispatch [::protocol/initialize-protocol {:mailserver-ranges (or % {})}])}
                 {:method     "browsers_getBrowsers"
                  :on-success #(re-frame/dispatch [::initialize-browsers %])}
+                {:method     "browsers_getBookmarks"
+                 :on-success #(re-frame/dispatch [::initialize-bookmarks %])}
                 {:method     "permissions_getDappPermissions"
                  :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}
                 {:method     "mailservers_getMailservers"

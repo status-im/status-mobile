@@ -26,6 +26,7 @@
             [status-im.ui.screens.wallet.send.views :as wallet]
             [status-im.ui.screens.link-previews-settings.views :as link-previews]
             [status-im.ui.screens.status.new.views :as status.new]
+            [status-im.ui.screens.browser.bookmarks.views :as bookmarks]
             [status-im.ui.screens.routing.status-stack :as status-stack]))
 
 (defonce main-stack (navigation/create-stack))
@@ -145,6 +146,10 @@
         :transition :presentation-ios
         :insets     {:bottom true}
         :component  status.new/my-status}
+       {:name       :new-bookmark
+        :transition :presentation-ios
+        :insets     {:bottom true}
+        :component  bookmarks/new-bookmark}
        {:name       :profile
         :transition :presentation-ios
         :insets     {:bottom true}

@@ -156,3 +156,16 @@
              (mapcat split-param)
              (map url-decode)
              (apply hash-map))))
+
+(defn filter-letters-numbers-and-replace-dot-on-dash
+  [^js value]
+  (let [cc (.charCodeAt value 0)]
+    (cond (or (and (> cc 96) (< cc 123))
+              (and (> cc 64) (< cc 91))
+              (and (> cc 47) (< cc 58)))
+          value
+          (= cc 46)
+          "-")))
+
+(defn topic-from-url [url]
+  (string/lower-case (apply str (map filter-letters-numbers-and-replace-dot-on-dash (url-host url)))))

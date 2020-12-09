@@ -1292,8 +1292,12 @@
     "membership-description": "Group membership requires you to be accepted by the group admin",
     "group-membership-request": "Group membership request",
     "members-limit-reached": "Members limit reached",
+    "favourite": "Favourite",
     "favourites": "Favourites",
     "new-favourite": "New favourite",
+    "edit-favourite": "Edit favourite",
+    "remove-favourite": "Remove favourite",
+    "add-favourite": "Add favourite",
     "add-to-favourites": "Add to favourites",
     "favourites-empty": "Addresses added to favourites will appear here",
     "contacts-empty": "Contacts with ENS names will appear here",
@@ -1331,5 +1335,14 @@
     "default-assets": "Default ERC20 and ERC721",
     "increase-gas": "Increase Gas",
     "cancelling": "Cancelling",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "close-all": "Close all",
+    "tabs": "Tabs",
+    "new-tab": "New tab",
+    "empty-tab": "Empty tab",
+    "open-in-new-tab": "Open in new tab",
+    "has-permissions": "has permission to access",
+    "connect-wallet": "Connect wallet",
+    "open-chat": "Open chat",
+    "favourite-description": "Your favourite websites will appear here"
 }

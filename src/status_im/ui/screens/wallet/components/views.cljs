@@ -4,3 +4,6 @@
 
 (defn separator []
   [react/view (styles/separator)])
+
+(defn separator-dark []
+  [react/view (styles/separator-dark)])

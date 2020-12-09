@@ -127,6 +127,10 @@
    "browsers_getBrowsers" {}
    "browsers_addBrowser" {}
    "browsers_deleteBrowser" {}
+   "browsers_getBookmarks" {}
+   "browsers_storeBookmark" {}
+   "browsers_updateBookmark" {}
+   "browsers_deleteBookmark" {}
    "mailservers_getMailserverRequestGaps" {}
    "mailservers_addMailserverRequestGaps" {}
    "mailservers_deleteMailserverRequestGaps" {}

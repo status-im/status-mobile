@@ -4,3 +4,7 @@
 (defn separator []
   {:height           1
    :background-color colors/gray-lighter})
+
+(defn separator-dark []
+  {:height           1
+   :background-color colors/black-transparent})

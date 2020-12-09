@@ -18,7 +18,7 @@
 (defn main-tab? [view-id]
   (contains?
    #{:chat-stack :browser-stack :wallet-stack :profile-stack :status-stack
-     :status :home :wallet :open-dapp :my-profile :wallet-onboarding-setup}
+     :status :home :wallet :empty-tab :my-profile :wallet-onboarding-setup}
    view-id))
 
 (def tabs-list-data

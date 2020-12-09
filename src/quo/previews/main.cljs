@@ -12,7 +12,8 @@
             [reagent.core :as reagent]
             [quo.design-system.colors :as colors]
             [quo.theme :as theme]
-            [status-im.ui.screens.routing.core :as navigation]))
+            [status-im.ui.screens.routing.core :as navigation]
+            [quo.previews.icons :as icons]))
 
 (def screens [{:name      :texts
                :insets    {:top false}
@@ -37,7 +38,10 @@
                :component bottom-sheet/preview}
               {:name      :controls
                :insets    {:top false}
-               :component controls/preview}])
+               :component controls/preview}
+              {:name      :icons
+               :insets    {:top false}
+               :component icons/preview}])
 
 (defn theme-switcher []
   [rn/view {:style {:flex-direction   :row
