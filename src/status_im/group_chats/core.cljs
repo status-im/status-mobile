@@ -1,6 +1,7 @@
 (ns status-im.group-chats.core
   (:refer-clojure :exclude [remove])
   (:require [clojure.spec.alpha :as spec]
+            [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.chat.models :as models.chat]
             [status-im.chat.models.message :as models.message]
@@ -120,8 +121,11 @@
                                      nil)
             (navigation/navigate-to-cofx :home {})))
 
+(def not-blank?
+  (complement string/blank?))
+
 (defn- valid-name? [name]
-  (spec/valid? :profile/name name))
+  (spec/valid? not-blank? name))
 
 (fx/defn name-changed
   "Save chat from edited profile"
