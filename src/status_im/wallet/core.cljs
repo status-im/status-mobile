@@ -24,6 +24,7 @@
             [status-im.wallet.utils :as wallet.utils]
             [status-im.native-module.core :as status]
             [status-im.ui.screens.mobile-network-settings.utils :as mobile-network-utils]
+            [status-im.utils.datetime :as datetime]
             status-im.wallet.recipient.core))
 
 (defn get-balance
@@ -543,8 +544,8 @@
    (log/info "start-wallet fx" watch-new-blocks?)
    (status/start-wallet watch-new-blocks?)))
 
-(def ms-10-min (* 10 60 1000))
-(def ms-20-min (* 20 60 1000))
+(def ms-10-min (datetime/minutes 10))
+(def ms-20-min (datetime/minutes 20))
 
 (fx/defn stop-wallet
   [{:keys [db] :as cofx}]
@@ -594,6 +595,16 @@
                 watching-txs?))
         (start-wallet cofx (boolean (or watch-new-blocks? watching-txs?)))
         (stop-wallet cofx)))))
+
+(def background-cooldown-time (datetime/minutes 3))
+
+(fx/defn restart-wallet-service-after-background
+  [{:keys [now] :as cofx} background-time]
+  (when (> (- now background-time)
+           background-cooldown-time)
+    (restart-wallet-service
+     cofx
+     {:force-start? true})))
 
 (fx/defn restart-wallet-service-default
   [cofx]

@@ -13,8 +13,12 @@
 (defn now []
   (t/now))
 
-(def hour (* 1000 60 60))
-(def day (* hour 24))
+(def one-second 1000)
+(def minute (* 60 one-second))
+(defn minutes [m]
+  (* m minute))
+(def hour (* 60 minute))
+(def day (* 24 hour))
 (def week (* 7 day))
 (def units [{:name :t/datetime-second-short :limit 60 :in-second 1}
             {:name :t/datetime-minute-short :limit 3600 :in-second 60}
