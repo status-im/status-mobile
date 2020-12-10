@@ -96,6 +96,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         sign_in_view.just_fyi('Check that transaction is appeared in transaction history')
         wallet_view.wait_balance_is_changed('STT', initial_amount_STT)
+        wallet_view.accounts_status_account.click()
         transactions_view = wallet_view.transaction_history_button.click()
         transactions_view.transactions_table.find_transaction(amount=sending_amount, asset='STT')
 

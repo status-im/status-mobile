@@ -67,6 +67,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
         sign_in_view.toggle_airplane_mode()
         wallet_view.wait_balance_is_changed('STT', initial_amount_STT)
+        wallet_view.accounts_status_account.click()
         transactions_view = wallet_view.transaction_history_button.click()
         transactions_view.transactions_table.find_transaction(amount=sending_amount, asset='STT')
 
