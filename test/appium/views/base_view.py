@@ -149,8 +149,8 @@ class DappTabButton(TabButton):
         return DappsView(self.driver)
 
     def click(self):
-        from views.dapps_view import SelectAccountButton
-        self.click_until_presence_of_element(SelectAccountButton(self.driver))
+        from views.dapps_view import EnterUrlEditbox
+        self.click_until_presence_of_element(EnterUrlEditbox(self.driver))
         return self.navigate()
 
 

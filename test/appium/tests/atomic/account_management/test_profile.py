@@ -614,6 +614,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5738)
     @marks.high
+    @marks.skip
+    # TODO: rebuild with browser 1.0
     def test_dapps_permissions(self):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()

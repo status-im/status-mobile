@@ -56,6 +56,8 @@ class TestDApps(SingleDeviceTestCase):
 
     @marks.testrail_id(6232)
     @marks.medium
+    @marks.skip
+    # TODO: rebuild with browser 1.0
     def test_switching_accounts_in_dapp(self):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()

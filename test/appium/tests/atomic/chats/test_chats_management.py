@@ -486,6 +486,8 @@ class TestChatManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5498)
     @marks.medium
+    @marks.skip
+    # TODO: rebuild with browser 1.0
     def test_share_user_profile_url_public_chat(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -519,6 +521,7 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in.just_fyi('Open URL and share link to it via messenger')
         daap_view = home.dapp_tab_button.click()
         browsing_view = daap_view.open_url('dap.ps')
+
         browsing_view.share_url_button.click()
         browsing_view.share_via_messenger()
         expeceted_text_1 = 'https://join.status.im/b/https://dap.ps'

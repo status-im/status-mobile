@@ -36,6 +36,7 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view.just_fyi('Relogin and check that tap on "Next" navigates to next page')
         browsing_view.relogin()
         home_view.dapp_tab_button.click()
+        browsing_view.open_tabs_button.click()
         dapp_view.element_by_text_part(ru_url).click()
         browsing_view.wait_for_element_starts_with_text('свободную энциклопедию')
         browsing_view.browser_next_page_button.click()
@@ -75,21 +76,22 @@ class TestBrowsing(SingleDeviceTestCase):
         for url in ('metamask.site', 'https://www.cryptokitties.domainname'):
             daap_view.just_fyi('Checking blocked website %s' % url)
             dapp_detail = daap_view.open_url(url)
-            dapp_detail.find_text_part('This site is blocked')
+            dapp_detail.find_element_by_translation_id('browsing-site-blocked-title')
             if dapp_detail.browser_refresh_page_button.is_element_displayed():
                 self.errors.append("Refresh button is present in blocked site")
             dapp_detail.go_back_button.click()
+            dapp_detail.open_tabs_button.click()
             daap_view.element_by_text("Browser").click()
             dapp_detail.continue_anyway_button.click()
             if dapp_detail.element_by_text('This site is blocked').is_element_displayed():
                 self.errors.append("Failed to open Dapp after 'Continue anyway' tapped for %s" % url)
-            daap_view.cross_icon.click()
+            home_view.dapp_tab_button.click()
 
         daap_view.just_fyi('Checking connection is not secure warning')
         browsing_view = daap_view.open_url('http://www.dvwa.co.uk')
         browsing_view.url_edit_box_lock_icon.click_until_presence_of_element(
             browsing_view.element_by_text(connection_not_secure_text))
-        browsing_view.cross_icon.click()
+        home_view.dapp_tab_button.click()
 
         for url in ('https://www.bbc.com', 'https://instant.airswap.io'):
             daap_view.just_fyi('Checking connection is secure for %s' % url)
@@ -97,7 +99,7 @@ class TestBrowsing(SingleDeviceTestCase):
             browsing_view.wait_for_d_aap_to_load()
             browsing_view.url_edit_box_lock_icon.click_until_presence_of_element(
                 browsing_view.element_by_text(connection_is_secure_text))
-            browsing_view.cross_icon.click()
+            home_view.dapp_tab_button.click()
 
         self.errors.verify_no_errors()
 
@@ -144,26 +146,44 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(5390)
     @marks.high
-    def test_long_press_delete_clear_all_dapps(self):
-        sign_in = SignInView(self.driver)
-        home_view = sign_in.create_user()
+    @marks.skip
+    # TODO: rebuild with browser 1.0
+    def test_delete_close_all_tabs(self):
+        home_view = SignInView(self.driver).create_user()
         dapp_view = home_view.dapp_tab_button.click()
-        browsing_view = dapp_view.open_url('google.com')
-        browsing_view.back_button.click()
-        dapp_view = DappsView(self.driver)
-        browser_entry = dapp_view.remove_browser_entry_long_press('Google')
+        urls = {
+            'google.com': 'Google',
+            'status.im': 'Status',
+            'bbc.com' : 'BBC'
+        }
+        tab_name, tab_name_status = 'Google' , 'Status'
+        #browsing_view = dapp_view.open_url('google.com')
+        for url in urls:
+            browsing_view = dapp_view.open_url(url)
+            browsing_view.browser_previous_page_button.click()
+        # browsing_view.back_button.click()
+        browsing_view.remove_tab(name=urls['bbc.com'])
         home_view.relogin()
-        home_view.dapp_tab_button.click()
-        if browser_entry.is_element_present(20):
-            self.errors.append('The browser entry is present after re-login')
-        for entry in ('google.com', 'status.im'):
-            browsing_view = dapp_view.open_url(entry)
-            browsing_view.back_button.click()
-        dapp_view.remove_browser_entry_long_press('status', clear_all=True)
-        home_view.relogin()
-        home_view.dapp_tab_button.click()
-        if not dapp_view.element_by_text('Browser history will appear here').is_element_displayed():
-            self.errors.append('Browser history is not empty')
+        # home_view.dapp_tab_button.click()
+        # browsing_view.open_tabs_button.click()
+        # if browsing_view.element_by_text_part(tab_name).is_element_displayed():
+        #     self.errors.append('Closed tab is present after re-login')
+        # for entry in ('google.com', 'status.im'):
+        #     browsing_view = dapp_view.open_url(entry)
+        #     browsing_view.browser_previous_page_button.click()
+        # browsing_view.remove_tab(clear_all=True)
+        # # dapp_view.remove_browser_entry_long_press('status', clear_all=True)
+        # home_view.relogin()
+        # home_view.dapp_tab_button.click()
+        # browsing_view.open_tabs_button.click()
+        # for closed_tab in (tab_name, tab_name_status):
+        #     if browsing_view.element_by_text_part(closed_tab).is_element_displayed():
+        #         self.errors.append('Closed tab %s is present after re-login')
+
+
+        # if not dapp_view.element_by_text('Browser history will appear here').is_element_displayed():
+        #     self.errors.append('Browser history is not empty')
+        # self.errors.verify_no_errors()
 
     @marks.testrail_id(5321)
     @marks.critical

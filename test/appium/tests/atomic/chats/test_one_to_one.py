@@ -923,12 +923,13 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                     'address': '0x3D59…F415',
                 },
             },
-            'dapp_deep_link': {
-                'url': 'https://join.status.im/b/simpledapp.eth',
-             },
-            'dapp_deep_link_https': {
-                'url': 'https://join.status.im/b/https://simpledapp.eth',
-            },
+            # TODO: rebuild with browser 1.0
+            # 'dapp_deep_link': {
+            #     'url': 'https://join.status.im/b/simpledapp.eth',
+            #  },
+            # 'dapp_deep_link_https': {
+            #     'url': 'https://join.status.im/b/https://simpledapp.eth',
+            # },
             'public_chat_deep_link': {
                 'url': 'https://join.status.im/baga-ma-2020',
                 'chat_name': 'baga-ma-2020'

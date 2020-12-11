@@ -12,6 +12,12 @@ class ProgressBarIcon(BaseElement):
         self.locator = self.Locator.xpath_selector("//android.widget.ProgressBar")
 
 
+class CloseTabButton(BaseElement):
+    def __init__(self, driver, name):
+        super(CloseTabButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[contains(@text, '%s')]/../../../../*[@content-desc='empty-tab']"
+                                                   % name)
+
 class WebLinkEditBox(BaseEditBox):
 
     def __init__(self, driver):
@@ -84,13 +90,22 @@ class ShareUrlButton(BaseButton):
 class GoBackButton(BaseButton):
     def __init__(self, driver):
         super(GoBackButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector("Go back")
+        self.locator = self.Locator.translation_id_selector('browsing-site-blocked-go-back')
 
+class OpenTabsButton(BaseButton):
+    def __init__(self, driver):
+        super(OpenTabsButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('browser-open-tabs')
+
+class CloseAllButton(BaseButton):
+    def __init__(self, driver):
+        super(CloseAllButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('close-all')
 
 class ContinueAnywayButton(BaseButton):
     def __init__(self, driver):
         super(ContinueAnywayButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector("Continue anyway")
+        self.locator = self.Locator.translation_id_selector("continue-anyway")
 
 
 class BaseWebView(BaseView):
@@ -114,6 +129,8 @@ class BaseWebView(BaseView):
         self.share_url_button = ShareUrlButton(self.driver)
         self.go_back_button = GoBackButton(self.driver)
         self.continue_anyway_button = ContinueAnywayButton(self.driver)
+        self.open_tabs_button = OpenTabsButton(self.driver)
+        self.close_all_button = CloseAllButton(self.driver)
 
     def wait_for_d_aap_to_load(self, wait_time=35):
         counter = 0
@@ -128,4 +145,13 @@ class BaseWebView(BaseView):
             self.web_view_browser.click()
         if self.always_button.is_element_displayed():
             self.always_button.click()
+
+    def remove_tab(self, name='', clear_all=False):
+        self.open_tabs_button.click()
+        if clear_all:
+            self.close_all_button.click()
+        else:
+            close_button = CloseTabButton(self.driver, name)
+            close_button.scroll_to_element()
+            close_button.click()
 
