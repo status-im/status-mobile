@@ -84,13 +84,17 @@ class PolicySummary(BaseElement):
 class ShareUrlButton(BaseButton):
     def __init__(self, driver):
         super(ShareUrlButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('modal-share-link-button')
-
+        self.locator = self.Locator.accessibility_id('share')
 
 class GoBackButton(BaseButton):
     def __init__(self, driver):
         super(GoBackButton, self).__init__(driver)
         self.locator = self.Locator.translation_id_selector('browsing-site-blocked-go-back')
+
+class OptionsButton(BaseButton):
+    def __init__(self, driver):
+        super(OptionsButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('browser-options')
 
 class OpenTabsButton(BaseButton):
     def __init__(self, driver):
@@ -128,6 +132,7 @@ class BaseWebView(BaseView):
         self.browser_refresh_page_button = BrowserRefreshPageButton(self.driver)
         self.share_url_button = ShareUrlButton(self.driver)
         self.go_back_button = GoBackButton(self.driver)
+        self.options_button = OptionsButton(self.driver)
         self.continue_anyway_button = ContinueAnywayButton(self.driver)
         self.open_tabs_button = OpenTabsButton(self.driver)
         self.close_all_button = CloseAllButton(self.driver)

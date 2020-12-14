@@ -148,9 +148,14 @@ class DappTabButton(TabButton):
         from views.dapps_view import DappsView
         return DappsView(self.driver)
 
-    def click(self):
+    def click(self, desired_element_text = 'enter_url'):
         from views.dapps_view import EnterUrlEditbox
-        self.click_until_presence_of_element(EnterUrlEditbox(self.driver))
+        if desired_element_text == 'enter_url':
+            self.click_until_presence_of_element(EnterUrlEditbox(self.driver))
+        else:
+            base_view = BaseView(self.driver)
+            self.click_until_presence_of_element(base_view.element_by_text_part(desired_element_text))
+
         return self.navigate()
 
 

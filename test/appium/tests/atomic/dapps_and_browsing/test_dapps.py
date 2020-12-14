@@ -56,8 +56,6 @@ class TestDApps(SingleDeviceTestCase):
 
     @marks.testrail_id(6232)
     @marks.medium
-    @marks.skip
-    # TODO: rebuild with browser 1.0
     def test_switching_accounts_in_dapp(self):
         sign_in_view = SignInView(self.driver)
         home_view = sign_in_view.create_user()
@@ -92,18 +90,18 @@ class TestDApps(SingleDeviceTestCase):
             self.errors.append("Permissions for %s are not removed" % test_dapp_name)
 
         sign_in_view.just_fyi('check that can change account')
-        profile_view.dapp_tab_button.click()
-        if not status_test_dapp.element_by_text(account_name).is_element_displayed():
+        profile_view.dapp_tab_button.click(desired_element_text='Allow')
+        if not status_test_dapp.element_by_text_part(account_name).is_element_displayed():
             self.errors.append("No expected account %s is shown in authorize web3 popup for wallet" % account_name)
-        status_test_dapp.allow_button.wait_and_click()
+        status_test_dapp.allow_button.click()
         dapp_view.profile_button.click(desired_element_text='DApp permissions')
         profile_view.element_by_text(test_dapp_name).click()
         for text in 'Chat key', account_name:
-            if not dapp_view.element_by_text(text).is_element_displayed():
+            if not dapp_view.element_by_text_part(text).is_element_displayed():
                 self.errors.append("Access is not granted to %s" % text)
 
         sign_in_view.just_fyi('check correct account is shown for transaction if sending from DApp')
-        profile_view.dapp_tab_button.click()
+        profile_view.dapp_tab_button.click(desired_element_text='Accounts')
         status_test_dapp.assets_button.click()
         send_transaction_view = status_test_dapp.request_stt_button.click()
         address = send_transaction_view.get_formatted_recipient_address(address)
@@ -117,8 +115,11 @@ class TestDApps(SingleDeviceTestCase):
         sign_in_view.wallet_button.click()
         if not wallet_view.element_by_text(account_name).is_element_displayed():
             self.errors.append("Subaccount is gone after relogin in Wallet!")
-        sign_in_view.dapp_tab_button.click()
-        if not dapp_view.element_by_text(account_name).is_element_displayed():
+        sign_in_view.profile_button.click()
+        profile_view.privacy_and_security_button.click()
+        profile_view.dapp_permissions_button.click()
+        profile_view.element_by_text(test_dapp_name).click()
+        if not profile_view.element_by_text(account_name).is_element_displayed():
             self.errors.append("Subaccount is not selected after relogin in Dapps!")
         self.errors.verify_no_errors()
 

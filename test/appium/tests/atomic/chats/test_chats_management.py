@@ -486,13 +486,10 @@ class TestChatManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5498)
     @marks.medium
-    @marks.skip
-    # TODO: rebuild with browser 1.0
     def test_share_user_profile_url_public_chat(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
+        home = SignInView(self.driver).create_user()
 
-        sign_in.just_fyi('Join to one-to-one chat and share link to other user profile via messenger')
+        home.just_fyi('Join to one-to-one chat and share link to other user profile via messenger')
         chat_view = home.add_contact(dummy_user["public_key"])
         chat_view.chat_options.click()
         chat_view.view_profile_button.click_until_presence_of_element(chat_view.remove_from_contacts)
@@ -505,7 +502,7 @@ class TestChatManagement(SingleDeviceTestCase):
         for _ in range(2):
             chat_view.click_system_back_button()
 
-        sign_in.just_fyi('Join to public chat and share link to it via messenger')
+        home.just_fyi('Join to public chat and share link to it via messenger')
         chat_view.get_back_to_home_view()
         public_chat_name = 'pubchat'
         public_chat = home.join_public_chat(public_chat_name)
@@ -518,10 +515,10 @@ class TestChatManagement(SingleDeviceTestCase):
             chat_view.click_system_back_button()
         chat_view.get_back_to_home_view()
 
-        sign_in.just_fyi('Open URL and share link to it via messenger')
+        home.just_fyi('Open URL and share link to it via messenger')
         daap_view = home.dapp_tab_button.click()
         browsing_view = daap_view.open_url('dap.ps')
-
+        browsing_view.options_button.click()
         browsing_view.share_url_button.click()
         browsing_view.share_via_messenger()
         expeceted_text_1 = 'https://join.status.im/b/https://dap.ps'

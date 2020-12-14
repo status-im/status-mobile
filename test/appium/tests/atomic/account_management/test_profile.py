@@ -614,16 +614,13 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5738)
     @marks.high
-    @marks.skip
-    # TODO: rebuild with browser 1.0
     def test_dapps_permissions(self):
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.create_user()
+        home_view = SignInView(self.driver).create_user()
         account_name = home_view.status_account_name
 
         home_view.just_fyi('open Status Test Dapp, allow all and check permissions in Profile')
         home_view.open_status_test_dapp()
-        home_view.cross_icon.click()
+        home_view.dapp_tab_button.click()
         profile_view = home_view.profile_button.click()
         profile_view.privacy_and_security_button.click()
         profile_view.dapp_permissions_button.click()

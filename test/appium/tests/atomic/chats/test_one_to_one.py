@@ -873,9 +873,8 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
     @marks.testrail_id(6322)
     @marks.medium
     def test_can_scan_different_links_with_universal_qr_scanner(self):
-        sign_in_view = SignInView(self.driver)
         user = transaction_senders['C']
-        home_view = sign_in_view.recover_access(user['passphrase'])
+        home_view = SignInView(self.driver).recover_access(user['passphrase'])
         wallet_view = home_view.wallet_button.click()
         wallet_view.set_up_wallet()
         wallet_view.home_button.click()
@@ -923,13 +922,12 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                     'address': '0x3D59…F415',
                 },
             },
-            # TODO: rebuild with browser 1.0
-            # 'dapp_deep_link': {
-            #     'url': 'https://join.status.im/b/simpledapp.eth',
-            #  },
-            # 'dapp_deep_link_https': {
-            #     'url': 'https://join.status.im/b/https://simpledapp.eth',
-            # },
+            'dapp_deep_link': {
+                'url': 'https://join.status.im/b/simpledapp.eth',
+             },
+            'dapp_deep_link_https': {
+                'url': 'https://join.status.im/b/https://simpledapp.eth',
+             },
             'public_chat_deep_link': {
                 'url': 'https://join.status.im/baga-ma-2020',
                 'chat_name': 'baga-ma-2020'
@@ -938,7 +936,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
         for key in url_data:
             home_view.plus_button.click_until_presence_of_element(home_view.start_new_chat_button)
-            sign_in_view.just_fyi('Checking %s case' % key)
+            home_view.just_fyi('Checking %s case' % key)
             if home_view.universal_qr_scanner_button.is_element_displayed():
                 home_view.universal_qr_scanner_button.click()
             if home_view.allow_button.is_element_displayed():
@@ -970,7 +968,7 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
                 home_view.open_in_status_button.click()
                 if not chat_view.allow_button.is_element_displayed():
                     self.errors.append('No allow button is shown in case of navigating to Status dapp!')
-                chat_view.cross_icon.click()
+                chat_view.dapp_tab_button.click()
             if 'public' in key:
                 if not chat_view.chat_message_input.is_element_displayed():
                     self.errors.append('No message input is shown in case of navigating to public chat via deep link!')

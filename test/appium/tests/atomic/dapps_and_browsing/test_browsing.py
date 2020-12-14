@@ -147,43 +147,36 @@ class TestBrowsing(SingleDeviceTestCase):
     @marks.testrail_id(5390)
     @marks.high
     @marks.skip
-    # TODO: rebuild with browser 1.0
+    # TODO: failed due to #11544 and #11545
     def test_delete_close_all_tabs(self):
         home_view = SignInView(self.driver).create_user()
         dapp_view = home_view.dapp_tab_button.click()
         urls = {
             'google.com': 'Google',
             'status.im': 'Status',
-            'bbc.com' : 'BBC'
+            'bbc.com' : 'bbc.com'
         }
-        tab_name, tab_name_status = 'Google' , 'Status'
-        #browsing_view = dapp_view.open_url('google.com')
         for url in urls:
             browsing_view = dapp_view.open_url(url)
-            browsing_view.browser_previous_page_button.click()
-        # browsing_view.back_button.click()
+            [browsing_view.dapp_tab_button.click() for _ in range(2)]
+        home_view.just_fyi('Close one tab, relogin and check that it is not reappearing')
         browsing_view.remove_tab(name=urls['bbc.com'])
         home_view.relogin()
-        # home_view.dapp_tab_button.click()
-        # browsing_view.open_tabs_button.click()
-        # if browsing_view.element_by_text_part(tab_name).is_element_displayed():
-        #     self.errors.append('Closed tab is present after re-login')
-        # for entry in ('google.com', 'status.im'):
-        #     browsing_view = dapp_view.open_url(entry)
-        #     browsing_view.browser_previous_page_button.click()
-        # browsing_view.remove_tab(clear_all=True)
-        # # dapp_view.remove_browser_entry_long_press('status', clear_all=True)
-        # home_view.relogin()
-        # home_view.dapp_tab_button.click()
-        # browsing_view.open_tabs_button.click()
-        # for closed_tab in (tab_name, tab_name_status):
-        #     if browsing_view.element_by_text_part(closed_tab).is_element_displayed():
-        #         self.errors.append('Closed tab %s is present after re-login')
+        home_view.dapp_tab_button.click()
+        browsing_view.open_tabs_button.click()
+        if browsing_view.element_by_text_part(urls['bbc.com']).is_element_displayed():
+             self.errors.append('Closed tab is present after re-login')
 
+        home_view.just_fyi('Close all tabs via "Close all", relogin and check that it is not reappearing')
+        browsing_view.close_all_button.click()
+        home_view.relogin()
+        home_view.dapp_tab_button.click()
+        browsing_view.open_tabs_button.click()
+        for url in urls:
+            if browsing_view.element_by_text_part(urls[url]).is_element_displayed():
+                self.errors.append('Closed tab %s present after re-login after "Close all"' % url)
 
-        # if not dapp_view.element_by_text('Browser history will appear here').is_element_displayed():
-        #     self.errors.append('Browser history is not empty')
-        # self.errors.verify_no_errors()
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5321)
     @marks.critical

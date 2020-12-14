@@ -123,6 +123,7 @@ class DappsView(BaseView):
         self.close_web3_permissions_window_button = CrossCloseWeb3PermissionButton(self.driver)
 
     def open_url(self, url):
+        self.enter_url_editbox.wait_for_visibility_of_element(10)
         self.enter_url_editbox.click()
         self.enter_url_editbox.send_keys(url)
         self.confirm()
