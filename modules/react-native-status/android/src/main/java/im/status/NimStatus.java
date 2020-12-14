@@ -59,7 +59,7 @@ public class NimStatus {
   public native String multiAccountReset();
   public native String deleteMultiaccount(String keyUID, String path);
   public native String migrateKeyStoreDir(String accountData, String password, String oldKeystoreDir, String multiaccountKeystoreDir);
-  public native void startWallet();
+  public native void startWallet(boolean watchNewBlocks);
   public native void stopWallet();
   public native void startLocalNotifications();
   public native void stopLocalNotifications();

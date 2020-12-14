@@ -544,8 +544,8 @@ jstring Java_im_status_NimStatus_multiAccountReset(JNIEnv* env, jobject thiz) {
   return (*env)->NewStringUTF(env, result);
 }
 
-void Java_im_status_NimStatus_startWallet(JNIEnv* env, jobject thiz) {
-  startWallet();
+void Java_im_status_NimStatus_startWallet(JNIEnv* env, jobject thiz, jboolean watchNewBlocks) {
+  startWallet(watchNewBlocks);
 }
 
 void Java_im_status_NimStatus_stopWallet(JNIEnv* env, jobject thiz) {
