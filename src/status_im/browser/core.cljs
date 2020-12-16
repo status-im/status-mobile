@@ -189,12 +189,13 @@
   [cofx browser url]
   (let [history-index (:history-index browser)
         history       (:history browser)]
-    (let [new-history (conj (subvec history 0 (inc history-index)) url)
-          new-index   (dec (count new-history))]
-      (update-browser cofx
-                      (assoc browser
-                             :history new-history
-                             :history-index new-index)))))
+    (when history
+      (let [new-history (conj (subvec history 0 (inc history-index)) url)
+            new-index   (dec (count new-history))]
+        (update-browser cofx
+                        (assoc browser
+                               :history new-history
+                               :history-index new-index))))))
 
 (defmulti storage-gateway :namespace)
 
@@ -251,7 +252,7 @@
   (let [browser (get-current-browser (:db cofx))
         options (get-in cofx [:db :browser/options])
         current-url (:url options)]
-    (when (and (not (string/blank? url)) (not= "about:blank" url) (not= current-url url) (not= (str current-url "/") url))
+    (when (and browser (not (string/blank? url)) (not= "about:blank" url) (not= current-url url) (not= (str current-url "/") url))
       (let [resolved-ens (first (filter (fn [v]
                                           (not= (.indexOf ^js url (second v)) -1))
                                         (:resolved-ens options)))
@@ -266,7 +267,7 @@
 (fx/defn update-browser-name
   [cofx title]
   (let [browser (get-current-browser (:db cofx))]
-    (when (and (not (:dapp? browser)) title (not (string/blank? title)))
+    (when (and browser (not (:dapp? browser)) title (not (string/blank? title)))
       (update-browser cofx (assoc browser :name title)))))
 
 (fx/defn navigation-state-changed
