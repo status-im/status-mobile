@@ -347,7 +347,7 @@ class FirstElementFromGalleryButton(BaseButton):
 class ViewProfileButton(BaseButton):
     def __init__(self, driver):
         super(ViewProfileButton, self).__init__(driver)
-        self.locator = self.Locator.translation_id_selector('view-profile')
+        self.locator = self.Locator.translation_id('view-profile')
 
     def navigate(self):
         return ChatView(self.driver)

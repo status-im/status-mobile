@@ -404,15 +404,22 @@ class MailServerAddressInput(BaseEditBox):
 
     def __init__(self, driver):
         super(MailServerAddressInput, self).__init__(driver)
-        self.locator = self.Locator.translation_id_selector('mailserver-address',
-                                                            suffix='/following-sibling::*[1]/android.widget.EditText')
+        self.locator = self.Locator.translation_id('mailserver-address',
+                                                   suffix='/following-sibling::*[1]/android.widget.EditText')
 
 
 class MailServerAutoSelectionButton(BaseButton):
+
     def __init__(self, driver):
         super(MailServerAutoSelectionButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Automatic selection']/following-sibling::*[1]")
+        self.locator = self.Locator.translation_id("mailserver-automatic", '/following-sibling::*[1]')
 
+
+class UseHistoryNodesButton(BaseButton):
+
+    def __init__(self, driver):
+        super(UseHistoryNodesButton, self).__init__(driver)
+        self.locator = self.Locator.translation_id('offline-messaging-use-history-nodes', '/following-sibling::*[1]')
 
 class MailServerElement(BaseButton):
 
@@ -444,7 +451,7 @@ class MailServerConfirmDeleteButton(BaseButton):
 
     def __init__(self, driver):
         super(MailServerConfirmDeleteButton, self).__init__(driver)
-        self.locator = self.Locator.translation_id_selector("delete-mailserver", uppercase=True)
+        self.locator = self.Locator.translation_id("delete-mailserver", uppercase=True)
 
 class ActiveNetworkName(BaseText):
 
@@ -701,6 +708,7 @@ class ProfileView(BaseView):
         self.mail_server_address_input = MailServerAddressInput(self.driver)
         self.mail_server_connect_button = MailServerConnectButton(self.driver)
         self.mail_server_auto_selection_button = MailServerAutoSelectionButton(self.driver)
+        self.use_history_node_button = UseHistoryNodesButton(self.driver)
         self.mail_server_delete_button = MailServerDeleteButton(self.driver)
         self.mail_server_confirm_delete_button = MailServerConfirmDeleteButton(self.driver)
 

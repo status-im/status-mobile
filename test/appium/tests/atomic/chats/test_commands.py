@@ -130,8 +130,9 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
             self.errors.append('Was not redirected to transaction history after tapping on PN')
 
         wallet_1.home_button.click(desired_view="chat")
-        home_1.just_fyi("Check 'Confirmed' state for sender")
-        chat_1_sender_message.transaction_status.wait_for_element_text('Confirmed')
+        home_1.just_fyi("Check 'Confirmed' state for sender and receiver")
+        wallet_2.status_in_background_button.click()
+        [message.transaction_status.wait_for_element_text('Confirmed') for message in (chat_1_sender_message, chat_2_receiver_message)]
         # TODO: should be added PNs for receiver agter getting more stable feature
         self.errors.verify_no_errors()
 
@@ -198,11 +199,12 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15, token=True)
         chat_2.toggle_airplane_mode()
         chat_2.connection_status.wait_for_invisibility_of_element(30)
-        chat_2_sender_message.transaction_status.wait_for_element_text('Confirmed')
         try:
             self.network_api.find_transaction_by_unique_amount(recipient_address[2:], amount, token=True)
         except Failed as e:
             self.errors.append(e.msg)
+        [message.transaction_status.wait_for_element_text('Confirmed') for message in
+         (chat_2_sender_message, chat_1_request_message)]
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6265)

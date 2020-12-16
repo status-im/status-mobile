@@ -244,8 +244,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     @marks.testrail_id(5502)
     @marks.critical
     def test_can_add_existing_ens(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.recover_access(ens_user['passphrase'])
+        home = SignInView(self.driver).recover_access(ens_user['passphrase'])
 
         home.just_fyi('switching to Mainnet')
         profile = home.profile_button.click()
@@ -256,12 +255,10 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         dapp_view.just_fyi('check if your name can be added via "ENS usernames" in Profile')
         dapp_view.element_by_text('Get started').click()
         dapp_view.ens_name.set_value(ens_user['ens'])
-        if not dapp_view.element_by_text_part('is owned by you').is_element_displayed():
-            self.errors.append('Owned username is not shown in ENS Dapp.')
         dapp_view.check_ens_name.click()
-        if not dapp_view.element_by_text_part('Username added').is_element_displayed():
+        if not dapp_view.find_element_by_translation_id('ens-saved-title').is_element_displayed():
             self.errors.append('No message "Username added" after resolving own username')
-        dapp_view.element_by_text('Ok, got it').click()
+        dapp_view.find_element_by_translation_id("ens-got-it").click()
 
         dapp_view.just_fyi('check that after adding username is shown in "ENS usernames" and profile')
         if not dapp_view.element_by_text(ens_user['ens']).is_element_displayed():
@@ -348,7 +345,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.profile_button.click()
         profile_view.logout()
         self.driver.reset()
-        # sign_in_view.accept_agreements()
         sign_in_view.recover_access(recovery_phrase)
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
@@ -925,6 +921,46 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         if not public_chat_1.chat_element_by_text(message).is_element_displayed(30):
             self.errors.append("Chat history wasn't fetched")
 
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(6332)
+    @marks.medium
+    def test_disable_use_history_node(self):
+        self.create_drivers(2)
+        home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
+        profile_1 = home_1.profile_button.click()
+
+        home_2.just_fyi('send several messages to public channel')
+        public_chat_name = home_2.get_random_chat_name()
+        message, message_no_history = 'test_message', 'history node is disabled'
+        public_chat_2 = home_2.join_public_chat(public_chat_name)
+        public_chat_2.send_message(message)
+
+        profile_1.just_fyi('disable use_history_node and check that no history is fetched but you can still send messages')
+        profile_1.sync_settings_button.click()
+        profile_1.mail_server_button.click()
+        profile_1.use_history_node_button.click()
+        profile_1.home_button.click()
+        public_chat_1 = home_1.join_public_chat(public_chat_name)
+        if public_chat_1.chat_element_by_text(message).is_element_displayed(30):
+            self.errors.append('Chat history was fetched when use_history_node is disabled')
+        public_chat_1.send_message(message_no_history)
+        if not public_chat_2.chat_element_by_text(message_no_history).is_element_displayed(30):
+            self.errors.append('Message sent when use_history_node is disabled was not received')
+        public_chat_1.profile_button.click()
+        profile_1.relogin()
+        home_1.get_chat('#%s'%public_chat_name).click()
+        if public_chat_1.chat_element_by_text(message).is_element_displayed(30):
+            self.drivers[0].fail('History was fetched after relogin when use_history_node is disabled')
+
+        profile_1.just_fyi('enable use_history_node and check that history is fetched')
+        home_1.profile_button.click()
+        profile_1.sync_settings_button.click()
+        profile_1.mail_server_button.click()
+        profile_1.use_history_node_button.click()
+        profile_1.home_button.click(desired_view='chat')
+        if not public_chat_1.chat_element_by_text(message).is_element_displayed(30):
+            self.errors.append('History was not fetched after enabling use_history_node')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5762)

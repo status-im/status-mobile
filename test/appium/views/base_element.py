@@ -48,7 +48,7 @@ class BaseElement(object):
             return cls(MobileBy.XPATH, xpath_expression)
 
         @classmethod
-        def translation_id_selector(cls, id, suffix='', uppercase = False):
+        def translation_id(cls, id, suffix='', uppercase = False):
             text = transl[id]
             if uppercase:
                 text = transl[id].upper()

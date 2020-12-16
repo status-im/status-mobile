@@ -76,8 +76,10 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
         wallet_1.home_button.click(desired_view='chat')
 
-        home_1.just_fyi("Check 'Confirmed' state for sender")
-        chat_1_sender_message.transaction_status.wait_for_element_text('Confirmed')
+        home_1.just_fyi("Check 'Confirmed' state for sender and receiver")
+        [message.transaction_status.wait_for_element_text('Confirmed') for message in
+         (chat_1_sender_message, chat_2_receiver_message)]
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6294)
@@ -148,7 +150,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, token=True)
         chat_2.toggle_airplane_mode()
         chat_2.connection_status.wait_for_invisibility_of_element(60)
-        chat_2_sender_message.transaction_status.wait_for_element_text('Confirmed')
+        [message.transaction_status.wait_for_element_text('Confirmed') for message in (chat_2_sender_message, chat_1_request_message)]
         self.errors.verify_no_errors()
 
 

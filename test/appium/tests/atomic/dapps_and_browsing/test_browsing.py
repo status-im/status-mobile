@@ -146,14 +146,12 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(5390)
     @marks.high
-    @marks.skip
-    # TODO: failed due to #11544 and #11545
     def test_delete_close_all_tabs(self):
         home_view = SignInView(self.driver).create_user()
         dapp_view = home_view.dapp_tab_button.click()
         urls = {
             'google.com': 'Google',
-            'status.im': 'Status',
+            'status.im': 'Status - Private',
             'bbc.com' : 'bbc.com'
         }
         for url in urls:

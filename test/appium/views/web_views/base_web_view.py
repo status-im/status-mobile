@@ -89,7 +89,7 @@ class ShareUrlButton(BaseButton):
 class GoBackButton(BaseButton):
     def __init__(self, driver):
         super(GoBackButton, self).__init__(driver)
-        self.locator = self.Locator.translation_id_selector('browsing-site-blocked-go-back')
+        self.locator = self.Locator.translation_id('browsing-site-blocked-go-back')
 
 class OptionsButton(BaseButton):
     def __init__(self, driver):
@@ -109,7 +109,7 @@ class CloseAllButton(BaseButton):
 class ContinueAnywayButton(BaseButton):
     def __init__(self, driver):
         super(ContinueAnywayButton, self).__init__(driver)
-        self.locator = self.Locator.translation_id_selector("continue-anyway")
+        self.locator = self.Locator.translation_id("continue-anyway")
 
 
 class BaseWebView(BaseView):

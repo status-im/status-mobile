@@ -598,7 +598,7 @@ class BaseView(object):
     def find_element_by_translation_id(self, id, element_type='base', uppercase=False):
         self.driver.info("Looking element by id: '%s'" % id)
         element = self.element_types[element_type](self.driver)
-        element.locator = element.Locator.translation_id_selector(id, uppercase=uppercase)
+        element.locator = element.Locator.translation_id(id, uppercase=uppercase)
         return element
 
     def wait_for_element_starts_with_text(self, text, wait_time=60):
