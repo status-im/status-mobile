@@ -16,7 +16,7 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.utils.core :as utils]))
 
-(defn toolbar-content [id display-name color]
+(defn toolbar-content [id display-name color members]
   [rn/view {:style {:flex           1
                     :align-items    :center
                     :flex-direction :row}}
@@ -33,7 +33,11 @@
    [rn/view {:style {:flex 1 :justify-content :center}}
     [quo/text {:number-of-lines     1
                :accessibility-label :community-name-text}
-     display-name]]])
+     display-name]
+    [quo/text {:number-of-lines 1
+               :size            :small
+               :color           :secondary}
+     (i18n/label-pluralize members :t/community-members {:count members})]]])
 
 (defn hide-sheet-and-dispatch [event]
   (re-frame/dispatch [:bottom-sheet/hide])
@@ -85,6 +89,7 @@
     [welcome-blank-page]
     [list/flat-list
      {:key-fn                       :chat-id
+      :content-container-style      {:padding-vertical 8}
       :keyboard-should-persist-taps :always
       :data                         chats
       :render-fn                    community-chat-item
@@ -125,6 +130,7 @@
                (get-in description [:chats]))]
     [list/flat-list
      {:key-fn                       :id
+      :content-container-style      {:padding-vertical 8}
       :keyboard-should-persist-taps :always
       :data                         chats
       :render-fn                    channel-preview-item}]))
@@ -137,7 +143,8 @@
      [topbar/topbar
       {:content           [toolbar-content id
                            (get-in description [:identity :display-name])
-                           (get-in description [:identity :color])]
+                           (get-in description [:identity :color])
+                           (count (get description :members))]
        :modal?            true
        :right-accessories (when (or admin joined)
                             [{:icon                :main-icons/more
