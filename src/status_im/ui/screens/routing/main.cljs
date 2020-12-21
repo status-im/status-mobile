@@ -100,6 +100,9 @@
        {:name       :create-group-chat
         :transition :presentation-ios
         :component  chat-stack/new-group-chat}
+       {:name       :communities
+        :transition :presentation-ios
+        :component  chat-stack/communities}
        {:name       :referral-invite
         :transition :presentation-ios
         :insets     {:bottom true}

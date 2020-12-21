@@ -27,6 +27,8 @@
 (def ^:const timeline-chat-type 5)
 (def ^:const community-chat-type 6)
 
+(def request-to-join-pending-state 1)
+
 (def reactions {emoji-reaction-love        (:love resources/reactions)
                 emoji-reaction-thumbs-up   (:thumbs-up resources/reactions)
                 emoji-reaction-thumbs-down (:thumbs-down resources/reactions)
@@ -78,6 +80,17 @@
 (def ^:const web3-keycard-sign-typed-data "keycard_signTypedData")
 
 (def ^:const status-create-address "status_createaddress")
+
+(def ^:const community-no-membership-access 1)
+(def ^:const community-invitation-only-access 2)
+(def ^:const community-on-request-access 3)
+
+;; Community rules for joining
+(def ^:const community-rule-ens-only "ens-only")
+
+(def ^:const community-channel-access-no-membership 1)
+(def ^:const community-channel-access-invitation-only 2)
+(def ^:const community-channel-access-on-request 3)
 
 ; BIP44 Wallet Root Key, the extended key from which any wallet can be derived
 (def ^:const path-wallet-root "m/44'/60'/0'/0")

@@ -213,6 +213,11 @@
 (reg-root-key-sub :buy-crypto/on-ramps :buy-crypto/on-ramps)
 
 ;; communities
+
+(reg-root-key-sub :communities/create :communities/create)
+(reg-root-key-sub :communities/requests-to-join :communities/requests-to-join)
+(reg-root-key-sub :communities/community-id-input :communities/community-id-input)
+
 (re-frame/reg-sub
  :communities
  (fn [db]
@@ -226,22 +231,42 @@
      [])))
 
 (re-frame/reg-sub
+ :communities/section-list
+ :<- [:communities]
+ (fn [communities]
+   (->> (vals communities)
+        (group-by (comp (fnil string/upper-case "") first :name))
+        (sort-by (fn [[title]] title))
+        (map (fn [[title data]]
+               {:title title
+                :data  data})))))
+
+(re-frame/reg-sub
  :communities/community
  :<- [:communities]
  (fn [communities [_ id]]
    (get communities id)))
 
 (re-frame/reg-sub
- :communities/status-community
+ :communities/communities
  :<- [:search/home-filter]
  :<- [:communities]
  (fn [[search-filter communities]]
-   (let [status-community (get communities constants/status-community-id)]
-     (when (and (:joined status-community)
-                (or (string/blank? search-filter)
-                    (string/includes? (string/lower-case
-                                       (get-in status-community [:description :identity :display-name])) search-filter)))
-       status-community))))
+   (filterv
+    (fn [{:keys [name joined id]}]
+      (and joined
+           (or config/communities-management-enabled?
+               (= id constants/status-community-id))
+           (or (empty? search-filter)
+               (string/includes? (string/lower-case (str name)) search-filter))))
+    (vals communities))))
+
+(re-frame/reg-sub
+ :communities/edited-community
+ :<- [:communities]
+ :<- [:communities/community-id-input]
+ (fn [[communities community-id]]
+   (get communities community-id)))
 
 (re-frame/reg-sub
  :communities/current-community
@@ -259,6 +284,16 @@
              (+ acc (or unviewed-messages-count 0)))
            0
            chats)))
+
+(re-frame/reg-sub
+ :communities/requests-to-join-for-community
+ :<- [:communities/requests-to-join]
+ (fn [requests [_ community-id]]
+   (->>
+    (get requests community-id {})
+    vals
+    (filter (fn [{:keys [state]}]
+              (= state constants/request-to-join-pending-state))))))
 
 ;;GENERAL ==============================================================================================================
 
@@ -1198,9 +1233,21 @@
  :home-items
  :<- [:search/home-filter]
  :<- [:search/filtered-chats]
- (fn [[search-filter filtered-chats]]
-   {:search-filter search-filter
-    :chats         filtered-chats}))
+ :<- [:communities/communities]
+ (fn [[search-filter filtered-chats communities]]
+   (let [communities-count (count communities)
+         chats-count (count filtered-chats)
+         ;; If we have both communities & chats we want to display
+         ;; a separator between them
+
+         communities-with-separator (if (and (pos? communities-count)
+                                             (pos? chats-count))
+                                      (update communities
+                                              (dec communities-count)
+                                              assoc :last? true)
+                                      communities)]
+     {:search-filter search-filter
+      :items         (concat communities-with-separator filtered-chats)})))
 
 ;;PAIRING ==============================================================================================================
 

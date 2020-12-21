@@ -9,6 +9,7 @@
             [quo.components.list.header :as list-header]
             [quo.components.list.footer :as list-footer]
             [quo.components.list.item :as list-item]
+            [quo.components.list.index :as list-index]
             [quo.components.controls.view :as controls]
             [quo.components.bottom-sheet.view :as bottom-sheet]
             [quo.components.separator :as separator]
@@ -23,6 +24,7 @@
 (def list-header list-header/header)
 (def list-footer list-footer/footer)
 (def list-item list-item/list-item)
+(def list-index list-index/index)
 (def bottom-sheet bottom-sheet/bottom-sheet)
 (def switch controls/switch)
 (def radio controls/radio)
