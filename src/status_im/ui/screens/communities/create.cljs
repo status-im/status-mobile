@@ -69,7 +69,8 @@
          :multiline      true
          :default-value  description
          :on-change-text #(>evt [::communities/create-field :description %])}]]
-      [quo/list-header (i18n/label :t/community-thumbnail-image)]
+      [quo/list-header {:color :main}
+       (i18n/label :t/community-thumbnail-image)]
       [photo-picker]
       [rn/view {:style {:padding-bottom     16
                         :padding-top        10
@@ -82,13 +83,12 @@
       [rn/view
        [quo/separator {:style {:margin-vertical 10}}]
        [quo/list-item {:title          (i18n/label :t/membership-button)
-                       :accessory-text "None"
+                       :accessory-text (when-not membership (i18n/label :t/membership-none))
                        :on-press       #(>evt [:navigate-to :community-membership])
                        :chevron        true
                        :size           :small}]
        [quo/list-footer
-        (some-> (get-in memberships/options [membership :description])
-                i18n/label)]]]
+        (i18n/label (get-in memberships/options [membership :description] :t/membership-none-placeholder))]]]
      [toolbar/toolbar
       {:show-border? true
        :center

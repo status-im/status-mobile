@@ -7,7 +7,7 @@
             [status-im.utils.handlers :refer [>evt <sub]]
             [status-im.communities.core :as communities]))
 
-(def options {1 {:title       :t/membership-appoval
+(def options {1 {:title       :t/membership-approval
                  :description :t/membership-approval-description}
               2 {:title       :t/membership-invite
                  :description :t/membership-invite-description}
@@ -29,7 +29,6 @@
 
 (defn membership []
   (let [{:keys [membership]} (<sub [:communities/create])]
-    (prn membership)
     [:<>
      [topbar/topbar {:title (i18n/label :t/membership-title)}]
      [rn/scroll-view {}

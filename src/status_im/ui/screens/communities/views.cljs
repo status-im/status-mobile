@@ -24,7 +24,8 @@
   (re-frame/dispatch event))
 
 (defn community-list-item [{:keys [id description]}]
-  (let [identity (:identity description)]
+  (let [identity (:identity description)
+        members  (count (:members description))]
     [quo/list-item
      {:icon (if (= id constants/status-community-id)
               [react/image {:source (resources/get-image :status-logo)
@@ -55,8 +56,7 @@
                                    (:description identity)]
                                   [quo/text {:number-of-lines 1
                                              :color           :secondary}
-                                   (str (count (:members description))
-                                        " member")]]
+                                   (i18n/label-pluralize members :t/community-members {:count members})]]
       :on-press                  #(do
                                     (re-frame/dispatch [:dismiss-keyboard])
                                     (re-frame/dispatch [:navigate-to :community {:community-id id}]))}]))
