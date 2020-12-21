@@ -117,12 +117,19 @@
    "multiaccounts_deleteIdentityImage" {}
    "wakuext_createCommunity" {}
    "wakuext_createCommunityChat" {}
-   "wakuext_inviteUserToCommunity" {}
+   "wakuext_inviteUsersToCommunity" {}
+   "wakuext_shareCommunity" {}
+   "wakuext_removeUserFromCommunity" {}
+   "wakuext_requestToJoinCommunity" {}
+   "wakuext_acceptRequestToJoinCommunity" {}
+   "wakuext_declineRequestToJoinCommunity" {}
+   "wakuext_pendingRequestsToJoinForCommunity" {}
    "wakuext_joinCommunity" {}
    "wakuext_leaveCommunity" {}
    "wakuext_communities" {}
    "wakuext_importCommunity" {}
    "wakuext_exportCommunity" {}
+   "wakuext_ensVerified" {}
    "status_chats" {}
    "localnotifications_switchWalletNotifications" {}
    "localnotifications_notificationPreferences" {}

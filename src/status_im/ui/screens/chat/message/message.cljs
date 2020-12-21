@@ -2,7 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
-            [status-im.communities.core :as communities]
             [status-im.utils.config :as config]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
@@ -216,7 +215,7 @@
     (chat.utils/format-author contact-with-names opts)))
 
 (defview community-content [{:keys [community-id] :as message}]
-  (letsubs [{:keys [joined verified] :as community} [:communities/community community-id]]
+  (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]]
     (when (and
            config/communities-enabled?
            community)
@@ -253,25 +252,24 @@
                          :style {:width 40
                                  :height 40}}]
 
-           (let [display-name (get-in community [:description :identity :display-name])]
-             [chat-icon/chat-icon-view-chat-list
-              display-name
-              true
-              display-name
-              colors/default-community-color]))]
+           [chat-icon/chat-icon-view-chat-list
+            name
+            true
+            name
+            colors/default-community-color])]
         [react/view {:padding-right 14}
          [react/text {:style {:font-weight "700"
                               :font-size 17}}
-          (get-in community [:description :identity :display-name])]
-         [react/text (get-in community [:description :identity :description])]]]
+          name]
+         [react/text description]]]
        [react/view {:border-width 1
                     :padding-vertical 8
                     :border-bottom-left-radius 10
                     :border-bottom-right-radius 10
                     :border-color colors/gray-lighter}
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [(if joined ::communities/leave ::communities/join) (:id community)])}
+        [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :community {:community-id (:id community)}])}
          [react/text {:style {:text-align :center
-                              :color colors/blue}} (if joined (i18n/label :t/leave) (i18n/label :t/join))]]]])))
+                              :color colors/blue}} (i18n/label :t/view)]]]])))
 
 (defn message-content-wrapper
   "Author, userpic and delivery wrapper"

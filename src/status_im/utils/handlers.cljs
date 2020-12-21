@@ -52,3 +52,7 @@
     name
     [debug-handlers-names (re-frame/inject-cofx :now) interceptors]
     handler)))
+
+(def <sub (comp deref re-frame/subscribe))
+
+(def >evt re-frame/dispatch)

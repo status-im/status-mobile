@@ -123,13 +123,17 @@
 (fx/defn name-verified
   {:events [:contacts/ens-name-verified]}
   [{:keys [db now] :as cofx} public-key ens-name]
-  (let [contact (-> (get-in db [:contacts/contacts public-key]
-                            (build-contact cofx public-key))
+  (let [contact (-> (or (get-in db [:contacts/contacts public-key])
+                        (build-contact cofx public-key))
                     (assoc :name ens-name
-                           :last-ens-clock-value now
-                           :ens-verified-at now
                            :ens-verified true))]
-    (upsert-contact cofx contact)))
+    (fx/merge cofx
+              {:db            (-> db
+                                  (update-in [:contacts/contacts public-key] merge contact))
+               ::json-rpc/call [{:method "wakuext_ensVerified"
+                                 :params [public-key ens-name]
+                                 :on-success #(log/debug "ens name verified successuful")}]}
+              (transport.filters/load-contact contact))))
 
 (fx/defn update-nickname
   {:events [:contacts/update-nickname]}

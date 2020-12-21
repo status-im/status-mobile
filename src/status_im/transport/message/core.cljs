@@ -28,6 +28,9 @@
 (fx/defn handle-community [cofx community]
   (models.communities/handle-community cofx community))
 
+(fx/defn handle-request-to-join-community [cofx request]
+  (models.communities/handle-request-to-join cofx request))
+
 (fx/defn handle-reactions [cofx reactions]
   (models.reactions/receive-signal cofx reactions))
 
@@ -44,6 +47,7 @@
   {:events [::process]}
   [cofx ^js response-js]
   (let [^js communities (.-communities response-js)
+        ^js requests-to-join-community (.-requestsToJoinCommunity response-js)
         ^js chats (.-chats response-js)
         ^js contacts (.-contacts response-js)
         ^js installations (.-installations response-js)
@@ -72,6 +76,11 @@
         (fx/merge cofx
                   {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
                   (handle-community (types/js->clj community))))
+      (seq requests-to-join-community)
+      (let [request (.pop requests-to-join-community)]
+        (fx/merge cofx
+                  {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (handle-request-to-join-community (types/js->clj request))))
       (seq chats)
       (let [chats-clj (types/js->clj chats)]
         (js-delete response-js "chats")

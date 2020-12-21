@@ -1,5 +1,6 @@
 {:lint-as {status-im.utils.views/defview  clojure.core/defn
            status-im.utils.views/letsubs  clojure.core/let
+           reagent.core/with-let          clojkure.core/let
            status-im.utils.fx/defn        clj-kondo.lint-as/def-catch-all
            quo.react/with-deps-check      clojure.core/fn
            quo.previews.preview/list-comp clojure.core/for

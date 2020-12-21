@@ -145,15 +145,17 @@
                                      (re-frame/dispatch [:set :public-group-topic nil])
                                      (re-frame/dispatch [:search/home-filter-changed nil]))}])])))
 
-(defn render-fn [home-item]
-  [inner-item/home-list-item home-item])
+(defn render-fn [{:keys [chat-id] :as home-item}]
+  ;; We use `chat-id` to distinguish communities from chats
+  (if chat-id
+    [inner-item/home-list-item home-item]
+    [communities.views/community-home-list-item home-item]))
 
-(defn communities-and-chats [chats status-community loading? search-filter hide-home-tooltip?]
+(defn communities-and-chats [items loading? search-filter hide-home-tooltip?]
   (if loading?
     [react/view {:flex 1 :align-items :center :justify-content :center}
      [react/activity-indicator {:animating true}]]
-    (if (and (empty? chats)
-             (not status-community)
+    (if (and (empty? items)
              (empty? search-filter)
              hide-home-tooltip?
              (not @search-active?))
@@ -161,33 +163,26 @@
       [list/flat-list
        {:key-fn                       :chat-id
         :keyboard-should-persist-taps :always
-        :data                         chats
+        :data                         items
         :render-fn                    render-fn
-        :header                       [:<>
-                                       (when (or (seq chats) @search-active? (seq search-filter))
-                                         [search-input-wrapper search-filter chats])
-                                       [referral-item/list-item]
-                                       (when (and (empty? chats)
-                                                  (not status-community)
-                                                  (or @search-active? (seq search-filter)))
-                                         [start-suggestion search-filter])
-                                       (when status-community
-                                         ;; We only support one community now, Status
-                                         [communities.views/status-community status-community])
-                                       (when (and status-community
-                                                  (seq chats))
-                                         [quo/separator])]
+        :header [:<>
+                 (when (or (seq items) @search-active? (seq search-filter))
+                   [search-input-wrapper search-filter items])
+                 [referral-item/list-item]
+                 (when
+                  (and (empty? items)
+                       (or @search-active? (seq search-filter)))
+                   [start-suggestion search-filter])]
         :footer                       (if (and (not hide-home-tooltip?) (not @search-active?))
                                         [home-tooltip-view]
                                         [react/view {:height 68}])}])))
 
 (views/defview chats-list []
-  (views/letsubs [status-community [:communities/status-community]
-                  loading? [:chats/loading?]
-                  {:keys [chats search-filter]} [:home-items]
+  (views/letsubs [loading? [:chats/loading?]
+                  {:keys [items
+                          search-filter]} [:home-items]
                   {:keys [hide-home-tooltip?]} [:multiaccount]]
-    [react/scroll-view
-     [communities-and-chats chats status-community loading? search-filter hide-home-tooltip?]]))
+    [communities-and-chats items loading? search-filter hide-home-tooltip?]))
 
 (views/defview plus-button []
   (views/letsubs [logging-in? [:multiaccounts/login]]

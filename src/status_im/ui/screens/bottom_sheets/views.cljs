@@ -4,7 +4,6 @@
             [status-im.ui.screens.home.sheet.views :as home.sheet]
             [status-im.ui.screens.keycard.views :as keycard]
             [status-im.ui.screens.about-app.views :as about-app]
-            [status-im.ui.screens.communities.views :as communities]
             [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [quo.core :as quo]))
 
@@ -32,18 +31,6 @@
 
           (= view :learn-more)
           (merge about-app/learn-more)
-
-          (= view :create-community)
-          (merge communities/create-sheet)
-
-          (= view :import-community)
-          (merge communities/import-sheet)
-
-          (= view :create-community-channel)
-          (merge communities/create-channel-sheet)
-
-          (= view :invite-people-community)
-          (merge communities/invite-people-sheet)
 
           (= view :recover-sheet)
           (merge recover.views/bottom-sheet))]
