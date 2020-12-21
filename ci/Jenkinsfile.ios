@@ -114,7 +114,7 @@ pipeline {
     stage('Cleanup') {
       steps {
         sh 'make watchman-clean'
-        sh 'make clean'
+        sh 'make purge'
       }
     }
   }

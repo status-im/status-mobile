@@ -116,7 +116,7 @@ pipeline {
     }
     stage('Cleanup') {
       steps {
-        sh 'make clean'
+        sh 'make purge'
       }
     }
   }

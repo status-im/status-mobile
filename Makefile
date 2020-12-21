@@ -127,9 +127,16 @@ _tmpdir-rm: SHELL := /bin/sh
 _tmpdir-rm: ##@prepare Remove TMPDIR
 	rm -fr "$(TMPDIR)"
 
+# Remove directories and ignored files
 clean: SHELL := /bin/sh
 clean: _fix-node-perms _tmpdir-rm ##@prepare Remove all output folders
+	git clean -dXf
+
+# Remove directories, ignored and non-ignored files
+purge: SHELL := /bin/sh
+purge: _fix-node-perms _tmpdir-rm ##@prepare Remove all output folders
 	git clean -dxf
+
 
 watchman-clean: export TARGET := watchman
 watchman-clean: ##@prepare Delete repo directory from watchman
