@@ -170,8 +170,7 @@
 (fx/defn create
   {:events [::create-confirmation-pressed]}
   [{:keys [db]}]
-  (let [{:keys [name description membership]} (get db :membership/create)
-        membership                            (js/parseInt membership)
+  (let [{:keys [name description membership]} (get db :communities/create)
         my-public-key                         (get-in db [:multiaccount :public-key])]
     {::json-rpc/call [{:method     "wakuext_createCommunity"
                        :params     [{:identity    {:display_name name
@@ -271,7 +270,7 @@
   {:events [::export-pressed]}
   [cofx community-id]
   (export cofx community-id
-          #(re-frame/dispatch [:show-popover {:view  :export-community
+          #(re-frame/dispatch [:show-popover {:view          :export-community
                                               :community-key %}])))
 
 (fx/defn import-confirmation-pressed

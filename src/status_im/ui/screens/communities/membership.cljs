@@ -39,5 +39,6 @@
                     :on-select #(>evt [::communities/create-field :membership id])}]))]
      [toolbar/toolbar
       {:show-border? true
-       :center       [quo/button {:type :secondary}
+       :center       [quo/button {:type     :secondary
+                                  :on-press #(>evt [:navigate-back])}
                       (i18n/label :t/done)]}]]))

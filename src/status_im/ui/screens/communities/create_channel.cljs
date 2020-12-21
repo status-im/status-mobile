@@ -9,13 +9,11 @@
             [status-im.communities.core :as communities]
             [status-im.ui.components.topbar :as topbar]))
 
-(defn valid? [community-name community-description]
-  (and (not (str/blank? community-name))
-       (not (str/blank? community-description))))
+(defn valid? [community-name]
+  (not (str/blank? community-name)))
 
 (defn create-channel []
-  (let [channel-name        (reagent/atom "")
-        channel-description (reagent/atom "")]
+  (let [channel-name (reagent/atom "")]
     (fn []
       [:<>
        [topbar/topbar {:title (i18n/label :t/create-channel-title)}]
@@ -28,20 +26,11 @@
           {:label          (i18n/label :t/name-your-channel)
            :placeholder    (i18n/label :t/name-your-channel-placeholder)
            :on-change-text #(reset! channel-name %)
-           :auto-focus     true}]]
-        [rn/view {:style {:padding-bottom     16
-                          :padding-top        10
-                          :padding-horizontal 16}}
-         [quo/text-input
-          {:label           (i18n/label :t/give-a-short-description-channel)
-           :placeholder     (i18n/label :t/give-a-short-description-channel)
-           :multiline       true
-           :number-of-lines 4
-           :on-change-text  #(reset! channel-description %)}]]]
+           :auto-focus     true}]]]
        [toolbar/toolbar
         {:show-border? true
          :center
-         [quo/button {:disabled (not (valid? @channel-name @channel-description))
+         [quo/button {:disabled (not (valid? @channel-name))
                       :type     :secondary
-                      :on-press #(re-frame/dispatch [::communities/create-channel-confirmation-pressed @channel-name @channel-description])}
+                      :on-press #(re-frame/dispatch [::communities/create-channel-confirmation-pressed @channel-name])}
           (i18n/label :t/create)]}]])))
