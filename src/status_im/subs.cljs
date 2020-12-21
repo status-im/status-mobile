@@ -219,6 +219,9 @@
 (reg-root-key-sub :acquisition :acquisition)
 
 ;; communities
+
+(reg-root-key-sub :communities/create :communities/create)
+
 (re-frame/reg-sub
  :communities
  (fn [db]
@@ -230,6 +233,16 @@
      (select-keys (:communities db) [constants/status-community-id])
      :else
      [])))
+
+(re-frame/reg-sub
+ :communities/section-list
+ :<- [:communities]
+ (fn [communities]
+   (->> (vals communities)
+        (group-by (comp (fnil string/upper-case "") first :display-name :identity :description))
+        (map (fn [[title data]]
+               {:title title
+                :data  data})))))
 
 (re-frame/reg-sub
  :communities/community

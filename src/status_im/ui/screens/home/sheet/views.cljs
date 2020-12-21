@@ -53,7 +53,7 @@
        :title               (i18n/label :t/communities-alpha)
        :accessibility-label :communities-button
        :icon                :main-icons/communities
-       :on-press            #(hide-sheet-and-dispatch [:navigate-to :communities])}])
+       :on-press            #(hide-sheet-and-dispatch [:navigate-to :communities {:screen :communities}])}])
    [invite/list-item
     {:accessibility-label :chats-menu-invite-friends-button}]])
 

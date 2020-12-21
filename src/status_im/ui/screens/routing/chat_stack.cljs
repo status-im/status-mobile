@@ -5,12 +5,20 @@
             [status-im.ui.screens.group.views :as group]
             [status-im.ui.screens.referrals.public-chat :as referrals.public-chat]
             [status-im.ui.screens.communities.views :as communities]
+            [status-im.ui.screens.communities.community :as community]
+            [status-im.ui.screens.communities.create :as communities.create]
+            [status-im.ui.screens.communities.import :as communities.import]
+            [status-im.ui.screens.communities.create-channel :as create-channel]
+            [status-im.ui.screens.communities.membership :as membership]
+            [status-im.ui.screens.communities.invite :as invite]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
-            [status-im.ui.screens.stickers.views :as stickers]))
+            [status-im.ui.screens.stickers.views :as stickers]
+            [status-im.utils.config :as config]))
 
 (defonce stack (navigation/create-stack))
 (defonce group-stack (navigation/create-stack))
+(defonce community-stack (navigation/create-stack))
 
 (defn chat-stack []
   [stack {:initial-route-name :home
@@ -39,6 +47,39 @@
      :component stickers/packs}
     {:name      :stickers-pack
      :component stickers/pack}]])
+
+(defn community []
+  [community-stack {:header-mode :none}
+   (concat
+    [{:name      :communities
+      :insets    {:bottom true
+                  :top    false}
+      :component communities/communities}
+     {:name      :community
+      :insets    {:bottom true
+                  :top    false}
+      :component community/community}
+     {:name      :community-import
+      :insets    {:bottom true
+                  :top    false}
+      :component communities.import/view}
+     {:name      :invite-people-community
+      :insets    {:bottom true
+                  :top    false}
+      :component invite/invite}]
+    (when config/communities-management-enabled?
+      [{:name      :community-create
+        :insets    {:bottom true
+                    :top    false}
+        :component communities.create/view}
+       {:name      :create-community-channel
+        :insets    {:bottom true
+                    :top    false}
+        :component create-channel/create-channel}
+       {:name      :community-membership
+        :insets    {:bottom true
+                    :top    false}
+        :component membership/membership}]))])
 
 (defn new-group-chat []
   [group-stack {:header-mode        :none

@@ -25,13 +25,14 @@
 (defn on-sheet-cancel []
   (re-frame/dispatch [:bottom-sheet/hide]))
 
-(defn bottom-sheet []
+(defn bottom-sheet
+  "DEPRECATED: Do not use this place, use event parameters"
+  []
   (let [{:keys [show? view]} @(re-frame/subscribe [:bottom-sheet])
         {:keys [content]
          :as   opts}
         (cond-> {:visible?   show?
                  :on-cancel on-sheet-cancel}
-
           (map? view)
           (merge view)
 
@@ -49,18 +50,6 @@
 
           (= view :learn-more)
           (merge about-app/learn-more)
-
-          (= view :create-community)
-          (merge communities/create-sheet)
-
-          (= view :import-community)
-          (merge communities/import-sheet)
-
-          (= view :create-community-channel)
-          (merge communities/create-channel-sheet)
-
-          (= view :invite-people-community)
-          (merge communities/invite-people-sheet)
 
           (= view :recover-sheet)
           (merge recover.views/bottom-sheet))]

@@ -9,7 +9,8 @@
    [status-im.transport.filters.core :as models.filters]
    [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
    [status-im.data-store.chats :as data-store.chats]
-   [status-im.ethereum.json-rpc :as json-rpc]))
+   [status-im.ethereum.json-rpc :as json-rpc]
+   [status-im.navigation :as navigation]))
 
 (def featured
   [{:name "Status"
@@ -38,6 +39,9 @@
         (assoc-in [:description :identity] {:display-name (:display_name identity)
                                             :description (:description identity)})
         (update-in [:description :chats] <-chats-rpc))))
+
+(defn fetch-community-id-input [{:keys [db]}]
+  (:communities/community-id-input db))
 
 (fx/defn handle-chats [cofx chats]
   (models.chat/ensure-chats cofx chats))
@@ -163,38 +167,35 @@
                                       :active (get-in cofx [:db :chats user-pk :active])}
                                      #(re-frame/dispatch [::chat-created community-id user-pk]))))
 
-(fx/defn create [{:keys [db]}
-                 community-name
-                 community-description
-                 community-membership
-                 on-success-event
-                 on-failure-event]
-  (let [membership (js/parseInt community-membership)
-        my-public-key (get-in db [:multiaccount :public-key])]
-    {::json-rpc/call [{:method "wakuext_createCommunity"
-                       :params [{:identity {:display_name community-name
-                                            :description community-description}
-                                 :members {my-public-key {}}
-                                 :permissions {:access membership}}]
-                       :on-success #(re-frame/dispatch [on-success-event %])
-                       :on-error #(do
-                                    (log/error "failed to create community" %)
-                                    (re-frame/dispatch [on-failure-event %]))}]}))
+(fx/defn create
+  {:events [::create-confirmation-pressed]}
+  [{:keys [db]}]
+  (let [{:keys [name description membership]} (get db :membership/create)
+        membership                            (js/parseInt membership)
+        my-public-key                         (get-in db [:multiaccount :public-key])]
+    {::json-rpc/call [{:method     "wakuext_createCommunity"
+                       :params     [{:identity    {:display_name name
+                                                   :description  description}
+                                     :members     {my-public-key {}}
+                                     :permissions {:access membership}}]
+                       :on-success #(re-frame/dispatch [::community-created %])
+                       :on-error   #(do
+                                      (log/error "failed to create community" %)
+                                      (re-frame/dispatch [::failed-to-create-community %]))}]}))
 
-(defn create-channel [community-id
-                      community-channel-name
-                      community-channel-description
-                      on-success-event
-                      on-failure-event]
-  {::json-rpc/call [{:method "wakuext_createCommunityChat"
-                     :params [community-id
-                              {:identity {:display_name community-channel-name
-                                          :description community-channel-description}
-                               :permissions {:access access-no-membership}}]
-                     :on-success #(re-frame/dispatch [on-success-event %])
-                     :on-error #(do
-                                  (log/error "failed to create community channel" %)
-                                  (re-frame/dispatch [on-failure-event %]))}]})
+(fx/defn create-channel
+  {:events [::create-channel-confirmation-pressed]}
+  [cofx community-channel-name community-channel-description]
+  (let [community-id (fetch-community-id-input cofx)]
+    {::json-rpc/call [{:method     "wakuext_createCommunityChat"
+                       :params     [community-id
+                                    {:identity    {:display_name community-channel-name
+                                                   :description  community-channel-description}
+                                     :permissions {:access access-no-membership}}]
+                       :on-success #(re-frame/dispatch [::community-channel-created %])
+                       :on-error   #(do
+                                      (log/error "failed to create community channel" %)
+                                      (re-frame/dispatch [::failed-to-create-community-channel %]))}]}))
 
 (def no-membership-access 1)
 (def invitation-only-access 2)
@@ -217,45 +218,39 @@
 (fx/defn reset-community-id-input [{:keys [db]} id]
   {:db (assoc db :communities/community-id-input id)})
 
-(defn fetch-community-id-input [{:keys [db]}]
-  (:communities/community-id-input db))
-
-(fx/defn import-pressed
-  {:events [::import-pressed]}
-  [cofx]
-  (bottom-sheet/show-bottom-sheet cofx {:view :import-community}))
-
-(fx/defn create-pressed
-  {:events [::create-pressed]}
-  [cofx]
-  (bottom-sheet/show-bottom-sheet cofx {:view :create-community}))
-
 (fx/defn invite-people-pressed
   {:events [::invite-people-pressed]}
   [cofx id]
   (fx/merge cofx
             (reset-community-id-input id)
-            (bottom-sheet/show-bottom-sheet {:view :invite-people-community})))
+            (bottom-sheet/hide-bottom-sheet)
+            (navigation/navigate-to :invite-people-community {})))
 
 (fx/defn create-channel-pressed
   {:events [::create-channel-pressed]}
   [cofx id]
   (fx/merge cofx
             (reset-community-id-input id)
-            (bottom-sheet/show-bottom-sheet {:view :create-community-channel})))
+            (navigation/navigate-to :create-community-channel {})))
 
 (fx/defn community-created
   {:events [::community-created]}
   [cofx response]
   (fx/merge cofx
-            (bottom-sheet/hide-bottom-sheet)
+            (navigation/navigate-back)
             (handle-response response)))
+
+(fx/defn open-create-community
+  {:events [::open-create-community]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (assoc db :communities/create {})}
+            (navigation/navigate-to :community-create nil)))
 
 (fx/defn community-imported
   {:events [::community-imported]}
   [cofx response]
   (fx/merge cofx
-            (bottom-sheet/hide-bottom-sheet)
             (handle-response response)))
 
 (fx/defn people-invited
@@ -269,7 +264,7 @@
   {:events [::community-channel-created]}
   [cofx response]
   (fx/merge cofx
-            (bottom-sheet/hide-bottom-sheet)
+            (navigation/navigate-back)
             (handle-response response)))
 
 (fx/defn handle-export-pressed
@@ -287,27 +282,6 @@
    community-key
    #(re-frame/dispatch [::community-imported %])))
 
-(fx/defn create-confirmation-pressed
-  {:events [::create-confirmation-pressed]}
-  [cofx community-name community-description membership]
-  (create
-   cofx
-   community-name
-   community-description
-   membership
-   ::community-created
-   ::failed-to-create-community))
-
-(fx/defn create-channel-confirmation-pressed
-  {:events [::create-channel-confirmation-pressed]}
-  [cofx community-channel-name community-channel-description]
-  (create-channel
-   (fetch-community-id-input cofx)
-   community-channel-name
-   community-channel-description
-   ::community-channel-created
-   ::failed-to-create-community-channel))
-
 (fx/defn invite-people-confirmation-pressed
   {:events [::invite-people-confirmation-pressed]}
   [cofx user-pk]
@@ -317,3 +291,8 @@
    user-pk
    ::people-invited
    ::failed-to-invite-people))
+
+(fx/defn create-field
+  {:events [::create-field]}
+  [{:keys [db]} field value]
+  {:db (assoc-in db [:communities/create field] value)})
