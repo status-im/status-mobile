@@ -101,6 +101,23 @@ class OpenTabsButton(BaseButton):
         super(OpenTabsButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('browser-open-tabs')
 
+
+class AddRemoveFavoritesButton(BaseButton):
+    def __init__(self, driver):
+        super(AddRemoveFavoritesButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('add-remove-fav')
+
+class BookmarkNameInput(BaseEditBox):
+    def __init__(self, driver):
+        super(BookmarkNameInput, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('bookmark-input')
+
+class SaveBookmarkButton(BaseEditBox):
+    def __init__(self, driver):
+        super(SaveBookmarkButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id('save-bookmark')
+
+
 class CloseAllButton(BaseButton):
     def __init__(self, driver):
         super(CloseAllButton, self).__init__(driver)
@@ -137,6 +154,11 @@ class BaseWebView(BaseView):
         self.open_tabs_button = OpenTabsButton(self.driver)
         self.close_all_button = CloseAllButton(self.driver)
 
+        # bookmarks management
+        self.add_remove_favorites_button = AddRemoveFavoritesButton(self.driver)
+        self.bookmark_name_input = BookmarkNameInput(self.driver)
+        self.save_bookmark_button = SaveBookmarkButton(self.driver)
+
     def wait_for_d_aap_to_load(self, wait_time=35):
         counter = 0
         while self.progress_bar_icon.is_element_present(5):
@@ -159,4 +181,20 @@ class BaseWebView(BaseView):
             close_button = CloseTabButton(self.driver, name)
             close_button.scroll_to_element()
             close_button.click()
+
+    def edit_bookmark_name(self, name):
+        self.bookmark_name_input.clear()
+        self.bookmark_name_input.send_keys(name)
+        self.save_bookmark_button.click()
+
+    def add_to_bookmarks(self, name=''):
+        self.options_button.click()
+        self.add_remove_favorites_button.click()
+        if name:
+            self.edit_bookmark_name(name)
+            bookmark_name = name
+        else:
+            bookmark_name = self.bookmark_name_input.text
+            self.save_bookmark_button.click()
+        return bookmark_name
 

@@ -176,6 +176,52 @@ class TestBrowsing(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(6633)
+    @marks.high
+    def test_browser_managing_bookmarks(self):
+        home_view = SignInView(self.driver).create_user()
+        dapp_view = home_view.dapp_tab_button.click()
+
+        home_view.just_fyi('Add some url to bookmarks with default name')
+        browsing_view = dapp_view.open_url('status.im')
+        default_bookmark_name = browsing_view.add_to_bookmarks()
+        browsing_view.browser_previous_page_button.click()
+        if not browsing_view.element_by_text(default_bookmark_name).is_element_displayed():
+            self.errors.append("Bookmark with default name is not added!")
+
+        home_view.just_fyi('Add some url to bookmarks with custom name')
+        custom_name = 'Custom BBC'
+        dapp_view.open_url('bbc.com')
+        browsing_view.add_to_bookmarks(custom_name)
+        browsing_view.dapp_tab_button.click()
+        if not browsing_view.element_by_text(custom_name).is_element_displayed():
+            self.driver.fail("Bookmark with custom name is not added!")
+
+        home_view.just_fyi('Check deleting bookmark on long tap and that it is deleted after relogin')
+        dapp_view.browser_entry_long_press(custom_name)
+        dapp_view.delete_bookmark_button.click()
+        if browsing_view.element_by_text(custom_name).is_element_displayed():
+            self.errors.append("Bookmark with custom name is not deleted!")
+        profile_view = dapp_view.profile_button.click()
+        profile_view.relogin()
+        profile_view.dapp_tab_button.click()
+        if browsing_view.element_by_text(custom_name).is_element_displayed():
+            self.errors.append("Bookmark with custom name is reappeared after relogin!")
+
+        home_view.just_fyi('Check "Edit bookmark" and "Open in new tab"')
+        edited_name = 'My Fav Status'
+        dapp_view.browser_entry_long_press(default_bookmark_name)
+        dapp_view.edit_bookmark_button.click()
+        browsing_view.edit_bookmark_name(edited_name)
+        if not browsing_view.element_by_text(edited_name).is_element_displayed():
+            self.driver.fail("Edited bookmark name is not shown!")
+        dapp_view.browser_entry_long_press(edited_name)
+        dapp_view.open_in_new_tab_button.click()
+        browsing_view.options_button.click()
+        if not browsing_view.find_element_by_translation_id('remove-favourite').is_element_displayed():
+            self.errors.append("Remove favourite is not shown on added bookmark!")
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(5321)
     @marks.critical
     def test_back_forward_buttons_browsing_website(self):

@@ -34,19 +34,19 @@
                                         [quo/list-item
                                          {:theme               :accent
                                           :title               (i18n/label :t/open-in-new-tab)
-                                          :accessibility-label :remove-dapp-from-list
+                                          :accessibility-label :open-in-new-tab
                                           :icon                :main-icons/tabs
                                           :on-press            #(hide-sheet-and-dispatch [:browser.ui/open-url url])}]
                                         [quo/list-item
                                          {:theme               :accent
                                           :title               (i18n/label :t/edit)
-                                          :accessibility-label :remove-dapp-from-list
+                                          :accessibility-label :edit-bookmark
                                           :icon                :main-icons/edit
                                           :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-bookmark bookmark])}]
                                         [quo/list-item
                                          {:theme               :negative
                                           :title               (i18n/label :t/delete)
-                                          :accessibility-label :clear-all-dapps
+                                          :accessibility-label :delete-bookmark
                                           :icon                :main-icons/delete
                                           :on-press            #(hide-sheet-and-dispatch [:browser/delete-bookmark url])}]])}]))
         :title         name
