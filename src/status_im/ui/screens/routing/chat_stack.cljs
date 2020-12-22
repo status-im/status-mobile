@@ -8,8 +8,10 @@
             [status-im.ui.screens.communities.community :as community]
             [status-im.ui.screens.communities.create :as communities.create]
             [status-im.ui.screens.communities.import :as communities.import]
+            [status-im.ui.screens.communities.profile :as community.profile]
             [status-im.ui.screens.communities.create-channel :as create-channel]
             [status-im.ui.screens.communities.membership :as membership]
+            [status-im.ui.screens.communities.members :as members]
             [status-im.ui.screens.communities.invite :as invite]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
@@ -18,7 +20,7 @@
 
 (defonce stack (navigation/create-stack))
 (defonce group-stack (navigation/create-stack))
-(defonce community-stack (navigation/create-stack))
+(defonce communities-stack (navigation/create-stack))
 
 (defn chat-stack []
   [stack {:initial-route-name :home
@@ -48,8 +50,8 @@
     {:name      :stickers-pack
      :component stickers/pack}]])
 
-(defn community []
-  [community-stack {:header-mode :none}
+(defn communities []
+  [communities-stack {:header-mode :none}
    (concat
     [{:name      :communities
       :insets    {:bottom true
@@ -68,7 +70,15 @@
                   :top    false}
       :component invite/invite}]
     (when config/communities-management-enabled?
-      [{:name      :community-create
+      [{:name      :community-management
+        :insets    {:bottom true
+                    :top    false}
+        :component community.profile/management}
+       {:name      :community-members
+        :insets    {:bottom true
+                    :top    false}
+        :component members/members}
+       {:name      :community-create
         :insets    {:bottom true
                     :top    false}
         :component communities.create/view}

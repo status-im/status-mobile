@@ -43,10 +43,19 @@
   (re-frame/dispatch [:bottom-sheet/hide])
   (re-frame/dispatch event))
 
-(defn community-actions [id admin]
+(defn community-actions [{:keys [id admin description]}]
   [:<>
    (when (and config/communities-management-enabled? admin)
      [:<>
+      [quo/list-item
+       {:title    (get-in description [:identity :display-name])
+        :on-press #(hide-sheet-and-dispatch [:navigate-to :community-management {:community-id id}])
+        :chevron  true
+        :icon     [chat-icon.screen/chat-icon-view-chat-sheet
+                   (get-in description [:identity :display-name])
+                   true
+                   (get-in description [:identity :display-name])
+                   (get-in description [:identity :color] (rand-nth colors/chat-colors))]}]
       [quo/list-item
        {:theme               :accent
         :title               (i18n/label :t/export-key)
@@ -63,7 +72,6 @@
        {:theme               :accent
         :title               (i18n/label :t/invite-people)
         :accessibility-label :community-invite-people
-        :icon                :main-icons/share
         :on-press            #(re-frame/dispatch [::communities/invite-people-pressed id])}]])
    [quo/list-item
     {:theme               :accent
@@ -136,8 +144,9 @@
       :render-fn                    channel-preview-item}]))
 
 (defn community [route]
-  (let [{:keys [community-id]}                (get-in route [:route :params])
-        {:keys [id description joined admin]} @(re-frame/subscribe [:communities/community community-id])]
+  (let [{:keys [community-id]} (get-in route [:route :params])
+        {:keys [id description joined admin]
+         :as   community}      @(re-frame/subscribe [:communities/community community-id])]
     [rn/view {:style {:flex 1}}
 
      [topbar/topbar
@@ -152,7 +161,7 @@
                               :on-press
                               #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                    {:content (fn []
-                                                               [community-actions id admin])
+                                                               [community-actions community])
                                                     :height  256}])}])}]
      (if joined
        [community-channel-list id]

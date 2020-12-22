@@ -150,6 +150,8 @@
         "one": "{{count}} member",
         "other": "{{count}} members"
     },
+    "members-label": "Members",
+    "community-members-title": "Members",
     "name-your-channel": "Name your channel",
     "name-your-channel-placeholder": "Channel name",
     "give-a-short-description": "Give a short description",
@@ -182,7 +184,9 @@
     "membership-ens-description": "Your community requires an ENS username to be able to join",
     "membership-free": "No requirement",
     "membership-free-description": "Your community is free for anyone to join",
+    "community-roles": "Roles",
     "complete-hardwallet-setup": "This card is now linked. You need it to sign transactions and unlock your keys",
+    "chat-notification-preferences": "Notification settings",
     "completed": "Completed",
     "confirm": "Confirm",
     "confirmation-request": "Confirmation request",

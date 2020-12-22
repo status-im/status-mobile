@@ -1,10 +1,8 @@
 (ns status-im.ui.screens.communities.views
   (:require-macros [status-im.utils.views :as views])
   (:require
-   [reagent.core :as reagent]
    [re-frame.core :as re-frame]
    [quo.core :as quo]
-   [clojure.string :as str]
    [status-im.i18n :as i18n]
    [status-im.utils.core :as utils]
    [status-im.utils.config :as config]
