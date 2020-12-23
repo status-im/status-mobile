@@ -11,7 +11,6 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
-            [status-im.transport.utils :as transport.utils]
             [status-im.ui.screens.mobile-network-settings.utils
              :as
              mobile-network-utils]
@@ -21,6 +20,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.random :as rand]
             [status-im.utils.utils :as utils]
+            [status-im.mailserver.topics :as topics]
             [taoensso.timbre :as log]))
 
 ;; How do mailserver work ?
@@ -362,12 +362,20 @@
 (defn chats->never-synced-public-chats [chats]
   (into {} (filter (fn [[_ v]] (:might-have-join-time-messages? v)) chats)))
 
+(defn- assoc-topic-chat [chat chats topic]
+  (assoc chats topic chat))
+
+(defn- reduce-assoc-topic-chat [db chats-map chat-id chat]
+  (let [assoc-topic-chat (partial assoc-topic-chat chat)
+        topics (topics/topics-for-chat db chat-id)]
+    (reduce assoc-topic-chat chats-map topics)))
+
 (fx/defn handle-request-success [{{:keys [chats] :as db} :db}
                                  {:keys [request-id topics]}]
   (when (:mailserver/current-request db)
     (let [by-topic-never-synced-chats
           (reduce-kv
-           #(assoc %1 (transport.utils/get-topic %2) %3)
+           (partial reduce-assoc-topic-chat db)
            {}
            (chats->never-synced-public-chats chats))
           never-synced-chats-in-this-request

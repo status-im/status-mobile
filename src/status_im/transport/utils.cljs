@@ -1,12 +1,6 @@
 (ns ^{:doc "Utils for transport layer"}
  status-im.transport.utils
-  (:require [clojure.string :as string]
-            [status-im.ethereum.core :as ethereum]))
-
-(defn get-topic
-  "Get the topic of a group chat or public chat from the chat-id"
-  [chat-id]
-  (subs (ethereum/sha3 chat-id) 0 10))
+  (:require [clojure.string :as string]))
 
 (defn extract-enode-id [enode]
   (-> enode
