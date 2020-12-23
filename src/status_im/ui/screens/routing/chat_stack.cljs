@@ -31,14 +31,6 @@
      :component home/home}
     {:name      :referral-enclav
      :component referrals.public-chat/view}
-    {:name       :communities
-     :transition :presentation-ios
-     :insets     {:bottom true}
-     :component  communities/communities}
-    {:name       :community
-     :transition :presentation-ios
-     :insets     {:bottom true}
-     :component  communities/community}
     {:name      :chat
      :component chat/chat}
     {:name      :group-chat-profile
