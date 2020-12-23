@@ -246,6 +246,16 @@
             {:db (assoc db :communities/create {})}
             (navigation/navigate-to :community-create nil)))
 
+(fx/defn open-edit-community
+  {:events [::open-edit-community]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (assoc db :communities/create {:name        ""
+                                                :description ""
+                                                :image       nil
+                                                :membership  nil})}
+            (navigation/navigate-to :community-edit nil)))
+
 (fx/defn community-imported
   {:events [::community-imported]}
   [cofx response]

@@ -8,11 +8,9 @@
             [status-im.i18n :as i18n]
             [status-im.communities.core :as communities]))
 
-
 (defn hide-sheet-and-dispatch [event]
   (>evt [:bottom-sheet/hide])
   (>evt event))
-
 
 (defn member-sheet [{:keys [public-key] :as member} community-id]
   [:<>

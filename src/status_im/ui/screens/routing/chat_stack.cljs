@@ -9,6 +9,7 @@
             [status-im.ui.screens.communities.create :as communities.create]
             [status-im.ui.screens.communities.import :as communities.import]
             [status-im.ui.screens.communities.profile :as community.profile]
+            [status-im.ui.screens.communities.edit :as community.edit]
             [status-im.ui.screens.communities.create-channel :as create-channel]
             [status-im.ui.screens.communities.membership :as membership]
             [status-im.ui.screens.communities.members :as members]
@@ -74,6 +75,10 @@
         :insets    {:bottom true
                     :top    false}
         :component community.profile/management}
+       {:name      :community-edit
+        :insets    {:bottom true
+                    :top    false}
+        :component community.edit/edit}
        {:name      :community-members
         :insets    {:bottom true
                     :top    false}
