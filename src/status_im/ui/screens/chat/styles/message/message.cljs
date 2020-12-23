@@ -118,8 +118,7 @@
 (defn message-view
   [{:keys [content-type outgoing group-chat last-in-group?]}]
   (merge
-   {:overflow :hidden
-    :border-top-left-radius     16
+   {:border-top-left-radius     16
     :border-top-right-radius    16
     :border-bottom-right-radius 16
     :border-bottom-left-radius  16
