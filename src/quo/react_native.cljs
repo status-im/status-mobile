@@ -90,9 +90,9 @@
 ;; Flat-list
 (def ^:private rn-flat-list (reagent/adapt-react-class (.-FlatList ^js rn)))
 
-(defn- wrap-render-fn [f]
+(defn- wrap-render-fn [f render-data]
   (fn [data]
-    (reagent/as-element [f (.-item ^js data) (.-index ^js data) (.-separators ^js data)])))
+    (reagent/as-element [f (.-item ^js data) (.-index ^js data) (.-separators ^js data) render-data])))
 
 (defn- wrap-key-fn [f]
   (fn [data index]
@@ -100,10 +100,10 @@
     (f data index)))
 
 (defn base-list-props
-  [{:keys [key-fn render-fn empty-component header footer separator data] :as props}]
+  [{:keys [key-fn render-fn empty-component header footer separator data render-data] :as props}]
   (merge {:data (to-array data)}
          (when key-fn            {:keyExtractor (wrap-key-fn key-fn)})
-         (when render-fn         {:renderItem (wrap-render-fn render-fn)})
+         (when render-fn         {:renderItem (wrap-render-fn render-fn render-data)})
          (when separator         {:ItemSeparatorComponent (fn [] (reagent/as-element separator))})
          (when empty-component   {:ListEmptyComponent (fn [] (reagent/as-element empty-component))})
          (when header            {:ListHeaderComponent (reagent/as-element header)})

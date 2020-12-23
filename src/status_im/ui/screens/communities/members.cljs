@@ -8,7 +8,34 @@
             [status-im.i18n :as i18n]
             [status-im.communities.core :as communities]))
 
-(defn render-member [public-key]
+
+(defn hide-sheet-and-dispatch [event]
+  (>evt [:bottom-sheet/hide])
+  (>evt event))
+
+
+(defn member-sheet [{:keys [public-key] :as member} community-id]
+  [:<>
+   [quo/list-item
+    {:theme               :accent
+     :icon                [chat-icon/contact-icon-contacts-tab
+                           (multiaccounts/displayed-photo member)]
+     :title               (multiaccounts/displayed-name member)
+     :subtitle            (i18n/label :t/view-profile)
+     :accessibility-label :view-chat-details-button
+     :chevron             true
+     :on-press            #(hide-sheet-and-dispatch  [:chat.ui/show-profile public-key])}]
+   [quo/separator {:style {:margin-vertical 8}}]
+   [quo/list-item {:theme    :negative
+                   :icon     :main-icons/arrow-left
+                   :title    (i18n/label :t/member-kick)
+                   :on-press #(>evt [::communities/member-kick community-id public-key])}]
+   [quo/list-item {:theme    :negative
+                   :icon     :main-icons/cancel
+                   :title    (i18n/label :t/member-ban)
+                   :on-press #(>evt [::communities/member-ban community-id public-key])}]])
+
+(defn render-member [public-key _ _ _ {:keys [community-id]}]
   (let [member (or (<sub [:contacts/contact-by-address public-key])
                    {:public-key public-key})]
     [quo/list-item
@@ -16,7 +43,13 @@
       {:title               (multiaccounts/displayed-name member)
        :accessibility-label :member-item
        :icon                [chat-icon/contact-icon-contacts-tab
-                             (multiaccounts/displayed-photo member)]})]))
+                             (multiaccounts/displayed-photo member)]
+       :accessory [quo/button {:on-press            #(>evt [:bottom-sheet/show-sheet
+                                                            {:content (fn [] [member-sheet member community-id])}])
+                               :type                :icon
+                               :theme               :icon
+                               :accessibility-label :menu-option}
+                   :main-icons/more]})]))
 
 (defn members [route]
   (let [{:keys [community-id]}           (get-in route [:route :params])
@@ -30,6 +63,7 @@
                      :theme               :accent
                      :on-press            #(>evt [::communities/invite-people-pressed community-id])}]
      [quo/separator {:style {:margin-vertical 8}}]
-     [rn/flat-list {:data      (keys members)
-                    :key-fn    identity
-                    :render-fn render-member}]]))
+     [rn/flat-list {:data        (keys members)
+                    :render-data {:community-id community-id}
+                    :key-fn      identity
+                    :render-fn   render-member}]]))

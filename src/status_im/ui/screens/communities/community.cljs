@@ -71,6 +71,7 @@
       [quo/list-item
        {:theme               :accent
         :title               (i18n/label :t/invite-people)
+        :icon                :main-icons/share
         :accessibility-label :community-invite-people
         :on-press            #(re-frame/dispatch [::communities/invite-people-pressed id])}]])
    [quo/list-item
