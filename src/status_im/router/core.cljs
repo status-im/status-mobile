@@ -8,7 +8,6 @@
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.resolver :as resolver]
-            [status-im.ethereum.stateofus :as stateofus]
             [cljs.spec.alpha :as spec]
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.db :as utils.db]
@@ -58,17 +57,10 @@
 (defn match-uri [uri]
   (assoc (bidi/match-route routes uri) :uri uri :query-params (parse-query-params uri)))
 
-(defn- ens-name-parse [contact-identity]
-  (when (string? contact-identity)
-    (string/lower-case
-     (if (ens/is-valid-eth-name? contact-identity)
-       contact-identity
-       (stateofus/subdomain contact-identity)))))
-
 (defn resolve-public-key
   [{:keys [chain contact-identity cb]}]
   (let [registry (get ens/ens-registries chain)
-        ens-name (ens-name-parse contact-identity)]
+        ens-name (resolver/ens-name-parse contact-identity)]
     (resolver/pubkey registry ens-name cb)))
 
 (defn match-contact-async
@@ -84,7 +76,7 @@
 
       (and (not public-key?) (string? user-id))
       (let [registry   (get ens/ens-registries chain)
-            ens-name   (ens-name-parse user-id)
+            ens-name   (resolver/ens-name-parse user-id)
             on-success #(match-contact-async chain {:user-id %} callback)]
         (resolver/pubkey registry ens-name on-success))
 

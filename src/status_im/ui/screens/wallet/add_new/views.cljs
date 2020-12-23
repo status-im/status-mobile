@@ -67,7 +67,7 @@
        :monospace           true
        :placeholder         (i18n/label :t/enter-address)
        :accessibility-label :add-account-enter-watch-address
-       :on-change-text      #(re-frame/dispatch [:set-in [:add-account :address] %])}]
+       :on-change-text      #(re-frame/dispatch [:wallet.accounts/set-account-to-watch %])}]
      [quo/text-input
       {:label               (i18n/label :t/password)
        :show-cancel         false

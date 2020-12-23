@@ -6,7 +6,6 @@
             [status-im.ethereum.resolver :as resolver]
             [status-im.ui.screens.add-new.new-chat.db :as db]
             [status-im.utils.handlers :as handlers]
-            [status-im.ethereum.stateofus :as stateofus]
             [status-im.utils.random :as random]
             [status-im.utils.utils :as utils]
             [status-im.utils.fx :as fx]
@@ -16,18 +15,11 @@
             [status-im.router.core :as router]
             [status-im.navigation :as navigation]))
 
-(defn- ens-name-parse [contact-identity]
-  (when (string? contact-identity)
-    (string/lower-case
-     (if (ens/is-valid-eth-name? contact-identity)
-       contact-identity
-       (stateofus/subdomain contact-identity)))))
-
 (re-frame/reg-fx
  :resolve-public-key
  (fn [{:keys [chain contact-identity cb]}]
    (let [registry (get ens/ens-registries chain)
-         ens-name (ens-name-parse contact-identity)]
+         ens-name (resolver/ens-name-parse contact-identity)]
      (resolver/pubkey registry ens-name cb))))
 
 ;;NOTE we want to handle only last resolve
@@ -56,7 +48,7 @@
                                              :else
                                              :valid)
                            :error      error
-                           :ens-name   (ens-name-parse new-ens-name)})}
+                           :ens-name   (resolver/ens-name-parse new-ens-name)})}
               (when is-ens?
                 (reset! resolve-last-id (random/id))
                 (let [chain (ethereum/chain-keyword db)]

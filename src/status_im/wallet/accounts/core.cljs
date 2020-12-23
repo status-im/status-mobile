@@ -19,7 +19,11 @@
             [status-im.multiaccounts.recover.core :as recover]
             [status-im.ethereum.mnemonic :as mnemonic]
             [taoensso.timbre :as log]
-            [status-im.wallet.prices :as prices]))
+            [status-im.wallet.prices :as prices]
+            [status-im.utils.hex :as hex]
+            [status-im.ethereum.ens :as ens]
+            [status-im.ens.core :as ens.core]
+            [status-im.ethereum.resolver :as resolver]))
 
 (fx/defn start-adding-new-account
   {:events [:wallet.accounts/start-adding-new-account]}
@@ -230,6 +234,24 @@
   {:db               (assoc-in db [:add-account :step] :generating)
    ::verify-password {:address         (get-in db [:multiaccount :wallet-root-address])
                       :hashed-password hashed-password}})
+
+(fx/defn set-account-to-watch
+  {:events [:wallet.accounts/set-account-to-watch]}
+  [{:keys [db] :as cofx} account]
+  (let [name? (and (>= (count account) 3)
+                   (not (hex/valid-hex? account)))
+        chain (ethereum/chain-keyword db)]
+    (log/debug "[wallet] set-account-to-watch" account
+               "name?" name?)
+    (cond-> {:db (assoc-in db [:add-account :address] account)}
+      name?
+      (assoc ::ens.core/resolve-address
+             (let [registry (get ens/ens-registries chain)
+                   ens-name (resolver/ens-name-parse account)]
+               [registry
+                ens-name
+                #(re-frame/dispatch
+                  [:wallet.accounts/set-account-to-watch %])])))))
 
 (fx/defn add-new-account
   {:events [:wallet.accounts/add-new-account]}
