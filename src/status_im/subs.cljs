@@ -2474,7 +2474,9 @@
  :link-preview/whitelist
  :<- [:multiaccount]
  (fn [multiaccount]
-   (get multiaccount :link-previews-whitelist)))
+   (filter (fn [{:keys [address]}]
+             (config/link-preview-enabled-site? address))
+           (get multiaccount :link-previews-whitelist))))
 
 (re-frame/reg-sub
  :link-preview/cache
