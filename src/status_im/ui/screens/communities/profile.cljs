@@ -45,7 +45,7 @@
        (when admin
          [quo/list-item {:theme    :accent
                          :icon     :main-icons/edit
-                         :title    "Edit community"
+                         :title    (i18n/label :t/edit-community)
                          :on-press #(>evt [::communities/open-edit-community community-id])}])
        [quo/list-item {:theme    :accent
                        :icon     :main-icons/arrow-left

@@ -155,7 +155,6 @@
                            (get-in description [:identity :display-name])
                            (get-in description [:identity :color])
                            (count (get description :members))]
-       :modal?            true
        :right-accessories (when (or admin joined)
                             [{:icon                :main-icons/more
                               :accessibility-label :community-menu-button

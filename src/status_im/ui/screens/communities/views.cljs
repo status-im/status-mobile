@@ -139,8 +139,7 @@
     :title-accessibility-label :chat-name-text
     :on-press                  #(do
                                   (re-frame/dispatch [:dismiss-keyboard])
-                                  (re-frame/dispatch [:navigate-to :communities {:screen :community
-                                                                                 :params {:community-id id}}]))
+                                  (re-frame/dispatch [:navigate-to :community {:community-id id}]))
     ;; TODO: actions
     ;; :on-long-press             #(re-frame/dispatch [:bottom-sheet/show-sheet
     ;;                                                 nil])
@@ -162,8 +161,7 @@
 
 (defn render-featured-community [{:keys [name id]}]
   ^{:key id}
-  [react/touchable-highlight {:on-press            #(re-frame/dispatch [:navigate-to :communities {:screen :community
-                                                                                                   :params {:community-id id}}])
+  [react/touchable-highlight {:on-press            #(re-frame/dispatch [:navigate-to :community {:community-id id}])
                               :accessibility-label :chat-item}
    [react/view {:padding-right 8 :padding-vertical 8}
     [react/view {:border-color colors/gray-lighter :border-radius 36 :border-width 1 :padding-horizontal 8 :padding-vertical 5}

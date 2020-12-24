@@ -41,7 +41,18 @@
     {:name      :stickers
      :component stickers/packs}
     {:name      :stickers-pack
-     :component stickers/pack}]])
+     :component stickers/pack}
+    ;; Community
+    {:name      :community
+     :component community/community}
+    {:name      :community-management
+     :component community.profile/management}
+    {:name      :community-members
+     :component members/members}
+    {:name      :create-community-channel
+     :component create-channel/create-channel}
+    {:name      :invite-people-community
+     :component invite/invite}]])
 
 (defn communities []
   [communities-stack {:header-mode :none}
@@ -50,10 +61,6 @@
       :insets    {:bottom true
                   :top    false}
       :component communities/communities}
-     {:name      :community
-      :insets    {:bottom true
-                  :top    false}
-      :component community/community}
      {:name      :community-import
       :insets    {:bottom true
                   :top    false}
@@ -63,26 +70,14 @@
                   :top    false}
       :component invite/invite}]
     (when config/communities-management-enabled?
-      [{:name      :community-management
-        :insets    {:bottom true
-                    :top    false}
-        :component community.profile/management}
-       {:name      :community-edit
+      [{:name      :community-edit
         :insets    {:bottom true
                     :top    false}
         :component community.edit/edit}
-       {:name      :community-members
-        :insets    {:bottom true
-                    :top    false}
-        :component members/members}
        {:name      :community-create
         :insets    {:bottom true
                     :top    false}
         :component communities.create/view}
-       {:name      :create-community-channel
-        :insets    {:bottom true
-                    :top    false}
-        :component create-channel/create-channel}
        {:name      :community-membership
         :insets    {:bottom true
                     :top    false}

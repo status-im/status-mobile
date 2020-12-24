@@ -120,12 +120,12 @@
 (fx/defn leave
   {:events [::leave]}
   [cofx community-id]
-  {::json-rpc/call [{:method "wakuext_leaveCommunity"
-                     :params [community-id]
+  {::json-rpc/call [{:method     "wakuext_leaveCommunity"
+                     :params     [community-id]
                      :on-success #(re-frame/dispatch [::left %])
-                     :on-error #(do
-                                  (log/error "failed to leave community" community-id %)
-                                  (re-frame/dispatch [::failed-to-leave %]))}]})
+                     :on-error   #(do
+                                    (log/error "failed to leave community" community-id %)
+                                    (re-frame/dispatch [::failed-to-leave %]))}]})
 
 (fx/defn fetch [_]
   {::json-rpc/call [{:method "wakuext_communities"
@@ -240,7 +240,7 @@
   [cofx id]
   (fx/merge cofx
             (reset-community-id-input id)
-            (navigation/navigate-to :create-community-channel {})))
+            (navigation/navigate-to :create-community-channel nil)))
 
 (fx/defn community-created
   {:events [::community-created]}
@@ -274,8 +274,7 @@
                                                   :description description
                                                   :image       image
                                                   :membership  access})}
-              (navigation/navigate-to :community-edit nil))))
-
+              (navigation/navigate-to :communities {:screen :community-edit}))))
 
 (fx/defn community-imported
   {:events [::community-imported]}
