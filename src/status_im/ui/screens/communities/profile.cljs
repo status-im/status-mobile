@@ -7,18 +7,18 @@
             [status-im.ui.components.colors :as colors]))
 
 (defn management [route]
-  (let [{:keys [community-id]}   (get-in route [:route :params])
-        {:keys [id description]} (<sub [:communities/community community-id])
-        roles                    false
-        notifications            false
-        members                  (count (get description :members))]
+  (let [{:keys [community-id]}      (get-in route [:route :params])
+        {:keys [description admin]} (<sub [:communities/community community-id])
+        roles                       false
+        notifications               false
+        members                     (count (get description :members))]
     [:<>
      [quo/animated-header {:left-accessories  [{:icon                :main-icons/arrow-left
                                                 :accessibility-label :back-button
                                                 :on-press            #(>evt [:navigate-back])}]
                            :right-accessories [{:icon                :main-icons/share
                                                 :accessibility-label :invite-button
-                                                :on-press            #(>evt [::communities/invite-people-pressed id])}]
+                                                :on-press            #(>evt [::communities/invite-people-pressed community-id])}]
                            :extended-header   (profile-header/extended-header
                                                {:title    (get-in description [:identity :display-name])
                                                 :color    (get-in description [:identity :color] (rand-nth colors/chat-colors))
@@ -30,10 +30,10 @@
        [quo/separator {:style {:margin-vertical 8}}]
        [quo/list-item {:chevron        true
                        :accessory-text (str members)
-                       :on-press       #(>evt [:navigate-to :community-members {:community-id id}])
+                       :on-press       #(>evt [:navigate-to :community-members {:community-id community-id}])
                        :title          (i18n/label :t/members-label)
                        :icon           :main-icons/group-chat}]
-       (when roles
+       (when (and admin roles)
          [quo/list-item {:chevron true
                          :title   (i18n/label :t/commonuity-role)
                          :icon    :main-icons/objects}])
@@ -42,16 +42,20 @@
                          :title   (i18n/label :t/chat-notification-preferences)
                          :icon    :main-icons/notification}])
        [quo/separator {:style {:margin-vertical 8}}]
+       (when admin
+         [quo/list-item {:theme    :accent
+                         :icon     :main-icons/edit
+                         :title    "Edit community"
+                         :on-press #(>evt [::communities/open-edit-community community-id])}])
        [quo/list-item {:theme    :accent
-                       :icon     :main-icons/edit
-                       :title    "Edit community"
-                       :on-press #(>evt [::communities/open-edit-community community-id])}]
-       [quo/list-item {:theme :accent
-                       :icon  :main-icons/arrow-left
-                       :title "Leave community"}]
-       [quo/list-item {:theme :negative
-                       :icon  :main-icons/delete
-                       :title "Delete"}]]]]))
+                       :icon     :main-icons/arrow-left
+                       :title    (i18n/label :t/leave-community)
+                       :on-press #(>evt [::communities/leave community-id])}]
+       (when admin
+         [quo/list-item {:theme    :negative
+                         :icon     :main-icons/delete
+                         :title    (i18n/label :t/delete)
+                         :on-press #(>evt [::communities/delete-community community-id])}])]]]))
 
 
 

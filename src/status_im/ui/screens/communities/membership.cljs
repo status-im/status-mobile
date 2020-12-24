@@ -5,16 +5,20 @@
             [quo.core :as quo]
             [status-im.i18n :as i18n]
             [status-im.utils.handlers :refer [>evt <sub]]
-            [status-im.communities.core :as communities]))
+            [status-im.communities.core :as communities]
+            [status-im.constants :as constants]))
 
-(def options {1 {:title       :t/membership-approval
-                 :description :t/membership-approval-description}
-              2 {:title       :t/membership-invite
-                 :description :t/membership-invite-description}
-              3 {:title       :t/membership-ens
-                 :description :t/membership-ens-description}
-              4 {:title       :t/membership-free
-                 :description :t/membership-free-description}})
+(def options {constants/community-on-request-access
+              {:title       :t/membership-approval
+               :description :t/membership-approval-description}
+              constants/community-invitation-only-access
+              {:title       :t/membership-invite
+               :description :t/membership-invite-description}
+              ;; 4 {:title       :t/membership-ens
+              ;;    :description :t/membership-ens-description}
+              constants/community-no-membership-access
+              {:title       :t/membership-free
+               :description :t/membership-free-description}})
 
 (defn option [{:keys [title description]} {:keys [selected on-select]}]
   [:<>

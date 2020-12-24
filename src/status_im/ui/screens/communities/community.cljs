@@ -60,7 +60,7 @@
        {:theme               :accent
         :title               (i18n/label :t/export-key)
         :accessibility-label :community-export-key
-        :icon                :main-icons/check
+        :icon                :main-icons/objects
         :on-press            #(hide-sheet-and-dispatch [::communities/export-pressed id])}]
       [quo/list-item
        {:theme               :accent
@@ -76,12 +76,12 @@
         :on-press            #(re-frame/dispatch [::communities/invite-people-pressed id])}]])
    [quo/list-item
     {:theme               :accent
-     :title               (i18n/label :t/leave)
+     :title               (i18n/label :t/leave-community)
      :accessibility-label :leave
      :icon                :main-icons/arrow-left
      :on-press            #(do
-                             (re-frame/dispatch [:navigate-to :home])
                              (re-frame/dispatch [:bottom-sheet/hide])
+                             (re-frame/dispatch [:navigate-to :home])
                              (re-frame/dispatch [::communities/leave id]))}]])
 
 (defn welcome-blank-page []

@@ -3,7 +3,7 @@
             [quo.components.text :as text]
             [quo.design-system.colors :as colors]))
 
-(defn index [{:keys [title] :as data}]
+(defn index [{:keys [title]}]
   [rn/view {:style {:padding-right 16}}
    [rn/view {:style {:border-top-width           1
                      :border-bottom-width        1

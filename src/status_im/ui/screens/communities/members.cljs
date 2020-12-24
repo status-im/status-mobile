@@ -12,7 +12,7 @@
   (>evt [:bottom-sheet/hide])
   (>evt event))
 
-(defn member-sheet [{:keys [public-key] :as member} community-id]
+(defn member-sheet [{:keys [public-key] :as member} community-id admin]
   [:<>
    [quo/list-item
     {:theme               :accent
@@ -23,17 +23,19 @@
      :accessibility-label :view-chat-details-button
      :chevron             true
      :on-press            #(hide-sheet-and-dispatch  [:chat.ui/show-profile public-key])}]
-   [quo/separator {:style {:margin-vertical 8}}]
-   [quo/list-item {:theme    :negative
-                   :icon     :main-icons/arrow-left
-                   :title    (i18n/label :t/member-kick)
-                   :on-press #(>evt [::communities/member-kick community-id public-key])}]
-   [quo/list-item {:theme    :negative
-                   :icon     :main-icons/cancel
-                   :title    (i18n/label :t/member-ban)
-                   :on-press #(>evt [::communities/member-ban community-id public-key])}]])
+   (when admin
+     [:<>
+      [quo/separator {:style {:margin-vertical 8}}]
+      [quo/list-item {:theme    :negative
+                      :icon     :main-icons/arrow-left
+                      :title    (i18n/label :t/member-kick)
+                      :on-press #(>evt [::communities/member-kick community-id public-key])}]
+      [quo/list-item {:theme    :negative
+                      :icon     :main-icons/cancel
+                      :title    (i18n/label :t/member-ban)
+                      :on-press #(>evt [::communities/member-ban community-id public-key])}]])])
 
-(defn render-member [public-key _ _ _ {:keys [community-id]}]
+(defn render-member [public-key _ _ {:keys [community-id admin]}]
   (let [member (or (<sub [:contacts/contact-by-address public-key])
                    {:public-key public-key})]
     [quo/list-item
@@ -42,16 +44,17 @@
        :accessibility-label :member-item
        :icon                [chat-icon/contact-icon-contacts-tab
                              (multiaccounts/displayed-photo member)]
-       :accessory [quo/button {:on-press            #(>evt [:bottom-sheet/show-sheet
-                                                            {:content (fn [] [member-sheet member community-id])}])
-                               :type                :icon
-                               :theme               :icon
-                               :accessibility-label :menu-option}
-                   :main-icons/more]})]))
+       :accessory           [quo/button {:on-press            #(>evt [:bottom-sheet/show-sheet
+                                                                      {:content (fn [] [member-sheet member community-id admin])}])
+                                         :type                :icon
+                                         :theme               :icon
+                                         :accessibility-label :menu-option}
+                             :main-icons/more]})]))
 
 (defn members [route]
-  (let [{:keys [community-id]}           (get-in route [:route :params])
-        {{:keys [members]} :description} (<sub [:communities/community community-id])]
+  (let [{:keys [community-id]}     (get-in route [:route :params])
+        {{:keys [members]} :description
+         admin             :admin} (<sub [:communities/community community-id])]
     [:<>
      [topbar/topbar {:title    (i18n/label :t/community-members-title)
                      :subtitle (str (count members))}]
@@ -62,6 +65,7 @@
                      :on-press            #(>evt [::communities/invite-people-pressed community-id])}]
      [quo/separator {:style {:margin-vertical 8}}]
      [rn/flat-list {:data        (keys members)
-                    :render-data {:community-id community-id}
+                    :render-data {:community-id community-id
+                                  :admin        admin}
                     :key-fn      identity
                     :render-fn   render-member}]]))

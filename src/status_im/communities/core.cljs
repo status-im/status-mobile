@@ -16,10 +16,6 @@
   [{:name "Status"
     :id constants/status-community-id}])
 
-(def access-no-membership 1)
-(def access-invitation-only 2)
-(def access-on-request 3)
-
 (defn <-chats-rpc [chats]
   (reduce-kv (fn [acc k v]
                (assoc acc
@@ -92,22 +88,24 @@
   (handle-response cofx response))
 
 (fx/defn export
-  [cofx community-id on-success]
-  {::json-rpc/call [{:method "wakuext_exportCommunity"
-                     :params [community-id]
-                     :on-success on-success
-                     :on-error #(do
-                                  (log/error "failed to export community" community-id %)
-                                  (re-frame/dispatch [::failed-to-export %]))}]})
+  {:events [::export-pressed]}
+  [cofx community-id]
+  {::json-rpc/call [{:method     "wakuext_exportCommunity"
+                     :params     [community-id]
+                     :on-success #(re-frame/dispatch [:show-popover {:view          :export-community
+                                                                     :community-key %}])
+                     :on-error   #(do
+                                    (log/error "failed to export community" community-id %)
+                                    (re-frame/dispatch [::failed-to-export %]))}]})
 (fx/defn import-community
   {:events [::import]}
-  [cofx community-key on-success]
-  {::json-rpc/call [{:method "wakuext_importCommunity"
-                     :params [community-key]
-                     :on-success on-success
-                     :on-error #(do
-                                  (log/error "failed to import community" %)
-                                  (re-frame/dispatch [::failed-to-import %]))}]})
+  [cofx community-key]
+  {::json-rpc/call [{:method     "wakuext_importCommunity"
+                     :params     [community-key]
+                     :on-success #(re-frame/dispatch [::community-imported %])
+                     :on-error   #(do
+                                    (log/error "failed to import community" %)
+                                    (re-frame/dispatch [::failed-to-import %]))}]})
 
 (fx/defn join
   {:events [::join]}
@@ -182,6 +180,22 @@
                                       (log/error "failed to create community" %)
                                       (re-frame/dispatch [::failed-to-create-community %]))}]}))
 
+(fx/defn edit
+  {:events [::edit-confirmation-pressed]}
+  [{:keys [db]}]
+  (let [{:keys [name description membership]} (get db :communities/create)
+        my-public-key                         (get-in db [:multiaccount :public-key])]
+    (log/error "Edit community is not yet implemented")
+    ;; {::json-rpc/call [{:method     "wakuext_createCommunity"
+    ;;                    :params     [{:identity    {:display_name name
+    ;;                                                :description  description}
+    ;;                                  :permissions {:access membership}}]
+    ;;                    :on-success #(re-frame/dispatch [::community-edited %])
+    ;;                    :on-error   #(do
+    ;;                                   (log/error "failed to create community" %)
+    ;;                                   (re-frame/dispatch [::failed-to-edit-community %]))}]}
+    ))
+
 (fx/defn create-channel
   {:events [::create-channel-confirmation-pressed]}
   [cofx community-channel-name community-channel-description]
@@ -190,18 +204,14 @@
                        :params     [community-id
                                     {:identity    {:display_name community-channel-name
                                                    :description  community-channel-description}
-                                     :permissions {:access access-no-membership}}]
+                                     :permissions {:access constants/community-channel-access-no-membership}}]
                        :on-success #(re-frame/dispatch [::community-channel-created %])
                        :on-error   #(do
                                       (log/error "failed to create community channel" %)
                                       (re-frame/dispatch [::failed-to-create-community-channel %]))}]}))
 
-(def no-membership-access 1)
-(def invitation-only-access 2)
-(def on-request-access 3)
-
 (defn require-membership? [permissions]
-  (not= no-membership-access (:access permissions)))
+  (not= constants/community-no-membership-access (:access permissions)))
 
 (def community-id-length 68)
 ;; TODO: test this
@@ -239,6 +249,13 @@
             (navigation/navigate-back)
             (handle-response response)))
 
+(fx/defn community-edited
+  {:events [::community-edited]}
+  [cofx response]
+  (fx/merge cofx
+            (navigation/navigate-back)
+            (handle-response response)))
+
 (fx/defn open-create-community
   {:events [::open-create-community]}
   [{:keys [db] :as cofx}]
@@ -248,18 +265,23 @@
 
 (fx/defn open-edit-community
   {:events [::open-edit-community]}
-  [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (assoc db :communities/create {:name        ""
-                                                :description ""
-                                                :image       nil
-                                                :membership  nil})}
-            (navigation/navigate-to :community-edit nil)))
+  [{:keys [db] :as cofx} id]
+  (let [{:keys [identity permissions]}           (get-in db [:communities id :description])
+        {:keys [display-name description image]} identity
+        {:keys [access]}                         permissions]
+    (fx/merge cofx
+              {:db (assoc db :communities/create {:name        display-name
+                                                  :description description
+                                                  :image       image
+                                                  :membership  access})}
+              (navigation/navigate-to :community-edit nil))))
+
 
 (fx/defn community-imported
   {:events [::community-imported]}
   [cofx response]
   (fx/merge cofx
+            (navigation/navigate-back)
             (handle-response response)))
 
 (fx/defn people-invited
@@ -276,21 +298,6 @@
             (navigation/navigate-back)
             (handle-response response)))
 
-(fx/defn handle-export-pressed
-  {:events [::export-pressed]}
-  [cofx community-id]
-  (export cofx community-id
-          #(re-frame/dispatch [:show-popover {:view          :export-community
-                                              :community-key %}])))
-
-(fx/defn import-confirmation-pressed
-  {:events [::import-confirmation-pressed]}
-  [cofx community-key]
-  (import-community
-   cofx
-   community-key
-   #(re-frame/dispatch [::community-imported %])))
-
 (fx/defn invite-people-confirmation-pressed
   {:events [::invite-people-confirmation-pressed]}
   [cofx user-pk]
@@ -305,3 +312,18 @@
   {:events [::create-field]}
   [{:keys [db]} field value]
   {:db (assoc-in db [:communities/create field] value)})
+
+(fx/defn member-ban
+  {:events [::member-ban]}
+  [cofx community-id public-key]
+  (log/error "Community member ban is not yet implemented"))
+
+(fx/defn member-kick
+  {:events [::member-kick]}
+  [cofx community-id public-key]
+  (log/error "Community member kick is not yet implemented"))
+
+(fx/defn delete-community
+  {:events [::delete-community]}
+  [cofx community-id]
+  (log/error "Community delete is not yet implemented"))

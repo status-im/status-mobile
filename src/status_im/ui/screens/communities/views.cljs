@@ -65,13 +65,13 @@
     {:theme               :accent
      :title               (i18n/label :t/import-community)
      :accessibility-label :community-import-community
-     :icon                :main-icons/check
+     :icon                :main-icons/objects
      :on-press            #(hide-sheet-and-dispatch [:navigate-to :community-import])}]
    [quo/list-item
     {:theme               :accent
      :title               (i18n/label :t/create-community)
      :accessibility-label :community-create-community
-     :icon                :main-icons/check
+     :icon                :main-icons/add
      :on-press            #(hide-sheet-and-dispatch [::communities/open-create-community])}]])
 
 (defn communities []
@@ -151,7 +151,7 @@
     [react/view {}
      [react/view {:style {:padding-top 16 :padding-horizontal 16}}
       [copyable-text/copyable-text-view
-       {:label           :t/community-key
+       {:label           :t/community-private-key
         :container-style {:margin-top 12 :margin-bottom 4}
         :copied-text     community-key}
        [quo/text {:number-of-lines     1

@@ -21,11 +21,12 @@
           {:label          (i18n/label :t/community-key)
            :placeholder    (i18n/label :t/community-key-placeholder)
            :on-change-text #(reset! community-key %)
+           :default-value  @community-key
            :auto-focus     true}]]]
 
        [toolbar/toolbar
         {:show-border? true
          :center       [quo/button {:disabled (= @community-key "")
                                     :type     :secondary
-                                    :on-press #(re-frame/dispatch [::communities/import-confirmation-pressed @community-key])}
+                                    :on-press #(re-frame/dispatch [::communities/import @community-key])}
                         (i18n/label :t/import)]}]])))

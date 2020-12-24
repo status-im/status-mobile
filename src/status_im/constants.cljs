@@ -61,6 +61,14 @@
 (def profile-pictures-visibility-everyone 2)
 (def profile-pictures-visibility-none 3)
 
+(def community-no-membership-access 1)
+(def community-invitation-only-access 2)
+(def community-on-request-access 3)
+
+(def community-channel-access-no-membership 1)
+(def community-channel-access-invitation-only 2)
+(def community-channel-access-on-request 3)
+
 (def min-password-length 6)
 (def max-group-chat-participants 20)
 (def default-number-of-messages 20)
