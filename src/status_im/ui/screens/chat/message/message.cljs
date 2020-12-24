@@ -37,14 +37,14 @@
    [react/view (when justify-timestamp?
                  {:align-self                       :flex-end
                   :position                         :absolute
-                  :bottom                           9       ; 6 Bubble bottom, 3 message baseline
-                  (if (:rtl? content) :left :right) 12
+                  :bottom                           9 ; 6 Bubble bottom, 3 message baseline
+                  (if (:rtl? content) :left :right) 0
                   :flex-direction                   :row
                   :align-items                      :flex-end})
     (when (and outgoing justify-timestamp?)
       [vector-icons/icon (case outgoing-status
-                           :sending :tiny-icons/tiny-pending
-                           :sent :tiny-icons/tiny-sent
+                           :sending  :tiny-icons/tiny-pending
+                           :sent     :tiny-icons/tiny-sent
                            :not-sent :tiny-icons/tiny-warning
                            :tiny-icons/tiny-pending)
        {:width  16
@@ -348,7 +348,7 @@
   [react/view {:accessibility-label :chat-item}
    [react/view (style/system-message-body message)
     [react/view (style/message-view message)
-     [react/view
+     [react/view (style/message-view-content)
       [render-parsed-text message (:parsed-text content)]]]]])
 
 (def message-height-px 200)
@@ -364,53 +364,55 @@
      :label    (i18n/label :t/sharing-copy-to-clipboard)}]))
 
 (defn collapsible-text-message [_ _]
-  (let [collapsed? (reagent/atom false)
+  (let [collapsed?   (reagent/atom false)
         collapsible? (reagent/atom false)]
     (fn [{:keys [content outgoing current-public-key public?] :as message} on-long-press modal]
-      [react/touchable-highlight
-       (when-not modal
-         {:on-press      (fn [_]
-                           (react/dismiss-keyboard!))
-          :on-long-press (fn []
-                           (if @collapsed?
-                             (do (reset! collapsed? false)
-                                 (js/setTimeout #(on-long-press-fn on-long-press message content) 200))
-                             (on-long-press-fn on-long-press message content)))})
-       [react/view (assoc (style/message-view message)
-                          :max-height (when-not (or outgoing modal)
-                                        (if @collapsible?
-                                          (if @collapsed? message-height-px nil)
-                                          message-height-px)))
-        (let [response-to (:response-to content)]
-          [react/view {:on-layout
-                       #(when (and (> (.-nativeEvent.layout.height ^js %) max-message-height-px)
-                                   (not @collapsible?)
-                                   (not outgoing)
-                                   (not modal))
-                          (reset! collapsed? true)
-                          (reset! collapsible? true))}
-           (when (and (seq response-to) (:quoted-message message))
-             [quoted-message response-to (:quoted-message message) outgoing current-public-key public?])
-           [render-parsed-text-with-timestamp message (:parsed-text content)]])
-        (when-not @collapsed?
-          [message-timestamp message true])
-        (when (and @collapsible? (not modal))
-          (if @collapsed?
-            [react/touchable-highlight
-             {:on-press #(swap! collapsed? not)
-              :style {:position :absolute  :bottom 0 :left 0 :right 0 :height 72}}
-             [react/linear-gradient {:colors [(str colors/blue-light "00") colors/blue-light]
-                                     :start {:x 0 :y 0} :end {:x 0 :y 0.9}}
-              [react/view {:height 72 :align-self :center :justify-content :flex-end
-                           :padding-bottom 10}
-               [react/view (style/collapse-button)
-                [vector-icons/icon :main-icons/dropdown
-                 {:color colors/white}]]]]]
-            [react/touchable-highlight {:on-press #(swap! collapsed? not)
-                                        :style {:align-self :center :margin 5}}
-             [react/view (style/collapse-button)
-              [vector-icons/icon :main-icons/dropdown-up
-               {:color colors/white}]]]))]])))
+      (let [max-height (when-not (or outgoing modal)
+                         (if @collapsible?
+                           (if @collapsed? message-height-px nil)
+                           message-height-px))]
+        [react/touchable-highlight
+         (when-not modal
+           {:on-press      (fn [_]
+                             (react/dismiss-keyboard!))
+            :on-long-press (fn []
+                             (if @collapsed?
+                               (do (reset! collapsed? false)
+                                   (js/setTimeout #(on-long-press-fn on-long-press message content) 200))
+                               (on-long-press-fn on-long-press message content)))})
+         [react/view {:style (style/message-view message)}
+          [react/view {:style      (style/message-view-content)
+                       :max-height max-height}
+           (let [response-to (:response-to content)]
+             [react/view {:on-layout
+                          #(when (and (> (.-nativeEvent.layout.height ^js %) max-message-height-px)
+                                      (not @collapsible?)
+                                      (not outgoing)
+                                      (not modal))
+                             (reset! collapsed? true)
+                             (reset! collapsible? true))}
+              (when (and (seq response-to) (:quoted-message message))
+                [quoted-message response-to (:quoted-message message) outgoing current-public-key public?])
+              [render-parsed-text-with-timestamp message (:parsed-text content)]])
+           (when-not @collapsed?
+             [message-timestamp message true])
+           (when (and @collapsible? (not modal))
+             (if @collapsed?
+               [react/touchable-highlight
+                {:on-press #(swap! collapsed? not)
+                 :style    {:position :absolute :bottom 0 :left 0 :right 0 :height 72}}
+                [react/linear-gradient {:colors [(str colors/blue-light "00") colors/blue-light]
+                                        :start  {:x 0 :y 0} :end {:x 0 :y 0.9}}
+                 [react/view {:height         72 :align-self :center :justify-content :flex-end
+                              :padding-bottom 10}
+                  [react/view (style/collapse-button)
+                   [vector-icons/icon :main-icons/dropdown
+                    {:color colors/white}]]]]]
+               [react/touchable-highlight {:on-press #(swap! collapsed? not)
+                                           :style    {:align-self :center :margin 5}}
+                [react/view (style/collapse-button)
+                 [vector-icons/icon :main-icons/dropdown-up
+                  {:color colors/white}]]]))]]]))))
 
 (defmethod ->message constants/content-type-text
   [message {:keys [on-long-press modal] :as reaction-picker}]
@@ -447,12 +449,13 @@
                                                       {:on-press #(react/copy-to-clipboard (get content :text))
                                                        :label    (i18n/label :t/sharing-copy-to-clipboard)}]))})
       [react/view (style/message-view message)
-       [react/view {:style (style/style-message-text outgoing)}
-        (when (and (seq response-to) (:quoted-message message))
-          [quoted-message response-to (:quoted-message message) outgoing current-public-key public?])
-        [react/text {:style (style/emoji-message message)}
-         (:text content)]]
-       [message-timestamp message]]]
+       [react/view {:style (style/message-view-content)}
+        [react/view {:style (style/style-message-text outgoing)}
+         (when (and (seq response-to) (:quoted-message message))
+           [quoted-message response-to (:quoted-message message) outgoing current-public-key public?])
+         [react/text {:style (style/emoji-message message)}
+          (:text content)]]
+        [message-timestamp message]]]]
      reaction-picker]))
 
 (defmethod ->message constants/content-type-sticker
@@ -498,7 +501,8 @@
                                 {:on-long-press
                                  (fn [] (on-long-press []))})
     [react/view {:style (style/message-view message) :accessibility-label :audio-message}
-     [message.audio/message-content message [message-timestamp message false]]]]
+     [react/view {:style (style/message-view-content)}
+      [message.audio/message-content message [message-timestamp message false]]]]]
    reaction-picker])
 
 (defmethod ->message :default [message]
