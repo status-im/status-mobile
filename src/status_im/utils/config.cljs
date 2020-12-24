@@ -141,3 +141,5 @@
                [id network])
              default-networks)))
 
+(def link-preview-enabled-site?
+  #{"youtube.com" "youtu.be"})

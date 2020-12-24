@@ -22,7 +22,8 @@
                    [::link-preview/enable title ((complement boolean) enabled?)])})))
 
 (views/defview link-previews-settings []
-  (views/letsubs [{:keys [link-previews-whitelist link-previews-enabled-sites]} [:multiaccount]]
+  (views/letsubs [link-previews-whitelist [:link-preview/whitelist]
+                  link-previews-enabled-sites [:link-preview/enabled-sites]]
     [react/view {:flex 1}
      [topbar/topbar {:title (i18n/label :t/chat-link-previews)}]
      [react/image {:source      (resources/get-theme-image :unfurl)
