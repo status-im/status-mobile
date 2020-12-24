@@ -122,7 +122,7 @@
     :border-top-right-radius    16
     :border-bottom-right-radius 16
     :border-bottom-left-radius  16
-    :padding-vertical           6
+    :padding-top                6
     :padding-horizontal         12
     :border-radius              8
     :margin-top                 (if (and last-in-group?
@@ -136,11 +136,15 @@
 
    (cond
      (= content-type constants/content-type-system-text) nil
-     outgoing {:background-color colors/blue}
-     :else {:background-color colors/blue-light})
+     outgoing                                            {:background-color colors/blue}
+     :else                                               {:background-color colors/blue-light})
 
    (when (= content-type constants/content-type-emoji)
      {:flex-direction :row})))
+
+(defn message-view-content []
+  {:padding-bottom 6
+   :overflow       :hidden})
 
 (def status-container
   {:padding-horizontal 5})
