@@ -195,6 +195,11 @@
 (def react-native-gradien #js {:default #js {}})
 
 (def push-notification-ios #js {})
+
+(def fast-image #js {:priority     #js {}
+                     :cacheControl #js {}
+                     :resizeMode   #js {}})
+
 ;; Update i18n_resources.cljs
 (defn mock [module]
   (case module
@@ -219,6 +224,7 @@
     "react-native-dialogs" dialogs
     "react-native" react-native
     "react-native-fs" fs
+    "react-native-fast-image" fast-image
     "react-native-mail" react-native-mail
     "react-native-image-resizer" image-resizer
     "react-native-haptic-feedback" react-native-haptic-feedback

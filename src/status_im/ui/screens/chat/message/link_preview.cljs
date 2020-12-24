@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [status-im.ui.components.react :as react]
             [quo.core :as quo]
+            [quo.fast-image :as fast-image]
             [status-im.utils.security :as security]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.chat.message.styles :as styles]
@@ -70,15 +71,15 @@
            {:on-press #(when (and (security/safe-link? link))
                          (re-frame/dispatch
                           [:browser.ui/message-link-pressed link]))}
-
            [react/view (styles/link-preview-wrapper outgoing timeline)
-            [react/image {:source              {:uri thumbnailUrl}
-                          :style               (styles/link-preview-image outgoing)
-                          :accessibility-label :member-photo}]
-            [quo/text {:size :small
+            [fast-image/image {:source              {:uri thumbnailUrl}
+                               :on-load             prn
+                               :style               (styles/link-preview-image outgoing)
+                               :accessibility-label :member-photo}]
+            [quo/text {:size  :small
                        :style styles/link-preview-title}
              title]
-            [quo/text {:size :small
+            [quo/text {:size  :small
                        :color :secondary
                        :style styles/link-preview-site}
              site]]])))))
