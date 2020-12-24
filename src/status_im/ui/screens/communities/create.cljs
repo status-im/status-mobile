@@ -13,9 +13,14 @@
             [status-im.ui.screens.communities.membership :as memberships]
             [status-im.ui.components.icons.vector-icons :as icons]))
 
+(def max-name-length 30)
+(def max-description-length 140)
+
 (defn valid? [community-name community-description membership]
   (and (not (str/blank? community-name))
        (not (str/blank? community-description))
+       (<= (count community-name) max-name-length)
+       (<= (count community-description) max-description-length)
        membership))
 
 (def crop-size 1000)
@@ -99,6 +104,19 @@
                           :elevation        2}}
          [icons/icon :main-icons/add {:color colors/white}]]]]]]))
 
+(defn countable-label [{:keys [label value max-length]}]
+  [rn/view {:style {:padding-bottom  10
+                    :justify-content :space-between
+                    :align-items     :flex-end
+                    :flex-direction  :row
+                    :flex-wrap       :nowrap}}
+   [quo/text label]
+   [quo/text {:size  :small
+              :color (if (> (count value) max-length)
+                       :negative
+                       :secondary)}
+    (str (count value) "/" max-length)]])
+
 (defn form []
   (let [{:keys [name description membership]} (<sub [:communities/create])]
     [rn/scroll-view {:style                   {:flex 1}
@@ -106,18 +124,22 @@
      [rn/view {:style {:padding-bottom     16
                        :padding-top        10
                        :padding-horizontal 16}}
+      [countable-label {:label      (i18n/label :t/name-your-community)
+                        :value      name
+                        :max-length max-name-length}]
       [quo/text-input
-       {:label          (i18n/label :t/name-your-community)
-        :placeholder    (i18n/label :t/name-your-community-placeholder)
+       {:placeholder    (i18n/label :t/name-your-community-placeholder)
         :default-value  name
         :on-change-text #(>evt  [::communities/create-field :name %])
         :auto-focus     true}]]
      [rn/view {:style {:padding-bottom     16
                        :padding-top        10
                        :padding-horizontal 16}}
+      [countable-label {:label      (i18n/label :t/give-a-short-description-community)
+                        :value      description
+                        :max-length max-description-length}]
       [quo/text-input
-       {:label          (i18n/label :t/give-a-short-description-community)
-        :placeholder    (i18n/label :t/give-a-short-description-community)
+       {:placeholder    (i18n/label :t/give-a-short-description-community)
         :multiline      true
         :default-value  description
         :on-change-text #(>evt [::communities/create-field :description %])}]]
@@ -128,6 +150,7 @@
       [quo/separator {:style {:margin-vertical 10}}]
       [quo/list-item {:title          (i18n/label :t/membership-button)
                       :accessory-text (i18n/label (get-in memberships/options [membership :title] :t/membership-none))
+                      :accessory      :text
                       :on-press       #(>evt [:navigate-to :community-membership])
                       :chevron        true
                       :size           :small}]

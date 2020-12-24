@@ -10,6 +10,7 @@
    [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
    [status-im.data-store.chats :as data-store.chats]
    [status-im.ethereum.json-rpc :as json-rpc]
+   [status-im.ui.components.colors :as colors]
    [status-im.navigation :as navigation]))
 
 (def featured
@@ -203,6 +204,7 @@
     {::json-rpc/call [{:method     "wakuext_createCommunityChat"
                        :params     [community-id
                                     {:identity    {:display_name community-channel-name
+                                                   :color        (rand-nth colors/chat-colors)
                                                    :description  community-channel-description}
                                      :permissions {:access constants/community-channel-access-no-membership}}]
                        :on-success #(re-frame/dispatch [::community-channel-created %])

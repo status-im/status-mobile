@@ -5,7 +5,7 @@
             [quo.core :as quo]
             [status-im.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
-            [re-frame.core :as re-frame]
+            [status-im.utils.handlers :refer [>evt]]
             [status-im.communities.core :as communities]
             [status-im.ui.components.topbar :as topbar]))
 
@@ -32,5 +32,5 @@
          :center
          [quo/button {:disabled (not (valid? @channel-name))
                       :type     :secondary
-                      :on-press #(re-frame/dispatch [::communities/create-channel-confirmation-pressed @channel-name])}
+                      :on-press #(>evt [::communities/create-channel-confirmation-pressed @channel-name])}
           (i18n/label :t/create)]}]])))

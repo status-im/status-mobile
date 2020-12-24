@@ -4,26 +4,35 @@
             [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.i18n :as i18n]
             [status-im.communities.core :as communities]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.constants :as constants]
+            [status-im.react-native.resources :as resources]
+            [quo.react-native :as rn]))
 
 (defn management [route]
   (let [{:keys [community-id]}      (get-in route [:route :params])
         {:keys [description admin]} (<sub [:communities/community community-id])
         roles                       false
         notifications               false
+        can-invite                  admin
         members                     (count (get description :members))]
     [:<>
      [quo/animated-header {:left-accessories  [{:icon                :main-icons/arrow-left
                                                 :accessibility-label :back-button
                                                 :on-press            #(>evt [:navigate-back])}]
-                           :right-accessories [{:icon                :main-icons/share
-                                                :accessibility-label :invite-button
-                                                :on-press            #(>evt [::communities/invite-people-pressed community-id])}]
+                           :right-accessories (when can-invite
+                                                [{:icon                :main-icons/share
+                                                  :accessibility-label :invite-button
+                                                  :on-press            #(>evt [::communities/invite-people-pressed community-id])}])
                            :extended-header   (profile-header/extended-header
                                                {:title    (get-in description [:identity :display-name])
                                                 :color    (get-in description [:identity :color] (rand-nth colors/chat-colors))
+                                                :photo    (when (= community-id constants/status-community-id)
+                                                            (:uri
+                                                             (rn/resolve-asset-source
+                                                              (resources/get-image :status-logo))))
                                                 :subtitle (i18n/label-pluralize members :t/community-members {:count members})})
-                           :insets            false}
+                           :use-insets        true}
       [:<>
        [quo/list-footer {:color :main}
         (get-in description [:identity :description])]

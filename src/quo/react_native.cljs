@@ -15,6 +15,8 @@
 (def image (reagent/adapt-react-class (.-Image rn)))
 (def text (reagent/adapt-react-class (.-Text ^js rn)))
 
+(defn resolve-asset-source [uri] (js->clj (.resolveAssetSource ^js (.-Image ^js rn) uri) :keywordize-keys true))
+
 (def scroll-view (reagent/adapt-react-class (.-ScrollView ^js rn)))
 (def modal (reagent/adapt-react-class (.-Modal ^js rn)))
 (def refresh-control (reagent/adapt-react-class (.-RefreshControl ^js rn)))

@@ -46,6 +46,7 @@
     {:name      :community
      :component community/community}
     {:name      :community-management
+     :insets    {:top false}
      :component community.profile/management}
     {:name      :community-members
      :component members/members}

@@ -51,6 +51,15 @@
                                          :accessibility-label :menu-option}
                              :main-icons/more]})]))
 
+(defn header [community-id]
+  [:<>
+   [quo/list-item {:icon                :main-icons/share
+                   :title               (i18n/label :t/invite-people)
+                   :accessibility-label :community-invite-people
+                   :theme               :accent
+                   :on-press            #(>evt [::communities/invite-people-pressed community-id])}]
+   [quo/separator {:style {:margin-vertical 8}}]])
+
 (defn members [route]
   (let [{:keys [community-id]}     (get-in route [:route :params])
         {{:keys [members]} :description
@@ -58,13 +67,8 @@
     [:<>
      [topbar/topbar {:title    (i18n/label :t/community-members-title)
                      :subtitle (str (count members))}]
-     [quo/list-item {:icon                :main-icons/share
-                     :title               (i18n/label :t/invite-people)
-                     :accessibility-label :community-invite-people
-                     :theme               :accent
-                     :on-press            #(>evt [::communities/invite-people-pressed community-id])}]
-     [quo/separator {:style {:margin-vertical 8}}]
      [rn/flat-list {:data        (keys members)
+                    :header      [header community-id]
                     :render-data {:community-id community-id
                                   :admin        admin}
                     :key-fn      identity

@@ -3,7 +3,7 @@
             [reagent.core :as reagent]
             [quo.core :as quo]
             [status-im.i18n :as i18n]
-            [re-frame.core :as re-frame]
+            [status-im.utils.handlers :refer [>evt]]
             [status-im.communities.core :as communities]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.toolbar :as toolbar]))
@@ -28,5 +28,5 @@
         {:show-border? true
          :center       [quo/button {:disabled (= @community-key "")
                                     :type     :secondary
-                                    :on-press #(re-frame/dispatch [::communities/import @community-key])}
+                                    :on-press #(>evt [::communities/import @community-key])}
                         (i18n/label :t/import)]}]])))
