@@ -20,6 +20,7 @@
             [status-im.ui.screens.add-new.new-public-chat.db :as db]
             [status-im.utils.debounce :as debounce]
             [status-im.utils.utils :as utils]
+            [status-im.utils.config :as config]
             [cljs-bean.core :as bean]
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.ui.components.invite.views :as invite]
@@ -82,13 +83,15 @@
      [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :center}
       (for [chat (new-public-chat/featured-public-chats)]
         (new-public-chat/render-topic chat))]]
-    [react/i18n-text {:style {:margin-horizontal 16
-                              :text-align        :center}
-                      :key   :join-a-community}]
-    [react/view {:style styles/tags-wrapper}
-     [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :center}
-      (for [community communities/featured]
-        (communities.views/render-featured-community community))]]]])
+    (when config/communities-enabled?
+      [react/view
+       [react/i18n-text {:style {:margin-horizontal 16
+                                 :text-align        :center}
+                         :key   :join-a-community}]
+       [react/view {:style styles/tags-wrapper}
+        [react/view {:flex-direction :row :flex-wrap :wrap :justify-content :center}
+         (for [community communities/featured]
+           (communities.views/render-featured-community community))]]])]])
 
 (defn welcome-blank-page []
   [react/view {:style {:flex 1 :flex-direction :row :align-items :center :justify-content :center}}
