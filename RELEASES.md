@@ -1,3 +1,75 @@
+## 1.10
+### iOS
+#### Excerpt
+Status version 1.10 is here and it is a perfect way to kick off 2021! Another feature rich update that makes the overall messaging, browsing, and transacting experience a whole lot better. Save your most frequently used DApps as favorites for one tap access to DeFi, NFTs, and more. Set a profile image to express yourself in chat. Speed up and cancel pending transactions and pull down to check for new transactions.
+
+#### Added
+- Pull to refresh on individual account view
+- Auto scan for tokens of primary Ethereum account upon recovery
+- Speed up pending transactions
+- Cancel pending transactions
+- Save dapps as favorite 
+- Switch between dapps in multiple tabs
+- Banner to find dapps to buy crypto
+- Sent message confirmation icon
+
+#### Changed
+- Manage dapp permissions without leaving the browser
+- Keycard pairing code updated to readible 5 symbol code
+- Profile and settings back to most right position in tab bar
+
+#### Fixed
+- Visibility of tab bar in dark mode
+- Watching accounts for transaction in chat messages (update status)
+- Multiple notifications for a single erc20 transfer 
+- Change group chat name when '/' character is included
+- Show transaction in chat for small amounts
+- Correction to transaction status in chat
+- Rotate mailservers on error return
+- Remove unused transport security entries 
+- Send chat messages in order so that text is always below image
+- Performance of list rendering
+- Alignment and image flickering issues in status updates
+- Disallow multiple pop ups to be shown at the same time
+- Add multiple custom history nodes without relogin
+
+
+### Android
+#### Excerpt
+Status version 1.10 is here and it is a perfect way to kick off 2021! Another feature rich update that makes the overall messaging, browsing, and transacting experience a whole lot better. Bookmark your most frequently used DApps for one tap access to DeFi, NFTs, and more. Set a profile image to express yourself in chat. Speed up and cancel pending transactions and pull down to check for new transactions.
+
+#### Added
+- Pull to refresh on individual account view
+- Auto scan for tokens of primary Ethereum account upon recovery
+- Speed up pending transactions
+- Cancel pending transactions
+- Save dapps as favorite 
+- Switch between dapps in multiple tabs
+- Banner to find dapps to buy crypto
+- Sent message confirmations
+
+#### Changed
+- Install with deeplink to public chat (Join to fetch messages)
+- Manage dapp permissions without leaving the browser
+- Keycard pairing code updated to readible 5 symbol code
+- Profile and settings back to most right position in tab bar
+
+#### Fixed
+- Visibility of tab bar in dark mode
+- Watching accounts for transaction in chat messages (update status)
+- Multiple notifications for a single erc20 transfer 
+- Change group chat name when '/' character is included
+- Show transaction in chat for small amounts
+- Correction to transaction status in chat
+- Rotate mailservers on error return
+- Remove unused transport security entries 
+- Send chat messages in order so that text is always below image
+- Performance of list rendering
+- Alignment and image flickering issues in status updates
+- Disallow multiple pop ups to be shown at the same time
+- Add multiple custom history nodes without relogin
+
+
 ## 1.9
 ### iOS
 #### Excerpt
