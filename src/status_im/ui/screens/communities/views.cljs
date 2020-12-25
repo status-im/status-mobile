@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.communities.views
-  (:require-macros [status-im.utils.views :as views])
-  (:require 
+  (:require
    [quo.core :as quo]
    [status-im.utils.handlers :refer [>evt <sub]]
    [status-im.i18n :as i18n]

@@ -98,6 +98,7 @@
                      :on-error   #(do
                                     (log/error "failed to export community" community-id %)
                                     (re-frame/dispatch [::failed-to-export %]))}]})
+
 (fx/defn import-community
   {:events [::import]}
   [cofx community-key]
@@ -139,32 +140,31 @@
 (fx/defn chat-created
   {:events [::chat-created]}
   [cofx community-id user-pk]
-  {::json-rpc/call [{:method "wakuext_sendChatMessage"
-                     :params [{:chatId user-pk
-                               :text "Upgrade here to see an invitation to community"
-                               :communityId community-id
-                               :contentType constants/content-type-community}]
+  {::json-rpc/call [{:method     "wakuext_sendChatMessage"
+                     :params     [{:chatId      user-pk
+                                   :text        "Upgrade here to see an invitation to community"
+                                   :communityId community-id
+                                   :contentType constants/content-type-community}]
                      :on-success
                      #(re-frame/dispatch [:transport/message-sent % 1])
                      :on-failure #(log/error "failed to send a message" %)}]})
 
-(fx/defn invite-user [cofx
-                      community-id
-                      user-pk
-                      on-success-event
-                      on-failure-event]
-
-  (fx/merge cofx
-            {::json-rpc/call [{:method "wakuext_inviteUserToCommunity"
-                               :params [community-id
-                                        user-pk]
-                               :on-success #(re-frame/dispatch [on-success-event %])
-                               :on-error #(do
-                                            (log/error "failed to invite-user community" %)
-                                            (re-frame/dispatch [on-failure-event %]))}]}
-            (models.chat/upsert-chat {:chat-id user-pk
-                                      :active (get-in cofx [:db :chats user-pk :active])}
-                                     #(re-frame/dispatch [::chat-created community-id user-pk]))))
+(fx/defn invite-user
+  {:events [::invite-people-confirmation-pressed]}
+  [cofx user-pk contacts]
+  (let [community-id (fetch-community-id-input cofx)]
+    (when (pos? (count contacts))
+      (log/error "Inviting contacts is not yet implemented"))
+    (fx/merge cofx
+              {::json-rpc/call [{:method     "wakuext_inviteUserToCommunity"
+                                 :params     [community-id user-pk]
+                                 :on-success #(re-frame/dispatch [::people-invited %])
+                                 :on-error   #(do
+                                                (log/error "failed to invite-user community" %)
+                                                (re-frame/dispatch [::failed-to-invite-people %]))}]}
+              (models.chat/upsert-chat {:chat-id user-pk
+                                        :active  (get-in cofx [:db :chats user-pk :active])}
+                                       #(re-frame/dispatch [::chat-created community-id user-pk])))))
 
 (fx/defn create
   {:events [::create-confirmation-pressed]}
@@ -187,7 +187,7 @@
   (let [{:keys [name description membership]} (get db :communities/create)
         my-public-key                         (get-in db [:multiaccount :public-key])]
     (log/error "Edit community is not yet implemented")
-    ;; {::json-rpc/call [{:method     "wakuext_createCommunity"
+    ;; {::json-rpc/call [{:method     "wakuext_editCommunity"
     ;;                    :params     [{:identity    {:display_name name
     ;;                                                :description  description}
     ;;                                  :permissions {:access membership}}]
@@ -289,7 +289,7 @@
   {:events [::people-invited]}
   [cofx response]
   (fx/merge cofx
-            (bottom-sheet/hide-bottom-sheet)
+            (navigation/navigate-back)
             (handle-response response)))
 
 (fx/defn community-channel-created
@@ -298,16 +298,6 @@
   (fx/merge cofx
             (navigation/navigate-back)
             (handle-response response)))
-
-(fx/defn invite-people-confirmation-pressed
-  {:events [::invite-people-confirmation-pressed]}
-  [cofx user-pk]
-  (invite-user
-   cofx
-   (fetch-community-id-input cofx)
-   user-pk
-   ::people-invited
-   ::failed-to-invite-people))
 
 (fx/defn create-field
   {:events [::create-field]}
