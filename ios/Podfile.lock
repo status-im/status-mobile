@@ -390,7 +390,7 @@ PODS:
   - SQLCipher/standard (3.4.2):
     - SQLCipher/common
   - SSZipArchive (2.2.3)
-  - TOCropViewController (2.5.4)
+  - TOCropViewController (2.5.5)
   - TouchID (4.4.1):
     - React
   - Yoga (1.14.0)
@@ -701,11 +701,11 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
-  TOCropViewController: 2a1ae1242600b1f2d996fd91a5268b2309a33b5c
+  TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: e3b7c4b3ecf96e505489762ffc00032df4d12519
+PODFILE CHECKSUM: 80a024d1e897d0d2c990255095371ccb9429542b
 
 COCOAPODS: 1.9.3

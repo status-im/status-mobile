@@ -2512,9 +2512,14 @@
  (fn [multiaccount]
    (pos? (count (get multiaccount :images)))))
 
-
 (re-frame/reg-sub
  :permission/all-granted?
  :<- [:app/permissions]
  (fn [app-permissions permissions]
    (permissions/check-granted app-permissions permissions)))
+
+(re-frame/reg-sub
+ :permission/limited?
+ :<- [:app/permissions]
+ (fn [app-permissions permission]
+   (permissions/check-limited app-permissions permission)))

@@ -146,13 +146,14 @@
                        #(utils/show-popup (i18n/label :t/error)
                                           (i18n/label :t/external-storage-denied))
                        50))}))}
-  [react/animated-view {:style {:background-color (:ui-background @colors/theme)
-                                :flex             1}}
-   (if-not @(re-frame/subscribe [:permission/all-granted? camera-roll-permissions])
-     [react/view {:flex 1 :flex-direction :row :margin-left 4}
-      [buttons true]
-      [no-permissions]]
-     [react/scroll-view {:horizontal true :style {:flex 1}}
-      [react/view {:flex 1 :flex-direction :row :margin-horizontal 4}
-       [buttons true]
-       [photos]]])])
+  (let [limited @(re-frame/subscribe [:permission/limited? :photo-library])]
+    [react/animated-view {:style {:background-color (:ui-background @colors/theme)
+                                  :flex             1}}
+     (if-not @(re-frame/subscribe [:permission/all-granted? camera-roll-permissions])
+       [react/view {:flex 1 :flex-direction :row :margin-left 4}
+        [buttons limited]
+        [no-permissions]]
+       [react/scroll-view {:horizontal true :style {:flex 1}}
+        [react/view {:flex 1 :flex-direction :row :margin-horizontal 4}
+         [buttons limited]
+         [photos]]])]))

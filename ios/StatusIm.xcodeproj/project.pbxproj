@@ -564,7 +564,6 @@
 				3AAD2ACF24A3A60E0075D594 /* Inter-Italic.otf in Resources */,
 				3AAD2AD024A3A60E0075D594 /* Inter-Medium.otf in Resources */,
 				3AAD2AD124A3A60E0075D594 /* Inter-MediumItalic.otf in Resources */,
-				3A6406FF24A3ADF90046ED37 /* Info.plist in Resources */,
 				3AAD2AD224A3A60E0075D594 /* Inter-Regular.otf in Resources */,
 				3AAD2AD324A3A60E0075D594 /* Inter-SemiBold.otf in Resources */,
 				3AAD2AD424A3A60E0075D594 /* Inter-SemiBoldItalic.otf in Resources */,

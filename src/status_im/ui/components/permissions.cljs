@@ -35,6 +35,11 @@
           to-check      (select-keys all to-check-keys)]
       (all-granted? to-check))))
 
+(defn check-limited [all permission]
+  (when (and (map? all) permission)
+    (= (.-LIMITED RESULTS)
+       (get all permission))))
+
 (defn request-permissions
   [{:keys [permissions on-allowed on-denied]
     :or   {on-allowed #()
@@ -60,5 +65,5 @@
 
 (fx/defn open-limited-photo-picker
   {:events [::open-limited-photo-picker]}
-  []
+  [_]
   {::open-limited-photo nil})
