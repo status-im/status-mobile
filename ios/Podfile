@@ -84,6 +84,8 @@ abstract_target 'Status' do
   permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone.podspec"
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
+  pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary"
+  pod 'Permission-PhotoLibraryAddOnly', :path => "#{permissions_path}/PhotoLibraryAddOnly"
 
   target 'StatusIm' do
     target 'StatusImTests' do

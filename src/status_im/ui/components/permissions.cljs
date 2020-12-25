@@ -2,7 +2,8 @@
   (:require [status-im.utils.platform :as platform]
             [re-frame.core :as re-frame]
             [status-im.utils.fx :as fx]
-            ["react-native-permissions" :refer (requestMultiple PERMISSIONS RESULTS)]))
+            [taoensso.timbre :as log]
+            ["react-native-permissions" :refer (requestMultiple openLimitedPhotoLibraryPicker PERMISSIONS RESULTS)]))
 
 (fx/defn store-permissions
   {:events [::store-permissions]}
@@ -49,3 +50,15 @@
                        (on-allowed)
                        (on-denied)))))
           (.catch on-denied)))))
+
+(re-frame/reg-fx
+ ::open-limited-photo
+ (fn []
+   (-> (openLimitedPhotoLibraryPicker)
+       (.catch (fn []
+                 (log/warn "Cannot open photo library picker"))))))
+
+(fx/defn open-limited-photo-picker
+  {:events [::open-limited-photo-picker]}
+  []
+  {::open-limited-photo nil})

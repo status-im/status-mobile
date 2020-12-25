@@ -228,7 +228,7 @@
      (when (and platform/ios? scope)
        [quo/list-item
         {:theme    :accent
-         :on-press #(permissions/request-permissions {:permission [:photo-library]})
+         :on-press #(hide-sheet-and-dispatch [::permissions/open-limited-photo-picker])
          :title    (i18n/label :t/permissions-more-photos)
          :icon     :main-icons/gallery}])
      [quo/list-item
