@@ -342,11 +342,22 @@
 
 ;; FIXME(Ferossgp): We should not copy keys as we denormalize the database,
 ;; this create desync between actual accounts and the one on login causing broken state
+;; UPDATE(cammellos): This code is copying over some fields explicitly as some values
+;; are alreayd in `multiaccounts/login` and should not be overriden, as they come from
+;; the keychain (save-password), this is not very explicit and we should probably
+;; make it clearer
 (fx/defn open-login
-  [{:keys [db] :as cofx} {:keys [key-uid] :as multiaccount}]
+  [{:keys [db] :as cofx} override-multiaccount]
   (fx/merge cofx
-            {:db (assoc db :multiaccounts/login multiaccount)}
-            (keychain/get-auth-method key-uid)))
+            {:db (-> db
+                     (update :multiaccounts/login
+                             merge
+                             override-multiaccount)
+                     (update :multiaccounts/login
+                             dissoc
+                             :error
+                             :password))}
+            (keychain/get-auth-method (:key-uid override-multiaccount))))
 
 (fx/defn open-login-callback
   {:events [:multiaccounts.login.callback/get-user-password-success]}
