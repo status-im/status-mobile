@@ -139,13 +139,17 @@
 (handlers/register-handler-fx
  :multiaccounts.login.ui/multiaccount-selected
  (fn [{:keys [db] :as cofx} [_ key-uid]]
-   (let [multiaccount (get-in db [:multiaccounts/multiaccounts key-uid])]
+   ;; We specifically pass a bunch of fields instead of the whole multiaccount
+   ;; as we want store some fields in multiaccount that are not here
+   (let [multiaccount
+         (get-in db [:multiaccounts/multiaccounts key-uid])]
      (fx/merge
       cofx
       {:db (-> db
                (dissoc :intro-wizard)
                (update :keycard dissoc :application-info))}
-      (multiaccounts.login/open-login multiaccount)))))
+      (multiaccounts.login/open-login
+       (select-keys multiaccount [:key-uid :name :public-key :identicon :images]))))))
 
 (handlers/register-handler-fx
  :login/filters-initialized

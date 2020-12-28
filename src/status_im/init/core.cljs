@@ -27,8 +27,13 @@
   [cofx {:keys [logout?]}]
   (let [{{:multiaccounts/keys [multiaccounts]} :db} cofx]
     (when (and (seq multiaccounts) (not logout?))
+      ;; We specifically pass a bunch of fields instead of the whole multiaccount
+      ;; as we want store some fields in multiaccount that are not here
       (let [multiaccount (first (sort-by :timestamp > (vals multiaccounts)))]
-        (multiaccounts.login/open-login cofx multiaccount)))))
+        (multiaccounts.login/open-login cofx
+                                        (select-keys
+                                         multiaccount
+                                         [:key-uid :name :public-key :identicon :images]))))))
 
 (fx/defn initialize-multiaccounts
   {:events [::initialize-multiaccounts]}
