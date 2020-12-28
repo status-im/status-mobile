@@ -38,7 +38,8 @@
 (defn render-transaction
   [{:keys [label contact address contact-accessibility-label
            address-accessibility-label currency-text amount-text
-           time-formatted on-touch-fn type hash]}]
+           time-formatted on-touch-fn type hash]}
+   _ _ {:keys [keycard-account?]}]
   [react/view
    [list/touchable-item on-touch-fn
     [react/view {:accessibility-label :transaction-item}
@@ -75,7 +76,8 @@
                        :style     {:margin-top 10}
                        :icon-opts (merge styles/forward
                                          {:accessibility-label :show-transaction-button})}]]]]
-   (when (= type :pending)
+   (when (and (not keycard-account?)
+              (= type :pending))
      [react/view {:flex-direction :row :padding 16 :justify-content :space-between}
       [quo/button
        {:on-press #(re-frame/dispatch [:signing.ui/increase-gas-pressed hash])}
@@ -108,6 +110,8 @@
   [transactions-history-sections address]
   (let [fetching-recent-history? @(re-frame/subscribe [:wallet/fetching-recent-tx-history? address])
         fetching-more-history?   @(re-frame/subscribe [:wallet/fetching-tx-history? address])
+        keycard-account?         @(re-frame/subscribe [:multiaccounts/keycard-account?])
+
         all-fetched?             @(re-frame/subscribe [:wallet/tx-history-fetched? address])]
     [react/view components.styles/flex
      [etherscan-link address]
@@ -121,6 +125,7 @@
      [list/section-list
       {:sections   transactions-history-sections
        :key-fn     :hash
+       :render-data {:keycard-account? keycard-account?}
        :render-fn  render-transaction
        :empty-component
        [react/i18n-text {:style styles/empty-text
