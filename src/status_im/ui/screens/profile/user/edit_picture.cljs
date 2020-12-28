@@ -4,7 +4,9 @@
             [status-im.i18n :as i18n]
             [status-im.utils.config :as config]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.react :as react]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.photo-picker.view :as photo-picker]
+            [status-im.ui.components.permissions :as permissions]))
 
 (def crop-size 1000)
 (def crop-opts {:cropping             true
@@ -13,32 +15,44 @@
                 :height               crop-size})
 
 (defn pick-pic []
-  (react/show-image-picker
+  (re-frame/dispatch [:bottom-sheet/hide])
+  (photo-picker/show-image-picker
    #(re-frame/dispatch [::multiaccounts/save-profile-picture (.-path ^js %) 0 0 crop-size crop-size])
    crop-opts))
 
 (defn take-pic []
-  (react/show-image-picker-camera
+  (re-frame/dispatch [:bottom-sheet/hide])
+  (photo-picker/take-picture
    #(re-frame/dispatch [::multiaccounts/save-profile-picture (.-path ^js %) 0 0 crop-size crop-size])
    crop-opts))
 
 (defn bottom-sheet [has-picture]
   (fn []
-    [:<>
-     [quo/list-item {:accessibility-label :take-photo
-                     :theme               :accent
-                     :icon                :main-icons/camera
-                     :title               (i18n/label :t/profile-pic-take)
-                     :on-press            take-pic}]
-     [quo/list-item {:accessibility-label :pick-photo
-                     :icon                :main-icons/gallery
-                     :theme               :accent
-                     :title               (i18n/label :t/profile-pic-pick)
-                     :on-press            pick-pic}]
-     (when (and config/enable-remove-profile-picture?
-                has-picture)
-       [quo/list-item {:accessibility-label :remove-photo
-                       :icon                :main-icons/delete
+    (let [limited @(re-frame/subscribe [:permission/limited? :photo-library])]
+      [:<>
+       [quo/list-item {:accessibility-label :take-photo
                        :theme               :accent
-                       :title               (i18n/label :t/profile-pic-remove)
-                       :on-press            #(re-frame/dispatch [::multiaccounts/delete-profile-picture nil])}])]))
+                       :icon                :main-icons/camera
+                       :title               (i18n/label :t/profile-pic-take)
+                       :on-press            take-pic}]
+       [quo/list-item {:accessibility-label :pick-photo
+                       :icon                :main-icons/gallery
+                       :theme               :accent
+                       :title               (i18n/label :t/profile-pic-pick)
+                       :on-press            pick-pic}]
+       (when (and platform/ios? limited)
+         [quo/list-item
+          {:theme    :accent
+           :on-press #(do
+                        (re-frame/dispatch [:bottom-sheet/hide])
+                        (re-frame/dispatch [::permissions/open-limited-photo-picker]))
+           :title    (i18n/label :t/permissions-more-photos)
+           :icon     :main-icons/gallery}])
+
+       (when (and config/enable-remove-profile-picture?
+                  has-picture)
+         [quo/list-item {:accessibility-label :remove-photo
+                         :icon                :main-icons/delete
+                         :theme               :accent
+                         :title               (i18n/label :t/profile-pic-remove)
+                         :on-press            #(re-frame/dispatch [::multiaccounts/delete-profile-picture nil])}])])))
