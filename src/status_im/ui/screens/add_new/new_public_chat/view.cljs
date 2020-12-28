@@ -92,6 +92,7 @@
        [chat-name-input topic error]]
       [react/view {:margin-top 32}
        (for [[section chats] (chat.models/chats)]
+         ^{:key section}
          [react/view
           [react/view {:margin-right               16 :padding-left            16 :padding-vertical 3
                        :border-bottom-width        1  :border-bottom-color     colors/gray-lighter
