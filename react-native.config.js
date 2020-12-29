@@ -2,11 +2,6 @@ const rndi = process.env.GOOGLE_FREE == 1 ? {platforms: {android: null}} : {};
 
 module.exports = {
     dependencies: {
-        'react-native-config': {
-            platforms: {
-                ios: null,
-            },
-        },
         'react-native-dialogs': {
             platforms: {
                 android: null,

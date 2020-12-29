@@ -37,7 +37,7 @@ in {
   nodejs = super.pkgs.nodejs-12_x;
   openjdk = super.pkgs.openjdk8_headless;
   xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {
-    version = "11.5";
+    version = "12.0";
     allowHigher = true;
   };
 

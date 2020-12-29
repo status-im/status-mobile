@@ -258,6 +258,10 @@ PODS:
     - React
   - react-native-cameraroll (1.6.2):
     - React
+  - react-native-config (1.4.1):
+    - react-native-config/App (= 1.4.1)
+  - react-native-config/App (1.4.1):
+    - React-Core
   - react-native-image-resizer (1.2.3):
     - React
   - react-native-mail (4.0.0):
@@ -441,6 +445,7 @@ DEPENDENCIES:
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - react-native-camera-kit (from `../node_modules/react-native-camera-kit`)
   - "react-native-cameraroll (from `../node_modules/@react-native-community/cameraroll`)"
+  - react-native-config (from `../node_modules/react-native-config`)
   - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -549,6 +554,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-camera-kit"
   react-native-cameraroll:
     :path: "../node_modules/@react-native-community/cameraroll"
+  react-native-config:
+    :path: "../node_modules/react-native-config"
   react-native-image-resizer:
     :path: "../node_modules/react-native-image-resizer"
   react-native-mail:
@@ -642,7 +649,7 @@ SPEC CHECKSUMS:
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: afd4259ef9eadeeb2d30250b37d95cb3b6b97a69
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
-  glog: d6cca0516fb0ca3697a5b2e199ea83dfc7133411
+  glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   Permission-Camera: 119b01de97a5b3edb637999e38476b68143b9d17
@@ -661,6 +668,7 @@ SPEC CHECKSUMS:
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-camera-kit: 498a6d111a904834e0824e9073cfadef7303235f
   react-native-cameraroll: ac69828fc43b9dbf92149714fd739577d38e4448
+  react-native-config: d8b45133fd13d4f23bd2064b72f6e2c08b2763ed
   react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3
   react-native-mail: 7e37dfbe93ff0d4c7df346b738854dbed533e86f
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9

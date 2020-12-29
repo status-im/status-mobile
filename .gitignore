@@ -165,3 +165,6 @@ trace.edn
 
 /app/
 project.clj
+
+# react-native-config codegen
+ios/tmp.xcconfig
