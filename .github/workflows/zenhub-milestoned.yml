@@ -1,0 +1,17 @@
+name: Zenhub integration milestoned
+on:
+  issues:
+    types:
+      - milestoned
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: status-im/zenhub-automations@master
+        with:
+          GITHUB_TOKEN:  ${{ secrets.GITHUB_TOKEN }}
+          ZENHUB_API_KEY: ${{ secrets.ZENHUB_TOKEN }}
+          INPROG_COLUMN: Z2lkOi8vcmFwdG9yL1BpcGVsaW5lLzMyODI1Mg
+          NEXT_COLUMN: Z2lkOi8vcmFwdG9yL1BpcGVsaW5lLzMyNzk2MQ
+          REVIEW_COLUMN: Z2lkOi8vcmFwdG9yL1BpcGVsaW5lLzIyNjk0MTA
