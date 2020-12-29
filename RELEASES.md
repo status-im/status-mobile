@@ -6,8 +6,6 @@ Status version 1.10 is here and it is a perfect way to kick off 2021! Another fe
 #### Added
 - Pull to refresh on individual account view
 - Auto scan for tokens of primary Ethereum account upon recovery
-- Speed up pending transactions
-- Cancel pending transactions
 - Save dapps as favorite 
 - Switch between dapps in multiple tabs
 - Banner to find dapps to buy crypto
@@ -41,8 +39,6 @@ Status version 1.10 is here and it is a perfect way to kick off 2021! Another fe
 #### Added
 - Pull to refresh on individual account view
 - Auto scan for tokens of primary Ethereum account upon recovery
-- Speed up pending transactions
-- Cancel pending transactions
 - Save dapps as favorite 
 - Switch between dapps in multiple tabs
 - Banner to find dapps to buy crypto
