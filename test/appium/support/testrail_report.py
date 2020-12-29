@@ -6,7 +6,7 @@ import emoji
 import base64
 from os import environ
 from support.base_test_report import BaseTestReport
-
+from sys import argv
 
 class TestrailReport(BaseTestReport):
 
@@ -87,9 +87,18 @@ class TestrailReport(BaseTestReport):
         test_cases['medium'] = 736
         test_cases['low'] = 737
         case_ids = list()
-        for phase in test_cases:
-            for case in self.get_cases([test_cases[phase]]):
-                case_ids.append(case['id'])
+        for arg in argv:
+            if "run_testrail_ids" in arg:
+                key, value = arg.split('=')
+                case_ids = value.split(',')
+        if len(case_ids) == 0:
+            if 'critical or high' in argv:
+                for case in self.get_cases([test_cases['critical'], test_cases['high']]):
+                    case_ids.append(case['id'])
+            else:
+                for phase in test_cases:
+                    for case in self.get_cases([test_cases[phase]]):
+                        case_ids.append(case['id'])
         return case_ids
 
     def add_results(self):
@@ -137,7 +146,7 @@ class TestrailReport(BaseTestReport):
                                             self.get_sauce_final_screenshot_url(job_id))
 
                     description += case_title + error + case_info
-            description_title += '## Failed tests: %s \n' % ', '.join(map(str, ids_failed_test))
+            description_title += '## Failed tests: %s \n' % ','.join(map(str, ids_failed_test))
             final_description = description_title + description
 
         request_body = {'description': final_description}

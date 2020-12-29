@@ -4,7 +4,6 @@ from views.sign_in_view import SignInView
 from datetime import datetime
 import time
 
-
 class TestPerformance(SingleDeviceTestCase):
 
     def get_timestamps_by_event(self, *args):

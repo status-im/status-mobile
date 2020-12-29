@@ -998,8 +998,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         dapp_view = profile_2.ens_usernames_button.click()
         dapp_view.element_by_text('Get started').click()
         dapp_view.ens_name.set_value(ens_user_message_sender['ens'])
-        dapp_view.check_ens_name.click()
-        dapp_view.element_by_text('Ok, got it').click()
+        dapp_view.check_ens_name.click_until_presence_of_element(dapp_view.find_element_by_translation_id("ens-got-it"))
+        dapp_view.find_element_by_translation_id("ens-got-it").click()
 
         device_1.just_fyi('Both devices joining the same public chat and send messages')
         chat_name = device_1.get_random_chat_name()

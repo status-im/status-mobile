@@ -30,7 +30,7 @@ class GithubHtmlReport(BaseTestReport):
                 for i, test in enumerate(failed_tests):
                     if test.testrail_case_id:
                         ids_failed_test.append(test.testrail_case_id)
-                summary_html += 'IDs of failed tests: %s \n' % ', '.join(map(str, ids_failed_test))
+                summary_html += 'IDs of failed tests: %s \n' % ','.join(map(str, ids_failed_test))
                 summary_html += "```\n"
             if passed_tests:
                 passed_tests_html = self.build_tests_table_html(passed_tests, run_id, failed_tests=False)
