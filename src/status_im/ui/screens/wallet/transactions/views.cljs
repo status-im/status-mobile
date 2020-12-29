@@ -76,7 +76,8 @@
                        :style     {:margin-top 10}
                        :icon-opts (merge styles/forward
                                          {:accessibility-label :show-transaction-button})}]]]]
-   (when (and (not keycard-account?)
+   (when (and false ;;TODO temporary disable for 1.10
+              (not keycard-account?)
               (= type :pending))
      [react/view {:flex-direction :row :padding 16 :justify-content :space-between}
       [quo/button
