@@ -106,15 +106,44 @@
        {:style {:color colors/blue}}
        (i18n/label :t/check-on-etherscan)]]]))
 
+(defn custom-node []
+  [react/view
+   {:style {:flex               1
+            :padding-horizontal 14
+            :flex-direction     :row
+            :align-items        :center
+            :background-color   (quo/get-color :warning-02)
+            :height             52}}
+   [react/text
+    {:style {:color (quo/get-color :warning-01)}}
+    (i18n/label :t/custom-node)]])
+
+(defn non-archival-node []
+  [react/view
+   {:style {:flex             1
+            :padding-horizontal 14
+            :flex-direction   :row
+            :align-items :center
+            :background-color (quo/get-color :negative-02)
+            :height           52}}
+   [react/text
+    {:style {:color (quo/get-color :negative-01)}}
+    (i18n/label :t/non-archival-node)]])
+
 (defn history-list
   [transactions-history-sections address]
   (let [fetching-recent-history? @(re-frame/subscribe [:wallet/fetching-recent-tx-history? address])
         fetching-more-history?   @(re-frame/subscribe [:wallet/fetching-tx-history? address])
         keycard-account?         @(re-frame/subscribe [:multiaccounts/keycard-account?])
-
+        custom-rpc-node?         @(re-frame/subscribe [:custom-rpc-node])
+        non-archival-rpc-node?   @(re-frame/subscribe [:wallet/non-archival-node])
         all-fetched?             @(re-frame/subscribe [:wallet/tx-history-fetched? address])]
     [react/view components.styles/flex
      [etherscan-link address]
+     (cond non-archival-rpc-node?
+           [non-archival-node]
+           custom-rpc-node?
+           [custom-node])
      (when fetching-recent-history?
        [react/view
         {:style {:flex            1

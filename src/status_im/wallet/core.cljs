@@ -547,6 +547,21 @@
 (def ms-10-min (datetime/minutes 10))
 (def ms-20-min (datetime/minutes 20))
 
+(def ms-2-min (datetime/minutes 2))
+(def ms-4-min (datetime/minutes 4))
+
+(defn get-restart-interval [db]
+  (if (ethereum/custom-rpc-node?
+       (ethereum/current-network db))
+    ms-4-min
+    ms-20-min))
+
+(defn get-watching-interval [db]
+  (if (ethereum/custom-rpc-node?
+       (ethereum/current-network db))
+    ms-2-min
+    ms-10-min))
+
 (fx/defn stop-wallet
   [{:keys [db] :as cofx}]
   (let [state (get db :wallet-service/state)
@@ -555,7 +570,7 @@
                  old-timeout
                  (utils.utils/set-timeout
                   #(re-frame.core/dispatch [::restart])
-                  ms-20-min))]
+                  (get-restart-interval db)))]
     {:db           (-> db
                        (update :wallet dissoc :fetching)
                        (assoc :wallet-service/state :stopped)
@@ -571,7 +586,7 @@
         state       (get db :wallet-service/state)
         timeout     (utils.utils/set-timeout
                      #(re-frame.core/dispatch [::restart])
-                     ms-20-min)]
+                     (get-restart-interval db))]
     {:db            (-> db
                         (assoc :wallet-service/state :started)
                         (assoc :wallet-service/restart-timeout timeout))
@@ -647,7 +662,7 @@
         timeout     (utils.utils/set-timeout
                      (fn []
                        (re-frame.core/dispatch [::stop-watching-txs]))
-                     ms-10-min)]
+                     (get-watching-interval db))]
     (fx/merge
      {:db (-> db
               (update :wallet/watch-txs (fnil conj #{}) tx-id)

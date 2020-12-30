@@ -101,6 +101,10 @@
    {:db               (assoc db :wallet/fetching-error message)}
    (wallet.core/stop-wallet)))
 
+(fx/defn non-archival-node-detected
+  [{:keys [db] :as cofx} _]
+  {:db (assoc db :wallet/non-archival-node true)})
+
 (fx/defn new-wallet-event
   [cofx {:keys [type blockNumber accounts newTransactions] :as event}]
   (log/debug "[wallet-subs] new-wallet-event"
@@ -113,4 +117,5 @@
     "recent-history-fetching" (recent-history-fetching-started cofx accounts)
     "recent-history-ready" (recent-history-fetching-ended cofx event)
     "fetching-history-error" (fetching-error cofx event)
+    "non-archival-node-detected" (non-archival-node-detected cofx event)
     (log/warn ::unknown-wallet-event :type type :event event)))

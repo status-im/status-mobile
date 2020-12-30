@@ -174,6 +174,7 @@
 (reg-root-key-sub :wallet/refreshing-history? :wallet/refreshing-history?)
 (reg-root-key-sub :wallet/buy-crypto-hidden :wallet/buy-crypto-hidden)
 (reg-root-key-sub :wallet/fetching-error :wallet/fetching-error)
+(reg-root-key-sub :wallet/non-archival-node :wallet/non-archival-node)
 
 ;;commands
 (reg-root-key-sub :commands/select-account :commands/select-account)
@@ -361,6 +362,12 @@
    (when-let [network (get networks current-network)]
      (assoc network
             :rpc-network? (get-in network [:config :UpstreamConfig :Enabled])))))
+
+(re-frame/reg-sub
+ :custom-rpc-node
+ :<- [:current-network]
+ (fn [network]
+   (ethereum/custom-rpc-node? network)))
 
 (re-frame/reg-sub
  :chain-keyword
@@ -913,8 +920,8 @@
  :<- [:multiaccount]
  (fn [[contacts multiaccount] [_ id identicon]]
    (let [contact (or (get contacts id)
-                     (when (= id (:public-key multiaccount)
-                              multiaccount))
+                     (when (= id (:public-key multiaccount))
+                       multiaccount)
                      (if identicon
                        {:identicon identicon}
                        (contact.db/public-key->new-contact id)))]
