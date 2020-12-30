@@ -49,6 +49,29 @@ class TestChatManagement(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    def test_chat_s_b(self):
+        home = SignInView(self.driver).create_user()
+        basic_user = dict()
+        basic_user['username'] = "@tanyatest10"
+        basic_user[
+            'public_key'] = "0x046f50d110b35c86c12e35674c02dc67444e0acb86be6727278ca9638cddec795491351ab9195b6c2faf9a9c7718b0be9369f5607095d4d077c7fd5a95eae594d6"
+
+        chat = home.add_contact(basic_user['public_key'])
+
+        one_to_one, public = basic_user['username'], '#chu'
+        message = 'test message'
+        chat.get_back_to_home_view()
+
+
+        home.join_public_chat(public[1:])
+        chat.get_back_to_home_view()
+        for chat_name in one_to_one, public:
+            chat = home.get_chat(chat_name).click()
+            chat.just_fyi('Sending messages to %s chat' % chat_name)
+            for i in range(100):
+                chat.chat_message_input.send_keys(message + str(i))
+                chat.send_message_button.click()
+
     @marks.testrail_id(6320)
     @marks.medium
     def test_can_start_chat_from_suggestions_using_search_chat(self):
