@@ -72,6 +72,7 @@ class TestChatManagement(SingleDeviceTestCase):
             for i in range(100):
                 chat.chat_message_input.send_keys(message + str(i))
                 chat.send_message_button.click()
+            chat.get_back_to_home_view()
 
     @marks.testrail_id(6320)
     @marks.medium
