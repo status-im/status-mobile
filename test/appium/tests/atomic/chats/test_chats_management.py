@@ -49,7 +49,7 @@ class TestChatManagement(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5800)
+    @marks.testrail_id(6637)
     def test_chat_s_b(self):
         home = SignInView(self.driver).create_user()
         basic_user = dict()
