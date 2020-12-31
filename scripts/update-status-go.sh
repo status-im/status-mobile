@@ -7,6 +7,24 @@ fi
 
 set -ef
 
+urlencode() {
+	# urlencode <string>
+
+	old_lc_collate=$LC_COLLATE
+	LC_COLLATE=C
+
+        local length="${#1}"
+	for (( i = 0; i < length; i++ )); do
+            local c="${1:$i:1}"
+            case $c in
+                [a-zA-Z0-9.~_-]) printf '%s' "$c" ;;
+                *) printf '%%%02X' "'$c" ;;
+        esac
+    done
+
+    LC_COLLATE=$old_lc_collate
+}
+
 GIT_ROOT="$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)"
 VERSION_FILE="${GIT_ROOT}/status-go-version.json"
 SCRIPT_FILE="$(basename "$0")"
@@ -75,7 +93,7 @@ if [[ -z "${STATUS_GO_COMMIT_SHA1}" ]]; then
     exit 1
 fi
 
-STATUS_GO_SHA256=$(nix-prefetch-url --unpack ${REPO_URL}/archive/${STATUS_GO_VERSION}.zip)
+STATUS_GO_SHA256=$(nix-prefetch-url --unpack ${REPO_URL}/archive/$(urlencode ${STATUS_GO_VERSION}).zip --name status-go-archive.zip)
 
 cat << EOF > ${VERSION_FILE}
 {
