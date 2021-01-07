@@ -1,4 +1,4 @@
-library 'status-react-jenkins@v1.2.8'
+library 'status-react-jenkins@v1.2.9'
 
 pipeline {
   agent { label 'linux' }
@@ -14,6 +14,20 @@ pipeline {
       daysToKeepStr: '30',
       artifactNumToKeepStr: '10',
     ))
+  }
+
+  /* WARNING: Defining parameters here with the ?: trick causes them to remember last value. */
+  parameters { 
+    choice(
+      name: 'BUILD_TYPE',
+      description: 'Makefile target to build. Optional Parameter.',
+      choices: genChoices(params.BUILD_TYPE, ['manual', 'nightly', 'release', 'pr', 'e2e']),
+    )
+    booleanParam(
+      name: 'PUBLISH',
+      description: 'Trigger publishing of build results for nightly or release.',
+      defaultValue: params.PUBLISH ?: false,
+    )
   }
 
   stages {
@@ -65,18 +79,20 @@ pipeline {
         ]
         /* add URLs to the build description */
         jenkins.setBuildDesc(urls)
-        /* Create JSON file with newest build URLs */
-        switch (btype) {
-          /* legacy naming, should have named it nightly.json */
-          case 'nightly': s3.updateBucketJSON(urls, 'latest.json'); break
-        }
       } }
     }
     stage('Publish') {
+      when { expression { params.PUBLISH } }
       steps { script {
         switch (btype) {
-          case 'nightly': build(job: 'misc/status.im', wait: false); break
-          case 'release': github.publishReleaseMobile(); break
+          case 'nightly':
+            /* Create JSON file with newest build URLs */
+            s3.updateBucketJSON(urls, 'latest.json');
+            build(job: 'misc/status.im', wait: false);
+            break;
+          case 'release':
+            github.publishReleaseMobile();
+            break;
         }
       } }
     }
@@ -92,4 +108,15 @@ pipeline {
       } }
     }
   }
+}
+
+/* Helper that generates list of available choices for a parameter
+ * but re-orders them based on the currently set value. First is default. */
+def List genChoices(String previousChoice, List defaultChoices) {
+  if (previousChoice == null) {
+     return defaultChoices
+  }
+  choices = defaultChoices.minus(previousChoice)
+  choices.add(0, previousChoice)
+  return choices
 }
