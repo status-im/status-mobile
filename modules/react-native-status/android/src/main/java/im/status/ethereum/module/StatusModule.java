@@ -1110,10 +1110,13 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void callPrivateRPC(final String payload, final Callback callback) {
+        Log.d(TAG, "calling privateRPC: " + payload);
         Runnable r = new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "calling privateRPC in status-go: " + payload);
                 String res = Statusgo.callPrivateRPC(payload);
+                Log.d(TAG, "invoking with response: " + res);
                 callback.invoke(res);
             }
         };
