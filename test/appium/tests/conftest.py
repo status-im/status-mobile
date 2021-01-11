@@ -8,19 +8,16 @@ from support.test_rerun import should_rerun_test
 from tests import test_suite_data, appium_container
 from datetime import datetime
 from os import environ
-from io import BytesIO
-from sauceclient import SauceClient, SauceException
+from sauceclient import SauceException
+import tests.cloudbase_test_api
 from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
 from support.testrail_report import TestrailReport
 from tests.users import transaction_senders
 import tests
 
-sauce_username = environ.get('SAUCE_USERNAME')
-sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
 github_token = environ.get('GIT_HUB_TOKEN')
 
-sauce = SauceClient(sauce_username, sauce_access_key)
 github_report = GithubHtmlReport()
 testrail_report = TestrailReport()
 
@@ -141,7 +138,7 @@ def is_master(config):
 
 
 def is_uploaded():
-    stored_files = sauce.storage.get_stored_files()
+    stored_files = tests.cloudbase_test_api.sauce.storage.get_stored_files()
     for i in range(len(stored_files['files'])):
         if stored_files['files'][i]['name'] == test_suite_data.apk_name:
             return True
@@ -173,18 +170,11 @@ def pytest_configure(config):
                                                     description='e2e tests are running')
             if config.getoption('env') == 'sauce':
                 if not is_uploaded():
-                    if 'http' in config.getoption('apk'):
-                        response = requests.get(config.getoption('apk'), stream=True)
-                        response.raise_for_status()
-                        file = BytesIO(response.content)
-                        del response
-                        requests.post('http://saucelabs.com/rest/v1/storage/'
-                                      + sauce_username + '/' + test_suite_data.apk_name + '?overwrite=true',
-                                      auth=(sauce_username, sauce_access_key),
-                                      data=file,
-                                      headers={'Content-Type': 'application/octet-stream'})
+                    apk = config.getoption('apk')
+                    if 'http' in apk:
+                        tests.cloudbase_test_api.upload_from_url(apk)
                     else:
-                        sauce.storage.upload_file(config.getoption('apk'))
+                        tests.cloudbase_test_api.sauce.storage.upload_file(apk)
 
 
 def pytest_unconfigure(config):
@@ -253,7 +243,7 @@ def pytest_runtest_makereport(item, call):
 def update_sauce_jobs(test_name, job_ids, passed):
     for job_id in job_ids.keys():
         try:
-            sauce.jobs.update_job(job_id, name=test_name, passed=passed)
+            tests.cloudbase_test_api.sauce.jobs.update_job(job_id, name=test_name, passed=passed)
         except (RemoteDisconnected, SauceException):
             pass
 

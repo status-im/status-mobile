@@ -39,8 +39,8 @@ PyYAML==5.3.1
 repoze.lru==0.7
 requests==2.25.0
 rlp==1.2.0
-sauceclient==1.0.0
 scrypt==0.8.17
+sauceclient==1.0.0
 selenium==3.14.1
 six==1.10.0
 urllib3==1.25.9
