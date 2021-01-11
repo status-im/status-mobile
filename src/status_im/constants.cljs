@@ -65,6 +65,9 @@
 (def community-invitation-only-access 2)
 (def community-on-request-access 3)
 
+;; Community rules for joining
+(def community-rule-ens-only "ens-only")
+
 (def community-channel-access-no-membership 1)
 (def community-channel-access-invitation-only 2)
 (def community-channel-access-on-request 3)

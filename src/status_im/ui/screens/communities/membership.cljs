@@ -14,8 +14,9 @@
               constants/community-invitation-only-access
               {:title       :t/membership-invite
                :description :t/membership-invite-description}
-              ;; 4 {:title       :t/membership-ens
-              ;;    :description :t/membership-ens-description}
+              constants/community-rule-ens-only
+              {:title       :t/membership-ens
+               :description :t/membership-ens-description}
               constants/community-no-membership-access
               {:title       :t/membership-free
                :description :t/membership-free-description}})

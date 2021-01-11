@@ -169,17 +169,24 @@
 (fx/defn create
   {:events [::create-confirmation-pressed]}
   [{:keys [db]}]
-  (let [{:keys [name description membership]} (get db :communities/create)
+  (let [{:keys [name description membership image]} (get db :communities/create)
         my-public-key                         (get-in db [:multiaccount :public-key])]
-    {::json-rpc/call [{:method     "wakuext_createCommunity"
-                       :params     [{:identity    {:display_name name
-                                                   :description  description}
-                                     :members     {my-public-key {}}
-                                     :permissions {:access membership}}]
-                       :on-success #(re-frame/dispatch [::community-created %])
-                       :on-error   #(do
-                                      (log/error "failed to create community" %)
-                                      (re-frame/dispatch [::failed-to-create-community %]))}]}))
+    ;; If access is ENS only, we set the access to require approval and set the rule
+    ;; of ens only
+    (let [params (cond-> {:name name
+                          :description description
+                          :membership membership
+                          :image image}
+                   (= membership constants/community-rule-ens-only)
+                   (assoc :membership constants/community-on-request-access
+                          :ens-only true))]
+
+      {::json-rpc/call [{:method     "wakuext_createCommunity"
+                         :params     [params]
+                         :on-success #(re-frame/dispatch [::community-created %])
+                         :on-error   #(do
+                                       (log/error "failed to create community" %)
+                                       (re-frame/dispatch [::failed-to-create-community %]))}]})))
 
 (fx/defn edit
   {:events [::edit-confirmation-pressed]}
