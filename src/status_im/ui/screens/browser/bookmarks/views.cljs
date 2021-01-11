@@ -28,7 +28,7 @@
              :auto-focus          true
              :show-cancel         false
              :label               (i18n/label :t/name)
-             :default-value       name
+             :default-value       @input-name
              :on-change-text      #(reset! input-name %)}]
            [react/text {:style {:margin 16 :color colors/gray}}
             url]]
