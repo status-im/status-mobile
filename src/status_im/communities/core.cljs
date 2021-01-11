@@ -185,8 +185,8 @@
                          :params     [params]
                          :on-success #(re-frame/dispatch [::community-created %])
                          :on-error   #(do
-                                       (log/error "failed to create community" %)
-                                       (re-frame/dispatch [::failed-to-create-community %]))}]})))
+                                        (log/error "failed to create community" %)
+                                        (re-frame/dispatch [::failed-to-create-community %]))}]})))
 
 (fx/defn edit
   {:events [::edit-confirmation-pressed]}
