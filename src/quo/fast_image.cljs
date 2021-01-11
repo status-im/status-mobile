@@ -4,6 +4,7 @@
 
 ;; Fast iamge
 
+;;TODO : Gif crashes on Samsung S10 https://github.com/status-im/status-react/issues/11610
 (def image (reagent/adapt-react-class react-native-fast-image))
 
 (def fast-image-preload (.-preload react-native-fast-image))
