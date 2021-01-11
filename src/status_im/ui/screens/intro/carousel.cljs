@@ -6,12 +6,16 @@
             [status-im.i18n :as i18n]
             [status-im.ui.screens.intro.styles :as styles]))
 
+(defn code [val]
+  ^{:key val}
+  [animated/code {:exec val}])
+
 (defn dot []
   (let [active            (animated/value 0)
         active-transition (animated/with-timing-transition active {:duration 100})]
     (fn [{:keys [selected progress]}]
       [animated/view {:style (styles/dot-style active-transition)}
-       [animated/code {:exec (animated/set active (if selected 1 0))}]
+       [code (animated/set active (if selected 1 0))]
        [animated/view {:style (styles/dot-progress active-transition progress)}]])))
 
 (defn dots-selector [{:keys [n selected progress]}]
