@@ -606,7 +606,7 @@
                  ;; We either never tried to connect to this peer
                  (or (nil? last-connection-attempt)
                      ;; Or 30 seconds have passed and no luck
-                     (<= (- now last-connection-attempt) (* constants/connection-timeout 3))))
+                     (>= (- now last-connection-attempt) (* constants/connection-timeout 3))))
         ;; Then we change mailserver
         (change-mailserver cofx)))))
 
