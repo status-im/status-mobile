@@ -4,12 +4,13 @@
 
 (defn button [label accessibility-label handler]
   [react/view
-   {:style {:width           50
+   {:style {:width           20
             :height          30
             :justify-content :center
             :align-items     :center}}
    [react/text
     {:on-press            handler
+     :style               {:font-size 8}
      :accessibility-label accessibility-label}
     label]])
 
