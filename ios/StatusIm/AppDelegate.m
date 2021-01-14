@@ -10,6 +10,7 @@
 #import "AppDelegate.h"
 
 #import <asl.h>
+#import "ReactNativeConfig.h"
 #import "React/RCTLog.h"
 #import "RCTBundleURLProvider.h"
 #import "RNSplashScreen.h"
@@ -53,6 +54,21 @@ static void InitializeFlipper(UIApplication *application) {
   #endif
   signal(SIGPIPE, SIG_IGN);
   NSURL *jsCodeLocation;
+
+  /* Set logging level from React Native */
+  NSString *logLevel = [ReactNativeConfig envFor:@"LOG_LEVEL"];
+  if([logLevel isEqualToString:@"error"]){
+    RCTSetLogThreshold(RCTLogLevelError);
+  }
+  else if([logLevel isEqualToString:@"warn"]){
+    RCTSetLogThreshold(RCTLogLevelWarning);
+  }
+  else if([logLevel isEqualToString:@"info"]){
+    RCTSetLogThreshold(RCTLogLevelInfo);
+  }
+  else if([logLevel isEqualToString:@"debug"]){
+    RCTSetLogThreshold(RCTLogLevelTrace);
+  }
 
   NSDictionary *appDefaults = [NSDictionary
       dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:@"BLANK_PREVIEW"];
