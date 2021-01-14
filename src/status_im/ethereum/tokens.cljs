@@ -744,7 +744,11 @@
                    {:address  "0x9ba00d6856a4edf4665bca2c2309936572473b7e"
                     :symbol   :aUSDC
                     :name     "Aave Interest bearing USDC"
-                    :decimals 6}])
+                    :decimals 6}
+                   {:address  "0xc944e90c64b2c07662a292be6244bdf05cda44a7"
+                    :symbol   :GRT
+                    :name     "Graph Token"
+                    :decimals 18}])
    :testnet
    (resolve-icons :testnet
                   [{:name     "Status Test Token"

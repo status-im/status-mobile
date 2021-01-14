@@ -44,7 +44,8 @@ let
     shortRev = strings.substring 0 7 rev;
     rawVersion = versionJSON.version;
     cleanVersion = utils.sanitizeVersion versionJSON.version;
-    goPackagePath = "github.com/${owner}/${repo}";
+    # Need to pretend this is from status-im to let Go build it.
+    goPackagePath = "github.com/status-im/${repo}";
     src = fetchFromGitHub {
       inherit rev owner repo sha256;
       name = "${repo}-${shortRev}-source";
