@@ -67,10 +67,9 @@ echo com.android.tools.build:gradle:3.4.0 | go-maven-resolver >> nix/deps/gradle
 ```
 Then you'll need to remove duplicates and sort `deps.urls`:
 ```
-sort -uo nix/deps/gradle/deps.urls nix/deps/gradle/deps.urls
+sort -o nix/deps/gradle/deps.urls nix/deps/gradle/deps.urls
 ```
 And finally generate the `deps.json` for Nix using:
 ```
 nix/deps/gradle/generate.sh gen_deps_json
 ```
-After run `make nix-update-gradle` and it should work just fine.

@@ -43,7 +43,7 @@ in {
 
   # Android environement
   androidEnvCustom = callPackage ./pkgs/android-sdk { };
-  androidPkgs = self.androidEnvCustom.pkgs;
+  androidPkgs = self.androidEnvCustom.licensedPkgs;
   androidShell = self.androidEnvCustom.shell;
 
   # Custom packages

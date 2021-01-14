@@ -102,8 +102,7 @@
 
 (defn group-chat-accents []
   (fn [{:keys [chat-id group-chat chat-name color invitation-admin]}]
-    (let [{:keys [joined?]} @(re-frame/subscribe [:group-chat/inviter-info chat-id])
-          removed? @(re-frame/subscribe [:group-chat/removed-from-current-chat?])]
+    (let [{:keys [joined?]} @(re-frame/subscribe [:group-chat/inviter-info chat-id])]
       (if invitation-admin
         [quo/list-item
          {:theme               :accent
@@ -138,14 +137,7 @@
              :title               (i18n/label :t/leave-chat)
              :accessibility-label :leave-chat-button
              :icon                :main-icons/arrow-left
-             :on-press            #(re-frame/dispatch [:group-chats.ui/leave-chat-pressed chat-id])}])
-         (when removed?
-           [quo/list-item
-            {:theme               :accent
-             :title               (i18n/label :t/remove)
-             :accessibility-label :remove-group-chat
-             :icon                :main-icons/delete
-             :on-press            #(hide-sheet-and-dispatch [:group-chats.ui/remove-chat-confirmed chat-id])}])]))))
+             :on-press            #(re-frame/dispatch [:group-chats.ui/leave-chat-pressed chat-id])}])]))))
 
 (defn actions [{:keys [chat-type]
                 :as current-chat}]

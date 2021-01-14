@@ -1,17 +1,28 @@
-{ stdenv, compose }:
+#
+# This Nix expression centralizes the configuration
+# for the Android development environment.
+#
 
-#
-# This derivation simply symlinks some stuff to get
-# shorter paths as libexec/android-sdk is quite the mouthful.
-#
-stdenv.mkDerivation {
-  name = "${compose.androidsdk.name}-mod";
-  phases = [ "symlinkPhase" ];
-  symlinkPhase = ''
-    mkdir -p $out
-    ln -s "${compose.androidsdk}/bin" $out/bin
-    for d in ${compose.androidsdk}/libexec/android-sdk/*; do
-      ln -s $d $out/$(basename $d)
-    done
-  '';
+{ stdenv, config, callPackage, androidenv, openjdk, mkShell }:
+
+androidenv.composeAndroidPackages {
+  toolsVersion = "26.1.1";
+  platformToolsVersion = "29.0.6";
+  buildToolsVersions = [ "29.0.2" ];
+  includeEmulator = false;
+  platformVersions = [ "29" ];
+  includeSources = false;
+  includeDocs = false;
+  includeSystemImages = false;
+  systemImageTypes = [ "default" ];
+  lldbVersions = [ "3.1.4508709" ];
+  cmakeVersions = [ "3.10.2" ];
+  includeNDK = true;
+  ndkVersion = "21.0.6113669";
+  useGoogleAPIs = false;
+  useGoogleTVAddOns = false;
+  includeExtras = [
+    "extras;android;m2repository"
+    "extras;google;m2repository"
+  ];
 }

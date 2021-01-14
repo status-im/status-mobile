@@ -142,4 +142,4 @@
              default-networks)))
 
 (def link-preview-enabled-site?
-  #{"youtube.com" "youtu.be" "github.com"})
+  #{"youtube.com" "youtu.be"})

@@ -774,7 +774,6 @@
  (fn [current-chat]
    (select-keys current-chat
                 [:community-id
-                 :contacts
                  :public?
                  :group-chat
                  :chat-type

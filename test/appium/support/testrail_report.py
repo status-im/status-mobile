@@ -121,7 +121,6 @@ class TestrailReport(BaseTestReport):
         tests = self.get_all_tests()
         passed_tests = self.get_passed_tests()
         failed_tests = self.get_failed_tests()
-        final_description = "Nothing to report this time..."
         if len(tests) > 0:
             description_title = "# %.0f%% of end-end tests have passed\n" % (len(passed_tests) / len(tests) * 100)
             description_title += "\n"
@@ -130,7 +129,7 @@ class TestrailReport(BaseTestReport):
             description_title += "Passed tests: %d\n" % len(passed_tests)
             description_title += "\n"
             ids_failed_test = []
-            description, case_info = '', ''
+            description = ''
             if failed_tests:
                 for i, test in enumerate(failed_tests):
                     last_testrun = test.testruns[-1]

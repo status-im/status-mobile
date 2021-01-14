@@ -1,8 +1,8 @@
-{ lib, buildGo114Package, fetchFromGitHub }:
+{ lib, buildGoPackage, fetchFromGitHub }:
 
 let
   inherit (lib) strings;
-in buildGo114Package rec {
+in buildGoPackage rec {
   pname = "go-maven-resolver";
   version = strings.substring 0 7 rev;
   owner = "status-im";

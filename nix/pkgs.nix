@@ -8,13 +8,13 @@ let
   # For testing local version of nixpkgs
   #nixpkgsSrc = (import <nixpkgs> { }).lib.cleanSource "/home/jakubgs/work/nixpkgs";
 
-  # We follow the master branch of official nixpkgs.
+  # Our own nixpkgs fork with custom fixes
   nixpkgsSrc = fetchFromGitHub {
     name = "nixpkgs-source";
-    owner = "NixOS";
+    owner = "status-im";
     repo = "nixpkgs";
-    rev = "51894963cbdc41f0cd8f571b7bcf79437d940355";
-    sha256 = "13nfghpnhnr5hbbibsrq172g1rdibd8lycis7ncvf9yxd4rdlf7b";
+    rev = "3355743cfd8d89cfa8d3b8e6d40c48e62e72d36a";
+    sha256 = "1l7559m3xkzwkm202rkjq3a8cz52k7z9vxn9y2adc30cp197wc82";
     # To get the compressed Nix sha256, use:
     # nix-prefetch-url --unpack https://github.com/${ORG}/nixpkgs/archive/${REV}.tar.gz
   };

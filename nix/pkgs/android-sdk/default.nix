@@ -3,12 +3,12 @@
 # for the Android development environment.
 #
 
-{ callPackage, stdenv, writeScript }:
+{ callPackage }:
 
 let
-  compose = callPackage ./compose.nix { };
-  pkgs = callPackage ./pkgs.nix { inherit compose; };
-  shell = callPackage ./shell.nix { androidPkgs = pkgs; };
+  pkgs = callPackage ./pkgs.nix { };
+  shell = callPackage ./shell.nix { };
+  licensedPkgs = callPackage ./licensed.nix { };
 in {
-  inherit compose pkgs shell;
+  inherit pkgs licensedPkgs shell;
 }
