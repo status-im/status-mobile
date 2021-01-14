@@ -42,6 +42,7 @@
     :method "resolver(bytes32)"
     :params [(namehash ens-name)]
     :outputs ["address"]
+    :on-error #(cb "0x")
     :on-success
     (fn [[address]]
       (cb (when-not (= address default-address) address)))}))
@@ -53,6 +54,7 @@
     :method "owner(bytes32)"
     :params [(namehash ens-name)]
     :outputs ["address"]
+    :on-error #(cb "0x")
     :on-success
     (fn [[address]]
       (cb address))}))
@@ -80,6 +82,7 @@
     :method "addr(bytes32)"
     :params [(namehash ens-name)]
     :outputs ["address"]
+    :on-error #(cb "0x")
     :on-success
     (fn [[address]]
       (cb address))}))
@@ -95,6 +98,7 @@
     :method "name(bytes32)"
     :params [(namehash ens-name)]
     :outputs ["string"]
+    :on-error #(cb "0x")
     :on-success
     (fn [[name]]
       (cb name))}))
@@ -123,6 +127,7 @@
    {:contract resolver
     :method "contenthash(bytes32)"
     :params [(namehash ens-name)]
+    :on-error #(cb "0x")
     :on-success
     (fn [raw-hash]
       ;; NOTE: it would be better if our abi-spec/decode was able to do that
@@ -172,7 +177,10 @@
     :on-success
     (fn [[x y]]
       (let [public-key (uncompressed-public-key x y)]
-        (cb public-key)))}))
+        (cb public-key)))
+    ;;at some point infura started to return execution reverted error instead of "0x" result
+    ;;our code expects "0x" result
+    :on-error #(cb "0x")}))
 
 (defn get-addr
   [registry ens-name cb]
