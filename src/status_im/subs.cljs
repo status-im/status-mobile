@@ -910,7 +910,7 @@
 
 (re-frame/reg-sub
  :chats/photo-path
- :<- [::contacts]
+ :<- [:contacts/contacts]
  :<- [:multiaccount]
  (fn [[contacts multiaccount] [_ id identicon]]
    (let [contact (or (get contacts id)
@@ -1802,10 +1802,18 @@
    (contact.db/query-chat-contacts chat contacts query-fn)))
 
 (re-frame/reg-sub
+ ::profile-pictures-visibility
+ :<- [:multiaccount]
+ (fn [multiaccount]
+   (get multiaccount :profile-pictures-visibility)))
+
+(re-frame/reg-sub
  :contacts/contacts
  :<- [::contacts]
- (fn [contacts]
-   (contact.db/enrich-contacts contacts)))
+ :<- [::profile-pictures-visibility]
+ :<- [:multiaccount/public-key]
+ (fn [[contacts profile-pictures-visibility public-key]]
+   (contact.db/enrich-contacts contacts profile-pictures-visibility public-key)))
 
 (re-frame/reg-sub
  :contacts/active
@@ -2097,7 +2105,7 @@
 (re-frame/reg-sub
  :search/filtered-chats
  :<- [:chats/active-chats]
- :<- [::contacts]
+ :<- [:contacts/contacts]
  :<- [:search/home-filter]
  (fn [[chats contacts search-filter]]
    ;; Short-circuit if search-filter is empty

@@ -83,6 +83,8 @@
      :component privacy-and-security/privacy-and-security}
     {:name      :appearance
      :component appearance/appearance}
+    {:name      :appearance-profile-pic
+     :component appearance/profile-pic}
     {:name      :notifications
      :component notifications-settings/notifications-settings}
     {:name      :notifications-servers

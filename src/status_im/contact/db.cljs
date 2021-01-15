@@ -4,7 +4,8 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
-            [status-im.multiaccounts.core :as multiaccounts]))
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.constants :as constants]))
 
 (defn public-key->new-contact [public-key]
   (let [alias (gfycat/generate-gfy public-key)]
@@ -54,7 +55,7 @@
   [members admins contacts {:keys [public-key] :as current-account}]
   (let [current-contact (some->
                          current-account
-                         (select-keys [:name :preferred-name :public-key :identicon])
+                         (select-keys [:name :preferred-name :public-key :identicon :images])
                          (clojure.set/rename-keys {:name           :alias
                                                    :preferred-name :name}))
         all-contacts    (cond-> contacts
@@ -130,19 +131,26 @@
                  :added? (contains? system-tags :contact/added)))))
 
 (defn enrich-contact
-  [{:keys [system-tags] :as contact}]
-  (-> contact
-      (dissoc :ens-verified-at :ens-verification-retries)
-      (assoc :pending? (pending? contact)
-             :blocked? (blocked? contact)
-             :active? (active? contact)
-             :added? (contains? system-tags :contact/added))
-      (multiaccounts/contact-with-names)))
+  ([contact] (enrich-contact contact nil nil))
+  ([{:keys [system-tags public-key] :as contact} setting own-public-key]
+   (let [added? (contains? system-tags :contact/added)]
+     (cond-> (-> contact
+                 (dissoc :ens-verified-at :ens-verification-retries)
+                 (assoc :pending? (pending? contact)
+                        :blocked? (blocked? contact)
+                        :active? (active? contact)
+                        :added? added?)
+                 (multiaccounts/contact-with-names))
+       (and setting (not= public-key own-public-key)
+            (or (= setting constants/profile-pictures-visibility-none)
+                (and (= setting constants/profile-pictures-visibility-contacts-only)
+                     (not added?))))
+       (dissoc :images)))))
 
 (defn enrich-contacts
-  [contacts]
+  [contacts profile-pictures-visibility own-public-key]
   (reduce-kv (fn [acc public-key contact]
-               (assoc acc public-key (enrich-contact contact)))
+               (assoc acc public-key (enrich-contact contact profile-pictures-visibility own-public-key)))
              {}
              contacts))
 
