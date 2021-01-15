@@ -160,6 +160,11 @@
             {::switch-theme theme}
             (multiaccounts.update/multiaccount-update :appearance theme {})))
 
+(fx/defn switch-appearance-profile
+  {:events [:multiaccounts.ui/appearance-profile-switched]}
+  [cofx id]
+  (multiaccounts.update/multiaccount-update cofx :profile-pictures-visibility id {}))
+
 (defn clean-path [path]
   (if path
     (string/replace-first path #"file://" "")

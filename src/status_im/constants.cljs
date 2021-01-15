@@ -57,6 +57,10 @@
 (def command-state-transaction-pending 6)
 (def command-state-transaction-sent 7)
 
+(def profile-pictures-visibility-contacts-only 1)
+(def profile-pictures-visibility-everyone 2)
+(def profile-pictures-visibility-none 3)
+
 (def min-password-length 6)
 (def max-group-chat-participants 20)
 (def default-number-of-messages 20)
