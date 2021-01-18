@@ -5,8 +5,6 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.mailserver.core :as mailserver]
             [status-im.transport.filters.core :as transport.filters]
-            [status-im.tribute-to-talk.db :as tribute-to-talk]
-            [status-im.tribute-to-talk.whitelist :as whitelist]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
@@ -19,19 +17,10 @@
                                                       (dissoc % :address)
                                                       %))
                            all-contacts)
-        contacts (into {} contacts-list)
-        tr-to-talk-enabled? (-> db tribute-to-talk/get-settings tribute-to-talk/enabled?)]
-    (fx/merge cofx
-              {:db (cond-> (-> db
-                               (update :contacts/contacts #(merge contacts %))
-                               (assoc :contacts/blocked (contact.db/get-blocked-contacts all-contacts)))
-                     tr-to-talk-enabled?
-                     (assoc :contacts/whitelist (whitelist/get-contact-whitelist all-contacts)))}
-              ;; TODO: This is currently called twice, once we load chats & when we load filters.
-              ;; For now leaving as it is as the next step is not to have this being called from status-react
-              ;; as both contacts & chats are in status-go, but we still need to signals the filters to
-              ;; status-react for mailsevers/gaps, so will address separately
-              (transport.filters/load-filters))))
+        contacts (into {} contacts-list)]
+    {:db (cond-> (-> db
+                     (update :contacts/contacts #(merge contacts %))
+                     (assoc :contacts/blocked (contact.db/get-blocked-contacts all-contacts))))}))
 
 (defn build-contact
   [{{:keys [multiaccount]
@@ -92,7 +81,6 @@
                 {:db (dissoc db :contacts/new-identity)
                  :dispatch [:start-profile-chat public-key]}
                 (upsert-contact contact)
-                (whitelist/add-to-whitelist public-key)
                 (send-contact-request contact)
                 (mailserver/process-next-messages-request)))))
 
@@ -128,17 +116,6 @@
                         :group/selected-contacts #{}
                         :new-chat-name "")}
             (navigation/navigate-to-cofx :create-group-chat nil)))
-
-(fx/defn set-tribute
-  [{:keys [db] :as cofx} public-key tribute-to-talk]
-  (let [contact (-> (or (build-contact cofx public-key)
-                        (get-in db [:contacts/contacts public-key]))
-                    (assoc :tribute-to-talk (or tribute-to-talk
-                                                {:disabled? true})))]
-    {:db (assoc-in db [:contacts/contacts public-key] contact)
-     :insert-identicons [[public-key [:contacts/contacts public-key :identicon]]]
-     :insert-gfycats    [[public-key [:contacts/contacts public-key :name]]
-                         [public-key [:contacts/contacts public-key :alias]]]}))
 
 (fx/defn name-verified
   {:events [:contacts/ens-name-verified]}

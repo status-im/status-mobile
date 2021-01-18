@@ -24,9 +24,6 @@
             [status-im.chat.models.reactions :as models.reactions]
             [status-im.pairing.core :as pairing]
             [status-im.signing.gas :as signing.gas]
-            #_[status-im.tribute-to-talk.core :as tribute-to-talk]
-            [status-im.tribute-to-talk.db :as tribute-to-talk.db]
-            [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.add-new.new-public-chat.db :as db]
             [status-im.ui.screens.mobile-network-settings.utils
              :as
@@ -403,7 +400,7 @@
  :disconnected?
  :<- [:peers-count]
  (fn [peers-count]
-   (and (not config/nimbus-enabled?) (zero? peers-count))))
+   (zero? peers-count)))
 
 (re-frame/reg-sub
  :offline?
@@ -2151,102 +2148,6 @@
    {:search-filter search-token-filter
     :tokens {true (apply-filter search-token-filter custom-tokens extract-token-attributes false)
              nil (apply-filter search-token-filter default-tokens extract-token-attributes false)}}))
-
-;; TRIBUTE TO TALK
-(re-frame/reg-sub
- :tribute-to-talk/settings
- :<- [:multiaccount]
- :<- [:ethereum/chain-keyword]
- (fn [[multiaccount chain-keyword]]
-   (get-in multiaccount [:tribute-to-talk]) chain-keyword))
-
-(re-frame/reg-sub
- :tribute-to-talk/screen-params
- :<- [:screen-params]
- (fn [screen-params]
-   (get screen-params :tribute-to-talk)))
-
-(re-frame/reg-sub
- :tribute-to-talk/profile
- :<- [:tribute-to-talk/settings]
- :<- [:tribute-to-talk/screen-params]
- (fn [[{:keys [seen? snt-amount]}
-       {:keys [state unavailable?]}]]
-   (let [state (or state (if snt-amount :completed :disabled))
-         snt-amount (tribute-to-talk.db/from-wei snt-amount)]
-     (when config/tr-to-talk-enabled?
-       (if unavailable?
-         {:subtext "Change network to enable Tribute to Talk"
-          :active? false
-          :icon :main-icons/tribute-to-talk
-          :icon-color colors/gray}
-         (cond-> {:new? (not seen?)}
-           (and (not (and seen?
-                          snt-amount
-                          (#{:signing :pending :transaction-failed :completed} state))))
-           (assoc :subtext (i18n/label :t/tribute-to-talk-desc))
-
-           (#{:signing :pending} state)
-           (assoc :activity-indicator {:animating true
-                                       :color colors/blue}
-                  :subtext (case state
-                             :pending (i18n/label :t/pending-confirmation)
-                             :signing (i18n/label :t/waiting-to-sign)))
-
-           (= state :transaction-failed)
-           (assoc :icon :main-icons/warning
-                  :icon-color colors/red
-                  :subtext (i18n/label :t/transaction-failed))
-
-           (not (#{:signing :pending :transaction-failed} state))
-           (assoc :icon :main-icons/tribute-to-talk)
-
-           (and (= state :completed)
-                (not-empty snt-amount))
-           (assoc :accessory-value (str snt-amount " SNT"))))))))
-
-(re-frame/reg-sub
- :tribute-to-talk/enabled?
- :<- [:tribute-to-talk/settings]
- (fn [settings]
-   (tribute-to-talk.db/enabled? settings)))
-
-(re-frame/reg-sub
- :tribute-to-talk/settings-ui
- :<- [:tribute-to-talk/settings]
- :<- [:tribute-to-talk/screen-params]
- :<- [:prices]
- :<- [:wallet/currency]
- (fn [[{:keys [seen? snt-amount message]
-        :as settings}
-       {:keys [step editing? state error]
-        :or {step :intro}
-        screen-snt-amount :snt-amount}
-       prices currency]]
-   (let [fiat-value (if snt-amount
-                      (money/fiat-amount-value
-                       snt-amount
-                       :SNT
-                       (-> currency :code keyword)
-                       prices)
-                      "0")]
-     (cond-> {:seen? seen?
-              :snt-amount (tribute-to-talk.db/from-wei snt-amount)
-              :message message
-              :enabled? (tribute-to-talk.db/enabled? settings)
-              :error error
-              :step step
-              :state (or state (if snt-amount :completed :disabled))
-              :editing? editing?
-              :fiat-value (str fiat-value " " (:code currency))}
-
-       (= step :set-snt-amount)
-       (assoc :snt-amount (str screen-snt-amount)
-              :disable-button?
-              (boolean (and (= step :set-snt-amount)
-                            (or (string/blank? screen-snt-amount)
-                                (#{"0" "0.0" "0.00"} screen-snt-amount)
-                                (string/ends-with? screen-snt-amount ".")))))))))
 
 ;;ENS ==================================================================================================================
 (re-frame/reg-sub

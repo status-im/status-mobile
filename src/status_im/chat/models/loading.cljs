@@ -4,7 +4,6 @@
             [status-im.ui.screens.chat.state :as chat.state]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.messages :as data-store.messages]
-            [status-im.transport.filters.core :as filters]
             [status-im.mailserver.core :as mailserver]
             [status-im.utils.fx :as fx]
             [status-im.chat.models.reactions :as reactions]
@@ -29,10 +28,8 @@
                       {}
                       new-chats)
         chats (merge old-chats chats)]
-    (fx/merge cofx
-              {:db (assoc db :chats chats
-                          :chats/loading? false)}
-              (filters/load-filters))))
+    {:db (assoc db :chats chats
+                :chats/loading? false)}))
 
 (fx/defn handle-chat-visibility-changed
   {:events [:chat.ui/message-visibility-changed]}

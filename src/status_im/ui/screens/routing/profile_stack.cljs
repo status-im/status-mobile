@@ -31,7 +31,6 @@
             [status-im.ui.screens.log-level-settings.views :as log-level-settings]
             [status-im.ui.screens.fleet-settings.views :as fleet-settings]
             [status-im.ui.screens.profile.seed.views :as profile.seed]
-            [status-im.ui.screens.profile.tribute-to-talk.views :as tr-to-talk]
             [status-im.ui.screens.keycard.pin.views :as keycard.pin]
             [status-im.ui.screens.keycard.settings.views :as keycard.settings]
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
@@ -117,8 +116,6 @@
      :component mobile-network-settings/mobile-network-settings}
     {:name      :backup-seed
      :component profile.seed/backup-seed}
-    {:name      :tribute-to-talk
-     :component tr-to-talk/tribute-to-talk}
     {:name       :delete-profile
      :transition :presentation-ios
      :insets     {:bottom true}

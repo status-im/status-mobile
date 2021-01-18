@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.routing.main
   (:require-macros [status-im.utils.views :as views])
-  (:require [status-im.ui.screens.profile.tribute-to-talk.views :as tr-to-talk]
-            [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
+  (:require [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
             [status-im.ui.screens.wallet.recipient.views :as recipient]
             [status-im.ui.screens.qr-scanner.views :as qr-scanner]
             [status-im.ui.screens.stickers.views :as stickers]
@@ -72,8 +71,6 @@
           :component intro-login-stack/intro-stack})
        {:name      :stickers-pack-modal
         :component stickers/pack-modal}
-       {:name      :tribute-learn-more
-        :component tr-to-talk/learn-more}
        {:name         :welcome
         :back-handler :noop
         :component    home/welcome}

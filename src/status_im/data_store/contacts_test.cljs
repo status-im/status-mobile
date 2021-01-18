@@ -7,14 +7,12 @@
                  :address "address"
                  :name "name"
                  :identicon "identicon"
-                 :tribute-to-talk "tribute-to-talk"
                  :last-updated 1
                  :system-tags #{:a :b}}
         expected-contact {:id "pk"
                           :address "address"
                           :name "name"
                           :identicon "identicon"
-                          :tributeToTalk "\"tribute-to-talk\""
 
                           :lastUpdated 1
                           :systemTags #{":a" ":b"}}]
@@ -29,15 +27,12 @@
                  :address "address"
                  :name "name"
                  :identicon "identicon"
-                 :tributeToTalk "\"tribute-to-talk\""
                  :lastUpdated 1
                  :systemTags [":a" ":b"]}
         expected-contact {:public-key "pk"
                           :address "address"
                           :name "name"
                           :identicon "identicon"
-                          :tribute-to-talk "tribute-to-talk"
-
                           :last-updated 1
                           :system-tags #{:a :b}}]
     (testing "<-rpc"

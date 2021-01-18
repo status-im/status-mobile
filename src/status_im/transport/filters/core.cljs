@@ -119,7 +119,9 @@
 (fx/defn add-filter-to-db
   "Set the filter in the db and upsert a mailserver topic"
   [{:keys [db] :as cofx} filter]
-  (when-not (loaded? db filter)
+  (when (and (not (loaded? db filter))
+             (not (:ephemeral? filter))
+             (:listen? filter))
     (fx/merge cofx
               (set-raw-filter filter)
               (upsert-mailserver-topic filter))))
@@ -198,25 +200,21 @@
                                   discovery
                                   filterId
                                   chatId
+                                  listen
+                                  ephemeral
                                   topic
                                   identity]}]
   {:chat-id (if (not= identity "") (str "0x" identity) chatId)
    :id chatId
    :filter-id filterId
    :negotiated? negotiated
+   :ephemeral? ephemeral
+   :listen? listen
    :discovery? discovery
    :topic topic})
 
-;; We check that both chats & contacts have been initialized
-(defn filters-initialized? [db]
-  (>= (:filters/initialized db) 2))
-
-(fx/defn set-filters-initialized [{:keys [db] :as cofx}]
-  (fx/merge
-   cofx
-   {:db (update db :filters/initialized inc)}
-   #(when (filters-initialized? (:db %))
-      {:dispatch [:login/filters-initialized]})))
+(defn messenger-started? [db]
+  (:messenger/started? db))
 
 (fx/defn handle-filters-added
   "Called every time we load a filter from statusgo, either from explicit call
@@ -228,11 +226,19 @@
             (add-filters-to-db filters)
             (upsert-group-chat-topics)
             (when (new-filters? db filters)
-              (mailserver/process-next-messages-request))
-            (set-filters-initialized)))
+              (mailserver/process-next-messages-request))))
 
 (fx/defn handle-filters [cofx filters]
   (handle-filters-added cofx (map responses->filters filters)))
+
+(fx/defn handle-loaded-filter [cofx filter]
+  (when (and (not (:ephemeral? filter))
+             (:listen? filter))
+    (set-raw-filter cofx filter)))
+
+(fx/defn handle-loaded-filters [cofx filters]
+  (let [processed-filters (map responses->filters filters)]
+    (apply fx/merge cofx (map handle-loaded-filter processed-filters))))
 
 (fx/defn handle-filters-removed
   "Called when we remove a filter from status-go, it will update the mailserver
@@ -256,23 +262,12 @@
       {:filters/add-raw-filters
        {:filters new-filters}})))
 
-(fx/defn load-filters
-  "Load all contacts and chats as filters"
-  [{:keys [db] :as cofx}]
-  (log/debug "loading filters")
-  (let [chats (vals (:chats db))
-        contacts (vals (:contacts/contacts db))
-        filters (concat
-                 (chats->filter-requests chats)
-                 (contacts->filter-requests contacts))]
-    (load-filter-fx filters)))
-
 ;; Load functions: utility function to load filters
 
 (fx/defn load-chat
   "Check if a filter already exists for that chat, otherw load the filter"
   [{:keys [db] :as cofx} chat-id]
-  (when (and (filters-initialized? db)
+  (when (and (messenger-started? db)
              (not (chat-loaded? db chat-id)))
     (let [chat (get-in db [:chats chat-id])]
       (load-filter-fx (->filter-request chat)))))
@@ -281,7 +276,7 @@
   "Check if a filter already exists for that chat, otherw load the filter"
   [{:keys [db] :as cofx} chats]
   (let [chats (filter #(chat-loaded? db (:chat-id %)) chats)]
-    (when (and (filters-initialized? db) (seq chats))
+    (when (and (messenger-started? db) (seq chats))
       (load-filter-fx (chats->filter-requests chats)))))
 
 (fx/defn load-contact

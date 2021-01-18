@@ -328,7 +328,7 @@
   - mailserver disconnected: we try to reconnect
   - mailserver connected: we mark the mailserver as trusted peer"
   [{:keys [db] :as cofx} previous-summary]
-  (when (and (not config/nimbus-enabled?) (:multiaccount db))
+  (when (:multiaccount db)
     (if (:mailserver/current-id db)
       (let [{:keys [peers-summary peers-count]} db
             {:keys [address sym-key-id] :as mailserver} (fetch-current db)
@@ -498,7 +498,7 @@
 (fx/defn process-next-messages-request
   [{:keys [db now] :as cofx}]
   (when (and
-         (:filters/initialized db)
+         (:messenger/started? db)
          (mobile-network-utils/syncing-allowed? cofx)
          (fetch-use-mailservers? cofx)
          (not (:mailserver/current-request db)))
@@ -756,13 +756,11 @@
     (fx/merge cofx
               {:db (update db :mailserver/ranges merge updated-ranges)
                ::json-rpc/call
-               (mapv (fn [chat-requests-range]
-                       {:method "mailservers_addChatRequestRange"
-                        :params [chat-requests-range]
-                        :on-success #()
-                        :on-failure
-                        #(log/error "failed to save chat request range" %)})
-                     (vals updated-ranges))})))
+               [{:method "mailservers_addChatRequestRanges"
+                 :params [(vals updated-ranges)]
+                 :on-success #()
+                 :on-failure
+                 #(log/error "failed to save chat request range" %)}]})))
 
 (defn prepare-new-gaps [new-gaps ranges {:keys [from to]} chat-ids]
   (into
@@ -886,14 +884,13 @@
                       (update :mailserver/planned-gap-requests
                               dissoc gap))
               ::json-rpc/call
-              (mapv (fn [[topic mailserver-topic]]
-                      {:method "mailservers_addMailserverTopic"
-                       :params [(assoc mailserver-topic :topic topic)]
-                       :on-success
-                       #(log/debug "added mailserver-topic successfully")
-                       :on-failure
-                       #(log/error "failed to add mailserver topic" %)})
-                    mailserver-topics)}
+              [{:method "mailservers_addMailserverTopics"
+                :params [(mapv (fn [[topic mailserver-topic]]
+                                 (assoc mailserver-topic :topic topic)) mailserver-topics)]
+                :on-success
+                #(log/debug "added mailserver-topic successfully")
+                :on-failure
+                #(log/error "failed to add mailserver topic" %)}]}
              (process-next-messages-request))))))))
 
 (fx/defn retry-next-messages-request
@@ -1043,7 +1040,9 @@
   [cofx]
   (fx/merge cofx
             {:mailserver/set-limit constants/default-limit}
-            (set-current-mailserver)))
+            (set-current-mailserver)
+            (reset-request-to)
+            (process-next-messages-request)))
 
 (def enode-address-regex
   #"enode://[a-zA-Z0-9]+\@\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b:(\d{1,5})")

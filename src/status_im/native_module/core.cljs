@@ -72,6 +72,24 @@
    key-uid
    #(.login ^js (status) account-data hashed-password)))
 
+(defn export-db
+  "NOTE: beware, the password has to be sha3 hashed"
+  [key-uid account-data hashed-password]
+  (log/debug "[native-module] export-db")
+  (clear-web-data)
+  (init-keystore
+   key-uid
+   #(.exportUnencryptedDatabase ^js (status) account-data hashed-password)))
+
+(defn import-db
+  "NOTE: beware, the password has to be sha3 hashed"
+  [key-uid account-data hashed-password]
+  (log/debug "[native-module] import-db")
+  (clear-web-data)
+  (init-keystore
+   key-uid
+   #(.importUnencryptedDatabase ^js (status) account-data hashed-password)))
+
 (defn logout []
   (log/debug "[native-module] logout")
   (clear-web-data)

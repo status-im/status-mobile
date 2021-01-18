@@ -768,7 +768,21 @@ RCT_EXPORT_METHOD(startLocalNotifications) {
 StatusgoStartLocalNotifications();
 }
 
+RCT_EXPORT_METHOD(exportUnencryptedDatabase:(NSString *)accountData
+                  password:(NSString *)password) {
+#if DEBUG
+    NSLog(@"exportUnencryptedDatabase() method called");
+#endif
+    "";
+}
 
+RCT_EXPORT_METHOD(importUnencryptedDatabase:(NSString *)accountData
+                  password:(NSString *)password) {
+#if DEBUG
+    NSLog(@"importUnencryptedDatabase() method called");
+#endif
+    "";
+}
 
 RCT_EXPORT_METHOD(setBlankPreviewFlag:(BOOL *)newValue)
 {

@@ -86,8 +86,7 @@
                                      new-mailserver-topic
                                      {:now-s (quot now 1000)})]
       (update-topic cofx
-                    (new-chat-ids? old-mailserver-topic
-                                   new-mailserver-topic)
+                    true
                     updated-topic))))
 
 (fx/defn upsert-many [cofx mailserver-topics]

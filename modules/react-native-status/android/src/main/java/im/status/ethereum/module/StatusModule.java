@@ -75,6 +75,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private static final String TAG = "StatusModule";
     private static final String logsZipFileName = "Status-debug-logs.zip";
     private static final String gethLogFileName = "geth.log";
+    private static final String exportDBFileName = "export.db";
     private static final String statusLogFileName = "Status.log";
     private static StatusModule module;
     private ReactApplicationContext reactContext;
@@ -191,6 +192,16 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         final File logFile = new File(pubDirectory, gethLogFileName);
 
         return logFile;
+    }
+
+    private File getExportDBFile() {
+        final Context context = this.getReactApplicationContext();
+        // Environment.getExternalStoragePublicDirectory doesn't work as expected on Android Q
+        // https://developer.android.com/reference/android/os/Environment#getExternalStoragePublicDirectory(java.lang.String)
+        final File pubDirectory = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        final File filename = new File(pubDirectory, exportDBFileName);
+
+        return filename;
     }
 
     private File prepareLogsFile(final Context context) {
@@ -395,6 +406,36 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             Log.d(TAG, "Login result: " + result);
         } else {
             Log.e(TAG, "Login failed: " + result);
+        }
+    }
+
+    @ReactMethod
+    public void exportUnencryptedDatabase(final String accountData, final String password) {
+        Log.d(TAG, "login");
+
+        final File newFile = getExportDBFile();
+
+        this.migrateKeyStoreDir(accountData, password);
+        String result = Statusgo.exportUnencryptedDatabase(accountData, password, newFile.getAbsolutePath());
+        if (result.startsWith("{\"error\":\"\"")) {
+            Log.d(TAG, "Login result: " + result);
+        } else {
+            Log.e(TAG, "Login failed: " + result);
+        }
+    }
+
+    @ReactMethod
+    public void importUnencryptedDatabase(final String accountData, final String password) {
+        Log.d(TAG, "importUnencryptedDatabase");
+
+        final File newFile = getExportDBFile();
+
+        this.migrateKeyStoreDir(accountData, password);
+        String result = Statusgo.importUnencryptedDatabase(accountData, password, newFile.getAbsolutePath());
+        if (result.startsWith("{\"error\":\"\"")) {
+            Log.d(TAG, "import result: " + result);
+        } else {
+            Log.e(TAG, "import failed: " + result);
         }
     }
 

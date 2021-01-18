@@ -83,7 +83,17 @@
                                             :height           40}
                                 [react/image {:source (resources/get-image :keycard-logo-blue)
                                               :style  {:width 24 :height 24}}]]
-          :on-press            #(hide-sheet-and-dispatch [::keycard/recover-with-keycard-pressed])}])]]))
+          :on-press            #(hide-sheet-and-dispatch [::keycard/recover-with-keycard-pressed])}])
+      (when config/database-management-enabled?
+        [quo/list-item {:theme               :accent
+                        :on-press            #(hide-sheet-and-dispatch [:multiaccounts.login.ui/import-db-submitted])
+                        :icon                :main-icons/receive
+                        :title               "Import unencrypted"}])
+      (when config/database-management-enabled?
+        [quo/list-item {:theme               :accent
+                        :on-press            #(hide-sheet-and-dispatch [:multiaccounts.login.ui/export-db-submitted])
+                        :icon                :main-icons/send
+                        :title               "Export unencrypted"}])]]))
 
 (def bottom-sheet
   {:content bottom-sheet-view})

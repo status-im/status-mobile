@@ -119,6 +119,7 @@
     (let [expected {:db {:filter/chat-ids #{"chat-id"}
                          :filter/filters {"filter-id" {:filter-id "filter-id"
                                                        :discovery? false
+                                                       :listen? true
                                                        :chat-id "chat-id"
                                                        :negotiated? false
                                                        :topic "topic"}}
@@ -132,7 +133,16 @@
                                                            :discovery? false
                                                            :chat-id "chat-id"
                                                            :negotiated? false
+                                                           :listen? true
                                                            :topic "topic"}))))))
+
+(deftest add-filter-to-db-not-listen
+  (with-redefs [mailserver.topics/upsert (fn [{:keys [db]} r] {:db (assoc db :upsert r)})]
+    (is (not (transport.filters/add-filter-to-db {:db {}} {:filter-id "filter-id"
+                                                           :discovery? false
+                                                           :chat-id "chat-id"
+                                                           :negotiated? false
+                                                           :topic "topic"})))))
 
 (deftest new-filters?
   (testing "new-filters?"

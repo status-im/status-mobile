@@ -15,7 +15,7 @@
             [status-im.notifications.core :as notifications]
             [status-im.popover.core :as popover]
             [status-im.communities.core :as communities]
-            [status-im.protocol.core :as protocol]
+            [status-im.transport.core :as transport]
             [status-im.stickers.core :as stickers]
             [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
             [status-im.navigation :as navigation]
@@ -36,6 +36,16 @@
  ::login
  (fn [[key-uid account-data hashed-password]]
    (status/login key-uid account-data hashed-password)))
+
+(re-frame/reg-fx
+ ::export-db
+ (fn [[key-uid account-data hashed-password]]
+   (status/export-db key-uid account-data hashed-password)))
+
+(re-frame/reg-fx
+ ::import-db
+ (fn [[key-uid account-data hashed-password]]
+   (status/import-db key-uid account-data hashed-password)))
 
 (re-frame/reg-fx
  ::enable-local-notifications
@@ -86,6 +96,26 @@
                                 :key-uid    key-uid
                                 :identicon  identicon})
               (ethereum/sha3 (security/safe-unmask-data password))]}))
+
+(fx/defn export-db-submitted
+  {:events [:multiaccounts.login.ui/export-db-submitted]}
+  [{:keys [db]}]
+  (let [{:keys [key-uid password name identicon]} (:multiaccounts/login db)]
+    {::export-db [key-uid
+                  (types/clj->json {:name       name
+                                    :key-uid    key-uid
+                                    :identicon  identicon})
+                  (ethereum/sha3 (security/safe-unmask-data password))]}))
+
+(fx/defn import-db-submitted
+  {:events [:multiaccounts.login.ui/import-db-submitted]}
+  [{:keys [db]}]
+  (let [{:keys [key-uid password name identicon]} (:multiaccounts/login db)]
+    {::import-db [key-uid
+                  (types/clj->json {:name       name
+                                    :key-uid    key-uid
+                                    :identicon  identicon})
+                  (ethereum/sha3 (security/safe-unmask-data password))]}))
 
 (fx/defn finish-keycard-setup
   [{:keys [db] :as cofx}]
@@ -217,9 +247,7 @@
                 (assoc ::notifications/enable nil))
               (acquisition/login)
               (initialize-appearance)
-              ;; NOTE: initializing mailserver depends on user mailserver
-              ;; preference which is why we wait for config callback
-              (protocol/initialize-protocol {:default-mailserver true})
+              (transport/start-messenger)
               (check-network-version network-id)
               (chat.loading/initialize-chats)
               (communities/fetch)
@@ -250,18 +278,12 @@
     (fx/merge cofx
               {:db (assoc db :chats/loading? true)
                ::json-rpc/call
-               [{:method     "mailservers_getMailserverTopics"
-                 :on-success #(re-frame/dispatch [::protocol/initialize-protocol {:mailserver-topics (or % {})}])}
-                {:method     "mailservers_getChatRequestRanges"
-                 :on-success #(re-frame/dispatch [::protocol/initialize-protocol {:mailserver-ranges (or % {})}])}
-                {:method     "browsers_getBrowsers"
+               [{:method     "browsers_getBrowsers"
                  :on-success #(re-frame/dispatch [::initialize-browsers %])}
                 {:method     "browsers_getBookmarks"
                  :on-success #(re-frame/dispatch [::initialize-bookmarks %])}
                 {:method     "permissions_getDappPermissions"
                  :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}
-                {:method     "mailservers_getMailservers"
-                 :on-success #(re-frame/dispatch [::protocol/initialize-protocol {:mailservers (or % [])}])}
                 {:method     "settings_getSettings"
                  :on-success #(re-frame/dispatch [::get-settings-callback %])}]}
               (notifications/load-notification-preferences)
@@ -278,24 +300,10 @@
     (fx/merge cofx
               {:db                   (-> db
                                          (dissoc :multiaccounts/login)
-                                         (assoc
-                                           ;;NOTE when login the filters are initialized twice
-                                           ;;once for contacts and once for chats
-                                           ;;when creating an account we do it only once by calling
-                                           ;;load-filters directly because we don't have chats and contacts
-                                           ;;later on there is a check that filters have been initialized twice
-                                           ;;so here we set it at 1 already so that it passes the check once it has
-                                           ;;been initialized
-                                          :filters/initialized 1)
                                          (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
-               :dispatch-later       [{:ms 2000 :dispatch [::initialize-wallet accounts nil nil (:recovered multiaccount)]}]
-               :filters/load-filters [[]]}
+               :dispatch-later       [{:ms 2000 :dispatch [::initialize-wallet accounts nil nil (:recovered multiaccount)]}]}
               (finish-keycard-setup)
-              (protocol/initialize-protocol {:mailservers        []
-                                             :mailserver-ranges  {}
-                                             :mailserver-topics  {}
-                                             :default-mailserver true})
-
+              (transport/start-messenger)
               (communities/fetch)
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)

@@ -39,7 +39,6 @@
 (def blank-preview? (enabled? (get-config :BLANK_PREVIEW "1")))
 (def group-chat-enabled? (enabled? (get-config :GROUP_CHATS_ENABLED "0")))
 (def tooltip-events? (enabled? (get-config :TOOLTIP_EVENTS "0")))
-(def nimbus-enabled? (enabled? (get-config :STATUS_GO_ENABLE_NIMBUS "0")))
 (def commands-enabled? (enabled? (get-config :COMMANDS_ENABLED "0")))
 (def keycard-test-menu-enabled? (enabled? (get-config :KEYCARD_TEST_MENU "0")))
 (def qr-test-menu-enabled? (enabled? (get-config :QR_READ_TEST_MENU "0")))
@@ -49,6 +48,7 @@
 (def communities-enabled? (enabled? (get-config :COMMUNITIES_ENABLED "0")))
 (def communities-management-enabled? (and (enabled? (get-config :COMMUNITIES_MANAGEMENT_ENABLED "0"))
                                           communities-enabled?))
+(def database-management-enabled? (enabled? (get-config :DATABASE_MANAGEMENT_ENABLED "0")))
 
 ;; CONFIG VALUES
 (def log-level

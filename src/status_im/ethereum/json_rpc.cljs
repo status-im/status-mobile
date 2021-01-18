@@ -160,9 +160,11 @@
    "mailservers_getMailservers" {}
    "mailservers_deleteMailserver" {}
    "mailservers_addMailserverTopic" {}
+   "mailservers_addMailserverTopics" {}
    "mailservers_getMailserverTopics" {}
    "mailservers_deleteMailserverTopic" {}
    "mailservers_addChatRequestRange" {}
+   "mailservers_addChatRequestRanges" {}
    "mailservers_getChatRequestRanges" {}
    "mailservers_deleteChatRequestRange" {}})
 

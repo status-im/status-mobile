@@ -152,9 +152,12 @@
        (select-keys multiaccount [:key-uid :name :public-key :identicon :images]))))))
 
 (handlers/register-handler-fx
- :login/filters-initialized
- (fn [cofx]
-   (universal-links/process-stored-event cofx)))
+ ::transport/messenger-started
+ (fn [cofx [_ response]]
+   (fx/merge
+    cofx
+    (transport/messenger-started response)
+    (universal-links/process-stored-event))))
 
 ;; multiaccounts update module
 
