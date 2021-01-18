@@ -6,5 +6,5 @@
 (handlers/register-handler-fx
  :handle-universal-link
  (fn [cofx [_ url]]
-   (log/debug "universal links: event received for " url)
+   (log/info "universal links: event received for " url)
    (universal-links/handle-url cofx url)))

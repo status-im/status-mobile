@@ -5,7 +5,6 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             ["@react-native-community/push-notification-ios" :default pn-ios]
             [status-im.notifications.android :as pn-android]
-            [status-im.native-module.core :as status]
             [status-im.notifications.local :as local]
             [quo.platform :as platform]
             [status-im.utils.config :as config]
@@ -70,21 +69,21 @@
      (do
        (pn-android/create-channel {:channel-id   "status-im-notifications"
                                    :channel-name "Status push notifications"})
-       (status/enable-notifications))
+       (pn-android/enable-notifications))
      (enable-ios-notifications))))
 
 (re-frame/reg-fx
  ::disable
  (fn [_]
    (if platform/android?
-     (status/disable-notifications)
+     (pn-android/disable-notifications)
      (disable-ios-notifications))))
 
 (re-frame/reg-fx
  ::logout-disable
  (fn [_]
    (if platform/android?
-     (status/disable-notifications)
+     (pn-android/disable-notifications)
      (.abandonPermissions ^js pn-ios))))
 
 (fx/defn handle-enable-notifications-event

@@ -26,6 +26,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import android.util.Log;
 
 import im.status.ethereum.pushnotifications.PushNotificationJsDelivery;
 
@@ -35,9 +36,12 @@ public class PushNotification extends ReactContextBaseJavaModule implements Acti
     private final SecureRandom mRandomNumberGenerator = new SecureRandom();
     private PushNotificationHelper pushNotificationHelper;
     private PushNotificationJsDelivery delivery;
+    private ReactApplicationContext reactContext;
+    private NewMessageSignalHandler newMessageSignalHandler;
 
     public PushNotification(ReactApplicationContext reactContext) {
         super(reactContext);
+        this.reactContext = reactContext;
         reactContext.addActivityEventListener(this);
         Application applicationContext = (Application) reactContext.getApplicationContext();
 
@@ -105,6 +109,28 @@ public class PushNotification extends ReactContextBaseJavaModule implements Acti
         if (bundle.getString("id") == null) {
             bundle.putString("id", String.valueOf(mRandomNumberGenerator.nextInt()));
         }
-        pushNotificationHelper.sendToNotificationCentre(bundle);
+
+        String type = bundle.getString("type");
+        if (type != null && type.equals("message")) {
+            if (this.newMessageSignalHandler != null) {
+                newMessageSignalHandler.handleNewMessage(bundle);
+            }
+        } else {
+            pushNotificationHelper.sendToNotificationCentre(bundle);
+        }
     }
+
+    @ReactMethod
+    public void enableNotifications() {
+        this.newMessageSignalHandler = new NewMessageSignalHandler(reactContext);
+    }
+
+    @ReactMethod
+    public void disableNotifications() {
+        if (newMessageSignalHandler != null) {
+            newMessageSignalHandler.stop();
+            newMessageSignalHandler = null;
+        }
+    }
+
 }

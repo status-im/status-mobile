@@ -35,14 +35,6 @@
                               config
                               #(callback (types/json->clj %))))
 
-(defn enable-notifications []
-  (log/debug "[native-module] enable-notifications")
-  (.enableNotifications ^js (status)))
-
-(defn disable-notifications []
-  (log/debug "[native-module] disable-notifications")
-  (.disableNotifications ^js (status)))
-
 (defn save-account-and-login
   "NOTE: beware, the password has to be sha3 hashed"
   [key-uid multiaccount-data hashed-password settings config accounts-data]

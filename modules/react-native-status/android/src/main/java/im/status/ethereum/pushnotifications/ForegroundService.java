@@ -1,4 +1,4 @@
-package im.status.ethereum.module;
+package im.status.ethereum.pushnotifications;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import android.os.Build;
+import im.status.ethereum.module.R;
 
 public class ForegroundService extends Service {
     private static final String CHANNEL_ID = "status-service";

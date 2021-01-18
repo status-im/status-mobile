@@ -1,6 +1,5 @@
 (ns status-im.notifications.local
   (:require [taoensso.timbre :as log]
-            [clojure.string :as cstr]
             [status-im.utils.fx :as fx]
             [status-im.ethereum.decode :as decode]
             ["@react-native-community/push-notification-ios" :default pn-ios]
@@ -14,7 +13,11 @@
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
-            [cljs-bean.core :as bean]))
+            [cljs-bean.core :as bean]
+            [status-im.ui.screens.chat.components.reply :as reply]
+            [clojure.string :as clojure.string]
+            [status-im.chat.models :as chat.models]
+            [status-im.constants :as constants]))
 
 (def default-erc20-token
   {:symbol   :ERC20
@@ -24,23 +27,31 @@
 (def notification-event-ios "localNotification")
 (def notification-event-android "remoteNotificationReceived")
 
-(defn local-push-ios [{:keys [title message user-info]}]
-  (.presentLocalNotification pn-ios #js {:alertBody  message
-                                         :alertTitle title
-                                         ;; NOTE: Use a special type to hide in Obj-C code other notifications
-                                         :userInfo   (bean/->js (merge user-info
-                                                                       {:notificationType "local-notification"}))}))
+(defn local-push-ios [{:keys [title message user-info body-type]}]
+  (when (not= body-type "message")
+    (.presentLocalNotification
+     pn-ios
+     #js {:alertBody  message
+          :alertTitle title
+          ;; NOTE: Use a special type to hide in Obj-C code other notifications
+          :userInfo   (bean/->js (merge user-info
+                                        {:notificationType "local-notification"}))})))
 
-(defn local-push-android [{:keys [title message icon user-info channel-id]
-                           :or   {channel-id "status-im-notifications"}}]
-  (pn-android/present-local-notification (merge {:channelId channel-id
-                                                 :title     title
-                                                 :message   message
-                                                 :showBadge false}
-                                                (when user-info
-                                                  {:userInfo (bean/->js user-info)})
-                                                (when icon
-                                                  {:largeIconUrl (:uri (react/resolve-asset-source icon))}))))
+(defn local-push-android
+  [{:keys [title message icon user-info channel-id type]
+    :as   notification
+    :or   {channel-id "status-im-notifications"}}]
+  (pn-android/present-local-notification
+   (merge {:channelId channel-id
+           :title     title
+           :message   message
+           :showBadge false}
+          (when user-info
+            {:userInfo (bean/->js user-info)})
+          (when icon
+            {:largeIconUrl (:uri (react/resolve-asset-source icon))})
+          (when (= type "message")
+            notification))))
 
 (defn handle-notification-press [{{deep-link :deepLink} :userInfo
                                   interaction           :userInteraction}]
@@ -61,13 +72,14 @@
                     (when (and data (.-dataJSON data))
                       (handle-notification-press (types/json->clj (.-dataJSON data))))))))
 
-(defn create-notification [{{:keys [state from to fromAccount toAccount value erc20 contract network]}
-                            :body
-                            :as notification}]
+(defn create-transfer-notification
+  [{{:keys [state from to fromAccount toAccount value erc20 contract network]}
+    :body
+    :as notification}]
   (let [chain       (ethereum/chain-id->chain-keyword network)
         token       (if erc20
-                      (get-in tokens/all-tokens-normalized [(keyword chain)
-                                                            (cstr/lower-case contract)]
+                      (get-in tokens/all-tokens-normalized
+                              [(keyword chain) (clojure.string/lower-case contract)]
                               default-erc20-token)
                       (tokens/native-currency (keyword chain)))
         amount      (money/wei->ether (decode/uint value))
@@ -95,15 +107,83 @@
      :user-info notification
      :message   description}))
 
+(defn show-message-pn?
+  [{{:keys [app-state multiaccount]} :db :as cofx}
+   {{:keys [message chat]} :body}]
+  (let [chat-id (get chat :id)
+        chat-type (get chat :chatType)]
+    (and
+     (or (= app-state "background")
+         (not (chat.models/foreground-chat? cofx chat-id)))
+     (or (contains? #{constants/one-to-one-chat-type
+                      constants/private-group-chat-type}
+                    chat-type)
+         (contains? (set (get message :mentions))
+                    (get multiaccount :public-key))))))
+
+(defn create-message-notification
+  ([cofx notification]
+   (when (or (nil? cofx)
+             (show-message-pn? cofx notification))
+     (create-message-notification notification)))
+  ([{{:keys [message contact chat]} :body}]
+   (let [chat-type    (get chat :chatType)
+         chat-id      (get chat :id)
+         contact-name @(re-frame/subscribe
+                        [:contacts/contact-name-by-identity (get contact :id)])
+         group-chat?  (not= chat-type constants/one-to-one-chat-type)
+         title        (clojure.string/join
+                       " "
+                       (cond-> [contact-name]
+                         group-chat?
+                         (conj
+                          ;; TODO(rasom): to be translated
+                          "in")
+
+                         group-chat?
+                         (conj
+                          (str (when (contains? #{constants/public-chat-type
+                                                  constants/community-chat-type}
+                                                chat-type)
+                                 "#")
+                               (get chat :name)))))]
+     {:type             "message"
+      :chatType         (str (get chat :chatType))
+      :from             title
+      :chatId           chat-id
+      :alias            title
+      :identicon        (get contact :identicon)
+      :whisperTimestamp (get message :whisperTimestamp)
+      :text             (reply/get-quoted-text-with-mentions (:parsedText message))})))
+
+(defn create-notification
+  ([notification]
+   (create-notification nil notification))
+  ([cofx {:keys [bodyType] :as notification}]
+   (assoc
+    (case bodyType
+      "message"     (create-message-notification cofx notification)
+      "transaction" (create-transfer-notification notification)
+      nil)
+    :body-type bodyType)))
+
 (re-frame/reg-fx
  ::local-push-ios
  (fn [evt]
    (-> evt create-notification local-push-ios)))
 
+(fx/defn local-notification-android
+  {:events [::local-notification-android]}
+  [cofx event]
+  (some->> event
+           (create-notification cofx)
+           local-push-android))
+
 (fx/defn process
-  [_ evt]
-  (when platform/ios?
-    {::local-push-ios evt}))
+  [cofx evt]
+  (if platform/ios?
+    {::local-push-ios evt}
+    (local-notification-android cofx evt)))
 
 (defn handle []
   (fn [^js message]
@@ -112,7 +192,7 @@
        (fn [on-success on-error]
          (try
            (when (= "local-notifications" (:type evt))
-             (-> (:event evt) create-notification local-push-android))
+             (re-frame/dispatch [::local-notification-android (:event evt)]))
            (on-success)
            (catch :default e
              (log/warn "failed to handle background notification" e)

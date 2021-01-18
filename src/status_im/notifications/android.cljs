@@ -15,3 +15,9 @@
                   #js {:channelId   channel-id
                        :channelName channel-name}
                   #(log/info "Notifications create channel:" %)))
+
+(defn enable-notifications []
+  (.enableNotifications ^js (pn-android)))
+
+(defn disable-notifications []
+  (.disableNotifications ^js (pn-android)))

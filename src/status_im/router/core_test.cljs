@@ -67,7 +67,7 @@
 (def error {:error :invalid-group-chat-data})
 
 (deftest match-group-chat-query
-  (are [query-params expected] (= (router/match-group-chat query-params)
+  (are [query-params expected] (= (router/match-group-chat {} query-params)
                                   expected)
     nil error
     {} error

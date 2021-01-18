@@ -1,4 +1,4 @@
-package im.status.ethereum.module;
+package im.status.ethereum.pushnotifications;
 
 import android.content.Context;
 import android.content.ContentResolver;
@@ -33,10 +33,12 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.NotificationCompat;
 
 import android.os.Build;
+import android.os.Bundle;
 import android.net.Uri;
 import android.media.AudioAttributes;
 
 import android.util.Log;
+import im.status.ethereum.module.R;
 
 public class NewMessageSignalHandler {
     //NOTE: currently we only show notifications for 1-1 chats, in the future we
@@ -57,6 +59,8 @@ public class NewMessageSignalHandler {
     private Context context;
     private Intent serviceIntent;
     private Boolean shouldRefreshNotifications;
+    private int ONE_TO_ONE_CHAT_TYPE = 1;
+    private int PRIVATE_GROUP_CHAT_TYPE = 3;
 
     //NOTE: we use a dynamically created BroadcastReceiver here so that we can capture
     //intents from notifications and act on them. For instance when tapping/dismissing
@@ -68,8 +72,9 @@ public class NewMessageSignalHandler {
                 if (intent.getAction() == ACTION_TAP_NOTIFICATION ||
                     intent.getAction() == ACTION_DELETE_NOTIFICATION) {
                     String chatId = intent.getExtras().getString("im.status.ethereum.chatId");
+                    int chatType = intent.getExtras().getInt("im.status.ethereum.chatType");
                     if (intent.getAction() == ACTION_TAP_NOTIFICATION) {
-                        context.startActivity(getOpenAppIntent(chatId));
+                        context.startActivity(getOpenAppIntent(chatId, chatType));
                     }
                     removeChat(chatId);
                     // clean up the group notifications when there is no
@@ -122,9 +127,15 @@ public class NewMessageSignalHandler {
     //NOTE: this method takes a chatId and returns an intent that will open the app in that chat
     //Once we support other kind of notifications we will need to adapt it. The simplest method
     //is probably to pass the universal link as param instead of the chatId.
-    public Intent getOpenAppIntent(String chatId) {
+    public Intent getOpenAppIntent(String chatId, int chatType) {
         Intent intent = getOpenAppIntent();
-        intent.setData(Uri.parse("status-im://p/" + chatId));
+        String path = "";
+        if (chatType == ONE_TO_ONE_CHAT_TYPE) {
+            path = "p/";
+        } else if (chatType == PRIVATE_GROUP_CHAT_TYPE) {
+            path = "g/args?a2=";
+        }
+        intent.setData(Uri.parse("status-im://" + path + chatId));
         return intent;
     }
 
@@ -175,15 +186,17 @@ public class NewMessageSignalHandler {
         this.chats.remove(chatId);
     }
 
-    private PendingIntent createOnDismissedIntent(Context context, int notificationId, String chatId) {
+    private PendingIntent createOnDismissedIntent(Context context, int notificationId, String chatId, int chatType) {
         Intent intent = new Intent(ACTION_DELETE_NOTIFICATION);
         intent.putExtra("im.status.ethereum.chatId", chatId);
+        intent.putExtra("im.status.ethereum.chatType", chatType);
         return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
-    private PendingIntent createOnTapIntent(Context context, int notificationId, String chatId) {
+    private PendingIntent createOnTapIntent(Context context, int notificationId, String chatId, int chatType) {
         Intent intent = new Intent(ACTION_TAP_NOTIFICATION);
         intent.putExtra("im.status.ethereum.chatId", chatId);
+        intent.putExtra("im.status.ethereum.chatType", chatType);
         return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
    } 
 
@@ -203,8 +216,8 @@ public class NewMessageSignalHandler {
             .setStyle(messagingStyle)
             .setGroup(GROUP_STATUS_MESSAGES)
             .setGroupSummary(true)
-            .setContentIntent(createOnTapIntent(context, notificationId, chat.getId()))
-            .setDeleteIntent(createOnDismissedIntent(context, notificationId, chat.getId()))
+            .setContentIntent(createOnTapIntent(context, notificationId, chat.getId(), chat.getType()))
+            .setDeleteIntent(createOnDismissedIntent(context, notificationId, chat.getId(), chat.getType()))
             .setNumber(messages.size())
             .setAutoCancel(true);
         if (Build.VERSION.SDK_INT >= 21) {
@@ -224,31 +237,13 @@ public class NewMessageSignalHandler {
         }
     }
 
-    void handleNewMessageSignal(JSONObject newMessageSignal) {
-        try {
-            JSONArray chatsNewMessagesData = newMessageSignal.getJSONObject("event").getJSONArray("chats");
-            for (int i = 0; i < chatsNewMessagesData.length(); i++) {
-                try {
-                    upsertChat(chatsNewMessagesData.getJSONObject(i));
-                } catch (JSONException e) {
-                    Log.e(TAG, "JSON conversion failed: " + e.getMessage());
-                }
-            }
-            JSONArray messagesNewMessagesData = newMessageSignal.getJSONObject("event").getJSONArray("messages");
-            for (int i = 0; i < messagesNewMessagesData.length(); i++) {
-                try {
-                    upsertMessage(messagesNewMessagesData.getJSONObject(i));
-                } catch (JSONException e) {
-                    Log.e(TAG, "JSON conversion failed: " + e.getMessage());
-                }
-            }
+    void handleNewMessage (Bundle data) {
+        upsertChat(data);
+        upsertMessage(data);
 
-            if(shouldRefreshNotifications) {
-                refreshNotifications();
-                shouldRefreshNotifications = false;
-            }
-        } catch (JSONException e) {
-            Log.e(TAG, "JSON conversion failed: " + e.getMessage());
+        if(shouldRefreshNotifications) {
+            refreshNotifications();
+            shouldRefreshNotifications = false;
         }
     }
 
@@ -268,69 +263,37 @@ public class NewMessageSignalHandler {
         return person;
     }
 
-    private void upsertChat(JSONObject chatData) {
-        try {
-            // NOTE: this is an exemple of chatData
-            // {"chatId":"contact-discovery-3622","filterId":"c0239d63f830e8b25f4bf7183c8d207f355a925b89514a17068cae4898e7f193",
-            //  "symKeyId":"","oneToOne":true,"identity":"046599511623d7385b926ce709ac57d518dac10d451a81f75cd32c7fb4b1c...",
-            // "topic":"0xc446561b","discovery":false,"negotiated":false,"listen":true}
-            int oneToOne = chatData.getInt("chatType");
-            // NOTE: for now we only notify one to one chats
-            // TODO: also notifiy on mentions, keywords and group chats
-            // TODO: one would have to pass the ens name and keywords to notify on when instanciating the class as well
-            // as have a method to add new ones after the handler is instanciated
-            if (oneToOne == 1) {
-                //JSONArray messagesData = chatNewMessagesData.getJSONArray("messages");
+    private void upsertChat(Bundle data) {
+        String id = data.getString("chatId");
+        int type = Integer.parseInt(data.getString("chatType"));
+        StatusChat chat = chats.get(id);
 
-                // there is no proper id for oneToOne chat in chatData so we peek into first message sig
-                // TODO: won't work for sync becaus it could be our own message
-                String id = chatData.getString("id");
-                StatusChat chat = chats.get(id);
+        // if the chat was not already there, we create one
+        if (chat == null) {
+            chat = new StatusChat(id, type);
+        }
 
+        chats.put(id, chat);
+    }
 
-                // if the chat was not already there, we create one
-                if (chat == null) {
-                    chat = new StatusChat(id, true);
-                }
+    private void upsertMessage(Bundle data) {
+        String chatId = data.getString("chatId");
+        StatusChat chat = chats.get(chatId);
+        if (chat == null) {
+            return;
+        }
 
-                chats.put(id, chat);
-            }
-        } catch (JSONException e) {
-            Log.e(TAG, "JSON conversion failed: " + e.getMessage());
+        StatusMessage message = createMessage(data);
+        if (message != null) {
+            chat.appendMessage(message);
+            chats.put(chatId, chat);
+            shouldRefreshNotifications = true;
         }
     }
 
-
-
-    private void upsertMessage(JSONObject messageData) {
-        try {
-            String chatId = messageData.getString("localChatId");
-            StatusChat chat = chats.get(chatId);
-            if (chat == null) {
-                return;
-            }
-
-            StatusMessage message = createMessage(messageData);
-            if (message != null) {
-                chat.appendMessage(message);
-                chats.put(chatId, chat);
-                shouldRefreshNotifications = true;
-            }
-
-        }
-        catch (JSONException e) {
-            Log.e(TAG, "JSON conversion failed: " + e.getMessage());
-        }
-    }
-
-    private StatusMessage createMessage(JSONObject messageData) {
-        try {
-            Person author = getPerson(messageData.getString("from"), messageData.getString("identicon"), messageData.getString("alias"));
-            return new StatusMessage(author,  messageData.getLong("whisperTimestamp"), messageData.getString("text"));
-        } catch (JSONException e) {
-            Log.e(TAG, "JSON conversion failed: " + e.getMessage());
-        }
-        return null;
+    private StatusMessage createMessage(Bundle data) {
+        Person author = getPerson(data.getString("from"), data.getString("identicon"), data.getString("alias"));
+        return new StatusMessage(author,  data.getLong("whisperTimestamp"), data.getString("text"));
     }
 }
 
@@ -338,17 +301,21 @@ class StatusChat {
     private ArrayList<StatusMessage> messages;
     private String id;
     private String name;
-    private Boolean oneToOne;
+    private int type;
 
-    StatusChat(String id, Boolean oneToOne) {
+    StatusChat(String id, int type) {
         this.id = id;
-        this.oneToOne = oneToOne;
+        this.type = type;
         this.messages = new  ArrayList<StatusMessage>();
         this.name = name;
     }
 
     public String getId() {
         return id;
+    }
+
+    public int getType() {
+        return this.type;
     }
 
     public String getName() {

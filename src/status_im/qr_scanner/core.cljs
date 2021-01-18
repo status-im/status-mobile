@@ -95,5 +95,6 @@
   {:events [::on-scan-success]}
   [{:keys [db]} uri]
   {::router/handle-uri {:chain (ethereum/chain-keyword db)
+                        :chats (get db :chats)
                         :uri   uri
                         :cb    #(re-frame/dispatch [::match-scanned-value %])}})

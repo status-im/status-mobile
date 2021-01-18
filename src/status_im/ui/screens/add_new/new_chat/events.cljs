@@ -97,5 +97,6 @@
   {:events [:contact/qr-code-scanned]}
   [{:keys [db]} data opts]
   {::router/handle-uri {:chain (ethereum/chain-keyword db)
+                        :chats (get db :chats)
                         :uri   data
                         :cb    #(re-frame/dispatch [::qr-code-handled % opts])}})

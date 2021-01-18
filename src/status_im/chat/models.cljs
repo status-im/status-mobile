@@ -48,6 +48,11 @@
   ([cofx chat-id]
    (active-chat? (get-chat cofx chat-id))))
 
+(defn foreground-chat?
+  [{{:keys [current-chat-id view-id]} :db} chat-id]
+  (and (= current-chat-id chat-id)
+       (= view-id :chat)))
+
 (defn group-chat?
   ([chat]
    (and (multi-user-chat? chat)

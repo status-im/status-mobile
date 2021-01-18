@@ -80,7 +80,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private static StatusModule module;
     private ReactApplicationContext reactContext;
     private boolean rootedDevice;
-    private NewMessageSignalHandler newMessageSignalHandler;
     private boolean background;
 
     StatusModule(ReactApplicationContext reactContext, boolean rootedDevice) {
@@ -112,19 +111,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Log.d(TAG, "******************* ON HOST DESTROY *************************");
     }
 
-    @ReactMethod
-    public void enableNotifications() {
-        this.newMessageSignalHandler = new NewMessageSignalHandler(reactContext);
-    }
-
-    @ReactMethod
-    public void disableNotifications() {
-        if (newMessageSignalHandler != null) {
-            newMessageSignalHandler.stop();
-            newMessageSignalHandler = null;
-        }
-    }
-
     private boolean checkAvailability() {
         // We wait at least 10s for getCurrentActivity to return a value,
         // otherwise we give up
@@ -153,35 +139,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     public void handleSignal(final String jsonEventString) {
-        try {
-            final JSONObject jsonEvent = new JSONObject(jsonEventString);
-            String eventType = jsonEvent.getString("type");
-            Log.d(TAG, "Signal event: " + jsonEventString);
-            // NOTE: the newMessageSignalHandler is only instanciated if the user
-            // enabled notifications in the app
-            if (this.background && newMessageSignalHandler != null) {
-                if (eventType.equals("messages.new")) {
-                    newMessageSignalHandler.handleNewMessageSignal(jsonEvent);
-                }
-            }
-
-            if(eventType.equals("local-notifications")) {
-                Context ctx = this.getReactApplicationContext();
-                Intent intent = new Intent(ctx, LocalNotificationsService.class);
-                Bundle bundle = new Bundle();
-
-                bundle.putString("event", jsonEventString);
-                intent.putExtras(bundle);
-
-                ctx.startService(intent);
-            }
-
-            WritableMap params = Arguments.createMap();
-            params.putString("jsonEvent", jsonEventString);
-            this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
-        } catch (JSONException e) {
-            Log.e(TAG, "JSON conversion failed: " + e.getMessage());
-        }
+        Log.d(TAG, "Signal event");
+        WritableMap params = Arguments.createMap();
+        params.putString("jsonEvent", jsonEventString);
+        this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
     }
 
     private File getLogsFile() {
@@ -442,7 +403,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void logout() {
         Log.d(TAG, "logout");
-        disableNotifications();
         String result = Statusgo.logout();
         if (result.startsWith("{\"error\":\"\"")) {
             Log.d(TAG, "Logout result: " + result);
