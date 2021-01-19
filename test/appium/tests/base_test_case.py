@@ -30,7 +30,7 @@ class AbstractTestCase:
 
     @property
     def executor_sauce_lab(self):
-        return 'http://%s:%s@ondemand.saucelabs.com:80/wd/hub' % (self.sauce_username, self.sauce_access_key)
+        return 'http://%s:%s@ondemand.eu-central-1.saucelabs.com/wd/hub' % (self.sauce_username, self.sauce_access_key)
 
     @property
     def executor_local(self):
@@ -59,7 +59,6 @@ class AbstractTestCase:
     def capabilities_sauce_lab(self):
         desired_caps = dict()
         desired_caps['app'] = 'sauce-storage:' + test_suite_data.apk_name
-
         desired_caps['build'] = pytest_config_global['build']
         desired_caps['name'] = test_suite_data.current_test.name
         desired_caps['platformName'] = 'Android'

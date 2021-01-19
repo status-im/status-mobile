@@ -9,7 +9,8 @@ from tests import test_suite_data, appium_container
 from datetime import datetime
 from os import environ
 from io import BytesIO
-from sauceclient import SauceClient, SauceException
+from tests.cloudbase_test_api import NewSauceClient as SauceClient
+from tests.cloudbase_test_api import SauceException
 from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
 from support.testrail_report import TestrailReport

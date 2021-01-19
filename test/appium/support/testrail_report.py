@@ -8,6 +8,7 @@ from os import environ
 from support.base_test_report import BaseTestReport
 from sys import argv
 
+
 class TestrailReport(BaseTestReport):
 
     def __init__(self):
@@ -151,7 +152,6 @@ class TestrailReport(BaseTestReport):
 
         request_body = {'description': final_description}
         return self.post('update_run/%s' % self.run_id, request_body)
-
 
     def get_run_results(self):
         return self.get('get_results_for_run/%s' % self.run_id)
