@@ -2,6 +2,7 @@
   (:require
    [re-frame.core :as re-frame]
    [clojure.walk :as walk]
+   [clojure.string :as string]
    [taoensso.timbre :as log]
    [status-im.utils.fx :as fx]
    [status-im.constants :as constants]
@@ -29,13 +30,10 @@
              {}
              chats))
 
-(defn <-rpc [{:keys [description] :as c}]
-  (let [identity (:identity description)]
-    (-> c
-        (update-in [:description :members] walk/stringify-keys)
-        (assoc-in [:description :identity] {:display-name (:display_name identity)
-                                            :description (:description identity)})
-        (update-in [:description :chats] <-chats-rpc))))
+(defn <-rpc [c]
+  (-> c
+      (update :members walk/stringify-keys)
+      (update :chats <-chats-rpc)))
 
 (defn fetch-community-id-input [{:keys [db]}]
   (:communities/community-id-input db))
@@ -176,7 +174,7 @@
     (let [params (cond-> {:name name
                           :description description
                           :membership membership
-                          :image image}
+                          :image (string/replace-first (str image) #"file://" "")}
                    (= membership constants/community-rule-ens-only)
                    (assoc :membership constants/community-on-request-access
                           :ens-only true))]
@@ -316,10 +314,21 @@
   [cofx community-id public-key]
   (log/error "Community member ban is not yet implemented"))
 
+(fx/defn member-kicked
+  {:events [::member-kicked]}
+  [cofx response]
+
+  (fx/merge cofx
+            (bottom-sheet/hide-bottom-sheet)
+            (handle-response response)))
+
 (fx/defn member-kick
   {:events [::member-kick]}
   [cofx community-id public-key]
-  (log/error "Community member kick is not yet implemented"))
+  {::json-rpc/call [{:method     "wakuext_removeUserFromCommunity"
+                     :params     [community-id public-key]
+                     :on-success #(re-frame/dispatch [::member-kicked %])
+                     :on-error   #(log/error "failed to remove user from community" community-id public-key %)}]})
 
 (fx/defn delete-community
   {:events [::delete-community]}

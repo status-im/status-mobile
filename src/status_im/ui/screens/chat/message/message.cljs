@@ -214,7 +214,8 @@
     (chat.utils/format-author contact-with-names opts)))
 
 (defview community-content [{:keys [community-id] :as message}]
-  (letsubs [{:keys [joined verified] :as community} [:communities/community community-id]]
+  (letsubs [{:keys [name description
+                    joined verified] :as community} [:communities/community community-id]]
     (when (and
            config/communities-enabled?
            community)
@@ -251,17 +252,16 @@
                          :style {:width 40
                                  :height 40}}]
 
-           (let [display-name (get-in community [:description :identity :display-name])]
-             [chat-icon/chat-icon-view-chat-list
-              display-name
-              true
-              display-name
-              colors/default-community-color]))]
+           [chat-icon/chat-icon-view-chat-list
+            name
+            true
+            name
+            colors/default-community-color])]
         [react/view {:padding-right 14}
          [react/text {:style {:font-weight "700"
                               :font-size 17}}
-          (get-in community [:description :identity :display-name])]
-         [react/text (get-in community [:description :identity :description])]]]
+          name]
+         [react/text description]]]
        [react/view {:border-width 1
                     :padding-vertical 8
                     :border-bottom-left-radius 10

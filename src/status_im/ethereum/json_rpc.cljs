@@ -118,6 +118,7 @@
    "wakuext_createCommunity" {}
    "wakuext_createCommunityChat" {}
    "wakuext_inviteUserToCommunity" {}
+   "wakuext_removeUserFromCommunity" {}
    "wakuext_joinCommunity" {}
    "wakuext_leaveCommunity" {}
    "wakuext_communities" {}

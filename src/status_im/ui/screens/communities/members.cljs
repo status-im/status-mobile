@@ -30,7 +30,8 @@
                       :icon     :main-icons/arrow-left
                       :title    (i18n/label :t/member-kick)
                       :on-press #(>evt [::communities/member-kick community-id public-key])}]
-      [quo/list-item {:theme    :negative
+      ; ban not implemented
+      #_[quo/list-item {:theme    :negative
                       :icon     :main-icons/cancel
                       :title    (i18n/label :t/member-ban)
                       :on-press #(>evt [::communities/member-ban community-id public-key])}]])])
@@ -62,8 +63,7 @@
 
 (defn members [route]
   (let [{:keys [community-id]}     (get-in route [:route :params])
-        {{:keys [members]} :description
-         admin             :admin} (<sub [:communities/community community-id])]
+        {:keys [admin members]}    (<sub [:communities/community community-id])]
     [:<>
      [topbar/topbar {:title    (i18n/label :t/community-members-title)
                      :subtitle (str (count members))}]

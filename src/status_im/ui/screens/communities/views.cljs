@@ -20,17 +20,25 @@
   (>evt [:bottom-sheet/hide])
   (>evt event))
 
-(defn community-list-item [{:keys [id description]}]
-  (let [members                                       (count (:members description))
-        {:keys [display-name description color]
-         :or   {color (rand-nth colors/chat-colors)}} (:identity description)]
+(defn community-list-item [{:keys [id members name description images color]}]
+  (let [members-count (count members)
+        thumbnail-image (get-in images [:thumbnail :uri])
+        color (or color (rand-nth colors/chat-colors))]
     [quo/list-item
-     {:icon                      (if (= id constants/status-community-id)
+     {:icon                      (cond
+                                  (= id constants/status-community-id)
                                    [react/image {:source (resources/get-image :status-logo)
                                                  :style  {:width  40
                                                           :height 40}}]
+                                   (seq thumbnail-image)
+                                   [react/image {:source {:uri thumbnail-image}
+                                                 :resize-mode :cover
+                                                 :style {:width 40
+                                                         :height 40}}]
+
+                                   :else
                                    [chat-icon.screen/chat-icon-view-chat-list
-                                    id true display-name color false false])
+                                    id true name color false false])
       :title                     [react/view {:flex-direction :row
                                               :flex           1
                                               :padding-right  16
@@ -39,14 +47,14 @@
                                              :accessibility-label :community-name-text
                                              :ellipsize-mode      :tail
                                              :number-of-lines     1}
-                                   (utils/truncate-str display-name 30)]]
+                                   (utils/truncate-str name 30)]]
       :title-accessibility-label :community-name-text
       :subtitle                  [react/view
                                   [quo/text {:number-of-lines 1}
                                    description]
                                   [quo/text {:number-of-lines 1
                                              :color           :secondary}
-                                   (i18n/label-pluralize members :t/community-members {:count members})]]
+                                   (i18n/label-pluralize members-count :t/community-members {:count members-count})]]
       :on-press                  #(do
                                     (>evt [:dismiss-keyboard])
                                     (>evt [:navigate-to :community {:community-id id}]))}]))
@@ -104,7 +112,7 @@
                                        :height           12}
                  :accessibility-label :unviewed-messages-public}]))
 
-(defn status-community [{:keys [id description]}]
+(defn status-community [{:keys [id name description]}]
   [quo/list-item
    {:icon                      [react/image {:source (resources/get-image :status-logo)
                                              :style  {:width  40
@@ -120,7 +128,7 @@
                                             :font-size           17
                                             :ellipsize-mode      :tail
                                             :number-of-lines     1}
-                                  (get-in description [:identity :display-name])]]
+                                  name]]
                                 [react/view {:flex-direction  :row
                                              :flex            1
                                              :justify-content :flex-end
