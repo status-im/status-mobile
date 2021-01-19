@@ -137,7 +137,7 @@ def pytest_addoption(parser):
 
 
 def is_master(config):
-    return not hasattr(config, 'slaveinput')
+    return not hasattr(config, 'workerinput')
 
 
 def is_uploaded():
