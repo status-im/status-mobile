@@ -10,6 +10,8 @@ abstract_target 'Status' do
   use_react_native!(:path => config["reactNativePath"])
 
   pod 'react-native-image-resizer', :path => '../node_modules/react-native-image-resizer'
+  pod 'react-native-config', :path => '../node_modules/react-native-config'
+
   pod 'SQLCipher', '~>3.0'
   pod 'SSZipArchive'
 

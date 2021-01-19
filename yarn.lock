@@ -6613,9 +6613,9 @@ react-native-camera-kit@^8.0.4:
   dependencies:
     lodash "^4.14.2"
 
-"react-native-config@git+https://github.com/status-im/react-native-config.git#v0.11.2-4-status":
-  version "0.11.2"
-  resolved "git+https://github.com/status-im/react-native-config.git#3dbe2939e79d0d19cdc55c319d5d0c7472798a35"
+"react-native-config@git+https://github.com/status-im/react-native-config.git#v1.4.2-status":
+  version "1.4.2"
+  resolved "git+https://github.com/status-im/react-native-config.git#c3e58d76fed923aaf88eadc5073099fab5ecb346"
 
 react-native-dark-mode@^0.2.2:
   version "0.2.2"

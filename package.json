@@ -37,7 +37,7 @@
     "react-native": "0.63.4",
     "react-native-background-timer": "^2.1.1",
     "react-native-camera-kit": "^8.0.4",
-    "react-native-config": "git+https://github.com/status-im/react-native-config.git#v0.11.2-4-status",
+    "react-native-config": "git+https://github.com/status-im/react-native-config.git#v1.4.2-status",
     "react-native-dark-mode": "^0.2.2",
     "react-native-device-info": "^5.6.1",
     "react-native-dialogs": "^1.0.4",

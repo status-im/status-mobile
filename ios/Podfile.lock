@@ -257,6 +257,10 @@ PODS:
     - React
   - react-native-cameraroll (1.6.2):
     - React
+  - react-native-config (1.4.2):
+    - react-native-config/App (= 1.4.2)
+  - react-native-config/App (1.4.2):
+    - React-Core
   - react-native-image-resizer (1.2.3):
     - React
   - react-native-mail (4.0.0):
@@ -440,6 +444,7 @@ DEPENDENCIES:
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - react-native-camera-kit (from `../node_modules/react-native-camera-kit`)
   - "react-native-cameraroll (from `../node_modules/@react-native-community/cameraroll`)"
+  - react-native-config (from `../node_modules/react-native-config`)
   - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
   - react-native-mail (from `../node_modules/react-native-mail`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -545,6 +550,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-camera-kit"
   react-native-cameraroll:
     :path: "../node_modules/@react-native-community/cameraroll"
+  react-native-config:
+    :path: "../node_modules/react-native-config"
   react-native-image-resizer:
     :path: "../node_modules/react-native-image-resizer"
   react-native-mail:
@@ -638,7 +645,7 @@ SPEC CHECKSUMS:
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: ab353d41aea8aae2ea6daaf813e67496642f3d7d
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: ce8f843ca00c0ef98518f064bdf5d160d88182c7
+  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   OpenSSL-Universal: ff34003318d5e1163e9529b08470708e389ffcdd
   Permission-Camera: afad27bf90337684d4a86f3825112d648c8c4d3b
@@ -656,6 +663,7 @@ SPEC CHECKSUMS:
   react-native-background-timer: 1f7d560647b40e6a60b01c452ba29c54bf581fc4
   react-native-camera-kit: 498a6d111a904834e0824e9073cfadef7303235f
   react-native-cameraroll: ac69828fc43b9dbf92149714fd739577d38e4448
+  react-native-config: c98128a72bc2c3a1ca72caec0b021f0fa944aa29
   react-native-image-resizer: 2f1577efa3bc762597681f530c8e8d05ce0ceeb3
   react-native-mail: 7e37dfbe93ff0d4c7df346b738854dbed533e86f
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
@@ -701,6 +709,6 @@ SPEC CHECKSUMS:
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 0a4939c1b21326c5a4b5af072c86c5518c449023
+PODFILE CHECKSUM: 8752b77562edc2969e7016627fa83c23a152cf3c
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.0
