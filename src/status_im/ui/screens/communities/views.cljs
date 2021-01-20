@@ -10,6 +10,7 @@
    [status-im.ui.components.list.views :as list]
    [status-im.ui.components.copyable-text :as copyable-text]
    [status-im.react-native.resources :as resources]
+   [status-im.ui.screens.chat.photos :as photos]
    [status-im.ui.components.topbar :as topbar]
    [status-im.ui.components.colors :as colors]
    [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
@@ -31,10 +32,7 @@
                                                  :style  {:width  40
                                                           :height 40}}]
                                    (seq thumbnail-image)
-                                   [react/image {:source {:uri thumbnail-image}
-                                                 :resize-mode :cover
-                                                 :style {:width 40
-                                                         :height 40}}]
+                                   [photos/photo thumbnail-image {:size 40}]
 
                                    :else
                                    [chat-icon.screen/chat-icon-view-chat-list

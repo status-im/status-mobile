@@ -14,6 +14,8 @@
    [status-im.ui.components.colors :as colors]
    [status-im.navigation :as navigation]))
 
+(def crop-size 1000)
+
 (def featured
   [{:name "Status"
     :id constants/status-community-id}])
@@ -174,7 +176,11 @@
     (let [params (cond-> {:name name
                           :description description
                           :membership membership
-                          :image (string/replace-first (str image) #"file://" "")}
+                          :image (string/replace-first (str image) #"file://" "")
+                          :imageAx 0
+                          :imageAy 0
+                          :imageBx crop-size
+                          :imageBy crop-size}
                    (= membership constants/community-rule-ens-only)
                    (assoc :membership constants/community-on-request-access
                           :ens-only true))]

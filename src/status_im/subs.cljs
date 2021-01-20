@@ -239,7 +239,7 @@
  :<- [:communities]
  (fn [communities]
    (->> (vals communities)
-        (group-by (comp (fnil string/upper-case "") first :display-name :identity :description))
+        (group-by (comp (fnil string/upper-case "") first :name))
         (map (fn [[title data]]
                {:title title
                 :data  data})))))
@@ -259,7 +259,7 @@
      (when (and (:joined status-community)
                 (or (string/blank? search-filter)
                     (string/includes? (string/lower-case
-                                       (get-in status-community [:description :identity :display-name])) search-filter)))
+                                       (:name status-community)) search-filter)))
        status-community))))
 
 (re-frame/reg-sub

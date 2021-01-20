@@ -1,5 +1,4 @@
-(ns status-im.ui.screens.communities.community
-  (:require [status-im.ui.components.topbar :as topbar]
+(ns status-im.ui.screens.communities.community (:require [status-im.ui.components.topbar :as topbar]
             [quo.react-native :as rn]
             [status-im.ui.components.toolbar :as toolbar]
             [quo.core :as quo]
@@ -9,6 +8,7 @@
             [status-im.communities.core :as communities]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
+            [status-im.ui.screens.chat.photos :as photos]
             [status-im.constants :as constants]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
@@ -16,28 +16,34 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.utils.core :as utils]))
 
-(defn toolbar-content [id display-name color members]
-  [rn/view {:style {:flex           1
-                    :align-items    :center
-                    :flex-direction :row}}
-   [rn/view {:padding-right 10}
-    (if (= id constants/status-community-id)
-      [rn/image {:source (resources/get-image :status-logo)
-                 :style  {:width  40
-                          :height 40}}]
-      [chat-icon.screen/chat-icon-view-toolbar
-       id
-       true
-       display-name
-       (or color (rand-nth colors/chat-colors))])]
-   [rn/view {:style {:flex 1 :justify-content :center}}
-    [quo/text {:number-of-lines     1
-               :accessibility-label :community-name-text}
-     display-name]
-    [quo/text {:number-of-lines 1
-               :size            :small
-               :color           :secondary}
-     (i18n/label-pluralize members :t/community-members {:count members})]]])
+(defn toolbar-content [id display-name color images members]
+  (let [thumbnail-image (get-in images [:thumbnail :uri])]
+    [rn/view {:style {:flex           1
+                      :align-items    :center
+                      :flex-direction :row}}
+     [rn/view {:padding-right 10}
+      (cond
+       (= id constants/status-community-id)
+       [rn/image {:source (resources/get-image :status-logo)
+                  :style  {:width  40
+                           :height 40}}]
+       (seq thumbnail-image)
+       [photos/photo thumbnail-image {:size 40}]
+
+       :else
+        [chat-icon.screen/chat-icon-view-toolbar
+         id
+         true
+         display-name
+         (or color (rand-nth colors/chat-colors))])]
+     [rn/view {:style {:flex 1 :justify-content :center}}
+      [quo/text {:number-of-lines     1
+                 :accessibility-label :community-name-text}
+       display-name]
+      [quo/text {:number-of-lines 1
+                 :size            :small
+                 :color           :secondary}
+       (i18n/label-pluralize members :t/community-members {:count members})]]]))
 
 (defn hide-sheet-and-dispatch [event]
   (>evt [:bottom-sheet/hide])
@@ -50,16 +56,14 @@
       {:title    name
        :on-press #(hide-sheet-and-dispatch [:navigate-to :community-management {:community-id id}])
        :chevron  true
-       :icon     (cond 
+       :icon     (cond
                   (= id constants/status-community-id)
                    [rn/image {:source (resources/get-image :status-logo)
                               :style  {:width  40
                                        :height 40}}]
                    (seq thumbnail-image)
-                   [rn/image {:source {:uri thumbnail-image}
-                              :resize-mode :cover
-                              :style  {:width  40
-                                       :height 40}}]
+                   [photos/photo thumbnail-image {:size 40}]
+
                    :else
                    [chat-icon.screen/chat-icon-view-chat-sheet
                     name
@@ -172,6 +176,7 @@
       {:content           [toolbar-content id
                            name
                            color
+                           images
                            (count members)]
        :right-accessories (when (or admin joined)
                             [{:icon                :main-icons/more
