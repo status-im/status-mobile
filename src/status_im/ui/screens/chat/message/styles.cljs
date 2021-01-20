@@ -110,8 +110,7 @@
    :border-bottom-right-radius (if timeline 16 (if outgoing 4 16))
    :border-width               1
    :border-color               components.colors/gray-lighter
-   :margin-vertical            4
-   :background-color           (:ui-background @colors/theme)})
+   :margin-vertical            4})
 
 (defn link-preview-image [outgoing]
   {:height                     170

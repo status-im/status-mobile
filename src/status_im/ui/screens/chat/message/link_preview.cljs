@@ -67,7 +67,8 @@
           nil)
         (when-not error
           [react/touchable-highlight
-           {:on-press #(when (and (security/safe-link? link))
+           {:style {:align-self :stretch}
+            :on-press #(when (and (security/safe-link? link))
                          (re-frame/dispatch
                           [:browser.ui/message-link-pressed link]))}
            [react/view (styles/link-preview-wrapper outgoing timeline)
