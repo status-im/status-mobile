@@ -5,7 +5,7 @@
             ["react-native-languages" :default react-native-languages]
             ["react-native-shake" :as react-native-shake]
             ["react-native-screens" :refer (enableScreens)]
-            ["react-native" :as rn]
+            ["react-native" :as rn :refer (DevSettings)]
             [re-frame.core :as re-frame]
             [re-frame.interop :as interop]
             [reagent.core :as reagent]
@@ -80,6 +80,14 @@
     :display-name "root"
     :reagent-render views/main}))
 
+(defn disable-rn-fast-refresh []
+  ;;on Android this method doesn't work
+  (when (and js/goog.DEBUG platform/ios? DevSettings)
+    (when-let [nm (.-_nativeModule DevSettings)]
+      ;;there is a bug in RN, so we have to enable it first and then disable
+      (.setHotLoadingEnabled ^js nm true)
+      (js/setTimeout #(.setHotLoadingEnabled ^js nm false) 1000))))
+
 (defn init []
   (utils.logs/init-logs config/log-level)
   (error-handler/register-exception-handler!)
@@ -91,4 +99,5 @@
   (notifications/listen-notifications)
   (when platform/android?
     (.registerHeadlessTask ^js app-registry "LocalNotifications" notifications/handle))
-  (snoopy/subscribe!))
+  (snoopy/subscribe!)
+  (disable-rn-fast-refresh))
