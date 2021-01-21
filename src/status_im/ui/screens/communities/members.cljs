@@ -32,9 +32,9 @@
                       :on-press #(>evt [::communities/member-kick community-id public-key])}]
       ; ban not implemented
       #_[quo/list-item {:theme    :negative
-                      :icon     :main-icons/cancel
-                      :title    (i18n/label :t/member-ban)
-                      :on-press #(>evt [::communities/member-ban community-id public-key])}]])])
+                        :icon     :main-icons/cancel
+                        :title    (i18n/label :t/member-ban)
+                        :on-press #(>evt [::communities/member-ban community-id public-key])}]])])
 
 (defn render-member [public-key _ _ {:keys [community-id admin]}]
   (let [member (or (<sub [:contacts/contact-by-address public-key])

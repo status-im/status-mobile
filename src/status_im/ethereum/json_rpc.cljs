@@ -119,6 +119,8 @@
    "wakuext_createCommunityChat" {}
    "wakuext_inviteUserToCommunity" {}
    "wakuext_removeUserFromCommunity" {}
+   "wakuext_requestToJoinCommunity" {}
+   "wakuext_pendingRequestsToJoinForCommunity" {}
    "wakuext_joinCommunity" {}
    "wakuext_leaveCommunity" {}
    "wakuext_communities" {}

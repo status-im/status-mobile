@@ -3,6 +3,7 @@
    [re-frame.core :as re-frame]
    [clojure.walk :as walk]
    [clojure.string :as string]
+   [clojure.set :as clojure.set]
    [taoensso.timbre :as log]
    [status-im.utils.fx :as fx]
    [status-im.constants :as constants]
@@ -25,15 +26,20 @@
                (assoc acc
                       (name k)
                       (-> v
-                          (update :members walk/stringify-keys)
-                          (assoc :identity {:display-name (get-in v [:identity :display_name])
-                                            :description (get-in v [:identity :description])}
-                                 :id (name k)))))
+                          (assoc :can-post? (:canPost v))
+                          (dissoc :canPost)
+                          (update :members walk/stringify-keys))))
              {}
              chats))
 
 (defn <-rpc [c]
   (-> c
+      (clojure.set/rename-keys {:requestedAccessAt :requested-access-at
+                                :canRequestAccess :can-request-access?
+                                :canManageUsers :can-manage-users?
+                                :canJoin :can-join?
+                                :requestedToJoinAt :requested-to-join-at
+                                :isMember :is-member?})
       (update :members walk/stringify-keys)
       (update :chats <-chats-rpc)))
 
@@ -84,7 +90,7 @@
   (handle-response cofx response))
 
 (fx/defn joined
-  {:events [::joined]}
+  {:events [::joined ::requested-to-join]}
   [cofx response]
   (handle-response cofx response))
 
@@ -119,6 +125,16 @@
                                   (log/error "failed to join community" community-id %)
                                   (re-frame/dispatch [::failed-to-join %]))}]})
 
+(fx/defn request-to-join
+  {:events [::request-to-join]}
+  [cofx community-id]
+  {::json-rpc/call [{:method "wakuext_requestToJoinCommunity"
+                     :params [{:communityID community-id}]
+                     :on-success #(re-frame/dispatch [::requested-to-join %])
+                     :on-error #(do
+                                  (log/error "failed to request to join community" community-id %)
+                                  (re-frame/dispatch [::failed-to-request-to-join %]))}]})
+
 (fx/defn leave
   {:events [::leave]}
   [cofx community-id]
@@ -149,6 +165,14 @@
                      #(re-frame/dispatch [:transport/message-sent % 1])
                      :on-failure #(log/error "failed to send a message" %)}]})
 
+(fx/defn share-community
+  {:events [::share-community]}
+  [cofx user-pk community-id]
+  (models.chat/upsert-chat cofx
+                           {:chat-id user-pk
+                            :active  (get-in cofx [:db :chats user-pk :active])}
+                           #(re-frame/dispatch [::chat-created community-id user-pk])))
+
 (fx/defn invite-user
   {:events [::invite-people-confirmation-pressed]}
   [cofx user-pk contacts]
@@ -156,15 +180,13 @@
     (when (pos? (count contacts))
       (log/error "Inviting contacts is not yet implemented"))
     (fx/merge cofx
-              {::json-rpc/call [{:method     "wakuext_inviteUserToCommunity"
-                                 :params     [community-id user-pk]
-                                 :on-success #(re-frame/dispatch [::people-invited %])
-                                 :on-error   #(do
-                                                (log/error "failed to invite-user community" %)
-                                                (re-frame/dispatch [::failed-to-invite-people %]))}]}
-              (models.chat/upsert-chat {:chat-id user-pk
-                                        :active  (get-in cofx [:db :chats user-pk :active])}
-                                       #(re-frame/dispatch [::chat-created community-id user-pk])))))
+              #_{::json-rpc/call [{:method     "wakuext_inviteUserToCommunity"
+                                   :params     [community-id user-pk]
+                                   :on-success #(re-frame/dispatch [::people-invited %])
+                                   :on-error   #(do
+                                                  (log/error "failed to invite-user community" %)
+                                                  (re-frame/dispatch [::failed-to-invite-people %]))}]}
+              (share-community user-pk community-id))))
 
 (fx/defn create
   {:events [::create-confirmation-pressed]}
@@ -227,15 +249,10 @@
   (not= constants/community-no-membership-access (:access permissions)))
 
 (def community-id-length 68)
-;; TODO: test this
-(defn can-post? [{:keys [admin] :as community} pk local-chat-id]
-  (let [chat-id (subs local-chat-id community-id-length)
-        can-access-community? (or (get-in community [:description :members pk])
-                                  (not (require-membership? (get-in community [:description :permissions]))))]
-    (or admin
-        (get-in community [:description :chats chat-id :members pk])
-        (and can-access-community?
-             (not (require-membership? (get-in community [:description :chats chat-id :permissions])))))))
+
+(defn can-post? [community _ local-chat-id]
+  (let [chat-id (subs local-chat-id community-id-length)]
+    (get-in community [:chats chat-id :can-post?])))
 
 (fx/defn reset-community-id-input [{:keys [db]} id]
   {:db (assoc db :communities/community-id-input id)})
@@ -340,3 +357,21 @@
   {:events [::delete-community]}
   [cofx community-id]
   (log/error "Community delete is not yet implemented"))
+
+(fx/defn invitations-fetched
+  {:events [::invitations-fetched]}
+  [cofx invitations]
+  (log/info "INVI" invitations))
+
+(fx/defn fetch-invitations
+  {:events [::fetch-invitations]}
+  [cofx community-id]
+  {::json-rpc/call [{:method     "wakuext_pendingRequestsToJoinForCommunity"
+                     :params     [community-id]
+                     :on-success #(re-frame/dispatch [::invitations-fetched %])
+                     :on-error   #(do
+                                    (log/error "failed to fetch invitations" community-id %)
+                                    (re-frame/dispatch [::failed-to-fetch-invitations %]))}]})
+
+(defn fetch-invitations! [community-id]
+  (re-frame/dispatch [::fetch-invitations community-id]))

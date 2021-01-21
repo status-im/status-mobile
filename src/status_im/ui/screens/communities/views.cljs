@@ -27,7 +27,7 @@
         color (or color (rand-nth colors/chat-colors))]
     [quo/list-item
      {:icon                      (cond
-                                  (= id constants/status-community-id)
+                                   (= id constants/status-community-id)
                                    [react/image {:source (resources/get-image :status-logo)
                                                  :style  {:width  40
                                                           :height 40}}]
@@ -110,7 +110,7 @@
                                        :height           12}
                  :accessibility-label :unviewed-messages-public}]))
 
-(defn status-community [{:keys [id name description]}]
+(defn status-community [{:keys [id name]}]
   [quo/list-item
    {:icon                      [react/image {:source (resources/get-image :status-logo)
                                              :style  {:width  40

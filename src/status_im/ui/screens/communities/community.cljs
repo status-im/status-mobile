@@ -1,20 +1,20 @@
 (ns status-im.ui.screens.communities.community (:require [status-im.ui.components.topbar :as topbar]
-            [quo.react-native :as rn]
-            [status-im.ui.components.toolbar :as toolbar]
-            [quo.core :as quo]
-            [status-im.utils.handlers :refer [>evt <sub]]
-            [status-im.i18n :as i18n]
-            [status-im.utils.config :as config]
-            [status-im.communities.core :as communities]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.screens.home.views.inner-item :as inner-item]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.constants :as constants]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.utils.core :as utils]))
+                                                         [quo.react-native :as rn]
+                                                         [status-im.ui.components.toolbar :as toolbar]
+                                                         [quo.core :as quo]
+                                                         [status-im.utils.handlers :refer [>evt <sub]]
+                                                         [status-im.i18n :as i18n]
+                                                         [status-im.utils.config :as config]
+                                                         [status-im.communities.core :as communities]
+                                                         [status-im.ui.components.list.views :as list]
+                                                         [status-im.ui.screens.home.views.inner-item :as inner-item]
+                                                         [status-im.ui.screens.chat.photos :as photos]
+                                                         [status-im.constants :as constants]
+                                                         [status-im.react-native.resources :as resources]
+                                                         [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+                                                         [status-im.ui.components.colors :as colors]
+                                                         [status-im.ui.components.icons.vector-icons :as icons]
+                                                         [status-im.utils.core :as utils]))
 
 (defn toolbar-content [id display-name color images members]
   (let [thumbnail-image (get-in images [:thumbnail :uri])]
@@ -23,14 +23,14 @@
                       :flex-direction :row}}
      [rn/view {:padding-right 10}
       (cond
-       (= id constants/status-community-id)
-       [rn/image {:source (resources/get-image :status-logo)
-                  :style  {:width  40
-                           :height 40}}]
-       (seq thumbnail-image)
-       [photos/photo thumbnail-image {:size 40}]
+        (= id constants/status-community-id)
+        [rn/image {:source (resources/get-image :status-logo)
+                   :style  {:width  40
+                            :height 40}}]
+        (seq thumbnail-image)
+        [photos/photo thumbnail-image {:size 40}]
 
-       :else
+        :else
         [chat-icon.screen/chat-icon-view-toolbar
          id
          true
@@ -49,7 +49,7 @@
   (>evt [:bottom-sheet/hide])
   (>evt event))
 
-(defn community-actions [{:keys [id admin name images description color]}]
+(defn community-actions [{:keys [id admin name images color]}]
   (let [thumbnail-image (get-in images [:thumbnail :uri])]
     [:<>
      [quo/list-item
@@ -57,7 +57,7 @@
        :on-press #(hide-sheet-and-dispatch [:navigate-to :community-management {:community-id id}])
        :chevron  true
        :icon     (cond
-                  (= id constants/status-community-id)
+                   (= id constants/status-community-id)
                    [rn/image {:source (resources/get-image :status-logo)
                               :style  {:width  40
                                        :height 40}}]
@@ -127,13 +127,11 @@
                 (map #(assoc % :color colors/blue)))]
     [community-chat-list chats]))
 
-(defn channel-preview-item [{:keys [id color identity]}]
-  (let [color (if (= id constants/status-community-id)
-                colors/blue
-                color)]
+(defn channel-preview-item [{:keys [id color name]}]
+  (let [color (or color (rand-nth colors/chat-colors))]
     [quo/list-item
      {:icon                      [chat-icon.screen/chat-icon-view-chat-list
-                                  id true (:display-name identity) color false false]
+                                  id true name color false false]
       :title                     [rn/view {:flex-direction :row
                                            :flex           1
                                            :padding-right  16
@@ -149,9 +147,8 @@
                                              :accessibility-label :chat-name-text
                                              :ellipsize-mode      :tail
                                              :number-of-lines     1}
-                                   (utils/truncate-str (:display-name identity) 30)]]
-      :title-accessibility-label :chat-name-text
-      :subtitle                  (:description identity)}]))
+                                   (utils/truncate-str name 30)]]
+      :title-accessibility-label :chat-name-text}]))
 
 (defn community-channel-preview-list [_ chats-without-id]
   (let [chats (reduce-kv
@@ -168,7 +165,17 @@
 
 (defn community [route]
   (let [{:keys [community-id]} (get-in route [:route :params])
-        {:keys [id chats name images members color joined admin]
+        {:keys [id
+                chats
+                name
+                images
+                members
+                color
+                joined
+                can-request-access?
+                can-join?
+                requested-to-join-at
+                admin]
          :as   community}      (<sub [:communities/community community-id])]
     [rn/view {:style {:flex 1}}
 
@@ -190,8 +197,26 @@
        [community-channel-list id]
        [community-channel-preview-list id chats])
      (when-not joined
-       [toolbar/toolbar
-        {:show-border? true
-         :center       [quo/button {:on-press #(>evt [::communities/join id])
-                                    :type     :secondary}
-                        (i18n/label :t/join)]}])]))
+       (cond
+         can-join?
+         [toolbar/toolbar
+          {:show-border? true
+           :center       [quo/button {:on-press #(>evt [::communities/join id])
+                                      :type     :secondary}
+                          (i18n/label :t/join)]}]
+         can-request-access?
+         (if (pos? requested-to-join-at)
+           [toolbar/toolbar
+            {:show-border? true
+             :left       [quo/text {:color :secondary} (i18n/label :t/membership-request-pending)]}]
+           [toolbar/toolbar
+            {:show-border? true
+             :center       [quo/button {:on-press #(>evt [::communities/request-to-join id])
+                                        :type     :secondary}
+                            (i18n/label :t/request-access)]}])
+         :else
+         [toolbar/toolbar
+          {:show-border? true
+           :center       [quo/button {:on-press #(>evt [::communities/join id])
+                                      :type     :secondary}
+                          (i18n/label :t/follow)]}]))]))
