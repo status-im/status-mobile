@@ -75,7 +75,7 @@ class BaseTestReport:
 
     def get_sauce_job_url(self, job_id):
         token = self.get_sauce_token(job_id)
-        return 'https://eu-central-1.saucelabs.com/jobs/%s?auth=%s' % (job_id, token)
+        return 'https://saucelabs.com/jobs/%s?auth=%s' % (job_id, token)
 
     def get_sauce_final_screenshot_url(self, job_id):
         token = self.get_sauce_token(job_id)
@@ -83,7 +83,7 @@ class BaseTestReport:
         for _ in range(10):
             try:
                 scr_number = sauce.jobs.get_job_assets(job_id)['screenshots'][-1]
-                return 'https://assets.eu-central-1.saucelabs.com/jobs/%s/%s?auth=%s' % (job_id, scr_number, token)
+                return 'https://assets.saucelabs.com/jobs/%s/%s?auth=%s' % (job_id, scr_number, token)
             except SauceException:
                 time.sleep(3)
 

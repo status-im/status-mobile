@@ -17,6 +17,7 @@ from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
 from tests import test_suite_data, start_threads, appium_container, pytest_config_global
 
+
 class AbstractTestCase:
     __metaclass__ = ABCMeta
 
@@ -30,7 +31,7 @@ class AbstractTestCase:
 
     @property
     def executor_sauce_lab(self):
-        return 'http://%s:%s@ondemand.eu-central-1.saucelabs.com/wd/hub' % (self.sauce_username, self.sauce_access_key)
+        return 'https://ondemand.saucelabs.com:443/wd/hub'
 
     @property
     def executor_local(self):
@@ -58,6 +59,8 @@ class AbstractTestCase:
     @property
     def capabilities_sauce_lab(self):
         desired_caps = dict()
+        desired_caps['username'] = self.sauce_username
+        desired_caps['accessKey'] = self.sauce_access_key
         desired_caps['app'] = 'sauce-storage:' + test_suite_data.apk_name
         desired_caps['build'] = pytest_config_global['build']
         desired_caps['name'] = test_suite_data.current_test.name
@@ -174,7 +177,7 @@ class SingleDeviceTestCase(AbstractTestCase):
             self.environment == 'sauce' else (self.executor_local, self.capabilities_local)
         for key, value in kwargs.items():
             capabilities[key] = value
-        self.driver = Driver(executor, capabilities)
+        self.driver = Driver(command_executor=executor, desired_capabilities=capabilities)
         test_suite_data.current_test.testruns[-1].jobs[self.driver.session_id] = 1
         self.driver.implicitly_wait(self.implicitly_wait)
         self.errors = Errors()
