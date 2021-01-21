@@ -129,7 +129,7 @@
   {:events [::request-to-join]}
   [cofx community-id]
   {::json-rpc/call [{:method "wakuext_requestToJoinCommunity"
-                     :params [{:communityID community-id}]
+                     :params [{:communityId community-id}]
                      :on-success #(re-frame/dispatch [::requested-to-join %])
                      :on-error #(do
                                   (log/error "failed to request to join community" community-id %)
