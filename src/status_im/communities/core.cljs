@@ -21,6 +21,17 @@
   [{:name "Status"
     :id constants/status-community-id}])
 
+(defn <-request-to-join-community-rpc [r]
+  (clojure.set/rename-keys r {:communityId :community-id
+                              :publicKey :public-key
+                              :chatId :chat-id}))
+
+(defn <-requests-to-join-community-rpc [requests]
+  (reduce (fn [acc r]
+            (assoc acc (:id r) (<-request-to-join-community-rpc r)))
+          {}
+          requests))
+
 (defn <-chats-rpc [chats]
   (reduce-kv (fn [acc k v]
                (assoc acc
@@ -358,20 +369,18 @@
   [cofx community-id]
   (log/error "Community delete is not yet implemented"))
 
-(fx/defn invitations-fetched
-  {:events [::invitations-fetched]}
-  [cofx invitations]
-  (log/info "INVI" invitations))
+(fx/defn requests-to-join-fetched
+  {:events [::requests-to-join-fetched]}
+  [{:keys [db]} community-id requests]
+  {:db (assoc-in db [:communities/requests-to-join community-id] (<-requests-to-join-community-rpc requests))})
 
-(fx/defn fetch-invitations
-  {:events [::fetch-invitations]}
+(fx/defn fetch-requests-to-join
+  {:events [::fetch-requests-to-join]}
   [cofx community-id]
   {::json-rpc/call [{:method     "wakuext_pendingRequestsToJoinForCommunity"
                      :params     [community-id]
-                     :on-success #(re-frame/dispatch [::invitations-fetched %])
-                     :on-error   #(do
-                                    (log/error "failed to fetch invitations" community-id %)
-                                    (re-frame/dispatch [::failed-to-fetch-invitations %]))}]})
+                     :on-success #(re-frame/dispatch [::requests-to-join-fetched community-id %])
+                     :on-error   #(log/error "failed to fetch requests-to-join" community-id %)}]})
 
-(defn fetch-invitations! [community-id]
-  (re-frame/dispatch [::fetch-invitations community-id]))
+(defn fetch-requests-to-join! [community-id]
+  (re-frame/dispatch [::fetch-requests-to-join community-id]))

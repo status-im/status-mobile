@@ -221,6 +221,7 @@
 ;; communities
 
 (reg-root-key-sub :communities/create :communities/create)
+(reg-root-key-sub :communities/requests-to-join :communities/requests-to-join)
 
 (re-frame/reg-sub
  :communities
@@ -278,6 +279,12 @@
              (+ acc (or unviewed-messages-count 0)))
            0
            chats)))
+
+(re-frame/reg-sub
+ :communities/requests-to-join-for-community
+ :<- [:communities/requests-to-join]
+ (fn [requests [_ community-id]]
+   (get requests community-id {})))
 
 ;;GENERAL ==============================================================================================================
 

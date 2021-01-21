@@ -6,17 +6,27 @@
             [reagent.core :as reagent]
             [status-im.communities.core :as communities]
             [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.badge :as badge]
             [status-im.constants :as constants]
             [status-im.react-native.resources :as resources]
             [quo.react-native :as rn]))
 
+(defn unviewed-indicator [c]
+  (when (pos? c)
+    [react/view {:padding-left    16
+                 :justify-content :flex-end
+                 :align-items     :flex-end}
+     [badge/message-counter c]]))
+
 (defn management [route]
   (let [{:keys [community-id]}      (get-in route [:route :params])
+        requests-to-join (<sub [:communities/requests-to-join :community-id])
         community (<sub [:communities/community community-id])]
     (reagent/create-class
      {:display-name "community-profile-view"
       :component-did-mount (fn []
-                             (communities/fetch-invitations! community-id))
+                             (communities/fetch-requests-to-join! community-id))
       :reagent-render (fn []
                         (let [{:keys [color
                                       members
@@ -38,10 +48,11 @@
                                                  :extended-header   (profile-header/extended-header
                                                                      {:title    name
                                                                       :color    (or color (rand-nth colors/chat-colors))
-                                                                      :photo    (when (= community-id constants/status-community-id)
+                                                                      :photo    (if (= community-id constants/status-community-id)
                                                                                   (:uri
                                                                                    (rn/resolve-asset-source
-                                                                                    (resources/get-image :status-logo))))
+                                                                                    (resources/get-image :status-logo)))
+                                                                                  (get-in community [:images :large :uri]))
                                                                       :subtitle (i18n/label-pluralize members-count :t/community-members {:count members-count})})
                                                  :use-insets        true}
                             [:<>
@@ -49,7 +60,11 @@
                               (get-in description [:identity :description])]
                              [quo/separator {:style {:margin-vertical 8}}]
                              [quo/list-item {:chevron        true
-                                             :accessory-text (str members-count)
+                                             :accessory
+                                             [react/view {:flex-direction :row}
+                                              (when (pos? members-count)
+                                                [quo/text {:color :secondary} (str members-count)])
+                                              [unviewed-indicator (count requests-to-join)]]
                                              :on-press       #(>evt [:navigate-to :community-members {:community-id community-id}])
                                              :title          (i18n/label :t/members-label)
                                              :icon           :main-icons/group-chat}]
