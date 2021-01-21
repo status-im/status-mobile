@@ -50,15 +50,11 @@
       les-topic (assoc les-topic {:Min 2, :Max 2}))))
 
 (defn- get-base-node-config [config]
-  (let [initial-props @(re-frame/subscribe [:initial-props])
-        status-node-port (get initial-props :STATUS_NODE_PORT)]
-    (cond-> (assoc config
-                   :Name "StatusIM")
-      config/dev-build?
-      (assoc :ListenAddr ":30304"
-             :DataDir (str (:DataDir config) "_dev"))
-      status-node-port
-      (assoc :ListenAddr (str ":" status-node-port)))))
+  (cond-> (assoc config
+                 :Name "StatusIM")
+    config/dev-build?
+    (assoc :ListenAddr ":30304"
+           :DataDir (str (:DataDir config) "_dev"))))
 
 (defn- pick-nodes
   "Picks `limit` different nodes randomly from the list of nodes

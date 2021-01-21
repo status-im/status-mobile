@@ -51,7 +51,7 @@
 (defn root [_]
   (reagent/create-class
    {:component-did-mount
-    (fn [this]
+    (fn [_]
       (.addListener ^js react/keyboard
                     (if platform/ios?
                       "keyboardWillShow"
@@ -71,7 +71,6 @@
       (.addEventListener react-native-shake
                          "ShakeEvent"
                          on-shake)
-      (re-frame/dispatch [:set-initial-props (reagent/props this)])
       (.hide ^js splash-screen))
     :component-will-unmount
     (fn []

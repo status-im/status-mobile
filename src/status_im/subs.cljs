@@ -70,7 +70,6 @@
 (reg-root-key-sub :about-app/node-info :node-info)
 (reg-root-key-sub :peers-summary :peers-summary)
 (reg-root-key-sub :dimensions/window :dimensions/window)
-(reg-root-key-sub :initial-props :initial-props)
 (reg-root-key-sub :fleets/custom-fleets :custom-fleets)
 (reg-root-key-sub :animations :animations)
 (reg-root-key-sub :ui/search :ui/search)

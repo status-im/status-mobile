@@ -32,7 +32,6 @@
              :chat/last-outgoing-message-sent-at 0
              :chat/spam-messages-frequency       0
              :tooltips                           {}
-             :initial-props                      {}
              :dimensions/window                  (dimensions/window)
              :registry                           {}
              :stickers/packs-owned               #{}

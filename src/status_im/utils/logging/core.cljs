@@ -60,7 +60,6 @@
   ;; TODO: Add message explaining db export
   (let [db-json (types/clj->json (select-keys db [:app-state
                                                   :current-chat-id
-                                                  :initial-props
                                                   :keyboard-height
                                                   :keyboard-max-height
                                                   :network

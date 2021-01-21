@@ -11,11 +11,10 @@
 
 (fx/defn initialize-app-db
   "Initialize db to initial state"
-  [{{:keys [keycard initial-props supported-biometric-auth app-active-since]
+  [{{:keys [keycard supported-biometric-auth app-active-since]
      :network/keys [type]} :db
     now :now}]
   {:db (assoc app-db
-              :initial-props initial-props
               :network/type type
               :keycard (dissoc keycard :secrets)
               :supported-biometric-auth supported-biometric-auth

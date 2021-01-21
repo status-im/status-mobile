@@ -889,11 +889,6 @@
    (pairing/update-installation cofx installation-id metadata)))
 
 (handlers/register-handler-fx
- :set-initial-props
- (fn [cofx [_ initial-props]]
-   {:db (assoc (:db cofx) :initial-props initial-props)}))
-
-(handlers/register-handler-fx
  :pairing.ui/enable-installation-pressed
  (fn [cofx [_ installation-id]]
    (pairing/enable-fx cofx installation-id)))
