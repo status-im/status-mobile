@@ -76,7 +76,7 @@ class TestBrowsing(SingleDeviceTestCase):
         for url in ('metamask.site', 'https://www.cryptokitties.domainname'):
             daap_view.just_fyi('Checking blocked website %s' % url)
             dapp_detail = daap_view.open_url(url)
-            dapp_detail.find_element_by_translation_id('browsing-site-blocked-title')
+            dapp_detail.element_by_translation_id('browsing-site-blocked-title')
             if dapp_detail.browser_refresh_page_button.is_element_displayed():
                 self.errors.append("Refresh button is present in blocked site")
             dapp_detail.go_back_button.click()
@@ -218,7 +218,7 @@ class TestBrowsing(SingleDeviceTestCase):
         dapp_view.browser_entry_long_press(edited_name)
         dapp_view.open_in_new_tab_button.click()
         browsing_view.options_button.click()
-        if not browsing_view.find_element_by_translation_id('remove-favourite').is_element_displayed():
+        if not browsing_view.element_by_translation_id('remove-favourite').is_element_displayed():
             self.errors.append("Remove favourite is not shown on added bookmark!")
         self.errors.verify_no_errors()
 
@@ -242,16 +242,20 @@ class TestBrowsing(SingleDeviceTestCase):
     @marks.testrail_id(5354)
     @marks.critical
     def test_refresh_button_browsing_app_webview(self):
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.create_user()
-        daap_view = home_view.dapp_tab_button.click()
-        browsing_view = daap_view.open_url('app.uniswap.org')
-        browsing_view.allow_button.click()
-        browsing_view.find_full_text('Select a token').click()
-        browsing_view.find_text_part("Token Name")
-        browsing_view.browser_refresh_page_button.click()
-        if browsing_view.element_by_text_part("Token Name").is_element_displayed():
-            self.driver.fail("Page failed to be refreshed")
+        home = SignInView(self.driver).create_user()
+        daap = home.dapp_tab_button.click()
+        url = 'app.uniswap.org'
+        element_on_start_page = daap.element_by_text('ETH')
+        web_page = daap.open_url(url)
+        daap.allow_button.click()
+        element_on_start_page.click()
+
+        # when bottom sheet is opened, elements by text couldn't be found
+        element_on_start_page.wait_for_invisibility_of_element(20)
+        web_page.browser_refresh_page_button.click()
+
+        if not element_on_start_page.is_element_displayed(30):
+             self.driver.fail("Page failed to be refreshed")
 
 
     @marks.testrail_id(5456)

@@ -124,7 +124,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         if not wallet.backup_recovery_phrase_warning_text.is_element_present(30):
             self.driver.fail("'Back up your seed phrase' warning is not shown on Wallet with funds")
         profile = wallet.get_profile_view()
-        wallet.backup_recovery_phrase_warning_text.click_until_presence_of_element(profile.ok_continue_button)
+        wallet.backup_recovery_phrase_warning_text.click()
         profile.backup_recovery_phrase()
 
     @marks.testrail_id(5440)

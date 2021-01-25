@@ -73,6 +73,7 @@ class NetworkApi(object):
         pytest.fail('Transaction is not found in Ropsten network')
 
     def find_transaction_by_unique_amount(self, address, amount, token=False, decimals=18, wait_time=600):
+        additional_info = 'token transactions' if token else 'ETH transactions'
         counter = 0
         while True:
             if counter >= wait_time:
@@ -80,29 +81,22 @@ class NetworkApi(object):
                     self.log('Transaction #%s, amount is %s' %(entry+1, float(int(transactions[entry]['value']) / 10 ** decimals)))
                     self.log(str(transactions[entry]))
                 pytest.fail(
-                    'Transaction with amount %s is not found in list of transactions, address is %s' %
-                    (amount, address))
+                    'Transaction with amount %s is not found in list of %s, address is %s during %ss' %
+                    (amount, additional_info, address, wait_time))
             else:
                 counter += 10
                 time.sleep(10)
                 try:
                     if token:
                         transactions = self.get_token_transactions(address)
-                        additional_info = 'token transactions'
                     else:
                         transactions = self.get_transactions(address)
-                        additional_info = 'ETH transactions'
                 except JSONDecodeError as e:
                     self.log(str(e))
                     continue
-                self.log('Looking for a transaction with unique amount %s in list of %s, address is %s' %
-                             (amount, additional_info, address))
                 try:
                     for transaction in transactions:
                         if float(int(transaction['value']) / 10 ** decimals) == float(amount):
-                            self.log(
-                                'Transaction with unique amount %s is found in list of transactions, address is %s' %
-                                (amount, address))
                             return transaction
                 except TypeError as e:
                     self.log("Failed iterate transactions: " + str(e))
@@ -110,7 +104,11 @@ class NetworkApi(object):
 
     def wait_for_confirmation_of_transaction(self, address, amount, confirmations=12, token=False):
         start_time = time.time()
-        self.log('Waiting for transaction to have %s confirmations' % confirmations)
+        if token:
+            token_info = "token transaction"
+        else:
+            token_info = "ETH transaction"
+        self.log('Waiting %s %s for %s to have %s confirmations' % (amount, token_info, address, confirmations))
         while round(time.time() - start_time, ndigits=2) < 900:  # should be < idleTimeout capability
             transaction = self.find_transaction_by_unique_amount(address, amount, token)
             self.log(

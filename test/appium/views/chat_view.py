@@ -2,82 +2,18 @@ from datetime import datetime
 import dateutil.parser
 import time
 
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException
 
 from tests import emojis
 from time import sleep
-from views.base_element import BaseButton, BaseEditBox, BaseText, BaseElement
+from views.base_element import Button, EditBox, Text, BaseElement, SilentButton
 from views.base_view import BaseView, ProgressBar
-from views.profile_view import ProfilePictureElement, ProfileAddressText
+from views.profile_view import ProfileView
 
 
-class ChatMessageInput(BaseEditBox):
+class SendCommand(Button):
     def __init__(self, driver):
-        super(ChatMessageInput, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('chat-message-input')
-
-
-class TinyReplyIconInMessageInput(BaseElement):
-    def __init__(self, driver):
-        super(TinyReplyIconInMessageInput, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('tiny-reply-icon')
-
-
-class QuoteUsernameInMessageInput(BaseText):
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.view.ViewGroup[@content-desc='cancel-message-reply']/"
-                                                   "..//android.widget.TextView[1]")
-
-
-class CancelReplyButton(BaseEditBox):
-    def __init__(self, driver):
-        super(CancelReplyButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('cancel-message-reply')
-
-class CancelSendImage(BaseEditBox):
-    def __init__(self, driver):
-        super(CancelSendImage, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('cancel-send-image')
-
-
-class ViewImageOptions(BaseEditBox):
-    def __init__(self, driver):
-        super(ViewImageOptions, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@content-desc="icon"]/android.widget.ImageView')
-
-class AddToContacts(BaseButton):
-    def __init__(self, driver):
-        super(AddToContacts, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('add-to-contacts-button')
-
-
-class RemoveFromContactsButton(BaseButton):
-    def __init__(self, driver):
-        super(RemoveFromContactsButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('Remove from contacts-item-button')
-
-
-class AddGroupChatMembersButton(BaseButton):
-    def __init__(self, driver):
-        super(AddGroupChatMembersButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Add members']")
-
-    def navigate(self):
-        from views.contacts_view import ContactsView
-        return ContactsView(self.driver)
-
-
-class UserNameText(BaseText):
-    def __init__(self, driver):
-        super(UserNameText, self).__init__(driver)
-        self.locator = \
-            self.Locator.accessibility_id('chat-name-text')
-
-class SendCommand(BaseButton):
-    def __init__(self, driver):
-        super(SendCommand, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Send transaction')
+        super().__init__(driver, translation_id="send-transaction")
 
     def navigate(self):
         from views.send_transaction_view import SendTransactionView
@@ -85,14 +21,12 @@ class SendCommand(BaseButton):
 
     def click(self):
         self.wait_for_element().click()
-        self.driver.info('Tap on %s' % self.name)
         return self.navigate()
 
 
-class RequestCommand(BaseButton):
+class RequestCommand(Button):
     def __init__(self, driver):
-        super(RequestCommand, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Request transaction')
+        super().__init__(driver, translation_id="request-transaction")
 
     def navigate(self):
         from views.send_transaction_view import SendTransactionView
@@ -100,84 +34,12 @@ class RequestCommand(BaseButton):
 
     def click(self):
         self.wait_for_element().click()
-        self.driver.info('Tap on %s' % self.name)
         return self.navigate()
 
 
-class ChatMenuButton(BaseButton):
+class GroupInfoButton(Button):
     def __init__(self, driver):
-        super(ChatMenuButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('chat-menu-button')
-
-
-class MembersButton(BaseButton):
-    def __init__(self, driver):
-        super(MembersButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="action"])[1]')
-
-
-class DeleteChatButton(BaseButton):
-    def __init__(self, driver):
-        super(DeleteChatButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="Delete chat"]')
-
-
-class ClearHistoryButton(BaseButton):
-    def __init__(self, driver):
-        super(ClearHistoryButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="Clear history"]')
-
-
-class ReplyMessageButton(BaseButton):
-    def __init__(self, driver):
-        super(ReplyMessageButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector("Reply")
-
-class SaveImageButton(BaseButton):
-    def __init__(self, driver):
-        super(SaveImageButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector("Save")
-
-
-class ImageInRecentInGalleryElement(BaseElement):
-    def __init__(self, driver):
-        super(ImageInRecentInGalleryElement, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[contains(@resource-id,"thumbnail")]')
-
-class ProfileDetailsOtherUser(BaseButton):
-    def __init__(self, driver):
-        super(ProfileDetailsOtherUser, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('share-button')
-
-
-class ProfileNicknameOtherUser(BaseElement):
-    def __init__(self, driver):
-        super(ProfileNicknameOtherUser, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@content-desc="profile-nickname-item"]/android.widget.TextView[2]')
-
-
-class ProfileNicknameOtherUserButton(BaseElement):
-    def __init__(self, driver):
-        super(ProfileNicknameOtherUserButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('profile-nickname-item')
-
-
-class NicknameInputOtherUser(BaseEditBox):
-    def __init__(self, driver):
-        super(NicknameInputOtherUser, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('nickname-input')
-
-class ShareChatButton(BaseButton):
-    def __init__(self, driver):
-        super(ShareChatButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('share-chat-button')
-
-
-class GroupInfoButton(BaseButton):
-
-    def __init__(self, driver):
-        super(GroupInfoButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="Group info"]')
+        super().__init__(driver, translation_id="group-info")
 
     def navigate(self):
         return GroupChatInfoView(self.driver)
@@ -186,243 +48,67 @@ class GroupInfoButton(BaseButton):
         self.wait_for_element().click()
         return self.navigate()
 
-class GroupInviteButton(BaseButton):
+
+class UnblockContactButton(Button):
     def __init__(self, driver):
-        super(GroupInviteButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('invite-chat-button')
-
-class GroupInviteLinkText(BaseText):
-    def __init__(self, driver):
-        super(BaseText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@content-desc="invitation-link"]/android.widget.TextView')
-
-
-class IntoduceYourselfEditBox(BaseEditBox):
-    def __init__(self, driver):
-        super(IntoduceYourselfEditBox, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('introduce-yourself-input')
-
-
-class RequestMembershipButton(BaseButton):
-    def __init__(self, driver):
-        super(RequestMembershipButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Request membership')
-
-
-class GroupMembershipRequestButton(BaseButton):
-    def __init__(self, driver):
-        super(GroupMembershipRequestButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('invitation-requests-button')
-
-
-class AcceptGroupInvitationButton(BaseButton):
-    def __init__(self, driver):
-        super(AcceptGroupInvitationButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('accept-invitation-button')
-
-
-class DeclineGroupInvitationButton(BaseButton):
-    def __init__(self, driver):
-        super(DeclineGroupInvitationButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('decline-invitation-button')
-
-
-class RetryGroupInvitationButton(BaseButton):
-    def __init__(self, driver):
-        super(RetryGroupInvitationButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('retry-button')
-
-class RemoveGroupInvitationButton(BaseButton):
-    def __init__(self, driver):
-        super(RemoveGroupInvitationButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('remove-group-button')
-
-
-class LeaveChatButton(BaseButton):
-    def __init__(self, driver):
-        super(LeaveChatButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('leave-chat-button')
-
-
-class ClearButton(BaseButton):
-    def __init__(self, driver):
-        super(ClearButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="CLEAR"]')
-
-
-class BlockContactButton(BaseButton):
-    def __init__(self, driver):
-        super(BlockContactButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('block-contact-confirm')
-
-
-class UnblockContactButton(BaseButton):
-    def __init__(self, driver):
-        super(UnblockContactButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('Unblock-item-button')
+        super().__init__(driver, accessibility_id="Unblock-item-button")
 
     def click(self):
         self.scroll_to_element()
         self.wait_for_element().click()
 
 
-class LeaveButton(BaseButton):
+class OpenInStatusButton(Button):
     def __init__(self, driver):
-        super(LeaveButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="LEAVE"]')
-
-
-class ChatSettings(BaseButton):
-    def __init__(self, driver):
-        super(ChatSettings, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Settings']")
-
-
-class UserOptions(BaseButton):
-    def __init__(self, driver):
-        super(UserOptions, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('options')
-
-
-class RemoveButton(BaseButton):
-    def __init__(self, driver):
-        super(RemoveButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Remove']")
-
-
-class OpenInStatusButton(BaseButton):
-    def __init__(self, driver):
-        super(OpenInStatusButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Open in Status']")
+        super().__init__(driver, translation_id="browsing-open-in-status")
 
     def navigate(self):
         from views.web_views.base_web_view import BaseWebView
         return BaseWebView(self.driver)
 
-
-class CommandsButton(BaseButton):
+class PublicKeyEditBox(EditBox):
     def __init__(self, driver):
-        super(CommandsButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('show-extensions-icon')
+        super().__init__(driver, accessibility_id="enter-contact-code-input")
+
+    def set_value(self, value):
+        for _ in range(2):
+            if self.text != value:
+                self.find_element().set_value(value)
 
 
-class ShowStickersButton(BaseButton):
+class ViewProfileButton(Button):
     def __init__(self, driver):
-        super(ShowStickersButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('show-stickers-icon')
-
-
-class GetStickers(BaseButton):
-    def __init__(self, driver):
-        super(GetStickers, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[contains(@text, "Get Stickers")]')
-
-
-class StickerIcon(BaseButton):
-    def __init__(self, driver):
-        super(StickerIcon, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('sticker-icon')
-
-class ShowImagesButton(BaseButton):
-    def __init__(self, driver):
-        super(ShowImagesButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('show-photo-icon')
-
-
-class TakePhotoButton(BaseButton):
-    def __init__(self, driver):
-        super(TakePhotoButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('take-picture')
-
-class ImageFromGalleryButton(BaseButton):
-    def __init__(self, driver):
-        super(ImageFromGalleryButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('open-gallery')
-
-class FirstElementFromGalleryButton(BaseButton):
-    def __init__(self, driver):
-        super(FirstElementFromGalleryButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@content-desc="open-gallery"]/following-sibling::android.view.ViewGroup[1]')
-
-class ViewProfileButton(BaseButton):
-    def __init__(self, driver):
-        super(ViewProfileButton, self).__init__(driver)
-        self.locator = self.Locator.translation_id('view-profile')
-
-    def navigate(self):
-        return ChatView(self.driver)
-
-class ViewProfileByAvatarButton(BaseButton):
-    def __init__(self, driver):
-        super(ViewProfileByAvatarButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('member-photo')
-
-class NoMessagesInChatText(BaseText):
-    def __init__(self, driver):
-        super(NoMessagesInChatText, self).__init__(driver)
-        self.locator = self.Locator.text_part_selector(
-            'Any messages you send here are encrypted and can only be read by you and')
-
-
-class ProfileSendMessageButton(BaseButton):
-    def __init__(self, driver):
-        super(ProfileSendMessageButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('Chat-item-button')
+        super().__init__(driver, translation_id="view-profile")
 
     def navigate(self):
         return ChatView(self.driver)
 
 
-class ProfileBlockContactButton(BaseButton):
+class ProfileSendMessageButton(Button):
     def __init__(self, driver):
-        super(ProfileBlockContactButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('Block-item-button')
+        super().__init__(driver, accessibility_id="Chat-item-button")
+
+    def navigate(self):
+        return ChatView(self.driver)
+
+
+class ProfileBlockContactButton(Button):
+    def __init__(self, driver):
+        super(ProfileBlockContactButton, self).__init__(driver, accessibility_id="Block-item-button")
 
     def click(self):
         self.scroll_to_element()
         self.wait_for_element().click()
 
 
-class ProfileAddToContactsButton(BaseButton):
-    def __init__(self, driver):
-        super(ProfileAddToContactsButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('Add to contacts-item-button')
-
-
-class JoinChatButton(BaseButton):
-    def __init__(self, driver):
-        super(JoinChatButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('join-chat-button')
-
-
-class DeclineChatButton(BaseButton):
-    def __init__(self, driver):
-        super(DeclineChatButton, self).__init__(driver)
-        self.locator = self.Locator.text_part_selector('Decline invitation')
-
-
-class RemoveFromChatButton(BaseButton):
-    def __init__(self, driver):
-        super(RemoveFromChatButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('remove-from-chat')
-
-
-class MakeAdminButton(BaseButton):
-    def __init__(self, driver):
-        super(MakeAdminButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('make-admin')
-
-
-class ChatElementByText(BaseElement):
+class ChatElementByText(Text):
     def __init__(self, driver, text):
-        super(ChatElementByText, self).__init__(driver)
         self.message_text = text
         self.message_locator = "//*[starts-with(@text,'%s')]" % text
-        self.locator = self.Locator.xpath_selector(
-            self.message_locator + "/ancestor::android.view.ViewGroup[@content-desc='chat-item']")
+        super().__init__(driver, prefix=self.message_locator,
+                         xpath="/ancestor::android.view.ViewGroup[@content-desc='chat-item']")
 
     def find_element(self):
-        self.driver.info("Looking for message with text '%s'" % self.message_text)
         for _ in range(2):
             try:
                 return super(ChatElementByText, self).find_element()
@@ -430,86 +116,74 @@ class ChatElementByText(BaseElement):
                 ChatView(self.driver).reconnect()
 
     def click_on_text(self):
-        self.locator = self.Locator.xpath_selector(self.message_locator +
-                                                   "/ancestor::android.view.ViewGroup[@content-desc='chat-item']/android.view.ViewGroup")
+        self.locator = "%s/ancestor::android.view.ViewGroup[@content-desc='chat-item']/android.view.ViewGroup" % self.message_locator
         self.click()
-
-
 
     @property
     def image_in_reply(self):
         class ImageInReply(BaseElement):
-            def __init__(self, driver, parent_locator):
-                super(ImageInReply, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(
-                    parent_locator + "//android.widget.ImageView")
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, xpath="//android.widget.ImageView")
         try:
-            return ImageInReply(self.driver, self.locator.value)
+            return ImageInReply(self.driver, self.locator)
         except NoSuchElementException:
             return ''
 
     @property
     def timestamp_message(self):
-        class TimeStampText(BaseText):
+        class TimeStampText(Text):
             def __init__(self, driver, parent_locator: str):
-                super(TimeStampText, self).__init__(driver)
-                suffix = "//android.widget.TextView)[last()]"
-                self.locator = self.Locator.xpath_selector("(" + parent_locator + suffix)
+                super().__init__(driver, xpath="(%s//android.widget.TextView)[last()]" % parent_locator)
 
-        return TimeStampText(self.driver, self.locator.value)
+        return TimeStampText(self.driver, self.locator)
 
     @property
     def progress_bar(self):
-        return ProgressBar(self.driver, self.locator.value)
+        return ProgressBar(self.driver, self.locator)
 
     @property
     def member_photo(self):
-        class MemberPhoto(BaseButton):
-            def __init__(self, driver, parent_locator):
-                super(MemberPhoto, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(parent_locator + "//*[@content-desc='member-photo']")
+        class MemberPhoto(Button):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='member-photo']")
 
-        return MemberPhoto(self.driver, self.locator.value)
+        return MemberPhoto(self.driver, self.locator)
 
     @property
     def username(self):
-        class Username(BaseText):
-            def __init__(self, driver, parent_locator):
-                super(Username, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(parent_locator + "/*[2]/android.widget.TextView")
+        class Username(Text):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, xpath="/*[2]/android.widget.TextView" )
 
-        return Username(self.driver, self.locator.value)
+        return Username(self.driver, self.locator)
 
     @property
     def send_request_button(self):
-        class SendRequestButton(BaseButton):
-            def __init__(self, driver, parent_locator):
-                super(SendRequestButton, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(parent_locator + '//*[@text="Send"]')
+        class SendRequestButton(Button):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, translation_id="command-button-send")
 
-        return SendRequestButton(self.driver, self.locator.value)
+        self.button = SendRequestButton(self.driver, self.locator)
+        return self.button
 
     @property
     def transaction_status(self):
-        class TransactionStatus(BaseText):
-            def __init__(self, driver, parent_locator):
-                super(TransactionStatus, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(parent_locator + "/*[1]/*[1]/*[5]/android.widget.TextView")
+        class TransactionStatus(Text):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, xpath="/*[1]/*[1]/*[5]/android.widget.TextView")
 
-        return TransactionStatus(self.driver, self.locator.value)
+        return TransactionStatus(self.driver, self.locator)
 
     def contains_text(self, text, wait_time=5) -> bool:
-        element = BaseText(self.driver)
-        element.locator = element.Locator.xpath_selector(
-            self.locator.value + "//android.view.ViewGroup//android.widget.TextView[contains(@text,'%s')]" % text)
+        element = Text(self.driver, prefix=self.locator,
+                       xpath="//android.view.ViewGroup//android.widget.TextView[contains(@text,'%s')]" % text)
         return element.is_element_displayed(wait_time)
 
     @property
     def accept_and_share_address(self):
-        class AcceptAndShareAddress(BaseButton):
+        class AcceptAndShareAddress(Button):
             def __init__(self, driver, parent_locator):
-                super(AcceptAndShareAddress, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(parent_locator + "//*[@text='Accept and share address']")
+                super().__init__(driver, prefix=parent_locator, translation_id="accept-and-share-address")
 
             def navigate(self):
                 from views.send_transaction_view import SendTransactionView
@@ -517,31 +191,27 @@ class ChatElementByText(BaseElement):
 
             def click(self):
                 self.wait_for_element().click()
-                self.driver.info('Tap on %s' % self.name)
                 return self.navigate()
 
-        return AcceptAndShareAddress(self.driver, self.locator.value)
+        return AcceptAndShareAddress(self.driver, self.locator)
 
     @property
     def decline_transaction(self):
-        class DeclineTransaction(BaseButton):
+        class DeclineTransaction(Button):
             def __init__(self, driver, parent_locator):
-                super(DeclineTransaction, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(parent_locator + "//*[@text='Decline']")
+                super().__init__(driver, prefix=parent_locator, translation_id="decline")
 
             def click(self):
                 self.wait_for_element().click()
-                self.driver.info('Tap on %s' % self.name)
                 return self.navigate()
 
-        return DeclineTransaction(self.driver, self.locator.value)
+        return DeclineTransaction(self.driver, self.locator)
 
     @property
     def sign_and_send(self):
-        class SignAndSend(BaseButton):
+        class SignAndSend(Button):
             def __init__(self, driver, parent_locator):
-                super(SignAndSend, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(parent_locator + "//*[@text='Sign and send']")
+                super().__init__(driver, prefix=parent_locator, translation_id="sign-and-send")
 
             def navigate(self):
                 from views.send_transaction_view import SendTransactionView
@@ -549,18 +219,15 @@ class ChatElementByText(BaseElement):
 
             def click(self):
                 self.wait_for_element().click()
-                self.driver.info('Tap on %s' % self.name)
                 return self.navigate()
 
-        return SignAndSend(self.driver, self.locator.value)
+        return SignAndSend(self.driver, self.locator)
 
     @property
     def replied_message_text(self):
-        class RepliedMessageText(BaseText):
-            def __init__(self, driver, parent_locator):
-                super(RepliedMessageText, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(
-                    parent_locator + "/preceding-sibling::*[1]/android.widget.TextView[2]")
+        class RepliedMessageText(Text):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, xpath="/preceding-sibling::*[1]/android.widget.TextView[2]")
         try:
             return RepliedMessageText(self.driver, self.message_locator).text
         except NoSuchElementException:
@@ -568,26 +235,22 @@ class ChatElementByText(BaseElement):
 
     @property
     def replied_to_username_text(self):
-        class RepliedToUsernameText(BaseText):
-            def __init__(self, driver, parent_locator):
-                super(RepliedToUsernameText, self).__init__(driver)
-                self.locator = self.Locator.xpath_selector(
-                    parent_locator + "/preceding-sibling::*[1]/android.widget.TextView[1]")
+        class RepliedToUsernameText(Text):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator,
+                                 xpath="%s/preceding-sibling::*[1]/android.widget.TextView[1]")
         try:
             return RepliedToUsernameText(self.driver, self.message_locator).text
         except NoSuchElementException:
             return ''
 
     def emojis_below_message(self, emoji: str = 'thumbs-up', own=True):
-        class EmojisNumber(BaseText):
+        class EmojisNumber(Text):
             def __init__(self, driver, parent_locator: str):
                 self.own = own
                 self.emoji = emoji
                 self.emojis_id = 'emoji-' + str(emojis[self.emoji]) + '-is-own-' + str(self.own).lower()
-                super(EmojisNumber, self).__init__(driver)
-
-                self.locator = self.Locator.xpath_selector(
-                    parent_locator + '/../..//*[@content-desc="%s"]' % self.emojis_id)
+                super().__init__(driver, prefix=parent_locator, xpath="/../..//*[@content-desc='%s']" % self.emojis_id)
 
             @property
             def text(self):
@@ -597,42 +260,12 @@ class ChatElementByText(BaseElement):
                     return text
                 except NoSuchElementException:
                     return 0
-        return int(EmojisNumber(self.driver, self.locator.value).text)
+        return int(EmojisNumber(self.driver, self.locator).text)
 
 
-class EmptyPublicChatMessage(BaseText):
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.locator = self.Locator.text_part_selector("It's been quite here")
-
-
-class ChatItem(BaseElement):
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@content-desc="chat-item"]')
-
-class StikerMessageItem(BaseElement):
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.locator = self.Locator.accessibility_id('sticker-message')
-
-
-class ImageChatItem(BaseElement):
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.locator = self.Locator.accessibility_id('message-image')
-
-
-class HistoryTimeMarker(BaseText):
-    def __init__(self, driver, marker='Today'):
-        super().__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@text="%s"]' % marker)
-
-
-class UsernameOptions(BaseButton):
+class UsernameOptions(Button):
     def __init__(self, driver, username):
-        super(UsernameOptions, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='%s']/..//*[@content-desc='menu-option']" % username)
+        super().__init__(driver, xpath="//*[@text='%s']/..//*[@content-desc='menu-option']" % username)
 
     def navigate(self):
         return ChatView(self.driver)
@@ -642,249 +275,168 @@ class UsernameOptions(BaseButton):
         self.wait_for_element().click()
         return self.navigate()
 
-
-class UserNameInGroupInfo(BaseButton):
+class UsernameCheckbox(Button):
     def __init__(self, driver, username):
-        super(UserNameInGroupInfo, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='%s']" % username)
+        self.username = username
+        super().__init__(driver, xpath="//*[@text='%s']" % username)
 
-
-class AdminUser(BaseButton):
-    def __init__(self, driver, username):
-        super(AdminUser, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='%s']/..//*[@text='Admin']" % username)
-
-
-class EditGroupChatButton(BaseButton):
-    def __init__(self, driver):
-        super(EditGroupChatButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("edit-button")
-
-
-class EditGroupChatEditBox(BaseEditBox):
-    def __init__(self, driver):
-        super(EditGroupChatEditBox, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("new-chat-name")
-
-
-class DoneButton(BaseButton):
-    def __init__(self, driver):
-        super(DoneButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("done")
-
+    def click(self):
+        try:
+                self.scroll_to_element(20).click()
+        except NoSuchElementException:
+                self.scroll_to_element(direction='up', depth=20).click()
 
 class GroupChatInfoView(BaseView):
     def __init__(self, driver):
-        super(GroupChatInfoView, self).__init__(driver)
-        self.add_members = AddGroupChatMembersButton(self.driver)
+        super().__init__(driver)
+        self.add_members = Button(self.driver, translation_id="add-members")
 
     def get_username_options(self, username: str):
         return UsernameOptions(self.driver, username)
 
     def user_admin(self, username: str):
-        return AdminUser(self.driver, username)
+        return Button(self.driver,
+                      xpath="//*[@text='%s']/..//*[@text='%s']" % (username, self.get_translation_by_key("group-chat-admin")))
 
     def get_user_from_group_info(self, username: str):
-        return UserNameInGroupInfo(self.driver, username)
-
-
-class AudioMessageButton(BaseButton):
-    def __init__(self, driver):
-        super(AudioMessageButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("show-audio-message-icon")
-
-
-class RecordAudioButton(BaseButton):
-    def __init__(self, driver):
-        super(RecordAudioButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("start-stop-audio-recording-button")
-
-
-class CancelAudioMessageButton(BaseButton):
-    def __init__(self, driver):
-        super(CancelAudioMessageButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("cancel-message-button")
-
-
-class SendAudioMessageButton(BaseButton):
-    def __init__(self, driver):
-        super(SendAudioMessageButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("send-message-button")
-
-
-class PlayPauseAudioMessageButton(BaseButton):
-    def __init__(self, driver):
-        super(PlayPauseAudioMessageButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("play-pause-audio-message-button")
-
-
-class AudioMessageInChatTimer(BaseText):
-    def __init__(self, driver):
-        super(AudioMessageInChatTimer, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//android.view.ViewGroup[@content-desc="play-pause-audio-message-button"]'
-                                                   '/../..//android.widget.TextView[1]')
-
-
-class AudioMessageRecordedTime(BaseText):
-    def __init__(self, driver):
-        super(AudioMessageRecordedTime, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("audio-message-recorded-time")
-
-
-class MyStatusEditBox(BaseEditBox):
-    def __init__(self, driver):
-        super(MyStatusEditBox, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("my-status-input")
-
-
-class AddNewStatusButton(BaseButton):
-    def __init__(self, driver):
-        super(AddNewStatusButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("plus-button")
-
-class OpenImagesPanelButton(BaseButton):
-    def __init__(self, driver):
-        super(OpenImagesPanelButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("open-images-panel-button")
-
-
-class SendMyStatusButton(BaseButton):
-    def __init__(self, driver):
-        super(SendMyStatusButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("send-my-status-button")
-
-
-class UserInMentionSuggestionList(BaseButton):
-    def __init__(self, driver, username):
-        super(UserInMentionSuggestionList, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//*[@content-desc='suggestions-list']//*[@text='%s']" % username)
-
+        return Text(self.driver, xpath="//*[@text='%s']" % username)
 
 class ChatView(BaseView):
     def __init__(self, driver):
-        super(ChatView, self).__init__(driver)
+        super().__init__(driver)
 
-        self.chat_message_input = ChatMessageInput(self.driver)
-        self.tiny_reply_icon_in_message_input = TinyReplyIconInMessageInput(self.driver)
-        self.quote_username_in_message_input = QuoteUsernameInMessageInput(self.driver)
-        self.cancel_reply_button = CancelReplyButton(self.driver)
-        self.add_to_contacts = AddToContacts(self.driver)
-        self.remove_from_contacts = RemoveFromContactsButton(self.driver)
-        self.user_name_text = UserNameText(self.driver)
-        self.no_messages_in_chat = NoMessagesInChatText(self.driver)
-        self.empty_public_chat_message = EmptyPublicChatMessage(self.driver)
-        self.chat_item = ChatItem(self.driver)
-        self.sticker_message = StikerMessageItem(self.driver)
+        # Start new chat
+        self.public_key_edit_box = PublicKeyEditBox(self.driver)
+        self.scan_contact_code_button = Button(self.driver, accessibility_id="scan-contact-code-button")
 
-        self.commands_button = CommandsButton(self.driver)
+        # Chat header
+        self.user_name_text = Text(self.driver, accessibility_id="chat-name-text")
+        self.add_to_contacts = Button(self.driver, accessibility_id="add-to-contacts-button")
+        ## Options
+        self.chat_options = Button(self.driver, accessibility_id="chat-menu-button")
+        self.delete_chat_button = Button(self.driver, translation_id="delete-chat")
+        self.clear_history_button = Button(self.driver, translation_id="clear-history")
+        self.reply_message_button = Button(self.driver, translation_id="message-reply")
+        self.share_chat_button = Button(self.driver, accessibility_id="share-chat-button")
+        self.clear_button = Button(self.driver, translation_id="clear", uppercase=True)
+        self.view_profile_button = ViewProfileButton(self.driver)
+        self.view_profile_by_avatar_button = Button(self.driver, accessibility_id="member-photo")
+        self.user_options = Button(self.driver, accessibility_id="options")
+        self.open_in_status_button = OpenInStatusButton(self.driver)
+
+        # Chat input
+        self.chat_message_input = EditBox(self.driver, accessibility_id="chat-message-input")
+        self.quote_username_in_message_input = EditBox(self.driver,
+                                                       xpath="//android.view.ViewGroup[@content-desc='cancel-message-reply']/..//android.widget.TextView[1]")
+        self.cancel_reply_button = Button(self.driver, accessibility_id="cancel-message-reply")
+        self.chat_item = Button(self.driver, accessibility_id="chat-item")
+        self.chat_name_editbox = EditBox(self.driver, accessibility_id="chat-name-input")
+        self.commands_button = Button(self.driver, accessibility_id="show-extensions-icon")
         self.send_command = SendCommand(self.driver)
         self.request_command = RequestCommand(self.driver)
 
-        self.show_stickers_button = ShowStickersButton(self.driver)
-        self.get_stickers = GetStickers(self.driver)
-        self.sticker_icon = StickerIcon(self.driver)
+        #Stickers
+        self.show_stickers_button = Button(self.driver, accessibility_id="show-stickers-icon")
+        self.get_stickers = Button(self.driver, translation_id="get-stickers")
+        self.sticker_icon = Button(self.driver, accessibility_id="sticker-icon")
+        self.sticker_message = Button(self.driver, accessibility_id="sticker-message")
 
         # Images
-        self.show_images_button = ShowImagesButton(self.driver)
-        self.take_photo_button = TakePhotoButton(self.driver)
-        self.image_from_gallery_button = ImageFromGalleryButton(self.driver)
-        self.first_image_from_gallery = FirstElementFromGalleryButton(self.driver)
-        self.image_chat_item = ImageChatItem(self.driver)
-        self.save_image_button = SaveImageButton(self.driver)
-        self.recent_image_in_gallery = ImageInRecentInGalleryElement(self.driver)
-        self.cancel_send_image_button = CancelSendImage(self.driver)
-        self.view_image_options = ViewImageOptions(self.driver)
+        self.show_images_button = Button(self.driver, accessibility_id="show-photo-icon")
+        self.take_photo_button = Button(self.driver, accessibility_id="take-picture")
+        self.image_from_gallery_button = Button(self.driver, accessibility_id="open-gallery")
+        self.first_image_from_gallery = Button(self.driver,
+                                               xpath="//*[@content-desc='open-gallery']/following-sibling::android.view.ViewGroup[1]")
+        self.image_chat_item = Button(self.driver, accessibility_id="message-image")
+        self.save_image_button = Button(self.driver, translation_id="save")
+        self.recent_image_in_gallery = Button(self.driver,
+                                              xpath="//*[contains(@resource-id,'thumbnail')]")
+        self.cancel_send_image_button = Button(self.driver, accessibility_id="cancel-send-image")
+        self.view_image_options = Button(self.driver,
+                                         xpath="//*[@content-desc='icon']/android.widget.ImageView")
 
-        self.audio_message_button = AudioMessageButton(self.driver)
-        self.record_audio_button = RecordAudioButton(self.driver)
-        self.cancel_audio_message_button = CancelAudioMessageButton(self.driver)
-        self.send_audio_message_button = SendAudioMessageButton(self.driver)
-        self.play_pause_audio_message_button = PlayPauseAudioMessageButton(self.driver)
-        self.audio_message_in_chat_timer = AudioMessageInChatTimer(self.driver)
-        self.audio_message_recorded_time = AudioMessageRecordedTime(self.driver)
-
-        self.chat_options = ChatMenuButton(self.driver)
-        self.members_button = MembersButton(self.driver)
-        self.delete_chat_button = DeleteChatButton(self.driver)
-        self.clear_history_button = ClearHistoryButton(self.driver)
-        self.reply_message_button = ReplyMessageButton(self.driver)
-        self.share_chat_button = ShareChatButton(self.driver)
-        self.clear_button = ClearButton(self.driver)
-        self.block_contact_button = BlockContactButton(self.driver)
-        self.unblock_contact_button = UnblockContactButton(self.driver)
+        #Audio
+        self.audio_message_button = Button(self.driver, accessibility_id="show-audio-message-icon")
+        self.record_audio_button = Button(self.driver, accessibility_id="start-stop-audio-recording-button")
+        self.cancel_audio_message_button = Button(self.driver, accessibility_id="cancel-message-button")
+        self.send_audio_message_button = Button(self.driver, accessibility_id="send-message-button")
+        self.play_pause_audio_message_button = Button(self.driver, accessibility_id="play-pause-audio-message-button")
+        self.audio_message_in_chat_timer = Text(self.driver,
+                                                xpath="//android.view.ViewGroup[@content-desc='play-pause-audio-message-button']/../..//android.widget.TextView[1]")
+        self.audio_message_recorded_time = Text(self.driver, accessibility_id="audio-message-recorded-time")
 
         # Group chats
         self.group_info = GroupInfoButton(self.driver)
-        self.leave_chat_button = LeaveChatButton(self.driver)
-        self.leave_button = LeaveButton(self.driver)
-        self.join_chat_button = JoinChatButton(self.driver)
-        self.decline_invitation_button = DeclineChatButton(self.driver)
-        self.remove_user_button = RemoveFromChatButton(self.driver)
-        self.make_admin_button = MakeAdminButton(self.driver)
-        self.edit_group_chat_name_button = EditGroupChatButton(self.driver)
-        self.edit_group_chat_name_edit_box = EditGroupChatEditBox(self.driver)
-        self.done_button = DoneButton(self.driver)
-
-        # Group invites
-        self.group_invite_button = GroupInviteButton(self.driver)
-        self.group_invite_link_text = GroupInviteLinkText(self.driver)
-        self.introduce_yourself_edit_box = IntoduceYourselfEditBox(self.driver)
-        self.request_membership_button = RequestMembershipButton(self.driver)
-        self.group_membership_request_button = GroupMembershipRequestButton(self.driver)
-        self.accept_group_invitation_button = AcceptGroupInvitationButton(self.driver)
-        self.decline_group_invitation_button = DeclineGroupInvitationButton(self.driver)
-        self.retry_group_invite_button = RetryGroupInvitationButton(self.driver)
-        self.remove_group_invite_button = RemoveGroupInvitationButton(self.driver)
-
-        self.chat_settings = ChatSettings(self.driver)
-        self.view_profile_button = ViewProfileButton(self.driver)
-        self.view_profile_by_avatar_button = ViewProfileByAvatarButton(self.driver)
-        self.user_options = UserOptions(self.driver)
-        self.remove_button = RemoveButton(self.driver)
-
-        self.open_in_status_button = OpenInStatusButton(self.driver)
+        self.leave_chat_button = Button(self.driver, accessibility_id="leave-chat-button")
+        self.leave_button = Button(self.driver, translation_id="leave", uppercase=True)
+        self.join_chat_button = Button(self.driver, accessibility_id="join-chat-button")
+        self.decline_invitation_button = Button(self.driver, translation_id="group-chat-decline-invitation")
+        self.remove_user_button = Button(self.driver, accessibility_id="remove-from-chat")
+        self.make_admin_button = Button(self.driver, accessibility_id="make-admin")
+        self.edit_group_chat_name_button = Button(self.driver, accessibility_id="edit-button")
+        self.edit_group_chat_name_edit_box = EditBox(self.driver, accessibility_id="new-chat-name")
+        self.done_button = Button(self.driver, accessibility_id="done")
+        self.create_button = Button(self.driver, accessibility_id="create-group-chat-button")
+        ## Group invites
+        self.group_invite_button = Button(self.driver, accessibility_id="invite-chat-button")
+        self.group_invite_link_text = Text(self.driver,
+                                           xpath="//*[@content-desc='invitation-link']/android.widget.TextView")
+        self.introduce_yourself_edit_box = EditBox(self.driver, accessibility_id="introduce-yourself-input")
+        self.request_membership_button = Button(self.driver, translation_id="request-membership")
+        self.group_membership_request_button = Button(self.driver, accessibility_id="invitation-requests-button")
+        self.accept_group_invitation_button = Button(self.driver, accessibility_id="accept-invitation-button")
+        self.decline_group_invitation_button = Button(self.driver, accessibility_id="decline-invitation-button")
+        self.retry_group_invite_button = Button(self.driver, accessibility_id="retry-button")
+        self.remove_group_invite_button = Button(self.driver, accessibility_id="remove-group-button")
 
         # Contact's profile
-        self.contact_profile_picture = ProfilePictureElement(self.driver)
+        self.contact_profile_picture = ProfileView(self.driver).profile_picture
         self.profile_send_message = ProfileSendMessageButton(self.driver)
-        self.profile_address_text = ProfileAddressText(self.driver)
         self.profile_block_contact = ProfileBlockContactButton(self.driver)
-        self.profile_add_to_contacts = ProfileAddToContactsButton(self.driver)
-        self.profile_details = ProfileDetailsOtherUser(self.driver)
-        self.profile_nickname = ProfileNicknameOtherUser(self.driver)
-        self.profile_nickname_button = ProfileNicknameOtherUserButton(self.driver)
-        self.nickname_input_field = NicknameInputOtherUser(self.driver)
+        self.confirm_block_contact_button = Button(self.driver, accessibility_id="block-contact-confirm")
+        self.unblock_contact_button = UnblockContactButton(self.driver)
+        self.profile_add_to_contacts = Button(self.driver, accessibility_id="Add to contacts-item-button")
+        self.profile_details = Button(self.driver, accessibility_id="share-button")
+        self.profile_nickname = Text(self.driver,
+                                     xpath="//*[@content-desc='profile-nickname-item']/android.widget.TextView[2]")
+        self.profile_nickname_button = Button(self.driver, accessibility_id="profile-nickname-item")
+        self.nickname_input_field = EditBox(self.driver, accessibility_id="nickname-input")
+        self.remove_from_contacts = Button(self.driver, accessibility_id="Remove from contacts-item-button")
 
-        #Timeline
-        self.timeline_add_new_status_button = AddNewStatusButton(self.driver)
-        self.timeline_my_status_editbox = MyStatusEditBox(self.driver)
-        self.timeline_open_images_panel_button = OpenImagesPanelButton(self.driver)
-        self.timeline_send_my_status_button = SendMyStatusButton(self.driver)
+        # Timeline
+        self.timeline_add_new_status_button = Button(self.driver, accessibility_id="plus-button")
+        self.timeline_my_status_editbox = EditBox(self.driver, accessibility_id="my-status-input")
+        self.timeline_open_images_panel_button = Button(self.driver, accessibility_id="open-images-panel-button")
+        self.timeline_send_my_status_button = Button(self.driver, accessibility_id="send-my-status-button")
 
     def delete_chat(self):
+        self.driver.info("**Delete chat via options**")
         self.chat_options.click()
         self.delete_chat_button.click()
         self.delete_button.click()
 
     def leave_chat(self):
+        self.driver.info("**Leave chat via options**")
         self.chat_options.click()
         self.leave_chat_button.click()
         self.leave_button.click()
 
     def clear_history(self):
+        self.driver.info("**Clear chat history via options**")
         self.chat_options.click()
         self.clear_history_button.click()
         self.clear_button.click()
 
 
     def leave_chat_via_group_info(self):
+        self.driver.info("**Leave group chat via group info**")
         self.chat_options.click()
         self.group_info.click()
         self.leave_chat_button.click()
         self.leave_button.click()
 
     def rename_chat_via_group_info(self, new_chat_name):
+        self.driver.info("**Rename group chat to %s**" % new_chat_name)
         self.chat_options.click()
         self.group_info.click()
         self.edit_group_chat_name_button.click()
@@ -892,58 +444,49 @@ class ChatView(BaseView):
         self.done_button.click()
 
     def get_group_invite_via_group_info(self):
+        self.driver.info("**Copy group invite link**")
         self.chat_options.click()
         self.group_info.click()
         self.group_invite_button.click()
         return self.group_invite_link_text.text
 
     def request_membership_for_group_chat(self, intro_message):
+        self.driver.info("**Requesting membership to group chat**")
         self.introduce_yourself_edit_box.set_value(intro_message)
         self.request_membership_button.click_until_presence_of_element(self.element_by_text('Request pending…'))
 
+    def get_username_checkbox(self, username: str):
+        self.driver.info("**Getting %s checkbox**" % username)
+        return UsernameCheckbox(self.driver, username)
+
     def accept_membership_for_group_chat_via_chat_view(self, username, accept=True):
+        info = "%s membership to group chat" % username
+        self.driver.info("**Accept %s**" % info) if accept else  self.driver.info("**Decline %s**" % info)
         self.group_membership_request_button.click()
         self.element_by_text(username).click()
         self.accept_group_invitation_button.click() if accept else self.decline_group_invitation_button.click()
 
-    def send_transaction_in_group_chat(self, amount, password, recipient):
-        self.commands_button.click()
-        self.send_command.click()
-        self.find_full_text(recipient['username']).click()
-        self.send_as_keyevent(amount)
-        self.send_message_button.click()
-
-        send_transaction_view = self.get_send_transaction_view()
-        self.send_message_button.click_until_presence_of_element(send_transaction_view.sign_transaction_button)
-        send_transaction_view.sign_transaction(password)
-        send_transaction_view.find_full_text(amount)
-        self.find_full_text('to  ' + recipient['username'], 10)
-
     def add_members_to_group_chat(self, user_names_to_add: list):
+        self.driver.info("**Add %s to group chat**" % ', '.join(map(str, user_names_to_add)))
         self.chat_options.click()
         group_info_view = self.group_info.click()
-        add_members_view = group_info_view.add_members.click()
+        group_info_view.add_members.click()
         for user_name in user_names_to_add:
-            user_contact = add_members_view.get_username_checkbox(user_name)
+            user_contact = self.get_username_checkbox(user_name)
             user_contact.scroll_to_element()
             user_contact.click()
-        add_members_view.add_button.click()
+        self.add_button.click()
 
     def get_user_options(self, username: str):
+        self.driver.info("**Get user options for %s**" % username)
         self.chat_options.click()
         group_info_view = self.group_info.click()
         group_info_view.get_username_options(username).click()
         return self
 
-    def request_transaction_in_1_1_chat(self, asset, amount):
-        self.commands_button.click()
-        self.request_command.click()
-        self.asset_by_name(asset).click()
-        self.send_as_keyevent(amount)
-        self.send_message_button.click()
 
     def chat_element_by_text(self, text):
-        self.driver.info("Looking for a message by text: '%s'" % text)
+        self.driver.info("**Looking for a message by text: '%s'**" % text)
         return ChatElementByText(self.driver, text)
 
     def verify_message_is_under_today_text(self, text, errors):
@@ -957,22 +500,25 @@ class ChatView(BaseView):
             errors.append("Message '%s' is not under 'Today' text" % text)
 
     def send_message(self, message: str = 'test message'):
+        self.driver.info("**Sending message '%s'**" % message)
         self.chat_message_input.send_keys(message)
         self.send_message_button.click()
 
     def copy_message_text(self, message_text):
+        self.driver.info("**Copying '%s' message via long press**" % message_text)
         self.element_by_text_part(message_text).long_press_element()
         self.element_by_text('Copy').click()
 
     def quote_message(self, message = str):
+        self.driver.info("**Quote '%s' message**" % message)
         self.element_by_text_part(message).long_press_element()
         self.reply_message_button.click()
 
     def set_reaction(self, message: str,  emoji: str = 'thumbs-up'):
+        self.driver.info("**Setting '%s' reaction**" % emoji)
         key = emojis[emoji]
         self.element_by_text_part(message).long_press_element()
-        element = BaseButton(self.driver)
-        element.locator = element.Locator.accessibility_id('pick-emoji-%s' % key)
+        element = Button(self.driver, accessibility_id ='pick-emoji-%s' % key)
         element.click()
         element.wait_for_invisibility_of_element()
 
@@ -982,6 +528,7 @@ class ChatView(BaseView):
         self.profile_block_contact.wait_for_visibility_of_element(5)
 
     def wait_ens_name_resolved_in_chat(self, message = str, username_value = str):
+        self.driver.info("**Waiting ENS name '%s' is resolved in chat**" % username_value)
         # self.view_profile_by_avatar_button.click()
         counter = 0
         while True:
@@ -995,41 +542,46 @@ class ChatView(BaseView):
         # self.profile_block_contact.wait_for_visibility_of_element(5)
 
     def move_to_messages_by_time_marker(self, marker='Today'):
-        self.driver.info("Moving to messages by time marker: '%s'" % marker)
-        HistoryTimeMarker(self.driver, marker).scroll_to_element(depth=50, direction='up')
+        self.driver.info("**Moving to messages by time marker: '%s'**" % marker)
+        Button(self.driver, xpath="//*[@text='%s'']"  % marker).scroll_to_element(depth=50, direction='up')
 
     def install_sticker_pack_by_name(self, pack_name: str):
-        element = BaseButton(self.driver)
-        element.locator = element.Locator.xpath_selector(
-            "//*[@content-desc='sticker-pack-name'][@text='%s']/..//*[@content-desc='sticker-pack-price']" % pack_name)
+        self.driver.info("**Installing '%s' stickerpack**" % pack_name)
+        element = Button(self.driver,
+                         xpath="//*[@content-desc='sticker-pack-name'][@text='%s']/..//*[@content-desc='sticker-pack-price']" % pack_name)
         element.scroll_to_element()
         element.click()
         element.wait_for_invisibility_of_element()
 
     def search_user_in_mention_suggestion_list(self, username):
-        return UserInMentionSuggestionList(self.driver, username)
+        return Button(self.driver, xpath="//*[@content-desc='suggestions-list']//*[@text='%s']" % username)
 
     def select_mention_from_suggestion_list(self, username_in_list, typed_search_pattern = ''):
+        self.driver.info("**Selecting '%s' from suggestion list by '%s'**" % (username_in_list, typed_search_pattern))
         self.chat_message_input.set_value('@' + typed_search_pattern)
         self.chat_message_input.click()
         self.search_user_in_mention_suggestion_list(username_in_list).wait_for_visibility_of_element(10).click()
 
     def record_audio_message(self, message_length_in_seconds=5):
+        self.driver.info("**Recording audiomessage %ss**" % message_length_in_seconds)
         self.audio_message_button.click()
         self.allow_button.click()
         self.record_audio_button.click()
         sleep(message_length_in_seconds)
 
     def play_audio_message(self, listen_time=5):
+        self.driver.info("**Playing audiomessage during %ss**" % listen_time)
         self.play_pause_audio_message_button.click()
         sleep(listen_time)
         self.play_pause_audio_message_button.click()
 
     def block_contact(self):
+        self.driver.info("**Block contact from other user profile**")
         self.profile_block_contact.click()
-        self.block_contact_button.click()
+        self.confirm_block_contact_button.click()
 
     def set_nickname(self, nickname):
+        self.driver.info("**Setting nickname:%s**" % nickname)
         self.profile_nickname_button.click()
         self.nickname_input_field.send_keys(nickname)
         self.element_by_text('Done').click()
@@ -1041,7 +593,7 @@ class ChatView(BaseView):
         return timestamp
 
     def set_new_status(self, status='something is happening', image=False):
-
+        self.driver.info("**Setting new status:%s, image set is: %s**" % (status, str(image)))
         self.timeline_add_new_status_button.click_until_presence_of_element(self.timeline_my_status_editbox)
         self.timeline_my_status_editbox.set_value(status)
 

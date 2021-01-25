@@ -143,10 +143,13 @@ class Driver(webdriver.Remote):
         return test_suite_data.current_test.testruns[-1].jobs[self.session_id]
 
     def info(self, text: str):
-        if "Base" not in text:
-            text = 'Device %s: %s' % (self.number, text)
-            logging.info(text)
-            test_suite_data.current_test.testruns[-1].steps.append(text)
+        # if "Base" not in text:
+        #     text = 'Device %s: %s' % (self.number, text)
+        #     logging.info(text)
+        #     test_suite_data.current_test.testruns[-1].steps.append(text)
+        text = 'Device %s: %s ' % (self.number, text)
+        logging.info(text)
+        test_suite_data.current_test.testruns[-1].steps.append(text)
 
     def fail(self, text: str):
         pytest.fail('Device %s: %s' % (self.number, text))

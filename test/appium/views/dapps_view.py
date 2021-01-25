@@ -1,31 +1,23 @@
-from views.base_element import BaseButton, BaseEditBox, BaseElement
+from views.base_element import Button, EditBox, BaseElement
 from views.base_view import BaseView
 from views.home_view import ChatElement
 
-class DiscoverDappsButton(BaseButton):
+class DiscoverDappsButton(Button):
     def __init__(self, driver):
-        super(DiscoverDappsButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Discover ÐApps')
+        super().__init__(driver, translation_id="open-dapp-store")
 
     def navigate(self):
         from views.web_views.base_web_view import BaseWebView
         return BaseWebView(self.driver)
 
     def click(self):
-        from views.web_views.base_web_view import BrowserRefreshPageButton
-        self.click_until_presence_of_element(BrowserRefreshPageButton(self.driver))
+        from views.web_views.base_web_view import BaseWebView
+        self.click_until_presence_of_element(BaseWebView(self.driver).browser_refresh_page_button)
         return self.navigate()
 
-
-class EnterUrlEditbox(BaseEditBox):
+class EditUrlEditbox(EditBox):
     def __init__(self, driver):
-        super(EnterUrlEditbox, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('dapp-url-input')
-
-class EditUrlEditbox(BaseEditBox):
-    def __init__(self, driver):
-        super(EditUrlEditbox, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(//android.widget.TextView)[1]')
+        super().__init__(driver, xpath="(//android.widget.TextView)[1]")
 
     @property
     def text(self):
@@ -34,102 +26,33 @@ class EditUrlEditbox(BaseEditBox):
 
 class BrowserEntry(ChatElement):
     def __init__(self, driver, name):
-        super(BrowserEntry, self).__init__(driver, name)
-        self.locator = self.locator.text_part_selector(name)
-
-
-class EnsName(BaseEditBox):
-    def __init__(self, driver):
-        super(EnsName, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//android.widget.EditText')
-
-
-class EnsCheckName(BaseButton):
-        def __init__(self, driver):
-            super(EnsCheckName, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector('//android.widget.EditText//following-sibling::android.view.ViewGroup[1]')
-
-
-class DeleteBookmarkButton(BaseButton):
-    def __init__(self, driver):
-        super(DeleteBookmarkButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('delete-bookmark')
-
-
-class EditBookmarkButton(BaseButton):
-    def __init__(self, driver):
-        super(EditBookmarkButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('edit-bookmark')
-
-
-class OpenInNewTabButton(BaseButton):
-    def __init__(self, driver):
-        super(OpenInNewTabButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('open-in-new-tab')
-
-class SelectAccountButton(BaseButton):
-    def __init__(self, driver):
-        super(SelectAccountButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('select-account')
-
-class SelectAccountRadioButton(BaseButton):
-    def __init__(self, driver, account_name):
-        super(SelectAccountRadioButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='%s']/../../android.view.ViewGroup/android.view.ViewGroup[2]" % account_name)
-
-class SetPrimaryUsername(BaseButton):
-    def __init__(self, driver):
-        super(SetPrimaryUsername, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('not-primary-username')
-
-
-class AlwaysAllowRadioButton(BaseButton):
-    def __init__(self, driver):
-        super(AlwaysAllowRadioButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Always allow']/../android.view.ViewGroup")
-
-
-class CrossCloseWeb3PermissionButton(BaseButton):
-    def __init__(self, driver):
-        super(CrossCloseWeb3PermissionButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            '//*[contains(@text,"ÐApps can access")]/../android.view.ViewGroup[1]/android.view.ViewGroup')
-
-
-class WebViewPageElement(BaseElement):
-    def __init__(self, driver):
-        super(WebViewPageElement, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('(//android.webkit.WebView)[1]')
+        super().__init__(driver, name)
+        self.locator = "//*[contains(@content-desc,'%s')]" % name
 
 
 class DappsView(BaseView):
-
     def __init__(self, driver):
         super(DappsView, self).__init__(driver)
 
-        self.enter_url_editbox = EnterUrlEditbox(self.driver)
+        self.enter_url_editbox = EditBox(self.driver, accessibility_id="dapp-url-input")
         self.edit_url_editbox = EditUrlEditbox(self.driver)
         self.discover_dapps_button = DiscoverDappsButton(self.driver)
-        self.web_page = WebViewPageElement(self.driver)
+        self.web_page = BaseElement(self.driver, xpath="(//android.webkit.WebView)[1]")
 
-        #ens dapp
-        self.ens_name = EnsName(self.driver)
-        self.check_ens_name = EnsCheckName(self.driver)
+        # Ens dapp
+        self.ens_name_input = EditBox(self.driver, xpath="//android.widget.EditText")
+        self.check_ens_name = Button(self.driver, xpath="//android.widget.EditText//following-sibling::android.view.ViewGroup[1]")
 
-        #options on long press
-        self.delete_bookmark_button = DeleteBookmarkButton(self.driver)
-        self.open_in_new_tab_button = OpenInNewTabButton(self.driver)
-        self.edit_bookmark_button = EditBookmarkButton(self.driver)
+        # Options on long press
+        self.delete_bookmark_button = Button(self.driver, accessibility_id="delete-bookmark")
+        self.open_in_new_tab_button = Button(self.driver, accessibility_id="open-in-new-tab")
+        self.edit_bookmark_button = Button(self.driver, accessibility_id="edit-bookmark")
 
-        #select account
-        self.select_account_button = SelectAccountButton(self.driver)
-        self.select_account_radio_button = SelectAccountRadioButton(self.driver,
-                                                                    account_name=self.status_account_name)
-        #permissions window
-        self.always_allow_radio_button = AlwaysAllowRadioButton(self.driver)
-        self.close_web3_permissions_window_button = CrossCloseWeb3PermissionButton(self.driver)
+        # Select account
+        self.select_account_button = Button(self.driver, accessibility_id="select-account")
 
     def open_url(self, url):
+        self.driver.info("**Open url '%s'**" % url)
         self.enter_url_editbox.wait_for_visibility_of_element(10)
         self.enter_url_editbox.click()
         self.enter_url_editbox.send_keys(url)
@@ -141,6 +64,7 @@ class DappsView(BaseView):
         return BrowserEntry(self.driver, name)
 
     def browser_entry_long_press(self, name):
+        self.driver.info("**Long press on '%s' browser entry**" % name)
         entry = self.get_browser_entry(name)
         entry.scroll_to_element()
         entry.long_press_element()
@@ -148,8 +72,10 @@ class DappsView(BaseView):
 
     def select_account_by_name(self, account_name=''):
         account_name = self.status_account_name if not account_name else account_name
-        return SelectAccountRadioButton(self.driver, account_name)
+        self.driver.info("**Select account by '%s'**" % account_name)
+        return Button(self.driver,
+                      xpath="//*[@text='%s']/../../android.view.ViewGroup/android.view.ViewGroup[2]" % account_name)
 
     def set_primary_ens_username(self, ens_name):
-        self.driver.info("Set {} as primary ENS name".format(ens_name))
-        return SetPrimaryUsername(self.driver)
+        self.driver.info("**Set {} as primary ENS name**".format(ens_name))
+        return Button(self.driver, accessibility_id="not-primary-username")

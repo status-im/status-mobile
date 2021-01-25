@@ -1,6 +1,6 @@
 import random
 
-from tests import marks, common_password, unique_password
+from tests import marks, common_password
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 from tests.users import basic_user
@@ -11,8 +11,7 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.testrail_id(5356)
     @marks.critical
     def test_switch_users_and_add_new_account(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
+        sign_in = SignInView(self.driver).create_user()
         public_key = sign_in.get_public_key_and_username()
         profile = sign_in.get_profile_view()
         profile.logout()
@@ -48,35 +47,30 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.create_password_input.set_value(common_password)
         sign_in.confirm_your_password_input.set_value(common_password)
         sign_in.next_button.click()
-        for element in sign_in.maybe_later_button, sign_in.lets_go_button:
-            element.wait_for_element(10)
-            element.click()
-        home_view = sign_in.get_home_view()
-        texts = ['Chat and transact privately with friends',
-                 'Jump into a public chat and meet new people',
-                 '#status']
+        [element.wait_and_click(10) for element in (sign_in.maybe_later_button, sign_in.lets_go_button)]
+        home = sign_in.get_home_view()
+        texts = ["chat-and-transact", "follow-your-interests"]
         for text in texts:
-            if not home_view.element_by_text(text).is_element_displayed():
-                self.errors.append("'%s' text is not shown" % text)
+            if not home.element_by_translation_id(text).is_element_displayed():
+                self.errors.append("'%s' text is not shown" % self.get_translation_by_key(text))
         for chat in ('#status', '#crypto'):
             sign_in.element_by_text(chat).click()
-            sign_in.back_button.click_until_presence_of_element(home_view.search_input)
-        profile_view = home_view.profile_button.click()
-        shown_username = profile_view.default_username_text.text
+            sign_in.back_button.click_until_presence_of_element(home.search_input)
+        profile = home.profile_button.click()
+        shown_username = profile.default_username_text.text
         if shown_username != username:
             self.errors.append("Default username '%s' doesn't match '%s'" % (shown_username, username))
-        profile_view.home_button.click_until_presence_of_element(home_view.element_by_text('#status'))
-        home_view.cross_icon_iside_welcome_screen_button.click()
+        profile.home_button.click_until_presence_of_element(home.element_by_text('#status'))
+        home.cross_icon_inside_welcome_screen_button.click()
         for chat in ('#status', '#crypto'):
-            home_view.delete_chat_long_press(chat)
-        if home_view.element_by_text(texts[0]).is_element_displayed():
+            home.delete_chat_long_press(chat)
+        if home.element_by_text(texts[0]).is_element_displayed():
             self.errors.append("'%s' text is shown, but welcome view was closed" % texts[0])
-        home_view.relogin()
-        if home_view.element_by_text(texts[0]).is_element_displayed():
+        home.relogin()
+        if home.element_by_text(texts[0]).is_element_displayed():
             self.errors.append("'%s' text is shown after relogin, but welcome view was closed" % texts[0])
-        text_after_closing_welcome_screen = "Your chats will appear here. To start new chats press the ⊕ button"
-        if not home_view.element_by_text(text_after_closing_welcome_screen).is_element_displayed():
-            self.errors.append("'%s' text is not shown after welcome view was closed" % text_after_closing_welcome_screen)
+        if not home.element_by_translation_id("welcome-blank-message").is_element_displayed():
+            self.errors.append("'%s' text is not shown after welcome view was closed" %  home.get_translation_by_key("welcome-blank-message"))
 
         self.errors.verify_no_errors()
 
@@ -88,7 +82,6 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.generate_key_button.click()
         sign_in.next_button.click()
         sign_in.next_button.click()
-        mismatch_error = "Passwords don't match"
         cases = ['password is not confirmed', 'password is too short', "passwords don't match"]
         error = "Can create multiaccount when"
 
@@ -110,8 +103,8 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.just_fyi("Checking case %s" % cases[2])
         sign_in.create_password_input.send_keys('1234565')
         sign_in.confirm_your_password_input.send_keys('1234567')
-        if not sign_in.find_text_part(mismatch_error):
-            self.errors.append("'%s' is not shown" % mismatch_error)
+        if not sign_in.element_by_translation_id("password_error1").is_element_displayed():
+            self.errors.append("'%s' is not shown" % sign_in.get_translation_by_key("password_error1"))
         sign_in.next_button.click()
         if sign_in.maybe_later_button.is_element_displayed(10):
             self.driver.fail('%s  %s' % (error, cases[2]))

@@ -199,10 +199,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15, token=True)
         chat_2.toggle_airplane_mode()
         chat_2.connection_status.wait_for_invisibility_of_element(30)
-        try:
-            self.network_api.find_transaction_by_unique_amount(recipient_address[2:], amount, token=True)
-        except Failed as e:
-            self.errors.append(e.msg)
         [message.transaction_status.wait_for_element_text('Confirmed') for message in
          (chat_2_sender_message, chat_1_request_message)]
         self.errors.verify_no_errors()

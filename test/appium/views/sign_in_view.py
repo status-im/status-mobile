@@ -2,37 +2,29 @@ from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
 
 from tests import common_password
-from views.base_element import BaseButton, BaseEditBox, BaseText
+from views.base_element import Button, EditBox, Text
 from views.base_view import BaseView
 
-class MultiAccountButton(BaseButton):
-    class Username(BaseText):
+class MultiAccountButton(Button):
+    class Username(Text):
         def __init__(self, driver, locator_value):
-            super(MultiAccountButton.Username, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector(locator_value + "//android.widget.TextView[@content-desc='username']")
-
+            super(MultiAccountButton.Username, self).__init__(driver,
+                                                              xpath="%s//android.widget.TextView[@content-desc='username']" % locator_value)
     def __init__(self, driver, position=1):
-        super(MultiAccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@content-desc='select-account-button-%s']" % position)
-        self.username = self.Username(driver, self.locator.value)
+        super(MultiAccountButton, self).__init__(driver,
+                                                 xpath="//*[@content-desc='select-account-button-%s']" % position)
+        self.username = self.Username(driver, self.locator)
 
 
-class MultiAccountOnLoginButton(BaseButton):
+class MultiAccountOnLoginButton(Button):
     def __init__(self, driver, position=1):
-        super(MultiAccountOnLoginButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("(//*[@content-desc='chat-icon'])[%s]/.." % position)
+        super(MultiAccountOnLoginButton, self).__init__(driver,
+                                                        xpath="(//*[@content-desc='chat-icon'])[%s]/.." % position)
 
 
-class RecoverWithKeycardButton(BaseButton):
+class BeginRecoveryButton(Button):
     def __init__(self, driver):
-        super(RecoverWithKeycardButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("recover-with-keycard-button")
-
-
-class BeginRecoveryButton(BaseButton):
-    def __init__(self, driver):
-        super(BeginRecoveryButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector("Begin recovery")
+        super(BeginRecoveryButton, self).__init__(driver, translation_id="keycard-recovery-intro-button-text")
 
     def navigate(self):
         from views.keycard_view import KeycardView
@@ -43,74 +35,27 @@ class BeginRecoveryButton(BaseButton):
         return self.navigate()
 
 
-class PairToThisDeviceButton(BaseButton):
+class SignInButton(Button):
     def __init__(self, driver):
-        super(PairToThisDeviceButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector("Pair to this device")
-
-
-class PasswordInput(BaseEditBox):
-    def __init__(self, driver):
-        super(PasswordInput, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("password-input")
-
-
-class RecoverAccountPasswordInput(BaseEditBox):
-    def __init__(self, driver):
-        super(RecoverAccountPasswordInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Password']"
-                                                   "/following-sibling::android.view.ViewGroup/android.widget.EditText")
-
-class FirstKeyForChatText(BaseText):
-    def __init__(self, driver):
-        super(FirstKeyForChatText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector('//*[@content-desc="select-account-button-0"]//android.widget.TextView[1]')
-
-
-class CreatePasswordInput(BaseEditBox):
-    def __init__(self, driver):
-        super(CreatePasswordInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("(//android.widget.EditText[@content-desc='password-input'])[1]")
-
-
-class ConfirmYourPasswordInput(BaseEditBox):
-    def __init__(self, driver):
-        super(ConfirmYourPasswordInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("(//android.widget.EditText[@content-desc='password-input'])[2]")
-
-
-class SignInButton(BaseButton):
-
-    def __init__(self, driver):
-        super(SignInButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Sign in' or @text='Submit']")
+        super(SignInButton, self).__init__(driver, translation_id="sign-in")
 
     def navigate(self):
         from views.home_view import HomeView
         return HomeView(self.driver)
 
 
-class LetsGoButton(BaseButton):
+class AccessKeyButton(Button):
     def __init__(self, driver):
-        super(LetsGoButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('lets-go-button')
+        super(AccessKeyButton, self).__init__(driver, translation_id="access-existing-keys")
+
+    def click(self):
+        self.scroll_to_element().click()
+        return self.navigate()
 
 
-class RecoverAccessButton(BaseButton):
-
+class KeycardKeyStorageButton(Button):
     def __init__(self, driver):
-        super(RecoverAccessButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Recover access']")
-
-    def navigate(self):
-        from views.recover_access_view import RecoverAccessView
-        return RecoverAccessView(self.driver)
-
-class KeycardKeyStorageButton(BaseButton):
-
-    def __init__(self, driver):
-        super(KeycardKeyStorageButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("select-storage-:advanced")
+        super(KeycardKeyStorageButton, self).__init__(driver, accessibility_id="select-storage-:advanced")
 
     def navigate(self):
         from views.keycard_view import KeycardView
@@ -121,86 +66,9 @@ class KeycardKeyStorageButton(BaseButton):
         return self.navigate()
 
 
-
-class CreateMultiaccountButton(BaseButton):
+class PrivacyPolicyLink(Button):
     def __init__(self, driver):
-        super(CreateMultiaccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//*[@text='Create multiaccount' or @text='Create new multiaccount']")
-
-
-class YourKeysMoreIcon(BaseButton):
-    def __init__(self, driver):
-        super(YourKeysMoreIcon, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("your-keys-more-icon")
-
-
-class GenerateKeyButton(BaseButton):
-    def __init__(self, driver):
-        super(GenerateKeyButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Generate keys']")
-
-
-class GenerateNewKeyButton(BaseButton):
-    def __init__(self, driver):
-        super(GenerateNewKeyButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('generate-a-new-key')
-
-
-class IHaveMultiaccountButton(RecoverAccessButton):
-    def __init__(self, driver):
-        super(IHaveMultiaccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='I already have a multiaccount']")
-
-
-class AccessKeyButton(RecoverAccessButton):
-    def __init__(self, driver):
-        super(AccessKeyButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Access existing keys']")
-
-
-class MaybeLaterButton(BaseButton):
-    def __init__(self, driver):
-        super(MaybeLaterButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("maybe-later")
-
-
-class EnableNotificationsButton(BaseButton):
-    def __init__(self, driver):
-        super(EnableNotificationsButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("enable-notifications")
-
-
-class AddExistingMultiaccountButton(RecoverAccessButton):
-    def __init__(self, driver):
-        super(AddExistingMultiaccountButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Add existing multiaccount']")
-
-
-class ConfirmPasswordInput(BaseEditBox):
-    def __init__(self, driver):
-        super(ConfirmPasswordInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Confirm']"
-                                                   "/following-sibling::android.view.ViewGroup/android.widget.EditText")
-
-
-class NameInput(BaseEditBox):
-    def __init__(self, driver):
-        super(NameInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.EditText")
-
-
-class OtherMultiAccountsButton(BaseButton):
-
-    def __init__(self, driver):
-        super(OtherMultiAccountsButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Other multiaccounts')
-
-
-class PrivacyPolicyLink(BaseButton):
-    def __init__(self, driver):
-        super(PrivacyPolicyLink, self).__init__(driver)
-        self.locator = self.Locator.text_part_selector('privacy policy')
+        super(PrivacyPolicyLink, self).__init__(driver, xpath="//*[contains(@text, 'privacy policy')]")
 
     def click(self):
         element = self.find_element()
@@ -209,7 +77,7 @@ class PrivacyPolicyLink(BaseButton):
         x = int(location['x'] + size['width'] * 0.9)
         y = int(location['y'] + size['height'] * 0.8)
         TouchAction(self.driver).tap(None, x, y).perform()
-        self.driver.info('Tap on %s' % self.name)
+        self.driver.info('Click on link %s' % self.name)
         return self.navigate()
 
     def navigate(self):
@@ -223,47 +91,45 @@ class SignInView(BaseView):
         super(SignInView, self).__init__(driver)
         self.driver = driver
         # if skip_popups:
-        #     self.accept_agreements()
+        #      self.accept_agreements()
 
-        self.password_input = PasswordInput(self.driver)
-        self.recover_account_password_input = RecoverAccountPasswordInput(self.driver)
-
+        self.password_input = EditBox(self.driver, accessibility_id="password-input")
         self.sign_in_button = SignInButton(self.driver)
-        self.recover_access_button = RecoverAccessButton(self.driver)
-
-        # new design
-        self.create_multiaccount_button = CreateMultiaccountButton(self.driver)
-        self.i_have_multiaccount_button = IHaveMultiaccountButton(self.driver)
-        self.access_key_button = AccessKeyButton(self.driver)
-        self.generate_key_button = GenerateKeyButton(self.driver)
-        self.your_keys_more_icon = YourKeysMoreIcon(self.driver)
-        self.generate_new_key_button = GenerateNewKeyButton(self.driver)
-        self.add_existing_multiaccount_button = AddExistingMultiaccountButton(self.driver)
-        self.confirm_password_input = ConfirmPasswordInput(self.driver)
-        self.create_password_input = CreatePasswordInput(self.driver)
-        self.confirm_your_password_input = ConfirmYourPasswordInput(self.driver)
-        self.enable_notifications_button = EnableNotificationsButton(self.driver)
-        self.maybe_later_button = MaybeLaterButton(self.driver)
-        self.name_input = NameInput(self.driver)
-        self.other_multiaccounts_button = OtherMultiAccountsButton(self.driver)
-        self.multiaccount_button = MultiAccountButton(self.driver)
         self.multi_account_on_login_button = MultiAccountOnLoginButton(self.driver)
+        self.access_key_button = AccessKeyButton(self.driver)
+        self.generate_key_button = Button(self.driver, translation_id="generate-new-key")
+        self.your_keys_more_icon = Button(self.driver, accessibility_id="your-keys-more-icon")
+        self.generate_new_key_button = Button(self.driver, accessibility_id="generate-a-new-key")
+        self.create_password_input = EditBox(self.driver,
+                                             xpath="(//android.widget.EditText[@content-desc='password-input'])[1]")
+        self.confirm_your_password_input = EditBox(self.driver,
+                                                   xpath="(//android.widget.EditText[@content-desc='password-input'])[2]")
+        self.enable_notifications_button = Button(self.driver, accessibility_id="enable-notifications")
+        self.maybe_later_button = Button(self.driver, accessibility_id="maybe-later")
         self.privacy_policy_link = PrivacyPolicyLink(self.driver)
-        self.lets_go_button = LetsGoButton(self.driver)
+        self.lets_go_button = Button(self.driver, accessibility_id="lets-go-button")
         self.keycard_storage_button = KeycardKeyStorageButton(self.driver)
-        self.first_username_on_choose_chat_name = FirstKeyForChatText(self.driver)
+        self.first_username_on_choose_chat_name = Text(self.driver,
+                                                       xpath="//*[@content-desc='select-account-button-0']//android.widget.TextView[1]")
 
         #keycard recovery
-        self.recover_with_keycard_button = RecoverWithKeycardButton(self.driver)
+        self.recover_with_keycard_button = Button(self.driver, accessibility_id="recover-with-keycard-button")
         self.begin_recovery_button = BeginRecoveryButton(self.driver)
-        self.pair_to_this_device_button = PairToThisDeviceButton(self.driver)
+        self.pair_to_this_device_button = Button(self.driver, translation_id="pair-card")
 
+        # restore from seed phrase
+        self.seedphrase_input = EditBox(self.driver, xpath="//android.widget.EditText")
+        self.enter_seed_phrase_button = Button(self.driver, accessibility_id="enter-seed-phrase-button")
+        self.reencrypt_your_key_button = Button(self.driver, translation_id="re-encrypt-key")
+        self.continue_custom_seed_phrase_button = Button(self.driver, accessibility_id="continue-custom-seed-phrase")
+        self.cancel_custom_seed_phrase_button = Button(self.driver, accessibility_id="cancel-custom-seed-phrase")
 
     def create_user(self, password=common_password, keycard=False, enable_notifications=False, second_user=False):
+        self.driver.info("**Creating new multiaccount (password:%s, keycard:%s)**" % (password, str(keycard)))
         if not second_user:
             self.get_started_button.click()
         self.generate_key_button.click_until_presence_of_element(self.next_button)
-        self.next_button.click_until_absense_of_element(self.element_by_text_part('Choose a chat name'))
+        self.next_button.click_until_absense_of_element(self.element_by_translation_id("intro-wizard-title2"))
         if keycard:
             keycard_flow = self.keycard_storage_button.click()
             keycard_flow.confirm_pin_and_proceed()
@@ -280,24 +146,26 @@ class SignInView(BaseView):
             self.maybe_later_button.click_until_presence_of_element(self.lets_go_button)
         self.lets_go_button.click_until_absense_of_element(self.lets_go_button)
         self.profile_button.wait_for_visibility_of_element(30)
+        self.driver.info("**New multiaccount is created successfully!**")
         return self.get_home_view()
 
     def recover_access(self, passphrase: str, password: str = common_password, keycard=False, enable_notifications=False):
+        self.driver.info("**Recover access(password:%s, keycard:%s)**" % (password, str(keycard)))
         self.get_started_button.click_until_presence_of_element(self.access_key_button)
-        recover_access_view = self.access_key_button.click()
-        recover_access_view.enter_seed_phrase_button.click()
-        recover_access_view.seedphrase_input.click()
-        recover_access_view.seedphrase_input.set_value(passphrase)
-        recover_access_view.next_button.click()
-        recover_access_view.reencrypt_your_key_button.click()
+        self.access_key_button.click()
+        self.enter_seed_phrase_button.click()
+        self.seedphrase_input.click()
+        self.seedphrase_input.set_value(passphrase)
+        self.next_button.click()
+        self.reencrypt_your_key_button.click()
         if keycard:
             keycard_flow = self.keycard_storage_button.click()
             keycard_flow.confirm_pin_and_proceed()
         else:
-            recover_access_view.next_button.click()
-            recover_access_view.create_password_input.set_value(password)
-            recover_access_view.confirm_your_password_input.set_value(password)
-            recover_access_view.next_button.click_until_presence_of_element(self.maybe_later_button)
+            self.next_button.click()
+            self.create_password_input.set_value(password)
+            self.confirm_your_password_input.set_value(password)
+            self.next_button.click_until_presence_of_element(self.maybe_later_button)
         self.maybe_later_button.wait_for_element(30)
         if enable_notifications:
             self.enable_notifications_button.click_until_presence_of_element(self.lets_go_button)
@@ -305,9 +173,11 @@ class SignInView(BaseView):
             self.maybe_later_button.click_until_presence_of_element(self.lets_go_button)
         self.lets_go_button.click()
         self.profile_button.wait_for_visibility_of_element(30)
+        self.driver.info("**Multiaccount is recovered successfully!**")
         return self.get_home_view()
 
     def sign_in(self, password=common_password, keycard=False, position=1):
+        self.driver.info("**Sign in (password:%s, keycard:%s)**" % (password, str(keycard)))
         self.multi_account_on_login_button.wait_for_visibility_of_element(30)
         self.get_multiaccount_by_position(position).click()
 
@@ -320,6 +190,7 @@ class SignInView(BaseView):
         else:
             self.password_input.set_value(password)
             self.sign_in_button.click()
+        self.driver.info("**Signed in successfully!**")
         return self.get_home_view()
 
 
@@ -332,5 +203,6 @@ class SignInView(BaseView):
                 'Device %s: Unable to find multiaccount by position %s' % (self.driver.number, position)) from None
 
     def open_weblink_and_login(self, url_weblink):
+        self.driver.info("**Open weblink %s**" % url_weblink)
         self.open_universal_web_link(url_weblink)
         self.sign_in()

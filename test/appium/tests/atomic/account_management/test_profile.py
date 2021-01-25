@@ -72,8 +72,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append('No redirected to carousel view after deleting last multiaccount')
         self.errors.verify_no_errors()
 
-
-
     @marks.testrail_id(5741)
     @marks.high
     def test_mobile_data_usage_popup_continue_syncing(self):
@@ -81,14 +79,14 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.create_user()
         sign_in_view.just_fyi("Enable mobile network to see popup and enable syncing")
         sign_in_view.toggle_mobile_data()
-        if not sign_in_view.element_by_text_part("Sync using mobile data?").is_element_displayed():
+        if not sign_in_view.element_by_translation_id("mobile-syncing-sheet-title").is_element_displayed():
             self.driver.fail('No popup about Mobile data is shown')
         sign_in_view.wait_for_element_starts_with_text('Continue syncing').click()
 
         sign_in_view.just_fyi("Check that selected option is stored in Profile")
         profile_view = sign_in_view.profile_button.click()
         profile_view.sync_settings_button.click()
-        profile_view.element_by_text('Mobile data').click()
+        profile_view.element_by_translation_id("mobile-network-settings").click()
         if not profile_view.use_mobile_data.attribute_value('checked'):
             self.errors.append("Use mobile data option is enabled after 'Continue syncing' selected")
         if profile_view.ask_me_when_on_mobile_network.attribute_value('checked'):
@@ -109,36 +107,35 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     @marks.testrail_id(6228)
     @marks.high
     def test_mobile_data_usage_popup_stop_syncing(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        offline_banner_text = "No Wi-fi, message syncing disabled."
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        offline_banner_text = sign_in.get_translation_by_key("mobile-network-sheet-offline")
 
-        sign_in_view.just_fyi("Enable mobile network to see popup and stop syncing")
-        sign_in_view.toggle_mobile_data()
-        sign_in_view.wait_for_element_starts_with_text('Stop syncing').click()
-        if not sign_in_view.wait_for_element_starts_with_text(offline_banner_text, 120):
+        sign_in.just_fyi("Enable mobile network to see popup and stop syncing")
+        sign_in.toggle_mobile_data()
+        sign_in.wait_for_element_starts_with_text('Stop syncing').click()
+        if not sign_in.wait_for_element_starts_with_text(offline_banner_text, 120):
             self.driver.fail('No popup about offline history is shown')
-        sign_in_view.element_by_text_part(offline_banner_text).click()
-        for item in offline_banner_text, "Start syncing", "Go to settings":
-            if not sign_in_view.element_by_text(item).is_element_displayed():
-                self.driver.fail("%s is not shown" % item)
+        sign_in.element_by_text_part(offline_banner_text).click()
+        for id in "mobile-network-sheet-offline", "mobile-network-start-syncing", "mobile-network-go-to-settings":
+            if not sign_in.element_by_translation_id(id).is_element_displayed():
+                self.driver.fail("%s is not shown" % sign_in.get_translation_by_key(id))
 
-        sign_in_view.just_fyi("Start syncing in offline popup")
-        sign_in_view.element_by_text("Start syncing").click()
-        sign_in_view.element_by_text_part(offline_banner_text).wait_for_invisibility_of_element(10)
-        if sign_in_view.element_by_text_part(offline_banner_text).is_element_displayed():
+        sign_in.just_fyi("Start syncing in offline popup")
+        sign_in.element_by_translation_id("mobile-network-start-syncing").click()
+        sign_in.element_by_text_part(offline_banner_text).wait_for_invisibility_of_element(10)
+        if sign_in.element_by_text_part(offline_banner_text).is_element_displayed():
             self.driver.fail("Popup about offline history is shown")
 
     @marks.testrail_id(6229)
     @marks.high
     def test_mobile_data_usage_settings(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
+        sign_in_view = SignInView(self.driver).create_user()
         profile_view = sign_in_view.profile_button.click()
 
         sign_in_view.just_fyi("Check default preferences")
         profile_view.sync_settings_button.click()
-        profile_view.element_by_text('Mobile data').click()
+        profile_view.element_by_translation_id("mobile-network-settings").click()
 
         if profile_view.use_mobile_data.text != 'OFF':
             self.errors.append("Mobile data is enabled by default")
@@ -148,7 +145,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         sign_in_view.just_fyi("Disable 'ask me when on mobile network' and check that it is not shown")
         profile_view.ask_me_when_on_mobile_network.click()
         sign_in_view.toggle_mobile_data()
-        if sign_in_view.element_by_text("Start syncing").is_element_displayed(20):
+        if sign_in_view.element_by_translation_id("mobile-network-start-syncing").is_element_displayed(20):
             self.errors.append("Popup is shown, but 'ask me when on mobile network' is disabled")
 
         sign_in_view.just_fyi("Check 'Restore default' setting")
@@ -245,8 +242,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     @marks.critical
     def test_can_add_existing_ens(self):
         home = SignInView(self.driver).recover_access(ens_user['passphrase'])
-
-        home.just_fyi('switching to Mainnet')
         profile = home.profile_button.click()
         profile.switch_network('Mainnet with upstream RPC')
         home.profile_button.click()
@@ -254,11 +249,11 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         dapp_view.just_fyi('check if your name can be added via "ENS usernames" in Profile')
         dapp_view.element_by_text('Get started').click()
-        dapp_view.ens_name.set_value(ens_user['ens'])
+        dapp_view.ens_name_input.set_value(ens_user['ens'])
         dapp_view.check_ens_name.click()
-        if not dapp_view.find_element_by_translation_id('ens-saved-title').is_element_displayed():
+        if not dapp_view.element_by_translation_id('ens-saved-title').is_element_displayed():
             self.errors.append('No message "Username added" after resolving own username')
-        dapp_view.find_element_by_translation_id("ens-got-it").click()
+        dapp_view.element_by_translation_id("ens-got-it").click()
 
         dapp_view.just_fyi('check that after adding username is shown in "ENS usernames" and profile')
         if not dapp_view.element_by_text(ens_user['ens']).is_element_displayed():
@@ -313,12 +308,12 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.driver.fail('Back up seed phrase option is available after seed phrase backed up!')
         profile_view.back_button.click()
         profile_view.logout()
-        recover_view = sign_in_view.access_key_button.click()
-        recover_view.enter_seed_phrase_button.click()
-        recover_view.seedphrase_input.click()
-        recover_view.seedphrase_input.set_value(' '.join(recovery_phrase.values()))
-        recover_view.next_button.click()
-        recover_view.element_by_text('UNLOCK').click()
+        sign_in_view.access_key_button.click()
+        sign_in_view.enter_seed_phrase_button.click()
+        sign_in_view.seedphrase_input.click()
+        sign_in_view.seedphrase_input.set_value(' '.join(recovery_phrase.values()))
+        sign_in_view.next_button.click()
+        sign_in_view.element_by_text('UNLOCK').click()
         sign_in_view.password_input.set_value(common_password)
         chats_view = sign_in_view.sign_in_button.click()
         chats_view.plus_button.click()
@@ -409,18 +404,16 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             profile.plus_button.click()
             sign_in_view.just_fyi('Checking %s case' % key)
             if 'scanning' in key:
-                from views.contacts_view import ContactsView
-                contact_view = ContactsView(self.driver)
-                contact_view.scan_contact_code_button.click()
-                if contact_view.allow_button.is_element_displayed():
-                    contact_view.allow_button.click()
-                contact_view.enter_qr_edit_box.scan_qr(users[key]['contact_code'])
+                chat_view.scan_contact_code_button.click()
+                if chat_view.allow_button.is_element_displayed():
+                    chat_view.allow_button.click()
+                chat_view.enter_qr_edit_box.scan_qr(users[key]['contact_code'])
             else:
-                contact_view.public_key_edit_box.click()
-                contact_view.public_key_edit_box.send_keys(users[key]['contact_code'])
+                chat_view.public_key_edit_box.click()
+                chat_view.public_key_edit_box.send_keys(users[key]['contact_code'])
                 if 'nickname' in users[key]:
                     chat_view.nickname_input_field.set_value(users[key]['nickname'])
-                contact_view.confirm_until_presence_of_element(profile.contacts_button)
+                chat_view.confirm_until_presence_of_element(profile.contacts_button)
             if not profile.element_by_text(users[key]['username']).is_element_displayed():
                 self.errors.append('In %s case username not found in contact view after scanning' % key)
             if 'nickname' in users[key]:
@@ -600,8 +593,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         base_web_view.click_system_back_button()
         home_view = signin_view.create_user()
         profile = home_view.profile_button.click()
-        about_view = profile.about_button.click()
-        about_view.privacy_policy_button.click()
+        profile.about_button.click()
+        profile.privacy_policy_button.click()
 
         if not base_web_view.policy_summary.is_element_displayed():
             self.errors.append('{} Profile about view!'.format(no_link_open_error_msg))
@@ -677,12 +670,12 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.mail_server_auto_selection_button.click()
         profile.mail_server_by_name(h_node).click()
         profile.confirm_button.click()
-        if profile.find_element_by_translation_id("mailserver-error-title").is_element_displayed(10):
+        if profile.element_by_translation_id("mailserver-error-title").is_element_displayed(10):
             h_node = node_hk
-            profile.find_element_by_translation_id("mailserver-pick-another", uppercase=True).click()
+            profile.element_by_translation_id("mailserver-pick-another", uppercase=True).click()
             profile.mail_server_by_name(h_node).click()
             profile.confirm_button.click()
-            if profile.find_element_by_translation_id("mailserver-error-title").is_element_displayed(10):
+            if profile.element_by_translation_id("mailserver-error-title").is_element_displayed(10):
                 self.driver.fail("Couldn't connect to any history node")
 
         profile.just_fyi('check that history node is pinned')
@@ -713,7 +706,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         dapp_view = profile_view.connect_existing_status_ens(ens_stateofus)
         profile_view.element_by_text("Add username").click()
         profile_view.element_by_text_part("another domain").click()
-        dapp_view.ens_name.set_value(ens_not_stateofus)
+        dapp_view.ens_name_input.set_value(ens_not_stateofus)
         dapp_view.check_ens_name.click_until_presence_of_element(dapp_view.element_by_text('Ok, got it'))
         dapp_view.element_by_text('Ok, got it').click()
 
@@ -789,7 +782,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5436)
     @marks.medium
-    @marks.flaky
+    #@marks.flaky
     def test_add_switch_delete_custom_mailserver(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -888,7 +881,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.confirm_button.click()
 
         profile_1.just_fyi('check that popup "Error connecting" will not reappear if tap on "Cancel"')
-        profile_1.find_element_by_translation_id('mailserver-error-title').wait_for_element(30)
+        profile_1.element_by_translation_id('mailserver-error-title').wait_for_element(30)
         profile_1.cancel_button.click()
         profile_1.home_button.click()
 
@@ -909,10 +902,10 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         profile_1.just_fyi('check that can RETRY to connect')
         for _ in range(2):
-            public_chat_1.find_element_by_translation_id('mailserver-retry', 'button', uppercase=True).wait_and_click()
+            public_chat_1.element_by_translation_id('mailserver-retry', 'button', uppercase=True).wait_and_click()
 
         profile_1.just_fyi('check that can pick another mailserver and receive messages')
-        public_chat_1.find_element_by_translation_id('mailserver-pick-another', 'button', uppercase=True).wait_and_click()
+        public_chat_1.element_by_translation_id('mailserver-pick-another', 'button', uppercase=True).wait_and_click()
         mailserver = profile_1.return_mailserver_name(mailserver_ams, used_fleet)
         profile_1.element_by_text(mailserver).click()
         profile_1.confirm_button.click()
@@ -1156,7 +1149,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         home_1.profile_button.click()
         dapp_view_1 = profile_1.ens_usernames_button.click()
         dapp_view_1.element_by_text('Get started').click()
-        dapp_view_1.ens_name.set_value(ens_user['ens'])
+        dapp_view_1.ens_name_input.set_value(ens_user['ens'])
         expected_text = 'This user name is owned by you and connected with your chat key.'
         if not dapp_view_1.element_by_text_part(expected_text).is_element_displayed():
             dapp_view_1.click_system_back_button()

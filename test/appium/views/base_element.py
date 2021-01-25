@@ -1,7 +1,6 @@
 import base64
 from io import BytesIO
 import os
-
 import time
 from timeit import timeit
 
@@ -16,50 +15,44 @@ from tests import transl
 
 
 class BaseElement(object):
-    class Locator(object):
-
-        def __init__(self, by, value):
-            self.by = by
-            self.value = value
-
-        @classmethod
-        def xpath_selector(locator, value):
-            return locator(MobileBy.XPATH, value)
-
-        @classmethod
-        def accessibility_id(locator, value):
-            return locator(MobileBy.ACCESSIBILITY_ID, value)
-
-        @classmethod
-        def text_selector(locator, text):
-            return BaseElement.Locator.xpath_selector('//*[@text="' + text + '"]')
-
-        @classmethod
-        def text_part_selector(locator, text):
-            return BaseElement.Locator.xpath_selector('//*[contains(@text, "' + text + '")]')
-
-        @classmethod
-        def id(locator, value):
-            return locator(MobileBy.ID, value)
-
-        @classmethod
-        def webview_selector(cls, value):
-            xpath_expression = '//*[@text="{0}"] | //*[@content-desc="{desc}"]'.format(value, desc=value)
-            return cls(MobileBy.XPATH, xpath_expression)
-
-        @classmethod
-        def translation_id(cls, id, suffix='', uppercase = False):
-            text = transl[id]
-            if uppercase:
-                text = transl[id].upper()
-            return BaseElement.Locator.xpath_selector('//*[@text="' + text + '"]' + suffix)
-
-        def __str__(self, *args, **kwargs):
-            return "%s:%s" % (self.by, self.value)
-
-    def __init__(self, driver):
+    def __init__(self, driver, **kwargs):
         self.driver = driver
+        self.by = MobileBy.XPATH
         self.locator = None
+        self.xpath = None
+        self.accessibility_id = None
+        self.translation_id = None
+        self.uppercase = None
+        self.prefix=''
+        self.suffix = None
+        self.id = None
+        self.webview = None
+
+        self.__dict__.update(kwargs)
+        self.set_locator()
+
+
+    def set_locator(self):
+        if self.xpath:
+            self.locator = self.xpath
+        elif self.accessibility_id:
+            self.by = MobileBy.ACCESSIBILITY_ID
+            self.locator = self.accessibility_id
+        elif self.translation_id:
+            text = transl[self.translation_id]
+            self.locator = '//*[@text="%s"]' % text
+            if self.uppercase:
+                self.locator = '//*[@text="%s" or @text="%s"]' % (text, text.upper())
+            if self.suffix:
+                self.locator += self.suffix
+        elif self.id:
+            self.by = MobileBy.ID
+            self.locator = self.id
+        elif self.webview:
+                self.locator = '//*[@text="{0}"] | //*[@content-desc="{desc}"]'.format(self.webview, desc=self.webview)
+        if self.prefix:
+            self.locator = self.prefix + self.locator
+        return self
 
     @property
     def name(self):
@@ -71,7 +64,8 @@ class BaseElement(object):
     def find_element(self):
         for _ in range(3):
             try:
-                return self.driver.find_element(self.locator.by, self.locator.value)
+                self.driver.info('*Find %s by %s:* `%s`' % (self.name, self.by, self.locator))
+                return self.driver.find_element(self.by, self.locator)
             except NoSuchElementException:
                 raise NoSuchElementException(
                     "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
@@ -80,16 +74,17 @@ class BaseElement(object):
                     continue
 
     def find_elements(self):
-        return self.driver.find_elements(self.locator.by, self.locator.value)
+        return self.driver.find_elements(self.by, self.locator)
 
     def click(self):
         self.find_element().click()
-        self.driver.info('Tap on %s' % self.name)
+        self.driver.info('*Tap on found %s*' % self.name)
+        return self.navigate()
 
     def wait_for_element(self, seconds=10):
         try:
             return WebDriverWait(self.driver, seconds) \
-                .until(expected_conditions.presence_of_element_located((self.locator.by, self.locator.value)))
+                .until(expected_conditions.presence_of_element_located((self.by, self.locator)))
         except TimeoutException:
             raise TimeoutException(
                 "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
@@ -97,7 +92,7 @@ class BaseElement(object):
     def wait_for_elements(self, seconds=10):
         try:
             return WebDriverWait(self.driver, seconds) \
-                .until(expected_conditions.presence_of_all_elements_located((self.locator.by, self.locator.value)))
+                .until(expected_conditions.presence_of_all_elements_located((self.by, self.locator)))
         except TimeoutException:
             raise TimeoutException(
                 "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
@@ -105,7 +100,7 @@ class BaseElement(object):
     def wait_for_visibility_of_element(self, seconds=10, ignored_exceptions=None):
         try:
             return WebDriverWait(self.driver, seconds, ignored_exceptions=ignored_exceptions) \
-                .until(expected_conditions.visibility_of_element_located((self.locator.by, self.locator.value)))
+                .until(expected_conditions.visibility_of_element_located((self.by, self.locator)))
         except TimeoutException:
             raise TimeoutException(
                 "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
@@ -113,17 +108,17 @@ class BaseElement(object):
     def wait_for_invisibility_of_element(self, seconds=10):
         try:
             return WebDriverWait(self.driver, seconds) \
-                .until(expected_conditions.invisibility_of_element_located((self.locator.by, self.locator.value)))
+                .until(expected_conditions.invisibility_of_element_located((self.by, self.locator)))
         except TimeoutException:
             raise TimeoutException("Device %s: '%s' is still visible on the screen after %s seconds" % (
                 self.driver.number, self.name, seconds)) from None
 
     def scroll_to_element(self, depth: int = 9, direction='down'):
+        self.driver.info('*Scrolling %s to %s*' % (direction, self.name))
         for _ in range(depth):
             try:
                 return self.find_element()
             except NoSuchElementException:
-                self.driver.info('Scrolling %s to %s' % (direction, self.name))
                 size = self.driver.get_window_size()
                 if direction == 'down':
                     self.driver.swipe(500, size["height"]*0.4, 500, size["height"]*0.05)
@@ -139,14 +134,12 @@ class BaseElement(object):
 
     def is_element_present(self, sec=5):
         try:
-            self.driver.info('Wait for %s' % self.name)
             return self.wait_for_element(sec)
         except TimeoutException:
             return False
 
     def is_element_displayed(self, sec=5, ignored_exceptions=None):
         try:
-            self.driver.info('Wait for %s' % self.name)
             return self.wait_for_visibility_of_element(sec, ignored_exceptions=ignored_exceptions)
         except TimeoutException:
             return False
@@ -206,7 +199,7 @@ class BaseElement(object):
 
     def long_press_element(self):
         element = self.find_element()
-        self.driver.info('Long press %s' % self.name)
+        self.driver.info('*Long press on %s*' % self.name)
         action = TouchAction(self.driver)
         action.long_press(element).release().perform()
 
@@ -222,33 +215,37 @@ class BaseElement(object):
 
         return timeit(wrapper, number=1)
 
+    @staticmethod
+    def get_translation_by_key(key):
+        return transl[key]
 
-class BaseEditBox(BaseElement):
 
-    def __init__(self, driver):
-        super(BaseEditBox, self).__init__(driver)
+class EditBox(BaseElement):
+
+    def __init__(self, driver, **kwargs):
+        super(EditBox, self).__init__(driver, **kwargs)
 
     def send_keys(self, value):
         self.find_element().send_keys(value)
-        self.driver.info("Type '%s' to %s" % (value, self.name))
+        self.driver.info("*Type '%s' to %s*" % (value, self.name))
 
     def set_value(self, value):
         self.find_element().set_value(value)
-        self.driver.info("Type '%s' to %s" % (value, self.name))
+        self.driver.info("*Type '%s' to %s*" % (value, self.name))
 
     def clear(self):
         self.find_element().clear()
-        self.driver.info('Clear text in %s' % self.name)
+        self.driver.info('*Clear text in %s*' % self.name)
 
     def delete_last_symbols(self, number_of_symbols_to_delete: int):
-        self.driver.info('Delete last %s symbols from %s' % (number_of_symbols_to_delete, self.name))
+        self.driver.info('*Delete last %s symbols from %s*' % (number_of_symbols_to_delete, self.name))
         self.click()
         for _ in range(number_of_symbols_to_delete):
             time.sleep(1)
             self.driver.press_keycode(67)
 
     def paste_text_from_clipboard(self):
-        self.driver.info('Paste text from clipboard into %s' % self.name)
+        self.driver.info('*Paste text from clipboard into %s*' % self.name)
         self.long_press_element()
         time.sleep(2)
         action = TouchAction(self.driver)
@@ -257,7 +254,7 @@ class BaseEditBox(BaseElement):
         action.press(x=x + 25, y=y - 50).release().perform()
 
     def cut_text(self):
-        self.driver.info('Cut text in %s' % self.name)
+        self.driver.info('-Cut text in %s' % self.name)
         location = self.find_element().location
         x, y = location['x'], location['y']
         action = TouchAction(self.driver)
@@ -266,19 +263,20 @@ class BaseEditBox(BaseElement):
         action.press(x=x + 50, y=y - 50).release().perform()
 
 
-class BaseText(BaseElement):
-
-    def __init__(self, driver):
-        super(BaseText, self).__init__(driver)
+class Text(BaseElement):
+    def __init__(self, driver, **kwargs):
+        super(Text, self).__init__(driver, **kwargs)
+        self.set_locator()
 
     @property
     def text(self):
         text = self.find_element().text
-        self.driver.info('%s is %s' % (self.name, text))
+        self.driver.info('*%s is %s*' % (self.name, text))
         return text
 
     def wait_for_element_text(self, text, wait_time=30):
         counter = 0
+        self.driver.info("*Wait for text element %s to be equal to %s*" % (self.name, text))
         while True:
             if counter >= wait_time:
                 self.driver.fail(
@@ -286,33 +284,26 @@ class BaseText(BaseElement):
             elif self.find_element().text != text:
                 counter += 10
                 time.sleep(10)
-                self.driver.info('Wait for text element %s to be equal to %s' % (self.name, text))
             else:
-                self.driver.info('Element %s text is equal to %s' % (self.name, text))
+                self.driver.info('*Element %s text is equal to %s*' % (self.name, text))
                 return
 
-class BaseButton(BaseElement):
+class Button(BaseElement):
 
-    def __init__(self, driver):
-        super(BaseButton, self).__init__(driver)
-
-    def click(self):
-        self.find_element().click()
-        self.driver.info('Tap on %s' % self.name)
-        return self.navigate()
+    def __init__(self, driver, **kwargs):
+        super(Button, self).__init__(driver, **kwargs)
 
     def wait_and_click(self, time=30):
-        self.driver.info('Waiting for element %s for max %s sec and click when it is available' % (self.name, time))
+        self.driver.info('*Wait for element %s for max %ss and click when it is available*' % (self.name, time))
         self.wait_for_visibility_of_element(time)
         self.click()
 
     def click_until_presence_of_element(self, desired_element, attempts=4):
         counter = 0
+        self.driver.info('*Click until %s by %s:*`%s` *is presented*' % (self.name, self.by, self.locator))
         while not desired_element.is_element_present(1) and counter <= attempts:
             try:
-                self.driver.info('Tap on %s' % self.name)
                 self.find_element().click()
-                self.driver.info('Wait for %s to be displayed' % desired_element.name)
                 desired_element.wait_for_element(5)
                 return self.navigate()
             except (NoSuchElementException, TimeoutException):
@@ -322,11 +313,31 @@ class BaseButton(BaseElement):
 
     def click_until_absense_of_element(self, desired_element, attempts=3):
         counter = 0
+        self.driver.info('*Click until %s by %s:*`%s` *is NOT presented*' % (desired_element.name, desired_element.by, desired_element.locator))
         while desired_element.is_element_present(1) and counter <= attempts:
             try:
-                self.driver.info('Tap on %s' % self.name)
                 self.find_element().click()
-                self.driver.info('Wait for %s to disappear' % desired_element.name)
                 counter += 1
             except (NoSuchElementException, TimeoutException):
                 return self.navigate()
+
+class SilentButton(Button):
+    def find_element(self):
+        for _ in range(3):
+            try:
+                return self.driver.find_element(self.by, self.locator)
+            except NoSuchElementException:
+                raise NoSuchElementException(
+                    "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
+            except Exception as exception:
+                if 'Internal Server Error' in str(exception):
+                    continue
+
+    def click(self):
+        self.find_element().click()
+        return self.navigate()
+
+    @property
+    def text(self):
+        text = self.find_element().text
+        return text

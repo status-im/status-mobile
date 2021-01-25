@@ -1,51 +1,42 @@
 import time
 from selenium.common.exceptions import NoSuchElementException
-from views.base_element import BaseElement, BaseButton, BaseText
+from views.base_element import BaseElement, Button, Text
 from views.base_view import BaseView
 
 
-class OptionsButton(BaseButton):
+class OptionsButton(Button):
     def __init__(self, driver):
-        super(OptionsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            '(//android.view.ViewGroup[@content-desc="icon"])[2]')
-
+        super().__init__(driver, xpath="(//android.view.ViewGroup[@content-desc='icon'])[2]")
     def click(self):
         self.click_until_presence_of_element(OptionsButton.CopyTransactionHashButton(self.driver))
 
-    class CopyTransactionHashButton(BaseButton):
+    class CopyTransactionHashButton(Button):
         def __init__(self, driver):
-            super(OptionsButton.CopyTransactionHashButton, self).__init__(driver)
-            self.locator = self.Locator.text_selector('Copy transaction ID')
+            super().__init__(driver, translation_id="copy-transaction-hash")
 
-    class OpenOnEtherscanButton(BaseButton):
+    class OpenOnEtherscanButton(Button):
         def __init__(self, driver):
-            super(OptionsButton.OpenOnEtherscanButton, self).__init__(driver)
-            self.locator = self.Locator.text_selector('Open on Etherscan.io')
-
+            super().__init__(driver, translation_id="open-on-etherscan")
 
 class TransactionTable(BaseElement):
     def __init__(self, driver):
-        super(TransactionTable, self).__init__(driver)
+        super().__init__(driver, xpath="//android.widget.ScrollView")
         self.driver = driver
-        self.locator = self.Locator.xpath_selector("//android.widget.ScrollView")
 
-    class TransactionElement(BaseButton):
+    class TransactionElement(Button):
         def __init__(self, driver):
-            super(TransactionTable.TransactionElement, self).__init__(driver)
+            super().__init__(driver)
 
         @staticmethod
         def by_amount(driver, amount: str, asset):
             element = TransactionTable.TransactionElement(driver)
-            element.locator = element.Locator.xpath_selector(
-                "(//android.widget.TextView[contains(@text,'%s %s')])" % (amount, asset))
+            element.locator = "(//android.widget.TextView[contains(@text,'%s %s')])" % (amount, asset)
             return element
 
         @staticmethod
         def by_index(driver, index: int):
             element = TransactionTable.TransactionElement(driver)
-            element.locator = element.Locator.xpath_selector(
-                '(//android.view.ViewGroup[@content-desc="transaction-item"])[%d]' % (index + 1))
+            element.locator = '(//android.view.ViewGroup[@content-desc="transaction-item"])[%d]' % (index + 1)
             return element
 
         class TransactionDetailsView(BaseView):
@@ -61,11 +52,11 @@ class TransactionTable(BaseElement):
                 self.locators['sender_address'] = "//*[@content-desc='sender-address-text']"
                 self.locators['recipient_address'] = "//*[@content-desc='recipient-address-text'][last()]"
 
-            class DetailsTextElement(BaseText):
+            class DetailsTextElement(Text):
                 def __init__(self, driver, locator):
                     super(TransactionTable.TransactionElement.TransactionDetailsView.DetailsTextElement,
                           self).__init__(driver)
-                    self.locator = self.Locator.xpath_selector(locator)
+                    self.locator = locator
 
                 def text(self):
                     text = self.find_element().text
@@ -85,12 +76,15 @@ class TransactionTable(BaseElement):
             return self.TransactionDetailsView(self.driver)
 
     def transaction_by_index(self, index: int):
+        self.driver.info('**Finding transaction by index %s**' % index)
         return self.TransactionElement.by_index(self.driver, index=index)
 
     def transaction_by_amount(self, amount: str, asset):
+        self.driver.info('**Finding transaction by amount %s**' % amount)
         return self.TransactionElement.by_amount(self.driver, amount=amount.replace(',', '.'), asset=asset)
 
     def find_transaction(self, amount: str, asset='ETH') -> TransactionElement:
+        self.driver.info('**Finding %s %s transaction**' % (amount, asset))
         element = self.transaction_by_amount(amount=amount, asset=asset)
         for i in range(9):
             try:
@@ -106,29 +100,10 @@ class TransactionTable(BaseElement):
 
     def get_transactions_number(self):
         element = self.TransactionElement(self.driver)
-        element.locator = element.Locator.xpath_selector('//android.view.ViewGroup[@content-desc="transaction-item"]')
+        element.locator = '//android.view.ViewGroup[@content-desc="transaction-item"]'
         return len(element.wait_for_elements())
-
-
-class FiltersButton(BaseButton):
-    def __init__(self, driver):
-        super(FiltersButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('filters-button')
-
-
-class FilterCheckbox(BaseButton):
-    def __init__(self, driver, filter_name):
-        super(FilterCheckbox, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//*[@text='%s']/following-sibling::*[@content-desc='checkbox']" % filter_name)
-
 
 class TransactionsView(BaseView):
     def __init__(self, driver):
-        super(TransactionsView, self).__init__(driver)
-        self.driver = driver
-        self.filters_button = FiltersButton(self.driver)
+        super().__init__(driver)
         self.transactions_table = TransactionTable(self.driver)
-
-    def filter_checkbox(self, filter_name):
-        return FilterCheckbox(self.driver, filter_name)

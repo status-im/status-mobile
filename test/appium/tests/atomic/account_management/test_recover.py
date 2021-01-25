@@ -5,7 +5,6 @@ from tests import marks, unique_password
 from tests.base_test_case import SingleDeviceTestCase
 from tests.users import basic_user, transaction_senders, recovery_users, ens_user
 from views.sign_in_view import SignInView
-from views.recover_access_view import RecoverAccessView
 
 
 class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
@@ -49,12 +48,10 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
         signin_view = SignInView(self.driver)
         signin_view.get_started_button.click_until_presence_of_element(signin_view.access_key_button)
         signin_view.access_key_button.click()
-        recover_access_view = RecoverAccessView(self.driver)
         validations = [
             {
                 'case': 'empty value',
                 'phrase': '    ',
-                'element to check': recover_access_view.warnings.invalid_recovery_phrase,
                 'validation message': 'Required field',
                 'words count': 1,
                 'popup': False
@@ -62,7 +59,6 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
             {
                 'case': '1 word seed',
                 'phrase': 'a',
-                'element to check': recover_access_view.warnings.invalid_recovery_phrase,
                 'validation message': '',
                 'words count': 1,
                 'popup' : False
@@ -70,60 +66,58 @@ class TestRecoverAccountSingleDevice(SingleDeviceTestCase):
             {
                 'case': 'mnemonic but checksum validation fails',
                 'phrase': 'one two three four five six seven eight nine ten eleven twelve',
-                'element to check': recover_access_view.warnings.invalid_recovery_phrase,
                 'validation message': '',
                 'words count': 12,
                 'popup': True
             },
         ]
 
-        recover_access_view.just_fyi("check that seed phrase is required (can't be empty)")
-        recover_access_view.enter_seed_phrase_button.click()
-        recover_access_view.next_button.click()
-        if recover_access_view.reencrypt_your_key_button.is_element_displayed():
+        signin_view.just_fyi("check that seed phrase is required (can't be empty)")
+        signin_view.enter_seed_phrase_button.click()
+        signin_view.next_button.click()
+        if signin_view.reencrypt_your_key_button.is_element_displayed():
             self.errors.append("Possible to create account with empty seed phrase")
 
         signin_view = SignInView(self.driver, skip_popups=False)
         for validation in validations:
-            recover_access_view.just_fyi("Checking %s" % validation.get('case'))
-            phrase, elm, msg, words_count, popup = validation.get('phrase'), \
-                                            validation.get('element to check'), \
+            signin_view.just_fyi("Checking %s" % validation.get('case'))
+            phrase, msg, words_count, popup = validation.get('phrase'), \
                                             validation.get('validation message'), \
                                             validation.get('words count'),\
                                             validation.get('popup')
             if signin_view.access_key_button.is_element_displayed():
                 signin_view.access_key_button.click()
-            if recover_access_view.enter_seed_phrase_button.is_element_displayed():
-                recover_access_view.enter_seed_phrase_button.click()
+            if signin_view.enter_seed_phrase_button.is_element_displayed():
+                signin_view.enter_seed_phrase_button.click()
 
-            recover_access_view.send_as_keyevent(phrase)
+            signin_view.seedphrase_input.set_value(phrase)
 
             if msg:
-                if not recover_access_view.element_by_text(msg).is_element_displayed():
+                if not signin_view.element_by_text(msg).is_element_displayed():
                     self.errors.append('"{}" message is not shown'.format(msg))
 
-            recover_access_view.just_fyi('check that words count is shown')
-            if words_count == 1:
+            signin_view.just_fyi('check that words count is shown')
+            if words_count:
                 if not signin_view.element_by_text('%s word' % words_count):
                     self.errors.append('"%s word" is not shown ' % words_count)
             else:
                 if not signin_view.element_by_text('%s words' % words_count):
                     self.errors.append('"%s words" is not shown ' % words_count)
 
-            recover_access_view.just_fyi('check that "Next" is disabled unless we use allowed count of words')
+            signin_view.just_fyi('check that "Next" is disabled unless we use allowed count of words')
             if words_count != 12 or 15 or 18 or 21 or 24:
-                recover_access_view.next_button.click()
-                if recover_access_view.reencrypt_your_key_button.is_element_displayed():
+                signin_view.next_button.click()
+                if signin_view.reencrypt_your_key_button.is_element_displayed():
                     self.errors.append("Possible to create account with wrong count (%s) of words" % words_count)
 
-            recover_access_view.just_fyi('check behavior for popup "Custom seed phrase"')
+            signin_view.just_fyi('check behavior for popup "Custom seed phrase"')
             if popup:
                 text = 'Invalid seed phrase'
-                if not recover_access_view.find_full_text(text):
+                if not signin_view.find_full_text(text):
                     self.errors.append('"%s" text is not shown' % text)
-                recover_access_view.cancel_custom_seed_phrase_button.click()
+                signin_view.cancel_custom_seed_phrase_button.click()
 
-            recover_access_view.click_system_back_button()
+            signin_view.click_system_back_button()
 
         self.errors.verify_no_errors()
 

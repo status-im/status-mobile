@@ -1,75 +1,56 @@
-from views.web_views.base_web_view import BaseWebView, BaseButton
+from views.web_views.base_web_view import BaseWebView, Button
 import time
 
-
-class AssetsButton(BaseButton):
-
+class RequestSTTButton(Button):
     def __init__(self, driver):
-        super(AssetsButton, self).__init__(driver)
-        self.locator = self.Locator.webview_selector('Assets')
+        super(RequestSTTButton, self).__init__(driver, webview="Request STT")
 
-    class RequestETHButton(BaseButton):
-        def __init__(self, driver):
-            super(AssetsButton.RequestETHButton, self).__init__(driver)
-            self.locator = self.Locator.webview_selector('Request Ropsten ETH')
-
-    class RequestSTTButton(BaseButton):
-        def __init__(self, driver):
-            super(AssetsButton.RequestSTTButton, self).__init__(driver)
-            self.locator = self.Locator.webview_selector('Request STT')
-
-        def navigate(self):
-            from views.send_transaction_view import SendTransactionView
-            return SendTransactionView(self.driver)
+    def navigate(self):
+        from views.send_transaction_view import SendTransactionView
+        return SendTransactionView(self.driver)
 
 
-class TransactionsButton(BaseButton):
-
+class TransactionsButton(Button):
     def __init__(self, driver):
-        super(TransactionsButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Transactions')
+        super().__init__(driver, xpath="//*[@text='Transactions']")
 
-    class SignMessageButton(BaseButton):
+    class SignMessageButton(Button):
         def __init__(self, driver):
-            super(TransactionsButton.SignMessageButton, self).__init__(driver)
-            self.locator = self.Locator.text_selector('Sign message')
+            super().__init__(driver, xpath="//*[@text='Sign message']")
 
         def click(self):
-            from views.send_transaction_view import SigningPhraseText
-            self.click_until_presence_of_element(SigningPhraseText(self.driver))
+            from views.base_element import Text
+            self.click_until_presence_of_element(Text(self.driver, translation_id="signing-phrase"))
             return self.navigate()
 
         def navigate(self):
             from views.send_transaction_view import SendTransactionView
             return SendTransactionView(self.driver)
 
-    class SignTypedMessageButton(BaseButton):
+    class SignTypedMessageButton(Button):
         def __init__(self, driver):
-            super(TransactionsButton.SignTypedMessageButton, self).__init__(driver)
-            self.locator = self.Locator.text_selector('Sign Typed Message')
+            super().__init__(driver, xpath="//*[@text='Sign Typed Message']")
 
         def click(self):
-            from views.send_transaction_view import SigningPhraseText
-            self.click_until_presence_of_element(SigningPhraseText(self.driver))
+            from views.base_element import Text
+            self.click_until_presence_of_element(Text(self.driver, translation_id="signing-phrase"))
             return self.navigate()
 
         def navigate(self):
             from views.send_transaction_view import SendTransactionView
             return SendTransactionView(self.driver)
 
-    class DeployContractButton(BaseButton):
+    class DeployContractButton(Button):
         def __init__(self, driver):
-            super(TransactionsButton.DeployContractButton, self).__init__(driver)
-            self.locator = self.Locator.text_selector('Deploy simple contract')
+            super().__init__(driver, xpath="//*[@text='Deploy simple contract']")
 
         def navigate(self):
             from views.send_transaction_view import SendTransactionView
             return SendTransactionView(self.driver)
 
-    class SendTwoTxOneByOneButton(BaseButton):
+    class SendTwoTxOneByOneButton(Button):
         def __init__(self, driver):
-            super(TransactionsButton.SendTwoTxOneByOneButton, self).__init__(driver)
-            self.locator = self.Locator.webview_selector('Send two Txs, one after another, 0.00001 and 0.00002 ETH')
+            super().__init__(driver, webview="Send two Txs, one after another, 0.00001 and 0.00002 ETH")
 
         def navigate(self):
             from views.send_transaction_view import SendTransactionView
@@ -81,40 +62,30 @@ class TransactionsButton(BaseButton):
             self.wait_for_visibility_of_element().click()
             return self.navigate()
 
-    class SendTwoTxInBatchButton(BaseButton):
+    class SendTwoTxInBatchButton(Button):
         def __init__(self, driver):
-            super(TransactionsButton.SendTwoTxInBatchButton, self).__init__(driver)
-            self.locator = self.Locator.text_selector('Send two Txs in batch, 0.00001 and 0.00002 ETH')
+            super().__init__(driver, xpath="//*[@text='Send two Txs in batch, 0.00001 and 0.00002 ETH']")
 
         def navigate(self):
             from views.send_transaction_view import SendTransactionView
             return SendTransactionView(self.driver)
 
-    class TestFiltersButton(BaseButton):
+    class TestFiltersButton(Button):
         def __init__(self, driver):
-            super(TransactionsButton.TestFiltersButton, self).__init__(driver)
-            self.locator = self.Locator.text_selector('Test filters')
+            super().__init__(driver, xpath="//*[@text='Test filters']")
 
 
-class StatusAPIButton(BaseButton):
-
+class StatusAPIButton(Button):
     def __init__(self, driver):
-        super(StatusAPIButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector('Status API')
-
-    class RequestContactCodeButton(BaseButton):
-        def __init__(self, driver):
-            super(StatusAPIButton.RequestContactCodeButton, self).__init__(driver)
-            self.locator = self.Locator.text_part_selector('Request contact code')
+        super().__init__(driver, xpath="//*[@text='%s']")
 
     def click(self):
         self.wait_for_visibility_of_element().click()
 
 
-class SendOneTransactionInBatchButton(BaseButton):
+class SendOneTransactionInBatchButton(Button):
     def __init__(self, driver):
-        super().__init__(driver)
-        self.locator = self.Locator.text_selector('Send one Tx in batch')
+        super().__init__(driver, xpath="//*[@text='Send one Tx in batch']")
 
     def navigate(self):
         from views.send_transaction_view import SendTransactionView
@@ -127,9 +98,9 @@ class StatusTestDAppView(BaseWebView):
         super(StatusTestDAppView, self).__init__(driver)
         self.driver = driver
 
-        self.assets_button = AssetsButton(self.driver)
-        self.request_eth_button = AssetsButton.RequestETHButton(self.driver)
-        self.request_stt_button = AssetsButton.RequestSTTButton(self.driver)
+        self.assets_button = Button(self.driver, webview="Assets")
+        self.request_eth_button = Button(self.driver, webview="Request Ropsten ETH")
+        self.request_stt_button = RequestSTTButton(self.driver)
 
         self.transactions_button = TransactionsButton(self.driver)
         self.sign_message_button = TransactionsButton.SignMessageButton(self.driver)
@@ -141,12 +112,14 @@ class StatusTestDAppView(BaseWebView):
         self.sign_typed_message_button = TransactionsButton.SignTypedMessageButton(self.driver)
 
         self.status_api_button = StatusAPIButton(self.driver)
-        self.request_contact_code_button = StatusAPIButton.RequestContactCodeButton(self.driver)
+        self.request_contact_code_button = Button(self.driver, xpath="//*[contains(text(),'Request contact code']")
 
     def wait_for_d_aap_to_load(self, wait_time=10):
+        self.driver.info("**Wait %ss for assets in simpledapp**" % wait_time)
         self.assets_button.wait_for_visibility_of_element(seconds=wait_time)
 
     def faucet_asset(self, asset='eth'):
+        self.driver.info("**Faucet %s in dapp**" % asset)
         self.wait_for_d_aap_to_load()
         self.assets_button.click()
         if asset == 'eth':

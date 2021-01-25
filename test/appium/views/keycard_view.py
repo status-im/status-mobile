@@ -1,120 +1,44 @@
-from views.base_element import BaseButton, BaseText, BaseEditBox
+from views.base_element import Button, Text, EditBox, SilentButton
 from views.base_view import BaseView
-
-
-class BeginSetupButton(BaseButton):
-    def __init__(self, driver):
-        super(BeginSetupButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector("Begin setup")
-
-
-class OnePinKeyboardButton(BaseButton):
-    def __init__(self, driver):
-        super(OnePinKeyboardButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector("1")
-
-
-class TwoPinKeyboardButton(BaseButton):
-    def __init__(self, driver):
-        super(TwoPinKeyboardButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector("2")
-
-class ConnectCardButton(BaseButton):
-    def __init__(self, driver):
-        super(ConnectCardButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("connect-card")
-
-class ConnectSelectedCardButton(BaseButton):
-    def __init__(self, driver):
-        super(ConnectSelectedCardButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("connect-selected-card")
-
-
-class DisconnectCardButton(BaseButton):
-    def __init__(self, driver):
-        super(DisconnectCardButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("disconnect-card")
-
-
-class ResetCardButton(BaseButton):
-    def __init__(self, driver):
-        super(ResetCardButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("keycard-reset-state")
-
-
-class RecoveryWordText(BaseText):
-    def __init__(self, driver, word_id):
-        super(RecoveryWordText, self).__init__(driver)
-        self.word_id = word_id
-        self.locator = self.Locator.accessibility_id("word%s" % word_id)
-
-class WordNumberText(BaseText):
-    def __init__(self, driver):
-        super(WordNumberText, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("word-number")
-
-class ConfirmSeedPhraseInput(BaseEditBox):
-    def __init__(self, driver):
-        super(ConfirmSeedPhraseInput, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("enter-word")
-
-class PairCodeText(BaseText):
-    def __init__(self, driver):
-        super(PairCodeText, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("pair-code")
-
-class PairCodeInput(BaseEditBox):
-    def __init__(self, driver):
-        super(PairCodeInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.EditText")
-
-class PairToThisDeviceButton(BaseButton):
-    def __init__(self, driver):
-        super(PairToThisDeviceButton, self).__init__(driver)
-        self.locator = self.Locator.text_selector("Pair to this device")
-
-
-class ConnectPairingCardButton(BaseButton):
-    def __init__(self, driver):
-        super(ConnectPairingCardButton, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id("connect-pairing-card")
 
 
 class KeycardView(BaseView):
     def __init__(self, driver):
-        super(KeycardView, self).__init__(driver)
-        self.begin_setup_button = BeginSetupButton(self.driver)
-        self.connect_card_button = ConnectCardButton(self.driver)
-        self.disconnect_card_button = DisconnectCardButton(self.driver)
-        self.reset_card_state_button = ResetCardButton(self.driver)
-        self.connect_selected_card_button = ConnectSelectedCardButton(self.driver)
-        self.pair_code_text = PairCodeText(self.driver)
-        self.pair_code_input = PairCodeInput(self.driver)
-        self.pair_to_this_device_button = PairToThisDeviceButton(self.driver)
-        self.connect_pairing_card_button = ConnectPairingCardButton(self.driver)
+        super().__init__(driver)
+        self.begin_setup_button = Button(self.driver, translation_id="begin-set-up")
+        self.connect_card_button = Button(self.driver, accessibility_id="connect-card")
+        self.disconnect_card_button = Button(self.driver, accessibility_id="disconnect-card")
+        self.reset_card_state_button = Button(self.driver, accessibility_id="keycard-reset-state")
+        self.connect_selected_card_button = Button(self.driver, accessibility_id="connect-selected-card")
+        self.pair_code_text = Text(self.driver, accessibility_id="pair-code")
+        self.pair_code_input = EditBox(self.driver, xpath="//android.widget.EditText")
+        self.pair_to_this_device_button = Button(self.driver, translation_id="pair-card")
+        self.connect_pairing_card_button = Button(self.driver, accessibility_id="connect-pairing-card")
 
-        #keyboard
-        self.one_button = OnePinKeyboardButton(self.driver)
-        self.two_button = TwoPinKeyboardButton(self.driver)
+        # Keyboard
+        self.one_button = SilentButton(self.driver, xpath="//*[@text='1']")
+        self.two_button = SilentButton(self.driver, xpath="//*[@text='2']")
 
-        #backup seed phrase
-        self.confirm_seed_phrase_edit_box = ConfirmSeedPhraseInput(self.driver)
+        # Backup seed phrase
+        self.confirm_seed_phrase_edit_box = EditBox(self.driver, accessibility_id="enter-word")
 
     def enter_default_pin(self):
+        self.driver.info("**Enter default pin 121212**")
         for _ in range(3):
             self.one_button.click()
             self.two_button.click()
 
     def enter_another_pin(self):
+        self.driver.info("**Enter not-default pin 222222**")
         for _ in range(6):
             self.two_button.click()
 
     def get_recovery_word(self, word_id):
-        word_element = RecoveryWordText(self.driver, word_id)
+        word_element = SilentButton(self.driver, accessibility_id="word%s" % word_id)
         return word_element.text
 
     def get_required_word_number(self):
-        description = WordNumberText(self.driver)
+        description = SilentButton(self.driver, accessibility_id="word-number")
         full_text = description.text
         word_number = ''.join(i for i in full_text if i.isdigit())
         return word_number
@@ -127,6 +51,7 @@ class KeycardView(BaseView):
         return recovery_phrase
 
     def backup_seed_phrase(self):
+        self.driver.info("**Backing up seed phrase for keycard**")
         recovery_phrase = self.get_seed_phrase()
         self.confirm_button.click()
         self.yes_button.click()

@@ -85,7 +85,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard_flow.connect_card_button.click()
         keycard_flow.enter_another_pin()
         keycard_flow.cancel_button.click()
-        if not keycard_flow.element_by_text_part('Dangerous operation').is_element_displayed():
+        if not keycard_flow.element_by_translation_id("keycard-cancel-setup-title").is_element_displayed():
             self.driver.fail('No Dangerous operation popup is shown on canceling operation from PIN code stage')
         keycard_flow.yes_button.click()
 
@@ -96,7 +96,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard_flow.wait_for_element_starts_with_text('Write codes down')
         pair_code = keycard_flow.pair_code_text.text
         keycard_flow.cancel_button.click()
-        if not keycard_flow.element_by_text_part('Dangerous operation').is_element_displayed():
+        if not keycard_flow.element_by_translation_id("keycard-cancel-setup-title").is_element_displayed():
             self.driver.fail('No Dangerous operation popup is shown on canceling operation from Pair code stage')
         keycard_flow.yes_button.click()
 
@@ -108,7 +108,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard_flow.confirm_button.click()
         keycard_flow.yes_button.click()
         keycard_flow.cancel_button.click()
-        if not keycard_flow.element_by_text_part('Dangerous operation').is_element_displayed():
+        if not keycard_flow.element_by_translation_id("keycard-cancel-setup-title").is_element_displayed():
             self.driver.fail('No Dangerous operation popup is shown on canceling operation during Backup seed phrase stage')
         keycard_flow.yes_button.click()
         if not keycard_flow.element_by_text_part('Back up seed phrase').is_element_displayed():
@@ -118,7 +118,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard_flow.cancel_button.click()
         keycard_flow.yes_button.click()
         keycard_flow.begin_setup_button.click()
-        keycard_flow.wait_for_element_starts_with_text('Back up seed phrase')
+        keycard_flow.element_by_translation_id("back-up-seed-phrase").wait_for_element(10)
         new_seed_phrase = keycard_flow.get_seed_phrase()
         if new_seed_phrase != seed_phrase:
             self.errors.append('Another seed phrase is shown after cancelling setup during Back up seed phrase')
@@ -146,12 +146,12 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.get_started_button.click()
 
-        recover_access = sign_in.access_key_button.click()
-        recover_access.enter_seed_phrase_button.click()
-        recover_access.seedphrase_input.click()
-        recover_access.seedphrase_input.set_value(basic_user['passphrase'])
-        recover_access.next_button.click()
-        recover_access.reencrypt_your_key_button.click()
+        sign_in.access_key_button.click()
+        sign_in.enter_seed_phrase_button.click()
+        sign_in.seedphrase_input.click()
+        sign_in.seedphrase_input.set_value(basic_user['passphrase'])
+        sign_in.next_button.click()
+        sign_in.reencrypt_your_key_button.click()
         keycard_flow = sign_in.keycard_storage_button.click()
 
         sign_in.just_fyi('Cancel on PIN code setup stage')
@@ -160,7 +160,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard_flow.connect_card_button.click()
         keycard_flow.enter_another_pin()
         keycard_flow.cancel_button.click()
-        if not keycard_flow.element_by_text_part('Dangerous operation').is_element_displayed():
+        if not keycard_flow.element_by_translation_id("keycard-cancel-setup-title").is_element_displayed():
             self.driver.fail('No Dangerous operation popup is shown on canceling operation from PIN code stage')
         keycard_flow.yes_button.click()
 
@@ -171,7 +171,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         keycard_flow.wait_for_element_starts_with_text('Write codes down')
         pair_code = keycard_flow.pair_code_text.text
         keycard_flow.cancel_button.click()
-        if not keycard_flow.element_by_text_part('Dangerous operation').is_element_displayed():
+        if not keycard_flow.element_by_translation_id("keycard-cancel-setup-title").is_element_displayed():
             self.driver.fail('No Dangerous operation popup is shown on canceling operation from Pair code stage')
         keycard_flow.yes_button.click()
 
@@ -229,12 +229,12 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         sign_in.just_fyi('Check that username and public key match expected for recovered multiaccount')
         public_key, default_username = sign_in.get_public_key_and_username(return_username=True)
-        profile_view = sign_in.get_profile_view()
+        profile = sign_in.get_profile_view()
         if public_key != recovered_user['public_key']:
             self.errors.append('Public key %s does not match expected' % public_key)
         if default_username != recovered_user['username']:
             self.errors.append('Default username %s does not match expected' % default_username)
-        profile_view.logout()
+        profile.logout()
 
         sign_in.just_fyi('Check that can login with recovered keycard account')
         sign_in.sign_in(keycard=True)

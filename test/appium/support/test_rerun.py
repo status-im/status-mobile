@@ -10,8 +10,7 @@ RERUN_ERRORS = [
     '504 Gateway Time-out',
     'Internal Server Error',
     'failed to start the browser or device',
-    'ERROR The test with session id'
-    "Message: 'CreateMultiaccountButton' is not found on screen",
+    'ERROR The test with session id',
     "503 Service Unavailable",
     "object has no attribute",
     "[Errno 104] Connection reset by peer",
