@@ -145,6 +145,9 @@
 (defn get-min-known-block [db address]
   (get-in db [:wallet :accounts (eip55/address->checksum address) :min-block]))
 
+(defn get-max-block-with-transfers [db address]
+  (get-in db [:wallet :accounts (eip55/address->checksum address) :max-block]))
+
 (defn min-block-transfers-count [db address]
   (get-in db [:wallet :accounts
               (eip55/address->checksum address)
@@ -182,6 +185,17 @@
                     :min-block min-block
                     :min-block-transfers-count min-block-transfers-count)}))
 
+(fx/defn set-max-block-with-transfers
+  [{:keys [db]} address transfers]
+  (let [max-block (reduce
+                   (fn [max-block {:keys [block]}]
+                     (if (> block max-block)
+                       block
+                       max-block))
+                   (get-in db [:wallet :accounts address :max-block] 0)
+                   transfers)]
+    {:db (assoc-in db [:wallet :accounts address :max-block] max-block)}))
+
 (defn update-fetching-status
   [db addresses fetching-type state]
   (update-in
@@ -214,10 +228,12 @@
              "count" (count transfers)
              "limit" limit)
   (let [checksum (eip55/address->checksum address)
-        min-known-block (or (get-min-known-block db address)
-                            (:ethereum/current-block db))
+        max-known-block (or (get-max-block-with-transfers db address)
+                            0)
         effects (cond-> [(when (seq transfers)
-                           (set-lowest-fetched-block checksum transfers))]
+                           (set-lowest-fetched-block checksum transfers))
+                         (when (seq transfers)
+                           (set-max-block-with-transfers checksum transfers))]
 
                   (seq transfers)
                   (concat (mapv add-transfer transfers))
@@ -231,7 +247,7 @@
                   true
                   (conj (wallet/update-balances
                          (into [] (reduce (fn [acc {:keys [address block]}]
-                                            (if (>= block min-known-block)
+                                            (if (> block max-known-block)
                                               (conj acc address)
                                               acc))
                                           #{}
