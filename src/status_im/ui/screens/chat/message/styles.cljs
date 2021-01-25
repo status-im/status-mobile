@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.chat.message.styles
   (:require [quo.design-system.colors :as colors]
+            [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as photos]
             [status-im.ui.components.colors :as components.colors]))
 
@@ -112,13 +113,31 @@
    :border-color               components.colors/gray-lighter
    :margin-vertical            4})
 
-(defn link-preview-image [outgoing]
-  {:height                     170
-   :overflow                   :hidden
-   :border-top-left-radius     16
-   :border-top-right-radius    16
-   :border-bottom-left-radius  (if outgoing 16 4)
-   :border-bottom-right-radius (if outgoing 4 16)})
+(def screen-width
+  (-> "window"
+      react/get-dimensions
+      :width))
+
+(defn scale-dimensions
+  "Scale a given height and width to be maximum percentage allowed of the screen width"
+  [{:keys [height width] :as dimensions}]
+  (let [max-cover    0.5
+        aspect-ratio (/ height width)
+        max-width    (* max-cover screen-width)]
+    (if (< width max-width)
+      dimensions
+      {:width  max-width
+       :height (* aspect-ratio max-width)})))
+
+(defn link-preview-image [outgoing {:keys [height width] :as dimensions}]
+  (merge (if (and height width)
+           (scale-dimensions dimensions)
+           {:height 170})
+         {:overflow                   :hidden
+          :border-top-left-radius     16
+          :border-top-right-radius    16
+          :border-bottom-left-radius  (if outgoing 16 4)
+          :border-bottom-right-radius (if outgoing 4 16)}))
 
 (def link-preview-title
   {:margin-horizontal 12

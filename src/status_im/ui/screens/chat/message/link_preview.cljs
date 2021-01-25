@@ -57,6 +57,9 @@
                 :type     :secondary}
     (i18n/label :t/dont-ask)]])
 
+(defn is-gif? [url]
+  (string/ends-with? url ".gif"))
+
 (defview link-preview-loader [link outgoing timeline]
   (letsubs [cache [:link-preview/cache]]
     (let [{:keys [site title thumbnailUrl error] :as preview-data} (get cache link)]
@@ -67,21 +70,23 @@
           nil)
         (when-not error
           [react/touchable-highlight
-           {:style {:align-self :stretch}
+           {:style (when-not (is-gif? thumbnailUrl) {:align-self :stretch})
             :on-press #(when (and (security/safe-link? link))
                          (re-frame/dispatch
                           [:browser.ui/message-link-pressed link]))}
            [react/view (styles/link-preview-wrapper outgoing timeline)
             [react/image {:source              {:uri thumbnailUrl}
-                          :style               (styles/link-preview-image outgoing)
+                          :style               (styles/link-preview-image outgoing (select-keys preview-data [:height :width]))
                           :accessibility-label :member-photo}]
-            [quo/text {:size  :small
-                       :style styles/link-preview-title}
-             title]
-            [quo/text {:size  :small
-                       :color :secondary
-                       :style styles/link-preview-site}
-             site]]])))))
+            (when-not (is-gif? thumbnailUrl)
+              [:<>
+               [quo/text {:size  :small
+                          :style styles/link-preview-title}
+                title]
+               [quo/text {:size  :small
+                          :color :secondary
+                          :style styles/link-preview-site}
+                site]])]])))))
 
 (defview link-preview-wrapper [links outgoing timeline]
   (letsubs
