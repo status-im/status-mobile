@@ -48,6 +48,7 @@
         set-up-filter-fx (set-up-filter chat-id previous-chat)
         chat-fx (models.chat/ensure-chat
                  (dissoc chat :unviewed-messages-count))
+        ;;TODO : dispatch :proccess instead
         messages-fx (map #(models.message/receive-one
                            (data-store.messages/<-rpc %))
                          messages)

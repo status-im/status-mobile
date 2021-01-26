@@ -783,6 +783,7 @@
   (let [chats           (map data-store.chats/<-rpc chats)
         messages        (map data-store.messages/<-rpc messages)
         message-fxs     (map chat.message/receive-one messages)
+        ;;TODO : dispatch :proccess instead
         emoji-reactions (map data-store.reactions/<-rpc emojiReactions)
         emoji-react-fxs (map chat.reactions/receive-one emoji-reactions)
         invitations-fxs [(group-chats/handle-invitations

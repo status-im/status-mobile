@@ -5,6 +5,7 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
+            [status-im.utils.utils :as utils]
             ["react-native" :as react-native]))
 
 (defn status []
@@ -97,7 +98,11 @@
 
 (defonce listener
   (.addListener ^js react/device-event-emitter "gethEvent"
-                #(re-frame/dispatch [:signals/signal-received (.-jsonEvent ^js %)])))
+                (fn [event]
+                  (utils/set-timeout
+                   #(re-frame/dispatch [:signals/signal-received (.-jsonEvent ^js event)])
+                   20))))
+
 
 (defn multiaccount-load-account
   "NOTE: beware, the password has to be sha3 hashed
@@ -416,3 +421,13 @@
   (log/debug "[native-module] resetKeyboardInput")
   (when platform/android?
     (.resetKeyboardInputCursor ^js (status) input selection)))
+
+(defn enable-maintain-visible-content-position [viewTag]
+  (log/debug "[native-module] enableMaintainVisibleContentPosition")
+  (when platform/android?
+    (.enableMaintainVisibleContentPosition ^js (status) viewTag)))
+
+(defn disable-maintain-visible-content-position [viewTag]
+  (log/debug "[native-module] resetKeyboardInput")
+  (when platform/android?
+    (.disableMaintainVisibleContentPosition ^js (status) viewTag)))
