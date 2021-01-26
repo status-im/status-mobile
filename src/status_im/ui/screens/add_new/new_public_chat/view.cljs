@@ -57,6 +57,7 @@
                  "id" "indonesian"
                  "in" "indonesian"
                  "hi" "status-indian"
+                 "ar" "status-arabic"
                  "fil" "status-filipino"
                  "nl" "status-dutch"})
 
