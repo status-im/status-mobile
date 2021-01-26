@@ -42,6 +42,13 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 
+import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.uimanager.UIManagerModuleListener;
+import com.facebook.react.views.scroll.ReactScrollView;
+import com.facebook.react.views.view.ReactViewGroup;
+
 import statusgo.SignalHandler;
 import statusgo.Statusgo;
 
@@ -87,6 +94,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         super(reactContext);
         this.reactContext = reactContext;
         this.rootedDevice = rootedDevice;
+        this.uiManagerModuleListeners = new HashMap<>();
         reactContext.addLifecycleEventListener(this);
     }
 
@@ -1496,5 +1504,67 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         });
     }
-}
 
+    private HashMap<Integer, UIManagerModuleListener> uiManagerModuleListeners;
+
+    @ReactMethod
+    public void enableMaintainVisibleContentPosition(final int viewTag) {
+        final UIManagerModule uiManagerModule = this.reactContext.getNativeModule(UIManagerModule.class);
+        this.reactContext.runOnUiQueueThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final ReactScrollView scrollView = (ReactScrollView)uiManagerModule.resolveView(viewTag);
+                    final UIManagerModuleListener uiManagerModuleListener = new UIManagerModuleListener() {
+                        private int minIndexForVisible = 0;
+                        private int prevFirstVisibleTop = 0;
+                        private View firstVisibleView = null;
+                        @Override
+                        public void willDispatchViewUpdates(final UIManagerModule uiManagerModule) {
+                            uiManagerModule.prependUIBlock(new UIBlock() {
+                                @Override
+                                public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+                                    ReactViewGroup mContentView = (ReactViewGroup)scrollView.getChildAt(0);
+                                    if (mContentView == null) return;
+                                    for (int ii = minIndexForVisible; ii < mContentView.getChildCount(); ++ii) {
+                                        View subview = mContentView.getChildAt(ii);
+                                        if (subview.getTop() >= scrollView.getScrollY()) {
+                                            prevFirstVisibleTop = subview.getTop();
+                                            firstVisibleView = subview;
+                                            break;
+                                        }
+                                    }
+                                }
+                            });
+
+                            UIImplementation.LayoutUpdateListener layoutUpdateListener = new UIImplementation.LayoutUpdateListener() {
+                                @Override
+                                public void onLayoutUpdated(ReactShadowNode root) {
+                                    if (firstVisibleView == null) return;
+                                    int deltaY = firstVisibleView.getTop() - prevFirstVisibleTop;
+                                    if (Math.abs(deltaY) > 0) {
+                                        scrollView.setScrollY(scrollView.getScrollY() + deltaY);
+                                    }
+                                    uiManagerModule.getUIImplementation().removeLayoutUpdateListener();
+                                }
+                            };
+
+                            uiManagerModule.getUIImplementation().setLayoutUpdateListener(layoutUpdateListener);
+                        }
+                    };
+                    uiManagerModule.addUIManagerListener(uiManagerModuleListener);
+                    uiManagerModuleListeners.put(viewTag, uiManagerModuleListener);
+                } catch(IllegalViewOperationException e) {
+                }
+            }
+        });
+    }
+
+    @ReactMethod
+    public void disableMaintainVisibleContentPosition(int key) {
+        if (key >= 0) {
+            final UIManagerModule uiManagerModule = this.reactContext.getNativeModule(UIManagerModule.class);
+            uiManagerModule.removeUIManagerListener(uiManagerModuleListeners.remove(key));
+        }
+    }
+}

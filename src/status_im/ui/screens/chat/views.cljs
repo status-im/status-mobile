@@ -32,7 +32,8 @@
             [status-im.ui.components.toolbar :as toolbar]
             [quo.core :as quo]
             [clojure.string :as string]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.native-module.core :as status]))
 
 (defn topbar []
   (let [current-chat @(re-frame/subscribe [:current-chat/metadata])]
@@ -170,39 +171,51 @@
               :current-public-key current-public-key)
        space-keeper])))
 
+(def curr-list-node-ref (atom nil))
+
+(defn enable-maintain-visible-content-position [ref]
+  (when ref
+    (when-let [node-ref (rn/find-node-handle ref)]
+      (when-not (= node-ref @curr-list-node-ref)
+        (when @curr-list-node-ref
+          (status/disable-maintain-visible-content-position @curr-list-node-ref))
+        (status/enable-maintain-visible-content-position node-ref)
+        (reset! curr-list-node-ref node-ref)))))
+
 (defn messages-view
   [{:keys [chat bottom-space pan-responder space-keeper]}]
   (let [{:keys [group-chat chat-id chat-type public? invitation-admin]} chat
-
-        messages           @(re-frame/subscribe [:chats/current-chat-messages-stream])
-        no-messages?       @(re-frame/subscribe [:chats/current-chat-no-messages?])
+        messages @(re-frame/subscribe [:chats/current-chat-messages-stream])
+        no-messages? @(re-frame/subscribe [:chats/current-chat-no-messages?])
         current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
     [list/flat-list
      (merge
       pan-responder
-      {:key-fn                       #(or (:message-id %) (:value %))
-       :ref                          #(reset! messages-list-ref %)
-       :header                       (when (= chat-type constants/private-group-chat-type)
-                                       [chat.group/group-chat-footer chat-id invitation-admin])
-       :footer                       [:<>
-                                      [chat-intro-header-container chat no-messages?]
-                                      (when (= chat-type constants/one-to-one-chat-type)
-                                        [invite.chat/reward-messages])]
-       :data                         messages
-       :inverted                     true
-       :render-data                  {:group-chat         group-chat
-                                      :public?            public?
-                                      :current-public-key current-public-key
-                                      :space-keeper       space-keeper}
-       :render-fn                    render-fn
-       :on-viewable-items-changed    on-viewable-items-changed
-       :on-end-reached               #(re-frame/dispatch [:chat.ui/load-more-messages])
-       :on-scroll-to-index-failed    #() ;;don't remove this
-       :content-container-style      {:padding-top    (+ bottom-space 16)
-                                      :padding-bottom 16}
-       :scrollIndicatorInsets        {:top bottom-space}
-       :keyboardDismissMode          "interactive"
-       :keyboard-should-persist-taps :handled})]))
+      {:key-fn                            #(or (:message-id %) (:value %))
+       :ref                               #(do
+                                             (enable-maintain-visible-content-position %)
+                                             (reset! messages-list-ref %))
+       :header                            [react/view {:padding-bottom (+ bottom-space 16)}
+                                           (when (= chat-type constants/private-group-chat-type)
+                                             [chat.group/group-chat-footer chat-id invitation-admin])]
+       :footer                            [react/view {:padding-top 16}
+                                           [chat-intro-header-container chat no-messages?]
+                                           (when (= chat-type constants/one-to-one-chat-type)
+                                             [invite.chat/reward-messages])]
+       :data                              messages
+       :inverted                          true
+       :render-data                       {:group-chat         group-chat
+                                           :public?            public?
+                                           :current-public-key current-public-key
+                                           :space-keeper       space-keeper}
+       :render-fn                         render-fn
+       :on-viewable-items-changed         on-viewable-items-changed
+       :on-end-reached                    #(re-frame/dispatch [:chat.ui/load-more-messages])
+       :on-scroll-to-index-failed         #()               ;;don't remove this
+       :scrollIndicatorInsets             {:top bottom-space}
+       :keyboardDismissMode               "interactive"
+       :keyboard-should-persist-taps      :handled
+       :maintain-visible-content-position {:minIndexForVisible 0}})]))
 
 (defn bottom-sheet [input-bottom-sheet]
   (case input-bottom-sheet
