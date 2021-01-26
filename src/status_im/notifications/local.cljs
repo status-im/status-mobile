@@ -24,12 +24,12 @@
 (def notification-event-ios "localNotification")
 (def notification-event-android "remoteNotificationReceived")
 
-(defn local-push-ios [{:keys [title message user-info]}]
-  (.presentLocalNotification pn-ios #js {:alertBody  message
-                                         :alertTitle title
-                                         ;; NOTE: Use a special type to hide in Obj-C code other notifications
-                                         :userInfo   (bean/->js (merge user-info
-                                                                       {:notificationType "local-notification"}))}))
+(defn local-push-ios [_ #_{:keys [title message user-info]}]
+  #_(.presentLocalNotification pn-ios #js {:alertBody  message
+                                           :alertTitle title
+                                           ;; NOTE: Use a special type to hide in Obj-C code other notifications
+                                           :userInfo   (bean/->js (merge user-info
+                                                                         {:notificationType "local-notification"}))}))
 
 (defn local-push-android [{:keys [title message icon user-info channel-id]
                            :or   {channel-id "status-im-notifications"}}]
