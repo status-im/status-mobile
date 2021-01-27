@@ -3,6 +3,7 @@
             [reagent.core :as reagent]
             [status-im.ethereum.core :as ethereum]
             [status-im.i18n :as i18n]
+            [taoensso.timbre :as log]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.vector-icons :as icons]
@@ -116,6 +117,18 @@
      {:style {:color colors/blue}}
      (i18n/label :t/check-on-opensea)]]])
 
+(defn buy-crypto []
+  (reagent/create-class
+   {:component-did-mount #(log/debug "hello")
+    :reagent-render (fn []
+                      [react/view {:flex 1}
+                       [topbar/topbar {:title (i18n/label :t/buy-crypto)
+                                       :modal? true}]
+                       [quo/button {} "hello"]])}))
+
+(defn on-buy-crypto-pressed []
+  (re-frame/dispatch [:navigate-to :buy-crypto]))
+
 (views/defview assets-and-collections [address]
   (views/letsubs [{:keys [tokens nfts]} [:wallet/visible-assets-with-values address]
                   currency [:wallet/currency]]
@@ -127,11 +140,13 @@
         [tabs/tab-title state :history (i18n/label :t/history) (= tab :history)]]
        (cond
          (= tab :assets)
-         [list/flat-list {:data               tokens
-                          :default-separator? false
-                          :key-fn             :name
-                          :render-data        (:code currency)
-                          :render-fn          accounts/render-asset}]
+         [react/view {}
+           [quo/button {:on-press on-buy-crypto-pressed} "hello"]
+           [list/flat-list {:data               tokens
+                            :default-separator? false
+                            :key-fn             :name
+                            :render-data        (:code currency)
+                            :render-fn          accounts/render-asset}]]
          (= tab :nft)
          [react/view
           [collectibles-link]

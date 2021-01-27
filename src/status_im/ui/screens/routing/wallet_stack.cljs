@@ -20,6 +20,8 @@
      :insets    {:top false}
      :style     {:padding-bottom tabbar.styles/tabs-diff}
      :component wallet.accounts/accounts-overview}
+    {:name      :buy-crypto
+     :component wallet.account/buy-crypto}
     {:name      :wallet-account
      :component wallet.account/account}
     {:name      :add-new-account
