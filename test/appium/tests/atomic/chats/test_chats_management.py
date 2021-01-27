@@ -569,7 +569,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
                         chat_1.profile_send_message,
                         chat_1.profile_nickname]:
             if not element.scroll_to_element():
-                self.errors.append('%s is not visible' % element.name)
+                self.errors.append('%s (locator is %s ) is not visible' % (element.name, element.locator))
         if chat_1.profile_nickname.text != 'None':
             self.errors.append('Default nickname is %s instead on "None"' % chat_1.profile_nickname.text)
 

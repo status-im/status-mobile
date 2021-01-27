@@ -31,7 +31,6 @@ class BaseElement(object):
         self.__dict__.update(kwargs)
         self.set_locator()
 
-
     def set_locator(self):
         if self.xpath:
             self.locator = self.xpath
@@ -49,7 +48,7 @@ class BaseElement(object):
             self.by = MobileBy.ID
             self.locator = self.id
         elif self.webview:
-                self.locator = '//*[@text="{0}"] | //*[@content-desc="{desc}"]'.format(self.webview, desc=self.webview)
+            self.locator = '//*[@text="{0}"] | //*[@content-desc="{desc}"]'.format(self.webview, desc=self.webview)
         if self.prefix:
             self.locator = self.prefix + self.locator
         return self
@@ -266,7 +265,6 @@ class EditBox(BaseElement):
 class Text(BaseElement):
     def __init__(self, driver, **kwargs):
         super(Text, self).__init__(driver, **kwargs)
-        self.set_locator()
 
     @property
     def text(self):
@@ -287,6 +285,7 @@ class Text(BaseElement):
             else:
                 self.driver.info('*Element %s text is equal to %s*' % (self.name, text))
                 return
+
 
 class Button(BaseElement):
 

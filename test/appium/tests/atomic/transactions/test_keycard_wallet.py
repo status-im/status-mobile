@@ -65,6 +65,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         sign_in_view.just_fyi('Change that balance is updated and transaction is appeared in history')
         initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
+
         sign_in_view.toggle_airplane_mode()
         wallet_view.wait_balance_is_changed('STT', initial_amount_STT)
         wallet_view.accounts_status_account.click()

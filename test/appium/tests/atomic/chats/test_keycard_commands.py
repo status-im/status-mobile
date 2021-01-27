@@ -158,7 +158,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 class TestCommandsSingleDevices(SingleDeviceTestCase):
 
     @marks.testrail_id(6295)
-    @marks.high
+    @marks.medium
     def test_keycard_send_eth_to_ens(self):
         sign_in = SignInView(self.driver)
         sender = transaction_senders['E']

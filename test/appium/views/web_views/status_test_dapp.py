@@ -77,7 +77,7 @@ class TransactionsButton(Button):
 
 class StatusAPIButton(Button):
     def __init__(self, driver):
-        super().__init__(driver, xpath="//*[@text='%s']")
+        super().__init__(driver, xpath="//*[@text='Status API']")
 
     def click(self):
         self.wait_for_visibility_of_element().click()
@@ -112,7 +112,7 @@ class StatusTestDAppView(BaseWebView):
         self.sign_typed_message_button = TransactionsButton.SignTypedMessageButton(self.driver)
 
         self.status_api_button = StatusAPIButton(self.driver)
-        self.request_contact_code_button = Button(self.driver, xpath="//*[contains(text(),'Request contact code']")
+        self.request_contact_code_button = Button(self.driver, xpath="//*[@text='Request contact code (public key)']")
 
     def wait_for_d_aap_to_load(self, wait_time=10):
         self.driver.info("**Wait %ss for assets in simpledapp**" % wait_time)

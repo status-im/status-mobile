@@ -881,7 +881,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.confirm_button.click()
 
         profile_1.just_fyi('check that popup "Error connecting" will not reappear if tap on "Cancel"')
-        profile_1.element_by_translation_id('mailserver-error-title').wait_for_element(30)
+        profile_1.element_by_translation_id(id='mailserver-error-title').wait_for_element(60)
         profile_1.cancel_button.click()
         profile_1.home_button.click()
 
@@ -902,16 +902,16 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         profile_1.just_fyi('check that can RETRY to connect')
         for _ in range(2):
-            public_chat_1.element_by_translation_id('mailserver-retry', 'button', uppercase=True).wait_and_click()
+            public_chat_1.element_by_translation_id('mailserver-retry', 'button', uppercase=True).wait_and_click(60)
 
         profile_1.just_fyi('check that can pick another mailserver and receive messages')
-        public_chat_1.element_by_translation_id('mailserver-pick-another', 'button', uppercase=True).wait_and_click()
+        public_chat_1.element_by_translation_id('mailserver-pick-another', 'button', uppercase=True).wait_and_click(60)
         mailserver = profile_1.return_mailserver_name(mailserver_ams, used_fleet)
         profile_1.element_by_text(mailserver).click()
         profile_1.confirm_button.click()
         profile_1.home_button.click()
         home_1.get_chat('#%s' % public_chat_name).click()
-        if not public_chat_1.chat_element_by_text(message).is_element_displayed(30):
+        if not public_chat_1.chat_element_by_text(message).is_element_displayed(60):
             self.errors.append("Chat history wasn't fetched")
 
         self.errors.verify_no_errors()

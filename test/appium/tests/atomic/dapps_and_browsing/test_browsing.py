@@ -243,6 +243,8 @@ class TestBrowsing(SingleDeviceTestCase):
     @marks.critical
     def test_refresh_button_browsing_app_webview(self):
         home = SignInView(self.driver).create_user()
+        profile = home.profile_button.click()
+        profile.switch_network()
         daap = home.dapp_tab_button.click()
         url = 'app.uniswap.org'
         element_on_start_page = daap.element_by_text('ETH')

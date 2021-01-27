@@ -11,9 +11,10 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.testrail_id(5356)
     @marks.critical
     def test_switch_users_and_add_new_account(self):
-        sign_in = SignInView(self.driver).create_user()
-        public_key = sign_in.get_public_key_and_username()
-        profile = sign_in.get_profile_view()
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+        public_key = home.get_public_key_and_username()
+        profile = home.get_profile_view()
         profile.logout()
         if sign_in.ok_button.is_element_displayed():
             sign_in.ok_button.click()

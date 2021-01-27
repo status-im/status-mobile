@@ -151,6 +151,10 @@ class PrivacyPolicyButton(Button):
         return BaseWebView(self.driver)
 
 
+class ProfilePictureElement(Button):
+    def __init__(self, driver):
+        super().__init__(driver, accessibility_id="chat-icon")
+
 
 class ProfileView(BaseView):
 
@@ -162,7 +166,7 @@ class ProfileView(BaseView):
         self.public_key_text = Text(self.driver, accessibility_id="chat-key")
         self.default_username_text = Text(self.driver, accessibility_id="default-username")
         self.share_my_profile_button = Button(self.driver, accessibility_id="share-header-button")
-        self.profile_picture = Button(self.driver, accesibility_id="chat-icon")
+        self.profile_picture = ProfilePictureElement(self.driver)
         self.edit_picture_button = Button(self.driver, accessibility_id="edit-profile-photo-button")
         self.confirm_edit_button = Button(self.driver, accessibility_id="done-button")
         self.select_from_gallery_button = Button(self.driver, translation_id="profile-pic-pick")

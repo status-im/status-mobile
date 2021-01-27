@@ -8,7 +8,7 @@ from tests import emojis
 from time import sleep
 from views.base_element import Button, EditBox, Text, BaseElement, SilentButton
 from views.base_view import BaseView, ProgressBar
-from views.profile_view import ProfileView
+from views.profile_view import ProfilePictureElement
 
 
 class SendCommand(Button):
@@ -390,7 +390,7 @@ class ChatView(BaseView):
         self.remove_group_invite_button = Button(self.driver, accessibility_id="remove-group-button")
 
         # Contact's profile
-        self.contact_profile_picture = ProfileView(self.driver).profile_picture
+        self.contact_profile_picture = ProfilePictureElement(self.driver)
         self.profile_send_message = ProfileSendMessageButton(self.driver)
         self.profile_block_contact = ProfileBlockContactButton(self.driver)
         self.confirm_block_contact_button = Button(self.driver, accessibility_id="block-contact-confirm")
