@@ -59,10 +59,10 @@
 (def activity-indicator-class (reagent/adapt-react-class (.-ActivityIndicator react-native)))
 
 (defn activity-indicator [props]
-  [activity-indicator-class props])
+  [activity-indicator-class (update props :color #(or % colors/gray))])
 
 (defn small-loading-indicator [color]
-  [activity-indicator {:color   (if color color :colors/gray)
+  [activity-indicator {:color   color
                        :ios     {:size :small}
                        :android {:size :16}}])
 
