@@ -232,25 +232,12 @@
             (when (and navigate-home? (not (= (:view-id db) :home)))
               (navigation/navigate-to-cofx :home {}))))
 
-(fx/defn offload-all-messages
-  {:events [::offload-all-messages]}
-  [{:keys [db] :as cofx}]
-  (when-let [current-chat-id (:current-chat-id db)]
-    {:db
-     (-> db
-         (dissoc :loaded-chat-id)
-         (update :messages dissoc current-chat-id)
-         (update :message-lists dissoc current-chat-id)
-         (update :pagination-info dissoc current-chat-id))}))
-
 (fx/defn preload-chat-data
   "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
   [{:keys [db] :as cofx} chat-id]
   (let [old-current-chat-id (:current-chat-id db)]
     (fx/merge cofx
               {:dispatch [:load-messages]}
-              (when-not (= old-current-chat-id chat-id)
-                (offload-all-messages))
               (fn [{:keys [db]}]
                 {:db (assoc db :current-chat-id chat-id)})
               ;; Group chat don't need this to load as all the loading of topics

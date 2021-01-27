@@ -13,8 +13,7 @@
           cursor-clock-value (dec clock-value)
           cursor (chat-loading/clock-value->cursor cursor-clock-value)
           cofx {:now 0
-                :db {:loaded-chat-id chat-id
-                     :current-chat-id chat-id
+                :db {:current-chat-id chat-id
                      :all-loaded? true
                      :chats {chat-id {:cursor cursor
                                       :cursor-clock-value cursor-clock-value}}}}
@@ -26,15 +25,14 @@
                    :from        "from"}]
       (testing "not current-chat"
         (is (nil? (message/add-received-message
-                   (update cofx :db dissoc :loaded-chat-id)
+                   cofx
                    message))))
       ;; <- cursor
       ;; <- message
       ;; <- top of the chat
       (testing "there's no hidden item"
         (with-redefs [view.state/first-not-visible-item (atom nil)]
-          (is (= {:db {:loaded-chat-id  "chat-id",
-                       :current-chat-id "chat-id",
+          (is (= {:db {:current-chat-id "chat-id",
                        :all-loaded?     true,
                        :chats
                        {"chat-id"
@@ -57,8 +55,7 @@
       ;; <- top of the chat
       (testing "the hidden item has a clock value less than the current"
         (with-redefs [view.state/first-not-visible-item (atom {:clock-value (dec clock-value)})]
-          (is (= {:db {:loaded-chat-id  "chat-id",
-                       :current-chat-id "chat-id",
+          (is (= {:db {:current-chat-id "chat-id",
                        :all-loaded?     true,
                        :chats
                        {"chat-id"

@@ -36,6 +36,7 @@
   [{:keys [db] :as cofx} ^js event]
   (let [^js viewable-items (.-viewableItems event)
         ^js last-element (aget viewable-items (dec (.-length viewable-items)))]
+    (println "MESSAGE VISIBILITY CHANGED")
     (when last-element
       (let [last-element-clock-value (:clock-value (.-item last-element))
             chat-id (:chat-id (.-item last-element))]
@@ -144,6 +145,7 @@
                                 constants/default-number-of-messages
                                 #(re-frame/dispatch [::messages-loaded current-chat-id session-id %])
                                 #(re-frame/dispatch [::failed-loading-messages current-chat-id session-id %]))]
+          (println "LOAD MORE MESSAGES" cursor)
           (fx/merge cofx
                     load-messages-fx
                     (reactions/load-more-reactions cursor)
@@ -153,17 +155,14 @@
   {:events [:load-messages]}
   [{:keys [db now] :as cofx}]
   (when-let [current-chat-id (:current-chat-id db)]
-    (if-not (get-in db [:pagination-info current-chat-id :messages-initialized?])
+    (println "INIT CHAT load messages" current-chat-id (get-in db [:pagination-info current-chat-id :messages-initialized?]))
+    (if (get-in db [:pagination-info current-chat-id :messages-initialized?])
+      ;; We mark messages as seen in case we received them while on a different tab
+      (message-seen/mark-messages-seen cofx current-chat-id)
       (do
        ; reset chat first-not-visible-items state
         (chat.state/reset)
         (fx/merge cofx
-                  {:db (-> db
-                          ;; We keep track of whether there's a loaded chat
-                          ;; which will be reset only if we hit home
-                           (assoc :loaded-chat-id current-chat-id)
-                           (assoc-in [:pagination-info current-chat-id :messages-initialized?] now))}
+                  {:db (assoc-in db [:pagination-info current-chat-id :messages-initialized?] now)}
                   (message-seen/mark-messages-seen current-chat-id)
-                  (load-more-messages)))
-      ;; We mark messages as seen in case we received them while on a different tab
-      (message-seen/mark-messages-seen cofx current-chat-id))))
+                  (load-more-messages))))))

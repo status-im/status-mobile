@@ -453,10 +453,10 @@
  (fn [cofx [_ chat-id _]]
    (chat/navigate-to-chat cofx chat-id)))
 
-(handlers/register-handler-fx
- :chat.ui/load-more-messages
- (fn [cofx _]
-   (chat.loading/load-more-messages cofx)))
+(fx/defn chat-ui-load-more-message
+   {:events [:chat.ui/load-more-messages :chat.ui/list-on-end-reached]}
+   [cofx]
+   (chat.loading/load-more-messages cofx))
 
 (handlers/register-handler-fx
  :chat.ui/start-chat
@@ -1235,7 +1235,6 @@
     (when-not (= (:current-chat-id db) chat-id)
       (fx/merge cofx
                 (chat/start-profile-chat public-key)
-                (chat/offload-all-messages)
                 (chat/preload-chat-data chat-id)))))
 
 (fx/defn reset-current-timeline-chat [{:keys [db] :as cofx}]
@@ -1246,13 +1245,11 @@
                 (fn [cofx]
                   (apply fx/merge cofx (map chat/start-profile-chat profile-chats)))
                 (chat/start-timeline-chat)
-                (chat/offload-all-messages)
                 (chat/preload-chat-data chat/timeline-chat-id)))))
 
 (fx/defn reset-current-chat [{:keys [db] :as cofx} chat-id]
   (when-not (= (:current-chat-id db) chat-id)
     (fx/merge cofx
-              (chat/offload-all-messages)
               (chat/preload-chat-data chat-id))))
 
 ;; NOTE: Will be removed with the keycard PR

@@ -143,6 +143,7 @@
 (defonce messages-list-ref (atom nil))
 
 (defn on-viewable-items-changed [^js e]
+  (println "on-viewable-items-changed!" @messages-list-ref)
   (when @messages-list-ref
     (reset! state/first-not-visible-item
             (when-let [^js last-visible-element (aget (.-viewableItems e) (dec (.-length ^js (.-viewableItems e))))]
@@ -210,7 +211,9 @@
                                            :space-keeper       space-keeper}
        :render-fn                         render-fn
        :on-viewable-items-changed         on-viewable-items-changed
-       :on-end-reached                    #(re-frame/dispatch [:chat.ui/load-more-messages])
+       :on-end-reached                    #(do
+                                             (println "ONEND-REACHED")
+                                             (re-frame/dispatch [:chat.ui/list-on-end-reached]))
        :on-scroll-to-index-failed         #()               ;;don't remove this
        :scrollIndicatorInsets             {:top bottom-space}
        :keyboardDismissMode               "interactive"
