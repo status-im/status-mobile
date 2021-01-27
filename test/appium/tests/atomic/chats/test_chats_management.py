@@ -1,6 +1,6 @@
 import time
 
-from tests import marks, camera_access_error_text, photos_access_error_text, recorded_error
+from tests import marks
 from tests.users import basic_user, dummy_user, ens_user_ropsten, ens_user, ens_user_message_sender
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
@@ -290,31 +290,31 @@ class TestChatManagement(SingleDeviceTestCase):
         home.plus_button.click()
         home.universal_qr_scanner_button.click()
         home.deny_button.click()
-        home.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
+        home.element_by_translation_id("camera-access-error").wait_for_visibility_of_element(3)
         home.ok_button.click()
         home.get_back_to_home_view()
 
         home.just_fyi("Denying access to camera in scan chat key view")
         home.plus_button.click()
-        contacts_view = home.start_new_chat_button.click()
-        contacts_view.scan_contact_code_button.click()
-        contacts_view.deny_button.click()
-        contacts_view.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
-        contacts_view.ok_button.click()
+        chat = home.start_new_chat_button.click()
+        chat.scan_contact_code_button.click()
+        chat.deny_button.click()
+        chat.element_by_translation_id("camera-access-error").wait_for_visibility_of_element(3)
+        chat.ok_button.click()
         home.get_back_to_home_view()
 
         home.just_fyi("Denying access to gallery at attempt to send image")
-        chat = home.add_contact(basic_user['public_key'])
+        home.add_contact(basic_user['public_key'])
         chat.show_images_button.click()
         chat.deny_button.click()
-        contacts_view.element_by_text(photos_access_error_text).wait_for_visibility_of_element(3)
-        contacts_view.ok_button.click()
+        chat.element_by_translation_id("external-storage-denied").wait_for_visibility_of_element(3)
+        chat.ok_button.click()
 
         home.just_fyi("Denying access to audio at attempt to record audio")
         chat.audio_message_button.click()
         chat.deny_button.click()
-        contacts_view.element_by_text(recorded_error).wait_for_visibility_of_element(3)
-        contacts_view.ok_button.click()
+        chat.element_by_translation_id("audio-recorder-permissions-error").wait_for_visibility_of_element(3)
+        chat.ok_button.click()
         home.get_back_to_home_view()
 
         home.just_fyi("Denying access to camera in wallet view")
@@ -322,7 +322,7 @@ class TestChatManagement(SingleDeviceTestCase):
         wallet.set_up_wallet()
         wallet.scan_qr_button.click()
         wallet.deny_button.click()
-        wallet.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
+        wallet.element_by_translation_id("camera-access-error").wait_for_visibility_of_element(3)
         wallet.ok_button.click()
 
         home.just_fyi("Denying access to camera in send transaction > scan address view")
@@ -331,7 +331,7 @@ class TestChatManagement(SingleDeviceTestCase):
         send_transaction.chose_recipient_button.scroll_and_click()
         send_transaction.scan_qr_code_button.click()
         send_transaction.deny_button.click()
-        send_transaction.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
+        send_transaction.element_by_translation_id("camera-access-error").wait_for_visibility_of_element(3)
         send_transaction.ok_button.click()
         wallet.back_button.click_until_absense_of_element(wallet.back_button)
 

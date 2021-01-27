@@ -48,18 +48,6 @@ geth_log_emulator_path = '/storage/emulated/0/Android/data/im.status.ethereum/fi
 mailserver_ams = 'mail-01.do-ams3'
 mailserver_hk = 'mail-01.ac-cn-hongkong-c'
 mailserver_gc = 'mail-01.gc-us-central1-a'
-mailserver_ams_01 = 'mail-01.do-ams3.{}'.format(used_fleet)
-camera_access_error_text = "To grant the required camera permission, please go to your system settings " \
-                           "and make sure that Status > Camera is selected."
-
-photos_access_error_text = "Access to external storage is denied"
-delete_alert_text = "Warning: If you don’t have your seed phrase written down, you will lose access to your funds after you delete your profile"
-
-connection_not_secure_text = "Connection is not secure! " \
-                             "Do not sign transactions or send personal data on this site."
-connection_is_secure_text = "Connection is secure. Make sure you really trust this site " \
-                            "before signing transactions or entering personal data."
-recorded_error = "You have to give permission to send audio messages"
 
 test_dapp_web_url = "status-im.github.io/dapp"
 test_dapp_url = 'simpledapp.eth'

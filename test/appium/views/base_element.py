@@ -80,6 +80,10 @@ class BaseElement(object):
         self.driver.info('*Tap on found %s*' % self.name)
         return self.navigate()
 
+    def double_click(self):
+        self.driver.info('*Double tap on %s*' % self.name)
+        [self.find_element().click() for _ in range(2)]
+
     def wait_for_element(self, seconds=10):
         try:
             return WebDriverWait(self.driver, seconds) \

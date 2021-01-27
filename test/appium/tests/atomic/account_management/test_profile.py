@@ -1,8 +1,7 @@
 import re
 
-from tests import marks, bootnode_address, mailserver_address, camera_access_error_text, \
-    photos_access_error_text, test_dapp_url, test_dapp_name, mailserver_ams, mailserver_gc, \
-    mailserver_hk, used_fleet, common_password, delete_alert_text
+from tests import marks, bootnode_address, mailserver_address, test_dapp_url, test_dapp_name, mailserver_ams, \
+    mailserver_gc, mailserver_hk, used_fleet, common_password
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_ropsten
 from views.sign_in_view import SignInView
@@ -11,25 +10,12 @@ from time import time
 
 class TestProfileSingleDevice(SingleDeviceTestCase):
 
-    @marks.testrail_id(5302)
-    @marks.high
-    @marks.skip
-    def test_set_profile_picture(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        profile_view = sign_in_view.profile_button.click()
-        profile_view.edit_profile_picture(file_name='sauce_logo.png')
-        profile_view.home_button.click()
-        sign_in_view.profile_button.click()
-        profile_view.swipe_down()
-        if not profile_view.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
-            self.driver.fail('Profile picture was not updated')
-
     @marks.testrail_id(6318)
     @marks.medium
     def test_can_delete_several_multiaccounts(self):
         sign_in = SignInView(self.driver)
         sign_in.create_user()
+        delete_alert_warning = sign_in.get_translation_by_key("delete-profile-warning")
         profile = sign_in.profile_button.click()
         profile.logout()
         if sign_in.ok_button.is_element_displayed():
@@ -50,14 +36,14 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         public_key, username = sign_in.get_public_key_and_username(return_username=True)
         profile.privacy_and_security_button.click()
         profile.delete_my_profile_button.click()
-        for element in (username, delete_alert_text):
-            if not profile.element_by_text(delete_alert_text).is_element_displayed():
-                self.errors.append('Required %s is not shown when deleting multiaccount' % element)
+        for text in (username, delete_alert_warning):
+            if not profile.element_by_text(text).is_element_displayed():
+                self.errors.append('Required %s is not shown when deleting multiaccount' % text)
         profile.delete_profile_button.click()
-        if profile.element_by_text('Profile deleted').is_element_displayed():
+        if profile.element_by_translation_id("profile-deleted-title").is_element_displayed():
             self.driver.fail('Profile is deleted without confirmation with password')
         profile.delete_my_profile_password_input.set_value(common_password)
-        profile.delete_profile_button.click_until_presence_of_element(profile.element_by_text('Profile deleted'))
+        profile.delete_profile_button.click_until_presence_of_element(profile.element_by_translation_id("profile-deleted-title"))
         profile.ok_button.click()
 
         sign_in.just_fyi('Delete last multiaccount')
@@ -113,7 +99,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         sign_in.just_fyi("Enable mobile network to see popup and stop syncing")
         sign_in.toggle_mobile_data()
-        sign_in.wait_for_element_starts_with_text('Stop syncing').click()
+        sign_in.element_by_translation_id("mobile-network-stop-syncing").wait_and_click()
         if not sign_in.wait_for_element_starts_with_text(offline_banner_text, 120):
             self.driver.fail('No popup about offline history is shown')
         sign_in.element_by_text_part(offline_banner_text).click()
@@ -156,62 +142,28 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append("'Ask me when on mobile network' is not enabled by default")
         self.errors.verify_no_errors()
 
-
-    @marks.testrail_id(5454)
-    @marks.critical
-    @marks.skip
-    # TODO: waiting for better times - no profile picture for now
-    def test_user_can_remove_profile_picture(self):
-        signin_view = SignInView(self.driver)
-        home_view = signin_view.create_user()
-        profile_view = home_view.profile_button.click()
-        profile_view.edit_profile_picture('sauce_logo.png')
-        profile_view.swipe_down()
-        if not profile_view.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
-            self.driver.fail('Profile picture was not updated')
-        profile_view.remove_profile_picture()
-        profile_view.swipe_down()
-        if profile_view.profile_picture.is_element_image_equals_template('default_icon_profile.png'):
-            self.driver.fail('Profile picture was not deleted')
-
     @marks.testrail_id(5323)
     @marks.critical
-    def test_share_contact_code_and_wallet_address(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        profile_view = sign_in_view.profile_button.click()
-        profile_view.share_my_profile_button.click()
-        public_key = profile_view.public_key_text.text
-        profile_view.share_button.click()
-        profile_view.share_via_messenger()
-        if not profile_view.element_by_text_part(public_key).is_element_present():
-            self.errors.append("Can't share public key")
-        for _ in range(2):
-            profile_view.click_system_back_button()
-        profile_view.close_share_popup()
-        wallet = profile_view.wallet_button.click()
-        wallet.set_up_wallet()
-        wallet.accounts_status_account.click()
-        request = wallet.receive_transaction_button.click()
-        address = wallet.address_text.text
-        request.share_button.click()
-        wallet.share_via_messenger()
-        if not wallet.element_by_text_part(address).is_element_present():
-            self.errors.append("Can't share address")
-        self.errors.verify_no_errors()
+    def test_share_copy_contact_code_and_wallet_address(self):
+        home = SignInView(self.driver).create_user()
+        profile = home.profile_button.click()
 
-    @marks.testrail_id(5375)
-    @marks.high
-    def test_copy_contact_code_and_wallet_address(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        profile_view = sign_in_view.profile_button.click()
-        profile_view.share_my_profile_button.click()
-        public_key = profile_view.public_key_text.text
-        profile_view.public_key_text.long_press_element()
-        profile_view.copy_text()
-        profile_view.close_share_popup()
-        home = profile_view.home_button.click()
+        home.just_fyi("Copying contact code")
+        profile.share_my_profile_button.click()
+        public_key = profile.public_key_text.text
+        profile.public_key_text.long_press_element()
+        profile.copy_text()
+
+        home.just_fyi("Sharing contact code via messenger")
+        profile.share_button.click()
+        profile.share_via_messenger()
+        if not profile.element_by_text_part(public_key).is_element_present():
+            self.errors.append("Can't share public key")
+        [profile.click_system_back_button() for _ in range(2)]
+        profile.close_share_popup()
+
+        home.just_fyi("Check that can paste contact code in chat message input")
+        home = profile.home_button.click()
         chat = home.add_contact(transaction_senders['M']['public_key'])
         chat.chat_message_input.click()
         chat.paste_text()
@@ -221,15 +173,24 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         chat.chat_message_input.clear()
         chat.get_back_to_home_view()
 
-        wallet = home.wallet_button.click()
+        home.just_fyi("Copying wallet address")
+        wallet = profile.wallet_button.click()
         wallet.set_up_wallet()
         wallet.accounts_status_account.click()
-        wallet.receive_transaction_button.click()
+        request = wallet.receive_transaction_button.click()
         address = wallet.address_text.text
-        share_view = home.get_send_transaction_view()
-        share_view.share_button.click()
-        share_view.element_by_text('Copy').click()
-        wallet.get_back_to_home_view()
+        request.share_button.click()
+        request.element_by_translation_id("sharing-copy-to-clipboard").click()
+
+        home.just_fyi("Sharing wallet address via messenger")
+        request.share_button.click()
+        wallet.share_via_messenger()
+        if not wallet.element_by_text_part(address).is_element_present():
+            self.errors.append("Can't share address")
+        [wallet.click_system_back_button() for _ in range(2)]
+        wallet.close_share_popup()
+
+        home.just_fyi("Check that can paste wallet address in chat message input")
         wallet.home_button.click()
         home.get_chat(transaction_senders['M']['username']).click()
         chat.chat_message_input.click()
@@ -270,57 +231,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5475)
-    @marks.low
-    @marks.skip
-    # TODO: skip until profile picture change feature is enabled
-    def test_change_profile_picture_several_times(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        profile_view = sign_in_view.profile_button.click()
-        for file_name in ['sauce_logo.png', 'sauce_logo_red.png', 'saucelabs_sauce.png']:
-            profile_view.edit_profile_picture(file_name=file_name)
-            profile_view.swipe_down()
-            if not profile_view.profile_picture.is_element_image_equals_template(
-                    file_name.replace('.png', '_profile.png')):
-                self.driver.fail('Profile picture was not updated')
-
-    @marks.testrail_id(6239)
-    @marks.medium
-    def test_backup_recovery_phrase(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        if sign_in_view.profile_button.counter.text != '1':
-            self.errors.append('Profile button counter is not shown')
-        profile_view = sign_in_view.profile_button.click()
-        profile_view.logout()
-        sign_in_view.sign_in()
-        if sign_in_view.profile_button.counter.text != '1':
-            self.errors.append('Profile button counter is not shown after re-login')
-        sign_in_view.profile_button.click()
-        profile_view.privacy_and_security_button.click()
-        profile_view.backup_recovery_phrase_button.click()
-        recovery_phrase = profile_view.backup_recovery_phrase()
-        if sign_in_view.profile_button.counter.is_element_displayed():
-            self.errors.append('Profile button counter is shown after recovery phrase backup')
-        profile_view.backup_recovery_phrase_button.click()
-        if not profile_view.backup_recovery_phrase_button.is_element_displayed():
-            self.driver.fail('Back up seed phrase option is available after seed phrase backed up!')
-        profile_view.back_button.click()
-        profile_view.logout()
-        sign_in_view.access_key_button.click()
-        sign_in_view.enter_seed_phrase_button.click()
-        sign_in_view.seedphrase_input.click()
-        sign_in_view.seedphrase_input.set_value(' '.join(recovery_phrase.values()))
-        sign_in_view.next_button.click()
-        sign_in_view.element_by_text('UNLOCK').click()
-        sign_in_view.password_input.set_value(common_password)
-        chats_view = sign_in_view.sign_in_button.click()
-        chats_view.plus_button.click()
-        if not chats_view.start_new_chat_button.is_element_displayed():
-            self.errors.append("Can't proceed using account after it's re-recover twice.")
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(6296)
     @marks.high
     def test_recover_account_from_new_user_seedphrase(self):
@@ -352,22 +262,25 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     @marks.testrail_id(5433)
     @marks.medium
     def test_invite_friends(self):
-        sign_in_view = SignInView(self.driver)
-        home = sign_in_view.create_user()
+        home = SignInView(self.driver).create_user()
+
+        self.driver.info("Check it via 'Invite friends' on home view")
         home.invite_friends_button.click()
         home.share_via_messenger()
-        home.find_text_part("Hey join me on Status: https://join.status.im/u/0x")
+        home.element_by_text_part("Hey join me on Status: https://join.status.im/u/0x")
         home.click_system_back_button()
+
+        self.driver.info("Check it via bottom sheet menu")
         home.plus_button.click()
         home.chats_menu_invite_friends_button.click()
         home.share_via_messenger()
-        home.find_text_part("Hey join me on Status: https://join.status.im/u/0x")
+        home.element_by_text_part("Hey join me on Status: https://join.status.im/u/0x")
 
     @marks.testrail_id(6312)
     @marks.medium
     def test_add_remove_contact_via_contacts_view(self):
-        sign_in_view = SignInView(self.driver)
-        home = sign_in_view.create_user()
+        home = SignInView(self.driver).create_user()
+
         home.just_fyi('Check empty contacts view')
         profile = home.profile_button.click()
         profile.switch_network()
@@ -398,11 +311,10 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         }
 
         home.just_fyi('Add contact  and check that they appear in Contacts view')
-        from views.chat_view import ChatView
-        chat_view = ChatView(self.driver)
+        chat_view = home.get_chat_view()
         for key in users:
             profile.plus_button.click()
-            sign_in_view.just_fyi('Checking %s case' % key)
+            home.just_fyi('Checking %s case' % key)
             if 'scanning' in key:
                 chat_view.scan_contact_code_button.click()
                 if chat_view.allow_button.is_element_displayed():
@@ -429,60 +341,192 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append('Removed user is still shown in contact view')
         self.errors.verify_no_errors()
 
-
     @marks.testrail_id(5431)
     @marks.medium
     def test_add_custom_network(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        profile = sign_in.profile_button.click()
+        profile.add_custom_network()
+        sign_in.sign_in()
+        sign_in.profile_button.click()
+        profile.advanced_button.click()
+        profile.network_settings_button.scroll_to_element(10, 'up')
+        if not profile.element_by_text_part('custom_ropsten').is_element_displayed():
+            self.driver.fail("Network custom_ropsten was not added!")
+
+    @marks.testrail_id(6239)
+    @marks.medium
+    def test_backup_recovery_phrase(self):
         sign_in_view = SignInView(self.driver)
         sign_in_view.create_user()
+        if sign_in_view.profile_button.counter.text != '1':
+            self.errors.append('Profile button counter is not shown')
         profile_view = sign_in_view.profile_button.click()
-        profile_view.add_custom_network()
+        profile_view.logout()
         sign_in_view.sign_in()
-        profile_view = sign_in_view.profile_button.click()
-        profile_view.advanced_button.click()
-        profile_view.network_settings_button.scroll_to_element(10, 'up')
-        profile_view.find_text_part('custom_ropsten')
+        if sign_in_view.profile_button.counter.text != '1':
+            self.errors.append('Profile button counter is not shown after re-login')
+        sign_in_view.profile_button.click()
+        profile_view.privacy_and_security_button.click()
+        profile_view.backup_recovery_phrase_button.click()
+        recovery_phrase = profile_view.backup_recovery_phrase()
+        if sign_in_view.profile_button.counter.is_element_displayed():
+            self.errors.append('Profile button counter is shown after recovery phrase backup')
+        profile_view.backup_recovery_phrase_button.click()
+        if not profile_view.backup_recovery_phrase_button.is_element_displayed():
+            self.driver.fail('Back up seed phrase option is available after seed phrase backed up!')
+        profile_view.back_button.click()
+        profile_view.logout()
+        sign_in_view.access_key_button.click()
+        sign_in_view.enter_seed_phrase_button.click()
+        sign_in_view.seedphrase_input.click()
+        sign_in_view.seedphrase_input.set_value(' '.join(recovery_phrase.values()))
+        sign_in_view.next_button.click()
+        sign_in_view.element_by_translation_id(id="unlock", uppercase=True).click()
+        sign_in_view.password_input.set_value(common_password)
+        chats_view = sign_in_view.sign_in_button.click()
+        chats_view.plus_button.click()
+        if not chats_view.start_new_chat_button.is_element_displayed():
+            self.errors.append("Can't proceed using account after it's re-recover twice.")
+        self.errors.verify_no_errors()
 
     @marks.critical
     @marks.testrail_id(5419)
     @marks.flaky
     def test_logcat_backup_recovery_phrase(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        profile_view = sign_in_view.profile_button.click()
-        profile_view.privacy_and_security_button.click()
-        profile_view.backup_recovery_phrase_button.click()
-        profile_view.ok_continue_button.click()
-        recovery_phrase = profile_view.get_recovery_phrase()
-        profile_view.next_button.click()
-        word_number = profile_view.recovery_phrase_word_number.number
-        profile_view.recovery_phrase_word_input.set_value(recovery_phrase[word_number])
-        profile_view.next_button.click()
-        word_number_1 = profile_view.recovery_phrase_word_number.number
-        profile_view.recovery_phrase_word_input.set_value(recovery_phrase[word_number_1])
-        profile_view.done_button.click()
-        profile_view.yes_button.click()
-        values_in_logcat = profile_view.find_values_in_logcat(passphrase1=recovery_phrase[word_number],
+        sign_in = SignInView(self.driver)
+        home = sign_in.create_user()
+
+        home.just_fyi("Check that badge on profile about back up seed phrase is presented")
+        if home.profile_button.counter.text != '1':
+            self.errors.append('Profile button counter is not shown')
+
+        home.just_fyi("Back up seed phrase and check logcat")
+        profile = home.profile_button.click()
+        profile.privacy_and_security_button.click()
+        profile.backup_recovery_phrase_button.click()
+        profile.ok_continue_button.click()
+        recovery_phrase = profile.get_recovery_phrase()
+        profile.next_button.click()
+        word_number = profile.recovery_phrase_word_number.number
+        profile.recovery_phrase_word_input.set_value(recovery_phrase[word_number])
+        profile.next_button.click()
+        word_number_1 = profile.recovery_phrase_word_number.number
+        profile.recovery_phrase_word_input.set_value(recovery_phrase[word_number_1])
+        profile.done_button.click()
+        profile.yes_button.click()
+        profile.ok_got_it_button.click()
+        if home.profile_button.counter.is_element_displayed():
+            self.errors.append('Profile button counter is shown after recovery phrase backup')
+        values_in_logcat = profile.find_values_in_logcat(passphrase1=recovery_phrase[word_number],
                                                passphrase2=recovery_phrase[word_number_1])
         if len(values_in_logcat) == 2:
             self.driver.fail(values_in_logcat)
+        profile.profile_button.double_click()
 
-    @marks.testrail_id(5391)
+        home.just_fyi("Try to restore same account from seed phrase (should be possible only to unlock existing account)")
+        profile.logout()
+        sign_in.access_key_button.click()
+        sign_in.enter_seed_phrase_button.click()
+        sign_in.seedphrase_input.click()
+        sign_in.seedphrase_input.set_value(' '.join(recovery_phrase.values()))
+        sign_in.next_button.click()
+        sign_in.element_by_translation_id(id="unlock", uppercase=True).click()
+        sign_in.password_input.set_value(common_password)
+        chat = sign_in.sign_in_button.click()
+        chat.plus_button.click()
+        if not chat.start_new_chat_button.is_element_displayed():
+            self.errors.append("Can't proceed using account after it's re-recover twice.")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(5453)
+    @marks.medium
+    def test_privacy_policy_node_version_need_help_in_profile(self):
+        signin = SignInView(self.driver)
+        no_link_found_error_msg = 'Could not find privacy policy link at'
+        no_link_open_error_msg = 'Could not open our privacy policy from'
+
+        signin.just_fyi("Checking provacy policy from sign in and from profile")
+        if not signin.privacy_policy_link.is_element_displayed():
+            self.driver.fail('%s Sign in view!' % no_link_found_error_msg)
+        web_page = signin.privacy_policy_link.click()
+        web_page.open_in_webview()
+        if not web_page.policy_summary.is_element_displayed():
+            self.errors.append('%s Sign in view!' % no_link_open_error_msg)
+        web_page.click_system_back_button()
+        home = signin.create_user()
+        profile = home.profile_button.click()
+        profile.about_button.click()
+        profile.privacy_policy_button.click()
+        if not web_page.policy_summary.is_element_displayed():
+            self.errors.append('%s Profile about view!' % no_link_open_error_msg)
+        web_page.click_system_back_button()
+
+        signin.just_fyi("Checking that version match expected format and can be copied")
+        app_version = profile.app_version_text.text
+        node_version = profile.node_version_text.text
+        if not re.search(r'\d{1}[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)]', app_version):
+            self.errors.append("App version %s didn't match expected format" % app_version)
+        if not re.search(r'StatusIM\/v.*\/android-\d{3}\/go\d{1}[.]\d{1,}', node_version):
+            self.errors.append("Node version %s didn't match expected format" % node_version)
+        profile.app_version_text.click()
+        profile.back_button.click()
+        profile.home_button.click()
+        chat = home.join_public_chat(home.get_random_chat_name())
+        message_input = chat.chat_message_input
+        message_input.paste_text_from_clipboard()
+        if message_input.text != app_version:
+            self.errors.append('Version number was not copied to clipboard')
+
+        signin.just_fyi("Checking Need help section")
+        home.profile_button.double_click()
+        profile.help_button.click()
+        web_page = profile.faq_button.click()
+        web_page.open_in_webview()
+        web_page.wait_for_d_aap_to_load()
+        if not profile.element_by_text_part("F.A.Q").is_element_displayed():
+            self.errors.append("FAQ is not shown")
+        profile.click_system_back_button()
+        profile.submit_bug_button.click()
+        if not profile.element_by_text_part("Welcome to Gmail").is_element_displayed():
+            self.errors.append("Mail client is not opened when submitting bug")
+        profile.click_system_back_button()
+        profile.request_a_feature_button.click()
+        if  not profile.element_by_text("#status").is_element_displayed():
+            self.errors.append("Status channel is not suggested for requesting a feature")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(5738)
     @marks.high
-    def test_need_help_section(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        profile_view = sign_in_view.profile_button.click()
-        profile_view.help_button.click()
-        base_web_view = profile_view.faq_button.click()
-        base_web_view.open_in_webview()
-        base_web_view.find_full_text('Frequently Asked Questions')
-        base_web_view.click_system_back_button()
-        profile_view.submit_bug_button.click()
-        base_web_view.find_full_text('Welcome to Gmail')
-        base_web_view.click_system_back_button()
-        profile_view.request_a_feature_button.click()
-        profile_view.find_full_text('#status')
+    def test_dapps_permissions(self):
+        home = SignInView(self.driver).create_user()
+        account_name = home.status_account_name
+
+        home.just_fyi('open Status Test Dapp, allow all and check permissions in Profile')
+        home.open_status_test_dapp()
+        home.dapp_tab_button.click()
+        profile = home.profile_button.click()
+        profile.privacy_and_security_button.click()
+        profile.dapp_permissions_button.click()
+        profile.element_by_text(test_dapp_name).click()
+        if not profile.element_by_text(account_name).is_element_displayed():
+            self.errors.append('Wallet permission was not granted')
+        if not profile.element_by_translation_id("chat-key").is_element_displayed():
+            self.errors.append('Contact code permission was not granted')
+
+        profile.just_fyi('revoke access and check that they are asked second time')
+        profile.revoke_access_button.click()
+        profile.back_button.click()
+        dapp_view = profile.dapp_tab_button.click()
+        dapp_view.open_url(test_dapp_url)
+        if not dapp_view.element_by_text_part(account_name).is_element_displayed():
+            self.errors.append('Wallet permission is not asked')
+        if dapp_view.allow_button.is_element_displayed():
+            dapp_view.allow_button.click(times_to_click=1)
+        if not dapp_view.element_by_translation_id("your-contact-code").is_element_displayed():
+            self.errors.append('Profile permission is not asked')
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5368)
     @marks.medium
@@ -492,12 +536,12 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         profile.advanced_button.click()
         default_log_level = 'INFO'
         for text in default_log_level, used_fleet:
-             if not profile.element_by_text(text).is_element_displayed():
+            if not profile.element_by_text(text).is_element_displayed():
                 self.errors.append('%s is not selected by default' % text)
         if home.find_values_in_geth('lvl=trce', 'lvl=dbug'):
-           self.errors.append('"%s" is set, but found another entries!' % default_log_level)
+            self.errors.append('"%s" is set, but found another entries!' % default_log_level)
         if not home.find_values_in_geth('lvl=info'):
-           self.errors.append('"%s" is set, but no entries are found!' % default_log_level)
+            self.errors.append('"%s" is set, but no entries are found!' % default_log_level)
 
         home.just_fyi('Set another loglevel and check that changes are applied')
         profile.log_level_setting_button.click()
@@ -525,134 +569,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         if not home.find_values_in_geth(changed_fleet):
             self.errors.append('"%s" is set, but no entry is found!' % changed_fleet)
 
-        self.errors.verify_no_errors()
-
-
-    @marks.testrail_id(5468)
-    @marks.medium
-    @marks.skip
-    # TODO: skip until profile picture change feature is enabled
-    def test_deny_camera_access_changing_profile_photo(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        profile = sign_in.profile_button.click()
-        profile.profile_picture.click()
-        profile.capture_button.click()
-        for _ in range(2):
-            profile.deny_button.click()
-        profile.element_by_text(camera_access_error_text).wait_for_visibility_of_element(3)
-        profile.ok_button.click()
-        profile.profile_picture.click()
-        profile.capture_button.click()
-        profile.deny_button.wait_for_visibility_of_element(2)
-
-    @marks.testrail_id(5469)
-    @marks.medium
-    @marks.skip
-    # TODO: skip until profile picture change feature is enabled
-    def test_deny_device_storage_access_changing_profile_photo(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        profile = sign_in.profile_button.click()
-        profile.profile_picture.click()
-        profile.select_from_gallery_button.click()
-        profile.deny_button.click()
-        profile.element_by_text(photos_access_error_text, element_type='text').wait_for_visibility_of_element(3)
-        profile.ok_button.click()
-        profile.profile_picture.click()
-        profile.select_from_gallery_button.click()
-        profile.deny_button.wait_for_visibility_of_element(2)
-
-    @marks.testrail_id(5299)
-    @marks.high
-    def test_user_can_switch_network(self):
-        signin_view = SignInView(self.driver)
-        home_view = signin_view.create_user()
-        network_name = 'Mainnet with upstream RPC'
-        profile = home_view.profile_button.click()
-        profile.switch_network(network_name)
-        profile = home_view.profile_button.click()
-        if not profile.current_active_network == network_name:
-            self.driver.fail('Oops! Wrong network selected!')
-
-    @marks.testrail_id(5453)
-    @marks.medium
-    def test_privacy_policy_is_accessible(self):
-        signin_view = SignInView(self.driver)
-        no_link_found_error_msg = 'Could not find privacy policy link at'
-        no_link_open_error_msg = 'Could not open our privacy policy from'
-
-        if not signin_view.privacy_policy_link.is_element_displayed():
-            self.driver.fail('{} Sign in view!'.format(no_link_found_error_msg))
-
-        base_web_view = signin_view.privacy_policy_link.click()
-        base_web_view.open_in_webview()
-        if not base_web_view.policy_summary.is_element_displayed():
-            self.errors.append('{} Sign in view!'.format(no_link_open_error_msg))
-
-        base_web_view.click_system_back_button()
-        home_view = signin_view.create_user()
-        profile = home_view.profile_button.click()
-        profile.about_button.click()
-        profile.privacy_policy_button.click()
-
-        if not base_web_view.policy_summary.is_element_displayed():
-            self.errors.append('{} Profile about view!'.format(no_link_open_error_msg))
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5738)
-    @marks.high
-    def test_dapps_permissions(self):
-        home_view = SignInView(self.driver).create_user()
-        account_name = home_view.status_account_name
-
-        home_view.just_fyi('open Status Test Dapp, allow all and check permissions in Profile')
-        home_view.open_status_test_dapp()
-        home_view.dapp_tab_button.click()
-        profile_view = home_view.profile_button.click()
-        profile_view.privacy_and_security_button.click()
-        profile_view.dapp_permissions_button.click()
-        profile_view.element_by_text(test_dapp_name).click()
-        if not profile_view.element_by_text(account_name).is_element_displayed():
-            self.errors.append('Wallet permission was not granted')
-        if not profile_view.element_by_text('Chat key').is_element_displayed():
-            self.errors.append('Contact code permission was not granted')
-
-        profile_view.just_fyi('revoke access and check that they are asked second time')
-        profile_view.revoke_access_button.click()
-        profile_view.back_button.click()
-        dapp_view = profile_view.dapp_tab_button.click()
-        dapp_view.open_url(test_dapp_url)
-        if not dapp_view.element_by_text_part(account_name).is_element_displayed():
-            self.errors.append('Wallet permission is not asked')
-        if dapp_view.allow_button.is_element_displayed():
-            dapp_view.allow_button.click(times_to_click=1)
-        if not dapp_view.element_by_text_part('to your profile').is_element_displayed():
-            self.errors.append('Profile permission is not asked')
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5428)
-    @marks.low
-    def test_version_format(self):
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.create_user()
-        profile_view = home_view.profile_button.click()
-        profile_view.about_button.click()
-        app_version = profile_view.app_version_text.text
-        node_version = profile_view.node_version_text.text
-        if not re.search(r'\d{1}[.]\d{1,2}[.]\d{1,2}\s[(]\d*[)]', app_version):
-            self.errors.append("App version %s didn't match expected format" % app_version)
-        if not re.search(r'StatusIM\/v.*\/android-\d{3}\/go\d{1}[.]\d{1,}', node_version):
-            self.errors.append("Node version %s didn't match expected format" % node_version)
-        profile_view.app_version_text.click()
-        profile_view.back_button.click()
-        profile_view.home_button.click()
-        chat = home_view.join_public_chat(home_view.get_random_chat_name())
-        message_input = chat.chat_message_input
-        message_input.paste_text_from_clipboard()
-        if message_input.text != app_version:
-            self.errors.append('Version number was not copied to clipboard')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5766)
@@ -696,32 +612,96 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     @marks.testrail_id(6219)
     @marks.medium
     def test_set_primary_ens_custom_domain(self):
-        sign_in_view = SignInView(self.driver)
+        home = SignInView(self.driver).recover_access(ens_user['passphrase'])
         ens_not_stateofus = ens_user['ens_another_domain']
         ens_stateofus = ens_user['ens']
-        home_view = sign_in_view.recover_access(ens_user['passphrase'])
 
-        home_view.just_fyi('add 2 ENS names in Profile')
-        profile_view = home_view.profile_button.click()
-        dapp_view = profile_view.connect_existing_status_ens(ens_stateofus)
-        profile_view.element_by_text("Add username").click()
-        profile_view.element_by_text_part("another domain").click()
-        dapp_view.ens_name_input.set_value(ens_not_stateofus)
-        dapp_view.check_ens_name.click_until_presence_of_element(dapp_view.element_by_text('Ok, got it'))
-        dapp_view.element_by_text('Ok, got it').click()
+        home.just_fyi('add 2 ENS names in Profile')
+        profile = home.profile_button.click()
+        dapp = profile.connect_existing_status_ens(ens_stateofus)
+        profile.element_by_text("Add username").click()
+        profile.element_by_text_part("another domain").click()
+        dapp.ens_name_input.set_value(ens_not_stateofus)
+        dapp.check_ens_name.click_until_presence_of_element(dapp.element_by_translation_id("ens-got-it"))
+        dapp.element_by_translation_id("ens-got-it").click()
 
-        home_view.just_fyi('check that by default %s ENS is set' % ens_stateofus)
-        dapp_view.element_by_text('Primary username').click()
+        home.just_fyi('check that by default %s ENS is set' % ens_stateofus)
+        dapp.element_by_text('Primary username').click()
         message_to_check = 'Your messages are displayed to others with'
-        if not dapp_view.element_by_text('%s\n@%s.stateofus.eth' % (message_to_check, ens_stateofus)).is_element_displayed():
+        if not dapp.element_by_text('%s\n@%s.stateofus.eth' % (message_to_check, ens_stateofus)).is_element_displayed():
              self.errors.append('%s ENS username is not set as primary by default' % ens_stateofus)
 
-        home_view.just_fyi('check view in chat settings ENS from other domain: %s after set new primary ENS' % ens_not_stateofus)
-        dapp_view.set_primary_ens_username(ens_user['ens_another_domain']).click()
-        if profile_view.username_in_ens_chat_settings_text.text != '@' + ens_not_stateofus:
+        home.just_fyi('check view in chat settings ENS from other domain: %s after set new primary ENS' % ens_not_stateofus)
+        dapp.set_primary_ens_username(ens_user['ens_another_domain']).click()
+        if profile.username_in_ens_chat_settings_text.text != '@' + ens_not_stateofus:
             self.errors.append('ENS username %s is not shown in ENS username Chat Settings after enabling' % ens_not_stateofus)
 
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(5302)
+    @marks.high
+    @marks.skip
+    # TODO: skip until profile picture change feature is enabled
+    def test_set_profile_picture(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        profile_view = sign_in_view.profile_button.click()
+        profile_view.edit_profile_picture(file_name='sauce_logo.png')
+        profile_view.home_button.click()
+        sign_in_view.profile_button.click()
+        profile_view.swipe_down()
+        if not profile_view.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
+            self.driver.fail('Profile picture was not updated')
+
+    @marks.testrail_id(5475)
+    @marks.low
+    @marks.skip
+    # TODO: skip until profile picture change feature is enabled
+    def test_change_profile_picture_several_times(self):
+        sign_in_view = SignInView(self.driver)
+        sign_in_view.create_user()
+        profile_view = sign_in_view.profile_button.click()
+        for file_name in ['sauce_logo.png', 'sauce_logo_red.png', 'saucelabs_sauce.png']:
+            profile_view.edit_profile_picture(file_name=file_name)
+            profile_view.swipe_down()
+            if not profile_view.profile_picture.is_element_image_equals_template(
+                    file_name.replace('.png', '_profile.png')):
+                self.driver.fail('Profile picture was not updated')
+
+    @marks.testrail_id(5468)
+    @marks.medium
+    @marks.skip
+    # TODO: skip until profile picture change feature is enabled
+    def test_deny_camera_access_changing_profile_photo(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        profile = sign_in.profile_button.click()
+        profile.profile_picture.click()
+        profile.capture_button.click()
+        for _ in range(2):
+            profile.deny_button.click()
+        profile.element_by_translation_id("camera-access-error").wait_for_visibility_of_element(3)
+        profile.ok_button.click()
+        profile.profile_picture.click()
+        profile.capture_button.click()
+        profile.deny_button.wait_for_visibility_of_element(2)
+
+    @marks.testrail_id(5469)
+    @marks.medium
+    @marks.skip
+    # TODO: skip until profile picture change feature is enabled
+    def test_deny_device_storage_access_changing_profile_photo(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        profile = sign_in.profile_button.click()
+        profile.profile_picture.click()
+        profile.select_from_gallery_button.click()
+        profile.deny_button.click()
+        profile.element_by_translation_id(id="external-storage-denied", element_type='text').wait_for_visibility_of_element(3)
+        profile.ok_button.click()
+        profile.profile_picture.click()
+        profile.select_from_gallery_button.click()
+        profile.deny_button.wait_for_visibility_of_element(2)
 
 
 class TestProfileMultipleDevice(MultipleDeviceTestCase):
@@ -782,7 +762,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5436)
     @marks.medium
-    #@marks.flaky
+    @marks.flaky
     def test_add_switch_delete_custom_mailserver(self):
         self.create_drivers(2)
         sign_in_1, sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -1056,83 +1036,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5680)
-    @marks.high
-    @marks.skip
-    # TODO: skip until edit userpic is enabled back
-    def test_pair_devices_sync_name_photo_public_group_chats(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        device_1_home = device_1.create_user()
-        device_1_home.profile_button.click()
-        device_1_profile = device_1_home.get_profile_view()
-        device_1_profile.privacy_and_security_button.click()
-        device_1_profile.backup_recovery_phrase_button.click()
-        recovery_phrase = device_1_profile.backup_recovery_phrase()
-        device_1_profile.back_button.click()
-        device_1_profile.get_back_to_home_view()
-        device_1_name = 'device_%s' % device_1.driver.number
-        device_2_name = 'device_%s' % device_2.driver.number
-        public_chat_before_sync_name = 'b-public-%s' % device_1_home.get_random_chat_name()
-        public_chat_after_sync_name = 'a-public-%s' % device_1_home.get_random_chat_name()
-        group_chat_name = 'group-%s' % device_1_home.get_random_chat_name()
-        message_after_sync = 'sent after sync'
-
-        device_1.just_fyi('join public chat, create group chat, edit user picture')
-        device_1_public_chat = device_1_home.join_public_chat(public_chat_before_sync_name)
-        device_1_public_chat.back_button.click()
-        device_1_one_to_one = device_1_home.add_contact(basic_user['public_key'])
-        device_1_one_to_one.back_button.click()
-        device_1_group_chat = device_1_home.create_group_chat([basic_user['username']], group_chat_name)
-        device_1_group_chat.back_button.click()
-        device_1_home.profile_button.click()
-        device_1_profile = device_1_home.get_profile_view()
-        device_1_profile.edit_profile_picture('sauce_logo.png')
-
-        device_2.just_fyi('go to profile > Devices, set device name, discover device 2 to device 1')
-        device_2_home = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
-        device_2_profile = device_2_home.get_profile_view()
-        device_2_profile.discover_and_advertise_device(device_2_name)
-
-        device_1.just_fyi('enable pairing of `device 2` and sync')
-        device_1_profile.discover_and_advertise_device(device_1_name)
-        device_1_profile.get_toggle_device_by_name(device_2_name).click()
-        device_1_profile.sync_all_button.click()
-        device_1_profile.sync_all_button.wait_for_visibility_of_element(15)
-
-        device_2.just_fyi('check that public chat and profile details are updated')
-        device_2_home = device_2_profile.get_back_to_home_view()
-        if not device_2_home.element_by_text('#%s' % public_chat_before_sync_name).is_element_displayed():
-            self.errors.append('Public chat "%s" doesn\'t appear after initial sync'
-                               % public_chat_before_sync_name)
-        device_2_home.home_button.click()
-        device_2_home.profile_button.click()
-        if not device_2_profile.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
-            self.errors.append('Profile picture was not updated after initial sync')
-        device_2_profile.home_button.click()
-
-        device_1.just_fyi('send message to group chat, and join to new public chat')
-        device_1_home = device_1_profile.get_back_to_home_view()
-        device_1_public_chat = device_1_home.join_public_chat(public_chat_after_sync_name)
-        device_1_public_chat.back_button.click()
-        device_1_home.element_by_text(group_chat_name).click()
-        device_1_group_chat.chat_message_input.send_keys(message_after_sync)
-        device_1_group_chat.send_message_button.click()
-        device_1_group_chat.back_button.click()
-
-        device_2.just_fyi('check that message in group chat is shown, public chats are synced')
-        if not device_2_home.element_by_text('#%s' % public_chat_after_sync_name).is_element_displayed():
-            self.errors.append('Public chat "%s" doesn\'t appear on other device when devices are paired'
-                               % public_chat_before_sync_name)
-
-        device_2_home.element_by_text(group_chat_name).click()
-        device_2_group_chat = device_2_home.get_chat_view()
-
-        if not device_2_group_chat.chat_element_by_text(message_after_sync).is_element_displayed():
-            self.errors.append('"%s" message in group chat is not synced' % message_after_sync)
-
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(6226)
     @marks.critical
     def test_ens_mentions_and_nickname_in_public_and_1_1_chats(self):
@@ -1234,5 +1137,82 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         chat_element.find_element()
         if chat_element.username.text != '%s %s' % (nickname, ens_name):
             self.errors.append('Nickname for user with ENS is not shown in public chat')
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(5680)
+    @marks.high
+    @marks.skip
+    # TODO: skip until edit userpic is enabled back
+    def test_pair_devices_sync_name_photo_public_group_chats(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        device_1_home = device_1.create_user()
+        device_1_home.profile_button.click()
+        device_1_profile = device_1_home.get_profile_view()
+        device_1_profile.privacy_and_security_button.click()
+        device_1_profile.backup_recovery_phrase_button.click()
+        recovery_phrase = device_1_profile.backup_recovery_phrase()
+        device_1_profile.back_button.click()
+        device_1_profile.get_back_to_home_view()
+        device_1_name = 'device_%s' % device_1.driver.number
+        device_2_name = 'device_%s' % device_2.driver.number
+        public_chat_before_sync_name = 'b-public-%s' % device_1_home.get_random_chat_name()
+        public_chat_after_sync_name = 'a-public-%s' % device_1_home.get_random_chat_name()
+        group_chat_name = 'group-%s' % device_1_home.get_random_chat_name()
+        message_after_sync = 'sent after sync'
+
+        device_1.just_fyi('join public chat, create group chat, edit user picture')
+        device_1_public_chat = device_1_home.join_public_chat(public_chat_before_sync_name)
+        device_1_public_chat.back_button.click()
+        device_1_one_to_one = device_1_home.add_contact(basic_user['public_key'])
+        device_1_one_to_one.back_button.click()
+        device_1_group_chat = device_1_home.create_group_chat([basic_user['username']], group_chat_name)
+        device_1_group_chat.back_button.click()
+        device_1_home.profile_button.click()
+        device_1_profile = device_1_home.get_profile_view()
+        device_1_profile.edit_profile_picture('sauce_logo.png')
+
+        device_2.just_fyi('go to profile > Devices, set device name, discover device 2 to device 1')
+        device_2_home = device_2.recover_access(passphrase=' '.join(recovery_phrase.values()))
+        device_2_profile = device_2_home.get_profile_view()
+        device_2_profile.discover_and_advertise_device(device_2_name)
+
+        device_1.just_fyi('enable pairing of `device 2` and sync')
+        device_1_profile.discover_and_advertise_device(device_1_name)
+        device_1_profile.get_toggle_device_by_name(device_2_name).click()
+        device_1_profile.sync_all_button.click()
+        device_1_profile.sync_all_button.wait_for_visibility_of_element(15)
+
+        device_2.just_fyi('check that public chat and profile details are updated')
+        device_2_home = device_2_profile.get_back_to_home_view()
+        if not device_2_home.element_by_text('#%s' % public_chat_before_sync_name).is_element_displayed():
+            self.errors.append('Public chat "%s" doesn\'t appear after initial sync'
+                               % public_chat_before_sync_name)
+        device_2_home.home_button.click()
+        device_2_home.profile_button.click()
+        if not device_2_profile.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
+            self.errors.append('Profile picture was not updated after initial sync')
+        device_2_profile.home_button.click()
+
+        device_1.just_fyi('send message to group chat, and join to new public chat')
+        device_1_home = device_1_profile.get_back_to_home_view()
+        device_1_public_chat = device_1_home.join_public_chat(public_chat_after_sync_name)
+        device_1_public_chat.back_button.click()
+        device_1_home.element_by_text(group_chat_name).click()
+        device_1_group_chat.chat_message_input.send_keys(message_after_sync)
+        device_1_group_chat.send_message_button.click()
+        device_1_group_chat.back_button.click()
+
+        device_2.just_fyi('check that message in group chat is shown, public chats are synced')
+        if not device_2_home.element_by_text('#%s' % public_chat_after_sync_name).is_element_displayed():
+            self.errors.append('Public chat "%s" doesn\'t appear on other device when devices are paired'
+                               % public_chat_before_sync_name)
+
+        device_2_home.element_by_text(group_chat_name).click()
+        device_2_group_chat = device_2_home.get_chat_view()
+
+        if not device_2_group_chat.chat_element_by_text(message_after_sync).is_element_displayed():
+            self.errors.append('"%s" message in group chat is not synced' % message_after_sync)
 
         self.errors.verify_no_errors()

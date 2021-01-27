@@ -1,7 +1,6 @@
-from tests import marks, connection_not_secure_text, connection_is_secure_text
+from tests import marks
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
-from views.dapps_view import DappsView
 
 
 class TestBrowsing(SingleDeviceTestCase):
@@ -71,35 +70,33 @@ class TestBrowsing(SingleDeviceTestCase):
     @marks.testrail_id(6210)
     @marks.high
     def test_open_blocked_secure_not_secure_sites(self):
-        home_view = SignInView(self.driver).create_user()
-        daap_view = home_view.dapp_tab_button.click()
+        home = SignInView(self.driver).create_user()
+        daap = home.dapp_tab_button.click()
         for url in ('metamask.site', 'https://www.cryptokitties.domainname'):
-            daap_view.just_fyi('Checking blocked website %s' % url)
-            dapp_detail = daap_view.open_url(url)
+            daap.just_fyi('Checking blocked website %s' % url)
+            dapp_detail = daap.open_url(url)
             dapp_detail.element_by_translation_id('browsing-site-blocked-title')
             if dapp_detail.browser_refresh_page_button.is_element_displayed():
                 self.errors.append("Refresh button is present in blocked site")
             dapp_detail.go_back_button.click()
             dapp_detail.open_tabs_button.click()
-            daap_view.element_by_text("Browser").click()
+            daap.element_by_text("Browser").click()
             dapp_detail.continue_anyway_button.click()
             if dapp_detail.element_by_text('This site is blocked').is_element_displayed():
                 self.errors.append("Failed to open Dapp after 'Continue anyway' tapped for %s" % url)
-            home_view.dapp_tab_button.click()
+            home.dapp_tab_button.click()
 
-        daap_view.just_fyi('Checking connection is not secure warning')
-        browsing_view = daap_view.open_url('http://www.dvwa.co.uk')
-        browsing_view.url_edit_box_lock_icon.click_until_presence_of_element(
-            browsing_view.element_by_text(connection_not_secure_text))
-        home_view.dapp_tab_button.click()
+        daap.just_fyi('Checking connection is not secure warning')
+        web_page = daap.open_url('http://www.dvwa.co.uk')
+        web_page.url_edit_box_lock_icon.click_until_presence_of_element(web_page.element_by_translation_id("browser-not-secure"))
+        home.dapp_tab_button.click()
 
         for url in ('https://www.bbc.com', 'https://instant.airswap.io'):
-            daap_view.just_fyi('Checking connection is secure for %s' % url)
-            browsing_view = daap_view.open_url(url)
-            browsing_view.wait_for_d_aap_to_load()
-            browsing_view.url_edit_box_lock_icon.click_until_presence_of_element(
-                browsing_view.element_by_text(connection_is_secure_text))
-            home_view.dapp_tab_button.click()
+            daap.just_fyi('Checking connection is secure for %s' % url)
+            web_page = daap.open_url(url)
+            web_page.wait_for_d_aap_to_load()
+            web_page.url_edit_box_lock_icon.click_until_presence_of_element(web_page.element_by_translation_id("browser-secure"))
+            home.dapp_tab_button.click()
 
         self.errors.verify_no_errors()
 
@@ -114,7 +111,7 @@ class TestBrowsing(SingleDeviceTestCase):
 
         browsing_view = daap_view.open_url('https://simpledapp.status.im/webviewtest/url-spoof-ssl.html')
         browsing_view.url_edit_box_lock_icon.click()
-        if not browsing_view.element_by_text_part(connection_not_secure_text).is_element_displayed():
+        if not browsing_view.element_by_translation_id("browser-not-secure").is_element_displayed():
             self.errors.append("Broken certificate displayed as secure connection \n")
 
         browsing_view.cross_icon.click()
