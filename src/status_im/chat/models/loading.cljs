@@ -119,6 +119,7 @@
                    :users                users
                    :new-messages         []}
                   messages)]
+      (println "MESSAGES LOADED" (count messages) (count already-loaded-messages) " ALL:" (count all-messages))
       (fx/merge cofx
                 {:db (-> db
                          (assoc-in [:pagination-info current-chat-id :cursor-clock-value] (when (seq cursor) (cursor->clock-value cursor)))
@@ -145,7 +146,7 @@
                                 constants/default-number-of-messages
                                 #(re-frame/dispatch [::messages-loaded current-chat-id session-id %])
                                 #(re-frame/dispatch [::failed-loading-messages current-chat-id session-id %]))]
-          (println "LOAD MORE MESSAGES" cursor)
+          (println "LOAD MORE MESSAGES" (count (get-in db [:messages current-chat-id])) "CURS" cursor)
           (fx/merge cofx
                     load-messages-fx
                     (reactions/load-more-reactions cursor)

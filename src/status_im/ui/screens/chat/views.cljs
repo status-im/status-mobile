@@ -194,6 +194,7 @@
       pan-responder
       {:key-fn                            #(or (:message-id %) (:value %))
        :ref                               #(do
+                                             (println "REF")
                                              (enable-maintain-visible-content-position %)
                                              (reset! messages-list-ref %))
        :header                            [react/view {:padding-bottom (+ bottom-space 16)}
@@ -210,7 +211,9 @@
                                            :current-public-key current-public-key
                                            :space-keeper       space-keeper}
        :render-fn                         render-fn
-       :on-viewable-items-changed         on-viewable-items-changed
+       ;;TODO we need this only when we scroll down in the chat to the new messages and want to offload viewed old messages
+       ;; it has issues and might be even slow, so we need to offload messages only if for example if there is more than 100 or some N ?
+       ;;:on-viewable-items-changed         on-viewable-items-changed
        :on-end-reached                    #(do
                                              (println "ONEND-REACHED")
                                              (re-frame/dispatch [:chat.ui/list-on-end-reached]))
@@ -218,7 +221,15 @@
        :scrollIndicatorInsets             {:top bottom-space}
        :keyboardDismissMode               "interactive"
        :keyboard-should-persist-taps      :handled
-       :maintain-visible-content-position {:minIndexForVisible 0}})]))
+       :maintain-visible-content-position {:minIndexForVisible 0}
+       :on-content-size-change (fn [w h]
+                                 (println "EV" w h))
+       :on-scroll #(do
+                     (println "HEI" (.-nativeEvent.contentSize.height ^js %) (.-nativeEvent.contentOffset.y ^js %)))})]))
+
+#_(.scrollToOffset @messages-list-ref #js
+    {:offset (+ @scroll-pos (- h @scroll-height))
+     :animated false})
 
 (defn bottom-sheet [input-bottom-sheet]
   (case input-bottom-sheet

@@ -85,21 +85,25 @@
         cursor-clock-value (get-in db [:chats current-chat-id :cursor-clock-value])]
     (fx/merge
      cofx
+     ;;TODO we want to add all messages, but we need to optimize that, so we can add messages smooth
+     (add-message {:message       message
+                   ;;TODO we need to find if this is an active chat
+                   :seen-by-user? (= view-id :chat)})
      ;; If we don't have any hidden message or the hidden message is before
      ;; this one, we add the message to the UI
-     (if (or (not @view.state/first-not-visible-item)
-             (<= (:clock-value @view.state/first-not-visible-item)
-                 clock-value))
-       (add-message {:message       message
-                     ;;TODO we need to find if this is an active chat
-                     :seen-by-user? (= view-id :chat)})
-       ;; Not in the current view, set all-loaded to false
-       ;; and offload to db and update cursor if necessary
-       {:db (cond-> (assoc-in db [:chats chat-id :all-loaded?] false)
-              (>= clock-value cursor-clock-value)
-              (update-in [:chats chat-id] assoc
-                         :cursor (chat-loading/clock-value->cursor clock-value)
-                         :cursor-clock-value clock-value))})
+     #_(if (or (not @view.state/first-not-visible-item)
+               (<= (:clock-value @view.state/first-not-visible-item)
+                   clock-value))
+         (add-message {:message       message
+                       ;;TODO we need to find if this is an active chat
+                       :seen-by-user? (= view-id :chat)})
+         ;; Not in the current view, set all-loaded to false
+         ;; and offload to db and update cursor if necessary
+         {:db (cond-> (assoc-in db [:chats chat-id :all-loaded?] false)
+                (>= clock-value cursor-clock-value)
+                (update-in [:chats chat-id] assoc
+                           :cursor (chat-loading/clock-value->cursor clock-value)
+                           :cursor-clock-value clock-value))})
      (add-sender-to-chat-users message))))
 
 (defn- message-loaded?

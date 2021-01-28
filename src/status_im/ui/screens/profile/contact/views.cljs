@@ -169,7 +169,7 @@
                                        [react/text {:style {:color colors/gray :line-height 22}}
                                         (i18n/label :t/status-updates-descr)]]])
         :ref                       #(reset! status.views/messages-list-ref %)
-        :on-viewable-items-changed chat.views/on-viewable-items-changed
+        ;:on-viewable-items-changed chat.views/on-viewable-items-changed
         :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages])
         :on-scroll-to-index-failed #()                      ;;don't remove this
         :render-fn                 status.views/render-message

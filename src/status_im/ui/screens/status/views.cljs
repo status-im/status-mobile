@@ -208,7 +208,7 @@
                                      :account  account}
          :render-fn                 render-message
          :data                      messages
-         :on-viewable-items-changed chat.views/on-viewable-items-changed
+         ;:on-viewable-items-changed chat.views/on-viewable-items-changed
          :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages])
          ;;don't remove :on-scroll-to-index-failed
          :on-scroll-to-index-failed #()
