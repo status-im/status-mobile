@@ -1,7 +1,7 @@
 import random
 
 from support.utilities import fill_string_with_char
-from tests import marks, common_password
+from tests import marks, common_password, unique_password
 from tests.base_test_case import SingleDeviceTestCase
 from views.sign_in_view import SignInView
 from tests.users import basic_user, transaction_senders, recovery_users

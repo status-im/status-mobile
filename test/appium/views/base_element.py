@@ -67,7 +67,7 @@ class BaseElement(object):
                 return self.driver.find_element(self.by, self.locator)
             except NoSuchElementException:
                 raise NoSuchElementException(
-                    "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
+                    "Device %s: %s by %s: `%s` is not found on the screen" % (self.driver.number, self.name, self.by, self.locator)) from None
             except Exception as exception:
                 if 'Internal Server Error' in str(exception):
                     continue
@@ -90,7 +90,7 @@ class BaseElement(object):
                 .until(expected_conditions.presence_of_element_located((self.by, self.locator)))
         except TimeoutException:
             raise TimeoutException(
-                "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
+                "Device %s: %s by %s: `%s` is not found on the screen" % (self.driver.number, self.name, self.by, self.locator))  from None
 
     def wait_for_elements(self, seconds=10):
         try:
@@ -98,7 +98,7 @@ class BaseElement(object):
                 .until(expected_conditions.presence_of_all_elements_located((self.by, self.locator)))
         except TimeoutException:
             raise TimeoutException(
-                "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
+                "Device %s:  %s by %s:`%s` is not found on the screen" % (self.driver.number, self.name, self.by, self.locator)) from None
 
     def wait_for_visibility_of_element(self, seconds=10, ignored_exceptions=None):
         try:
@@ -106,15 +106,15 @@ class BaseElement(object):
                 .until(expected_conditions.visibility_of_element_located((self.by, self.locator)))
         except TimeoutException:
             raise TimeoutException(
-                "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
+                "Device %s: %s by %s:`%s` is not found on the screen" % (self.driver.number, self.name, self.by, self.locator)) from None
 
     def wait_for_invisibility_of_element(self, seconds=10):
         try:
             return WebDriverWait(self.driver, seconds) \
                 .until(expected_conditions.invisibility_of_element_located((self.by, self.locator)))
         except TimeoutException:
-            raise TimeoutException("Device %s: '%s' is still visible on the screen after %s seconds" % (
-                self.driver.number, self.name, seconds)) from None
+            raise TimeoutException("Device %s: %s by %s:* `%s`  is still visible on the screen after %s seconds" % (
+                self.driver.number, self.name, self.by, self.locator, seconds)) from None
 
     def scroll_to_element(self, depth: int = 9, direction='down'):
         self.driver.info('*Scrolling %s to %s*' % (direction, self.name))

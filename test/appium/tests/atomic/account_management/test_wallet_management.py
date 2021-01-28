@@ -52,42 +52,64 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5384)
     @marks.critical
-    def test_open_transaction_on_etherscan(self):
+    def test_open_transaction_on_etherscan_copy_tx_hash(self):
         user = wallet_users['D']
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.recover_access(user['passphrase'])
-        wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.accounts_status_account.click()
-        transactions_view = wallet_view.transaction_history_button.click()
-        transaction_details = transactions_view.transactions_table.transaction_by_index(0).click()
+        home = SignInView(self.driver).recover_access(user['passphrase'])
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.accounts_status_account.click()
+
+        wallet.just_fyi("Open transaction on etherscan")
+        transactions = wallet.transaction_history_button.click()
+        transaction_details = transactions.transactions_table.transaction_by_index(0).click()
         transaction_hash = transaction_details.get_transaction_hash()
         transaction_details.options_button.click()
         transaction_details.open_transaction_on_etherscan_button.click()
-        base_web_view = wallet_view.get_base_web_view()
-        base_web_view.open_in_webview()
-        base_web_view.find_text_part(transaction_hash)
+        web_page = wallet.get_base_web_view()
+        web_page.open_in_webview()
+        web_page.element_by_text_part(transaction_hash).wait_for_visibility_of_element(30)
 
-    @marks.testrail_id(5427)
-    @marks.medium
-    def test_copy_transaction_hash(self):
-        user = wallet_users['D']
-        sign_in_view = SignInView(self.driver)
-        home_view = sign_in_view.recover_access(user['passphrase'])
-        wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.accounts_status_account.click()
-        transactions_view = wallet_view.transaction_history_button.click()
-        transaction_details = transactions_view.transactions_table.transaction_by_index(0).click()
-        transaction_hash = transaction_details.get_transaction_hash()
+        wallet.just_fyi("Copy transaction hash")
+        web_page.click_system_back_button()
         transaction_details.options_button.click()
         transaction_details.copy_transaction_hash_button.click()
-        transaction_details.get_back_to_home_view()
-        wallet_view.home_button.click()
-        public_chat = home_view.join_public_chat('testchat')
+        wallet.home_button.click()
+        public_chat = home.join_public_chat('testchat')
         public_chat.chat_message_input.paste_text_from_clipboard()
         if public_chat.chat_message_input.text != transaction_hash:
             self.driver.fail('Transaction hash was not copied')
+
+    @marks.testrail_id(5346)
+    @marks.high
+    def test_collectible_from_wallet(self):
+        passphrase = wallet_users['F']['passphrase']
+        home = SignInView(self.driver).recover_access(passphrase=passphrase)
+        profile = home.profile_button.click()
+        profile.switch_network()
+        wallet = profile.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.scan_tokens()
+        wallet.accounts_status_account.click()
+        wallet.collectibles_button.click()
+
+        wallet.just_fyi('Check collectibles amount in wallet')
+        wallet.cryptokitties_in_collectibles_number.wait_for_visibility_of_element(30)
+        if wallet.cryptokitties_in_collectibles_number.text != '1':
+            self.errors.append(
+                'Wrong number is shown on CK assets: %s' % wallet.cryptokitties_in_collectibles_number.text)
+
+        wallet.just_fyi('Check that collectibles are not shown when sending assets from wallet')
+        send_transaction = wallet.send_transaction_button.click()
+        send_transaction.select_asset_button.click()
+        if send_transaction.asset_by_name("CryptoKitties").is_element_displayed():
+            self.errors.append('Collectibles can be sent from wallet')
+        wallet.back_button.click(2)
+
+        wallet.just_fyi('Check "Open in OpenSea"')
+        wallet.element_by_translation_id("check-on-opensea").click()
+        if not wallet.allow_button.is_element_displayed(40):
+            self.errors.append('OpenSea app is not opened when navigating from wallet')
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5341)
     @marks.critical
@@ -126,32 +148,6 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.backup_recovery_phrase_warning_text.click()
         profile.backup_recovery_phrase()
 
-    @marks.testrail_id(5440)
-    @marks.medium
-    def test_no_collectibles_to_send_from_wallet(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        profile = sign_in.profile_button.click()
-        profile.switch_network('Mainnet with upstream RPC')
-        wallet = sign_in.wallet_button.click()
-        wallet.set_up_wallet()
-        assets = ['CryptoKitties', 'CryptoStrikers']
-        for asset in assets:
-            wallet.select_asset(asset)
-        wallet.accounts_status_account.click_until_presence_of_element(wallet.collectibles_button)
-        wallet.collectibles_button.click()
-        for asset in assets:
-            if not wallet.element_by_text(asset).is_element_displayed():
-                self.errors.append('Assets are not shown in Collectibles after adding')
-        wallet.transaction_history_button.click()
-        send_transaction = wallet.send_transaction_button.click()
-        send_transaction.select_asset_button.click()
-        for asset in assets:
-            if send_transaction.asset_by_name(asset).is_element_displayed():
-                self.errors.append('Collectibles can be sent from wallet')
-        self.errors.verify_no_errors()
-
-
     @marks.testrail_id(5381)
     @marks.high
     def test_user_can_see_all_own_assets_after_account_recovering(self):
@@ -170,32 +166,6 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.driver.fail('User collectibles token name in not shown')
         if not wallet_view.element_by_text('1').is_element_displayed():
             self.driver.fail('User collectibles amount does not match')
-
-    @marks.testrail_id(5346)
-    @marks.high
-    def test_collectible_from_wallet(self):
-        passphrase = wallet_users['F']['passphrase']
-        signin_view = SignInView(self.driver)
-        home_view = signin_view.recover_access(passphrase=passphrase)
-        profile = home_view.profile_button.click()
-        profile.switch_network()
-        wallet_view = profile.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.scan_tokens()
-        wallet_view.accounts_status_account.click()
-        wallet_view.collectibles_button.click()
-
-        wallet_view.just_fyi('Check collectibles amount in wallet')
-        wallet_view.cryptokitties_in_collectibles_number.wait_for_visibility_of_element(30)
-        if wallet_view.cryptokitties_in_collectibles_number.text != '1':
-            self.errors.append('Wrong number is shown on CK assets: %s' % wallet_view.cryptokitties_in_collectibles_number.text)
-
-        wallet_view.just_fyi('Check "Open in OpenSea"')
-        wallet_view.element_by_text('Check on opensea').click()
-        if not wallet_view.allow_button.is_element_displayed(40):
-            self.errors.append('OpenSea app is not opened when navigating from wallet')
-        self.errors.verify_no_errors()
-
 
     @marks.testrail_id(6224)
     @marks.critical
@@ -356,7 +326,6 @@ class TestWalletManagement(SingleDeviceTestCase):
             self.errors.append(
                 'Wrong address %s is shown in "Receive" popup account ' % wallet_view.address_text.text)
         self.errors.verify_no_errors()
-
 
     @marks.testrail_id(5406)
     @marks.critical
