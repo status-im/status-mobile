@@ -228,12 +228,10 @@
              "count" (count transfers)
              "limit" limit)
   (let [checksum (eip55/address->checksum address)
-        max-known-block (or (get-max-block-with-transfers db address)
-                            0)
+        max-known-block (get-max-block-with-transfers db address)
         effects (cond-> [(when (seq transfers)
                            (set-lowest-fetched-block checksum transfers))
-                         (when (seq transfers)
-                           (set-max-block-with-transfers checksum transfers))]
+                         (set-max-block-with-transfers checksum transfers)]
 
                   (seq transfers)
                   (concat (mapv add-transfer transfers))
@@ -247,7 +245,7 @@
                   true
                   (conj (wallet/update-balances
                          (into [] (reduce (fn [acc {:keys [address block]}]
-                                            (if (> block max-known-block)
+                                            (if (and max-known-block (> block max-known-block))
                                               (conj acc address)
                                               acc))
                                           #{}

@@ -232,7 +232,8 @@
                        (reduce (fn [acc {:keys [address symbol]}]
                                  (assoc acc address symbol))
                                {}))]
-    (when (not= network-status :offline)
+    (when (and (seq addresses)
+               (not= network-status :offline))
       (fx/merge
        cofx
        {:wallet/get-balances        addresses
@@ -564,16 +565,18 @@
 
 (fx/defn stop-wallet
   [{:keys [db] :as cofx}]
-  (let [state (get db :wallet-service/state)
-        old-timeout (get db :wallet-service/restart-timeout)
-        timeout (or
-                 old-timeout
-                 (utils.utils/set-timeout
-                  #(re-frame.core/dispatch [::restart])
-                  (get-restart-interval db)))]
+  (let [state           (get db :wallet-service/state)
+        old-timeout     (get db :wallet-service/restart-timeout)
+        timeout         (or
+                         old-timeout
+                         (utils.utils/set-timeout
+                          #(re-frame.core/dispatch [::restart])
+                          (get-restart-interval db)))
+        max-known-block (get db :wallet/max-known-block 0)]
     {:db           (-> db
                        (update :wallet dissoc :fetching)
                        (assoc :wallet-service/state :stopped)
+                       (assoc :wallet/max-known-block max-known-block)
                        (assoc :wallet-service/restart-timeout timeout)
                        (dissoc :wallet/recent-history-fetching-started?
                                :wallet/waiting-for-recent-history?
