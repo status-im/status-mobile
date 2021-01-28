@@ -1,11 +1,10 @@
 import random
 import string
 
-from tests import marks, camera_access_error_text, common_password
+from tests import marks, common_password
 from tests.base_test_case import SingleDeviceTestCase
 from tests.users import wallet_users, transaction_senders, basic_user, ens_user
 from views.sign_in_view import SignInView
-import time
 
 
 class TestWalletManagement(SingleDeviceTestCase):

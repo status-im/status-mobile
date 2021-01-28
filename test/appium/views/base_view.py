@@ -536,7 +536,8 @@ class BaseView(object):
         items_in_logcat = list()
         for key, value in kwargs.items():
             self.driver.info("**Checking in logcat for:** `%s`" % value)
-            if re.findall(r'\W%s$|\W%s\W' % (value, value), logcat):
+            escaped_value = re.escape(value)
+            if re.findall(r'\W%s$|\W%s\W' % (escaped_value, escaped_value), logcat):
                 items_in_logcat.append('%s in logcat!!!' % key.capitalize())
         return items_in_logcat
 

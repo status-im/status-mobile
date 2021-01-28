@@ -211,7 +211,7 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         dapp_view.just_fyi('check if your name can be added via "ENS usernames" in Profile')
         dapp_view.element_by_text('Get started').click()
         dapp_view.ens_name_input.set_value(ens_user['ens'])
-        dapp_view.check_ens_name.click()
+        dapp_view.check_ens_name.click_until_absense_of_element(dapp_view.check_ens_name)
         if not dapp_view.element_by_translation_id('ens-saved-title').is_element_displayed():
             self.errors.append('No message "Username added" after resolving own username')
         dapp_view.element_by_translation_id("ens-got-it").click()
