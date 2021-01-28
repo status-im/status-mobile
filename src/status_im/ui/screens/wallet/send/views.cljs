@@ -171,7 +171,7 @@
                      :margin-vertical 16}
          [react/text-input
           {:style               {:font-size   38
-                                 :color       (when amount-error colors/red)
+                                 :color       (if amount-error colors/red colors/black)
                                  :flex-shrink 1}
            :keyboard-type       :decimal-pad
            :auto-capitalize     :words
