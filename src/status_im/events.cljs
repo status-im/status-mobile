@@ -1,5 +1,6 @@
 (ns status-im.events
   (:require [re-frame.core :as re-frame]
+            [clojure.set :as clojure.set]
             [status-im.bootnodes.core :as bootnodes]
             [status-im.browser.core :as browser]
             [status-im.browser.permissions :as browser.permissions]
@@ -31,6 +32,8 @@
             [status-im.privacy-policy.core :as privacy-policy]
             [status-im.signals.core :as signals]
             [status-im.stickers.core :as stickers]
+            [status-im.ethereum.json-rpc :as json-rpc]
+
             [status-im.transport.core :as transport]
             [status-im.transport.message.core :as transport.message]
             [status-im.ui.components.react :as react]
@@ -1291,3 +1294,25 @@
                 (reset-current-profile-chat % (get-in % [:db :contacts/identity]))
 
                 nil))))
+
+(defn on-ramp<-rpc [on-ramp]
+  (clojure.set/rename-keys on-ramp {:logoUrl :logo-url
+                                    :siteUrl :site-url}))
+
+(handlers/register-handler-fx
+ ::crypto-loaded
+ (fn [{:keys [db]} [_ on-ramps]]
+   (log/info "on-ramps event received" on-ramps)
+   {:db (assoc
+         db
+         :buy-crypto/on-ramps
+         (map on-ramp<-rpc on-ramps))}))
+
+(handlers/register-handler-fx
+ :buy-crypto.ui/loaded
+ (fn [_ _]
+   {::json-rpc/call [{:method "wallet_getCryptoOnRamps"
+                      :params []
+                      :on-success (fn [on-ramps]
+                                    (log/info "on-ramps received" on-ramps)
+                                    (re-frame/dispatch [::crypto-loaded on-ramps]))}]}))

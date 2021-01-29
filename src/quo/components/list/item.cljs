@@ -130,7 +130,7 @@
                     ;; Occupy only content width, never grow, but shrink if need be
                     :flex-grow      0
                     :flex-shrink    1
-                    :align-items    :center}}
+                    :align-items    (or (:left-side-alignment props) :center)}}
    [icon-column props]
    [title-column props]])
 
@@ -169,6 +169,7 @@
 
 (defn list-item
   [{:keys [theme accessory disabled subtitle-max-lines icon icon-container-style
+           left-side-alignment
            title subtitle active on-press on-long-press chevron size text-size
            accessory-text accessibility-label title-accessibility-label
            haptic-feedback haptic-type error animated animated-accessory? title-text-weight]
@@ -211,6 +212,7 @@
                    :text-color                (if on-press
                                                 text-color
                                                 (:text-color (themes :main)))
+                   :left-side-alignment       left-side-alignment
                    :icon-bg-color             icon-bg-color
                    :title-accessibility-label title-accessibility-label
                    :icon                      icon

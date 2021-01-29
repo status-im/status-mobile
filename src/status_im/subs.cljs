@@ -168,7 +168,6 @@
 (reg-root-key-sub :wallet/recipient :wallet/recipient)
 (reg-root-key-sub :wallet/favourites :wallet/favourites)
 (reg-root-key-sub :wallet/refreshing-history? :wallet/refreshing-history?)
-(reg-root-key-sub :wallet/buy-crypto-hidden :wallet/buy-crypto-hidden)
 (reg-root-key-sub :wallet/fetching-error :wallet/fetching-error)
 (reg-root-key-sub :wallet/non-archival-node :wallet/non-archival-node)
 
@@ -216,6 +215,8 @@
 (reg-root-key-sub :push-notifications/preferences :push-notifications/preferences)
 
 (reg-root-key-sub :acquisition :acquisition)
+
+(reg-root-key-sub :buy-crypto/on-ramps :buy-crypto/on-ramps)
 
 ;; communities
 (re-frame/reg-sub

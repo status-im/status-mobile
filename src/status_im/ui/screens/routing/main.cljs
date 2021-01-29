@@ -10,6 +10,7 @@
             [status-im.ui.screens.routing.intro-login-stack :as intro-login-stack]
             [status-im.ui.screens.routing.chat-stack :as chat-stack]
             [status-im.ui.screens.routing.wallet-stack :as wallet-stack]
+            [status-im.ui.screens.wallet.buy-crypto.views :as wallet.buy-crypto]
             [status-im.ui.screens.routing.key-storage-stack :as key-storage-stack]
             [status-im.ui.screens.group.views :as group-chat]
             [status-im.ui.screens.group.events :as group.events]
@@ -152,6 +153,14 @@
         :transition :presentation-ios
         :insets     {:bottom true}
         :component  contact/profile}
+       {:name       :buy-crypto
+        :transition :presentation-ios
+        :insets     {:bottom true}
+        :component wallet.buy-crypto/container}
+       {:name       :buy-crypto-website
+        :transition :presentation-ios
+        :insets     {:bottom true}
+        :component  wallet.buy-crypto/website}
        {:name      :key-storage-stack
         :component key-storage-stack/key-storage-stack}]
 

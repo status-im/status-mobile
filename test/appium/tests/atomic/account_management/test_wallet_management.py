@@ -280,7 +280,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         initial_STT = wallet.get_asset_amount_by_name('STT')
 
         wallet.just_fyi('Check individual account view (imported from private key), receive option')
-        wallet.get_account_by_name(account_name).click()
+        wallet.get_account_by_name(account_name).scroll_and_click(direction="up")
         if not wallet.send_transaction_button.is_element_displayed():
             self.errors.append('Send button is not shown on account added with private key')
         wallet.receive_transaction_button.click()
@@ -314,7 +314,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet.wait_balance_is_changed('MDS')
 
         wallet.just_fyi('Check account view and send option (imported from seed phrase)')
-        wallet.get_account_by_name(account_name).click()
+        wallet.get_account_by_name(account_name).scroll_and_click(direction="up")
         if not wallet.send_transaction_button.is_element_displayed():
             self.errors.append('Send button is not shown on account added with seed phrase')
         wallet.receive_transaction_button.click()

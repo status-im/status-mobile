@@ -5,14 +5,15 @@
             [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as icons]
             [quo.core :as quo]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.screens.wallet.account.styles :as styles]
             [status-im.ui.screens.wallet.accounts.sheets :as sheets]
             [status-im.ui.screens.wallet.accounts.views :as accounts]
+            [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto]
             [status-im.ui.screens.wallet.transactions.views :as history]
             [status-im.utils.money :as money]
             [status-im.wallet.utils :as wallet.utils]
@@ -64,7 +65,7 @@
        (ethereum/normalized-hex address)]]
      [react/view {:position :absolute :top 12 :right 12}
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-popover {:view :share-account :address address}])}
-       [icons/icon :main-icons/share {:color               colors/white-persist
+       [icons/icon :main-icons/share {:color                      colors/white-persist
                                       :accessibility-label :share-wallet-address-icon}]]]
      [react/view {:height                     button-group-height :background-color          colors/black-transparent-20
                   :border-bottom-right-radius 8                   :border-bottom-left-radius 8 :flex-direction :row}
@@ -127,11 +128,13 @@
         [tabs/tab-title state :history (i18n/label :t/history) (= tab :history)]]
        (cond
          (= tab :assets)
-         [list/flat-list {:data               tokens
-                          :default-separator? false
-                          :key-fn             :name
-                          :render-data        (:code currency)
-                          :render-fn          accounts/render-asset}]
+         [react/view {}
+          [buy-crypto/banner]
+          [list/flat-list {:data               tokens
+                           :default-separator? false
+                           :key-fn             :name
+                           :render-data        (:code currency)
+                           :render-fn          accounts/render-asset}]]
          (= tab :nft)
          [react/view
           [collectibles-link]

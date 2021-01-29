@@ -21,7 +21,7 @@
      :style     {:padding-bottom tabbar.styles/tabs-diff}
      :component wallet.accounts/accounts-overview}
     {:name      :wallet-account
-     :component wallet.account/account}
+     :component  wallet.account/account}
     {:name      :add-new-account
      :component add-account/add-account}
     {:name      :add-new-account-pin

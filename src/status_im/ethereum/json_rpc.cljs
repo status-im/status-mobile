@@ -136,6 +136,7 @@
    "wallet_addFavourite" {}
    "wallet_getFavourites" {}
    "wallet_deleteCustomToken" {}
+   "wallet_getCryptoOnRamps" {}
    "browsers_getBrowsers" {}
    "browsers_addBrowser" {}
    "browsers_deleteBrowser" {}
