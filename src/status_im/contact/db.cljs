@@ -18,8 +18,8 @@
 (defn public-key->contact
   [contacts public-key]
   (when public-key
-    (get contacts public-key
-         (public-key->new-contact public-key))))
+    (or (get contacts public-key)
+        (public-key->new-contact public-key))))
 
 (defn- contact-by-address [[addr contact] address]
   (when (ethereum/address= addr address)

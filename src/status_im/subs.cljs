@@ -121,7 +121,6 @@
 (reg-root-key-sub :camera-roll-photos :camera-roll-photos)
 (reg-root-key-sub :group-chat/invitations :group-chat/invitations)
 (reg-root-key-sub :chats/mention-suggestions :chats/mention-suggestions)
-(reg-root-key-sub :chats/cursor :chats/cursor)
 (reg-root-key-sub :chat/inputs-with-mentions :chat/inputs-with-mentions)
 (reg-root-key-sub :inactive-chat-id :inactive-chat-id)
 ;;browser
@@ -1065,15 +1064,20 @@
  :<- [:chats/mentionable-contacts]
  :<- [:contacts/blocked-set]
  :<- [:multiaccount]
- (fn [[{:keys [users]} contacts blocked {:keys [name preferred-name public-key]}]]
-   (apply dissoc
-          (-> users
-              (merge contacts)
-              (assoc public-key (mentions/add-searchable-phrases
-                                 {:alias      name
-                                  :name       (or preferred-name name)
-                                  :public-key public-key})))
-          blocked)))
+ (fn [[{:keys [chat-id users chat-type]} contacts blocked {:keys [name preferred-name public-key]}]]
+   (let [contacts-with-one-to-one (if (= chat-type constants/one-to-one-chat-type)
+                                    (assoc contacts chat-id (get contacts chat-id (-> chat-id
+                                                                                      contact.db/public-key->new-contact
+                                                                                      contact.db/enrich-contact)))
+                                    contacts)]
+     (apply dissoc
+            (-> users
+                (merge contacts-with-one-to-one)
+                (assoc public-key (mentions/add-searchable-phrases
+                                   {:alias      name
+                                    :name       (or preferred-name name)
+                                    :public-key public-key})))
+            blocked))))
 
 (re-frame/reg-sub
  :chat/mention-suggestions
@@ -1081,13 +1085,6 @@
  :<- [:chats/mention-suggestions]
  (fn [[chat-id mentions]]
    (take 15 (get mentions chat-id))))
-
-(re-frame/reg-sub
- :chat/cursor
- :<- [:chats/current-chat-id]
- :<- [:chats/cursor]
- (fn [[chat-id cursor]]
-   (get cursor chat-id)))
 
 (re-frame/reg-sub
  :chat/input-with-mentions

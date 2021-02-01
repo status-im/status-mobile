@@ -79,15 +79,7 @@
       :accessibility-label :send-message-button
       :color               (styles/send-icon-color)}]]])
 
-(defn selection [cursor]
-  ;; NOTE(rasom): In case if mention is added on pressing suggestion and
-  ;; it is placed inside some text we have to specify `:selection` on
-  ;; Android to ensure that cursor is added after the mention, not after
-  ;; the last char in input. On iOS it works that way without this code
-  (when (and cursor platform/android?)
-    (clj->js {:start cursor :end cursor})))
-
-(defn on-selection-change [cursor timeout-id last-text-change mentionable-users args]
+(defn on-selection-change [timeout-id last-text-change mentionable-users args]
   (let [selection (.-selection ^js (.-nativeEvent ^js args))
         start     (.-start selection)
         end       (.-end selection)]
@@ -113,11 +105,7 @@
       (re-frame/dispatch [::mentions/on-selection-change
                           {:start start
                            :end   end}
-                          mentionable-users]))
-    ;; NOTE(rasom): we have to reset `cursor` value when user starts using
-    ;; text-input because otherwise cursor will stay in the same position
-    (when (and cursor platform/android?)
-      (re-frame/dispatch [::mentions/clear-cursor]))))
+                          mentionable-users]))))
 
 (defn on-change [on-text-change last-text-change timeout-id  mentionable-users args]
   (let [text (.-text ^js (.-nativeEvent ^js args))]
@@ -155,8 +143,7 @@
 
 (defn text-input
   [{:keys [cooldown-enabled? input-with-mentions on-text-change set-active-panel text-input-ref]}]
-  (let [cursor            @(re-frame/subscribe [:chat/cursor])
-        mentionable-users @(re-frame/subscribe [:chats/mentionable-users])
+  (let [mentionable-users @(re-frame/subscribe [:chats/mentionable-users])
         timeout-id        (atom nil)
         last-text-change  (atom nil)]
     [rn/view {:style (styles/text-input-wrapper)}
@@ -178,25 +165,18 @@
                                    (i18n/label :t/type-a-message))
        :underline-color-android  :transparent
        :auto-capitalize          :sentences
-       :selection                (selection cursor)
-       :on-selection-change      (partial on-selection-change
-                                          cursor timeout-id last-text-change mentionable-users)
+       :on-selection-change      (partial on-selection-change timeout-id last-text-change mentionable-users)
        :on-change                (partial on-change
                                           on-text-change last-text-change timeout-id mentionable-users)
        :on-text-input            (partial on-text-input mentionable-users)}
-      ;; NOTE(rasom): reduce was used instead of for here because although
-      ;; each text component was given a unique id it still would mess with
-      ;; colors on Android. In case if entire component is built without lists
-      ;; inside it works just fine on both platforms.
-      (reduce
-       (fn [acc [type text]]
-         (conj
-          acc
-          [rn/text (when (= type :mention)
-                     {:style {:color "#0DA4C9"}})
-           text]))
-       [:<>]
-       input-with-mentions)]]))
+      (for [[idx [type text]] (map-indexed
+                               (fn [idx item]
+                                 [idx item])
+                               input-with-mentions)]
+        ^{:key (str idx "_" type "_" text)}
+        [rn/text (when (= type :mention)
+                   {:style {:color "#0DA4C9"}})
+         text])]]))
 
 (defn mention-item
   [[public-key {:keys [alias name nickname] :as user}] _ _ text-input-ref]

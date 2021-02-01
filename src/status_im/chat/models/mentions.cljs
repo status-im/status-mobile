@@ -195,6 +195,10 @@
                        :name       name}))
              {}
              group-contacts))
+          (= chat-type constants/one-to-one-chat-type)
+          (assoc users
+                 current-chat-id
+                 (contact.db/public-key->contact contacts current-chat-id))
 
           :else users)
         {:keys [name preferred-name public-key]}
