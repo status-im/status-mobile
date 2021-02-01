@@ -43,12 +43,12 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
         send_transaction_view = status_test_dapp.sign_message_button.click()
-        send_transaction_view.find_full_text('Test message')
+        if not send_transaction_view.element_by_text("Test message").is_element_displayed():
+            self.driver.fail("No message shown when signing!")
         send_transaction_view.enter_password_input.send_keys(password)
         send_transaction_view.sign_button.click()
         if not status_test_dapp.element_by_text_part('Signed message').is_element_displayed():
             self.driver.fail('Message was not signed')
-
         send_transaction_view.just_fyi('Check logcat for sensitive data')
         values_in_logcat = send_transaction_view.find_values_in_logcat(password=password)
         if values_in_logcat:
@@ -85,9 +85,10 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.transactions_button.click_until_presence_of_element(status_test_dapp.sign_typed_message_button)
         send_transaction_view = status_test_dapp.sign_typed_message_button.click()
         send_transaction_view.enter_password_input.send_keys(common_password)
-        send_transaction_view.sign_button.click_until_presence_of_element(send_transaction_view.ok_button)
-        status_test_dapp.find_text_part('0xde3048417e5881acc9ca8466ab0b3e2f9f965a70acabbda2d140e95a28b13d2d'
-                                        '2d38eba6c0a5bfdc50e5d59e0ed3226c749732fd4a9374b57f34121eaff2a5081c')
+        send_transaction_view.sign_button.click_until_absense_of_element(send_transaction_view.sign_button)
+
+        status_test_dapp.element_by_text_part('0xde3048417e5881acc9ca8466ab0b3e2f9f965a70acabbda2d140e95a28b13d2d2d38eba'
+                                              '6c0a5bfdc50e5d59e0ed3226c749732fd4a9374b57f34121eaff2a5081c').wait_for_element(30)
 
     @marks.testrail_id(5743)
     @marks.high

@@ -364,14 +364,6 @@ class BaseView(object):
                 keycode, metastate = keys[i], None
             self.driver.press_keycode(keycode=keycode, metastate=metastate)
 
-    def find_full_text(self, text, wait_time=60):
-        element = BaseElement(self.driver, xpath="//*[@text='%s']" % text)
-        return element.wait_for_element(wait_time)
-
-    def find_text_part(self, text, wait_time=60):
-        element = BaseElement(self.driver, xpath='//*[contains(@text, "' + text + '")]')
-        return element.wait_for_element(wait_time)
-
     def element_by_text(self, text, element_type='button'):
         element = self.element_types[element_type](self.driver)
         element.locator = '//*[@text="%s"]' % text

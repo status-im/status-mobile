@@ -3,7 +3,7 @@ import string
 
 from tests import marks, common_password
 from tests.base_test_case import SingleDeviceTestCase
-from tests.users import wallet_users, transaction_senders, basic_user, ens_user
+from tests.users import wallet_users, transaction_senders, basic_user
 from views.sign_in_view import SignInView
 
 
@@ -15,9 +15,8 @@ class TestWalletManagement(SingleDeviceTestCase):
         sign_in = SignInView(self.driver)
         sign_in.recover_access(transaction_senders['A']['passphrase'])
         wallet = sign_in.wallet_button.click()
-        texts = ['This is your signing phrase',
-                 'You should see these 3 words before signing each transaction',
-                 'If you see a different combination, cancel the transaction and sign out']
+        texts = list(map(sign_in.get_translation_by_key,
+                         ["this-is-you-signing", "three-words-description", "three-words-description-2"]))
         wallet.just_fyi('Check tests in set up wallet popup')
         for text in texts:
             if not wallet.element_by_text_part(text).is_element_displayed():
@@ -41,7 +40,7 @@ class TestWalletManagement(SingleDeviceTestCase):
         if phrase_1 != phrase:
             self.errors.append("Transaction phrase '%s' doesn't match expected '%s'" % (phrase_1, phrase))
         wallet.ok_got_it_button.click()
-        wallet.back_button.click(times_to_click=2)
+        wallet.cancel_button.click()
         wallet.home_button.click()
         wallet.wallet_button.click()
         for text in texts:
@@ -119,10 +118,21 @@ class TestWalletManagement(SingleDeviceTestCase):
         wallet = sign_in.wallet_button.click()
         wallet.set_up_wallet()
         asset = "MDS"
+
+        sign_in.just_fyi("Enabling 0 asset on wallet and check it is shown")
         wallet.select_asset(asset)
         wallet.asset_by_name(asset).scroll_to_element()
         if not wallet.asset_by_name(asset).is_element_displayed():
             self.errors.append('%s asset is not shown in wallet' % asset)
+
+        sign_in.just_fyi("Check that 0 asset is not disappearing after relogin")
+        profile = wallet.profile_button.click()
+        profile.relogin()
+        sign_in.wallet_button.click()
+        if not wallet.asset_by_name(asset).is_element_displayed():
+            self.errors.append('%s asset is not shown in wallet after relogin' % asset)
+
+        sign_in.just_fyi("Deselecting asset")
         wallet.select_asset(asset)
         if wallet.asset_by_name(asset).is_element_displayed():
             self.errors.append('%s asset is shown in wallet but was deselected' % asset)
@@ -151,215 +161,164 @@ class TestWalletManagement(SingleDeviceTestCase):
     @marks.testrail_id(5381)
     @marks.high
     def test_user_can_see_all_own_assets_after_account_recovering(self):
-        passphrase = wallet_users['E']['passphrase']
-        signin_view = SignInView(self.driver)
-        home_view = signin_view.recover_access(passphrase=passphrase)
-        profile = home_view.profile_button.click()
+        home = SignInView(self.driver).recover_access(wallet_users['E']['passphrase'])
+        profile = home.profile_button.click()
         profile.switch_network('Rinkeby with upstream RPC')
-        profile = home_view.profile_button.click()
-        wallet_view = profile.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.scan_tokens()
-        wallet_view.accounts_status_account.click()
-        wallet_view.collectibles_button.click()
-        if not wallet_view.element_by_text('KDO').is_element_displayed():
+        profile = home.profile_button.click()
+        wallet = profile.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.scan_tokens()
+        wallet.accounts_status_account.click()
+        wallet.collectibles_button.click()
+        if not wallet.element_by_text('KDO').is_element_displayed():
             self.driver.fail('User collectibles token name in not shown')
-        if not wallet_view.element_by_text('1').is_element_displayed():
+        if not wallet.element_by_text('1').is_element_displayed():
             self.driver.fail('User collectibles amount does not match')
 
     @marks.testrail_id(6224)
     @marks.critical
     def test_add_account_to_multiaccount_instance_generate_new(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.add_account_button.click()
-        wallet_view.generate_an_account_button.click()
-        wallet_view.add_account_generate_account_button.click()
+        home = SignInView(self.driver).create_user()
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.add_account_button.click()
+        wallet.generate_an_account_button.click()
+        wallet.add_account_generate_account_button.click()
         account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-        wallet_view.account_name_input.send_keys(account_name)
-        wallet_view.account_color_button.select_color_by_position(1)
-        if wallet_view.get_account_by_name(account_name).is_element_displayed():
+        wallet.account_name_input.send_keys(account_name)
+        wallet.account_color_button.select_color_by_position(1)
+        if wallet.get_account_by_name(account_name).is_element_displayed():
             self.driver.fail('Account is added without password')
-        wallet_view.enter_your_password_input.send_keys('000000')
-        wallet_view.add_account_generate_account_button.click()
-        if not wallet_view.element_by_text_part('Password seems to be incorrect').is_element_displayed():
+        wallet.enter_your_password_input.send_keys('000000')
+        wallet.add_account_generate_account_button.click()
+        if not wallet.element_by_text_part('Password seems to be incorrect').is_element_displayed():
              self.driver.fail("Incorrect password validation is not performed")
-        wallet_view.enter_your_password_input.clear()
-        wallet_view.enter_your_password_input.send_keys(common_password)
-        wallet_view.add_account_generate_account_button.click()
-        account_button = wallet_view.get_account_by_name(account_name)
+        wallet.enter_your_password_input.clear()
+        wallet.enter_your_password_input.send_keys(common_password)
+        wallet.add_account_generate_account_button.click()
+        account_button = wallet.get_account_by_name(account_name)
         if not account_button.is_element_displayed():
             self.driver.fail('Account was not added')
-
         if not account_button.color_matches('multi_account_color.png'):
             self.driver.fail('Account color does not match expected')
 
     @marks.testrail_id(6244)
     @marks.high
     def test_add_and_delete_watch_only_account_to_multiaccount_instance(self):
-        sign_in_view = SignInView(self.driver).create_user()
-        wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
+        home = SignInView(self.driver).create_user()
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
 
-        wallet_view.just_fyi('Add watch-only account')
-        wallet_view.add_account_button.click()
-        wallet_view.add_watch_only_address_button.click()
-        wallet_view.enter_address_input.send_keys(basic_user['address'])
+        wallet.just_fyi('Add watch-only account')
+        wallet.add_account_button.click()
+        wallet.add_watch_only_address_button.click()
+        wallet.enter_address_input.send_keys(basic_user['address'])
         account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-        wallet_view.account_name_input.send_keys(account_name)
-        wallet_view.add_account_generate_account_button.click()
-        account_button = wallet_view.get_account_by_name(account_name)
+        wallet.account_name_input.send_keys(account_name)
+        wallet.add_account_generate_account_button.click()
+        account_button = wallet.get_account_by_name(account_name)
         if not account_button.is_element_displayed():
             self.driver.fail('Account was not added')
 
-        wallet_view.just_fyi('Check that overall balance is changed after adding watch-only account')
+        wallet.just_fyi('Check that overall balance is changed after adding watch-only account')
         for asset in ('ETH', 'ADI', 'STT'):
-            wallet_view.wait_balance_is_changed(asset)
+            wallet.wait_balance_is_changed(asset)
 
-        wallet_view.just_fyi('Check individual watch-only account view, settings and receive option')
-        wallet_view.get_account_by_name(account_name).click()
-        if wallet_view.send_transaction_button.is_element_displayed():
+        wallet.just_fyi('Check individual watch-only account view, settings and receive option')
+        wallet.get_account_by_name(account_name).click()
+        if wallet.send_transaction_button.is_element_displayed():
             self.errors.append('Send button is shown on watch-only wallet')
-        if not wallet_view.element_by_text('Watch-only').is_element_displayed():
+        if not wallet.element_by_text('Watch-only').is_element_displayed():
             self.errors.append('No "Watch-only" label is shown on watch-only wallet')
-        wallet_view.receive_transaction_button.click_until_presence_of_element(wallet_view.address_text)
-        if wallet_view.address_text.text[2:] != basic_user['address']:
-            self.errors.append('Wrong address %s is shown in "Receive" popup for watch-only account ' % wallet_view.address_text.text)
-        wallet_view.close_share_popup()
-        wallet_view.get_account_options_by_name(account_name).click()
-        wallet_view.account_settings_button.click()
-        if not wallet_view.element_by_text('Watch-only').is_element_displayed():
+        wallet.receive_transaction_button.click_until_presence_of_element(wallet.address_text)
+        if wallet.address_text.text[2:] != basic_user['address']:
+            self.errors.append('Wrong address %s is shown in "Receive" popup for watch-only account ' % wallet.address_text.text)
+        wallet.close_share_popup()
+        wallet.get_account_options_by_name(account_name).click()
+        wallet.account_settings_button.click()
+        if not wallet.element_by_text('Watch-only').is_element_displayed():
             self.errors.append('"Watch-only" type is not shown in account settings')
 
-        wallet_view.just_fyi('Delete watch-only account')
-        wallet_view.delete_account_button.click()
-        wallet_view.yes_button.click()
+        wallet.just_fyi('Delete watch-only account')
+        wallet.delete_account_button.click()
+        wallet.yes_button.click()
         if account_button.is_element_displayed():
             self.driver.fail('Account was not deleted')
-
-        # forcing app to update balance
-        wallet_view.put_app_to_background_and_back()
-
         for asset in ('ETH', 'ADI', 'STT'):
-            wallet_view.wait_balance_is_equal_expected_amount(asset, 0)
+            wallet.wait_balance_is_equal_expected_amount(asset, 0)
 
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(6271)
-    @marks.high
-    def test_add_account_to_multiaccount_instance_seed_phrase(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-
-        wallet_view.just_fyi('Add account from seed phrase')
-        wallet_view.add_account_button.click()
-        wallet_view.enter_a_seed_phrase_button.click()
-        wallet_view.enter_your_password_input.send_keys(common_password)
-
-        wallet_view.enter_seed_phrase_input.set_value('')
-        account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-        wallet_view.account_name_input.send_keys(account_name)
-        wallet_view.add_account_generate_account_button.click()
-        if wallet_view.get_account_by_name(account_name).is_element_displayed():
-            self.driver.fail('Account is added without seed phrase')
-        wallet_view.enter_seed_phrase_input.set_value(str(wallet_users['C']['passphrase']).upper())
-        wallet_view.add_account_generate_account_button.click()
-
-        account_button = wallet_view.get_account_by_name(account_name)
-        if not account_button.is_element_displayed():
-            self.driver.fail('Account was not added')
-
-        wallet_view.just_fyi('Check that overall balance is changed after adding account')
-        for asset in ('ETH', 'ADI'):
-            wallet_view.wait_balance_is_changed(asset)
-
-        wallet_view.just_fyi('Check account view and send option')
-        wallet_view.get_account_by_name(account_name).click()
-        if not wallet_view.send_transaction_button.is_element_displayed():
-            self.errors.append('Send button is not shown on account added with seed phrase')
-        wallet_view.receive_transaction_button.click()
-        if wallet_view.address_text.text[2:] != wallet_users['C']['address']:
-            self.errors.append(
-                'Wrong address %s is shown in "Receive" popup ' % wallet_view.address_text.text)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6272)
     @marks.high
-    def test_add_account_to_multiaccount_instance_private_key(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        wallet_view = sign_in_view.wallet_button.click()
-        wallet_view.set_up_wallet()
+    def test_add_account_to_wallet_private_key_and_seed_phrase(self):
+        sign_in = SignInView(self.driver)
+        sign_in.create_user()
+        wallet = sign_in.wallet_button.click()
+        wallet.set_up_wallet()
 
-        wallet_view.just_fyi('Add account from private key')
-        wallet_view.add_account_button.click()
-        wallet_view.enter_a_private_key_button.click()
-        wallet_view.enter_your_password_input.send_keys(common_password)
-
-        wallet_view.enter_a_private_key_input.set_value(wallet_users['C']['private_key'][0:9])
+        wallet.just_fyi('Add account from private key')
+        wallet.add_account_button.click()
+        wallet.enter_a_private_key_button.click()
+        wallet.enter_your_password_input.send_keys(common_password)
+        wallet.enter_a_private_key_input.set_value(wallet_users['C']['private_key'][0:9])
         account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-        wallet_view.account_name_input.send_keys(account_name)
-        wallet_view.add_account_generate_account_button.click()
-        if wallet_view.get_account_by_name(account_name).is_element_displayed():
+        wallet.account_name_input.send_keys(account_name)
+        wallet.add_account_generate_account_button.click()
+        if wallet.get_account_by_name(account_name).is_element_displayed():
             self.driver.fail('Account is added with wrong private key')
-        wallet_view.enter_a_private_key_input.set_value(wallet_users['C']['private_key'])
-        wallet_view.add_account_generate_account_button.click()
+        wallet.enter_a_private_key_input.set_value(wallet_users['C']['private_key'])
+        wallet.add_account_generate_account_button.click()
+        account_button = wallet.get_account_by_name(account_name)
+        if not account_button.is_element_displayed():
+            self.driver.fail('Account from private key was not added')
 
-        account_button = wallet_view.get_account_by_name(account_name)
+        wallet.just_fyi('Check that overall balance is changed after adding account from private key')
+        for asset in ('ETH', 'ADI', 'LXS', 'STT'):
+            wallet.wait_balance_is_changed(asset)
+        initial_STT = wallet.get_asset_amount_by_name('STT')
+
+        wallet.just_fyi('Check individual account view (imported from private key), receive option')
+        wallet.get_account_by_name(account_name).click()
+        if not wallet.send_transaction_button.is_element_displayed():
+            self.errors.append('Send button is not shown on account added with private key')
+        wallet.receive_transaction_button.click()
+        if wallet.address_text.text[2:] != wallet_users['C']['address']:
+            self.errors.append('Wrong address %s is shown in "Receive" popup account ' % wallet.address_text.text)
+        wallet.wallet_button.double_click()
+
+        wallet.just_fyi('Adding account from seed phrase')
+        wallet.add_account_button.scroll_to_element(direction='left')
+        wallet.add_account_button.click()
+        wallet.enter_a_seed_phrase_button.click()
+        wallet.enter_your_password_input.send_keys(common_password)
+        wallet.enter_seed_phrase_input.set_value('')
+        account_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+        wallet.account_name_input.send_keys(account_name)
+        wallet.add_account_generate_account_button.click()
+        if wallet.get_account_by_name(account_name).is_element_displayed():
+            self.driver.fail('Account is added without seed phrase')
+        wallet.enter_seed_phrase_input.set_value(str(wallet_users['C']['passphrase']).upper())
+        wallet.add_account_generate_account_button.click()
+        if wallet.get_account_by_name(account_name).is_element_displayed():
+            self.driver.fail('Same account was added twice')
+        wallet.enter_seed_phrase_input.set_value(str(wallet_users['D']['passphrase']).upper())
+        wallet.add_account_generate_account_button.click()
+        account_button = wallet.get_account_by_name(account_name)
         if not account_button.is_element_displayed():
             self.driver.fail('Account was not added')
 
-        wallet_view.just_fyi('Check that overall balance is changed after adding account')
-        for asset in ('ETH', 'ADI'):
-            wallet_view.wait_balance_is_changed(asset)
+        wallet.just_fyi('Check that overall balance is changed after adding account from seed phrase')
+        wallet.wait_balance_is_changed('STT', initial_balance=initial_STT)
+        wallet.wait_balance_is_changed('MDS')
 
-        wallet_view.just_fyi('Check individual account view, receive option')
-        wallet_view.get_account_by_name(account_name).click()
-        if not wallet_view.send_transaction_button.is_element_displayed():
-            self.errors.append('Send button is not shown on account added with private key')
-        wallet_view.receive_transaction_button.click()
-        if wallet_view.address_text.text[2:] != wallet_users['C']['address']:
-            self.errors.append(
-                'Wrong address %s is shown in "Receive" popup account ' % wallet_view.address_text.text)
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5406)
-    @marks.critical
-    def test_ens_username_recipient(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
-
-        sign_in.just_fyi('switching to mainnet')
-        profile = sign_in.profile_button.click()
-        profile.switch_network('Mainnet with upstream RPC')
-        wallet = profile.wallet_button.click()
-
-        wallet.just_fyi('checking that "stateofus.eth" name will be resolved as recipient')
-        wallet.set_up_wallet()
-        wallet.accounts_status_account.click()
-        send_transaction = wallet.send_transaction_button.click()
-        send_transaction.set_recipient_address('%s.stateofus.eth' % ens_user['ens'])
-        formatted_ens_user_address = send_transaction.get_formatted_recipient_address(ens_user['address'])
-
-        if send_transaction.enter_recipient_address_text.text != formatted_ens_user_address:
-            self.errors.append('ENS address on stateofus.eth is not resolved as recipient')
-
-        wallet.just_fyi('checking that ".eth" name will be resolved as recipient')
-        send_transaction.set_recipient_address(ens_user['ens_another_domain'])
-
-        if send_transaction.enter_recipient_address_text.text != formatted_ens_user_address:
-            self.errors.append('ENS address on another domain is not resolved as recipient')
-
-        wallet.just_fyi('checking that "stateofus.eth" name without domain will be resolved as recipient')
-        send_transaction.set_recipient_address(ens_user['ens'])
-
-        if send_transaction.enter_recipient_address_text.text != formatted_ens_user_address:
-            self.errors.append('ENS address "stateofus.eth" without domain is not resolved as recipient')
-
+        wallet.just_fyi('Check account view and send option (imported from seed phrase)')
+        wallet.get_account_by_name(account_name).click()
+        if not wallet.send_transaction_button.is_element_displayed():
+            self.errors.append('Send button is not shown on account added with seed phrase')
+        wallet.receive_transaction_button.click()
+        if wallet.address_text.text[2:] != wallet_users['D']['address']:
+            self.errors.append('Wrong address %s is shown in "Receive" popup ' % wallet.address_text.text)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6269)

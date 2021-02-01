@@ -79,7 +79,7 @@ class HomeView(BaseView):
         self.driver.info('**Waiting for syncing complete:**')
         while True:
             try:
-                sync = self.find_text_part('Syncing', 10)
+                sync = self.element_by_text_part('Syncing').wait_for_element(10)
                 self.driver.info(sync.text)
             except TimeoutException:
                 break
@@ -129,7 +129,7 @@ class HomeView(BaseView):
         return chat_view
 
     def join_public_chat(self, chat_name: str):
-        self.driver.info("**Creating group chat %s**" % chat_name)
+        self.driver.info("**Creating public chat %s**" % chat_name)
         self.plus_button.click_until_presence_of_element(self.join_public_chat_button, attempts=5)
         self.join_public_chat_button.wait_for_visibility_of_element(5)
         chat_view = self.join_public_chat_button.click()

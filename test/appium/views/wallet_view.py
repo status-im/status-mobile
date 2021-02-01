@@ -164,7 +164,7 @@ class WalletView(BaseView):
             elif self.asset_by_name(asset).is_element_present() and self.get_asset_amount_by_name(asset) == initial_balance:
                 if not self.transaction_history_button.is_element_displayed():
                     self.wallet_account_by_name(self.status_account_name).click()
-                self.swipe_down()
+                self.swipe_up()
                 counter += 10
                 time.sleep(10)
                 [self.wallet_button.click() for _ in range(2)]
@@ -174,10 +174,11 @@ class WalletView(BaseView):
                 time.sleep(10)
                 if scan_tokens:
                     self.scan_tokens()
-                self.swipe_down()
+                self.swipe_up()
                 self.driver.info('*Waiting %s seconds for %s to display asset*' % (counter, asset))
             else:
                 self.driver.info('**Balance is updated!**')
+                self.accounts_status_account.scroll_to_element(direction='up')
                 return self
 
     def get_sign_in_phrase(self):

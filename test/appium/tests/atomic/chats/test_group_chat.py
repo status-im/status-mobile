@@ -67,6 +67,66 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(3998)
+    @marks.high
+    def test_offline_add_new_group_chat_member(self):
+        message_before_adding = 'message before adding new user'
+        message_after_adding = 'message from new member'
+        message_from_old_member_after_adding = 'message from old member'
+
+        self.create_drivers(3)
+        devices_home, devices_key, devices_username, devices_chat = {}, {}, {}, {}
+        for key in self.drivers:
+            sign_in_view = SignInView(self.drivers[key])
+            devices_home[key] = sign_in_view.create_user()
+            devices_key[key], devices_username[key] = sign_in_view.get_public_key_and_username(True)
+            sign_in_view.home_button.click()
+
+        chat_name = devices_home[0].get_random_chat_name()
+        for i in range(1, 3):
+            devices_home[0].add_contact(devices_key[i])
+            devices_home[0].get_back_to_home_view()
+        devices_chat[0] = devices_home[0].create_group_chat([devices_username[1]], chat_name)
+        devices_chat[0].send_message(message_before_adding)
+
+        devices_home[1].just_fyi('Join to chat as chat member')
+        devices_chat[1] = devices_home[1].get_chat(chat_name).click()
+        devices_chat[1].join_chat_button.click()
+
+        devices_home[2].just_fyi('Put not added member device to offline and check that invite will be fetched')
+        invite_system_message = devices_chat[0].invite_system_message(devices_username[0], devices_username[1])
+        devices_home[2].toggle_airplane_mode()
+        devices_chat[0].add_members_to_group_chat([devices_username[2]])
+        devices_home[2].toggle_airplane_mode()
+        devices_home[2].connection_status.wait_for_invisibility_of_element(60)
+        if not devices_home[2].get_chat(chat_name).is_element_displayed():
+            self.driver[0].fail('Invite to group chat was not fetched from offline')
+        devices_chat[2] = devices_home[2].get_chat(chat_name).click()
+        if not devices_chat[2].element_by_text(invite_system_message).is_element_displayed():
+            self.errors.append('Message about adding first chat member is not shown for new added member')
+        if devices_chat[2].element_by_text(message_before_adding).is_element_displayed():
+            self.errors.append('Message sent before adding user is shown')
+
+        devices_chat[0].just_fyi('Put admin device to offline and check that message from new member will be fetched')
+        devices_chat[0].toggle_airplane_mode()
+        devices_chat[2].join_chat_button.click()
+        devices_chat[2].send_message(message_after_adding)
+        devices_chat[0].toggle_airplane_mode()
+        devices_chat[0].connection_status.wait_for_invisibility_of_element(60)
+        for key in devices_chat:
+            if not devices_chat[key].chat_element_by_text(message_after_adding).is_element_displayed(
+                    20):
+                self.errors.append("Message with text '%s' was not received" % message_after_adding)
+
+        devices_chat[0].just_fyi('Send message from old member and check that it is fetched')
+        devices_chat[1].send_message(message_from_old_member_after_adding)
+        for key in devices_chat:
+            if not devices_chat[key].chat_element_by_text(message_from_old_member_after_adding).is_element_displayed(
+                    20):
+                self.errors.append("Message with text '%s' was not received" % message_from_old_member_after_adding)
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(3997)
     @marks.medium
     def test_leave_group_chat_via_group_info(self):
@@ -100,65 +160,6 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         device_1_chat.send_message(message)
         if device_2_home.element_by_text(chat_name).is_element_displayed():
             self.errors.append("Group chat '%s' reappeared when new message is sent" % chat_name)
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(3998)
-    @marks.high
-    def test_offline_add_new_group_chat_member(self):
-        message_before_adding = 'message before adding new user'
-        message_after_adding = 'message from new member'
-        message_from_old_member_after_adding = 'message from old member'
-
-        self.create_drivers(3)
-        devices_home, devices_key, devices_username, devices_chat = {}, {}, {}, {}
-        for key in self.drivers:
-            sign_in_view = SignInView(self.drivers[key])
-            devices_home[key] = sign_in_view.create_user()
-            devices_key[key], devices_username[key] = sign_in_view.get_public_key_and_username(True)
-            sign_in_view.home_button.click()
-
-        chat_name = devices_home[0].get_random_chat_name()
-        for i in range(1, 3):
-            devices_home[0].add_contact(devices_key[i])
-            devices_home[0].get_back_to_home_view()
-        devices_chat[0] = devices_home[0].create_group_chat([devices_username[1]], chat_name)
-        devices_chat[0].send_message(message_before_adding)
-
-        devices_home[1].just_fyi('Join to chat as chat member')
-        devices_chat[1] = devices_home[1].get_chat(chat_name).click()
-        devices_chat[1].join_chat_button.click()
-
-        devices_home[2].just_fyi('Put not added member device to offline and check that invite will be fetched')
-        invite_system_message = devices_chat[0].invite_system_message(devices_username[0],devices_username[1])
-        devices_home[2].toggle_airplane_mode()
-        devices_chat[0].add_members_to_group_chat([devices_username[2]])
-        devices_home[2].toggle_airplane_mode()
-        devices_home[2].connection_status.wait_for_invisibility_of_element(60)
-        if not devices_home[2].get_chat(chat_name).is_element_displayed():
-            self.driver[0].fail('Invite to group chat was not fetched from offline')
-        devices_chat[2] = devices_home[2].get_chat(chat_name).click()
-        if not devices_chat[2].element_by_text(invite_system_message).is_element_displayed():
-            self.errors.append('Message about adding first chat member is not shown for new added member')
-        if devices_chat[2].element_by_text(message_before_adding).is_element_displayed():
-            self.errors.append('Message sent before adding user is shown')
-
-        devices_chat[0].just_fyi('Put admin device to offline and check that message from new member will be fetched')
-        devices_chat[0].toggle_airplane_mode()
-        devices_chat[2].join_chat_button.click()
-        devices_chat[2].send_message(message_after_adding)
-        devices_chat[0].toggle_airplane_mode()
-        devices_chat[0].connection_status.wait_for_invisibility_of_element(60)
-        for key in devices_chat:
-            if not devices_chat[key].chat_element_by_text(message_after_adding).is_element_displayed(
-                    20):
-                self.errors.append("Message with text '%s' was not received" % message_after_adding)
-
-        devices_chat[0].just_fyi('Send message from old member and check that it is fetched')
-        devices_chat[1].send_message(message_from_old_member_after_adding)
-        for key in devices_chat:
-            if not devices_chat[key].chat_element_by_text(message_from_old_member_after_adding).is_element_displayed(20):
-                self.errors.append("Message with text '%s' was not received" % message_from_old_member_after_adding)
-
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5756)
@@ -238,7 +239,6 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
             self.errors.append("Message '%s' was received by removed member" % message)
         self.errors.verify_no_errors()
 
-
     @marks.testrail_id(6324)
     @marks.medium
     def test_invite_to_group_chat_handling(self):
@@ -311,7 +311,6 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
                 self.errors.append('%s is not shown after joining to group chat via invite' % join_system_message)
 
         self.errors.verify_no_errors()
-
 
     @marks.testrail_id(5694)
     @marks.medium

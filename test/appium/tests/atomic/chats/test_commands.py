@@ -9,47 +9,6 @@ from views.sign_in_view import SignInView
 
 @marks.transaction
 class TestCommandsMultipleDevices(MultipleDeviceTestCase):
-
-    @marks.testrail_id(6257)
-    @marks.medium
-    def test_network_mismatch_for_send_request_in_1_1_chat(self):
-        sender = transaction_senders['D']
-        self.create_drivers(2)
-        device_1_sign_in, device_2_sign_in = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        device_1_sign_in.recover_access(passphrase=sender['passphrase'])
-        device_2_sign_in.create_user()
-        home_1, home_2 = device_1_sign_in.get_home_view(), device_2_sign_in.get_home_view()
-        profile_2 = home_2.profile_button.click()
-        device_2_username = profile_2.default_username_text.text
-        profile_2.switch_network()
-
-        chat_2 = home_2.add_contact(sender['public_key'])
-        chat_2.send_message("Hey there!")
-        amount = chat_2.get_unique_amount()
-
-        chat_2.commands_button.click()
-        request_transaction = chat_2.request_command.click()
-        request_transaction.amount_edit_box.set_value(amount)
-        request_transaction.confirm()
-        request_transaction.request_transaction_button.click()
-        chat_2_request_message = chat_2.chat_element_by_text('↓ Incoming transaction')
-
-        chat_2_request_message.long_press_element()
-        if chat_2.reply_message_button.is_element_displayed():
-            self.errors.append('Reply is available on long-tap on Incoming transaction message!')
-
-        chat_1 = home_1.get_chat(device_2_username).click()
-        chat_1_sender_message = chat_1.chat_element_by_text('↑ Outgoing transaction')
-        chat_1_sender_message.long_press_element()
-        if chat_1.reply_message_button.is_element_displayed():
-            self.errors.append('Reply is available on long-tap on Outgoing transaction message!')
-        send_message = chat_1_sender_message.sign_and_send.click()
-        send_message.next_button.click()
-        send_message.sign_transaction()
-        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15)
-        chat_1_sender_message.transaction_status.wait_for_element_text('Confirmed')
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(6253)
     @marks.critical
     def test_send_eth_in_1_1_chat(self):
@@ -256,6 +215,45 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(6257)
+    @marks.medium
+    def test_network_mismatch_for_send_request_in_1_1_chat(self):
+        sender = transaction_senders['D']
+        self.create_drivers(2)
+        device_1_sign_in, device_2_sign_in = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        device_1_sign_in.recover_access(passphrase=sender['passphrase'])
+        device_2_sign_in.create_user()
+        home_1, home_2 = device_1_sign_in.get_home_view(), device_2_sign_in.get_home_view()
+        profile_2 = home_2.profile_button.click()
+        device_2_username = profile_2.default_username_text.text
+        profile_2.switch_network()
+
+        chat_2 = home_2.add_contact(sender['public_key'])
+        chat_2.send_message("Hey there!")
+        amount = chat_2.get_unique_amount()
+
+        chat_2.commands_button.click()
+        request_transaction = chat_2.request_command.click()
+        request_transaction.amount_edit_box.set_value(amount)
+        request_transaction.confirm()
+        request_transaction.request_transaction_button.click()
+        chat_2_request_message = chat_2.chat_element_by_text('↓ Incoming transaction')
+
+        chat_2_request_message.long_press_element()
+        if chat_2.reply_message_button.is_element_displayed():
+            self.errors.append('Reply is available on long-tap on Incoming transaction message!')
+
+        chat_1 = home_1.get_chat(device_2_username).click()
+        chat_1_sender_message = chat_1.chat_element_by_text('↑ Outgoing transaction')
+        chat_1_sender_message.long_press_element()
+        if chat_1.reply_message_button.is_element_displayed():
+            self.errors.append('Reply is available on long-tap on Outgoing transaction message!')
+        send_message = chat_1_sender_message.sign_and_send.click()
+        send_message.next_button.click()
+        send_message.sign_transaction()
+        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15)
+        chat_1_sender_message.transaction_status.wait_for_element_text('Confirmed')
+        self.errors.verify_no_errors()
 
 @marks.transaction
 class TestCommandsSingleDevices(SingleDeviceTestCase):

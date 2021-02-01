@@ -200,9 +200,9 @@ class TestCreateAccount(SingleDeviceTestCase):
 
             signin_view.just_fyi('check behavior for popup "Custom seed phrase"')
             if popup:
-                text = 'Invalid seed phrase'
-                if not signin_view.find_full_text(text):
-                    self.errors.append('"%s" text is not shown' % text)
+
+                if not signin_view.element_by_translation_id("custom-seed-phrase").is_element_displayed():
+                    self.errors.append("Popup about custom seed phrase is not shown")
                 signin_view.cancel_custom_seed_phrase_button.click()
 
             signin_view.click_system_back_button()

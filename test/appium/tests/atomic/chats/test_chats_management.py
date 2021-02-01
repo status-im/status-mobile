@@ -8,30 +8,135 @@ from views.chat_view import ChatView
 
 
 class TestChatManagement(SingleDeviceTestCase):
+    @marks.testrail_id(5319)
+    @marks.critical
+    def test_long_press_to_delete_chat(self):
+        home = SignInView(self.driver).create_user()
+
+        home.just_fyi("Creating 3 types of chats")
+        chat = home.add_contact(basic_user['public_key'])
+        one_to_one, public, group = basic_user['username'], '#public-delete-long-press', 'group'
+        chat.get_back_to_home_view()
+        home.create_group_chat([basic_user['username']], group)
+        chat.get_back_to_home_view()
+        home.join_public_chat(public[1:])
+        chat.get_back_to_home_view()
+
+        home.just_fyi("Deleting all types of chats and check that they will not reappear after relogin")
+        for chat_name in one_to_one, public, group:
+            chat = home.get_chat(chat_name).click()
+            chat.send_message('test message')
+            chat.get_back_to_home_view()
+            home.leave_chat_long_press(chat_name) if chat_name == group else home.delete_chat_long_press(chat_name)
+        home.relogin()
+        for chat_name in one_to_one, public, group:
+            if home.get_chat(chat_name).is_element_displayed():
+                self.driver.fail('Deleted %s is present after relaunch app' % chat_name)
+
+    @marks.testrail_id(5387)
+    @marks.high
+    def test_delete_chats_via_delete_button_rejoin(self):
+        sign_in = SignInView(self.driver)
+        message = 'test message'
+        home = sign_in.create_user()
+
+        home.just_fyi("Creating 3 types of chats")
+        chat = home.add_contact(basic_user['public_key'])
+        one_to_one, public, group = basic_user['username'], '#public-delete-long-press', 'group'
+        chat.get_back_to_home_view()
+        home.create_group_chat([basic_user['username']], group)
+        chat.get_back_to_home_view()
+        home.join_public_chat(public[1:])
+        chat.get_back_to_home_view()
+        home.join_public_chat(public[1:])
+        chat.get_back_to_home_view()
+
+
+        home.just_fyi("Deleting 3 chats via delete button and check they will not reappear after relaunching app")
+        for chat_name in one_to_one, public, group:
+            chat = home.get_chat(chat_name).click()
+            chat.send_message(message)
+            chat.leave_chat() if chat_name == group else chat.delete_chat()
+            chat.get_back_to_home_view()
+        for chat_name in one_to_one, public, group:
+            if home.get_chat(chat_name).is_element_displayed():
+                self.errors.append('Deleted %s chat is shown, but the chat has been deleted' % chat_name)
+        self.driver.close_app()
+        self.driver.launch_app()
+        sign_in.sign_in()
+        for chat_name in one_to_one, public, group:
+            if home.get_chat(chat_name).is_element_displayed():
+                self.errors.append('Deleted %s is shown after re-login, but the chat has been deleted' % chat_name)
+
+        sign_in.just_fyi('Rejoin public chat and check that messages are fetched again')
+        public_chat = home.join_public_chat(public[1:])
+        if not public_chat.chat_element_by_text(message).is_element_displayed(20):
+            self.errors.append('Messages are not fetched when rejoining public chat after deleting')
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(5304)
+    @marks.high
+    def test_open_chat_by_pasting_chat_key_chech_invalid_chat_key_cases(self):
+        home = SignInView(self.driver).create_user()
+        public_key = basic_user['public_key']
+        home.plus_button.click()
+        chat = home.start_new_chat_button.click()
+
+        home.just_fyi("Check that invalid public key and ENS can not be resolved")
+        for invalid_chat_key in (basic_user['public_key'][:-1], ens_user_ropsten['ens'][:-2]):
+            chat.public_key_edit_box.clear()
+            chat.public_key_edit_box.set_value(invalid_chat_key)
+            chat.confirm()
+            if not home.element_by_translation_id("user-not-found").is_element_displayed():
+                self.errors.append('Error is not shown for invalid public key')
+
+        home.just_fyi("Check that valid ENS is resolved")
+        chat.public_key_edit_box.clear()
+        chat.public_key_edit_box.set_value(ens_user_ropsten['ens'])
+        resolved_ens = chat.get_resolved_chat_key('%s.stateofus.eth' % ens_user_ropsten['ens'], ens_user_ropsten['public_key'])
+        if not chat.element_by_text(resolved_ens).is_element_displayed(10):
+            self.errors.append('ENS name is not resolved after pasting chat key')
+        home.back_button.click()
+
+        home.just_fyi("Check that can paste public key from keyboard and start chat")
+        home.join_public_chat(home.get_random_chat_name())
+        chat.send_message(public_key)
+        chat.copy_message_text(public_key)
+        chat.back_button.click()
+        home.plus_button.click()
+        home.start_new_chat_button.click()
+        chat.public_key_edit_box.paste_text_from_clipboard()
+        if chat.public_key_edit_box.text != public_key:
+            self.errors.append('Public key is not pasted from clipboard')
+        expected_resolved_name = chat.get_resolved_chat_key(basic_user['username'], public_key)
+        if not chat.element_by_text(expected_resolved_name).is_element_displayed():
+            self.errors.append('3 random-name is not resolved after pasting chat key')
+        chat.public_key_edit_box.click()
+        chat.confirm_until_presence_of_element(chat.chat_message_input)
+        chat.get_back_to_home_view()
+        if not home.get_chat(basic_user['username']).is_element_present():
+            self.errors.append("No chat open in home view")
+
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5426)
     @marks.medium
     def test_clear_history_via_options(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
+        home = SignInView(self.driver).create_user()
         chat = home.add_contact(basic_user['public_key'])
 
+        home.just_fyi("Creating 3 types of chats")
         one_to_one, public, group = basic_user['username'], '#public-clear-options', 'group'
         message = 'test message'
-        chat.get_back_to_home_view()
-
+        chat.home_button.double_click()
         home.create_group_chat([basic_user['username']], group)
-        chat.get_back_to_home_view()
-
+        chat.home_button.double_click()
         home.join_public_chat(public[1:])
         chat.get_back_to_home_view()
         for chat_name in one_to_one, public, group:
             chat = home.get_chat(chat_name).click()
-            chat.just_fyi('Sending messages to %s chat' % chat_name)
-            for _ in range(2):
-                chat.chat_message_input.send_keys(message)
-                chat.send_message_button.click()
-            chat.just_fyi('Clear history for %s chat' % chat_name)
+            [chat.send_message(message) for _ in range(2)]
             chat.clear_history()
             if chat.element_by_text(message).is_element_displayed():
                 self.errors.append('Messages in %s chat are still shown after clearing history' % chat_name)
@@ -39,12 +144,10 @@ class TestChatManagement(SingleDeviceTestCase):
         home.relogin()
         for chat_name in one_to_one, public, group:
             if home.element_by_text(message).is_element_displayed():
-                self.errors.append(
-                    'Messages in %s chat are still shown in Preview after clearing history and relaunch' % chat_name)
+                self.errors.append('Messages in %s chat are still shown in Preview after clearing history and relaunch' % chat_name)
             chat = home.get_chat(chat_name).click()
             if chat.element_by_text(message).is_element_displayed():
-                self.errors.append(
-                    'Messages in %s chat are shown after clearing history and relauch' % chat_name)
+                self.errors.append('Messages in %s chat are shown after clearing history and relauch' % chat_name)
             chat.get_back_to_home_view()
 
         self.errors.verify_no_errors()
@@ -136,31 +239,28 @@ class TestChatManagement(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5319)
+    @marks.testrail_id(5386)
     @marks.medium
     def test_long_press_to_clear_chat_history(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        chat = home.add_contact(basic_user['public_key'])
-
-        one_to_one, public, group = basic_user['username'], '#public-clear-long-press', 'group'
+        home = SignInView(self.driver).create_user()
         message = 'test message'
-        chat.get_back_to_home_view()
 
+        home.just_fyi("Creating 3 types of chats")
+        chat = home.add_contact(basic_user['public_key'])
+        one_to_one, public, group = basic_user['username'], '#public-delete-long-press', 'group'
+        chat.get_back_to_home_view()
         home.create_group_chat([basic_user['username']], group)
         chat.get_back_to_home_view()
-
         home.join_public_chat(public[1:])
         chat.get_back_to_home_view()
+
+        home.just_fyi("Clearing history for 3 types of chats and check it will not reappear after re-login")
         for chat_name in one_to_one, public, group:
             chat = home.get_chat(chat_name).click()
-            chat.just_fyi('Sending message to %s chat' % chat_name)
-            chat.chat_message_input.send_keys(message)
-            chat.send_message_button.click()
+            chat.send_message(message)
             if chat.element_by_text(message).is_element_displayed():
                 self.errors.append('Messages in %s chat are still shown after clearing history' % chat_name)
             home = chat.get_back_to_home_view()
-            home.just_fyi('Clear history for %s chat' % chat_name)
             home.clear_chat_long_press(chat_name)
         home.relogin()
         for chat_name in one_to_one, public, group:
@@ -169,128 +269,22 @@ class TestChatManagement(SingleDeviceTestCase):
                     'Messages in %s chat are still shown in Preview after clearing history and relaunch' % chat_name)
             chat = home.get_chat(chat_name).click()
             if chat.element_by_text(message).is_element_displayed():
-                self.errors.append(
-                    'Messages in %s chat are shown after clearing history and relauch' % chat_name)
+                self.errors.append('Messages in %s chat are shown after clearing history and relauch' % chat_name)
             chat.get_back_to_home_view()
 
         self.errors.verify_no_errors()
-
-    @marks.testrail_id(5319)
-    @marks.critical
-    def test_long_press_to_delete_chat(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        chat = home.add_contact(basic_user['public_key'])
-
-        one_to_one, public, group = basic_user['username'], '#public-delete-long-press', 'group'
-        chat.get_back_to_home_view()
-
-        home.create_group_chat([basic_user['username']], group)
-        chat.get_back_to_home_view()
-
-        home.join_public_chat(public[1:])
-        chat.get_back_to_home_view()
-        for chat_name in one_to_one, public, group:
-            chat = home.get_chat(chat_name).click()
-            chat.just_fyi('Sending message to %s chat' % chat_name)
-            chat.chat_message_input.send_keys('test message')
-            chat.send_message_button.click()
-            chat.get_back_to_home_view()
-            chat.just_fyi('Deleting %s chat' % chat_name)
-            home.leave_chat_long_press(chat_name) if chat_name == group else home.delete_chat_long_press(chat_name)
-        home.relogin()
-        for chat_name in one_to_one, public, group:
-            if home.get_chat(chat_name).is_element_displayed():
-                self.driver.fail('Deleted %s is present after relaunch app' % chat_name)
-
-    @marks.testrail_id(5304)
-    @marks.high
-    def test_open_chat_by_pasting_public_key(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        public_key = basic_user['public_key']
-
-        chat = home.join_public_chat(home.get_random_chat_name())
-        chat.chat_message_input.send_keys(public_key)
-        chat.send_message_button.click()
-        chat.chat_element_by_text(public_key).long_press_element()
-        chat.element_by_text('Copy').click()
-        chat.get_back_to_home_view()
-
-        home.plus_button.click()
-        contacts_view = home.start_new_chat_button.click()
-        contacts_view.public_key_edit_box.paste_text_from_clipboard()
-        if contacts_view.public_key_edit_box.text != public_key:
-            self.driver.fail('Public key is not pasted from clipboard')
-        contacts_view.public_key_edit_box.click()
-        contacts_view.confirm_until_presence_of_element(chat.chat_message_input)
-        contacts_view.get_back_to_home_view()
-        if not home.get_chat(basic_user['username']).is_element_present():
-            self.driver.fail("No chat open in home view")
-
-    @marks.testrail_id(5387)
-    @marks.high
-    def test_delete_chats_via_delete_button(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        chat = home.add_contact(basic_user['public_key'])
-
-        one_to_one, public, group = basic_user['username'], '#public-delete-options', 'group'
-        chat.get_back_to_home_view()
-
-        home.create_group_chat([basic_user['username']], group)
-        chat.get_back_to_home_view()
-
-        home.join_public_chat(public[1:])
-        chat.get_back_to_home_view()
-        message = 'test message'
-        for chat_name in one_to_one, public, group:
-            chat = home.get_chat(chat_name).click()
-            chat.just_fyi('Sending message to %s chat' % chat_name)
-            chat.chat_message_input.send_keys(message)
-            chat.send_message_button.click()
-            chat.just_fyi('Deleting %s chat' % chat_name)
-            chat.leave_chat() if chat_name == group else chat.delete_chat()
-            chat.get_back_to_home_view()
-        for chat_name in one_to_one, public, group:
-            if home.get_chat(chat_name).is_element_displayed():
-                self.errors.append('Deleted %s chat is shown, but the chat has been deleted' % chat_name)
-        self.driver.close_app()
-        self.driver.launch_app()
-        sign_in.sign_in()
-        for chat_name in one_to_one, public, group:
-            if home.get_chat(chat_name).is_element_displayed():
-                self.errors.append('Deleted %s is shown after re-login, but the chat has been deleted' % chat_name)
-        sign_in.just_fyi('Rejoin public chat and check that messages are fetched again')
-        public_chat = home.join_public_chat(public[1:])
-        if not public_chat.chat_element_by_text(message).is_element_displayed(20):
-            self.errors.append('Messages are not fetched when rejoining public chat after deleting')
-
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(5464)
-    @marks.medium
-    def test_incorrect_contact_code_start_new_chat(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        home.plus_button.click()
-        contacts_view = home.start_new_chat_button.click()
-        contacts_view.public_key_edit_box.set_value(basic_user['public_key'][:-1])
-        contacts_view.confirm()
-        warning_text = contacts_view.element_by_text('User not found')
-        if not warning_text.is_element_displayed():
-            self.driver.fail('Error is not shown for invalid public key')
 
     @marks.testrail_id(6319)
     @marks.medium
     def test_deny_access_camera_and_gallery(self):
         home = SignInView(self.driver).create_user()
+        general_camera_error = home.element_by_translation_id("camera-access-error")
 
         home.just_fyi("Denying access to camera in universal qr code scanner")
         home.plus_button.click()
         home.universal_qr_scanner_button.click()
         home.deny_button.click()
-        home.element_by_translation_id("camera-access-error").wait_for_visibility_of_element(3)
+        general_camera_error.wait_for_visibility_of_element(3)
         home.ok_button.click()
         home.get_back_to_home_view()
 
@@ -299,7 +293,7 @@ class TestChatManagement(SingleDeviceTestCase):
         chat = home.start_new_chat_button.click()
         chat.scan_contact_code_button.click()
         chat.deny_button.click()
-        chat.element_by_translation_id("camera-access-error").wait_for_visibility_of_element(3)
+        general_camera_error.wait_for_visibility_of_element(3)
         chat.ok_button.click()
         home.get_back_to_home_view()
 
@@ -322,7 +316,7 @@ class TestChatManagement(SingleDeviceTestCase):
         wallet.set_up_wallet()
         wallet.scan_qr_button.click()
         wallet.deny_button.click()
-        wallet.element_by_translation_id("camera-access-error").wait_for_visibility_of_element(3)
+        general_camera_error.wait_for_visibility_of_element(3)
         wallet.ok_button.click()
 
         home.just_fyi("Denying access to camera in send transaction > scan address view")
@@ -331,7 +325,7 @@ class TestChatManagement(SingleDeviceTestCase):
         send_transaction.chose_recipient_button.scroll_and_click()
         send_transaction.scan_qr_code_button.click()
         send_transaction.deny_button.click()
-        send_transaction.element_by_translation_id("camera-access-error").wait_for_visibility_of_element(3)
+        general_camera_error.wait_for_visibility_of_element(3)
         send_transaction.ok_button.click()
         wallet.back_button.click_until_absense_of_element(wallet.back_button)
 
@@ -430,8 +424,7 @@ class TestChatManagement(SingleDeviceTestCase):
     @marks.testrail_id(6213)
     @marks.medium
     def test_unblocked_user_is_not_added_in_contacts(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
+        home = SignInView(self.driver).create_user()
         chat_view = home.add_contact(basic_user["public_key"], add_in_contacts=False)
 
         chat_view.just_fyi('Block user not added as contact from chat view')
@@ -440,7 +433,7 @@ class TestChatManagement(SingleDeviceTestCase):
         chat_view.block_contact()
 
         chat_view.just_fyi('Unblock user not added as contact from chat view')
-        profile = sign_in.profile_button.click()
+        profile = home.profile_button.click()
         profile.contacts_button.click()
         profile.blocked_users_button.click()
         profile.element_by_text(basic_user["username"]).click()
@@ -450,39 +443,6 @@ class TestChatManagement(SingleDeviceTestCase):
         profile.back_button.click(2)
         if profile.element_by_text(basic_user["username"]).is_element_displayed():
             self.driver.fail("Unblocked user not added previously in contact list added in contacts!")
-
-    @marks.testrail_id(5496)
-    @marks.low
-    def test_can_remove_quote_snippet_from_inputs(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        chat_view = home.add_contact(dummy_user["public_key"], add_in_contacts=False)
-        message_to_quote_1_to_1 = "This is a message to quote in 1-1"
-        message_to_quote_public = "This is a message to quote in public"
-
-        chat_view.just_fyi("Send and quote message in 1-1 chat")
-        chat_view.send_message(message_to_quote_1_to_1)
-        chat_view.quote_message(message_to_quote_1_to_1)
-        chat_view.get_back_to_home_view(times_to_click_on_back_btn=1)
-
-        chat_view.just_fyi("Send and quote message in public chat")
-        public_chat_name = home.get_random_chat_name()
-        home.join_public_chat(public_chat_name)
-        chat_view.send_message(message_to_quote_public)
-        chat_view.quote_message(message_to_quote_public)
-
-        chat_view.just_fyi("Clear quotes from both chats")
-        chat_view.cancel_reply_button.click()
-
-        if chat_view.cancel_reply_button.is_element_displayed():
-            self.errors.append("Message quote kept in public chat input after it's cancelation")
-        chat_view.get_back_to_home_view(times_to_click_on_back_btn=1)
-        home.get_chat(dummy_user["username"]).click()
-        chat_view.cancel_reply_button.click()
-        if chat_view.cancel_reply_button.is_element_displayed():
-            self.errors.append("Message quote kept in 1-1 chat input after it's cancelation")
-
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(5498)
     @marks.medium
@@ -816,12 +776,20 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         device_1_username = device_1_profile.default_username_text.text
         home_1.home_button.click()
 
-        device_1.just_fyi("Sender adds receiver and quotes own message and sends")
+        device_1.just_fyi("Sender adds receiver and quotes own message")
         device_1_chat = home_1.add_contact(device_2_public_key)
         device_1_chat.send_message(message_from_sender)
         device_1_chat.quote_message(message_from_sender)
         if device_1_chat.quote_username_in_message_input.text != "↪ You":
             self.errors.append("'You' is not displayed in reply quote snippet replying to own message")
+
+        device_1_chat.just_fyi("Clear quote and check there is not snippet anymore")
+        device_1_chat.cancel_reply_button.click()
+        if device_1_chat.cancel_reply_button.is_element_displayed():
+            self.errors.append("Message quote kept in public chat input after it's cancelation")
+
+        device_1_chat.just_fyi("Send reply")
+        device_1_chat.quote_message(message_from_sender)
         reply_to_message_from_sender = message_from_sender + " reply"
         device_1_chat.send_message(reply_to_message_from_sender)
 
@@ -986,8 +954,8 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
     def test_mention_users_not_in_chats_if_not_in_contacts(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(), device_2.recover_access(
-            passphrase=ens_user_message_sender['passphrase'])
+        sender = ens_user_message_sender
+        home_1, home_2 = device_1.create_user(), device_2.recover_access(passphrase=sender['passphrase'])
 
         profile_2 = home_2.profile_button.click()
         profile_2.switch_network()
@@ -997,7 +965,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         home_2.just_fyi('Set ENS name so its visible in chats')
         dapp_view = profile_2.ens_usernames_button.click()
         dapp_view.element_by_text('Get started').click()
-        dapp_view.ens_name_input.set_value(ens_user_message_sender['ens'])
+        dapp_view.ens_name_input.set_value(sender['ens'])
         dapp_view.check_ens_name.click_until_presence_of_element(dapp_view.element_by_translation_id("ens-got-it"))
         dapp_view.element_by_translation_id("ens-got-it").click()
 
@@ -1008,9 +976,9 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_1 = home_1.join_public_chat(chat_name)
         profile_2.home_button.click()
         chat_2 = home_2.join_public_chat(chat_name)
-        message = 'From ' + ens_user_message_sender['ens'] + ' message'
+        message = 'From ' + sender['ens'] + ' message'
         chat_2.send_message(message)
-        username_value = '@' + ens_user_message_sender['ens']
+        username_value = '@' + sender['ens']
 
         self.drivers[1].close_app()
         self.drivers[1].launch_app()
@@ -1031,7 +999,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         nickname = 'nicknamefortestuser'
         chat_1.set_nickname(nickname)
         chat_1.back_button.click()
-        ens_nickname_value = nickname + " @" + ens_user_message_sender['ens']
+        ens_nickname_value = nickname + " @" + sender['ens']
         chat_1.wait_ens_name_resolved_in_chat(message=message, username_value=ens_nickname_value)
 
         device_1.just_fyi('Check there is ENS+Nickname user in separate 1-1 chat')
@@ -1040,7 +1008,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
         chat_1.chat_message_input.send_keys('@')
         if not (chat_1.search_user_in_mention_suggestion_list(ens_nickname_value).is_element_displayed() or
                 chat_1.search_user_in_mention_suggestion_list(
-                    ens_user_message_sender['username']).is_element_displayed()):
+                    sender['username']).is_element_displayed()):
             self.errors.append('ENS-owner user is not available in mention suggestion list')
         device_1.just_fyi('Check there is own username is present in any 1-1 chat')
         if not chat_1.search_user_in_mention_suggestion_list(own_default_username[1]).is_element_displayed():
@@ -1055,15 +1023,14 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         device_1.just_fyi('Check there is ENS+Nickname user in Group chat and no random user')
         chat_1.get_back_to_home_view(2)
-        home_1.add_contact(ens_user_message_sender['public_key'])
+        home_1.add_contact(sender['public_key'])
         chat_1.get_back_to_home_view(2)
         home_1.create_group_chat(user_names_to_add=[nickname])
         chat_1.chat_message_input.send_keys('@')
         if chat_1.search_user_in_mention_suggestion_list(random_username).is_element_displayed():
             self.errors.append('Random user from public chat is in mention suggestion list of Group chat')
         if not (chat_1.search_user_in_mention_suggestion_list(ens_nickname_value).is_element_displayed() or
-                chat_1.search_user_in_mention_suggestion_list(
-                    ens_user_message_sender['username']).is_element_displayed()):
+                chat_1.search_user_in_mention_suggestion_list(sender['username']).is_element_displayed()):
             self.errors.append('ENS-owner user is not available in mention suggestion list of Group chat')
 
         self.errors.verify_no_errors()

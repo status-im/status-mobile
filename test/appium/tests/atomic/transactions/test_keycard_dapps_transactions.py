@@ -45,12 +45,12 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
         send_transaction_view = status_test_dapp.sign_message_button.click()
-        send_transaction_view.find_full_text('Test message')
+        if not send_transaction_view.element_by_text("Test message").is_element_displayed():
+            self.driver.fail("No message shown when signing!")
         keycard_view = send_transaction_view.sign_with_keycard_button.click()
         keycard_view.enter_default_pin()
         if not keycard_view.element_by_text_part('Signed message').is_element_displayed():
             self.driver.fail('Message was not signed')
-
         keycard_view.just_fyi('Check logcat for sensitive data')
         values_in_logcat = send_transaction_view.find_values_in_logcat(pin=pin,
                                                                        puk=puk,

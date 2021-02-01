@@ -63,10 +63,11 @@ wallet_users['C']['public_key'] = "0x040e562b69362e7e57492bca50b6095acfa636c48b8
                                   "40837da01728d4585695fda7f1de2ed193a1dd4080291d90812e1cae77"
 wallet_users['C']['private_key'] = '7800C28310576645BBF6BF6355F7AA4CEC659B1713AF7E7713E1A33097A3DDF6'
 
+# Do not use this user for send/receive transactions
 wallet_users['D'] = dict()
 wallet_users['D']['passphrase'] = "hen mango since lottery laundry flag report whisper cycle rate festival carry"
 wallet_users['D']['username'] = "Competent Rectangular Albino"
-wallet_users['D']['address'] = "80b663e82657caf5657ce79b11aeaeda02c6cd92"
+wallet_users['D']['address'] = "80B663E82657Caf5657ce79b11aEaEDa02C6CD92"
 wallet_users['D']['public_key'] = "0x04f79d02bab51efe903645e74b23df471b041ce3c964a5cf376c7ae572039569af7cf934d094e" \
                                   "86b2177db49b6943d0c8720550e39868ef5c7108ebffb5522b140"
 wallet_users['E'] = dict()

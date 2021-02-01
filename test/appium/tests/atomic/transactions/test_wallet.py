@@ -4,7 +4,7 @@ import string
 from support.utilities import get_merged_txs_list
 from tests import marks, unique_password
 from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
-from tests.users import transaction_senders, basic_user, wallet_users, ens_user_ropsten, transaction_recipients
+from tests.users import transaction_senders, basic_user, wallet_users, ens_user_ropsten, transaction_recipients, ens_user
 from views.send_transaction_view import SendTransactionView
 from views.sign_in_view import SignInView
 
@@ -213,7 +213,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sign_in_view.create_user()
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_currency(user_currency)
-        if not wallet_view.find_text_part('EUR'):
+        if not wallet_view.element_by_text_part('EUR').is_element_displayed(20):
             self.driver.fail('EUR currency is not displayed')
 
     @marks.testrail_id(5407)
@@ -480,92 +480,97 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6328)
-    @marks.medium
+    @marks.critical
     def test_send_transaction_set_recipient_options(self):
-        sender = wallet_users['D']
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.recover_access(sender['passphrase'])
-        home_view = sign_in_view.get_home_view()
+        home = SignInView(self.driver).recover_access(wallet_users['D']['passphrase'])
         nickname = 'my_some_nickname'
         account_name = 'my_acc_name'
         account_address = '0x8c2E3Cd844848E79cFd4671cE45C12F210b630d7'
         recent_add_to_fav_name = 'my_Recent_STT'
-        recent_add_to_fav_address = '0xc039f82eceda458b63a0f327b7b0c20def5903d7'
+        recent_add_to_fav_address = '0x58d8c3d70ce4fa4b9fb10a665c8712238746f2ff'
+        ens_status = ens_user_ropsten
+        ens_other = ens_user
         basic_add_to_fav_name = 'my_basic_address'
 
-        home_view.just_fyi('Add new account and new ENS contact for recipient')
-        chat = home_view.add_contact(ens_user_ropsten['ens'])
+        home.just_fyi('Add new account and new ENS contact for recipient')
+        chat = home.add_contact(ens_status['ens'])
         chat.chat_options.click()
         chat.view_profile_button.click_until_presence_of_element(chat.remove_from_contacts)
         chat.set_nickname(nickname)
         chat.back_button.click()
-        wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.add_account(account_name=account_name)
-        wallet_view.accounts_status_account.click()
-        send_transaction = wallet_view.send_transaction_button.click()
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
+        wallet.add_account(account_name=account_name)
+        wallet.accounts_status_account.click()
+        send_tr = wallet.send_transaction_button.click()
 
-        send_transaction.just_fyi('Set one of my accounts')
-        send_transaction.chose_recipient_button.click()
-        send_transaction.element_by_text('My accounts').click()
-        send_transaction.element_by_text(account_name).click()
-        if send_transaction.enter_recipient_address_text.text != \
-                send_transaction.get_formatted_recipient_address(account_address):
+        send_tr.just_fyi('Set one of my accounts')
+        send_tr.chose_recipient_button.click()
+        send_tr.element_by_translation_id("my-accounts").click()
+        send_tr.element_by_text(account_name).click()
+        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(account_address):
             self.errors.append('Added account is not resolved as recipient')
 
-        send_transaction.just_fyi('Set contact')
-        send_transaction.chose_recipient_button.click()
-        send_transaction.element_by_text('Contacts').scroll_and_click()
-        send_transaction.element_by_text(nickname).scroll_and_click()
-        send_transaction.recipient_done.click()
-        if send_transaction.enter_recipient_address_text.text != \
-                send_transaction.get_formatted_recipient_address(ens_user_ropsten['address']):
-            self.errors.append('ENS from contact is not resolved as recipient')
-
-        send_transaction.just_fyi('Set contract address from recent and check smart contract error')
-        send_transaction.chose_recipient_button.click()
-        send_transaction.element_by_text('Recent').click()
-        send_transaction.element_by_text('↑ 0 ETHro').click()
-        if not send_transaction.element_by_text_part('is a smart contract').is_element_displayed():
+        send_tr.just_fyi('Set contract address from recent and check smart contract error')
+        send_tr.chose_recipient_button.click()
+        send_tr.element_by_translation_id("recent").click()
+        send_tr.element_by_text('↓ 1000 MDS').click()
+        if not send_tr.element_by_translation_id("warning-sending-to-contract-descr").is_element_displayed():
             self.driver.fail('No warning is shown at attempt to set as recipient smart contract')
-        send_transaction.ok_button.click()
-        send_transaction.element_by_text('↑ 2 STT').scroll_and_click()
-        send_transaction.add_to_favorites(recent_add_to_fav_name)
-        wallet_view.element_by_text('Recent').click()
+        send_tr.ok_button.click()
+        send_tr.element_by_text('↑ 0.001 ETHro').scroll_and_click()
+        send_tr.add_to_favorites(recent_add_to_fav_name)
+        wallet.element_by_translation_id("recent").click()
 
-        send_transaction.just_fyi('Scan invalid QR')
-        send_transaction.scan_qr_code_button.click()
-        send_transaction.allow_button.click(1)
-        wallet_view.enter_qr_edit_box.scan_qr('something%s' % basic_user['address'])
-        if not send_transaction.element_by_text_part('Invalid address').is_element_displayed(10):
+        send_tr.just_fyi('Scan invalid QR')
+        send_tr.scan_qr_code_button.click()
+        send_tr.allow_button.click(1)
+        wallet.enter_qr_edit_box.scan_qr('something%s' % basic_user['address'])
+        if not send_tr.element_by_text_part('Invalid address').is_element_displayed(10):
             self.driver.fail('No error is shown at attempt to scan invalid address')
-        wallet_view.ok_button.click()
+        wallet.ok_button.click()
 
-        send_transaction.just_fyi('Scan code, add it to favorites and recheck that it is preserved')
-        send_transaction.scan_qr_code_button.click()
-        wallet_view.enter_qr_edit_box.scan_qr(basic_user['address'])
-        send_transaction.add_to_favorites(basic_add_to_fav_name)
-        send_transaction.element_by_text('Favourites').scroll_and_click()
+        send_tr.just_fyi('Scan code, add it to favorites and recheck that it is preserved')
+        send_tr.scan_qr_code_button.click()
+        wallet.enter_qr_edit_box.scan_qr(basic_user['address'])
+        send_tr.add_to_favorites(basic_add_to_fav_name)
+        send_tr.element_by_translation_id("favourites").scroll_and_click()
         for name in (recent_add_to_fav_name, basic_add_to_fav_name):
-            if not send_transaction.element_by_text(name).is_element_displayed():
-                self.errors.append('%s was not added to Favourites' % name)
-        send_transaction.element_by_text(recent_add_to_fav_name).click()
-        if str(send_transaction.enter_recipient_address_text.text).lower() != \
-                send_transaction.get_formatted_recipient_address(recent_add_to_fav_address):
+            wallet.element_by_text(name).scroll_to_element()
+
+        send_tr.element_by_text(recent_add_to_fav_name).scroll_and_click()
+        if str(send_tr.enter_recipient_address_text.text).lower() != send_tr.get_formatted_recipient_address(
+                recent_add_to_fav_address):
             self.errors.append('Recent address that was added to favourites was not resolved correctly')
 
-        send_transaction.just_fyi('Check search and set address from search')
-        send_transaction.chose_recipient_button.click()
-        send_transaction.search_by_keyword(ens_user_ropsten['ens'][:2])
-        if not send_transaction.element_by_text('@' + ens_user_ropsten['ens']).is_element_displayed():
+        send_tr.just_fyi('Set contact')
+        send_tr.chose_recipient_button.click()
+        send_tr.element_by_translation_id("contacts").scroll_and_click()
+        send_tr.element_by_text(nickname).scroll_and_click()
+        send_tr.recipient_done.click()
+        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(ens_status['address']):
+            self.errors.append('ENS from contact is not resolved as recipient')
+
+        send_tr.just_fyi('Set different ENS options')
+        send_tr.set_recipient_address(ens_other['ens_another_domain'])
+        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(ens_other['address']):
+            self.errors.append('ENS address on another domain is not resolved as recipient')
+        send_tr.set_recipient_address('%s.stateofus.eth' % ens_status['ens'])
+        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address(ens_status['address']):
+            self.errors.append('ENS address on stateofus.eth is not resolved as recipient')
+
+        send_tr.just_fyi('Check search and set address from search')
+        send_tr.chose_recipient_button.click()
+        send_tr.search_by_keyword(ens_status['ens'][:2])
+        if not send_tr.element_by_text('@' + ens_status['ens']).is_element_displayed():
             self.errors.append('ENS address from contacts is not shown in search')
-        send_transaction.cancel_button.click()
-        send_transaction.search_by_keyword('my')
+        send_tr.cancel_button.click()
+        send_tr.search_by_keyword('my')
         for name in (nickname, account_name, recent_add_to_fav_name, basic_add_to_fav_name):
-            if not send_transaction.element_by_text(name).is_element_displayed():
+            if not send_tr.element_by_text(name).is_element_displayed():
                 self.errors.append('%s is not shown in search when searching by namepart' % name)
-        send_transaction.element_by_text(basic_add_to_fav_name).click()
-        if send_transaction.enter_recipient_address_text.text!= send_transaction.get_formatted_recipient_address('0x' + basic_user['address']):
+        send_tr.element_by_text(basic_add_to_fav_name).click()
+        if send_tr.enter_recipient_address_text.text != send_tr.get_formatted_recipient_address('0x' + basic_user['address']):
             self.errors.append('QR scanned address that was added to favourites was not resolved correctly')
 
         self.errors.verify_no_errors()

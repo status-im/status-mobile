@@ -49,41 +49,6 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5386)
-    @marks.high
-    def test_public_chat_clear_history(self):
-        self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        chat_name = device_1.get_random_chat_name()
-        for sign_in in device_1, device_2:
-            home = sign_in.create_user()
-            home.join_public_chat(chat_name)
-        chat_1, chat_2 = device_1.get_chat_view(), device_2.get_chat_view()
-        message_1, message_2, message_3 = 'm1', 'm2', 'm3'
-        chat_1.chat_message_input.send_keys(message_1)
-        chat_1.send_message_button.click()
-        chat_2.element_by_text(message_1).is_element_present()
-
-        chat_2.chat_message_input.send_keys(message_2)
-        chat_2.send_message_button.click()
-        chat_1.element_by_text(message_2).is_element_present()
-        chat_1.chat_options.click()
-        chat_1.clear_history_button.click()
-        chat_1.clear_button.click()
-        chat_2.chat_message_input.send_keys(message_3)
-        chat_2.send_message_button.click()
-        chat_1.element_by_text(message_3).is_element_present()
-        for message in message_1, message_2:
-            if chat_1.element_starts_with_text(message).is_element_present():
-                chat_1.driver.fail("Message '%s' is shown, but public chat history has been cleared" % message)
-        home_1 = chat_1.get_back_to_home_view()
-        home_1.relogin()
-        home_1.element_by_text('#' + chat_name).click()
-        for message in message_1, message_2:
-            if chat_1.element_starts_with_text(message).is_element_present():
-                chat_1.driver.fail(
-                    "Message '%s' is shown after re-login, but public chat history has been cleared" % message)
-
     @marks.testrail_id(5360)
     @marks.critical
     def test_unread_messages_counter_public_chat(self):
@@ -216,7 +181,6 @@ class TestPublicChatSingleDevice(SingleDeviceTestCase):
         home_view = chat.get_back_to_home_view()
         if not home_view.element_by_text(tag_message).is_element_displayed():
             self.driver.fail('Could not find the public chat in user chat list.')
-
 
     @marks.testrail_id(6205)
     @marks.high

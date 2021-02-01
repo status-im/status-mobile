@@ -129,7 +129,7 @@ class BaseElement(object):
                     self.driver.swipe(500, size["height"]*0.25, 500, size["height"]*0.8)
         else:
             raise NoSuchElementException(
-                "Device %s: '%s' is not found on the screen" % (self.driver.number, self.name)) from None
+                "Device %s: %s by %s:* `%s` is not found on the screen" % (self.driver.number, self.name,  self.by, self.locator)) from None
 
     def scroll_and_click(self):
         self.scroll_to_element()

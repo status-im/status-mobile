@@ -14,7 +14,8 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view = daap_view.open_url('www.wikipedia.org')
         wiki_texts = ['Español', '日本語', 'Français', '中文', 'Português']
         for wiki_text in wiki_texts:
-            browsing_view.find_text_part(wiki_text, 15)
+            if not browsing_view.element_by_text_part(wiki_text).is_element_displayed(15):
+                self.driver.fail("%s is not shown" % wiki_text)
 
     @marks.testrail_id(5395)
     @marks.medium
@@ -24,7 +25,7 @@ class TestBrowsing(SingleDeviceTestCase):
         dapp_view = home_view.dapp_tab_button.click()
         ru_url = 'https://ru.m.wikipedia.org'
         browsing_view = dapp_view.open_url(ru_url)
-        browsing_view.find_text_part('Добро пожаловать')
+        browsing_view.element_by_text_part('Добро пожаловать').wait_for_element(20)
 
         browsing_view.just_fyi('Navigate to next page and back')
         browsing_view.element_by_text_part('свободную энциклопедию').click()
@@ -51,7 +52,7 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view = dapp_view.open_url('status.im')
         offline_texts = ['Unable to load page', 'ERR_INTERNET_DISCONNECTED']
         for text in offline_texts:
-            browsing_view.find_text_part(text, 15)
+            browsing_view.element_by_text_part(text).wait_for_element(15)
         home_view.toggle_airplane_mode()
         browsing_view.browser_refresh_page_button.click_until_presence_of_element(browsing_view.element_by_text_part('An Open Source Community'))
 
@@ -62,7 +63,7 @@ class TestBrowsing(SingleDeviceTestCase):
         home_view = sign_in.create_user()
         daap_view = home_view.dapp_tab_button.click()
         browsing_view = daap_view.open_url('invalid.takoe')
-        browsing_view.find_text_part('Unable to load page')
+        browsing_view.element_by_text_part('Unable to load page').wait_for_element(20)
         browsing_view.cross_icon.click()
         if home_view.element_by_text('Recent').is_element_displayed():
             self.driver.fail('Browser entity is shown for an invalid link')
@@ -136,7 +137,7 @@ class TestBrowsing(SingleDeviceTestCase):
         browsing_view.cross_icon.click()
         daap_view.open_url('https://simpledapp.status.im/webviewtest/port-timeout.html')
         # wait up  ~2.5 mins for port time out
-        if daap_view.find_text_part('example.com', 150):
+        if daap_view.element_by_text_part('example.com').is_element_displayed(150):
             self.errors.append("URL spoof due to port timeout \n")
 
         self.errors.verify_no_errors()
@@ -231,9 +232,9 @@ class TestBrowsing(SingleDeviceTestCase):
         if browsing_view.element_by_text_part('View all').is_element_displayed(20):
             self.driver.fail("Failed to access Categories using ''View all'")
         browsing_view.browser_previous_page_button.click()
-        browsing_view.find_text_part('Categories', 15)
+        browsing_view.element_by_text_part('Categories').wait_for_element(15)
         browsing_view.browser_next_page_button.click()
-        browsing_view.find_text_part('Exchanges', 15)
+        browsing_view.element_by_text_part('Exchanges').wait_for_element(15)
         browsing_view.back_to_home_button.click()
 
     @marks.testrail_id(5354)

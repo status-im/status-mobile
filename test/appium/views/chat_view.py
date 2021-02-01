@@ -66,15 +66,6 @@ class OpenInStatusButton(Button):
         from views.web_views.base_web_view import BaseWebView
         return BaseWebView(self.driver)
 
-class PublicKeyEditBox(EditBox):
-    def __init__(self, driver):
-        super().__init__(driver, accessibility_id="enter-contact-code-input")
-
-    def set_value(self, value):
-        for _ in range(2):
-            if self.text != value:
-                self.find_element().set_value(value)
-
 
 class ViewProfileButton(Button):
     def __init__(self, driver):
@@ -306,7 +297,7 @@ class ChatView(BaseView):
         super().__init__(driver)
 
         # Start new chat
-        self.public_key_edit_box = PublicKeyEditBox(self.driver)
+        self.public_key_edit_box = EditBox(self.driver, accessibility_id="enter-contact-code-input")
         self.scan_contact_code_button = Button(self.driver, accessibility_id="scan-contact-code-button")
 
         # Chat header
@@ -507,7 +498,7 @@ class ChatView(BaseView):
     def copy_message_text(self, message_text):
         self.driver.info("**Copying '%s' message via long press**" % message_text)
         self.element_by_text_part(message_text).long_press_element()
-        self.element_by_text('Copy').click()
+        self.element_by_translation_id("copy-to-clipboard").click()
 
     def quote_message(self, message = str):
         self.driver.info("**Quote '%s' message**" % message)
@@ -603,6 +594,10 @@ class ChatView(BaseView):
                 self.allow_button.click()
             self.first_image_from_gallery.click()
         self.timeline_send_my_status_button.click()
+
+    @staticmethod
+    def get_resolved_chat_key(username, chat_key):
+        return '%s • %s…%s' % (username, chat_key[:6], chat_key[-4:])
 
     # Group chat system messages
     @staticmethod
