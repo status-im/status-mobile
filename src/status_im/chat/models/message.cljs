@@ -86,9 +86,9 @@
     (fx/merge
      cofx
      ;;TODO we want to add all messages, but we need to optimize that, so we can add messages smooth
-     (add-message {:message       message
+     (add-message {:message       message})
                    ;;TODO we need to find if this is an active chat
-                   :seen-by-user? (= view-id :chat)})
+                   ;;:seen-by-user? (= view-id :chat)})
      ;; If we don't have any hidden message or the hidden message is before
      ;; this one, we add the message to the UI
      #_(if (or (not @view.state/first-not-visible-item)
@@ -120,7 +120,7 @@
   [{:keys [db] :as cofx} {:keys [chat-id from message-type message-id new?]}]
   (when-not (= message-type constants/message-type-private-group-system-message)
     (let [{:keys [current-chat-id view-id]} db
-          chat-view?         (= :chat view-id)
+          chat-view?         nil;(= :chat view-id)
           current-count (get-in db [:chats chat-id :unviewed-messages-count])]
       (cond
         (= from (multiaccounts.model/current-public-key cofx))

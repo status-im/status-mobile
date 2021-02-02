@@ -55,12 +55,25 @@
                                                            :cursor (clock-value->cursor last-element-clock-value)})
                      (assoc-in [:message-lists chat-id] (message-list/add-many nil (vals new-messages))))}))))))
 
+(fx/defn handle-chat-visibility-changed2
+  {:events [:chat.ui/message-visibility-changed2]}
+  [{:keys [db] :as cofx} ^js event]
+  (let [^js viewable-items (.-viewableItems event)
+        ^js last-element (aget viewable-items (dec (.-length viewable-items)))]
+    (when last-element
+      (let [chat-id (:chat-id (.-item last-element))]
+        (when (seq (get-in db [:chats chat-id :loaded-unviewed-messages-ids]))
+          (let [viewed-set (set (map #(:message-id (.-item %)) viewable-items))]
+            ;(println "MESSAGE VISIBILITY CHANGED 2" chat-id viewed-set)
+            {:db (update-in db [:chats chat-id :loaded-unviewed-messages-ids] clojure.set/difference viewed-set)}))))))
+
 (fx/defn initialize-chats
   "Initialize persisted chats on startup"
   [cofx]
   (data-store.chats/fetch-chats-rpc cofx {:on-success
                                           #(re-frame/dispatch
                                             [:chats-list/load-success %])}))
+
 (fx/defn handle-failed-loading-messages
   {:events [::failed-loading-messages]}
   [{:keys [db]} current-chat-id _ err]
@@ -131,7 +144,7 @@
                          (assoc-in [:pagination-info current-chat-id :cursor] cursor)
                          (assoc-in [:pagination-info current-chat-id :all-loaded?]
                                    (empty? cursor)))}
-                (message-seen/mark-messages-seen current-chat-id)))))
+                #_(message-seen/mark-messages-seen current-chat-id)))))
 
 (fx/defn load-more-messages
   [{:keys [db] :as cofx}]
@@ -159,11 +172,12 @@
     (println "INIT CHAT load messages" current-chat-id (get-in db [:pagination-info current-chat-id :messages-initialized?]))
     (if (get-in db [:pagination-info current-chat-id :messages-initialized?])
       ;; We mark messages as seen in case we received them while on a different tab
-      (message-seen/mark-messages-seen cofx current-chat-id)
+      #_(message-seen/mark-messages-seen cofx current-chat-id)
+      nil
       (do
        ; reset chat first-not-visible-items state
         (chat.state/reset)
         (fx/merge cofx
                   {:db (assoc-in db [:pagination-info current-chat-id :messages-initialized?] now)}
-                  (message-seen/mark-messages-seen current-chat-id)
+                  #_(message-seen/mark-messages-seen current-chat-id)
                   (load-more-messages))))))

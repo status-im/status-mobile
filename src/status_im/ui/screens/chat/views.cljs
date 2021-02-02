@@ -33,7 +33,8 @@
             [quo.core :as quo]
             [clojure.string :as string]
             [status-im.constants :as constants]
-            [status-im.native-module.core :as status]))
+            [status-im.native-module.core :as status]
+            [status-im.ui.components.icons.vector-icons :as icons]))
 
 (defn topbar []
   (let [current-chat @(re-frame/subscribe [:current-chat/metadata])]
@@ -141,36 +142,53 @@
        [chat-intro-one-to-one opts]))])
 
 (defonce messages-list-ref (atom nil))
+(defonce prev-last-item (atom nil))
 
 (defn on-viewable-items-changed [^js e]
-  (println "on-viewable-items-changed!" @messages-list-ref)
-  (when @messages-list-ref
-    (reset! state/first-not-visible-item
-            (when-let [^js last-visible-element (aget (.-viewableItems e) (dec (.-length ^js (.-viewableItems e))))]
-              (let [index (.-index last-visible-element)
-                    ;; Get first not visible element, if it's a datemark/gap
-                    ;; we might unnecessarely add messages on receiving as
-                    ;; they do not have a clock value, but most of the times
-                    ;; it will be a message
-                    first-not-visible (aget (.-data ^js (.-props ^js @messages-list-ref)) (inc index))]
-                (when (and first-not-visible
-                           (= :message (:type first-not-visible)))
-                  first-not-visible)))))
-  (debounce/debounce-and-dispatch [:chat.ui/message-visibility-changed e] 5000))
+  (let [^js last-visible-element (aget (.-viewableItems e) (dec (.-length ^js (.-viewableItems e))))
+        ^js first-visible-element (aget (.-viewableItems e) 0)]
+    #_(println "on-viewable-items-changed!" (when (and @prev-last-item (not= @prev-last-item (.-index last-visible-element))) (> (.-index last-visible-element) @prev-last-item)) (.-index first-visible-element) (.-index last-visible-element) (.-length ^js (.-viewableItems e)))
+    (when first-visible-element
+      ;(println "VIEW" (.-index first-visible-element) (:message-id (.-item first-visible-element)))
+      (when (and (< (.-index first-visible-element) (get @prev-last-item (:chat-id (.-item first-visible-element))))
+                 (>=(get @prev-last-item (:chat-id (.-item first-visible-element))) 10)
+                 (< (.-index first-visible-element) 10))
+        (println "ON BEGIN REACHED"))
+      (swap! prev-last-item assoc (:chat-id (.-item first-visible-element)) (.-index first-visible-element)))
+    ;;TODO chill!
+    (re-frame/dispatch [:chat.ui/message-visibility-changed2 e]))
+  #_(when @messages-list-ref
+      (reset! state/first-not-visible-item
+              (when-let [^js last-visible-element (aget (.-viewableItems e) (dec (.-length ^js (.-viewableItems e))))]
+                (let [index (.-index last-visible-element)
+                      ;; Get first not visible element, if it's a datemark/gap
+                      ;; we might unnecessarely add messages on receiving as
+                      ;; they do not have a clock value, but most of the times
+                      ;; it will be a message
+                      first-not-visible (aget (.-data ^js (.-props ^js @messages-list-ref)) (inc index))]
+                  (when (and first-not-visible
+                             (= :message (:type first-not-visible)))
+                    first-not-visible)))))
+  #_(debounce/debounce-and-dispatch [:chat.ui/message-visibility-changed e] 5000))
 
-(defn render-fn [{:keys [outgoing type] :as message} idx _ {:keys [group-chat public? current-public-key space-keeper]}]
-  (if (= type :datemark)
-    [message-datemark/chat-datemark (:value message)]
-    (if (= type :gap)
-      [gap/gap message idx messages-list-ref false]
-      ; message content
-      [message/chat-message
-       (assoc message
-              :incoming-group (and group-chat (not outgoing))
-              :group-chat group-chat
-              :public? public?
-              :current-public-key current-public-key)
-       space-keeper])))
+(def mess-layouts (atom {}))
+
+(defn render-fn [{:keys [outgoing type message-id value] :as message} idx _ {:keys [group-chat public? current-public-key space-keeper]}]
+  [react/view {:on-layout #(do
+                             (swap! mess-layouts assoc (str type message-id value) (.-nativeEvent.layout.height ^js %)))}
+                             ;(println "ONLAYOUT" (.-nativeEvent.layout.height ^js %) message-id))}
+   (if (= type :datemark)
+     [message-datemark/chat-datemark (:value message)]
+     (if (= type :gap)
+       [gap/gap message idx messages-list-ref false]
+       ; message content
+       [message/chat-message
+        (assoc message
+               :incoming-group (and group-chat (not outgoing))
+               :group-chat group-chat
+               :public? public?
+               :current-public-key current-public-key)
+        space-keeper]))])
 
 (def curr-list-node-ref (atom nil))
 
@@ -183,53 +201,75 @@
         (status/enable-maintain-visible-content-position node-ref)
         (reset! curr-list-node-ref node-ref)))))
 
-(defn messages-view
-  [{:keys [chat bottom-space pan-responder space-keeper]}]
-  (let [{:keys [group-chat chat-id chat-type public? invitation-admin]} chat
-        messages @(re-frame/subscribe [:chats/current-chat-messages-stream])
-        no-messages? @(re-frame/subscribe [:chats/current-chat-no-messages?])
-        current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
-    [list/flat-list
-     (merge
-      pan-responder
-      {:key-fn                            #(or (:message-id %) (:value %))
-       :ref                               #(do
-                                             (println "REF")
-                                             (enable-maintain-visible-content-position %)
-                                             (reset! messages-list-ref %))
-       :header                            [react/view {:padding-bottom (+ bottom-space 16)}
-                                           (when (= chat-type constants/private-group-chat-type)
-                                             [chat.group/group-chat-footer chat-id invitation-admin])]
-       :footer                            [react/view {:padding-top 16}
-                                           [chat-intro-header-container chat no-messages?]
-                                           (when (= chat-type constants/one-to-one-chat-type)
-                                             [invite.chat/reward-messages])]
-       :data                              messages
-       :inverted                          true
-       :render-data                       {:group-chat         group-chat
-                                           :public?            public?
-                                           :current-public-key current-public-key
-                                           :space-keeper       space-keeper}
-       :render-fn                         render-fn
-       ;;TODO we need this only when we scroll down in the chat to the new messages and want to offload viewed old messages
-       ;; it has issues and might be even slow, so we need to offload messages only if for example if there is more than 100 or some N ?
-       ;;:on-viewable-items-changed         on-viewable-items-changed
-       :on-end-reached                    #(do
-                                             (println "ONEND-REACHED")
-                                             (re-frame/dispatch [:chat.ui/list-on-end-reached]))
-       :on-scroll-to-index-failed         #()               ;;don't remove this
-       :scrollIndicatorInsets             {:top bottom-space}
-       :keyboardDismissMode               "interactive"
-       :keyboard-should-persist-taps      :handled
-       :maintain-visible-content-position {:minIndexForVisible 0}
-       :on-content-size-change (fn [w h]
-                                 (println "EV" w h))
-       :on-scroll #(do
-                     (println "HEI" (.-nativeEvent.contentSize.height ^js %) (.-nativeEvent.contentOffset.y ^js %)))})]))
+(def last-scroll-pos (atom 0))
+(def need-to-scroll (atom nil))
 
-#_(.scrollToOffset @messages-list-ref #js
-    {:offset (+ @scroll-pos (- h @scroll-height))
-     :animated false})
+(defn messages-view []
+  (reset! need-to-scroll @last-scroll-pos)
+  (fn [{:keys [chat bottom-space pan-responder space-keeper]}]
+    (let [{:keys [group-chat chat-id chat-type public? invitation-admin loaded-unviewed-messages-ids]} chat
+          messages @(re-frame/subscribe [:chats/current-chat-messages-stream])
+          no-messages? @(re-frame/subscribe [:chats/current-chat-no-messages?])
+          current-public-key @(re-frame/subscribe [:multiaccount/public-key])
+          unviewed-messages-count (count loaded-unviewed-messages-ids)]
+      [react/view {:flex 1}
+       [list/flat-list
+        (merge
+         pan-responder
+         {:key-fn                            #(or (:message-id %) (:value %))
+          :ref                               #(do
+                                                (enable-maintain-visible-content-position %)
+                                                (reset! messages-list-ref %))
+          :header                            [react/view {:padding-bottom (+ bottom-space 16)}
+                                              (when (= chat-type constants/private-group-chat-type)
+                                                [chat.group/group-chat-footer chat-id invitation-admin])]
+          :footer                            [react/view {:padding-top 16}
+                                              [chat-intro-header-container chat no-messages?]
+                                              (when (= chat-type constants/one-to-one-chat-type)
+                                                [invite.chat/reward-messages])]
+          :data                              messages
+          :inverted                          true
+          :render-data                       {:group-chat         group-chat
+                                              :public?            public?
+                                              :current-public-key current-public-key
+                                              :space-keeper       space-keeper}
+          :render-fn                         render-fn
+          :initialScrollIndex                (get @prev-last-item chat-id)
+          :on-viewable-items-changed         on-viewable-items-changed
+          :getItemLayout                     (let [offsets (:messages (reduce (fn [{:keys [offset inx] :as acc} {:keys [type message-id value]}]
+                                                                                (let [message-id (str type message-id value)
+                                                                                      len (get @mess-layouts message-id)]
+                                                                                  ;(println "LEN" inx offset len)
+                                                                                  (-> acc
+                                                                                      (update :inx inc)
+                                                                                      (update :offset + len)
+                                                                                      (assoc-in [:messages message-id] {:offset offset :length len}))))
+                                                                              {:offset 16 :inx 0 :messages {}} messages))]
+                                               #(let [{:keys [message-id value type]} (get %1 %2)
+                                                      {:keys [offset length]} (get offsets (str type message-id value))]
+                                                  (if offset
+                                                    #js {:length length :offset offset :index %2}
+                                                    #js {:length 0 :offset 0 :index %2})))
+          :on-end-reached                    #(do
+                                                (println "ONEND-REACHED")
+                                                (re-frame/dispatch [:chat.ui/list-on-end-reached]))
+          :on-scroll-to-index-failed         #()               ;;don't remove this
+          :scrollIndicatorInsets             {:top bottom-space}
+          :keyboardDismissMode               :interactive
+          :keyboard-should-persist-taps      :handled
+          :maintain-visible-content-position {:minIndexForVisible 0}
+          ;:on-content-size-change
+          #_(fn [w h] (when (and @messages-list-ref @need-to-scroll)
+                        (println "SCroll to off" @need-to-scroll)
+                        (js/setTimeout #(.scrollToOffset @messages-list-ref #js {:offset @need-to-scroll :animated false}) 100)
+                        (reset! need-to-scroll nil)))})]
+          ;:on-scroll #(reset! last-scroll-pos (.-nativeEvent.contentOffset.y ^js %))})]
+       (when (> unviewed-messages-count 0)
+         [react/view {:background-color colors/gray :padding-vertical 5 :padding-horizontal 8 :border-radius 16
+                      :flex-direction :row :align-items :center
+                      :position :absolute :bottom  (+ bottom-space 24) :right 12}
+          [react/text {:style {:color colors/white}} unviewed-messages-count]
+          [icons/icon :main-icons/arrow-down {:color colors/white}]])])))
 
 (defn bottom-sheet [input-bottom-sheet]
   (case input-bottom-sheet
