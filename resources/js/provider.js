@@ -232,6 +232,12 @@
     // (DEPRECATED) Support for legacy sendAsync method
     EthereumProvider.prototype.sendAsync = function (payload, callback)
     {
+      if (!payload) {
+          return new Error('Request is not valid.');
+      }
+      if (payload.method == 'eth_requestAccounts'){
+          return sendAPIrequest('web3');
+      }
       var syncResponse = getSyncResponse(payload);
       if (syncResponse && callback) {
           callback(null, syncResponse);
