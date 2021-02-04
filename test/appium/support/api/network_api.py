@@ -17,8 +17,8 @@ class NetworkApi(object):
         self.faucet_url = 'https://faucet-ropsten.status.im/donate'
         self.faucet_backup_address = w3.account_address
         self.headers = {
-        'User-Agent':"Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit\
-        /537.36 (KHTML, like Gecko) Chrome\/77.0.3865.90 Safari\/537.36", }
+        'User-Agent':"Mozilla\\5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit\\537.36 (KHTML, like Gecko) Chrome\\7"
+                     "7.0.3865.90 Safari\\537.36", }
         self.chat_bot_url = 'http://offsite.chat:8099'
         self.api_key = environ.get('ETHERSCAN_API_KEY')
 

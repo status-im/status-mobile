@@ -24,61 +24,62 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         chat_1 = home_1.add_contact(recipient_public_key)
         amount = chat_1.get_unique_amount()
+        account_name = wallet_1.status_account_name
 
         home_1.just_fyi('Send %s ETH in 1-1 chat and check it for sender and receiver: Address requested' % amount)
-        chat_1.commands_button.click_until_presence_of_element(chat_1.send_command)
+        chat_1.commands_button.click()
         send_transaction = chat_1.send_command.click()
-        if not send_transaction.get_username_in_transaction_bottom_sheet_button(recipient_username).is_element_displayed():
-            self.driver.fail('%s is not shown in "Send Transaction" bottom sheet' % recipient_username)
         send_transaction.get_username_in_transaction_bottom_sheet_button(recipient_username).click()
         if send_transaction.scan_qr_code_button.is_element_displayed():
-            self.driver.fail('Recipient is editable in bootom sheet when send ETH from 1-1 chat')
+            self.drivers[0].fail('Recipient is editable in bottom sheet when send ETH from 1-1 chat')
         send_transaction.amount_edit_box.set_value(amount)
         send_transaction.confirm()
         send_transaction.sign_transaction_button.click()
-        chat_1_sender_message = chat_1.chat_element_by_text('↑ Outgoing transaction')
-        if not chat_1_sender_message.is_element_displayed():
-            self.driver.fail('No message is shown after sending ETH in 1-1 chat for sender')
-        chat_1_sender_message.transaction_status.wait_for_element_text('Address requested')
+        sender_message = chat_1.get_outgoing_transaction()
+        if not sender_message.is_element_displayed():
+            self.drivers[0].fail('No message is shown after sending ETH in 1-1 chat for sender')
+        sender_message.transaction_status.wait_for_element_text(sender_message.address_requested)
 
         chat_2 = home_2.get_chat(sender['username']).click()
-        chat_2_receiver_message = chat_2.chat_element_by_text('↓ Incoming transaction')
-        timestamp_sender = chat_1_sender_message.timestamp_message.text
-        if not chat_2_receiver_message.is_element_displayed():
-            self.driver.fail('No message about incoming transaction in 1-1 chat is shown for receiver')
-        chat_2_receiver_message.transaction_status.wait_for_element_text('Address requested')
+        receiver_message = chat_2.get_incoming_transaction()
+        timestamp_sender = sender_message.timestamp_message.text
+        if not receiver_message.is_element_displayed():
+            self.drivers[0].fail('No message about incoming transaction in 1-1 chat is shown for receiver')
+        receiver_message.transaction_status.wait_for_element_text(receiver_message.address_requested)
 
         home_2.just_fyi('Accept and share address for sender and receiver')
-        for text in ('Accept and share address', 'Decline'):
-            if not chat_2_receiver_message.contains_text(text):
-                self.driver.fail("Transaction message doesn't contain required option %s" % text)
-        select_account_bottom_sheet = chat_2_receiver_message.accept_and_share_address.click()
-        if not select_account_bottom_sheet.get_account_in_select_account_bottom_sheet_button(wallet_1.status_account_name).is_element_displayed():
+        for option in (receiver_message.decline_transaction, receiver_message.accept_and_share_address):
+            if not option.is_element_displayed():
+                self.drivers[0].fail("Required options accept or share are not shown")
+
+        select_account_bottom_sheet = receiver_message.accept_and_share_address.click()
+        if not select_account_bottom_sheet.get_account_in_select_account_bottom_sheet_button(account_name).is_element_displayed():
             self.errors.append('Not expected value in "From" in "Select account": "Status" is expected')
         select_account_bottom_sheet.select_button.click()
-        chat_2_receiver_message.transaction_status.wait_for_element_text("Shared '%s'" % home_1.status_account_name)
-        chat_1_sender_message.transaction_status.wait_for_element_text('Address request accepted')
+        receiver_message.transaction_status.wait_for_element_text(receiver_message.shared_account)
+        sender_message.transaction_status.wait_for_element_text(sender_message.address_request_accepted)
 
         home_1.just_fyi("Sign and send transaction and check that timestamp on message is updated")
-        time.sleep(40)
-        send_message = chat_1_sender_message.sign_and_send.click()
+        time.sleep(20)
+        send_message = sender_message.sign_and_send.click()
         send_message.next_button.click()
         send_message.sign_transaction(keycard=True, default_gas_price=False)
-        chat_1_sender_message.transaction_status.wait_for_element_text('Pending')
-        updated_timestamp_sender = chat_1_sender_message.timestamp_message.text
+        sender_message.transaction_status.wait_for_element_text(sender_message.pending)
+        updated_timestamp_sender = sender_message.timestamp_message.text
         if updated_timestamp_sender == timestamp_sender:
             self.errors.append("Timestamp of message is not updated after signing transaction")
 
         chat_1.wallet_button.click()
-        wallet_1.accounts_status_account.click()
-        transactions_view = wallet_1.transaction_history_button.click()
-        transactions_view.transactions_table.find_transaction(amount=amount)
+        wallet_1.find_transaction_in_history(amount=amount)
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount)
         wallet_1.home_button.click(desired_view='chat')
 
-        home_1.just_fyi("Check 'Confirmed' state for sender and receiver")
-        [message.transaction_status.wait_for_element_text('Confirmed') for message in
-         (chat_1_sender_message, chat_2_receiver_message)]
+        home_1.just_fyi("Check 'Confirmed' state for sender and receiver(use pull-to-refresh to update history)")
+        chat_2.wallet_button.click()
+        wallet_2.find_transaction_in_history(amount=amount)
+        wallet_2.home_button.click(desired_view="chat")
+        [message.transaction_status.wait_for_element_text(message.confirmed, 60) for message in
+         (sender_message, receiver_message)]
 
         self.errors.verify_no_errors()
 
@@ -92,11 +93,11 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         device_1.just_fyi('Grab user data for transactions and public chat, set up wallets')
         home_1 = device_1.create_user(keycard=True)
         recipient_public_key, recipient_username = home_1.get_public_key_and_username(return_username=True)
+        amount = device_1.get_unique_amount()
+        asset_name = 'STT'
         wallet_1 = home_1.wallet_button.click()
         wallet_1.set_up_wallet()
-        recipient_address = wallet_1.get_wallet_address()
-        wallet_1.back_button.click()
-        wallet_1.select_asset('STT')
+        wallet_1.select_asset(asset_name)
         wallet_1.home_button.click()
 
         home_2 = device_2.recover_access(passphrase=sender['passphrase'], keycard=True, enable_notifications=True)
@@ -107,8 +108,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         device_2.just_fyi('Add recipient to contact and send 1 message')
         chat_2 = home_2.add_contact(recipient_public_key)
         chat_2.send_message("Hey there!")
-        amount = chat_2.get_unique_amount()
-        asset_name = 'STT'
+
         profile_2 = wallet_2.profile_button.click()
         profile_2.airplane_mode_button.click()
         device_2.home_button.click()
@@ -126,9 +126,9 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         request_transaction.select_asset_button.click_until_presence_of_element(asset_button)
         asset_button.click()
         request_transaction.request_transaction_button.click()
-        chat_1_request_message = chat_1.chat_element_by_text('↓ Incoming transaction')
+        chat_1_request_message = chat_1.get_incoming_transaction()
         if not chat_1_request_message.is_element_displayed():
-            self.driver.fail('No incoming transaction in 1-1 chat is shown for recipient after requesting STT')
+            self.drivers[0].fail('No incoming transaction in 1-1 chat is shown for recipient after requesting STT')
 
         home_2.just_fyi('Check that transaction message is fetched from offline and sign transaction')
         profile_2.airplane_mode_button.click()
@@ -137,10 +137,10 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         if not device_2.element_by_text(transaction_request_pn).is_element_displayed(60):
             self.errors.append("Push notification is not received after going back from offline")
         device_2.element_by_text(transaction_request_pn).click()
-        chat_2_sender_message = chat_2.chat_element_by_text('↑ Outgoing transaction')
+        chat_2_sender_message = chat_2.get_outgoing_transaction()
         if not chat_2_sender_message.is_element_displayed():
                 self.driver.fail('No outgoing transaction in 1-1 chat is shown for sender after requesting STT')
-        chat_2_sender_message.transaction_status.wait_for_element_text('Address received')
+        chat_2_sender_message.transaction_status.wait_for_element_text(chat_2_sender_message.address_received)
         send_message = chat_2_sender_message.sign_and_send.click()
         send_message.next_button.click()
         send_message.sign_transaction(keycard=True, default_gas_price=False)
@@ -150,7 +150,8 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, token=True)
         chat_2.toggle_airplane_mode()
         chat_2.connection_status.wait_for_invisibility_of_element(60)
-        [message.transaction_status.wait_for_element_text('Confirmed') for message in (chat_2_sender_message, chat_1_request_message)]
+        [message.transaction_status.wait_for_element_text(message.confirmed) for message in
+         (chat_2_sender_message, chat_1_request_message)]
         self.errors.verify_no_errors()
 
 
@@ -175,6 +176,6 @@ class TestCommandsSingleDevices(SingleDeviceTestCase):
         from views.send_transaction_view import SendTransactionView
         send_transaction = SendTransactionView(self.driver)
         send_transaction.sign_transaction(keycard=True)
-        chat_sender_message = chat.chat_element_by_text('↑ Outgoing transaction')
+        chat_sender_message = chat.get_outgoing_transaction()
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15)
-        chat_sender_message.transaction_status.wait_for_element_text('Confirmed')
+        chat_sender_message.transaction_status.wait_for_element_text(chat_sender_message.confirmed)

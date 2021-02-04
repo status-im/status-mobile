@@ -27,7 +27,7 @@ class Account(object):
         return w3.eth.getBalance(self.account_address)
 
     def send_eth(self, to_address, eth_value, gas_price_increment=0):
-        signed_txn = w3.eth.account.signTransaction(dict(
+        signed_txn = w3.eth.account.sign_transaction(dict(
             nonce=self.nonce,
             gasPrice=w3.eth.gasPrice + gas_price_increment * 1000000000,
             gas=21000,

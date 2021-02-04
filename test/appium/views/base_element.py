@@ -116,6 +116,20 @@ class BaseElement(object):
             raise TimeoutException("Device %s: %s by %s:* `%s`  is still visible on the screen after %s seconds" % (
                 self.driver.number, self.name, self.by, self.locator, seconds)) from None
 
+    def wait_for_element_text(self, text, wait_time=30):
+        counter = 0
+        self.driver.info("*Wait for text element %s to be equal to %s*" % (self.name, text))
+        while True:
+            if counter >= wait_time:
+                self.driver.fail(
+                    "'%s' is not equal to expected '%s' in %s sec" % (self.find_element().text, text, wait_time))
+            elif self.find_element().text != text:
+                counter += 10
+                time.sleep(10)
+            else:
+                self.driver.info('*Element %s text is equal to %s*' % (self.name, text))
+                return
+
     def scroll_to_element(self, depth: int = 9, direction='down'):
         self.driver.info('*Scrolling %s to %s*' % (direction, self.name))
         for _ in range(depth):
@@ -276,19 +290,6 @@ class Text(BaseElement):
         self.driver.info('*%s is %s*' % (self.name, text))
         return text
 
-    def wait_for_element_text(self, text, wait_time=30):
-        counter = 0
-        self.driver.info("*Wait for text element %s to be equal to %s*" % (self.name, text))
-        while True:
-            if counter >= wait_time:
-                self.driver.fail(
-                    "'%s' is not equal to expected '%s' in %s sec" % (self.find_element().text, text, wait_time))
-            elif self.find_element().text != text:
-                counter += 10
-                time.sleep(10)
-            else:
-                self.driver.info('*Element %s text is equal to %s*' % (self.name, text))
-                return
 
 
 class Button(BaseElement):

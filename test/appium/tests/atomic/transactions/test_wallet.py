@@ -29,8 +29,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                                      sender_password=unique_password )
 
         wallet_view.just_fyi('Check that transaction is appeared in transaction history')
-        transactions_view = wallet_view.transaction_history_button.click()
-        transactions_view.transactions_table.find_transaction(amount=transaction_amount)
+        wallet_view.find_transaction_in_history(amount=transaction_amount)
 
         wallet_view.just_fyi('Check logcat for sensitive data')
         values_in_logcat = wallet_view.find_values_in_logcat(password=unique_password)
@@ -96,10 +95,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
         sign_in_view.just_fyi('Check that transaction is appeared in transaction history')
         wallet_view.wait_balance_is_changed('STT', initial_amount_STT)
-        if not wallet_view.transaction_history_button.is_element_displayed():
-            wallet_view.accounts_status_account.click()
-        transactions_view = wallet_view.transaction_history_button.click()
-        transactions_view.transactions_table.find_transaction(amount=sending_amount, asset='STT')
+        wallet_view.find_transaction_in_history(amount=sending_amount, asset='STT')
 
     @marks.testrail_id(5461)
     @marks.medium
@@ -248,7 +244,6 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view = sign_in_view.wallet_button.click()
         wallet_view.set_up_wallet()
         status_account_address = wallet_view.get_wallet_address()[2:]
-       # wallet_view.back_button.click()
         self.network_api.get_donate(status_account_address, external_faucet=True)
         wallet_view.wait_balance_is_changed()
         account_name = 'subaccount'
@@ -285,11 +280,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         sub_account_address = wallet_view.get_wallet_address(account_name)[2:]
         self.network_api.wait_for_confirmation_of_transaction(status_account_address, transaction_amount)
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
-        transactions_view = wallet_view.transaction_history_button.click()
+        wallet_view.find_transaction_in_history(amount=transaction_amount)
+        wallet_view.find_transaction_in_history(amount=format(float(transaction_amount_1),'.11f').rstrip('0'))
 
         wallet_view.just_fyi("Check transactions on subaccount")
-        transactions_view.transactions_table.find_transaction(amount=transaction_amount)
-        transactions_view.transactions_table.find_transaction(amount=format(float(transaction_amount_1),'.11f').rstrip('0'))
         self.network_api.verify_balance_is_updated(updated_balance, status_account_address)
 
         wallet_view.just_fyi("Verify total ETH on main wallet view")
@@ -435,9 +429,9 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                         self.errors.append(
                             'Expected error %s is not shown' % error)
                 if send_transaction_view.back_button.is_element_displayed():
-                    send_transaction_view.back_button.click()
+                    send_transaction_view.back_button.wait_and_click()
                 else:
-                    wallet_view.cancel_button.click()
+                    wallet_view.cancel_button.wait_and_click()
 
         self.errors.verify_no_errors()
 

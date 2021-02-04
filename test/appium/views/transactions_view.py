@@ -84,7 +84,6 @@ class TransactionTable(BaseElement):
         return self.TransactionElement.by_amount(self.driver, amount=amount.replace(',', '.'), asset=asset)
 
     def find_transaction(self, amount: str, asset='ETH') -> TransactionElement:
-        self.driver.info('**Finding %s %s transaction**' % (amount, asset))
         element = self.transaction_by_amount(amount=amount, asset=asset)
         for i in range(9):
             try:

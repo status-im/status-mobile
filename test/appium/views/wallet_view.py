@@ -160,14 +160,15 @@ class WalletView(BaseView):
         counter = 0
         while True:
             if counter >= wait_time:
-                self.driver.fail('Balance is not changed during %s seconds!' % wait_time)
+                self.driver.fail('Balance %s %s is not changed during %s seconds!' % (asset, initial_balance,wait_time))
             elif self.asset_by_name(asset).is_element_present() and self.get_asset_amount_by_name(asset) == initial_balance:
                 if not self.transaction_history_button.is_element_displayed():
                     self.wallet_account_by_name(self.status_account_name).click()
-                self.swipe_up()
+                if (counter/60).is_integer():
+                    self.driver.swipe(500, 500, 500, 1000)
+                    self.driver.info("*Refreshing transaction history*")
                 counter += 10
                 time.sleep(10)
-                [self.wallet_button.click() for _ in range(2)]
                 self.driver.info('*Waiting %ss for %s updated balance*' % (counter,asset))
             elif not self.asset_by_name(asset).is_element_present(10):
                 counter += 10
@@ -178,7 +179,7 @@ class WalletView(BaseView):
                 self.driver.info('*Waiting %s seconds for %s to display asset*' % (counter, asset))
             else:
                 self.driver.info('**Balance is updated!**')
-                self.accounts_status_account.scroll_to_element(direction='up')
+                self.wallet_button.double_click()
                 return self
 
     def get_sign_in_phrase(self):
@@ -282,6 +283,16 @@ class WalletView(BaseView):
                                                    default_gas_price=kwargs.get('default_gas_price', False),
                                                    sender_password=kwargs.get('sender_password', common_password))
         return send_transaction_view
+
+    def find_transaction_in_history(self, amount, asset='ETH', account_name=None):
+        if account_name == None:
+            account_name = self.status_account_name
+        self.driver.info('**Finding %s %s transaction for %s**' % (amount, asset, account_name))
+        if not self.transaction_history_button.is_element_displayed():
+            self.get_account_by_name(account_name).click()
+            self.transaction_history_button.wait_for_element()
+        transactions_view = self.transaction_history_button.click()
+        return transactions_view.transactions_table.find_transaction(amount=amount, asset=asset)
 
     def set_currency(self, desired_currency='EUR'):
         self.driver.info("**Setting '%s' currency**" % desired_currency)

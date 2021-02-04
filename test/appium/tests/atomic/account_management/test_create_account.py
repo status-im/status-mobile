@@ -133,9 +133,9 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.testrail_id(5363)
     @marks.high
     def test_pass_phrase_validation(self):
-        signin_view = SignInView(self.driver)
-        signin_view.get_started_button.click_until_presence_of_element(signin_view.access_key_button)
-        signin_view.access_key_button.click()
+        sign_in = SignInView(self.driver)
+        sign_in.get_started_button.click_until_presence_of_element(sign_in.access_key_button)
+        sign_in.access_key_button.click()
         validations = [
             {
                 'case': 'empty value',
@@ -160,52 +160,52 @@ class TestCreateAccount(SingleDeviceTestCase):
             },
         ]
 
-        signin_view.just_fyi("check that seed phrase is required (can't be empty)")
-        signin_view.enter_seed_phrase_button.click()
-        signin_view.next_button.click()
-        if signin_view.reencrypt_your_key_button.is_element_displayed():
+        sign_in.just_fyi("check that seed phrase is required (can't be empty)")
+        sign_in.enter_seed_phrase_button.click()
+        sign_in.next_button.click()
+        if sign_in.reencrypt_your_key_button.is_element_displayed():
             self.errors.append("Possible to create account with empty seed phrase")
 
-        signin_view = SignInView(self.driver, skip_popups=False)
+        sign_in = SignInView(self.driver, skip_popups=False)
         for validation in validations:
-            signin_view.just_fyi("Checking %s" % validation.get('case'))
+            sign_in.just_fyi("Checking %s" % validation.get('case'))
             phrase, msg, words_count, popup = validation.get('phrase'), \
                                             validation.get('validation message'), \
                                             validation.get('words count'),\
                                             validation.get('popup')
-            if signin_view.access_key_button.is_element_displayed():
-                signin_view.access_key_button.click()
-            if signin_view.enter_seed_phrase_button.is_element_displayed():
-                signin_view.enter_seed_phrase_button.click()
+            if sign_in.access_key_button.is_element_displayed():
+                sign_in.access_key_button.click()
+            if sign_in.enter_seed_phrase_button.is_element_displayed():
+                sign_in.enter_seed_phrase_button.click()
 
-            signin_view.seedphrase_input.set_value(phrase)
+            sign_in.seedphrase_input.set_value(phrase)
 
             if msg:
-                if not signin_view.element_by_text(msg).is_element_displayed():
+                if not sign_in.element_by_text(msg).is_element_displayed():
                     self.errors.append('"{}" message is not shown'.format(msg))
 
-            signin_view.just_fyi('check that words count is shown')
+            sign_in.just_fyi('check that words count is shown')
             if words_count:
-                if not signin_view.element_by_text('%s word' % words_count):
+                if not sign_in.element_by_text('%s word' % words_count):
                     self.errors.append('"%s word" is not shown ' % words_count)
             else:
-                if not signin_view.element_by_text('%s words' % words_count):
+                if not sign_in.element_by_text('%s words' % words_count):
                     self.errors.append('"%s words" is not shown ' % words_count)
 
-            signin_view.just_fyi('check that "Next" is disabled unless we use allowed count of words')
+            sign_in.just_fyi('check that "Next" is disabled unless we use allowed count of words')
             if words_count != 12 or 15 or 18 or 21 or 24:
-                signin_view.next_button.click()
-                if signin_view.reencrypt_your_key_button.is_element_displayed():
+                sign_in.next_button.click()
+                if sign_in.reencrypt_your_key_button.is_element_displayed():
                     self.errors.append("Possible to create account with wrong count (%s) of words" % words_count)
 
-            signin_view.just_fyi('check behavior for popup "Custom seed phrase"')
+            sign_in.just_fyi('check behavior for popup "Custom seed phrase"')
             if popup:
 
-                if not signin_view.element_by_translation_id("custom-seed-phrase").is_element_displayed():
+                if not sign_in.element_by_translation_id("custom-seed-phrase").is_element_displayed():
                     self.errors.append("Popup about custom seed phrase is not shown")
-                signin_view.cancel_custom_seed_phrase_button.click()
+                sign_in.cancel_custom_seed_phrase_button.click()
 
-            signin_view.click_system_back_button()
+            sign_in.click_system_back_button()
 
         self.errors.verify_no_errors()
 

@@ -86,6 +86,7 @@ class HomeView(BaseView):
 
     def get_chat(self, username):
         self.driver.info("**Looking for chat '%s'**" % username)
+        ChatElement(self.driver, username[:25]).wait_for_element(30)
         return ChatElement(self.driver, username[:25])
 
     def get_username_below_start_new_chat_button(self, username_part):
@@ -94,11 +95,11 @@ class HomeView(BaseView):
     def add_contact(self, public_key, add_in_contacts=True, nickname=''):
         self.driver.info("**Starting 1-1 chat, add in contacts:%s**" % str(add_in_contacts))
         self.plus_button.click_until_presence_of_element(self.start_new_chat_button)
-        contacts_view = self.start_new_chat_button.click()
-        contacts_view.public_key_edit_box.click()
-        contacts_view.public_key_edit_box.send_keys(public_key)
+        chat = self.start_new_chat_button.click()
+        chat.public_key_edit_box.click()
+        chat.public_key_edit_box.send_keys(public_key)
         one_to_one_chat = self.get_chat_view()
-        contacts_view.confirm_until_presence_of_element(one_to_one_chat.chat_message_input)
+        chat.confirm_until_presence_of_element(one_to_one_chat.chat_message_input)
         if add_in_contacts:
             one_to_one_chat.add_to_contacts.click()
         if nickname:

@@ -165,3 +165,7 @@ trace.edn
 
 /app/
 project.clj
+
+##appium
+test/appium/report/
+result.xml

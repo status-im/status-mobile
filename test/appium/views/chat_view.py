@@ -106,10 +106,6 @@ class ChatElementByText(Text):
             except NoSuchElementException:
                 ChatView(self.driver).reconnect()
 
-    def click_on_text(self):
-        self.locator = "%s/ancestor::android.view.ViewGroup[@content-desc='chat-item']/android.view.ViewGroup" % self.message_locator
-        self.click()
-
     @property
     def image_in_reply(self):
         class ImageInReply(BaseElement):
@@ -148,71 +144,10 @@ class ChatElementByText(Text):
 
         return Username(self.driver, self.locator)
 
-    @property
-    def send_request_button(self):
-        class SendRequestButton(Button):
-            def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, translation_id="command-button-send")
-
-        self.button = SendRequestButton(self.driver, self.locator)
-        return self.button
-
-    @property
-    def transaction_status(self):
-        class TransactionStatus(Text):
-            def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="/*[1]/*[1]/*[5]/android.widget.TextView")
-
-        return TransactionStatus(self.driver, self.locator)
-
     def contains_text(self, text, wait_time=5) -> bool:
         element = Text(self.driver, prefix=self.locator,
                        xpath="//android.view.ViewGroup//android.widget.TextView[contains(@text,'%s')]" % text)
         return element.is_element_displayed(wait_time)
-
-    @property
-    def accept_and_share_address(self):
-        class AcceptAndShareAddress(Button):
-            def __init__(self, driver, parent_locator):
-                super().__init__(driver, prefix=parent_locator, translation_id="accept-and-share-address")
-
-            def navigate(self):
-                from views.send_transaction_view import SendTransactionView
-                return SendTransactionView(self.driver)
-
-            def click(self):
-                self.wait_for_element().click()
-                return self.navigate()
-
-        return AcceptAndShareAddress(self.driver, self.locator)
-
-    @property
-    def decline_transaction(self):
-        class DeclineTransaction(Button):
-            def __init__(self, driver, parent_locator):
-                super().__init__(driver, prefix=parent_locator, translation_id="decline")
-
-            def click(self):
-                self.wait_for_element().click()
-                return self.navigate()
-
-        return DeclineTransaction(self.driver, self.locator)
-
-    @property
-    def sign_and_send(self):
-        class SignAndSend(Button):
-            def __init__(self, driver, parent_locator):
-                super().__init__(driver, prefix=parent_locator, translation_id="sign-and-send")
-
-            def navigate(self):
-                from views.send_transaction_view import SendTransactionView
-                return SendTransactionView(self.driver)
-
-            def click(self):
-                self.wait_for_element().click()
-                return self.navigate()
-
-        return SignAndSend(self.driver, self.locator)
 
     @property
     def replied_message_text(self):
@@ -266,6 +201,7 @@ class UsernameOptions(Button):
         self.wait_for_element().click()
         return self.navigate()
 
+
 class UsernameCheckbox(Button):
     def __init__(self, driver, username):
         self.username = username
@@ -276,6 +212,7 @@ class UsernameCheckbox(Button):
                 self.scroll_to_element(20).click()
         except NoSuchElementException:
                 self.scroll_to_element(direction='up', depth=20).click()
+
 
 class GroupChatInfoView(BaseView):
     def __init__(self, driver):
@@ -291,6 +228,84 @@ class GroupChatInfoView(BaseView):
 
     def get_user_from_group_info(self, username: str):
         return Text(self.driver, xpath="//*[@text='%s']" % username)
+
+
+class TransactionMessage(ChatElementByText):
+    def __init__(self, driver, text:str):
+        super().__init__(driver, text=text)
+        # Common statuses for incoming and outgoing transactions
+        self.address_requested = self.get_translation_by_key("address-requested")
+        self.confirmed = self.get_translation_by_key("status-confirmed")
+        self.pending = self.get_translation_by_key("pending")
+        self.declined = self.get_translation_by_key("transaction-declined")
+
+    @property
+    def transaction_status(self):
+        class TransactionStatus(SilentButton):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, xpath="/*[1]/*[1]/*[5]/android.widget.TextView")
+
+        return TransactionStatus(self.driver, self.locator)
+
+    @property
+    def decline_transaction(self):
+        class DeclineTransaction(Button):
+            def __init__(self, driver, parent_locator):
+                super().__init__(driver, prefix=parent_locator, translation_id="decline")
+
+            def click(self):
+                self.wait_for_element().click()
+                return self.navigate()
+
+        return DeclineTransaction(self.driver, self.locator)
+
+
+class OutgoingTransaction(TransactionMessage):
+    def __init__(self, driver, account_name: str):
+        super().__init__(driver, text="↑ Outgoing transaction")
+        self.account_name = account_name
+        self.address_request_accepted = self.get_translation_by_key("address-request-accepted")
+        self.address_received = self.get_translation_by_key("address-received")
+
+    @property
+    def sign_and_send(self):
+        class SignAndSend(Button):
+            def __init__(self, driver, parent_locator):
+                super().__init__(driver, prefix=parent_locator, translation_id="sign-and-send")
+
+            def navigate(self):
+                from views.send_transaction_view import SendTransactionView
+                return SendTransactionView(self.driver)
+
+            def click(self):
+                self.wait_for_element().click()
+                return self.navigate()
+
+        return SignAndSend(self.driver, self.locator)
+
+
+class IncomingTransaction(TransactionMessage):
+    def __init__(self, driver, account_name: str):
+        super().__init__(driver, text="↓ Incoming transaction")
+        self.account_name = account_name
+        self.shared_account = "Shared '%s'" % account_name
+
+    @property
+    def accept_and_share_address(self):
+        class AcceptAndShareAddress(Button):
+            def __init__(self, driver, parent_locator):
+                super().__init__(driver, prefix=parent_locator, translation_id="accept-and-share-address")
+
+            def navigate(self):
+                from views.send_transaction_view import SendTransactionView
+                return SendTransactionView(self.driver)
+
+            def click(self):
+                self.wait_for_element().click()
+                return self.navigate()
+
+        return AcceptAndShareAddress(self.driver, self.locator)
+
 
 class ChatView(BaseView):
     def __init__(self, driver):
@@ -399,6 +414,17 @@ class ChatView(BaseView):
         self.timeline_my_status_editbox = EditBox(self.driver, accessibility_id="my-status-input")
         self.timeline_open_images_panel_button = Button(self.driver, accessibility_id="open-images-panel-button")
         self.timeline_send_my_status_button = Button(self.driver, accessibility_id="send-my-status-button")
+
+    def get_outgoing_transaction(self, account=None):
+        if account is None:
+            account = self.status_account_name
+        return OutgoingTransaction(self.driver, account)
+
+    def get_incoming_transaction(self, account=None):
+        if account is None:
+            account = self.status_account_name
+        return IncomingTransaction(self.driver, account)
+
 
     def delete_chat(self):
         self.driver.info("**Delete chat via options**")
@@ -615,6 +641,10 @@ class ChatView(BaseView):
     @staticmethod
     def invite_system_message(admin, invited_user):
         return '%s has invited %s' % (admin, invited_user)
+
+    @staticmethod
+    def invited_to_join_system_message(username, chat_name):
+        return '%s invited you to join the group %s' % (username, chat_name)
 
     @staticmethod
     def join_system_message(username):

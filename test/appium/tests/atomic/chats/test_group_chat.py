@@ -21,7 +21,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
         device_1_home.just_fyi('Check default placeholder when trying to create group chat without contacts')
         device_1_home.new_group_chat_button.click()
-        if not device_1_home.element_by_text('Invite friends').is_element_displayed():
+        if not device_1_home.element_by_translation_id("invite-friends").is_element_displayed():
              self.errors.append("No placeholder is shown when there are no contacts")
         device_1_home.get_back_to_home_view()
 
@@ -35,6 +35,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         create_system_message = device_1_chat.create_system_message(device_1_username, chat_name)
         invite_system_message = device_1_chat.invite_system_message(device_1_username, device_2_username)
         join_system_message = device_1_chat.join_system_message(device_2_username)
+        invited_to_join = device_1_chat.invited_to_join_system_message(device_1_username, chat_name)
         create_for_admin_system_message = device_1_chat.create_for_admin_system_message(chat_name)
         for message in [create_for_admin_system_message, create_system_message, invite_system_message]:
             if not device_1_chat.chat_element_by_text(message):
@@ -47,8 +48,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         for element in device_2_chat.join_chat_button, device_2_chat.decline_invitation_button:
             if not element.is_element_displayed():
                 self.drivers[0].fail('"Join Chat" or "Decline" is not shown for member of group chat')
-        for message in ['%s invited you to join the group %s' % (device_1_username, chat_name),
-                        create_system_message, invite_system_message]:
+        for message in [invited_to_join, create_system_message, invite_system_message]:
             if not device_2_chat.chat_element_by_text(message):
                 self.errors.append('%s system message is not shown' % message)
 
@@ -100,7 +100,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         devices_home[2].toggle_airplane_mode()
         devices_home[2].connection_status.wait_for_invisibility_of_element(60)
         if not devices_home[2].get_chat(chat_name).is_element_displayed():
-            self.driver[0].fail('Invite to group chat was not fetched from offline')
+            self.drivers[0].fail('Invite to group chat was not fetched from offline')
         devices_chat[2] = devices_home[2].get_chat(chat_name).click()
         if not devices_chat[2].element_by_text(invite_system_message).is_element_displayed():
             self.errors.append('Message about adding first chat member is not shown for new added member')
