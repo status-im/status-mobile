@@ -95,6 +95,19 @@ class Keychain
   end
 end
 
+# App Store Connect API is an official public API used to manage Apps.
+# This includes metadata, pricing and availability, provisioning, and more.
+# It provides a JSON API and auth using API Keys to generate a JSON Web Token (JWT).
+def asc_api_key()
+  app_store_connect_api_key(
+    key_id: ENV['FASTLANE_ASC_API_KEY_ID'],
+    issuer_id: ENV['FASTLANE_ASC_API_ISSUER_ID'],
+    key_filepath: ENV['FASTLANE_ASC_API_KEY_FILE_PATH'],
+    duration: 1500, # seconds, session length
+    in_house: false,
+  )
+end
+
 # builds an ios app with ad-hoc configuration and put it
 # to "status-ios" output folder
 # `readonly`:
@@ -114,6 +127,7 @@ def build_ios_adhoc(readonly: false, pr_build: false)
   match(
     type: 'adhoc',
     readonly: readonly,
+    api_key: asc_api_key(),
     app_identifier: app_id,
     force_for_new_devices: true,
     keychain_name: kc.name,
@@ -150,6 +164,7 @@ def build_ios_e2e
   match(
     type: 'adhoc',
     readonly: true,
+    api_key: asc_api_key(),
     force_for_new_devices: true,
     keychain_name: kc.name,
     keychain_password: kc.pass
@@ -230,6 +245,7 @@ platform :ios do
     match(
       type: 'appstore',
       readonly: true,
+      api_key: asc_api_key(),
       app_identifier: 'im.status.ethereum',
       keychain_name: kc.name,
       keychain_password: kc.pass
