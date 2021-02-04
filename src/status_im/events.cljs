@@ -458,6 +458,11 @@
    [cofx]
    (chat.loading/load-more-messages cofx))
 
+(fx/defn chat-ui-load-more-message-to-beggining
+   {:events [:chat.ui/list-on-begin-reached]}
+   [cofx]
+   (chat.loading/load-more-messages-to-beggining cofx))
+
 (handlers/register-handler-fx
  :chat.ui/start-chat
  (fn [cofx [_ contact-id]]

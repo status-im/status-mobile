@@ -152,11 +152,6 @@
             (ensure-chat chat-props)
             #(chats-store/save-chat % (get-in % [:db :chats chat-id]) on-success)))
 
-(fx/defn handle-save-chat
-  {:events [::save-chat]}
-  [{:keys [db] :as cofx} chat-id on-success]
-  (chats-store/save-chat cofx (get-in db [:chats chat-id]) on-success))
-
 (fx/defn handle-mark-all-read-successful
   {:events [::mark-all-read-successful]}
   [{:keys [db] :as cofx} chat-id]
@@ -239,7 +234,9 @@
     (fx/merge cofx
               {:dispatch [:load-messages]}
               (fn [{:keys [db]}]
-                {:db (assoc db :current-chat-id chat-id)})
+                {:db (-> db
+                         (assoc :current-chat-id chat-id)
+                         (update-in [:pagination-info chat-id :from] #(max (+ (- (get-in db [:pagination-info chat-id :last-visible]) 40) %) 0)))})
               ;; Group chat don't need this to load as all the loading of topics
               ;; happens on membership changes
               (when-not (or (group-chat? cofx chat-id) (timeline-chat? cofx chat-id))

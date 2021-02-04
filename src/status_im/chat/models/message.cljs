@@ -32,6 +32,7 @@
     {:db (update-in db [:chats chat-id]
                     update
                     :unviewed-messages-count dec)}))
+
 (fx/defn hide-message
   "Hide chat message, rebuild message-list"
   [{:keys [db] :as cofx} chat-id {:keys [seen message-id]}]
@@ -47,7 +48,7 @@
   (let [current-public-key (multiaccounts.model/current-public-key cofx)
         message-to-be-removed (when replace
                                 (get-in db [:messages chat-id replace]))
-        prepared-message (prepare-message message seen-by-user?)]
+        prepared-message message];(prepare-message message seen-by-user?)]
     (fx/merge cofx
               (when message-to-be-removed
                 (hide-message chat-id message-to-be-removed))

@@ -887,6 +887,14 @@
    (empty? messages)))
 
 (re-frame/reg-sub
+ :chats/list-range
+ :<- [::pagination-info]
+ :<- [:chats/current-chat-id]
+ (fn [[pagination-info chat-id]]
+   {:to (get-in pagination-info [chat-id :to])
+    :from (get-in pagination-info [chat-id :from])}))
+
+(re-frame/reg-sub
  :chats/current-chat-messages-stream
  :<- [:chats/message-list]
  :<- [:chats/current-chat-messages]
@@ -894,9 +902,12 @@
  :<- [:chats/range]
  :<- [:chats/all-loaded?]
  :<- [:chats/public?]
- (fn [[message-list messages messages-gaps range all-loaded? public?]]
+ :<- [:chats/list-range]
+ (fn [[message-list messages messages-gaps range all-loaded? public? {:keys [from to]}]]
    ;;TODO (perf) we need to move all these to status-go
    (-> (models.message-list/->seq message-list)
+       (vec)
+       (subvec (or from 0))
        (chat.db/add-datemarks)
        (hydrate-messages messages)
        (chat.db/add-gaps messages-gaps range all-loaded? public?))))

@@ -143,20 +143,44 @@
 
 (defonce messages-list-ref (atom nil))
 (defonce prev-last-item (atom nil))
+(defonce messages-atom (atom nil))
+(def need-to-scroll (atom nil))
 
 (defn on-viewable-items-changed [^js e]
-  (let [^js last-visible-element (aget (.-viewableItems e) (dec (.-length ^js (.-viewableItems e))))
-        ^js first-visible-element (aget (.-viewableItems e) 0)]
-    #_(println "on-viewable-items-changed!" (when (and @prev-last-item (not= @prev-last-item (.-index last-visible-element))) (> (.-index last-visible-element) @prev-last-item)) (.-index first-visible-element) (.-index last-visible-element) (.-length ^js (.-viewableItems e)))
-    (when first-visible-element
-      ;(println "VIEW" (.-index first-visible-element) (:message-id (.-item first-visible-element)))
-      (when (and (< (.-index first-visible-element) (get @prev-last-item (:chat-id (.-item first-visible-element))))
-                 (>=(get @prev-last-item (:chat-id (.-item first-visible-element))) 10)
-                 (< (.-index first-visible-element) 10))
-        (println "ON BEGIN REACHED"))
-      (swap! prev-last-item assoc (:chat-id (.-item first-visible-element)) (.-index first-visible-element)))
-    ;;TODO chill!
-    (re-frame/dispatch [:chat.ui/message-visibility-changed2 e]))
+    (let [^js viewable-items (.-viewableItems e)
+          ^js last-visible-element (aget viewable-items (dec (.-length viewable-items)))
+          ^js first-visible-element (aget viewable-items 0)]
+
+      #_(println "on-viewable-items-changed!" (when (and @prev-last-item (not= @prev-last-item (.-index last-visible-element))) (> (.-index last-visible-element) @prev-last-item)) (.-index first-visible-element) (.-index last-visible-element) (.-length ^js (.-viewableItems e)))
+      (when (and first-visible-element (not @need-to-scroll))
+        (re-frame/dispatch [:chat.ui/visible-element-changed (.-index first-visible-element)])
+        ;(println "VIEW" (:text (:content (.-item last-visible-element))) (:text (:content (.-item first-visible-element))))
+        (when (or
+               ;(= (.-index first-visible-element) 0)
+               (and (> (get @prev-last-item (:chat-id (.-item first-visible-element))) (.-index first-visible-element))
+                    (< (.-index first-visible-element) 20)
+                    (< (- (get @prev-last-item (:chat-id (.-item first-visible-element)))
+                          (.-index first-visible-element))
+                       10)))
+          (println "ON BEGIN REACHED" (.-index first-visible-element) (get @prev-last-item (:chat-id (.-item first-visible-element))))
+          (re-frame/dispatch [:chat.ui/list-on-begin-reached]))
+        (swap! prev-last-item assoc (:chat-id (.-item first-visible-element)) (.-index first-visible-element)))
+      ;;TODO chill!
+      (let [{:keys [unviewed-messages-ids chat-id]}
+            (reduce (fn [acc item]
+                      (let [{:keys [message-id chat-id seen content]} (get @messages-atom (.-index item))]
+                        ;;TODO: item is wrong here!
+                        ;(println "wtf2 "(.-index item)  (:text content) seen)
+                        (cond-> acc
+                                (and (nil? (:chat-id acc)) chat-id)
+                                (assoc :chat-id chat-id)
+                                (and message-id (not seen))
+                                (update :unviewed-messages-ids conj message-id))))
+                    {:unviewed-messages-ids '() :chat-id nil}
+                    viewable-items)]
+        ;(println chat-id (count unviewed-messages-ids))
+        (when (and chat-id (seq unviewed-messages-ids))
+          (re-frame/dispatch [:chat/mark-messages-seen chat-id unviewed-messages-ids]))))
   #_(when @messages-list-ref
       (reset! state/first-not-visible-item
               (when-let [^js last-visible-element (aget (.-viewableItems e) (dec (.-length ^js (.-viewableItems e))))]
@@ -202,16 +226,16 @@
         (reset! curr-list-node-ref node-ref)))))
 
 (def last-scroll-pos (atom 0))
-(def need-to-scroll (atom nil))
 
 (defn messages-view []
-  (reset! need-to-scroll @last-scroll-pos)
+  (reset! need-to-scroll (when (> (:from @(re-frame/subscribe [:chats/list-range])) 0) 40))
+  (reset! prev-last-item nil)
   (fn [{:keys [chat bottom-space pan-responder space-keeper]}]
-    (let [{:keys [group-chat chat-id chat-type public? invitation-admin loaded-unviewed-messages-ids]} chat
+    (let [{:keys [group-chat chat-id chat-type public? invitation-admin unviewed-messages-count]} chat
           messages @(re-frame/subscribe [:chats/current-chat-messages-stream])
           no-messages? @(re-frame/subscribe [:chats/current-chat-no-messages?])
-          current-public-key @(re-frame/subscribe [:multiaccount/public-key])
-          unviewed-messages-count (count loaded-unviewed-messages-ids)]
+          current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
+      (reset! messages-atom (vec messages))
       [react/view {:flex 1}
        [list/flat-list
         (merge
@@ -234,36 +258,39 @@
                                               :current-public-key current-public-key
                                               :space-keeper       space-keeper}
           :render-fn                         render-fn
-          :initialScrollIndex                (get @prev-last-item chat-id)
+          ;:initialScrollIndex                @need-to-scroll
           :on-viewable-items-changed         on-viewable-items-changed
-          :getItemLayout                     (let [offsets (:messages (reduce (fn [{:keys [offset inx] :as acc} {:keys [type message-id value]}]
-                                                                                (let [message-id (str type message-id value)
-                                                                                      len (get @mess-layouts message-id)]
-                                                                                  ;(println "LEN" inx offset len)
-                                                                                  (-> acc
-                                                                                      (update :inx inc)
-                                                                                      (update :offset + len)
-                                                                                      (assoc-in [:messages message-id] {:offset offset :length len}))))
-                                                                              {:offset 16 :inx 0 :messages {}} messages))]
-                                               #(let [{:keys [message-id value type]} (get %1 %2)
-                                                      {:keys [offset length]} (get offsets (str type message-id value))]
-                                                  (if offset
-                                                    #js {:length length :offset offset :index %2}
-                                                    #js {:length 0 :offset 0 :index %2})))
+          ;:initialNumToRender 60
+          ;:contentOffset #js {:x 0 :y @need-to-scroll}
+          :getItemLayout
+          (let [offsets (:messages (reduce (fn [{:keys [offset idx] :as acc} {:keys [type message-id value]}]
+                                             (let [message-id (str type message-id value)
+                                                   len (get @mess-layouts message-id)]
+                                               ;(println "LEN" inx offset len)
+                                               (-> acc
+                                                   (update :idx inc)
+                                                   (update :offset + len)
+                                                   (assoc-in [:messages message-id] {:offset offset :length len}))))
+                                           {:offset 16 :idx 0 :messages {}} messages))]
+            #(let [{:keys [message-id value type]} (get %1 %2)
+                   {:keys [offset length]} (get offsets (str type message-id value))]
+               (if offset
+                 #js {:length length :offset offset :index %2}
+                 #js {:length 0 :offset 0 :index %2})))
           :on-end-reached                    #(do
-                                                (println "ONEND-REACHED")
+                                                (println "ONEND-REACHED" (count messages))
                                                 (re-frame/dispatch [:chat.ui/list-on-end-reached]))
           :on-scroll-to-index-failed         #()               ;;don't remove this
           :scrollIndicatorInsets             {:top bottom-space}
           :keyboardDismissMode               :interactive
           :keyboard-should-persist-taps      :handled
           :maintain-visible-content-position {:minIndexForVisible 0}
-          ;:on-content-size-change
-          #_(fn [w h] (when (and @messages-list-ref @need-to-scroll)
-                        (println "SCroll to off" @need-to-scroll)
-                        (js/setTimeout #(.scrollToOffset @messages-list-ref #js {:offset @need-to-scroll :animated false}) 100)
-                        (reset! need-to-scroll nil)))})]
-          ;:on-scroll #(reset! last-scroll-pos (.-nativeEvent.contentOffset.y ^js %))})]
+          :on-content-size-change
+          (fn [w h] (when (and @messages-list-ref @need-to-scroll (> @need-to-scroll 0))
+                      (println "SCroll to off" @need-to-scroll)
+                      (.scrollToIndex @messages-list-ref (clj->js {:index 40 :animated false}))
+                      (reset! need-to-scroll nil)))
+          :on-scroll #(reset! last-scroll-pos (.-nativeEvent.contentOffset.y ^js %))})]
        (when (> unviewed-messages-count 0)
          [react/view {:background-color colors/gray :padding-vertical 5 :padding-horizontal 8 :border-radius 16
                       :flex-direction :row :align-items :center

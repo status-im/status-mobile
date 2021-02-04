@@ -7,25 +7,23 @@
   (max 0 (- old-count (count new-seen-messages-ids))))
 
 (fx/defn update-chats-unviewed-messages-count
-  [{:keys [db]} {:keys [chat-id _]}]
-  (let [{:keys [loaded-unviewed-messages-ids unviewed-messages-count]}
+  [{:keys [db]} chat-id loaded-unviewed-messages-ids]
+  (let [{:keys [unviewed-messages-count]}
         (get-in db [:chats chat-id])]
     {:db (update-in db [:chats chat-id] assoc
                     :unviewed-messages-count (subtract-seen-messages
                                               unviewed-messages-count
-                                              loaded-unviewed-messages-ids)
-                    :loaded-unviewed-messages-ids #{})}))
+                                              loaded-unviewed-messages-ids))}))
 
 (fx/defn mark-messages-seen
   "Marks all unviewed loaded messages as seen in particular chat"
-  [{:keys [db] :as cofx} chat-id]
-  (let [loaded-unviewed-ids (get-in db [:chats chat-id :loaded-unviewed-messages-ids])]
-    (when (seq loaded-unviewed-ids)
-      (fx/merge cofx
-                {:db (reduce (fn [acc message-id]
-                               (assoc-in acc [:messages chat-id message-id :seen]
-                                         true))
-                             db
-                             loaded-unviewed-ids)}
-                (messages-store/mark-messages-seen chat-id loaded-unviewed-ids nil)
-                (update-chats-unviewed-messages-count {:chat-id chat-id})))))
+  {:events [:chat/mark-messages-seen]}
+  [{:keys [db] :as cofx} chat-id ids]
+  (fx/merge cofx
+            {:db (reduce (fn [acc message-id]
+                           (assoc-in acc [:messages chat-id message-id :seen]
+                                     true))
+                         db
+                         ids)}
+            (messages-store/mark-messages-seen chat-id ids nil)
+            (update-chats-unviewed-messages-count chat-id ids)))
