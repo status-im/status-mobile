@@ -86,7 +86,6 @@ class HomeView(BaseView):
 
     def get_chat(self, username):
         self.driver.info("**Looking for chat '%s'**" % username)
-        ChatElement(self.driver, username[:25]).wait_for_element(30)
         return ChatElement(self.driver, username[:25])
 
     def get_username_below_start_new_chat_button(self, username_part):
