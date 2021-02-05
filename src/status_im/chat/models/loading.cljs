@@ -177,7 +177,7 @@
 (fx/defn load-more-messages-to-beggining
   [{:keys [db] :as cofx}]
   (when-let [current-chat-id (:current-chat-id db)]
-    {:db (update-in db [:pagination-info current-chat-id :from] #(max (- % 20) 0))}))
+    {:db (update-in db [:pagination-info current-chat-id :from] #(max (- % 40) 0))}))
 
 (fx/defn visible-element-changed
   {:events [:chat.ui/visible-element-changed]}

@@ -154,14 +154,15 @@
       #_(println "on-viewable-items-changed!" (when (and @prev-last-item (not= @prev-last-item (.-index last-visible-element))) (> (.-index last-visible-element) @prev-last-item)) (.-index first-visible-element) (.-index last-visible-element) (.-length ^js (.-viewableItems e)))
       (when (and first-visible-element (not @need-to-scroll))
         (re-frame/dispatch [:chat.ui/visible-element-changed (.-index first-visible-element)])
-        ;(println "VIEW" (:text (:content (.-item last-visible-element))) (:text (:content (.-item first-visible-element))))
+        (println "VIEW" (.-index first-visible-element))
         (when (or
-               ;(= (.-index first-visible-element) 0)
-               (and (> (get @prev-last-item (:chat-id (.-item first-visible-element))) (.-index first-visible-element))
-                    (< (.-index first-visible-element) 20)
-                    (< (- (get @prev-last-item (:chat-id (.-item first-visible-element)))
-                          (.-index first-visible-element))
-                       10)))
+               (= (.-index first-visible-element) 0)
+               (and (get @prev-last-item (:chat-id (.-item first-visible-element)))
+                    (> (get @prev-last-item (:chat-id (.-item first-visible-element))) (.-index first-visible-element))
+                    (< (.-index first-visible-element) 40)
+                    #_(< (- (get @prev-last-item (:chat-id (.-item first-visible-element)))
+                            (.-index first-visible-element))
+                         10)))
           (println "ON BEGIN REACHED" (.-index first-visible-element) (get @prev-last-item (:chat-id (.-item first-visible-element))))
           (re-frame/dispatch [:chat.ui/list-on-begin-reached]))
         (swap! prev-last-item assoc (:chat-id (.-item first-visible-element)) (.-index first-visible-element)))
@@ -290,7 +291,9 @@
                       (println "SCroll to off" @need-to-scroll)
                       (.scrollToIndex @messages-list-ref (clj->js {:index 40 :animated false}))
                       (reset! need-to-scroll nil)))
-          :on-scroll #(reset! last-scroll-pos (.-nativeEvent.contentOffset.y ^js %))})]
+          :on-scroll #(do
+                        (println "SCroll" (.-nativeEvent.contentOffset.y ^js %))
+                        (reset! last-scroll-pos (.-nativeEvent.contentOffset.y ^js %)))})]
        (when (> unviewed-messages-count 0)
          [react/view {:background-color colors/gray :padding-vertical 5 :padding-horizontal 8 :border-radius 16
                       :flex-direction :row :align-items :center
