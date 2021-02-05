@@ -154,18 +154,20 @@
       #_(println "on-viewable-items-changed!" (when (and @prev-last-item (not= @prev-last-item (.-index last-visible-element))) (> (.-index last-visible-element) @prev-last-item)) (.-index first-visible-element) (.-index last-visible-element) (.-length ^js (.-viewableItems e)))
       (when (and first-visible-element (not @need-to-scroll))
         (re-frame/dispatch [:chat.ui/visible-element-changed (.-index first-visible-element)])
-        (println "VIEW" (.-index first-visible-element))
-        (when (or
-               (= (.-index first-visible-element) 0)
-               (and (get @prev-last-item (:chat-id (.-item first-visible-element)))
-                    (> (get @prev-last-item (:chat-id (.-item first-visible-element))) (.-index first-visible-element))
-                    (< (.-index first-visible-element) 40)
-                    #_(< (- (get @prev-last-item (:chat-id (.-item first-visible-element)))
-                            (.-index first-visible-element))
-                         10)))
-          (println "ON BEGIN REACHED" (.-index first-visible-element) (get @prev-last-item (:chat-id (.-item first-visible-element))))
-          (re-frame/dispatch [:chat.ui/list-on-begin-reached]))
-        (swap! prev-last-item assoc (:chat-id (.-item first-visible-element)) (.-index first-visible-element)))
+        ;(println "VIEW" (.-index first-visible-element))
+        (if (and (get @prev-last-item (:chat-id (.-item first-visible-element)))
+                 (or
+                  (= (.-index first-visible-element) 0)
+                  (and (> (get @prev-last-item (:chat-id (.-item first-visible-element))) (.-index first-visible-element))
+                       (< (.-index first-visible-element) 40)
+                       #_(< (- (get @prev-last-item (:chat-id (.-item first-visible-element)))
+                               (.-index first-visible-element))
+                            10))))
+          (do
+            (println "ON BEGIN REACHED" (.-index first-visible-element) (get @prev-last-item (:chat-id (.-item first-visible-element))))
+            (re-frame/dispatch [:chat.ui/list-on-begin-reached])
+            (reset! prev-last-item nil))
+          (swap! prev-last-item assoc (:chat-id (.-item first-visible-element)) (.-index first-visible-element))))
       ;;TODO chill!
       (let [{:keys [unviewed-messages-ids chat-id]}
             (reduce (fn [acc item]
@@ -237,6 +239,7 @@
           no-messages? @(re-frame/subscribe [:chats/current-chat-no-messages?])
           current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
       (reset! messages-atom (vec messages))
+      (println "RENDER")
       [react/view {:flex 1}
        [list/flat-list
         (merge
@@ -259,7 +262,7 @@
                                               :current-public-key current-public-key
                                               :space-keeper       space-keeper}
           :render-fn                         render-fn
-          ;:initialScrollIndex                @need-to-scroll
+          :initialScrollIndex                @need-to-scroll
           :on-viewable-items-changed         on-viewable-items-changed
           ;:initialNumToRender 60
           ;:contentOffset #js {:x 0 :y @need-to-scroll}
@@ -289,10 +292,10 @@
           :on-content-size-change
           (fn [w h] (when (and @messages-list-ref @need-to-scroll (> @need-to-scroll 0))
                       (println "SCroll to off" @need-to-scroll)
-                      (.scrollToIndex @messages-list-ref (clj->js {:index 40 :animated false}))
+                      ;(.scrollToIndex @messages-list-ref (clj->js {:index 40 :animated false}))
                       (reset! need-to-scroll nil)))
           :on-scroll #(do
-                        (println "SCroll" (.-nativeEvent.contentOffset.y ^js %))
+                        ;(println "SCroll" (.-nativeEvent.contentOffset.y ^js %))
                         (reset! last-scroll-pos (.-nativeEvent.contentOffset.y ^js %)))})]
        (when (> unviewed-messages-count 0)
          [react/view {:background-color colors/gray :padding-vertical 5 :padding-horizontal 8 :border-radius 16
