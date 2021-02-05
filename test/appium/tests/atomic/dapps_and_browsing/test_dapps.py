@@ -36,6 +36,59 @@ class TestDApps(SingleDeviceTestCase):
         if not status_test_dapp.element_by_text(user['public_key']).is_element_displayed():
             self.driver.fail('Public key is not returned')
 
+
+    @marks.testrail_id(6635)
+    @marks.medium
+    def test_webview_camera_permission(self):
+        web_view_camera_url = 'https://simpledapp.status.im/webviewtest/webviewcamera.html'
+        home = SignInView(self.driver).create_user()
+        self.driver.set_clipboard_text(web_view_camera_url)
+        dapp = home.dapp_tab_button.click()
+        dapp.enter_url_editbox.click()
+        dapp.paste_text()
+        dapp.confirm()
+
+        from views.web_views.base_web_view import BaseWebView
+        camera_dapp = BaseWebView(self.driver)
+        camera_dapp.just_fyi("Check camera request blocked (because it's not enabled in app yet)")
+        camera_request_blocked = home.get_translation_by_key("page-camera-request-blocked")
+        if not dapp.element_by_text_part(camera_request_blocked).is_element_displayed():
+            self.driver.fail("There is no pop-up notifying that camera access need to be granted in app")
+        camera_dapp.swipe_down()
+        if not camera_dapp.camera_image_in_dapp.is_element_image_similar_to_template('blank_camera_image.png'):
+            self.driver.fail("Even camera permissions not allowed - acccess to camera granted")
+
+        profile = home.profile_button.click()
+        profile.privacy_and_security_button.click()
+
+        camera_dapp.just_fyi("Enable camera requests in Dapps")
+        camera_permission_requests = home.get_translation_by_key("webview-camera-permission-requests")
+        if profile.element_by_text_part(camera_permission_requests).is_element_displayed():
+            profile.element_by_text_part('Webview camera permission requests').click()
+        home.dapp_tab_button.click(desired_element_text='webview')
+
+        camera_dapp.just_fyi("Check DApp asks now to allow camera aceess but Deny in DApp")
+        camera_dapp.browser_refresh_page_button.click()
+        camera_dapp.deny_button.click()
+        if not camera_dapp.camera_image_in_dapp.is_element_image_similar_to_template('blank_camera_image.png'):
+            self.driver.fail("Even camera access Denied to Dapp, - acccess to camera granted")
+
+        camera_dapp.just_fyi("Check DApp asks now to allow camera aceess and Allow access to DApp")
+        camera_dapp.browser_refresh_page_button.click()
+        camera_dapp.allow_button.click()
+        if camera_dapp.camera_image_in_dapp.is_element_image_similar_to_template('blank_camera_image.png'):
+            camera_dapp.camera_image_in_dapp.save_new_screenshot_of_element('blank_camera_image3.png')
+            self.driver.fail("Even camera access Accepted to Dapp, - camera view is not shown")
+
+        camera_dapp.just_fyi("Relogin and check camera access still needs to be allowed")
+        home.profile_button.click()
+        profile.relogin()
+        home.dapp_tab_button.click()
+        camera_dapp.open_tabs_button.click()
+        dapp.element_by_text_part("https").click()
+        if not camera_dapp.allow_button.is_element_displayed():
+            self.driver.fail("No request to camera access after relogin")
+
     @marks.testrail_id(6323)
     @marks.medium
     @marks.flaky

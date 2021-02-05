@@ -11,6 +11,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
+import imagehash
 from tests import transl
 
 
@@ -26,6 +27,7 @@ class BaseElement(object):
         self.prefix=''
         self.suffix = None
         self.id = None
+        self.class_name = None
         self.webview = None
 
         self.__dict__.update(kwargs)
@@ -47,6 +49,9 @@ class BaseElement(object):
         elif self.id:
             self.by = MobileBy.ID
             self.locator = self.id
+        elif self.class_name:
+            self.by = MobileBy.CLASS_NAME
+            self.locator = self.class_name
         elif self.webview:
             self.locator = '//*[@text="{0}"] | //*[@content-desc="{desc}"]'.format(self.webview, desc=self.webview)
         if self.prefix:
@@ -200,6 +205,12 @@ class BaseElement(object):
         if file_name:
             self.template = file_name
         return not ImageChops.difference(self.image, self.template).getbbox()
+
+    def is_element_image_similar_to_template(self, template_path: str = ''):
+        image_template = os.sep.join(__file__.split(os.sep)[:-1]) + '/elements_templates/%s' % template_path
+        template = imagehash.average_hash(Image.open(image_template))
+        element_image = imagehash.average_hash(self.image)
+        return not bool(template-element_image)
 
     def swipe_left_on_element(self):
         element = self.find_element()

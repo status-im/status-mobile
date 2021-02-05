@@ -49,3 +49,4 @@ zbarlight==3.0
 docker==4.4.0
 influxdb==5.3.1
 web3
+imagehash
