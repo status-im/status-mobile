@@ -24,7 +24,7 @@ class TestTransactionDApp(SingleDeviceTestCase):
         status_test_dapp.wallet_button.click()
 
         send_transaction_view.just_fyi('Verify that wallet balance is updated')
-        wallet_view.wait_balance_is_changed('STT', initial_amount_STT)
+        wallet_view.wait_balance_is_changed('STT', initial_amount_STT, scan_tokens=True)
 
         send_transaction_view.just_fyi('Check logcat for sensitive data')
         values_in_logcat = send_transaction_view.find_values_in_logcat(password=unique_password)

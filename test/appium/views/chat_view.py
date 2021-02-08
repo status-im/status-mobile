@@ -74,6 +74,16 @@ class ViewProfileButton(Button):
     def navigate(self):
         return ChatView(self.driver)
 
+class ChatOptionsButton(Button):
+    def __init__(self, driver):
+        super().__init__(driver, accessibility_id="chat-menu-button")
+
+    def click(self):
+        self.click_until_presence_of_element(ChatView(self.driver).clear_history_button)
+
+    def navigate(self):
+        return ChatView(self.driver)
+
 
 class ProfileSendMessageButton(Button):
     def __init__(self, driver):
@@ -319,7 +329,7 @@ class ChatView(BaseView):
         self.user_name_text = Text(self.driver, accessibility_id="chat-name-text")
         self.add_to_contacts = Button(self.driver, accessibility_id="add-to-contacts-button")
         ## Options
-        self.chat_options = Button(self.driver, accessibility_id="chat-menu-button")
+        self.chat_options = ChatOptionsButton(self.driver)
         self.delete_chat_button = Button(self.driver, translation_id="delete-chat")
         self.clear_history_button = Button(self.driver, translation_id="clear-history")
         self.reply_message_button = Button(self.driver, translation_id="message-reply")

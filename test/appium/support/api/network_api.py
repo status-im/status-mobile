@@ -35,7 +35,7 @@ class NetworkApi(object):
         except TypeError as e:
             self.log("Check response from etherscan API. Returned values do not match expected. %s" % e)
         except JSONDecodeError as e:
-            self.log(str(e))
+            self.log("No valid JSON response from Etherscan: %s " % str(e))
             pass
 
     def get_token_transactions(self, address: str) -> List[dict]:
@@ -47,7 +47,7 @@ class NetworkApi(object):
         except TypeError as e:
             self.log("Check response from etherscan API. Returned values do not match expected. %s" % str(e))
         except JSONDecodeError as e:
-            self.log(str(e))
+            self.log("No valid JSON response from Etherscan: %s " % str(e))
             pass
 
     def is_transaction_successful(self, transaction_hash: str) -> int:
@@ -92,7 +92,7 @@ class NetworkApi(object):
                     else:
                         transactions = self.get_transactions(address)
                 except JSONDecodeError as e:
-                    self.log(str(e))
+                    self.log("No valid JSON response from Etherscan: %s " % str(e))
                     continue
                 try:
                     for transaction in transactions:
@@ -141,7 +141,7 @@ class NetworkApi(object):
             self.log("Trying to get funds from %s" % self.faucet_url)
             return requests.request('GET', '%s/0x%s' % (self.faucet_url, address)).json()
         except JSONDecodeError as e:
-            self.log(str(e))
+            self.log("No valid JSON response from Etherscan: %s " % str(e))
             pass
 
     def faucet_backup(self, address):
@@ -155,7 +155,8 @@ class NetworkApi(object):
         if initial_balance < 1000000000000000000:
             if external_faucet:
                 self.faucet_backup(address)
-            self.faucet(address)
+            else:
+                self.faucet(address)
             while True:
                 if counter >= wait_time:
                     pytest.fail("Donation was not received during %s seconds!" % wait_time)

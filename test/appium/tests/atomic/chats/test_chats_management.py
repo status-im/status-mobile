@@ -248,11 +248,11 @@ class TestChatManagement(SingleDeviceTestCase):
         home.just_fyi("Creating 3 types of chats")
         chat = home.add_contact(basic_user['public_key'])
         one_to_one, public, group = basic_user['username'], '#public-delete-long-press', 'group'
-        chat.get_back_to_home_view()
+        chat.home_button.click()
         home.create_group_chat([basic_user['username']], group)
-        chat.get_back_to_home_view()
+        chat.home_button.click()
         home.join_public_chat(public[1:])
-        chat.get_back_to_home_view()
+        chat.home_button.click()
 
         home.just_fyi("Clearing history for 3 types of chats and check it will not reappear after re-login")
         for chat_name in one_to_one, public, group:
@@ -260,17 +260,16 @@ class TestChatManagement(SingleDeviceTestCase):
             chat.send_message(message)
             if chat.element_by_text(message).is_element_displayed():
                 self.errors.append('Messages in %s chat are still shown after clearing history' % chat_name)
-            home = chat.get_back_to_home_view()
+            home = chat.home_button.click()
             home.clear_chat_long_press(chat_name)
         home.relogin()
+        if home.element_by_text(message).is_element_displayed():
+            self.errors.append('Message is still shown in Preview after clearing history and relaunch')
         for chat_name in one_to_one, public, group:
-            if home.element_by_text(message).is_element_displayed():
-                self.errors.append(
-                    'Messages in %s chat are still shown in Preview after clearing history and relaunch' % chat_name)
             chat = home.get_chat(chat_name).click()
             if chat.element_by_text(message).is_element_displayed():
-                self.errors.append('Messages in %s chat are shown after clearing history and relauch' % chat_name)
-            chat.get_back_to_home_view()
+                self.errors.append('Messages in %s chat are shown after clearing history and relaunch' % chat_name)
+            chat.home_button.click()
 
         self.errors.verify_no_errors()
 

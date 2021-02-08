@@ -154,14 +154,12 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         public_chat_name = home_1.get_random_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(public_chat_name), home_2.join_public_chat(public_chat_name)
 
-        browser = device_1.dapp_tab_button.click()
+        device_1.dapp_tab_button.click()
         message = 'hello'
         chat_2.send_message(message)
-
-        if home_1.home_button.public_unread_messages.is_element_displayed():
-            device_1.home_button.click_until_absense_of_element(browser.enter_url_editbox)
+        home_1.home_button.click(desired_view='chat')
         if not chat_1.chat_element_by_text(message).is_element_displayed():
-            self.drivers[0].fail("No message if it received while another tab opened")
+            self.drivers[0].fail("No message if it is received while another tab opened")
 
 
 class TestPublicChatSingleDevice(SingleDeviceTestCase):

@@ -180,6 +180,7 @@ class WalletView(BaseView):
             else:
                 self.driver.info('**Balance is updated!**')
                 self.wallet_button.double_click()
+                self.accounts_status_account.scroll_to_element(direction='up')
                 return self
 
     def get_sign_in_phrase(self):
