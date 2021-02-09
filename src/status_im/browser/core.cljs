@@ -403,18 +403,35 @@
                                                   :error     %1
                                                   :result    %2}])]}))))
 
+(fx/defn handle-no-permissions [cofx {:keys [method id]} message-id]
+  (if (= method "eth_accounts")
+    ;; eth_accounts returns empty array for compatibility with meta-mask
+    (send-to-bridge cofx
+                    {:type      constants/web3-send-async-callback
+                     :messageId message-id
+                     :result    {:jsonrpc "2.0"
+                                 :id      (int id)
+                                 :result  []}})
+    (send-to-bridge cofx
+                    {:type      constants/web3-send-async-callback
+                     :messageId message-id
+                     :error     {:code 4100}})))
+
+(def permissioned-method
+  #{"eth_accounts" "eth_coinbase" "eth_sendTransaction" "eth_sign"
+    "keycard_signTypedData"
+    "eth_signTypedData" "personal_sign" "personal_ecRecover"})
+
+(defn has-permissions? [{:dapps/keys [permissions]} dapp-name method]
+  (boolean
+   (and (permissioned-method method)
+        (not (some #{constants/dapp-permission-web3} (get-in permissions [dapp-name :permissions]))))))
+
 (fx/defn web3-send-async-read-only
   [{:keys [db] :as cofx} dapp-name {:keys [method] :as payload} message-id]
-  (let [{:dapps/keys [permissions]} db]
-    (if (and (#{"eth_accounts" "eth_coinbase" "eth_sendTransaction" "eth_sign"
-                "keycard_signTypedData"
-                "eth_signTypedData" "personal_sign" "personal_ecRecover"} method)
-             (not (some #{constants/dapp-permission-web3} (get-in permissions [dapp-name :permissions]))))
-      (send-to-bridge cofx
-                      {:type      constants/web3-send-async-callback
-                       :messageId message-id
-                       :error     {:code 4100}})
-      (web3-send-async cofx payload message-id))))
+  (if (has-permissions? db dapp-name method)
+    (handle-no-permissions cofx payload message-id)
+    (web3-send-async cofx payload message-id)))
 
 (fx/defn handle-scanned-qr-code
   [cofx data {:keys [dapp-name permission message-id]}]
