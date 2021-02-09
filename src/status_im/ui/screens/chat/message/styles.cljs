@@ -130,7 +130,8 @@
        :height (* aspect-ratio max-width)})))
 
 (defn link-preview-image [outgoing {:keys [height width] :as dimensions}]
-  (merge (if (and height width)
+  (merge (if (and (pos? height)
+                  (pos? width))
            (scale-dimensions dimensions)
            {:height 170})
          {:overflow                   :hidden
