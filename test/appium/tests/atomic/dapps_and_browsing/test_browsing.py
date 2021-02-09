@@ -154,7 +154,7 @@ class TestBrowsing(SingleDeviceTestCase):
         }
         for url in urls:
             browsing_view = dapp_view.open_url(url)
-            [browsing_view.dapp_tab_button.click() for _ in range(2)]
+            browsing_view.dapp_tab_button.double_click()
         home_view.just_fyi('Close one tab, relogin and check that it is not reappearing')
         browsing_view.remove_tab(name=urls['bbc.com'])
         home_view.relogin()
