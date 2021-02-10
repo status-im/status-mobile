@@ -450,6 +450,11 @@ class BaseView(object):
     def get_random_chat_name():
         return ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
 
+    @staticmethod
+    def get_random_message():
+        message = 'test message:'
+        return message + ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
+
     def get_text_from_qr(self):
         image = Image.open(BytesIO(base64.b64decode(self.driver.get_screenshot_as_base64())))
         image.load()

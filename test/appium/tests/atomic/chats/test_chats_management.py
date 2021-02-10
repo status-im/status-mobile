@@ -12,6 +12,7 @@ class TestChatManagement(SingleDeviceTestCase):
     @marks.critical
     def test_long_press_to_delete_chat(self):
         home = SignInView(self.driver).create_user()
+        messages = [home.get_random_message() for _ in range(3)]
 
         home.just_fyi("Creating 3 types of chats")
         chat = home.add_contact(basic_user['public_key'])
@@ -23,11 +24,13 @@ class TestChatManagement(SingleDeviceTestCase):
         chat.get_back_to_home_view()
 
         home.just_fyi("Deleting all types of chats and check that they will not reappear after relogin")
+        i = 0
         for chat_name in one_to_one, public, group:
             chat = home.get_chat(chat_name).click()
-            chat.send_message('test message')
+            chat.send_message(messages[i])
             chat.get_back_to_home_view()
             home.leave_chat_long_press(chat_name) if chat_name == group else home.delete_chat_long_press(chat_name)
+            i+=1
         home.relogin()
         for chat_name in one_to_one, public, group:
             if home.get_chat(chat_name).is_element_displayed():
@@ -37,8 +40,8 @@ class TestChatManagement(SingleDeviceTestCase):
     @marks.high
     def test_delete_chats_via_delete_button_rejoin(self):
         sign_in = SignInView(self.driver)
-        message = 'test message'
         home = sign_in.create_user()
+        messages = [home.get_random_message() for _ in range(3)]
 
         home.just_fyi("Creating 3 types of chats")
         chat = home.add_contact(basic_user['public_key'])
@@ -53,10 +56,13 @@ class TestChatManagement(SingleDeviceTestCase):
 
 
         home.just_fyi("Deleting 3 chats via delete button and check they will not reappear after relaunching app")
+        i = 0
         for chat_name in one_to_one, public, group:
+            message = messages[i]
             chat = home.get_chat(chat_name).click()
             chat.send_message(message)
             chat.leave_chat() if chat_name == group else chat.delete_chat()
+            i+=1
             chat.get_back_to_home_view()
         for chat_name in one_to_one, public, group:
             if home.get_chat(chat_name).is_element_displayed():
@@ -68,16 +74,17 @@ class TestChatManagement(SingleDeviceTestCase):
             if home.get_chat(chat_name).is_element_displayed():
                 self.errors.append('Deleted %s is shown after re-login, but the chat has been deleted' % chat_name)
 
-        sign_in.just_fyi('Rejoin public chat and check that messages are fetched again')
-        public_chat = home.join_public_chat(public[1:])
-        if not public_chat.chat_element_by_text(message).is_element_displayed(20):
-            self.errors.append('Messages are not fetched when rejoining public chat after deleting')
+        # TODO: blocked due to #11683 - enable after fix
+        # sign_in.just_fyi('Rejoin public chat and check that messages are fetched again')
+        # public_chat = home.join_public_chat(public[1:])
+        # if not public_chat.chat_element_by_text(messages[1]).is_element_displayed(20):
+        #     self.errors.append('Messages are not fetched when rejoining public chat after deleting')
 
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5304)
     @marks.high
-    def test_open_chat_by_pasting_chat_key_chech_invalid_chat_key_cases(self):
+    def test_open_chat_by_pasting_chat_key_check_invalid_chat_key_cases(self):
         home = SignInView(self.driver).create_user()
         public_key = basic_user['public_key']
         home.plus_button.click()
@@ -243,11 +250,11 @@ class TestChatManagement(SingleDeviceTestCase):
     @marks.medium
     def test_long_press_to_clear_chat_history(self):
         home = SignInView(self.driver).create_user()
-        message = 'test message'
+        messages = [home.get_random_message() for _ in range(3)]
 
         home.just_fyi("Creating 3 types of chats")
         chat = home.add_contact(basic_user['public_key'])
-        one_to_one, public, group = basic_user['username'], '#public-delete-long-press', 'group'
+        one_to_one, public, group = basic_user['username'], '#public-clear-long-press', 'group'
         chat.home_button.click()
         home.create_group_chat([basic_user['username']], group)
         chat.home_button.click()
@@ -255,20 +262,27 @@ class TestChatManagement(SingleDeviceTestCase):
         chat.home_button.click()
 
         home.just_fyi("Clearing history for 3 types of chats and check it will not reappear after re-login")
+        i = 0
         for chat_name in one_to_one, public, group:
+            message=messages[i]
             chat = home.get_chat(chat_name).click()
             chat.send_message(message)
             if chat.element_by_text(message).is_element_displayed():
                 self.errors.append('Messages in %s chat are still shown after clearing history' % chat_name)
+            i += 1
             home = chat.home_button.click()
             home.clear_chat_long_press(chat_name)
         home.relogin()
-        if home.element_by_text(message).is_element_displayed():
-            self.errors.append('Message is still shown in Preview after clearing history and relaunch')
+        for message in messages:
+            if home.element_by_text(message).is_element_displayed():
+                self.errors.append('Message is still shown in Preview after clearing history and relaunch')
+        i = 0
         for chat_name in one_to_one, public, group:
+            message=messages[i]
             chat = home.get_chat(chat_name).click()
             if chat.element_by_text(message).is_element_displayed():
                 self.errors.append('Messages in %s chat are shown after clearing history and relaunch' % chat_name)
+            i += 1
             chat.home_button.click()
 
         self.errors.verify_no_errors()
