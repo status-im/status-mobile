@@ -43,6 +43,9 @@
     :accent   {:icon-color       (:icon-05 @colors/theme)
                :background-color (:interactive-01 @colors/theme)
                :text-color       (:text-05 @colors/theme)}
+    :secondary {:icon-color       (:icon-02 @colors/theme)
+                :background-color (:interactive-02 @colors/theme)
+                :text-color       (:text-02 @colors/theme)}
     :disabled {:icon-color       (:icon-02 @colors/theme)
                :background-color (:ui-01 @colors/theme)
                :text-color       (:text-02 @colors/theme)}))

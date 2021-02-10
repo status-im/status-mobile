@@ -163,10 +163,9 @@
         (when (or (seq chats) @search-active? (seq search-filter))
           [search-input-wrapper search-filter chats])
         [referral-item/list-item]]
-       (when
-        (and (empty? chats)
-             (not status-community))
-         (or @search-active? (seq search-filter))
+       (when (and (empty? chats)
+                  (not status-community)
+                  (or @search-active? (seq search-filter)))
          [start-suggestion search-filter])
        (when status-community
          ;; We only support one community now, Status
@@ -201,8 +200,9 @@
 
 (defn home []
   [react/keyboard-avoiding-view {:style styles/home-container}
-   [connectivity/connectivity
-    [topbar/topbar {:title      (i18n/label :t/chat)
-                    :navigation :none}]
-    [chats-list]]
+   [topbar/topbar {:title             (i18n/label :t/chat)
+                   :navigation        :none
+                   :right-component   [connectivity/connectivity-button]}]
+   [connectivity/loading-indicator]
+   [chats-list]
    [plus-button]])

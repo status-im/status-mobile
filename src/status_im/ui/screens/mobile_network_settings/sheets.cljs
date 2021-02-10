@@ -34,7 +34,8 @@
 (views/defview checkbox []
   (views/letsubs [checked? [:mobile-network/remember-choice?]]
     [react/view
-     {:style styles/checkbox-line-container}
+     {:style styles/checkbox-line-container
+      :accessibility-label "remember-choice"}
      [checkbox/checkbox
       {:checked?        checked?
        :style           styles/checkbox
@@ -54,6 +55,10 @@
     [{:style styles/settings-link}
      (str " " (i18n/label :mobile-network-sheet-settings))]]])
 
+(defn hide-sheet-and-dispatch [event]
+  (re-frame/dispatch [:bottom-sheet/hide])
+  (re-frame/dispatch event))
+
 (views/defview settings-sheet []
   [react/view {:flex 1}
    [react/view {:align-items :center}
@@ -61,16 +66,18 @@
     [details :mobile-syncing-sheet-details]]
    [quo/list-item
     {:theme    :accent
+     :accessibility-label "mobile-network-continue-syncing"
      :title    (i18n/label :t/mobile-network-continue-syncing)
      :subtitle (i18n/label :t/mobile-network-continue-syncing-details)
      :icon     :main-icons/network
-     :on-press #(re-frame/dispatch [:mobile-network/continue-syncing])}]
+     :on-press #(hide-sheet-and-dispatch [:mobile-network/continue-syncing])}]
    [quo/list-item
     {:theme    :negative
+     :accessibility-label "mobile-network-stop-syncing"
      :title    (i18n/label :t/mobile-network-stop-syncing)
      :subtitle (i18n/label :t/mobile-network-stop-syncing-details)
      :icon     :main-icons/cancel
-     :on-press #(re-frame/dispatch [:mobile-network/stop-syncing])}]
+     :on-press #(hide-sheet-and-dispatch [:mobile-network/stop-syncing])}]
    [separator]
    [react/view {:flex       1
                 :align-self :stretch}

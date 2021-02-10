@@ -208,7 +208,9 @@
                                  (on-long-press))}))
       [container {:size size}
        [left-side {:icon-color                icon-color
-                   :text-color                text-color
+                   :text-color                (if on-press
+                                                text-color
+                                                (:text-color (themes :main)))
                    :icon-bg-color             icon-bg-color
                    :title-accessibility-label title-accessibility-label
                    :icon                      icon

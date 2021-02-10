@@ -25,7 +25,8 @@
      [:multiaccount]]
     [react/view {:style styles/container}
      [topbar/topbar {:title (i18n/label :t/mobile-network-settings)}]
-     [react/view {:style styles/switch-container}
+     [react/view {:style styles/switch-container
+                  :accessibility-label "mobile-network-use-mobile"}
       [profile.components/settings-switch-item
        {:label-kw  :t/mobile-network-use-mobile
         :value     syncing-on-mobile-network?
@@ -33,7 +34,8 @@
      [react/view {:style styles/details}
       [react/text {:style styles/use-mobile-data-text}
        (i18n/label :t/mobile-network-use-mobile-data)]]
-     [react/view {:style styles/switch-container}
+     [react/view {:style styles/switch-container
+                  :accessibility-label "mobile-network-ask-me"}
       [profile.components/settings-switch-item
        {:label-kw  :t/mobile-network-ask-me
         :value     (not remember-syncing-choice?)
@@ -43,8 +45,9 @@
       {:style styles/defaults-container}
       [react/text
        {:style    styles/defaults
+        :accessibility-label "restore-defaults"
         :on-press #(hide-sheet-and-dispatch [:mobile-network/restore-defaults])}
-       "Restore Defaults"]]]))
+       (i18n/label :t/restore-defaults)]]]))
 
 (def settings-sheet
   {:content sheets/settings-sheet})

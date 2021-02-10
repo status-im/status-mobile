@@ -59,7 +59,6 @@
          :syncing-on-mobile-network? (boolean sync?) {})
         (multiaccounts.update/multiaccount-update
          :remember-syncing-choice? (boolean remember-choice?) {})
-        (bottom-sheet/hide-bottom-sheet)
         (when (and cellular? sync?)
           (mailserver/process-next-messages-request))
         (wallet/restart-wallet-service-default))))))

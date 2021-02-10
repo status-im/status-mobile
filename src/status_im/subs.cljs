@@ -851,6 +851,14 @@
    (get ranges chat-id)))
 
 (re-frame/reg-sub
+ :mailserver/current-name
+ :<- [:mailserver/current-id]
+ :<- [:fleets/current-fleet]
+ :<- [:mailserver/mailservers]
+ (fn [[current-mailserver-id current-fleet mailservers]]
+   (get-in mailservers [current-fleet current-mailserver-id :name])))
+
+(re-frame/reg-sub
  :chats/all-loaded?
  :<- [::pagination-info]
  :<- [:chats/current-chat-id]
@@ -1743,54 +1751,41 @@
 
 ;;UI ==============================================================================================================
 
-;;TODO this subscription looks super weird huge and with dispatches?
 (re-frame/reg-sub
- :connectivity/status-properties
+ :connectivity/state
  :<- [:network-status]
  :<- [:disconnected?]
  :<- [:mailserver/connecting?]
  :<- [:mailserver/connection-error?]
  :<- [:mailserver/request-error?]
- :<- [:mailserver/fetching?]
  :<- [:network/type]
  :<- [:multiaccount]
  (fn [[network-status disconnected? mailserver-connecting? mailserver-connection-error?
-       mailserver-request-error? mailserver-fetching? network-type multiaccount]]
-   (let [error-label     (cond
-                           (= network-status :offline)
-                           :t/offline
+       mailserver-request-error? network-type {:keys [syncing-on-mobile-network? use-mailservers?]}]]
+   (merge {:mobile (mobile-network-utils/cellular? network-type)
+           :sync syncing-on-mobile-network?
+           :peers :online}
+          (cond
+            (= network-status :offline)
+            {:peers :offline
+             :node :offline}
 
-                           mailserver-connecting?
-                           :t/connecting
+            (not use-mailservers?)
+            {:node :disabled}
 
-                           mailserver-connection-error?
-                           :t/mailserver-reconnect
+            (or mailserver-connection-error? mailserver-connecting?)
+            {:node :connecting}
 
-                           mailserver-request-error?
-                           :t/mailserver-request-error-status
+            mailserver-request-error?
+            {:node :error}
 
-                           (and (mobile-network-utils/cellular? network-type)
-                                (not (:syncing-on-mobile-network? multiaccount)))
-                           :mobile-network
+            disconnected?
+            {:peers :offline
+             :node :offline}
 
-                           disconnected?
-                           :t/offline
-
-                           :else nil)
-         connected?       (and (nil? error-label) (not= :mobile-network error-label))]
-     {:message            (or error-label :t/connected)
-      :connected?         connected?
-      :connecting?        (= error-label :t/connecting)
-      :loading-indicator? (and mailserver-fetching? connected?)
-      :on-press-event       (cond
-                              mailserver-connection-error?
-                              :mailserver.ui/reconnect-mailserver-pressed
-
-                              mailserver-request-error?
-                              :mailserver.ui/request-error-pressed
-
-                              (= :mobile-network error-label)
-                              :mobile-network/show-offline-sheet)})))
+            :else
+            {:peers :online
+             :node :online}))))
 
 ;;CONTACT ==============================================================================================================
 

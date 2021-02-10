@@ -10,9 +10,7 @@
 (views/defview sync-settings []
   (views/letsubs [{:keys [syncing-on-mobile-network?
                           use-mailservers?]}          [:multiaccount]
-                  current-mailserver-id               [:mailserver/current-id]
-                  current-fleet                       [:fleets/current-fleet]
-                  mailservers                         [:mailserver/mailservers]]
+                  current-mailserver-name             [:mailserver/current-name]]
     [react/view {:style {:flex 1 :background-color colors/white}}
      [topbar/topbar {:title (i18n/label :t/sync-settings)
                      :navigation {:on-press #(re-frame/dispatch [:navigate-to :profile-stack {:screen :my-profile}])}}]
@@ -32,8 +30,7 @@
                       :title               (i18n/label :t/history-nodes)
                       :on-press            #(re-frame/dispatch [:navigate-to :offline-messaging-settings])
                       :accessory           :text
-                      :accessory-text      (when use-mailservers?
-                                             (get-in mailservers [current-fleet current-mailserver-id :name]))
+                      :accessory-text      (when use-mailservers? current-mailserver-name)
                       :chevron             true}]
       ;; TODO(Ferossgp): Devider componemt
       [react/view {:height           1

@@ -165,6 +165,7 @@
     "connect": "Connect",
     "connect-mailserver-content": "Connect to {{name}}?",
     "connected": "Connected",
+    "connected-to": "Connected to",
     "connecting": "Connecting...",
     "connecting-requires-login": "Connecting to another network requires login",
     "connection-with-the-card-lost": "Connection with the card\n has been lost",
@@ -1403,5 +1404,18 @@
     "everyone": "Everyone",
     "show-profile-pictures": "Show profile pictures of",
     "non-archival-node": "RPC endpoint doesn't support archival requests. Your local transfers history might be incomplete.",
-    "custom-node": "You are using custom RPC endpoint. Your local transfers history might be incomplete."
+    "custom-node": "You are using custom RPC endpoint. Your local transfers history might be incomplete.",
+    "connection-status": "Connection status",
+    "peer-to-peer": "Peer to peer",
+    "not-connected-to-peers": "Not connected to any peers",
+    "unable-to-send-messages": "Unable to send and receive messages",
+    "can-send-messages": "You can send and receive new messages",
+    "not-connected-nodes": "Not connected to a status node",
+    "unable-to-fetch": "Unable to fetch chat history",
+    "nodes-disabled": "Status nodes disabled",
+    "waiting-wi-fi": "Waiting for Wi-Fi…",
+    "you-can-fetch": "You can fetch chat history",
+    "youre-on-mobile-network": "You’re on mobile network",
+    "status-mobile-descr": "Status tends to use a lot of data when syncing chats. You can choose not to sync when on mobile network",
+    "restore-defaults": "Restore Defaults"
 }

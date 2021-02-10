@@ -295,16 +295,16 @@
             @(re-frame/subscribe [:chats/current-chat])]
         (when current-chat
           [react/view {:style {:flex 1}}
-           [connectivity/connectivity
-            [topbar]
-            [react/view {:style {:flex 1}}
-             (if group-chat
-               [invitation-requests chat-id admins]
-               [add-contact-bar chat-id])
-             [messages-view {:chat          current-chat
-                             :bottom-space  (max @bottom-space @panel-space)
-                             :pan-responder pan-responder
-                             :space-keeper  space-keeper}]]]
+           [connectivity/loading-indicator]
+           [topbar]
+           [react/view {:style {:flex 1}}
+            (if group-chat
+              [invitation-requests chat-id admins]
+              [add-contact-bar chat-id])
+            [messages-view {:chat          current-chat
+                            :bottom-space  (max @bottom-space @panel-space)
+                            :pan-responder pan-responder
+                            :space-keeper  space-keeper}]]
            (when (and group-chat invitation-admin)
              [accessory/view {:y               position-y
                               :on-update-inset on-update}
