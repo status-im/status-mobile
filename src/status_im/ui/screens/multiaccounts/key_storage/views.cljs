@@ -137,7 +137,7 @@
                                                   :height 16}]]])
 
 (defn keycard-upsell-banner []
-  [react/touchable-highlight {:on-press #(.openURL ^js react/linking "https://keycard.tech/")}
+  [react/touchable-highlight {:on-press #(.openURL ^js react/linking "https://get-keycard.status.im/")}
    [react/view {:background-color (if (= :dark @colors/theme) "#2C5955" "#DDF8F4")
                 :border-radius 16
                 :margin 16

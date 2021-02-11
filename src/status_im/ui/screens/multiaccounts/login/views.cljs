@@ -14,7 +14,8 @@
             [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.colors :as colors])
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn login-multiaccount [^js password-text-input]
@@ -43,7 +44,8 @@
             sign-in-enabled? [:sign-in-enabled?]
             auth-method [:auth-method]
             view-id [:view-id]
-            supported-biometric-auth [:supported-biometric-auth]]
+            supported-biometric-auth [:supported-biometric-auth]
+            keycard?                 [:keycard-multiaccount?]]
     [react/keyboard-avoiding-view {:style ast/multiaccounts-view}
      [topbar/topbar {:border-bottom     false
                      :right-accessories [{:icon     :more
@@ -91,10 +93,12 @@
                               :style           {:margin-left 3 :margin-right 10}
                               :on-value-change #(re-frame/dispatch [:multiaccounts/save-password %])}]
           [react/text (i18n/label :t/save-password)]])]]
-     (when processing
+     (if processing
        [react/view styles/processing-view
         [react/activity-indicator {:animating true}]
-        [react/i18n-text {:style styles/processing :key :processing}]])
+        [react/i18n-text {:style styles/processing :key :processing}]]
+       (when-not keycard?
+         [key-storage/keycard-upsell-banner]))
 
      [toolbar/toolbar
       {:size :large
