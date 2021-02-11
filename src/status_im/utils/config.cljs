@@ -143,4 +143,11 @@
              default-networks)))
 
 (def link-preview-enabled-site?
-  #{"youtube.com" "youtu.be" "github.com" "giphy.com" "gph.is" "media.giphy.com"})
+  #{"youtube.com"
+    "youtu.be"
+    "our.status.im"
+    "medium.com"
+    "github.com"
+    "giphy.com"
+    "gph.is"
+    "media.giphy.com"})
