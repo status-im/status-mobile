@@ -18,6 +18,7 @@
    [{:name      :wallet
      :insets    {:top false}
      :style     {:padding-bottom tabbar.styles/tabs-diff}
+     :on-focus  [:wallet/tab-opened]
      :component wallet.accounts/accounts-overview}
     {:name      :wallet-account
      :component  wallet.account/account}

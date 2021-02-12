@@ -185,17 +185,6 @@
                     :min-block min-block
                     :min-block-transfers-count min-block-transfers-count)}))
 
-(fx/defn set-max-block-with-transfers
-  [{:keys [db]} address transfers]
-  (let [max-block (reduce
-                   (fn [max-block {:keys [block]}]
-                     (if (> block max-block)
-                       block
-                       max-block))
-                   (get-in db [:wallet :accounts address :max-block] 0)
-                   transfers)]
-    {:db (assoc-in db [:wallet :accounts address :max-block] max-block)}))
-
 (defn update-fetching-status
   [db addresses fetching-type state]
   (update-in
@@ -231,7 +220,7 @@
         max-known-block (get-max-block-with-transfers db address)
         effects (cond-> [(when (seq transfers)
                            (set-lowest-fetched-block checksum transfers))
-                         (set-max-block-with-transfers checksum transfers)]
+                         (wallet/set-max-block-with-transfers checksum transfers)]
 
                   (seq transfers)
                   (concat (mapv add-transfer transfers))
@@ -250,7 +239,7 @@
                                               acc))
                                           #{}
                                           transfers))
-                         nil))
+                         (zero? max-known-block)))
 
                   (< (count transfers) limit)
                   (conj (tx-history-end-reached checksum)))]
@@ -286,6 +275,7 @@
   [cofx transfers params]
   (fx/merge cofx
             (handle-new-transfer transfers params)
+            (wallet/stop-fetching-on-empty-tx-history transfers)
             (check-ens-transactions transfers)))
 
 (fx/defn tx-fetching-failed

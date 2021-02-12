@@ -171,15 +171,17 @@
       balances)))
 
 (defn get-token-balances
-  [{:keys [addresses tokens init? assets]}]
+  [{:keys [addresses tokens scan-all-tokens? assets]}]
   (json-rpc/call
    {:method            "wallet_getTokensBalances"
     :params            [addresses (keys tokens)]
     :number-of-retries 50
     :on-success
     (fn [results]
-      (when-let [balances (clean-up-results results tokens (if init? nil assets))]
-        (re-frame/dispatch (if init?
+      (when-let [balances (clean-up-results
+                           results tokens
+                           (if scan-all-tokens? nil assets))]
+        (re-frame/dispatch (if scan-all-tokens?
                              ;; NOTE: when there it is not a visible
                              ;; assets we make an initialization round
                              [::tokens-found balances]
@@ -222,15 +224,18 @@
   {:events [:wallet/update-balances]}
   [{{:keys [network-status :wallet/all-tokens
             multiaccount :multiaccount/accounts] :as db} :db
-    :as cofx} addresses init?]
+    :as cofx} addresses scan-all-tokens?]
+  (log/debug "update-balances"
+             "accounts" addresses
+             "scan-all-tokens?" scan-all-tokens?)
   (let [addresses (or addresses (map (comp string/lower-case :address) accounts))
         {:keys [:wallet/visible-tokens]} multiaccount
         chain     (ethereum/chain-keyword db)
         assets    (get visible-tokens chain)
         tokens    (->> (vals all-tokens)
                        (remove #(or (:hidden? %)
-                                    ;;if not init remove not visible tokens
-                                    (and (not init?)
+                                    ;;if not scan-all-tokens? remove not visible tokens
+                                    (and (not scan-all-tokens?)
                                          (not (get assets (:symbol %))))))
                        (reduce (fn [acc {:keys [address symbol]}]
                                  (assoc acc address symbol))
@@ -240,10 +245,10 @@
       (fx/merge
        cofx
        {:wallet/get-balances        addresses
-        :wallet/get-tokens-balances {:addresses addresses
-                                     :tokens    tokens
-                                     :assets    assets
-                                     :init?     init?}
+        :wallet/get-tokens-balances {:addresses        addresses
+                                     :tokens           tokens
+                                     :assets           assets
+                                     :scan-all-tokens? scan-all-tokens?}
         :db                         (prices/clear-error-message db :balance-update)}
        (when-not assets
          (multiaccounts.update/multiaccount-update
@@ -263,6 +268,10 @@
   {:db (assoc-in db
                  [:wallet :accounts (eip55/address->checksum address) :balance :ETH]
                  (money/bignumber balance))})
+
+(defn has-empty-balances? [db]
+  (some #(nil? (get-in % [:balance :ETH]))
+        (get-in db [:wallet :accounts])))
 
 (fx/defn update-toggle-in-settings
   [{{:keys [multiaccount] :as db} :db :as cofx} symbol checked?]
@@ -299,6 +308,13 @@
                                                balances)))
                            accounts
                            balances))}))
+
+(fx/defn set-zero-balances
+  [cofx {:keys [address]}]
+  (fx/merge
+   cofx
+   (update-balance address 0)
+   (update-tokens-balances {address {:SNT 0}})))
 
 (fx/defn configure-token-balance-and-visibility
   {:events [::tokens-found]}
@@ -555,11 +571,29 @@
 (def ms-2-min (datetime/minutes 2))
 (def ms-4-min (datetime/minutes 4))
 
-(defn get-restart-interval [db]
-  (if (ethereum/custom-rpc-node?
+(defn get-max-block-with-transfer [db]
+  (reduce
+   (fn [block [_ {:keys [max-block]}]]
+     (if (or (nil? block)
+             (> max-block block))
+       max-block
+       block))
+   nil
+   (get-in db [:wallet :accounts])))
+
+(defn get-restart-interval
+  [db]
+  (let [max-block (get-max-block-with-transfer db)]
+    (cond
+      (ethereum/custom-rpc-node?
        (ethereum/current-network db))
-    ms-4-min
-    ms-20-min))
+      ms-4-min
+
+      (and max-block (zero? max-block))
+      (log/info "[wallet] No transactions found")
+
+      :else
+      ms-20-min)))
 
 (defn get-watching-interval [db]
   (if (ethereum/custom-rpc-node?
@@ -573,9 +607,10 @@
         old-timeout     (get db :wallet-service/restart-timeout)
         timeout         (or
                          old-timeout
-                         (utils.utils/set-timeout
-                          #(re-frame.core/dispatch [::restart])
-                          (get-restart-interval db)))
+                         (when-let [interval (get-restart-interval db)]
+                           (utils.utils/set-timeout
+                            #(re-frame.core/dispatch [::restart])
+                            interval)))
         max-known-block (get db :wallet/max-known-block 0)]
     {:db           (-> db
                        (update :wallet dissoc :fetching)
@@ -591,12 +626,14 @@
   [{:keys [db] :as cofx} watch-new-blocks?]
   (let [old-timeout (get db :wallet-service/restart-timeout)
         state       (get db :wallet-service/state)
-        timeout     (utils.utils/set-timeout
-                     #(re-frame.core/dispatch [::restart])
-                     (get-restart-interval db))]
+        timeout     (when-let [interval (get-restart-interval db)]
+                      (utils.utils/set-timeout
+                       #(re-frame.core/dispatch [::restart])
+                       interval))]
     {:db            (-> db
-                        (assoc :wallet-service/state :started)
-                        (assoc :wallet-service/restart-timeout timeout))
+                        (assoc :wallet-service/state :started
+                               :wallet-service/restart-timeout timeout
+                               :wallet/was-started? true))
      ::start-wallet watch-new-blocks?
      ::utils.utils/clear-timeouts
      [old-timeout]}))
@@ -625,9 +662,10 @@
 (def background-cooldown-time (datetime/minutes 3))
 
 (fx/defn restart-wallet-service-after-background
-  [{:keys [now] :as cofx} background-time]
-  (when (> (- now background-time)
-           background-cooldown-time)
+  [{:keys [now db] :as cofx} background-time]
+  (when (and (get db :wallet/was-started?)
+             (> (- now background-time)
+                background-cooldown-time))
     (restart-wallet-service
      cofx
      {:force-start? true})))
@@ -699,6 +737,7 @@
 
 (fx/defn clear-timeouts
   [{:keys [db]}]
+  (log/info "[wallet] clear-timeouts")
   (let [watch-timeout-id (get db :wallet/watch-txs-timeout)
         restart-timeout-id (get db :wallet-service/restart-timeout)]
     {:db                          (dissoc db :wallet/watch-txs-timeout
@@ -766,3 +805,52 @@
             (when on-close
               {:dispatch on-close})
             (navigation/navigate-back)))
+(fx/defn stop-fetching-on-empty-tx-history
+  [{:keys [db] :as cofx} transfers]
+  (let [non-empty-history?    (get db :wallet/non-empty-tx-history?)
+        watching-outgoing-tx? (get db :wallet/watch-txs-timeout)
+        custom-node?          (ethereum/custom-rpc-node?
+                               (ethereum/current-network db))]
+    (if (and (not non-empty-history?)
+             (not watching-outgoing-tx?)
+             (empty? transfers)
+             (not custom-node?))
+      (clear-timeouts cofx)
+      {:db (assoc db :wallet/non-empty-tx-history? true)})))
+
+(re-frame/reg-fx
+ ::set-inital-range
+ (fn []
+   (json-rpc/call
+    {:method            "wallet_setInitialBlocksRange"
+     :params            []
+     :number-of-retries 10
+     :on-success        #(log/info "Initial blocks range was successfully set")
+     :on-error          #(log/info "Initial blocks range was not set")})))
+
+(fx/defn set-initial-blocks-range
+  [{:keys [db]}]
+  {::set-inital-range nil})
+
+(fx/defn tab-opened
+  {:events [:wallet/tab-opened]}
+  [{:keys [db] :as cofx}]
+  (when-not (get db :wallet/was-started?)
+    (restart-wallet-service cofx {:force-start? true})))
+
+(fx/defn set-max-block [{:keys [db]} address block]
+  (log/debug "set-max-block"
+             "address" address
+             "block" block)
+  {:db (assoc-in db [:wallet :accounts address :max-block] block)})
+
+(fx/defn set-max-block-with-transfers
+  [{:keys [db] :as cofx} address transfers]
+  (let [max-block (reduce
+                   (fn [max-block {:keys [block]}]
+                     (if (> block max-block)
+                       block
+                       max-block))
+                   (get-in db [:wallet :accounts address :max-block] 0)
+                   transfers)]
+    (set-max-block cofx address max-block)))

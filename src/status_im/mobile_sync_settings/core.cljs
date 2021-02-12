@@ -18,11 +18,13 @@
 
 (fx/defn on-network-status-change
   [{:keys [db] :as cofx}]
-  (let [logged-in? (multiaccounts.model/logged-in? cofx)
+  (let [initialized? (get db :network-status/initialized?)
+        logged-in? (multiaccounts.model/logged-in? cofx)
         {:keys [remember-syncing-choice?]} (:multiaccount db)]
     (apply
      fx/merge
      cofx
+     {:db (assoc db :network-status/initialized? true)}
      (cond
        (and logged-in?
             (utils/cellular? (:network/type db))
@@ -35,8 +37,13 @@
 
        logged-in?
        [(mailserver/process-next-messages-request)
-        (bottom-sheet/hide-bottom-sheet)
-        (wallet/restart-wallet-service-default)]))))
+        (bottom-sheet/hide-bottom-sheet)]
+
+       ;; NOTE(rasom): When we log into account on-network-status-change is
+       ;; dispatched, but that doesn't mean there was a status change, thus
+       ;; no reason to restart wallet.
+       (and logged-in? initialized?)
+       [(wallet/restart-wallet-service-default)]))))
 
 (defn apply-settings
   ([sync?] (apply-settings sync? :default))

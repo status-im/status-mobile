@@ -135,6 +135,7 @@
    "localnotifications_notificationPreferences" {}
    "wallet_getTransfers" {}
    "wallet_getTokensBalances" {}
+   "wallet_setInitialBlocksRange" {}
    "wallet_getBlocksByAddress" {}
    "wallet_getTransfersFromBlock" {}
    "wallet_getTransfersByAddress" {}

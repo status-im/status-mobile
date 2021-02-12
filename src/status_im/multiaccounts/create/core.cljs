@@ -131,9 +131,14 @@
 
 (fx/defn exit-wizard
   [{:keys [db] :as cofx}]
-  (fx/merge cofx
-            {:db (dissoc db :intro-wizard)}
-            (navigation/navigate-to-cofx :notifications-onboarding nil)))
+  (let [recovered-account? (get-in db [:intro-wizard :recovering?])]
+    (log/info "exit-wizard" "recovered-account?" recovered-account?)
+    (fx/merge
+     cofx
+     {:db (-> db
+              (dissoc :intro-wizard)
+              (assoc :recovered-account? recovered-account?))}
+     (navigation/navigate-to-cofx :notifications-onboarding nil))))
 
 (fx/defn init-key-generation
   [{:keys [db] :as cofx}]
