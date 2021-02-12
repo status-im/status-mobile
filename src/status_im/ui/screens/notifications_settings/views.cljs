@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
             [quo.platform :as platform]
             [quo.design-system.colors :as quo-colors]

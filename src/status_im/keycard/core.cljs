@@ -10,7 +10,7 @@
             [status-im.keycard.recovery :as recovery]
             [status-im.keycard.sign :as sign]
             [status-im.keycard.wallet :as wallet]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.navigation :as navigation]
@@ -542,3 +542,14 @@
       :keycard
       :from-key-storage-and-migration?
       boolean))
+
+(fx/defn ui-recovery-phrase-cancel-pressed
+  {:events [:keycard.ui/recovery-phrase-cancel-pressed]}
+  [{:keys [db]}]
+  {:db (assoc-in db [:keycard :setup-step] :recovery-phrase)})
+
+(fx/defn ui-pin-numpad-delete-button-pressed
+  {:events [:keycard.ui/pin-numpad-delete-button-pressed]}
+  [{:keys [db]} step]
+  (when-not (empty? (get-in db [:keycard :pin step]))
+    {:db (update-in db [:keycard :pin step] pop)}))

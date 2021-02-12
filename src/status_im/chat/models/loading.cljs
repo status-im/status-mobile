@@ -132,6 +132,7 @@
                 (message-seen/mark-messages-seen current-chat-id)))))
 
 (fx/defn load-more-messages
+  {:events [:chat.ui/load-more-messages]}
   [{:keys [db] :as cofx}]
   (when-let [current-chat-id (:current-chat-id db)]
     (when-let [session-id (get-in db [:pagination-info current-chat-id :messages-initialized?])]

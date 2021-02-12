@@ -7,7 +7,7 @@
    [status-im.constants :as constants]
    [status-im.chat.models :as models.chat]
    [status-im.transport.filters.core :as models.filters]
-   [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
+   [status-im.bottom-sheet.core :as bottom-sheet]
    [status-im.data-store.chats :as data-store.chats]
    [status-im.ethereum.json-rpc :as json-rpc]))
 

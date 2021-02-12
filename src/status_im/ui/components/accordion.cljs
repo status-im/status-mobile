@@ -3,7 +3,7 @@
             [quo.core :as quo]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as icons]))
+            [status-im.ui.components.icons.icons :as icons]))
 
 (defn section
   "Render collapsible section"
@@ -30,6 +30,6 @@
 
 (defn accordion
   "List of collapseable sections"
-  []
+  [])
   ;; TODO(shivekkhurana): Extract status-im.ui.screens.wallet.recipient.views/accordion component here
-  )
+

@@ -8,7 +8,7 @@
             [status-im.acquisition.gateway :as gateway]
             [status-im.chat.models :as chat]
             [status-im.navigation :as navigation]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
+            [status-im.bottom-sheet.core :as bottom-sheet]))
 
 (def public-chat "public-chat")
 

@@ -1,7 +1,7 @@
 (ns status-im.ui.components.tooltip.views
   (:require [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.tooltip.animations :as animations]
             [status-im.ui.components.tooltip.styles :as styles])
@@ -21,9 +21,9 @@
           {:style               (styles/tooltip-text font-size)
            :accessibility-label accessibility-label}
           label]])
-      #_[vector-icons/icon :icons/tooltip-tip (assoc
-                                               styles/tooltip-triangle
-                                               :color color)]]]))
+      #_[icons/icon :icons/tooltip-tip (assoc
+                                        styles/tooltip-triangle
+                                        :color color)]]]))
 
 (views/defview bottom-tooltip-info [label on-close]
   (views/letsubs [bottom-anim-value (animation/create-value 75)
@@ -31,12 +31,12 @@
     {:component-did-mount (animations/animate-tooltip 75 bottom-anim-value opacity-value 10)}
     [react/view styles/bottom-tooltip-container
      [react/animated-view {:style (styles/tooltip-animated bottom-anim-value opacity-value)}
-      [vector-icons/icon :icons/tooltip-tip (assoc
-                                             styles/tooltip-triangle
-                                             :color colors/gray
-                                             :container-style {:transform [{:rotate "180deg"}]})]
+      [icons/icon :icons/tooltip-tip (assoc
+                                      styles/tooltip-triangle
+                                      :color colors/gray
+                                      :container-style {:transform [{:rotate "180deg"}]})]
       [react/view styles/bottom-tooltip-text-container
        [react/text {:style styles/bottom-tooltip-text} label]
        [react/touchable-highlight {:on-press on-close
                                    :style    styles/close-icon}
-        [vector-icons/icon :main-icons/close {:color colors/white}]]]]]))
+        [icons/icon :main-icons/close {:color colors/white}]]]]]))

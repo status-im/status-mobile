@@ -6,7 +6,7 @@
             [status-im.react-native.resources :as resources]
             [quo.core :as quo]
             [status-im.ui.components.colors :as colors]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.constants :as constants]))
 
 (def titles {constants/profile-pictures-visibility-contacts-only (i18n/label :t/recent-recipients)

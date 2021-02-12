@@ -2,9 +2,9 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.screens.mobile-network-settings.style :as styles]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [re-frame.core :as re-frame]
-            status-im.ui.screens.mobile-network-settings.events
+            status-im.mobile-sync-settings.core
             [status-im.ui.screens.profile.components.views :as profile.components]
             [status-im.ui.screens.mobile-network-settings.sheets :as sheets]
             [status-im.ui.components.topbar :as topbar]))

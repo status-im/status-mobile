@@ -2,7 +2,7 @@
   (:require [status-im.ui.components.colors :as colors]
             [quo.core :as quo]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as icons]))
+            [status-im.ui.components.icons.icons :as icons]))
 
 (def action-button-container
   {:position        :absolute

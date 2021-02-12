@@ -54,7 +54,6 @@ Core namespace must only contain functions that can be called outside of the mod
 
 ### db.cljs
 
-- must contain specs for the app-db subpart the module modifies
 - must contain getter and setter functions used by fx producing functions and subscriptions
 - db logic called by other modules
 
@@ -72,21 +71,8 @@ These guidelines make db.cljs namespaces the place to go when making changes to 
 
 ### Events
 
-- all events must be defined in the single `status-im.events` namespace which can be considered as an index of everything going on in the app
-- events must always be declared with `register-handler-fx`, no `register-handler-db`
-- events must never use the `trim-v` interceptor
-- events must only contain a function call defined in a module
-    ```clojure
-    (handlers/register-handler-fx
-      :notifications/handle-push-notification-open
-    (fn [cofx [_ event]]
-      (notifications/handle-push-notification-open event cofx)))
-    ```
-- events must use synthetic namespaces:
-
-  - `:module.ui/` for user triggered events
-  - `:module.callback/` for callback events, which are events bringing back the result of an fx to the event loop, the name of the event should end with `-success` or `-error` most of the time. Other possibilities can be `-granted`, `-denied` for instance.
-  - `:module/` for internal events, examples are time based events marked `-timed-out`, external changes marked `-changed` or reception of external events marked `-received`.
+- all events must be defined in the `core.cljs` namespaces
+- events must always be declared with `fx/defn` macro
 
 ## Testing flow
 - All PRs automatically go to "REVIEW" column on [Pipeline for QA](https://github.com/status-im/status-react/projects/7) project on Github. This is our main board for QA / devs interaction

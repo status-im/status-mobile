@@ -1,12 +1,12 @@
 (ns status-im.qr-scanner.core
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.chat.models :as chat]
             [status-im.router.core :as router]
             [status-im.navigation :as navigation]
             [status-im.utils.utils :as utils]
             [status-im.ethereum.core :as ethereum]
-            [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
+            [status-im.add-new.db :as new-chat.db]
             [status-im.utils.fx :as fx]
             [status-im.group-chats.core :as group-chats]))
 

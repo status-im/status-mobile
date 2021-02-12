@@ -5,7 +5,7 @@
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as status]
             [status-im.ui.components.colors :as colors]

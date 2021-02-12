@@ -13,5 +13,7 @@
  (fn []
    (open-privacy-policy-link!)))
 
-(fx/defn open-privacy-policy-link [_]
+(fx/defn open-privacy-policy-link
+  {:events [:privacy-policy/privacy-policy-button-pressed]}
+  [_]
   {:privacy-policy/open-privacy-policy-link nil})

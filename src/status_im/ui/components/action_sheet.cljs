@@ -1,5 +1,5 @@
 (ns status-im.ui.components.action-sheet
-  (:require [status-im.i18n :as i18n]
+  (:require [status-im.i18n.i18n :as i18n]
             [status-im.utils.core :as utils]
             ["react-native" :refer (ActionSheetIOS)]))
 

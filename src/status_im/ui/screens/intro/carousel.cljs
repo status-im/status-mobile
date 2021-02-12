@@ -3,7 +3,7 @@
             [quo.react-native :as rn]
             [quo.core :as quo]
             [reagent.core :as r]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.intro.styles :as styles]))
 
 (defn code [val]

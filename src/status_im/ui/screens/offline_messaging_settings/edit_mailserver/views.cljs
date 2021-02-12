@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.screens.offline-messaging-settings.edit-mailserver.styles :as styles]
             [clojure.string :as string]

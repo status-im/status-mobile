@@ -1,7 +1,7 @@
 (ns status-im.network.net-info
   (:require [re-frame.core :as re-frame]
             [status-im.native-module.core :as status]
-            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
+            [status-im.mobile-sync-settings.core :as mobile-network]
             [status-im.utils.fx :as fx]
             [status-im.wallet.core :as wallet]
             ["@react-native-community/netinfo" :default net-info]

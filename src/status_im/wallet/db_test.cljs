@@ -2,7 +2,7 @@
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.wallet.db :as wallet.db]
             [status-im.utils.money :as money]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n.i18n :as i18n]))
 
 (deftest test-too-precise-amount?
   (testing "try both decimal and scientific or hex format"

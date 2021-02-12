@@ -1,7 +1,7 @@
 (ns status-im.ui.components.checkbox.view
   (:require [status-im.ui.components.checkbox.styles :as styles]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]))
 
 (defn checkbox

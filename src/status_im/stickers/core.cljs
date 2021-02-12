@@ -100,6 +100,7 @@
       (assoc :stickers/set-pending-timeout-fx nil))))
 
 (fx/defn install-stickers-pack
+  {:events [:stickers/install-pack]}
   [{{:keys [multiaccount] :as db} :db :as cofx} id]
   (let [pack (get-in db [:stickers/packs id])]
     (fx/merge
@@ -116,6 +117,7 @@
   (contains? sticker :hash))
 
 (fx/defn load-sticker-pack-success
+  {:events [:stickers/load-sticker-pack-success]}
   [{:keys [db] :as cofx} edn-string id price]
   (let [{:keys [stickers] :as pack} (assoc (get (edn/read-string edn-string) 'meta)
                                            :id id :price price)]
@@ -126,6 +128,7 @@
                      (assoc-in [:stickers/packs id] pack))})))
 
 (fx/defn open-sticker-pack
+  {:events [:stickers/open-sticker-pack]}
   [{{:stickers/keys [packs packs-installed] :networks/keys [current-network] :as db} :db :as cofx} id]
   (when (and id (string/starts-with? current-network "mainnet"))
     (let [pack    (or (get packs-installed id)
@@ -140,13 +143,15 @@
                     :stickers/owned-packs-fx [pack-contract address]})))))
 
 (fx/defn load-pack
-  [cofx url id price]
+  {:events [:stickers/load-pack]}
+  [_ url id price]
   {:http-get {:url url
               :on-success
               (fn [o]
                 (re-frame/dispatch [:stickers/load-sticker-pack-success o id price]))}})
 
 (fx/defn load-packs
+  {:events [:stickers/load-packs]}
   [{:keys [db]}]
   (let [contract      (contracts/get-address db :status/stickers)
         pack-contract (contracts/get-address db :status/sticker-pack)
@@ -156,6 +161,7 @@
        :stickers/load-packs-fx [contract]})))
 
 (fx/defn approve-pack
+  {:events [:stickers/buy-pack]}
   [{db :db :as cofx} pack-id price]
   (let [address                 (ethereum/default-address db)
         sticker-market-contract (contracts/get-address db :status/sticker-market)
@@ -170,6 +176,7 @@
       :on-result [:stickers/pending-pack pack-id]})))
 
 (fx/defn pending-pack
+  {:events [:stickers/pending-pack]}
   [{{:keys [multiaccount] :as db} :db :as cofx} id]
   (let [contract (contracts/get-address db :status/sticker-pack)
         address  (ethereum/default-address db)
@@ -186,6 +193,7 @@
                    {:stickers/set-pending-timeout-fx nil})))))
 
 (fx/defn pending-timeout
+  {:events [:stickers/pending-timeout]}
   [{{:stickers/keys [packs-pending packs-owned] :as db} :db :as cofx}]
   (let [packs-diff (clojure.set/difference packs-pending packs-owned)
         contract   (contracts/get-address db :status/sticker-pack)
@@ -201,5 +209,12 @@
                  packs-diff
                  {})))))
 
-(fx/defn pack-owned [{db :db} id]
+(fx/defn pack-owned
+  {:events [:stickers/pack-owned]}
+  [{db :db} id]
   {:db (update db :stickers/packs-owned conj id)})
+
+(fx/defn select-pack
+  {:events [:stickers/select-pack]}
+  [{:keys [db]} id]
+  {:db (assoc db :stickers/selected-pack id)})

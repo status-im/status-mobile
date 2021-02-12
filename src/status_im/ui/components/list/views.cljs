@@ -1,26 +1,6 @@
 (ns status-im.ui.components.list.views
-  "
-  Wrapper for react-native list components.
-
-  (defn render [{:keys [title subtitle]}]
-    [item
-     [item-icon {:icon :dots_vertical_white}]
-     [item-content
-      [item-primary title]
-      [item-secondary subtitle]]
-     [item-icon {:icon :arrow_right_gray}]])
-
-  [flat-list {:data [{:title  \"\" :subtitle \"\"}] :render-fn render}]
-
-  [section-list {:sections [{:title \"\" :key :unik :data {:title  \"\" :subtitle \"\"}}] :render-fn render}]
-
-  or with a per-section `render-fn`
-
-  [section-list {:sections [{:title \"\" :key :unik :render-fn render :data {:title  \"\" :subtitle \"\"}}]}]
-  "
   (:require [reagent.core :as reagent]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [quo.core :as quo]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.styles :as styles]
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]
@@ -55,7 +35,7 @@
   [{:keys [icon style icon-opts]}]
   {:pre [(not (nil? icon))]}
   [react/view {:style (merge styles/item-icon-wrapper style)}
-   [vector-icons/icon icon (merge icon-opts {:style styles/item-icon})]])
+   [icons/icon icon (merge icon-opts {:style styles/item-icon})]])
 ;;TODO DEPRECATED, use status-im.ui.components.list-item.views
 (defn item-image
   [{:keys [source style image-style]}]
@@ -119,17 +99,6 @@
       (merge (base-list-props props)
              props
              {:data (to-array data)})])))
-
-(defn flat-list-generic-render-fn
-  "A generic status-react specific `render-fn` for `list-item`.
-  Handles `list-item` `data` consiting any combination of
-  `list-item/list-item` config map and `companent`."
-  [item _]
-  (cond
-    (map? item)    [quo/list-item item]
-    (vector? item) item
-    (nil? item)    nil
-    :else          [item]))
 
 (defn- wrap-render-section-header-fn [f]
   (fn [^js data]

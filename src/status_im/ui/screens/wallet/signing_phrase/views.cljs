@@ -2,9 +2,9 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [quo.core :as quo]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [re-frame.core :as re-frame]))
 
 (views/defview signing-phrase []

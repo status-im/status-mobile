@@ -1,11 +1,11 @@
 (ns status-im.ui.screens.keycard.views
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [quo.core :as quo]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.react :as react]
@@ -155,8 +155,8 @@
         [react/text {:style {:text-align :center
                              :color      colors/blue}}
          (i18n/label :t/learn-more-about-keycard)]
-        [vector-icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
-                                                           :container-style {:margin-left 5}}]]]]]
+        [icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
+                                                    :container-style {:margin-left 5}}]]]]]
     [react/view {:margin-bottom 32}
      [quo/button {:on-press #(re-frame/dispatch [:navigate-back])}
       (i18n/label :t/ok-got-it)]]]])
@@ -192,7 +192,7 @@
        :align-items      :center
        :justify-content  :center
        :border-radius    20}}
-     [vector-icons/icon
+     [icons/icon
       :main-icons/check
       {:color colors/green}]]
     [react/text {:style {:typography :header}}
@@ -224,7 +224,7 @@
                  :border-radius    16
                  :align-items      :center
                  :justify-content  :center}
-     [vector-icons/icon
+     [icons/icon
       :main-icons/cancel
       {:color  colors/red
        :width  20

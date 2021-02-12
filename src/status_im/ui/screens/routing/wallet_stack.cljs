@@ -7,7 +7,6 @@
             [status-im.ui.screens.wallet.account.views :as wallet.account]
             [status-im.ui.screens.wallet.add-new.views :as add-account]
             [status-im.ui.screens.wallet.account-settings.views :as account-settings]
-            [status-im.ui.screens.wallet.events :as wallet.events]
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
             [status-im.ui.screens.routing.core :as navigation]))
 
@@ -33,7 +32,7 @@
     {:name      :wallet-settings-assets
      :component wallet-settings/manage-assets}
     {:name      :wallet-add-custom-token
-     :on-focus  [::wallet.events/wallet-add-custom-token]
+     :on-focus  [:wallet/wallet-add-custom-token]
      :component custom-tokens/add-custom-token}
     {:name      :wallet-custom-token-details
      :component custom-tokens/custom-token-details}

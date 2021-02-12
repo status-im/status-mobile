@@ -1,7 +1,7 @@
 (ns status-im.ui.components.invite.advertiser
   (:require [status-im.ui.components.invite.modal :as modal]
             [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.acquisition.core :as acquisition]
             [status-im.acquisition.advertiser :as advertiser]))
 

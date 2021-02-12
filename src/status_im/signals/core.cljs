@@ -1,6 +1,6 @@
 (ns status-im.signals.core
   (:require [status-im.ethereum.subscriptions :as ethereum.subscriptions]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.login.core :as login]
             [status-im.multiaccounts.model :as multiaccounts.model]
@@ -42,6 +42,7 @@
               (mailserver/peers-summary-change previous-summary))))
 
 (fx/defn process
+  {:events [:signals/signal-received]}
   [cofx event-str]
   ;; We only convert to clojure when strictly necessary or we know it
   ;; won't impact performance, as it is a fairly costly operation on large-ish

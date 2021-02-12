@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.chat.toolbar-content
-  (:require [status-im.i18n :as i18n]
+  (:require [status-im.i18n.i18n :as i18n]
             [status-im.constants :as constants]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.react :as react]

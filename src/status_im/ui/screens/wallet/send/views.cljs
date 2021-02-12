@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.send.views
   (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.commands.core :as commands]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
@@ -12,7 +12,7 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list.views :as list]
             [status-im.wallet.utils :as wallet.utils]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.wallet.send.sheets :as sheets]
             [status-im.ui.screens.wallet.components.views :as components]

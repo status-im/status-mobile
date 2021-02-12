@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame.core]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.chat-icon.styles :as styles]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]

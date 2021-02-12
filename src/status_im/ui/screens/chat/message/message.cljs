@@ -1,12 +1,12 @@
 (ns status-im.ui.screens.chat.message.message
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.communities.core :as communities]
             [status-im.utils.config :as config]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.message.audio :as message.audio]
             [status-im.chat.models.reactions :as models.reactions]
@@ -42,11 +42,11 @@
                   :flex-direction                   :row
                   :align-items                      :flex-end})
     (when (and outgoing justify-timestamp?)
-      [vector-icons/icon (case outgoing-status
-                           :sending  :tiny-icons/tiny-pending
-                           :sent     :tiny-icons/tiny-sent
-                           :not-sent :tiny-icons/tiny-warning
-                           :tiny-icons/tiny-pending)
+      [icons/icon (case outgoing-status
+                    :sending  :tiny-icons/tiny-pending
+                    :sent     :tiny-icons/tiny-sent
+                    :not-sent :tiny-icons/tiny-warning
+                    :tiny-icons/tiny-pending)
        {:width  16
         :height 12
         :color  colors/white}])
@@ -197,7 +197,7 @@
     [react/text {:style style/not-sent-text}
      (i18n/label :t/status-not-sent-tap)]
     [react/view style/not-sent-icon
-     [vector-icons/icon :main-icons/warning {:color colors/red}]]]])
+     [icons/icon :main-icons/warning {:color colors/red}]]]])
 
 (defn message-delivery-status
   [{:keys [chat-id message-id outgoing-status message-type]}]
@@ -406,12 +406,12 @@
                  [react/view {:height         72 :align-self :center :justify-content :flex-end
                               :padding-bottom 10}
                   [react/view (style/collapse-button)
-                   [vector-icons/icon :main-icons/dropdown
+                   [icons/icon :main-icons/dropdown
                     {:color colors/white}]]]]]
                [react/touchable-highlight {:on-press #(swap! collapsed? not)
                                            :style    {:align-self :center :margin 5}}
                 [react/view (style/collapse-button)
-                 [vector-icons/icon :main-icons/dropdown-up
+                 [icons/icon :main-icons/dropdown-up
                   {:color colors/white}]]]))]]]))))
 
 (defmethod ->message constants/content-type-text

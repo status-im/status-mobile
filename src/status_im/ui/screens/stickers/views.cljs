@@ -1,10 +1,9 @@
 (ns status-im.ui.screens.stickers.views
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.screens.stickers.styles :as styles]
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.money :as money]
@@ -59,7 +58,7 @@
 (defview packs []
   (letsubs [packs [:stickers/all-packs]]
     [react/view styles/screen
-     [react/keyboard-avoiding-view components.styles/flex
+     [react/keyboard-avoiding-view {:flex 1}
       [topbar/topbar {:title (i18n/label :t/sticker-market)}]
       (if (seq packs)
         [react/scroll-view {:keyboard-should-persist-taps :handled :style {:padding 16}}
@@ -77,7 +76,7 @@
                     stickers installed owned pending]
              :as pack}
             [:stickers/get-current-pack]]
-    [react/keyboard-avoiding-view components.styles/flex
+    [react/keyboard-avoiding-view {:flex 1}
      [topbar/topbar {:modal? modal?}]
      (if pack
        [react/view {:flex 1}

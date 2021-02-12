@@ -1,11 +1,10 @@
 (ns status-im.ui.screens.wallet.transactions.views
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.wallet.transactions.styles :as styles]
@@ -99,7 +98,7 @@
                :align-items :center
                :background-color colors/blue-light
                :height           52}}
-      [vector-icons/tiny-icon
+      [icons/tiny-icon
        :tiny-icons/tiny-external
        {:color           colors/blue
         :container-style {:margin-right 5}}]
@@ -139,7 +138,7 @@
         custom-rpc-node?         @(re-frame/subscribe [:custom-rpc-node])
         non-archival-rpc-node?   @(re-frame/subscribe [:wallet/non-archival-node])
         all-fetched?             @(re-frame/subscribe [:wallet/tx-history-fetched? address])]
-    [react/view components.styles/flex
+    [react/view {:flex 1}
      [etherscan-link address]
      (cond non-archival-rpc-node?
            [non-archival-node]
@@ -272,14 +271,14 @@
                     date amount-text currency-text]
              :as   transaction}
             [:wallet.transactions.details/screen hash address]]
-    [react/view {:style components.styles/flex}
+    [react/view {:flex 1}
      ;;TODO options should be replaced by bottom sheet ,and topbar should be used here
      [topbar/topbar {:title             (i18n/label :t/transaction-details)
                      :right-accessories (when transaction
                                           [{:icon     :main-icons/more
                                             :on-press #(list-selection/show {:options
                                                                              (details-action hash url)})}])}]
-     [react/scroll-view {:style components.styles/flex}
+     [react/scroll-view {:flex 1}
       [details-header date type amount-text currency-text]
       [details-confirmations confirmations confirmations-progress (= :failed type)]
       [react/view {:style styles/details-separator}]

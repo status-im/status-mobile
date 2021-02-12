@@ -6,13 +6,13 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ethereum.ens]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.utils :as chat.utils]
@@ -70,7 +70,7 @@
                        :background-color colors/blue
                        :align-items :center
                        :justify-content :center}}
-   [vector-icons/icon
+   [icons/icon
     (case state
       (:available :connected :connected-with-different-key :owned)
       :main-icons/check
@@ -108,10 +108,10 @@
     [react/touchable-highlight
      {:on-press #(debounce/dispatch-and-chill [::ens/input-icon-pressed] 3000)}
      [icon-wrapper colors/blue
-      [vector-icons/icon :main-icons/arrow-right {:color colors/white-persist}]]]
+      [icons/icon :main-icons/arrow-right {:color colors/white-persist}]]]
 
     [icon-wrapper colors/gray
-     [vector-icons/icon :main-icons/arrow-right {:color colors/white-persist}]]))
+     [icons/icon :main-icons/arrow-right {:color colors/white-persist}]]))
 
 (defn help-message-text-element
   ([label]
@@ -336,10 +336,10 @@
     :registration-failed
     [react/view {:style {:width       40      :height          40 :border-radius 30 :background-color colors/red-light
                          :align-items :center :justify-content :center}}
-     [vector-icons/icon :main-icons/warning {:color colors/red}]]
+     [icons/icon :main-icons/warning {:color colors/red}]]
     [react/view {:style {:width       40      :height          40 :border-radius 30 :background-color colors/gray-lighter
                          :align-items :center :justify-content :center}}
-     [vector-icons/icon :main-icons/check {:color colors/blue}]]))
+     [icons/icon :main-icons/check {:color colors/blue}]]))
 
 (defn- final-state-label
   [state username]

@@ -3,12 +3,12 @@
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
             [re-frame.db]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.key-storage.core :as multiaccounts.key-storage]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.topbar :as topbar]
@@ -132,9 +132,9 @@
                  :accessibility-label :learn-more
                  :on-press #(js/alert :press)}
      (i18n/label :learn-more)]
-    [vector-icons/icon :main-icons/tiny-external {:color  colors/blue
-                                                  :width  16
-                                                  :height 16}]]])
+    [icons/icon :main-icons/tiny-external {:color  colors/blue
+                                           :width  16
+                                           :height 16}]]])
 
 (defn keycard-upsell-banner []
   [react/touchable-highlight {:on-press #(.openURL ^js react/linking "https://get-keycard.status.im/")}
@@ -200,7 +200,7 @@
                   :border-radius   16
                   :align-items     :center
                   :justify-content :center}
-      [vector-icons/icon :main-icons/warning {:color colors/blue}]]
+      [icons/icon :main-icons/warning {:color colors/blue}]]
      [react/text {:style {:typography    :title-bold
                           :margin-top    8
                           :margin-bottom 24}}
@@ -228,7 +228,7 @@
                 :border-radius   16
                 :align-items     :center
                 :justify-content :center}
-    [vector-icons/icon :main-icons/tiny-warning-background {:color colors/red}]]
+    [icons/icon :main-icons/tiny-warning-background {:color colors/red}]]
    [react/text {:style styles/popover-title}
     (i18n/label :t/move-keystore-file-to-keycard)]
    [react/view styles/popover-body-container
@@ -255,7 +255,7 @@
                 :border-radius   16
                 :align-items     :center
                 :justify-content :center}
-    [vector-icons/icon :main-icons/close {:color colors/red}]]
+    [icons/icon :main-icons/close {:color colors/red}]]
    [react/text {:style {:typography    :title-bold
                         :margin-top    8
                         :margin-bottom 24}}

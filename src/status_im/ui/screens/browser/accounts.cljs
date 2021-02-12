@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.browser.accounts
   (:require [status-im.ui.components.list.views :as list]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [quo.core :as quo]
             [status-im.ui.components.chat-icon.screen :as chat-icon]

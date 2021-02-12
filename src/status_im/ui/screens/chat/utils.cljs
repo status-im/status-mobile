@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.chat.utils
   (:require [status-im.ethereum.stateofus :as stateofus]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
             [status-im.multiaccounts.core :as multiaccounts]))

@@ -7,7 +7,7 @@
             [status-im.native-module.core :as status]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [clojure.string :as string]
             [taoensso.timbre :as log]
             [status-im.multiaccounts.create.core :as multiaccounts.create]))

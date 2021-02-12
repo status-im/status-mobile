@@ -6,10 +6,10 @@
             [status-im.chat.models :as chat]
             [status-im.constants :as constants]
             [status-im.router.core :as router]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ethereum.core :as ethereum]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.add-new.new-chat.db :as new-chat.db]
+            [status-im.add-new.db :as new-chat.db]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
@@ -106,7 +106,7 @@
   "Dispatch url so we can get access to re-frame/db"
   [url]
   (if-not (nil? url)
-    (re-frame/dispatch [:handle-universal-link url])
+    (re-frame/dispatch [:universal-links/handle-url url])
     (log/debug "universal-links: no url")))
 
 (fx/defn on-handle

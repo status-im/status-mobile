@@ -1,7 +1,6 @@
 (ns status-im.multiaccounts.logout.core
   (:require [re-frame.core :as re-frame]
-            [status-im.chaos-mode.core :as chaos-mode]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.init.core :as init]
             [status-im.native-module.core :as status]
             [status-im.transport.core :as transport]
@@ -24,7 +23,6 @@
               (keychain/save-auth-method key-uid auth-method)
               (transport/stop-whisper)
               (wallet/clear-timeouts)
-              (chaos-mode/stop-checking)
               (init/initialize-app-db))))
 
 (re-frame/reg-fx
@@ -33,7 +31,7 @@
    (status/stop-local-notifications)))
 
 (fx/defn logout
-  {:events [:logout :multiaccounts.logout.ui/logout-confirmed]}
+  {:events [:logout :multiaccounts.logout.ui/logout-confirmed :multiaccounts.update.callback/save-settings-success]}
   [cofx]
   (logout-method cofx {:auth-method keychain/auth-method-none
                        :logout?     true}))

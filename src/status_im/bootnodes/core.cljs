@@ -1,7 +1,7 @@
 (ns status-im.bootnodes.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]))
@@ -22,6 +22,7 @@
     (get-in cofx [:db :multiaccount :custom-bootnodes network id])))
 
 (fx/defn set-input
+  {:events [:bootnodes.ui/input-changed]}
   [{:keys [db]} input-key value]
   {:db (update
         db
@@ -35,6 +36,7 @@
                   :url  (not (valid-address? value)))})})
 
 (fx/defn edit
+  {:events [:bootnodes.ui/add-bootnode-pressed]}
   [{:keys [db] :as cofx} id]
   (let [{:keys [id
                 address
@@ -61,6 +63,8 @@
                                  [:multiaccounts.update.callback/save-settings-success])}))))
 
 (fx/defn upsert
+  {:events [:bootnodes.ui/save-pressed]
+   :interceptors [(re-frame/inject-cofx :random-id-generator)]}
   [{{:bootnodes/keys [manage] :keys [multiaccount] :as db} :db
     random-id-generator :random-id-generator :as cofx}]
   (let [{:keys [name id url]} manage
@@ -94,11 +98,13 @@
      {:success-event [:multiaccounts.update.callback/save-settings-success]})))
 
 (fx/defn set-bootnodes-from-qr
+  {:events [:bootnodes.callback/qr-code-scanned]}
   [cofx url]
   (assoc (set-input cofx :url (string/trim url))
          :dispatch [:navigate-back]))
 
 (fx/defn show-delete-bootnode-confirmation
+  {:events [:bootnodes.ui/delete-pressed]}
   [_ bootnode-id]
   {:ui/show-confirmation {:title (i18n/label :t/delete-bootnode-title)
                           :content (i18n/label :t/delete-bootnode-are-you-sure)
@@ -106,6 +112,7 @@
                           :on-accept #(re-frame/dispatch [:bootnodes.ui/delete-confirmed bootnode-id])}})
 
 (fx/defn delete-bootnode
+  {:events [:bootnodes.ui/delete-confirmed]}
   [cofx bootnode-id]
   (fx/merge cofx
             (delete bootnode-id)

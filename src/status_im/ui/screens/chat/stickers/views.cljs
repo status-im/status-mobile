@@ -4,9 +4,9 @@
             [reagent.core :as reagent]
             [status-im.stickers.core :as stickers]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.colors :as colors]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
             [status-im.ui.screens.chat.stickers.styles :as styles]
             [status-im.utils.contenthash :as contenthash]
@@ -21,9 +21,9 @@
 
 (defn- no-stickers-yet-panel []
   [react/view {:style {:flex 1 :align-items :center :justify-content :center}}
-   [vector-icons/icon :stickers-icons/stickers-big {:color  colors/gray
-                                                    :width  64
-                                                    :height 64}]
+   [icons/icon :stickers-icons/stickers-big {:color  colors/gray
+                                             :width  64
+                                             :height 64}]
    [react/text {:style {:margin-vertical 8 :font-size 17}} (i18n/label :t/you-dont-have-stickers)]
    [quo/button {:type     :secondary
                 :on-press #(do
@@ -51,9 +51,9 @@
                            :align-items     :center
                            :justify-content :center
                            :width           window-width}}
-       [vector-icons/icon :stickers-icons/sticker-history {:width  64
-                                                           :height 64
-                                                           :color  colors/gray}]
+       [icons/icon :stickers-icons/sticker-history {:width  64
+                                                    :height 64
+                                                    :color  colors/gray}]
        [react/text {:style {:margin-top 12
                             :font-size  17}}
         (i18n/label :t/recently-used-stickers)]])))
@@ -130,15 +130,15 @@
                                 (re-frame/dispatch [:stickers/load-packs])
                                 (re-frame/dispatch [:navigate-to :stickers]))
                   :selected? false :background-color colors/blue}
-       [vector-icons/icon :main-icons/add {:width 20 :height 20 :color colors/white-persist}]]
+       [icons/icon :main-icons/add {:width 20 :height 20 :color colors/white-persist}]]
       [react/view {:width 2}]
       [react/scroll-view {:horizontal true :style {:padding-left 2}}
        [react/view
         [react/view {:style {:flex-direction :row}}
          [pack-icon {:id :recent :background-color colors/white}
-          [vector-icons/icon :stickers-icons/recent {:color  colors/gray
-                                                     :width  44
-                                                     :height 44}]]
+          [icons/icon :stickers-icons/recent {:color  colors/gray
+                                              :width  44
+                                              :height 44}]]
          (for [{:keys [id thumbnail]} installed-packs]
            ^{:key id}
            [pack-icon {:id               id

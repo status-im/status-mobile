@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
+            [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.native-module.core :as native-module]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.utils.fx :as fx]
@@ -82,11 +82,6 @@
     (identicon/identicon public-key)))
 
 (re-frame/reg-fx
- ::chaos-mode-changed
- (fn [on]
-   (native-module/chaos-mode-update on (constantly nil))))
-
-(re-frame/reg-fx
  ::webview-debug-changed
  (fn [value]
    (when platform/android?
@@ -98,20 +93,16 @@
    (native-module/set-blank-preview-flag flag)))
 
 (fx/defn confirm-wallet-set-up
+  {:events [:multiaccounts.ui/wallet-set-up-confirmed]}
   [cofx]
   (multiaccounts.update/multiaccount-update cofx
                                             :wallet-set-up-passed? true {}))
 
 (fx/defn confirm-home-tooltip
+  {:events [:multiaccounts.ui/hide-home-tooltip]}
   [cofx]
   (multiaccounts.update/multiaccount-update cofx
                                             :hide-home-tooltip? true {}))
-
-(fx/defn switch-dev-mode
-  [cofx dev-mode?]
-  (multiaccounts.update/multiaccount-update cofx
-                                            :dev-mode? dev-mode?
-                                            {}))
 
 (fx/defn switch-webview-debug
   {:events [:multiaccounts.ui/switch-webview-debug]}
@@ -122,16 +113,8 @@
              :webview-debug (boolean value)
              {})))
 
-(fx/defn switch-chaos-mode
-  [{:keys [db] :as cofx} chaos-mode?]
-  (when (:multiaccount db)
-    (fx/merge cofx
-              {::chaos-mode-changed chaos-mode?}
-              (multiaccounts.update/multiaccount-update
-               :chaos-mode? (boolean chaos-mode?)
-               {}))))
-
 (fx/defn switch-preview-privacy-mode
+  {:events [:multiaccounts.ui/preview-privacy-mode-switched]}
   [{:keys [db] :as cofx} private?]
   (fx/merge cofx
             {::blank-preview-flag-changed private?}
@@ -140,7 +123,8 @@
              {})))
 
 (fx/defn switch-webview-permission-requests?
-  [{:keys [db] :as cofx} enabled?]
+  {:events [:multiaccounts.ui/webview-permission-requests-switched]}
+  [cofx enabled?]
   (multiaccounts.update/multiaccount-update
    cofx
    :webview-allow-permission-requests? (boolean enabled?)

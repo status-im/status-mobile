@@ -1,10 +1,9 @@
 (ns status-im.ui.screens.wallet.settings.views
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.styles :as components.styles]
             [quo.core :as quo]
             [reagent.core :as reagent]
             [status-im.ui.components.topbar :as topbar]
@@ -75,9 +74,9 @@
     {:component-will-unmount #(do
                                 (re-frame/dispatch [:search/token-filter-changed nil])
                                 (reset! search-active? false))}
-    [react/view (merge components.styles/flex {:background-color colors/white})
+    [react/view {:flex 1 :background-color colors/white}
      [toolbar]
-     [react/view {:style components.styles/flex}
+     [react/view {:flex 1}
       [react/view {:padding-horizontal 16
                    :padding-vertical   10}
        [search-input/search-input

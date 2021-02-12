@@ -1,8 +1,8 @@
 (ns status-im.signing.gas
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.utils.fx :as fx]
             [status-im.utils.money :as money]))
 

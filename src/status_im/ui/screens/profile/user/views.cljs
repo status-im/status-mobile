@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.profile.user.views
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
             [status-im.ui.components.colors :as colors]
             [status-im.multiaccounts.core :as multiaccounts]

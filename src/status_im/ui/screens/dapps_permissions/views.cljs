@@ -1,14 +1,14 @@
 (ns status-im.ui.screens.dapps-permissions.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.constants :as constants]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.dapps-permissions.styles :as styles]
             [quo.core :as quo]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.topbar :as topbar]))
 
 (defn d-icon []

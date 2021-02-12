@@ -7,7 +7,7 @@
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
             [status-im.ui.components.colors :as colors]
             [status-im.constants :as constants]
@@ -16,7 +16,9 @@
             [status-im.utils.fx :as fx]
             [status-im.utils.utils :as utils]
             [status-im.utils.types :as types]
-            [status-im.ui.screens.add-new.new-public-chat.db :as new-public-chat.db]))
+            [status-im.add-new.db :as new-public-chat.db]
+            [status-im.mailserver.topics :as mailserver.topics]
+            [status-im.mailserver.constants :as mailserver.constants]))
 
 (defn chats []
   (:chats (types/json->clj (js/require "./chats.js"))))
@@ -85,6 +87,7 @@
   by mailserver, corresponding event :chat.ui/join-time-messages-checked
   dissociates these two fileds via this function, thereby signalling that the
   public chat is not fresh anymore."
+  {:events [:chat.ui/join-time-messages-checked]}
   [{:keys [db] :as cofx} chat-id]
   (when (:might-have-join-time-messages? (get-chat cofx chat-id))
     {:db (dissoc-join-time-fields db chat-id)}))
@@ -198,6 +201,7 @@
 
 (fx/defn clear-history
   "Clears history of the particular chat"
+  {:events [:chat.ui/clear-history]}
   [{:keys [db] :as cofx} chat-id remove-chat?]
   (let [{:keys [last-message public?
                 deleted-at-clock-value]} (get-in db [:chats chat-id])
@@ -227,14 +231,15 @@
 
 (fx/defn remove-chat
   "Removes chat completely from app, producing all necessary effects for that"
-  [{:keys [db now] :as cofx} chat-id navigate-home?]
+  {:events [:chat.ui/remove-chat]}
+  [{:keys [db now] :as cofx} chat-id]
   (fx/merge cofx
             (mailserver/remove-gaps chat-id)
             (mailserver/remove-range chat-id)
             (deactivate-chat chat-id)
             (clear-history chat-id true)
             (transport.filters/stop-listening chat-id)
-            (when (and navigate-home? (not (= (:view-id db) :home)))
+            (when (not (= (:view-id db) :home))
               (navigation/navigate-to-cofx :home {}))))
 
 (fx/defn offload-all-messages
@@ -265,6 +270,7 @@
 
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
+  {:events [:chat.ui/navigate-to-chat]}
   [{db :db :as cofx} chat-id]
   (fx/merge cofx
             {:db (assoc db :inactive-chat-id chat-id)}
@@ -273,6 +279,7 @@
 
 (fx/defn start-chat
   "Start a chat, making sure it exists"
+  {:events [:chat.ui/start-chat]}
   [{:keys [db] :as cofx} chat-id]
   ;; don't allow to open chat with yourself
   (when (not= (multiaccounts.model/current-public-key cofx) chat-id)
@@ -290,6 +297,7 @@
 
 (fx/defn start-public-chat
   "Starts a new public chat"
+  {:events [:chat.ui/start-public-chat]}
   [cofx topic {:keys [dont-navigate? profile-public-key]}]
   (if (or (new-public-chat.db/valid-topic? topic) profile-public-key)
     (if (active-chat? cofx topic)
@@ -321,6 +329,7 @@
 
 (fx/defn disable-chat-cooldown
   "Turns off chat cooldown (protection against message spamming)"
+  {:events [:chat/disable-cooldown]}
   [{:keys [db]}]
   {:db (assoc db :chat/cooldown-enabled? false)})
 
@@ -372,3 +381,58 @@
   (fx/merge (assoc-in cofx [:db :contacts/identity] identity)
             (contact.core/create-contact identity)
             (navigation/navigate-to-cofx :profile nil)))
+
+(fx/defn clear-history-pressed
+  {:events [:chat.ui/clear-history-pressed]}
+  [_ chat-id]
+  {:ui/show-confirmation
+   {:title               (i18n/label :t/clear-history-title)
+    :content             (i18n/label :t/clear-history-confirmation-content)
+    :confirm-button-text (i18n/label :t/clear-history-action)
+    :on-accept           #(do
+                            (re-frame/dispatch [:bottom-sheet/hide])
+                            (re-frame/dispatch [:chat.ui/clear-history chat-id false]))}})
+
+(fx/defn chat-ui-fill-gaps
+  {:events [:chat.ui/fill-gaps]}
+  [{:keys [db] :as cofx} gap-ids]
+  (let [chat-id (:current-chat-id db)
+        topics (mailserver.topics/topics-for-current-chat db)
+        gaps (keep
+              (fn [id]
+                (get-in db [:mailserver/gaps chat-id id]))
+              gap-ids)]
+    (mailserver/fill-the-gap
+     cofx
+     {:gaps    gaps
+      :topics  topics
+      :chat-id chat-id})))
+
+(fx/defn chat-ui-fetch-more
+  {:events [:chat.ui/fetch-more]}
+  [{:keys [db] :as cofx}]
+  (let [chat-id (:current-chat-id db)
+
+        {:keys [lowest-request-from]}
+        (get-in db [:mailserver/ranges chat-id])
+
+        topics (mailserver.topics/topics-for-current-chat db)
+        gaps [{:id   :first-gap
+               :to   lowest-request-from
+               :from (- lowest-request-from mailserver.constants/one-day)}]]
+    (mailserver/fill-the-gap
+     cofx
+     {:gaps    gaps
+      :topics  topics
+      :chat-id chat-id})))
+
+(fx/defn chat-ui-remove-chat-pressed
+  {:events [:chat.ui/remove-chat-pressed]}
+  [_ chat-id]
+  {:ui/show-confirmation
+   {:title               (i18n/label :t/delete-confirmation)
+    :content             (i18n/label :t/delete-chat-confirmation)
+    :confirm-button-text (i18n/label :t/delete)
+    :on-accept           #(do
+                            (re-frame/dispatch [:bottom-sheet/hide])
+                            (re-frame/dispatch [:chat.ui/remove-chat chat-id]))}})

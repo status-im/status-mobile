@@ -8,7 +8,7 @@
             [status-im.ui.screens.chat.styles.message.audio :as style]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.slider :as slider]))
 

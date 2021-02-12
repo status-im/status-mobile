@@ -323,10 +323,6 @@
   (log/debug "[native-module] update-mailservers")
   (.updateMailservers ^js (status) enodes on-result))
 
-(defn chaos-mode-update [on on-result]
-  (log/debug "[native-module] chaos-mode-update")
-  (.chaosModeUpdate ^js (status) on on-result))
-
 (defn toggle-webview-debug [on]
   (log/debug "[native-module] toggle-webview-debug" on)
   (.toggleWebviewDebug ^js (status) on))

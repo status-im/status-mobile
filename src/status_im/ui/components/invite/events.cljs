@@ -6,7 +6,7 @@
             [status-im.utils.config :as config]
             [status-im.ethereum.abi-spec :as abi-spec]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.signing.core :as signing]
             [status-im.ethereum.core :as ethereum]
             [status-im.ui.components.react :as react]
@@ -15,7 +15,7 @@
             [status-im.acquisition.core :as acquisition]
             [status-im.acquisition.persistance :as persistence]
             [status-im.utils.money :as money]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]))
+            [status-im.bottom-sheet.core :as bottom-sheet]))
 
 (def privacy-policy-link "https://status.im/referral-program/terms-and-conditions")
 

@@ -19,7 +19,7 @@
 ;; NOTE(oskarth): Feature flag deprecation lifecycles. We want to make sure
 ;; flags stay up to date and are removed once behavior introduced is stable.
 
-(goog-define INFURA_TOKEN "d3633f237cbd4649a639067d1807584c")
+(goog-define INFURA_TOKEN "800c641949d64d768a5070a1b0511938")
 
 (def mainnet-rpc-url (str "https://mainnet.infura.io/v3/" INFURA_TOKEN))
 (def testnet-rpc-url (str "https://ropsten.infura.io/v3/" INFURA_TOKEN))

@@ -6,7 +6,7 @@
    [status-im.audio.core :as audio]
    [status-im.ui.components.react :as react]
    [re-frame.core :as re-frame]
-   [status-im.i18n :as i18n]
+   [status-im.i18n.i18n :as i18n]
    [quo.components.animated.pressable :as pressable]
    [status-im.native-module.core :as status]
    [status-im.ui.screens.chat.components.input :as input]
@@ -14,7 +14,7 @@
    [status-im.ui.screens.chat.audio-message.styles :as styles]
    [status-im.ui.components.colors :as colors]
    [status-im.ui.components.animation :as anim]
-   [status-im.ui.components.icons.vector-icons :as icons]
+   [status-im.ui.components.icons.icons :as icons]
    [status-im.utils.utils :as utils.utils]
    [status-im.utils.fs :as fs]
    [status-im.utils.fx :as fx]))

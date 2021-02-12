@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.badge :as badge]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
@@ -10,7 +10,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.screens.home.styles :as styles]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.core :as utils]
             [status-im.utils.datetime :as time]))

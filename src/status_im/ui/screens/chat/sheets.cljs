@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.chat.sheets
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.constants :as constants]
             [status-im.ui.components.list-selection :as list-selection]

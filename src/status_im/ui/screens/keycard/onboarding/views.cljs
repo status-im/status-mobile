@@ -4,8 +4,8 @@
             [status-im.ui.components.toolbar :as bottom-toolbar]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.i18n :as i18n]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.topbar :as topbar]
@@ -51,8 +51,8 @@
           [react/text {:style {:text-align :center
                                :color      colors/blue}}
            (i18n/label :t/learn-more-about-keycard)]
-          [vector-icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
-                                                             :container-style {:margin-left 5}}]]]]]
+          [icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
+                                                      :container-style {:margin-left 5}}]]]]]
       [react/view {:width "80%"}
        (for [[number header text] [["1"
                                     (i18n/label :t/keycard-onboarding-start-step1)

@@ -1,11 +1,11 @@
 (ns status-im.ui.screens.chat.views
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.connectivity.view :as connectivity]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.sheets :as sheets]
@@ -68,7 +68,7 @@
         #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
         :accessibility-label :add-to-contacts-button}
        [react/view {:style (style/add-contact)}
-        [vector-icons/icon :main-icons/add
+        [icons/icon :main-icons/add
          {:color colors/blue}]
         [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]])))
 

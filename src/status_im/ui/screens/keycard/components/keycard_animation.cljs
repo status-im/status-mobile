@@ -4,7 +4,7 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]))
 
 (defn circle [{:keys [animation-value color size]}]
@@ -50,17 +50,17 @@
   [indicator-container animation-value
    (case @state
      :error
-     [vector-icons/icon :main-icons/close {:color  colors/red
-                                           :height 28
-                                           :width  28}]
+     [icons/icon :main-icons/close {:color  colors/red
+                                    :height 28
+                                    :width  28}]
      :success
-     [vector-icons/icon :main-icons/check {:color  colors/green
-                                           :height 28
-                                           :width  28}]
+     [icons/icon :main-icons/check {:color  colors/green
+                                    :height 28
+                                    :width  28}]
      :connected
-     [vector-icons/icon :main-icons/check {:color  colors/blue
-                                           :height 28
-                                           :width  28}]
+     [icons/icon :main-icons/check {:color  colors/blue
+                                    :height 28
+                                    :width  28}]
      :processing
      [react/activity-indicator {:color colors/blue}]
 
@@ -122,7 +122,7 @@
                :right           19.5
                :height          42
                :width           25}}
-      [vector-icons/icon :main-icons/keycard-logo-big
+      [icons/icon :main-icons/keycard-logo-big
        {:color  key-color
         :width  25
         :height 42}]]

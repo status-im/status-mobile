@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.browser.site-blocked.views
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.browser.site-blocked.styles :as styles]
             [quo.core :as quo])
@@ -13,7 +13,7 @@
                       :bounces                      false
                       :content-container-style      styles/container}
    [react/view styles/container-root-view
-    [vector-icons/icon :main-icons/info {:color colors/red}]
+    [icons/icon :main-icons/info {:color colors/red}]
     [react/text {:style styles/title-text}
      (i18n/label :t/browsing-site-blocked-title)]
     [react/nested-text {:style styles/description-text}

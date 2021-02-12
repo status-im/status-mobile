@@ -4,7 +4,7 @@
             [quo.design-system.spacing :as spacing]
             [quo.design-system.colors :as colors]
             [quo.react-native :as rn]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]))
 
 (def avatar-extended-size 64)
@@ -72,10 +72,10 @@
              [animated/view {:style          (header-subtitle {:minimized minimized})
                              :pointer-events :box-none}
               (when subtitle-icon
-                [vector-icons/icon subtitle-icon {:color           (:icon-02 @colors/theme)
-                                                  :width           16
-                                                  :height          16
-                                                  :container-style {:margin-right 4}}])
+                [icons/icon subtitle-icon {:color           (:icon-02 @colors/theme)
+                                           :width           16
+                                           :height          16
+                                           :container-style {:margin-right 4}}])
               [quo/text {:number-of-lines 1
                          :ellipsize-mode  :middle
                          :monospace       monospace

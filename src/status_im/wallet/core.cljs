@@ -7,7 +7,7 @@
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.tokens :as tokens]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.navigation :as navigation]
             [status-im.utils.core :as utils.core]
             [status-im.utils.fx :as fx]
@@ -19,13 +19,15 @@
             [status-im.contact.db :as contact.db]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im.ui.components.bottom-sheet.core :as bottom-sheet]
+            [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.wallet.prices :as prices]
             [status-im.wallet.utils :as wallet.utils]
             [status-im.native-module.core :as status]
-            [status-im.ui.screens.mobile-network-settings.utils :as mobile-network-utils]
+            [status-im.utils.mobile-sync :as mobile-network-utils]
             [status-im.utils.datetime :as datetime]
-            status-im.wallet.recipient.core))
+            status-im.wallet.recipient.core
+            [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
+            [status-im.async-storage.core :as async-storage]))
 
 (defn get-balance
   [{:keys [address on-success on-error]}]
@@ -61,6 +63,7 @@
   {:db (assoc-error-message db :balance-update :error-unable-to-get-token-balance)})
 
 (fx/defn open-transaction-details
+  {:events [:wallet.ui/show-transaction-details]}
   [cofx hash address]
   (navigation/navigate-to-cofx cofx :wallet-stack {:screen  :wallet-transaction-details
                                                    :initial false
@@ -275,6 +278,7 @@
                  (update-balances % nil nil)))))
 
 (fx/defn toggle-visible-token
+  {:events [:wallet.settings/toggle-visible-token]}
   [cofx symbol checked?]
   (update-toggle-in-settings cofx symbol checked?))
 
@@ -700,3 +704,65 @@
     {:db                          (dissoc db :wallet/watch-txs-timeout
                                           :wallet-service/restart-timeout)
      ::utils.utils/clear-timeouts [watch-timeout-id restart-timeout-id]}))
+
+(fx/defn get-buy-crypto-preference
+  {:events [::get-buy-crypto]}
+  [_]
+  {::async-storage/get {:keys [:buy-crypto-hidden]
+                        :cb   #(re-frame/dispatch [::store-buy-crypto-preference %])}})
+
+(fx/defn wallet-will-focus
+  {:events [::wallet-stack]}
+  [{:keys [db] :as cofx}]
+  (let [wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])
+        sign-phrase-showed? (get db :wallet/sign-phrase-showed?)]
+    {:dispatch [:wallet.ui/pull-to-refresh] ;TODO temporary simple fix for v1
+     :db       (if (or wallet-set-up-passed? sign-phrase-showed?)
+                 db
+                 (assoc db :popover/popover {:view [signing-phrase/signing-phrase]}
+                        :wallet/sign-phrase-showed? true))}))
+
+(fx/defn wallet-wallet-add-custom-token
+  {:events [:wallet/wallet-add-custom-token]}
+  [{:keys [db]}]
+  {:db (dissoc db :wallet/custom-token-screen)})
+
+(fx/defn hide-buy-crypto
+  {:events [::hide-buy-crypto]}
+  [{:keys [db]}]
+  {:db                  (assoc db :wallet/buy-crypto-hidden true)
+   ::async-storage/set! {:buy-crypto-hidden true}})
+
+(fx/defn store-buy-crypto
+  {:events [::store-buy-crypto-preference]}
+  [{:keys [db]} {:keys [buy-crypto-hidden]}]
+  {:db (assoc db :wallet/buy-crypto-hidden buy-crypto-hidden)})
+
+(fx/defn contract-address-paste
+  {:events [:wallet.custom-token.ui/contract-address-paste]}
+  [_]
+  {:wallet.custom-token/contract-address-paste nil})
+
+(fx/defn transactions-add-filter
+  {:events [:wallet.transactions/add-filter]}
+  [{:keys [db]} id]
+  {:db (update-in db [:wallet :filters] conj id)})
+
+(fx/defn transactions-remove-filter
+  {:events [:wallet.transactions/remove-filter]}
+  [{:keys [db]} id]
+  {:db (update-in db [:wallet :filters] disj id)})
+
+(fx/defn transactions-add-all-filters
+  {:events [:wallet.transactions/add-all-filters]}
+  [{:keys [db]}]
+  {:db (assoc-in db [:wallet :filters]
+                 wallet.db/default-wallet-filters)})
+
+(fx/defn settings-navigate-back-pressed
+  {:events [:wallet.settings.ui/navigate-back-pressed]}
+  [cofx on-close]
+  (fx/merge cofx
+            (when on-close
+              {:dispatch on-close})
+            (navigation/navigate-back)))

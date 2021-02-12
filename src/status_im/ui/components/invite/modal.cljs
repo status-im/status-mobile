@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [quo.react-native :as rn]
             [quo.core :as quo]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.invite.style :as styles]
             [status-im.ui.components.invite.events :as invite]
             [status-im.acquisition.gateway :as gateway]

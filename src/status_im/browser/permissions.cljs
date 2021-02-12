@@ -1,7 +1,7 @@
 (ns status-im.browser.permissions
   (:require [status-im.constants :as constants]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.navigation :as navigation]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.utils.fx :as fx]))
@@ -80,6 +80,7 @@
                                :on-success #()}]}))
 
 (fx/defn revoke-dapp-permissions
+  {:events [:dapps/revoke-access]}
   [cofx dapp]
   (fx/merge cofx
             (revoke-permissions dapp)
@@ -121,6 +122,7 @@
 
 (fx/defn allow-permission
   "Add permission to set of allowed permission and process next permission"
+  {:events [:browser.permissions.ui/dapp-permission-allowed]}
   [{:keys [db] :as cofx}]
   (let [{:keys [requested-permission message-id dapp-name yield-control? params]}
         (get-in db [:browser/options :show-permission])]
@@ -132,6 +134,7 @@
 
 (fx/defn deny-permission
   "Add permission to set of allowed permission and process next permission"
+  {:events [:browser.permissions.ui/dapp-permission-denied]}
   [{:keys [db] :as cofx}]
   (let [{:keys [requested-permission message-id dapp-name]} (get-in db [:browser/options :show-permission])]
     (fx/merge (assoc-in cofx [:db :browser/options :show-permission] nil)

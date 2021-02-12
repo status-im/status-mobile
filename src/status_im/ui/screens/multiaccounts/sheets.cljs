@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.multiaccounts.sheets
   (:require [quo.core :as quo]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]))
 

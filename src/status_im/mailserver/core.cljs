@@ -5,15 +5,13 @@
             [re-frame.core :as re-frame]
             [status-im.data-store.mailservers :as data-store.mailservers]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.mailserver.constants :as constants]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.native-module.core :as status]
             [status-im.node.core :as node]
-            [status-im.ui.screens.mobile-network-settings.utils
-             :as
-             mobile-network-utils]
+            [status-im.utils.mobile-sync :as mobile-network-utils]
             [status-im.navigation :as navigation]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
@@ -370,8 +368,9 @@
         topics (topics/topics-for-chat db chat-id)]
     (reduce assoc-topic-chat chats-map topics)))
 
-(fx/defn handle-request-success [{{:keys [chats] :as db} :db}
-                                 {:keys [request-id topics]}]
+(fx/defn handle-request-success
+  {:events [:mailserver.callback/request-success]}
+  [{{:keys [chats] :as db} :db} {:keys [request-id topics]}]
   (when (:mailserver/current-request db)
     (let [by-topic-never-synced-chats
           (reduce-kv
@@ -524,6 +523,7 @@
   "the current mailserver has been trusted
   update mailserver status to `:connected` and request messages
   if mailserver is ready"
+  {:events [:mailserver.callback/mark-trusted-peer-success]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db (update-mailserver-state db :connected)}
@@ -533,6 +533,7 @@
   "the current mailserver sym-key has been generated
   add sym-key to the mailserver in app-db and request messages if
   mailserver is ready"
+  {:events [:mailserver.callback/generate-mailserver-symkey-success]}
   [{:keys [db] :as cofx} {:keys [id]} sym-key-id]
   (let [current-fleet (node/current-fleet-key db)]
     (fx/merge
@@ -545,6 +546,7 @@
      (process-next-messages-request))))
 
 (fx/defn update-use-mailservers
+  {:events [:mailserver.ui/use-history-switch-pressed]}
   [cofx use-mailservers?]
   (fx/merge cofx
             (multiaccounts.update/multiaccount-update :use-mailservers? use-mailservers? {})
@@ -604,6 +606,7 @@
 (fx/defn check-connection
   "Check connection checks that the connection is successfully connected,
   otherwise it will try to change mailserver and connect again"
+  {:events [:mailserver/check-connection-timeout :mailserver.callback/mark-trusted-peer-error]}
   [{:keys [db now] :as cofx}]
   ;; check if logged into multiaccount
   (when (contains? db :multiaccount)
@@ -894,6 +897,7 @@
              (process-next-messages-request))))))))
 
 (fx/defn retry-next-messages-request
+  {:events [:mailserver.ui/retry-request-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db (dissoc db :mailserver/request-error)}
@@ -953,6 +957,7 @@
       (handle-request-error cofx errorMessage))))
 
 (fx/defn show-request-error-popup
+  {:events [:mailserver.ui/request-error-pressed]}
   [{:keys [db]}]
   (let [mailserver-error (:mailserver/request-error db)]
     {:utils/show-confirmation
@@ -991,6 +996,7 @@
                   :request    first-request})))))
 
 (fx/defn resend-request
+  {:events [:mailserver.callback/resend-request]}
   [{:keys [db] :as cofx} {:keys [request-id]}]
   (let [current-request (:mailserver/current-request db)
         gap-request?    (executing-gap-request? db)]
@@ -1065,7 +1071,9 @@
   (let [[initial host] (extract-address-components address)]
     (str "enode://" initial ":" password "@" host)))
 
-(fx/defn set-input [{:keys [db]} input-key value]
+(fx/defn set-input
+  {:events [:mailserver.ui/input-changed]}
+  [{:keys [db]} input-key value]
   {:db (update
         db
         :mailserver.edit/mailserver
@@ -1092,7 +1100,9 @@
 
 (def default? (comp not :user-defined fetch))
 
-(fx/defn edit [{:keys [db] :as cofx} id]
+(fx/defn edit
+  {:events [:mailserver.ui/user-defined-mailserver-selected]}
+  [{:keys [db] :as cofx} id]
   (let [{:keys [id address password name]} (fetch db id)
         url (when address (build-url address password))]
     (fx/merge cofx
@@ -1108,6 +1118,8 @@
       (update :id name)))
 
 (fx/defn upsert
+  {:events [:mailserver.ui/save-pressed]
+   :interceptors [(re-frame/inject-cofx :random-id-generator)]}
   [{{:mailserver.edit/keys [mailserver] :keys [multiaccount] :as db} :db
     random-id-generator :random-id-generator :as cofx}]
 
@@ -1145,6 +1157,7 @@
            (connected? db id))))
 
 (fx/defn delete
+  {:events [:mailserver.ui/delete-confirmed]}
   [{:keys [db] :as cofx} id]
   (if (can-delete? db id)
     {:db (-> db
@@ -1161,6 +1174,7 @@
     {:dispatch [:navigate-back]}))
 
 (fx/defn show-connection-confirmation
+  {:events [:mailserver.ui/default-mailserver-selected :mailserver.ui/connect-pressed]}
   [{:keys [db]} mailserver-id]
   (let [current-fleet (node/current-fleet-key db)]
     {:ui/show-confirmation
@@ -1176,6 +1190,7 @@
       :on-cancel nil}}))
 
 (fx/defn show-delete-confirmation
+  {:events [:mailserver.ui/delete-pressed]}
   [{:keys [db]} mailserver-id]
   {:ui/show-confirmation
    {:title               (i18n/label :t/delete-mailserver-title)
@@ -1185,14 +1200,18 @@
                            [:mailserver.ui/delete-confirmed mailserver-id])}})
 
 (fx/defn set-url-from-qr
+  {:events [:mailserver.callback/qr-code-scanned]}
   [cofx url]
   (assoc (set-input cofx :url url)
          :dispatch [:navigate-back]))
 
-(fx/defn dismiss-connection-error [{:keys [db]} new-state]
+(fx/defn dismiss-connection-error
+  {:events [:mailserver.ui/dismiss-connection-error]}
+  [{:keys [db]} new-state]
   {:db (assoc db :mailserver/connection-error-dismissed new-state)})
 
 (fx/defn save-settings
+  {:events [:mailserver.ui/connect-confirmed]}
   [{:keys [db] :as cofx} current-fleet mailserver-id]
   (let [{:keys [address]} (fetch-current db)
         pinned-mailservers (get-in db [:multiaccount :pinned-mailservers])
@@ -1212,6 +1231,7 @@
                  {})))))
 
 (fx/defn unpin
+  {:events [:mailserver.ui/unpin-pressed]}
   [{:keys [db] :as cofx}]
   (let [current-fleet (node/current-fleet-key db)
         pinned-mailservers (get-in db [:multiaccount :pinned-mailservers])]
@@ -1223,6 +1243,7 @@
               (change-mailserver))))
 
 (fx/defn pin
+  {:events [:mailserver.ui/pin-pressed]}
   [{:keys [db] :as cofx}]
   (let [current-fleet (node/current-fleet-key db)
         mailserver-id (:mailserver/current-id db)
@@ -1259,3 +1280,10 @@
           (assoc-in [:mailserver/gaps chat-id] gaps))}
 
      (data-store.mailservers/delete-gaps outdated-gaps))))
+
+(fx/defn mailserver-ui-add-pressed
+  {:events [:mailserver.ui/add-pressed]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (dissoc db :mailserver.edit/mailserver)}
+            (navigation/navigate-to-cofx :edit-mailserver nil)))

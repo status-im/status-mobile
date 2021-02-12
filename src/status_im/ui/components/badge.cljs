@@ -1,7 +1,7 @@
 (ns status-im.ui.components.badge
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n.i18n :as i18n]))
 
 (defn badge [label & [small?]]
   [react/view (merge

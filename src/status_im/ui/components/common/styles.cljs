@@ -1,15 +1,5 @@
 (ns status-im.ui.components.common.styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.styles :as styles]))
-
-(def separator-wrapper
-  {:background-color colors/white})
-
-(styles/def separator
-  {:android {:height 0}
-   :ios     {:height           1
-             :background-color colors/black-transparent
-             :opacity          0.5}})
+  (:require [status-im.ui.components.colors :as colors]))
 
 (defn logo-container [size]
   {:width            size

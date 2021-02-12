@@ -17,6 +17,7 @@
   (log/error ::error event))
 
 (fx/defn register-subscription
+  {:events [:ethereum.callback/subscription-success]}
   [{:keys [db]} id handler]
   {:db (assoc-in db [:ethereum/subscriptions id] handler)})
 

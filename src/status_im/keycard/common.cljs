@@ -3,14 +3,14 @@
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.keycard.nfc :as nfc]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.navigation :as navigation]
-            [status-im.ui.components.bottom-sheet.events :as bottom-sheet]
             [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
             [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.bottom-sheet.core :as bottom-sheet]))
 
 (def default-pin "000000")
 

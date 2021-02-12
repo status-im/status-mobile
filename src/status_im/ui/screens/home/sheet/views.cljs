@@ -3,7 +3,7 @@
             [status-im.ui.components.react :as react]
             [status-im.qr-scanner.core :as qr-scanner]
             [quo.core :as quo]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.utils.config :as config]
             [status-im.ui.components.invite.views :as invite]))
 

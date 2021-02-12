@@ -3,10 +3,10 @@
             [status-im.commands.core :as commands]
             [status-im.constants :as constants]
             [status-im.ethereum.transactions.core :as transactions]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.utils.money :as money]))
 
@@ -26,7 +26,7 @@
                        :padding-horizontal 8
                        :margin-right 12
                        :margin-bottom 2}}
-   [vector-icons/icon :tiny-icons/tiny-pending
+   [icons/icon :tiny-icons/tiny-pending
     {:width 16
      :height 16
      :color colors/gray
@@ -69,17 +69,17 @@
    (if (or (= command-state constants/command-state-request-address-for-transaction-declined)
            (= command-state constants/command-state-request-transaction-declined)
            (= :failed transaction-type))
-     [vector-icons/icon :tiny-icons/tiny-warning-background
+     [icons/icon :tiny-icons/tiny-warning-background
       {:width 16
        :height 16
        :container-style {:margin-right 6}}]
      (if (= :pending transaction-type)
-       [vector-icons/icon :tiny-icons/tiny-pending
+       [icons/icon :tiny-icons/tiny-pending
         {:color colors/gray
          :width 16
          :height 16
          :container-style {:margin-right 6}}]
-       [vector-icons/icon :tiny-icons/tiny-check
+       [icons/icon :tiny-icons/tiny-check
         {:width 16
          :height 16
          :container-style {:margin-right 6}}]))

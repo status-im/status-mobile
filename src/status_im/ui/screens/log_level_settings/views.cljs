@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.log-level-settings.views
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.log-level-settings.styles :as styles]
@@ -10,7 +10,7 @@
 
 (defn- log-level-icon [current?]
   [react/view (styles/log-level-icon-container current?)
-   [vector-icons/icon :main-icons/mailserver
+   [icons/icon :main-icons/mailserver
     (styles/log-level-icon current?)]])
 
 (defn change-log-level [log-level]

@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.buy-crypto.views
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.webview :as components.webview]
             [status-im.ui.screens.wallet.buy-crypto.sheets :as sheets]
             [status-im.ui.components.icons.icons :as icons]

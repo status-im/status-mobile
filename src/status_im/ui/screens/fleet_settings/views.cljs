@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.fleet-settings.views
   (:require [re-frame.core :as re-frame]
             [status-im.node.core :as node]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
@@ -11,7 +11,7 @@
 
 (defn- fleet-icon [current?]
   [react/view (styles/fleet-icon-container current?)
-   [vector-icons/icon :main-icons/mailserver
+   [icons/icon :main-icons/mailserver
     (styles/fleet-icon current?)]])
 
 (defn change-fleet [fleet]

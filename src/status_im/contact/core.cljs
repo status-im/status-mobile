@@ -68,6 +68,8 @@
 
 (fx/defn add-contact
   "Add a contact and set pending to false"
+  {:events [:contact.ui/add-to-contact-pressed]
+   :interceptors [(re-frame/inject-cofx :random-id-generator)]}
   [{:keys [db] :as cofx} public-key nickname]
   (when (not= (get-in db [:multiaccount :public-key]) public-key)
     (let [contact (cond-> (get-in db [:contacts/contacts public-key]
@@ -110,6 +112,7 @@
   (contacts-store/fetch-contacts-rpc cofx #(re-frame/dispatch [::contacts-loaded %])))
 
 (fx/defn open-contact-toggle-list
+  {:events [:contact.ui/start-group-chat-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db (assoc db

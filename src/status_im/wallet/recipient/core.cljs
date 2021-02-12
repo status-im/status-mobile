@@ -8,7 +8,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.random :as random]
             [status-im.ethereum.eip55 :as eip55]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.navigation :as navigation]
             [status-im.ethereum.json-rpc :as json-rpc]))

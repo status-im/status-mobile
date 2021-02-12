@@ -1,10 +1,10 @@
 (ns status-im.ui.screens.chat.components.reply
   (:require [quo.core :as quo]
             [quo.react-native :as rn]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [quo.design-system.colors :as colors]
             [quo.components.animated.pressable :as pressable]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ethereum.stateofus :as stateofus]
             [status-im.ui.screens.chat.components.style :as styles]
             [re-frame.core :as re-frame]

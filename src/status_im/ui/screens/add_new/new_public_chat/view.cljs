@@ -1,15 +1,15 @@
 (ns status-im.ui.screens.add-new.new-public-chat.view
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
-            [status-im.i18n-resources :as i18n-resources]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.i18n.i18n-resources :as i18n-resources]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.add-new.new-public-chat.db :as db]
+            [status-im.add-new.db :as db]
             [status-im.chat.models :as chat.models]
-            [status-im.ui.components.icons.vector-icons :as icons])
+            [status-im.ui.components.icons.icons :as icons])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- start-chat [topic]

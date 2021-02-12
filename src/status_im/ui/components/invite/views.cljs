@@ -5,7 +5,7 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.utils.utils :as utils]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [quo.design-system.spacing :as spacing]
             [quo.design-system.colors :as colors]
             [status-im.ui.components.invite.style :as styles]

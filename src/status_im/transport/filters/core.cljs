@@ -9,7 +9,6 @@
             [status-im.mailserver.topics :as mailserver.topics]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.utils.fx :as fx]
-            [status-im.utils.handlers :as handlers]
             [taoensso.timbre :as log]))
 
 (defn is-public-key? [k]
@@ -220,6 +219,7 @@
   "Called every time we load a filter from statusgo, either from explicit call
   or through signals. It stores the filter in the db and upsert the relevant
   mailserver topics."
+  {:events [:filters.callback/filters-added]}
   [{:keys [db] :as cofx} filters]
   (fx/merge cofx
             (mailserver/reset-request-to)
@@ -243,6 +243,7 @@
 (fx/defn handle-filters-removed
   "Called when we remove a filter from status-go, it will update the mailserver
   topics"
+  {:events [:filters.callback/filters-removed]}
   [cofx filters]
   (fx/merge cofx
             (remove-filters-from-db filters)
@@ -309,32 +310,17 @@
                                           (contains? members-joined my-public-key)
                                           (contains? members chat-id)))
                                    (vals (:chats db)))]
-    (when
-     (or public?
-         (and one-to-one?
-              (not (contact.db/active? db chat-id))
-              (not= my-public-key chat-id)
-              (not (get-in db [:chats chat-id :is-active]))
-              (empty? active-group-chats)))
-      (fx/merge
-       cofx
-       ;; we exclude the negotiated filters as those are not to be removed
-       ;; otherwise we might miss messages
-       (remove-filter-fx
-        (non-negotiated-filters-for-chat-id db chat-id))))))
-
-;; reg-fx
-
-(handlers/register-handler-fx
- :filters.callback/filters-added
- (fn [cofx [_ filters]]
-   (log/debug "PERF" :filters.callback/filters-added)
-   (handle-filters-added cofx filters)))
-
-(handlers/register-handler-fx
- :filters.callback/filters-removed
- (fn [cofx [_ filters]]
-   (handle-filters-removed cofx filters)))
+    (when (or public?
+              (and one-to-one?
+                   (not (contact.db/active? db chat-id))
+                   (not= my-public-key chat-id)
+                   (not (get-in db [:chats chat-id :is-active]))
+                   (empty? active-group-chats)))
+      (fx/merge cofx
+                ;; we exclude the negotiated filters as those are not to be removed
+                ;; otherwise we might miss messages
+                (remove-filter-fx
+                 (non-negotiated-filters-for-chat-id db chat-id))))))
 
 (re-frame/reg-fx
  :filters/add-raw-filters

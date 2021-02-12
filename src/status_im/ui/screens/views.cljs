@@ -2,71 +2,35 @@
   (:require [status-im.utils.universal-links.core :as utils.universal-links]
             [re-frame.core :as re-frame]
             [cljs-bean.core :refer [bean]]
-            [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.routing.core :as navigation]
             [reagent.core :as reagent]
-            [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
-            [status-im.ui.screens.keycard.views :as keycard]
-            [status-im.ui.screens.home.sheet.views :as home.sheet]
             [status-im.ui.screens.routing.main :as routing]
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.popover.views :as popover]
-            [status-im.ui.screens.communities.views :as communities]
-            [status-im.ui.screens.multiaccounts.recover.views :as recover.views]
             [status-im.ui.screens.wallet.send.views :as wallet]
             [status-im.ui.components.status-bar.view :as statusbar]
             [status-im.ui.components.colors :as colors]
             [status-im.keycard.test-menu :as keycard.test-menu]
-            [quo.core :as quo]
+            [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
             [status-im.utils.config :as config]
-            [status-im.reloader :as reloader]))
+            [status-im.reloader :as reloader]
+            [status-im.utils.platform :as platform]
+            [status-im.i18n.i18n :as i18n]
+            ["react-native" :as rn]
+            ["react-native-languages" :default react-native-languages]
+            ["react-native-shake" :as react-native-shake]))
 
-(defn on-sheet-cancel []
-  (re-frame/dispatch [:bottom-sheet/hide]))
+(def splash-screen (-> rn .-NativeModules .-SplashScreen))
 
-(defn bottom-sheet []
-  (let [{:keys [show? view]} @(re-frame/subscribe [:bottom-sheet])
-        {:keys [content]
-         :as   opts}
-        (cond-> {:visible?   show?
-                 :on-cancel on-sheet-cancel}
+(defn on-languages-change [^js event]
+  (i18n/set-language (.-language event)))
 
-          (map? view)
-          (merge view)
+(defn on-shake []
+  (re-frame/dispatch [:shake-event]))
 
-          (= view :mobile-network)
-          (merge mobile-network-settings/settings-sheet)
-
-          (= view :mobile-network-offline)
-          (merge mobile-network-settings/offline-sheet)
-
-          (= view :add-new)
-          (merge home.sheet/add-new)
-
-          (= view :keycard.login/more)
-          (merge keycard/more-sheet)
-
-          (= view :learn-more)
-          (merge about-app/learn-more)
-
-          (= view :create-community)
-          (merge communities/create-sheet)
-
-          (= view :import-community)
-          (merge communities/import-sheet)
-
-          (= view :create-community-channel)
-          (merge communities/create-channel-sheet)
-
-          (= view :invite-people-community)
-          (merge communities/invite-people-sheet)
-
-          (= view :recover-sheet)
-          (merge recover.views/bottom-sheet))]
-    [quo/bottom-sheet opts
-     (when content
-       [content])]))
+(defn app-state-change-handler [state]
+  (re-frame/dispatch [:app-state-change state]))
 
 (def debug? ^boolean js/goog.DEBUG)
 
@@ -91,32 +55,57 @@
     (persist-state! state)))
 
 (defonce main-app-navigator    (partial routing/get-main-component false))
-(defonce twopane-app-navigator (partial routing/get-main-component true))
 
-(defn main []
+(defn root [_]
   (reagent/create-class
-   {:component-did-mount    utils.universal-links/initialize
-    :component-will-unmount utils.universal-links/finalize
-    :reagent-render
+   {:component-did-mount
+    (fn [_]
+      (.addListener ^js react/keyboard
+                    (if platform/ios?
+                      "keyboardWillShow"
+                      "keyboardDidShow")
+                    (fn [^js e]
+                      (let [h (.. e -endCoordinates -height)]
+                        (re-frame/dispatch-sync [:set :keyboard-height h])
+                        (re-frame/dispatch-sync [:set :keyboard-max-height h]))))
+      (.addListener ^js react/keyboard
+                    (if platform/ios?
+                      "keyboardWillHide"
+                      "keyboardDidHide")
+                    (fn [_]
+                      (re-frame/dispatch-sync [:set :keyboard-height 0])))
+      (.addEventListener ^js react/app-state "change" app-state-change-handler)
+      (.addEventListener react-native-languages "change" on-languages-change)
+      (.addEventListener react-native-shake
+                         "ShakeEvent"
+                         on-shake)
+      (.hide ^js splash-screen)
+      (utils.universal-links/initialize))
+    :component-will-unmount
     (fn []
-      [react/safe-area-provider
-       ^{:key (str @colors/theme @reloader/cnt)}
-       [react/view {:flex             1
-                    :background-color colors/black-persist}
-        [navigation/navigation-container
-         (merge {:ref               (fn [r]
-                                      (navigation/set-navigator-ref r))
-                 :onStateChange     on-state-change
-                 :enableURLHandling false}
-                (when debug?
-                  {:enableURLHandling true
-                   :initialState      @state}))
-         [main-app-navigator]]
-        [wallet/select-account]
-        [signing/signing]
-        [bottom-sheet]
-        [popover/popover]
-        (when debug?
-          [reloader/reload-view @reloader/cnt])
-        (when config/keycard-test-menu-enabled?
-          [keycard.test-menu/test-menu])]])}))
+      (.removeEventListener ^js react/app-state "change" app-state-change-handler)
+      (.removeEventListener react-native-languages "change" on-languages-change)
+      (utils.universal-links/finalize))
+    :display-name   "root"
+    :reagent-render (fn []
+                      [react/safe-area-provider
+                       ^{:key (str @colors/theme @reloader/cnt)}
+                       [react/view {:flex             1
+                                    :background-color colors/black-persist}
+                        [navigation/navigation-container
+                         (merge {:ref               (fn [r]
+                                                      (navigation/set-navigator-ref r))
+                                 :onStateChange     on-state-change
+                                 :enableURLHandling false}
+                                (when debug?
+                                  {:enableURLHandling true
+                                   :initialState      @state}))
+                         [main-app-navigator]]
+                        [wallet/select-account]
+                        [signing/signing]
+                        [bottom-sheets/bottom-sheet]
+                        [popover/popover]
+                        (when debug?
+                          [reloader/reload-view @reloader/cnt])
+                        (when config/keycard-test-menu-enabled?
+                          [keycard.test-menu/test-menu])]])}))

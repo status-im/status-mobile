@@ -6,12 +6,13 @@
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.message-content :as message-content]
             [status-im.constants :as constants]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.fx :as fx]
             ["emojilib" :as emojis]
             [status-im.chat.models.mentions :as mentions]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
@@ -26,10 +27,12 @@
 (fx/defn set-chat-input-text
   "Set input text for current-chat. Takes db and input text and cofx
   as arguments and returns new fx. Always clear all validation messages."
+  {:events [:chat.ui/set-chat-input-text]}
   [{{:keys [current-chat-id] :as db} :db} new-input]
   {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))})
 
 (fx/defn select-mention
+  {:events [:chat.ui/select-mention]}
   [{:keys [db] :as cofx} text-input-ref {:keys [alias name searched-text match] :as user}]
   (let [chat-id     (:current-chat-id db)
         new-text    (mentions/new-input-text-with-mention cofx user)
@@ -95,6 +98,7 @@
 
 (fx/defn reply-to-message
   "Sets reference to previous chat message and focuses on input"
+  {:events [:chat.ui/reply-to-message]}
   [{:keys [db] :as cofx} message]
   (let [current-chat-id (:current-chat-id db)]
     (fx/merge cofx
@@ -106,6 +110,7 @@
 
 (fx/defn cancel-message-reply
   "Cancels stage message reply"
+  {:events [:chat.ui/cancel-message-reply]}
   [{:keys [db]}]
   (let [current-chat-id (:current-chat-id db)]
     {:db (assoc-in db [:chat/inputs current-chat-id :metadata :responding-to-message] nil)}))
@@ -182,6 +187,7 @@
 
 (fx/defn send-current-message
   "Sends message from current chat input"
+  {:events [:chat.ui/send-current-message]}
   [{{:keys [current-chat-id] :as db} :db :as cofx}]
   (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])
         input-text-with-mentions (mentions/check-mentions cofx input-text)]
@@ -189,3 +195,19 @@
               (send-messages input-text-with-mentions current-chat-id)
               (mentions/clear-mentions)
               (mentions/clear-cursor))))
+
+(fx/defn chat-send-sticker
+  {:events [:chat/send-sticker]}
+  [{{:keys [current-chat-id multiaccount]} :db :as cofx} {:keys [hash] :as sticker}]
+  (fx/merge
+   cofx
+   (multiaccounts.update/multiaccount-update
+    :stickers/recent-stickers
+    (conj (remove #(= hash %) (:stickers/recent-stickers multiaccount)) hash)
+    {})
+   (send-sticker-message sticker current-chat-id)))
+
+(fx/defn chat-send-audio
+  {:events [:chat/send-audio]}
+  [{{:keys [current-chat-id]} :db :as cofx} audio-path duration]
+  (send-audio-message cofx audio-path duration current-chat-id))

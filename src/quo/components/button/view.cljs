@@ -6,7 +6,7 @@
             [quo.design-system.spacing :as spacing]
             [quo.components.text :as text]
             ;; FIXME:
-            [status-im.ui.components.icons.vector-icons :as icons]))
+            [status-im.ui.components.icons.icons :as icons]))
 
 (defn style-container [type]
   (merge {:height          44

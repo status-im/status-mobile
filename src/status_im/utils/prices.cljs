@@ -18,10 +18,8 @@
 (defn- ->url-param-syms [syms]
   ((comp (partial string/join ",") (partial map name)) syms))
 
-(defn- gen-price-url [fsyms tsyms chaos-mode?]
-  (if chaos-mode?
-    "http://httpstat.us/500"
-    (str api-url "/pricemultifull?fsyms=" (->url-param-syms fsyms) "&tsyms=" (->url-param-syms tsyms) "&" status-identifier)))
+(defn- gen-price-url [fsyms tsyms]
+  (str api-url "/pricemultifull?fsyms=" (->url-param-syms fsyms) "&tsyms=" (->url-param-syms tsyms) "&" status-identifier))
 
 (defn- format-price-resp [resp mainnet?]
   ;;NOTE(this check is to allow value conversion for sidechains with native currencies listed on cryptocompare
@@ -40,13 +38,12 @@
                                      :price    (:PRICE entry)
                                      :last-day (:OPEN24HOUR entry)}}))}))))
 
-(defn get-prices [from to mainnet? on-success on-error chaos-mode?]
+(defn get-prices [from to mainnet? on-success on-error]
   (log/debug "[prices] get-prices"
              "from" from
              "to" to
-             "mainnet?" mainnet?
-             "chaos-mode?" chaos-mode?)
+             "mainnet?" mainnet?)
   (http/get
-   (gen-price-url from to chaos-mode?)
+   (gen-price-url from to)
    (fn [resp] (on-success (format-price-resp resp mainnet?)))
    on-error))

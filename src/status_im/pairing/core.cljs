@@ -1,12 +1,13 @@
 (ns status-im.pairing.core
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.navigation :as navigation]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as utils.platform]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.multiaccounts.update.core :as multiaccounts.update]))
 
 (defn enable-installation-rpc [installation-id on-success on-failure]
   (json-rpc/call {:method     (json-rpc/call-ext-method "enableInstallation")
@@ -53,16 +54,21 @@
   [our-installation-id installations]
   (sort (partial compare-installation our-installation-id) installations))
 
-(defn send-pair-installation
+(fx/defn send-pair-installation
+  {:events [:pairing.ui/pair-devices-pressed]}
   [_]
   {::json-rpc/call [{:method     (json-rpc/call-ext-method "sendPairInstallation")
                      :params     []
                      :on-success #(log/info "sent pair installation message")}]})
 
-(fx/defn prompt-dismissed [{:keys [db]}]
+(fx/defn prompt-dismissed
+  {:events [:pairing.ui/prompt-dismissed]}
+  [{:keys [db]}]
   {:db (assoc-in db [:pairing/prompt-user-pop-up] false)})
 
-(fx/defn prompt-accepted [{:keys [db] :as cofx}]
+(fx/defn prompt-accepted
+  {:events [:pairing.ui/prompt-accepted]}
+  [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db (assoc-in db [:pairing/prompt-user-pop-up] false)}
             (navigation/navigate-to-cofx :installations nil)))
@@ -79,7 +85,8 @@
 
 (fx/defn set-name
   "Set the name of the device"
-  [{:keys [db] :as cofx} installation-name]
+  {:events [:pairing.ui/set-name-pressed]}
+  [{:keys [db]} installation-name]
   (let [our-installation-id (get-in db [:multiaccount :installation-id])]
     {:pairing/set-installation-metadata [our-installation-id
                                          {:name installation-name
@@ -140,14 +147,18 @@
 (defn get-our-installations []
   (get-our-installations-rpc handle-get-our-installations-response-success nil))
 
-(defn enable-fx [cofx installation-id]
+(fx/defn enable-fx
+  {:events [:pairing.ui/enable-installation-pressed]}
+  [cofx installation-id]
   (if (< (count (filter :enabled? (vals (get-in cofx [:db :pairing/installations])))) (inc config/max-installations))
     {:pairing/enable-installation [installation-id]}
     {:utils/show-popup {:title (i18n/label :t/pairing-maximum-number-reached-title)
 
                         :content (i18n/label :t/pairing-maximum-number-reached-content)}}))
 
-(defn disable-fx [_ installation-id]
+(fx/defn disable-fx
+  {:events [:pairing.ui/disable-installation-pressed]}
+  [_ installation-id]
   {:pairing/disable-installation [installation-id]})
 
 (re-frame/reg-fx
@@ -169,7 +180,9 @@
  :pairing/get-our-installations
  get-our-installations)
 
-(defn send-installation-messages [{:keys [db]}]
+(defn send-installation-messages
+  {:events [:pairing.ui/synchronize-installation-pressed]}
+  [{:keys [db]}]
   (let [multiaccount                             (:multiaccount db)
         {:keys [name preferred-name identicon]} multiaccount]
     {::json-rpc/call [{:method     (json-rpc/call-ext-method "syncDevices")
@@ -183,7 +196,9 @@
    :device-type (:deviceType metadata)
    :enabled? enabled})
 
-(fx/defn update-installation [{:keys [db]} installation-id metadata]
+(fx/defn update-installation
+  {:events [:pairing.callback/set-installation-metadata-success]}
+  [{:keys [db]} installation-id metadata]
   {:db (update-in db [:pairing/installations installation-id]
                   assoc
                   :installation-id installation-id
@@ -197,10 +212,26 @@
                                            %
                                            installations))})
 
-(fx/defn load-installations [{:keys [db]} installations]
+(fx/defn load-installations
+  {:events [:pairing.callback/get-our-installations-success]}
+  [{:keys [db]} installations]
   {:db (assoc db :pairing/installations (reduce
                                          (fn [acc {:keys [id] :as i}]
                                            (assoc acc id
                                                   (installation<-rpc i)))
                                          {}
                                          installations))})
+
+(fx/defn enable-installation-success
+  {:events [:pairing.callback/enable-installation-success]}
+  [cofx installation-id]
+  (fx/merge cofx
+            (enable installation-id)
+            (multiaccounts.update/send-multiaccount-update)))
+
+(fx/defn disable-installation-success
+  {:events [:pairing.callback/disable-installation-success]}
+  [cofx installation-id]
+  (fx/merge cofx
+            (disable installation-id)
+            (multiaccounts.update/send-multiaccount-update)))

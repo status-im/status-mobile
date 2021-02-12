@@ -1,10 +1,10 @@
 (ns status-im.ui.screens.browser.empty-tab.views
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [quo.core :as quo]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]

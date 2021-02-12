@@ -228,6 +228,7 @@
 
 (fx/defn delete-message
   "Deletes chat message, rebuild message-list"
+  {:events [:chat.ui/delete-message]}
   [{:keys [db] :as cofx} chat-id message-id]
   (fx/merge cofx
             {:db            (update-in db [:messages chat-id] dissoc message-id)}

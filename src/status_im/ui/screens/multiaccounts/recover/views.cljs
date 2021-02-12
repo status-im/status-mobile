@@ -5,14 +5,14 @@
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.multiaccounts.key-storage.core :as multiaccounts.key-storage]
             [status-im.keycard.recovery :as keycard]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.utils.config :as config]
             [status-im.utils.security]
             [status-im.ui.components.colors :as colors]
             [quo.core :as quo]
             [status-im.utils.platform :as platform]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.icons.vector-icons :as icons]))
+            [status-im.ui.components.icons.icons :as icons]))
 
 (defn hide-sheet-and-dispatch [event]
   (re-frame/dispatch [:bottom-sheet/hide])

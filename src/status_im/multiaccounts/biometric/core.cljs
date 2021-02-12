@@ -1,6 +1,6 @@
 (ns status-im.multiaccounts.biometric.core
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.popover.core :as popover]
             [status-im.ui.components.colors :as colors]

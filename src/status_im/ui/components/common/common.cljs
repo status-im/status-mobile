@@ -1,19 +1,14 @@
 (ns status-im.ui.components.common.common
   (:require [reagent.core :as reagent]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.common.styles :as styles]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn logo
   [{:keys [size]}]
-  [vector-icons/icon :icons/logo (styles/logo size)])
-
-;;TODO DEPRECATED, use status-im.ui.components.list-item.views
-(defn separator [style & [wrapper-style]]
-  [react/view (merge styles/separator-wrapper wrapper-style)
-   [react/view (merge styles/separator style)]])
+  [icons/icon :icons/logo (styles/logo size)])
 
 ;;TODO DEPRECATED, use status-im.ui.components.badge
 (defn counter

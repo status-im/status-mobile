@@ -1,11 +1,11 @@
 (ns status-im.ui.screens.home.views
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.communities.core :as communities]
             [status-im.ui.components.connectivity.view :as connectivity]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.home.styles :as styles]
@@ -15,9 +15,9 @@
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.add-new.new-public-chat.view :as new-public-chat]
             [quo.core :as quo]
-            [status-im.ui.screens.add-new.new-chat.events :as new-chat]
+            [status-im.add-new.core :as new-chat]
             [status-im.ui.components.search-input.view :as search-input]
-            [status-im.ui.screens.add-new.new-public-chat.db :as db]
+            [status-im.add-new.db :as db]
             [status-im.utils.debounce :as debounce]
             [status-im.utils.utils :as utils]
             [status-im.utils.config :as config]
@@ -158,29 +158,28 @@
              hide-home-tooltip?
              (not @search-active?))
       [welcome-blank-page]
-      [react/view
-       [:<>
-        (when (or (seq chats) @search-active? (seq search-filter))
-          [search-input-wrapper search-filter chats])
-        [referral-item/list-item]]
-       (when (and (empty? chats)
-                  (not status-community)
-                  (or @search-active? (seq search-filter)))
-         [start-suggestion search-filter])
-       (when status-community
-         ;; We only support one community now, Status
-         [communities.views/status-community status-community])
-       (when (and status-community
-                  (seq chats))
-         [quo/separator])
-       [list/flat-list
-        {:key-fn                       :chat-id
-         :keyboard-should-persist-taps :always
-         :data                         chats
-         :render-fn                    render-fn
-         :footer                       (if (and (not hide-home-tooltip?) (not @search-active?))
-                                         [home-tooltip-view]
-                                         [react/view {:height 68}])}]])))
+      [list/flat-list
+       {:key-fn                       :chat-id
+        :keyboard-should-persist-taps :always
+        :data                         chats
+        :render-fn                    render-fn
+        :header                       [:<>
+                                       (when (or (seq chats) @search-active? (seq search-filter))
+                                         [search-input-wrapper search-filter chats])
+                                       [referral-item/list-item]
+                                       (when (and (empty? chats)
+                                                  (not status-community)
+                                                  (or @search-active? (seq search-filter)))
+                                         [start-suggestion search-filter])
+                                       (when status-community
+                                         ;; We only support one community now, Status
+                                         [communities.views/status-community status-community])
+                                       (when (and status-community
+                                                  (seq chats))
+                                         [quo/separator])]
+        :footer                       (if (and (not hide-home-tooltip?) (not @search-active?))
+                                        [home-tooltip-view]
+                                        [react/view {:height 68}])}])))
 
 (views/defview chats-list []
   (views/letsubs [status-community [:communities/status-community]

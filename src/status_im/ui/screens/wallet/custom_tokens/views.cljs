@@ -5,7 +5,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
             [clojure.string :as string]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar]))
 

@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.link-previews-settings.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
             [quo.core :as quo]

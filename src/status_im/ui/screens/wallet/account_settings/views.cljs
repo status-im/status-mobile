@@ -2,8 +2,8 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.copyable-text :as copyable-text]

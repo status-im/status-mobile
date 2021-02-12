@@ -1,10 +1,10 @@
 (ns status-im.ui.screens.keycard.recovery.views
   (:require [re-frame.core :as re-frame]
             [status-im.keycard.recovery :as keycard.recovery]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.toolbar :as bottom-toolbar]
             [status-im.ui.components.tooltip.views :as tooltip]
@@ -52,8 +52,8 @@
         [react/text {:style {:text-align :center
                              :color      colors/blue}}
          (i18n/label :t/learn-more-about-keycard)]
-        [vector-icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
-                                                           :container-style {:margin-left 5}}]]]]]
+        [icons/tiny-icon :tiny-icons/tiny-external {:color           colors/blue
+                                                    :container-style {:margin-left 5}}]]]]]
 
     [react/view {:align-items     :center
                  :justify-content :center}

@@ -4,7 +4,7 @@
             [oops.core :refer [ocall]]
             [quo.react-native :as rn]
             ;; TODO(Ferossgp): Move icon component to lib
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [quo.components.tooltip :as tooltip]
             [quo.platform :as platform]
             [quo.design-system.typography :as typography]

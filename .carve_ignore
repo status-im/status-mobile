@@ -31,7 +31,7 @@ reagent.dom/dom-node
 reagent.dom/force-update-all
 status-im.multiaccounts.create.core/get-new-key-code
 status-im.ethereum.decode/string
-status-im.network.ui.views/mainnet?
+status-im.ui.screens.network.views/mainnet?
 status-im.data-store.chats/event->string
 status-im.mailserver.constants/seven-days
 status-im.mailserver.constants/connection-timeout
@@ -65,7 +65,7 @@ mocks.js-dependencies/emoji-picker
 mocks.js-dependencies/i18n
 mocks.js-dependencies/qr-code
 mocks.js-dependencies/svg
-mocks.js-dependencies/vector-icons
+mocks.js-dependencies/icons
 mocks.js-dependencies/webview
 mocks.js-dependencies/desktop-linking
 mocks.js-dependencies/desktop-shortcuts

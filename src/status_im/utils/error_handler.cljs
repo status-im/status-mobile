@@ -1,7 +1,7 @@
 (ns status-im.utils.error-handler
   (:require [clojure.string :as string]
             [status-im.utils.utils :as utils]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [re-frame.core :as re-frame]))
 
 ;; Error handling code based on https://gist.github.com/pesterhazy/e6846be1b6712a9038537022d131ce46

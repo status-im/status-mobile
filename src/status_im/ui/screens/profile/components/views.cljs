@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.profile.components.views
   (:require [clojure.string :as string]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.components.styles :as styles]))
 
@@ -20,7 +20,7 @@
    [react/view styles/settings-item
     (when icon
       [react/view styles/settings-item-icon
-       [vector-icons/icon icon {:color colors/blue}]])
+       [icons/icon icon {:color colors/blue}]])
     [react/view styles/settings-item-text-wrapper
      [react/text {:style (merge styles/settings-item-text
                                 (when destructive?
@@ -38,7 +38,7 @@
     (if icon-content
       icon-content
       (when (and active? (not hide-arrow?))
-        [vector-icons/icon :main-icons/next {:color colors/gray-transparent-40}]))]])
+        [icons/icon :main-icons/next {:color colors/gray-transparent-40}]))]])
 
 (defn settings-switch-item
   [{:keys [label-kw value action-fn active?]

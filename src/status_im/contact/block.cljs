@@ -36,6 +36,7 @@
     (apply fx/merge cofx fxs)))
 
 (fx/defn block-contact
+  {:events [:contact.ui/block-contact-confirmed]}
   [{:keys [db now] :as cofx} public-key]
   (let [contact (-> (contact.db/public-key->contact
                      (:contacts/contacts db)
@@ -59,6 +60,7 @@
                 (navigation/navigate-back)))))
 
 (fx/defn unblock-contact
+  {:events [:contact.ui/unblock-contact-pressed]}
   [{:keys [db now] :as cofx} public-key]
   (let [contact (-> (get-in db [:contacts/contacts public-key])
                     (assoc :last-updated now)

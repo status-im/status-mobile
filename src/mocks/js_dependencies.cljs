@@ -1,6 +1,6 @@
 (ns mocks.js-dependencies
   (:require-macros [status-im.utils.slurp :refer [slurp]])
-  (:require [status-im.default-fleet :refer (default-fleets)])
+  (:require [status-im.fleet.default-fleet :refer (default-fleets)])
   (:require [status-im.chat.default-chats :refer (default-chats)]))
 
 (def action-button          #js {:default #js {:Item #js {}}})
@@ -25,7 +25,6 @@
             :RefreshControl           {}
             :FlatList                 {}
             :Text                     {}
-            :ProgressBarAndroid       {}
             :StatusBar                {}
             :ScrollView               {}
             :KeyboardAvoidingView     {}
@@ -72,7 +71,7 @@
 
 (def reanimated-bottom-sheet           #js {:default #js {}})
 
-(def vector-icons           #js {:default #js {}})
+(def icons           #js {:default #js {}})
 (def webview                #js {:WebView #js {}})
 (def status-keycard         #js {:default #js {}})
 
@@ -196,10 +195,6 @@
 
 (def push-notification-ios #js {})
 
-(def fast-image #js {:priority     #js {}
-                     :cacheControl #js {}
-                     :resizeMode   #js {}})
-
 ;; Update i18n_resources.cljs
 (defn mock [module]
   (case module
@@ -224,7 +219,6 @@
     "react-native-dialogs" dialogs
     "react-native" react-native
     "react-native-fs" fs
-    "react-native-fast-image" fast-image
     "react-native-mail" react-native-mail
     "react-native-image-resizer" image-resizer
     "react-native-haptic-feedback" react-native-haptic-feedback

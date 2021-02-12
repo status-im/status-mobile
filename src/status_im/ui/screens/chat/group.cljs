@@ -5,7 +5,7 @@
             [status-im.constants :as constants]
             [status-im.utils.universal-links.utils :as links]
             [status-im.ui.screens.chat.styles.main :as style]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.colors :as colors]
             [status-im.utils.debounce :as debounce])

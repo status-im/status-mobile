@@ -24,9 +24,9 @@
             [status-im.ui.screens.mobile-network-settings.view
              :as
              mobile-network-settings]
-            [status-im.network.ui.edit-network.views :as edit-network]
-            [status-im.network.ui.views :as network]
-            [status-im.network.ui.network-details.views :as network-details]
+            [status-im.ui.screens.network.edit-network.views :as edit-network]
+            [status-im.ui.screens.network.views :as network]
+            [status-im.ui.screens.network.network-details.views :as network-details]
             [status-im.ui.screens.network-info.views :as network-info]
             [status-im.ui.screens.log-level-settings.views :as log-level-settings]
             [status-im.ui.screens.fleet-settings.views :as fleet-settings]

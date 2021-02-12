@@ -5,7 +5,7 @@
             [cljs-time.format :refer [formatters
                                       formatter
                                       unparse]]
-            [status-im.i18n :refer [label label-pluralize]]
+            [status-im.i18n.i18n :refer [label label-pluralize]]
             [status-im.native-module.core :as status]
             [clojure.string :as s]
             [status-im.goog.i18n :as goog.18n]))
@@ -57,7 +57,7 @@
     (fn []
       (or @formatter
           (reset! formatter
-                  (goog.18n/mk-fmt status-im.i18n/locale format))))))
+                  (goog.18n/mk-fmt status-im.i18n.i18n/locale format))))))
 
 ;; generate formatters for different formats
 (def date-time-fmt

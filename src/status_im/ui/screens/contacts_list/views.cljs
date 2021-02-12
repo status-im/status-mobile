@@ -5,7 +5,7 @@
             [status-im.ui.components.list.views :as list.views]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.invite.views :as invite]
             [quo.core :as quo]
             [status-im.ui.components.topbar :as topbar])

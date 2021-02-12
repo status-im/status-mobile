@@ -7,7 +7,7 @@
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
             [clojure.string :as clojure.string]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n.i18n :as i18n]))
 
 (defn safe-blank? [s]
   (or (not s)

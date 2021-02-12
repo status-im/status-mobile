@@ -5,8 +5,7 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [re-frame.core :as re-frame]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.styles :as components.styles]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [reagent.core :as reagent]
             [status-im.utils.security :as security]
             [status-im.ui.screens.privacy-and-security-settings.events :as delete-profile]))
@@ -37,7 +36,7 @@
             error        @(re-frame/subscribe [:delete-profile/error])]
         (when (and @text-input-ref error (not @password))
           (.clear ^js @text-input-ref))
-        [react/view components.styles/flex
+        [react/view {:flex 1}
          [topbar/topbar {:modal? true}]
          [react/view
           {:style {:flex            1

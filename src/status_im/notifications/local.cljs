@@ -9,7 +9,7 @@
             [status-im.utils.types :as types]
             [status-im.utils.money :as money]
             [status-im.ethereum.core :as ethereum]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]

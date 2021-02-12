@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.add-new.new-chat.views
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [quo.core :as quo]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.add-new.new-chat.styles :as styles]
             [status-im.utils.debounce :as debounce]
             [status-im.utils.utils :as utils]
             [reagent.core :as reagent])
@@ -50,10 +49,10 @@
       [react/touchable-highlight
        {:on-press #(debounce/dispatch-and-chill [:contact.ui/contact-code-submitted new-contact? entered-nickname] 3000)}
        [icon-wrapper colors/blue
-        [vector-icons/icon icon {:color colors/white-persist}]]]
+        [icons/icon icon {:color colors/white-persist}]]]
 
       [icon-wrapper colors/gray
-       [vector-icons/icon icon {:color colors/white-persist}]])))
+       [icons/icon icon {:color colors/white-persist}]])))
 
 (defn get-validation-label [value]
   (case value
@@ -96,7 +95,7 @@
                    :align-items     :center}
        [input-icon state false nil]]]
      [react/view {:min-height 30 :justify-content :flex-end}
-      [quo/text {:style styles/message
+      [quo/text {:style {:margin-horizontal 16}
                  :size  :small
                  :align :center
                  :color :secondary}
@@ -167,7 +166,7 @@
                    :align-items     :center}
        [input-icon state true @entered-nickname]]]
      [react/view {:min-height 30 :justify-content :flex-end :margin-bottom 16}
-      [quo/text {:style styles/message
+      [quo/text {:style {:margin-horizontal 16}
                  :size  :small
                  :align :center
                  :color :secondary}

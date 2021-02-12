@@ -54,7 +54,9 @@
                :dispatch-later [{:dispatch [::initialize-view {:logout? logout?}]
                                  :ms       100}]})))
 
-(fx/defn start-app [cofx]
+(fx/defn start-app
+  {:events [:init/app-started]}
+  [cofx]
   (fx/merge cofx
             {:get-supported-biometric-auth          nil
              ::init-theme                           nil

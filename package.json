@@ -41,7 +41,6 @@
     "react-native-dark-mode": "^0.2.2",
     "react-native-device-info": "^5.6.1",
     "react-native-dialogs": "^1.0.4",
-    "react-native-fast-image": "^8.3.4",
     "react-native-fetch-polyfill": "^1.1.2",
     "react-native-fs": "^2.14.1",
     "react-native-gesture-handler": "^1.8.0",

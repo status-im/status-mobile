@@ -4,7 +4,7 @@
             [status-im.ui.components.react :as react]
             [quo.core :as quo]
             [status-im.utils.security :as security]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.chat.message.styles :as styles]
             [status-im.react-native.resources :as resources]
             [status-im.chat.models.link-preview :as link-preview])

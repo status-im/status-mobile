@@ -9,7 +9,7 @@
             [quo.components.controls.view :as controls]
             [quo.components.tooltip :as tooltip]
             ;; FIXME:
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [quo.components.animated.pressable :as animated]))
 
 (defn themes [theme]

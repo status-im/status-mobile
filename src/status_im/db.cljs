@@ -7,7 +7,6 @@
 (def app-db {:keyboard-height                    0
              :contacts/contacts                  {}
              :pairing/installations              {}
-             :qr-codes                           {}
              :group/selected-contacts            #{}
              :chats                              {}
              :current-chat-id                    nil
@@ -20,8 +19,6 @@
              :peers-count                        0
              :node-info                          {}
              :peers-summary                      []
-             :my-profile/editing?                false
-             :transport/filters                  {}
              :transport/message-envelopes        {}
              :mailserver/mailservers             (fleet/default-mailservers {})
              :mailserver/topics                  {}

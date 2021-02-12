@@ -2,12 +2,12 @@
   (:require [re-frame.core :as re-frame]
             [reagent.core :as r]
             [status-im.constants :as constants]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.create.core :refer [step-kw-to-num]]
             [status-im.privacy-policy.core :as privacy-policy]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.radio :as radio]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
@@ -115,8 +115,8 @@
          [react/image
           {:source (resources/get-image (if selected? image-selected image))
            :style  {:width image-width :height image-height}}]
-         [vector-icons/icon icon {:color (if selected? colors/blue colors/gray)
-                                  :width icon-width :height icon-height}])
+         [icons/icon icon {:color (if selected? colors/blue colors/gray)
+                           :width icon-width :height icon-height}])
        [react/view {:style {:margin-horizontal 16 :flex 1}}
         [react/text {:style (assoc styles/wizard-text :font-weight "500" :color colors/black :text-align :left)}
          (i18n/label title)]

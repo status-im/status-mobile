@@ -3,13 +3,12 @@
             [reagent.core :as reagent]
             [status-im.browser.core :as browser]
             [status-im.browser.webview-ref :as webview-ref]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.connectivity.view :as connectivity]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.tooltip.views :as tooltip]
             [status-im.ui.components.webview :as components.webview]
             [status-im.ui.screens.browser.accounts :as accounts]
@@ -174,7 +173,7 @@
                                 (not (nil? (:url props)))))}
   [react/view {:flex 1
                :elevation -10}
-   [react/view components.styles/flex
+   [react/view {:flex 1}
     (if (and unsafe? (not= (http/url-host url) ignore-unsafe))
       [site-blocked.views/view {:can-go-back? can-go-back?
                                 :site         browser-id}]

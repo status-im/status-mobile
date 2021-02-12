@@ -1,11 +1,11 @@
 (ns status-im.ui.screens.profile.contact.views
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.chat.models :as chat.models]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.profile-header.view :as profile-header]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.components.sheets :as sheets]

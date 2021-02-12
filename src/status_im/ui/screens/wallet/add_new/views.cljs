@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.screens.keycard.pin.views :as pin.views]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.ui.components.colors :as colors]
             [reagent.core :as reagent]
@@ -10,7 +10,7 @@
             [status-im.multiaccounts.db :as multiaccounts.db]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.screens.wallet.account-settings.views :as account-settings]
             [status-im.ethereum.core :as ethereum]
             [status-im.utils.security :as security]

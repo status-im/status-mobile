@@ -7,7 +7,7 @@
             [quo.design-system.spacing :as spacing]
             [quo.platform :as platform]
             ;; FIXME(Ferossgp): Dependecy on status
-            [status-im.ui.components.icons.vector-icons :as vector-icons]))
+            [status-im.ui.components.icons.icons :as icons]))
 
 (def ^:private initial-height 22)
 
@@ -66,7 +66,7 @@
 
          (when platform/ios?
            ;; NOTE(Ferossgp): Android does not show elevation for tooltip making it lost on white bg
-           [vector-icons/icon :icons/tooltip-tip {:width           18
-                                                  :height          8
-                                                  :container-style {:elevation 3}
-                                                  :color           (:ui-background @colors/theme)}])]]])))
+           [icons/icon :icons/tooltip-tip {:width           18
+                                           :height          8
+                                           :container-style {:elevation 3}
+                                           :color           (:ui-background @colors/theme)}])]]])))

@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.keycard.settings.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]

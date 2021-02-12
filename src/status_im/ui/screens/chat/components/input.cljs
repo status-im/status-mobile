@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.chat.components.input
-  (:require [status-im.ui.components.icons.vector-icons :as icons]
+  (:require [status-im.ui.components.icons.icons :as icons]
             [quo.react-native :as rn]
             [quo.react :as react]
             [quo.platform :as platform]
@@ -13,7 +13,7 @@
             [quo.animated :as animated]
             [status-im.utils.config :as config]
             [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [clojure.string :as string]
             [status-im.chat.models.mentions :as mentions]
             [status-im.ui.components.list.views :as list]

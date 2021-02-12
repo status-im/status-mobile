@@ -1,6 +1,6 @@
 (ns status-im.ui.components.react
   (:require [reagent.core :as reagent]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.typography :as typography]
             [status-im.utils.platform :as platform]
@@ -21,7 +21,6 @@
 
 (def app-state (.-AppState react-native))
 (def view (reagent/adapt-react-class (.-View react-native)))
-(def progress-bar (reagent/adapt-react-class (.-ProgressBarAndroid react-native)))
 
 (def status-bar-class (.-StatusBar react-native))
 
@@ -66,7 +65,6 @@
                        :ios     {:size :small}
                        :android {:size :16}}])
 
-(def pan-responder (.-PanResponder react-native))
 (def animated (.-Animated react-native))
 
 (def animated-view-class

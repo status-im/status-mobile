@@ -3,7 +3,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.mailserver.core :as mailserver]
-            [status-im.constants :as constants]
             [status-im.native-module.core :as status]
             [status-im.pairing.core :as pairing]
             [status-im.utils.fx :as fx]
@@ -11,9 +10,12 @@
             [status-im.utils.publisher :as publisher]
             [status-im.transport.filters.core :as transport.filters]
             status-im.transport.shh
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.universal-links.core :as universal-links]))
 
-(defn set-node-info [{:keys [db]} node-info]
+(fx/defn set-node-info
+  {:events [:transport.callback/node-info-fetched]}
+  [{:keys [db]} node-info]
   {:db (assoc db :node-info node-info)})
 
 (defn fetch-node-info []
@@ -72,18 +74,18 @@
   "We should only start receiving messages/processing topics once all the
   initializiation is completed, otherwise we might receive messages/topics
   when the state has not been properly initialized."
-  [{:keys [db] :as cofx}]
-  {:db (assoc db :rpc-url constants/ethereum-rpc-url)
-   ::json-rpc/call [{:method (json-rpc/call-ext-method "startMessenger")
+  [_]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "startMessenger")
                      :on-success #(re-frame/dispatch [::messenger-started %])
                      :on-failure #(log/error "failed to start messenger")}]})
 
 (fx/defn messenger-started
+  {:events [::messenger-started]}
   [{:keys [db] :as cofx} {:keys [filters
                                  mailserverTopics
                                  mailservers
                                  mailserverRanges] :as response}]
-  (log/info "Messenger started", response, mailserverTopics, mailservers, mailserverRanges)
+  (log/info "Messenger started")
   (fx/merge cofx
             {:db (-> db
                      (assoc :messenger/started? true)
@@ -94,7 +96,8 @@
             (fetch-node-info-fx)
             (pairing/init)
             (publisher/start-fx)
-            (mailserver/initialize-mailserver)))
+            (mailserver/initialize-mailserver)
+            (universal-links/process-stored-event)))
 
 (fx/defn stop-whisper
   "Stops whisper protocol"

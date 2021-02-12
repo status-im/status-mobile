@@ -7,7 +7,7 @@
             [quo.gesture-handler :as gh]
             [quo.design-system.colors :as colors]
             [quo.components.controls.styles :as styles]
-            [status-im.ui.components.icons.vector-icons :as icons]))
+            [status-im.ui.components.icons.icons :as icons]))
 
 (defn control-builder [component]
   (fn [props]

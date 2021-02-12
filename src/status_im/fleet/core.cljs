@@ -1,7 +1,7 @@
 (ns status-im.fleet.core
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.node.core :as node]
             [status-im.utils.config :as config]
@@ -33,7 +33,8 @@
           (node/fleets db)))
 
 (fx/defn show-save-confirmation
-  [{:keys [db] :as cofx} fleet]
+  {:events [:fleet.ui/fleet-selected]}
+  [_ fleet]
   {:ui/show-confirmation
    {:title               (i18n/label :t/close-app-title)
     :content             (i18n/label :t/change-fleet
@@ -68,6 +69,7 @@
                                                        nodes))))})
 
 (fx/defn save
+  {:events [:fleet.ui/save-fleet-confirmed]}
   [{:keys [db now] :as cofx} fleet]
   (let [old-fleet (get-in db [:multiaccount :fleet])]
     (when (not= fleet old-fleet)

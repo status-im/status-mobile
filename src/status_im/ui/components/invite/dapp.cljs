@@ -2,7 +2,7 @@
   (:require [status-im.ui.components.invite.modal :as modal]
             [re-frame.core :as re-frame]
             [status-im.acquisition.core :as acquisition]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.acquisition.dapp :as dapp]))
 
 (defn accept-popover []

@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
             [status-im.ui.screens.chat.styles.input.gap :as style]))
 

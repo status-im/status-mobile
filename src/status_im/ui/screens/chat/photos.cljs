@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as style]
-            [status-im.ui.screens.profile.db :as profile.db]
+            [status-im.profile.db :as profile.db]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.image :as utils.image]))
 

@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.offline-messaging-settings.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.radio :as radio]
@@ -43,7 +43,7 @@
 
         (if pinned?
           [radio/radio connected?]
-          [vector-icons/icon :check {:color colors/blue}])]])))
+          [icons/icon :check {:color colors/blue}])]])))
 
 (views/defview offline-messaging-settings []
   (views/letsubs [current-mailserver-id      [:mailserver/current-id]

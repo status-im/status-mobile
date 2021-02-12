@@ -5,13 +5,13 @@
             [status-im.react-native.resources :as resources]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.common.styles :as components.common.styles]
             [status-im.ui.components.toolbar :as toolbar]
             [clojure.string :as string]
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.profile.seed.styles :as styles]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]))
 
 (def steps-numbers

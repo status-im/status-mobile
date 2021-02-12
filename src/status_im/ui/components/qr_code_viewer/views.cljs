@@ -3,8 +3,10 @@
             [reagent.core :as reagent]
             [status-im.ui.components.qr-code-viewer.styles :as styles]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.svg :as svg]
-            ["qrcode" :as qr-code-js]))
+            ["qrcode" :as qr-code-js]
+            ["react-native-svg" :refer (SvgXml)]))
+
+(def svgxml (reagent/adapt-react-class SvgXml))
 
 (defn qr-code [{:keys [size value]}]
   (let [uri (reagent/atom nil)]
@@ -15,7 +17,7 @@
      #(reset! uri %2))
     (fn []
       (when @uri
-        [svg/svgxml {:xml @uri :width size :height size}]))))
+        [svgxml {:xml @uri :width size :height size}]))))
 
 (defn qr-code-view
   "Qr Code view including the frame.

@@ -2,14 +2,21 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [clojure.string :as string]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.camera :as camera]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.qr-scanner.styles :as styles]
             [status-im.ui.components.colors :as colors]
             [status-im.utils.config :as config]
-            [quo.core :as quo]))
+            [quo.core :as quo]
+            [reagent.core :as reagent]
+            ["react-native-camera-kit" :refer (CameraKitCamera)]))
+
+(def camera (reagent/adapt-react-class CameraKitCamera))
+
+(defn get-qr-code-data [^js event]
+  (when-let [data (-> event .-nativeEvent .-codeStringValue)]
+    (string/trim data)))
 
 (defn- topbar [_ {:keys [title] :as opts}]
   [topbar/topbar
@@ -58,7 +65,7 @@
      [corner :border-bottom-width :border-right-width :border-bottom-right-radius]]]])
 
 (defn on-barcode-read [opts data]
-  (re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success opts (camera/get-qr-code-data data)]))
+  (re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success opts (get-qr-code-data data)]))
 
 (defview qr-scanner []
   (letsubs [read-once? (atom false)
@@ -74,7 +81,7 @@
        [react/view {:flex 1}
         [react/with-activity-indicator
          {}
-         [camera/camera
+         [camera
           {:ref            #(reset! camera-ref %)
            :style          {:flex 1}
            :camera-options {:zoomMode :off}

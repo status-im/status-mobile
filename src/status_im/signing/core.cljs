@@ -8,7 +8,7 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.ethereum.tokens :as tokens]
             [status-im.keycard.common :as keycard.common]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.native-module.core :as status]
             [status-im.signing.keycard :as signing.keycard]
             [status-im.utils.fx :as fx]

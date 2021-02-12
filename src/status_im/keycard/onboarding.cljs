@@ -1,7 +1,7 @@
 (ns status-im.keycard.onboarding
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.keycard.common :as common]

@@ -4,13 +4,13 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [cljs-bean.core :refer [bean]]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [quo.components.safe-area :as safe-area]
             [status-im.ui.screens.routing.core :as navigation]
             [quo.animated :as animated]
             [quo.react-native :as rn]
             [status-im.ui.components.badge :as badge]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.utils.platform :as platform]))
@@ -60,7 +60,7 @@
          :accessibility-label accessibility-label}
         [react/view {:style tabs.styles/tab-container}
          [react/view {:style tabs.styles/icon-container}
-          [vector-icons/icon icon (tabs.styles/icon active?)]
+          [icons/icon icon (tabs.styles/icon active?)]
           (when count
             (cond
               (or (pos? count) (pos? (:other count)))

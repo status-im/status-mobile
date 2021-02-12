@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.profile.components.sheets
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.profile.components.styles :as styles]
             [quo.core :as quo]
             [reagent.core :as reagent])

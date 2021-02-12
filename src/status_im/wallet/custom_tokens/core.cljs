@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.utils.fx :as fx]
@@ -90,6 +90,7 @@
         (vals all-tokens)))
 
 (fx/defn total-supply-result
+  {:events [:wallet.custom-token/total-supply-result]}
   [{:keys [db]} contract total-supply]
   (if (money/valid? total-supply)
     {:wallet.custom-token/get-name contract}
@@ -103,6 +104,7 @@
   (not (nil? (get all-tokens (string/lower-case contract)))))
 
 (fx/defn contract-address-is-changed
+  {:events [:wallet.custom-token/contract-address-is-pasted]}
   [{:keys [db]} contract]
   (if (ethereum/address? contract)
     (if (token-in-list? db contract)
@@ -119,6 +121,7 @@
                  :error (i18n/label :t/wrong-address)})}))
 
 (fx/defn decimals-result
+  {:events [:wallet.custom-token/decimals-result]}
   [{:keys [db]} result]
   {:db (update db
                :wallet/custom-token-screen
@@ -127,6 +130,7 @@
                 :in-progress? nil})})
 
 (fx/defn symbol-result
+  {:events [:wallet.custom-token/symbol-result]}
   [{:keys [db]} contract token-symbol]
   (let [symbol-exists? (field-exists? db :symbol (keyword token-symbol))]
     {:db
@@ -139,6 +143,7 @@
      contract}))
 
 (fx/defn name-result
+  {:events [:wallet.custom-token/name-result]}
   [{:keys [db]} contract token-name]
   (let [name-exists? (field-exists? db :name token-name)]
     {:db
@@ -150,6 +155,7 @@
      :wallet.custom-token/get-symbol contract}))
 
 (fx/defn balance-result
+  {:events [:wallet.custom-token/balance-result]}
   [{:keys [db]} contract balance]
   (if (money/valid? balance)
     {:db (assoc-in db
@@ -195,6 +201,7 @@
               (navigation/navigate-back))))
 
 (fx/defn field-is-edited
+  {:events [:wallet.custom-token.ui/field-is-edited]}
   [{:keys [db] :as cofx} field-key value]
   (case field-key
     :contract (contract-address-is-changed cofx value)

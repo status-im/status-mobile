@@ -2,9 +2,9 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.screens.currency-settings.styles :as styles]
             [status-im.ui.components.topbar :as topbar]
@@ -21,7 +21,7 @@
       [react/text {:style styles/currency-name-text}
        (str display-name " (" code ")")]
       (when selected?
-        [vector-icons/icon :main-icons/check {:color :active}])]]))
+        [icons/icon :main-icons/check {:color :active}])]]))
 
 (views/defview currency-settings []
   (views/letsubs [currency-id [:wallet.settings/currency]

@@ -1,7 +1,7 @@
 (ns status-im.utils.utils
   (:require [clojure.string :as string]
             [goog.string :as gstring]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.core :as ethereum]

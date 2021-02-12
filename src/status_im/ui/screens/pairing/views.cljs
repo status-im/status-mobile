@@ -1,14 +1,10 @@
 (ns status-im.ui.screens.pairing.views
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [reagent.core :as reagent]
             [clojure.string :as string]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.icons.vector-icons :as icons]
-            [status-im.utils.platform :as utils.platform]
-            [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.checkbox.view :as checkbox.views]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [quo.core :as quo]
@@ -69,54 +65,26 @@
       [react/text (i18n/label :t/pair-this-device-description)]]]]])
 
 (defn your-device [{:keys [installation-id name device-type]}]
-  [react/view {:style styles/installation-item}
-   [react/view {:style (styles/pairing-button true)}
-    [icons/icon (if (= "desktop"
-                       device-type)
-                  :main-icons/desktop
-                  :main-icons/mobile)
-     (icon-style (styles/pairing-button-icon true))]]
-   [react/view {:style styles/pairing-actions-text}
-    [react/view
-     [react/text (str
-                  name
-                  " ("
-                  (i18n/label :t/you)
-                  ", "
-                  (subs installation-id 0 5)
-                  ")")]]]])
+  [quo/list-item {:icon  (if (= "desktop"
+                                device-type)
+                           :main-icons/desktop
+                           :main-icons/mobile)
+                  :title (str name " (" (i18n/label :t/you) ", " (subs installation-id 0 5) ")")}])
 
 (defn render-row [{:keys [name
                           enabled?
                           device-type
                           installation-id]}]
-  [react/touchable-highlight
-   {:accessibility-label :installation-item}
-   [react/view {:style styles/installation-item}
-    [react/view {:style (styles/pairing-button enabled?)}
-     [icons/icon (if (= "desktop"
-                        device-type)
-                   :main-icons/desktop
-                   :main-icons/mobile)
-      (icon-style (styles/pairing-button-icon enabled?))]]
-    [react/view {:style styles/pairing-actions-text}
-     [react/view
-      [react/text (str
-                   (if (string/blank? name)
-                     (i18n/label :t/pairing-no-info)
-                     name)
-                   " ("
-                   (subs installation-id 0 5)
-                   ")")]]]
-    [react/view
-     (if utils.platform/ios?
-       ;; On IOS switches seems to be broken, they take up value of dev-mode? (so if dev mode is on they all show to be on).
-       ;; Replacing therefore with checkbox until I have more time to investigate
-       (checkbox.views/checkbox {:checked? enabled?
-                                 :on-value-change (partial toggle-enabled! installation-id enabled?)})
-       [react/switch {:track-color     #js {:true colors/blue :false nil}
-                      :value           enabled?
-                      :on-value-change (partial toggle-enabled! installation-id enabled?)}])]]])
+  [quo/list-item {:icon      (if (= "desktop" device-type)
+                               :main-icons/desktop
+                               :main-icons/mobile)
+                  :title     (str (if (string/blank? name)
+                                    (i18n/label :t/pairing-no-info)
+                                    name)
+                                  " (" (subs installation-id 0 5) ")")
+                  :accessory :checkbox
+                  :active    enabled?
+                  :on-press  (partial toggle-enabled! installation-id enabled?)}])
 
 (defn render-rows [installations]
   [react/scroll-view {:style styles/wrapper}
@@ -139,7 +107,7 @@
        :on-change-text      #(reset! installation-name %)
        :auto-focus          true}]]]
    [react/view styles/bottom-container
-    [react/view components.styles/flex]
+    [react/view {:flex 1}]
     [quo/button
      {:type      :secondary
       :after     :main-icon/next

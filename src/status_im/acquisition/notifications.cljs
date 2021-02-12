@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.notifications.android :as pn-android]
             [status-im.utils.fx :as fx]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.notifications.core :as notifications]
             [status-im.ui.components.react :as react]
             [quo.platform :as platform]

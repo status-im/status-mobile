@@ -2,7 +2,7 @@
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
             [status-im.constants :as constants]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.list.views :as list]

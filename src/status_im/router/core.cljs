@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [bidi.bidi :as bidi]
             [taoensso.timbre :as log]
-            [status-im.ui.screens.add-new.new-public-chat.db :as public-chat.db]
+            [status-im.add-new.db :as public-chat.db]
             [status-im.utils.security :as security]
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.ens :as ens]

@@ -30,7 +30,7 @@
       (let [actual (atom nil)]
         (with-redefs [re-frame/dispatch #(reset! actual %)]
           (links/url-event-listener #js {:url "some-url"})
-          (is (= [:handle-universal-link "some-url"] @actual))))))
+          (is (= [:universal-links/handle-url "some-url"] @actual))))))
   (testing "the url is nil"
     (testing "it does not dispatches the url"
       (let [actual (atom nil)]

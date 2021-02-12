@@ -8,7 +8,7 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.keycard.common :as keycard.common]
             [status-im.fleet.core :as fleet]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.biometric.core :as biometric]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.native-module.core :as status]
@@ -17,7 +17,7 @@
             [status-im.communities.core :as communities]
             [status-im.transport.core :as transport]
             [status-im.stickers.core :as stickers]
-            [status-im.ui.screens.mobile-network-settings.events :as mobile-network]
+            [status-im.mobile-sync-settings.core :as mobile-network]
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
@@ -480,3 +480,16 @@
                 (acquisition/create))
               (navigation/navigate-reset {:index  0
                                           :routes [{:name :tabs}]}))))
+
+(fx/defn multiaccount-selected
+  {:events [:multiaccounts.login.ui/multiaccount-selected]}
+  [{:keys [db] :as cofx} key-uid]
+  ;; We specifically pass a bunch of fields instead of the whole multiaccount
+  ;; as we want store some fields in multiaccount that are not here
+  (let [multiaccount (get-in db [:multiaccounts/multiaccounts key-uid])]
+    (fx/merge
+     cofx
+     {:db (-> db
+              (dissoc :intro-wizard)
+              (update :keycard dissoc :application-info))}
+     (open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])))))

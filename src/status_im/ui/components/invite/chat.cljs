@@ -8,7 +8,7 @@
             [quo.core :as quo]
             [status-im.acquisition.chat :as acquisition]
             [status-im.ui.components.invite.events :as invite]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [status-im.acquisition.gateway :as gateway]
             [status-im.ui.components.invite.style :as styles]))
 

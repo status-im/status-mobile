@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.browser.options.views
   (:require [status-im.ui.components.react :as react]
             [quo.core :as quo]
-            [status-im.i18n :as i18n]
+            [status-im.i18n.i18n :as i18n]
             [re-frame.core :as re-frame]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.components.colors :as colors]
@@ -9,7 +9,7 @@
             [status-im.browser.core :as browser]
             [status-im.utils.http :as http]
             [status-im.utils.utils :as utils]
-            [status-im.ui.components.icons.vector-icons :as icons]
+            [status-im.ui.components.icons.icons :as icons]
             [status-im.constants :as constants]))
 
 (defn hide-sheet-and-dispatch [event]
