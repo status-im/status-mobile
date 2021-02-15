@@ -157,18 +157,19 @@
   (debounce/debounce-and-dispatch [:chat.ui/message-visibility-changed e] 5000))
 
 (defn render-fn [{:keys [outgoing type] :as message} idx _ {:keys [group-chat public? current-public-key space-keeper]}]
-  (if (= type :datemark)
-    [message-datemark/chat-datemark (:value message)]
-    (if (= type :gap)
-      [gap/gap message idx messages-list-ref false]
-      ; message content
-      [message/chat-message
-       (assoc message
-              :incoming-group (and group-chat (not outgoing))
-              :group-chat group-chat
-              :public? public?
-              :current-public-key current-public-key)
-       space-keeper])))
+  [react/view {:style (when platform/android? {:scaleY -1})}
+   (if (= type :datemark)
+     [message-datemark/chat-datemark (:value message)]
+     (if (= type :gap)
+       [gap/gap message idx messages-list-ref false]
+       ; message content
+       [message/chat-message
+        (assoc message
+               :incoming-group (and group-chat (not outgoing))
+               :group-chat group-chat
+               :public? public?
+               :current-public-key current-public-key)
+        space-keeper]))])
 
 (defn messages-view
   [{:keys [chat bottom-space pan-responder space-keeper]}]
@@ -183,13 +184,16 @@
       {:key-fn                       #(or (:message-id %) (:value %))
        :ref                          #(reset! messages-list-ref %)
        :header                       (when (= chat-type constants/private-group-chat-type)
-                                       [chat.group/group-chat-footer chat-id invitation-admin])
-       :footer                       [:<>
+                                       [react/view {:style (when platform/android? {:scaleY -1})}
+                                        [chat.group/group-chat-footer chat-id invitation-admin]])
+       :footer                       [react/view {:style (when platform/android? {:scaleY -1})}
                                       [chat-intro-header-container chat no-messages?]
                                       (when (= chat-type constants/one-to-one-chat-type)
                                         [invite.chat/reward-messages])]
        :data                         messages
-       :inverted                     true
+       ;;TODO https://github.com/facebook/react-native/issues/30034
+       :inverted                     (when platform/ios? true)
+       :style                        (when platform/android? {:scaleY -1})
        :render-data                  {:group-chat         group-chat
                                       :public?            public?
                                       :current-public-key current-public-key
