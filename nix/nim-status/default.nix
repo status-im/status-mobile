@@ -10,8 +10,8 @@ let
 in rec {
   srcRaw = pkgs.fetchgit {
     url = "https://github.com/status-im/nim-status";
-    rev = "6b82c0f9d608ce1f78f1bdabfd434ad4b7a2ea39";
-    sha256 = "1gn9rbv4ndz5xfd8h9cvwffcadh7lx4xx7zdvy9w5bd29li3i3p6";
+    rev = "13641d4f9d8fbe942cb71c049df9a0bda1fdfa1c";
+    sha256 = "0mb2fdjps4qv1rv5l5fp0bgxaikgf3zssbsmwsh6g5biysrbmzys";
     fetchSubmodules = true;
   };
 
@@ -32,6 +32,10 @@ in rec {
   #   '';
 
   # };
+
+  sqlcipher = callPackage ./sqlcipher.nix { platform = "android"; arch = "386"; };
+  nim-sqlcipher = callPackage ./nim-sqlcipher.nix { platform = "android"; arch = "386"; };
+  nim-status = callPackage ./nim-status.nix { platform = "android"; arch = "386"; };
 
   openssl-android-x86 = callPackage ./openssl.nix { platform = "android"; arch = "386"; };
   openssl-ios-x86 = callPackage ./openssl.nix { platform = "ios"; arch = "386"; };
