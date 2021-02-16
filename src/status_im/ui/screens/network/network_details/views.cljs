@@ -6,7 +6,8 @@
             [status-im.ui.screens.network.styles :as st]
             [status-im.ui.screens.network.views :as network-settings]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.utils.debounce :refer [dispatch-and-chill]])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview network-details []
@@ -24,7 +25,7 @@
           {:name       name
            :connected? connected?}]
          (when-not connected?
-           [react/touchable-highlight {:on-press #(re-frame/dispatch [::network/connect-network-pressed id])}
+           [react/touchable-highlight {:on-press #(dispatch-and-chill [::network/connect-network-pressed id] 1000)}
             [react/view st/connect-button-container
              [react/view {:style               st/connect-button
                           :accessibility-label :network-connect-button}
