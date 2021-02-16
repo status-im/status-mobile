@@ -231,9 +231,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         self.driver.launch_app()
         SignInView(self.driver).sign_in()
         home.home_button.wait_for_visibility_of_element()
-        connection_text = home.connection_status.text
-        if connection_text != 'Offline':
-            self.driver.fail("Connection status text '%s' doesn't match expected 'Offline'" % connection_text)
+        home.connection_offline_icon.wait_for_visibility_of_element(20)
+
 
     @marks.testrail_id(6225)
     @marks.transaction

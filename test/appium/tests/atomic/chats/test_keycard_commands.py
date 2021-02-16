@@ -112,7 +112,6 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         profile_2 = wallet_2.profile_button.click()
         profile_2.airplane_mode_button.click()
         device_2.home_button.double_click()
-        # device_2.click_system_home_button()
         chat_element = home_1.get_chat(sender['username'])
         chat_element.wait_for_visibility_of_element(30)
         chat_1 = chat_element.click()
@@ -138,9 +137,10 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         # if not device_2.element_by_text(transaction_request_pn).is_element_displayed(60):
         #    self.errors.append("Push notification is not received after going back from offline")
         # device_2.element_by_text(transaction_request_pn).click()
-        home_2.connection_status.wait_for_invisibility_of_element(120)
+        home_2.connection_offline_icon.wait_for_invisibility_of_element(120)
         home_2.get_chat(recipient_username).click()
         chat_2_sender_message = chat_2.get_outgoing_transaction()
+        chat_2_sender_message.wait_for_visibility_of_element(60)
         chat_2_sender_message.transaction_status.wait_for_element_text(chat_2_sender_message.address_received)
         send_message = chat_2_sender_message.sign_and_send.click()
         send_message.next_button.click()
@@ -150,8 +150,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_2.toggle_airplane_mode()
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, token=True)
         chat_2.toggle_airplane_mode()
-        chat_2.connection_status.wait_for_invisibility_of_element(60)
-        [message.transaction_status.wait_for_element_text(message.confirmed) for message in
+        [message.transaction_status.wait_for_element_text(message.confirmed, wait_time=60) for message in
          (chat_2_sender_message, chat_1_request_message)]
         self.errors.verify_no_errors()
 

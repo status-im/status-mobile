@@ -58,90 +58,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append('No redirected to carousel view after deleting last multiaccount')
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5741)
-    @marks.high
-    def test_mobile_data_usage_popup_continue_syncing(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        sign_in_view.just_fyi("Enable mobile network to see popup and enable syncing")
-        sign_in_view.toggle_mobile_data()
-        if not sign_in_view.element_by_translation_id("mobile-syncing-sheet-title").is_element_displayed():
-            self.driver.fail('No popup about Mobile data is shown')
-        sign_in_view.wait_for_element_starts_with_text('Continue syncing').click()
-
-        sign_in_view.just_fyi("Check that selected option is stored in Profile")
-        profile_view = sign_in_view.profile_button.click()
-        profile_view.sync_settings_button.click()
-        profile_view.element_by_translation_id("mobile-network-settings").click()
-        if not profile_view.use_mobile_data.attribute_value('checked'):
-            self.errors.append("Use mobile data option is enabled after 'Continue syncing' selected")
-        if profile_view.ask_me_when_on_mobile_network.attribute_value('checked'):
-            self.errors.append("'Ask me when on mobile network' option not enabled even it was checked when 'Continue"
-                               "syncing' selected!")
-
-        sign_in_view.just_fyi("Check that can join public chat and send message")
-        chat_name = sign_in_view.get_random_chat_name()
-        home = profile_view.get_back_to_home_view()
-        chat = home.join_public_chat(chat_name)
-        message = 'test message'
-        chat.chat_message_input.send_keys(message)
-        chat.send_message_button.click()
-        if not chat.chat_element_by_text(message).is_element_displayed():
-            self.errors.append("Message was not sent!")
-        self.errors.verify_no_errors()
-
-    @marks.testrail_id(6228)
-    @marks.high
-    def test_mobile_data_usage_popup_stop_syncing(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user()
-        offline_banner_text = sign_in.get_translation_by_key("mobile-network-sheet-offline")
-
-        sign_in.just_fyi("Enable mobile network to see popup and stop syncing")
-        sign_in.toggle_mobile_data()
-        sign_in.element_by_translation_id("mobile-network-stop-syncing").wait_and_click()
-        if not sign_in.wait_for_element_starts_with_text(offline_banner_text, 120):
-            self.driver.fail('No popup about offline history is shown')
-        sign_in.element_by_text_part(offline_banner_text).click()
-        for id in "mobile-network-sheet-offline", "mobile-network-start-syncing", "mobile-network-go-to-settings":
-            if not sign_in.element_by_translation_id(id).is_element_displayed():
-                self.driver.fail("%s is not shown" % sign_in.get_translation_by_key(id))
-
-        sign_in.just_fyi("Start syncing in offline popup")
-        sign_in.element_by_translation_id("mobile-network-start-syncing").click()
-        sign_in.element_by_text_part(offline_banner_text).wait_for_invisibility_of_element(10)
-        if sign_in.element_by_text_part(offline_banner_text).is_element_displayed():
-            self.driver.fail("Popup about offline history is shown")
-
-    @marks.testrail_id(6229)
-    @marks.high
-    def test_mobile_data_usage_settings(self):
-        sign_in_view = SignInView(self.driver).create_user()
-        profile_view = sign_in_view.profile_button.click()
-
-        sign_in_view.just_fyi("Check default preferences")
-        profile_view.sync_settings_button.click()
-        profile_view.element_by_translation_id("mobile-network-settings").click()
-
-        if profile_view.use_mobile_data.text != 'OFF':
-            self.errors.append("Mobile data is enabled by default")
-        if profile_view.ask_me_when_on_mobile_network.text != "ON":
-            self.errors.append("'Ask me when on mobile network' is not enabled by default")
-
-        sign_in_view.just_fyi("Disable 'ask me when on mobile network' and check that it is not shown")
-        profile_view.ask_me_when_on_mobile_network.click()
-        sign_in_view.toggle_mobile_data()
-        if sign_in_view.element_by_translation_id("mobile-network-start-syncing").is_element_displayed(20):
-            self.errors.append("Popup is shown, but 'ask me when on mobile network' is disabled")
-
-        sign_in_view.just_fyi("Check 'Restore default' setting")
-        profile_view.element_by_text('Restore Defaults').click()
-        if profile_view.use_mobile_data.attribute_value("checked"):
-            self.errors.append("Mobile data is enabled by default")
-        if not profile_view.ask_me_when_on_mobile_network.attribute_value("checked"):
-            self.errors.append("'Ask me when on mobile network' is not enabled by default")
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(5323)
     @marks.critical
     def test_share_copy_contact_code_and_wallet_address(self):
@@ -877,15 +793,20 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         profile_1.home_button.click()
         public_chat_1 = home_1.join_public_chat(public_chat_name)
         public_chat_1.relogin()
-        if not public_chat_1.element_by_text_part("Connecting").is_element_displayed(20):
-            self.errors.append("Indicator doesn't show 'Connecting'")
+
+        profile_1.just_fyi('check that still connected to custom mailserver after relogin')
+        home_1.profile_button.click()
+        profile_1.sync_settings_button.click()
+        if not profile_1.element_by_text(server_name).is_element_displayed():
+            self.drivers[0].fail("Not connected to custom mailserver after re-login")
 
         profile_1.just_fyi('check that can RETRY to connect')
-        for _ in range(2):
-            public_chat_1.element_by_translation_id('mailserver-retry', 'button', uppercase=True).wait_and_click(60)
+        profile_1.element_by_translation_id(id='mailserver-error-title').wait_for_element(60)
+        public_chat_1.element_by_translation_id(id='mailserver-retry', uppercase=True).wait_and_click(60)
 
         profile_1.just_fyi('check that can pick another mailserver and receive messages')
-        public_chat_1.element_by_translation_id('mailserver-pick-another', 'button', uppercase=True).wait_and_click(60)
+        profile_1.element_by_translation_id(id='mailserver-error-title').wait_for_element(60)
+        profile_1.element_by_translation_id(id='mailserver-pick-another', uppercase=True).wait_and_click(120)
         mailserver = profile_1.return_mailserver_name(mailserver_ams, used_fleet)
         profile_1.element_by_text(mailserver).click()
         profile_1.confirm_button.click()
@@ -1139,6 +1060,86 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
             self.errors.append('Nickname for user with ENS is not shown in public chat')
 
         self.errors.verify_no_errors()
+
+
+    @marks.testrail_id(6228)
+    @marks.high
+    def test_mobile_data_usage_complex_settings(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        device_1_home = device_1.create_user()
+        public_chat_name, public_chat_message = 'e2e-started-before', 'message to pub chat'
+        device_1_public = device_1_home.join_public_chat(public_chat_name)
+        device_1_public.send_message(public_chat_message)
+
+        device_1_home.just_fyi('set mobile data to "OFF" and check that peer-to-peer connection is still working')
+        device_2_home = device_2.create_user()
+        device_2_home.toggle_mobile_data()
+        device_2_home.mobile_connection_off_icon.wait_for_visibility_of_element(20)
+        for element in device_2_home.continue_syncing_button, device_2_home.stop_syncing_button, device_2_home.remember_my_choice_checkbox:
+            if not element.is_element_displayed(10):
+               self.drivers[0].fail('Element %s is not not shown in "Syncing mobile" bottom sheet' % element.locator)
+        device_2_home.stop_syncing_button.click()
+        if not device_2_home.mobile_connection_off_icon.is_element_displayed():
+            self.drivers[0].fail('No mobile connection OFF icon is shown')
+        device_2_home.mobile_connection_off_icon.click()
+        for element in device_2_home.connected_to_n_peers_text, device_2_home.waiting_for_wi_fi:
+            if not element.is_element_displayed():
+                self.errors.append("Element '%s' is not shown in Connection status bottom sheet" % element.locator)
+        device_2_home.click_system_back_button()
+        device_2_public = device_2_home.join_public_chat(public_chat_name)
+        if device_2_public.chat_element_by_text(public_chat_message).is_element_displayed(30):
+            self.errors.append("Chat history was fetched with mobile data fetching off")
+        public_chat_new_message = 'new message'
+        device_1_public.send_message(public_chat_new_message)
+        if not device_2_public.chat_element_by_text(public_chat_new_message).is_element_displayed(30):
+            self.errors.append("Peer-to-peer connection is not working when  mobile data fetching is off")
+
+        device_2_home.just_fyi('set mobile data to "ON"')
+        device_2_home.home_button.click()
+        device_2_home.mobile_connection_off_icon.click()
+        device_2_home.use_mobile_data_switch.click()
+        if not device_2_home.connected_to_node_text.is_element_displayed(10):
+            self.errors.append("Not connected to history node after enabling fetching on mobile data")
+        device_2_home.click_system_back_button()
+        device_2_home.mobile_connection_on_icon.wait_for_visibility_of_element(10)
+        if not device_2_home.mobile_connection_on_icon.is_element_displayed():
+            self.errors.append('No mobile connection ON icon is shown')
+        device_2_home.get_chat('#%s'% public_chat_name).click()
+        if not device_2_public.chat_element_by_text(public_chat_message).is_element_displayed(30):
+            self.errors.append("Chat history was not fetched with mobile data fetching ON")
+
+        device_2_home.just_fyi('check redirect to sync settings by tappin "Sync" in connection status bottom sheet')
+        device_2_home.home_button.click()
+        device_2_home.mobile_connection_on_icon.click()
+        device_2_home.connection_settings_button.click()
+        if not device_2_home.element_by_translation_id("mobile-network-use-mobile").is_element_displayed():
+            self.errors.append("Was not redirected to sync settings after tapping on Settings in connection bottom sheet")
+
+        device_1_home.just_fyi("Check default preferences in Sync settings")
+        device_1_profile = device_1_home.profile_button.click()
+        device_1_profile.sync_settings_button.click()
+        if not device_1_profile.element_by_translation_id("mobile-network-use-wifi").is_element_displayed():
+            self.errors.append("Mobile data is enabled by default")
+        device_1_profile.element_by_translation_id("mobile-network-use-wifi").click()
+        if device_1_profile.ask_me_when_on_mobile_network.text != "ON":
+            self.errors.append("'Ask me when on mobile network' is not enabled by default")
+
+        device_1_profile.just_fyi("Disable 'ask me when on mobile network' and check that it is not shown")
+        device_1_profile.ask_me_when_on_mobile_network.click()
+        device_1_profile.toggle_mobile_data()
+        if device_1_profile.element_by_translation_id("mobile-network-start-syncing").is_element_displayed(20):
+            self.errors.append("Popup is shown, but 'ask me when on mobile network' is disabled")
+
+        device_1_profile.just_fyi("Check 'Restore default' setting")
+        device_1_profile.element_by_text('Restore Defaults').click()
+        if device_1_profile.use_mobile_data.attribute_value("checked"):
+            self.errors.append("Mobile data is enabled by default")
+        if not device_1_profile.ask_me_when_on_mobile_network.attribute_value("checked"):
+            self.errors.append("'Ask me when on mobile network' is not enabled by default")
+
+        self.errors.verify_no_errors()
+
 
     @marks.testrail_id(5680)
     @marks.high

@@ -114,7 +114,7 @@ class ChatElementByText(Text):
             try:
                 return super(ChatElementByText, self).find_element()
             except NoSuchElementException:
-                ChatView(self.driver).reconnect()
+                self.wait_for_visibility_of_element(20)
 
     @property
     def image_in_reply(self):

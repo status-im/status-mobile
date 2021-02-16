@@ -34,9 +34,9 @@ class ChatElement(SilentButton):
                 return super(ChatElement, self).find_element()
             except NoSuchElementException as e:
                 if i == 0:
-                    HomeView(self.driver).reconnect()
+                    self.wait_for_visibility_of_element(20)
                 else:
-                    e.msg = 'Device %s: Unable to find chat with user %s' % (self.driver.number, self.username)
+                    e.msg = 'Device %s: Unable to find chat with name %s' % (self.driver.number, self.username)
                     raise e
 
     @property
@@ -74,6 +74,25 @@ class HomeView(BaseView):
         self.delete_chat_button = Button(self.driver, accessibility_id="delete-chat-button")
         self.clear_history_button = Button(self.driver, accessibility_id="clear-history-button")
         self.mark_all_messages_as_read_button = Button(self.driver, accessibility_id="mark-all-read-button")
+
+        # Connection icons
+        self.mobile_connection_off_icon = Button(self.driver, accessibility_id="conn-button-mobile-sync-off")
+        self.mobile_connection_on_icon = Button(self.driver, accessibility_id="conn-button-mobile-sync")
+        self.connection_offline_icon = Button(self.driver, accessibility_id="conn-button-offline")
+
+        # Sync using mobile data bottom sheet
+        self.continue_syncing_button = Button(self.driver, accessibility_id="mobile-network-continue-syncing")
+        self.stop_syncing_button = Button(self.driver, accessibility_id="mobile-network-stop-syncing")
+        self.remember_my_choice_checkbox = Button(self.driver, xpath="//*[@content-desc='remember-choice']//*[@content-desc='checkbox']")
+
+        # Connection status bottom sheet
+        self.connected_to_n_peers_text = Text(self.driver, accessibility_id="connected-to-n-peers")
+        self.connected_to_node_text =  Text(self.driver, accessibility_id="connected-to-mailserver")
+        self.waiting_for_wi_fi = Text(self.driver, accessibility_id="waiting-wi-fi")
+        self.use_mobile_data_switch = Button(self.driver, accessibility_id="mobile-network-use-mobile")
+        self.connection_settings_button =  Button(self.driver, accessibility_id="settings")
+        self.not_connected_to_node_text = Text(self.driver, accessibility_id="not-connected-nodes")
+        self.not_connected_to_peers_text = Text(self.driver, accessibility_id="not-connected-to-peers")
 
     def wait_for_syncing_complete(self):
         self.driver.info('**Waiting for syncing complete:**')

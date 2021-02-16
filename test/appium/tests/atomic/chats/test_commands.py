@@ -138,7 +138,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         home_2.just_fyi('Check that transaction message is fetched from offline and sign transaction')
         device_2.sign_in()
-        home_2.connection_status.wait_for_invisibility_of_element(30)
+        home_2.connection_offline_icon.wait_for_invisibility_of_element(30)
         home_2.get_chat(recipient_username).click()
         chat_2_sender_message = chat_2.get_outgoing_transaction()
         if not chat_2_sender_message.is_element_displayed():
@@ -153,8 +153,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         chat_2.toggle_airplane_mode()
         self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15, token=True)
         chat_2.toggle_airplane_mode()
-        chat_2.connection_status.wait_for_invisibility_of_element(30)
-        [message.transaction_status.wait_for_element_text(message.confirmed) for message in
+        [message.transaction_status.wait_for_element_text(message.confirmed, wait_time=60) for message in
          (chat_2_sender_message, chat_1_request_message)]
         self.errors.verify_no_errors()
 

@@ -102,25 +102,22 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
         home_1.just_fyi('turn on airplane mode and check that offline status is shown on home view')
         home_1.toggle_airplane_mode()
-        home_1.connection_status.wait_for_visibility_of_element(15)
-        if home_1.connection_status.text != 'Offline':
-            self.errors.append('Offline status is not shown in home screen')
+        home_1.connection_offline_icon.wait_and_click(20)
+        for element in home_1.not_connected_to_node_text, home_1.not_connected_to_peers_text:
+            if not element.is_element_displayed():
+                self.errors.append('Element "%s" is not shown in Connection status screen if device is offline' % element.locator)
+        home_1.click_system_back_button()
+
         profile_2 = home_2.profile_button.click()
         username_2 = profile_2.default_username_text.text
         profile_2.get_back_to_home_view()
         chat_2 = home_2.add_contact(public_key_1)
         message_1 = 'test message'
         chat_2.send_message(message_1)
-
-        home_2.just_fyi('turn on airplane mode and check that offline status is shown on chat view')
         chat_2.toggle_airplane_mode()
-        chat_2.element_by_text('Offline').wait_for_visibility_of_element(15)
-        if chat_2.connection_status.text != 'Offline':
-            self.errors.append('Offline status is not shown in 1-1 chat')
 
         home_1.just_fyi('go back online and check that 1-1 chat will be fetched')
         home_1.toggle_airplane_mode()
-        home_1.connection_status.wait_for_invisibility_of_element(30)
         chat_element = home_1.get_chat(username_2)
         chat_element.wait_for_visibility_of_element(30)
         chat_1 = chat_element.click()
@@ -129,8 +126,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         home_1.just_fyi('checking offline fetching for another message')
         chat_2.toggle_airplane_mode()
         home_1.toggle_airplane_mode()
-        chat_2.element_by_text('Connecting to peers...').wait_for_invisibility_of_element(60)
-        chat_2.connection_status.wait_for_invisibility_of_element(60)
         message_2 = 'one more message'
         chat_2.send_message(message_2)
         home_1.toggle_airplane_mode()
@@ -148,7 +143,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         home_1 = profile_1.get_back_to_home_view()
         public_key_2 = home_2.get_public_key_and_username()
         profile_2 = home_2.get_profile_view()
-        profile_2.switch_network('Mainnet with upstream RPC')
+        profile_2.switch_network()
 
         chat_1 = home_1.add_contact(public_key_2)
         message = 'test message'
@@ -431,7 +426,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         device_2_chat = chat_element.click()
         if not device_2_chat.chat_element_by_text(message).is_element_displayed():
             self.errors.append("Message with text '%s' was not received" % message)
-        device_2_chat.connection_status.wait_for_invisibility_of_element(60)
         device_2_chat.add_to_contacts.click()
 
         device_2_chat.get_back_to_home_view()

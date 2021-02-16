@@ -221,13 +221,12 @@ class BaseView(object):
         self.next_button = Button(self.driver, translation_id="next")
         self.add_button = Button(self.driver, translation_id="add")
         self.save_button = Button(self.driver, translation_id="save")
-        self.done_button = Button(self.driver, translation_id="done") #self.locator = self.Locator.xpath_selector("//*[@content-desc='done-button' or contains(@text, 'Done')]")
+        self.done_button = Button(self.driver, translation_id="done")
         self.delete_button = Button(self.driver, translation_id="delete", uppercase=True)
         self.ok_continue_button = Button(self.driver, xpath="//*[@text='OK, CONTINUE' or @text='Okay, continue']")
         self.discard_button = Button(self.driver, xpath="//*[@text='DISCARD']")
         self.confirm_button = Button(self.driver, translation_id='confirm', uppercase=True)
-        self.connection_status = Text(self.driver,
-                                      xpath="//*[@content-desc='connection-status-text']/android.widget.TextView")
+
         self.cross_icon = Button(self.driver, xpath="(//android.view.ViewGroup[@content-desc='icon'])[1]")
         self.native_close_button = Button(self.driver, id="android:id/aerr_close")
         self.show_roots_button = Button(self.driver, accessibility_id="Show roots")
@@ -515,22 +514,6 @@ class BaseView(object):
         self.element_by_text_part(text).click()
         return self.get_chat_view()
 
-    def reconnect(self):
-        self.driver.info("**Reconnecting**")
-        connect_status = self.connection_status
-        for i in range(3):
-            if connect_status.is_element_displayed(5, ignored_exceptions=StaleElementReferenceException):
-                if 'Tap to reconnect' in connect_status.text:
-                    try:
-                        connect_status.click()
-                    except AttributeError:
-                        pass
-                    try:
-                        connect_status.wait_for_invisibility_of_element()
-                    except TimeoutException as e:
-                        if i == 2:
-                            e.msg = "Device %s: Can't reconnect to mail server after 3 attempts" % self.driver.number
-                            raise e
 
     def find_values_in_logcat(self, **kwargs):
         logcat = self.logcat
