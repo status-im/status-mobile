@@ -8,7 +8,8 @@
             [status-im.navigation :as navigation]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im.constants :as constants]))
 
 (fx/defn load-contacts
   {:events [::contacts-loaded]}
@@ -81,7 +82,8 @@
                             (fnil #(conj % :contact/added) #{})))]
       (fx/merge cofx
                 {:db (dissoc db :contacts/new-identity)
-                 :dispatch [:start-profile-chat public-key]}
+                 :dispatch-n [[:start-profile-chat public-key]
+                              [:offload-messages constants/timeline-chat-id]]}
                 (upsert-contact contact)
                 (send-contact-request contact)
                 (mailserver/process-next-messages-request)))))
@@ -95,7 +97,7 @@
                             (fnil #(disj % :contact/added) #{}))]
     (fx/merge cofx
               {:db (assoc-in db [:contacts/contacts public-key] new-contact)
-               :dispatch [:chat/remove-update-chat public-key]}
+               :dispatch [:offload-messages constants/timeline-chat-id]}
               (contacts-store/save-contact new-contact))))
 
 (fx/defn create-contact

@@ -25,8 +25,8 @@
 (defonce communities-stack (navigation/create-stack))
 
 (defn chat-stack []
-  [stack {:initial-route-name :home
-          :header-mode        :none}
+  [stack {:initial-route-name    :home
+          :header-mode           :none}
    [{:name      :home
      :style     {:padding-bottom tabbar.styles/tabs-diff}
      :component home/home}

@@ -16,7 +16,6 @@
               :unviewed-messages-count 2
               :is-active true
               :chat-id "chat-id"
-              :loaded-unviewed-messages-ids []
               :timestamp 2}
         expected-chat {:id "chat-id"
                        :color "color"

@@ -146,37 +146,36 @@
   (let [mentionable-users @(re-frame/subscribe [:chats/mentionable-users])
         timeout-id        (atom nil)
         last-text-change  (atom nil)]
-    [rn/view {:style (styles/text-input-wrapper)}
-     [rn/text-input
-      {:style                    (styles/text-input)
-       :ref                      text-input-ref
-       :max-font-size-multiplier 1
-       :accessibility-label      :chat-message-input
-       :text-align-vertical      :center
-       :multiline                true
-       :editable                 (not cooldown-enabled?)
-       :blur-on-submit           false
-       :auto-focus               false
-       :on-focus                 #(set-active-panel nil)
-       :max-length               chat.constants/max-text-size
-       :placeholder-text-color   (:text-02 @colors/theme)
-       :placeholder              (if cooldown-enabled?
-                                   (i18n/label :cooldown/text-input-disabled)
-                                   (i18n/label :t/type-a-message))
-       :underline-color-android  :transparent
-       :auto-capitalize          :sentences
-       :on-selection-change      (partial on-selection-change timeout-id last-text-change mentionable-users)
-       :on-change                (partial on-change
-                                          on-text-change last-text-change timeout-id mentionable-users)
-       :on-text-input            (partial on-text-input mentionable-users)}
-      (for [[idx [type text]] (map-indexed
-                               (fn [idx item]
-                                 [idx item])
-                               input-with-mentions)]
-        ^{:key (str idx "_" type "_" text)}
-        [rn/text (when (= type :mention)
-                   {:style {:color "#0DA4C9"}})
-         text])]]))
+    [rn/text-input
+     {:style                    (styles/text-input)
+      :ref                      text-input-ref
+      :max-font-size-multiplier 1
+      :accessibility-label      :chat-message-input
+      :text-align-vertical      :center
+      :multiline                true
+      :editable                 (not cooldown-enabled?)
+      :blur-on-submit           false
+      :auto-focus               false
+      :on-focus                 #(set-active-panel nil)
+      :max-length               chat.constants/max-text-size
+      :placeholder-text-color   (:text-02 @colors/theme)
+      :placeholder              (if cooldown-enabled?
+                                  (i18n/label :cooldown/text-input-disabled)
+                                  (i18n/label :t/type-a-message))
+      :underline-color-android  :transparent
+      :auto-capitalize          :sentences
+      :on-selection-change      (partial on-selection-change timeout-id last-text-change mentionable-users)
+      :on-change                (partial on-change
+                                         on-text-change last-text-change timeout-id mentionable-users)
+      :on-text-input            (partial on-text-input mentionable-users)}
+     (for [[idx [type text]] (map-indexed
+                              (fn [idx item]
+                                [idx item])
+                              input-with-mentions)]
+       ^{:key (str idx "_" type "_" text)}
+       [rn/text (when (= type :mention)
+                  {:style {:color "#0DA4C9"}})
+        text])]))
 
 (defn mention-item
   [[public-key {:keys [alias name nickname] :as user}] _ _ text-input-ref]

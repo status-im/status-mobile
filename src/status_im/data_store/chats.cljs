@@ -83,8 +83,7 @@
                                 :last-clock-value :lastClockValue
                                 :profile-public-key :profile})
       (dissoc :public? :group-chat :messages
-              :might-have-join-time-messages?
-              :loaded-unviewed-messages-ids :chat-type
+              :might-have-join-time-messages? :chat-type
               :contacts :admins :members-joined)))
 
 (defn <-rpc [chat]

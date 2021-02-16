@@ -151,7 +151,6 @@
 
    :messages {"status" {"4" {} "5" {} "6" {}}}
    :chats {"status" {:public? true
-                     :group-chat true
-                     :loaded-unviewed-messages-ids #{"6" "5" "4"}}
-           "opened" {:loaded-unviewed-messages-ids #{}}
-           "1-1"    {:loaded-unviewed-messages-ids #{"6" "5" "4"}}}})
+                     :group-chat true}
+           "opened" {}
+           "1-1"    {}}})

@@ -2,5 +2,7 @@
 
 (defonce first-not-visible-item (atom nil))
 
-(defn reset []
+(defonce scrolling (atom nil))
+
+(defn reset-visible-item []
   (reset! first-not-visible-item nil))

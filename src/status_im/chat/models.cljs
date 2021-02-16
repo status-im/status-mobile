@@ -3,7 +3,6 @@
             [taoensso.timbre :as log]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.transport.filters.core :as transport.filters]
-            [status-im.contact.core :as contact.core]
             [status-im.data-store.chats :as chats-store]
             [status-im.data-store.messages :as messages-store]
             [status-im.ethereum.json-rpc :as json-rpc]
@@ -18,7 +17,9 @@
             [status-im.utils.types :as types]
             [status-im.add-new.db :as new-public-chat.db]
             [status-im.mailserver.topics :as mailserver.topics]
-            [status-im.mailserver.constants :as mailserver.constants]))
+            [status-im.mailserver.constants :as mailserver.constants]
+            [status-im.chat.models.loading :as loading]
+            [status-im.ui.screens.chat.state :as chat.state]))
 
 (defn chats []
   (:chats (types/json->clj (js/require "./chats.js"))))
@@ -67,6 +68,12 @@
    (:timeline? chat))
   ([cofx chat-id]
    (timeline-chat? (get-chat cofx chat-id))))
+
+(defn profile-chat?
+  ([chat]
+   (:profile-public-key chat))
+  ([cofx chat-id]
+   (profile-chat? (get-chat cofx chat-id))))
 
 (defn set-chat-ui-props
   "Updates ui-props in active chat by merging provided kvs into them"
@@ -165,19 +172,6 @@
   [{:keys [db] :as cofx} chat-id on-success]
   (chats-store/save-chat cofx (get-in db [:chats chat-id]) on-success))
 
-(fx/defn handle-mark-all-read-successful
-  {:events [::mark-all-read-successful]}
-  [{:keys [db] :as cofx} chat-id]
-  {:db (assoc-in db [:chats chat-id :unviewed-messages-count] 0)})
-
-(fx/defn handle-mark-all-read
-  {:events [:chat.ui/mark-all-read-pressed
-            :chat.ui/mark-public-all-read]}
-  [{:keys [db] :as cofx} chat-id]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "markAllRead")
-                     :params [chat-id]
-                     :on-success #(re-frame/dispatch [::mark-all-read-successful chat-id])}]})
-
 (fx/defn add-public-chat
   "Adds new public group chat to db"
   [cofx topic profile-public-key timeline?]
@@ -198,8 +192,7 @@
                 :contacts                       #{}
                 :public?                        true
                 :might-have-join-time-messages? (get-in cofx [:db :multiaccount :use-mailservers?])
-                :unviewed-messages-count        0
-                :loaded-unviewed-messages-ids   #{}}
+                :unviewed-messages-count        0}
                nil))
 
 (fx/defn clear-history
@@ -232,6 +225,23 @@
            (assoc-in [:chats chat-id :is-active] false)
            (assoc-in [:current-chat-id] nil))})
 
+(fx/defn offload-messages
+  {:events [:offload-messages]}
+  [{:keys [db]} chat-id]
+  {:db (-> db
+           (update :messages dissoc chat-id)
+           (update :message-lists dissoc chat-id)
+           (update :pagination-info dissoc chat-id))})
+
+(fx/defn close-chat
+  {:events [:close-chat]}
+  [{:keys [db] :as cofx} chat-id]
+  (chat.state/reset-visible-item)
+  (fx/merge cofx
+            {:db (dissoc db :current-chat-id)}
+            (offload-messages chat-id)
+            (navigation/navigate-to-cofx :home {})))
+
 (fx/defn remove-chat
   "Removes chat completely from app, producing all necessary effects for that"
   {:events [:chat.ui/remove-chat]}
@@ -240,43 +250,27 @@
             (mailserver/remove-gaps chat-id)
             (mailserver/remove-range chat-id)
             (deactivate-chat chat-id)
+            (offload-messages chat-id)
             (clear-history chat-id true)
             (transport.filters/stop-listening chat-id)
             (when (not (= (:view-id db) :home))
               (navigation/navigate-to-cofx :home {}))))
 
-(fx/defn offload-all-messages
-  {:events [::offload-all-messages]}
-  [{:keys [db] :as cofx}]
-  (when-let [current-chat-id (:current-chat-id db)]
-    {:db
-     (-> db
-         (dissoc :loaded-chat-id)
-         (update :messages dissoc current-chat-id)
-         (update :message-lists dissoc current-chat-id)
-         (update :pagination-info dissoc current-chat-id))}))
-
 (fx/defn preload-chat-data
   "Takes chat-id and coeffects map, returns effects necessary when navigating to chat"
+  {:events [:chat.ui/preload-chat-data]}
   [{:keys [db] :as cofx} chat-id]
-  (let [old-current-chat-id (:current-chat-id db)]
-    (fx/merge cofx
-              {:dispatch [:load-messages]}
-              (when-not (= old-current-chat-id chat-id)
-                (offload-all-messages))
-              (fn [{:keys [db]}]
-                {:db (assoc db :current-chat-id chat-id)})
-              ;; Group chat don't need this to load as all the loading of topics
-              ;; happens on membership changes
-              (when-not (or (group-chat? cofx chat-id) (timeline-chat? cofx chat-id))
-                (transport.filters/load-chat chat-id)))))
+  (fx/merge cofx
+            (when-not (or (group-chat? cofx chat-id) (timeline-chat? cofx chat-id))
+              (transport.filters/load-chat chat-id))
+            (loading/load-messages chat-id)))
 
 (fx/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
   {:events [:chat.ui/navigate-to-chat]}
   [{db :db :as cofx} chat-id]
   (fx/merge cofx
-            {:db (assoc db :inactive-chat-id chat-id)}
+            {:db (assoc db :current-chat-id chat-id)}
             (preload-chat-data chat-id)
             (navigation/navigate-to-cofx :chat-stack {:screen :chat})))
 
@@ -287,16 +281,17 @@
   ;; don't allow to open chat with yourself
   (when (not= (multiaccounts.model/current-public-key cofx) chat-id)
     (fx/merge cofx
+              {:dispatch [:chat.ui/navigate-to-chat chat-id]}
               (upsert-chat {:chat-id   chat-id
                             :is-active true}
                            nil)
-              (transport.filters/load-chat chat-id)
-              (navigate-to-chat chat-id))))
-
-(def timeline-chat-id "@timeline70bd746ddcc12beb96b2c9d572d0784ab137ffc774f5383e50585a932080b57cca0484b259e61cecbaa33a4c98a300a")
+              (transport.filters/load-chat chat-id))))
 
 (defn profile-chat-topic [public-key]
   (str "@" public-key))
+
+(defn my-profile-chat-topic [db]
+  (profile-chat-topic (get-in db [:multiaccount :public-key])))
 
 (fx/defn start-public-chat
   "Starts a new public chat"
@@ -310,7 +305,7 @@
                 (add-public-chat topic profile-public-key false)
                 (transport.filters/load-chat topic)
                 #(when-not dont-navigate?
-                   (navigate-to-chat % topic))))
+                   {:dispatch [:chat.ui/navigate-to-chat topic]})))
     {:utils/show-popup {:title   (i18n/label :t/cant-open-public-chat)
                         :content (i18n/label :t/invalid-public-chat-topic)}}))
 
@@ -327,8 +322,8 @@
 (fx/defn start-timeline-chat
   "Starts a new timeline chat"
   [cofx]
-  (when-not (active-chat? cofx timeline-chat-id)
-    (add-public-chat cofx timeline-chat-id nil true)))
+  (when-not (active-chat? cofx constants/timeline-chat-id)
+    (add-public-chat cofx constants/timeline-chat-id nil true)))
 
 (fx/defn disable-chat-cooldown
   "Turns off chat cooldown (protection against message spamming)"
@@ -343,17 +338,6 @@
    (utils/show-popup nil
                      (i18n/label :cooldown/warning-message)
                      #())))
-
-(fx/defn show-profile-without-adding-contact
-  {:events [:chat.ui/show-profile-without-adding-contact]}
-  [{:keys [db] :as cofx} identity]
-  (let [my-public-key (get-in db [:multiaccount :public-key])]
-    (if (= my-public-key identity)
-      (navigation/navigate-to-cofx cofx :profile-stack {:screen :my-profile})
-      (fx/merge
-       cofx
-       {:db (assoc db :contacts/identity identity)}
-       (navigation/navigate-to-cofx :profile nil)))))
 
 (fx/defn mute-chat-failed
   {:events [::mute-chat-failed]}
@@ -380,10 +364,16 @@
 
 (fx/defn show-profile
   {:events [:chat.ui/show-profile]}
-  [cofx identity]
-  (fx/merge (assoc-in cofx [:db :contacts/identity] identity)
-            (contact.core/create-contact identity)
-            (navigation/navigate-to-cofx :profile nil)))
+  [{:keys [db] :as cofx} identity]
+  (let [my-public-key (get-in db [:multiaccount :public-key])]
+    (if (= my-public-key identity)
+      (navigation/navigate-to-cofx cofx :profile-stack {:screen :my-profile})
+      (fx/merge
+       cofx
+       {:db (assoc db :contacts/identity identity)
+        :dispatch [:chat.ui/preload-chat-data (profile-chat-topic identity)]}
+       (start-profile-chat identity)
+       (navigation/navigate-to-cofx :profile nil)))))
 
 (fx/defn clear-history-pressed
   {:events [:chat.ui/clear-history-pressed]}
@@ -398,13 +388,12 @@
 
 (fx/defn chat-ui-fill-gaps
   {:events [:chat.ui/fill-gaps]}
-  [{:keys [db] :as cofx} gap-ids]
-  (let [chat-id (:current-chat-id db)
-        topics (mailserver.topics/topics-for-current-chat db)
-        gaps (keep
-              (fn [id]
-                (get-in db [:mailserver/gaps chat-id id]))
-              gap-ids)]
+  [{:keys [db] :as cofx} gap-ids chat-id]
+  (let [topics  (mailserver.topics/topics-for-chat db chat-id)
+        gaps    (keep
+                 (fn [id]
+                   (get-in db [:mailserver/gaps chat-id id]))
+                 gap-ids)]
     (mailserver/fill-the-gap
      cofx
      {:gaps    gaps
@@ -413,16 +402,14 @@
 
 (fx/defn chat-ui-fetch-more
   {:events [:chat.ui/fetch-more]}
-  [{:keys [db] :as cofx}]
-  (let [chat-id (:current-chat-id db)
-
-        {:keys [lowest-request-from]}
+  [{:keys [db] :as cofx} chat-id]
+  (let [{:keys [lowest-request-from]}
         (get-in db [:mailserver/ranges chat-id])
 
-        topics (mailserver.topics/topics-for-current-chat db)
-        gaps [{:id   :first-gap
-               :to   lowest-request-from
-               :from (- lowest-request-from mailserver.constants/one-day)}]]
+        topics  (mailserver.topics/topics-for-chat db chat-id)
+        gaps    [{:id   :first-gap
+                  :to   lowest-request-from
+                  :from (- lowest-request-from mailserver.constants/one-day)}]]
     (mailserver/fill-the-gap
      cofx
      {:gaps    gaps

@@ -39,18 +39,19 @@
                                     chat-type
                                     chat-name
                                     public?]}]
-  [react/view {:style st/toolbar-container}
-   [react/view {:margin-right 10}
-    [chat-icon.screen/chat-icon-view-toolbar chat-id group-chat chat-name color]]
-   [react/view {:style st/chat-name-view}
-    (if group-chat
-      [react/text {:style               st/chat-name-text
-                   :number-of-lines     1
-                   :accessibility-label :chat-name-text}
-       chat-name]
-      [one-to-one-name chat-id])
-    (when-not group-chat
-      [contact-indicator chat-id])
-    (when (and group-chat (not invitation-admin) (not= chat-type constants/community-chat-type))
-      [group-last-activity {:contacts   contacts
-                            :public?    public?}])]])
+  (when chat-id
+    [react/view {:style st/toolbar-container}
+     [react/view {:margin-right 10}
+      [chat-icon.screen/chat-icon-view-toolbar chat-id group-chat chat-name color]]
+     [react/view {:style st/chat-name-view}
+      (if group-chat
+        [react/text {:style               st/chat-name-text
+                     :number-of-lines     1
+                     :accessibility-label :chat-name-text}
+         chat-name]
+        [one-to-one-name chat-id])
+      (when-not group-chat
+        [contact-indicator chat-id])
+      (when (and group-chat (not invitation-admin) (not= chat-type constants/community-chat-type))
+        [group-last-activity {:contacts   contacts
+                              :public?    public?}])]]))

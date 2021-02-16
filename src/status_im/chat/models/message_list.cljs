@@ -4,6 +4,7 @@
             ["functional-red-black-tree" :as rb-tree]))
 
 (defn- add-datemark [{:keys [whisper-timestamp] :as msg}]
+  ;;TODO this is slow
   (assoc msg :datemark (time/day-relative whisper-timestamp)))
 
 (defn- add-timestamp [{:keys [whisper-timestamp] :as msg}]
@@ -132,12 +133,10 @@
   (let [^js iter (.find tree message)
         ^js previous-message (when (.-hasPrev iter)
                                (get-prev-element iter))
-        ^js next-message     (when (.-hasNext iter)
-                               (get-next-element iter))
+        ^js next-message (when (.-hasNext iter)
+                           (get-next-element iter))
         ^js message-with-pos-data (add-group-info message previous-message next-message)]
-    (cond->
-     (.update iter message-with-pos-data)
-
+    (cond-> (.update iter message-with-pos-data)
       next-message
       (-> ^js (.find next-message)
           (.update (update-next-message message-with-pos-data next-message)))
@@ -170,8 +169,7 @@
     (update-message tree prepared-message)))
 
 (defn add [message-list message]
-  (insert-message (or message-list (rb-tree compare-fn))
-                  (prepare-message message)))
+  (insert-message (or message-list (rb-tree compare-fn)) (prepare-message message)))
 
 (defn add-many [message-list messages]
   (reduce add

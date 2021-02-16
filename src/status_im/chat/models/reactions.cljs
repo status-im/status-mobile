@@ -4,8 +4,7 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.transport.message.protocol :as message.protocol]
-            [status-im.data-store.reactions :as data-store.reactions]
-            [status-im.chat.models :as chat]))
+            [status-im.data-store.reactions :as data-store.reactions]))
 
 (defn update-reaction [acc retracted chat-id message-id emoji-id emoji-reaction-id reaction]
   ;; NOTE(Ferossgp): For a better performance, better to not keep in db all retracted reactions
@@ -23,7 +22,7 @@
                :as   reaction}]
        (cond-> (update-reaction acc retracted chat-id message-id emoji-id emoji-reaction-id reaction)
          (get-in chats [chat-id :profile-public-key])
-         (update-reaction retracted chat/timeline-chat-id message-id emoji-id emoji-reaction-id reaction)))
+         (update-reaction retracted constants/timeline-chat-id message-id emoji-id emoji-reaction-id reaction)))
      reactions
      new-reactions)))
 
@@ -39,27 +38,25 @@
     {:db (update db :reactions (process-reactions (:chats db)) reactions)}))
 
 (fx/defn load-more-reactions
-  [{:keys [db] :as cofx} cursor]
-  (when-let [current-chat-id (:current-chat-id db)]
-    (when-let [session-id (get-in db [:pagination-info current-chat-id :messages-initialized?])]
-      (data-store.reactions/reactions-by-chat-id-rpc
-       current-chat-id
-       cursor
-       constants/default-number-of-messages
-       #(re-frame/dispatch [::reactions-loaded current-chat-id session-id %])
-       #(log/error "failed loading reactions" current-chat-id %)))))
+  {:events [:load-more-reactions]}
+  [{:keys [db]} cursor chat-id]
+  (when-let [session-id (get-in db [:pagination-info chat-id :messages-initialized?])]
+    (data-store.reactions/reactions-by-chat-id-rpc
+     chat-id
+     cursor
+     constants/default-number-of-messages
+     #(re-frame/dispatch [::reactions-loaded chat-id session-id %])
+     #(log/error "failed loading reactions" chat-id %))))
 
 (fx/defn reactions-loaded
   {:events [::reactions-loaded]}
-  [{{:keys [current-chat-id] :as db} :db}
+  [{db :db}
    chat-id
    session-id
    reactions]
-  (when-not (or (nil? current-chat-id)
-                (not= chat-id current-chat-id)
-                (and (get-in db [:pagination-info current-chat-id :messages-initialized?])
-                     (not= session-id
-                           (get-in db [:pagination-info current-chat-id :messages-initialized?]))))
+  (when-not (and (get-in db [:pagination-info chat-id :messages-initialized?])
+                 (not= session-id
+                       (get-in db [:pagination-info chat-id :messages-initialized?])))
     (let [reactions-w-chat-id (map #(assoc % :chat-id chat-id) reactions)]
       {:db (update db :reactions (process-reactions (:chats db)) reactions-w-chat-id)})))
 

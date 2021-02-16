@@ -138,6 +138,7 @@
      {:keys [identicon]} :contact
      contact-id :contact-id}]
    (when (and chat-type chat-id)
+     ;;TODO : DON'T USE SUBS IN EVENTS
      (let [contact-name @(re-frame/subscribe
                           [:contacts/contact-name-by-identity contact-id])
            group-chat?  (not= chat-type constants/one-to-one-chat-type)

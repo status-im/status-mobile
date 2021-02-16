@@ -200,7 +200,7 @@
   (str "wakuext_" method))
 
 (defn call
-  [{:keys [method params on-success on-error] :as arg}]
+  [{:keys [method params on-success on-error js-response] :as arg}]
   (if-let [method-options (json-rpc-api method)]
     (let [params (or params [])
           {:keys [id on-result subscription?]
@@ -226,15 +226,16 @@
          (fn [response]
            (if (string/blank? response)
              (on-error {:message "Blank response"})
-             (let [{:keys [error result]} (types/json->clj response)]
-               (if error
-                 (on-error error)
+             (let [response-js (types/json->js response)]
+               (if (.-error response-js)
+                 (on-error (types/js->clj (.-error response-js)))
                  (if subscription?
                    (re-frame/dispatch
                     [:ethereum.callback/subscription-success
-                     result on-success])
-                   (on-success (on-result result))))))))))
-
+                     (types/js->clj (.-result response-js)) on-success])
+                   (on-success (on-result (if js-response
+                                            (.-result response-js)
+                                            (types/js->clj (.-result response-js)))))))))))))
     (log/warn "method" method "not found" arg)))
 
 (defn eth-call

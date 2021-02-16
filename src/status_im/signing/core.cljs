@@ -240,8 +240,9 @@
                      :params [chat-id (str value) contract transaction-hash
                               (or (:result (types/json->clj signature))
                                   (ethereum/normalized-hex signature))]
+                     :js-response true
                      :on-success
-                     #(re-frame/dispatch [:transport/message-sent % 1])}]})
+                     #(re-frame/dispatch [:transport/message-sent %])}]})
 
 (fx/defn send-accept-request-transaction-message
   {:events [:sign/send-accept-transaction-message]}
@@ -250,8 +251,9 @@
                      :params [transaction-hash message-id
                               (or (:result (types/json->clj signature))
                                   (ethereum/normalized-hex signature))]
+                     :js-response true
                      :on-success
-                     #(re-frame/dispatch [:transport/message-sent % 1])}]})
+                     #(re-frame/dispatch [:transport/message-sent %])}]})
 
 (fx/defn transaction-result
   [{:keys [db] :as cofx} result tx-obj]
@@ -429,7 +431,8 @@
                   amount
                   (when-not (= symbol :ETH)
                     address)]
-         :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})))
+         :js-response true
+         :on-success #(re-frame/dispatch [:transport/message-sent %])}]})))
 
 (fx/defn sign-transaction-button-clicked-from-request
   {:events  [:wallet.ui/sign-transaction-button-clicked-from-request]}

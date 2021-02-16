@@ -49,47 +49,47 @@
         update?           (atom nil)
         current-obj       (reagent/atom nil)]
     (reagent/create-class
-     {:component-will-mount  (fn [args]
-                               (let [[_ obj _ _] (.-argv (.-props args))]
-                                 (when @clear-timeout (js/clearTimeout @clear-timeout))
-                                 (when (or (not= obj @current-obj) @update?)
-                                   (cond
-                                     @update?
-                                     (do (reset! update? false)
-                                         (show-panel-anim bottom-anim-value alpha-value))
+     {:UNSAFE_componentWillMount  (fn [args]
+                                    (let [[_ obj _ _] (.-argv (.-props args))]
+                                      (when @clear-timeout (js/clearTimeout @clear-timeout))
+                                      (when (or (not= obj @current-obj) @update?)
+                                        (cond
+                                          @update?
+                                          (do (reset! update? false)
+                                              (show-panel-anim bottom-anim-value alpha-value))
 
-                                     (and @current-obj obj)
-                                     (do (reset! update? true)
-                                         (js/setTimeout #(reset! current-obj obj) 600)
-                                         (hide-panel-anim bottom-anim-value alpha-value (- window-height)))
+                                          (and @current-obj obj)
+                                          (do (reset! update? true)
+                                              (js/setTimeout #(reset! current-obj obj) 600)
+                                              (hide-panel-anim bottom-anim-value alpha-value (- window-height)))
 
-                                     obj
-                                     (do (reset! current-obj obj)
-                                         (show-panel-anim bottom-anim-value alpha-value))
+                                          obj
+                                          (do (reset! current-obj obj)
+                                              (show-panel-anim bottom-anim-value alpha-value))
 
-                                     :else
-                                     (do (reset! clear-timeout (js/setTimeout #(reset! current-obj nil) 600))
-                                         (hide-panel-anim bottom-anim-value alpha-value (- window-height)))))))
-      :component-will-update (fn [_ [_ obj _ _]]
-                               (when @clear-timeout (js/clearTimeout @clear-timeout))
-                               (when (or (not= obj @current-obj) @update?)
-                                 (cond
-                                   @update?
-                                   (do (reset! update? false)
-                                       (show-panel-anim bottom-anim-value alpha-value))
+                                          :else
+                                          (do (reset! clear-timeout (js/setTimeout #(reset! current-obj nil) 600))
+                                              (hide-panel-anim bottom-anim-value alpha-value (- window-height)))))))
+      :UNSAFE_componentWillUpdate (fn [_ [_ obj _ _]]
+                                    (when @clear-timeout (js/clearTimeout @clear-timeout))
+                                    (when (or (not= obj @current-obj) @update?)
+                                      (cond
+                                        @update?
+                                        (do (reset! update? false)
+                                            (show-panel-anim bottom-anim-value alpha-value))
 
-                                   (and @current-obj obj)
-                                   (do (reset! update? true)
-                                       (js/setTimeout #(reset! current-obj obj) 600)
-                                       (hide-panel-anim bottom-anim-value alpha-value (- window-height)))
+                                        (and @current-obj obj)
+                                        (do (reset! update? true)
+                                            (js/setTimeout #(reset! current-obj obj) 600)
+                                            (hide-panel-anim bottom-anim-value alpha-value (- window-height)))
 
-                                   obj
-                                   (do (reset! current-obj obj)
-                                       (show-panel-anim bottom-anim-value alpha-value))
+                                        obj
+                                        (do (reset! current-obj obj)
+                                            (show-panel-anim bottom-anim-value alpha-value))
 
-                                   :else
-                                   (do (reset! clear-timeout (js/setTimeout #(reset! current-obj nil) 600))
-                                       (hide-panel-anim bottom-anim-value alpha-value (- window-height))))))
+                                        :else
+                                        (do (reset! clear-timeout (js/setTimeout #(reset! current-obj nil) 600))
+                                            (hide-panel-anim bottom-anim-value alpha-value (- window-height))))))
       :reagent-render        (fn []
                                (when @current-obj
                                  [react/keyboard-avoiding-view {:style {:position :absolute :top 0 :bottom 0 :left 0 :right 0}}

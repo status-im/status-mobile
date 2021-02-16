@@ -98,7 +98,8 @@
  :utils/dispatch-later
  (fn [params]
    (doseq [{:keys [ms dispatch]} params]
-     (set-timeout #(re-frame/dispatch dispatch) ms))))
+     (when (and ms dispatch)
+       (set-timeout #(re-frame/dispatch dispatch) ms)))))
 
 (defn clear-timeout [id]
   (.clearTimeout background-timer id))

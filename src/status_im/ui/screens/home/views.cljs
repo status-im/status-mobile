@@ -169,9 +169,8 @@
                  (when (or (seq items) @search-active? (seq search-filter))
                    [search-input-wrapper search-filter items])
                  [referral-item/list-item]
-                 (when
-                  (and (empty? items)
-                       (or @search-active? (seq search-filter)))
+                 (when (and (empty? items)
+                            (or @search-active? (seq search-filter)))
                    [start-suggestion search-filter])]
         :footer                       (if (and (not hide-home-tooltip?) (not @search-active?))
                                         [home-tooltip-view]
@@ -194,9 +193,9 @@
 
 (defn home []
   [react/keyboard-avoiding-view {:style styles/home-container}
-   [topbar/topbar {:title             (i18n/label :t/chat)
-                   :navigation        :none
-                   :right-component   [connectivity/connectivity-button]}]
+   [topbar/topbar {:title           (i18n/label :t/chat)
+                   :navigation      :none
+                   :right-component [connectivity/connectivity-button]}]
    [connectivity/loading-indicator]
    [chats-list]
    [plus-button]])

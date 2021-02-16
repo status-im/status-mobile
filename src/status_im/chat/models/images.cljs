@@ -9,7 +9,8 @@
             [status-im.utils.image-processing :as image-processing]
             [taoensso.timbre :as log]
             [clojure.string :as string]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.chat.models :as chat]))
 
 (def maximum-image-size-px 2000)
 
@@ -55,24 +56,24 @@
 
 (re-frame/reg-fx
  ::chat-open-image-picker-camera
- (fn []
+ (fn [current-chat-id]
    (react/show-image-picker-camera
-    #(re-frame/dispatch [:chat.ui/image-captured (.-path %)]) {})))
+    #(re-frame/dispatch [:chat.ui/image-captured current-chat-id (.-path %)]) {})))
 
 (re-frame/reg-fx
  ::chat-open-image-picker
- (fn []
+ (fn [chat-id]
    (react/show-image-picker
     (fn [^js images]
       ;; NOTE(Ferossgp): Because we can't highlight the already selected images inside
       ;; gallery, we just clean previous state and set all newly picked images
       (when (and platform/ios? (pos? (count images)))
-        (re-frame/dispatch [:chat.ui/clear-sending-images]))
+        (re-frame/dispatch [:chat.ui/clear-sending-images chat-id]))
       (doseq [^js result (if platform/ios?
                            (take config/max-images-batch images)
                            [images])]
         (resize-and-call (.-path result)
-                         #(re-frame/dispatch [:chat.ui/image-selected (result->id result) %]))))
+                         #(re-frame/dispatch [:chat.ui/image-selected chat-id (result->id result) %]))))
     ;; NOTE(Ferossgp): On android you cannot set max limit on images, when a user
     ;; selects too many images the app crashes.
     {:media-type "photo"
@@ -80,10 +81,10 @@
 
 (re-frame/reg-fx
  ::image-selected
- (fn [uri]
+ (fn [[uri chat-id]]
    (resize-and-call
     uri
-    #(re-frame/dispatch [:chat.ui/image-selected uri %]))))
+    #(re-frame/dispatch [:chat.ui/image-selected chat-id uri %]))))
 
 (re-frame/reg-fx
  ::camera-roll-get-photos
@@ -97,12 +98,12 @@
 
 (fx/defn image-captured
   {:events [:chat.ui/image-captured]}
-  [{:keys [db]} uri]
-  (let [current-chat-id (:current-chat-id db)
+  [{:keys [db]} chat-id uri]
+  (let [current-chat-id (or chat-id (:current-chat-id db))
         images          (get-in db [:chat/inputs current-chat-id :metadata :sending-image])]
     (when (and (< (count images) config/max-images-batch)
                (not (get images uri)))
-      {::image-selected uri})))
+      {::image-selected [uri current-chat-id]})))
 
 (fx/defn camera-roll-get-photos
   {:events [:chat.ui/camera-roll-get-photos]}
@@ -116,20 +117,24 @@
 
 (fx/defn clear-sending-images
   {:events [:chat.ui/clear-sending-images]}
-  [{:keys [db]}]
-  (let [current-chat-id (:current-chat-id db)]
-    {:db (update-in db [:chat/inputs current-chat-id :metadata] assoc :sending-image {})}))
+  [{:keys [db]} current-chat-id]
+  {:db (update-in db [:chat/inputs current-chat-id :metadata] assoc :sending-image {})})
 
 (fx/defn cancel-sending-image
   {:events [:chat.ui/cancel-sending-image]}
-  [cofx]
-  (clear-sending-images cofx))
+  [{:keys [db] :as cofx} chat-id]
+  (let [current-chat-id (or chat-id (:current-chat-id db))]
+    (clear-sending-images cofx current-chat-id)))
+
+(fx/defn cancel-sending-image-timeline
+  {:events [:chat.ui/cancel-sending-image-timeline]}
+  [{:keys [db] :as cofx}]
+  (cancel-sending-image cofx (chat/my-profile-chat-topic db)))
 
 (fx/defn image-selected
   {:events [:chat.ui/image-selected]}
-  [{:keys [db]} original uri]
-  (let [current-chat-id (:current-chat-id db)]
-    {:db (update-in db [:chat/inputs current-chat-id :metadata :sending-image original] merge {:uri uri})}))
+  [{:keys [db]} current-chat-id original uri]
+  {:db (update-in db [:chat/inputs current-chat-id :metadata :sending-image original] merge {:uri uri})})
 
 (fx/defn image-unselected
   {:events [:chat.ui/image-unselected]}
@@ -139,31 +144,46 @@
 
 (fx/defn chat-open-image-picker
   {:events [:chat.ui/open-image-picker]}
-  [{:keys [db]}]
-  (let [current-chat-id (:current-chat-id db)
+  [{:keys [db]} chat-id]
+  (let [current-chat-id (or chat-id (:current-chat-id db))
         images          (get-in db [:chat/inputs current-chat-id :metadata :sending-image])]
     (when (< (count images) config/max-images-batch)
-      {::chat-open-image-picker nil})))
+      {::chat-open-image-picker current-chat-id})))
+
+(fx/defn chat-open-image-picker-timeline
+  {:events [:chat.ui/open-image-picker-timeline]}
+  [{:keys [db] :as cofx}]
+  (chat-open-image-picker cofx (chat/my-profile-chat-topic db)))
 
 (fx/defn chat-show-image-picker-camera
   {:events [:chat.ui/show-image-picker-camera]}
-  [{:keys [db]}]
-  (let [current-chat-id (:current-chat-id db)
+  [{:keys [db]} chat-id]
+  (let [current-chat-id (or chat-id (:current-chat-id db))
         images          (get-in db [:chat/inputs current-chat-id :metadata :sending-image])]
     (when (< (count images) config/max-images-batch)
-      {::chat-open-image-picker-camera nil})))
+      {::chat-open-image-picker-camera current-chat-id})))
+
+(fx/defn chat-show-image-picker-camera-timeline
+  {:events [:chat.ui/show-image-picker-camera-timeline]}
+  [{:keys [db] :as cofx}]
+  (chat-show-image-picker-camera cofx (chat/my-profile-chat-topic db)))
 
 (fx/defn camera-roll-pick
   {:events [:chat.ui/camera-roll-pick]}
-  [{:keys [db]} uri]
-  (let [current-chat-id (:current-chat-id db)
+  [{:keys [db]} uri chat-id]
+  (let [current-chat-id (or chat-id (:current-chat-id db))
         images          (get-in db [:chat/inputs current-chat-id :metadata :sending-image])]
     (if (get-in db [:chats current-chat-id :timeline?])
       {:db              (assoc-in db [:chat/inputs current-chat-id :metadata :sending-image] {})
-       ::image-selected uri}
+       ::image-selected [uri current-chat-id]}
       (when (and (< (count images) config/max-images-batch)
                  (not (get images uri)))
-        {::image-selected uri}))))
+        {::image-selected [uri current-chat-id]}))))
+
+(fx/defn camera-roll-pick-timeline
+  {:events [:chat.ui/camera-roll-pick-timeline]}
+  [{:keys [db] :as cofx} uri]
+  (camera-roll-pick cofx uri (chat/my-profile-chat-topic db)))
 
 (fx/defn save-image-to-gallery
   {:events [:chat.ui/save-image-to-gallery]}

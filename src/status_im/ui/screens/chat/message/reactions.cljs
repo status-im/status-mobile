@@ -62,35 +62,35 @@
                              (reset! position pos)
                              (reset! visible true))]
         [:<>
-         [animated/view {:style {:opacity (animated/mix animation 1 0)}}
-          [rn/view {:ref         ref
-                    :collapsable false}
-           [render message {:modal         false
-                            :on-long-press (fn [act]
-                                             (when (or (not outgoing)
-                                                       (and outgoing (= outgoing-status :sent)))
-                                               (reset! actions act)
-                                               (get-picker-position ref on-open)))}]]
+         [rn/view {:ref         ref
+                   :style       {:opacity (if @visible 0 1)}
+                   :collapsable false}
+          [render message {:modal         false
+                           :on-long-press (fn [act]
+                                            (when (or (not outgoing)
+                                                      (and outgoing (= outgoing-status :sent)))
+                                              (reset! actions act)
+                                              (get-picker-position ref on-open)))}]
           [reaction-row/message-reactions message reactions timeline]]
-         [rn/modal {:visible          @visible
-                    :on-request-close on-close
-                    :on-show          (fn []
-                                        (js/requestAnimationFrame
-                                         #(animated/set-value animated-state 1)))
-                    :transparent      true}
-          [reaction-picker/modal {:outgoing       (:outgoing message)
-                                  :display-photo  (:display-photo? message)
-                                  :animation      animation
-                                  :spring         spring-animation
-                                  :top            (:top @position)
-                                  :message-height (:height @position)
-                                  :on-close       on-close
-                                  :actions        @actions
-                                  :own-reactions  own-reactions
-                                  :timeline       timeline
-                                  :send-emoji     (fn [emoji]
-                                                    (on-close)
-                                                    (js/setTimeout #(on-emoji-press emoji)
-                                                                   reaction-picker/animation-duration))}
-           [render message {:modal       true
-                            :close-modal on-close}]]]]))))
+         (when @visible
+           [rn/modal {:on-request-close on-close
+                      :on-show          (fn []
+                                          (js/requestAnimationFrame
+                                           #(animated/set-value animated-state 1)))
+                      :transparent      true}
+            [reaction-picker/modal {:outgoing       (:outgoing message)
+                                    :display-photo  (:display-photo? message)
+                                    :animation      animation
+                                    :spring         spring-animation
+                                    :top            (:top @position)
+                                    :message-height (:height @position)
+                                    :on-close       on-close
+                                    :actions        @actions
+                                    :own-reactions  own-reactions
+                                    :timeline       timeline
+                                    :send-emoji     (fn [emoji]
+                                                      (on-close)
+                                                      (js/setTimeout #(on-emoji-press emoji)
+                                                                     reaction-picker/animation-duration))}
+             [render message {:modal       true
+                              :close-modal on-close}]]])]))))

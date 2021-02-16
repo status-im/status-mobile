@@ -82,8 +82,8 @@
 (defview stickers-paging-panel [installed-packs selected-pack]
   (letsubs [ref   (atom nil)
             width [:dimensions/window-width]]
-    {:component-will-update (fn [_ [_ installed-packs selected-pack]]
-                              (update-scroll-position @ref installed-packs selected-pack width true))
+    {:UNSAFE_componentWillUpdate (fn [_ [_ installed-packs selected-pack]]
+                                   (update-scroll-position @ref installed-packs selected-pack width true))
      :component-did-mount   #(update-scroll-position @ref installed-packs selected-pack width false)}
     [react/scroll-view {:style                             {:flex 1}
                         :horizontal                        true

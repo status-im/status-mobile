@@ -1256,7 +1256,9 @@
                {})
               (dismiss-connection-error false))))
 
-(fx/defn load-gaps-fx [{:keys [db] :as cofx} chat-id]
+(fx/defn load-gaps-fx
+  {:events [:load-gaps]}
+  [{:keys [db] :as cofx} chat-id]
   (when-not (get-in db [:gaps-loaded? chat-id])
     (let [success-fn #(re-frame/dispatch [::gaps-loaded %1 %2])]
       (data-store.mailservers/load-gaps cofx chat-id success-fn))))

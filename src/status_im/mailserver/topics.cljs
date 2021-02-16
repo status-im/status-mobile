@@ -169,9 +169,3 @@
   (extract-topics (:mailserver/topics db)
                   chat-id
                   (not (get-in (:chats db) [chat-id :public?]))))
-
-(defn topics-for-current-chat
-  "return a list of topics used by the current-chat, include discovery if
-  private group chat or one-to-one"
-  [{:keys [current-chat-id] :as db}]
-  (topics-for-chat db current-chat-id))

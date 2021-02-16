@@ -20,8 +20,7 @@
             [clojure.string :as string]
             [quo.components.list.item :as list-item]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.screens.status.views :as status.views]
-            [status-im.ui.screens.chat.views :as chat.views])
+            [status-im.ui.screens.status.views :as status.views])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn actions
@@ -156,60 +155,54 @@
                  :number-of-lines 2}
      label]]])
 
-(defn status []
-  (let [messages @(re-frame/subscribe [:chats/current-chat-messages-stream])
-        no-messages? @(re-frame/subscribe [:chats/current-chat-no-messages?])
-        {:keys [profile-public-key]} @(re-frame/subscribe [:chats/current-raw-chat])]
-    (when profile-public-key
-      [list/flat-list
-       {:key-fn                    #(or (:message-id %) (:value %))
-        :header                    (when no-messages?
-                                     [react/view {:padding-horizontal 32 :margin-top 32}
-                                      [react/view (styles/updates-descr-cont)
-                                       [react/text {:style {:color colors/gray :line-height 22}}
-                                        (i18n/label :t/status-updates-descr)]]])
-        :ref                       #(reset! status.views/messages-list-ref %)
-        :on-viewable-items-changed chat.views/on-viewable-items-changed
-        :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages])
-        :on-scroll-to-index-failed #()                      ;;don't remove this
-        :render-fn                 status.views/render-message
-        :data                      messages}])))
-
-(views/defview profile []
-  (views/letsubs [{:keys [public-key name ens-verified]
-                   :as   contact}  [:contacts/current-contact]]
-    (let [muted? (:muted @(re-frame/subscribe [:chats/chat public-key]))
-          [first-name second-name] (multiaccounts/contact-two-names contact true)
-          on-share #(re-frame/dispatch [:show-popover (merge
-                                                       {:view    :share-chat-key
-                                                        :address public-key}
-                                                       (when (and ens-verified name)
-                                                         {:ens-name name}))])]
-      (when contact
-        [react/view {:flex 1}
-         [quo/animated-header
-          {:use-insets        false
-           :right-accessories [{:icon     :main-icons/share
-                                :accessibility-label :share-button
-                                :on-press on-share}]
-           :left-accessories  [{:icon                :main-icons/close
-                                :accessibility-label :back-button
-                                :on-press            #(re-frame/dispatch [:navigate-back])}]
-           :extended-header   (profile-header/extended-header
-                               {:on-press on-share
-                                :bottom-separator false
-                                :title    first-name
-                                :photo    (multiaccounts/displayed-photo contact)
-                                :monospace (not ens-verified)
-                                :subtitle second-name})}
-          [react/view {:height 1 :background-color colors/gray-lighter :margin-top 8}]
-          [nickname-settings contact]
-          [react/view {:height 1 :background-color colors/gray-lighter}]
-          [react/view {:padding-top 17 :flex-direction :row :align-items :stretch :flex 1}
-           (for [{:keys [label] :as action} (actions contact muted?)
-                 :when label]
-             ^{:key label}
-             [button-item action])]
-          [react/view {:height 1 :background-color colors/gray-lighter :margin-top 16}]
-          [status]]]))))
+(defn profile []
+  (let [{:keys [public-key name ens-verified] :as contact} @(re-frame/subscribe [:contacts/current-contact])
+        current-chat-id @(re-frame/subscribe [:chats/current-profile-chat])
+        messages @(re-frame/subscribe [:chats/chat-messages-stream current-chat-id])
+        no-messages? @(re-frame/subscribe [:chats/chat-no-messages? current-chat-id])
+        muted? (:muted @(re-frame/subscribe [:chats/chat public-key]))
+        [first-name second-name] (multiaccounts/contact-two-names contact true)
+        on-share #(re-frame/dispatch [:show-popover (merge
+                                                     {:view    :share-chat-key
+                                                      :address public-key}
+                                                     (when (and ens-verified name)
+                                                       {:ens-name name}))])]
+    (when contact
+      [:<>
+       [quo/header {:right-accessories [{:icon     :main-icons/share
+                                         :accessibility-label :share-button
+                                         :on-press on-share}]
+                    :left-accessories  [{:icon                :main-icons/close
+                                         :accessibility-label :back-button
+                                         :on-press            #(re-frame/dispatch [:navigate-back])}]}]
+       [list/flat-list
+        {:key-fn                    #(or (:message-id %) (:value %))
+         :header                    [:<>
+                                     [(profile-header/extended-header
+                                       {:on-press on-share
+                                        :bottom-separator false
+                                        :title    first-name
+                                        :photo    (multiaccounts/displayed-photo contact)
+                                        :monospace (not ens-verified)
+                                        :subtitle second-name})]
+                                     [react/view {:height 1 :background-color colors/gray-lighter :margin-top 8}]
+                                     [nickname-settings contact]
+                                     [react/view {:height 1 :background-color colors/gray-lighter}]
+                                     [react/view {:padding-top 17 :flex-direction :row :align-items :stretch :flex 1}
+                                      (for [{:keys [label] :as action} (actions contact muted?)
+                                            :when label]
+                                        ^{:key label}
+                                        [button-item action])]
+                                     [react/view {:height 1 :background-color colors/gray-lighter :margin-top 16}]
+                                     (when no-messages?
+                                       [react/view {:padding-horizontal 32 :margin-top 32}
+                                        [react/view (styles/updates-descr-cont)
+                                         [react/text {:style {:color colors/gray :line-height 22}}
+                                          (i18n/label :t/status-updates-descr)]]])]
+         :ref                       #(reset! status.views/messages-list-ref %)
+         :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages current-chat-id])
+         :on-scroll-to-index-failed #()                        ;;don't remove this
+         :render-data               {:chat-id current-chat-id}
+         :render-fn                 status.views/render-message
+         :data                      messages}]])))
 

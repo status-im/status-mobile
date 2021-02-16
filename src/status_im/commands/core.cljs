@@ -24,18 +24,21 @@
   {:db (dissoc db :commands/select-account)
    ::json-rpc/call [{:method (json-rpc/call-ext-method "acceptRequestAddressForTransaction")
                      :params [message-id address]
-                     :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})
+                     :js-response true
+                     :on-success #(re-frame/dispatch [:transport/message-sent %])}]})
 
 (fx/defn handle-decline-request-address-for-transaction
   {:events [::decline-request-address-for-transaction]}
   [cofx message-id]
   {::json-rpc/call [{:method (json-rpc/call-ext-method "declineRequestAddressForTransaction")
                      :params [message-id]
-                     :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})
+                     :js-response true
+                     :on-success #(re-frame/dispatch [:transport/message-sent %])}]})
 
 (fx/defn handle-decline-request-transaction
   {:events [::decline-request-transaction]}
   [cofx message-id]
   {::json-rpc/call [{:method (json-rpc/call-ext-method "declineRequestTransaction")
                      :params [message-id]
-                     :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})
+                     :js-response true
+                     :on-success #(re-frame/dispatch [:transport/message-sent %])}]})

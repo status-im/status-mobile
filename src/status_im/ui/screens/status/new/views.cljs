@@ -19,16 +19,16 @@
   [react/view styles/buttons
    [pressable/pressable {:type                :scale
                          :accessibility-label :take-picture
-                         :on-press  #(re-frame/dispatch [:chat.ui/show-image-picker-camera])}
+                         :on-press  #(re-frame/dispatch [:chat.ui/show-image-picker-camera-timeline])}
     [icons/icon :main-icons/camera]]
    [react/view {:style {:padding-top 8}}
-    [pressable/pressable {:on-press            #(re-frame/dispatch [:chat.ui/open-image-picker])
+    [pressable/pressable {:on-press            #(re-frame/dispatch [:chat.ui/open-image-picker-timeline])
                           :accessibility-label :open-gallery
                           :type                :scale}
      [icons/icon :main-icons/gallery]]]])
 
 (defn image-preview [uri]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/camera-roll-pick uri])}
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:chat.ui/camera-roll-pick-timeline uri])}
    [react/image {:style  styles/image
                  :source {:uri uri}}]])
 
@@ -52,8 +52,8 @@
         scroll (reagent/atom nil)
         autoscroll? (reagent/atom false)
         scroll-height (reagent/atom nil)
-        input-text (re-frame/subscribe [:chats/current-chat-input-text])
-        sending-image (re-frame/subscribe [:chats/sending-image])]
+        input-text (re-frame/subscribe [:chats/timeline-chat-input-text])
+        sending-image (re-frame/subscribe [:chats/timeline-sending-image])]
     (fn []
       (let [{:keys [uri]} (first (vals @sending-image))]
         [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
@@ -83,7 +83,7 @@
                                                              @scroll-height
                                                              -40)]
                                           (.scrollTo @scroll #js {:y height :animated true})))
-             :on-change-text         #(re-frame/dispatch [:chat.ui/set-chat-input-text %])
+             :on-change-text         #(re-frame/dispatch [:chat.ui/set-timeline-input-text %])
              :default-value          @input-text
              :placeholder            (i18n/label :t/whats-on-your-mind)}]
            (when uri

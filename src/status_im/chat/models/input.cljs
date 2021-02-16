@@ -28,8 +28,15 @@
   "Set input text for current-chat. Takes db and input text and cofx
   as arguments and returns new fx. Always clear all validation messages."
   {:events [:chat.ui/set-chat-input-text]}
-  [{{:keys [current-chat-id] :as db} :db} new-input]
-  {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))})
+  [{db :db} new-input chat-id]
+  (let [current-chat-id (or chat-id (:current-chat-id db))]
+    {:db (assoc-in db [:chat/inputs current-chat-id :input-text] (text->emoji new-input))}))
+
+(fx/defn set-timeline-input-text
+  {:events [:chat.ui/set-timeline-input-text]}
+  [{db :db} new-input]
+  {:db (assoc-in db [:chat/inputs (chat/my-profile-chat-topic db) :input-text]
+                 (text->emoji new-input))})
 
 (fx/defn select-mention
   {:events [:chat.ui/select-mention]}
@@ -43,7 +50,7 @@
      {:db (-> db
               (assoc-in [:chats/cursor chat-id] cursor)
               (assoc-in [:chats/mention-suggestions chat-id] nil))}
-     (set-chat-input-text new-text)
+     (set-chat-input-text new-text chat-id)
      ;; NOTE(rasom): Some keyboards do not react on selection property passed to
      ;; text input (specifically Samsung keyboard with predictive text set on).
      ;; In this case, if the user continues typing after the programmatic change,
@@ -132,8 +139,8 @@
        :ens-name preferred-name})))
 
 (defn build-image-messages
-  [{{:keys [current-chat-id] :as db} :db} chat-id]
-  (let [images (get-in db [:chat/inputs current-chat-id :metadata :sending-image])]
+  [{db :db} chat-id]
+  (let [images (get-in db [:chat/inputs chat-id :metadata :sending-image])]
     (mapv (fn [[_ {:keys [uri]}]]
             {:chat-id      chat-id
              :content-type constants/content-type-image
@@ -141,13 +148,12 @@
              :text         (i18n/label :t/update-to-see-image)})
           images)))
 
-(fx/defn clean-input [{:keys [db] :as cofx}]
-  (let [current-chat-id (:current-chat-id db)]
-    (fx/merge cofx
-              {:db (-> db
-                       (assoc-in [:chat/inputs current-chat-id :metadata :sending-image] nil)
-                       (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil))}
-              (set-chat-input-text nil))))
+(fx/defn clean-input [{:keys [db] :as cofx} current-chat-id]
+  (fx/merge cofx
+            {:db (-> db
+                     (assoc-in [:chat/inputs current-chat-id :metadata :sending-image] nil)
+                     (assoc-in [:chat/inputs current-chat-id :metadata :responding-to-message] nil))}
+            (set-chat-input-text nil current-chat-id)))
 
 (fx/defn send-messages [{:keys [db] :as cofx} input-text current-chat-id]
   (let [image-messages (build-image-messages cofx current-chat-id)
@@ -155,17 +161,23 @@
         messages (keep identity (conj image-messages text-message))]
     (when (seq messages)
       (fx/merge cofx
-                (clean-input cofx)
+                (clean-input cofx (:current-chat-id db))
                 (process-cooldown)
                 (chat.message/send-messages messages)))))
 
 (fx/defn send-my-status-message
   "when not empty, proceed by sending text message with public key topic"
   {:events [:profile.ui/send-my-status-message]}
-  [{{:keys [current-chat-id] :as db} :db :as cofx}]
-  (let [{:keys [input-text]} (get-in db [:chat/inputs current-chat-id])
-        chat-id (chat/profile-chat-topic (get-in db [:multiaccount :public-key]))]
-    (send-messages cofx input-text chat-id)))
+  [{db :db :as cofx}]
+  (let [current-chat-id (chat/my-profile-chat-topic db)
+        {:keys [input-text]} (get-in db [:chat/inputs current-chat-id])
+        image-messages (build-image-messages cofx current-chat-id)
+        text-message (build-text-message cofx input-text current-chat-id)
+        messages (keep identity (conj image-messages text-message))]
+    (when (seq messages)
+      (fx/merge cofx
+                (clean-input current-chat-id)
+                (chat.message/send-messages messages)))))
 
 (fx/defn send-audio-message
   [cofx audio-path duration current-chat-id]

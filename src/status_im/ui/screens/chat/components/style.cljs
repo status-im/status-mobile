@@ -38,6 +38,8 @@
   (merge typography/font-regular
          typography/base
          {:flex               1
+          :min-height         34
+          :max-height         144
           :margin             0
           :border-width       0
           :flex-shrink        1

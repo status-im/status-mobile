@@ -383,7 +383,8 @@
                                           (when-not (= symbol :ETH)
                                             address)
                                           from-address]
-                                 :on-success #(re-frame/dispatch [:transport/message-sent % 1])}]})))
+                                 :js-response true
+                                 :on-success #(re-frame/dispatch [:transport/message-sent %])}]})))
 
 (fx/defn accept-request-transaction-button-clicked-from-command
   {:events  [:wallet.ui/accept-request-transaction-button-clicked-from-command]}

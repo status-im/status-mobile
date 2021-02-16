@@ -175,8 +175,9 @@
                                    :text        "Upgrade here to see an invitation to community"
                                    :communityId community-id
                                    :contentType constants/content-type-community}]
+                     :js-response true
                      :on-success
-                     #(re-frame/dispatch [:transport/message-sent % 1])
+                     #(re-frame/dispatch [:transport/message-sent %])
                      :on-failure #(log/error "failed to send a message" %)}]})
 
 (fx/defn invite-users
@@ -242,7 +243,7 @@
   [{:keys [db]}]
   (let [{:keys [name description membership]} (get db :communities/create)
         my-public-key                         (get-in db [:multiaccount :public-key])]
-    (log/error "Edit community is not yet implemented")
+    (log/error "Edit community is not yet implemented")))
     ;; {::json-rpc/call [{:method     "wakuext_editCommunity"
     ;;                    :params     [{:identity    {:display_name name
     ;;                                                :description  description}
@@ -251,7 +252,7 @@
     ;;                    :on-error   #(do
     ;;                                   (log/error "failed to create community" %)
     ;;                                   (re-frame/dispatch [::failed-to-edit-community %]))}]}
-    ))
+
 
 (fx/defn create-channel
   {:events [::create-channel-confirmation-pressed]}

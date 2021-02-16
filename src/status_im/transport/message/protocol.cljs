@@ -26,26 +26,25 @@
    :sticker         sticker
    :contentType     content-type})
 
-(fx/defn send-chat-messages [cofx messages]
-  {::json-rpc/call
-   [{:method     (json-rpc/call-ext-method "sendChatMessages")
-     :params     [(mapv build-message messages)]
-     :on-success
-     #(re-frame/dispatch [:transport/message-sent % 1])
-     :on-failure #(log/error "failed to send a message" %)}]})
+(fx/defn send-chat-messages [_ messages]
+  {::json-rpc/call [{:method     (json-rpc/call-ext-method "sendChatMessages")
+                     :params     [(mapv build-message messages)]
+                     :js-response true
+                     :on-success #(re-frame/dispatch [:transport/message-sent %])
+                     :on-failure #(log/error "failed to send a message" %)}]})
 
-(fx/defn send-reaction [cofx {:keys [message-id chat-id emoji-id]}]
+(fx/defn send-reaction [_ {:keys [message-id chat-id emoji-id]}]
   {::json-rpc/call [{:method     (json-rpc/call-ext-method
                                   "sendEmojiReaction")
                      :params     [chat-id message-id emoji-id]
-                     :on-success
-                     #(re-frame/dispatch [:transport/reaction-sent %])
+                     :js-response true
+                     :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
                      :on-failure #(log/error "failed to send a reaction" %)}]})
 
-(fx/defn send-retract-reaction [cofx {:keys [emoji-reaction-id] :as reaction}]
+(fx/defn send-retract-reaction [_ {:keys [emoji-reaction-id] :as reaction}]
   {::json-rpc/call [{:method     (json-rpc/call-ext-method
                                   "sendEmojiReactionRetraction")
                      :params     [emoji-reaction-id]
-                     :on-success
-                     #(re-frame/dispatch [:transport/retraction-sent %])
+                     :js-response true
+                     :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])
                      :on-failure #(log/error "failed to send a reaction retraction" %)}]})

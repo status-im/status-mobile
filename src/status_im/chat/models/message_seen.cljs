@@ -13,8 +13,7 @@
     {:db (update-in db [:chats chat-id] assoc
                     :unviewed-messages-count (subtract-seen-messages
                                               unviewed-messages-count
-                                              loaded-unviewed-messages-ids)
-                    :loaded-unviewed-messages-ids #{})}))
+                                              loaded-unviewed-messages-ids))}))
 
 (fx/defn mark-messages-seen
   "Marks all unviewed loaded messages as seen in particular chat"
@@ -29,10 +28,3 @@
                              loaded-unviewed-ids)}
                 (messages-store/mark-messages-seen chat-id loaded-unviewed-ids nil)
                 (update-chats-unviewed-messages-count {:chat-id chat-id})))))
-
-(fx/defn ui-mark-messages-seen
-  {:events [:chat.ui/mark-messages-seen]}
-  [{:keys [db] :as cofx} view-id]
-  (fx/merge cofx
-            {:db (assoc db :view-id view-id)}
-            (mark-messages-seen cofx (:current-chat-id db))))

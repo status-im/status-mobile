@@ -9,6 +9,7 @@
   [stack {:initial-route-name :status
           :header-mode        :none}
    [{:name      :status
+     :on-focus  [:init-timeline-chat]
      :insets    {:top true}
      :style     {:padding-bottom tabbar.styles/tabs-diff}
      :component status.views/timeline}]])

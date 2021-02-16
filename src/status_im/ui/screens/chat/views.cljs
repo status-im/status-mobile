@@ -11,7 +11,6 @@
             [status-im.ui.screens.chat.sheets :as sheets]
             [quo.animated :as animated]
             [quo.react-native :as rn]
-            [quo.platform :as platform]
             [status-im.ui.screens.chat.audio-message.views :as audio-message]
             [quo.react :as quo.react]
             [status-im.ui.screens.chat.message.message :as message]
@@ -20,7 +19,6 @@
             [status-im.ui.screens.chat.toolbar-content :as toolbar-content]
             [status-im.ui.screens.chat.image.views :as image]
             [status-im.ui.screens.chat.state :as state]
-            [status-im.utils.debounce :as debounce]
             [status-im.ui.screens.chat.extensions.views :as extensions]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.group :as chat.group]
@@ -32,20 +30,20 @@
             [status-im.ui.components.toolbar :as toolbar]
             [quo.core :as quo]
             [clojure.string :as string]
-            [status-im.constants :as constants]))
+            [status-im.constants :as constants]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.utils :as utils]))
 
-(defn topbar []
-  (let [current-chat @(re-frame/subscribe [:current-chat/metadata])]
-    [topbar/topbar
-     {:content           [toolbar-content/toolbar-content-view current-chat]
-      :navigation        {:on-press #(re-frame/dispatch [:navigate-to :home])}
-      :right-accessories [{:icon                :main-icons/more
-                           :accessibility-label :chat-menu-button
-                           :on-press
-                           #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                {:content (fn []
-                                                            [sheets/actions current-chat])
-                                                 :height  256}])}]}]))
+(defn topbar [current-chat]
+  [topbar/topbar
+   {:content           [toolbar-content/toolbar-content-view current-chat]
+    :navigation        {:on-press #(re-frame/dispatch [:close-chat (:chat-id current-chat)])}
+    :right-accessories [{:icon                :main-icons/more
+                         :accessibility-label :chat-menu-button
+                         :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                                   {:content (fn []
+                                                                               [sheets/actions current-chat])
+                                                                    :height  256}])}]}])
 
 (defn invitation-requests [chat-id admins]
   (let [current-pk @(re-frame/subscribe [:multiaccount/public-key])
@@ -153,60 +151,7 @@
                     first-not-visible (aget (.-data ^js (.-props ^js @messages-list-ref)) (inc index))]
                 (when (and first-not-visible
                            (= :message (:type first-not-visible)))
-                  first-not-visible)))))
-  (debounce/debounce-and-dispatch [:chat.ui/message-visibility-changed e] 5000))
-
-(defn render-fn [{:keys [outgoing type] :as message} idx _ {:keys [group-chat public? current-public-key space-keeper]}]
-  [react/view {:style (when platform/android? {:scaleY -1})}
-   (if (= type :datemark)
-     [message-datemark/chat-datemark (:value message)]
-     (if (= type :gap)
-       [gap/gap message idx messages-list-ref false]
-       ; message content
-       [message/chat-message
-        (assoc message
-               :incoming-group (and group-chat (not outgoing))
-               :group-chat group-chat
-               :public? public?
-               :current-public-key current-public-key)
-        space-keeper]))])
-
-(defn messages-view
-  [{:keys [chat bottom-space pan-responder space-keeper]}]
-  (let [{:keys [group-chat chat-id chat-type public? invitation-admin]} chat
-
-        messages           @(re-frame/subscribe [:chats/current-chat-messages-stream])
-        no-messages?       @(re-frame/subscribe [:chats/current-chat-no-messages?])
-        current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
-    [list/flat-list
-     (merge
-      pan-responder
-      {:key-fn                       #(or (:message-id %) (:value %))
-       :ref                          #(reset! messages-list-ref %)
-       :header                       (when (= chat-type constants/private-group-chat-type)
-                                       [react/view {:style (when platform/android? {:scaleY -1})}
-                                        [chat.group/group-chat-footer chat-id invitation-admin]])
-       :footer                       [react/view {:style (when platform/android? {:scaleY -1})}
-                                      [chat-intro-header-container chat no-messages?]
-                                      (when (= chat-type constants/one-to-one-chat-type)
-                                        [invite.chat/reward-messages])]
-       :data                         messages
-       ;;TODO https://github.com/facebook/react-native/issues/30034
-       :inverted                     (when platform/ios? true)
-       :style                        (when platform/android? {:scaleY -1})
-       :render-data                  {:group-chat         group-chat
-                                      :public?            public?
-                                      :current-public-key current-public-key
-                                      :space-keeper       space-keeper}
-       :render-fn                    render-fn
-       :on-viewable-items-changed    on-viewable-items-changed
-       :on-end-reached               #(re-frame/dispatch [:chat.ui/load-more-messages])
-       :on-scroll-to-index-failed    #() ;;don't remove this
-       :content-container-style      {:padding-top    (+ bottom-space 16)
-                                      :padding-bottom 16}
-       :scrollIndicatorInsets        {:top bottom-space}
-       :keyboardDismissMode          "interactive"
-       :keyboard-should-persist-taps :handled})]))
+                  first-not-visible))))))
 
 (defn bottom-sheet [input-bottom-sheet]
   (case input-bottom-sheet
@@ -258,72 +203,155 @@
                            :on-press            #(re-frame/dispatch [:send-group-chat-membership-request])}
                           (i18n/label :t/request-membership)]}])]))
 
+(defn get-space-keeper-ios [bottom-space panel-space active-panel text-input-ref]
+  (fn [state]
+    ;; NOTE: Only iOs now because we use soft input resize screen on android
+    (when platform/ios?
+      (cond
+        (and state
+             (< @bottom-space @panel-space)
+             (not @active-panel))
+        (reset! bottom-space @panel-space)
+
+        (and (not state)
+             (< @panel-space @bottom-space))
+        (do
+          (some-> ^js (quo.react/current-ref text-input-ref) .focus)
+          (reset! panel-space @bottom-space)
+          (reset! bottom-space 0))))))
+
+(defn get-set-active-panel [active-panel]
+  (fn [panel]
+    (rn/configure-next
+     (:ease-opacity-200 rn/custom-animations))
+    (reset! active-panel panel)
+    (reagent/flush)
+    (when panel
+      (js/setTimeout #(react/dismiss-keyboard!) 100))))
+
+(defn list-footer [{:keys [chat-id chat-type] :as chat}]
+  (let [loading-messages? @(re-frame/subscribe [:chats/loading-messages? chat-id])
+        no-messages? @(re-frame/subscribe [:chats/chat-no-messages? chat-id])
+        all-loaded? @(re-frame/subscribe [:chats/all-loaded? chat-id])]
+    [react/view {:style (when platform/android? {:scaleY -1})}
+     (if (or loading-messages? (not chat-id) (not all-loaded?))
+       [react/view {:height 324 :align-items :center :justify-content :center}
+        [react/activity-indicator {:animating true}]]
+       [chat-intro-header-container chat no-messages?])
+     (when (= chat-type constants/one-to-one-chat-type)
+       [invite.chat/reward-messages])]))
+
+(defn list-header [{:keys [chat-id chat-type invitation-admin]}]
+  (when (= chat-type constants/private-group-chat-type)
+    [react/view {:style (when platform/android? {:scaleY -1})}
+     [chat.group/group-chat-footer chat-id invitation-admin]]))
+
+(defn render-fn [{:keys [outgoing type] :as message}
+                 idx
+                 _
+                 {:keys [group-chat public? current-public-key space-keeper chat-id]}]
+  [react/view {:style (when platform/android? {:scaleY -1})}
+   (if (= type :datemark)
+     [message-datemark/chat-datemark (:value message)]
+     (if (= type :gap)
+       [gap/gap message idx messages-list-ref false chat-id]
+       ; message content
+       [message/chat-message
+        (assoc message
+               :incoming-group (and group-chat (not outgoing))
+               :group-chat group-chat
+               :public? public?
+               :current-public-key current-public-key)
+        space-keeper]))])
+
+(defn messages-view
+  [{:keys [chat bottom-space pan-responder space-keeper]}]
+  (let [{:keys [group-chat chat-id public?]} chat
+        messages @(re-frame/subscribe [:chats/chat-messages-stream chat-id])
+        current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
+    [list/flat-list
+     (merge
+      pan-responder
+      {:key-fn                       #(or (:message-id %) (:value %))
+       :ref                          #(reset! messages-list-ref %)
+       :header                       [list-header chat]
+       :footer                       [list-footer chat]
+       :data                         messages
+       :render-data                  {:group-chat         group-chat
+                                      :public?            public?
+                                      :current-public-key current-public-key
+                                      :space-keeper       space-keeper
+                                      :chat-id            chat-id}
+       :render-fn                    render-fn
+       :on-viewable-items-changed    on-viewable-items-changed
+       ;;TODO this is not really working in pair with inserting new messages because we stop inserting new messages
+       ;;if they outside the viewarea, but we load more here because end is reached,so its slowdown UI because we
+       ;;load and render 20 messages more, but we can't prevent this , because otherwise :on-end-reached will work wrong
+       :on-end-reached               (fn []
+                                       (if @state/scrolling
+                                         (re-frame/dispatch [:chat.ui/load-more-messages chat-id])
+                                         (utils/set-timeout #(re-frame/dispatch [:chat.ui/load-more-messages chat-id])
+                                                            (if platform/low-device? 500 200))))
+
+       :on-scroll-to-index-failed    #()                    ;;don't remove this
+       :content-container-style      {:padding-top (+ bottom-space 16)
+                                      :padding-bottom 16}
+       :scroll-indicator-insets      {:top bottom-space}    ;;ios only
+       :keyboard-dismiss-mode        :interactive
+       :keyboard-should-persist-taps :handled
+       :onMomentumScrollBegin        #(reset! state/scrolling true)
+       :onMomentumScrollEnd          #(reset! state/scrolling false)
+       ;;TODO https://github.com/facebook/react-native/issues/30034
+       :inverted                     (when platform/ios? true)
+       :style                        (when platform/android? {:scaleY -1})})]))
+
 (defn chat []
   (let [bottom-space   (reagent/atom 0)
-        panel-space    (reagent/atom 0)
+        panel-space    (reagent/atom 52)
         active-panel   (reagent/atom nil)
         position-y     (animated/value 0)
         pan-state      (animated/value 0)
         text-input-ref (quo.react/create-ref)
-        on-update      (partial reset! panel-space)
+        on-update      #(when-not (zero? %) (reset! panel-space %))
         pan-responder  (accessory/create-pan-responder position-y pan-state)
-        space-keeper   (fn [state]
-                         ;; NOTE: Only iOs now because we use soft input resize screen on android
-                         (when platform/ios?
-                           (cond
-                             (and state
-                                  (< @bottom-space @panel-space)
-                                  (not @active-panel))
-                             (reset! bottom-space @panel-space)
-
-                             (and (not state)
-                                  (< @panel-space @bottom-space))
-                             (do
-                               (some-> ^js (quo.react/current-ref text-input-ref) .focus)
-                               (reset! panel-space @bottom-space)
-                               (reset! bottom-space 0)))))
-        set-active-panel (fn [panel]
-                           (rn/configure-next
-                            (:ease-opacity-200 rn/custom-animations))
-                           (reset! active-panel panel)
-                           (reagent/flush)
-                           (when panel
-                             (js/setTimeout #(react/dismiss-keyboard!) 100)))
+        space-keeper   (get-space-keeper-ios bottom-space panel-space active-panel text-input-ref)
+        set-active-panel (get-set-active-panel active-panel)
         on-text-change #(re-frame/dispatch [:chat.ui/set-chat-input-text %])]
     (fn []
       (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as current-chat}
             @(re-frame/subscribe [:chats/current-chat])]
-        (when current-chat
-          [react/view {:style {:flex 1}}
-           [connectivity/loading-indicator]
-           [topbar]
-           [react/view {:style {:flex 1}}
+        [:<>
+         [connectivity/loading-indicator]
+         [topbar current-chat]
+         [:<>
+          (when current-chat
             (if group-chat
               [invitation-requests chat-id admins]
-              [add-contact-bar chat-id])
-            [messages-view {:chat          current-chat
-                            :bottom-space  (max @bottom-space @panel-space)
-                            :pan-responder pan-responder
-                            :space-keeper  space-keeper}]]
-           (when (and group-chat invitation-admin)
-             [accessory/view {:y               position-y
-                              :on-update-inset on-update}
-              [invitation-bar chat-id]])
-           ;; NOTE(rasom): on android we have to place `autocomplete-mentions`
-           ;; outside `accessory/view` because otherwise :keyboardShouldPersistTaps
-           ;; :always doesn't work and keyboard is hidden on pressing suggestion.
-           ;; Scrolling of suggestions doesn't work neither in this case.
-           (when platform/android?
-             [components/autocomplete-mentions text-input-ref])
-           (when show-input?
-             [accessory/view {:y               position-y
-                              :pan-state       pan-state
-                              :has-panel       (boolean @active-panel)
-                              :on-close        #(set-active-panel nil)
-                              :on-update-inset on-update}
-              [components/chat-toolbar
-               {:active-panel             @active-panel
-                :set-active-panel         set-active-panel
-                :text-input-ref           text-input-ref
-                :on-text-change           on-text-change}]
-              [bottom-sheet @active-panel]])])))))
+              [add-contact-bar chat-id]))
+          ;;MESSAGES LIST
+          [messages-view {:chat          current-chat
+                          :bottom-space  (max @bottom-space @panel-space)
+                          :pan-responder pan-responder
+                          :space-keeper  space-keeper}]]
+         (when (and group-chat invitation-admin)
+           [accessory/view {:y               position-y
+                            :on-update-inset on-update}
+            [invitation-bar chat-id]])
+         ;; NOTE(rasom): on android we have to place `autocomplete-mentions`
+         ;; outside `accessory/view` because otherwise :keyboardShouldPersistTaps
+         ;; :always doesn't work and keyboard is hidden on pressing suggestion.
+         ;; Scrolling of suggestions doesn't work neither in this case.
+         (when platform/android?
+           [components/autocomplete-mentions text-input-ref])
+         (when show-input?
+           [accessory/view {:y               position-y
+                            :pan-state       pan-state
+                            :has-panel       (boolean @active-panel)
+                            :on-close        #(set-active-panel nil)
+                            :on-update-inset on-update}
+            [components/chat-toolbar
+             {:active-panel             @active-panel
+              :set-active-panel         set-active-panel
+              :text-input-ref           text-input-ref
+              :on-text-change           on-text-change}]
+            [bottom-sheet @active-panel]])]))))

@@ -23,6 +23,13 @@
       (catch js/Error _
         (when (string? json) json)))))
 
+(defn json->js [json]
+  (when-not (= json "undefined")
+    (try
+      (.parse js/JSON json)
+      (catch js/Error _
+        (when (string? json) json)))))
+
 (def serialize clj->json)
 (defn deserialize [o] (try (json->clj o)
                            (catch :default _ nil)))

@@ -57,8 +57,8 @@
                                limit
                                on-success
                                on-failure]
-  {::json-rpc/call [{:method (json-rpc/call-ext-method "chatMessages")
-                     :params [chat-id cursor limit]
+  {::json-rpc/call [{:method     (json-rpc/call-ext-method "chatMessages")
+                     :params     [chat-id cursor limit]
                      :on-success (fn [result]
                                    (on-success (update result :messages #(map <-rpc %))))
                      :on-failure on-failure}]})

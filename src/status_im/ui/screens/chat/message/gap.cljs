@@ -7,7 +7,7 @@
             [status-im.ui.screens.chat.styles.input.gap :as style]))
 
 (defn on-press
-  [ids first-gap? idx list-ref]
+  [ids first-gap? idx list-ref chat-id]
   (fn []
     (when (and list-ref @list-ref)
       (.scrollToIndex ^js @list-ref
@@ -15,24 +15,25 @@
                            :viewOffset   20
                            :viewPosition 0.5}))
     (if first-gap?
-      (re-frame/dispatch [:chat.ui/fetch-more])
-      (re-frame/dispatch [:chat.ui/fill-gaps ids]))))
+      (re-frame/dispatch [:chat.ui/fetch-more chat-id])
+      (re-frame/dispatch [:chat.ui/fill-gaps ids chat-id]))))
 
 (views/defview gap
-  [{:keys [gaps first-gap?]} idx list-ref timeline]
-  (views/letsubs [range [:chats/range]
-                  {:keys [might-have-join-time-messages?]} [:chats/current-raw-chat]
+  [{:keys [gaps first-gap?]} idx list-ref timeline chat-id]
+  (views/letsubs [range [:chats/range chat-id]
+                  {:keys [might-have-join-time-messages?]} [:chat-by-id chat-id]
                   in-progress? [:chats/fetching-gap-in-progress?
                                 (if first-gap?
                                   [:first-gap]
-                                  (:ids gaps))]
+                                  (:ids gaps))
+                                chat-id]
                   connected?   [:mailserver/connected?]]
     (let [ids            (:ids gaps)]
       (when-not (and first-gap? might-have-join-time-messages?)
         [react/view {:style style/gap-container}
          [react/touchable-highlight
           {:on-press (when (and connected? (not in-progress?))
-                       (on-press ids first-gap? idx list-ref))
+                       (on-press ids first-gap? idx list-ref chat-id))
            :style    style/touchable}
           [react/view {:style style/label-container}
            (if in-progress?

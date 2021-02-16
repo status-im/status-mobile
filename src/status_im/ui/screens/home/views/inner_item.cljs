@@ -174,13 +174,10 @@
                                    [message-content-text {:content      (:content last-message)
                                                           :content-type (:content-type last-message)}]]
                                   [unviewed-indicator home-item]]
-      :on-press                  #(do
-                                    (re-frame/dispatch [:dismiss-keyboard])
-                                    (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
-                                    (re-frame/dispatch [:search/home-filter-changed nil])
-                                    (if public?
-                                      (re-frame/dispatch [:chat.ui/mark-public-all-read chat-id])
-                                      (re-frame/dispatch [:chat.ui/mark-messages-seen :chat])))
+      :on-press                  (fn []
+                                   (re-frame/dispatch [:dismiss-keyboard])
+                                   (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
+                                   (re-frame/dispatch [:search/home-filter-changed nil]))
       :on-long-press             #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                       {:content (fn []
                                                                   [sheets/actions home-item])}])}]))

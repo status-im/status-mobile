@@ -1,16 +1,9 @@
 (ns status-im.events
   (:require [re-frame.core :as re-frame]
             [status-im.chat.models :as chat]
-            [status-im.chat.models.message :as chat.message]
-            [status-im.chat.models.reactions :as chat.reactions]
-            [status-im.data-store.chats :as data-store.chats]
-            [status-im.data-store.messages :as data-store.messages]
-            [status-im.data-store.reactions :as data-store.reactions]
-            [status-im.group-chats.core :as group-chats]
             [status-im.i18n.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.transport.message.core :as transport.message]
             [status-im.ui.components.react :as react]
             [status-im.utils.fx :as fx]
             status-im.utils.logging.core
@@ -22,8 +15,6 @@
             [status-im.native-module.core :as status]
             [status-im.ui.components.permissions :as permissions]
             [status-im.utils.utils :as utils]
-            [status-im.data-store.invitations :as data-store.invitations]
-            [status-im.contact.db :as contact.db]
             [status-im.ethereum.json-rpc :as json-rpc]
             clojure.set
             status-im.currency.core
@@ -55,7 +46,6 @@
             status-im.mailserver.constants
             status-im.ethereum.subscriptions
             status-im.fleet.core
-            status-im.chat.models.message-seen
             status-im.contact.block
             status-im.contact.core
             status-im.contact.chat
@@ -100,30 +90,6 @@
  :ui/listen-to-window-dimensions-change
  (fn []
    (dimensions/add-event-listener)))
-
-;;TODO: map fx/merge is slow, we shouldn't do it, its much better to have one fx for vector of items
-(fx/defn handle-update
-  {:events [:transport/reaction-sent :transport/retraction-sent :transport/invitation-sent]}
-  [cofx {:keys [chats messages emojiReactions invitations]}]
-  (let [chats (map data-store.chats/<-rpc chats)
-        messages (map data-store.messages/<-rpc messages)
-        message-fxs (map chat.message/receive-one messages)
-        emoji-reactions (map data-store.reactions/<-rpc emojiReactions)
-        emoji-react-fxs (map chat.reactions/receive-one emoji-reactions)
-        invitations-fxs [(group-chats/handle-invitations
-                          (map data-store.invitations/<-rpc invitations))]
-        chat-fxs (map #(chat/ensure-chat (dissoc % :unviewed-messages-count)) chats)]
-    (apply fx/merge cofx (concat chat-fxs message-fxs emoji-react-fxs invitations-fxs))))
-
-(fx/defn transport-message-sent
-  {:events [:transport/message-sent]}
-  [cofx response messages-count]
-  (let [set-hash-fxs (map (fn [{:keys [localChatId id messageType]}]
-                            (transport.message/set-message-envelope-hash localChatId id messageType messages-count))
-                          (:messages response))]
-    (apply fx/merge cofx
-           (conj set-hash-fxs
-                 (handle-update response)))))
 
 (fx/defn dismiss-keyboard
   {:events [:dismiss-keyboard]}
@@ -210,35 +176,15 @@
   [{:keys [db]} dimensions]
   {:db (assoc db :dimensions/window (dimensions/window dimensions))})
 
-(fx/defn reset-current-profile-chat [{:keys [db] :as cofx} public-key]
-  (let [chat-id (chat/profile-chat-topic public-key)]
-    (when-not (= (:current-chat-id db) chat-id)
-      (fx/merge cofx
-                (chat/start-profile-chat public-key)
-                (chat/offload-all-messages)
-                (chat/preload-chat-data chat-id)))))
+(fx/defn init-timeline-chat
+  {:events [:init-timeline-chat]}
+  [{:keys [db] :as cofx}]
+  (when-not (get-in db [:pagination-info constants/timeline-chat-id :messages-initialized?])
+    (chat/preload-chat-data cofx constants/timeline-chat-id)))
 
-(fx/defn reset-current-timeline-chat [{:keys [db] :as cofx}]
-  (let [profile-chats (conj (map :public-key (contact.db/get-active-contacts (:contacts/contacts db)))
-                            (get-in db [:multiaccount :public-key]))]
-    (when-not (= (:current-chat-id db) chat/timeline-chat-id)
-      (fx/merge cofx
-                (fn [cofx]
-                  (apply fx/merge cofx (map chat/start-profile-chat profile-chats)))
-                (chat/start-timeline-chat)
-                (chat/offload-all-messages)
-                (chat/preload-chat-data chat/timeline-chat-id)))))
-
-(fx/defn reset-current-chat [{:keys [db] :as cofx} chat-id]
-  (when-not (= (:current-chat-id db) chat-id)
-    (fx/merge cofx
-              (chat/offload-all-messages)
-              (chat/preload-chat-data chat-id))))
-
-;; NOTE: Will be removed with the keycard PR
 (fx/defn on-will-focus
   {:events [:screens/on-will-focus]}
-  [{:keys [db] :as cofx} view-id]
+  [cofx view-id]
   (fx/merge cofx
             #(case view-id
                :keycard-settings (keycard/settings-screen-did-load %)
@@ -247,30 +193,8 @@
                :keycard-login-pin (keycard/enter-pin-screen-did-load %)
                :add-new-account-pin (keycard/enter-pin-screen-did-load %)
                :keycard-authentication-method (keycard/authentication-method-screen-did-load %)
-               (:chat :group-chat-profile) (reset-current-chat % (get db :inactive-chat-id))
                :multiaccounts (keycard/multiaccounts-screen-did-load %)
                (:wallet-stack :wallet) (wallet/wallet-will-focus %)
-               (:status :status-stack)
-               (reset-current-timeline-chat %)
-               :profile
-               (reset-current-profile-chat % (get-in % [:db :contacts/identity]))
-               nil)))
-
-(fx/defn tab-will-change
-  {:events [:screens/tab-will-change]}
-  [{:keys [db] :as cofx} view-id]
-  (fx/merge cofx
-            #(case view-id
-               ;;when we back to chat we want to show inactive chat
-               :chat
-               (reset-current-chat % (get db :inactive-chat-id))
-
-               (:status :status-stack)
-               (reset-current-timeline-chat %)
-
-               :profile
-               (reset-current-profile-chat % (get-in % [:db :contacts/identity]))
-
                nil)))
 
 ;;TODO :replace by named events

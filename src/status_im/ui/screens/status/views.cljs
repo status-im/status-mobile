@@ -11,7 +11,6 @@
             [status-im.ui.components.list.views :as list]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.status.styles :as styles]
-            [status-im.ui.screens.chat.views :as chat.views]
             [status-im.ui.components.plus-button :as components.plus-button]
             [status-im.ui.screens.chat.image.preview.views :as preview]
             [status-im.ui.screens.chat.photos :as photos]
@@ -65,7 +64,7 @@
                     :background-color :transparent
                     :border-color     colors/black-transparent}]
        (when show-close?
-         [react/touchable-highlight {:on-press            #(re-frame/dispatch [:chat.ui/cancel-sending-image])
+         [react/touchable-highlight {:on-press            #(re-frame/dispatch [:chat.ui/cancel-sending-image-timeline])
                                      :accessibility-label :cancel-send-image
                                      :style               {:right 4 :top 12 :position :absolute}}
           [react/view {:width            24
@@ -110,7 +109,7 @@
                          {:border-radius 16}))
      [react/touchable-highlight
       {:on-press #(do (when modal (close-modal))
-                      (re-frame/dispatch [:chat.ui/show-profile-without-adding-contact from]))}
+                      (re-frame/dispatch [:chat.ui/show-profile from]))}
       [react/view {:padding-top 2 :padding-right 8}
        (if outgoing
          [photos/account-photo account]
@@ -120,7 +119,7 @@
                    :justify-content :space-between}
        [react/touchable-highlight
         {:on-press #(do (when modal (close-modal))
-                        (re-frame/dispatch [:chat.ui/show-profile-without-adding-contact from]))}
+                        (re-frame/dispatch [:chat.ui/show-profile from]))}
         (if outgoing
           [message/message-my-name {:profile? true :you? false}]
           [message/message-author-name from {:profile? true}])]
@@ -134,14 +133,14 @@
           [message/render-parsed-text (assoc message :outgoing false) (:parsed-text content)]])
        [link-preview/link-preview-wrapper (:links content) outgoing true]]]]))
 
-(defn render-message [{:keys [type] :as message} idx _ {:keys [timeline account]}]
+(defn render-message [{:keys [type] :as message} idx _ {:keys [timeline account chat-id]}]
   (if (= type :datemark)
     nil
     (if (= type :gap)
       (if timeline
         nil
-        [gap/gap message idx messages-list-ref true])
-      ; message content
+        [gap/gap message idx messages-list-ref true chat-id])
+      ;; for timeline for reactions we need to use :from as chat-id
       (let [chat-id (chat/profile-chat-topic (:from message))]
         [react/view (merge {:accessibility-label :chat-item}
                            (when (:last-in-group? message)
@@ -152,7 +151,7 @@
          [reactions/with-reaction-picker
           {:message         message
            :timeline        true
-           :reactions       @(re-frame/subscribe [:chats/message-reactions (:message-id message)])
+           :reactions       @(re-frame/subscribe [:chats/message-reactions (:message-id message) constants/timeline-chat-id])
            :picker-on-open  (fn [])
            :picker-on-close (fn [])
            :send-emoji      (fn [{:keys [emoji-id]}]
@@ -182,37 +181,38 @@
 
 (defn timeline []
   (let [messages @(re-frame/subscribe [:chats/timeline-messages-stream])
-        no-messages? @(re-frame/subscribe [:chats/current-chat-no-messages?])
+        loading-messages? @(re-frame/subscribe [:chats/loading-messages? constants/timeline-chat-id])
+        no-messages? @(re-frame/subscribe [:chats/chat-no-messages? constants/timeline-chat-id])
         account @(re-frame/subscribe [:multiaccount])]
     [react/view {:flex 1}
-     ;;TODO implement in the next iteration
-     #_[tabs]
      [react/view {:height           1
                   :background-color colors/gray-lighter}]
-     (if no-messages?
-       [react/view {:padding-horizontal 32
-                    :margin-top         64}
-        [react/image {:style  {:width      140
-                               :height     140
-                               :align-self :center}
-                      :source {:uri (contenthash/url image-hash)}}]
-        [react/view (styles/descr-container)
-         [react/text {:style {:color       colors/gray
-                              :line-height 22}}
-          (if (= :timeline (:tab @state))
-            (i18n/label :t/statuses-descr)
-            (i18n/label :t/statuses-my-status-descr))]]]
-       [list/flat-list
-        {:key-fn                    #(or (:message-id %) (:value %))
-         :render-data               {:timeline (= :timeline (:tab @state))
-                                     :account  account}
-         :render-fn                 render-message
-         :data                      messages
-         :on-viewable-items-changed chat.views/on-viewable-items-changed
-         :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages])
-         ;;don't remove :on-scroll-to-index-failed
-         :on-scroll-to-index-failed #()
-         :header                    [react/view {:height 8}]
-         :footer                    [react/view {:height 68}]}])
+     (if loading-messages?
+       [react/view {:flex 1 :align-items :center :justify-content :center}
+        [react/activity-indicator {:animating true}]]
+       (if no-messages?
+         [react/view {:padding-horizontal 32
+                      :margin-top         64}
+          [react/image {:style  {:width      140
+                                 :height     140
+                                 :align-self :center}
+                        :source {:uri (contenthash/url image-hash)}}]
+          [react/view (styles/descr-container)
+           [react/text {:style {:color       colors/gray
+                                :line-height 22}}
+            (if (= :timeline (:tab @state))
+              (i18n/label :t/statuses-descr)
+              (i18n/label :t/statuses-my-status-descr))]]]
+         [list/flat-list
+          {:key-fn                    #(or (:message-id %) (:value %))
+           :render-data               {:timeline (= :timeline (:tab @state))
+                                       :account  account}
+           :render-fn                 render-message
+           :data                      messages
+           :on-end-reached            #(re-frame/dispatch [:chat.ui/load-more-messages constants/timeline-chat-id])
+           ;;don't remove :on-scroll-to-index-failed
+           :on-scroll-to-index-failed #()
+           :header                    [react/view {:height 8}]
+           :footer                    [react/view {:height 68}]}]))
      [components.plus-button/plus-button
       {:on-press #(re-frame/dispatch [:navigate-to :my-status])}]]))

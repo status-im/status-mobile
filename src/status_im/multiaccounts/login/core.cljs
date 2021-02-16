@@ -32,7 +32,8 @@
             [status-im.data-store.invitations :as data-store.invitations]
             [status-im.chat.models.link-preview :as link-preview]
             [status-im.utils.mobile-sync :as utils.mobile-sync]
-            [status-im.async-storage.core :as async-storage]))
+            [status-im.async-storage.core :as async-storage]
+            [status-im.chat.models :as chat.models]))
 
 (re-frame/reg-fx
  ::login
@@ -317,6 +318,8 @@
               (finish-keycard-setup)
               (transport/start-messenger)
               (communities/fetch)
+              (chat.models/start-timeline-chat)
+              (chat.models/start-profile-chat (:public-key multiaccount))
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)
               (logging/set-log-level (:log-level multiaccount)))))
