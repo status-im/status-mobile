@@ -26,7 +26,7 @@ pipeline {
     booleanParam(
       name: 'PUBLISH',
       description: 'Trigger publishing of build results for nightly or release.',
-      defaultValue: params.PUBLISH ?: false,
+      defaultValue: getPublishDefault(params.PUBLISH),
     )
   }
 
@@ -119,4 +119,14 @@ def List genChoices(String previousChoice, List defaultChoices) {
   choices = defaultChoices.minus(previousChoice)
   choices.add(0, previousChoice)
   return choices
+}
+
+/* Helper that makes PUBLISH default to 'false' unless:
+ * - The build is for a release branch
+ * - A user explicitly specified a value
+ * Since release builds create and re-create GitHub drafts every time. */
+def Boolean getPublishDefault(Boolean previousValue) {
+  if (env.JOB_NAME.startsWith('status-react/release')) { return true }
+  if (previousValue != null) { return previousValue }
+  return false
 }
