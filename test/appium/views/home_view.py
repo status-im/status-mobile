@@ -121,7 +121,6 @@ class HomeView(BaseView):
         if add_in_contacts:
             one_to_one_chat.add_to_contacts.click()
         if nickname:
-            self.driver.info("**Setting nickname '%s'**" % nickname)
             one_to_one_chat.chat_options.click()
             one_to_one_chat.view_profile_button.click()
             one_to_one_chat.set_nickname(nickname)

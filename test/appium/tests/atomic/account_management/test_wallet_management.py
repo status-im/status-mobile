@@ -106,7 +106,8 @@ class TestWalletManagement(SingleDeviceTestCase):
 
         wallet.just_fyi('Check "Open in OpenSea"')
         wallet.element_by_translation_id("check-on-opensea").click()
-        wallet.element_by_text('Sign In').click()
+
+        wallet.element_by_text('Sign In').wait_and_click(60)
         if not wallet.allow_button.is_element_displayed(40):
             self.errors.append('Can not sign in in OpenSea dapp')
         self.errors.verify_no_errors()

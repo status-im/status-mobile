@@ -87,8 +87,10 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         home_1.just_fyi("Check 'Confirmed' state for sender and receiver(use pull-to-refresh to update history)")
         chat_2.status_in_background_button.click()
         chat_2.wallet_button.click()
+        wallet_2.wait_balance_is_changed()
         wallet_2.find_transaction_in_history(amount=amount)
-        wallet_2.home_button.click(desired_view="chat")
+        wallet_2.home_button.click()
+        home_2.get_chat(sender['username']).click()
         [message.transaction_status.wait_for_element_text(message.confirmed, 60) for message in
          (sender_message, receiver_message)]
 
