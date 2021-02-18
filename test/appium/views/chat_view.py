@@ -513,10 +513,11 @@ class ChatView(BaseView):
 
 
     def chat_element_by_text(self, text):
-        self.driver.info("**Looking for a message by text: '%s'**" % text)
+        self.driver.info("**Looking for a message by text: %s**" % text)
         return ChatElementByText(self.driver, text)
 
     def verify_message_is_under_today_text(self, text, errors):
+        self.driver.info("**Veryfying that '%s' is under today**" % text)
         message_element = self.chat_element_by_text(text)
         message_element.wait_for_visibility_of_element()
         message_location = message_element.find_element().location['y']

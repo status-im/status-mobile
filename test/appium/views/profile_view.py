@@ -352,10 +352,11 @@ class ProfileView(BaseView):
         return MailServerElement(self.driver, server_name)
 
     def get_toggle_device_by_name(self, device_name):
-        return SilentButton(self.driver, xpath="//android.widget.TextView[contains(@text,'%s')]/../android.widget.Switch" % device_name)
+        self.driver.info("**Selecting device %s for sync**" % device_name)
+        return SilentButton(self.driver, xpath="//android.widget.TextView[contains(@text,'%s')]/..//android.widget.CheckBox" % device_name)
 
     def discover_and_advertise_device(self, device_name):
-        self.driver.info("**Discover and advertise '%s'**" % device_name)
+        self.driver.info("**Discover and advertise %s**" % device_name)
         self.sync_settings_button.click()
         self.devices_button.scroll_to_element()
         self.devices_button.click()
@@ -375,7 +376,7 @@ class ProfileView(BaseView):
             self.driver.fail("Failed to connect after %s attempts" % i)
 
     def connect_existing_status_ens(self, name):
-        self.driver.info("**Connect existing ENS '%s'**" % name)
+        self.driver.info("**Connect existing ENS: %s**" % name)
         profile = self.profile_button.click()
         profile.switch_network('Mainnet with upstream RPC')
         self.profile_button.click()

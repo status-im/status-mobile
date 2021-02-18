@@ -1,4 +1,3 @@
-
 import emoji
 import random
 from dateutil import parser
@@ -41,9 +40,14 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         chat_1, chat_2 = home_1.join_public_chat(public_chat_name), home_2.join_public_chat(public_chat_name)
 
         message = 'hello'
-        chat_1.chat_message_input.send_keys(message)
-        chat_1.send_message_button.click()
+        chat_1.send_message(message)
 
+        sent_time = chat_1.convert_device_time_to_chat_timestamp()
+        for chat in chat_1, chat_2:
+            chat.verify_message_is_under_today_text(message, self.errors)
+            timestamp = chat.chat_element_by_text(message).timestamp_message.text
+            if timestamp != sent_time:
+                self.errors.append("Timestamp is not shown, expected '%s', in fact '%s'" % (sent_time, timestamp))
         if chat_2.chat_element_by_text(message).username.text != default_username_1:
             self.errors.append("Default username '%s' is not shown next to the received message" % default_username_1)
 

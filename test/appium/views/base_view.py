@@ -181,7 +181,7 @@ class EnterQRcodeEditBox(EditBox):
     def scan_qr(self, value):
         self.set_value(value)
         base_view = BaseView(self.driver)
-        base_view.ok_button.click()
+        base_view.ok_button.click_until_absense_of_element(base_view.element_by_translation_id("scan-qr"))
 
     def click(self):
         self.wait_for_element().click()
