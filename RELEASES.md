@@ -1,3 +1,47 @@
+## 1.11
+### iOS
+#### Excerpt
+V1.11 also makes some improvements to the overall Status experience. Improved compatibility with DApps creates a more seamless experience with your favorite DeFi, NFT, and other decentralized applications. Improvements to Status Nodes and fixes to Android notifications have been made for better performance with private, group chats and public chats.
+
+Update in the App Store or Google Play if you do not have auto updates enabled.
+
+For the full changelog, see Github https://github.com/status-im/status-react/milestone/49?closed=1
+
+#### Added
+- Add Giphy url support in chat
+- The Graph (GRT) erc-20 token added to the default list
+
+#### Changed
+- Improved compatibility with DApps
+- Sync with Status Nodes improvements
+
+#### Fixed
+- Fixes to Android notifications
+- UI fixes
+- Sluggish performance on private group chats bug
+
+### Android
+#### Excerpt
+V1.11 also makes some improvements to the overall Status experience. Improved compatibility with DApps creates a more seamless experience with your favorite DeFi, NFT, and other decentralized applications. Improvements to Status Nodes and fixes to Android notifications have been made for better performance with private, group chats and public chats.
+
+Update in the App Store or Google Play if you do not have auto updates enabled.
+
+For the full changelog, see Github https://github.com/status-im/status-react/milestone/49?closed=1
+
+#### Added
+- Migrate existing account to Keycard 
+- Add Giphy url support in chat
+- The Graph (GRT) erc-20 token added to the default list
+
+#### Changed
+- Improved compatibility with DApps
+- Sync with Status Nodes improvements
+
+#### Fixed
+- Fixes to Android notifications
+- UI fixes
+- Sluggish performance on private group chats bug
+
 ## 1.10
 ### iOS
 #### Excerpt
