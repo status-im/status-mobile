@@ -9,21 +9,31 @@
             [status-im.utils.config :as config]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.multiaccounts.biometric.core :as biometric]
-            [status-im.utils.platform :as platform])
+            [status-im.utils.platform :as platform]
+            [status-im.constants :as constants])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn separator []
   [quo/separator {:style {:margin-vertical  8}}])
+
+(def titles {constants/profile-pictures-visibility-contacts-only (i18n/label :t/recent-recipients)
+             constants/profile-pictures-visibility-everyone      (i18n/label :t/everyone)
+             constants/profile-pictures-visibility-none          (i18n/label :t/none)
+             constants/profile-pictures-show-to-contacts-only    (i18n/label :t/recent-recipients)
+             constants/profile-pictures-show-to-everyone         (i18n/label :t/everyone)
+             constants/profile-pictures-show-to-none             (i18n/label :t/none)})
 
 (views/defview privacy-and-security []
   (views/letsubs [{:keys [mnemonic
                           preview-privacy?
                           messages-from-contacts-only
                           webview-allow-permission-requests?
-                          opensea-enabled?]} [:multiaccount]
+                          opensea-enabled?
+                          profile-pictures-visibility]} [:multiaccount]
                   supported-biometric-auth [:supported-biometric-auth]
                   keycard?                 [:keycard-multiaccount?]
-                  auth-method              [:auth-method]]
+                  auth-method              [:auth-method]
+                  profile-pictures-show-to [:multiaccount/profile-pictures-show-to]]
     [react/scroll-view {:padding-vertical 8}
      [quo/list-header (i18n/label :t/security)]
      [quo/list-item {:size                :small
@@ -111,6 +121,26 @@
                        :chevron             true
                        :on-press            #(re-frame/dispatch [::key-storage/logout-and-goto-key-storage])
                        :accessibility-label :key-managment}])
+
+     [separator]
+     [quo/list-header (i18n/label :t/privacy-photos)]
+     [quo/list-item
+      {:size                :small
+       :title               (i18n/label :t/show-profile-pictures)
+       :accessibility-label :show-profile-pictures
+       :accessory           :text
+       :accessory-text      (get titles profile-pictures-visibility)
+       :on-press            #(re-frame/dispatch [:navigate-to :privacy-and-security-profile-pic])
+       :chevron             true}]
+     [quo/list-item
+      {:size                :small
+       :title               (i18n/label :t/show-profile-pictures-to)
+       :accessibility-label :show-profile-pictures-to
+       :accessory           :text
+       :accessory-text      (get titles profile-pictures-show-to)
+       :on-press            #(re-frame/dispatch [:navigate-to :privacy-and-security-profile-pic-show-to])
+       :chevron             true}]
+
      [separator]
      [quo/list-item
       {:size                :small
@@ -119,3 +149,31 @@
        :on-press            #(re-frame/dispatch [:navigate-to :delete-profile])
        :accessibility-label :dapps-permissions-button
        :chevron             true}]]))
+
+(defn ppst-radio-item [id value]
+  [quo/list-item
+   {:active    (= value id)
+    :accessory :radio
+    :title     (get titles id)
+    :on-press  #(re-frame/dispatch [:multiaccounts.ui/profile-picture-show-to-switched id])}])
+
+(views/defview profile-pic-show-to []
+  (views/letsubs [{:keys [profile-pictures-show-to]} [:multiaccount]]
+    [react/view {:margin-top 8}
+     [ppst-radio-item constants/profile-pictures-show-to-everyone profile-pictures-show-to]
+     [ppst-radio-item constants/profile-pictures-show-to-contacts-only profile-pictures-show-to]
+     [ppst-radio-item constants/profile-pictures-show-to-none profile-pictures-show-to]]))
+
+(defn ppvf-radio-item [id value]
+  [quo/list-item
+   {:active    (= value id)
+    :accessory :radio
+    :title     (get titles id)
+    :on-press  #(re-frame/dispatch [:multiaccounts.ui/appearance-profile-switched id])}])
+
+(views/defview profile-pic []
+  (views/letsubs [{:keys [profile-pictures-visibility]} [:multiaccount]]
+    [react/view {:margin-top 8}
+     [ppvf-radio-item constants/profile-pictures-visibility-everyone profile-pictures-visibility]
+     [ppvf-radio-item constants/profile-pictures-visibility-contacts-only profile-pictures-visibility]
+     [ppvf-radio-item constants/profile-pictures-visibility-none profile-pictures-visibility]]))

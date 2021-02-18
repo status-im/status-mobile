@@ -78,12 +78,13 @@
 (def verify-ens-contract-address (get-config :VERIFY_ENS_CONTRACT_ADDRESS ((ethereum/chain-id->chain-keyword verify-ens-chain-id) ens/ens-registries)))
 
 (def default-multiaccount
-  {:preview-privacy?                   blank-preview?
-   :wallet/visible-tokens              {:mainnet #{:SNT}}
-   :currency                           :usd
-   :appearance                         0
-   :profile-pictures-visibility        1
-   :log-level                          log-level
+  {:preview-privacy?      blank-preview?
+   :wallet/visible-tokens {:mainnet #{:SNT}}
+   :currency :usd
+   :appearance 0
+   :profile-pictures-show-to 1
+   :profile-pictures-visibility 1
+   :log-level log-level
    :webview-allow-permission-requests? false
    :anon-metrics/should-send?          false
    :opensea-enabled?                   false
