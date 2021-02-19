@@ -132,6 +132,10 @@
  card/unpair-and-delete)
 
 (re-frame/reg-fx
+ :keycard/import-keys
+ card/import-keys)
+
+(re-frame/reg-fx
  :keycard/get-keys
  card/get-keys)
 

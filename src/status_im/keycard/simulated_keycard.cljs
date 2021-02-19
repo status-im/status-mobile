@@ -336,6 +336,8 @@
          #js {:code    "EUNSPECIFIED"
               :message "Unexpected error SW, 0x63C2"})))))
 
+(def import-keys get-keys)
+
 (defn sign [{:keys [pin hash data path typed? on-success on-failure]}]
   (if (= pin (get @state :pin))
     (later
@@ -483,6 +485,9 @@
   (keycard/unpair-and-delete [this args]
     (log/debug "simulated card unpair-and-delete")
     (unpair-and-delete args))
+  (keycard/import-keys [this args]
+    (log/debug "simulated card import-keys")
+    (import-keys args))
   (keycard/get-keys [this args]
     (log/debug "simulated card get-keys")
     (get-keys args))

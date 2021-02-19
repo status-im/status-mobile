@@ -356,6 +356,9 @@
                (-> db
                    (assoc-in [:keycard :pin :status] nil)
                    (assoc-in [:keycard :pin :login] [])
+                   (update-in [:keycard :application-info] assoc
+                              :puk-retry-counter 5
+                              :pin-retry-counter 3)
                    (assoc-in [:keycard :multiaccount]
                              (update account-data :whisper-public-key ethereum/normalized-hex))
                    (assoc-in [:keycard :flow] nil)
@@ -365,7 +368,6 @@
                            :identicon identicon
                            :name name))
 
-               :keycard/get-application-info {:pairing (get-pairing db key-uid)}
                :keycard/login-with-keycard   {:multiaccount-data multiaccount-data
                                               :password          encryption-public-key
                                               :chat-key          whisper-private-key

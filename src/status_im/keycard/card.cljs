@@ -336,24 +336,43 @@
        (re-frame/dispatch [:keycard.callback/on-delete-error
                            (error-object->map response)]))})))
 
+(defn import-keys [{:keys [on-success] :as args}]
+  (log/debug "[keycard] import-keys")
+  (keycard/import-keys
+   card
+   (assoc
+    args
+    :on-success
+    (fn [response]
+      (log/debug "[keycard response succ] import-keys")
+      (re-frame/dispatch
+       [(or on-success :keycard.callback/on-generate-and-load-key-success)
+        response]))
+    :on-failure
+    (fn [response]
+      (log/warn "[keycard response fail] import-keys"
+                (error-object->map response))
+      (re-frame/dispatch [:keycard.callback/on-get-keys-error
+                          (error-object->map response)])))))
+
 (defn get-keys [{:keys [on-success] :as args}]
   (log/debug "[keycard] get-keys")
   (keycard/get-keys
    card
-   (merge
+   (assoc
     args
-    {:on-success
-     (fn [response]
-       (log/debug "[keycard response succ] get-keys")
-       (re-frame/dispatch
-        [(or on-success :keycard.callback/on-get-keys-success)
-         response]))
-     :on-failure
-     (fn [response]
-       (log/debug "[keycard response fail] get-keys"
-                  (error-object->map response))
-       (re-frame/dispatch [:keycard.callback/on-get-keys-error
-                           (error-object->map response)]))})))
+    :on-success
+    (fn [response]
+      (log/debug "[keycard response succ] get-keys")
+      (re-frame/dispatch
+       [(or on-success :keycard.callback/on-get-keys-success)
+        response]))
+    :on-failure
+    (fn [response]
+      (log/warn "[keycard response fail] get-keys"
+                (error-object->map response))
+      (re-frame/dispatch [:keycard.callback/on-get-keys-error
+                          (error-object->map response)])))))
 
 (defn sign [{:keys [on-success on-failure] :as args}]
   (log/debug "[keycard] sign")

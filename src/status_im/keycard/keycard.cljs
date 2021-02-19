@@ -28,6 +28,7 @@
   (remove-key-with-unpair [this args])
   (export-key [this args])
   (unpair-and-delete [this args])
+  (import-keys [this args])
   (get-keys [this args])
   (sign [this args])
   (sign-typed-data [this args])

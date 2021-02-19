@@ -211,6 +211,14 @@
         (then on-success)
         (catch on-failure))))
 
+(defn import-keys
+  [{:keys [pairing pin on-success on-failure]}]
+  (when (and pairing (not-empty pin))
+    (.. status-keycard
+        (importKeys pairing pin)
+        (then on-success)
+        (catch on-failure))))
+
 (defn get-keys
   [{:keys [pairing pin on-success on-failure]}]
   (when (and pairing (not-empty pin))
@@ -315,6 +323,8 @@
     (export-key args))
   (keycard/unpair-and-delete [this args]
     (unpair-and-delete args))
+  (keycard/import-keys [this args]
+    (import-keys args))
   (keycard/get-keys [this args]
     (get-keys args))
   (keycard/sign [this args]

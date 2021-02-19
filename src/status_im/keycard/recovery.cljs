@@ -250,9 +250,9 @@
                                         (assoc-in [:keycard :pin :status] :verifying)
                                         (assoc-in [:keycard :secrets] {:pairing   pairing'
                                                                        :paired-on (utils.datetime/timestamp)}))
-               :keycard/get-keys {:pairing    pairing'
-                                  :pin        pin
-                                  :on-success :keycard.callback/on-generate-and-load-key-success}})))
+               :keycard/import-keys {:pairing    pairing'
+                                     :pin        pin
+                                     :on-success :keycard.callback/on-generate-and-load-key-success}})))
 
 (fx/defn load-recovering-key-screen
   {:events [:keycard/load-recovering-key-screen]}
