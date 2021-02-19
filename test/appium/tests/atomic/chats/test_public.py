@@ -42,12 +42,12 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
         message = 'hello'
         chat_1.send_message(message)
 
-        sent_time = chat_1.convert_device_time_to_chat_timestamp()
+        sent_time_variants = chat_1.convert_device_time_to_chat_timestamp()
         for chat in chat_1, chat_2:
             chat.verify_message_is_under_today_text(message, self.errors)
             timestamp = chat.chat_element_by_text(message).timestamp_message.text
-            if timestamp != sent_time:
-                self.errors.append("Timestamp is not shown, expected '%s', in fact '%s'" % (sent_time, timestamp))
+            if timestamp not in sent_time_variants:
+                self.errors.append("Timestamp is not shown, expected '%s', in fact '%s'" % (sent_time_variants.join(','), timestamp))
         if chat_2.chat_element_by_text(message).username.text != default_username_1:
             self.errors.append("Default username '%s' is not shown next to the received message" % default_username_1)
 

@@ -84,8 +84,8 @@ class NetworkApi(object):
                     'Transaction with amount %s is not found in list of %s, address is %s during %ss' %
                     (amount, additional_info, address, wait_time))
             else:
-                counter += 10
-                time.sleep(10)
+                counter += 30
+                time.sleep(30)
                 try:
                     if token:
                         transactions = self.get_token_transactions(address)
@@ -100,7 +100,8 @@ class NetworkApi(object):
                             return transaction
                 except TypeError as e:
                     self.log("Failed iterate transactions: " + str(e))
-                    continue
+                    pytest.fail("No valid JSON response from Etherscan: %s " % str(e))
+                    # continue
 
     def wait_for_confirmation_of_transaction(self, address, amount, confirmations=12, token=False):
         start_time = time.time()

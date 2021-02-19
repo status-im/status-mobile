@@ -137,7 +137,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         for message in messages:
             device_1_chat.send_message(message)
         device_2_chat = device_2_home.get_chat(default_username_1).click()
-        sent_time = device_1_chat.convert_device_time_to_chat_timestamp()
+        sent_time_variants = device_1_chat.convert_device_time_to_chat_timestamp()
         for message in messages:
             if not device_2_chat.chat_element_by_text(message).is_element_displayed():
                 self.errors.append("Message with test '%s' was not received" % message)
@@ -150,8 +150,8 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         for chat in device_1_chat, device_2_chat:
             chat.verify_message_is_under_today_text(timestamp_message, self.errors)
             timestamp = chat.chat_element_by_text(timestamp_message).timestamp_message.text
-            if timestamp != sent_time:
-                self.errors.append("Timestamp is not shown, expected '%s', in fact '%s'" % (sent_time, timestamp))
+            if timestamp not in sent_time_variants:
+                self.errors.append("Timestamp is not shown, expected '%s', in fact '%s'" % (sent_time_variants.join(","), timestamp))
 
         device_2_home.just_fyi("Add user to contact and verify his default username")
         device_2_chat.add_to_contacts.click()

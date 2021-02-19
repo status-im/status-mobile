@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import dateutil.parser
 import time
 
@@ -9,6 +9,15 @@ from time import sleep
 from views.base_element import Button, EditBox, Text, BaseElement, SilentButton
 from views.base_view import BaseView, ProgressBar
 from views.profile_view import ProfilePictureElement
+
+
+class CommandsButton(Button):
+    def __init__(self, driver):
+        super().__init__(driver, accessibility_id="show-extensions-icon")
+
+    def click(self):
+        self.click_until_presence_of_element(SendCommand(self.driver))
+        return self.navigate()
 
 
 class SendCommand(Button):
@@ -73,6 +82,7 @@ class ViewProfileButton(Button):
 
     def navigate(self):
         return ChatView(self.driver)
+
 
 class ChatOptionsButton(Button):
     def __init__(self, driver):
@@ -347,7 +357,7 @@ class ChatView(BaseView):
         self.cancel_reply_button = Button(self.driver, accessibility_id="cancel-message-reply")
         self.chat_item = Button(self.driver, accessibility_id="chat-item")
         self.chat_name_editbox = EditBox(self.driver, accessibility_id="chat-name-input")
-        self.commands_button = Button(self.driver, accessibility_id="show-extensions-icon")
+        self.commands_button = CommandsButton(self.driver)
         self.send_command = SendCommand(self.driver)
         self.request_command = RequestCommand(self.driver)
 
@@ -614,11 +624,15 @@ class ChatView(BaseView):
         self.nickname_input_field.send_keys(nickname)
         self.element_by_text('Done').click()
 
-    def convert_device_time_to_chat_timestamp(self):
+    def convert_device_time_to_chat_timestamp(self) -> list:
         sent_time_object = dateutil.parser.parse(self.driver.device_time)
         timestamp = datetime.strptime("%s:%s" % (sent_time_object.hour, sent_time_object.minute), '%H:%M').strftime("%I:%M %p")
-        timestamp = timestamp[1:] if timestamp[0] == '0' else timestamp
-        return timestamp
+        timestamp_obj = datetime.strptime(timestamp, '%I:%M %p')
+        possible_timestamps_obj = [timestamp_obj + timedelta(0,0,0,0,1), timestamp_obj, timestamp_obj - timedelta(0,0,0,0,1)]
+        timestamps = list(map(lambda x : x.strftime("%I:%M %p"), possible_timestamps_obj))
+        final_timestamps = [t[1:] if t[0] == '0' else t for t in timestamps]
+        return final_timestamps
+
 
     def set_new_status(self, status='something is happening', image=False):
         self.driver.info("**Setting new status:%s, image set is: %s**" % (status, str(image)))
