@@ -21,7 +21,7 @@
         data                 (get-in db [:keycard :data])
         typed?               (get-in db [:keycard :typed?])
         pin                  (common/vector->string (get-in db [:keycard :pin :sign]))
-        from                 (get-in db [:signing/tx :from :address])
+        from                 (or (get-in db [:signing/tx :from :address]) (get-in db [:signing/tx :message :from]) (ethereum/default-address db))
         path                 (reduce
                               (fn [_ {:keys [address path]}]
                                 (when (= from address)
