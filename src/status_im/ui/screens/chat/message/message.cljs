@@ -23,7 +23,9 @@
             [quo.core :as quo]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.components.reply :as components.reply]
-            [status-im.ui.screens.chat.message.link-preview :as link-preview])
+            [status-im.ui.screens.chat.message.link-preview :as link-preview]
+            [status-im.ui.components.animation :as animation]
+            [status-im.utils.datetime :as datetime])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]
@@ -363,6 +365,26 @@
                   (get content :parsed-text)))
      :label    (i18n/label :t/sharing-copy-to-clipboard)}]))
 
+(defn message-anim [scale-value scale-anim-value translate-value translate-x-anim-value translate-y-anim-value opacity-anim-value]
+  (fn []
+    (animation/start
+     (animation/parallel
+      [(animation/timing opacity-anim-value {:toValue         1
+                                             :duration        400
+                                             :useNativeDriver true})
+       (animation/timing scale-anim-value {:toValue         scale-value
+                                           :easing          (.bezier ^js animation/easing 0.165, 0.84, 0.44, 1)
+                                           :duration        400
+                                           :useNativeDriver true})
+       (animation/timing translate-y-anim-value {:toValue         translate-value
+                                                 :easing          (.bezier ^js animation/easing 0.165, 0.84, 0.44, 1)
+                                                 :duration        400
+                                                 :useNativeDriver true})
+       (animation/timing translate-x-anim-value {:toValue         translate-value
+                                                 :easing          (.bezier ^js animation/easing 0.165, 0.84, 0.44, 1)
+                                                 :duration        400
+                                                 :useNativeDriver true})]))))
+
 (defn collapsible-text-message [_ _]
   (let [collapsed?   (reagent/atom false)
         collapsible? (reagent/atom false)]
@@ -509,21 +531,33 @@
   [message-content-wrapper message
    [unknown-content-type message]])
 
-(defn chat-message [message space-keeper]
-  [reactions/with-reaction-picker
-   {:message         message
-    :reactions       @(re-frame/subscribe [:chats/message-reactions (:message-id message)])
-    :picker-on-open  (fn []
-                       (space-keeper true))
-    :picker-on-close (fn []
-                       (space-keeper false))
-    :send-emoji      (fn [{:keys [emoji-id]}]
-                       (re-frame/dispatch [::models.reactions/send-emoji-reaction
-                                           {:message-id (:message-id message)
-                                            :emoji-id   emoji-id}]))
-    :retract-emoji   (fn [{:keys [emoji-id emoji-reaction-id]}]
-                       (re-frame/dispatch [::models.reactions/send-emoji-reaction-retraction
-                                           {:message-id        (:message-id message)
-                                            :emoji-id          emoji-id
-                                            :emoji-reaction-id emoji-reaction-id}]))
-    :render          ->message}])
+(defview chat-message [message space-keeper]
+  (letsubs [scale-anim-value (animation/create-value 0.25)
+            translate-x-anim-value (animation/create-value 120)
+            translate-y-anim-value (animation/create-value 50)
+            opacity-anim-value     (animation/create-value 0)]
+    {:component-did-mount (message-anim 1 scale-anim-value 0 translate-x-anim-value translate-y-anim-value opacity-anim-value)}
+    (let [seconds-ago (datetime/seconds-ago (datetime/to-date (:timestamp message)))]
+      [react/animated-view {:style (when (and (:outgoing message)
+                                              (= seconds-ago 0))
+                                     {:transform [{:scale scale-anim-value}
+                                                  {:translateX translate-x-anim-value}
+                                                  {:translateY translate-y-anim-value}]
+                                      :opacity opacity-anim-value})}
+       [reactions/with-reaction-picker
+        {:message         message
+         :reactions       @(re-frame/subscribe [:chats/message-reactions (:message-id message)])
+         :picker-on-open  (fn []
+                            (space-keeper true))
+         :picker-on-close (fn []
+                            (space-keeper false))
+         :send-emoji      (fn [{:keys [emoji-id]}]
+                            (re-frame/dispatch [::models.reactions/send-emoji-reaction
+                                                {:message-id (:message-id message)
+                                                 :emoji-id   emoji-id}]))
+         :retract-emoji   (fn [{:keys [emoji-id emoji-reaction-id]}]
+                            (re-frame/dispatch [::models.reactions/send-emoji-reaction-retraction
+                                                {:message-id        (:message-id message)
+                                                 :emoji-id          emoji-id
+                                                 :emoji-reaction-id emoji-reaction-id}]))
+         :render          ->message}]])))
