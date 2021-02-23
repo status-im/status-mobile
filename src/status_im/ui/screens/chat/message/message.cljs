@@ -20,6 +20,7 @@
             [status-im.utils.security :as security]
             [status-im.ui.screens.chat.message.reactions :as reactions]
             [status-im.ui.screens.chat.image.preview.views :as preview]
+            [quo.animated :as reanimated]
             [quo.core :as quo]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.components.reply :as components.reply]
@@ -277,30 +278,47 @@
            identicon
            from outgoing]
     :as   message} content {:keys [modal close-modal]}]
-  [react/view {:style               (style/message-wrapper message)
-               :pointer-events      :box-none
-               :accessibility-label :chat-item}
-   [react/view {:style          (style/message-body message)
-                :pointer-events :box-none}
-    (when display-photo?
-      [react/view (style/message-author-userpic outgoing)
-       (when first-in-group?
-         [react/touchable-highlight {:on-press #(do (when modal (close-modal))
+  (let [transition (reanimated/value 0) translateX (if (true? outgoing) 60 -60)]
+    (fn []
+      [react/view {:style               (style/message-wrapper message)
+                   :pointer-events      :box-none
+                   :accessibility-label :chat-item}
+       [reanimated/code
+        {:exec (reanimated/set transition (reanimated/re-timing
+                                           {:from     transition
+                                            :to       1
+                                            :easing   (:ease-out-quart reanimated/easings)
+                                            :duration 400}))}]
+       [react/view {:style          (style/message-body message)
+                    :pointer-events :box-none}
+        (when display-photo?
+          [react/view (style/message-author-userpic outgoing)
+           (when first-in-group?
+             [react/touchable-highlight {:on-press #(do (when modal (close-modal))
+                                                        (re-frame/dispatch [:chat.ui/show-profile-without-adding-contact from]))}
+              [photos/member-photo from identicon]])])
+        [react/view {:style (style/message-author-wrapper outgoing display-photo?)}
+         (when display-username?
+           [react/touchable-opacity {:style    style/message-author-touchable
+                                     :on-press #(do (when modal (close-modal))
                                                     (re-frame/dispatch [:chat.ui/show-profile-without-adding-contact from]))}
-          [photos/member-photo from identicon]])])
-    [react/view {:style (style/message-author-wrapper outgoing display-photo?)}
-     (when display-username?
-       [react/touchable-opacity {:style    style/message-author-touchable
-                                 :on-press #(do (when modal (close-modal))
-                                                (re-frame/dispatch [:chat.ui/show-profile-without-adding-contact from]))}
-        [message-author-name from {:modal modal}]])
+            [message-author-name from {:modal modal}]])
      ;;MESSAGE CONTENT
-     [react/view
-      content]
-     [link-preview/link-preview-wrapper (:links (:content message)) outgoing false]]]
+         [reanimated/view
+          {:style
+           {:opacity transition
+            :transform [{:translateX translateX}
+                        {:scale (reanimated/interpolate
+                                 transition
+                                 {:inputRange  [0 1]
+                                  :outputRange [0.25 1]
+                                  :extrapolate (:clamp reanimated/extrapolate)})}
+                        {:translateX (- translateX)}]}}
+          content]
+         [link-preview/link-preview-wrapper (:links (:content message)) outgoing false]]]
    ; delivery status
-   [react/view (style/delivery-status outgoing)
-    [message-delivery-status message]]])
+       [react/view (style/delivery-status outgoing)
+        [message-delivery-status message]]])))
 
 (def image-max-width 260)
 (def image-max-height 192)
