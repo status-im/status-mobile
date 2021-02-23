@@ -142,6 +142,7 @@ class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(6246)
     @marks.medium
+    @marks.flaky
     def test_keycard_interruption_access_key_onboarding_flow(self):
         sign_in = SignInView(self.driver)
         sign_in.get_started_button.click()
@@ -247,7 +248,6 @@ class TestCreateAccount(SingleDeviceTestCase):
     @marks.medium
     def test_keycard_can_recover_keycard_account_offline_and_add_watch_only_acc(self):
         sign_in = SignInView(self.driver)
-        recovered_user = transaction_senders['A']
         sign_in.toggle_airplane_mode()
 
         sign_in.just_fyi('Recover multiaccount offline')
@@ -291,7 +291,7 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         wallet_view.just_fyi('Check that balance is changed after go back to WI-FI')
         sign_in.toggle_mobile_data()
-        for asset in ('LXS', 'ADI', 'STT'):
+        for asset in ('ADI', 'STT'):
             wallet_view.asset_by_name(asset).scroll_to_element()
             wallet_view.wait_balance_is_changed(asset, wait_time=60)
 

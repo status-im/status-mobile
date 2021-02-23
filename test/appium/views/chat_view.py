@@ -184,7 +184,7 @@ class ChatElementByText(Text):
         class RepliedToUsernameText(Text):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, prefix=parent_locator,
-                                 xpath="%s/preceding-sibling::*[1]/android.widget.TextView[1]")
+                                 xpath="/preceding-sibling::*[1]/android.widget.TextView[1]")
         try:
             return RepliedToUsernameText(self.driver, self.message_locator).text
         except NoSuchElementException:
@@ -248,6 +248,40 @@ class GroupChatInfoView(BaseView):
 
     def get_user_from_group_info(self, username: str):
         return Text(self.driver, xpath="//*[@text='%s']" % username)
+
+
+class PreviewMessage(ChatElementByText):
+    def __init__(self, driver, text:str):
+        super().__init__(driver, text=text)
+        self.locator+="/android.view.ViewGroup/android.view.ViewGroup/"
+
+    @staticmethod
+    def return_element_or_empty(obj):
+        try:
+            return obj.find_element()
+        except NoSuchElementException:
+            return ''
+
+    @property
+    def preview_image(self):
+        class PreviewImage(SilentButton):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, xpath="android.widget.ImageView")
+        return PreviewMessage.return_element_or_empty(PreviewImage(self.driver, self.locator))
+
+    @property
+    def preview_title(self):
+        class PreviewTitle(SilentButton):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, xpath="android.widget.TextView[1]")
+        return PreviewMessage.return_element_or_empty(PreviewTitle(self.driver, self.locator))
+
+    @property
+    def preview_subtitle(self):
+        class PreviewSubTitle(SilentButton):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, prefix=parent_locator, xpath="android.widget.TextView[2]")
+        return PreviewMessage.return_element_or_empty(PreviewSubTitle(self.driver, self.locator))
 
 
 class TransactionMessage(ChatElementByText):
@@ -444,6 +478,10 @@ class ChatView(BaseView):
         if account is None:
             account = self.status_account_name
         return IncomingTransaction(self.driver, account)
+
+    def get_preview_message_by_text(self, text=None):
+        self.driver.info('**Getting preview message for link:%s**' % text)
+        return PreviewMessage(self.driver, text)
 
 
     def delete_chat(self):

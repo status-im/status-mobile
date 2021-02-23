@@ -367,7 +367,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5373)
     @marks.high
-    def test_send_and_open_links(self):
+    def test_send_and_open_links_with_previews(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
 
@@ -378,10 +378,10 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         public_key_2 = home_2.get_public_key_and_username()
         home_2.home_button.click()
 
+        home_1.just_fyi("Check that link can be opened from 1-1 chat")
         chat_1 = home_1.add_contact(public_key_2)
         url_message = 'http://status.im'
-        chat_1.chat_message_input.send_keys(url_message)
-        chat_1.send_message_button.click()
+        chat_1.send_message(url_message)
         chat_1.get_back_to_home_view()
         chat_2 = home_2.get_chat(default_username_1).click()
         chat_2.element_starts_with_text(url_message, 'button').click()
@@ -393,17 +393,50 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         web_view.back_to_home_button.click()
         chat_2.home_button.click()
 
+        home_1.just_fyi("Check that link can be opened from public chat")
         chat_name = ''.join(random.choice(string.ascii_lowercase) for _ in range(7))
-        home_1.join_public_chat(chat_name)
-        home_2.join_public_chat(chat_name)
-        chat_2.chat_message_input.send_keys(url_message)
-        chat_2.send_message_button.click()
+        chat_1 = home_1.join_public_chat(chat_name)
+        chat_2 = home_2.join_public_chat(chat_name)
+        chat_2.send_message(url_message)
         chat_1.element_starts_with_text(url_message, 'button').click()
         web_view = chat_1.open_in_status_button.click()
         try:
             web_view.element_by_text('Private, Secure Communication').find_element()
         except TimeoutException:
             self.errors.append('Device 1: URL was not opened from 1-1 chat')
+        home_1.home_button.click(desired_view='chat')
+
+        preview_urls = {'github_pr':{'url':'https://github.com/status-im/status-react/pull/11707',
+                                     'txt':'Update translations by jinhojang6 · Pull Request #11707 · status-im/status-react',
+                                     'subtitle' : 'GitHub'},
+                         'yotube':{'url':'https://www.youtube.com/watch?v=XN-SVmuJH2g&list=PLbrz7IuP1hrgNtYe9g6YHwHO6F3OqNMao',
+                                   'txt':'Status & Keycard – Hardware-Enforced Security',
+                                   'subtitle': 'YouTube'}}
+
+        home_1.just_fyi("Check enabling and sending first gif")
+        giphy_url = 'https://giphy.com/gifs/this-is-fine-QMHoU66sBXqqLqYvGO'
+        chat_2.send_message(giphy_url)
+        chat_2.element_by_translation_id("dont-ask").click()
+        chat_1.element_by_translation_id("enable").wait_and_click()
+        chat_1.element_by_translation_id("enable-all").wait_and_click()
+        chat_1.back_button.click()
+        if not chat_1.get_preview_message_by_text(giphy_url).preview_image:
+            self.errors.append("No preview is shown for %s" % giphy_url)
+        for key in preview_urls:
+            home_2.just_fyi("Checking %s preview case" % key)
+            data = preview_urls[key]
+            chat_2.send_message(data['url'])
+            message = chat_1.get_preview_message_by_text(data['url'])
+            if message.preview_title.text != data['txt']:
+                 self.errors.append("Title '%s' does not match expected" % message.preview_title.text)
+            if message.preview_subtitle.text != data['subtitle']:
+                 self.errors.append("Subtitle '%s' does not match expected" % message.preview_subtitle.text)
+
+        home_2.just_fyi("Check if after do not ask again previews are not shown and no enable button appear")
+        if chat_2.element_by_translation_id("enable").is_element_displayed():
+            self.errors.append("Enable button is still shown after clicking on 'Den't ask again'")
+        if chat_2.get_preview_message_by_text(giphy_url).preview_image:
+            self.errors.append("Preview is shown for sender without permission")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5362)
