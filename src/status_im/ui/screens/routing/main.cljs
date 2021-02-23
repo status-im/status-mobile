@@ -11,7 +11,6 @@
             [status-im.ui.screens.routing.chat-stack :as chat-stack]
             [status-im.ui.screens.routing.wallet-stack :as wallet-stack]
             [status-im.ui.screens.wallet.buy-crypto.views :as wallet.buy-crypto]
-            [status-im.ui.screens.routing.key-storage-stack :as key-storage-stack]
             [status-im.ui.screens.group.views :as group-chat]
             [status-im.ui.screens.routing.profile-stack :as profile-stack]
             [status-im.ui.screens.routing.browser-stack :as browser-stack]
@@ -162,9 +161,7 @@
        {:name       :buy-crypto-website
         :transition :presentation-ios
         :insets     {:bottom true}
-        :component  wallet.buy-crypto/website}
-       {:name      :key-storage-stack
-        :component key-storage-stack/key-storage-stack}]
+        :component  wallet.buy-crypto/website}]
 
       (when config/quo-preview-enabled?
         [{:name      :quo-preview

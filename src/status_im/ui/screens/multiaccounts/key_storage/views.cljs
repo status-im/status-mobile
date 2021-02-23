@@ -104,7 +104,7 @@
 (defview seed-phrase []
   (letsubs
     [{:keys [seed-word-count seed-shape-invalid?]} [:multiaccounts/key-storage]]
-    [react/keyboard-avoiding-view {:style {:display :flex :flex 1 :flex-direction :column}}
+    [react/keyboard-avoiding-view {:flex 1}
      [local-topbar (i18n/label :t/enter-seed-phrase)]
      [multiaccounts.views/seed-phrase-input
       {:on-change-event     [::multiaccounts.key-storage/seed-phrase-input-changed]
@@ -115,15 +115,14 @@
                           :margin-bottom 8
                           :text-align    :center}}
       (i18n/label :t/multiaccounts-recover-enter-phrase-text)]
-     [react/keyboard-avoiding-view {:style {:flex 1}}
-      [toolbar/toolbar {:show-border? true
-                        :right        [quo/button
-                                       {:type     :secondary
-                                        :disabled (or seed-shape-invalid?
-                                                      (nil? seed-shape-invalid?))
-                                        :on-press #(re-frame/dispatch [::multiaccounts.key-storage/choose-storage-pressed])
-                                        :after    :main-icons/next}
-                                       (i18n/label :t/choose-storage)]}]]]))
+     [toolbar/toolbar {:show-border? true
+                       :right        [quo/button
+                                      {:type     :secondary
+                                       :disabled (or seed-shape-invalid?
+                                                     (nil? seed-shape-invalid?))
+                                       :on-press #(re-frame/dispatch [::multiaccounts.key-storage/choose-storage-pressed])
+                                       :after    :main-icons/next}
+                                      (i18n/label :t/choose-storage)]}]]))
 
 (defn keycard-subtitle []
   [react/view
@@ -316,10 +315,7 @@
     ;; Delete multiaccount and init keycard onboarding
     (re-frame/dispatch [::multiaccounts.key-storage/delete-multiaccount-and-init-keycard-onboarding]))
 
-
   ;; Show error popup
-
-
   (re-frame/dispatch [::multiaccounts.key-storage/show-seed-key-uid-mismatch-error-popup])
   (re-frame/dispatch [::multiaccounts.key-storage/show-transfer-warning-popup])
   (re-frame/dispatch [::multiaccounts.key-storage/delete-multiaccount-error])

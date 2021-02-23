@@ -5,6 +5,7 @@
             [status-im.ui.screens.multiaccounts.views :as multiaccounts]
             [status-im.ui.screens.intro.views :as intro]
             [status-im.keycard.core :as keycard.core]
+            [status-im.ui.screens.routing.key-storage-stack :as key-storage-stack]
             [status-im.ui.screens.keycard.onboarding.views :as keycard.onboarding]
             [status-im.ui.screens.keycard.recovery.views :as keycard.recovery]
             [status-im.ui.screens.keycard.views :as keycard]
@@ -104,4 +105,7 @@
       {:name      :keycard-unpaired
        :component keycard/unpaired}
       {:name      :not-keycard
-       :component keycard/not-keycard}]]))
+       :component keycard/not-keycard}
+      {:name      :key-storage-stack
+       :insets    {:top false}
+       :component key-storage-stack/key-storage-stack}]]))
