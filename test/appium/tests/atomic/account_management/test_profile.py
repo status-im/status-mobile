@@ -554,20 +554,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5302)
-    @marks.high
-    @marks.skip
-    # TODO: skip until profile picture change feature is enabled
-    def test_set_profile_picture(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        profile_view = sign_in_view.profile_button.click()
-        profile_view.edit_profile_picture(file_name='sauce_logo.png')
-        profile_view.home_button.click()
-        sign_in_view.profile_button.click()
-        profile_view.swipe_down()
-        if not profile_view.profile_picture.is_element_image_equals_template('sauce_logo_profile.png'):
-            self.driver.fail('Profile picture was not updated')
 
     @marks.testrail_id(5475)
     @marks.low
@@ -621,6 +607,45 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
 
 class TestProfileMultipleDevice(MultipleDeviceTestCase):
+
+    @marks.testrail_id(6646)
+    @marks.high
+    def test_set_profile_picture(self):
+        self.create_drivers(2)
+        home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
+        profile_1 = home_1.profile_button.click()
+        public_key_1 = profile_1.get_public_key_and_username()
+
+        profile_1.just_fyi("Set user Profile image from Gallery")
+        profile_1.edit_profile_picture(file_name='sauce_logo.png')
+        home_1.profile_button.click()
+        profile_1.swipe_down()
+
+        if not profile_1.profile_picture.is_element_image_similar_to_template('sauce_logo_profile.png'):
+            self.drivers[0].fail('Profile picture was not updated')
+
+        profile_1.just_fyi("Check user profile updated in chat")
+        home = profile_1.home_button.click()
+        message = "Text message"
+        public_chat_name = home.get_random_chat_name()
+        home_2.add_contact(public_key=public_key_1)
+        home_2.home_button.click()
+        public_chat_2 = home_2.join_public_chat(public_chat_name)
+        public_chat_1 = home.join_public_chat(public_chat_name)
+        public_chat_1.chat_message_input.send_keys(message)
+        public_chat_1.send_message_button.click()
+        if not public_chat_2.chat_element_by_text(message).member_photo.is_element_image_similar_to_template('sauce_logo.png'):
+            self.drivers[0].fail('Profile picture was not updated in chat')
+
+        profile_1.just_fyi("Set user Profile image by taking Photo")
+        home_1.profile_button.click()
+        profile_1.edit_profile_picture(file_name='sauce_logo.png', update_by='Make Photo')
+        home_1.home_button.click(desired_view='chat')
+        public_chat_1.chat_message_input.send_keys(message)
+        public_chat_1.send_message_button.click()
+
+        if public_chat_2.chat_element_by_text(message).member_photo.is_element_image_similar_to_template('sauce_logo.png'):
+            self.drivers[0].fail('Profile picture was not updated in chat after making photo')
 
     @marks.testrail_id(5432)
     @marks.medium

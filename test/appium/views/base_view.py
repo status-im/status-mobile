@@ -215,6 +215,7 @@ class BaseView(object):
         self.no_button = Button(self.driver, translation_id="no")
         self.back_button = BackButton(self.driver)
         self.allow_button = AllowButton(self.driver)
+        self.allow_all_the_time = Button(self.driver, xpath="//*[@text='Allow all the time']")
         self.deny_button = Button(self.driver, translation_id="deny", uppercase=True)
         self.continue_button = Button(self.driver, translation_id="continue", uppercase=True)
         self.ok_button = Button(self.driver, xpath="//*[@text='OK' or @text='Ok']")

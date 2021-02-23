@@ -171,6 +171,11 @@ class ProfileView(BaseView):
         self.confirm_edit_button = Button(self.driver, accessibility_id="done-button")
         self.select_from_gallery_button = Button(self.driver, translation_id="profile-pic-pick")
         self.capture_button = Button(self.driver, translation_id="image-source-make-photo")
+        self.take_photo_button = Button(self.driver, accessibility_id="take-photo")
+        self.crop_photo_button = Button(self.driver, accessibility_id="Crop")
+        self.decline_photo_crop = Button(self.driver, accessibility_id="Navigate up")
+        self.shutter_button = Button(self.driver, accessibility_id="Shutter")
+        self.accept_photo_button = Button(self.driver, accessibility_id="Done")
 
         # ENS
         self.username_in_ens_chat_settings_text = EditBox(self.driver,
@@ -327,20 +332,45 @@ class ProfileView(BaseView):
         self.driver.info("**Seed phrase is backed up!**")
         return recovery_phrase
 
-    def edit_profile_picture(self, file_name: str):
+    def edit_profile_picture(self, file_name: str, update_by = "Gallery"):
+        self.driver.info("**Setting custom profile image**")
         if not AbstractTestCase().environment == 'sauce':
             raise NotImplementedError('Test case is implemented to run on SauceLabs only')
         self.profile_picture.click()
         self.profile_picture.template = file_name
-        self.select_from_gallery_button.click()
+        if update_by == "Gallery":
+            self.select_from_gallery_button.click()
+            if self.allow_button.is_element_displayed(sec=5):
+                self.allow_button.click()
+            image_name = "sauce_logo.png, 4.64 kB, Nov 4, 2020"
+            if file_name == 'sauce_logo_red.png':
+                image_name = "sauce_logo_red.png, 624 kB, Nov 4, 2020"
+
+            image_full_content = self.get_image_in_storage_by_name(image_name)
+            if not image_full_content.is_element_displayed(2):
+                self.show_roots_button.click()
+                for element_text in 'Images', 'DCIM':
+                    self.element_by_text(element_text).click()
+            image_full_content.click()
+        else:
+            ## take by Photo
+            self.take_photo()
+            self.click_system_back_button()
+            self.take_photo()
+            self.accept_photo_button.click()
+        self.crop_photo_button.click()
+        self.driver.info("**Custom profile image has been set**")
+
+
+    def take_photo(self):
+        self.take_photo_button.click()
         if self.allow_button.is_element_displayed(sec=5):
             self.allow_button.click()
-        picture = self.element_by_text(file_name)
-        if not picture.is_element_displayed(2):
-            self.show_roots_button.click()
-            for element_text in 'Images', 'DCIM':
-                self.element_by_text(element_text).click()
-        picture.click()
+        if self.allow_all_the_time.is_element_displayed(sec=5):
+            self.allow_all_the_time.click()
+        if self.element_by_text("NEXT").is_element_displayed(sec=5):
+            self.element_by_text("NEXT").click()
+        self.shutter_button.click()
 
     def logout(self):
         self.driver.info("**Logging out**")
@@ -350,6 +380,9 @@ class ProfileView(BaseView):
 
     def mail_server_by_name(self, server_name):
         return MailServerElement(self.driver, server_name)
+
+    def get_image_in_storage_by_name(self, image_name=str()):
+        return SilentButton(self.driver, xpath="//*[@content-desc='%s']" % image_name)
 
     def get_toggle_device_by_name(self, device_name):
         self.driver.info("**Selecting device %s for sync**" % device_name)

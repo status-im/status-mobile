@@ -28,6 +28,7 @@ class BaseElement(object):
         self.suffix = None
         self.id = None
         self.class_name = None
+        self.AndroidUIAutomator = None
         self.webview = None
 
         self.__dict__.update(kwargs)
@@ -52,6 +53,9 @@ class BaseElement(object):
         elif self.class_name:
             self.by = MobileBy.CLASS_NAME
             self.locator = self.class_name
+        elif self.AndroidUIAutomator:
+            self.by = MobileBy.ANDROID_UIAUTOMATOR
+            self.locator = self.AndroidUIAutomator
         elif self.webview:
             self.locator = '//*[@text="{0}"] | //*[@content-desc="{desc}"]'.format(self.webview, desc=self.webview)
         if self.prefix:

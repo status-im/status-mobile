@@ -77,7 +77,6 @@ class TestDApps(SingleDeviceTestCase):
         camera_dapp.browser_refresh_page_button.click()
         camera_dapp.allow_button.click()
         if camera_dapp.camera_image_in_dapp.is_element_image_similar_to_template('blank_camera_image.png'):
-            camera_dapp.camera_image_in_dapp.save_new_screenshot_of_element('blank_camera_image3.png')
             self.driver.fail("Even camera access Accepted to Dapp, - camera view is not shown")
 
         camera_dapp.just_fyi("Relogin and check camera access still needs to be allowed")
