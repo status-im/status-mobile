@@ -209,12 +209,17 @@
                    (chat-model/join-time-messages-checked-for-chats (keys grouped-messages)))))))
 
 ;;;; Send message
-(fx/defn update-message-status
+(fx/defn update-db-message-status
   [{:keys [db] :as cofx} chat-id message-id status]
   (fx/merge cofx
             {:db (assoc-in db
                            [:messages chat-id message-id :outgoing-status]
-                           status)}
+                           status)}))
+
+(fx/defn update-message-status
+  [{:keys [db] :as cofx} chat-id message-id status]
+  (fx/merge cofx
+            (update-db-message-status chat-id message-id status)
             (data-store.messages/update-outgoing-status message-id status)))
 
 (fx/defn resend-message

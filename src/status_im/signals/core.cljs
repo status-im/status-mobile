@@ -7,6 +7,7 @@
             [status-im.transport.filters.core :as transport.filters]
             [status-im.transport.message.core :as transport.message]
             [status-im.notifications.local :as local-notifications]
+            [status-im.chat.models.message :as models.message]
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]))
 
@@ -54,6 +55,8 @@
       "node.login"         (status-node-started cofx (js->clj event-js :keywordize-keys true))
       "envelope.sent"      (transport.message/update-envelopes-status cofx (:ids (js->clj event-js :keywordize-keys true)) :sent)
       "envelope.expired"   (transport.message/update-envelopes-status cofx (:ids (js->clj event-js :keywordize-keys true)) :not-sent)
+      "message.delivered"  (let [{:keys [chatID messageID] :as event-cljs} (js->clj event-js :keywordize-keys true)]
+                             (models.message/update-db-message-status cofx chatID messageID :delivered))
       "mailserver.request.completed" (mailserver/handle-request-completed cofx (js->clj event-js :keywordize-keys true))
       "mailserver.request.expired"   (when (multiaccounts.model/logged-in? cofx)
                                        (mailserver/resend-request cofx {:request-id (.-hash event-js)}))

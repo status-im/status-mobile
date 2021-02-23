@@ -43,13 +43,15 @@
                   :align-items                      :flex-end})
     (when (and outgoing justify-timestamp?)
       [icons/icon (case outgoing-status
-                    :sending  :tiny-icons/tiny-pending
-                    :sent     :tiny-icons/tiny-sent
-                    :not-sent :tiny-icons/tiny-warning
+                    :sending   :tiny-icons/tiny-pending
+                    :sent      :tiny-icons/tiny-sent
+                    :not-sent  :tiny-icons/tiny-warning
+                    :delivered :tiny-icons/tiny-delivered
                     :tiny-icons/tiny-pending)
-       {:width  16
-        :height 12
-        :color  colors/white}])
+       {:width               16
+        :height              12
+        :color               colors/white
+        :accessibility-label (name outgoing-status)}])
     [react/text {:style (style/message-timestamp-text outgoing)}
      timestamp-str]]))
 
