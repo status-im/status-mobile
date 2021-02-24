@@ -365,7 +365,7 @@
                   (get content :parsed-text)))
      :label    (i18n/label :t/sharing-copy-to-clipboard)}]))
 
-(defn message-anim [scale-value scale-anim-value translate-value translate-x-anim-value translate-y-anim-value opacity-anim-value]
+(defn message-anim [scale-value scale-anim-value opacity-anim-value]
   (fn []
     (animation/start
      (animation/parallel
@@ -375,15 +375,7 @@
        (animation/timing scale-anim-value {:toValue         scale-value
                                            :easing          (.bezier ^js animation/easing 0.165, 0.84, 0.44, 1)
                                            :duration        400
-                                           :useNativeDriver true})
-       (animation/timing translate-y-anim-value {:toValue         translate-value
-                                                 :easing          (.bezier ^js animation/easing 0.165, 0.84, 0.44, 1)
-                                                 :duration        400
-                                                 :useNativeDriver true})
-       (animation/timing translate-x-anim-value {:toValue         translate-value
-                                                 :easing          (.bezier ^js animation/easing 0.165, 0.84, 0.44, 1)
-                                                 :duration        400
-                                                 :useNativeDriver true})]))))
+                                           :useNativeDriver true})]))))
 
 (defn collapsible-text-message [_ _]
   (let [collapsed?   (reagent/atom false)
@@ -532,17 +524,23 @@
    [unknown-content-type message]])
 
 (defview chat-message [message space-keeper]
-  (letsubs [scale-anim-value (animation/create-value 0.25)
-            translate-x-anim-value (animation/create-value 120)
-            translate-y-anim-value (animation/create-value 50)
+  (letsubs [window-width [:dimensions/window-width]
+            window-height [:dimensions/window-height]
+            scale-anim-value (animation/create-value 0.25)
             opacity-anim-value     (animation/create-value 0)]
-    {:component-did-mount (message-anim 1 scale-anim-value 0 translate-x-anim-value translate-y-anim-value opacity-anim-value)}
+    {:component-did-mount (message-anim 1 scale-anim-value opacity-anim-value)}
     (let [seconds-ago (datetime/seconds-ago (datetime/to-date (:timestamp message)))]
       [react/animated-view {:style (when (and (:outgoing message)
                                               (= seconds-ago 0))
                                      {:transform [{:scale scale-anim-value}
-                                                  {:translateX translate-x-anim-value}
-                                                  {:translateY translate-y-anim-value}]
+                                                  {:translateX (animation/interpolate
+                                                                scale-anim-value
+                                                                {:inputRange  [0.25 1]
+                                                                 :outputRange [(* window-width 0.32) 0]})}
+                                                  {:translateY (animation/interpolate
+                                                                scale-anim-value
+                                                                {:inputRange  [0.25 1]
+                                                                 :outputRange [(* window-height 0.0615) 0]})}]
                                       :opacity opacity-anim-value})}
        [reactions/with-reaction-picker
         {:message         message
