@@ -23,15 +23,17 @@ function append_env_export() {
 }
 
 config=''
-if [ -n "${STATUS_GO_SRC_OVERRIDE}" ]; then
+if [[ -n "${STATUS_GO_SRC_OVERRIDE}" ]]; then
   config+="status-im.status-go.src-override=\"${STATUS_GO_SRC_OVERRIDE}\";"
 fi
-if [ -n "${NIMBUS_SRC_OVERRIDE}" ]; then
+if [[ -n "${NIMBUS_SRC_OVERRIDE}" ]]; then
   config+="status-im.nimbus.src-override=\"${NIMBUS_SRC_OVERRIDE}\";"
+fi
+if [[ "${ANDROID_APK_SIGNED}" == "true" ]]; then
+  config+="status-im.android.keystore-path=\"$(must_get_env KEYSTORE_PATH)\";"
 fi
 config+="status-im.build-type=\"$(must_get_env BUILD_TYPE)\";"
 config+="status-im.build-number=\"$(must_get_env BUILD_NUMBER)\";"
-config+="status-im.android.keystore-path=\"$(must_get_env KEYSTORE_PATH)\";"
 config+="status-im.android.apk-signed=\"$(must_get_env ANDROID_APK_SIGNED)\";"
 config+="status-im.android.abi-split=\"$(must_get_env ANDROID_ABI_SPLIT)\";"
 config+="status-im.android.abi-include=\"$(must_get_env ANDROID_ABI_INCLUDE)\";"

@@ -156,12 +156,15 @@ keystore: export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 keystore: ##@prepare Generate a Keystore for signing Android APKs
 	@./scripts/generate-keystore.sh
 
+fdroid-nix-dir: ##@prepare Create /nix directory for F-Droid Vagrant builders
+	mkdir -m 0755 /nix
+	chown vagrant /nix
+
 #----------------
 # Release builds
 #----------------
-release: release-android release-ios ##@build build release for Android and iOS
+release: release-android release-ios ##@build Build release for Android and iOS
 
-release-android: export TARGET := default
 release-android: export BUILD_ENV ?= prod
 release-android: export BUILD_TYPE ?= nightly
 release-android: export BUILD_NUMBER ?= $(TMP_BUILD_NUMBER)
@@ -169,12 +172,20 @@ release-android: export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 release-android: export ANDROID_APK_SIGNED ?= true
 release-android: export ANDROID_ABI_SPLIT ?= false
 release-android: export ANDROID_ABI_INCLUDE ?= armeabi-v7a;arm64-v8a;x86
-release-android: keystore ##@build build release for Android
+release-android: keystore ##@build Build release for Android
+	scripts/release-android.sh
+
+release-fdroid: export BUILD_ENV ?= prod
+release-fdroid: export BUILD_TYPE = release
+release-fdroid: export ANDROID_APK_SIGNED = false
+release-fdroid: export ANDROID_ABI_SPLIT = false
+release-fdroid: export ANDROID_ABI_INCLUDE = armeabi-v7a;arm64-v8a;x86;x86_64
+release-fdroid: ##@build Build release for F-Droid
 	scripts/release-android.sh
 
 release-ios: export TARGET := ios
 release-ios: export BUILD_ENV ?= prod
-release-ios: watchman-clean ##@build build release for iOS release
+release-ios: watchman-clean ##@build Build release for iOS release
 	@git clean -dxf -f target/ios && \
 	$(MAKE) jsbundle-ios && \
 	xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration Release -destination 'generic/platform=iOS' -UseModernBuildSystem=N clean archive
