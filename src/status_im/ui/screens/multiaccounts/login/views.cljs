@@ -48,7 +48,8 @@
             keycard?                 [:keycard-multiaccount?]]
     [react/keyboard-avoiding-view {:style ast/multiaccounts-view}
      [topbar/topbar {:border-bottom     false
-                     :right-accessories [{:icon     :more
+                     :right-accessories [{:icon                :more
+                                          :accessibility-label "sign-in-options"
                                           :on-press #(do
                                                        (react/dismiss-keyboard!)
                                                        (re-frame/dispatch [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]))}]}]

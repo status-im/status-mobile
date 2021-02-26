@@ -35,6 +35,96 @@ class TestCreateAccount(SingleDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(6645)
+    @marks.critical
+    def test_restore_account_migrate_multiaccount_to_keycard(self):
+        sign_in = SignInView(self.driver)
+        seed = basic_user['passphrase']
+        home = sign_in.recover_access(passphrase=seed)
+        profile = home.profile_button.click()
+        profile.logout()
+
+        home.just_fyi("Checking keycard banner and starting migrate multiaccount to keycard")
+        sign_in.multi_account_on_login_button.wait_for_visibility_of_element(30)
+        sign_in.get_multiaccount_by_position(1).click()
+        if not sign_in.get_keycard_banner.is_element_displayed():
+            self.errors.append("Get a keycard banner is not shown on login screen for ordinary multiaccount")
+        sign_in.options_button.click()
+        sign_in.manage_keys_and_storage_button.click()
+        if not sign_in.element_by_text(basic_user['username']).is_element_displayed():
+            self.driver.fail("Default username is not shown when migrating multiaccount to keycard!")
+
+        home.just_fyi("Checking validation of seed phrase during migration")
+        sign_in.enter_seed_phrase_next_button.click()
+        if sign_in.seedphrase_input.is_element_displayed():
+            self.driver.fail("Proceeded to seedphrase input without confirmed Actions")
+        sign_in.move_keystore_file_option.click()
+        sign_in.enter_seed_phrase_next_button.click()
+        sign_in.seedphrase_input.set_value(transaction_senders['A']['passphrase'])
+        sign_in.choose_storage_button.click()
+        if not sign_in.element_by_translation_id("seed-key-uid-mismatch").is_element_displayed():
+            self.driver.fail("Can proceed with seed phrase of another user")
+        sign_in.element_by_translation_id("try-again").click()
+        sign_in.seedphrase_input.set_value(seed[:-1])
+        sign_in.choose_storage_button.click()
+        if not sign_in.custom_seed_phrase_label.is_element_displayed():
+            self.driver.fail("Can proceed with invalid seed phrase")
+        sign_in.cancel_button.click()
+        sign_in.seedphrase_input.set_value(seed)
+        sign_in.choose_storage_button.click()
+        if not sign_in.get_keycard_banner.is_element_displayed():
+            self.errors.append("Get a keycard banner is not shown on Key management screen")
+        sign_in.keycard_required_option.click()
+        if sign_in.get_keycard_banner.is_element_displayed():
+            self.errors.append("Get a keycard banner is shown when keycard storage is chosen")
+
+        home.just_fyi("Finishing migration to keycard")
+        sign_in.confirm_button.click()
+        keycard = sign_in.move_and_reset_button.click()
+        keycard.begin_setup_button.click()
+        keycard.connect_card_button.click()
+        keycard.enter_default_pin()
+        keycard.enter_default_pin()
+        keycard.next_button.scroll_to_element()
+        keycard.next_button.wait_for_visibility_of_element(20)
+        keycard.next_button.click()
+        keycard.yes_button.click()
+        sign_in.maybe_later_button.wait_and_click(30)
+        sign_in.lets_go_button.wait_and_click(30)
+
+        sign_in.just_fyi('Check that after migrating account with assets is restored')
+        wallet_view = sign_in.wallet_button.click()
+        wallet_view.set_up_wallet()
+        for asset in ['ETH', 'ADI', 'STT']:
+            if wallet_view.get_asset_amount_by_name(asset) == 0:
+                self.errors.append('Asset %s was not restored' % asset)
+
+        sign_in.just_fyi('Check that after migration wallet address matches expected')
+        address = wallet_view.get_wallet_address()
+        if address != '0x%s' % basic_user['address']:
+            self.errors.append('Restored address %s does not match expected' % address)
+
+        sign_in.just_fyi('Check that after migration username and public key match expected')
+        public_key, default_username = sign_in.get_public_key_and_username(return_username=True)
+        profile = sign_in.get_profile_view()
+        if public_key != basic_user['public_key']:
+            self.errors.append('Public key %s does not match expected' % public_key)
+        if default_username != basic_user['username']:
+            self.errors.append('Default username %s does not match expected' % default_username)
+        profile.logout()
+
+        sign_in.just_fyi('Check that can login with migrated account, keycard banner is not shown and no option to migrate')
+        sign_in.get_multiaccount_by_position(1).click()
+        if sign_in.get_keycard_banner.is_element_displayed():
+            self.errors.append("Get a keycard banner is shown on migrated keycard multiaccount")
+        keycard.one_button.wait_for_visibility_of_element(10)
+        keycard.connect_selected_card_button.click()
+        keycard.enter_default_pin()
+        if not sign_in.home_button.is_element_displayed(10):
+            self.driver.fail('Keycard user is not logged in')
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(6240)
     @marks.critical
     def test_restore_account_from_mnemonic_to_keycard(self):

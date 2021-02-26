@@ -55,7 +55,7 @@
         [quo/list-item
          {:theme               :accent
           :title               (i18n/label :t/manage-keys-and-storage)
-          :accessibility-label :enter-seed-phrase-button
+          :accessibility-label :manage-keys-and-storage-button
           :icon                :main-icons/key
           :on-press            #(hide-sheet-and-dispatch [::multiaccounts.key-storage/key-and-storage-management-pressed])}])
 

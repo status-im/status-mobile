@@ -170,6 +170,17 @@ class ChatElementByText(Text):
         return element.is_element_displayed(wait_time)
 
     @property
+    def status(self) -> str:
+        sent = Text(self.driver, prefix=self.locator, xpath="//*[@content-desc='sent']")
+        delivered = Text(self.driver, prefix=self.locator, xpath="//*[@content-desc='delivered']")
+        status = ''
+        if sent.is_element_displayed(10, ignored_exceptions=NoSuchElementException):
+            status = 'sent'
+        if delivered.is_element_displayed(20, ignored_exceptions=NoSuchElementException):
+            status = 'delivered'
+        return status
+
+    @property
     def replied_message_text(self):
         class RepliedMessageText(Text):
             def __init__(self, driver, parent_locator: str):

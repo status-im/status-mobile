@@ -21,10 +21,17 @@ class MultiAccountOnLoginButton(Button):
         super(MultiAccountOnLoginButton, self).__init__(driver,
                                                         xpath="(//*[@content-desc='chat-icon'])[%s]/.." % position)
 
+class MoveAndResetButton(Button):
+    def __init__(self, driver):
+        super().__init__(driver, accessibility_id="move-and-reset-button")
+
+    def navigate(self):
+        from views.keycard_view import KeycardView
+        return KeycardView(self.driver)
 
 class BeginRecoveryButton(Button):
     def __init__(self, driver):
-        super(BeginRecoveryButton, self).__init__(driver, translation_id="keycard-recovery-intro-button-text")
+        super().__init__(driver, translation_id="keycard-recovery-intro-button-text")
 
     def navigate(self):
         from views.keycard_view import KeycardView
@@ -37,7 +44,7 @@ class BeginRecoveryButton(Button):
 
 class SignInButton(Button):
     def __init__(self, driver):
-        super(SignInButton, self).__init__(driver, translation_id="sign-in")
+        super().__init__(driver, translation_id="sign-in")
 
     def navigate(self):
         from views.home_view import HomeView
@@ -46,7 +53,7 @@ class SignInButton(Button):
 
 class AccessKeyButton(Button):
     def __init__(self, driver):
-        super(AccessKeyButton, self).__init__(driver, translation_id="access-existing-keys")
+        super().__init__(driver, translation_id="access-existing-keys")
 
     def click(self):
         self.scroll_to_element().click()
@@ -55,7 +62,7 @@ class AccessKeyButton(Button):
 
 class KeycardKeyStorageButton(Button):
     def __init__(self, driver):
-        super(KeycardKeyStorageButton, self).__init__(driver, accessibility_id="select-storage-:advanced")
+        super().__init__(driver, accessibility_id="select-storage-:advanced")
 
     def navigate(self):
         from views.keycard_view import KeycardView
@@ -87,15 +94,12 @@ class PrivacyPolicyLink(Button):
 
 class SignInView(BaseView):
 
-    def __init__(self, driver, skip_popups=True):
-        super(SignInView, self).__init__(driver)
+    def __init__(self, driver):
+        super().__init__(driver)
         self.driver = driver
-        # if skip_popups:
-        #      self.accept_agreements()
 
         self.password_input = EditBox(self.driver, accessibility_id="password-input")
         self.sign_in_button = SignInButton(self.driver)
-        self.multi_account_on_login_button = MultiAccountOnLoginButton(self.driver)
         self.access_key_button = AccessKeyButton(self.driver)
         self.generate_key_button = Button(self.driver, translation_id="generate-new-key")
         self.your_keys_more_icon = Button(self.driver, accessibility_id="your-keys-more-icon")
@@ -111,6 +115,7 @@ class SignInView(BaseView):
         self.keycard_storage_button = KeycardKeyStorageButton(self.driver)
         self.first_username_on_choose_chat_name = Text(self.driver,
                                                        xpath="//*[@content-desc='select-account-button-0']//android.widget.TextView[1]")
+        self.get_keycard_banner = Button(self.driver, translation_id="get-a-keycard")
 
         #keycard recovery
         self.recover_with_keycard_button = Button(self.driver, accessibility_id="recover-with-keycard-button")
@@ -121,6 +126,19 @@ class SignInView(BaseView):
         self.seedphrase_input = EditBox(self.driver, xpath="//android.widget.EditText")
         self.enter_seed_phrase_button = Button(self.driver, accessibility_id="enter-seed-phrase-button")
         self.reencrypt_your_key_button = Button(self.driver, translation_id="re-encrypt-key")
+
+        # migrate multiaccount
+        self.options_button = Button(self.driver, accessibility_id="sign-in-options")
+        self.manage_keys_and_storage_button = Button(self.driver, accessibility_id="manage-keys-and-storage-button")
+        self.multi_account_on_login_button = MultiAccountOnLoginButton(self.driver)
+        self.move_keystore_file_option =  Button(self.driver, accessibility_id="move-keystore-file")
+        self.move_and_reset_button = MoveAndResetButton(self.driver)
+        self.choose_storage_button = Button(self.driver, translation_id="choose-storage")
+        self.enter_seed_phrase_next_button = Button(self.driver, translation_id="enter-seed-phrase")
+        self.keycard_required_option = Button(self.driver, translation_id="empty-keycard-required")
+
+        # errors
+        self.custom_seed_phrase_label = Text(self.driver, translation_id="custom-seed-phrase")
         self.continue_custom_seed_phrase_button = Button(self.driver, accessibility_id="continue-custom-seed-phrase")
         self.cancel_custom_seed_phrase_button = Button(self.driver, accessibility_id="cancel-custom-seed-phrase")
 

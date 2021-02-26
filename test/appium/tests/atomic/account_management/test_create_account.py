@@ -201,7 +201,7 @@ class TestCreateAccount(SingleDeviceTestCase):
             sign_in.just_fyi('check behavior for popup "Custom seed phrase"')
             if popup:
 
-                if not sign_in.element_by_translation_id("custom-seed-phrase").is_element_displayed():
+                if not sign_in.custom_seed_phrase_label.is_element_displayed():
                     self.errors.append("Popup about custom seed phrase is not shown")
                 sign_in.cancel_custom_seed_phrase_button.click()
 

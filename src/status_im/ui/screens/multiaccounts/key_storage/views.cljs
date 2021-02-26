@@ -67,12 +67,13 @@
                   :justify-content :space-between}
       [react/view
        [quo/list-header (i18n/label :t/actions)]
-       [quo/list-item {:title              (i18n/label :t/move-keystore-file)
-                       :subtitle           (i18n/label :t/select-new-location-for-keys)
-                       :subtitle-max-lines 4
-                       :accessory          :checkbox
-                       :active             move-keystore-checked?
-                       :on-press           #(re-frame/dispatch [::multiaccounts.key-storage/move-keystore-checked (not move-keystore-checked?)])}]
+       [quo/list-item {:title               (i18n/label :t/move-keystore-file)
+                       :subtitle            (i18n/label :t/select-new-location-for-keys)
+                       :subtitle-max-lines  4
+                       :accessibility-label :move-keystore-file
+                       :accessory           :checkbox
+                       :active              move-keystore-checked?
+                       :on-press            #(re-frame/dispatch [::multiaccounts.key-storage/move-keystore-checked (not move-keystore-checked?)])}]
        [quo/list-item {:title              (i18n/label :t/reset-database)
                        :subtitle           (i18n/label :t/reset-database-warning)
                        :subtitle-max-lines 4
@@ -216,7 +217,6 @@
      [react/view {:margin-vertical 24
                   :align-items     :center}
       [quo/button {:on-press            #(re-frame/dispatch [:hide-popover])
-                   :accessibility-label :cancel-custom-seed-phrase
                    :type                :secondary}
        (i18n/label :t/try-again)]]]))
 
@@ -238,12 +238,12 @@
    [react/view {:margin-vertical 24
                 :align-items     :center}
     [quo/button {:on-press            #(re-frame/dispatch [::multiaccounts.key-storage/delete-multiaccount-and-init-keycard-onboarding])
-                 :accessibility-label :cancel-custom-seed-phrase
+                 :accessibility-label :move-and-reset-button
                  :type                :primary
                  :theme               :negative}
      (i18n/label :t/move-and-reset)]
     [quo/button {:on-press            #(re-frame/dispatch [:hide-popover])
-                 :accessibility-label :cancel-custom-seed-phrase
+                 :accessibility-label :cancel-move-seed-phrase-button
                  :type                :secondary}
      (i18n/label :t/cancel)]]])
 

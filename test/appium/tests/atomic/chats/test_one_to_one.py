@@ -73,7 +73,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5310)
     @marks.critical
-    def test_offline_is_shown_messaging_1_1_chat(self):
+    def test_offline_is_shown_messaging_1_1_chat_sent_delivered(self):
         self.create_drivers(2)
         home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
         public_key_1 = home_1.get_public_key_and_username()
@@ -92,7 +92,11 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         profile_2.get_back_to_home_view()
         chat_2 = home_2.add_contact(public_key_1)
         message_1 = 'test message'
+
+        home_2.just_fyi("check sent status")
         chat_2.send_message(message_1)
+        if chat_2.chat_element_by_text(message_1).status != 'sent':
+            self.errors.append('Message status is not sent, it is %s!' % chat_2.chat_element_by_text(message_1).status)
         chat_2.toggle_airplane_mode()
 
         home_1.just_fyi('go back online and check that 1-1 chat will be fetched')
@@ -102,14 +106,17 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_1).wait_for_visibility_of_element(2)
 
-        home_1.just_fyi('checking offline fetching for another message')
+        home_1.just_fyi('checking offline fetching for another message, check delivered stutus for first message')
         chat_2.toggle_airplane_mode()
+        if chat_2.chat_element_by_text(message_1).status != 'delivered':
+            self.errors.append('Message status is not delivered, it is %s!' % chat_2.chat_element_by_text(message_1).status)
         home_1.toggle_airplane_mode()
         message_2 = 'one more message'
         chat_2.send_message(message_2)
         home_1.toggle_airplane_mode()
         chat_1 = chat_element.click()
         chat_1.chat_element_by_text(message_2).wait_for_visibility_of_element(180)
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5315)
     @marks.high

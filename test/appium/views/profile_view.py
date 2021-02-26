@@ -17,7 +17,7 @@ class AddNewContactButton(Button):
         return ChatView(self.driver)
 
 
-class LogoutButton(Button):
+class LogoutButton(SilentButton):
     def __init__(self, driver):
         super().__init__(driver, accessibility_id="log-out-button")
 
@@ -31,7 +31,7 @@ class LogoutDialog(BaseView):
         super().__init__(driver)
         self.logout_button = LogoutDialog.LogoutButton(driver)
 
-    class LogoutButton(Button):
+    class LogoutButton(SilentButton):
         def __init__(self, driver):
             super().__init__(driver, translation_id="logout", uppercase=True)
 
