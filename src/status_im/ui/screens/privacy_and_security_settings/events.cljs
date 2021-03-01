@@ -65,3 +65,8 @@
   [{:keys [db]} error]
   (log/info "[delete-profile] on-failure" error)
   {:db (assoc db :delete-profile/error error)})
+
+(fx/defn keep-keys-on-keycard
+  {:events [::keep-keys-on-keycard]}
+  [{:keys [db] :as cofx} checked?]
+  {:db (assoc-in db [:delete-profile/keep-keys-on-keycard?] checked?)})

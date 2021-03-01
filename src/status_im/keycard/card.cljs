@@ -321,19 +321,19 @@
 
 (defn unpair-and-delete [args]
   (log/debug "[keycard] unpair-and-delete")
-  (keycard/unpair-and-delete
+  (keycard/unpair
    card
    (merge
     args
     {:on-success
      (fn [response]
        (log/debug "[keycard response succ] unpair-and-delete")
-       (re-frame/dispatch [:keycard.callback/on-delete-success
+       (re-frame/dispatch [:keycard.callback/on-unpair-and-delete-success
                            response]))
      :on-failure
      (fn [response]
        (log/debug "[keycard response fail] unpair-and-delete")
-       (re-frame/dispatch [:keycard.callback/on-delete-error
+       (re-frame/dispatch [:keycard.callback/on-unpair-and-delete-error
                            (error-object->map response)]))})))
 
 (defn import-keys [{:keys [on-success] :as args}]

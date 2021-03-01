@@ -16,8 +16,7 @@
 (views/defview privacy-and-security []
   (views/letsubs [{:keys [mnemonic preview-privacy? webview-allow-permission-requests?]} [:multiaccount]
                   supported-biometric-auth [:supported-biometric-auth]
-                  auth-method              [:auth-method]
-                  keycard?                 [:keycard-multiaccount?]]
+                  auth-method              [:auth-method]]
     [react/view {:flex 1 :background-color colors/white}
      [topbar/topbar {:title (i18n/label :t/privacy-and-security)}]
      [react/scroll-view {:padding-vertical 8}
@@ -78,14 +77,11 @@
                         :on-press                #(re-frame/dispatch
                                                    [:multiaccounts.ui/webview-permission-requests-switched
                                                     ((complement boolean) webview-allow-permission-requests?)])}])
-      ;; TODO(rasom): remove this condition when kk support will be added
-      (when-not keycard?
-        [separator])
-      (when-not keycard?
-        [quo/list-item
-         {:size                :small
-          :theme               :negative
-          :title               (i18n/label :t/delete-my-profile)
-          :on-press            #(re-frame/dispatch [:navigate-to :delete-profile])
-          :accessibility-label :dapps-permissions-button
-          :chevron             true}])]]))
+      [separator]
+      [quo/list-item
+       {:size                :small
+        :theme               :negative
+        :title               (i18n/label :t/delete-my-profile)
+        :on-press            #(re-frame/dispatch [:navigate-to :delete-profile])
+        :accessibility-label :dapps-permissions-button
+        :chevron             true}]]]))

@@ -4,6 +4,7 @@
             [status-im.keycard.common :as common]
             status-im.keycard.delete-key
             status-im.keycard.export-key
+            status-im.keycard.unpair
             [status-im.keycard.login :as login]
             [status-im.keycard.mnemonic :as mnemonic]
             [status-im.keycard.onboarding :as onboarding]
@@ -192,7 +193,9 @@
               ;; now for simplicity do not hide bottom sheet when generating key
               ;; and exporting key but should be refactored.
               (when-not (contains? #{:keycard/generate-and-load-key
-                                     :wallet.accounts/generate-new-keycard-account} on-verified)
+                                     :wallet.accounts/generate-new-keycard-account
+                                     :keycard/remove-key-with-unpair
+                                     :keycard/unpair-and-delete} on-verified)
                 (common/hide-connection-sheet))
               (when-not (contains? #{:keycard/unpair
                                      :keycard/generate-and-load-key

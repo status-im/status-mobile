@@ -204,6 +204,7 @@
 
 ;; delete profile
 (reg-root-key-sub :delete-profile/error :delete-profile/error)
+(reg-root-key-sub :delete-profile/keep-keys-on-keycard? :delete-profile/keep-keys-on-keycard?)
 
 ;; push notifications
 (reg-root-key-sub :push-notifications/servers :push-notifications/servers)
