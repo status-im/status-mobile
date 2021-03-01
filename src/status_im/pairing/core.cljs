@@ -180,7 +180,7 @@
  :pairing/get-our-installations
  get-our-installations)
 
-(defn send-installation-messages
+(fx/defn send-installation-messages
   {:events [:pairing.ui/synchronize-installation-pressed]}
   [{:keys [db]}]
   (let [multiaccount                             (:multiaccount db)
