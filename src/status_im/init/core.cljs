@@ -12,10 +12,11 @@
 (fx/defn initialize-app-db
   "Initialize db to initial state"
   [{{:keys [keycard supported-biometric-auth app-active-since]
-     :network/keys [type]} :db
+     :network/keys [type] :keycard/keys [banner-hidden]} :db
     now :now}]
   {:db (assoc app-db
               :network/type type
+              :keycard/banner-hidden banner-hidden
               :keycard (dissoc keycard :secrets)
               :supported-biometric-auth supported-biometric-auth
               :app-active-since (or app-active-since now)
@@ -60,7 +61,9 @@
   (fx/merge cofx
             {:get-supported-biometric-auth          nil
              ::init-theme                           nil
-             ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts % {:logout? false}])
+             ::open-multiaccounts                   #(do
+                                                       (re-frame/dispatch [::initialize-multiaccounts % {:logout? false}])
+                                                       (re-frame/dispatch [:get-keycard-banner-preference]))
              :ui/listen-to-window-dimensions-change nil
              ::network/listen-to-network-info       nil
              :keycard/register-card-events          nil
