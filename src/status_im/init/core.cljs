@@ -60,9 +60,7 @@
   (fx/merge cofx
             {:get-supported-biometric-auth          nil
              ::init-theme                           nil
-             ::open-multiaccounts                   #(do
-                                                       (re-frame/dispatch [::initialize-multiaccounts % {:logout? false}])
-                                                       (re-frame/dispatch [:get-keycard-banner-preference]))
+             ::open-multiaccounts                   #(re-frame/dispatch [::initialize-multiaccounts % {:logout? false}])
              :ui/listen-to-window-dimensions-change nil
              ::network/listen-to-network-info       nil
              :keycard/register-card-events          nil

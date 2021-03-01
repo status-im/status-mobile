@@ -30,8 +30,7 @@
             [status-im.acquisition.core :as acquisition]
             [taoensso.timbre :as log]
             [status-im.data-store.invitations :as data-store.invitations]
-            [status-im.chat.models.link-preview :as link-preview]
-            [status-im.async-storage.core :as async-storage]))
+            [status-im.chat.models.link-preview :as link-preview]))
 
 (re-frame/reg-fx
  ::login
@@ -494,20 +493,3 @@
               (dissoc :intro-wizard)
               (update :keycard dissoc :application-info))}
      (open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])))))
-
-(fx/defn hide-keycard-banner
-  {:events [:hide-keycard-banner]}
-  [{:keys [db]}]
-  {:db                  (assoc db :keycard/banner-hidden true)
-   ::async-storage/set! {:keycard-banner-hidden true}})
-
-(fx/defn get-keycard-banner-preference-cb
-  {:events [:get-keycard-banner-preference-cb]}
-  [{:keys [db]} {:keys [keycard-banner-hidden]}]
-  {:db (assoc db :keycard/banner-hidden keycard-banner-hidden)})
-
-(fx/defn get-keycard-banner-preference
-  {:events [:get-keycard-banner-preference]}
-  [_]
-  {::async-storage/get {:keys [:keycard-banner-hidden]
-                        :cb   #(re-frame/dispatch [:get-keycard-banner-preference-cb %])}})

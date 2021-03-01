@@ -45,8 +45,7 @@
             auth-method [:auth-method]
             view-id [:view-id]
             supported-biometric-auth [:supported-biometric-auth]
-            keycard?                 [:keycard-multiaccount?]
-            banner-hidden [:keycard/banner-hidden]]
+            keycard?                 [:keycard-multiaccount?]]
     [react/keyboard-avoiding-view {:style ast/multiaccounts-view}
      [topbar/topbar {:border-bottom     false
                      :right-accessories [{:icon                :more
@@ -99,7 +98,7 @@
        [react/view styles/processing-view
         [react/activity-indicator {:animating true}]
         [react/i18n-text {:style styles/processing :key :processing}]]
-       (when-not (or keycard? banner-hidden)
+       (when-not keycard?
          [key-storage/keycard-upsell-banner]))
 
      [toolbar/toolbar

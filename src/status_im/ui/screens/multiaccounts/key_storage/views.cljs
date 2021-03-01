@@ -139,28 +139,25 @@
                                            :height 16}]]])
 
 (defn keycard-upsell-banner []
-  [react/view {:background-color (if (= :dark @colors/theme) "#2C5955" "#DDF8F4")
-               :border-radius 16 :padding-left 12 :padding-right 50 :margin 16}
-   [react/touchable-highlight {:on-press #(.openURL ^js react/linking "https://get-keycard.status.im/")}
-    [react/view {:padding-vertical 8
-                 :flex-direction :row}
+  [react/touchable-highlight {:on-press #(.openURL ^js react/linking "https://get-keycard.status.im/")}
+   [react/view {:background-color (if (= :dark @colors/theme) "#2C5955" "#DDF8F4")
+                :border-radius 16
+                :margin 16
+                :padding-horizontal 12
+                :padding-vertical 8
+                :flex-direction :row}
+    [react/view
      [react/image {:source (resources/get-theme-image :keycard)
                    :resize-mode :contain
                    :style {:width 48
-                           :height 48}}]
-     [react/view {:flex 1
-                  :margin-left 12}
-      [react/text {:style {:font-size 20
-                           :font-weight "700"}}
-       (i18n/label :t/get-a-keycard)]
-      [react/text {:style {:color (colors/alpha colors/text 0.8)}}
-       (i18n/label :t/keycard-upsell-subtitle)]]]]
-   [react/touchable-highlight
-    {:style               {:position :absolute :right 0  :top 0
-                           :align-items :center :justify-content :center :margin 2}
-     :on-press            #(re-frame/dispatch [:hide-keycard-banner])
-     :accessibility-label :hide-home-button}
-    [icons/icon :main-icons/close-circle {:color colors/gray}]]])
+                           :height 48}}]]
+    [react/view {:flex 1
+                 :margin-left 12}
+     [react/text {:style {:font-size 20
+                          :font-weight "700"}}
+      (i18n/label :t/get-a-keycard)]
+     [react/text {:style {:color (colors/alpha colors/text 0.8)}}
+      (i18n/label :t/keycard-upsell-subtitle)]]]])
 
 (defview storage []
   (letsubs
