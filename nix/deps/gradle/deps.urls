@@ -268,8 +268,6 @@ https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-iid
 https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-stats/17.0.0/play-services-stats-17.0.0.pom
 https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-tasks/17.0.0/play-services-tasks-17.0.0.pom
 https://dl.google.com/dl/android/maven2/com/google/android/material/material/1.1.0/material-1.1.0.pom
-https://repository.sonatype.org/content/groups/sonatype-public-grid/com/afollestad/material-dialogs/commons/0.9.6.0/commons-0.9.6.0.pom
-https://repository.sonatype.org/content/groups/sonatype-public-grid/com/afollestad/material-dialogs/core/0.9.6.0/core-0.9.6.0.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/facebook/fbjni/fbjni-java-only/0.0.3/fbjni-java-only-0.0.3.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/facebook/flipper/flipper-fresco-plugin/0.54.0/flipper-fresco-plugin-0.54.0.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/facebook/flipper/flipper/0.54.0/flipper-0.54.0.pom
@@ -288,6 +286,7 @@ https://repository.sonatype.org/content/groups/sonatype-public-grid/com/github/s
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/github/status-im/status-keycard-java/lib/3.0.4/lib-3.0.4.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/github/yalantis/ucrop/2.2.5-native/ucrop-2.2.5-native.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/org/jetbrains/trove4j/trove4j/20160824/trove4j-20160824.pom
+https://repo.maven.apache.org/maven2/antlr/antlr/2.7.7/antlr-2.7.7.pom
 https://repo.maven.apache.org/maven2/commons-cli/commons-cli/1.2/commons-cli-1.2.pom
 https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.4/commons-codec-1.4.pom
 https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.6/commons-codec-1.6.pom
@@ -298,6 +297,8 @@ https://repo.maven.apache.org/maven2/commons-io/commons-io/2.4/commons-io-2.4.po
 https://repo.maven.apache.org/maven2/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.pom
 https://repo.maven.apache.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.pom
 https://repo.maven.apache.org/maven2/com/adobe/xmp/xmpcore/5.1.2/xmpcore-5.1.2.pom
+https://repo.maven.apache.org/maven2/com/afollestad/material-dialogs/commons/0.9.6.0/commons-0.9.6.0.pom
+https://repo.maven.apache.org/maven2/com/afollestad/material-dialogs/core/0.9.6.0/core-0.9.6.0.pom
 https://repo.maven.apache.org/maven2/com/android/databinding/baseLibrary/1.0-rc5/baseLibrary-1.0-rc5.pom
 https://repo.maven.apache.org/maven2/com/android/databinding/compilerCommon/1.0-rc5/compilerCommon-1.0-rc5.pom
 https://repo.maven.apache.org/maven2/com/android/tools/annotations/24.1.3/annotations-24.1.3.pom
@@ -432,6 +433,7 @@ https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/1.1/j2
 https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/1.3/j2objc-annotations-1.3.pom
 https://repo.maven.apache.org/maven2/com/google/jimfs/jimfs-parent/1.1/jimfs-parent-1.1.pom
 https://repo.maven.apache.org/maven2/com/google/jimfs/jimfs/1.1/jimfs-1.1.pom
+https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-bom/4.0.0-rc-2/protobuf-bom-4.0.0-rc-2.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java-util/3.4.0/protobuf-java-util-3.4.0.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.0.0/protobuf-java-3.0.0.pom
 https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-java/3.4.0/protobuf-java-3.4.0.pom
@@ -496,11 +498,11 @@ https://repo.maven.apache.org/maven2/javax/xml/bind/jaxb-api/2.2.12-b140109.1041
 https://repo.maven.apache.org/maven2/javax/xml/bind/jaxb-api/2.4.0-b180830.0359/jaxb-api-2.4.0-b180830.0359.pom
 https://repo.maven.apache.org/maven2/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2.pom
 https://repo.maven.apache.org/maven2/junit/junit/4.12/junit-4.12.pom
-https://repo.maven.apache.org/maven2/junit/junit/4.13.1/junit-4.13.1.pom
+https://repo.maven.apache.org/maven2/junit/junit/4.13.2/junit-4.13.2.pom
 https://repo.maven.apache.org/maven2/me/zhanghai/android/materialprogressbar/library/1.4.2/library-1.4.2.pom
-https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy-agent/1.10.5/byte-buddy-agent-1.10.5.pom
-https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy-parent/1.10.5/byte-buddy-parent-1.10.5.pom
-https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy/1.10.5/byte-buddy-1.10.5.pom
+https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy-agent/1.10.18/byte-buddy-agent-1.10.18.pom
+https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy-parent/1.10.18/byte-buddy-parent-1.10.18.pom
+https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy/1.10.18/byte-buddy-1.10.18.pom
 https://repo.maven.apache.org/maven2/net/java/jvnet-parent/1/jvnet-parent-1.pom
 https://repo.maven.apache.org/maven2/net/java/jvnet-parent/3/jvnet-parent-3.pom
 https://repo.maven.apache.org/maven2/net/java/jvnet-parent/4/jvnet-parent-4.pom
@@ -529,6 +531,7 @@ https://repo.maven.apache.org/maven2/org/antlr/antlr4/4.5.3/antlr4-4.5.3.pom
 https://repo.maven.apache.org/maven2/org/antlr/antlr-master/3.5.2/antlr-master-3.5.2.pom
 https://repo.maven.apache.org/maven2/org/antlr/antlr-runtime/3.5.2/antlr-runtime-3.5.2.pom
 https://repo.maven.apache.org/maven2/org/antlr/antlr/3.5.2/antlr-3.5.2.pom
+https://repo.maven.apache.org/maven2/org/antlr/stringtemplate/3.2.1/stringtemplate-3.2.1.pom
 https://repo.maven.apache.org/maven2/org/apache/apache/4/apache-4.pom
 https://repo.maven.apache.org/maven2/org/apache/apache/9/apache-9.pom
 https://repo.maven.apache.org/maven2/org/apache/apache/13/apache-13.pom
@@ -591,7 +594,7 @@ https://repo.maven.apache.org/maven2/org/bouncycastle/bcprov-jdk15on/1.48/bcprov
 https://repo.maven.apache.org/maven2/org/bouncycastle/bcprov-jdk15on/1.56/bcprov-jdk15on-1.56.pom
 https://repo.maven.apache.org/maven2/org/bouncycastle/bcprov-jdk15on/1.60/bcprov-jdk15on-1.60.pom
 https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/2.5.2/checker-qual-2.5.2.pom
-https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.10.0/checker-qual-3.10.0.pom
+https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.11.0/checker-qual-3.11.0.pom
 https://repo.maven.apache.org/maven2/org/codehaus/codehaus-parent/4/codehaus-parent-4.pom
 https://repo.maven.apache.org/maven2/org/codehaus/groovy/groovy-all/2.4.15/groovy-all-2.4.15.pom
 https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-annotations/1.14/animal-sniffer-annotations-1.14.pom
@@ -682,14 +685,13 @@ https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.4.10/k
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.4.20/kotlin-stdlib-1.4.20.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.4.21/kotlin-stdlib-1.4.21.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-util-io/1.3.50/kotlin-util-io-1.3.50.pom
-https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.5.2/junit-jupiter-api-5.5.2.pom
-https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.5.2/junit-platform-commons-1.5.2.pom
+https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.7.0/junit-bom-5.7.0.pom
+https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.7.0/junit-jupiter-api-5.7.0.pom
+https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.7.0/junit-platform-commons-1.7.0.pom
 https://repo.maven.apache.org/maven2/org/jvnet/staxex/stax-ex/1.7.7/stax-ex-1.7.7.pom
 https://repo.maven.apache.org/maven2/org/jvnet/staxex/stax-ex/2.0.0/stax-ex-2.0.0.pom
-https://repo.maven.apache.org/maven2/org/mockito/mockito-core/3.3.3/mockito-core-3.3.3.pom
-https://repo.maven.apache.org/maven2/org/objenesis/objenesis-parent/2.6/objenesis-parent-2.6.pom
+https://repo.maven.apache.org/maven2/org/mockito/mockito-core/3.6.28/mockito-core-3.6.28.pom
 https://repo.maven.apache.org/maven2/org/objenesis/objenesis-parent/3.1/objenesis-parent-3.1.pom
-https://repo.maven.apache.org/maven2/org/objenesis/objenesis/2.6/objenesis-2.6.pom
 https://repo.maven.apache.org/maven2/org/objenesis/objenesis/3.1/objenesis-3.1.pom
 https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.pom
 https://repo.maven.apache.org/maven2/org/ow2/asm/asm-analysis/5.0.3/asm-analysis-5.0.3.pom
@@ -718,5 +720,9 @@ https://repo.maven.apache.org/maven2/org/ow2/asm/asm/6.0/asm-6.0.pom
 https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.1/asm-9.1.pom
 https://repo.maven.apache.org/maven2/org/ow2/ow2/1.3/ow2-1.3.pom
 https://repo.maven.apache.org/maven2/org/ow2/ow2/1.5/ow2-1.5.pom
+https://repo.maven.apache.org/maven2/org/slf4j/jcl-over-slf4j/2.0.0-alpha1/jcl-over-slf4j-2.0.0-alpha1.pom
+https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/2.0.0-alpha1/slf4j-api-2.0.0-alpha1.pom
+https://repo.maven.apache.org/maven2/org/slf4j/slf4j-jdk14/2.0.0-alpha1/slf4j-jdk14-2.0.0-alpha1.pom
+https://repo.maven.apache.org/maven2/org/slf4j/slf4j-parent/2.0.0-alpha1/slf4j-parent-2.0.0-alpha1.pom
 https://repo.maven.apache.org/maven2/org/sonatype/oss/oss-parent/7/oss-parent-7.pom
 https://repo.maven.apache.org/maven2/org/sonatype/oss/oss-parent/9/oss-parent-9.pom
