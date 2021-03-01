@@ -4,6 +4,7 @@ binaryage/env-config/0.2.2/env-config-0.2.2.jar
 binaryage/oops/0.7.0/oops-0.7.0.jar
 cider/cider-nrepl/0.25.3/cider-nrepl-0.25.3.jar
 cider/piggieback/0.4.1/piggieback-0.4.1.jar
+cljfmt/cljfmt/0.6.7/cljfmt-0.6.7.jar
 cljs-bean/cljs-bean/1.3.0/cljs-bean-1.3.0.jar
 cljsjs/react/16.13.0-0/react-16.13.0-0.jar
 cljsjs/react-dom/16.13.0-0/react-dom-16.13.0-0.jar
@@ -18,6 +19,7 @@ com/cognitect/transit-js/0.8.846/transit-js-0.8.846.jar
 com/fasterxml/jackson/core/jackson-core/2.8.7/jackson-core-2.8.7.jar
 com/google/code/findbugs/jsr305/3.0.1/jsr305-3.0.1.jar
 com/google/code/gson/gson/2.7/gson-2.7.jar
+com/googlecode/java-diff-utils/diffutils/1.3.0/diffutils-1.3.0.jar
 com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar
 com/google/elemental2/elemental2-core/1.0.0-RC1/elemental2-core-1.0.0-RC1.jar
 com/google/errorprone/error_prone_annotations/2.3.1/error_prone_annotations-2.3.1.jar
@@ -109,6 +111,8 @@ refactor-nrepl/refactor-nrepl/2.5.0/refactor-nrepl-2.5.0.jar
 re-frame/re-frame/0.12.0/re-frame-0.12.0.jar
 re-frisk-remote/re-frisk-remote/1.3.11/re-frisk-remote-1.3.11.jar
 re-frisk/sente/1.15.0/sente-1.15.0.jar
+rewrite-clj/rewrite-clj/0.6.1/rewrite-clj-0.6.1.jar
+rewrite-cljs/rewrite-cljs/0.4.4/rewrite-cljs-0.4.4.jar
 ring-cors/ring-cors/0.1.8/ring-cors-0.1.8.jar
 ring/ring-codec/1.1.2/ring-codec-1.1.2.jar
 ring/ring-core/1.8.1/ring-core-1.8.1.jar

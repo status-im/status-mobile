@@ -78,6 +78,19 @@
   },
 
   {
+    "path": "cljfmt/cljfmt/0.6.7/cljfmt-0.6.7",
+    "host": "https://repo.clojars.org",
+    "pom": {
+      "sha1": "3d7ac9112908c9c9349adc056d1d06ae2cd33c21",
+      "sha256": "1q46q43mykn61f032y5734j84gcjca41pwd3iik9xghnzmphy2mn"
+    },
+    "jar": {
+      "sha1": "91e8afa2c19db72acdef7f881aad905871ba6e69",
+      "sha256": "0ara83gaqnafjgr2aqz5zqmywdsmhsz483xkkxpiwbn9lfqvidmh"
+    }
+  },
+
+  {
     "path": "cljs-bean/cljs-bean/1.3.0/cljs-bean-1.3.0",
     "host": "https://repo.clojars.org",
     "pom": {
@@ -256,6 +269,19 @@
     "jar": {
       "sha1": "751f548c85fa49f330cecbb1875893f971b33c4e",
       "sha256": "0clda1xrjfja969xsbrhc61ip588xvsi9k054kpd4cz1m5gfnhrd"
+    }
+  },
+
+  {
+    "path": "com/googlecode/java-diff-utils/diffutils/1.3.0/diffutils-1.3.0",
+    "host": "https://repo1.maven.org/maven2",
+    "pom": {
+      "sha1": "7d5e372ff32c90095800f96d8308c41af0285a41",
+      "sha256": "1dj7p0m0kwnjvy1y3kq63zb6bw0azjf79i5xbccmy3wv63b1vqrg"
+    },
+    "jar": {
+      "sha1": "7e060dd5b19431e6d198e91ff670644372f60fbd",
+      "sha256": "1hn5plp7iyl626h8mrra56sysfm2qannj1dapr1m5afwkb24vfk1"
     }
   },
 
@@ -1439,6 +1465,32 @@
     "jar": {
       "sha1": "d54aa873a848f624a282c2c2f7df947c976a77b5",
       "sha256": "0yhsqpi3d8x11pl1aq8z23fdyjspvq07dsyvrlkpbyx7rm64i21h"
+    }
+  },
+
+  {
+    "path": "rewrite-clj/rewrite-clj/0.6.1/rewrite-clj-0.6.1",
+    "host": "https://repo.clojars.org",
+    "pom": {
+      "sha1": "05778b423e14e8f1b054cc78df4e5d048cc0fc68",
+      "sha256": "0wp9xvmfp37x88msm2yhhzi8sjwd4hxz0vv4bslhal3zi97c1bj6"
+    },
+    "jar": {
+      "sha1": "55b399417a088ca163ef835e56db76ea962ce0a9",
+      "sha256": "0qq3an9nrhhw5mba753zs1m9rnk86w9l1f04n8v0hz0i2kbf1cki"
+    }
+  },
+
+  {
+    "path": "rewrite-cljs/rewrite-cljs/0.4.4/rewrite-cljs-0.4.4",
+    "host": "https://repo.clojars.org",
+    "pom": {
+      "sha1": "4e7a2542517a5b0231631305461603605bea1592",
+      "sha256": "050imgkzw5q7200klwrkd4v32xxy1f4aghs8g4ma5dbg4rl4pgcd"
+    },
+    "jar": {
+      "sha1": "dd14a371d0d09eedccb39f01e3edabefb2d1e64f",
+      "sha256": "0hb07wg71i2bjn8wzs8q6w1nb3jb2s36nhr9kv9mc0gyrr6im244"
     }
   },
 

@@ -21,7 +21,7 @@ declare -A REPOS=(
 
 function gen_deps_list() {
     # split into separate lines
-    CLASSPATH_LINES=$(yarn shadow-cljs classpath | tr ':' '\n')
+    CLASSPATH_LINES=$(yarn shadow-cljs classpath --force-spawn | tr ':' '\n')
     # remove unnecessary lines
     CLASSPATH_LINES=$(echo "${CLASSPATH_LINES}" | grep -vE '^(\$|yarn|Done|shadow-cljs|src|test)')
     # remove local home path

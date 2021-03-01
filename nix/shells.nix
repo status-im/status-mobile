@@ -31,6 +31,10 @@ let
     clojure = mkShell {
       buildInputs = with pkgs; [ clojure flock maven openjdk ];
       inputsFrom = [ node-sh ];
+      # CLASSPATH from clojure deps with 'src' appended to find local sources.
+      shellHook = with pkgs; ''
+        export CLASS_PATH="$(find ${deps.clojure} -iname '*.jar' | tr '\n' ':')src"
+      '';
     };
 
     # for 'make watchman-clean'

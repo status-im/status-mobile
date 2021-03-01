@@ -241,15 +241,12 @@ endif
 lint: export TARGET := clojure
 lint: ##@test Run code style checks
 	yarn clj-kondo --confg .clj-kondo/config.edn --lint src && \
-	clojure -Sdeps '{:deps {cljfmt {:mvn/version "0.6.7"}}}' \
-		-m cljfmt.main check $$(git diff --diff-filter=d --cached --name-only src && echo src) \
-		--indents indentation.edn
+	TARGETS=$$(git diff --diff-filter=d --cached --name-only src && echo src) && \
+	clojure -Scp "$$CLASS_PATH" -m cljfmt.main check --indents indentation.edn $$TARGETS
 
 lint-fix: export TARGET := clojure
 lint-fix: ##@test Run code style checks and fix issues
-	clojure -Sdeps '{:deps {cljfmt {:mvn/version "0.6.7"}}}' \
-		-m cljfmt.main fix src \
-		--indents indentation.edn
+	clojure -Scp "$$CLASS_PATH" -m cljfmt.main fix src --indents indentation.edn
 
 test: export TARGET := clojure
 test: ##@test Run tests once in NodeJS
