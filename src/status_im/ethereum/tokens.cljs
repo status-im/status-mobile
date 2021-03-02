@@ -748,6 +748,10 @@
                    {:address  "0xc944e90c64b2c07662a292be6244bdf05cda44a7"
                     :symbol   :GRT
                     :name     "Graph Token"
+                    :decimals 18}
+                   {:address  "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
+                    :symbol   :GLM
+                    :name     "Golem Network Token"
                     :decimals 18}])
    :testnet
    (resolve-icons :testnet
