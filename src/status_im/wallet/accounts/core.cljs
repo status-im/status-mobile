@@ -23,7 +23,8 @@
             [status-im.utils.hex :as hex]
             [status-im.ethereum.ens :as ens]
             [status-im.ens.core :as ens.core]
-            [status-im.ethereum.resolver :as resolver]))
+            [status-im.ethereum.resolver :as resolver]
+            [status-im.utils.mobile-sync :as utils.mobile-sync]))
 
 (fx/defn start-adding-new-account
   {:events [:wallet.accounts/start-adding-new-account]}
@@ -205,7 +206,9 @@
       (fx/merge cofx
                 {:db (update-in db [:add-account :account] merge account)}
                 (save-new-account)
-                (wallet/update-balances nil true)
+                (if (utils.mobile-sync/syncing-allowed? cofx)
+                  (wallet/set-max-block address 0)
+                  (wallet/update-balances nil true))
                 (prices/update-prices)
                 (navigation/navigate-back)))))
 

@@ -231,15 +231,15 @@
                            (wallet/stop-watching-tx hash))
                          transfers))
 
-                  true
+                  (and max-known-block
+                       (some #(> (:block %) max-known-block) transfers))
                   (conj (wallet/update-balances
-                         (into [] (reduce (fn [acc {:keys [address block]}]
-                                            (if (and max-known-block (> block max-known-block))
-                                              (conj acc address)
-                                              acc))
-                                          #{}
-                                          transfers))
+                         [address]
                          (zero? max-known-block)))
+
+                  (and (zero? max-known-block)
+                       (empty? transfers))
+                  (conj (wallet/set-zero-balances {:address address}))
 
                   (< (count transfers) limit)
                   (conj (tx-history-end-reached checksum)))]
