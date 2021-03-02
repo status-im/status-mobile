@@ -1,5 +1,3 @@
-const rndi = process.env.GOOGLE_FREE == 1 ? {platforms: {android: null}} : {};
-
 module.exports = {
     dependencies: {
         'react-native-config': {
@@ -24,6 +22,5 @@ module.exports = {
                 ios: null,
             },
         },
-        'react-native-device-info': rndi,
     },
 };

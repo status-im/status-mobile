@@ -327,6 +327,14 @@ dependencies {
       implementation jscFlavor
     }
 
+    if (googleFree) {
+        implementation(project(':react-native-device-info')) {
+            exclude group: 'com.google.firebase'
+            exclude group: 'com.google.android.gms'
+            exclude group: 'com.android.installreferrer'
+        }
+    }
+
     // react-native-screens
     implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02'

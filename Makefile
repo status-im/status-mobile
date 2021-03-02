@@ -175,12 +175,13 @@ release-android: export ANDROID_ABI_INCLUDE ?= armeabi-v7a;arm64-v8a;x86
 release-android: keystore ##@build Build release for Android
 	scripts/release-android.sh
 
-release-fdroid: export BUILD_ENV ?= prod
+release-fdroid: export BUILD_ENV = prod
 release-fdroid: export BUILD_TYPE = release
 release-fdroid: export ANDROID_APK_SIGNED = false
 release-fdroid: export ANDROID_ABI_SPLIT = false
 release-fdroid: export ANDROID_ABI_INCLUDE = armeabi-v7a;arm64-v8a;x86;x86_64
 release-fdroid: ##@build Build release for F-Droid
+	echo "GOOGLE_FREE=1" >> .env.release
 	scripts/release-android.sh
 
 release-ios: export TARGET := ios
