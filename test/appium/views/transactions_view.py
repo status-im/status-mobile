@@ -90,12 +90,9 @@ class TransactionTable(BaseElement):
                 element.find_element()
                 return element
             except NoSuchElementException:
-                time.sleep(20)
-                self.refresh_transactions()
+                from views.base_view import BaseView
+                BaseView(self.driver).pull_to_refresh()
         self.driver.fail('Transaction %s %s was not found on Wallet/Transaction screen' %(amount, asset))
-
-    def refresh_transactions(self):
-        self.driver.swipe(500, 500, 500, 1000)
 
     def get_transactions_number(self):
         element = self.TransactionElement(self.driver)

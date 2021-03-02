@@ -14,7 +14,7 @@ class TestDApps(SingleDeviceTestCase):
         status_test_dapp = home_view.open_status_test_dapp()
         status_test_dapp.wait_for_d_aap_to_load()
         status_test_dapp.transactions_button.click()
-        status_test_dapp.test_filters_button.click()
+        status_test_dapp.test_filters_button.scroll_and_click()
         for element in status_test_dapp.element_by_text('eth_uninstallFilter'), status_test_dapp.ok_button:
             if element.is_element_displayed(10):
                 self.driver.fail("'Test filters' button produced an error")

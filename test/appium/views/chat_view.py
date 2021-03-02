@@ -176,7 +176,7 @@ class ChatElementByText(Text):
         status = ''
         if sent.is_element_displayed(10, ignored_exceptions=NoSuchElementException):
             status = 'sent'
-        if delivered.is_element_displayed(20, ignored_exceptions=NoSuchElementException):
+        if delivered.is_element_displayed(30, ignored_exceptions=NoSuchElementException):
             status = 'delivered'
         return status
 

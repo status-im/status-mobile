@@ -165,8 +165,8 @@ class WalletView(BaseView):
                 if not self.transaction_history_button.is_element_displayed():
                     self.wallet_account_by_name(self.status_account_name).click()
                 if (counter/60).is_integer():
-                    self.driver.swipe(500, 500, 500, 1000)
-                    self.driver.info("*Refreshing transaction history*")
+                    self.pull_to_refresh()
+                    counter+=20
                 counter += 10
                 time.sleep(10)
                 self.driver.info('*Waiting %ss for %s updated balance*' % (counter,asset))

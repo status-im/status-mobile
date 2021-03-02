@@ -170,26 +170,34 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5314)
     @marks.critical
-    def test_can_see_all_transactions_in_history(self):
+    def test_can_see_balance_and_all_transactions_history_on_cellular(self):
         address = wallet_users['D']['address']
         passphrase = wallet_users['D']['passphrase']
 
         ropsten_txs = self.network_api.get_transactions(address)
         ropsten_tokens = self.network_api.get_token_transactions(address)
         expected_txs_list = get_merged_txs_list(ropsten_txs, ropsten_tokens)
-        signin_view = SignInView(self.driver)
-        home_view = signin_view.recover_access(passphrase=passphrase)
-        wallet_view = home_view.wallet_button.click()
-        wallet_view.set_up_wallet()
-        wallet_view.accounts_status_account.click()
-        transaction_view = wallet_view.transaction_history_button.click()
+        sign_in = SignInView(self.driver)
+        sign_in.switch_to_mobile(before_login=True)
+        home = sign_in.recover_access(passphrase=passphrase)
 
-        status_tx_number = transaction_view.transactions_table.get_transactions_number()
+        wallet = home.wallet_button.click()
+        wallet.set_up_wallet()
+        for asset in ('ETH', 'MDS', 'STT'):
+            wallet.wait_balance_is_changed(asset)
+        wallet.accounts_status_account.click()
+        transaction = wallet.transaction_history_button.click()
+        if not wallet.element_by_translation_id("transactions-history-empty").is_element_displayed():
+            self.errors.append("Transaction history was loaded automatically on mobila data!")
+        wallet.pull_to_refresh()
+        if wallet.element_by_translation_id("transactions-history-empty").is_element_displayed():
+            wallet.pull_to_refresh()
+        status_tx_number = transaction.transactions_table.get_transactions_number()
         if status_tx_number < 1:
             self.driver.fail('No transactions found')
 
         for n in range(status_tx_number):
-            transactions_details = transaction_view.transactions_table.transaction_by_index(n).click()
+            transactions_details = transaction.transactions_table.transaction_by_index(n).click()
             tx_hash = transactions_details.get_transaction_hash()
             tx_from = transactions_details.get_sender_address()
             tx_to = transactions_details.get_recipient_address()

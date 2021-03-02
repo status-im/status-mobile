@@ -410,6 +410,22 @@ class BaseView(object):
         size = self.driver.get_window_size()
         self.driver.swipe(size["width"]*0.2, size["height"]*0.8, size["width"]*0.8, size["height"]*0.8)
 
+    def switch_to_mobile(self, before_login=False, sync=False):
+        self.driver.info("*Turning on mobile data, syncing is %s*" % str(sync))
+        self.driver.set_network_connection(4)
+        if before_login is False:
+            from views.home_view import HomeView
+            home = HomeView(self.driver)
+            if sync is True:
+                home.continue_syncing_button.wait_and_click()
+            else:
+                home.stop_syncing_button.wait_and_click()
+
+    def pull_to_refresh(self, wait_sec=20):
+        self.driver.info("*Pull to refresh view*")
+        self.driver.swipe(500, 500, 500, 1000)
+        time.sleep(wait_sec)
+
     def get_status_test_dapp_view(self):
         from views.web_views.status_test_dapp import StatusTestDAppView
         return StatusTestDAppView(self.driver)

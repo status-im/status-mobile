@@ -165,8 +165,6 @@ class TestCreateAccount(SingleDeviceTestCase):
         sign_in.next_button.click()
         if sign_in.reencrypt_your_key_button.is_element_displayed():
             self.errors.append("Possible to create account with empty seed phrase")
-
-        sign_in = SignInView(self.driver, skip_popups=False)
         for validation in validations:
             sign_in.just_fyi("Checking %s" % validation.get('case'))
             phrase, msg, words_count, popup = validation.get('phrase'), \
