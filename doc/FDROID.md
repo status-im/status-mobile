@@ -10,6 +10,8 @@ The app builds defined this way run on servers that generate the unsigned APKs u
 
 First release of Status app was merged in [fdroid/fdroiddata#7179](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/7179).
 
+:warning: __WARNING__: Once changes are commited into `fdroiddata` repo they __cannot be changed__.
+
 # Adding New Versions
 
 You can find our configuration file at [`metadata/im.status.ethereum.yml`](https://gitlab.com/fdroid/fdroiddata/-/blob/master/metadata/im.status.ethereum.yml)
@@ -20,11 +22,15 @@ Builds:
   - versionName: 1.12.0
     versionCode: 2021022512
     commit: cfb825a11b61d312af8cb5d36686af540c31f481
-    sudo: make fdroid-nix-dir
+    sudo:
+      - cd build/im.status.ethereum
+      - make fdroid-build-env
     init: nix/scripts/setup.sh
     output: result/app-release-unsigned.apk
-    scanignore: android/build.gradle
-    scandelete: ios
+    scanignore:
+      - android/build.gradle
+    scandelete:
+      - ios
     build: make release-fdroid BUILD_NUMBER=$$VERCODE$$
 ```
 It contains a list of objects defining each release of the application. In order to add a new release simply copy a previous release object and adjust the following values:
@@ -76,14 +82,14 @@ docker run --rm \
   -v $PWD/fdroiddata:/repo \
   -v $PWD/fdroidserver:/fdroidserver \
   statusteam/docker-executable-fdroidserver:latest \
-  build im.status.ethereum:1.12.0
+  build im.status.ethereum
 ```
 We have to create a user and specify the UID because Nix cannot run as `root` and that is the default user for the F-Droid Docker image. By adding our own user and setting the UID we also make it possible to mount folders like `fdroiddata` and `fdroidserver`.
 
 You can specify a `--vebose` flag for `build` command for additional information.
 You can provide `--storage-opt size=30G` flag if Docker complains about running out of space.
 
-You should also run `lint im.status.ethereum` to verify the YAML format is correct.
+You should also run `lint` and `rewritemeta` for the App ID to verify and fix the YAML metadata formatting.
 
 # Details
 

@@ -156,9 +156,16 @@ keystore: export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 keystore: ##@prepare Generate a Keystore for signing Android APKs
 	@./scripts/generate-keystore.sh
 
+fdroid-max-watches: SHELL := /bin/sh
+fdroid-max-watches: ##@prepare Bump max_user_watches to avoid ENOSPC errors
+	sysctl fs.inotify.max_user_watches=524288
+
+fdroid-nix-dir: SHELL := /bin/sh
 fdroid-nix-dir: ##@prepare Create /nix directory for F-Droid Vagrant builders
 	mkdir -m 0755 /nix
 	chown vagrant /nix
+
+fdroid-build-env: fdroid-max-watches fdroid-nix-dir ##@prepare Setup build environment for F-Droud build
 
 #----------------
 # Release builds
