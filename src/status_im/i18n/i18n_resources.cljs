@@ -6,7 +6,7 @@
 (def default-device-language
   (keyword (.-language react-native-languages)))
 
-(def languages #{:ar :bn :de :el :en :es :es_419 :fil :fr :id :in :it :ja :ko :ms :pt_BR :ru :tr :vi :zh :zh_Hant :zh_TW})
+(def languages #{:ar :bn :de :el :en :es :es_419 :es_AR :fil :fr :id :in :it :ja :ko :ms :pt :pt_BR :ru :tr :vi :zh :zh_Hant :zh_TW})
 
 (defonce loaded-languages
   (atom
@@ -33,6 +33,7 @@
       :en         (js/require "../translations/en.json")
       :es         (js/require "../translations/es.json")
       :es_419     (js/require "../translations/es_419.json")
+      :es_AR      (js/require "../translations/es_AR.json")
       :fil        (js/require "../translations/fil.json")
       :fr         (js/require "../translations/fr.json")
       :id         (js/require "../translations/id.json")
@@ -41,6 +42,7 @@
       :ja         (js/require "../translations/ja.json")
       :ko         (js/require "../translations/ko.json")
       :ms         (js/require "../translations/ms.json")
+      :pt         (js/require "../translations/pt.json")
       :pt_BR      (js/require "../translations/pt_BR.json")
       :ru         (js/require "../translations/ru.json")
       :tr         (js/require "../translations/tr.json")
