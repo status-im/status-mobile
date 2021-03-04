@@ -4,7 +4,7 @@ from tests import marks
 from tests.users import transaction_senders, transaction_recipients, ens_user_ropsten
 from tests.base_test_case import MultipleDeviceTestCase, SingleDeviceTestCase
 from views.sign_in_view import SignInView
-
+import pytest
 @marks.transaction
 class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
@@ -85,10 +85,14 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(6294)
     @marks.medium
-    def test_keycard_request_and_receive_stt_in_1_1_chat_offline_opened_from_push(self):
+    @pytest.mark.parametrize('number', [str(i) for i in range(2)])
+    def test_keycard_request_and_receive_stt_in_1_1_chat_offline_opened_from_push(self, number):
+
         sender = transaction_senders['D']
         self.create_drivers(2)
+
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        device_1.just_fyi("This is test run number %s" % number)
 
         device_1.just_fyi('Grab user data for transactions and public chat, set up wallets')
         home_1 = device_1.create_user(keycard=True)
