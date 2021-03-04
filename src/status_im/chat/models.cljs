@@ -189,9 +189,12 @@
                 :name                           topic
                 :chat-name                      (str "#" topic)
                 :group-chat                     true
-                :chat-type                      (if timeline?
-                                                  constants/timeline-chat-type
-                                                  constants/public-chat-type)
+                :chat-type                      (cond timeline?
+                                                      constants/timeline-chat-type
+                                                      profile-public-key
+                                                      constants/profile-chat-type
+                                                      :else
+                                                      constants/public-chat-type)
                 :contacts                       #{}
                 :public?                        true
                 :might-have-join-time-messages? (get-in cofx [:db :multiaccount :use-mailservers?])
