@@ -149,7 +149,8 @@
                     :weak-password?         true
                     :encrypt-with-password? true
                     :back-action            :intro-wizard/navigate-back
-                    :forward-action         :multiaccounts.recover/enter-phrase-next-pressed})
+                    :forward-action         :multiaccounts.recover/enter-phrase-next-pressed}
+                   :recovered-account? true)
             (update :keycard dissoc :flow))}
    (bottom-sheet/hide-bottom-sheet)
    (navigation/navigate-to-cofx :recover-multiaccount-enter-phrase nil)))

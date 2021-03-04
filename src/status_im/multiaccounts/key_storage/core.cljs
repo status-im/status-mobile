@@ -31,8 +31,11 @@
 (fx/defn enter-seed-pressed
   "User is logged out and probably wants to move multiaccount to Keycard. Navigate to enter seed phrase screen"
   {:events [::enter-seed-pressed]}
-  [cofx]
-  (navigation/navigate-to-cofx cofx :key-storage-stack {:screen :seed-phrase}))
+  [{:keys [db] :as cofx}]
+  (fx/merge
+   cofx
+   {:db (assoc db :recovered-account? true)}
+   (navigation/navigate-to-cofx :key-storage-stack {:screen :seed-phrase})))
 
 (fx/defn seed-phrase-input-changed
   {:events [::seed-phrase-input-changed]}

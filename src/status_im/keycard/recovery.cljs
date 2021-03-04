@@ -61,7 +61,10 @@
   {:events [::recover-with-keycard-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:db                           (assoc-in db [:keycard :flow] :import)
+            {:db
+             (-> db
+                 (assoc-in [:keycard :flow] :import)
+                 (assoc :recovered-account? true))
              :keycard/check-nfc-enabled nil}
             (bottom-sheet/hide-bottom-sheet)
             (navigation/navigate-to-cofx :keycard-recovery-intro nil)))
@@ -272,7 +275,7 @@
    {:db (update-in db [:keycard :multiaccount]
                    (fn [multiacc]
                      (assoc multiacc
-                            :recovered true
+                            :recovered (get db :recovered-account?)
                             :name whisper-name
                             :identicon identicon)))}
    (create-keycard-multiaccount)))

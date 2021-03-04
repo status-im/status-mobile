@@ -95,7 +95,9 @@
   {:events [:multiaccounts.create.ui/intro-wizard]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:db (update db :keycard dissoc :flow)}
+            {:db (-> db
+                     (update :keycard dissoc :flow)
+                     (dissoc :restored-account?))}
             (prepare-intro-wizard)
             (navigation/navigate-to-cofx :create-multiaccount-generate-key nil)))
 
@@ -107,14 +109,21 @@
             (bottom-sheet/hide-bottom-sheet)
             (navigation/navigate-to-cofx :create-multiaccount-generate-key nil)))
 
+(fx/defn remove-recovery-flag [{:keys [db]}]
+  {:db (dissoc db :recovered-account?)})
+
 (fx/defn dec-step
   {:events [:intro-wizard/dec-step]}
   [{:keys [db] :as cofx}]
   (let  [step (get-in db [:intro-wizard :step])]
     (fx/merge cofx
-              (if (or (= step :enter-phrase) (= :generate-key step))
-                #(prepare-intro-wizard %)
-                {:db (assoc-in db [:intro-wizard :step] (decrement-step step))}))))
+              (when (= step :enter-phrase)
+                remove-recovery-flag)
+              (if (or (= step :enter-phrase)
+                      (= :generate-key step))
+                prepare-intro-wizard
+                (fn [_]
+                  {:db (assoc-in db [:intro-wizard :step] (decrement-step step))})))))
 
 (fx/defn intro-step-back
   {:events [:intro-wizard/navigate-back]}
@@ -131,14 +140,10 @@
 
 (fx/defn exit-wizard
   [{:keys [db] :as cofx}]
-  (let [recovered-account? (get-in db [:intro-wizard :recovering?])]
-    (log/info "exit-wizard" "recovered-account?" recovered-account?)
-    (fx/merge
-     cofx
-     {:db (-> db
-              (dissoc :intro-wizard)
-              (assoc :recovered-account? recovered-account?))}
-     (navigation/navigate-to-cofx :notifications-onboarding nil))))
+  (fx/merge
+   cofx
+   {:db (dissoc db :intro-wizard)}
+   (navigation/navigate-to-cofx :notifications-onboarding nil)))
 
 (fx/defn init-key-generation
   [{:keys [db] :as cofx}]
