@@ -55,6 +55,14 @@ class ChatElement(SilentButton):
 
         return UnreadMessagesPublicChat(self.driver)
 
+    @property
+    def chat_image(self):
+        class ChatImage(BaseElement):
+            def __init__(self, driver):
+                super().__init__(driver, xpath="//*[@content-desc='chat-icon']")
+
+        return ChatImage(self.driver)
+
 
 class HomeView(BaseView):
     def __init__(self, driver):

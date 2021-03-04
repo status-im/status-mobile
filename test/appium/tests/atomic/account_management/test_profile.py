@@ -555,21 +555,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-    @marks.testrail_id(5475)
-    @marks.low
-    @marks.skip
-    # TODO: skip until profile picture change feature is enabled
-    def test_change_profile_picture_several_times(self):
-        sign_in_view = SignInView(self.driver)
-        sign_in_view.create_user()
-        profile_view = sign_in_view.profile_button.click()
-        for file_name in ['sauce_logo.png', 'sauce_logo_red.png', 'saucelabs_sauce.png']:
-            profile_view.edit_profile_picture(file_name=file_name)
-            profile_view.swipe_down()
-            if not profile_view.profile_picture.is_element_image_equals_template(
-                    file_name.replace('.png', '_profile.png')):
-                self.driver.fail('Profile picture was not updated')
-
     @marks.testrail_id(5468)
     @marks.medium
     @marks.skip
@@ -646,6 +631,97 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         if public_chat_2.chat_element_by_text(message).member_photo.is_element_image_similar_to_template('sauce_logo.png'):
             self.drivers[0].fail('Profile picture was not updated in chat after making photo')
+
+    @marks.testrail_id(6636)
+    @marks.medium
+    def test_show_profile_picture_of_setting(self):
+        self.create_drivers(2)
+        home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
+        profile_1 = home_1.profile_button.click()
+        public_key_1, default_username_1 = profile_1.get_public_key_and_username(return_username=True)
+
+        profile_1.just_fyi("Set user Profile image from Gallery")
+        profile_1.edit_profile_picture(file_name='sauce_logo.png')
+        home_1.profile_button.click()
+        profile_1.swipe_down()
+
+        profile_1.just_fyi('set status in profile')
+        device_1_status = 'My new update!'
+        timeline = profile_1.status_button.click()
+        timeline.set_new_status(device_1_status)
+        if not timeline.timeline_own_account_photo.is_element_image_similar_to_template('sauce_logo.png'):
+            self.errors.append('Profile picture was not updated in timeline')
+
+        profile_1.just_fyi('Check profile image it is not in mentions because user not in contacts yet')
+        one_to_one_chat_2 = home_2.add_contact(public_key_1, add_in_contacts=False)
+        one_to_one_chat_2.chat_message_input.set_value('@' + default_username_1)
+        one_to_one_chat_2.chat_message_input.click()
+        if one_to_one_chat_2.user_profile_image_in_mentions_list(default_username_1).is_element_image_similar_to_template('sauce_logo.png'):
+            self.errors.append('Profile picture is updated in 1-1 chat mentions list of contact not in Contacts list')
+
+        profile_1.just_fyi('Check profile image is in mentions because now user was added in contacts')
+        one_to_one_chat_2.add_to_contacts.click()
+        one_to_one_chat_2.chat_message_input.set_value('@' + default_username_1)
+        one_to_one_chat_2.chat_message_input.click()
+        if not one_to_one_chat_2.user_profile_image_in_mentions_list(default_username_1).is_element_image_similar_to_template('sauce_logo.png'):
+            self.errors.append('Profile picture was not updated in 1-1 chat mentions list')
+
+        profile_1.just_fyi('Check profile image updated in user profile view and on Chats view')
+        profile_2 = one_to_one_chat_2.profile_button.click()
+        profile_2.contacts_button.click()
+        profile_2.element_by_text(default_username_1).click()
+        if not profile_2.profile_picture.is_element_image_similar_to_template('sauce_logo.png'):
+            self.errors.append('Profile picture was not updated on user Profile view')
+        profile_2.back_button.click()
+        one_to_one_chat_2.home_button.click(desired_view='home')
+        if not home_2.get_chat(default_username_1).chat_image.is_element_image_similar_to_template('sauce_logo.png'):
+            self.errors.append('User profile picture was not updated on Chats view')
+
+        profile_1.just_fyi('Check profile image updated in user profile view in Group chat views 4')
+        home_1.home_button.click(desired_view='home')
+        group_chat_message = 'Trololo'
+        group_chat_2 = home_2.create_group_chat(user_names_to_add=[default_username_1])
+        group_chat_2.send_message('Message')
+        group_chat_1 = home_1.get_chat('new_group_chat').click()
+        group_chat_1.join_chat_button.click()
+        group_chat_1.send_message(group_chat_message)
+        if not group_chat_2.chat_element_by_text(group_chat_message).member_photo.is_element_image_similar_to_template('sauce_logo.png'):
+            self.errors.append('User profile picture was not updated in message Group chat view')
+
+        profile_1.just_fyi('Check profile image updated in on login view')
+        home_1.profile_button.click()
+        profile_1.logout()
+        sign_in_1 = home_1.get_sign_in_view()
+        if not sign_in_1.get_multiaccount_by_position(1).account_logo.is_element_image_similar_to_template('sauce_logo.png'):
+            self.errors.append('User profile picture was not updated on Multiaccounts list select login view')
+        sign_in_1.element_by_text(default_username_1).click()
+        if not sign_in_1.get_multiaccount_by_position(1).account_logo.is_element_image_similar_to_template('sauce_logo.png'):
+            self.errors.append('User profile picture was not updated on account login view')
+        sign_in_1.password_input.set_value(common_password)
+        sign_in_1.sign_in_button.click()
+
+        profile_1.just_fyi('Remove user from contact and check there is no profile image displayed')
+        group_chat_2.profile_button.click()
+        profile_2.contacts_button.click()
+        profile_2.element_by_text(default_username_1).click()
+        one_to_one_chat_2.remove_from_contacts.click()
+        # Send message to User 2 so update of profile image picked up
+        group_chat_1 = home_1.get_chat('new_group_chat').click()
+        group_chat_1.send_message(group_chat_message)
+        one_to_one_chat_2.back_button.click()
+        one_to_one_chat_2.home_button.click(desired_view='home')
+        if home_2.get_chat(default_username_1).chat_image.is_element_image_similar_to_template('sauce_logo.png'):
+            self.errors.append('User profile picture is not default to default after user removed from Contacts')
+
+        profile_2.just_fyi('Enable to see profile image from "Everyone" setting')
+        home_2.profile_button.click()
+        profile_2.appearance_button.click()
+        profile_2.show_profile_pictures_of.click()
+        profile_2.element_by_text('Everyone').click()
+        group_chat_1.send_message(group_chat_message)
+        profile_2.home_button.click(desired_view='home')
+        if not home_2.get_chat(default_username_1).chat_image.is_element_image_similar_to_template('sauce_logo.png'):
+            self.errors.append('User profile picture is not returned to default after user removed from Contacts')
 
     @marks.testrail_id(5432)
     @marks.medium

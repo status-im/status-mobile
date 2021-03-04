@@ -191,6 +191,9 @@ class ProfileView(BaseView):
 
         # Privacy and security
         self.privacy_and_security_button = Button(self.driver, accessibility_id="privacy-and-security-settings-button")
+        # Appearance
+        self.appearance_button = Button(self.driver, accessibility_id="appearance-settings-button")
+        self.show_profile_pictures_of = Button(self.driver, accessibility_id="show-profile-pictures")
         ## Backup recovery phrase
         self.backup_recovery_phrase_button = BackupRecoveryPhraseButton(self.driver)
         self.recovery_phrase_table = RecoveryPhraseTable(self.driver)
@@ -342,11 +345,7 @@ class ProfileView(BaseView):
             self.select_from_gallery_button.click()
             if self.allow_button.is_element_displayed(sec=5):
                 self.allow_button.click()
-            image_name = "sauce_logo.png, 4.64 kB, Nov 4, 2020"
-            if file_name == 'sauce_logo_red.png':
-                image_name = "sauce_logo_red.png, 624 kB, Nov 4, 2020"
-
-            image_full_content = self.get_image_in_storage_by_name(image_name)
+            image_full_content = self.get_image_in_storage_by_name(file_name)
             if not image_full_content.is_element_displayed(2):
                 self.show_roots_button.click()
                 for element_text in 'Images', 'DCIM':
@@ -382,7 +381,7 @@ class ProfileView(BaseView):
         return MailServerElement(self.driver, server_name)
 
     def get_image_in_storage_by_name(self, image_name=str()):
-        return SilentButton(self.driver, xpath="//*[@content-desc='%s']" % image_name)
+        return SilentButton(self.driver, xpath="//*[contains(@content-desc,'%s')]" % image_name)
 
     def get_toggle_device_by_name(self, device_name):
         self.driver.info("**Selecting device %s for sync**" % device_name)

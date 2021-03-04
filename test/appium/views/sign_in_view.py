@@ -21,6 +21,15 @@ class MultiAccountOnLoginButton(Button):
         super(MultiAccountOnLoginButton, self).__init__(driver,
                                                         xpath="(//*[@content-desc='chat-icon'])[%s]/.." % position)
 
+    @property
+    def account_logo(self):
+        class AccountLogo(Text):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(driver, xpath="%s//*[@content-desc='chat-icon']" % parent_locator)
+
+        return AccountLogo(self.driver, self.locator)
+
+
 class MoveAndResetButton(Button):
     def __init__(self, driver):
         super().__init__(driver, accessibility_id="move-and-reset-button")
@@ -28,6 +37,7 @@ class MoveAndResetButton(Button):
     def navigate(self):
         from views.keycard_view import KeycardView
         return KeycardView(self.driver)
+
 
 class BeginRecoveryButton(Button):
     def __init__(self, driver):

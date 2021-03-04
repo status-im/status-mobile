@@ -474,11 +474,13 @@ class ChatView(BaseView):
         self.nickname_input_field = EditBox(self.driver, accessibility_id="nickname-input")
         self.remove_from_contacts = Button(self.driver, accessibility_id="Remove from contacts-item-button")
 
-        # Timeline
+        # Timeline (My Status tab)
         self.timeline_add_new_status_button = Button(self.driver, accessibility_id="plus-button")
         self.timeline_my_status_editbox = EditBox(self.driver, accessibility_id="my-status-input")
         self.timeline_open_images_panel_button = Button(self.driver, accessibility_id="open-images-panel-button")
         self.timeline_send_my_status_button = Button(self.driver, accessibility_id="send-my-status-button")
+        self.timeline_own_account_photo = Button(self.driver, accessibility_id="own-account-photo")
+
 
     def get_outgoing_transaction(self, account=None):
         if account is None:
@@ -570,7 +572,6 @@ class ChatView(BaseView):
         group_info_view.get_username_options(username).click()
         return self
 
-
     def chat_element_by_text(self, text):
         self.driver.info("**Looking for a message by text: %s**" % text)
         return ChatElementByText(self.driver, text)
@@ -639,6 +640,10 @@ class ChatView(BaseView):
         element.scroll_to_element()
         element.click()
         element.wait_for_invisibility_of_element()
+
+    def user_profile_image_in_mentions_list(self, username):
+        return Button(self.driver, xpath="//*[@content-desc='suggestions-list']//*[@text='%s']/"
+                                         "..//*[@content-desc='member-photo']" % username)
 
     def search_user_in_mention_suggestion_list(self, username):
         return Button(self.driver, xpath="//*[@content-desc='suggestions-list']//*[@text='%s']" % username)
