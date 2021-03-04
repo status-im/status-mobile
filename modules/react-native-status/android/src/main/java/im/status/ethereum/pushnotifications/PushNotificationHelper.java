@@ -11,6 +11,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.BroadcastReceiver;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.res.Resources;
@@ -24,9 +26,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
+import android.util.Base64;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.Person;
+import androidx.core.graphics.drawable.IconCompat;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
@@ -43,8 +48,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
+import im.status.ethereum.module.R;
 import static im.status.ethereum.pushnotifications.PushNotification.LOG_TAG;
 
 public class PushNotificationHelper {
@@ -53,10 +60,90 @@ public class PushNotificationHelper {
 
     private static final long DEFAULT_VIBRATION = 300L;
     private static final String CHANNEL_ID = "status-im-notifications";
+    public static final String ACTION_DELETE_NOTIFICATION = "im.status.ethereum.module.DELETE_NOTIFICATION";
+    public static final String ACTION_TAP_NOTIFICATION = "im.status.ethereum.module.TAP_NOTIFICATION";
+    public static final String ACTION_TAP_STOP = "im.status.ethereum.module.TAP_STOP";
+
+    private NotificationManager notificationManager;
+
+
+    private HashMap<String, Person> persons;
+    private HashMap<String, StatusMessageGroup> messageGroups;
 
     public PushNotificationHelper(Application context) {
         this.context = context;
+        this.persons = new HashMap<String, Person>();
+        this.messageGroups = new HashMap<String, StatusMessageGroup>();
+        this.notificationManager = context.getSystemService(NotificationManager.class);
+        this.registerBroadcastReceiver();
     }
+
+    public Intent getOpenAppIntent(String deepLink) {
+        Class intentClass;
+        String packageName = context.getPackageName();
+        Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+        String className = launchIntent.getComponent().getClassName();
+        try {
+            intentClass =  Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+        Intent intent = new Intent(context, intentClass);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setAction(Intent.ACTION_VIEW);
+        //NOTE: you might wonder, why the heck did he decide to set these flags in particular. Well,
+        //the answer is a simple as it can get in the Android native development world. I noticed
+        //that my initial setup was opening the app but wasn't triggering any events on the js side, like
+        //the links do from the browser. So I compared both intents and noticed that the link from
+        //the browser produces an intent with the flag 0x14000000. I found out that it was the following
+        //flags in this link:
+        //https://stackoverflow.com/questions/52390129/android-intent-setflags-issue
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setData(Uri.parse(deepLink));
+        return intent;
+    }
+
+    //NOTE: we use a dynamically created BroadcastReceiver here so that we can capture
+    //intents from notifications and act on them. For instance when tapping/dismissing
+    //a chat notification we want to clear the chat so that next messages don't show
+    //the messages that we have seen again
+    private final BroadcastReceiver notificationActionReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction() == ACTION_TAP_NOTIFICATION ||
+                    intent.getAction() == ACTION_DELETE_NOTIFICATION) {
+                    String deepLink = intent.getExtras().getString("im.status.ethereum.deepLink");
+                    String groupId = intent.getExtras().getString("im.status.ethereum.groupId");
+                    if (intent.getAction() == ACTION_TAP_NOTIFICATION) {
+                        context.startActivity(getOpenAppIntent(deepLink));
+                    }
+                    if (groupId != null) {
+                      removeGroup(groupId);
+                      // clean up the group notifications when there is no
+                      // more unread chats
+                      if (messageGroups.size() == 0) {
+                          notificationManager.cancelAll();
+                      }}
+                    }
+                if (intent.getAction() == ACTION_TAP_STOP) {
+                    stop();
+                    System.exit(0);
+                }
+                Log.e(LOG_TAG, "intent received: " + intent.getAction());
+            }
+        };
+
+    private void registerBroadcastReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_DELETE_NOTIFICATION);
+        filter.addAction(ACTION_TAP_NOTIFICATION);
+        filter.addAction(ACTION_TAP_STOP);
+        context.registerReceiver(notificationActionReceiver, filter);
+        Log.e(LOG_TAG, "Broadcast Receiver registered");
+    }
+
+
 
     private NotificationManager notificationManager() {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -95,12 +182,22 @@ public class PushNotificationHelper {
         aggregator.setBigPictureUrl(context, bundle.getString("bigPictureUrl"));
     }
 
+    public void handleConversation(final Bundle bundle) {
+      this.addStatusMessage(bundle);
+    }
+
     public void sendToNotificationCentreWithPicture(final Bundle bundle, Bitmap largeIconBitmap, Bitmap bigPictureBitmap) {
+
         try {
             Class intentClass = getMainActivityClass();
             if (intentClass == null) {
                 Log.e(LOG_TAG, "No activity class found for the notification");
                 return;
+            }
+
+            if (bundle.getBoolean("isConversation")) {
+              this.handleConversation(bundle);
+              return;
             }
 
             if (bundle.getString("message") == null) {
@@ -325,10 +422,10 @@ public class PushNotificationHelper {
                 }
             }
 
-            int notificationID = Integer.parseInt(notificationIdString);
+            int notificationID = notificationIdString.hashCode();
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+            notification.setContentIntent(createOnTapIntent(context, notificationID, bundle.getString("deepLink")))
+              .setDeleteIntent(createOnDismissedIntent(context, notificationID, bundle.getString("deepLink")));
 
             NotificationManager notificationManager = notificationManager();
 
@@ -367,7 +464,6 @@ public class PushNotificationHelper {
 
             notification.setUsesChronometer(bundle.getBoolean("usesChronometer", false));
             notification.setChannelId(channel_id);
-            notification.setContentIntent(pendingIntent);
 
             JSONArray actionsArray = null;
             try {
@@ -546,4 +642,155 @@ public class PushNotificationHelper {
         return false;
     }
 
+    private Person getPerson(Bundle bundle) {
+      String base64Image = bundle.getString("icon").split(",")[1];
+      byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+      Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+      String name = bundle.getString("name");
+
+      return new Person.Builder().setIcon(IconCompat.createWithBitmap(decodedByte)).setName(name).build();
+    }
+
+    private StatusMessage createMessage(Bundle data) {
+        Person author = getPerson(data.getBundle("notificationAuthor"));
+        return new StatusMessage(author,  data.getLong("timestamp"), data.getString("message"));
+    }
+
+    private PendingIntent createGroupOnDismissedIntent(Context context, int notificationId, String groupId, String deepLink) {
+        Intent intent = new Intent(ACTION_DELETE_NOTIFICATION);
+        intent.putExtra("im.status.ethereum.deepLink", deepLink);
+        intent.putExtra("im.status.ethereum.groupId", groupId);
+        return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private PendingIntent createGroupOnTapIntent(Context context, int notificationId, String groupId, String deepLink) {
+        Intent intent = new Intent(ACTION_TAP_NOTIFICATION);
+        intent.putExtra("im.status.ethereum.deepLink", deepLink);
+        intent.putExtra("im.status.ethereum.groupId", groupId);
+        return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+   }
+
+    private PendingIntent createOnTapIntent(Context context, int notificationId, String deepLink) {
+        Intent intent = new Intent(ACTION_TAP_NOTIFICATION);
+        intent.putExtra("im.status.ethereum.deepLink", deepLink);
+        return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+   }
+
+    private PendingIntent createOnDismissedIntent(Context context, int notificationId, String deepLink) {
+        Intent intent = new Intent(ACTION_DELETE_NOTIFICATION);
+        intent.putExtra("im.status.ethereum.deepLink", deepLink);
+        return PendingIntent.getBroadcast(context.getApplicationContext(), notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+
+    public void addStatusMessage(Bundle bundle) {
+      String conversationId = bundle.getString("conversationId");
+      StatusMessageGroup group = this.messageGroups.get(conversationId);
+      NotificationManager notificationManager = notificationManager();
+
+      if (group == null) {
+        group = new StatusMessageGroup(conversationId);
+      }
+
+      this.messageGroups.put(conversationId, group);
+
+      group.addMessage(createMessage(bundle));
+
+      NotificationCompat.MessagingStyle messagingStyle = new NotificationCompat.MessagingStyle("Me");
+      ArrayList<StatusMessage> messages = group.getMessages();
+      for (int i = 0; i < messages.size(); i++) {
+        StatusMessage message = messages.get(i);
+        messagingStyle.addMessage(message.getText(),
+            message.getTimestamp(),
+            message.getAuthor());
+      }
+
+      if (bundle.getString("title") != null) {
+        messagingStyle.setConversationTitle(bundle.getString("title"));
+      }
+
+      NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+        .setSmallIcon(R.drawable.ic_stat_notify_status)
+        .setPriority(NotificationCompat.PRIORITY_HIGH)
+        .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+        .setStyle(messagingStyle)
+        .setGroup(conversationId)
+        .setOnlyAlertOnce(true)
+        .setGroupSummary(true)
+        .setContentIntent(createGroupOnTapIntent(context, conversationId.hashCode(), conversationId, bundle.getString("deepLink")))
+        .setDeleteIntent(createGroupOnDismissedIntent(context, conversationId.hashCode(), conversationId, bundle.getString("deepLink")))
+        .setNumber(messages.size() + 1)
+        .setAutoCancel(true);
+      if (Build.VERSION.SDK_INT >= 21) {
+        builder.setVibrate(new long[0]);
+      }
+      notificationManager.notify(conversationId.hashCode(), builder.build());
+    }
+
+    class StatusMessageGroup {
+      private ArrayList<StatusMessage> messages;
+      private String id;
+
+      StatusMessageGroup(String id) {
+        this.id = id;
+        this.messages = new ArrayList<StatusMessage>();
+      }
+      public ArrayList<StatusMessage> getMessages() {
+        return messages;
+      }
+
+      public void addMessage(StatusMessage message) {
+        this.messages.add(message);
+      }
+
+      public String getId() {
+        return this.id;
+      }
+    }
+
+    class StatusMessage {
+      public Person getAuthor() {
+        return author;
+      }
+
+      public long getTimestamp() {
+        return timestamp;
+      }
+
+      public String getText() {
+        return text;
+      }
+
+      private Person author;
+      private long timestamp;
+      private String text;
+
+      StatusMessage(Person author, long timestamp, String text) {
+        this.author = author;
+        this.timestamp = timestamp;
+        this.text = text;
+      }
+    }
+
+    private void removeGroup(String groupId) {
+        this.messageGroups.remove(groupId);
+    }
+
+    public void start() {
+        Log.e(LOG_TAG, "Starting Foreground Service");
+        Intent serviceIntent = new Intent(context, ForegroundService.class);
+        context.startService(serviceIntent);
+        this.registerBroadcastReceiver();
+    }
+
+    public void stop() {
+        Log.e(LOG_TAG, "Stopping Foreground Service");
+        //NOTE: we cancel all the current notifications, because the intents can't be used anymore
+        //since the broadcast receiver will be killed as well and won't be able to handle any intent
+        notificationManager.cancelAll();
+        Intent serviceIntent = new Intent(context, ForegroundService.class);
+        context.stopService(serviceIntent);
+        context.unregisterReceiver(notificationActionReceiver);
+    }
 }

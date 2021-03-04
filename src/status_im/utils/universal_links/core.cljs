@@ -24,11 +24,12 @@
 (def domains {:external "https://join.status.im"
               :internal "status-im:/"})
 
-(def links {:public-chat  "%s/%s"
-            :private-chat "%s/p/%s"
-            :group-chat   "%s/g/%s"
-            :user         "%s/u/%s"
-            :browse       "%s/b/%s"})
+(def links {:public-chat        "%s/%s"
+            :private-chat       "%s/p/%s"
+            :community-requests "%s/cr/%s"
+            :group-chat         "%s/g/%s"
+            :user               "%s/u/%s"
+            :browse             "%s/b/%s"})
 
 (defn generate-link [link-type domain-type param]
   (gstring/format (get links link-type)
@@ -58,6 +59,10 @@
       (chat/start-chat cofx chat-id)
       {:utils/show-popup {:title   (i18n/label :t/unable-to-read-this-code)
                           :content (i18n/label :t/can-not-add-yourself)}})))
+
+(fx/defn handle-community-requests [cofx {:keys [community-id]}]
+  (log/info "universal-links: handling community request  " community-id)
+  (navigation/navigate-to-cofx cofx :community-requests-to-join {:community-id community-id}))
 
 (fx/defn handle-public-chat [cofx {:keys [topic]}]
   (log/info "universal-links: handling public chat" topic)
@@ -113,20 +118,22 @@
   {:events [::match-value]}
   [cofx url {:keys [type] :as data}]
   (case type
-    :group-chat     (handle-group-chat cofx data)
-    :public-chat    (handle-public-chat cofx data)
-    :private-chat   (handle-private-chat cofx data)
-    :contact        (handle-view-profile cofx data)
-    :browser        (handle-browse cofx data)
-    :eip681         (handle-eip681 cofx data)
-    :referrals      (handle-referrer-url cofx data)
-    :wallet-account (handle-wallet-account cofx data)
+    :group-chat         (handle-group-chat cofx data)
+    :public-chat        (handle-public-chat cofx data)
+    :private-chat       (handle-private-chat cofx data)
+    :community-requests (handle-community-requests cofx data)
+    :contact            (handle-view-profile cofx data)
+    :browser            (handle-browse cofx data)
+    :eip681             (handle-eip681 cofx data)
+    :referrals          (handle-referrer-url cofx data)
+    :wallet-account     (handle-wallet-account cofx data)
     (handle-not-found url)))
 
 (fx/defn route-url
   "Match a url against a list of routes and handle accordingly"
   [{:keys [db]} url]
   {::router/handle-uri {:chain (ethereum/chain-keyword db)
+                        :chats (:chats db)
                         :uri   url
                         :cb    #(re-frame/dispatch [::match-value url %])}})
 

@@ -360,7 +360,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_1.send_message_button.click()
 
         device_2.open_notification_bar()
-        chat_2 = home_2.click_upon_push_notification_by_text("audio message")
+        chat_2 = home_2.click_upon_push_notification_by_text("Audio")
 
         listen_time = 5
 

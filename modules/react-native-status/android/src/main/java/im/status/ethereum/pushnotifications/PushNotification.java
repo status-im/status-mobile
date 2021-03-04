@@ -37,7 +37,7 @@ public class PushNotification extends ReactContextBaseJavaModule implements Acti
     private PushNotificationHelper pushNotificationHelper;
     private PushNotificationJsDelivery delivery;
     private ReactApplicationContext reactContext;
-    private NewMessageSignalHandler newMessageSignalHandler;
+    private boolean started;
 
     public PushNotification(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -104,33 +104,30 @@ public class PushNotification extends ReactContextBaseJavaModule implements Acti
 
     @ReactMethod
     public void presentLocalNotification(ReadableMap details) {
+        if (!this.started) {
+          return;
+        }
+
         Bundle bundle = Arguments.toBundle(details);
         // If notification ID is not provided by the user, generate one at random
         if (bundle.getString("id") == null) {
             bundle.putString("id", String.valueOf(mRandomNumberGenerator.nextInt()));
         }
 
-        String type = bundle.getString("type");
-        if (type != null && type.equals("message")) {
-            if (this.newMessageSignalHandler != null) {
-                newMessageSignalHandler.handleNewMessage(bundle);
-            }
-        } else {
-            pushNotificationHelper.sendToNotificationCentre(bundle);
-        }
+        pushNotificationHelper.sendToNotificationCentre(bundle);
     }
 
     @ReactMethod
     public void enableNotifications() {
-        this.newMessageSignalHandler = new NewMessageSignalHandler(reactContext);
+        this.started = true;
+        this.pushNotificationHelper.start();
     }
 
     @ReactMethod
     public void disableNotifications() {
-        if (newMessageSignalHandler != null) {
-            newMessageSignalHandler.stop();
-            newMessageSignalHandler = null;
-        }
+      if (this.started) {
+        this.started = false;
+        this.pushNotificationHelper.stop();
+      }
     }
-
 }

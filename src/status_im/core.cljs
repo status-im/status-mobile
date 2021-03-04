@@ -30,8 +30,6 @@
     (status/set-soft-input-mode status/adjust-resize))
   (.registerComponent ^js (.-AppRegistry rn) "StatusIm" #(reagent/reactify-component views/root))
   (notifications/listen-notifications)
-  (when platform/android?
-    (.registerHeadlessTask ^js (.-AppRegistry rn) "LocalNotifications" notifications/handle))
   (snoopy/subscribe!)
   (when (and js/goog.DEBUG platform/ios? DevSettings)
     ;;on Android this method doesn't work

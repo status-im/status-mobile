@@ -57,6 +57,7 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
         for chat in (device_1_chat, device_2_chat):
             if not chat.chat_element_by_text(join_system_message).is_element_displayed():
                 self.errors.append('System message after joining group chat is not shown')
+        device_2_chat.home_button.click(desired_view="home")
         message_1 = "Message from device: %s" % device_1_chat.driver.number
         device_1_chat.send_message(message_1)
         if device_1_chat.chat_element_by_text(message_1).status != 'delivered':

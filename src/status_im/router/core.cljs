@@ -43,6 +43,7 @@
                                   "b/"                    browser-extractor
                                   "browser/"              browser-extractor
                                   ["p/" :chat-id]         :private-chat
+                                  ["cr/" :community-id]  :community-requests
                                   "g/"                    group-chat-extractor
                                   ["wallet/" :account]    :wallet-account
                                   ["u/" :user-id]         :user
@@ -200,6 +201,9 @@
 
       (spec/valid? :global/public-key uri)
       (match-contact-async chain {:user-id uri} cb)
+
+      (= handler :community-requests)
+      (cb {:type handler :community-id (:community-id route-params)})
 
       (= handler :referrals)
       (cb (match-referral route-params))

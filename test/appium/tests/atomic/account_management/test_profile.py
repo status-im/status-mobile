@@ -1123,7 +1123,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
         home_1.just_fyi('check that PN is received and after tap you are redirected to public chat')
         home_1.open_notification_bar()
-        home_1.element_by_text_part('%s in #%s' % (username_2, chat_name)).click()
+        home_1.element_by_text_part(username_2).click()
         chat_1.element_starts_with_text(user_1['ens'] +'.stateofus.eth','button').click()
         if not profile_1.contacts_button.is_element_displayed():
                 self.errors.append('Was not redirected to own profile after tapping on mention of myself from another user!')
