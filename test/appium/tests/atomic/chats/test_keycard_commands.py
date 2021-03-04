@@ -85,7 +85,7 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
     @marks.testrail_id(6294)
     @marks.medium
-    @pytest.mark.parametrize('number', [str(i) for i in range(2)])
+    @pytest.mark.parametrize('number', [str(i) for i in range(13)])
     def test_keycard_request_and_receive_stt_in_1_1_chat_offline_opened_from_push(self, number):
 
         sender = transaction_senders['D']
