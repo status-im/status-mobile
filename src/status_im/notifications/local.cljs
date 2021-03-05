@@ -42,17 +42,18 @@
   [{:keys [title message icon user-info channel-id type]
     :as   notification
     :or   {channel-id "status-im-notifications"}}]
-  (pn-android/present-local-notification
-   (merge {:channelId channel-id
-           :title     title
-           :message   message
-           :showBadge false}
-          (when user-info
-            {:userInfo (bean/->js user-info)})
-          (when icon
-            {:largeIconUrl (:uri (react/resolve-asset-source icon))})
-          (when (= type "message")
-            notification))))
+  (when notification
+    (pn-android/present-local-notification
+     (merge {:channelId channel-id
+             :title     title
+             :message   message
+             :showBadge false}
+            (when user-info
+              {:userInfo (bean/->js user-info)})
+            (when icon
+              {:largeIconUrl (:uri (react/resolve-asset-source icon))})
+            (when (= type "message")
+              notification)))))
 
 (defn handle-notification-press [{{deep-link :deepLink} :userInfo
                                   interaction           :userInteraction}]
@@ -136,32 +137,33 @@
      {:keys [chat-type chat-id] :as chat} :chat
      {:keys [identicon]} :contact
      contact-id :contact-id}]
-   (let [contact-name @(re-frame/subscribe
-                        [:contacts/contact-name-by-identity contact-id])
-         group-chat?  (not= chat-type constants/one-to-one-chat-type)
-         title        (clojure.string/join
-                       " "
-                       (cond-> [contact-name]
-                         group-chat?
-                         (conj
-                          ;; TODO(rasom): to be translated
-                          "in")
+   (when (and chat-type chat-id)
+     (let [contact-name @(re-frame/subscribe
+                          [:contacts/contact-name-by-identity contact-id])
+           group-chat?  (not= chat-type constants/one-to-one-chat-type)
+           title        (clojure.string/join
+                         " "
+                         (cond-> [contact-name]
+                           group-chat?
+                           (conj
+                            ;; TODO(rasom): to be translated
+                            "in")
 
-                         group-chat?
-                         (conj
-                          (str (when (contains? #{constants/public-chat-type
-                                                  constants/community-chat-type}
-                                                chat-type)
-                                 "#")
-                               (get chat :name)))))]
-     {:type             "message"
-      :chatType         (str chat-type)
-      :from             title
-      :chatId           chat-id
-      :alias            title
-      :identicon        (or identicon (identicon/identicon contact-id))
-      :whisperTimestamp (get message :whisperTimestamp)
-      :text             (reply/get-quoted-text-with-mentions (:parsedText message))})))
+                           group-chat?
+                           (conj
+                            (str (when (contains? #{constants/public-chat-type
+                                                    constants/community-chat-type}
+                                                  chat-type)
+                                   "#")
+                                 (get chat :name)))))]
+       {:type             "message"
+        :chatType         (str chat-type)
+        :from             title
+        :chatId           chat-id
+        :alias            title
+        :identicon        (or identicon (identicon/identicon contact-id))
+        :whisperTimestamp (get message :whisperTimestamp)
+        :text             (reply/get-quoted-text-with-mentions (:parsedText message))}))))
 
 (defn create-notification
   ([notification]
