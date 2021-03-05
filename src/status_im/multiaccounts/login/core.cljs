@@ -504,7 +504,7 @@
     (fx/merge
      cofx
      {:db (-> db
-              (dissoc :intro-wizard)
+              (dissoc :intro-wizard :recovered-account?)
               (update :keycard dissoc :application-info))}
      (open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])))))
 
