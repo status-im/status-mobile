@@ -24,28 +24,30 @@
 (views/defview link-previews-settings []
   (views/letsubs [link-previews-whitelist [:link-preview/whitelist]
                   link-previews-enabled-sites [:link-preview/enabled-sites]]
-    [react/view {:flex 1}
-     [topbar/topbar {:title (i18n/label :t/chat-link-previews)}]
-     [react/image {:source      (resources/get-theme-image :unfurl)
-                   :style       styles/link-preview-settings-image}]
-     [quo/text {:style {:margin 16}}
-      (i18n/label :t/you-can-choose-preview-websites)]
-     [quo/separator {:style {:margin-vertical  8}}]
+    (let [all-enabled (= (count link-previews-whitelist) (count link-previews-enabled-sites))]
+      [react/view {:flex 1}
+       [topbar/topbar {:title (i18n/label :t/chat-link-previews)}]
+       [react/image {:source      (resources/get-theme-image :unfurl)
+                     :style       styles/link-preview-settings-image}]
+       [quo/text {:style {:margin 16}}
+        (i18n/label :t/you-can-choose-preview-websites)]
+       [quo/separator {:style {:margin-vertical  8}}]
 
-     [react/view styles/whitelist-container
-      [quo/list-header (i18n/label :t/websites)]
+       [react/view styles/whitelist-container
+        [quo/list-header (i18n/label :t/websites)]
 
-      (when (> (count link-previews-whitelist) 1)
-        [quo/button {:on-press #(doseq [site (map :title link-previews-whitelist)]
-                                  (re-frame/dispatch
-                                   [::link-preview/enable site true]))
-                     :type     :secondary
-                     :style styles/enable-all}
-         (i18n/label :t/enable-all)])]
-
-     [list/flat-list
-      {:data      (vec (map (prepare-urls-items-data link-previews-enabled-sites) link-previews-whitelist))
-       :key-fn    (fn [_ i] (str i))
-       :render-fn quo/list-item
-       :footer [quo/text {:color :secondary
-                          :style {:margin 16}} (i18n/label :t/previewing-may-share-metadata)]}]]))
+        (when (> (count link-previews-whitelist) 1)
+          [quo/button {:on-press #(re-frame/dispatch [::link-preview/enable-all
+                                                      link-previews-whitelist
+                                                      (not all-enabled)])
+                       :type     :secondary
+                       :style styles/enable-all}
+           (if all-enabled
+             (i18n/label :t/disable-all)
+             (i18n/label :t/enable-all))])]
+       [list/flat-list
+        {:data      (vec (map (prepare-urls-items-data link-previews-enabled-sites) link-previews-whitelist))
+         :key-fn    (fn [_ i] (str i))
+         :render-fn quo/list-item
+         :footer [quo/text {:color :secondary
+                            :style {:margin 16}} (i18n/label :t/previewing-may-share-metadata)]}]])))
