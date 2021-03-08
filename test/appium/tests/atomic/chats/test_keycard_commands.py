@@ -131,12 +131,11 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
 
         home_2.just_fyi('Check that transaction message is fetched from offline and sign transaction')
         profile_2.airplane_mode_button.click()
-        # TODO: PN is waiting for #11175
-        #transaction_request_pn = 'Request transaction'
-        # device_2.open_notification_bar()
-        # if not device_2.element_by_text(transaction_request_pn).is_element_displayed(60):
-        #    self.errors.append("Push notification is not received after going back from offline")
-        # device_2.element_by_text(transaction_request_pn).click()
+        transaction_request_pn = 'Request transaction'
+        device_2.open_notification_bar()
+        if not device_2.element_by_text(transaction_request_pn).is_element_displayed(60):
+           self.errors.append("Push notification is not received after going back from offline")
+        device_2.element_by_text(transaction_request_pn).click()
         home_2.connection_offline_icon.wait_for_invisibility_of_element(120)
         home_2.get_chat(recipient_username).click()
         chat_2_sender_message = chat_2.get_outgoing_transaction()

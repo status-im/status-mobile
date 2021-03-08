@@ -185,14 +185,13 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         send_transaction.confirm()
         send_transaction.sign_transaction_button.click()
         chat_1_sender_message = chat_1.get_outgoing_transaction()
-        # TODO: PN is waiting for #11175
-        # home_1.click_system_home_button()
+        home_1.click_system_home_button()
 
         chat_2 = home_2.get_chat(sender['username']).click()
         chat_2_receiver_message = chat_2.get_incoming_transaction()
         chat_2_receiver_message.decline_transaction.click()
-        # home_1.open_notification_bar()
-        # home_1.element_by_text_part('Request address for transaction declined').wait_and_click()
+        home_1.open_notification_bar()
+        home_1.element_by_text_part('Request address for transaction declined').wait_and_click()
 
         [message.transaction_status.wait_for_element_text(message.declined) for message in
          (chat_1_sender_message, chat_2_receiver_message)]

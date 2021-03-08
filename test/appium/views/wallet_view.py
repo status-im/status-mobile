@@ -167,6 +167,7 @@ class WalletView(BaseView):
                 if (counter/60).is_integer():
                     self.pull_to_refresh()
                     counter+=20
+                self.wallet_button.double_click()
                 counter += 10
                 time.sleep(10)
                 self.driver.info('*Waiting %ss for %s updated balance*' % (counter,asset))
