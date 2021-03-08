@@ -16,6 +16,17 @@
                (disj (get multiaccount :link-previews-enabled-sites #{}) site))
              {})))
 
+(fx/defn enable-all
+  {:events [::enable-all]}
+  [{{:keys [multiaccount]} :db :as cofx} link-previews-whitelist enabled?]
+  (fx/merge cofx
+            (multiaccounts.update/multiaccount-update
+             :link-previews-enabled-sites
+             (if enabled?
+               (into #{} (map :title link-previews-whitelist))
+               #{})
+             {})))
+
 (fx/defn load-link-preview-data
   {:events [::load-link-preview-data]}
   [cofx link]
