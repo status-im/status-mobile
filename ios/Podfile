@@ -33,7 +33,7 @@ abstract_target 'Status' do
   target 'StatusImPR' do
   end
 
-  use_flipper!
+  use_flipper!({ 'Flipper' => '0.74.0' })
   post_install do |installer|
     flipper_post_install(installer)
   end
