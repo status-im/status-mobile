@@ -14,7 +14,6 @@
             [status-im.ui.screens.communities.membership :as membership]
             [status-im.ui.screens.communities.members :as members]
             [status-im.ui.screens.communities.requests-to-join :as requests-to-join]
-            [status-im.ui.screens.communities.invite :as invite]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
             [status-im.ui.screens.stickers.views :as stickers]
@@ -54,9 +53,7 @@
     {:name      :community-requests-to-join
      :component requests-to-join/requests-to-join-container}
     {:name      :create-community-channel
-     :component create-channel/create-channel}
-    {:name      :invite-people-community
-     :component invite/invite}]])
+     :component create-channel/create-channel}]])
 
 (defn communities []
   [communities-stack {:header-mode :none}
@@ -68,11 +65,7 @@
      {:name      :community-import
       :insets    {:bottom true
                   :top    false}
-      :component communities.import/view}
-     {:name      :invite-people-community
-      :insets    {:bottom true
-                  :top    false}
-      :component invite/invite}]
+      :component communities.import/view}]
     (when config/communities-management-enabled?
       [{:name      :community-edit
         :insets    {:bottom true

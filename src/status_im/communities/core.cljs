@@ -7,10 +7,7 @@
    [taoensso.timbre :as log]
    [status-im.utils.fx :as fx]
    [status-im.constants :as constants]
-   [status-im.chat.models :as models.chat]
-   [status-im.transport.filters.core :as models.filters]
    [status-im.bottom-sheet.core :as bottom-sheet]
-   [status-im.data-store.chats :as data-store.chats]
    [status-im.ethereum.json-rpc :as json-rpc]
    [status-im.ui.components.colors :as colors]
    [status-im.navigation :as navigation]))
@@ -56,15 +53,6 @@
 (defn fetch-community-id-input [{:keys [db]}]
   (:communities/community-id-input db))
 
-(fx/defn handle-chats [cofx chats]
-  (models.chat/ensure-chats cofx chats))
-
-(fx/defn handle-filters [cofx filters]
-  (models.filters/handle-filters cofx filters))
-
-(fx/defn handle-removed-filters [cofx filters]
-  (models.filters/handle-filters-removed cofx (map models.filters/responses->filters filters)))
-
 (fx/defn handle-request-to-join [{:keys [db]} r]
   (let [{:keys [id community-id] :as request} (<-request-to-join-community-rpc r)]
     {:db (assoc-in db [:communities/requests-to-join community-id id] request)}))
@@ -75,11 +63,7 @@
                db
                chat-ids)})
 
-(fx/defn handle-community
-  [{:keys [db]} {:keys [id] :as community}]
-  {:db (assoc-in db [:communities id] (<-rpc community))})
-
-(fx/defn handle-fetched
+(fx/defn handle-communities
   {:events [::fetched]}
   [{:keys [db]} communities]
   {:db (reduce (fn [db {:keys [id] :as community}]
@@ -87,26 +71,20 @@
                db
                communities)})
 
-(fx/defn handle-response [cofx response]
-  (fx/merge cofx
-            (handle-removed-chats (:removedChats response))
-            (handle-chats (map #(-> %
-                                    (data-store.chats/<-rpc)
-                                    (dissoc :unviewed-messages-count))
-                               (:chats response)))
-            (handle-fetched (:communities response))
-            (handle-removed-filters (:removedFilters response))
-            (handle-filters (:filters response))))
+(fx/defn handle-response [_ response-js]
+  {:dispatch [:sanitize-messages-and-process-response response-js]})
 
 (fx/defn left
   {:events [::left]}
-  [cofx response]
-  (handle-response cofx response))
+  [cofx response-js]
+  (fx/merge cofx
+            (handle-response cofx response-js)
+            (navigation/navigate-to-cofx :home {})))
 
 (fx/defn joined
   {:events [::joined ::requested-to-join]}
-  [cofx response]
-  (handle-response cofx response))
+  [cofx response-js]
+  (handle-response cofx response-js))
 
 (fx/defn export
   {:events [::export-pressed]}
@@ -124,6 +102,7 @@
   [cofx community-key]
   {::json-rpc/call [{:method     "wakuext_importCommunity"
                      :params     [community-key]
+                     :js-response true
                      :on-success #(re-frame/dispatch [::community-imported %])
                      :on-error   #(do
                                     (log/error "failed to import community" %)
@@ -134,6 +113,7 @@
   [cofx community-id]
   {::json-rpc/call [{:method "wakuext_joinCommunity"
                      :params [community-id]
+                     :js-response true
                      :on-success #(re-frame/dispatch [::joined %])
                      :on-error #(do
                                   (log/error "failed to join community" community-id %)
@@ -144,6 +124,7 @@
   [cofx community-id]
   {::json-rpc/call [{:method "wakuext_requestToJoinCommunity"
                      :params [{:communityId community-id}]
+                     :js-response true
                      :on-success #(re-frame/dispatch [::requested-to-join %])
                      :on-error #(do
                                   (log/error "failed to request to join community" community-id %)
@@ -154,6 +135,7 @@
   [cofx community-id]
   {::json-rpc/call [{:method     "wakuext_leaveCommunity"
                      :params     [community-id]
+                     :js-response true
                      :on-success #(re-frame/dispatch [::left %])
                      :on-error   #(do
                                     (log/error "failed to leave community" community-id %)
@@ -169,7 +151,7 @@
 
 (fx/defn chat-created
   {:events [::chat-created]}
-  [cofx community-id user-pk]
+  [_ community-id user-pk]
   {::json-rpc/call [{:method     "wakuext_sendChatMessage"
                      :params     [{:chatId      user-pk
                                    :text        "Upgrade here to see an invitation to community"
@@ -191,6 +173,7 @@
       {::json-rpc/call [{:method     "wakuext_inviteUsersToCommunity"
                          :params     [{:communityId community-id
                                        :users pks}]
+                         :js-response true
                          :on-success #(re-frame/dispatch [::people-invited %])
                          :on-error   #(do
                                         (log/error "failed to invite-user community" %)
@@ -206,6 +189,7 @@
       {::json-rpc/call [{:method     "wakuext_shareCommunity"
                          :params     [{:communityId community-id
                                        :users pks}]
+                         :js-response true
                          :on-success #(re-frame/dispatch [::people-invited %])
                          :on-error   #(do
                                         (log/error "failed to invite-user community" %)
@@ -233,6 +217,7 @@
 
       {::json-rpc/call [{:method     "wakuext_createCommunity"
                          :params     [params]
+                         :js-response true
                          :on-success #(re-frame/dispatch [::community-created %])
                          :on-error   #(do
                                         (log/error "failed to create community" %)
@@ -264,6 +249,7 @@
                                                    :color        (rand-nth colors/chat-colors)
                                                    :description  community-channel-description}
                                      :permissions {:access constants/community-channel-access-no-membership}}]
+                       :js-response true
                        :on-success #(re-frame/dispatch [::community-channel-created %])
                        :on-error   #(do
                                       (log/error "failed to create community channel" %)
@@ -306,23 +292,23 @@
 
 (fx/defn community-created
   {:events [::community-created]}
-  [cofx response]
+  [cofx response-js]
   (fx/merge cofx
             (navigation/navigate-back)
-            (handle-response response)))
+            (handle-response response-js)))
 
 (fx/defn community-edited
   {:events [::community-edited]}
-  [cofx response]
+  [cofx response-js]
   (fx/merge cofx
             (navigation/navigate-back)
-            (handle-response response)))
+            (handle-response response-js)))
 
 (fx/defn open-create-community
   {:events [::open-create-community]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
-            {:db (assoc db :communities/create {})}
+            {:db (assoc db :communities/create {:membership constants/community-no-membership-access})}
             (navigation/navigate-to :community-create nil)))
 
 (fx/defn open-edit-community
@@ -340,24 +326,24 @@
 
 (fx/defn community-imported
   {:events [::community-imported]}
-  [cofx response]
+  [cofx response-js]
   (fx/merge cofx
             (navigation/navigate-back)
-            (handle-response response)))
+            (handle-response response-js)))
 
 (fx/defn people-invited
   {:events [::people-invited]}
-  [cofx response]
+  [cofx response-js]
   (fx/merge cofx
             (navigation/navigate-back)
-            (handle-response response)))
+            (handle-response response-js)))
 
 (fx/defn community-channel-created
   {:events [::community-channel-created]}
-  [cofx response]
+  [cofx response-js]
   (fx/merge cofx
             (navigation/navigate-back)
-            (handle-response response)))
+            (handle-response response-js)))
 
 (fx/defn create-field
   {:events [::create-field]}
@@ -371,17 +357,17 @@
 
 (fx/defn member-kicked
   {:events [::member-kicked]}
-  [cofx response]
-
+  [cofx response-js]
   (fx/merge cofx
             (bottom-sheet/hide-bottom-sheet)
-            (handle-response response)))
+            (handle-response response-js)))
 
 (fx/defn member-kick
   {:events [::member-kick]}
   [cofx community-id public-key]
   {::json-rpc/call [{:method     "wakuext_removeUserFromCommunity"
                      :params     [community-id public-key]
+                     :js-response true
                      :on-success #(re-frame/dispatch [::member-kicked %])
                      :on-error   #(log/error "failed to remove user from community" community-id public-key %)}]})
 
@@ -408,21 +394,24 @@
 
 (fx/defn request-to-join-accepted
   {:events [::request-to-join-accepted]}
-  [{:keys [db] :as cofx} community-id request-id response]
+  [{:keys [db] :as cofx} community-id request-id response-js]
   (fx/merge cofx
             {:db (update-in db [:communities/requests-to-join community-id] dissoc request-id)}
-            (handle-response response)))
+            (handle-response response-js)))
 
 (fx/defn request-to-join-declined
   {:events [::request-to-join-declined]}
-  [{:keys [db] :as cofx} community-id request-id]
-  {:db (update-in db [:communities/requests-to-join community-id] dissoc request-id)})
+  [{:keys [db] :as cofx} community-id request-id response-js]
+  (fx/merge cofx
+            {:db (update-in db [:communities/requests-to-join community-id] dissoc request-id)}
+            (handle-response response-js)))
 
 (fx/defn accept-request-to-join-pressed
   {:events [:communities.ui/accept-request-to-join-pressed]}
   [cofx community-id request-id]
   {::json-rpc/call [{:method     "wakuext_acceptRequestToJoinCommunity"
                      :params     [{:id request-id}]
+                     :js-response true
                      :on-success #(re-frame/dispatch [::request-to-join-accepted community-id request-id %])
                      :on-error   #(log/error "failed to accept requests-to-join" community-id request-id %)}]})
 
@@ -431,5 +420,6 @@
   [cofx community-id request-id]
   {::json-rpc/call [{:method     "wakuext_declineRequestToJoinCommunity"
                      :params     [{:id request-id}]
+                     :js-response true
                      :on-success #(re-frame/dispatch [::request-to-join-declined community-id request-id %])
                      :on-error   #(log/error "failed to decline requests-to-join" community-id request-id)}]})

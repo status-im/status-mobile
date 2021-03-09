@@ -30,7 +30,8 @@
         ^js emoji-reactions (.-emojiReactions response-js)
         ^js filters (.-filters response-js)
         ^js removed-filters (.-removedFilters response-js)
-        ^js invitations (.-invitations response-js)]
+        ^js invitations (.-invitations response-js)
+        ^js removed-chats (.-removedChats response-js)]
 
     (cond
 
@@ -63,10 +64,19 @@
                   (models.contact/ensure-contacts (map data-store.contacts/<-rpc contacts-clj))))
 
       (seq communities)
-      (let [community (.pop communities)]
+      (let [communities-clj (types/js->clj communities)]
+        (js-delete response-js "communities")
         (fx/merge cofx
                   {:utils/dispatch-later [{:ms 20 :dispatch [:process-response response-js]}]}
-                  (models.communities/handle-community (types/js->clj community))))
+                  (models.communities/handle-communities (types/js->clj communities-clj))))
+
+      (seq removed-chats)
+      (let [removed-chats-clj (types/js->clj removed-chats)]
+        (js-delete response-js "removedChats")
+        (fx/merge cofx
+                  {:utils/dispatch-later [{:ms 20 :dispatch [:process-response response-js]}]}
+                  (models.communities/handle-removed-chats (types/js->clj removed-chats-clj))))
+
       (seq requests-to-join-community)
       (let [request (.pop requests-to-join-community)]
         (fx/merge cofx

@@ -983,8 +983,8 @@
  :chats/unread-messages-number
  :<- [:chats/active-chats]
  (fn [chats _]
-   (reduce-kv (fn [{:keys [public other]} _ {:keys [unviewed-messages-count public?]}]
-                (if public?
+   (reduce-kv (fn [{:keys [public other]} _ {:keys [unviewed-messages-count public?] :as chat}]
+                (if (or public? (chat.models/community-chat? chat))
                   {:public (+ public unviewed-messages-count)
                    :other other}
                   {:other (+ other unviewed-messages-count)

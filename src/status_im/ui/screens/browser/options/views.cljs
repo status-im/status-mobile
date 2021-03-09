@@ -76,7 +76,7 @@
             :accessibility-label :open-chat
             :title               (str "#" topic)
             :subtitle            (i18n/label :t/open-chat)
-            :on-press            #(hide-sheet-and-dispatch [:chat.ui/start-public-chat topic nil])
+            :on-press            #(hide-sheet-and-dispatch [:chat.ui/start-public-chat topic {:navigation-reset? true}])
             :chevron             true}]
           [components/separator]])
        (if connected?

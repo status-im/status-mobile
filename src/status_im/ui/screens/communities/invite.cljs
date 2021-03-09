@@ -5,7 +5,7 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.constants :as constants]
             [status-im.ui.components.toolbar :as toolbar]
-            [status-im.utils.handlers :refer [>evt <sub]]
+            [status-im.utils.handlers :refer [<sub >evt-once]]
             [status-im.communities.core :as communities]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
@@ -57,11 +57,12 @@
                                              (not= (:access permissions) constants/community-no-membership-access))]
         [:<>
          [topbar/topbar {:title (i18n/label (if can-invite?
-                                              :t/community-invite-title
-                                              :t/community-share-title))}]
+                                              :t/invite-people
+                                              :t/community-share-title))
+                         :modal? true}]
          [rn/flat-list {:style                   {:flex 1}
                         :content-container-style {:padding-vertical 16}
-                        :header                  [header user-pk]
+                        ;:header                  [header user-pk]
                         :render-data             {:selected contacts-selected}
                         :render-fn               contacts-list-item
                         :key-fn                  (fn [{:keys [active public-key]}]
@@ -73,7 +74,8 @@
            [quo/button {:disabled (and (str/blank? @user-pk)
                                        (zero? (count selected)))
                         :type     :secondary
-                        :on-press #(>evt [(if can-invite?
-                                            ::communities/invite-people-confirmation-pressed
-                                            ::communities/share-community-confirmation-pressed) @user-pk selected])}
+                        :on-press #(>evt-once
+                                    [(if can-invite?
+                                       ::communities/invite-people-confirmation-pressed
+                                       ::communities/share-community-confirmation-pressed) @user-pk selected])}
             (i18n/label (if can-invite? :t/invite :t/share))]}]]))))

@@ -1486,5 +1486,6 @@
     "rpc-usage-get-stats": "Refresh",
     "rpc-usage-reset": "Reset",
     "rpc-usage-filter": "Filter methods",
-    "rpc-usage-copy": "Copy"
+    "rpc-usage-copy": "Copy",
+    "community-message-preview": "Invitation to join {{community-name}}"
 }

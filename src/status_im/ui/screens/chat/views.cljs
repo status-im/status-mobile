@@ -249,7 +249,7 @@
 (defn render-fn [{:keys [outgoing type] :as message}
                  idx
                  _
-                 {:keys [group-chat public? current-public-key space-keeper chat-id]}]
+                 {:keys [group-chat public? current-public-key space-keeper chat-id show-input?]}]
   [react/view {:style (when platform/android? {:scaleY -1})}
    (if (= type :datemark)
      [message-datemark/chat-datemark (:value message)]
@@ -261,11 +261,12 @@
                :incoming-group (and group-chat (not outgoing))
                :group-chat group-chat
                :public? public?
-               :current-public-key current-public-key)
+               :current-public-key current-public-key
+               :show-input? show-input?)
         space-keeper]))])
 
 (defn messages-view
-  [{:keys [chat bottom-space pan-responder space-keeper]}]
+  [{:keys [chat bottom-space pan-responder space-keeper show-input?]}]
   (let [{:keys [group-chat chat-id public?]} chat
         messages @(re-frame/subscribe [:chats/chat-messages-stream chat-id])
         current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
@@ -281,7 +282,8 @@
                                       :public?            public?
                                       :current-public-key current-public-key
                                       :space-keeper       space-keeper
-                                      :chat-id            chat-id}
+                                      :chat-id            chat-id
+                                      :show-input?        show-input?}
        :render-fn                    render-fn
        :on-viewable-items-changed    on-viewable-items-changed
        ;;TODO this is not really working in pair with inserting new messages because we stop inserting new messages
@@ -332,7 +334,8 @@
           [messages-view {:chat          current-chat
                           :bottom-space  (max @bottom-space @panel-space)
                           :pan-responder pan-responder
-                          :space-keeper  space-keeper}]]
+                          :space-keeper  space-keeper
+                          :show-input?   show-input?}]]
          (when (and group-chat invitation-admin)
            [accessory/view {:y               position-y
                             :on-update-inset on-update}

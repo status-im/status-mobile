@@ -5,9 +5,9 @@
             [quo.core :as quo]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
-            [status-im.utils.handlers :refer [>evt]]
             [status-im.communities.core :as communities]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.utils.debounce :as debounce]))
 
 (defn valid? [community-name]
   (not (str/blank? community-name)))
@@ -32,5 +32,7 @@
          :center
          [quo/button {:disabled (not (valid? @channel-name))
                       :type     :secondary
-                      :on-press #(>evt [::communities/create-channel-confirmation-pressed @channel-name])}
+                      :on-press #(debounce/dispatch-and-chill
+                                  [::communities/create-channel-confirmation-pressed @channel-name]
+                                  3000)}
           (i18n/label :t/create)]}]])))

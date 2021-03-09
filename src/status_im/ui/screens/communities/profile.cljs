@@ -10,23 +10,18 @@
             [status-im.constants :as constants]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.unviewed-indicator :as unviewed-indicator]
-            [quo.react-native :as rn]))
+            [quo.react-native :as rn]
+            [clojure.string :as string]))
 
 (defn management [route]
   (let [{:keys [community-id]}      (get-in route [:route :params])
         requests-to-join (<sub [:communities/requests-to-join-for-community community-id])
         community (<sub [:communities/community community-id])
-
-        {:keys [color
-                members
-                permissions
-                description
-                name admin]} community
+        {:keys [color members permissions description name admin]} community
         roles                false
         notifications        false
         show-members-count?  (not= (:access permissions) constants/community-no-membership-access)
         members-count        (count members)]
-
     [:<>
      [quo/animated-header {:left-accessories  [{:icon                :main-icons/arrow-left
                                                 :accessibility-label :back-button
@@ -42,12 +37,16 @@
                                                              (rn/resolve-asset-source
                                                               (resources/get-image :status-logo)))
                                                             (get-in community [:images :large :uri]))
-                                                :subtitle (when show-members-count? (i18n/label-pluralize members-count :t/community-members {:count members-count}))})
+                                                :subtitle (if show-members-count?
+                                                            (i18n/label-pluralize members-count :t/community-members {:count members-count})
+                                                            (i18n/label :t/open-membership))})
                            :use-insets        true}
       [:<>
-       [quo/list-footer {:color :main}
-        (get-in description [:identity :description])]
-       [quo/separator {:style {:margin-vertical 8}}]
+       (when-not (string/blank? description)
+         [:<>
+          [quo/list-footer {:color :main}
+           description]
+          [quo/separator {:style {:margin-vertical 8}}]])
        (when show-members-count?
          [quo/list-item {:chevron        true
                          :accessory

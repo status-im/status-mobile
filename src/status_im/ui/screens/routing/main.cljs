@@ -26,7 +26,8 @@
             [status-im.ui.screens.link-previews-settings.views :as link-previews]
             [status-im.ui.screens.status.new.views :as status.new]
             [status-im.ui.screens.browser.bookmarks.views :as bookmarks]
-            [status-im.ui.screens.routing.status-stack :as status-stack]))
+            [status-im.ui.screens.routing.status-stack :as status-stack]
+            [status-im.ui.screens.communities.invite :as communities.invite]))
 
 (defonce main-stack (navigation/create-stack))
 (defonce bottom-tabs (navigation/create-bottom-tabs))
@@ -161,7 +162,10 @@
        {:name       :buy-crypto-website
         :transition :presentation-ios
         :insets     {:bottom true}
-        :component  wallet.buy-crypto/website}]
+        :component  wallet.buy-crypto/website}
+       {:name      :invite-people-community
+        :component communities.invite/invite
+        :insets     {:bottom true}}]
 
       (when config/quo-preview-enabled?
         [{:name      :quo-preview

@@ -43,10 +43,9 @@
                          colors/gray)}))
 
 (defn message-wrapper [{:keys [outgoing]}]
-  (merge {:flex-direction :column}
-         (if outgoing
-           {:margin-left 96}
-           {:margin-right 52})))
+  (if outgoing
+    {:margin-left 96}
+    {:margin-right 52}))
 
 (defn message-author-wrapper
   [outgoing display-photo?]
@@ -318,3 +317,32 @@
           :position         :absolute
           :background-color :transparent
           :border-color     colors/black-transparent}))
+
+(defn community-verified []
+  {:border-right-width      1
+   :border-left-width       1
+   :border-top-width        1
+   :border-left-color       colors/gray-lighter
+   :border-right-color      colors/gray-lighter
+   :border-top-left-radius  10
+   :border-top-right-radius 10
+   :padding-vertical        8
+   :padding-horizontal      15
+   :border-top-color        colors/gray-lighter})
+
+(defn community-message [verified]
+  {:flex-direction          :row
+   :padding-vertical        12
+   :border-top-left-radius  (when-not verified 10)
+   :border-top-right-radius (when-not verified 10)
+   :border-right-width      1
+   :border-left-width       1
+   :border-top-width        1
+   :border-color            colors/gray-lighter})
+
+(defn community-view-button []
+  {:border-width               1
+   :padding-vertical           8
+   :border-bottom-left-radius  10
+   :border-bottom-right-radius 10
+   :border-color               colors/gray-lighter})

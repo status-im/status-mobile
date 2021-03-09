@@ -7,15 +7,13 @@
    [status-im.constants :as constants]
    [status-im.communities.core :as communities]
    [status-im.utils.handlers :refer [>evt <sub]]
-   [status-im.ui.screens.chat.photos :as photos]
    [status-im.ui.components.list.views :as list]
    [status-im.ui.components.copyable-text :as copyable-text]
-   [status-im.react-native.resources :as resources]
    [status-im.ui.components.topbar :as topbar]
    [status-im.ui.components.colors :as colors]
-   [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
    [status-im.ui.components.toolbar :as toolbar]
-   [status-im.ui.components.react :as react]))
+   [status-im.ui.components.react :as react]
+   [status-im.ui.screens.communities.icon :as communities.icon]))
 
 (defn hide-sheet-and-dispatch [event]
   (>evt [:bottom-sheet/hide])
@@ -31,25 +29,10 @@
                                        :height           12}
                  :accessibility-label :unviewed-messages-public}]))
 
-(defn community-icon [{:keys [id name images color]}]
-  (let [color (or color (rand-nth colors/chat-colors))
-        thumbnail-image (get-in images [:thumbnail :uri])]
-    (cond
-      (= id constants/status-community-id)
-      [react/image {:source (resources/get-image :status-logo)
-                    :style  {:width  40
-                             :height 40}}]
-      (seq thumbnail-image)
-      [photos/photo thumbnail-image {:size 40}]
-
-      :else
-      [chat-icon.screen/chat-icon-view-chat-list
-       id true name color false false])))
-
 (defn community-home-list-item [{:keys [id name last?] :as community}]
   [react/view
    [quo/list-item
-    {:icon                      [community-icon community]
+    {:icon                      [communities.icon/community-icon community]
      :title                     [react/view {:flex-direction :row
                                              :flex           1}
                                  [react/view {:flex-direction :row
@@ -70,11 +53,11 @@
      :title-accessibility-label :chat-name-text
      :on-press                  #(do
                                    (>evt [:dismiss-keyboard])
-                                   (>evt [:navigate-to :community {:community-id id}]))
+                                   (>evt [:navigate-to :community {:community-id id}]))}]
      ;; TODO: actions
      ;; :on-long-press             #(>evt [:bottom-sheet/show-sheet
      ;;                                                 nil])
-     }]
+
    (when last?
      [quo/separator])])
 
@@ -82,7 +65,7 @@
   (let [members-count (count members)
         show-members-count? (not= (:access permissions) constants/community-no-membership-access)]
     [quo/list-item
-     {:icon                      [community-icon community]
+     {:icon                      [communities.icon/community-icon community]
       :title                     [react/view {:flex-direction :row
                                               :flex           1
                                               :padding-right  16
@@ -156,7 +139,7 @@
         {:show-border? true
          :center       [quo/button {:on-press #(>evt [::communities/open-create-community])
                                     :type     :secondary}
-                        (i18n/label :t/create)]}])]))
+                        (i18n/label :t/create-community)]}])]))
 
 (defn export-community []
   (let [{:keys [community-key]} (<sub [:popover/popover])]

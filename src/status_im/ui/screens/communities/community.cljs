@@ -7,7 +7,6 @@
             [status-im.utils.handlers :refer [>evt <sub]]
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
-            [status-im.utils.config :as config]
             [status-im.communities.core :as communities]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.screens.home.views.inner-item :as inner-item]
@@ -16,7 +15,9 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
-            [status-im.utils.core :as utils]))
+            [status-im.utils.core :as utils]
+            [status-im.ui.components.plus-button :as components.plus-button]
+            [status-im.utils.config :as config]))
 
 (def request-cooldown-ms (* 60 1000))
 
@@ -47,25 +48,49 @@
       [quo/text {:number-of-lines     1
                  :accessibility-label :community-name-text}
        display-name]
-      (when show-members-count?
-        [quo/text {:number-of-lines 1
-                   :size            :small
-                   :color           :secondary}
-         (i18n/label-pluralize members :t/community-members {:count members})])]]))
+      [quo/text {:number-of-lines 1
+                 :size            :small
+                 :color           :secondary}
+       (if show-members-count?
+         (i18n/label-pluralize members :t/community-members {:count members})
+         (i18n/label :t/open-membership))]]]))
 
 (defn hide-sheet-and-dispatch [event]
   (>evt [:bottom-sheet/hide])
   (>evt event))
 
-(defn community-actions [{:keys [id
-                                 permissions
-                                 can-manage-users? name images color]}]
+(defn community-plus-actions [{:keys [id permissions can-manage-users?]}]
   (let [can-invite?     (and can-manage-users? (not= (:access permissions) constants/community-no-membership-access))
-        can-share?      (not= (:access permissions) constants/community-invitation-only-access)
-        thumbnail-image (get-in images [:thumbnail :uri])]
+        can-share?      (not= (:access permissions) constants/community-invitation-only-access)]
+    [:<>
+     [quo/list-item
+      {:theme               :accent
+       :title               (i18n/label :t/create-channel)
+       :accessibility-label :community-create-channel
+       :icon                :main-icons/channel
+       :on-press            #(hide-sheet-and-dispatch [::communities/create-channel-pressed id])}]
+     [quo/separator]
+     (when can-invite?
+       [quo/list-item
+        {:theme               :accent
+         :title               (i18n/label :t/invite-people)
+         :icon                :main-icons/share
+         :accessibility-label :community-invite-people
+         :on-press            #(>evt [::communities/invite-people-pressed id])}])
+     (when (and can-share? (not can-invite?))
+       [quo/list-item
+        {:theme               :accent
+         :title               (i18n/label :t/invite-people)
+         :icon                :main-icons/share
+         :accessibility-label :community-share
+         :on-press            #(>evt [::communities/share-community-pressed id])}])]))
+
+(defn community-actions [{:keys [id name images color can-manage-users?]}]
+  (let [thumbnail-image (get-in images [:thumbnail :uri])]
     [:<>
      [quo/list-item
       {:title    name
+       :subtitle (i18n/label :t/view-profile)
        :on-press #(hide-sheet-and-dispatch [:navigate-to :community-management {:community-id id}])
        :chevron  true
        :icon     (cond
@@ -83,42 +108,12 @@
                     name
                     (or color (rand-nth colors/chat-colors))])}]
      (when (and config/communities-management-enabled? can-manage-users?)
-       [:<>
-        [quo/list-item
-         {:theme               :accent
-          :title               (i18n/label :t/export-key)
-          :accessibility-label :community-export-key
-          :icon                :main-icons/objects
-          :on-press            #(hide-sheet-and-dispatch [::communities/export-pressed id])}]
-        [quo/list-item
-         {:theme               :accent
-          :title               (i18n/label :t/create-channel)
-          :accessibility-label :community-create-channel
-          :icon                :main-icons/channel
-          :on-press            #(hide-sheet-and-dispatch [::communities/create-channel-pressed id])}]])
-     (when can-invite?
        [quo/list-item
         {:theme               :accent
-         :title               (i18n/label :t/invite-people)
-         :icon                :main-icons/share
-         :accessibility-label :community-invite-people
-         :on-press            #(>evt [::communities/invite-people-pressed id])}])
-     (when can-share?
-       [quo/list-item
-        {:theme               :accent
-         :title               (i18n/label :t/share)
-         :icon                :main-icons/share
-         :accessibility-label :community-share
-         :on-press            #(>evt [::communities/share-community-pressed id])}])
-     [quo/list-item
-      {:theme               :accent
-       :title               (i18n/label :t/leave-community)
-       :accessibility-label :leave
-       :icon                :main-icons/arrow-left
-       :on-press            #(do
-                               (>evt [:bottom-sheet/hide])
-                               (>evt [:navigate-to :home])
-                               (>evt [::communities/leave id]))}]]))
+         :title               (i18n/label :t/export-key)
+         :accessibility-label :community-export-key
+         :icon                :main-icons/objects
+         :on-press            #(hide-sheet-and-dispatch [::communities/export-pressed id])}])]))
 
 (defn welcome-blank-page []
   [rn/view {:style {:padding 16 :flex 1 :flex-direction :row :align-items :center :justify-content :center}}
@@ -148,7 +143,7 @@
     [community-chat-list chats]))
 
 (defn channel-preview-item [{:keys [id color name]}]
-  (let [color (or color (rand-nth colors/chat-colors))]
+  (let [color (or color colors/default-community-color)]
     [quo/list-item
      {:icon                      [chat-icon.screen/chat-icon-view-chat-list
                                   id true name color false false]
@@ -185,39 +180,35 @@
 
 (defn community [route]
   (let [{:keys [community-id]} (get-in route [:route :params])
-        {:keys [id
-                chats
-                name
-                images
-                members
-                permissions
-                color
-                joined
-                can-request-access?
-                can-join?
-                requested-to-join-at
-                admin]
+        {:keys [id chats name images members permissions color joined can-request-access?
+                can-join? requested-to-join-at admin]
          :as   community}      (<sub [:communities/community community-id])]
     [rn/view {:style {:flex 1}}
-
      [topbar/topbar
-      {:content           [toolbar-content id
-                           name
-                           color
-                           images
-                           (not= (:access permissions) constants/community-no-membership-access)
-                           (count members)]
-       :right-accessories (when (or admin joined)
-                            [{:icon                :main-icons/more
-                              :accessibility-label :community-menu-button
-                              :on-press
-                              #(>evt [:bottom-sheet/show-sheet
-                                      {:content (fn []
-                                                  [community-actions community])
-                                       :height  256}])}])}]
+      {:content
+       [toolbar-content
+        id
+        name
+        color
+        images
+        (not= (:access permissions) constants/community-no-membership-access)
+        (count members)]
+       :right-accessories
+       (when (or admin joined)
+         [{:icon                :main-icons/more
+           :accessibility-label :community-menu-button
+           :on-press #(>evt [:bottom-sheet/show-sheet
+                             {:content (fn []
+                                         [community-actions community])}])}])}]
      (if joined
        [community-channel-list id]
        [community-channel-preview-list id chats])
+     (when admin
+       [components.plus-button/plus-button
+        {:on-press #(>evt [:bottom-sheet/show-sheet
+                           {:content (fn []
+                                       [community-plus-actions community])}])
+         :accessibility-label :new-chat-button}])
      (when-not joined
        (cond
          can-join?

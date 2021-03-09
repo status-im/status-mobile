@@ -16,13 +16,13 @@
   (>evt [:bottom-sheet/hide])
   (>evt event))
 
-(defn member-sheet [{:keys [public-key] :as member} community-id can-kick-users?]
+(defn member-sheet [first-name {:keys [public-key] :as member} community-id can-kick-users?]
   [:<>
    [quo/list-item
     {:theme               :accent
      :icon                [chat-icon/contact-icon-contacts-tab
                            (multiaccounts/displayed-photo member)]
-     :title               (multiaccounts/displayed-name member)
+     :title               first-name
      :subtitle            (i18n/label :t/view-profile)
      :accessibility-label :view-chat-details-button
      :chevron             true
@@ -43,18 +43,19 @@
 (defn render-member [public-key _ _ {:keys [community-id
                                             my-public-key
                                             can-kick-users?]}]
-  (let [{:keys [nickname] :as member} (or (<sub [:contacts/contact-by-identity public-key])
-                                          {:public-key public-key})]
+  (let [member (<sub [:contacts/contact-by-identity public-key])
+        [first-name second-name] (<sub [:contacts/contact-two-names-by-identity public-key])]
     [quo/list-item
-     {:title               (if (seq nickname)
-                             nickname
-                             (multiaccounts/displayed-name member))
+     {:title               first-name
+      :subtitle            second-name
       :accessibility-label :member-item
       :icon                [chat-icon/contact-icon-contacts-tab
                             (multiaccounts/displayed-photo member)]
       :accessory           (when (not= public-key my-public-key)
-                             [quo/button {:on-press            #(>evt [:bottom-sheet/show-sheet
-                                                                       {:content (fn [] [member-sheet member community-id can-kick-users?])}])
+                             [quo/button {:on-press
+                                          #(>evt [:bottom-sheet/show-sheet
+                                                  {:content (fn []
+                                                              [member-sheet first-name member community-id can-kick-users?])}])
                                           :type                :icon
                                           :theme               :icon
                                           :accessibility-label :menu-option}

@@ -11,7 +11,8 @@
             [quo.design-system.colors :as colors]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.communities.membership :as memberships]
-            [status-im.ui.components.icons.icons :as icons]))
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.utils.debounce :as debounce]))
 
 (def max-name-length 30)
 (def max-description-length 140)
@@ -29,14 +30,22 @@
                 :height               crop-size})
 
 (defn pick-pic []
-  (react/show-image-picker
-   #(>evt [::communities/create-field :image (.-path ^js %)])
-   crop-opts))
+  ;;we need timeout because first we need to close bottom sheet and then open picker
+  (js/setTimeout
+   (fn []
+     (react/show-image-picker
+      #(>evt [::communities/create-field :image (.-path ^js %)])
+      crop-opts))
+   300))
 
 (defn take-pic []
-  (react/show-image-picker-camera
-   #(>evt [::communities/create-field :image (.-path ^js %)])
-   crop-opts))
+  ;;we need timeout because first we need to close bottom sheet and then open picker
+  (js/setTimeout
+   (fn []
+     (react/show-image-picker-camera
+      #(>evt [::communities/create-field :image (.-path ^js %)])
+      crop-opts))
+   300))
 
 (defn bottom-sheet [has-picture]
   (fn []
@@ -118,7 +127,8 @@
 
 (defn form []
   (let [{:keys [name description membership]} (<sub [:communities/create])]
-    [rn/scroll-view {:style                   {:flex 1}
+    [rn/scroll-view {:keyboard-should-persist-taps :handled
+                     :style                   {:flex 1}
                      :content-container-style {:padding-vertical 16}}
      [rn/view {:style {:padding-bottom     16
                        :padding-top        10
@@ -166,5 +176,5 @@
        :center
        [quo/button {:disabled (not (valid? name description))
                     :type     :secondary
-                    :on-press #(>evt [::communities/create-confirmation-pressed])}
+                    :on-press #(debounce/dispatch-and-chill [::communities/create-confirmation-pressed] 3000)}
         (i18n/label :t/create)]}]]))

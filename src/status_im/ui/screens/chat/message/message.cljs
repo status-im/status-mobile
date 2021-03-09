@@ -12,7 +12,6 @@
             [status-im.ui.screens.chat.message.command :as message.command]
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.chat.sheets :as sheets]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.screens.chat.styles.message.message :as style]
             [status-im.ui.screens.chat.utils :as chat.utils]
             [status-im.utils.contenthash :as contenthash]
@@ -22,7 +21,8 @@
             [quo.core :as quo]
             [reagent.core :as reagent]
             [status-im.ui.screens.chat.components.reply :as components.reply]
-            [status-im.ui.screens.chat.message.link-preview :as link-preview])
+            [status-im.ui.screens.chat.message.link-preview :as link-preview]
+            [status-im.ui.screens.communities.icon :as communities.icon])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]
@@ -216,58 +216,31 @@
 
 (defview community-content [{:keys [community-id] :as message}]
   (letsubs [{:keys [name description verified] :as community} [:communities/community community-id]]
-    (when (and
-           config/communities-enabled?
-           community)
+    (when (and config/communities-enabled? community)
       [react/view {:style (assoc (style/message-wrapper message)
                                  :margin-vertical 10
+                                 :margin-left 8
                                  :width 271)}
        (when verified
-         [react/view {:border-right-width 1
-                      :border-left-width 1
-                      :border-top-width 1
-                      :border-left-color colors/gray-lighter
-                      :border-right-color colors/gray-lighter
-                      :border-top-left-radius 10
-                      :border-top-right-radius 10
-                      :padding-vertical 8
-                      :padding-horizontal 15
-                      :border-top-color colors/gray-lighter}
+         [react/view (style/community-verified)
           [react/text {:style {:font-size 13
                                :color colors/blue}} (i18n/label :t/communities-verified)]])
-
-       [react/view {:flex-direction :row
-                    :padding-vertical 12
-                    :border-top-left-radius (when-not verified 10)
-                    :border-top-right-radius (when-not verified 10)
-                    :border-right-width 1
-                    :border-left-width 1
-                    :border-top-width 1
-                    :border-color colors/gray-lighter}
-
+       [react/view (style/community-message verified)
         [react/view {:width 62
                      :padding-left 14}
          (if (= community-id constants/status-community-id)
            [react/image {:source (resources/get-image :status-logo)
                          :style {:width 40
                                  :height 40}}]
-
-           [chat-icon/chat-icon-view-chat-list
-            name
-            true
-            name
-            colors/default-community-color])]
-        [react/view {:padding-right 14}
-         [react/text {:style {:font-weight "700"
-                              :font-size 17}}
+           [communities.icon/community-icon community])]
+        [react/view {:padding-right 14 :flex 1}
+         [react/text {:style {:font-weight "700" :font-size 17}}
           name]
          [react/text description]]]
-       [react/view {:border-width 1
-                    :padding-vertical 8
-                    :border-bottom-left-radius 10
-                    :border-bottom-right-radius 10
-                    :border-color colors/gray-lighter}
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :community {:community-id (:id community)}])}
+       [react/view (style/community-view-button)
+        [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to
+                                                                   :community
+                                                                   {:community-id (:id community)}])}
          [react/text {:style {:text-align :center
                               :color colors/blue}} (i18n/label :t/view)]]]])))
 
@@ -355,12 +328,14 @@
 
 (defn on-long-press-fn [on-long-press message content]
   (on-long-press
-   [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-     :label    (i18n/label :t/message-reply)}
-    {:on-press #(react/copy-to-clipboard
-                 (components.reply/get-quoted-text-with-mentions
-                  (get content :parsed-text)))
-     :label    (i18n/label :t/sharing-copy-to-clipboard)}]))
+   (concat
+    (when (:show-input? message)
+      [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+        :label    (i18n/label :t/message-reply)}])
+    [{:on-press #(react/copy-to-clipboard
+                  (components.reply/get-quoted-text-with-mentions
+                   (get content :parsed-text)))
+      :label    (i18n/label :t/sharing-copy-to-clipboard)}])))
 
 (defn collapsible-text-message [_ _]
   (let [collapsed?   (reagent/atom false)

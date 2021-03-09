@@ -72,7 +72,7 @@
          parsed-text)]
     (:components result)))
 
-(defn message-content-text [{:keys [content content-type]}]
+(defn message-content-text [{:keys [content content-type community-id]}]
   [:<>
    (cond
 
@@ -95,6 +95,13 @@
      [react/text {:style               styles/last-message-text
                   :accessibility-label :no-messages-text}
       (i18n/label :t/audio)]
+
+     (= constants/content-type-community content-type)
+     (let [{:keys [name]}
+           @(re-frame/subscribe [:communities/community community-id])]
+       [react/text {:style               styles/last-message-text
+                    :accessibility-label :no-messages-text}
+        (i18n/label :t/community-message-preview {:community-name name})])
 
      (string/blank? (:text content))
      [react/text {:style styles/last-message-text}
@@ -171,8 +178,9 @@
       :title-accessibility-label :chat-name-text
       :subtitle                  [react/view {:flex-direction :row}
                                   [react/view {:flex 1}
-                                   [message-content-text {:content      (:content last-message)
-                                                          :content-type (:content-type last-message)}]]
+                                   [message-content-text (select-keys last-message [:content
+                                                                                    :content-type
+                                                                                    :community-id])]]
                                   [unviewed-indicator home-item]]
       :on-press                  (fn []
                                    (re-frame/dispatch [:dismiss-keyboard])

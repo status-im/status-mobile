@@ -1,7 +1,8 @@
 (ns status-im.utils.handlers
   (:require [re-frame.core :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect]]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.debounce :as debounce]))
 
 (defn- parse-json
   ;; NOTE(dmitryn) Expects JSON response like:
@@ -56,3 +57,6 @@
 (def <sub (comp deref re-frame/subscribe))
 
 (def >evt re-frame/dispatch)
+
+(defn >evt-once [event]
+  (debounce/dispatch-and-chill event 3000))

@@ -36,14 +36,17 @@
 (def one-to-one-chat?
   (complement multi-user-chat?))
 
-(defn community-chat? [{:keys [chat-type]}]
-  (= chat-type constants/community-chat-type))
-
 (defn public-chat?
   ([chat]
    (:public? chat))
   ([cofx chat-id]
    (public-chat? (get-chat cofx chat-id))))
+
+(defn community-chat?
+  ([{:keys [chat-type]}]
+   (= chat-type constants/community-chat-type))
+  ([cofx chat-id]
+   (community-chat? (get-chat cofx chat-id))))
 
 (defn active-chat?
   ([chat]
@@ -240,7 +243,7 @@
   (fx/merge cofx
             {:db (dissoc db :current-chat-id)}
             (offload-messages chat-id)
-            (navigation/navigate-to-cofx :home {})))
+            (navigation/navigate-back)))
 
 (fx/defn remove-chat
   "Removes chat completely from app, producing all necessary effects for that"
@@ -296,14 +299,20 @@
 (fx/defn start-public-chat
   "Starts a new public chat"
   {:events [:chat.ui/start-public-chat]}
-  [cofx topic {:keys [dont-navigate? profile-public-key]}]
+  [cofx topic {:keys [dont-navigate? profile-public-key navigation-reset?]}]
   (if (or (new-public-chat.db/valid-topic? topic) profile-public-key)
     (if (active-chat? cofx topic)
       (when-not dont-navigate?
-        (navigate-to-chat cofx topic))
+        (if navigation-reset?
+          (fx/merge cofx
+                    {:dispatch [:chat.ui/navigate-to-chat topic]}
+                    (navigation/navigate-to-cofx :home {}))
+          (navigate-to-chat cofx topic)))
       (fx/merge cofx
                 (add-public-chat topic profile-public-key false)
                 (transport.filters/load-chat topic)
+                #(when navigation-reset?
+                   (navigation/navigate-to-cofx % :home {}))
                 #(when-not dont-navigate?
                    {:dispatch [:chat.ui/navigate-to-chat topic]})))
     {:utils/show-popup {:title   (i18n/label :t/cant-open-public-chat)
