@@ -1481,5 +1481,10 @@
     "you-can-fetch": "You can fetch chat history",
     "youre-on-mobile-network": "You’re on mobile network",
     "status-mobile-descr": "Status tends to use a lot of data when syncing chats. You can choose not to sync when on mobile network",
-    "restore-defaults": "Restore Defaults"
+    "restore-defaults": "Restore Defaults",
+    "rpc-usage-info": "RPC usage stats",
+    "rpc-usage-get-stats": "Refresh",
+    "rpc-usage-reset": "Reset",
+    "rpc-usage-filter": "Filter methods",
+    "rpc-usage-copy": "Copy"
 }

@@ -131,6 +131,8 @@
    "wakuext_exportCommunity" {}
    "wakuext_ensVerified" {}
    "status_chats" {}
+   "rpcstats_getStats" {}
+   "rpcstats_reset" {}
    "localnotifications_switchWalletNotifications" {}
    "localnotifications_notificationPreferences" {}
    "wallet_getTransfers" {}

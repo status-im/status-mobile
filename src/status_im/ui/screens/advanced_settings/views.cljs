@@ -51,6 +51,13 @@
     :on-press
     #(re-frame/dispatch [:navigate-to :bootnodes-settings])
     :chevron             true}
+   {:size                 :small
+    :title                (i18n/label :t/rpc-usage-info)
+    :accessibility-label  :rpc-usage-info
+    :container-margin-top 8
+    :on-press
+    #(re-frame/dispatch [:navigate-to :rpc-usage-info])
+    :chevron              true}
    (when platform/ios?
      {:size                :small
       :title               (i18n/label :t/notification-settings)

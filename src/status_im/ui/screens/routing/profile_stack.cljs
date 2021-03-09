@@ -28,6 +28,7 @@
             [status-im.ui.screens.network.views :as network]
             [status-im.ui.screens.network.network-details.views :as network-details]
             [status-im.ui.screens.network-info.views :as network-info]
+            [status-im.ui.screens.rpc-usage-info :as rpc-usage-info]
             [status-im.ui.screens.log-level-settings.views :as log-level-settings]
             [status-im.ui.screens.fleet-settings.views :as fleet-settings]
             [status-im.ui.screens.profile.seed.views :as profile.seed]
@@ -106,6 +107,8 @@
      :component network-details/network-details}
     {:name      :network-info
      :component network-info/network-info}
+    {:name      :rpc-usage-info
+     :component rpc-usage-info/usage-info}
     {:name      :edit-network
      :component edit-network/edit-network}
     {:name      :log-level-settings
