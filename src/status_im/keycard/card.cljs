@@ -76,6 +76,10 @@
   {:code  (.-code object)
    :error (.-message object)})
 
+(defn set-pairings [pairings]
+  (log/debug "[keycard] open-nfc-settings")
+  (keycard/set-pairings card {:pairings pairings}))
+
 (defn get-application-info [{:keys [on-success] :as args}]
   (log/debug "[keycard] get-application-info")
   (keycard/get-application-info

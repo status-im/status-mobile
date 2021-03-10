@@ -37,10 +37,8 @@
 (fx/defn unpair
   {:events [:keycard/unpair]}
   [{:keys [db]}]
-  (let [pin     (common/vector->string (get-in db [:keycard :pin :current]))
-        pairing (common/get-pairing db)]
-    {:keycard/unpair {:pin     pin
-                      :pairing pairing}}))
+  (let [pin     (common/vector->string (get-in db [:keycard :pin :current]))]
+    {:keycard/unpair {:pin pin}}))
 
 (fx/defn unpair-and-delete
   {:events [:keycard/unpair-and-delete]}
@@ -50,11 +48,9 @@
    {:on-card-connected :keycard/unpair-and-delete
     :handler
     (fn [{:keys [db]}]
-      (let [pin     (common/vector->string (get-in db [:keycard :pin :current]))
-            pairing (common/get-pairing db)]
+      (let [pin     (common/vector->string (get-in db [:keycard :pin :current]))]
         {:keycard/unpair-and-delete
-         {:pin     pin
-          :pairing pairing}}))}))
+         {:pin pin}}))}))
 
 (fx/defn remove-pairing-from-multiaccount
   [cofx {:keys [remove-instance-uid?]}]
@@ -108,11 +104,9 @@
    {:on-card-connected :keycard/remove-key-with-unpair
     :handler
     (fn [{:keys [db]}]
-      (let [pin     (common/vector->string (get-in db [:keycard :pin :current]))
-            pairing (common/get-pairing db)]
+      (let [pin     (common/vector->string (get-in db [:keycard :pin :current]))]
         {:keycard/remove-key-with-unpair
-         {:pin     pin
-          :pairing pairing}}))}))
+         {:pin pin}}))}))
 
 (defn handle-account-removal [{:keys [db] :as cofx} keys-removed-from-card?]
   (let [key-uid (get-in db [:multiaccount :key-uid])

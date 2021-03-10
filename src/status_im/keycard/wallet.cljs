@@ -19,7 +19,7 @@
 (fx/defn verify-pin-with-delay
   [cofx]
   {:utils/dispatch-later
-   ;; We need to give previous sheet some time to be fully hidden 
+   ;; We need to give previous sheet some time to be fully hidden
    [{:ms 200
      :dispatch [:wallet.accounts/verify-pin]}]})
 
@@ -33,8 +33,7 @@
   [{:keys [db]}]
   (let [path-num (inc (get-in db [:multiaccount :latest-derived-path]))
         path     (str constants/path-wallet-root "/" path-num)
-        pin      (common/vector->string (get-in db [:keycard :pin :export-key]))
-        pairing  (common/get-pairing db)]
+        pin      (common/vector->string (get-in db [:keycard :pin :export-key]))]
     {:db
      (assoc-in
       db [:keycard :on-export-success]
@@ -48,7 +47,7 @@
                   :public-key (str "0x" public-key)
                   :path       path})))
 
-     :keycard/export-key {:pin pin :pairing pairing :path path}}))
+     :keycard/export-key {:pin pin :path path}}))
 
 (fx/defn verify-pin
   {:events [:wallet.accounts/verify-pin]}

@@ -11,6 +11,7 @@
             [status-im.keycard.recovery :as recovery]
             [status-im.keycard.sign :as sign]
             [status-im.keycard.wallet :as wallet]
+            [status-im.keycard.card :as card]
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
@@ -47,6 +48,16 @@
                                                 :current             []}))}
             (common/listen-to-hardware-back-button)
             (navigation/navigate-replace :keycard-recovery-pin nil)))
+
+(fx/defn load-recovery-pin-screen-with-pairings
+  [{:keys [db] :as cofx}]
+  (let [instance-uid (get-in db [:keycard :application-info :instance-uid])
+        {:keys [pairing paired-on]} (get-in db [:keycard :pairings (keyword instance-uid)])]
+    (fx/merge cofx
+              {:db (-> db
+                       (assoc-in [:keycard :secrets :pairing] pairing)
+                       (assoc-in [:keycard :secrets :paired-on] paired-on))}
+              (load-recovery-pin-screen))))
 
 (fx/defn proceed-setup-with-initialized-card
   [{:keys [db] :as cofx} flow instance-uid]
@@ -133,8 +144,7 @@
 (fx/defn on-unblock-pin-success
   {:events [:keycard.callback/on-unblock-pin-success]}
   [{:keys [db] :as cofx}]
-  (let [pairing   (common/get-pairing db)
-        reset-pin (get-in db [:keycard :pin :reset])]
+  (let [reset-pin (get-in db [:keycard :pin :reset])]
     (fx/merge cofx
               {:db
                (-> db
@@ -156,8 +166,7 @@
 (fx/defn on-unblock-pin-error
   {:events [:keycard.callback/on-unblock-pin-error]}
   [{:keys [db] :as cofx} error]
-  (let [pairing       (common/get-pairing db)
-        tag-was-lost? (common/tag-lost? (:error error))
+  (let [tag-was-lost? (common/tag-lost? (:error error))
         puk-retries (common/pin-retries (:error error))]
     (log/debug "[keycard] unblock pin error" error)
     (when-not tag-was-lost?
@@ -181,8 +190,7 @@
 (fx/defn on-verify-pin-success
   {:events [:keycard.callback/on-verify-pin-success]}
   [{:keys [db] :as cofx}]
-  (let [on-verified (get-in db [:keycard :pin :on-verified])
-        pairing     (common/get-pairing db)]
+  (let [on-verified (get-in db [:keycard :pin :on-verified])]
     (log/debug "[hardwaller] success pin verification. on-verified" on-verified)
     (fx/merge cofx
               {:db (update-in db [:keycard :pin] merge {:status      nil
@@ -202,7 +210,7 @@
                                      :keycard/remove-key-with-unpair
                                      :keycard/unpair-and-delete
                                      :wallet.accounts/generate-new-keycard-account} on-verified)
-                (common/get-application-info pairing nil))
+                (common/get-application-info nil))
               (when on-verified
                 (common/dispatch-event on-verified))
               (clear-on-verify-handlers))))
@@ -258,13 +266,11 @@
     (fn [{:keys [db]}]
       (let [puk     (common/vector->string (get-in db [:keycard :pin :puk]))
             pin     (common/vector->string (get-in db [:keycard :pin :reset]))
-            key-uid (get-in db [:keycard :application-info :key-uid])
-            pairing (common/get-pairing db key-uid)]
+            key-uid (get-in db [:keycard :application-info :key-uid])]
         {:db (assoc-in db [:keycard :pin :status] :verifying)
          :keycard/unblock-pin
          {:puk     puk
-          :new-pin pin
-          :pairing pairing}}))}))
+          :new-pin pin}}))}))
 
 (def pin-code-length 6)
 (def puk-code-length 12)
@@ -392,6 +398,7 @@
 (fx/defn on-retrieve-pairings-success
   {:events [:keycard.callback/on-retrieve-pairings-success]}
   [{:keys [db]} pairings]
+  (card/set-pairings pairings)
   {:db (assoc-in db [:keycard :pairings] pairings)})
 
 ;; When pairing to device has completed, we need to persist pairing data to
@@ -409,8 +416,9 @@
         instance-uid (get-in db [:keycard :application-info :instance-uid])
         multiaccount (common/find-multiaccount-by-keycard-instance-uid db instance-uid)
         paired-on    (utils.datetime/timestamp)
-        pairings     (assoc (get-in db [:keycard :pairings]) instance-uid {:pairing   pairing
-                                                                           :paired-on paired-on})
+        pairings     (-> (get-in db [:keycard :pairings])
+                         (dissoc (keyword instance-uid))
+                         (assoc  instance-uid {:pairing pairing :paired-on paired-on}))
         next-step    (if (= setup-step :pair)
                        :begin
                        :card-ready)]
@@ -479,10 +487,8 @@
   [{:keys [db] :as cofx}]
   (let [app-info                       (get-in db [:keycard :application-info])
         flow                           (get-in db [:keycard :flow])
-        {:keys [instance-uid key-uid]} app-info
-        pairing                        (common/get-pairing db key-uid)
-        app-info'                      (if pairing (assoc app-info :paired? true) app-info)
-        card-state                     (common/get-card-state app-info')]
+        {:keys [instance-uid key-uid paired?]} app-info
+        card-state                     (common/get-card-state app-info)]
     (log/debug "[keycard] check-card-state"
                "card-state" card-state
                "flow" flow)
@@ -508,8 +514,8 @@
                          (= flow :import))
                 (if (common/find-multiaccount-by-key-uid db key-uid)
                   (multiaccounts.recover/show-existing-multiaccount-alert key-uid)
-                  (if pairing
-                    (load-recovery-pin-screen)
+                  (if paired?
+                    (load-recovery-pin-screen-with-pairings)
                     (recovery/load-pair-screen))))
 
               (when (= card-state :blank)

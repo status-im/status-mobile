@@ -115,7 +115,7 @@
     {:on-card-connected :keycard/get-application-info
      :on-card-read      :keycard/check-card-state
      :sheet-options     {:on-cancel [::cancel-pressed]}
-     :handler           (common/get-application-info nil :keycard/check-card-state)})))
+     :handler           (common/get-application-info :keycard/check-card-state)})))
 
 (fx/defn recovery-success-finish-pressed
   {:events [:keycard.recovery.success/finish-pressed]}
@@ -253,8 +253,7 @@
                                         (assoc-in [:keycard :pin :status] :verifying)
                                         (assoc-in [:keycard :secrets] {:pairing   pairing'
                                                                        :paired-on (utils.datetime/timestamp)}))
-               :keycard/import-keys {:pairing    pairing'
-                                     :pin        pin
+               :keycard/import-keys {:pin        pin
                                      :on-success :keycard.callback/on-generate-and-load-key-success}})))
 
 (fx/defn load-recovering-key-screen

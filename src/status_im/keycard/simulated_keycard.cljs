@@ -47,7 +47,7 @@
           :app-version            "2.2"
           :secure-channel-pub-key "04c3071768912a515c00aeab7ceb8a5bfda91d036f4a4e60b7944cee3ca7fb67b6d118e8df1e2480b87fd636c6615253245bbbc93a6a407f155f2c58f76c96ef0e",
           :instance-uid           "1b360b10a9a68b7d494e8f059059f118"
-          :paired?                true
+          :paired?                false
           :has-master-key?        true
           :initialized?           true
           :pin-retry-counter      3
@@ -101,6 +101,9 @@
   (log/debug "register-card-events")
   (on-card-connected (:on-card-connected args))
   (on-card-disconnected (:on-card-disconnected args)))
+
+(defn set-pairings [args]
+  (log/warn "set-pairings not implemented" args))
 
 (defn remove-event-listener [id]
   (log/debug "remove-event-listener")
@@ -203,7 +206,9 @@
                            {:root-key root-data
                             :derived  derived-data-extended})))))))))))
   (when (= password kk1-password)
-    (later #(on-success (str (rand-int 10000000))))))
+    (do
+      (swap! state assoc-in [:application-info :paired?] true)
+      (later #(on-success (str (rand-int 10000000)))))))
 
 (defn generate-and-load-key
   [{:keys [pin on-success]}]
@@ -212,6 +217,8 @@
                          pin
                          (:intro-wizard @re-frame.db/app-db))]
       (log/debug "[simulated kk] generate-and-load-key response" response)
+      (swap! state assoc-in
+             [:application-info :key-uid] (:key-uid response))
       (status/multiaccount-store-derived
        id
        (:key-uid response)
@@ -314,6 +321,8 @@
       (later
        (if @derived-acc
          (let [[id keys] (multiaccount->keys pin @derived-acc)]
+           (swap! state assoc-in
+                  [:application-info :key-uid] (:key-uid keys))
            (status/multiaccount-store-derived
             id
             (:key-uid keys)
@@ -428,6 +437,9 @@
   (keycard/register-card-events [this args]
     (log/debug "simulated card register-card-event")
     (register-card-events args))
+  (keycard/set-pairings [this args]
+    (log/debug "simulated card set-pairings")
+    (set-pairings args))
   (keycard/on-card-connected [this callback]
     (log/debug "simulated card on-card-connected")
     (on-card-connected callback))

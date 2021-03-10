@@ -329,16 +329,12 @@
 (fx/defn get-keys-from-keycard
   [{:keys [db]}]
   (let [key-uid (get-in db [:multiaccounts/login :key-uid])
-        pairing (get-in db [:multiaccounts/multiaccounts key-uid :keycard-pairing])
         pin     (string/join (get-in db [:keycard :pin :login]))]
     (log/debug "[keycard] get-keys-from-keycard"
-               "not nil pairing:" (boolean pairing)
                ", not empty pin:" (boolean (seq pin)))
-    (when (and pairing
-               (seq pin))
+    (when (seq pin)
       {:db               (assoc-in db [:keycard :pin :status] :verifying)
-       :keycard/get-keys {:pairing pairing
-                          :pin     pin}})))
+       :keycard/get-keys {:pin pin}})))
 
 (fx/defn on-get-keys-success
   {:events [:keycard.callback/on-get-keys-success]}
@@ -417,17 +413,9 @@
 
 (fx/defn get-application-info
   {:events [:keycard/get-application-info]}
-  [{:keys [db]} pairing on-card-read]
-  (let [key-uid
-        (when-not (:intro-wizard db)
-          (get-in
-           db [:keycard :application-info :key-uid]
-           (get-in db [:multiaccounts/login :key-uid])))
-        pairing' (or pairing (some->> key-uid (get-pairing db)))]
-    (log/debug "[keycard] get-application-info"
-               "pairing" pairing')
-    {:keycard/get-application-info {:pairing    pairing'
-                                    :on-success on-card-read}}))
+  [{:keys [db]} on-card-read]
+  (log/debug "[keycard] get-application-info")
+  {:keycard/get-application-info {:on-success on-card-read}})
 
 (fx/defn on-get-application-info-success
   {:events [:keycard.callback/on-get-application-info-success]}
@@ -499,8 +487,7 @@
         on-card-connected         (get-in db [:keycard :on-card-connected])
         on-card-read              (cond
                                     should-read-instance-uid? :keycard/get-application-info
-                                    :else                     (get-in db [:keycard :on-card-read]))
-        pairing                   (get-pairing db key-uid)]
+                                    :else                     (get-in db [:keycard :on-card-read]))]
     (log/debug "[keycard] on-card-connected" on-card-connected
                "on-card-read" on-card-read)
     (when on-card-connected
@@ -512,7 +499,7 @@
                 (stash-on-card-connected)
                 (when (and on-card-read
                            (nil? on-card-connected))
-                  (get-application-info pairing on-card-read))))))
+                  (get-application-info on-card-read))))))
 
 (fx/defn on-card-disconnected
   {:events [::on-card-disconnected]}
@@ -546,13 +533,11 @@
       {:on-card-connected (or on-card-connected :keycard/verify-pin)
        :handler
        (fn [{:keys [db] :as cofx}]
-         (let [pin     (vector->string (get-in db [:keycard :pin pin-step]))
-               pairing (get-pairing db)]
+         (let [pin     (vector->string (get-in db [:keycard :pin pin-step]))]
            (fx/merge
             cofx
             {:db                    (assoc-in db [:keycard :pin :status] :verifying)
-             :keycard/verify-pin {:pin     pin
-                                  :pairing pairing}})))}))))
+             :keycard/verify-pin {:pin pin}})))}))))
 
 (fx/defn navigete-to-keycard-settings
   {:events [::navigate-to-keycard-settings]}

@@ -438,7 +438,7 @@
         (get-credentials % key-uid)
         (and keycard-multiaccount?
              (get-in db [:keycard :card-connected?]))
-        (keycard.common/get-application-info % nil nil))
+        (keycard.common/get-application-info % nil))
      (open-login-callback nil))))
 
 (fx/defn biometric-auth-done

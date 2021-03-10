@@ -80,6 +80,9 @@
   [callback]
   (.addListener ^js event-emitter "keyCardOnNFCDisabled" callback))
 
+(defn set-pairings [{:keys [pairings]}]
+  (.. status-keycard (setPairings (clj->js (or pairings {})))))
+
 (defn register-card-events
   [args]
   (doseq [listener @active-listeners]
@@ -93,10 +96,10 @@
            (on-nfc-disabled (:on-nfc-disabled args))]))
 
 (defn get-application-info
-  [{:keys [pairing on-success on-failure]}]
+  [{:keys [on-success on-failure]}]
 
   (.. status-keycard
-      (getApplicationInfo (str pairing))
+      (getApplicationInfo)
       (then (fn [response]
               (let [info (-> response
                              (js->clj :keywordize-keys true)
@@ -137,42 +140,41 @@
         (catch on-failure))))
 
 (defn generate-and-load-key
-  [{:keys [mnemonic pairing pin on-success on-failure]}]
-  (when pairing
-    (.. status-keycard
-        (generateAndLoadKey mnemonic pairing pin)
-        (then on-success)
-        (catch on-failure))))
+  [{:keys [mnemonic pin on-success on-failure]}]
+  (.. status-keycard
+      (generateAndLoadKey mnemonic pin)
+      (then on-success)
+      (catch on-failure)))
 
 (defn unblock-pin
-  [{:keys [puk new-pin pairing on-success on-failure]}]
-  (when (and pairing new-pin puk)
+  [{:keys [puk new-pin on-success on-failure]}]
+  (when (and new-pin puk)
     (.. status-keycard
-        (unblockPin pairing puk new-pin)
+        (unblockPin puk new-pin)
         (then on-success)
         (catch on-failure))))
 
 (defn verify-pin
-  [{:keys [pin pairing on-success on-failure]}]
-  (when (and pairing (not-empty pin))
+  [{:keys [pin on-success on-failure]}]
+  (when (not-empty pin)
     (.. status-keycard
-        (verifyPin pairing pin)
+        (verifyPin pin)
         (then on-success)
         (catch on-failure))))
 
 (defn change-pin
-  [{:keys [current-pin new-pin pairing on-success on-failure]}]
-  (when (and pairing current-pin new-pin)
+  [{:keys [current-pin new-pin on-success on-failure]}]
+  (when (and current-pin new-pin)
     (.. status-keycard
-        (changePin pairing current-pin new-pin)
+        (changePin current-pin new-pin)
         (then on-success)
         (catch on-failure))))
 
 (defn unpair
-  [{:keys [pin pairing on-success on-failure]}]
-  (when (and pairing pin)
+  [{:keys [pin on-success on-failure]}]
+  (when (and pin)
     (.. status-keycard
-        (unpair pairing pin)
+        (unpair pin)
         (then on-success)
         (catch on-failure))))
 
@@ -183,61 +185,61 @@
       (catch on-failure)))
 
 (defn remove-key
-  [{:keys [pin pairing on-success on-failure]}]
+  [{:keys [pin on-success on-failure]}]
   (.. status-keycard
-      (removeKey pairing pin)
+      (removeKey pin)
       (then on-success)
       (catch on-failure)))
 
 (defn remove-key-with-unpair
-  [{:keys [pin pairing on-success on-failure]}]
+  [{:keys [pin on-success on-failure]}]
   (.. status-keycard
-      (removeKeyWithUnpair pairing pin)
+      (removeKeyWithUnpair pin)
       (then on-success)
       (catch on-failure)))
 
 (defn export-key
-  [{:keys [pin pairing path on-success on-failure]}]
+  [{:keys [pin path on-success on-failure]}]
   (.. status-keycard
-      (exportKeyWithPath pairing pin path)
+      (exportKeyWithPath pin path)
       (then on-success)
       (catch on-failure)))
 
 (defn unpair-and-delete
-  [{:keys [pin pairing on-success on-failure]}]
-  (when (and pairing pin)
+  [{:keys [pin on-success on-failure]}]
+  (when (not-empty pin)
     (.. status-keycard
-        (unpairAndDelete pairing pin)
+        (unpairAndDelete pin)
         (then on-success)
         (catch on-failure))))
 
 (defn import-keys
-  [{:keys [pairing pin on-success on-failure]}]
-  (when (and pairing (not-empty pin))
+  [{:keys [pin on-success on-failure]}]
+  (when (not-empty pin)
     (.. status-keycard
-        (importKeys pairing pin)
+        (importKeys pin)
         (then on-success)
         (catch on-failure))))
 
 (defn get-keys
-  [{:keys [pairing pin on-success on-failure]}]
-  (when (and pairing (not-empty pin))
+  [{:keys [pin on-success on-failure]}]
+  (when (not-empty pin)
     (.. status-keycard
-        (getKeys pairing pin)
+        (getKeys pin)
         (then on-success)
         (catch on-failure))))
 
 (defn sign
-  [{:keys [pairing pin path hash on-success on-failure]}]
+  [{:keys [pin path hash on-success on-failure]}]
   (log/debug "keycard sign" "path" path)
-  (when (and pairing pin hash)
+  (when (and pin hash)
     (if path
       (.. status-keycard
-          (signWithPath pairing pin path hash)
+          (signWithPath pin path hash)
           (then on-success)
           (catch on-failure))
       (.. status-keycard
-          (sign pairing pin hash)
+          (sign pin hash)
           (then on-success)
           (catch on-failure)))))
 
@@ -291,6 +293,8 @@
     (remove-event-listener event))
   (keycard/remove-event-listeners [this]
     (remove-event-listeners))
+  (keycard/set-pairings [this args]
+    (set-pairings args))
   (keycard/get-application-info [this args]
     (get-application-info args))
   (keycard/install-applet [this args]

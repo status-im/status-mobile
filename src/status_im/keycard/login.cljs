@@ -90,16 +90,16 @@
         (get-in db [:keycard :application-info])
 
         key-uid                (get-in db [:keycard :application-info :key-uid])
+        paired?                (get-in db [:keycard :application-info :paired?])
         multiaccount           (get-in db [:multiaccounts/multiaccounts (get-in db [:multiaccounts/login :key-uid])])
         multiaccount-key-uid   (get multiaccount :key-uid)
         multiaccount-mismatch? (or (nil? multiaccount)
-                                   (not= multiaccount-key-uid key-uid))
-        pairing                (:keycard-pairing multiaccount)]
+                                   (not= multiaccount-key-uid key-uid))]
     (log/debug "[keycard] login-with-keycard"
                "empty application info" (empty? application-info)
                "no key-uid" (empty? key-uid)
                "multiaccount-mismatch?" multiaccount-mismatch?
-               "no pairing" (empty? pairing))
+               "no pairing" paired?)
     (cond
       (empty? application-info)
       (fx/merge cofx
@@ -116,7 +116,7 @@
                 (common/hide-connection-sheet)
                 (navigation/navigate-to-cofx :keycard-wrong nil))
 
-      (empty? pairing)
+      (not paired?)
       (fx/merge cofx
                 (common/hide-connection-sheet)
                 (navigation/navigate-to-cofx :keycard-unpaired nil))
@@ -138,7 +138,7 @@
    {:sheet-options     {:on-cancel [::common/cancel-sheet-confirm]}
     :on-card-connected :keycard/get-application-info
     :on-card-read      :keycard/login-with-keycard
-    :handler           (common/get-application-info nil :keycard/login-with-keycard)}))
+    :handler           (common/get-application-info :keycard/login-with-keycard)}))
 
 (fx/defn on-keycard-keychain-keys
   {:events [:multiaccounts.login.callback/get-keycard-keys-success]}

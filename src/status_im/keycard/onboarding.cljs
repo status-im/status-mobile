@@ -253,7 +253,7 @@
 (fx/defn generate-and-load-key
   {:events [:keycard/generate-and-load-key]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [pairing pin]}
+  (let [{:keys [pin]}
         (get-in db [:keycard :secrets])
 
         {:keys [selected-id multiaccounts]}
@@ -272,7 +272,6 @@
     (fx/merge cofx
               {:keycard/generate-and-load-key
                {:mnemonic     mnemonic
-                :pairing      pairing
                 :pin          pin'}})))
 
 (fx/defn begin-setup-pressed
@@ -290,7 +289,7 @@
    (common/show-connection-sheet
     {:on-card-connected :keycard/get-application-info
      :on-card-read      :keycard/check-card-state
-     :handler           (common/get-application-info nil :keycard/check-card-state)})))
+     :handler           (common/get-application-info :keycard/check-card-state)})))
 
 (fx/defn cancel-confirm
   {:events [::cancel-confirm]}

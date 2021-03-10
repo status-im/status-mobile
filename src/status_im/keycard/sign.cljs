@@ -13,10 +13,9 @@
   {:events [:keycard/sign]}
   [{:keys [db] :as cofx}]
   (let [card-connected?      (get-in db [:keycard :card-connected?])
-        pairing              (common/get-pairing db)
-        keycard-instance-uid (get-in db [:multiaccount :keycard-instance-uid])
-        instance-uid         (get-in db [:keycard :application-info :instance-uid])
-        keycard-match?       (= keycard-instance-uid instance-uid)
+        key-uid              (get-in db [:multiaccount :key-uid])
+        keycard-key-uid      (get-in db [:keycard :application-info :key-uid])
+        keycard-match?       (= key-uid keycard-key-uid)
         hash                 (get-in db [:keycard :hash])
         data                 (get-in db [:keycard :data])
         typed?               (get-in db [:keycard :typed?])
@@ -35,7 +34,6 @@
                             (assoc-in [:keycard :pin :status] :verifying))
        :keycard/sign {:hash    (ethereum/naked-address hash)
                       :data    data
-                      :pairing pairing
                       :typed?  typed?
                       :pin     pin
                       :path    path}}
@@ -59,10 +57,9 @@
                                         (normalize-signature %)])
         hash (ethereum/naked-address result)
         card-connected?                   (get-in db [:keycard :card-connected?])
-        pairing                           (common/get-pairing db)
-        multiaccount-keycard-instance-uid (get-in db [:multiaccount :keycard-instance-uid])
-        instance-uid                      (get-in db [:keycard :application-info :instance-uid])
-        keycard-match?                    (= multiaccount-keycard-instance-uid instance-uid)
+        key-uid                           (get-in db [:multiaccount :key-uid])
+        keycard-key-uid                   (get-in db [:keycard :application-info :key-uid])
+        keycard-match?                    (= key-uid keycard-key-uid)
         pin                               (common/vector->string (get-in db [:keycard :pin :sign]))]
     (if (and card-connected?
              keycard-match?)
@@ -71,7 +68,6 @@
                          (assoc-in [:keycard :pin :status] :verifying))
        :keycard/sign {:hash       (ethereum/naked-address hash)
                       :data       (:data params)
-                      :pairing    pairing
                       :pin        pin
                       :on-success on-success}}
       (fx/merge cofx
@@ -94,7 +90,7 @@
             (assoc-in [:keycard :pin :sign] [])
             (assoc-in [:keycard :pin :status] nil))}
    (common/clear-on-card-connected)
-   (common/get-application-info (common/get-pairing db) nil)
+   (common/get-application-info nil)
    (common/hide-connection-sheet)))
 
 (fx/defn sign-typed-data
@@ -149,11 +145,10 @@
 (fx/defn prepare-to-sign
   {:events [:keycard/prepare-to-sign]}
   [{:keys [db] :as cofx}]
-  (let [pairing (common/get-pairing db)]
-    (common/show-connection-sheet
-     cofx
-     {:on-card-connected :keycard/prepare-to-sign
-      :handler           (common/get-application-info pairing :keycard/sign)})))
+  (common/show-connection-sheet
+   cofx
+   {:on-card-connected :keycard/prepare-to-sign
+    :handler           (common/get-application-info :keycard/sign)}))
 
 (fx/defn sign-message-completed
   [_ signature]
@@ -184,7 +179,7 @@
                             (assoc-in [:keycard :pin :sign] [])
                             (assoc-in [:keycard :pin :status] nil))}
                    (common/clear-on-card-connected)
-                   (common/get-application-info (common/get-pairing db) nil)
+                   (common/get-application-info nil)
                    (common/hide-connection-sheet))))
               (if transaction
                 (send-transaction-with-signature

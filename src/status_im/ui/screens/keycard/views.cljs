@@ -116,7 +116,7 @@
       (i18n/label :t/pair-this-card)]
      [react/view {:margin-top 27}
       [quo/button {:type     :secondary
-                   :on-press #(re-frame/dispatch [:keycard.login.ui/dismiss-pressed])}
+                   :on-press #(re-frame/dispatch [:navigate-back])}
        (i18n/label :t/dismiss)]]]]])
 
 ;; NOTE(Ferossgp): Seems like it should be in popover

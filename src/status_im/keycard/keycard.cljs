@@ -8,6 +8,7 @@
   (check-nfc-enabled [this args])
   (open-nfc-settings [this])
   (register-card-events [this args])
+  (set-pairings [this args])
   (on-card-disconnected [this callback])
   (on-card-connected [this callback])
   (remove-event-listener [this event])

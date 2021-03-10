@@ -59,8 +59,7 @@
         :on-card-connected :keycard/change-pin
         :handler
         (fn [{:keys [db] :as cofx}]
-          (let [pairing     (common/get-pairing db)
-                new-pin     (common/vector->string
+          (let [new-pin     (common/vector->string
                              (get-in db [:keycard :pin :original]))
                 current-pin (common/vector->string
                              (get-in db [:keycard :pin :current]))]
@@ -70,8 +69,7 @@
 
               :keycard/change-pin
               {:new-pin     new-pin
-               :current-pin current-pin
-               :pairing     pairing}})))}))))
+               :current-pin current-pin}})))}))))
 
 (fx/defn on-change-pin-success
   {:events [:keycard.callback/on-change-pin-success]}
@@ -97,7 +95,6 @@
   [{:keys [db] :as cofx} error]
   (log/debug "[keycard] change pin error" error)
   (let [tag-was-lost? (common/tag-lost? (:error error))
-        pairing       (common/get-pairing db)
         pin-retries (common/pin-retries (:error error))]
     (fx/merge cofx
               (if tag-was-lost?
