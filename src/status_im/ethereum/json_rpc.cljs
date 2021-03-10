@@ -179,7 +179,8 @@
    "mailservers_addChatRequestRange" {}
    "mailservers_addChatRequestRanges" {}
    "mailservers_getChatRequestRanges" {}
-   "mailservers_deleteChatRequestRange" {}})
+   "mailservers_deleteChatRequestRange" {}
+   "appmetrics_saveAppMetrics" {}})
 
 (defn on-error-retry
   [call-method {:keys [method number-of-retries delay on-error] :as arg}]
