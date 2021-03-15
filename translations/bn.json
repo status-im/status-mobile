@@ -1048,6 +1048,8 @@
     "rinkeby-network": "Rinkeby পরীক্ষা নেটওয়ার্ক",
     "ropsten-network": "Ropsten পরীক্ষা নেটওয়ার্ক",
     "rpc-url": "RPC URL",
+    "rpc-usage-copy": "অনুলিপি",
+    "rpc-usage-get-stats": "সতেজ",
     "save": "সংরক্ষণ",
     "save-password": "পাসওয়ার্ড সংরক্ষণ করুন",
     "save-password-unavailable": "পাসওয়ার্ড সংরক্ষণ করতে ডিভাইস পাসকোড নির্ধারণ করুন",

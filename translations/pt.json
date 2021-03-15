@@ -1161,6 +1161,8 @@
     "rinkeby-network": "Rede de teste Rinkeby",
     "ropsten-network": "Rede de teste de Ropsten",
     "rpc-url": "RPC URL",
+    "rpc-usage-copy": "Copiar",
+    "rpc-usage-get-stats": "Atualizar",
     "save": "Salvar",
     "save-password": "Salvar senha",
     "save-password-unavailable": "Defina a senha do dispositivo para salvar a senha",

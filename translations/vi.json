@@ -1033,6 +1033,8 @@
     "rinkeby-network": "Mạng thử nghiệm Rinkeby",
     "ropsten-network": "Ropsten mạng thử nghiệm",
     "rpc-url": "URL RPC",
+    "rpc-usage-copy": "Sao chép",
+    "rpc-usage-get-stats": "Làm tươi",
     "save": "Tiết kiệm",
     "save-password": "Lưu mật khẩu",
     "save-password-unavailable": "Đặt mật mã thiết bị để lưu mật khẩu",

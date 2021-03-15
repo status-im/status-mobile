@@ -1034,6 +1034,8 @@
     "rinkeby-network": "Rangkaian ujian Rinkeby",
     "ropsten-network": "Rangkaian ujian Ropsten",
     "rpc-url": "URL RPC",
+    "rpc-usage-copy": "Salinan",
+    "rpc-usage-get-stats": "Segarkan",
     "save": "Jimat",
     "save-password": "Simpan katalaluan",
     "save-password-unavailable": "Tetapkan kod laluan peranti untuk menyimpan kata laluan",

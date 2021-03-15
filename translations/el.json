@@ -1064,6 +1064,8 @@
     "rinkeby-network": "Δίκτυο δοκιμών Rinkeby",
     "ropsten-network": "Δοκιμαστικό δίκτυο Ropsten",
     "rpc-url": "Διεύθυνση URL RPC",
+    "rpc-usage-copy": "Αντιγραφή",
+    "rpc-usage-get-stats": "Ανανέωση",
     "save": "Αποθήκευση",
     "save-password": "Αποθήκευση κωδικού",
     "save-password-unavailable": "Ορίστε τον κωδικό πρόσβασης της συσκευής για να αποθηκεύσετε τον κωδικό σας",

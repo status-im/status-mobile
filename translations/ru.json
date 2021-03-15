@@ -1199,6 +1199,8 @@
     "rinkeby-network": "Тестовая сеть Rinkeby",
     "ropsten-network": "Тестовая сеть Ropsten",
     "rpc-url": "RPC URL-адрес",
+    "rpc-usage-copy": "Копировать",
+    "rpc-usage-get-stats": "Обновить",
     "save": "Сохранить",
     "save-password": "Сохранить пароль",
     "save-password-unavailable": "Установите код доступа на ваше устройство, чтобы сохранить пароль",

@@ -1107,6 +1107,8 @@
     "rinkeby-network": "Rinkeby-Testnetzwerk",
     "ropsten-network": "Ropsten-Testnetzwerk",
     "rpc-url": "RPC-URL",
+    "rpc-usage-copy": "Kopieren",
+    "rpc-usage-get-stats": "Aktualisieren",
     "save": "Speichern",
     "save-password": "Passwort speichern",
     "save-password-unavailable": "Legen Sie den Gerätepasscode fest, um das Passwort zu speichern",
