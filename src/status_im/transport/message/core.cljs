@@ -18,9 +18,15 @@
             [status-im.multiaccounts.model :as multiaccounts.model]
             [clojure.string :as string]))
 
+(fx/defn process-next
+  [cofx ^js response-js sync-handler]
+  (if sync-handler
+    (sync-handler cofx response-js true)
+    {:utils/dispatch-later [{:ms 20 :dispatch [:process-response response-js]}]}))
+
 (fx/defn process-response
   {:events [:process-response]}
-  [cofx ^js response-js]
+  [cofx ^js response-js process-async]
   (let [^js communities (.-communities response-js)
         ^js requests-to-join-community (.-requestsToJoinCommunity response-js)
         ^js chats (.-chats response-js)
@@ -31,7 +37,8 @@
         ^js filters (.-filters response-js)
         ^js removed-filters (.-removedFilters response-js)
         ^js invitations (.-invitations response-js)
-        ^js removed-chats (.-removedChats response-js)]
+        ^js removed-chats (.-removedChats response-js)
+        sync-handler (when-not process-async process-response)]
 
     (cond
 
@@ -39,7 +46,7 @@
       (do
         (js-delete response-js "chats")
         (fx/merge cofx
-                  {:utils/dispatch-later [{:ms 20 :dispatch [:process-response response-js]}]}
+                  (process-next response-js sync-handler)
                   (models.chat/ensure-chats (map #(-> %
                                                       (data-store.chats/<-rpc)
                                                       ;;TODO why here?
@@ -53,61 +60,61 @@
       (let [installations-clj (types/js->clj installations)]
         (js-delete response-js "installations")
         (fx/merge cofx
-                  {:utils/dispatch-later [{:ms 20 :dispatch [:process-response response-js]}]}
+                  (process-next response-js sync-handler)
                   (models.pairing/handle-installations installations-clj)))
 
       (seq contacts)
       (let [contacts-clj (types/js->clj contacts)]
         (js-delete response-js "contacts")
         (fx/merge cofx
-                  {:utils/dispatch-later [{:ms 20 :dispatch [:process-response response-js]}]}
+                  (process-next response-js sync-handler)
                   (models.contact/ensure-contacts (map data-store.contacts/<-rpc contacts-clj))))
 
       (seq communities)
       (let [communities-clj (types/js->clj communities)]
         (js-delete response-js "communities")
         (fx/merge cofx
-                  {:utils/dispatch-later [{:ms 20 :dispatch [:process-response response-js]}]}
+                  (process-next response-js sync-handler)
                   (models.communities/handle-communities (types/js->clj communities-clj))))
 
       (seq removed-chats)
       (let [removed-chats-clj (types/js->clj removed-chats)]
         (js-delete response-js "removedChats")
         (fx/merge cofx
-                  {:utils/dispatch-later [{:ms 20 :dispatch [:process-response response-js]}]}
+                  (process-next response-js sync-handler)
                   (models.communities/handle-removed-chats (types/js->clj removed-chats-clj))))
 
       (seq requests-to-join-community)
       (let [request (.pop requests-to-join-community)]
         (fx/merge cofx
-                  {:utils/dispatch-later [{:ms 20 :dispatch [::process response-js]}]}
+                  (process-next response-js sync-handler)
                   (models.communities/handle-request-to-join (types/js->clj request))))
 
       (seq emoji-reactions)
       (let [reactions (types/js->clj emoji-reactions)]
         (js-delete response-js "emojiReactions")
         (fx/merge cofx
-                  {:utils/dispatch-later [{:ms 20 :dispatch [:process-response response-js]}]}
+                  (process-next response-js sync-handler)
                   (models.reactions/receive-signal (map data-store.reactions/<-rpc reactions))))
 
       (seq invitations)
       (let [invitations (types/js->clj invitations)]
         (js-delete response-js "invitations")
         (fx/merge cofx
-                  {:utils/dispatch-later [{:ms 20 :dispatch [:process-response response-js]}]}
+                  (process-next response-js sync-handler)
                   (models.group/handle-invitations (map data-store.invitations/<-rpc invitations))))
       (seq filters)
       (let [filters (types/js->clj filters)]
         (js-delete response-js "filters")
         (fx/merge cofx
-                  {:utils/dispatch-later [{:ms 20 :dispatch [:process-response response-js]}]}
+                  (process-next response-js sync-handler)
                   (models.filters/handle-filters filters)))
 
       (seq removed-filters)
       (let [removed-filters (types/js->clj removed-filters)]
         (js-delete response-js "removedFilters")
         (fx/merge cofx
-                  {:utils/dispatch-later [{:ms 20 :dispatch [:process-response response-js]}]}
+                  (process-next response-js sync-handler)
                   (models.filters/handle-filters-removed filters))))))
 
 (defn group-by-and-update-unviewed-counts
@@ -155,7 +162,7 @@
 (fx/defn sanitize-messages-and-process-response
   "before processing we want to filter and sort messages, so we can process first only messages which will be showed"
   {:events [:sanitize-messages-and-process-response]}
-  [{:keys [db] :as cofx} ^js response-js]
+  [{:keys [db] :as cofx} ^js response-js process-async]
   (let [current-chat-id (:current-chat-id db)
         {:keys [db messages transactions chats statuses]}
         (reduce group-by-and-update-unviewed-counts
@@ -173,7 +180,7 @@
                                                  {:ms 100 :dispatch [:watch-tx transaction-hash]}))
                                              (when (seq chats)
                                                [{:ms 100 :dispatch [:chat/join-times-messages-checked chats]}]))}
-              (process-response response-js))))
+              (process-response response-js process-async))))
 
 (fx/defn remove-hash
   [{:keys [db]} envelope-hash]
@@ -242,4 +249,4 @@
                           (types/js->clj (.-messages response-js)))]
     (apply fx/merge cofx
            (conj set-hash-fxs
-                 #(sanitize-messages-and-process-response % response-js)))))
+                 #(sanitize-messages-and-process-response % response-js false)))))

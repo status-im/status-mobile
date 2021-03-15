@@ -160,6 +160,7 @@
     {:db             (assoc-in db [:chat/memberships current-chat-id] nil)
      ::json-rpc/call [{:method     (json-rpc/call-ext-method "sendGroupChatInvitationRequest")
                        :params     [nil current-chat-id invitation-admin message]
+                       :js-response true
                        :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]}))
 
 (fx/defn send-group-chat-membership-rejection
@@ -168,6 +169,7 @@
   [cofx invitation-id]
   {::json-rpc/call [{:method     (json-rpc/call-ext-method "sendGroupChatInvitationRejection")
                      :params     [nil invitation-id]
+                     :js-response true
                      :on-success #(re-frame/dispatch [:sanitize-messages-and-process-response %])}]})
 
 (fx/defn handle-invitations

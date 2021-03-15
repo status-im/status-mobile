@@ -114,7 +114,7 @@
                     :content-type  constants/content-type-text}]
        [react/view {:margin-bottom 8 :margin-right 16}
         [react/view {:padding-left 72}
-         (chat.utils/format-author (multiaccounts/displayed-name contact))]
+         (chat.utils/format-author contact)]
         [react/view {:flex-direction :row :align-items :flex-end}
          [react/view {:padding-left 16 :padding-top 4}
           [photos/photo (multiaccounts/displayed-photo contact) {:size 36}]]

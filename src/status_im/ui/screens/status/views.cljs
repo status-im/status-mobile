@@ -187,7 +187,7 @@
     [react/view {:flex 1}
      [react/view {:height           1
                   :background-color colors/gray-lighter}]
-     (if loading-messages?
+     (if (and no-messages? loading-messages?)
        [react/view {:flex 1 :align-items :center :justify-content :center}
         [react/activity-indicator {:animating true}]]
        (if no-messages?
