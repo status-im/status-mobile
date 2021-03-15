@@ -1,39 +1,10 @@
 from tests import marks, pair_code, common_password
-from tests.base_test_case import SingleDeviceTestCase
+from tests.base_test_case import SingleDeviceTestCase, MultipleDeviceTestCase
 from views.sign_in_view import SignInView
-from views.keycard_view import KeycardView
 from tests.users import basic_user, transaction_senders
 
 
 class TestCreateAccount(SingleDeviceTestCase):
-
-    @marks.testrail_id(5689)
-    @marks.critical
-    def test_add_new_keycard_account_and_login(self):
-        sign_in = SignInView(self.driver)
-        sign_in.create_user(keycard=True)
-
-        sign_in.just_fyi('Check that after creating keycard account balance is 0, not ...')
-        wallet_view = sign_in.wallet_button.click()
-        wallet_view.set_up_wallet()
-        if wallet_view.status_account_total_usd_value.text != '0':
-            self.errors.append("Account USD value is not 0, it is %s" % wallet_view.status_account_total_usd_value.text)
-        public_key, default_username = sign_in.get_public_key_and_username(return_username=True)
-        profile = sign_in.get_profile_view()
-        profile.logout()
-
-        sign_in.just_fyi('Check that can login with keycard account')
-        sign_in.multi_account_on_login_button.wait_for_visibility_of_element(5)
-        sign_in.multi_account_on_login_button.click()
-        keycard_view = KeycardView(self.driver)
-        if not keycard_view.element_by_text_part(default_username).is_element_displayed():
-            self.errors.append("%s is not found on keycard login screen!" % default_username)
-        keycard_view.connect_selected_card_button.click()
-        keycard_view.enter_default_pin()
-        if not sign_in.home_button.is_element_displayed(10):
-            self.driver.fail('Keycard user is not logged in')
-
-        self.errors.verify_no_errors()
 
     @marks.testrail_id(6645)
     @marks.critical
@@ -452,4 +423,78 @@ class TestCreateAccount(SingleDeviceTestCase):
         for amount in [transaction_amount_keycard, transaction_amount_added]:
             self.network_api.find_transaction_by_unique_amount(basic_user['address'], amount)
 
+        self.errors.verify_no_errors()
+
+class TestKeycardCreateMultiaccountMultipleDevice(MultipleDeviceTestCase):
+
+    @marks.testrail_id(5689)
+    @marks.critical
+    def test_keycard_create_login_resotore_unlock_same_seed(self):
+        self.create_drivers(2)
+        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+
+        device_1.just_fyi("Create keycard account and save seed phrase")
+        device_1.get_started_button.click()
+        device_1.generate_key_button.click_until_presence_of_element(device_1.next_button)
+        device_1.next_button.click_until_absense_of_element(device_1.element_by_translation_id("intro-wizard-title2"))
+        keycard_flow = device_1.keycard_storage_button.click()
+        keycard_flow.confirm_pin_and_proceed()
+        seed_phrase = keycard_flow.backup_seed_phrase()
+        device_1.maybe_later_button.wait_for_visibility_of_element(30)
+        device_1.maybe_later_button.click_until_presence_of_element(device_1.lets_go_button)
+        device_1.lets_go_button.click_until_absense_of_element(device_1.lets_go_button)
+        device_1.profile_button.wait_for_visibility_of_element(30)
+
+        device_2.just_fyi("Restore same multiaccount from seed phrase on another device")
+        device_2.recover_access(seed_phrase)
+
+        device_1.just_fyi('Check that after creating keycard account balance is 0, not ...')
+        wallet_1 = device_1.wallet_button.click()
+        wallet_1.set_up_wallet()
+        wallet_address = wallet_1.get_wallet_address()
+        wallet_1.wallet_button.double_click()
+        if wallet_1.status_account_total_usd_value.text != '0':
+            self.errors.append("Account USD value is not 0, it is %s" % wallet_1.status_account_total_usd_value.text)
+        public_key, default_username = device_1.get_public_key_and_username(return_username=True)
+        profile_1 = device_1.get_profile_view()
+        profile_1.logout()
+
+        profile_1.just_fyi('Check that can login with keycard account')
+        device_1.multi_account_on_login_button.wait_for_visibility_of_element(5)
+        device_1.multi_account_on_login_button.click()
+        if not keycard_flow.element_by_text_part(default_username).is_element_displayed():
+            self.errors.append("%s is not found on keycard login screen!" % default_username)
+        keycard_flow.connect_selected_card_button.click()
+        keycard_flow.enter_default_pin()
+        if not device_1.home_button.is_element_displayed(10):
+            self.errors.append('Keycard user is not logged in')
+
+        device_2.just_fyi("Check username and wallet address on another device")
+        wallet_2 = device_2.wallet_button.click()
+        wallet_2.set_up_wallet()
+        wallet_address_2 = wallet_2.get_wallet_address()
+        wallet_2.wallet_button.double_click()
+        if wallet_address != wallet_address_2:
+            self.errors.append('Wallet address on restored multiaccount is not equal to created keycard multiaccount')
+        public_key_2, default_username_2 = device_2.get_public_key_and_username(return_username=True)
+        if public_key != public_key_2:
+            self.errors.append('Public key on restored multiaccount is not equal to created keycard multiaccount')
+        if default_username_2 != default_username:
+            self.errors.append('Username on restored multiaccount is not equal to created keycard multiaccount')
+
+        device_1.just_fyi('Unlock keycard multiaccount at attempt to restore same multiaccount from seed')
+        device_1.profile_button.click()
+        profile_1.logout()
+        device_1.access_key_button.click()
+        device_1.enter_seed_phrase_button.click()
+        device_1.seedphrase_input.click()
+        device_1.seedphrase_input.set_value(seed_phrase)
+        device_1.next_button.click()
+        device_1.element_by_translation_id(id="unlock", uppercase=True).click()
+        keycard_flow.connect_selected_card_button.click()
+        keycard_flow.enter_default_pin()
+        device_1_home = device_1.home_button.click()
+        device_1_home.plus_button.click()
+        if not device_1_home.start_new_chat_button.is_element_displayed():
+             self.errors.append("Can't proceed using account after it's re-recover twice.")
         self.errors.verify_no_errors()

@@ -59,6 +59,7 @@ class KeycardView(BaseView):
             number = self.get_required_word_number()
             self.confirm_seed_phrase_edit_box.set_value(recovery_phrase[number])
             self.next_button.click()
+        return ' '.join(recovery_phrase.values())
 
     def confirm_pin_and_proceed(self):
         self.next_button.click()
