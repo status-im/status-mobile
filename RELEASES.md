@@ -1,3 +1,44 @@
+## 1.12
+### iOS
+#### Excerpt
+V1.12 Release - Keycard on iOS, Crypto Onramps, and More
+
+Keycard can now be used on iOS devices for hardware enforced security to your keys and accounts! Status v1.12 also introduces simpler access to obtaining crypto via onramps providers as well as some key updates to the messaging experience
+
+##### Added
+Keycard iOS integration 
+Link previews for our.status.im and medium.om
+List of Crypto onramps
+Add “delivered” message confirmations to 1:1 messages 
+Keycard banner on login screen
+
+#### Fixed
+UI issue showing up a chat on a paired device when it should not
+UI issue was showing messages as pending if no one is part of the group chat*
+Push notification is generated on paired account when you send message to 1-1
+UI issue for wrong notification when using two paired devices with same accounts
+Improve keycard login time
+
+### Android
+#### Excerpt
+V1.12 Release - Crypto Onramps and Improved Messaging
+
+Status v1.12  introduces simpler access to obtaining crypto via onramp providers as well as some key updates to the messaging experience including delivered message confirmations in 1:1 private chats
+
+##### Added
+Link previews for our.status.im and medium.om
+List of Crypto onramps
+Add “delivered” message confirmations to 1:1 messages 
+Keycard banner on login screen
+Local notifications for Mentions
+
+#### Fixed
+UI issue showing up a chat on a paired device when it should not
+UI issue was showing messages as pending if no one is part of the group chat*
+Push notification is generated on paired account when you send message to 1-1
+UI issue for wrong notification when using two paired devices with same accounts
+Improve keycard login time
+
 ## 1.11
 ### iOS
 #### Excerpt
