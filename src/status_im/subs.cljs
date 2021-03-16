@@ -1705,6 +1705,7 @@
     (re-frame/subscribe [:wallet.transactions/all-filters?])])
  (fn [[transactions filters all-filters?] [_ address]]
    {:all-filters? all-filters?
+    :total        (count transactions)
     :transaction-history-sections
     (->> transactions
          vals
@@ -2506,3 +2507,13 @@
  :<- [:multiaccount]
  (fn [multiaccount]
    (pos? (count (get multiaccount :images)))))
+
+(re-frame/reg-sub
+ :mobile-network/syncing-allowed?
+ :<- [:network/type]
+ :<- [:multiaccount]
+ (fn [[network-type {:keys [syncing-on-mobile-network?]}]]
+   (or (= network-type "wifi")
+       (and
+        (= network-type "cellular")
+        syncing-on-mobile-network?))))

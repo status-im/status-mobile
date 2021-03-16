@@ -1,14 +1,15 @@
 (ns status-im.ethereum.transactions.core
-  (:require [re-frame.core :as re-frame]
+  (:require [cljs.spec.alpha :as spec]
+            [re-frame.core :as re-frame]
+            [status-im.ens.core :as ens]
             [status-im.ethereum.decode :as decode]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.encode :as encode]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [status-im.ens.core :as ens]
             [status-im.utils.fx :as fx]
+            [status-im.utils.mobile-sync :as utils.mobile-sync]
             [status-im.wallet.core :as wallet]
-            [taoensso.timbre :as log]
-            [cljs.spec.alpha :as spec]))
+            [taoensso.timbre :as log]))
 
 (def confirmations-count-threshold 12)
 
@@ -207,8 +208,12 @@
   {:db (update-fetching-status db addresses :history? false)})
 
 (fx/defn tx-history-end-reached
-  [{:keys [db]} address]
-  {:db (assoc-in db [:wallet :fetching address :all-fetched?] true)})
+  [{:keys [db] :as cofx} address]
+  (let [syncing-allowed? (utils.mobile-sync/syncing-allowed? cofx)]
+    {:db (assoc-in db [:wallet :fetching address :all-fetched?]
+                   (if syncing-allowed?
+                     :all
+                     :all-preloaded))}))
 
 (fx/defn handle-new-transfer
   [{:keys [db] :as cofx} transfers {:keys [address limit]}]
@@ -289,9 +294,10 @@
 (re-frame/reg-fx
  :transactions/get-transfers
  (fn [{:keys [chain-tokens addresses before-block limit
-              limit-per-address]
+              limit-per-address fetch-more?]
        :as params
-       :or {limit default-transfers-limit}}]
+       :or {limit       default-transfers-limit
+            fetch-more? true}}]
    {:pre [(spec/valid?
            (spec/coll-of string?)
            addresses)]}
@@ -299,19 +305,23 @@
               "addresses" addresses
               "block" before-block
               "limit" limit
-              "limit-per-address" limit-per-address)
+              "limit-per-address" limit-per-address
+              "fetch-more?" fetch-more?)
    (doseq [address addresses]
      (let [limit (or (get limit-per-address address)
                      limit)]
        (json-rpc/call
         {:method "wallet_getTransfersByAddress"
-         :params [address (encode/uint before-block) (encode/uint limit)]
+         :params [address (encode/uint before-block) (encode/uint limit) fetch-more?]
          :on-success #(re-frame/dispatch
                        [::new-transfers
                         (enrich-transfers chain-tokens %)
                         (assoc params :address address
                                :limit limit)])
          :on-error #(re-frame/dispatch [::tx-fetching-failed address])})))))
+
+(defn some-transactions-loaded? [db address]
+  (not-empty (get-in db [:wallet :accounts address :transactions])))
 
 (fx/defn fetch-more-tx
   {:events [:transactions/fetch-more]}
@@ -326,6 +336,7 @@
        :addresses             [address]
        :before-block          min-known-block
        :historical?           true
+       :fetch-more?           (utils.mobile-sync/syncing-allowed? cofx)
        ;; Transfers are requested before and including `min-known-block` because
        ;; there is no guarantee that all transfers from that block are shown
        ;; already. To make sure that we fetch the whole `default-transfers-limit`
@@ -334,3 +345,10 @@
        :limit-per-address {address (+ default-transfers-limit
                                       min-block-transfers-count)}}}
      (tx-fetching-in-progress [address]))))
+
+(fx/defn get-fetched-transfers
+  [{:keys [db]}]
+  {:transactions/get-transfers
+   {:chain-tokens (:wallet/all-tokens db)
+    :addresses    (map :address (get db :multiaccount/accounts))
+    :fetch-more?  false}})

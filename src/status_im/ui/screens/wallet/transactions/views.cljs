@@ -131,13 +131,14 @@
     (i18n/label :t/non-archival-node)]])
 
 (defn history-list
-  [transactions-history-sections address]
+  [{:keys [transaction-history-sections total]} address]
   (let [fetching-recent-history? @(re-frame/subscribe [:wallet/fetching-recent-tx-history? address])
         fetching-more-history?   @(re-frame/subscribe [:wallet/fetching-tx-history? address])
         keycard-account?         @(re-frame/subscribe [:multiaccounts/keycard-account?])
         custom-rpc-node?         @(re-frame/subscribe [:custom-rpc-node])
         non-archival-rpc-node?   @(re-frame/subscribe [:wallet/non-archival-node])
-        all-fetched?             @(re-frame/subscribe [:wallet/tx-history-fetched? address])]
+        all-fetched?             @(re-frame/subscribe [:wallet/tx-history-fetched? address])
+        syncing-allowed?         @(re-frame/subscribe [:mobile-network/syncing-allowed?])]
     [react/view {:flex 1}
      [etherscan-link address]
      (cond non-archival-rpc-node?
@@ -152,7 +153,7 @@
         [react/activity-indicator {:size      :large
                                    :animating true}]])
      [list/section-list
-      {:sections   transactions-history-sections
+      {:sections   transaction-history-sections
        :key-fn     :hash
        :render-data {:keycard-account? keycard-account?}
        :render-fn  render-transaction
@@ -162,7 +163,7 @@
                                   :transactions-history-loading
                                   :transactions-history-empty)}]}]
      (when (and (not fetching-recent-history?)
-                (not all-fetched?))
+                (not= all-fetched? :all))
        (if fetching-more-history?
          [react/view
           {:style {:flex            1
@@ -173,6 +174,9 @@
          [toolbar/toolbar
           {:center
            [quo/button {:type     :secondary
+                        :disabled (and (not syncing-allowed?)
+                                       (or (= all-fetched? :all-preloaded)
+                                           (zero? total)))
                         :on-press (when-not fetching-more-history?
                                     #(re-frame/dispatch
                                       [:transactions/fetch-more address]))}

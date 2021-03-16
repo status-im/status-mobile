@@ -95,9 +95,8 @@
       :accessory-text items-number}]))
 
 (views/defview transactions [address]
-  (views/letsubs [{:keys [transaction-history-sections]}
-                  [:wallet.transactions.history/screen address]]
-    [history/history-list transaction-history-sections address]))
+  (views/letsubs [data [:wallet.transactions.history/screen address]]
+    [history/history-list data address]))
 
 (defn collectibles-link []
   [react/touchable-highlight

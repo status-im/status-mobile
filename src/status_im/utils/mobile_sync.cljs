@@ -6,5 +6,6 @@
 (defn syncing-allowed? [{:keys [db]}]
   (let [network (:network/type db)
         {:keys [syncing-on-mobile-network?]} (:multiaccount db)]
-    (not (and (= network "cellular")
-              (not syncing-on-mobile-network?)))))
+    (or (= network "wifi")
+        (and syncing-on-mobile-network?
+             (= network "cellular")))))

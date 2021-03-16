@@ -35,15 +35,17 @@
          {:view :mobile-network})
         (sheet-defaults)]
 
-       logged-in?
-       [(mailserver/process-next-messages-request)
-        (bottom-sheet/hide-bottom-sheet)]
-
        ;; NOTE(rasom): When we log into account on-network-status-change is
        ;; dispatched, but that doesn't mean there was a status change, thus
        ;; no reason to restart wallet.
        (and logged-in? initialized?)
-       [(wallet/restart-wallet-service-default)]))))
+       [(mailserver/process-next-messages-request)
+        (bottom-sheet/hide-bottom-sheet)
+        (wallet/restart-wallet-service {:force-start? true})]
+
+       logged-in?
+       [(mailserver/process-next-messages-request)
+        (bottom-sheet/hide-bottom-sheet)]))))
 
 (defn apply-settings
   ([sync?] (apply-settings sync? :default))
@@ -67,7 +69,7 @@
          :remember-syncing-choice? (boolean remember-choice?) {})
         (when (and cellular? sync?)
           (mailserver/process-next-messages-request))
-        (wallet/restart-wallet-service-default))))))
+        (wallet/restart-wallet-service {:force-start? true}))))))
 
 (fx/defn mobile-network-continue-syncing
   {:events [:mobile-network/continue-syncing]}

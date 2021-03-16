@@ -4,6 +4,7 @@
             [status-im.contact.core :as contact]
             [status-im.data-store.settings :as data-store.settings]
             [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.transactions.core :as transactions]
             [status-im.ethereum.eip55 :as eip55]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.keycard.common :as keycard.common]
@@ -94,6 +95,8 @@
 
          :else
          (wallet/update-balances nil scan-all-tokens?))
+   (when-not (utils.mobile-sync/syncing-allowed? cofx)
+     (transactions/get-fetched-transfers))
    (prices/update-prices)))
 
 (fx/defn login

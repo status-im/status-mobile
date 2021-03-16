@@ -614,7 +614,6 @@
                             interval)))
         max-known-block (get db :wallet/max-known-block 0)]
     {:db           (-> db
-                       (update :wallet dissoc :fetching)
                        (assoc :wallet-service/state :stopped)
                        (assoc :wallet/max-known-block max-known-block)
                        (assoc :wallet-service/restart-timeout timeout)
@@ -624,7 +623,7 @@
      ::stop-wallet nil}))
 
 (fx/defn start-wallet
-  [{:keys [db] :as cofx} watch-new-blocks?]
+  [{:keys [db] :as cofx} watch-new-blocks? on-recent-history-fetching]
   (let [old-timeout (get db :wallet-service/restart-timeout)
         state       (get db :wallet-service/state)
         timeout     (when-let [interval (get-restart-interval db)]
@@ -634,14 +633,15 @@
     {:db            (-> db
                         (assoc :wallet-service/state :started
                                :wallet-service/restart-timeout timeout
-                               :wallet/was-started? true))
+                               :wallet/was-started? true
+                               :wallet/on-recent-history-fetching on-recent-history-fetching))
      ::start-wallet watch-new-blocks?
      ::utils.utils/clear-timeouts
      [old-timeout]}))
 
 (fx/defn restart-wallet-service
   [{:keys [db] :as cofx}
-   {:keys [force-start? watch-new-blocks? ignore-syncing-settings?]}]
+   {:keys [force-start? watch-new-blocks? ignore-syncing-settings? on-recent-history-fetching]}]
   (when (or force-start? (:multiaccount db))
     (let [watching-txs? (get db :wallet/watch-txs)
           waiting? (get db :wallet/waiting-for-recent-history?)
@@ -657,7 +657,7 @@
                 waiting?
                 force-start?
                 watching-txs?))
-        (start-wallet cofx (boolean (or watch-new-blocks? watching-txs?)))
+        (start-wallet cofx (boolean (or watch-new-blocks? watching-txs?)) on-recent-history-fetching)
         (stop-wallet cofx)))))
 
 (def background-cooldown-time (datetime/minutes 3))
