@@ -42,7 +42,8 @@
   (when chat-id
     [react/view {:style st/toolbar-container}
      [react/view {:margin-right 10}
-      [chat-icon.screen/chat-icon-view-toolbar chat-id group-chat chat-name color]]
+      [react/touchable-highlight {:on-press #(when-not group-chat (re-frame/dispatch [:chat.ui/show-profile chat-id]))}
+       [chat-icon.screen/chat-icon-view-toolbar chat-id group-chat chat-name color]]]
      [react/view {:style st/chat-name-view}
       (if group-chat
         [react/text {:style               st/chat-name-text
