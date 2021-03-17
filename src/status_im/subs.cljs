@@ -66,8 +66,6 @@
 (reg-root-key-sub :animations :animations)
 (reg-root-key-sub :ui/search :ui/search)
 (reg-root-key-sub :web3-node-version :web3-node-version)
-(reg-root-key-sub :keyboard-height :keyboard-height)
-(reg-root-key-sub :keyboard-max-height :keyboard-max-height)
 (reg-root-key-sub :sync-data :sync-data)
 (reg-root-key-sub :mobile-network/remember-choice? :mobile-network/remember-choice?)
 (reg-root-key-sub :qr-modal :qr-modal)
@@ -790,12 +788,6 @@
    (:input-text input)))
 
 (re-frame/reg-sub
- :chats/current-chat-input-text
- :<- [:chats/current-chat-inputs]
- (fn [input]
-   (:input-text input)))
-
-(re-frame/reg-sub
  :chats/current-chat-membership
  :<- [:chats/current-chat-id]
  :<- [:chat/memberships]
@@ -826,6 +818,12 @@
 
        (not group-chat)
        (assoc :show-input? true)))))
+
+(re-frame/reg-sub
+ :chats/current-chat-chat-view
+ :<- [:chats/current-chat]
+ (fn [current-chat]
+   (select-keys current-chat [:chat-id :show-input? :group-chat :admins :invitation-admin :public? :chat-type :color :chat-name])))
 
 (re-frame/reg-sub
  :current-chat/metadata
@@ -913,6 +911,12 @@
  :<- [::chats]
  (fn [chats [_ chat-id]]
    (get-in chats [chat-id :public?])))
+
+(re-frame/reg-sub
+ :chats/might-have-join-time-messages?
+ :<- [::chats]
+ (fn [chats [_ chat-id]]
+   (get-in chats [chat-id :might-have-join-time-messages?])))
 
 (re-frame/reg-sub
  :chats/message-list
@@ -1018,6 +1022,31 @@
  :<- [:chats/timeline-chat-input]
  (fn [{:keys [metadata]}]
    (:sending-image metadata)))
+
+(re-frame/reg-sub
+ :chats/chat-toolbar
+ :<- [:disconnected?]
+ :<- [:multiaccounts/login]
+ :<- [:chats/sending-image]
+ :<- [:mainnet?]
+ :<- [:current-chat/one-to-one-chat?]
+ :<- [:current-chat/metadata]
+ :<- [:chats/reply-message]
+ (fn [[disconnected? {:keys [processing]} sending-image mainnet? one-to-one-chat? {:keys [public?]} reply]]
+   (let [sending-image (seq sending-image)]
+     {:send          (and (not (or processing disconnected?)))
+      :stickers      (and mainnet?
+                          (not sending-image)
+                          (not reply))
+      :image         (and (not reply)
+                          (not public?))
+      :extensions    (and one-to-one-chat?
+                          (or config/commands-enabled? mainnet?)
+                          (not reply))
+      :audio         (and (not sending-image)
+                          (not reply)
+                          (not public?))
+      :sending-image sending-image})))
 
 (re-frame/reg-sub
  :public-chat.new/topic-error-message

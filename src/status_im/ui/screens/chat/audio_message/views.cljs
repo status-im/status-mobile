@@ -281,14 +281,14 @@
          [cancel-button (:cancel-disabled? @state) #(stop-recording base-params)]]
         [rec-button-view (merge base-params {:state state})]
         [react/animated-view {:style {:opacity ctrl-buttons-anim-value}}
-         [input/send-button {:on-send-press (fn [] (cond
-                                                     (= :ready-to-send (:general @state))
-                                                     (do
-                                                       (reset-timer timer)
-                                                       (animate-buttons false false base-params)
-                                                       (send-audio-msessage state))
+         [input/send-button (fn [] (cond
+                                     (= :ready-to-send (:general @state))
+                                     (do
+                                       (reset-timer timer)
+                                       (animate-buttons false false base-params)
+                                       (send-audio-msessage state))
 
-                                                     (#{:recording :recording-paused} (:general @state))
-                                                     (stop-recording (merge base-params
-                                                                            {:on-success
-                                                                             #(send-audio-msessage state)}))))}]]]])))
+                                     (#{:recording :recording-paused} (:general @state))
+                                     (stop-recording (merge base-params
+                                                            {:on-success
+                                                             #(send-audio-msessage state)}))))]]]])))

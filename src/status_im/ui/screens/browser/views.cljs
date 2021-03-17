@@ -230,7 +230,7 @@
        [components/separator-dark]
        [react/view
         (when loading?
-          [connectivity/loading-indicator window-width])]
+          [connectivity/loading-indicator-anim window-width])]
        [browser-component {:dapp?                 dapp?
                            :dapp                  dapp
                            :error?                error?

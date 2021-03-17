@@ -15,7 +15,6 @@
             [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
             [status-im.utils.config :as config]
             [status-im.reloader :as reloader]
-            [status-im.utils.platform :as platform]
             [status-im.i18n.i18n :as i18n]
             ["react-native" :as rn]
             ["react-native-languages" :default react-native-languages]
@@ -60,25 +59,9 @@
   (reagent/create-class
    {:component-did-mount
     (fn [_]
-      (.addListener ^js react/keyboard
-                    (if platform/ios?
-                      "keyboardWillShow"
-                      "keyboardDidShow")
-                    (fn [^js e]
-                      (let [h (.. e -endCoordinates -height)]
-                        (re-frame/dispatch-sync [:set :keyboard-height h])
-                        (re-frame/dispatch-sync [:set :keyboard-max-height h]))))
-      (.addListener ^js react/keyboard
-                    (if platform/ios?
-                      "keyboardWillHide"
-                      "keyboardDidHide")
-                    (fn [_]
-                      (re-frame/dispatch-sync [:set :keyboard-height 0])))
       (.addEventListener ^js react/app-state "change" app-state-change-handler)
       (.addEventListener react-native-languages "change" on-languages-change)
-      (.addEventListener react-native-shake
-                         "ShakeEvent"
-                         on-shake)
+      (.addEventListener react-native-shake "ShakeEvent" on-shake)
       (.hide ^js splash-screen)
       (utils.universal-links/initialize))
     :component-will-unmount

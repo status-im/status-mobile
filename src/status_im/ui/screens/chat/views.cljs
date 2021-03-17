@@ -20,7 +20,6 @@
             [status-im.ui.screens.chat.image.views :as image]
             [status-im.ui.screens.chat.state :as state]
             [status-im.ui.screens.chat.extensions.views :as extensions]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.gap :as gap]
             [status-im.ui.components.invite.chat :as invite.chat]
@@ -32,18 +31,28 @@
             [clojure.string :as string]
             [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [quo.design-system.colors :as quo.colors]))
 
-(defn topbar [current-chat]
-  [topbar/topbar
-   {:content           [toolbar-content/toolbar-content-view current-chat]
-    :navigation        {:on-press #(re-frame/dispatch [:close-chat (:chat-id current-chat)])}
-    :right-accessories [{:icon                :main-icons/more
-                         :accessibility-label :chat-menu-button
-                         :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                   {:content (fn []
-                                                                               [sheets/actions current-chat])
-                                                                    :height  256}])}]}])
+(defn topbar []
+  ;;we don't use topbar component, because we want chat view as simple (fast) as possible
+  [react/view {:height 56 :border-bottom-width 1 :border-bottom-color (:ui-01 @quo.colors/theme)}
+   [react/touchable-highlight {:on-press-in #(re-frame/dispatch [:close-chat])
+                               :accessibility-label :back-button
+                               :style {:height 56 :width 40 :align-items :center :justify-content :center
+                                       :padding-left 16}}
+    [icons/icon :main-icons/arrow-left]]
+   [react/view {:flex 1 :left 52 :right 52 :top 0 :bottom 0 :position :absolute}
+    [toolbar-content/toolbar-content-view]]
+   [react/touchable-highlight {:on-press-in #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                                 {:content (fn []
+                                                                             [sheets/current-chat-actions])
+                                                                  :height  256}])
+                               :accessibility-label :chat-menu-button
+                               :style {:right 0 :top 0 :bottom 0 :position :absolute
+                                       :height 56 :width 40 :align-items :center :justify-content :center
+                                       :padding-right 16}}
+    [icons/icon :main-icons/more]]])
 
 (defn invitation-requests [chat-id admins]
   (let [current-pk @(re-frame/subscribe [:multiaccount/public-key])
@@ -59,16 +68,15 @@
              (i18n/label :t/group-membership-request)]]])))))
 
 (defn add-contact-bar [public-key]
-  (let [added? @(re-frame/subscribe [:contacts/contact-added? public-key])]
-    (when-not added?
-      [react/touchable-highlight
-       {:on-press
-        #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
-        :accessibility-label :add-to-contacts-button}
-       [react/view {:style (style/add-contact)}
-        [icons/icon :main-icons/add
-         {:color colors/blue}]
-        [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]])))
+  (when-not @(re-frame/subscribe [:contacts/contact-added? public-key])
+    [react/touchable-highlight
+     {:on-press
+      #(re-frame/dispatch [:contact.ui/add-to-contact-pressed public-key])
+      :accessibility-label :add-to-contacts-button}
+     [react/view {:style (style/add-contact)}
+      [icons/icon :main-icons/add
+       {:color colors/blue}]
+      [react/i18n-text {:style style/add-contact-text :key :add-to-contacts}]]]))
 
 (defn chat-intro [{:keys [chat-id
                           chat-name
@@ -114,7 +122,6 @@
 (defn chat-intro-header-container
   [{:keys [group-chat invitation-admin
            chat-type
-           might-have-join-time-messages?
            color chat-id chat-name
            public?]}
    no-messages]
@@ -131,7 +138,7 @@
           :chat-name chat-name
           :public? public?
           :color color
-          :loading-messages? might-have-join-time-messages?
+          :loading-messages? @(re-frame/subscribe [:chats/might-have-join-time-messages? chat-id])
           :no-messages? no-messages}]
      (if group-chat
        [chat-intro opts]
@@ -233,6 +240,7 @@
   (let [loading-messages? @(re-frame/subscribe [:chats/loading-messages? chat-id])
         no-messages? @(re-frame/subscribe [:chats/chat-no-messages? chat-id])
         all-loaded? @(re-frame/subscribe [:chats/all-loaded? chat-id])]
+    (println "LIST FOOTER" (or loading-messages? (not chat-id) (not all-loaded?)))
     [react/view {:style (when platform/android? {:scaleY -1})}
      (if (or loading-messages? (not chat-id) (not all-loaded?))
        [react/view {:height 324 :align-items :center :justify-content :center}
@@ -265,16 +273,28 @@
                :show-input? show-input?)
         space-keeper]))])
 
-(defn messages-view
-  [{:keys [chat bottom-space pan-responder space-keeper show-input?]}]
+(def list-key-fn #(or (:message-id %) (:value %)))
+(def list-ref #(reset! messages-list-ref %))
+
+;;TODO this is not really working in pair with inserting new messages because we stop inserting new messages
+;;if they outside the viewarea, but we load more here because end is reached,so its slowdown UI because we
+;;load and render 20 messages more, but we can't prevent this , because otherwise :on-end-reached will work wrong
+(defn list-on-end-reached []
+  (if @state/scrolling
+    (re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat])
+    (utils/set-timeout #(re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat])
+                       (if platform/low-device? 700 200))))
+
+(defn messages-view [{:keys [chat bottom-space pan-responder space-keeper show-input?]}]
   (let [{:keys [group-chat chat-id public?]} chat
         messages @(re-frame/subscribe [:chats/chat-messages-stream chat-id])
         current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
+    ;;do not use anonymous functions for handlers
     [list/flat-list
      (merge
       pan-responder
-      {:key-fn                       #(or (:message-id %) (:value %))
-       :ref                          #(reset! messages-list-ref %)
+      {:key-fn                       list-key-fn
+       :ref                          list-ref
        :header                       [list-header chat]
        :footer                       [list-footer chat]
        :data                         messages
@@ -286,75 +306,63 @@
                                       :show-input?        show-input?}
        :render-fn                    render-fn
        :on-viewable-items-changed    on-viewable-items-changed
-       ;;TODO this is not really working in pair with inserting new messages because we stop inserting new messages
-       ;;if they outside the viewarea, but we load more here because end is reached,so its slowdown UI because we
-       ;;load and render 20 messages more, but we can't prevent this , because otherwise :on-end-reached will work wrong
-       :on-end-reached               (fn []
-                                       (if @state/scrolling
-                                         (re-frame/dispatch [:chat.ui/load-more-messages chat-id])
-                                         (utils/set-timeout #(re-frame/dispatch [:chat.ui/load-more-messages chat-id])
-                                                            (if platform/low-device? 500 200))))
-
-       :on-scroll-to-index-failed    #()                    ;;don't remove this
+       :on-end-reached               list-on-end-reached
+       :on-scroll-to-index-failed    identity              ;;don't remove this
        :content-container-style      {:padding-top (+ bottom-space 16)
                                       :padding-bottom 16}
        :scroll-indicator-insets      {:top bottom-space}    ;;ios only
        :keyboard-dismiss-mode        :interactive
        :keyboard-should-persist-taps :handled
-       :onMomentumScrollBegin        #(reset! state/scrolling true)
-       :onMomentumScrollEnd          #(reset! state/scrolling false)
+       :onMomentumScrollBegin        state/start-scrolling
+       :onMomentumScrollEnd          state/stop-scrolling
        ;;TODO https://github.com/facebook/react-native/issues/30034
        :inverted                     (when platform/ios? true)
        :style                        (when platform/android? {:scaleY -1})})]))
 
 (defn chat []
-  (let [bottom-space   (reagent/atom 0)
-        panel-space    (reagent/atom 52)
-        active-panel   (reagent/atom nil)
-        position-y     (animated/value 0)
-        pan-state      (animated/value 0)
+  (let [bottom-space (reagent/atom 0)
+        panel-space (reagent/atom 52)
+        active-panel (reagent/atom nil)
+        position-y (animated/value 0)
+        pan-state (animated/value 0)
         text-input-ref (quo.react/create-ref)
-        on-update      #(when-not (zero? %) (reset! panel-space %))
-        pan-responder  (accessory/create-pan-responder position-y pan-state)
-        space-keeper   (get-space-keeper-ios bottom-space panel-space active-panel text-input-ref)
+        on-update #(when-not (zero? %) (reset! panel-space %))
+        pan-responder (accessory/create-pan-responder position-y pan-state)
+        space-keeper (get-space-keeper-ios bottom-space panel-space active-panel text-input-ref)
         set-active-panel (get-set-active-panel active-panel)
-        on-text-change #(re-frame/dispatch [:chat.ui/set-chat-input-text %])]
+        on-close #(set-active-panel nil)]
     (fn []
-      (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as current-chat}
-            @(re-frame/subscribe [:chats/current-chat])]
+      (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as chat}
+            ;;we want to react only on these fields, do not use full chat map here
+            @(re-frame/subscribe [:chats/current-chat-chat-view])
+            max-bottom-space (max @bottom-space @panel-space)]
         [:<>
+         [topbar]
          [connectivity/loading-indicator]
-         [topbar current-chat]
-         [:<>
-          (when current-chat
-            (if group-chat
-              [invitation-requests chat-id admins]
-              [add-contact-bar chat-id]))
-          ;;MESSAGES LIST
-          [messages-view {:chat          current-chat
-                          :bottom-space  (max @bottom-space @panel-space)
-                          :pan-responder pan-responder
-                          :space-keeper  space-keeper
-                          :show-input?   show-input?}]]
+         (when chat-id
+           (if group-chat
+             [invitation-requests chat-id admins]
+             [add-contact-bar chat-id]))
+         ;;MESSAGES LIST
+         [messages-view {:chat          chat
+                         :bottom-space  max-bottom-space
+                         :pan-responder pan-responder
+                         :space-keeper  space-keeper
+                         :show-input?   show-input?}]
          (when (and group-chat invitation-admin)
            [accessory/view {:y               position-y
                             :on-update-inset on-update}
             [invitation-bar chat-id]])
-         ;; NOTE(rasom): on android we have to place `autocomplete-mentions`
-         ;; outside `accessory/view` because otherwise :keyboardShouldPersistTaps
-         ;; :always doesn't work and keyboard is hidden on pressing suggestion.
-         ;; Scrolling of suggestions doesn't work neither in this case.
-         (when platform/android?
-           [components/autocomplete-mentions text-input-ref])
+         [components/autocomplete-mentions text-input-ref max-bottom-space]
          (when show-input?
            [accessory/view {:y               position-y
                             :pan-state       pan-state
                             :has-panel       (boolean @active-panel)
-                            :on-close        #(set-active-panel nil)
+                            :on-close        on-close
                             :on-update-inset on-update}
             [components/chat-toolbar
-             {:active-panel             @active-panel
-              :set-active-panel         set-active-panel
-              :text-input-ref           text-input-ref
-              :on-text-change           on-text-change}]
+             {:chat-id          chat-id
+              :active-panel     @active-panel
+              :set-active-panel set-active-panel
+              :text-input-ref   text-input-ref}]
             [bottom-sheet @active-panel]])]))))

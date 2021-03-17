@@ -31,15 +31,9 @@
         (i18n/label :chat-is-a-contact)
         (i18n/label :chat-is-not-a-contact))]]))
 
-(defn toolbar-content-view [{:keys [group-chat
-                                    invitation-admin
-                                    color
-                                    chat-id
-                                    contacts
-                                    chat-type
-                                    chat-name
-                                    public?]}]
-  (when chat-id
+(defn toolbar-content-view []
+  (let [{:keys [group-chat invitation-admin color chat-id contacts chat-type chat-name public?]}
+        @(re-frame/subscribe [:chats/current-chat])]
     [react/view {:style st/toolbar-container}
      [react/view {:margin-right 10}
       [react/touchable-highlight {:on-press #(when-not group-chat (re-frame/dispatch [:chat.ui/show-profile chat-id]))}

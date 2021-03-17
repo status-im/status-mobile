@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.chat.styles.input.gap
   (:require [status-im.ui.components.colors :as colors]))
 
-(def gap-container
+(defn gap-container []
   {:align-self          :stretch
    :margin-top          24
    :margin-bottom       24

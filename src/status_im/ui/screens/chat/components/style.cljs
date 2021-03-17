@@ -8,7 +8,6 @@
    :padding-vertical 8
    :border-top-width 1
    :border-top-color (:ui-01 @colors/theme)
-   :background-color (:ui-background @colors/theme)
    :align-items      :flex-end
    :flex-direction   :row})
 
@@ -21,8 +20,9 @@
    :border-bottom-left-radius  16
    :margin-horizontal          8})
 
-(defn input-row []
+(def input-row
   {:flex-direction :row
+   :overflow       :hidden
    :align-items    :flex-end})
 
 (defn text-input-wrapper []
@@ -41,7 +41,6 @@
           :min-height         34
           :max-height         144
           :margin             0
-          :border-width       0
           :flex-shrink        1
           :color              (:text-01 @colors/theme)
           :padding-horizontal 12}
@@ -50,11 +49,13 @@
            {:padding-top    2
             :padding-bottom 6})))
 
-(defn actions-wrapper [invisible]
-  {:flex-direction :row
-   :padding-left   4
-   :min-height     34
-   :left           (if invisible -88 0)})
+(defn actions-wrapper [show-send]
+  (merge
+   (when show-send
+     {:width 0 :left -88})
+   {:flex-direction :row
+    :padding-left   4
+    :min-height     34}))
 
 (defn touchable-icon []
   {:padding-horizontal 10
@@ -97,17 +98,12 @@
    :margin-horizontal 5})
 
 (defn send-message-container []
-  {:background-color  (:interactive-01 @colors/theme)
-   :width             26
-   :height            26
-   :border-radius     13
-   :justify-content   :center
-   :align-items       :center})
-
-(defn in-input-buttons []
-  {:flex-direction :row
-   :height         34
-   :overflow       :hidden})
+  {:background-color (:interactive-01 @colors/theme)
+   :width            26
+   :height           26
+   :border-radius    13
+   :justify-content  :center
+   :align-items      :center})
 
 (defn send-icon-color []
   colors/white)
@@ -118,6 +114,5 @@
    :right            0
    :bottom           bottom
    :background-color (colors/get-color :ui-background)
-   :flex-direction   :column
    :border-top-width 1
    :border-top-color (colors/get-color :ui-01)})

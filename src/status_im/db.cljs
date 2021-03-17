@@ -4,8 +4,7 @@
             [status-im.wallet.db :as wallet.db]))
 
 ;; initial state of app-db
-(def app-db {:keyboard-height                    0
-             :contacts/contacts                  {}
+(def app-db {:contacts/contacts                  {}
              :pairing/installations              {}
              :group/selected-contacts            #{}
              :chats                              {}

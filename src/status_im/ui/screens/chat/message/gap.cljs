@@ -30,7 +30,7 @@
                   connected?   [:mailserver/connected?]]
     (let [ids            (:ids gaps)]
       (when-not (and first-gap? might-have-join-time-messages?)
-        [react/view {:style style/gap-container}
+        [react/view {:style (style/gap-container)}
          [react/touchable-highlight
           {:on-press (when (and connected? (not in-progress?))
                        (on-press ids first-gap? idx list-ref chat-id))

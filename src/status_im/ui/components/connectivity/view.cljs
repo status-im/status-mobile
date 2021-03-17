@@ -49,26 +49,27 @@
            (animation/parallel
             [(animation/timing blue-bar-left-margin (easing :out 0))
              (animation/timing white-bar-left-margin (easing :out 0))])]))))}
-    [react/view {:style               {:width            parent-width
-                                       :position         :absolute
-                                       :top              -3
-                                       :z-index          3
-                                       :height           3
-                                       :background-color colors/white}
-                 :accessibility-label :loading-indicator}
-     [react/animated-view {:style (animated-bar-style blue-bar-left-margin
-                                                      parent-width
-                                                      colors/blue)}]
-     [react/animated-view {:style (assoc (animated-bar-style white-bar-left-margin
-                                                             parent-width
-                                                             colors/white)
-                                         :left (* 0.15 parent-width))}]]))
+    [react/view
+     [react/view {:style               {:width            parent-width
+                                        :position         :absolute
+                                        :top              -3
+                                        :z-index          3
+                                        :height           3
+                                        :background-color colors/white}
+                  :accessibility-label :loading-indicator}
+      [react/animated-view {:style (animated-bar-style blue-bar-left-margin
+                                                       parent-width
+                                                       colors/blue)}]
+      [react/animated-view {:style (assoc (animated-bar-style white-bar-left-margin
+                                                              parent-width
+                                                              colors/white)
+                                          :left (* 0.15 parent-width))}]]]))
 
 (defview loading-indicator []
-  (letsubs [ui-status-properties [:connectivity/ui-status-properties]
+  (letsubs [fetching? [:mailserver/fetching?]
             window-width [:dimensions/window-width]]
-    (when (:loading-indicator? ui-status-properties)
-      [loading-indicator-anim @window-width])))
+    (when fetching?
+      [loading-indicator-anim window-width])))
 
 (defn hide-sheet-and-dispatch [event]
   (re-frame/dispatch [:bottom-sheet/hide])

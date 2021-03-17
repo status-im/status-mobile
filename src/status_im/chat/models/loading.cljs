@@ -122,6 +122,11 @@
             #(re-frame/dispatch [::messages-loaded chat-id session-id %])
             #(re-frame/dispatch [::failed-loading-messages chat-id session-id %]))))))))
 
+(fx/defn load-more-messages-for-current-chat
+  {:events [:chat.ui/load-more-messages-for-current-chat]}
+  [{:keys [db] :as cofx}]
+  (load-more-messages cofx (:current-chat-id db) false))
+
 (fx/defn load-messages
   [{:keys [db now] :as cofx} chat-id]
   (when-not (get-in db [:pagination-info chat-id :messages-initialized?])

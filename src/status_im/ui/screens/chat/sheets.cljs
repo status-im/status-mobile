@@ -163,6 +163,9 @@
 
     :else      [one-to-one-chat-accents current-chat]))
 
+(defn current-chat-actions []
+  [actions @(re-frame/subscribe [:chats/current-chat])])
+
 (defn options [chat-id message-id]
   (fn []
     [react/view

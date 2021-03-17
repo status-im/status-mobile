@@ -108,39 +108,33 @@
                            :font-size 15 :line-height 22}}
        (str (i18n/format-currency (* amount price) (:code wallet-currency)) " " (:code wallet-currency))])))
 
-(views/defview select-account-sheet [{:keys [from message]}]
-  (views/letsubs [window-height [:dimensions/window-height]
-                  keyboard-height [:keyboard-height]]
-    (let [small-screen? (< (- window-height keyboard-height) 450)]
-      [react/view {:style (styles/acc-sheet)}
-       [header {:small-screen? small-screen?
-                :label         :t/select-account}]
-       [react/view {:flex-direction  :row :padding-horizontal 24 :align-items :center
-                    :margin-vertical (if small-screen? 8 16)}]
-       (when-not small-screen?
-         [quo/list-header
-          (i18n/label :t/from)])
-       [react/view {:flex-direction :row :flex 1 :align-items :center}
-        (when small-screen?
-          [react/i18n-text {:style {:width 50 :text-align :right :color colors/gray} :key :t/from}])
-        [react/view {:flex 1}
-         [render-account from nil ::commands/set-selected-account]]]
-       [toolbar/toolbar
-        {:left
-         [react/view {:padding-horizontal 8}
-          [quo/button
-           {:type     :secondary
-            :on-press #(re-frame/dispatch [:set :commands/select-account nil])}
-           (i18n/label :t/cancel)]]
-         :right
-         [quo/button
-          {:accessibility-label :select-account-bottom-sheet
-           :disabled            (nil? from)
-           :on-press            #(re-frame/dispatch
-                                  [::commands/accept-request-address-for-transaction
-                                   (:message-id message)
-                                   (:address from)])}
-          (i18n/label :t/share)]}]])))
+(defn select-account-sheet [{:keys [from message]}]
+  [react/view {:style (styles/acc-sheet)}
+   [header {:small-screen? false
+            :label         :t/select-account}]
+   [react/view {:flex-direction  :row :padding-horizontal 24 :align-items :center
+                :margin-vertical 16}]
+   [quo/list-header
+    (i18n/label :t/from)]
+   [react/view {:flex-direction :row :flex 1 :align-items :center}
+    [react/view {:flex 1}
+     [render-account from nil ::commands/set-selected-account]]]
+   [toolbar/toolbar
+    {:left
+     [react/view {:padding-horizontal 8}
+      [quo/button
+       {:type     :secondary
+        :on-press #(re-frame/dispatch [:set :commands/select-account nil])}
+       (i18n/label :t/cancel)]]
+     :right
+     [quo/button
+      {:accessibility-label :select-account-bottom-sheet
+       :disabled            (nil? from)
+       :on-press            #(re-frame/dispatch
+                              [::commands/accept-request-address-for-transaction
+                               (:message-id message)
+                               (:address from)])}
+      (i18n/label :t/share)]}]])
 
 (defview select-account []
   (letsubs [data [:commands/select-account]]

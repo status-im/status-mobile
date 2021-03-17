@@ -43,7 +43,7 @@
   [{:keys [db] :as cofx} text-input-ref {:keys [alias name searched-text match] :as user}]
   (let [chat-id     (:current-chat-id db)
         new-text    (mentions/new-input-text-with-mention cofx user)
-        at-sign-idx (get-in db [:chats chat-id :mentions :at-sign-idx])
+        at-sign-idx (get-in db [:chats/mentions chat-id :mentions :at-sign-idx])
         cursor      (+ at-sign-idx (count name) 2)]
     (fx/merge
      cofx

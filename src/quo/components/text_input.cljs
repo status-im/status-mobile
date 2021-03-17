@@ -65,11 +65,6 @@
       (s/explain spec prop)
       false)))
 
-;; TODO(Ferossgp): Check performance for android layout animations
-(when (and platform/android?
-           (aget rn/ui-manager "setLayoutAnimationEnabledExperimental"))
-  (ocall rn/ui-manager "setLayoutAnimationEnabledExperimental" true))
-
 (def height 44)                         ; 22 line-height + 11*2 vertical padding
 (def multiline-height 88)               ; 3 * 22 three line-height + 11* vertical padding
 

@@ -448,7 +448,7 @@
 
 (fx/defn on-text-input
   {:events [::on-text-input]}
-  [{:keys [db] :as cofx} {:keys [new-text previous-text start end] :as args}]
+  [{:keys [db]} {:keys [previous-text start end] :as args}]
   (log/debug "[mentions] on-text-input args" args)
   (let [normalized-previous-text
         ;; NOTE(rasom): on iOS `previous-text` contains entire input's text. To
@@ -457,16 +457,14 @@
           previous-text
           (subs previous-text start end))
         chat-id        (:current-chat-id db)
-        previous-state (get-in db [:chats chat-id :mentions])
-        text     (get-in db [:chat/inputs chat-id :input-text])
+        previous-state (get-in db [:chats/mentions chat-id :mentions])
         new-state (-> previous-state
                       (merge args)
                       (assoc :previous-text normalized-previous-text))
-        old-at-idxs (:at-idxs new-state)
         new-at-idxs (calc-at-idxs new-state)
         new-state (assoc new-state :at-idxs new-at-idxs)]
     (log/debug "[mentions] on-text-input state" new-state)
-    {:db (assoc-in db [:chats chat-id :mentions] new-state)}))
+    {:db (assoc-in db [:chats/mentions chat-id :mentions] new-state)}))
 
 (defn calculate-input [text [first-idx :as idxs]]
   (if-not first-idx
@@ -496,8 +494,7 @@
   [{:keys [db]} mentionable-users]
   (let [chat-id  (:current-chat-id db)
         text     (get-in db [:chat/inputs chat-id :input-text])
-        {:keys [new-text start end] :as state}
-        (get-in db [:chats chat-id :mentions])
+        state    (get-in db [:chats/mentions chat-id :mentions])
         new-at-idxs (check-idx-for-mentions
                      text
                      (:at-idxs state)
@@ -506,25 +503,25 @@
     (log/debug "[mentions] new-at-idxs" new-at-idxs calculated-input)
     {:db (-> db
              (update-in
-              [:chats chat-id :mentions]
+              [:chats/mentions chat-id :mentions]
               assoc
               :at-idxs new-at-idxs)
              (assoc-in [:chat/inputs-with-mentions chat-id] calculated-input))}))
 
 (fx/defn calculate-suggestions
   {:events [::calculate-suggestions]}
-  [{:keys [db] :as cofx} mentionable-users]
+  [{:keys [db]} mentionable-users]
   (let [chat-id  (:current-chat-id db)
         text     (get-in db [:chat/inputs chat-id :input-text])
         {:keys [new-text at-idxs start end] :as state}
-        (get-in db [:chats chat-id :mentions])
+        (get-in db [:chats/mentions chat-id :mentions])
         new-text (or new-text text)]
     (log/debug "[mentions] calculate suggestions"
                "state" state)
     (if-not (seq at-idxs)
       {:db (-> db
                (assoc-in [:chats/mention-suggestions chat-id] nil)
-               (assoc-in [:chats chat-id :mentions :at-idxs] nil)
+               (assoc-in [:chats/mentions chat-id :mentions :at-idxs] nil)
                (assoc-in [:chat/inputs-with-mentions chat-id] [[:text text]]))}
       (let [new-at-idxs (check-idx-for-mentions
                          text
@@ -550,7 +547,7 @@
                    "mentions" (count mentions))
         (log/debug "[mentions] new-at-idxs" new-at-idxs calculated-input)
         {:db (-> db
-                 (update-in [:chats chat-id :mentions]
+                 (update-in [:chats/mentions chat-id :mentions]
                             assoc
                             :at-sign-idx at-sign-idx
                             :at-idxs new-at-idxs
@@ -563,7 +560,7 @@
   (let [chat-id (:current-chat-id db)
         text    (get-in db [:chat/inputs chat-id :input-text])
         {:keys [mention-end at-sign-idx]}
-        (get-in db [:chats chat-id :mentions])]
+        (get-in db [:chats/mentions chat-id :mentions])]
     (log/debug "[mentions] clear suggestions"
                "state" new-input-text-with-mention)
     (string/join
@@ -589,7 +586,7 @@
     (fx/merge
      cofx
      {:db (-> db
-              (update-in [:chats chat-id] dissoc :mentions)
+              (update-in [:chats/mentions chat-id] dissoc :mentions)
               (update :chat/inputs-with-mentions dissoc chat-id))}
      (clear-suggestions))))
 
@@ -607,7 +604,7 @@
    mentionable-users]
   (let [chat-id (:current-chat-id db)
         {:keys [mention-end at-idxs]}
-        (get-in db [:chats chat-id :mentions])]
+        (get-in db [:chats/mentions chat-id :mentions])]
     (when (seq at-idxs)
       (if (some
            (fn [{:keys [from to] :as idx}]
@@ -617,7 +614,7 @@
            at-idxs)
         (fx/merge
          cofx
-         {:db (update-in db [:chats chat-id :mentions]
+         {:db (update-in db [:chats/mentions chat-id :mentions]
                          assoc
                          :start end
                          :end end

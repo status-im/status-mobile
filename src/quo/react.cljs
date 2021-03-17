@@ -16,6 +16,10 @@
   (oset! ref "current" val)
   val)
 
+(defn set-native-props [^js ref ^js props]
+  (when-let [curr-ref ^js (current-ref ref)]
+    (.setNativeProps curr-ref props)))
+
 (deftype StateHook [value set-value]
   cljs.core/IHash
   (-hash [o] (goog/getUid o))

@@ -152,29 +152,31 @@
     [communities.views/community-home-list-item home-item]))
 
 (defn communities-and-chats [items loading? search-filter hide-home-tooltip?]
-  (if loading?
-    [react/view {:flex 1 :align-items :center :justify-content :center}
-     [react/activity-indicator {:animating true}]]
-    (if (and (empty? items)
-             (empty? search-filter)
-             hide-home-tooltip?
-             (not @search-active?))
-      [welcome-blank-page]
-      [list/flat-list
-       {:key-fn                       :chat-id
-        :keyboard-should-persist-taps :always
-        :data                         items
-        :render-fn                    render-fn
-        :header [:<>
-                 (when (or (seq items) @search-active? (seq search-filter))
-                   [search-input-wrapper search-filter items])
-                 [referral-item/list-item]
-                 (when (and (empty? items)
-                            (or @search-active? (seq search-filter)))
-                   [start-suggestion search-filter])]
-        :footer                       (if (and (not hide-home-tooltip?) (not @search-active?))
-                                        [home-tooltip-view]
-                                        [react/view {:height 68}])}])))
+  [:<>
+   [connectivity/loading-indicator]
+   (if loading?
+     [react/view {:flex 1 :align-items :center :justify-content :center}
+      [react/activity-indicator {:animating true}]]
+     (if (and (empty? items)
+              (empty? search-filter)
+              hide-home-tooltip?
+              (not @search-active?))
+       [welcome-blank-page]
+       [list/flat-list
+        {:key-fn                       #(or (:chat-id %) (:id %))
+         :keyboard-should-persist-taps :always
+         :data                         items
+         :render-fn                    render-fn
+         :header [:<>
+                  (when (or (seq items) @search-active? (seq search-filter))
+                    [search-input-wrapper search-filter items])
+                  [referral-item/list-item]
+                  (when (and (empty? items)
+                             (or @search-active? (seq search-filter)))
+                    [start-suggestion search-filter])]
+         :footer                       (if (and (not hide-home-tooltip?) (not @search-active?))
+                                         [home-tooltip-view]
+                                         [react/view {:height 68}])}]))])
 
 (views/defview chats-list []
   (views/letsubs [loading? [:chats/loading?]
@@ -196,6 +198,5 @@
    [topbar/topbar {:title           (i18n/label :t/chat)
                    :navigation      :none
                    :right-component [connectivity/connectivity-button]}]
-   [connectivity/loading-indicator]
    [chats-list]
    [plus-button]])
