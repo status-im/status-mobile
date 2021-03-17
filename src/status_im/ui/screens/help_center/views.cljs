@@ -33,7 +33,7 @@
     :accessibility-label :request-a-feature-button
     :on-press
     #(re-frame/dispatch [:chat.ui/start-public-chat
-                         "status"
+                         "support"
                          {:navigation-reset? false}])
     :chevron             true}])
 
