@@ -219,11 +219,10 @@
                     :name     "Monaco"
                     :address  "0xb63b606ac810a52cca15e44bb630fd42d8d1d83d"
                     :decimals 8}
-                   {:symbol               :LRC
-                    :name                 "loopring"
-                    :address              "0xef68e7c694f40c8202821edf525de3782458639f"
-                    :decimals             18
-                    :skip-decimals-check? true}
+                   {:symbol   :LRC
+                    :name     "LoopringCoin V2"
+                    :address  "0xbbbbca6a901c926f240b89eacb641d8aec7aeafd"
+                    :decimals 18}
                    {:symbol   :ZSC
                     :name     "Zeus Shield Coin"
                     :address  "0x7a41e0517a5eca4fdbc7fbeba4d4c47b9ff6dc63"
