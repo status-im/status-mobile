@@ -142,22 +142,18 @@
       acc)))
 
 (defn receive-many [{:keys [db]} ^js response-js]
-  (let [current-chat-id (:current-chat-id db)
-        messages-js ^js (.splice (.-messages response-js) 0 (if platform/low-device? 3 10))
-        {:keys [db chats senders]}
+  (let [messages-js ^js (.splice (.-messages response-js) 0 (if platform/low-device? 3 10))
+        {:keys [db senders]}
         (reduce reduce-js-messages
                 {:db db :chats #{} :senders {} :transactions #{}}
                 messages-js)]
     ;;we want to render new messages as soon as possible
     ;;so we dispatch later all other events which can be handled async
     {:db db
-
      :utils/dispatch-later
      (concat [{:ms 20 :dispatch [:process-response response-js]}]
-             (when (and current-chat-id
-                        (get chats current-chat-id)
-                        (not (chat-model/profile-chat? {:db db} current-chat-id)))
-               [{:ms 100 :dispatch [:chat/mark-all-as-read (:current-chat-id db)]}])
+             (when-let [chat-id (:current-chat-id db)]
+               [{:ms 100 :dispatch [:chat/mark-all-as-read chat-id]}])
              (when (seq senders)
                [{:ms 100 :dispatch [:chat/add-senders-to-chat-users (vals senders)]}]))}))
 
