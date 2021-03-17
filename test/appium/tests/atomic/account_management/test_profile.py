@@ -409,8 +409,8 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
             self.errors.append("Mail client is not opened when submitting bug")
         profile.click_system_back_button()
         profile.request_a_feature_button.click()
-        if  not profile.element_by_text("#status").is_element_displayed():
-            self.errors.append("Status channel is not suggested for requesting a feature")
+        if  not profile.element_by_text("#support").is_element_displayed():
+            self.errors.append("Support channel is not suggested for requesting a feature")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(5738)
@@ -1060,13 +1060,15 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6226)
     @marks.critical
-    def test_ens_mentions_and_nickname_in_public_and_1_1_chats(self):
+    def test_ens_mentions_pn_and_nickname_in_public_and_1_1_chats(self):
         self.create_drivers(2)
         device_1, device_2 = self.drivers[0], self.drivers[1]
         sign_in_1, sign_in_2 = SignInView(device_1), SignInView(device_2)
         user_1 = ens_user
-        home_1 = sign_in_1.recover_access(user_1['passphrase'])
+        home_1 = sign_in_1.recover_access(user_1['passphrase'], enable_notifications=True)
         home_2 = sign_in_2.create_user()
+        publuc_key_2, username_2 = home_2.get_public_key_and_username(return_username=True)
+        home_2.home_button.double_click()
 
         home_1.just_fyi('switching to mainnet and add ENS')
         profile_1 = sign_in_1.profile_button.click()
@@ -1107,6 +1109,7 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         chat_1.send_message(message_text_2)
         if not chat_2.wait_for_element_starts_with_text(ens_name):
             self.errors.append('ENS username is not shown in public chat')
+        home_1.put_app_to_background()
 
         home_2.just_fyi('check that can mention user with ENS name')
         chat_2.select_mention_from_suggestion_list(user_1['ens'])
@@ -1117,6 +1120,10 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
         for element in (chat_2.element_by_text(user_1['username']), chat_2.profile_add_to_contacts):
             if not element.is_element_displayed():
                 self.errors.append('Was not redirected to user profile after tapping on mention!')
+
+        home_1.just_fyi('check that PN is received and after tap you are redirected to public chat')
+        home_1.open_notification_bar()
+        home_1.element_by_text_part('%s in #%s' % (username_2, chat_name)).click()
         chat_1.element_starts_with_text(user_1['ens'] +'.stateofus.eth','button').click()
         if not profile_1.contacts_button.is_element_displayed():
                 self.errors.append('Was not redirected to own profile after tapping on mention of myself from another user!')

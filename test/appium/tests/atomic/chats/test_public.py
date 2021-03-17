@@ -57,32 +57,39 @@ class TestPublicChatMultipleDevice(MultipleDeviceTestCase):
     @marks.critical
     def test_unread_messages_counter_public_chat(self):
         self.create_drivers(2)
-        device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        home_1, home_2 = device_1.create_user(), device_2.create_user()
+        driver_2 = self.drivers[1]
+        home_1, home_2 = SignInView(self.drivers[0]).create_user(), SignInView(self.drivers[1]).create_user()
 
         chat_name = home_1.get_random_chat_name()
         chat_1, chat_2 = home_1.join_public_chat(chat_name), home_2.join_public_chat(chat_name)
         home_1.get_back_to_home_view()
+        message, message_2 = 'test message', 'test message2'
+        chat_2.send_message(message)
 
-        message = 'test message'
-        chat_2.chat_message_input.send_keys(message)
-        chat_2.send_message_button.click()
-
+        home_1.just_fyi("Check unread message indicator on home, on chat element and that it is not shown after reading messages")
         if not home_1.home_button.public_unread_messages.is_element_displayed():
             self.errors.append('New messages public chat badge is not shown on Home button')
-
         chat_element = home_1.get_chat('#' + chat_name)
         if not chat_element.new_messages_public_chat.is_element_displayed():
             self.errors.append('New messages counter is not shown in public chat')
-
         chat_element.click()
-        home_1.get_back_to_home_view()
+        home_1.home_button.double_click()
 
         if home_1.home_button.public_unread_messages.is_element_displayed():
             self.errors.append('New messages public chat badge is shown on Home button')
         if chat_element.new_messages_public_chat.is_element_displayed():
             self.errors.append('Unread messages badge is shown in public chat while while there are no unread messages')
+        [home.get_chat('#' + chat_name).click() for home in (home_1,home_2)]
+        chat_1.send_message(message_2)
+        chat_2.chat_element_by_text(message_2).wait_for_element(20)
 
+        home_2.just_fyi("Check that unread message indicator is not reappeared after relogin")
+        driver_2.close_app()
+        driver_2.launch_app()
+        SignInView(driver_2).sign_in()
+        chat_element = home_2.get_chat('#' + chat_name)
+        if chat_element.new_messages_public_chat.is_element_displayed():
+            self.errors.append('New messages counter is shown after relogin')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(6270)

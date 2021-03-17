@@ -10,10 +10,10 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(3994)
     @marks.high
-    def test_create_new_group_chat(self):
+    def test_create_new_group_chat_messaging_pn_delived(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        device_1_home, device_2_home = device_1.create_user(), device_2.create_user()
+        device_1_home, device_2_home = device_1.create_user(), device_2.create_user(enable_notifications=True)
         device_1_key, device_1_username = device_1.get_public_key_and_username(True)
         device_1.home_button.click()
         chat_name = device_1_home.get_random_chat_name()
@@ -52,13 +52,22 @@ class TestGroupChatMultipleDevice(MultipleDeviceTestCase):
             if not device_2_chat.chat_element_by_text(message):
                 self.errors.append('%s system message is not shown' % message)
 
-        device_2.just_fyi('Join to group chat, check system messages and send messages to group chat')
+        device_2.just_fyi('Join to group chat, check system messages and send messages to group chat, check message status is delivered')
         device_2_chat.join_chat_button.click()
         for chat in (device_1_chat, device_2_chat):
             if not chat.chat_element_by_text(join_system_message).is_element_displayed():
                 self.errors.append('System message after joining group chat is not shown')
-        for chat in (device_1_chat, device_2_chat):
-            chat.send_message("Message from device: %s" % chat.driver.number)
+        message_1 = "Message from device: %s" % device_1_chat.driver.number
+        device_1_chat.send_message(message_1)
+        if device_1_chat.chat_element_by_text(message_1).status != 'delivered':
+            self.errors.append('Message status is not delivered, it is %s!' % device_1_chat.chat_element_by_text(message_1).status)
+
+        device_2_home.put_app_to_background()
+
+        device_2_home.just_fyi('check that PN is received and after tap you are redirected to public chat')
+        device_2_home.open_notification_bar()
+        device_2_home.element_by_text_part("Message from device: %s" % device_1_chat.driver.number).click()
+        device_2_chat.send_message("Message from device: %s" % device_2_chat.driver.number)
         for chat in (device_1_chat, device_2_chat):
             for chat_driver in (device_1_chat, device_2_chat):
                 if not chat.chat_element_by_text(
