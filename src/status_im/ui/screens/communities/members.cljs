@@ -16,7 +16,7 @@
   (>evt [:bottom-sheet/hide])
   (>evt event))
 
-(defn member-sheet [first-name {:keys [public-key] :as member} community-id can-kick-users?]
+(defn member-sheet [first-name {:keys [public-key] :as member} community-id can-kick-users? can-manage-users?]
   [:<>
    [quo/list-item
     {:theme               :accent
@@ -33,15 +33,17 @@
       [quo/list-item {:theme    :negative
                       :icon     :main-icons/arrow-left
                       :title    (i18n/label :t/member-kick)
-                      :on-press #(>evt [::communities/member-kick community-id public-key])}]
-      ; ban not implemented
-      #_[quo/list-item {:theme    :negative
-                        :icon     :main-icons/cancel
-                        :title    (i18n/label :t/member-ban)
-                        :on-press #(>evt [::communities/member-ban community-id public-key])}]])])
+                      :on-press #(>evt [::communities/member-kick community-id public-key])}]])
+   (when can-manage-users?
+     [:<>
+      [quo/list-item {:theme    :negative
+                      :icon     :main-icons/cancel
+                      :title    (i18n/label :t/member-ban)
+                      :on-press #(>evt [::communities/member-ban community-id public-key])}]])])
 
 (defn render-member [public-key _ _ {:keys [community-id
                                             my-public-key
+                                            can-manage-users?
                                             can-kick-users?]}]
   (let [member (<sub [:contacts/contact-by-identity public-key])
         [first-name second-name] (<sub [:contacts/contact-two-names-by-identity public-key])]
@@ -55,7 +57,7 @@
                              [quo/button {:on-press
                                           #(>evt [:bottom-sheet/show-sheet
                                                   {:content (fn []
-                                                              [member-sheet first-name member community-id can-kick-users?])}])
+                                                              [member-sheet first-name member community-id can-kick-users? can-manage-users?])}])
                                           :type                :icon
                                           :theme               :icon
                                           :accessibility-label :menu-option}

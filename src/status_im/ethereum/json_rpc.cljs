@@ -120,6 +120,7 @@
    "wakuext_inviteUsersToCommunity" {}
    "wakuext_shareCommunity" {}
    "wakuext_removeUserFromCommunity" {}
+   "wakuext_banUserFromCommunity" {}
    "wakuext_requestToJoinCommunity" {}
    "wakuext_acceptRequestToJoinCommunity" {}
    "wakuext_declineRequestToJoinCommunity" {}
