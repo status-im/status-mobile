@@ -213,7 +213,7 @@
 
 (defmethod storage-gateway :swarm
   [{:keys [hash]}]
-  (str "https://swarm-gateways.net/bzz:/" hash))
+  (str "https://gateway.ethswarm.org/bzz/" hash))
 
 (fx/defn resolve-ens-multihash-success
   {:events [:browser.callback/resolve-ens-multihash-success]}
