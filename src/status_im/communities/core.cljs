@@ -350,10 +350,22 @@
   [{:keys [db]} field value]
   {:db (assoc-in db [:communities/create field] value)})
 
+(fx/defn member-banned
+  {:events [::member-banned]}
+  [cofx response-js]
+  (fx/merge cofx
+            (bottom-sheet/hide-bottom-sheet)
+            (handle-response response-js)))
+
 (fx/defn member-ban
   {:events [::member-ban]}
   [cofx community-id public-key]
-  (log/error "Community member ban is not yet implemented"))
+  {::json-rpc/call [{:method     "wakuext_banUserFromCommunity"
+                     :params     [{:communityId community-id
+                                   :user public-key}]
+                     :js-response true
+                     :on-success #(re-frame/dispatch [::member-banned %])
+                     :on-error   #(log/error "failed to ban user from community" community-id public-key %)}]})
 
 (fx/defn member-kicked
   {:events [::member-kicked]}
