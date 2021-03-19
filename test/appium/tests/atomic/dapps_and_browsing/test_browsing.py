@@ -5,140 +5,96 @@ from views.sign_in_view import SignInView
 
 class TestBrowsing(SingleDeviceTestCase):
 
-    @marks.testrail_id(5424)
-    @marks.medium
-    def test_browse_page_with_non_english_text(self):
-        sign_in = SignInView(self.driver)
-        home_view = sign_in.create_user()
-        daap_view = home_view.dapp_tab_button.click()
-        browsing_view = daap_view.open_url('www.wikipedia.org')
-        wiki_texts = ['Español', '日本語', 'Français', '中文', 'Português']
-        for wiki_text in wiki_texts:
-            if not browsing_view.element_by_text_part(wiki_text).is_element_displayed(15):
-                self.driver.fail("%s is not shown" % wiki_text)
-
     @marks.testrail_id(5395)
-    @marks.medium
-    def test_navigation_history_kept_after_relogin(self):
+    @marks.high
+    def test_back_forward_refresh_navigation_history_kept_after_relogin(self):
         sign_in = SignInView(self.driver)
-        home_view = sign_in.create_user()
-        dapp_view = home_view.dapp_tab_button.click()
+        home = sign_in.create_user()
+        dapp = home.dapp_tab_button.click()
         ru_url = 'https://ru.m.wikipedia.org'
-        browsing_view = dapp_view.open_url(ru_url)
-        browsing_view.element_by_text_part('Добро пожаловать').wait_for_element(20)
+        browsing = dapp.open_url(ru_url)
+        browsing.element_by_text_part('Добро пожаловать').wait_for_element(20)
 
-        browsing_view.just_fyi('Navigate to next page and back')
-        browsing_view.element_by_text_part('свободную энциклопедию').click()
-        browsing_view.element_by_text_part('Свободный контент')
-        browsing_view.browser_previous_page_button.click()
-        browsing_view.wait_for_element_starts_with_text('свободную энциклопедию')
+        browsing.just_fyi("Check next page")
+        browsing.just_fyi('Navigate to next page and back')
+        browsing.element_by_text_part('свободную энциклопедию').click()
+        browsing.element_by_text_part('Свободный контент')
+        browsing.browser_previous_page_button.click()
+        browsing.wait_for_element_starts_with_text('свободную энциклопедию')
 
-        browsing_view.just_fyi('Relogin and check that tap on "Next" navigates to next page')
-        browsing_view.relogin()
-        home_view.dapp_tab_button.click()
-        browsing_view.open_tabs_button.click()
-        dapp_view.element_by_text_part(ru_url).click()
-        browsing_view.wait_for_element_starts_with_text('свободную энциклопедию')
-        browsing_view.browser_next_page_button.click()
-        browsing_view.element_by_text_part('Свободный контент').wait_for_element(30)
+        browsing.just_fyi('Relogin and check that tap on "Next" navigates to next page')
+        profile = home.profile_button.click()
+        profile.switch_network()
+        home.dapp_tab_button.click()
+        browsing.open_tabs_button.click()
+        dapp.element_by_text_part(ru_url).click()
+        browsing.wait_for_element_starts_with_text('свободную энциклопедию')
+        browsing.browser_next_page_button.click()
+        browsing.element_by_text_part('Свободный контент').wait_for_element(30)
 
-    @marks.testrail_id(5438)
-    @marks.medium
-    def test_browser_shows_offline_state(self):
-        sign_in = SignInView(self.driver)
-        home_view = sign_in.create_user()
-        home_view.toggle_airplane_mode()
-        dapp_view = home_view.dapp_tab_button.click()
-        browsing_view = dapp_view.open_url('status.im')
-        offline_texts = ['Unable to load page', 'ERR_INTERNET_DISCONNECTED']
-        for text in offline_texts:
-            browsing_view.element_by_text_part(text).wait_for_element(15)
-        home_view.toggle_airplane_mode()
-        browsing_view.browser_refresh_page_button.click_until_presence_of_element(browsing_view.element_by_text_part('An Open Source Community'))
+        browsing.just_fyi("Check refresh button")
+        browsing.dapp_tab_button.double_click()
+        url = 'app.uniswap.org'
+        element_on_start_page = dapp.element_by_text('ETH')
+        web_page = dapp.open_url(url)
+        dapp.allow_button.click()
+        element_on_start_page.click()
 
-    @marks.testrail_id(5465)
-    @marks.medium
-    def test_open_invalid_link(self):
-        sign_in = SignInView(self.driver)
-        home_view = sign_in.create_user()
-        daap_view = home_view.dapp_tab_button.click()
-        browsing_view = daap_view.open_url('invalid.takoe')
-        browsing_view.element_by_text_part('Unable to load page').wait_for_element(20)
-        browsing_view.cross_icon.click()
-        if home_view.element_by_text('Recent').is_element_displayed():
-            self.driver.fail('Browser entity is shown for an invalid link')
+        # when bottom sheet is opened, elements by text couldn't be found
+        element_on_start_page.wait_for_invisibility_of_element(20)
+        web_page.browser_refresh_page_button.click()
+
+        if not element_on_start_page.is_element_displayed(30):
+            self.driver.fail("Page failed to be refreshed")
+
 
     @marks.testrail_id(6210)
     @marks.high
-    def test_open_blocked_secure_not_secure_sites(self):
+    def test_open_blocked_secure_not_secure_inlalid_offline_urls(self):
         home = SignInView(self.driver).create_user()
-        daap = home.dapp_tab_button.click()
+        dapp = home.dapp_tab_button.click()
         for url in ('metamask.site', 'https://www.cryptokitties.domainname'):
-            daap.just_fyi('Checking blocked website %s' % url)
-            dapp_detail = daap.open_url(url)
+            dapp.just_fyi('Checking blocked website %s' % url)
+            dapp_detail = dapp.open_url(url)
             dapp_detail.element_by_translation_id('browsing-site-blocked-title')
             if dapp_detail.browser_refresh_page_button.is_element_displayed():
                 self.errors.append("Refresh button is present in blocked site")
             dapp_detail.go_back_button.click()
             dapp_detail.open_tabs_button.click()
-            daap.element_by_text("Browser").click()
+            dapp.element_by_text("Browser").click()
             dapp_detail.continue_anyway_button.click()
             if dapp_detail.element_by_text('This site is blocked').is_element_displayed():
                 self.errors.append("Failed to open Dapp after 'Continue anyway' tapped for %s" % url)
             home.dapp_tab_button.click()
 
-        daap.just_fyi('Checking connection is not secure warning')
-        web_page = daap.open_url('http://www.dvwa.co.uk')
+        dapp.just_fyi('Checking connection is not secure warning')
+        web_page = dapp.open_url('http://www.dvwa.co.uk')
         web_page.url_edit_box_lock_icon.click_until_presence_of_element(web_page.element_by_translation_id("browser-not-secure"))
         home.dapp_tab_button.click()
 
         for url in ('https://www.bbc.com', 'https://instant.airswap.io'):
-            daap.just_fyi('Checking connection is secure for %s' % url)
-            web_page = daap.open_url(url)
+            dapp.just_fyi('Checking connection is secure for %s' % url)
+            web_page = dapp.open_url(url)
             web_page.wait_for_d_aap_to_load()
             web_page.url_edit_box_lock_icon.click_until_presence_of_element(web_page.element_by_translation_id("browser-secure"))
             home.dapp_tab_button.click()
 
-        self.errors.verify_no_errors()
-
-
-    #TODO: waiting mode
-    @marks.testrail_id(6300)
-    @marks.skip
-    @marks.medium
-    def test_webview_security(self):
-        home_view = SignInView(self.driver).create_user()
-        daap_view = home_view.dapp_tab_button.click()
-
-        browsing_view = daap_view.open_url('https://simpledapp.status.im/webviewtest/url-spoof-ssl.html')
-        browsing_view.url_edit_box_lock_icon.click()
-        if not browsing_view.element_by_translation_id("browser-not-secure").is_element_displayed():
-            self.errors.append("Broken certificate displayed as secure connection \n")
-
+        dapp.just_fyi('Checking opening invalid link')
+        home.dapp_tab_button.double_click()
+        browsing_view = dapp.open_url('invalid.takoe')
+        browsing_view.element_by_translation_id("web-view-error").wait_for_element(20)
         browsing_view.cross_icon.click()
-        daap_view.open_url('https://simpledapp.status.im/webviewtest/webviewtest.html')
-        browsing_view.element_by_text_part('204').click()
-        if browsing_view.element_by_text_part('google.com').is_element_displayed():
-            self.errors.append("URL changed on attempt to redirect to no-content page \n")
 
-        browsing_view.cross_icon.click()
-        daap_view.open_url('https://simpledapp.status.im/webviewtest/webviewtest.html')
-        browsing_view.element_by_text_part('XSS check').click()
-        browsing_view.open_in_status_button.click()
-        if browsing_view.element_by_text_part('simpledapp.status.im').is_element_displayed():
-            self.errors.append("XSS attemp succedded \n")
-            browsing_view.ok_button.click()
-
-        browsing_view.cross_icon.click()
-        daap_view.open_url('https://simpledapp.status.im/webviewtest/url-blank.html')
-        if daap_view.edit_url_editbox.text == '':
-            self.errors.append("Blank URL value. Must show the actual URL \n")
-
-        browsing_view.cross_icon.click()
-        daap_view.open_url('https://simpledapp.status.im/webviewtest/port-timeout.html')
-        # wait up  ~2.5 mins for port time out
-        if daap_view.element_by_text_part('example.com').is_element_displayed(150):
-            self.errors.append("URL spoof due to port timeout \n")
+        dapp.just_fyi('Checking offline state')
+        home.toggle_airplane_mode()
+        home.dapp_tab_button.double_click()
+        browsing_view = dapp.open_url('status.im')
+        offline_texts = ['Unable to load page', 'ERR_INTERNET_DISCONNECTED']
+        for text in offline_texts:
+            browsing_view.element_by_text_part(text).wait_for_element(15)
+        home.toggle_airplane_mode()
+        browsing_view.browser_refresh_page_button.click_until_presence_of_element(
+            browsing_view.element_by_text_part('An Open Source Community'))
 
         self.errors.verify_no_errors()
 
@@ -220,43 +176,105 @@ class TestBrowsing(SingleDeviceTestCase):
             self.errors.append("Remove favourite is not shown on added bookmark!")
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(5321)
-    @marks.critical
-    def test_back_forward_buttons_browsing_website(self):
-        sign_in = SignInView(self.driver)
-        home = sign_in.create_user()
-        daap_view = home.dapp_tab_button.click()
-        browsing_view = daap_view.open_url('dap.ps')
-        browsing_view.wait_for_element_starts_with_text('View all', 30)
-        browsing_view.element_by_text_part('View all', 'button').click()
-        if browsing_view.element_by_text_part('View all').is_element_displayed(20):
-            self.driver.fail("Failed to access Categories using ''View all'")
-        browsing_view.browser_previous_page_button.click()
-        browsing_view.element_by_text_part('Categories').wait_for_element(15)
-        browsing_view.browser_next_page_button.click()
-        browsing_view.element_by_text_part('Exchanges').wait_for_element(15)
-        browsing_view.back_to_home_button.click()
-
-    @marks.testrail_id(5354)
-    @marks.critical
-    def test_refresh_button_browsing_app_webview(self):
+    @marks.testrail_id(5424)
+    @marks.medium
+    def test_open_url_with_non_english_text_connect_revoke_wallet_new_tab_open_chat_options(self):
         home = SignInView(self.driver).create_user()
-        profile = home.profile_button.click()
-        profile.switch_network()
-        daap = home.dapp_tab_button.click()
-        url = 'app.uniswap.org'
-        element_on_start_page = daap.element_by_text('ETH')
-        web_page = daap.open_url(url)
-        daap.allow_button.click()
-        element_on_start_page.click()
+        web_view = home.dapp_tab_button.click()
+        browsing = web_view.open_url('www.wikipedia.org')
+        wiki_texts = ['Español', '日本語', 'Français', '中文', 'Português']
+        for wiki_text in wiki_texts:
+            if not browsing.element_by_text_part(wiki_text).is_element_displayed(15):
+                self.errors.append("%s is not shown" % wiki_text)
 
-        # when bottom sheet is opened, elements by text couldn't be found
-        element_on_start_page.wait_for_invisibility_of_element(20)
-        web_page.browser_refresh_page_button.click()
+        web_view.just_fyi("Check that can connect wallet and revoke access")
+        browsing.options_button.click()
+        browsing.connect_account_button.click()
+        browsing.allow_button.click()
+        browsing.options_button.click()
+        if not browsing.connected_account_button.is_element_displayed():
+            self.driver.fail("Account is not connected")
+        browsing.click_system_back_button()
+        profile = browsing.profile_button.click()
+        profile.privacy_and_security_button.click()
+        profile.dapp_permissions_button.click()
+        if not profile.element_by_text('wikipedia.org').is_element_displayed():
+            self.errors.append("Permissions are not granted")
+        profile.dapp_tab_button.click(desired_element_text = wiki_texts[0])
+        browsing.options_button.click()
+        browsing.connected_account_button.click()
+        browsing.element_by_translation_id("revoke-access").click()
+        browsing.options_button.click()
+        if not browsing.connect_account_button.is_element_displayed():
+            self.errors.append("Permission for account is not removed if using 'Revoke access' from dapp view")
+        browsing.click_system_back_button()
+        browsing.profile_button.click(desired_element_text = 'DApp permissions')
+        if profile.element_by_text('wikipedia.org').is_element_displayed():
+            self.errors.append("Permissions are not revoked")
 
-        if not element_on_start_page.is_element_displayed(30):
-             self.driver.fail("Page failed to be refreshed")
+        web_view.just_fyi("Check that can open chat view and send some message")
+        profile.dapp_tab_button.click(desired_element_text = wiki_texts[0])
+        browsing.options_button.click()
+        browsing.open_chat_from_dapp_button.click()
+        public_chat = browsing.get_chat_view()
+        if not public_chat.element_by_text('#wikipedia-org').is_element_displayed():
+            self.driver.fail("No redirect to public chat")
+        message = public_chat.get_random_message()
+        public_chat.send_message(message)
+        public_chat.dapp_tab_button.click(desired_element_text = wiki_texts[0])
+        browsing.options_button.click()
+        browsing.open_chat_from_dapp_button.click()
+        if not public_chat.chat_element_by_text(message).is_element_displayed():
+            self.errors.append("Messages are not shown if open dapp chat from view")
 
+        web_view.just_fyi("Check that can open new tab using 'New tab' from bottom sheet")
+        profile.dapp_tab_button.click(desired_element_text=wiki_texts[0])
+        browsing.options_button.click()
+        browsing.new_tab_button.click()
+        if not browsing.element_by_translation_id("open-dapp-store").is_element_displayed():
+            self.errors.append("Was not redirected to home dapp store view using New tab")
+
+        self.errors.verify_no_errors()
+
+    #TODO: waiting mode
+    @marks.testrail_id(6300)
+    @marks.skip
+    @marks.medium
+    def test_webview_security(self):
+        home_view = SignInView(self.driver).create_user()
+        daap_view = home_view.dapp_tab_button.click()
+
+        browsing_view = daap_view.open_url('https://simpledapp.status.im/webviewtest/url-spoof-ssl.html')
+        browsing_view.url_edit_box_lock_icon.click()
+        if not browsing_view.element_by_translation_id("browser-not-secure").is_element_displayed():
+            self.errors.append("Broken certificate displayed as secure connection \n")
+
+        browsing_view.cross_icon.click()
+        daap_view.open_url('https://simpledapp.status.im/webviewtest/webviewtest.html')
+        browsing_view.element_by_text_part('204').click()
+        if browsing_view.element_by_text_part('google.com').is_element_displayed():
+            self.errors.append("URL changed on attempt to redirect to no-content page \n")
+
+        browsing_view.cross_icon.click()
+        daap_view.open_url('https://simpledapp.status.im/webviewtest/webviewtest.html')
+        browsing_view.element_by_text_part('XSS check').click()
+        browsing_view.open_in_status_button.click()
+        if browsing_view.element_by_text_part('simpledapp.status.im').is_element_displayed():
+            self.errors.append("XSS attemp succedded \n")
+            browsing_view.ok_button.click()
+
+        browsing_view.cross_icon.click()
+        daap_view.open_url('https://simpledapp.status.im/webviewtest/url-blank.html')
+        if daap_view.edit_url_editbox.text == '':
+            self.errors.append("Blank URL value. Must show the actual URL \n")
+
+        browsing_view.cross_icon.click()
+        daap_view.open_url('https://simpledapp.status.im/webviewtest/port-timeout.html')
+        # wait up  ~2.5 mins for port time out
+        if daap_view.element_by_text_part('example.com').is_element_displayed(150):
+            self.errors.append("URL spoof due to port timeout \n")
+
+        self.errors.verify_no_errors()
 
     @marks.testrail_id(5456)
     @marks.medium
