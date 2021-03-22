@@ -643,21 +643,18 @@
   [{:keys [db] :as cofx}
    {:keys [force-start? watch-new-blocks? ignore-syncing-settings? on-recent-history-fetching]}]
   (when (or force-start? (:multiaccount db))
-    (let [watching-txs? (get db :wallet/watch-txs)
-          waiting? (get db :wallet/waiting-for-recent-history?)
+    (let [waiting? (get db :wallet/waiting-for-recent-history?)
           syncing-allowed? (mobile-network-utils/syncing-allowed? cofx)]
       (log/info "restart-wallet-service"
                 "force-start?" force-start?
-                "watching-txs?" watching-txs?
                 "syncing-allowed?" syncing-allowed?
                 "watch-new-blocks?" watch-new-blocks?)
       (if (and (or syncing-allowed?
                    ignore-syncing-settings?)
                (or
                 waiting?
-                force-start?
-                watching-txs?))
-        (start-wallet cofx (boolean (or watch-new-blocks? watching-txs?)) on-recent-history-fetching)
+                force-start?))
+        (start-wallet cofx (boolean watch-new-blocks?) on-recent-history-fetching)
         (stop-wallet cofx)))))
 
 (def background-cooldown-time (datetime/minutes 3))
@@ -686,10 +683,8 @@
   {:events [:wallet.ui/pull-to-refresh-history]}
   [{:keys [db now] :as cofx}]
   (let [last-pull         (get db :wallet/last-pull-time)
-        watching?         (get db :wallet/watch-txs)
         fetching-history? (get db :wallet/recent-history-fetching-started?)]
-    (when (and (not watching?)
-               (not fetching-history?)
+    (when (and (not fetching-history?)
                (or (not last-pull)
                    (> (- now last-pull) pull-to-refresh-cooldown-period)))
       (fx/merge
@@ -700,50 +695,27 @@
         {:force-start?             true
          :ignore-syncing-settings? true})))))
 
+(re-frame/reg-fx
+ ::start-watching
+ (fn [hash]
+   (log/info "[wallet] watch transaction" hash)
+   (json-rpc/call
+    {:method            "wallet_watchTransaction"
+     :params            [hash]
+     :on-success        #(re-frame.core/dispatch [::restart])
+     :on-error          #(log/info "[wallet] watch transaction error" % "hash" hash)})))
+
 (fx/defn watch-tx
   {:events [:watch-tx]}
   [{:keys [db] :as cofx} tx-id]
-  (let [txs         (get db :wallet/watch-txs)
-        old-timeout (get db :wallet-service/restart-timeout)
-        timeout     (utils.utils/set-timeout
-                     (fn []
-                       (re-frame.core/dispatch [::stop-watching-txs]))
-                     (get-watching-interval db))]
-    (fx/merge
-     {:db (-> db
-              (update :wallet/watch-txs (fnil conj #{}) tx-id)
-              (assoc :wallet/watch-txs-timeout timeout))
-      ::utils.utils/clear-timeouts
-      [old-timeout]}
-     (restart-wallet-service {:force-start?      true
-                              :watch-new-blocks? true}))))
-
-(fx/defn stop-watching-txs
-  {:events [::stop-watching-txs]}
-  [{:keys [db] :as cofx}]
-  (fx/merge
-   {:db (dissoc db
-                :wallet/watch-txs
-                :wallet/watch-txs-timeout)}
-   (restart-wallet-service-default)))
-
-(fx/defn stop-watching-tx
-  [{:keys [db] :as cofx} tx]
-  (let [txs (get db :wallet/watch-txs)
-        new-txs ((fnil disj #{}) txs tx)]
-    (when (get txs tx)
-      (if (empty? new-txs)
-        (stop-watching-txs cofx)
-        {:db (assoc db :wallet/watch-txs new-txs)}))))
+  {::start-watching tx-id})
 
 (fx/defn clear-timeouts
   [{:keys [db]}]
   (log/info "[wallet] clear-timeouts")
-  (let [watch-timeout-id (get db :wallet/watch-txs-timeout)
-        restart-timeout-id (get db :wallet-service/restart-timeout)]
-    {:db                          (dissoc db :wallet/watch-txs-timeout
-                                          :wallet-service/restart-timeout)
-     ::utils.utils/clear-timeouts [watch-timeout-id restart-timeout-id]}))
+  (let [restart-timeout-id (get db :wallet-service/restart-timeout)]
+    {:db                          (dissoc db :wallet-service/restart-timeout)
+     ::utils.utils/clear-timeouts [restart-timeout-id]}))
 
 (fx/defn get-buy-crypto-preference
   {:events [::get-buy-crypto]}
@@ -806,14 +778,13 @@
             (when on-close
               {:dispatch on-close})
             (navigation/navigate-back)))
+
 (fx/defn stop-fetching-on-empty-tx-history
   [{:keys [db] :as cofx} transfers]
   (let [non-empty-history?    (get db :wallet/non-empty-tx-history?)
-        watching-outgoing-tx? (get db :wallet/watch-txs-timeout)
         custom-node?          (ethereum/custom-rpc-node?
                                (ethereum/current-network db))]
     (if (and (not non-empty-history?)
-             (not watching-outgoing-tx?)
              (empty? transfers)
              (not custom-node?))
       (clear-timeouts cofx)

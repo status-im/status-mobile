@@ -230,12 +230,6 @@
                   (seq transfers)
                   (concat (mapv add-transfer transfers))
 
-                  (seq transfers)
-                  (concat
-                   (mapv (fn [{:keys [hash]}]
-                           (wallet/stop-watching-tx hash))
-                         transfers))
-
                   (and max-known-block
                        (some #(> (:block %) max-known-block) transfers))
                   (conj (wallet/update-balances

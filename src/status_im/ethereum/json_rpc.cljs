@@ -148,6 +148,7 @@
    "wallet_getFavourites" {}
    "wallet_deleteCustomToken" {}
    "wallet_getCryptoOnRamps" {}
+   "wallet_watchTransaction" {}
    "browsers_getBrowsers" {}
    "browsers_addBrowser" {}
    "browsers_deleteBrowser" {}

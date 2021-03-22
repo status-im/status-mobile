@@ -149,11 +149,10 @@ class TestCommandsMultipleDevices(MultipleDeviceTestCase):
         send_message = chat_2_sender_message.sign_and_send.click()
         send_message.next_button.click()
         send_message.sign_transaction(default_gas_price=False)
-        chat_2_sender_message.transaction_status.wait_for_element_text(chat_2_sender_message.pending)
 
         home_2.just_fyi('Check that transaction message is updated with new status after offline')
         chat_2.toggle_airplane_mode()
-        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=15, token=True)
+        self.network_api.wait_for_confirmation_of_transaction(sender['address'], amount, confirmations=12, token=True)
         chat_2.toggle_airplane_mode()
         [message.transaction_status.wait_for_element_text(message.confirmed, wait_time=60) for message in
          (chat_2_sender_message, chat_1_request_message)]
