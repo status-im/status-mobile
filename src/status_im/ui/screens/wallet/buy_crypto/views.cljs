@@ -17,7 +17,7 @@
 (defn on-buy-crypto-pressed []
   (re-frame/dispatch [:navigate-to :buy-crypto]))
 
-(defn render-on-ramp [{:keys [name fees region logo-url description] :as on-ramp}]
+(defn render-on-ramp [{:keys [name fees logo-url description] :as on-ramp}]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :buy-crypto-website on-ramp])
                               :style {:flex 1}}
    [quo/list-item
@@ -28,9 +28,7 @@
                       [quo/text {} description]]
      :subtitle       [react/view {:style {:flex 1}}
                       [quo/text {:size :small
-                                 :color :secondary} fees]
-                      [quo/text {:size :small
-                                 :color :secondary} region]]
+                                 :color :secondary} fees]]
      :icon           [photos/photo logo-url {:size 40}]
      :left-side-alignment :flex-start
      :accessory      :text}]])
