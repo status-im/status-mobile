@@ -268,7 +268,7 @@ PODS:
     - React
   - react-native-splash-screen (3.2.0):
     - React
-  - react-native-status-keycard (2.5.33):
+  - react-native-status-keycard (2.5.32):
     - Keycard
     - React
   - react-native-webview (10.9.2):
@@ -673,7 +673,7 @@ SPEC CHECKSUMS:
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
   react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
-  react-native-status-keycard: dac854029a37eabf04a8ede091ddeee71ab049b9
+  react-native-status-keycard: f846d457fc2b964d327f86c345936477004a8a60
   react-native-webview: 4e96d493f9f90ba4f03b28933f30b2964df07e39
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
   React-RCTAnimation: 1bde3ecc0c104c55df246eda516e0deb03c4e49b
