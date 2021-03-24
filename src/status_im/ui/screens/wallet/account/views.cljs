@@ -64,7 +64,7 @@
                                    :color       colors/white-transparent-70-persist}}
        (ethereum/normalized-hex address)]]
      [react/view {:position :absolute :top 12 :right 12}
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-popover {:view :share-account :address address}])}
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet/share-popover address])}
        [icons/icon :main-icons/share {:color                      colors/white-persist
                                       :accessibility-label :share-wallet-address-icon}]]]
      [react/view {:height                     button-group-height :background-color          colors/black-transparent-20
@@ -83,7 +83,7 @@
        (i18n/label :t/receive)
        :main-icons/receive
        colors/white-persist
-       #(re-frame/dispatch [:show-popover {:view :share-account :address address}])]]]))
+       #(re-frame/dispatch [:wallet/share-popover address])]]]))
 
 (defn render-collectible [{:keys [name icon amount] :as collectible}]
   (let [items-number (money/to-fixed amount)]
@@ -170,7 +170,7 @@
     (i18n/label :t/receive)
     :main-icons/receive
     colors/blue-persist
-    #(re-frame/dispatch [:show-popover {:view :share-account :address address}])]])
+    #(re-frame/dispatch [:wallet/share-popover address])]])
 
 (defn anim-listener [anim-y scroll-y]
   (let [to-show (atom false)]

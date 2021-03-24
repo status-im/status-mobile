@@ -54,7 +54,8 @@
             status-im.bootnodes.core
             status-im.browser.core
             status-im.browser.permissions
-            status-im.chat.models.transport))
+            status-im.chat.models.transport
+            [status-im.navigation :as navigation]))
 
 (re-frame/reg-fx
  :dismiss-keyboard
@@ -235,3 +236,11 @@
                      :params     []
                      :on-success (fn [on-ramps]
                                    (re-frame/dispatch [::crypto-loaded on-ramps]))}]})
+
+(fx/defn open-buy-crypto-screen
+  {:events [:buy-crypto.ui/open-screen]}
+  [cofx]
+  (fx/merge
+   cofx
+   (navigation/navigate-to :buy-crypto nil)
+   (wallet/keep-watching-history)))

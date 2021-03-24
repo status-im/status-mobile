@@ -64,8 +64,7 @@
      :icon                :main-icons/share
      :accessibility-label :share-account-button
      :on-press            #(hide-sheet-and-dispatch
-                            [:show-popover {:view    :share-account
-                                            :address (:address account)}])}]])
+                            [:wallet/share-popover (:address account)])}]])
 
 (defn add-account []
   (let [keycard? @(re-frame/subscribe [:keycard-multiaccount?])]

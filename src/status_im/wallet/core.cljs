@@ -27,7 +27,8 @@
             [status-im.utils.datetime :as datetime]
             status-im.wallet.recipient.core
             [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
-            [status-im.async-storage.core :as async-storage]))
+            [status-im.async-storage.core :as async-storage]
+            [status-im.popover.core :as popover.core]))
 
 (defn get-balance
   [{:keys [address on-success on-error]}]
@@ -590,7 +591,9 @@
        (ethereum/current-network db))
       ms-4-min
 
-      (and max-block (zero? max-block))
+      (and max-block
+           (zero? max-block)
+           (nil? (get db :wallet/keep-watching-until-ms)))
       (log/info "[wallet] No transactions found")
 
       :else
@@ -780,15 +783,35 @@
             (navigation/navigate-back)))
 
 (fx/defn stop-fetching-on-empty-tx-history
-  [{:keys [db] :as cofx} transfers]
+  [{:keys [db now] :as cofx} transfers]
   (let [non-empty-history?    (get db :wallet/non-empty-tx-history?)
         custom-node?          (ethereum/custom-rpc-node?
-                               (ethereum/current-network db))]
-    (if (and (not non-empty-history?)
-             (empty? transfers)
-             (not custom-node?))
-      (clear-timeouts cofx)
-      {:db (assoc db :wallet/non-empty-tx-history? true)})))
+                               (ethereum/current-network db))
+        until-ms              (get db :wallet/keep-watching-until-ms)]
+    (when-not (and until-ms (> until-ms now))
+      (fx/merge
+       cofx
+       {:db (dissoc db :wallet/keep-watching-until-ms)}
+       (if (and (not non-empty-history?)
+                (empty? transfers)
+                (not custom-node?))
+         (clear-timeouts)
+         (fn [{:keys [db]}]
+           {:db (assoc db :wallet/non-empty-tx-history? true)}))))))
+
+(fx/defn keep-watching-history
+  {:events [:wallet/keep-watching]}
+  [{:keys [db now] :as cofx}]
+  (let [non-empty-history? (get db :wallet/non-empty-tx-history?)
+        restart?           (and (not (get db :wallet/non-empty-tx-history?))
+                                (not (get db :wallet-service/restart-timeout)))]
+    (fx/merge
+     cofx
+     (when-not non-empty-history?
+       {:db (assoc db :wallet/keep-watching-until-ms
+                   (+ now (datetime/minutes 30)))})
+     (when restart?
+       (restart-wallet-service {:force-start? true})))))
 
 (re-frame/reg-fx
  ::set-inital-range
@@ -826,3 +849,16 @@
                    (get-in db [:wallet :accounts address :max-block] 0)
                    transfers)]
     (set-max-block cofx address max-block)))
+
+(fx/defn share
+  {:events [:wallet/share-popover]}
+  [{:keys [db] :as cofx} address]
+  (let [non-empty-history? (get db :wallet/non-empty-tx-history?)
+        restart?     (and (not (get db :wallet/non-empty-tx-history?))
+                          (not (get db :wallet-service/restart-timeout)))]
+    (fx/merge
+     cofx
+     (popover.core/show-popover
+      {:view    :share-account
+       :address address})
+     (keep-watching-history))))
