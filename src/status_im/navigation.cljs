@@ -2,8 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.screens.routing.core :as navigation]
             [taoensso.timbre :as log]
-            [status-im.utils.fx :as fx]
-            [status-im.anon-metrics.interceptors :as anon-metrics]))
+            [status-im.utils.fx :as fx]))
 
 (re-frame/reg-fx
  ::navigate-to
@@ -45,8 +44,7 @@
    ::navigate-to [go-to-view-id screen-params]})
 
 (fx/defn navigate-to
-  {:events       [:navigate-to]
-   :interceptors [anon-metrics/catch-events]}
+  {:events       [:navigate-to]}
   [cofx go-to-view-id screen-params]
   (navigate-to-cofx cofx go-to-view-id screen-params))
 
@@ -61,8 +59,7 @@
   {::navigate-reset config})
 
 (fx/defn navigate-replace
-  {:events [:navigate-replace]
-   :interceptors [anon-metrics/catch-events]}
+  {:events [:navigate-replace]}
   [{:keys [db]} go-to-view-id screen-params]
   (let [db (cond-> (assoc db :view-id go-to-view-id)
              (seq screen-params)
