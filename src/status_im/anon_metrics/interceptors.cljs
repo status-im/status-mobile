@@ -14,7 +14,7 @@
                                :value transformed-payload
                                :app_version build/version
                                :os platform/os}]]
-                    :on-failure log/error})))
+                    :on-failure prn})))
 
 (defn catch-events-before [context]
   (log/info "catch-events/interceptor fired")
