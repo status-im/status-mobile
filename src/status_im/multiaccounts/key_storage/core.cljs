@@ -10,7 +10,8 @@
             [status-im.popover.core :as popover]
             [status-im.utils.fx :as fx]
             [status-im.utils.security :as security]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [status-im.keycard.backup-key :as keycard.backup]))
 
 (fx/defn key-and-storage-management-pressed
   "This event can be dispatched before login and from profile and needs to redirect accordingly"
@@ -53,6 +54,14 @@
   [cofx _]
   (popover/show-popover cofx {:view :seed-key-uid-mismatch}))
 
+(fx/defn key-uid-matches
+  {:events [::key-uid-matches]}
+  [{:keys [db] :as cofx} _]
+  (let [backup? (get-in db [:keycard :creating-backup?])]
+    (if backup?
+      (keycard.backup/start-keycard-backup cofx)
+      (navigation/navigate-to-cofx cofx :storage nil))))
+
 (defn validate-seed-against-key-uid
   "Check if the key-uid was generated with the given seed-phrase"
   [{:keys [import-mnemonic-fn on-success on-error]} {:keys [seed-phrase key-uid]}]
@@ -70,7 +79,7 @@
  ::validate-seed-against-key-uid
  (partial validate-seed-against-key-uid
           {:import-mnemonic-fn native-module/multiaccount-import-mnemonic
-           :on-success #(re-frame/dispatch [:navigate-to :storage])
+           :on-success #(re-frame/dispatch [::key-uid-matches])
            :on-error #(re-frame/dispatch [::show-seed-key-uid-mismatch-error-popup])}))
 
 (fx/defn seed-phrase-validated
@@ -85,7 +94,7 @@
       (popover/show-popover cofx {:view :custom-seed-phrase})
       {::validate-seed-against-key-uid {:seed-phrase (-> db :multiaccounts/key-storage :seed-phrase)
                                         ;; Unique key-uid of the account for which we are going to move keys
-                                        :key-uid (-> db :multiaccounts/login :key-uid)}})))
+                                        :key-uid (or (-> db :multiaccounts/login :key-uid) (-> db :multiaccount :key-uid))}})))
 
 (fx/defn choose-storage-pressed
   {:events [::choose-storage-pressed]}

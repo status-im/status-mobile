@@ -95,19 +95,15 @@
                              :on-press #(re-frame/dispatch [:keycard-settings.ui/change-pin-pressed])}]
              ;; TODO(rasom): uncomment this when unpairing will be enabled
              ;; https://github.com/status-im/status-react/issues/9227
+             [quo/list-item {:icon     :main-icons/keycard
+                             :size     :small
+                             :title    (i18n/label :t/keycard-backup)
+                             :accessibility-label "create-backup-keycard"
+                             :on-press #(re-frame/dispatch [:keycard-settings.ui/backup-card-pressed])}]
              #_[quo/list-item {:icon     :main-icons/close
                                :size     :small
                                :title    (i18n/label :t/unpair-card)
-                               :on-press #(re-frame/dispatch [:keycard-settings.ui/unpair-card-pressed])}]])])]
-                                        ; NOTE: Reset card is hidden until multiaccount removal will be implemented
-      #_(when pairing
-          [react/view {:margin-bottom 35
-                       :margin-left   16}
-           [quo/list-item {:icon     :main-icons/warning
-                           :theme    :negative
-                           :size     :small
-                           :title    (i18n/label :t/reset-card)
-                           :on-press #(re-frame/dispatch [:keycard-settings.ui/reset-card-pressed])}]])]]))
+                               :on-press #(re-frame/dispatch [:keycard-settings.ui/unpair-card-pressed])}]])])]]]))
 
 (defn reset-pin []
   [keycard.views/login-pin

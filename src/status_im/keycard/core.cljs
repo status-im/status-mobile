@@ -5,6 +5,7 @@
             status-im.keycard.delete-key
             status-im.keycard.export-key
             status-im.keycard.unpair
+            status-im.keycard.backup-key
             [status-im.keycard.login :as login]
             [status-im.keycard.mnemonic :as mnemonic]
             [status-im.keycard.onboarding :as onboarding]
@@ -65,8 +66,9 @@
              "instance-uid" instance-uid)
   (if (= flow :import)
     (navigation/navigate-to-cofx cofx :keycard-recovery-no-key nil)
-    (let [pairing-data (get-in db [:keycard :pairings instance-uid])]
-      (if pairing-data
+    (let [pairing-data (get-in db [:keycard :pairings (keyword instance-uid)])
+          paired? (get-in db [:keycard :application-info :paired?])]
+      (if paired?
         (fx/merge cofx
                   {:db (update-in db [:keycard :secrets] merge pairing-data)}
                   (common/listen-to-hardware-back-button)

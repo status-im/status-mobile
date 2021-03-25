@@ -27,7 +27,12 @@
             [status-im.ui.screens.status.new.views :as status.new]
             [status-im.ui.screens.browser.bookmarks.views :as bookmarks]
             [status-im.ui.screens.routing.status-stack :as status-stack]
-            [status-im.ui.screens.communities.invite :as communities.invite]))
+            [status-im.ui.screens.communities.invite :as communities.invite]
+            [status-im.ui.screens.keycard.onboarding.views :as keycard.onboarding]
+            [status-im.ui.screens.keycard.recovery.views :as keycard.recovery]
+            [status-im.keycard.core :as keycard.core]
+            [status-im.ui.screens.keycard.views :as keycard]
+            [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage.views]))
 
 (defonce main-stack (navigation/create-stack))
 (defonce bottom-tabs (navigation/create-bottom-tabs))
@@ -55,7 +60,8 @@
      :component profile-stack/profile-stack}]])
 
 (views/defview get-main-component [_]
-  (views/letsubs [logged-in? [:multiaccount/logged-in?]]
+  (views/letsubs [logged-in? [:multiaccount/logged-in?]
+                  keycard-account? [:multiaccounts/keycard-account?]]
     [main-stack (merge {:header-mode :none}
                        ;; https://github.com/react-navigation/react-navigation/issues/6520
                        (when platform/ios?
@@ -170,4 +176,26 @@
       (when config/quo-preview-enabled?
         [{:name      :quo-preview
           :insets    {:top false :bottom false}
-          :component quo.preview/preview-stack}]))]))
+          :component quo.preview/preview-stack}])
+
+      (when keycard-account?
+        [{:name         :keycard-onboarding-intro
+          :back-handler keycard.core/onboarding-intro-back-handler
+          :component    keycard.onboarding/intro}
+         {:name         :keycard-onboarding-puk-code
+          :back-handler :noop
+          :component    keycard.onboarding/puk-code}
+         {:name         :keycard-onboarding-pin
+          :back-handler :noop
+          :component    keycard.onboarding/pin}
+         {:name         :keycard-recovery-pair
+          :back-handler :noop
+          :component    keycard.recovery/pair}
+         {:name      :seed-phrase
+          :component key-storage.views/seed-phrase}
+         {:name      :keycard-recovery-pin
+          :component keycard.recovery/pin}
+         {:name      :keycard-wrong
+          :component keycard/wrong}
+         {:name      :not-keycard
+          :component keycard/not-keycard}]))]))

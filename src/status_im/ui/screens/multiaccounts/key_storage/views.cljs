@@ -103,7 +103,8 @@
 
 (defview seed-phrase []
   (letsubs
-    [{:keys [seed-word-count seed-shape-invalid?]} [:multiaccounts/key-storage]]
+    [{:keys [seed-word-count seed-shape-invalid?]} [:multiaccounts/key-storage]
+     {:keys [creating-backup?]} [:keycard]]
     [react/keyboard-avoiding-view {:flex 1}
      [local-topbar (i18n/label :t/enter-seed-phrase)]
      [multiaccounts.views/seed-phrase-input
@@ -122,7 +123,7 @@
                                                      (nil? seed-shape-invalid?))
                                        :on-press #(re-frame/dispatch [::multiaccounts.key-storage/choose-storage-pressed])
                                        :after    :main-icons/next}
-                                      (i18n/label :t/choose-storage)]}]]))
+                                      (i18n/label (if creating-backup? :t/next :t/choose-storage))]}]]))
 
 (defn keycard-subtitle []
   [react/view
@@ -197,7 +198,8 @@
                                        (i18n/label :t/confirm)]}]]]))
 
 (defview seed-key-uid-mismatch-popover []
-  (letsubs [{:keys [name]} [:multiaccounts/login]]
+  (letsubs [{:keys [name]} [:multiaccounts/login]
+            {logged-in-name :name} [:multiaccount]]
     [react/view {:margin-top        24
                  :margin-horizontal 24
                  :align-items       :center}
@@ -215,7 +217,7 @@
       [react/view
        [react/text {:style (into styles/popover-text
                                  {:margin-bottom 16})}
-        (i18n/label :t/seed-key-uid-mismatch-desc-1 {:multiaccount-name name})]
+        (i18n/label :t/seed-key-uid-mismatch-desc-1 {:multiaccount-name (or name logged-in-name)})]
        [react/text {:style styles/popover-text}
         (i18n/label :t/seed-key-uid-mismatch-desc-2)]]]
      [react/view {:margin-vertical 24

@@ -197,12 +197,20 @@
                   (navigation/navigate-to-cofx (if platform/android?
                                                  :notifications-settings :welcome) nil))))))
 
+(fx/defn on-backup-success
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:utils/show-popup   {:title   (i18n/label :t/keycard-backup-success-title)
+                                  :content (i18n/label :t/keycard-backup-success-body)}}
+            (navigation/navigate-to-cofx :keycard-settings nil)))
+
 (fx/defn on-generate-and-load-key-success
   {:events       [:keycard.callback/on-generate-and-load-key-success]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)
                   (re-frame/inject-cofx ::multiaccounts.create/get-signing-phrase)]}
   [{:keys [db random-guid-generator] :as cofx} data]
-  (let [account-data (js->clj data :keywordize-keys true)]
+  (let [account-data (js->clj data :keywordize-keys true)
+        backup? (get-in db [:keycard :creating-backup?])]
     (fx/merge cofx
               {:db (-> db
                        (assoc-in [:keycard :multiaccount]
@@ -222,12 +230,13 @@
                        (assoc-in [:keycard :application-info :key-uid]
                                  (ethereum/normalized-hex (:key-uid account-data)))
                        (update :keycard dissoc :recovery-phrase)
+                       (update :keycard dissoc :creating-backup?)
                        (update-in [:keycard :secrets] dissoc :pin :puk :password)
                        (assoc :multiaccounts/new-installation-id (random-guid-generator))
                        (update-in [:keycard :secrets] dissoc :mnemonic))}
               (common/remove-listener-to-hardware-back-button)
               (common/hide-connection-sheet)
-              (create-keycard-multiaccount))))
+              (if backup? (on-backup-success) (create-keycard-multiaccount)))))
 
 (fx/defn on-generate-and-load-key-error
   {:events [:keycard.callback/on-generate-and-load-key-error]}
