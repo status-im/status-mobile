@@ -178,6 +178,7 @@
         this._events[name].forEach(cb => cb(data));
     }
     EthereumProvider.prototype.enable = function () {
+        if (window.statusAppDebug) { console.log("enable"); }
         return sendAPIrequest('web3');
     };
 
@@ -187,6 +188,7 @@
 
     EthereumProvider.prototype.request = function (requestArguments)
     {
+         if (window.statusAppDebug) { console.log("request: " + JSON.stringify(requestArguments)); }
          if (!requestArguments) {
            return new Error('Request is not valid.');
          }
@@ -232,12 +234,14 @@
     // (DEPRECATED) Support for legacy send method
     EthereumProvider.prototype.send = function (method, params = [])
     {
+        if (window.statusAppDebug) { console.log("send (legacy): " + method);}
         return this.request({method: method, params: params});
     }
 
     // (DEPRECATED) Support for legacy sendSync method
     EthereumProvider.prototype.sendSync = function (payload)
     {
+        if (window.statusAppDebug) { console.log("sendSync (legacy)" + JSON.stringify(payload));}
         if (payload.method == "eth_uninstallFilter"){
             this.sendAsync(payload, function (res, err) {})
         }
@@ -252,6 +256,7 @@
     // (DEPRECATED) Support for legacy sendAsync method
     EthereumProvider.prototype.sendAsync = function (payload, callback)
     {
+      if (window.statusAppDebug) { console.log("sendAsync (legacy)" + JSON.stringify(payload));}
       if (!payload) {
           return new Error('Request is not valid.');
       }

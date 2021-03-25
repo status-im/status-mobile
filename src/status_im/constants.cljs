@@ -74,6 +74,7 @@
 
 (def ^:const web3-send-transaction "eth_sendTransaction")
 (def ^:const web3-personal-sign "personal_sign")
+(def ^:const web3-eth-sign "eth_sign")
 (def ^:const web3-sign-typed-data "eth_signTypedData")
 (def ^:const web3-sign-typed-data-v3 "eth_signTypedData_v3")
 
