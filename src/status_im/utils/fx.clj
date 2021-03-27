@@ -52,8 +52,18 @@
            ([cofx# ~@args]
             (if (and (map? cofx#)
                      (not (nil? (:db cofx#))))
-              (let [~cofx cofx#]
-                ~@fdecl)
+              (let [res# (let [~cofx cofx#] ~@fdecl)]
+                (when-not (nil? res#)
+                  (aset res#
+                        "cljs$core$ILookup$_lookup$arity$2"
+                        (fn [foo# k#]
+                          (clojure.core/this-as
+                           m#
+                           (when (and (map? k#)
+                                      (contains? k# :db))
+                             (throw (js/Error. (str "fx/defn's result is used as fx producing function in " ~name))))
+                           (get m# k# nil)))))
+                res#)
               (throw (js/Error. (str "fx/defn expects a map of cofx as first argument got " cofx# " in function " ~name))))))
          ~@(register-events events interceptors (with-meta name m) argsyms))
       (throw (Exception. (str "fx/defn expects a vector of keyword as value for :events key in attr-map in function " name))))))
