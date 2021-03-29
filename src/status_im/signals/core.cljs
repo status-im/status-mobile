@@ -16,20 +16,22 @@
   (log/debug "[signals] status-node-started"
              "error" error)
   (if error
-    {:db (-> db
-             (update :multiaccounts/login dissoc :processing)
-             (assoc-in [:multiaccounts/login :error]
-                       ;; NOTE: the only currently known error is
-                       ;; "file is not a database" which occurs
-                       ;; when the user inputs the wrong password
-                       ;; if that is the error that is found
-                       ;; we show the i18n label for wrong password
-                       ;; to the user
-                       ;; in case of an unknown error we show the
-                       ;; error
-                       (if (= error "file is not a database")
-                         (i18n/label :t/wrong-password)
-                         error)))}
+    (cond-> {:db (-> db
+                     (update :multiaccounts/login dissoc :processing)
+                     (assoc-in [:multiaccounts/login :error]
+                               ;; NOTE: the only currently known error is
+                               ;; "file is not a database" which occurs
+                               ;; when the user inputs the wrong password
+                               ;; if that is the error that is found
+                               ;; we show the i18n label for wrong password
+                               ;; to the user
+                               ;; in case of an unknown error we show the
+                               ;; error
+                               (if (= error "file is not a database")
+                                 (i18n/label :t/wrong-password)
+                                 error)))}
+      (= (:view-id db) :progress)
+      (assoc :dispatch [:navigate-to :login]))
     (login/multiaccount-login-success cofx)))
 
 (fx/defn summary
