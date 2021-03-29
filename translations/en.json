@@ -503,7 +503,7 @@
     "enter-a-private-key": "Enter a private key",
     "enter-a-seed-phrase": "Enter a seed phrase",
     "enter-address": "Enter address",
-    "enter-contact-code": "Enter ENS username or chat key",
+    "enter-contact-code": "ENS (vitalik94) or chat key (0x04…)",
     "enter-pair-code": "Enter your pairing code",
     "pair-code-placeholder": "Pair code...",
     "enter-pair-code-description": "Pairing code was displayed to you during the Keycard setup",
@@ -640,6 +640,7 @@
     "invalid-number": "Invalid number",
     "invalid-pairing-password": "Invalid pairing password",
     "invalid-range": "Invalid format, must be between {{min}} and {{max}}",
+    "invalid-username-or-key": "Invalid username or chat key",
     "join-me": "Hey join me on Status: {{url}}",
     "join-a-community": "or join a community",
     "http-gateway-error": "Oops, request failed!",
@@ -1304,6 +1305,7 @@
     "you-are-all-set-description": "If you lose your phone, you can now access your funds and chat key using your seed phrase",
     "you-can-change-account": "You can change the account name and color to what you wish",
     "you-dont-have-stickers": "You don’t have any stickers yet",
+    "you-dont-have-contacts-invite-friends": "You don’t have any contacts yet.\nInvite your friends to start chatting.",
     "your-contact-code": "Granting access authorizes this DApp to retrieve your chat key",
     "your-data-belongs-to-you": "If you lose your seed phrase you lose your data and funds",
     "your-data-belongs-to-you-description": "If you lose access, for example by losing your phone, you can only access your keys with your seed phrase. No one, but you has your seed phrase. Write it down. Keep it safe",
@@ -1338,7 +1340,7 @@
     "add-seed-account": "Add account with a seed phrase",
     "account-exists-title": "Account already exists",
     "add-private-key-account": "Add account from private key",
-    "user-not-found": "User not found",
+    "profile-not-found": "Profile not found",
     "waku-bloom-filter-mode": "Waku bloom filter mode",
     "appearance": "Appearance",
     "preference": "Preference",
@@ -1496,5 +1498,6 @@
     "rpc-usage-reset": "Reset",
     "rpc-usage-filter": "Filter methods",
     "rpc-usage-copy": "Copy",
-    "community-message-preview": "Invitation to join {{community-name}}"
+    "community-message-preview": "Invitation to join {{community-name}}",
+    "non-contacts": "Non contacts"
 }

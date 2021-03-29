@@ -83,7 +83,7 @@
           [icons/icon icon {:color icon-color}]])])))
 
 (defn title-column
-  [{:keys [title text-color subtitle subtitle-max-lines
+  [{:keys [title text-color subtitle subtitle-max-lines subtitle-secondary
            title-accessibility-label size text-size title-text-weight
            right-side-present?]}]
   [rn/view {:style (merge (:tiny spacing/padding-horizontal)
@@ -105,14 +105,37 @@
                     :size                text-size}
          title]
         title)
-      (if (string? subtitle)
-        [text/text {:weight          :regular
-                    :color           :secondary
-                    :ellipsize-mode  :tail
-                    :number-of-lines subtitle-max-lines
-                    :size            text-size}
-         subtitle]
-        subtitle)]
+      (if (string? subtitle-secondary)
+        [rn/view {:flex-direction :row}
+         [text/text {:style {:max-width "56.5%"}
+                     :weight          :regular
+                     :color           :secondary
+                     :ellipsize-mode  :tail
+                     :number-of-lines subtitle-max-lines
+                     :size            text-size}
+          subtitle]
+         [text/text {:style {:width "7%" :text-align :center}
+                     :weight          :regular
+                     :color           :secondary
+                     :ellipsize-mode  :middle
+                     :number-of-lines subtitle-max-lines
+                     :size            text-size}
+          "•"]
+         [text/text {:style {:max-width "36.5%"}
+                     :weight          :regular
+                     :color           :secondary
+                     :ellipsize-mode  :middle
+                     :number-of-lines subtitle-max-lines
+                     :size            text-size}
+          subtitle-secondary]]
+        (if (string? subtitle)
+          [text/text {:weight          :regular
+                      :color           :secondary
+                      :ellipsize-mode  :tail
+                      :number-of-lines subtitle-max-lines
+                      :size            text-size}
+           subtitle]
+          subtitle))]
 
      title
      (if (string? title)
@@ -170,7 +193,7 @@
 (defn list-item
   [{:keys [theme accessory disabled subtitle-max-lines icon icon-container-style
            left-side-alignment
-           title subtitle active on-press on-long-press chevron size text-size
+           title subtitle subtitle-secondary active on-press on-long-press chevron size text-size
            accessory-text accessibility-label title-accessibility-label
            haptic-feedback haptic-type error animated animated-accessory? title-text-weight]
     :or   {subtitle-max-lines 1
@@ -223,6 +246,7 @@
                    :text-size                 text-size
                    :subtitle                  subtitle
                    :subtitle-max-lines        subtitle-max-lines
+                   :subtitle-secondary        subtitle-secondary
                    :right-side-present?       (or accessory chevron)}]
        [right-side {:chevron             chevron
                     :active              active

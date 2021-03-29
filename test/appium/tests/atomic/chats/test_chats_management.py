@@ -95,13 +95,13 @@ class TestChatManagement(SingleDeviceTestCase):
             chat.public_key_edit_box.clear()
             chat.public_key_edit_box.set_value(invalid_chat_key)
             chat.confirm()
-            if not home.element_by_translation_id("user-not-found").is_element_displayed():
+            if not home.element_by_translation_id("profile-not-found").is_element_displayed():
                 self.errors.append('Error is not shown for invalid public key')
 
         home.just_fyi("Check that valid ENS is resolved")
         chat.public_key_edit_box.clear()
         chat.public_key_edit_box.set_value(ens_user_ropsten['ens'])
-        resolved_ens = chat.get_resolved_chat_key('%s.stateofus.eth' % ens_user_ropsten['ens'], ens_user_ropsten['public_key'])
+        resolved_ens = '%s.stateofus.eth' % ens_user_ropsten['ens']
         if not chat.element_by_text(resolved_ens).is_element_displayed(10):
             self.errors.append('ENS name is not resolved after pasting chat key')
         home.back_button.click()
@@ -116,8 +116,7 @@ class TestChatManagement(SingleDeviceTestCase):
         chat.public_key_edit_box.paste_text_from_clipboard()
         if chat.public_key_edit_box.text != public_key:
             self.errors.append('Public key is not pasted from clipboard')
-        expected_resolved_name = chat.get_resolved_chat_key(basic_user['username'], public_key)
-        if not chat.element_by_text(expected_resolved_name).is_element_displayed():
+        if not chat.element_by_text(basic_user['username']).is_element_displayed():
             self.errors.append('3 random-name is not resolved after pasting chat key')
         chat.public_key_edit_box.click()
         chat.confirm_until_presence_of_element(chat.chat_message_input)
@@ -585,10 +584,9 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
             'Check that user is added to contacts below "Start new chat" and you redirected to 1-1 on tap')
         home_1.plus_button.click()
         home_1.start_new_chat_button.click()
-        for name in (nickname, username_2):
-            if not home_1.element_by_text(name).is_element_displayed():
-                home_1.driver.fail('List of contacts below "Start new chat" does not contain added user')
-        home_1.element_by_text(username_2).click()
+        if not home_1.element_by_text(nickname).is_element_displayed():
+            home_1.driver.fail('List of contacts below "Start new chat" does not contain added user')
+        home_1.element_by_text(nickname).click()
         if not chat_1.chat_message_input.is_element_displayed():
             home_1.driver.fail('No redirect to 1-1 chat if tap on Contact below "Start new chat"')
         for element in (chat_1.chat_message_input, chat_1.element_by_text(nickname)):
@@ -599,7 +597,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         device_1.just_fyi('Remove user from contacts')
         chat_1.profile_button.click()
-        userprofile = profile_1.open_contact_from_profile(username_2)
+        userprofile = profile_1.open_contact_from_profile(nickname)
         userprofile.remove_from_contacts.click()
         if userprofile.remove_from_contacts.is_element_displayed():
             self.errors.append("'Remove from contacts' is not changed to 'Add to contacts'")
@@ -608,7 +606,7 @@ class TestChatManagementMultipleDevice(MultipleDeviceTestCase):
 
         device_1.just_fyi('Check that user is removed from contact list in profile')
         userprofile.back_button.click()
-        if profile_1.element_by_text(username_2).is_element_displayed():
+        if profile_1.element_by_text(nickname).is_element_displayed():
             self.errors.append('List of contacts in profile contains removed user')
         profile_1.home_button.click(desired_view='chat')
         if not chat_1.add_to_contacts.is_element_displayed():
