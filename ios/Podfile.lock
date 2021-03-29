@@ -25,7 +25,7 @@ PODS:
     - OpenSSL-Universal (= 1.1.180)
   - Flipper-Glog (0.3.6)
   - Flipper-PeerTalk (0.0.4)
-  - Flipper-RSocket (1.3.0):
+  - Flipper-RSocket (1.3.1):
     - Flipper-Folly (~> 2.5)
   - FlipperKit (0.74.0):
     - FlipperKit/Core (= 0.74.0)
@@ -268,7 +268,9 @@ PODS:
     - React
   - react-native-splash-screen (3.2.0):
     - React
-  - react-native-status-keycard (2.5.32):
+  - react-native-status (1.0.0):
+    - React
+  - react-native-status-keycard (2.5.33):
     - Keycard
     - React
   - react-native-webview (10.9.2):
@@ -440,6 +442,7 @@ DEPENDENCIES:
   - react-native-shake (from `../node_modules/react-native-shake`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
+  - react-native-status (from `../modules/react-native-status`)
   - react-native-status-keycard (from `../node_modules/react-native-status-keycard`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -555,6 +558,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/slider"
   react-native-splash-screen:
     :path: "../node_modules/react-native-splash-screen"
+  react-native-status:
+    :path: "../modules/react-native-status"
   react-native-status-keycard:
     :path: "../node_modules/react-native-status-keycard"
   react-native-webview:
@@ -643,7 +648,7 @@ SPEC CHECKSUMS:
   Flipper-Folly: f7a3caafbd74bda4827954fd7a6e000e36355489
   Flipper-Glog: 1dfd6abf1e922806c52ceb8701a3599a79a200a6
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
-  Flipper-RSocket: 602921fee03edacf18f5d6f3d3594ba477f456e5
+  Flipper-RSocket: 127954abe8b162fcaf68d2134d34dc2bd7076154
   FlipperKit: f42987ea58737ac0fb3fbc38f8e703452ba56940
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: cee4319f395bad5865ef3f32466c2e0ae677432c
@@ -673,7 +678,8 @@ SPEC CHECKSUMS:
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
   react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
-  react-native-status-keycard: f846d457fc2b964d327f86c345936477004a8a60
+  react-native-status: 45dbf1302ce3c258b459dfab137cd1c2c68c295d
+  react-native-status-keycard: dac854029a37eabf04a8ede091ddeee71ab049b9
   react-native-webview: 4e96d493f9f90ba4f03b28933f30b2964df07e39
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
   React-RCTAnimation: 1bde3ecc0c104c55df246eda516e0deb03c4e49b
@@ -710,6 +716,6 @@ SPEC CHECKSUMS:
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 2dcfb8f3d85214711628bc8909bfe647a800507a
+PODFILE CHECKSUM: c1c8d3ccfd58edcd7388c38b7b0a24d729b2be80
 
 COCOAPODS: 1.10.0
