@@ -2,8 +2,8 @@
 #import "ReactNativeConfig.h"
 #import "React/RCTBridge.h"
 #import "React/RCTEventDispatcher.h"
-#import "Statusgo/Statusgo.h"
-#import <SSZipArchive.h>
+#import "Statusgo.h"
+#import "SSZipArchive.h"
 
 @interface NSDictionary (BVJSONString)
 -(NSString*) bv_jsonStringWithPrettyPrint:(BOOL) prettyPrint;
