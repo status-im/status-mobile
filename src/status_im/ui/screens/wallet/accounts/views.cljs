@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.accounts.views
   (:require [quo.animated :as reanimated]
             [quo.core :as quo]
+            [quo.react-native :as rn]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.i18n.i18n :as i18n]
@@ -14,6 +15,7 @@
             [status-im.ui.screens.wallet.accounts.styles :as styles]
             [status-im.qr-scanner.core :as qr-scanner]
             [status-im.wallet.utils :as wallet.utils]
+            [status-im.utils.utils :as utils.utils]
             [status-im.keycard.login :as keycard.login])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -190,12 +192,39 @@
         [quo/text {:color :secondary}
          (i18n/label :t/wallet-total-value)]])]))
 
+;; Note(rasom): sometimes `refreshing` might get stuck on iOS if action happened
+;; too fast. By updating this atom in 1s we ensure that `refreshing?` property
+;; is updated properly in this case.
+(defonce updates-counter (reagent/atom 0))
+
+(defn schedule-counter-reset []
+  (utils.utils/set-timeout
+   (fn []
+     (swap! updates-counter inc)
+     (when @(re-frame/subscribe [:wallet/refreshing-history?])
+       (schedule-counter-reset)))
+   1000))
+
+(defn refresh-action []
+  (schedule-counter-reset)
+  (re-frame/dispatch [:wallet.ui/pull-to-refresh-history]))
+
+(defn refresh-control [refreshing?]
+  (reagent/as-element
+   [rn/refresh-control
+    {:refreshing (boolean refreshing?)
+     :onRefresh  refresh-action}]))
+
 (defn accounts-overview []
   (let [mnemonic @(re-frame/subscribe [:mnemonic])]
     [react/view {:flex 1}
      [quo/animated-header
       {:extended-header   total-value
        :use-insets        true
+       :refresh-control   (refresh-control
+                           (and
+                            @updates-counter
+                            @(re-frame/subscribe [:wallet/refreshing-history?])))
        :right-accessories [{:on-press            #(re-frame/dispatch
                                                    [::qr-scanner/scan-code
                                                     {:handler :wallet.send/qr-scanner-result}])
