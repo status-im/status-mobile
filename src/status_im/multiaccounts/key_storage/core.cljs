@@ -66,7 +66,8 @@
   "Check if the key-uid was generated with the given seed-phrase"
   [{:keys [import-mnemonic-fn on-success on-error]} {:keys [seed-phrase key-uid]}]
   (import-mnemonic-fn
-   seed-phrase nil
+   (mnemonic/sanitize-passphrase seed-phrase)
+   nil
    (fn [result]
      (let [{:keys [keyUid]} (types/json->clj result)]
        ;; if the key-uid from app-db is same as the one returned by multiaccount import,
