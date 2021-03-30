@@ -3,6 +3,7 @@
             [goog.object :as object]
             [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
+            [status-im.audio.core :as audio]
             [status-im.chat.constants :as chat.constants]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.chat.models :as chat]
@@ -251,7 +252,8 @@
                 (send-edited-message input-text-with-mentions editing-message)
                 (send-messages input-text-with-mentions current-chat-id))
               (mentions/clear-mentions)
-              (mentions/clear-cursor))))
+              (mentions/clear-cursor)
+              (audio/play-in-app-sound :message_sent))))
 
 (fx/defn chat-send-sticker
   {:events [:chat/send-sticker]}

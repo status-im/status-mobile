@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* StatusImTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* StatusImTests.m */; };
+		06141E9C26135F1C006FA6F0 /* message_sent.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 06141E9B26135F1C006FA6F0 /* message_sent.mp3 */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		25DC9C9DC25846BD8D084888 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */; };
@@ -100,6 +101,7 @@
 		00E356EE1AD99517003FC87E /* StatusImTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StatusImTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* StatusImTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StatusImTests.m; sourceTree = "<group>"; };
+		06141E9B26135F1C006FA6F0 /* message_sent.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = message_sent.mp3; sourceTree = "<group>"; };
 		132CE3B093884B0FB239A0AB /* libPods-Status-StatusIm.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Status-StatusIm.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* StatusIm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StatusIm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = StatusIm/AppDelegate.h; sourceTree = "<group>"; };
@@ -203,6 +205,7 @@
 		13B07FAE1A68108700A75B9A /* StatusIm */ = {
 			isa = PBXGroup;
 			children = (
+				06141E9B26135F1C006FA6F0 /* message_sent.mp3 */,
 				922C4CA61F4D5F8B0033C753 /* StatusIm.entitlements */,
 				B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -473,6 +476,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06141E9C26135F1C006FA6F0 /* message_sent.mp3 in Resources */,
 				74B758FC20D7C00B003343C3 /* launch-image-universal.storyboard in Resources */,
 				B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */,
 				D84616FB563A48EBB1678699 /* Inter-Bold.otf in Resources */,

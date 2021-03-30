@@ -1,5 +1,8 @@
 (ns status-im.audio.core
-  (:require ["@react-native-community/audio-toolkit" :refer (Player Recorder MediaStates)]))
+  (:require ["@react-native-community/audio-toolkit" :refer (Player Recorder MediaStates)]
+            [status-im.utils.fx :as fx]
+            [goog.object]
+            [re-frame.core :as re-frame]))
 
 ;; get mediastates from react module
 (def PLAYING (.-PLAYING ^js MediaStates))
@@ -74,7 +77,7 @@
                             (on-pause)))))
 
 (defn start-playing [player on-start on-error]
-  (when (and player (.-canPlay ^js player))
+  (when player
     (.play ^js player #(if %
                          (on-error {:error (.-err %) :message (.-message %)})
                          (on-start)))))
@@ -127,3 +130,21 @@
                 #(when (and player (not= (get-state player) IDLE))
                    (.destroy ^js player))
                 #()))
+
+(defn pure-set-volume [js-audio-obj vol]
+  (goog.object/set js-audio-obj "volume" vol)
+  js-audio-obj)
+
+(re-frame/reg-fx
+ ::play-in-app-sound
+ (fn [sound-id]
+   (-> sound-id
+       name
+       (str ".mp3")
+       (new-player {} #())
+       (pure-set-volume 0.5)
+       (start-playing #() #()))))
+
+(fx/defn play-in-app-sound
+  [_ sound-id]
+  {::play-in-app-sound sound-id})
