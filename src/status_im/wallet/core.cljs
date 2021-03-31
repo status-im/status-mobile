@@ -677,8 +677,11 @@
 
 (fx/defn restart
   {:events [::restart]}
-  [{:keys [db] :as cofx}]
-  (restart-wallet-service cofx {:force-start? true}))
+  [{:keys [db] :as cofx} ignore-syncing-settings?]
+  (restart-wallet-service
+   cofx
+   {:force-start?             true
+    :ignore-syncing-settings? ignore-syncing-settings?}))
 
 (def pull-to-refresh-cooldown-period (* 1 60 1000))
 
@@ -705,7 +708,7 @@
    (json-rpc/call
     {:method            "wallet_watchTransaction"
      :params            [hash]
-     :on-success        #(re-frame.core/dispatch [::restart])
+     :on-success        #(re-frame.core/dispatch [::restart true])
      :on-error          #(log/info "[wallet] watch transaction error" % "hash" hash)})))
 
 (fx/defn watch-tx
