@@ -1595,5 +1595,16 @@
     "status-is-open-source": "Status is open-source",
     "build-yourself": "To use the app without these Terms of Service, you can build your own version",
     "accept-and-continue": "Accept and continue",
-    "empty-activity-center": "Your chat notifications\nwill appear here"
+    "empty-activity-center": "Your chat notifications\nwill appear here",
+    "pinned-messages": "Pinned messages",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "no-pinned-messages": "No pinned messages",
+    "pinned-messages-count": {
+        "one": "1 pinned message",
+        "other": "{{count}} pinned messages"
+    },
+    "pinned-messages-empty": "Pinned messages will appear here. To pin a message, press and hold it and tap `Pin`",
+    "pinned-by": "Pinned by",
+    "pin-limit-reached": "Pin limit reached. Unpin a previous message first."
 }

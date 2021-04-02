@@ -83,6 +83,16 @@
        (i18n/label :t/profile-details)]]
      [render-detail contact]]))
 
+(defn pin-settings [public-key pin-count]
+  [quo/list-item
+   {:title               (i18n/label :t/pinned-messages)
+    :size                :small
+    :accessibility-label :profile-nickname-item
+    :accessory           :text
+    :accessory-text      pin-count
+    :on-press            #(re-frame/dispatch [:contact.ui/pinned-messages-pressed public-key])
+    :chevron             true}])
+
 (defn nickname-settings [{:keys [names]}]
   [quo/list-item
    {:title               (i18n/label :t/nickname)
@@ -162,6 +172,7 @@
         messages @(re-frame/subscribe [:chats/profile-messages-stream current-chat-id])
         no-messages? @(re-frame/subscribe [:chats/chat-no-messages? current-chat-id])
         muted? @(re-frame/subscribe [:chats/muted public-key])
+        pinned-messages @(re-frame/subscribe [:chats/pinned public-key])
         [first-name second-name] (multiaccounts/contact-two-names contact true)
         on-share #(re-frame/dispatch [:show-popover (merge
                                                      {:view    :share-chat-key
@@ -188,6 +199,7 @@
                                         :subtitle second-name})]
                                      [react/view {:height 1 :background-color colors/gray-lighter :margin-top 8}]
                                      [nickname-settings contact]
+                                     [pin-settings public-key (count pinned-messages)]
                                      [react/view {:height 1 :background-color colors/gray-lighter}]
                                      [react/view {:padding-top 17 :flex-direction :row :align-items :stretch :flex 1}
                                       (for [{:keys [label] :as action} (actions contact muted?)

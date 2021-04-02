@@ -239,8 +239,8 @@
 (defn render-fn [{:keys [outgoing type] :as message}
                  idx
                  _
-                 {:keys [group-chat public? current-public-key space-keeper chat-id show-input?]}]
-  [react/view {:style (when platform/android? {:scaleY -1})}
+                 {:keys [group-chat public? current-public-key space-keeper chat-id show-input? message-pin-enabled edit-enabled in-pinned-view?]}]
+  [react/view {:style (when (and platform/android? (not in-pinned-view?)) {:scaleY -1})}
    (if (= type :datemark)
      [message-datemark/chat-datemark (:value message)]
      (if (= type :gap)
@@ -252,7 +252,9 @@
                :group-chat group-chat
                :public? public?
                :current-public-key current-public-key
-               :show-input? show-input?)
+               :show-input? show-input?
+               :message-pin-enabled message-pin-enabled
+               :edit-enabled edit-enabled)
         space-keeper]))])
 
 (def list-key-fn #(or (:message-id %) (:value %)))
@@ -267,10 +269,29 @@
     (utils/set-timeout #(re-frame/dispatch [:chat.ui/load-more-messages-for-current-chat])
                        (if platform/low-device? 700 200))))
 
+(defn get-render-data [{:keys [group-chat chat-id public? community-id admins space-keeper show-input? edit-enabled in-pinned-view?]}]
+  (let [current-public-key @(re-frame/subscribe [:multiaccount/public-key])
+        community @(re-frame/subscribe [:communities/community community-id])
+        group-admin? (get admins current-public-key)
+        community-admin? (when community (community :admin))
+        message-pin-enabled (and (not public?)
+                                 (or (not group-chat)
+                                     (and group-chat
+                                          (or group-admin?
+                                              community-admin?))))]
+    {:group-chat          group-chat
+     :public?             public?
+     :current-public-key  current-public-key
+     :space-keeper        space-keeper
+     :chat-id             chat-id
+     :show-input?         show-input?
+     :message-pin-enabled message-pin-enabled
+     :edit-enabled        edit-enabled
+     :in-pinned-view?     in-pinned-view?}))
+
 (defn messages-view [{:keys [chat bottom-space pan-responder space-keeper show-input?]}]
-  (let [{:keys [group-chat chat-id public?]} chat
-        messages @(re-frame/subscribe [:chats/chat-messages-stream chat-id])
-        current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
+  (let [{:keys [group-chat chat-id public? community-id admins]} chat
+        messages @(re-frame/subscribe [:chats/chat-messages-stream chat-id])]
     ;;do not use anonymous functions for handlers
     [list/flat-list
      (merge
@@ -280,12 +301,15 @@
        :header                       [list-header chat]
        :footer                       [list-footer chat]
        :data                         messages
-       :render-data                  {:group-chat         group-chat
-                                      :public?            public?
-                                      :current-public-key current-public-key
-                                      :space-keeper       space-keeper
-                                      :chat-id            chat-id
-                                      :show-input?        show-input?}
+       :render-data                  (get-render-data {:group-chat      group-chat
+                                                       :chat-id         chat-id
+                                                       :public?         public?
+                                                       :community-id    community-id
+                                                       :admins          admins
+                                                       :space-keeper    space-keeper
+                                                       :show-input?     show-input?
+                                                       :edit-enabled    true
+                                                       :in-pinned-view? false})
        :render-fn                    render-fn
        :on-viewable-items-changed    on-viewable-items-changed
        :on-end-reached               list-on-end-reached

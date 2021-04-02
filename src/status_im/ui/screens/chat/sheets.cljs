@@ -8,7 +8,8 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.chat.styles.message.sheets :as sheets.styles]
-            [quo.core :as quo]))
+            [quo.core :as quo]
+            [status-im.chat.models.pin-message :as models.pin-message]))
 
 (defn hide-sheet-and-dispatch [event]
   (re-frame/dispatch [:bottom-sheet/hide])
@@ -25,7 +26,9 @@
        :subtitle            (i18n/label :t/view-profile)
        :accessibility-label :view-chat-details-button
        :chevron             true
-       :on-press            #(hide-sheet-and-dispatch  [:chat.ui/show-profile chat-id])}]
+       :on-press            #(do
+                               (hide-sheet-and-dispatch  [:chat.ui/show-profile chat-id])
+                               (re-frame/dispatch [::models.pin-message/load-pin-messages chat-id]))}]
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/mark-all-read)
@@ -93,6 +96,12 @@
        :on-press            #(hide-sheet-and-dispatch [:navigate-to :community-channel-details {:chat-id chat-id}])}]
      [quo/list-item
       {:theme               :accent
+       :title               (i18n/label :t/pinned-messages)
+       :icon                :main-icons/pin
+       :accessory           :text
+       :on-press            #(hide-sheet-and-dispatch [:contact.ui/pinned-messages-pressed chat-id])}]
+     [quo/list-item
+      {:theme               :accent
        :title               (i18n/label :t/mark-all-read)
        :accessibility-label :mark-all-read-button
        :icon                :main-icons/check
@@ -123,7 +132,9 @@
            :icon     [chat-icon/chat-icon-view-chat-sheet
                       chat-id group-chat chat-name color]
            :chevron  true
-           :on-press #(hide-sheet-and-dispatch [:show-group-chat-profile chat-id])}]
+           :on-press #(do
+                        (hide-sheet-and-dispatch [:show-group-chat-profile chat-id])
+                        (re-frame/dispatch [::models.pin-message/load-pin-messages chat-id]))}]
          [quo/list-item
           {:theme               :accent
            :title               (i18n/label :t/mark-all-read)
