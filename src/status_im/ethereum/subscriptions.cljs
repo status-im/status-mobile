@@ -21,40 +21,12 @@
   [{:keys [db]} id handler]
   {:db (assoc-in db [:ethereum/subscriptions id] handler)})
 
-(fx/defn max-known-block
-  [{:keys [db]} block-number]
-  {:db (assoc db :wallet/max-known-block block-number)})
-
-(fx/defn new-block
-  [{:keys [db] :as cofx} historical? block-number accounts transactions-per-account]
-  (log/debug "[wallet-subs] new-block"
+(fx/defn new-transfers
+  [{:keys [db] :as cofx} block-number accounts]
+  (log/debug "[wallet-subs] new-transfers"
              "accounts" accounts
-             "block" block-number
-             "transactions-per-account" transactions-per-account
-             "max-known-block" (:wallet/max-known-block db))
-  (when (>= block-number (:wallet/max-known-block db))
-    (fx/merge cofx
-              (cond-> {}
-                (not historical?)
-                (assoc :db (assoc db :ethereum/current-block block-number))
-
-                ;;NOTE only get transfers if the new block contains some
-                ;;     from/to one of the multiaccount accounts
-                (not-empty accounts)
-                (assoc :transactions/get-transfers
-                       {:chain-tokens (:wallet/all-tokens db)
-                        :addresses    accounts
-                        :before-block block-number
-                        :historical?  historical?}))
-              (transactions/check-watched-transactions))))
-
-(fx/defn reorg
-  [{:keys [db] :as cofx} {:keys [blockNumber accounts]}]
-  (log/debug "[wallet-subs] reorg"
-             "accounts" accounts
-             "block-number" blockNumber)
-  {:db (update-in db [:wallet :transactions]
-                  wallet/remove-transactions-since-block blockNumber)})
+             "block" block-number)
+  (transactions/check-watched-transactions cofx))
 
 (fx/defn recent-history-fetching-started
   [{:keys [db]} accounts]
@@ -76,6 +48,7 @@
   (fx/merge
    cofx
    {:db (-> db
+            (assoc :ethereum/current-block blockNumber)
             (update-in [:wallet :accounts]
                        wallet/remove-transactions-since-block blockNumber)
             (transactions/update-fetching-status accounts :recent? false)
@@ -95,8 +68,7 @@
                     []
                     accounts)
      :before-block blockNumber
-     :limit        20
-     :historical?  true}}
+     :limit        20}}
    (wallet.core/restart-wallet-service-default)))
 
 (fx/defn fetching-error
@@ -104,7 +76,7 @@
   (fx/merge
    cofx
    {:db               (assoc db :wallet/fetching-error message)}
-   (wallet.core/stop-wallet)))
+   (wallet.core/after-checking-history)))
 
 (fx/defn non-archival-node-detected
   [{:keys [db] :as cofx} _]
@@ -112,13 +84,12 @@
 
 (fx/defn new-wallet-event
   [cofx {:keys [type blockNumber accounts newTransactions] :as event}]
-  (log/debug "[wallet-subs] new-wallet-event"
-             "event-type" type)
+  (log/info "[wallet-subs] new-wallet-event"
+            "event-type" type
+            "blockNumber" blockNumber
+            "accounts" accounts)
   (case type
-    "newblock" (new-block cofx false blockNumber accounts newTransactions)
-    "history" (new-block cofx true blockNumber accounts nil)
-    "maxKnownBlock" (max-known-block cofx blockNumber)
-    "reorg" (reorg cofx event)
+    "new-transfers" (new-transfers cofx blockNumber accounts)
     "recent-history-fetching" (recent-history-fetching-started cofx accounts)
     "recent-history-ready" (recent-history-fetching-ended cofx event)
     "fetching-history-error" (fetching-error cofx event)

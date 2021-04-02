@@ -22,7 +22,6 @@
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.wallet.prices :as prices]
             [status-im.wallet.utils :as wallet.utils]
-            [status-im.native-module.core :as status]
             [status-im.utils.mobile-sync :as mobile-network-utils]
             [status-im.utils.datetime :as datetime]
             status-im.wallet.recipient.core
@@ -556,16 +555,14 @@
                           :on-cancel           #()}})
 
 (re-frame/reg-fx
- ::stop-wallet
- (fn []
-   (log/info "stop-wallet fx")
-   (status/stop-wallet)))
-
-(re-frame/reg-fx
- ::start-wallet
- (fn [watch-new-blocks?]
-   (log/info "start-wallet fx" watch-new-blocks?)
-   (status/start-wallet watch-new-blocks?)))
+ ::check-recent-history
+ (fn [addresses]
+   (log/info "[wallet] check recent history" addresses)
+   (json-rpc/call
+    {:method            "wallet_checkRecentHistory"
+     :params            [addresses]
+     :on-success        #(log/info "[wallet] wallet_checkRecentHistory success")
+     :on-error          #(log/error "[wallet] wallet_checkRecentHistory error" %)})))
 
 (def ms-10-min (datetime/minutes 10))
 (def ms-20-min (datetime/minutes 20))
@@ -605,60 +602,46 @@
     ms-2-min
     ms-10-min))
 
-(fx/defn stop-wallet
+(fx/defn after-checking-history
   [{:keys [db] :as cofx}]
-  (let [state           (get db :wallet-service/state)
-        old-timeout     (get db :wallet-service/restart-timeout)
-        timeout         (or
-                         old-timeout
-                         (when-let [interval (get-restart-interval db)]
-                           (utils.utils/set-timeout
-                            #(re-frame.core/dispatch [::restart])
-                            interval)))
-        max-known-block (get db :wallet/max-known-block 0)]
-    {:db           (-> db
-                       (assoc :wallet-service/state :stopped)
-                       (assoc :wallet/max-known-block max-known-block)
-                       (assoc :wallet-service/restart-timeout timeout)
-                       (dissoc :wallet/recent-history-fetching-started?
-                               :wallet/waiting-for-recent-history?
-                               :wallet/refreshing-history?))
-     ::stop-wallet nil}))
+  (log/info "[wallet] after-checking-history")
+  {:db (dissoc db
+               :wallet/recent-history-fetching-started?
+               :wallet/waiting-for-recent-history?
+               :wallet/refreshing-history?)})
 
-(fx/defn start-wallet
-  [{:keys [db] :as cofx} watch-new-blocks? on-recent-history-fetching]
-  (let [old-timeout (get db :wallet-service/restart-timeout)
-        state       (get db :wallet-service/state)
+(fx/defn check-recent-history
+  [{:keys [db] :as cofx} on-recent-history-fetching]
+  (let [addresses   (map :address (get db :multiaccount/accounts))
+        old-timeout (get db :wallet-service/restart-timeout)
         timeout     (when-let [interval (get-restart-interval db)]
                       (utils.utils/set-timeout
                        #(re-frame.core/dispatch [::restart])
                        interval))]
     {:db            (-> db
-                        (assoc :wallet-service/state :started
-                               :wallet-service/restart-timeout timeout
+                        (assoc :wallet-service/restart-timeout timeout
                                :wallet/was-started? true
                                :wallet/on-recent-history-fetching on-recent-history-fetching))
-     ::start-wallet watch-new-blocks?
+     ::check-recent-history addresses
      ::utils.utils/clear-timeouts
      [old-timeout]}))
 
 (fx/defn restart-wallet-service
   [{:keys [db] :as cofx}
-   {:keys [force-start? watch-new-blocks? ignore-syncing-settings? on-recent-history-fetching]}]
+   {:keys [force-start? ignore-syncing-settings? on-recent-history-fetching]}]
   (when (or force-start? (:multiaccount db))
     (let [waiting? (get db :wallet/waiting-for-recent-history?)
           syncing-allowed? (mobile-network-utils/syncing-allowed? cofx)]
       (log/info "restart-wallet-service"
                 "force-start?" force-start?
-                "syncing-allowed?" syncing-allowed?
-                "watch-new-blocks?" watch-new-blocks?)
+                "syncing-allowed?" syncing-allowed?)
       (if (and (or syncing-allowed?
                    ignore-syncing-settings?)
                (or
                 waiting?
                 force-start?))
-        (start-wallet cofx (boolean watch-new-blocks?) on-recent-history-fetching)
-        (stop-wallet cofx)))))
+        (check-recent-history cofx on-recent-history-fetching)
+        (after-checking-history cofx)))))
 
 (def background-cooldown-time (datetime/minutes 3))
 
@@ -828,7 +811,8 @@
 
 (fx/defn set-initial-blocks-range
   [{:keys [db]}]
-  {::set-inital-range nil})
+  {:db                (assoc db :wallet/new-account true)
+   ::set-inital-range nil})
 
 (fx/defn tab-opened
   {:events [:wallet/tab-opened]}

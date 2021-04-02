@@ -95,6 +95,8 @@
 
          :else
          (wallet/update-balances nil scan-all-tokens?))
+   (when-not (get db :wallet/new-account)
+     (wallet/restart-wallet-service {:force-start? true}))
    (when-not (utils.mobile-sync/syncing-allowed? cofx)
      (transactions/get-fetched-transfers))
    (prices/update-prices)))
@@ -360,10 +362,9 @@
               ;;FIXME
               (when nodes
                 (fleet/set-nodes :eth.contract nodes))
-              (if (and (not login-only?)
-                       (not recovered-account?))
-                (wallet/set-initial-blocks-range)
-                (wallet/restart-wallet-service {:force-start? true}))
+              (when (and (not login-only?)
+                         (not recovered-account?))
+                (wallet/set-initial-blocks-range))
               (if login-only?
                 (login-only-events key-uid password save-password?)
                 (create-only-events)))))

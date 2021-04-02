@@ -136,19 +136,17 @@
    "rpcstats_reset" {}
    "localnotifications_switchWalletNotifications" {}
    "localnotifications_notificationPreferences" {}
-   "wallet_getTransfers" {}
-   "wallet_getTokensBalances" {}
    "wallet_setInitialBlocksRange" {}
-   "wallet_getBlocksByAddress" {}
-   "wallet_getTransfersFromBlock" {}
    "wallet_getTransfersByAddress" {}
+   "wallet_watchTransaction" {}
+   "wallet_checkRecentHistory" {}
+   "wallet_getTokensBalances" {}
    "wallet_getCustomTokens" {}
    "wallet_addCustomToken" {}
    "wallet_addFavourite" {}
    "wallet_getFavourites" {}
    "wallet_deleteCustomToken" {}
    "wallet_getCryptoOnRamps" {}
-   "wallet_watchTransaction" {}
    "browsers_getBrowsers" {}
    "browsers_addBrowser" {}
    "browsers_deleteBrowser" {}

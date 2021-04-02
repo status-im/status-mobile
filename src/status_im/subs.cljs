@@ -155,7 +155,6 @@
 (reg-root-key-sub :wallet/custom-token-screen :wallet/custom-token-screen)
 (reg-root-key-sub :wallet/prepare-transaction :wallet/prepare-transaction)
 (reg-root-key-sub :wallet-service/manual-setting :wallet-service/manual-setting)
-(reg-root-key-sub :wallet-service/state :wallet-service/state)
 (reg-root-key-sub :wallet/recipient :wallet/recipient)
 (reg-root-key-sub :wallet/favourites :wallet/favourites)
 (reg-root-key-sub :wallet/refreshing-history? :wallet/refreshing-history?)

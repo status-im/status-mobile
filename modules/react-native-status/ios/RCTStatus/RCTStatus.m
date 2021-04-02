@@ -771,20 +771,6 @@ RCT_EXPORT_METHOD(appStateChange:(NSString *)type) {
     StatusgoAppStateChange(type);
 }
 
-RCT_EXPORT_METHOD(stopWallet) {
-#if DEBUG
-    NSLog(@"StopWallet() method called");
-#endif
-    StatusgoStopWallet();
-}
-
-RCT_EXPORT_METHOD(startWallet:(BOOL)watchNewBlocks) {
-#if DEBUG
-    NSLog(@"StartWallet() method called");
-#endif
-    StatusgoStartWallet(watchNewBlocks);
-}
-
 RCT_EXPORT_METHOD(stopLocalNotifications) {
 #if DEBUG
     NSLog(@"StopLocalNotifications() method called");

@@ -273,15 +273,6 @@
   (log/debug "[native-module] app-state-change")
   (.appStateChange ^js (status) state))
 
-(defn stop-wallet []
-  (log/debug "[native-module] stop-wallet")
-  (.stopWallet ^js (status)))
-
-(defn start-wallet [watch-new-blocks?]
-  (log/debug "[native-module] start-wallet" watch-new-blocks?)
-  (when (status)
-    (.startWallet ^js (status) watch-new-blocks?)))
-
 (defn stop-local-notifications []
   (log/debug "[native-module] stop-local-notifications")
   (.stopLocalNotifications ^js (status)))

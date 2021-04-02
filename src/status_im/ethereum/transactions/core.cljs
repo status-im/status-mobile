@@ -329,7 +329,6 @@
       {:chain-tokens          (:wallet/all-tokens db)
        :addresses             [address]
        :before-block          min-known-block
-       :historical?           true
        :fetch-more?           (utils.mobile-sync/syncing-allowed? cofx)
        ;; Transfers are requested before and including `min-known-block` because
        ;; there is no guarantee that all transfers from that block are shown
