@@ -232,6 +232,14 @@
     {:db (assoc-in db [:chats chat-id] chat)
      :dispatch [:chat.ui/navigate-to-chat chat-id]}))
 
+(fx/defn navigate-to-user-pinned-messages
+  "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
+  {:events [:chat.ui/navigate-to-pinned-messages]}
+  [{db :db :as cofx} chat-id]
+  (fx/merge cofx
+            {:db (assoc db :current-chat-id chat-id)}
+            (navigation/navigate-to :chat-pinned-messages nil)))
+
 (fx/defn start-chat
   "Start a chat, making sure it exists"
   {:events [:chat.ui/start-chat]}

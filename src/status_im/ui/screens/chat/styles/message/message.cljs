@@ -42,18 +42,18 @@
                          colors/white-transparent-70-persist
                          colors/gray)}))
 
-(defn message-wrapper [{:keys [outgoing]}]
-  (if outgoing
+(defn message-wrapper [{:keys [outgoing in-popover?]}]
+  (if (and outgoing (not in-popover?))
     {:margin-left 96}
     {:margin-right 52}))
 
 (defn message-author-wrapper
-  [outgoing display-photo?]
-  (let [align (if outgoing :flex-end :flex-start)]
+  [outgoing display-photo? in-popover?]
+  (let [align (if (and outgoing (not in-popover?)) :flex-end :flex-start)]
     (merge {:flex-direction :column
             :flex-shrink    1
             :align-items    align}
-           (if outgoing
+           (if (and outgoing (not in-popover?))
              {:margin-right 8}
              (when-not display-photo?
                {:margin-left 8})))))
@@ -64,6 +64,64 @@
      :padding-right 8}
     {:align-self    :flex-start
      :padding-left  8}))
+
+(defn pin-indicator [outgoing display-photo?]
+  (merge
+   {:flex-direction             :row
+    :border-top-left-radius     (if outgoing 12 4)
+    :border-top-right-radius    (if outgoing 4 12)
+    :border-bottom-left-radius  12
+    :border-bottom-right-radius 12
+    :padding-left               8
+    :padding-right              10
+    :padding-vertical           5
+    :background-color           colors/gray-lighter
+    :justify-content            :center
+    :max-width                  "80%"}
+   (if outgoing
+     {:align-self  :flex-end
+      :align-items :flex-end}
+     {:align-self  :flex-start
+      :align-items :flex-start})
+   (when display-photo?
+     {:margin-left 44})))
+
+(defn pin-indicator-container [outgoing]
+  (merge
+   {:margin-top      2
+    :align-items     :center
+    :justify-content :center}
+   (if outgoing
+     {:align-self    :flex-end
+      :align-items   :flex-end
+      :padding-right 8}
+     {:align-self   :flex-start
+      :align-items  :flex-start
+      :padding-left 8})))
+
+(defn pinned-by-text-icon-container []
+  {:flex-direction :row
+   :align-items    :flex-start
+   :top            5
+   :left           8
+   :position       :absolute})
+
+(defn pin-icon-container []
+  {:flex-direction :row
+   :margin-top     1})
+
+(defn pin-author-text []
+  {:margin-left  2
+   :margin-right 12
+   :padding-right 0
+   :left         12
+   :flex-direction :row
+   :flex-shrink  1
+   :align-self   :flex-start
+   :overflow     :hidden})
+
+(defn pinned-by-text []
+  {:margin-left 5})
 
 (def message-author-touchable
   {:margin-left    12
@@ -115,7 +173,7 @@
    :shadow-offset  {:width 0 :height 4}})
 
 (defn message-view
-  [{:keys [content-type outgoing group-chat last-in-group? mentioned]}]
+  [{:keys [content-type outgoing group-chat last-in-group? mentioned pinned]}]
   (merge
    {:border-top-left-radius     16
     :border-top-right-radius    16
@@ -134,6 +192,7 @@
      {:border-bottom-left-radius 4})
 
    (cond
+     pinned                                             {:background-color colors/pin-background}
      (= content-type constants/content-type-system-text) nil
      outgoing                                            {:background-color colors/blue}
      mentioned                                           {:background-color colors/mentioned-background
@@ -214,11 +273,13 @@
           :text-align :center
           :font-weight "400"))
 
-(defn text-style [outgoing content-type]
-  (cond
-    (= content-type constants/content-type-system-text) (system-text-style)
-    outgoing (outgoing-text-style)
-    :else (default-text-style)))
+(defn text-style [outgoing content-type in-popover?]
+  (merge
+   (when in-popover? {:number-of-lines 2})
+   (cond
+     (= content-type constants/content-type-system-text) (system-text-style)
+     outgoing (outgoing-text-style)
+     :else (default-text-style))))
 
 (defn emph-text-style []
   (update (default-text-style) :style

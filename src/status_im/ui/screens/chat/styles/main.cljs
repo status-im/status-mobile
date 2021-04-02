@@ -6,6 +6,11 @@
    :align-items    :center
    :flex-direction :row})
 
+(def pins-name-view
+  {:flex            1
+   :justify-content :center
+   :align-items     :center})
+
 (def chat-name-view
   {:flex            1
    :justify-content :center})

@@ -7,7 +7,8 @@
             [status-im.chat.models.message-list :as message-list]
             [taoensso.timbre :as log]
             [status-im.ethereum.json-rpc :as json-rpc]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im.chat.models.pin-message :as models.pin-message]))
 
 (defn cursor->clock-value
   [^js cursor]
@@ -115,7 +116,8 @@
         (when (or first-request cursor)
           (merge
            {:db (assoc-in db [:pagination-info chat-id :loading-messages?] true)}
-           {:utils/dispatch-later [{:ms 100 :dispatch [:load-more-reactions cursor chat-id]}]}
+           {:utils/dispatch-later [{:ms 100 :dispatch [:load-more-reactions cursor chat-id]}
+                                   {:ms 100 :dispatch [::models.pin-message/load-pin-messages chat-id]}]}
            (data-store.messages/messages-by-chat-id-rpc
             chat-id
             cursor

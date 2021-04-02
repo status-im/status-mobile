@@ -19,7 +19,8 @@
             [status-im.ui.screens.biometric.views :as biometric]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.screens.keycard.views :as keycard.views]
-            [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]))
+            [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
+            [status-im.ui.screens.chat.message.pinned-message :as pinned-message]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -172,6 +173,9 @@
 
                    (= :password-reset-success view)
                    [reset-password.views/reset-success-popover]
+
+                   (= :pin-limit view)
+                   [pinned-message/pin-limit-popover]
 
                    :else
                    [view])]]]]])))})))

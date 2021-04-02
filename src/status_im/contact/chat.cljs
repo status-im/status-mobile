@@ -26,3 +26,8 @@
                  (navigation/navigate-back %))
               #(when ens-name
                  (contact/name-verified % public-key ens-name)))))
+
+(fx/defn pinned-messages-pressed
+  {:events       [:contact.ui/pinned-messages-pressed]}
+  [cofx public-key]
+  (chat/navigate-to-user-pinned-messages cofx public-key))

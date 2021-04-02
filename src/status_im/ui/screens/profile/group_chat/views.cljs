@@ -181,8 +181,9 @@
 
 (defview group-chat-profile []
   (letsubs [{:keys [admins chat-id joined? chat-name color contacts] :as current-chat} [:chats/current-chat]
-            members      [:contacts/current-chat-contacts]
-            current-pk   [:multiaccount/public-key]]
+            members         [:contacts/current-chat-contacts]
+            current-pk      [:multiaccount/public-key]
+            pinned-messages [:chats/pinned chat-id]]
     (when current-chat
       (let [admin?                (get admins current-pk)
             allow-adding-members? (and admin? joined?
@@ -215,6 +216,13 @@
                                       (when (pos? invitations)
                                         [components.common/counter {:size 22} invitations]))
                :on-press            #(re-frame/dispatch [:navigate-to :group-chat-invite])}])
+           [quo/list-item
+            {:title               (i18n/label :t/pinned-messages)
+             :icon                :main-icons/pin
+             :accessory           :text
+             :accessory-text      (count pinned-messages)
+             :chevron             true
+             :on-press            #(re-frame/dispatch [:contact.ui/pinned-messages-pressed chat-id])}]
            (when joined?
              [quo/list-item
               {:theme               :negative

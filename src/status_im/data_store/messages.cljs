@@ -10,7 +10,8 @@
     (assoc :text (:text content)
            :sticker (:sticker content))
     :always
-    (clojure.set/rename-keys {:chat-id :chatId
+    (clojure.set/rename-keys {:chat-id :chat_id
+                              :whisper-timestamp :whisperTimestamp
                               :community-id :communityId
                               :clock-value :clock})))
 
