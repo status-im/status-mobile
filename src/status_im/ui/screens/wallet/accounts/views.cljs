@@ -199,11 +199,11 @@
 
 (defn schedule-counter-reset []
   (utils.utils/set-timeout
-    (fn []
-      (swap! updates-counter inc)
-      (when @(re-frame/subscribe [:wallet/refreshing-history?])
-        (schedule-counter-reset)))
-    1000))
+   (fn []
+     (swap! updates-counter inc)
+     (when @(re-frame/subscribe [:wallet/refreshing-history?])
+       (schedule-counter-reset)))
+   1000))
 
 (defn refresh-action []
   (schedule-counter-reset)
