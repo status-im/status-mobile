@@ -250,8 +250,14 @@
 (defn sign-typed-data
   "NOTE: beware, the password has to be sha3 hashed"
   [data account hashed-password callback]
-  (log/debug "[native-module] clear-web-data")
+  (log/debug "[native-module] sign-typed-data")
   (.signTypedData ^js (status) data account hashed-password callback))
+
+(defn sign-typed-data-v4
+  "NOTE: beware, the password has to be sha3 hashed"
+  [data account hashed-password callback]
+  (log/debug "[native-module] sign-typed-data-v4")
+  (.signTypedDataV4 ^js (status) data account hashed-password callback))
 
 (defn send-logs [dbJson js-logs callback]
   (log/debug "[native-module] send-logs")

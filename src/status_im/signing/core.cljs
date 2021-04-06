@@ -48,8 +48,10 @@
 
 (re-frame/reg-fx
  :signing.fx/sign-typed-data
- (fn [{:keys [data account on-completed hashed-password]}]
-   (status/sign-typed-data data account hashed-password on-completed)))
+ (fn [{:keys [v4 data account on-completed hashed-password]}]
+   (if v4
+     (status/sign-typed-data-v4 data account hashed-password on-completed)
+     (status/sign-typed-data data account hashed-password on-completed))))
 
 (defn get-contact [db to]
   (let [to (utils.hex/normalize-hex to)]
@@ -68,7 +70,7 @@
 
 (fx/defn sign-message
   [{{:signing/keys [sign tx] :as db} :db}]
-  (let [{{:keys [data typed? from]} :message} tx
+  (let [{{:keys [data typed? from v4]} :message} tx
         {:keys [in-progress? password]} sign
         from (or from (ethereum/default-address db))
         hashed-password (ethereum/sha3 (security/safe-unmask-data password))]
@@ -76,7 +78,8 @@
       (merge
        {:db (update db :signing/sign assoc :error nil :in-progress? true)}
        (if typed?
-         {:signing.fx/sign-typed-data {:data         data
+         {:signing.fx/sign-typed-data {:v4           v4
+                                       :data         data
                                        :account      from
                                        :hashed-password hashed-password
                                        :on-completed #(re-frame/dispatch [:signing/sign-message-completed %])}}

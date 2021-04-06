@@ -77,6 +77,7 @@
 (def ^:const web3-eth-sign "eth_sign")
 (def ^:const web3-sign-typed-data "eth_signTypedData")
 (def ^:const web3-sign-typed-data-v3 "eth_signTypedData_v3")
+(def ^:const web3-sign-typed-data-v4 "eth_signTypedData_v4")
 
 (def ^:const web3-keycard-sign-typed-data "keycard_signTypedData")
 

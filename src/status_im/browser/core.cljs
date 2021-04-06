@@ -381,7 +381,8 @@
   {:browser/send-to-bridge message})
 
 (defn web3-sign-message? [method]
-  (#{constants/web3-sign-typed-data constants/web3-sign-typed-data-v3 constants/web3-personal-sign
+  (#{constants/web3-sign-typed-data constants/web3-sign-typed-data-v3 constants/web3-sign-typed-data-v4
+     constants/web3-personal-sign
      constants/web3-eth-sign constants/web3-keycard-sign-typed-data} method))
 
 (fx/defn web3-send-async
@@ -401,6 +402,7 @@
                               (if message?
                                 {:message {:address address
                                            :data data
+                                           :v4 (= constants/web3-sign-typed-data-v4 method)
                                            :typed? typed?
                                            :pinless? (= method constants/web3-keycard-sign-typed-data)
                                            :from dapps-address}}
