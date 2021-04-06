@@ -1,5 +1,6 @@
 (ns status-im.multiaccounts.login.core
   (:require [re-frame.core :as re-frame]
+            [status-im.anon-metrics.core :as anon-metrics]
             [status-im.chat.models.loading :as chat.loading]
             [status-im.contact.core :as contact]
             [status-im.data-store.settings :as data-store.settings]
@@ -361,6 +362,8 @@
                ::json-rpc/call
                [{:method     "web3_clientVersion"
                  :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]}
+              ;; Start tasks to save usage data locally
+              (anon-metrics/start-transferring)
               ;;FIXME
               (when nodes
                 (fleet/set-nodes :eth.contract nodes))

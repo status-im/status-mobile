@@ -74,6 +74,7 @@
    [theme-switcher]
    [rn/view
     (for [{:keys [name]} screens]
+      ^{:key name}
       [rn/touchable-opacity {:on-press #(navigation/navigate-to name nil)}
        [rn/view {:style {:padding-vertical 8}}
         [quo/text (str "Preview " name)]]])]])

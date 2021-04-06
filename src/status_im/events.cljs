@@ -16,6 +16,7 @@
             [status-im.ui.components.permissions :as permissions]
             [status-im.utils.utils :as utils]
             [status-im.ethereum.json-rpc :as json-rpc]
+            [status-im.anon-metrics.core :as anon-metrics]
             clojure.set
             status-im.currency.core
             status-im.navigation
@@ -185,7 +186,8 @@
     (chat/preload-chat-data cofx constants/timeline-chat-id)))
 
 (fx/defn on-will-focus
-  {:events [:screens/on-will-focus]}
+  {:events [:screens/on-will-focus]
+   :interceptors [anon-metrics/interceptor]}
   [cofx view-id]
   (fx/merge cofx
             #(case view-id

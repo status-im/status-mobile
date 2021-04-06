@@ -3,7 +3,7 @@
             [status-im.ui.screens.routing.core :as navigation]
             [taoensso.timbre :as log]
             [status-im.utils.fx :as fx]
-            [status-im.anon-metrics.interceptors :as anon-metrics]))
+            [status-im.anon-metrics.core :as anon-metrics]))
 
 (re-frame/reg-fx
  ::navigate-to
@@ -38,15 +38,16 @@
     (assoc-in [:navigation/screen-params view] screen-params)))
 
 (fx/defn navigate-to-cofx
-  [{:keys [db]} go-to-view-id screen-params]
+  [{:keys [db] :as cofx} go-to-view-id screen-params]
   {:db
    (-> (assoc db :view-id go-to-view-id)
        (all-screens-params go-to-view-id screen-params))
-   ::navigate-to [go-to-view-id screen-params]})
+   ::navigate-to [go-to-view-id screen-params]
+   ;; simulate a navigate-to event so it can be captured be anon-metrics
+   ::anon-metrics/transform-and-log {:coeffects {:event [:navigate-to go-to-view-id screen-params]}}})
 
 (fx/defn navigate-to
-  {:events       [:navigate-to]
-   :interceptors [anon-metrics/catch-events]}
+  {:events       [:navigate-to]}
   [cofx go-to-view-id screen-params]
   (navigate-to-cofx cofx go-to-view-id screen-params))
 
@@ -62,7 +63,7 @@
 
 (fx/defn navigate-replace
   {:events [:navigate-replace]
-   :interceptors [anon-metrics/catch-events]}
+   :interceptors [anon-metrics/interceptor]}
   [{:keys [db]} go-to-view-id screen-params]
   (let [db (cond-> (assoc db :view-id go-to-view-id)
              (seq screen-params)

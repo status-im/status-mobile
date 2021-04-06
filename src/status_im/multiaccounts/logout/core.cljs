@@ -1,5 +1,6 @@
 (ns status-im.multiaccounts.logout.core
   (:require [re-frame.core :as re-frame]
+            [status-im.anon-metrics.core :as anon-metrics]
             [status-im.i18n.i18n :as i18n]
             [status-im.init.core :as init]
             [status-im.native-module.core :as status]
@@ -20,6 +21,7 @@
                :keychain/clear-user-password         key-uid
                ::init/open-multiaccounts             #(re-frame/dispatch [::init/initialize-multiaccounts % {:logout? logout?}])}
               (notifications/logout-disable)
+              (anon-metrics/stop-transferring)
               (keychain/save-auth-method key-uid auth-method)
               (transport/stop-whisper)
               (wallet/clear-timeouts)

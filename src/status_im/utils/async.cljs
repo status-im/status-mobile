@@ -40,7 +40,7 @@
           (recur acc (seq acc)))))))
 
 (defn task-queue
-  "Creates `core.async` channel which will process 0 arg functions put there in serial fashon.
+  "Creates `core.async` channel which will process 0 arg functions put there in serial fashion.
   Takes the same argument/s as `core.async/chan`, those arguments will be delegated to the
   channel constructor.
   Returns task-queue where tasks represented by 0 arg task functions can be put for processing."
@@ -100,3 +100,11 @@
           (async/alts! [finished-chan (timeout timeout-ms)])
           (recur))))
     do-now-chan))
+
+(comment
+  (def c (atom nil))
+
+  (let [periodic-task-chan (async-periodic-exec #(prn :task) 5000 1000)]
+    (reset! c periodic-task-chan))
+
+  (async-periodic-stop! @c))
