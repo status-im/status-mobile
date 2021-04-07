@@ -58,10 +58,14 @@
             {:db            (-> db
                                 (update-in [:contacts/contacts public-key] merge contact))}
             (transport.filters/load-contact contact)
-            #(contacts-store/save-contact % (get-in % [:db :contacts/contacts public-key]))))
+            (fn [cf]
+              (contacts-store/save-contact cf
+                                           (get-in cf [:db :contacts/contacts public-key])
+                                           #(re-frame/dispatch [::send-contact-request  public-key])))))
 
 (fx/defn send-contact-request
-  [{:keys [db] :as cofx} {:keys [public-key] :as contact}]
+  {:events [::send-contact-request]}
+  [{:keys [db] :as cofx} public-key]
   (let [{:keys [name profile-image]} (own-info db)]
     {::json-rpc/call [{:method (json-rpc/call-ext-method "sendContactUpdate")
                        :params [public-key name profile-image]
@@ -85,7 +89,6 @@
                  :dispatch-n [[:start-profile-chat public-key]
                               [:offload-messages constants/timeline-chat-id]]}
                 (upsert-contact contact)
-                (send-contact-request contact)
                 (mailserver/process-next-messages-request)))))
 
 (fx/defn remove-contact
@@ -98,7 +101,7 @@
     (fx/merge cofx
               {:db (assoc-in db [:contacts/contacts public-key] new-contact)
                :dispatch [:offload-messages constants/timeline-chat-id]}
-              (contacts-store/save-contact new-contact))))
+              (contacts-store/save-contact new-contact nil))))
 
 (fx/defn create-contact
   "Create entry in contacts"

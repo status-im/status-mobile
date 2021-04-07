@@ -17,7 +17,9 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.utils.core :as utils]
             [status-im.ui.components.plus-button :as components.plus-button]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [re-frame.core :as re-frame]
+            [status-im.ui.screens.chat.sheets :as sheets]))
 
 (def request-cooldown-ms (* 60 1000))
 
@@ -121,8 +123,16 @@
               :color :secondary}
     (i18n/label :t/welcome-community-blank-message)]])
 
-(defn community-chat-item [home-item]
-  [inner-item/home-list-item home-item])
+(defn community-chat-item [{:keys [chat-id] :as home-item}]
+  [inner-item/home-list-item
+   home-item
+   {:on-press      (fn []
+                     (re-frame/dispatch [:dismiss-keyboard])
+                     (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
+                     (re-frame/dispatch [:search/home-filter-changed nil]))
+    :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                        {:content (fn []
+                                                    [sheets/actions home-item])}])}])
 
 (defn community-chat-list [chats]
   (if (empty? chats)

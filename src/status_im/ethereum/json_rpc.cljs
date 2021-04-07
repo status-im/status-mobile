@@ -111,6 +111,7 @@
    "wakuext_getPushNotificationsServers" {}
    "wakuext_enablePushNotificationsBlockMentions" {}
    "wakuext_disablePushNotificationsBlockMentions" {}
+   "wakuext_unreadActivityCenterNotificationsCount" {}
    "multiaccounts_getIdentityImages" {}
    "multiaccounts_getIdentityImage" {}
    "multiaccounts_storeIdentityImage" {}
@@ -131,6 +132,12 @@
    "wakuext_importCommunity" {}
    "wakuext_exportCommunity" {}
    "wakuext_ensVerified" {}
+   "wakuext_dismissActivityCenterNotifications" {}
+   "wakuext_acceptActivityCenterNotifications" {}
+   "wakuext_dismissAllActivityCenterNotifications" {}
+   "wakuext_acceptAllActivityCenterNotifications" {}
+   "wakuext_markAllActivityCenterNotificationsRead" {}
+   "wakuext_activityCenterNotifications" {}
    "status_chats" {}
    "rpcstats_getStats" {}
    "rpcstats_reset" {}

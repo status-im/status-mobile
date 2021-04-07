@@ -217,6 +217,9 @@
 (reg-root-key-sub :communities/requests-to-join :communities/requests-to-join)
 (reg-root-key-sub :communities/community-id-input :communities/community-id-input)
 
+(reg-root-key-sub :activity.center/notifications :activity.center/notifications)
+(reg-root-key-sub :activity.center/notifications-count :activity.center/notifications-count)
+
 (re-frame/reg-sub
  :communities
  (fn [db]

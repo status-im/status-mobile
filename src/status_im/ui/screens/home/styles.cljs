@@ -89,7 +89,3 @@
    :background-color colors/gray
    :align-items      :center
    :justify-content  :center})
-
-(def home-container
-  (merge
-   {:flex 1}))

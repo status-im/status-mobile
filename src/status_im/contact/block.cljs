@@ -69,4 +69,4 @@
               {:db (-> db
                        (update :contacts/blocked disj public-key)
                        (assoc-in [:contacts/contacts public-key] contact))}
-              (contacts-store/save-contact contact))))
+              (contacts-store/save-contact contact nil))))

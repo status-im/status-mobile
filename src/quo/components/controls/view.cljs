@@ -64,8 +64,8 @@
 (defn checkbox-view [props]
   (let [{:keys [value onChange disabled]} (bean/bean props)]
     (reagent/as-element
-     [rn/touchable-highlight
-      {:on-press (when onChange onChange)}
+     [rn/touchable-without-feedback
+      {:on-press (when (and onChange (not disabled)) onChange)}
       [rn/view {:style               (styles/checkbox-style value disabled)
                 :accessibility-label :checkbox
                 :accessibility-role  :checkbox}

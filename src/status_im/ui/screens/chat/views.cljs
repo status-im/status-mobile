@@ -240,7 +240,6 @@
   (let [loading-messages? @(re-frame/subscribe [:chats/loading-messages? chat-id])
         no-messages? @(re-frame/subscribe [:chats/chat-no-messages? chat-id])
         all-loaded? @(re-frame/subscribe [:chats/all-loaded? chat-id])]
-    (println "LIST FOOTER" (or loading-messages? (not chat-id) (not all-loaded?)))
     [react/view {:style (when platform/android? {:scaleY -1})}
      (if (or loading-messages? (not chat-id) (not all-loaded?))
        [react/view {:height 324 :align-items :center :justify-content :center}

@@ -8,7 +8,6 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [quo.core :as quo]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.sheets :as sheets]
             [status-im.ui.screens.home.styles :as styles]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.utils.contenthash :as contenthash]
@@ -137,55 +136,49 @@
                      :height          15
                      :margin-right   2}})
 
-(defn home-list-item [home-item]
+(defn home-list-item [home-item opts]
   (let [{:keys [chat-id chat-name color online group-chat
                 public? timestamp last-message muted]}
         home-item
         private-group? (and group-chat (not public?))
         public-group?  (and group-chat public?)]
     [quo/list-item
-     {:icon                      [chat-icon.screen/chat-icon-view-chat-list
-                                  chat-id group-chat chat-name color online false]
-      :title                     [react/view {:flex-direction :row
-                                              :flex           1}
-                                  [react/view {:flex-direction :row
-                                               :flex           1
-                                               :padding-right  16
-                                               :align-items    :center}
-                                   (cond
-                                     muted
-                                     [icons/icon :main-icons/tiny-muted (assoc (icon-style) :color colors/gray)]
-                                     private-group?
-                                     [icons/icon :main-icons/tiny-group (icon-style)]
-                                     public-group?
-                                     [icons/icon :main-icons/tiny-public (icon-style)]
-                                     :else
-                                     [icons/icon :main-icons/tiny-new-contact (icon-style)])
-                                   [quo/text {:weight              :medium
-                                              :color               (when muted :secondary)
-                                              :accessibility-label :chat-name-text
-                                              :ellipsize-mode      :tail
-                                              :number-of-lines     1}
-                                    (if group-chat
-                                      (utils/truncate-str chat-name 30)
-                                      ;; This looks a bit odd, but I would like only to subscribe
-                                      ;; if it's a one-to-one. If wrapped in a component styling
-                                      ;; won't be applied correctly.
-                                      (first @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])))]]
-                                  [message-timestamp (if (pos? (:whisper-timestamp last-message))
-                                                       (:whisper-timestamp last-message)
-                                                       timestamp)]]
-      :title-accessibility-label :chat-name-text
-      :subtitle                  [react/view {:flex-direction :row}
-                                  [react/view {:flex 1}
-                                   [message-content-text (select-keys last-message [:content
-                                                                                    :content-type
-                                                                                    :community-id])]]
-                                  [unviewed-indicator home-item]]
-      :on-press                  (fn []
-                                   (re-frame/dispatch [:dismiss-keyboard])
-                                   (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
-                                   (re-frame/dispatch [:search/home-filter-changed nil]))
-      :on-long-press             #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                      {:content (fn []
-                                                                  [sheets/actions home-item])}])}]))
+     (merge {:icon                      [chat-icon.screen/chat-icon-view-chat-list
+                                         chat-id group-chat chat-name color online false]
+             :title                     [react/view {:flex-direction :row
+                                                     :flex           1}
+                                         [react/view {:flex-direction :row
+                                                      :flex           1
+                                                      :padding-right  16
+                                                      :align-items    :center}
+                                          (cond
+                                            muted
+                                            [icons/icon :main-icons/tiny-muted (assoc (icon-style) :color colors/gray)]
+                                            private-group?
+                                            [icons/icon :main-icons/tiny-group (icon-style)]
+                                            public-group?
+                                            [icons/icon :main-icons/tiny-public (icon-style)]
+                                            :else
+                                            [icons/icon :main-icons/tiny-new-contact (icon-style)])
+                                          [quo/text {:weight              :medium
+                                                     :color               (when muted :secondary)
+                                                     :accessibility-label :chat-name-text
+                                                     :ellipsize-mode      :tail
+                                                     :number-of-lines     1}
+                                           (if group-chat
+                                             (utils/truncate-str chat-name 30)
+                                             ;; This looks a bit odd, but I would like only to subscribe
+                                             ;; if it's a one-to-one. If wrapped in a component styling
+                                             ;; won't be applied correctly.
+                                             (first @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])))]]
+                                         [message-timestamp (if (pos? (:whisper-timestamp last-message))
+                                                              (:whisper-timestamp last-message)
+                                                              timestamp)]]
+             :title-accessibility-label :chat-name-text
+             :subtitle                  [react/view {:flex-direction :row}
+                                         [react/view {:flex 1}
+                                          [message-content-text (select-keys last-message [:content
+                                                                                           :content-type
+                                                                                           :community-id])]]
+                                         [unviewed-indicator home-item]]}
+            opts)]))

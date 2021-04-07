@@ -11,11 +11,13 @@
             [status-im.data-store.contacts :as data-store.contacts]
             [status-im.data-store.chats :as data-store.chats]
             [status-im.data-store.invitations :as data-store.invitations]
+            [status-im.data-store.activities :as data-store.activities]
             [status-im.group-chats.core :as models.group]
             [status-im.utils.fx :as fx]
             [status-im.utils.types :as types]
             [status-im.constants :as constants]
             [status-im.multiaccounts.model :as multiaccounts.model]
+            [status-im.notifications-center.core :as notifications-center]
             [clojure.string :as string]))
 
 (fx/defn process-next
@@ -26,7 +28,7 @@
 
 (fx/defn process-response
   {:events [:process-response]}
-  [cofx ^js response-js process-async]
+  [{:keys [db] :as cofx} ^js response-js process-async]
   (let [^js communities (.-communities response-js)
         ^js requests-to-join-community (.-requestsToJoinCommunity response-js)
         ^js chats (.-chats response-js)
@@ -38,6 +40,7 @@
         ^js removed-filters (.-removedFilters response-js)
         ^js invitations (.-invitations response-js)
         ^js removed-chats (.-removedChats response-js)
+        ^js activity-notifications (.-activityCenterNotifications response-js)
         sync-handler (when-not process-async process-response)]
 
     (cond
@@ -55,6 +58,14 @@
 
       (seq messages)
       (models.message/receive-many cofx response-js)
+
+      (seq activity-notifications)
+      (do
+        (js-delete response-js "activityCenterNotifications")
+        (fx/merge cofx
+                  (notifications-center/handle-activities (map data-store.activities/<-rpc
+                                                               (types/js->clj activity-notifications)))
+                  (process-next response-js sync-handler)))
 
       (seq installations)
       (let [installations-clj (types/js->clj installations)]

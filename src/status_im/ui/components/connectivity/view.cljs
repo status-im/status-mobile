@@ -164,7 +164,6 @@
     (when-let [icon (get-icon state)]
       [quo/button {:type     :icon
                    :accessibility-label (str "conn-button-" (name icon))
-                   :style    {:margin-right 16}
                    :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet
                                                   {:content connectivity-sheet}])
                    :theme    (if (= (:peers state) :offline) :negative :secondary)} icon])))

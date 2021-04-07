@@ -34,7 +34,8 @@
             [status-im.chat.models.link-preview :as link-preview]
             [status-im.utils.mobile-sync :as utils.mobile-sync]
             [status-im.async-storage.core :as async-storage]
-            [status-im.chat.models :as chat.models]))
+            [status-im.chat.models :as chat.models]
+            [status-im.notifications-center.core :as notifications-center]))
 
 (re-frame/reg-fx
  ::login
@@ -276,7 +277,8 @@
               (logging/set-log-level (:log-level multiaccount))
               (multiaccounts/get-profile-picture)
               (multiaccounts/switch-preview-privacy-mode-flag)
-              (link-preview/request-link-preview-whitelist))))
+              (link-preview/request-link-preview-whitelist)
+              (notifications-center/get-activity-center-notifications-count))))
 
 (defn get-new-auth-method [auth-method save-password?]
   (when save-password?

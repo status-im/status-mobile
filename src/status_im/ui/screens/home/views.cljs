@@ -25,7 +25,9 @@
             [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.plus-button :as components.plus-button])
+            [status-im.ui.components.plus-button :as components.plus-button]
+            [status-im.ui.components.tabbar.styles :as tabs.styles]
+            [status-im.ui.screens.chat.sheets :as sheets])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn welcome-image-wrapper []
@@ -148,7 +150,15 @@
 (defn render-fn [{:keys [chat-id] :as home-item}]
   ;; We use `chat-id` to distinguish communities from chats
   (if chat-id
-    [inner-item/home-list-item home-item]
+    [inner-item/home-list-item
+     home-item
+     {:on-press      (fn []
+                       (re-frame/dispatch [:dismiss-keyboard])
+                       (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
+                       (re-frame/dispatch [:search/home-filter-changed nil]))
+      :on-long-press #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                          {:content (fn []
+                                                      [sheets/actions home-item])}])}]
     [communities.views/community-home-list-item home-item]))
 
 (defn chat-list-key-fn [item]
@@ -195,10 +205,30 @@
       :loading logging-in?
       :accessibility-label :new-chat-button}]))
 
+(views/defview notifications-button []
+  (views/letsubs [notif-count [:activity.center/notifications-count]]
+    [react/view
+     [quo/button {:type     :icon
+                  :style {:margin-left 10}
+                  :accessibility-label "notifications-button"
+                  :on-press #(do
+                               (re-frame/dispatch [:get-activity-center-notifications])
+                               (re-frame/dispatch [:mark-all-activity-center-notifications-as-read])
+                               (re-frame/dispatch [:navigate-to :notifications-center]))
+                  :theme    :icon}
+      :main-icons/notification]
+     (when (pos? notif-count)
+       [react/view {:style (merge (tabs.styles/counter-public-container) {:top 5 :right 5})
+                    :pointer-events :none}
+        [react/view {:style               tabs.styles/counter-public
+                     :accessibility-label :notifications-unread-badge}]])]))
+
 (defn home []
-  [react/keyboard-avoiding-view {:style styles/home-container}
+  [react/keyboard-avoiding-view {:style {:flex 1}}
    [topbar/topbar {:title           (i18n/label :t/chat)
                    :navigation      :none
-                   :right-component [connectivity/connectivity-button]}]
+                   :right-component [react/view {:flex-direction :row :margin-right 16}
+                                     [connectivity/connectivity-button]
+                                     [notifications-button]]}]
    [chats-list]
    [plus-button]])

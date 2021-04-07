@@ -40,10 +40,13 @@
                      :on-failure #(log/error "failed to fetch contacts" %)}]})
 
 (fx/defn save-contact
-  [cofx {:keys [public-key] :as contact}]
+  [cofx {:keys [public-key] :as contact} on-success]
   {::json-rpc/call [{:method (json-rpc/call-ext-method "saveContact")
                      :params [(->rpc contact)]
-                     :on-success #(log/debug "saved contact" public-key "successfuly")
+                     :on-success #(do
+                                    (log/debug "saved contact" public-key "successfuly")
+                                    (when on-success
+                                      (on-success)))
                      :on-failure #(log/error "failed to save contact" public-key %)}]})
 
 (fx/defn block [cofx contact on-success]

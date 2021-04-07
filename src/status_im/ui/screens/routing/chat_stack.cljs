@@ -17,6 +17,7 @@
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
             [status-im.ui.screens.stickers.views :as stickers]
+            [status-im.ui.screens.notifications-center.views :as notifications-center]
             [status-im.utils.config :as config]))
 
 (defonce stack (navigation/create-stack))
@@ -42,6 +43,8 @@
      :component stickers/packs}
     {:name      :stickers-pack
      :component stickers/pack}
+    {:name      :notifications-center
+     :component notifications-center/center}
     ;; Community
     {:name      :community
      :component community/community}

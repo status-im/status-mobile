@@ -199,6 +199,7 @@
     :attribution
     {:db (assoc-in db [:acquisition :accounts account :bonuses] data)}))
 
+;;TODO this one rerender whole root many times FIX IT
 (re-frame/reg-sub-raw
  ::default-reward
  (fn [db]
