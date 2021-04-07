@@ -103,7 +103,7 @@ def asc_api_key()
     key_id: ENV['FASTLANE_ASC_API_KEY_ID'],
     issuer_id: ENV['FASTLANE_ASC_API_ISSUER_ID'],
     key_filepath: ENV['FASTLANE_ASC_API_KEY_FILE_PATH'],
-    duration: 1500, # seconds, session length
+    duration: 1200, # seconds, session length
     in_house: false,
   )
 end
