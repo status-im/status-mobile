@@ -8,8 +8,7 @@ These are just guidelines, not rules. Use your best judgment, and feel free to p
 
 #### What should I know before I get started?
 
-* [Mission and Core Values](https://status.im/contribute)
-* [Principles](https://status.im/contribute/our_principles.html)
+* [Mission and Principles](https://status.im/about)
 * [Read our FAQ](https://status.im/docs/FAQs.html)
 * [Join our Chat](http://join.status.im/chat/public/status-core-dev)
 * [Developer Introduction](https://status.im/developer_tools/)
