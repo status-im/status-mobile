@@ -12,5 +12,5 @@ These are just guidelines, not rules. Use your best judgment, and feel free to p
 * [Read our FAQ](https://status.im/docs/FAQs.html)
 * [Join our Chat](http://join.status.im/chat/public/status-core-dev)
 * [Developer Introduction](https://status.im/developer_tools/)
-* [Build Status Yourself](https://status.im/build_status)
+* [Build Status Yourself](https://status.im/technical/build_status)
 * [Find issues to work on](https://github.com/status-im/)
