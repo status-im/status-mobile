@@ -120,7 +120,7 @@
     {:name      :backup-seed
      :component profile.seed/backup-seed}
     {:name       :delete-profile
-     :transition :presentation-ios
+     :transition :presentation-modal
      :insets     {:bottom true}
      :component  delete-profile/delete-profile}
     ;; {:name:my-profile-ext-settings

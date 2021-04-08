@@ -2,7 +2,7 @@
   (:require ["react" :refer (useCallback useEffect)]
             ["react-native" :refer (BackHandler)]
             ["@react-navigation/native" :refer (NavigationContainer StackActions CommonActions useFocusEffect) :as react-navigation]
-            ["@react-navigation/stack" :refer (createStackNavigator TransitionPresets)]
+            ["@react-navigation/stack" :refer (createStackNavigator TransitionPresets CardStyleInterpolators)]
             ["@react-navigation/bottom-tabs" :refer (createBottomTabNavigator)]
             [reagent.core :as reagent]
             [cljs-bean.core :refer [bean]]
@@ -43,9 +43,25 @@
 
 (def transition-presets TransitionPresets)
 
+(def card-style-interpolators CardStyleInterpolators)
+
+(def back-gesture-response-distance 70)
+
+(def dismiss-gesture-response-distance 100)
+
 (def modal-presentation-ios (merge (js->clj (.-ModalPresentationIOS ^js transition-presets))
                                    {:gestureEnabled     true
                                     :cardOverlayEnabled true}))
+
+(def enable-gestures-default-android {:gestureEnabled true
+                                      :gestureDirection :horizontal
+                                      :gestureResponseDistance {:horizontal back-gesture-response-distance}
+                                      :cardStyleInterpolator (js->clj (.-forHorizontalIOS ^js card-style-interpolators))})
+
+(def enable-gestures-modal-android {:gestureEnabled true
+                                    :gestureDirection :vertical
+                                    :gestureResponseDistance {:vertical dismiss-gesture-response-distance}
+                                    :cardStyleInterpolator (js->clj (.-forVerticalIOS ^js card-style-interpolators))})
 
 ;; TODO(Ferossgp): Unify with topbar back icon. Maybe dispatch the same event and move the all logic inside the event.
 (defn handle-on-screen-focus
@@ -97,11 +113,13 @@
                       (get style :padding-vertical))})))
 
 (defn presentation-type [{:keys [transition] :as opts}]
-  (if (and platform/ios? (= transition :presentation-ios))
+  (if (and platform/ios? (= transition :presentation-modal))
     (-> opts
         (update :options merge modal-presentation-ios)
         (assoc-in [:insets :top] false))
-    opts))
+    (if platform/android?
+      (-> opts (update :options merge (if (= transition :presentation-modal) enable-gestures-modal-android enable-gestures-default-android)))
+      opts)))
 
 (defn wrap-screen [{:keys [component] :as options}]
   (assoc options :component

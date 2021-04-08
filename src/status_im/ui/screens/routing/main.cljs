@@ -82,48 +82,48 @@
         :component    home/welcome}
        {:name       :new-chat
         :on-focus   [::new-chat.events/new-chat-focus]
-        :transition :presentation-ios
+        :transition :presentation-modal
         :component  new-chat/new-chat}
        {:name       :new-contact
         :on-focus   [::new-chat.events/new-chat-focus]
-        :transition :presentation-ios
+        :transition :presentation-modal
         :component  new-chat/new-contact}
        {:name       :link-preview-settings
-        :transition :presentation-ios
+        :transition :presentation-modal
         :component  link-previews/link-previews-settings}
        {:name       :new-public-chat
-        :transition :presentation-ios
+        :transition :presentation-modal
         :insets     {:bottom true}
         :component  new-public-chat/new-public-chat}
        {:name       :nickname
-        :transition :presentation-ios
+        :transition :presentation-modal
         :insets     {:bottom true}
         :component  contact/nickname}
        {:name       :edit-group-chat-name
-        :transition :presentation-ios
+        :transition :presentation-modal
         :insets     {:bottom true}
         :component  group-chat/edit-group-chat-name}
        {:name       :create-group-chat
-        :transition :presentation-ios
+        :transition :presentation-modal
         :component  chat-stack/new-group-chat}
        {:name       :communities
-        :transition :presentation-ios
+        :transition :presentation-modal
         :component  chat-stack/communities}
        {:name       :referral-invite
-        :transition :presentation-ios
+        :transition :presentation-modal
         :insets     {:bottom true}
         :component  invite/referral-invite}
        {:name       :add-participants-toggle-list
         :on-focus   [:group/add-participants-toggle-list]
-        :transition :presentation-ios
+        :transition :presentation-modal
         :insets     {:bottom true}
         :component  group-chat/add-participants-toggle-list}
        {:name       :recipient
-        :transition :presentation-ios
+        :transition :presentation-modal
         :insets     {:bottom true}
         :component  recipient/recipient}
        {:name       :new-favourite
-        :transition :presentation-ios
+        :transition :presentation-modal
         :insets     {:bottom true}
         :component  recipient/new-favourite}
        {:name      :qr-scanner
@@ -142,31 +142,31 @@
         :insets       {:bottom true}
         :component    notifications-settings/notifications-onboarding}
        {:name       :prepare-send-transaction
-        :transition :presentation-ios
+        :transition :presentation-modal
         :insets     {:bottom true}
         :component  wallet/prepare-send-transaction}
        {:name       :request-transaction
-        :transition :presentation-ios
+        :transition :presentation-modal
         :insets     {:bottom true}
         :component  wallet/request-transaction}
        {:name       :my-status
-        :transition :presentation-ios
+        :transition :presentation-modal
         :insets     {:bottom true}
         :component  status.new/my-status}
        {:name       :new-bookmark
-        :transition :presentation-ios
+        :transition :presentation-modal
         :insets     {:bottom true}
         :component  bookmarks/new-bookmark}
        {:name       :profile
-        :transition :presentation-ios
+        :transition :presentation-modal
         :insets     {:bottom true}
         :component  contact/profile}
        {:name       :buy-crypto
-        :transition :presentation-ios
+        :transition :presentation-modal
         :insets     {:bottom true}
         :component wallet.buy-crypto/container}
        {:name       :buy-crypto-website
-        :transition :presentation-ios
+        :transition :presentation-modal
         :insets     {:bottom true}
         :component  wallet.buy-crypto/website}
        {:name      :invite-people-community
