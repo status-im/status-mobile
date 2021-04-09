@@ -91,7 +91,7 @@
 (defview link-preview-wrapper [links outgoing timeline]
   (letsubs
     [ask-user? [:link-preview/link-preview-request-enabled]
-     whitelist [:link-preview/whitelist]
+     whitelist [:link-previews-whitelist]
      enabled-sites   [:link-preview/enabled-sites]]
     (when links
       (let [link-info (previewable-link links whitelist enabled-sites)

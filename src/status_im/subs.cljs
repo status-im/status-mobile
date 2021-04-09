@@ -79,6 +79,7 @@
 (reg-root-key-sub :app-active-since :app-active-since)
 (reg-root-key-sub :connectivity/ui-status-properties :connectivity/ui-status-properties)
 (reg-root-key-sub :logged-in-since :logged-in-since)
+(reg-root-key-sub :link-previews-whitelist :link-previews-whitelist)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network
@@ -2544,14 +2545,6 @@
    (not-any? :error (vals manage))))
 
 ;; LINK PREVIEW ========================================================================================================
-
-(re-frame/reg-sub
- :link-preview/whitelist
- :<- [:multiaccount]
- (fn [multiaccount]
-   (filter (fn [{:keys [address]}]
-             (config/link-preview-enabled-site? address))
-           (get multiaccount :link-previews-whitelist))))
 
 (re-frame/reg-sub
  :link-preview/cache

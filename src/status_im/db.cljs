@@ -11,6 +11,7 @@
              :current-chat-id                    nil
              :selected-participants              #{}
              :sync-state                         :done
+             :link-previews-whitelist            []
              :app-state                          "active"
              :wallet                              wallet.db/default-wallet
              :wallet/all-tokens                  {}

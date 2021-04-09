@@ -63,8 +63,7 @@
 
 (fx/defn save-link-preview-whitelist
   {:events [::link-preview-whitelist-received]}
-  [cofx whitelist]
-  (fx/merge cofx
-            (multiaccounts.update/multiaccount-update
-             :link-previews-whitelist whitelist {})))
+  [{:keys [db]} whitelist]
+  {:db (assoc db :link-previews-whitelist
+              whitelist)})
 

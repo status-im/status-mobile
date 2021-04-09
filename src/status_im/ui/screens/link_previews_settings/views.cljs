@@ -22,7 +22,7 @@
                    [::link-preview/enable title ((complement boolean) enabled?)])})))
 
 (views/defview link-previews-settings []
-  (views/letsubs [link-previews-whitelist [:link-preview/whitelist]
+  (views/letsubs [link-previews-whitelist [:link-previews-whitelist]
                   link-previews-enabled-sites [:link-preview/enabled-sites]]
     (let [all-enabled (= (count link-previews-whitelist) (count link-previews-enabled-sites))]
       [react/view {:flex 1}
