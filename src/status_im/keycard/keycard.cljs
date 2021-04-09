@@ -23,6 +23,7 @@
   (unblock-pin [this args])
   (verify-pin [this args])
   (change-pin [this args])
+  (change-puk [this args])
   (unpair [this args])
   (delete [this args])
   (remove-key [this args])

@@ -92,14 +92,19 @@
              [quo/list-item {:icon     :main-icons/add
                              :size     :small
                              :title    (i18n/label :t/change-pin)
-                             :on-press #(re-frame/dispatch [:keycard-settings.ui/change-pin-pressed])}]
-             ;; TODO(rasom): uncomment this when unpairing will be enabled
-             ;; https://github.com/status-im/status-react/issues/9227
+                             :on-press #(re-frame/dispatch [:keycard-settings.ui/change-credentials-pressed :pin])}]
+             [quo/list-item {:icon     :main-icons/security
+                             :size     :small
+                             :title    (i18n/label :t/change-puk)
+                             :accessibility-label "change-puk"
+                             :on-press #(re-frame/dispatch [:keycard-settings.ui/change-credentials-pressed :puk])}]
              [quo/list-item {:icon     :main-icons/keycard
                              :size     :small
                              :title    (i18n/label :t/keycard-backup)
                              :accessibility-label "create-backup-keycard"
                              :on-press #(re-frame/dispatch [:keycard-settings.ui/backup-card-pressed])}]
+             ;; TODO(rasom): uncomment this when unpairing will be enabled
+             ;; https://github.com/status-im/status-react/issues/9227
              #_[quo/list-item {:icon     :main-icons/close
                                :size     :small
                                :title    (i18n/label :t/unpair-card)

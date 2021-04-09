@@ -238,6 +238,24 @@
         [:keycard.callback/on-change-pin-error
          (error-object->map response)]))})))
 
+(defn change-puk [args]
+  (log/debug "[keycard] change-puk")
+  (keycard/change-puk
+   card
+   (merge
+    args
+    {:on-success
+     (fn [response]
+       (log/debug "[keycard response succ] change-puk")
+       (re-frame/dispatch
+        [:keycard.callback/on-change-puk-success response]))
+     :on-failure
+     (fn [response]
+       (log/debug "[keycard response fail] change-puk")
+       (re-frame/dispatch
+        [:keycard.callback/on-change-pin-error
+         (error-object->map response)]))})))
+
 (defn unpair [args]
   (log/debug "[keycard] unpair")
   (keycard/unpair

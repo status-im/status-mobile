@@ -135,6 +135,9 @@
 (defn- proceed-to-pin-confirmation [fx]
   (assoc-in fx [:db :keycard :pin :enter-step] :confirmation))
 
+(defn- proceed-to-change-puk-confirmation [fx]
+  (assoc-in fx [:db :keycard :pin :enter-step] :puk-confirmation))
+
 (defn- proceed-to-pin-reset-confirmation [fx]
   (-> fx
       (update-in [:db :keycard :pin] dissoc :reset-confirmation)
@@ -289,7 +292,7 @@
   [{:keys [db] :as cofx} number enter-step]
   (log/debug "update-pin" enter-step)
   (let [numbers-entered (count (get-in db [:keycard :pin enter-step]))
-        need-update? (if (= enter-step :puk)
+        need-update? (if (or (= enter-step :puk) (= enter-step :puk-original) (= enter-step :puk-confirmation))
                        (< numbers-entered puk-code-length)
                        (< numbers-entered pin-code-length))]
     (fx/merge cofx
@@ -306,6 +309,13 @@
                                            :enter-step   :original
                                            :original     []
                                            :confirmation []}))
+
+(defn- puk-enter-error [fx error-label]
+  (update-in fx [:db :keycard :pin] merge {:status           :error
+                                           :error-label      error-label
+                                           :enter-step       :puk-original
+                                           :puk-original     []
+                                           :puk-confirmation []}))
 
 (defn- pin-reset-error [fx error-label]
   (update-in fx [:db :keycard :pin] merge {:status             :error
@@ -374,6 +384,21 @@
            (not= (get-in db [:keycard :pin :original])
                  (get-in db [:keycard :pin :confirmation])))
       (pin-enter-error :t/pin-mismatch)
+
+      (and (= enter-step :puk-original)
+           (= puk-code-length numbers-entered))
+      (proceed-to-change-puk-confirmation)
+
+      (and (= enter-step :puk-confirmation)
+           (= (get-in db [:keycard :pin :puk-original])
+              (get-in db [:keycard :pin :puk-confirmation])))
+      (change-pin/change-puk)
+
+      (and (= enter-step :puk-confirmation)
+           (= puk-code-length numbers-entered)
+           (not= (get-in db [:keycard :pin :puk-original])
+                 (get-in db [:keycard :pin :puk-confirmation])))
+      (puk-enter-error :t/puk-mismatch)
 
       (= enter-step :reset)
       (proceed-to-pin-reset-confirmation)

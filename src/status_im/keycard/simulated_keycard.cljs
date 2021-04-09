@@ -259,6 +259,8 @@
 
 (defn change-pin [args]
   (log/warn "change-pin not implemented" args))
+(defn change-puk [args]
+  (log/warn "change-puk not implemented" args))
 (defn unpair [args]
   (log/warn "unpair not implemented" args))
 (defn delete [args]
@@ -479,6 +481,9 @@
   (keycard/change-pin [this args]
     (log/debug "simulated card change-pin")
     (change-pin args))
+  (keycard/change-puk [this args]
+    (log/debug "simulated card change-puk")
+    (change-puk args))
   (keycard/unpair [this args]
     (log/debug "simulated card unpair")
     (unpair args))

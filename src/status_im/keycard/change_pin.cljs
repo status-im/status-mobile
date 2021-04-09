@@ -7,23 +7,27 @@
             [status-im.keycard.common :as common]
             [status-im.keycard.login :as keycard.login]))
 
-(fx/defn change-pin-pressed
-  {:events [:keycard-settings.ui/change-pin-pressed]}
-  [{:keys [db] :as cofx}]
+(fx/defn change-credentials-pressed
+  {:events [:keycard-settings.ui/change-credentials-pressed]}
+  [{:keys [db] :as cofx} changing]
   (let [pin-retry-counter (get-in db [:keycard :application-info :pin-retry-counter])
         enter-step (if (zero? pin-retry-counter) :puk :current)]
     (if (= enter-step :puk)
       (keycard.login/reset-pin cofx)
       (fx/merge cofx
                 {:db
-                 (assoc-in db [:keycard :pin] {:enter-step   enter-step
-                                               :current      []
-                                               :puk          []
-                                               :original     []
-                                               :confirmation []
-                                               :status       nil
-                                               :error-label  nil
-                                               :on-verified  :keycard/proceed-to-change-pin})}
+                 (assoc-in db [:keycard :pin] {:enter-step       enter-step
+                                               :current          []
+                                               :puk              []
+                                               :original         []
+                                               :confirmation     []
+                                               :puk-original     []
+                                               :puk-confirmation []
+                                               :status           nil
+                                               :error-label      nil
+                                               :on-verified      (case changing
+                                                                   :pin :keycard/proceed-to-change-pin
+                                                                   :puk :keycard/proceed-to-change-puk)})}
                 (common/navigate-to-enter-pin-screen)))))
 
 (fx/defn proceed-to-change-pin
@@ -32,6 +36,15 @@
   (fx/merge cofx
             {:db (-> db
                      (assoc-in [:keycard :pin :enter-step] :original)
+                     (assoc-in [:keycard :pin :status] nil))}
+            (navigation/navigate-to-cofx :enter-pin-settings nil)))
+
+(fx/defn proceed-to-change-puk
+  {:events [:keycard/proceed-to-change-puk]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (-> db
+                     (assoc-in [:keycard :pin :enter-step] :puk-original)
                      (assoc-in [:keycard :pin :status] nil))}
             (navigation/navigate-to-cofx :enter-pin-settings nil)))
 
@@ -71,6 +84,25 @@
               {:new-pin     new-pin
                :current-pin current-pin}})))}))))
 
+(fx/defn change-puk
+  {:events [:keycard/change-puk]}
+  [{:keys [db] :as cofx}]
+  (common/show-connection-sheet
+   cofx
+   {:sheet-options     {:on-cancel [::on-cancel]}
+    :on-card-connected :keycard/change-puk
+    :handler
+    (fn [{:keys [db] :as cofx}]
+      (let [puk (common/vector->string
+                 (get-in db [:keycard :pin :puk-original]))
+            pin (common/vector->string
+                 (get-in db [:keycard :pin :current]))]
+        (fx/merge
+         cofx
+         {:db                 (assoc-in db [:keycard :pin :status] :verifying)
+          :keycard/change-puk {:puk puk
+                               :pin pin}})))}))
+
 (fx/defn on-change-pin-success
   {:events [:keycard.callback/on-change-pin-success]}
   [{:keys [db] :as cofx}]
@@ -89,6 +121,19 @@
                 (navigation/navigate-to-cofx :keycard-settings nil))
               (when (:multiaccounts/login db)
                 (common/get-keys-from-keycard)))))
+
+(fx/defn on-change-puk-success
+  {:events [:keycard.callback/on-change-puk-success]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db               (assoc-in db [:keycard :pin] {:status           nil
+                                                             :puk-original     []
+                                                             :puk-confirmation []
+                                                             :error-label      nil})
+             :utils/show-popup {:title   ""
+                                :content (i18n/label :t/puk-changed)}}
+            (common/hide-connection-sheet)
+            (navigation/navigate-to-cofx :keycard-settings nil)))
 
 (fx/defn on-change-pin-error
   {:events [:keycard.callback/on-change-pin-error]}

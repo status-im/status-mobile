@@ -181,7 +181,7 @@
                    retry-counter small-screen? save-password-checkbox?]}]
         (let [enabled? (and (not= status :verifying)
                             (not @!error?))
-              puk? (= step :puk)]
+              puk? (or (= step :puk) (= step :puk-original) (= step :puk-confirmation))]
           [react/scroll-view
            [react/view styles/pin-container
             [react/view (styles/center-container title-label)
@@ -261,12 +261,16 @@
                                          :import-multiaccount :t/current-pin
                                          :original            :t/create-a-pin
                                          :confirmation        :t/repeat-pin
+                                         :puk-original        :t/create-a-puk
+                                         :puk-confirmation    :t/repeat-puk
                                          :t/current-pin)
                     :description-label (case step
                                          :current             :t/current-pin-description
                                          :sign                :t/current-pin-description
                                          :import-multiaccount :t/current-pin-description
                                          :login               :t/login-pin-description
+                                         :puk-original        :t/new-puk-description
+                                         :puk-confirmation    :t/new-puk-description
                                          :t/new-pin-description)
                     :step              step
                     :status            status

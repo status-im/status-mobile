@@ -108,6 +108,10 @@
  card/change-pin)
 
 (re-frame/reg-fx
+ :keycard/change-puk
+ card/change-puk)
+
+(re-frame/reg-fx
  :keycard/unpair
  card/unpair)
 

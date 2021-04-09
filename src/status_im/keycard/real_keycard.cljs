@@ -170,6 +170,14 @@
         (then on-success)
         (catch on-failure))))
 
+(defn change-puk
+  [{:keys [pin puk on-success on-failure]}]
+  (when (and pin puk)
+    (.. status-keycard
+        (changePUK pin puk)
+        (then on-success)
+        (catch on-failure))))
+
 (defn unpair
   [{:keys [pin on-success on-failure]}]
   (when (and pin)
@@ -315,6 +323,8 @@
     (verify-pin args))
   (keycard/change-pin [this args]
     (change-pin args))
+  (keycard/change-puk [this args]
+    (change-puk args))
   (keycard/unpair [this args]
     (unpair args))
   (keycard/delete [this args]
