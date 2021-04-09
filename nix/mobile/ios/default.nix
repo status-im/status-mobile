@@ -16,10 +16,11 @@ in {
       flock # used in nix/scripts/node_modules.sh
     ];
 
+    # WARNING: Executes shellHook in reverse order.
     inputsFrom = [
       fastlane.shell
-      status-go-shell
       pod-shell
+      status-go-shell # Needs to run before pod-install
     ];
 
     shellHook = ''
