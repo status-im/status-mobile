@@ -1167,7 +1167,7 @@
                                    {:alias      name
                                     :name       (or preferred-name name)
                                     :public-key public-key})))
-            blocked))))
+            [blocked public-key]))))
 
 (re-frame/reg-sub
  :chat/mention-suggestions
