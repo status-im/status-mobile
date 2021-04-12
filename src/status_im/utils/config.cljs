@@ -146,7 +146,6 @@
   #{"youtube.com"
     "youtu.be"
     "our.status.im"
-    "medium.com"
     "github.com"
     "giphy.com"
     "gph.is"
