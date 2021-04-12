@@ -77,6 +77,10 @@ class BaseTestReport:
         token = self.get_sauce_token(job_id)
         return 'https://saucelabs.com/jobs/%s?auth=%s' % (job_id, token)
 
+    def get_jenkins_link_to_rerun_e2e(self, branch_name="develop", pr_id="", apk_name="", tr_case_ids=""):
+        return 'https://ci.status.im/job/end-to-end-tests/job/status-app-prs-rerun/parambuild/' \
+               '?BRANCH_NAME=%s&APK_NAME=%s&PR_ID=%s&TR_CASE_IDS=%s' % (branch_name, apk_name, pr_id, tr_case_ids)
+
     def get_sauce_final_screenshot_url(self, job_id):
         token = self.get_sauce_token(job_id)
         from tests.conftest import sauce

@@ -2,12 +2,18 @@ import os
 from support.base_test_report import BaseTestReport
 from support.testrail_report import TestrailReport
 
-
 class GithubHtmlReport(BaseTestReport):
     TEST_REPORT_DIR = "%s/../report" % os.path.dirname(os.path.abspath(__file__))
 
     def __init__(self):
         super(GithubHtmlReport, self).__init__()
+
+    def list_of_failed_testrail_ids(self, tests_data):
+        ids_failed_test = []
+        for i, test in enumerate(tests_data):
+            if test.testrail_case_id:
+                ids_failed_test.append(test.testrail_case_id)
+        return ','.join(map(str, ids_failed_test))
 
     def build_html_report(self, run_id):
         tests = self.get_all_tests()
@@ -26,11 +32,7 @@ class GithubHtmlReport(BaseTestReport):
             if failed_tests:
                 failed_tests_html = self.build_tests_table_html(failed_tests, run_id, failed_tests=True)
                 summary_html += "```\n"
-                ids_failed_test = []
-                for i, test in enumerate(failed_tests):
-                    if test.testrail_case_id:
-                        ids_failed_test.append(test.testrail_case_id)
-                summary_html += 'IDs of failed tests: %s \n' % ','.join(map(str, ids_failed_test))
+                summary_html += 'IDs of failed tests: %s \n' % self.list_of_failed_testrail_ids(failed_tests)
                 summary_html += "```\n"
             if passed_tests:
                 passed_tests_html = self.build_tests_table_html(passed_tests, run_id, failed_tests=False)
@@ -43,6 +45,15 @@ class GithubHtmlReport(BaseTestReport):
         html = "<h3>%s (%d)</h3>" % (tests_type, len(tests))
         html += "<details>"
         html += "<summary>Click to expand</summary>"
+        html += "<br/>"
+
+        if failed_tests:
+            from tests import pytest_config_global
+            pr_id = pytest_config_global['pr_number']
+            apk_name = pytest_config_global['apk']
+            tr_case_ids = self.list_of_failed_testrail_ids(self.get_failed_tests())
+            html += "<li><a href=\"%s\">Rerun tests</a></li>" % self.get_jenkins_link_to_rerun_e2e(pr_id=pr_id, apk_name=apk_name, tr_case_ids=tr_case_ids)
+
         html += "<br/>"
         html += "<table style=\"width: 100%\">"
         html += "<colgroup>"
