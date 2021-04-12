@@ -29,7 +29,7 @@ pipeline {
   stages {
     stage('Setup') {
       steps { script {
-        nix.shell('nix-env -i openssh', pure: false)
+        nix.shell('nix-env -i openssh', sandbox: false, pure: false)
         /* some build targets don't build on MacOS */
         uname = sh(script: 'uname', returnStdout: true)
       } }

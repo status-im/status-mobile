@@ -1,9 +1,9 @@
 # This Nix expression takes care of reading/parsing the correct .env configuration file and return it as an attr set
-{ config, stdenv }:
+{ config, stdenv, lib }:
 
 let
   inherit (builtins) listToAttrs head tail readFile;
-  inherit (stdenv.lib) attrByPath filter hasPrefix nameValuePair splitString;
+  inherit (lib) attrByPath filter hasPrefix nameValuePair splitString;
 
   build-type = attrByPath ["status-im" "build-type"] "" config;
   ci = (attrByPath ["status-im" "ci"] "" config) != "";
