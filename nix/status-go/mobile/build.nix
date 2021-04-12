@@ -1,4 +1,4 @@
-{ lib, stdenv, utils, callPackage, buildGo114Package
+{ lib, stdenv, utils, callPackage, buildGo116Package
 , go, androidPkgs, openjdk, gomobile, xcodeWrapper
 # object with source attributes
 , meta, source
@@ -20,7 +20,7 @@ let
   # formatted for use with -target
   targetArchs = map (a: "${platform}/${a}") architectures;
 
-in buildGo114Package {
+in buildGo116Package {
   pname = source.repo;
   version = "${source.cleanVersion}-${source.shortRev}-${platform}";
 

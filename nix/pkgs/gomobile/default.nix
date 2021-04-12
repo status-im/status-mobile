@@ -1,21 +1,18 @@
-{ stdenv, lib, fetchgit, buildGo114Module, zlib
+{ stdenv, lib, fetchgit, buildGo116Module, zlib
 , makeWrapper, xcodeWrapper, androidPkgs }:
 
-buildGo114Module {
+buildGo116Module {
   pname = "gomobile";
-  version = "2020-06-22";
+  version = "2021-06-14";
 
-  vendorSha256 = "1n1338vqkc1n8cy94501n7jn3qbr28q9d9zxnq2b4rxsqjfc9l94";
+  vendorSha256 = "1irgkgv72rakg7snk1bnp10ibr64ykz9l40s59l4fnl63zsh12a0";
 
   src = fetchgit {
-    # WARNING: Next commit removes support for ARM 32 bit builds for iOS
-    rev = "33b80540585f2b31e503da24d6b2a02de3c53ff5";
+    rev = "7c8f154d100840bc5828285bb390bbae1cb5a98c";
     name = "gomobile";
     url = "https://go.googlesource.com/mobile";
-    sha256 = "0c9map2vrv34wmaycsv71k4day3b0z5p16yzxmlp8amvqb38zwlm";
+    sha256 = "1w9mra1mqf60iafp0ywvja5196fjsjyfhvz4yizqq4qkyll5qmj1";
   };
-
-  patches = [ ./resolve-nix-android-sdk.patch ];
 
   subPackages = [ "bind" "cmd/gobind" "cmd/gomobile" ];
 
