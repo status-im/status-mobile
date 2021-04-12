@@ -751,6 +751,10 @@
                    {:address  "0x7DD9c5Cba05E151C895FDe1CF355C9A1D5DA6429"
                     :symbol   :GLM
                     :name     "Golem Network Token"
+                    :decimals 18}
+                   {:address  "0x23b608675a2b2fb1890d3abbd85c5775c51691d5"
+                    :symbol   :SOCKS
+                    :name     "Unisocks Edition 0"
                     :decimals 18}])
    :testnet
    (resolve-icons :testnet
