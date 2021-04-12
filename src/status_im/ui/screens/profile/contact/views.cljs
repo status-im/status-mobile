@@ -158,7 +158,7 @@
 (defn profile []
   (let [{:keys [public-key name ens-verified] :as contact} @(re-frame/subscribe [:contacts/current-contact])
         current-chat-id @(re-frame/subscribe [:chats/current-profile-chat])
-        messages @(re-frame/subscribe [:chats/chat-messages-stream current-chat-id])
+        messages @(re-frame/subscribe [:chats/profile-messages-stream current-chat-id])
         no-messages? @(re-frame/subscribe [:chats/chat-no-messages? current-chat-id])
         muted? (:muted @(re-frame/subscribe [:chats/chat public-key]))
         [first-name second-name] (multiaccounts/contact-two-names contact true)

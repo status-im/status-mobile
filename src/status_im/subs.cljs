@@ -940,7 +940,7 @@
    (empty? messages)))
 
 (re-frame/reg-sub
- :chats/chat-messages-stream
+ :chats/raw-chat-messages-stream
  (fn [[_ chat-id] _]
    [(re-frame/subscribe [:chats/message-list chat-id])
     (re-frame/subscribe [:chats/chat-messages chat-id])
@@ -955,13 +955,49 @@
        (hydrate-messages messages)
        (chat.db/add-gaps messages-gaps range all-loaded? public?))))
 
+;;we want to keep data unchanged so react doesn't change component when we leave screen
+(def memo-chat-messages-stream (atom nil))
+
+(re-frame/reg-sub
+ :chats/chat-messages-stream
+ (fn [[_ chat-id] _]
+   [(re-frame/subscribe [:chats/raw-chat-messages-stream chat-id])
+    (re-frame/subscribe [:view-id])])
+ (fn [[messages view-id]]
+   (if (= view-id :chat)
+     (do
+       (reset! memo-chat-messages-stream messages)
+       messages)
+     @memo-chat-messages-stream)))
+
+(def memo-profile-messages-stream (atom nil))
+
+(re-frame/reg-sub
+ :chats/profile-messages-stream
+ (fn [[_ chat-id] _]
+   [(re-frame/subscribe [:chats/raw-chat-messages-stream chat-id])
+    (re-frame/subscribe [:view-id])])
+ (fn [[messages view-id]]
+   (if (= view-id :profile)
+     (do
+       (reset! memo-profile-messages-stream messages)
+       messages)
+     @memo-profile-messages-stream)))
+
+(def memo-timeline-messages-stream (atom nil))
+
 (re-frame/reg-sub
  :chats/timeline-messages-stream
  :<- [:chats/message-list constants/timeline-chat-id]
  :<- [:chats/chat-messages constants/timeline-chat-id]
- (fn [[message-list messages]]
-   (-> (models.message-list/->seq message-list)
-       (hydrate-messages messages))))
+ :<- [:view-id]
+ (fn [[message-list messages view-id]]
+   (if (= view-id :status)
+     (let [res (-> (models.message-list/->seq message-list)
+                   (hydrate-messages messages))]
+       (reset! memo-timeline-messages-stream res)
+       res)
+     @memo-timeline-messages-stream)))
 
 (re-frame/reg-sub
  :chats/current-profile-chat
@@ -1281,28 +1317,43 @@
  (fn [[{:keys [:stickers/recent-stickers]} packs]]
    (map (fn [hash] {:hash hash :pack (find-pack-id-for-hash hash packs)}) recent-stickers)))
 
+;;HOME ==============================================================================================================
+
+(def memo-home-items (atom nil))
+
 (re-frame/reg-sub
  :home-items
  :<- [:search/home-filter]
  :<- [:search/filtered-chats]
  :<- [:communities/communities]
- (fn [[search-filter filtered-chats communities]]
-   (let [communities-count (count communities)
-         chats-count (count filtered-chats)
-         ;; If we have both communities & chats we want to display
-         ;; a separator between them
+ :<- [:view-id]
+ (fn [[search-filter filtered-chats communities view-id]]
+   (if (= view-id :home)
+     (let [communities-count (count communities)
+           chats-count (count filtered-chats)
+           ;; If we have both communities & chats we want to display
+           ;; a separator between them
 
-         communities-with-separator (if (and (pos? communities-count)
-                                             (pos? chats-count))
-                                      (update communities
-                                              (dec communities-count)
-                                              assoc :last? true)
-                                      communities)]
-     {:search-filter search-filter
-      :items         (concat communities-with-separator filtered-chats)})))
+           communities-with-separator (if (and (pos? communities-count)
+                                               (pos? chats-count))
+                                        (update communities
+                                                (dec communities-count)
+                                                assoc :last? true)
+                                        communities)
+           res {:search-filter search-filter
+                :items         (concat communities-with-separator filtered-chats)}]
+       (reset! memo-home-items res)
+       res)
+     ;;we want to keep data unchanged so react doesn't change component when we leave screen
+     @memo-home-items)))
+
+(re-frame/reg-sub
+ :hide-home-tooltip?
+ :<- [:multiaccount]
+ (fn [multiaccount]
+   (:hide-home-tooltip? multiaccount)))
 
 ;;PAIRING ==============================================================================================================
-
 
 (re-frame/reg-sub
  :pairing/installations
@@ -1316,7 +1367,7 @@
 (re-frame/reg-sub
  :pairing/installation-id
  :<- [:multiaccount]
- :installation-id)
+ (fn [multiaccount] (:installation-id multiaccount)))
 
 (re-frame/reg-sub
  :pairing/installation-name
