@@ -15,7 +15,7 @@
   ios = callPackage ./build.nix {
     platform = "ios";
     # amd64 is for ios simulator
-    architectures = [ "arm" "arm64" "amd64" ];
+    architectures = [ "arm64" "amd64" ];
     outputFileName = "Statusgo.framework";
     inherit meta source goBuildFlags goBuildLdFlags;
   };

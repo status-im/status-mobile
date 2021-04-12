@@ -32,7 +32,7 @@ in {
   gradlePropParser = callPackage ./tools/gradlePropParser.nix { };
 
   # Package version adjustments
-  go = super.pkgs.go_1_14;
+  go = super.pkgs.go_1_16;
   gradle = super.pkgs.gradle_5;
   nodejs = super.pkgs.nodejs-12_x;
   openjdk = super.pkgs.openjdk8_headless;
