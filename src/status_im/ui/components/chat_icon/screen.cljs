@@ -10,19 +10,24 @@
 
 ;;TODO REWORK THIS NAMESPACE
 
+(def get-name-first-char
+  (memoize
+   (fn [name]
+     ;; TODO: for now we check if the first letter is a #
+     ;; which means it is most likely a public chat and
+     ;; use the second letter if that is the case
+     ;; a broader refactoring should clean up upstream params
+     ;; for default-chat-icon
+     (string/capitalize (if (and (= "#" (first name))
+                                 (< 1 (count name)))
+                          (second name)
+                          (first name))))))
+
 (defn default-chat-icon [name styles]
   (when-not (string/blank? name)
     [react/view (:default-chat-icon styles)
      [react/text {:style (:default-chat-icon-text styles)}
-      ;; TODO: for now we check if the first letter is a #
-      ;; which means it is most likely a public chat and
-      ;; use the second letter if that is the case
-      ;; a broader refactoring should clean up upstream params
-      ;; for default-chat-icon
-      (string/capitalize (if (and (= "#" (first name))
-                                  (< 1 (count name)))
-                           (second name)
-                           (first name)))]]))
+      (get-name-first-char name)]]))
 
 (defn chat-icon-view
   [chat-id group-chat name styles]

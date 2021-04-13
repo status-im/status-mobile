@@ -45,13 +45,15 @@
   ;; i18n ignores nil value, leading to misleading messages
   (into {} (for [[k v] options] [k (or v default-option-value)])))
 
-(defn label
-  ([path] (label path {}))
+(defn label-fn
+  ([path] (label-fn path {}))
   ([path options]
    (if (exists? (.t i18n))
      (let [options (update options :amount label-number)]
        (.t i18n (name path) (clj->js (label-options options))))
      (name path))))
+
+(def label (memoize label-fn))
 
 (defn label-pluralize [count path & options]
   (if (exists? (.t i18n))

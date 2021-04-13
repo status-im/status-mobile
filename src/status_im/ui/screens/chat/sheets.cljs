@@ -14,7 +14,7 @@
   (re-frame/dispatch [:bottom-sheet/hide])
   (re-frame/dispatch event))
 
-(defn one-to-one-chat-accents [{:keys [chat-id]}]
+(defn one-to-one-chat-accents [chat-id]
   (let [photo        @(re-frame/subscribe [:chats/photo-path chat-id])
         contact-name @(re-frame/subscribe [:contacts/contact-name-by-identity chat-id])]
     [react/view
@@ -45,7 +45,7 @@
        :icon                :main-icons/delete
        :on-press            #(re-frame/dispatch [:chat.ui/remove-chat-pressed chat-id])}]]))
 
-(defn public-chat-accents [{:keys [chat-id]}]
+(defn public-chat-accents [chat-id]
   (let [link    (universal-links/generate-link :public-chat :external chat-id)
         message (i18n/label :t/share-public-chat-text {:link link})]
     [react/view
@@ -147,13 +147,13 @@
              :icon                :main-icons/delete
              :on-press            #(hide-sheet-and-dispatch [:group-chats.ui/remove-chat-confirmed chat-id])}])]))))
 
-(defn actions [{:keys [chat-type]
+(defn actions [{:keys [chat-type chat-id]
                 :as current-chat}]
   (cond
     (#{constants/public-chat-type
        constants/profile-chat-type
        constants/timeline-chat-type} chat-type)
-    [public-chat-accents current-chat]
+    [public-chat-accents chat-id]
 
     (= chat-type constants/community-chat-type)
     [community-chat-accents current-chat]
@@ -161,10 +161,13 @@
     (= chat-type constants/private-group-chat-type)
     [group-chat-accents current-chat]
 
-    :else      [one-to-one-chat-accents current-chat]))
+    :else      [one-to-one-chat-accents chat-id]))
 
 (defn current-chat-actions []
   [actions @(re-frame/subscribe [:chats/current-chat])])
+
+(defn chat-actions [chat-id]
+  [actions @(re-frame/subscribe [:chat-by-id chat-id])])
 
 (defn options [chat-id message-id]
   (fn []

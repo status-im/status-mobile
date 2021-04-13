@@ -12,7 +12,9 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.utils.contenthash :as contenthash]
             [status-im.utils.core :as utils]
-            [status-im.utils.datetime :as time]))
+            [status-im.utils.datetime :as time]
+            [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
+            [status-im.ui.screens.chat.sheets :as sheets]))
 
 (defn mention-element [from]
   @(re-frame/subscribe [:contacts/contact-name-by-identity from]))
@@ -39,7 +41,7 @@
 
                  "mention"
                  {:components [react/text-class [mention-element literal]]
-                  :length 4} ;; we can't predict name length so take the smallest possible
+                  :length     4}                            ;; we can't predict name length so take the smallest possible
 
                  "status-tag"
                  (truncate-literal (str "#" literal))
@@ -72,7 +74,7 @@
     (:components result)))
 
 (defn message-content-text [{:keys [content content-type community-id]}]
-  [:<>
+  [react/view {:position :absolute :left 72 :top 32 :right 80}
    (cond
 
      (not (and content content-type))
@@ -109,76 +111,88 @@
      (:text content)
      (render-subheader (:parsed-text content)))])
 
-(defn message-timestamp [timestamp]
-  [react/view
-   (when timestamp
-     [react/text {:style               styles/datetime-text
-                  :number-of-lines     1
-                  :accessibility-label :last-message-time-text}
-      ;;TODO (perf) move to event
-      (string/upper-case (time/to-short-str timestamp))])])
+(def memo-timestamp
+  (memoize
+   (fn [timestamp]
+     (string/upper-case (time/to-short-str timestamp)))))
 
 (defn unviewed-indicator [{:keys [unviewed-messages-count public?]}]
   (when (pos? unviewed-messages-count)
-    [react/view {:padding-left    16
-                 :justify-content :flex-end
-                 :align-items     :flex-end}
+    [react/view {:position :absolute :right 16 :bottom 12}
      (if public?
        [react/view {:style               styles/public-unread
                     :accessibility-label :unviewed-messages-public}]
        [badge/message-counter unviewed-messages-count])]))
 
+(def memo-on-long-press
+  (memoize
+   (fn [chat-id]
+     (fn []
+       (re-frame/dispatch [:bottom-sheet/show-sheet
+                           {:content (fn [] [sheets/chat-actions chat-id])}])))))
+
+(def memo-on-press
+  (memoize
+   (fn [chat-id]
+     (fn []
+       (re-frame/dispatch [:dismiss-keyboard])
+       (re-frame/dispatch [:chat.ui/navigate-to-chat chat-id])
+       (re-frame/dispatch [:search/home-filter-changed nil])))))
+
 (defn icon-style []
   {:color           colors/black
    :width           15
    :height          15
-   :container-style {:width           15
-                     :height          15
-                     :margin-right   2}})
+   :container-style {:top          13 :left 72
+                     :position     :absolute
+                     :width        15
+                     :height       15
+                     :margin-right 2}})
+
+(defn chat-item-icon [muted private-group? public-group?]
+  (cond
+    muted
+    [icons/icon :main-icons/tiny-muted (assoc (icon-style) :color colors/gray)]
+    private-group?
+    [icons/icon :main-icons/tiny-group (icon-style)]
+    public-group?
+    [icons/icon :main-icons/tiny-public (icon-style)]
+    :else
+    [icons/icon :main-icons/tiny-new-contact (icon-style)]))
+
+(defn chat-item-title [chat-id muted group-chat chat-name]
+  [quo/text {:weight              :medium
+             :color               (when muted :secondary)
+             :accessibility-label :chat-name-text
+             :ellipsize-mode      :tail
+             :number-of-lines     1
+             :style               {:position :absolute :left 92 :top 10 :right 90}}
+   (if group-chat
+     (utils/truncate-str chat-name 30)
+     ;; This looks a bit odd, but I would like only to subscribe
+     ;; if it's a one-to-one. If wrapped in a component styling
+     ;; won't be applied correctly.
+     (first @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])))])
 
 (defn home-list-item [home-item opts]
-  (let [{:keys [chat-id chat-name color online group-chat
-                public? timestamp last-message muted]}
-        home-item
-        private-group? (and group-chat (not public?))
-        public-group?  (and group-chat public?)]
-    [quo/list-item
-     (merge {:icon                      [chat-icon.screen/chat-icon-view-chat-list
-                                         chat-id group-chat chat-name color online false]
-             :title                     [react/view {:flex-direction :row
-                                                     :flex           1}
-                                         [react/view {:flex-direction :row
-                                                      :flex           1
-                                                      :padding-right  16
-                                                      :align-items    :center}
-                                          (cond
-                                            muted
-                                            [icons/icon :main-icons/tiny-muted (assoc (icon-style) :color colors/gray)]
-                                            private-group?
-                                            [icons/icon :main-icons/tiny-group (icon-style)]
-                                            public-group?
-                                            [icons/icon :main-icons/tiny-public (icon-style)]
-                                            :else
-                                            [icons/icon :main-icons/tiny-new-contact (icon-style)])
-                                          [quo/text {:weight              :medium
-                                                     :color               (when muted :secondary)
-                                                     :accessibility-label :chat-name-text
-                                                     :ellipsize-mode      :tail
-                                                     :number-of-lines     1}
-                                           (if group-chat
-                                             (utils/truncate-str chat-name 30)
-                                             ;; This looks a bit odd, but I would like only to subscribe
-                                             ;; if it's a one-to-one. If wrapped in a component styling
-                                             ;; won't be applied correctly.
-                                             (first @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])))]]
-                                         [message-timestamp (if (pos? (:whisper-timestamp last-message))
-                                                              (:whisper-timestamp last-message)
-                                                              timestamp)]]
-             :title-accessibility-label :chat-name-text
-             :subtitle                  [react/view {:flex-direction :row}
-                                         [react/view {:flex 1}
-                                          [message-content-text (select-keys last-message [:content
-                                                                                           :content-type
-                                                                                           :community-id])]]
-                                         [unviewed-indicator home-item]]}
-            opts)]))
+  (let [{:keys [chat-id chat-name color group-chat public? timestamp last-message muted]} home-item]
+    [react/touchable-opacity (merge {:style {:height 64}} opts)
+     [:<>
+      [chat-item-icon muted (and group-chat (not public?)) (and group-chat public?)]
+      [chat-icon.screen/chat-icon-view chat-id group-chat chat-name
+       {:container              (assoc chat-icon.styles/container-chat-list
+                                       :top 12 :left 16 :position :absolute)
+        :size                   40
+        :chat-icon              chat-icon.styles/chat-icon-chat-list
+        :default-chat-icon      (chat-icon.styles/default-chat-icon-chat-list color)
+        :default-chat-icon-text (chat-icon.styles/default-chat-icon-text 40)}]
+      [chat-item-title chat-id muted group-chat chat-name]
+      [react/text {:style               styles/datetime-text
+                   :number-of-lines     1
+                   :accessibility-label :last-message-time-text}
+       ;;TODO (perf) move to event
+       (memo-timestamp (if (pos? (:whisper-timestamp last-message))
+                         (:whisper-timestamp last-message)
+                         timestamp))]
+      [message-content-text (select-keys last-message [:content :content-type :community-id])]
+      [unviewed-indicator home-item]]]))

@@ -26,27 +26,25 @@
     :else
     colors/black))
 
-(defn icon
-  ([name] (icon name nil))
+(defn memo-icon-fn
+  ([name] (memo-icon-fn name nil))
   ([name {:keys [color resize-mode container-style
                  accessibility-label width height]
           :or   {accessibility-label :icon}}]
    ^{:key name}
-   [react/view
-    {:style               (or
-                           container-style
-                           {:width  (or width 24)
-                            :height (or height 24)})
-     :accessibility-label accessibility-label}
-    [react/image {:style  (cond-> {:width  (or width 24)
-                                   :height (or height 24)}
+   [react/image {:style  (merge (cond-> {:width  (or width 24)
+                                         :height (or height 24)}
 
-                            resize-mode
-                            (assoc :resize-mode resize-mode)
+                                  resize-mode
+                                  (assoc :resize-mode resize-mode)
 
-                            :always
-                            (assoc :tint-color (match-color color)))
-                  :source (icon-source name)}]]))
+                                  :always
+                                  (assoc :tint-color (match-color color)))
+                                container-style)
+                 :accessibility-label accessibility-label
+                 :source (icon-source name)}]))
+
+(def icon (memoize memo-icon-fn))
 
 (defn tiny-icon
   ([name] (tiny-icon name {}))

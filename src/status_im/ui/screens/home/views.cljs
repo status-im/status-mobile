@@ -101,7 +101,7 @@
 
 (defonce search-active? (reagent/atom false))
 
-(defn search-input-wrapper [search-filter chats]
+(defn search-input-wrapper [search-filter chats-empty]
   [react/view {:padding-horizontal 16
                :padding-vertical   10}
    [search-input/search-input
@@ -109,7 +109,7 @@
      :search-filter  search-filter
      :on-cancel      #(re-frame/dispatch [:search/home-filter-changed nil])
      :on-blur        (fn []
-                       (when-not (seq chats)
+                       (when chats-empty
                          (re-frame/dispatch [:search/home-filter-changed nil]))
                        (re-frame/dispatch [::new-chat/clear-new-identity]))
      :on-focus       (fn [search-filter]
@@ -174,12 +174,13 @@
       [welcome-blank-page]
       [list/flat-list
        {:key-fn                       chat-list-key-fn
+        :initialNumToRender           5
         :keyboard-should-persist-taps :always
         :data                         items
         :render-fn                    render-fn
         :header                       [:<>
                                        (when (or (seq items) @search-active? (seq search-filter))
-                                         [search-input-wrapper search-filter items])
+                                         [search-input-wrapper search-filter (empty? items)])
                                        [referral-item/list-item]
                                        (when (and (empty? items)
                                                   (or @search-active? (seq search-filter)))

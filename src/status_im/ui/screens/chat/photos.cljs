@@ -6,15 +6,20 @@
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.utils.image :as utils.image]))
 
+(def memo-photo-rend
+  (memoize
+   (fn [photo-path size accessibility-label]
+     (let [identicon? (when photo-path (profile.db/base64-png? photo-path))]
+       [react/view {:style (style/photo-container size)}
+        [react/image {:source              (utils.image/source photo-path)
+                      :style               (style/photo size)
+                      :resize-mode         :cover
+                      :accessibility-label (or accessibility-label :chat-icon)}]
+        (when identicon?
+          [react/view {:style (style/photo-border size)}])]))))
+
 (defn photo [photo-path {:keys [size accessibility-label]}]
-  (let [identicon? (when photo-path (profile.db/base64-png? photo-path))]
-    [react/view {:style (style/photo-container size)}
-     [react/image {:source              (utils.image/source photo-path)
-                   :style               (style/photo size)
-                   :resize-mode         :cover
-                   :accessibility-label (or accessibility-label :chat-icon)}]
-     (when identicon?
-       [react/view {:style (style/photo-border size)}])]))
+  [memo-photo-rend photo-path size accessibility-label])
 
 ;; We optionally pass identicon for perfomance reason, so it does not have to be calculated for each message
 (defn member-photo [pub-key identicon]

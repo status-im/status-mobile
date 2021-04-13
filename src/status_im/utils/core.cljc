@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             #?(:cljs [taoensso.timbre :as log])))
 
-(defn truncate-str
+(defn truncate-str-memo
   "Given string and max threshold, trims the string to threshold length with `...`
   appended to end or in the middle if length of the string exceeds max threshold,
   returns the same string if threshold is not exceeded"
@@ -18,6 +18,8 @@
         (str start "..." end))
       (str (subs s 0 (- threshold 3)) "..."))
     s))
+
+(def truncate-str (memoize truncate-str-memo))
 
 (defn clean-text [s]
   (-> s

@@ -330,38 +330,41 @@
         space-keeper (get-space-keeper-ios bottom-space panel-space active-panel text-input-ref)
         set-active-panel (get-set-active-panel active-panel)
         on-close #(set-active-panel nil)]
-    (fn []
-      (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as chat}
-            ;;we want to react only on these fields, do not use full chat map here
-            @(re-frame/subscribe [:chats/current-chat-chat-view])
-            max-bottom-space (max @bottom-space @panel-space)]
-        [:<>
-         [topbar]
-         [connectivity/loading-indicator]
-         (when chat-id
-           (if group-chat
-             [invitation-requests chat-id admins]
-             [add-contact-bar chat-id]))
-         ;;MESSAGES LIST
-         [messages-view {:chat          chat
-                         :bottom-space  max-bottom-space
-                         :pan-responder pan-responder
-                         :space-keeper  space-keeper
-                         :show-input?   show-input?}]
-         (when (and group-chat invitation-admin)
-           [accessory/view {:y               position-y
-                            :on-update-inset on-update}
-            [invitation-bar chat-id]])
-         [components/autocomplete-mentions text-input-ref max-bottom-space]
-         (when show-input?
-           [accessory/view {:y               position-y
-                            :pan-state       pan-state
-                            :has-panel       (boolean @active-panel)
-                            :on-close        on-close
-                            :on-update-inset on-update}
-            [components/chat-toolbar
-             {:chat-id          chat-id
-              :active-panel     @active-panel
-              :set-active-panel set-active-panel
-              :text-input-ref   text-input-ref}]
-            [bottom-sheet @active-panel]])]))))
+    (reagent/create-class
+     {:component-will-unmount #(re-frame/dispatch-sync [:close-chat])
+      :reagent-render
+      (fn []
+        (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as chat}
+              ;;we want to react only on these fields, do not use full chat map here
+              @(re-frame/subscribe [:chats/current-chat-chat-view])
+              max-bottom-space (max @bottom-space @panel-space)]
+          [:<>
+           [topbar]
+           [connectivity/loading-indicator]
+           (when chat-id
+             (if group-chat
+               [invitation-requests chat-id admins]
+               [add-contact-bar chat-id]))
+           ;;MESSAGES LIST
+           [messages-view {:chat          chat
+                           :bottom-space  max-bottom-space
+                           :pan-responder pan-responder
+                           :space-keeper  space-keeper
+                           :show-input?   show-input?}]
+           (when (and group-chat invitation-admin)
+             [accessory/view {:y               position-y
+                              :on-update-inset on-update}
+              [invitation-bar chat-id]])
+           [components/autocomplete-mentions text-input-ref max-bottom-space]
+           (when show-input?
+             [accessory/view {:y               position-y
+                              :pan-state       pan-state
+                              :has-panel       (boolean @active-panel)
+                              :on-close        on-close
+                              :on-update-inset on-update}
+              [components/chat-toolbar
+               {:chat-id          chat-id
+                :active-panel     @active-panel
+                :set-active-panel set-active-panel
+                :text-input-ref   text-input-ref}]
+              [bottom-sheet @active-panel]])]))})))

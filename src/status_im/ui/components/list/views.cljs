@@ -62,30 +62,41 @@
          [react/view {:style (merge style styles/item-checkbox)}
           [radio/radio (:checked? props)]])])
 
-(defn- wrap-render-fn [f render-data]
-  (fn [^js data]
-    (reagent/as-element [f (.-item data) (.-index data) (.-separators data) render-data])))
-
-(defn- wrap-key-fn [f]
-  (fn [data index]
-    {:post [(some? %)]}
-    (f data index)))
+(def memo-wrap-render-fn
+  (memoize
+   (fn [f render-data]
+     (fn [^js data]
+       (reagent/as-element [f (.-item data) (.-index data) (.-separators data) render-data])))))
 
 (def base-separator [react/view styles/base-separator])
 
 (def default-separator [react/view styles/separator])
 
+(def memo-separator-fn
+  (memoize
+   (fn [separator default-separator?]
+     (reagent/as-element (or separator (when (and platform/ios? default-separator?) default-separator))))))
+
+(def memo-as-element
+  (memoize
+   (fn [element]
+     (reagent/as-element element))))
+
+(def memo-wrap-key-fn
+  (memoize
+   (fn [f]
+     (fn [data index]
+       {:post [(some? %)]}
+       (f data index)))))
+
 (defn- base-list-props
   [{:keys [key-fn render-fn empty-component header footer separator default-separator? render-data]}]
-  (let [separator (or separator (when (and platform/ios? default-separator?) default-separator))]
-    (merge (when key-fn            {:keyExtractor (wrap-key-fn key-fn)})
-           (when render-fn         {:renderItem (wrap-render-fn render-fn render-data)})
-           (when separator         {:ItemSeparatorComponent (fn [] (reagent/as-element separator))})
-           (when empty-component   {:ListEmptyComponent (fn [] (reagent/as-element empty-component))})
-           ;; header and footer not wrapped in anonymous function to prevent re-creation on every re-render
-           ;; More details can be found here - https://github.com/facebook/react-native/issues/13602#issuecomment-300608431
-           (when header            {:ListHeaderComponent (reagent/as-element header)})
-           (when footer            {:ListFooterComponent (reagent/as-element footer)}))))
+  (merge (when key-fn            {:keyExtractor (memo-wrap-key-fn key-fn)})
+         (when render-fn         {:renderItem (memo-wrap-render-fn render-fn render-data)})
+         (when separator         {:ItemSeparatorComponent (memo-separator-fn separator default-separator?)})
+         (when empty-component   {:ListEmptyComponent (memo-as-element empty-component)})
+         (when header            {:ListHeaderComponent (memo-as-element header)})
+         (when footer            {:ListFooterComponent (memo-as-element footer)})))
 
 (defn flat-list
   "A wrapper for FlatList.
@@ -115,7 +126,7 @@
 (defn- wrap-per-section-render-fn [props]
   (update
    (if-let [f (:render-fn props)]
-     (assoc (dissoc props :render-fn :render-data) :renderItem (wrap-render-fn f (:render-data props)))
+     (assoc (dissoc props :render-fn :render-data) :renderItem (memo-wrap-render-fn f (:render-data props)))
      props)
    :data to-array))
 

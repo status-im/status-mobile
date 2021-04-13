@@ -13,7 +13,8 @@
    [status-im.ui.components.colors :as colors]
    [status-im.ui.components.toolbar :as toolbar]
    [status-im.ui.components.react :as react]
-   [status-im.ui.screens.communities.icon :as communities.icon]))
+   [status-im.ui.screens.communities.icon :as communities.icon]
+   [quo.design-system.colors :as quo.colors]))
 
 (defn hide-sheet-and-dispatch [event]
   (>evt [:bottom-sheet/hide])
@@ -30,36 +31,35 @@
                  :accessibility-label :unviewed-messages-public}]))
 
 (defn community-home-list-item [{:keys [id name last?] :as community}]
-  [react/view
-   [quo/list-item
-    {:icon                      [communities.icon/community-icon community]
-     :title                     [react/view {:flex-direction :row
-                                             :flex           1}
-                                 [react/view {:flex-direction :row
-                                              :flex           1
-                                              :padding-right  16
-                                              :align-items    :center}
-                                  [quo/text {:weight              :medium
-                                             :accessibility-label :chat-name-text
-                                             :font-size           17
-                                             :ellipsize-mode      :tail
-                                             :number-of-lines     1}
-                                   name]]
-                                 [react/view {:flex-direction  :row
-                                              :flex            1
-                                              :justify-content :flex-end
-                                              :align-items     :center}
-                                  [community-unviewed-count id]]]
-     :title-accessibility-label :chat-name-text
-     :on-press                  #(do
-                                   (>evt [:dismiss-keyboard])
-                                   (>evt [:navigate-to :community {:community-id id}]))}]
-     ;; TODO: actions
-     ;; :on-long-press             #(>evt [:bottom-sheet/show-sheet
-     ;;                                                 nil])
-
-   (when last?
-     [quo/separator])])
+  [react/touchable-opacity {:style    (merge {:height 64}
+                                             (when last?
+                                               {:border-bottom-color (quo.colors/get-color :ui-01)
+                                                :border-bottom-width 1}))
+                            :on-press (fn [id]
+                                        (>evt [:dismiss-keyboard])
+                                        (>evt [:navigate-to :community {:community-id id}]))}
+   [:<>
+    [react/view {:top 12 :left 16 :position :absolute}
+     [communities.icon/community-icon community]]
+    [react/view {:style               {:margin-left    72
+                                       :flex-direction :row
+                                       :flex           1}
+                 :accessibility-label :chat-name-text}
+     [react/view {:flex-direction :row
+                  :flex           1
+                  :padding-right  16
+                  :align-items    :center}
+      [quo/text {:weight              :medium
+                 :accessibility-label :chat-name-text
+                 :font-size           17
+                 :ellipsize-mode      :tail
+                 :number-of-lines     1}
+       name]]
+     [react/view {:flex-direction  :row
+                  :flex            1
+                  :justify-content :flex-end
+                  :align-items     :center}
+      [community-unviewed-count id]]]]])
 
 (defn community-list-item [{:keys [id permissions members name description] :as community}]
   (let [members-count (count members)
@@ -102,13 +102,6 @@
      :accessibility-label :community-create-community
      :icon                :main-icons/add
      :on-press            #(hide-sheet-and-dispatch [::communities/open-create-community])}]])
-
-(defn communities-home-list [communities]
-  [list/flat-list
-   {:key-fn                         :id
-    :keyboard-should-persist-taps   :always
-    :data                       communities
-    :render-fn                      community-home-list-item}])
 
 (defn communities-list [communities]
   [list/section-list

@@ -21,7 +21,10 @@
    :text-align     :right
    :letter-spacing 0.4
    :align-items    :center
-   :line-height    12})
+   :line-height    12
+   :position       :absolute
+   :top            10
+   :right          16})
 
 (defn chat-tooltip []
   {:align-items   :center
