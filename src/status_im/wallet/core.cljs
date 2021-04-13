@@ -27,7 +27,8 @@
             status-im.wallet.recipient.core
             [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
             [status-im.async-storage.core :as async-storage]
-            [status-im.popover.core :as popover.core]))
+            [status-im.popover.core :as popover.core]
+            [clojure.set :as clojure.set]))
 
 (defn get-balance
   [{:keys [address on-success on-error]}]
@@ -326,9 +327,8 @@
                                    (flatten (map keys (vals balances))))]
     (fx/merge cofx
               (multiaccounts.update/multiaccount-update
-               :wallet/visible-tokens (assoc visible-tokens
-                                             chain
-                                             chain-visible-tokens)
+               :wallet/visible-tokens
+               (update visible-tokens chain clojure.set/union chain-visible-tokens)
                {})
               (update-tokens-balances balances)
               (prices/update-prices))))
