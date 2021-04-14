@@ -38,7 +38,7 @@ pipeline {
       steps { script {
         withCredentials([
           string(
-            credentialsId: 'SUPPLY_JSON_KEY_DATA',
+            credentialsId: 'google-play-api-key-json',
             variable: 'GOOGLE_PLAY_JSON_KEY'
           ),
         ]) {
