@@ -211,6 +211,7 @@
         "other": "{{count}}位成員"
     },
     "community-members-title": "成員",
+    "community-message-preview": "邀請加入{{community-name}}",
     "community-private-key": "社群管理私鑰",
     "community-requests-to-join-title": "會員申請",
     "community-roles": "角色",
@@ -737,6 +738,9 @@
     "keycard-applet-install-instructions": "要安裝小工具，請按照https:\/\/github.com\/status-im\/keycard-cli#keycard-applet-installation上的說明進行操作",
     "keycard-awaiting-description": "嘗試四處移動卡以在設備上找到NFC讀卡器",
     "keycard-awaiting-title": "尋找中...",
+    "keycard-backup": "创建一个备份卡",
+    "keycard-backup-success-body": "备份卡创建成功。现在，您可以像主卡一样在帐户中使用。",
+    "keycard-backup-success-title": "备份成功",
     "keycard-blocked": "金鑰卡已被鎖定， \n您需要重設卡片才能繼續使用。",
     "keycard-can-use-with-new-passcode": "您可以將此卡與新密碼一起使用",
     "keycard-cancel-setup-text": "這將取消金鑰卡設置。強烈建議您完成設置以使用金鑰卡。您真的要取消嗎？",
@@ -852,6 +856,7 @@
     "mark-all-read": "將所有內容標記為已讀",
     "master-account": "主控賬戶",
     "maybe-later": "稍後再說",
+    "member-ban": "禁止成员",
     "member-kick": "強制退出成員",
     "members": {
         "other": " {{count}} 位成員"
@@ -1291,7 +1296,7 @@
     "timeline": "時間軸",
     "to": "到",
     "to-block": "區塊",
-    "to-enable-biometric": "要啟用{{bio-type-label}} ，您必須在解鎖螢幕上保存密碼",
+    "to-enable-biometric": "要啟用{{bio-type-label}} ，您必須在解鎖螢幕上勾選保存密碼",
     "to-encrypt-enter-password": "要加密帳號，請輸入密碼",
     "to-see-this-message": "要查看此訊息，",
     "token-auto-validate-decimals-error": "地址{{address}}上{{symbol}}代幣的小數位數錯誤－設置為{{expected}}但檢測為{{actual}}",

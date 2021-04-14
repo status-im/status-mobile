@@ -211,6 +211,7 @@
         "other": "{{count}}位成员"
     },
     "community-members-title": "成员",
+    "community-message-preview": "邀请加入{{community-name}}",
     "community-private-key": "社区私钥",
     "community-requests-to-join-title": "加入申请",
     "community-roles": "角色",
@@ -737,6 +738,9 @@
     "keycard-applet-install-instructions": "要安装applet，请按照https:\/\/github.com\/status-im\/keycard-cli#keycard-applet-installation上的说明进行操作。",
     "keycard-awaiting-description": "为了方便 NFC 读卡器识别，请将卡片在设备周围来回移动",
     "keycard-awaiting-title": "正在查找...",
+    "keycard-backup": "创建备份 Keycard",
+    "keycard-backup-success-body": "备份卡创建成功。现在，您可以像主卡一样在帐户中使用。",
+    "keycard-backup-success-title": "备份成功",
     "keycard-blocked": "Keycard已被锁定。 \n您需要重置卡片才能继续使用它。",
     "keycard-can-use-with-new-passcode": "您可以将此卡与新通行码一起使用",
     "keycard-cancel-setup-text": "这将取消Keycard设置。强烈建议完成设置并使用Keycard。真的想取消吗？",
@@ -852,6 +856,7 @@
     "mark-all-read": "标记全部已读",
     "master-account": "主账户",
     "maybe-later": "稍后",
+    "member-ban": "禁止成员",
     "member-kick": "删除成员",
     "members": {
         "other": "{{count}} 个成员"

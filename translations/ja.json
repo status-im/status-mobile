@@ -202,7 +202,6 @@
     "community-color": "コミュニティカラー",
     "community-color-placeholder": "色を選ぶ",
     "community-edit-title": "コミュニティの編集",
-    "community-image-delete": "Empty",
     "community-image-pick": "画像を選ぶ",
     "community-image-take": "写真を撮る",
     "community-invite-title": "招待する",
@@ -212,6 +211,7 @@
         "other": "{{count}} 名"
     },
     "community-members-title": "メンバー",
+    "community-message-preview": "{{community-name}}への招待状",
     "community-private-key": "コミュニティの秘密鍵",
     "community-requests-to-join-title": "参加リクエスト",
     "community-roles": "役割",
@@ -738,6 +738,9 @@
     "keycard-applet-install-instructions": "アプレットをインストールするには https:\/\/github.com\/status-im\/keycard-cli#keycard-applet-installation の手順に従ってください。",
     "keycard-awaiting-description": "お使いのスマートフォン（またはNFCリーダー）でカードを読み取ります。",
     "keycard-awaiting-title": "探しています...",
+    "keycard-backup": "バックアップカードの作成",
+    "keycard-backup-success-body": "バックアップカードの作成に成功しました。メインカードと同じアカウントで使用することができます。",
+    "keycard-backup-success-title": "バックアップ成功",
     "keycard-blocked": "Keycardがブロックされました。\n引き続き使用するにはカードをリセットする必要があります。",
     "keycard-can-use-with-new-passcode": "新たにパスコードを設定してカードを使用できます",
     "keycard-cancel-setup-text": "この操作はKeycardのセットアップをキャンセルします。Keycardを使用するにはセットアップを完了させることを強くお勧めします。本当にキャンセルしますか？",
@@ -853,6 +856,7 @@
     "mark-all-read": "すべて既読にする",
     "master-account": "マスターアカウント",
     "maybe-later": "後にする",
+    "member-ban": "BANされたメンバー",
     "member-kick": "メンバーをキックする",
     "members": {
         "other": "メンバー"
@@ -1231,7 +1235,7 @@
     "sign-message": "メッセージに署名",
     "sign-out": "サインアウト",
     "sign-request-failed": "メッセージに署名できませんでした",
-    "sign-with": "で署名",
+    "sign-with": "署名 ",
     "sign-with-password": "パスワードで署名する",
     "sign-you-in": "サインインしています…",
     "signing": "署名中",

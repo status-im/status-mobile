@@ -62,7 +62,7 @@
     "amount": "수량",
     "appearance": "테마",
     "apply": "적용",
-    "are-you-sure-description": "지금부터 시드 구문을 다시 확인할 수 없습니다",
+    "are-you-sure-description": "지금부터 전체 시드 구문을 다시 확인할 수 없습니다",
     "are-you-sure-to-cancel": "정말 취소하시겠어요?",
     "are-you-sure?": "정말 삭제하시겠어요?",
     "ask-in-status": "질문 및 버그 신고",
@@ -211,6 +211,7 @@
         "other": "멤버"
     },
     "community-members-title": "멤버",
+    "community-message-preview": "{{community-name}} 가입 초대",
     "community-private-key": "커뮤니티 개인키",
     "community-requests-to-join-title": "멤버십 요청",
     "community-roles": "역할",
@@ -737,6 +738,9 @@
     "keycard-applet-install-instructions": "애플릿을 설치하려면 https:\/\/github.com\/status-im\/keycard-cli#keycard-applet-installation 를 확인해주세요",
     "keycard-awaiting-description": "카드를 기기 NFC접촉면에 놓아주시길 바랍니다.",
     "keycard-awaiting-title": "탐색 중",
+    "keycard-backup": "백업 키카드 만들기",
+    "keycard-backup-success-body": "백업 카드가 성공적으로 생성되었습니다. 이제 기본 카드처럼 계정에서 사용할 수 있습니다.",
+    "keycard-backup-success-title": "백업 성공",
     "keycard-blocked": "키카드가 차단되었습니다. \n계속 사용하려면 카드를 재설정해야합니다",
     "keycard-can-use-with-new-passcode": "이 카드를 새 패스코드와 사용할 수 있습니다.",
     "keycard-cancel-setup-text": "키카드 설치가 취소됩니다. 키카드를 사용하려면 설치를 완료해야 합니다. 설치를 취소하시겠습니까?",
@@ -852,6 +856,7 @@
     "mark-all-read": "모두 읽음 처리",
     "master-account": "마스터 계정",
     "maybe-later": "나중에",
+    "member-ban": "멤버 내보내기",
     "member-kick": "멤버 내보내기",
     "members": {
         "other": "{{count}} 명"
