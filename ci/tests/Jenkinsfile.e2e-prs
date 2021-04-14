@@ -62,7 +62,7 @@ pipeline {
 
         withCredentials([
           usernamePassword(
-            credentialsId: 'status-im-auto-token',
+            credentialsId: 'status-im-auto',
             usernameVariable: 'GIT_HUB_USER', /* ignored */
             passwordVariable: 'GIT_HUB_TOKEN'
           ),
