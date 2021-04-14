@@ -1,11 +1,14 @@
 (ns status-im.ui.screens.wallet.buy-crypto.views
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
+            [taoensso.timbre :as log]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.webview :as components.webview]
             [status-im.ui.screens.wallet.buy-crypto.sheets :as sheets]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.screens.chat.photos :as photos]
+            [status-im.ui.screens.browser.views :as browser.views]
+
             [quo.core :as quo]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
@@ -13,6 +16,8 @@
   (:require-macros [status-im.utils.views :as views]))
 
 (def learn-more-url "")
+
+(def webview-ref (atom nil))
 
 (defn on-buy-crypto-pressed []
   (re-frame/dispatch [:buy-crypto.ui/open-screen]))
@@ -94,9 +99,15 @@
             (i18n/label :t/buy-crypto-leaving)]]])
        [components.webview/webview
         {:onLoadEnd #(reset! has-loaded? true)
-         ;; NOTE: without this it crashes on android 11
-         :androidHardwareAccelerationDisabled true
-         :containerStyle (when-not @has-loaded? {:opacity 0})
+         :ref #(reset! webview-ref %)
+         :on-permission-request #(browser.views/request-resources-access-for-page
+                                  (-> ^js % .-nativeEvent .-resources) site-url @webview-ref)
+         :java-script-enabled true
+         :local-storage-enabled true
+         ;; This is to avoid crashes on android devices
+         ;; due to https://github.com/react-native-webview/react-native-webview/issues/1838
+         ;; We can't disable hardware acceleration as we need to use camera
+         :containerStyle (when-not @has-loaded? {:opacity 0.01 :min-height 1})
          :source {:uri site-url}}]])))
 
 (defn container []
