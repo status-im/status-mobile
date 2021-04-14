@@ -112,7 +112,7 @@
 (def resources-to-permissions-map {"android.webkit.resource.VIDEO_CAPTURE" :camera
                                    "android.webkit.resource.AUDIO_CAPTURE" :record-audio})
 
-(views/defview request-resources-panel [resources url]
+(views/defview request-resources-panel [resources url webview-ref]
   [react/view styles/blocked-access-container
    [react/view styles/blocked-access-icon-container
     [icons/icon :main-icons/camera styles/blocked-access-camera-icon]]
@@ -127,8 +127,8 @@
        :on-press (fn []
                    (components.permissions/request-permissions
                     {:permissions (map resources-to-permissions-map resources)
-                     :on-allowed  #(.answerPermissionRequest ^js @webview-ref/webview-ref true resources)
-                     :on-denied  #(.answerPermissionRequest ^js @webview-ref/webview-ref false)})
+                     :on-allowed  #(.answerPermissionRequest ^js webview-ref true resources)
+                     :on-denied  #(.answerPermissionRequest ^js webview-ref false)})
                    (re-frame/dispatch [:bottom-sheet/hide]))}
       (i18n/label :t/allow)]]
     [react/view styles/blocked-access-button-wrapper
@@ -136,7 +136,7 @@
       {:theme    :negative
        :style    styles/blocked-access-button
        :on-press (fn []
-                   (.answerPermissionRequest ^js @webview-ref/webview-ref false)
+                   (.answerPermissionRequest ^js webview-ref false)
                    (re-frame/dispatch [:bottom-sheet/hide]))}
       (i18n/label :t/deny)]]]])
 
@@ -148,10 +148,10 @@
     [react/text {:style styles/blocked-access-text}
      (str url " " (i18n/label :t/page-camera-request-blocked))]]])
 
-(defn request-resources-access-for-page [resources url]
+(defn request-resources-access-for-page [resources url webview-ref]
   (re-frame/dispatch
    [:bottom-sheet/show-sheet
-    {:content        (fn [] [request-resources-panel resources url])
+    {:content        (fn [] [request-resources-panel resources url webview-ref])
      :show-handle?       false
      :backdrop-dismiss?  false
      :disable-drag?      true
@@ -193,7 +193,7 @@
                                                         500))
 
         :on-permission-request                      #(if resources-permission?
-                                                       (request-resources-access-for-page (-> ^js % .-nativeEvent .-resources) url)
+                                                       (request-resources-access-for-page (-> ^js % .-nativeEvent .-resources) url @webview-ref/webview-ref)
                                                        (block-resources-access-and-notify-user url))
         ;; Extract event data here due to
         ;; https://reactjs.org/docs/events.html#event-pooling
