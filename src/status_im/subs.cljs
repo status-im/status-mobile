@@ -968,7 +968,7 @@
    [(re-frame/subscribe [:chats/raw-chat-messages-stream chat-id])
     (re-frame/subscribe [:view-id])])
  (fn [[messages view-id]]
-   (if (= view-id :chat)
+   (if (or (= view-id :chat) (empty? messages))
      (do
        (reset! memo-chat-messages-stream messages)
        messages)
@@ -982,7 +982,7 @@
    [(re-frame/subscribe [:chats/raw-chat-messages-stream chat-id])
     (re-frame/subscribe [:view-id])])
  (fn [[messages view-id]]
-   (if (= view-id :profile)
+   (if (or (= view-id :profile) (empty? messages))
      (do
        (reset! memo-profile-messages-stream messages)
        messages)

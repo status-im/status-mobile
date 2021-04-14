@@ -53,8 +53,6 @@
   (when debug?
     (persist-state! state)))
 
-(defonce main-app-navigator    (partial routing/get-main-component false))
-
 (defn root [_]
   (reagent/create-class
    {:component-did-mount
@@ -83,7 +81,7 @@
                                 (when debug?
                                   {:enableURLHandling true
                                    :initialState      @state}))
-                         [main-app-navigator]]
+                         [routing/main-nav-component]]
                         [wallet/select-account]
                         [signing/signing]
                         [bottom-sheets/bottom-sheet]

@@ -243,8 +243,7 @@
     (chat.state/reset-visible-item)
     (fx/merge cofx
               {:db (dissoc db :current-chat-id)}
-              (offload-messages chat-id)
-              (navigation/navigate-back))))
+              (offload-messages chat-id))))
 
 (fx/defn remove-chat
   "Removes chat completely from app, producing all necessary effects for that"

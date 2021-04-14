@@ -59,7 +59,7 @@
      :insets    {:top false}
      :component profile-stack/profile-stack}]])
 
-(views/defview get-main-component [_]
+(views/defview main-nav-component []
   (views/letsubs [logged-in? [:multiaccount/logged-in?]
                   keycard-account? [:multiaccounts/keycard-account?]]
     [main-stack (merge {:header-mode :none}

@@ -37,7 +37,7 @@
 (defn topbar []
   ;;we don't use topbar component, because we want chat view as simple (fast) as possible
   [react/view {:height 56 :border-bottom-width 1 :border-bottom-color (:ui-01 @quo.colors/theme)}
-   [react/touchable-highlight {:on-press-in #(re-frame/dispatch [:close-chat])
+   [react/touchable-highlight {:on-press-in #(re-frame/dispatch [:navigate-back])
                                :accessibility-label :back-button
                                :style {:height 56 :width 40 :align-items :center :justify-content :center
                                        :padding-left 16}}
@@ -331,7 +331,7 @@
         set-active-panel (get-set-active-panel active-panel)
         on-close #(set-active-panel nil)]
     (reagent/create-class
-     {:component-will-unmount #(re-frame/dispatch-sync [:close-chat])
+     {:component-will-unmount #(re-frame/dispatch [:close-chat])
       :reagent-render
       (fn []
         (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as chat}
