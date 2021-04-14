@@ -358,6 +358,7 @@
                                :pin
                                :multiaccount)
                        (assoc :logged-in-since now)
+                       (assoc :view-id :home)
                        (assoc :wallet/waiting-for-recent-history? true))
                ::json-rpc/call
                [{:method     "web3_clientVersion"

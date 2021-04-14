@@ -75,7 +75,9 @@
 (def memo-separator-fn
   (memoize
    (fn [separator default-separator?]
-     (reagent/as-element (or separator (when (and platform/ios? default-separator?) default-separator))))))
+     (when-let [separator (or separator (when (and platform/ios? default-separator?) default-separator))]
+       (fn []
+         (reagent/as-element separator))))))
 
 (def memo-as-element
   (memoize
