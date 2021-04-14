@@ -178,6 +178,14 @@
         (then on-success)
         (catch on-failure))))
 
+(defn change-pairing
+  [{:keys [pin pairing on-success on-failure]}]
+  (when (and pin pairing)
+    (.. status-keycard
+        (changePairingPassword pin pairing)
+        (then on-success)
+        (catch on-failure))))
+
 (defn unpair
   [{:keys [pin on-success on-failure]}]
   (when (and pin)
@@ -325,6 +333,8 @@
     (change-pin args))
   (keycard/change-puk [this args]
     (change-puk args))
+  (keycard/change-pairing [this args]
+    (change-pairing args))
   (keycard/unpair [this args]
     (unpair args))
   (keycard/delete [this args]

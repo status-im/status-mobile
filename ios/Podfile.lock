@@ -270,7 +270,7 @@ PODS:
     - React
   - react-native-status (1.0.0):
     - React
-  - react-native-status-keycard (2.5.33):
+  - react-native-status-keycard (2.5.34):
     - Keycard
     - React
   - react-native-webview (10.9.2):
@@ -628,7 +628,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Keycard:
-    :commit: 36e260cfafc2755a47f1e5f542858ceb0c6c37df
+    :commit: 75c956d64a7d9fdf63e1aac9c2f36237e792c3eb
     :git: https://github.com/status-im/Keycard.swift.git
   secp256k1:
     :commit: 46a1fa30d9b8babeae85ff519050f42394ab5fcc
@@ -679,7 +679,7 @@ SPEC CHECKSUMS:
   react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-status: 45dbf1302ce3c258b459dfab137cd1c2c68c295d
-  react-native-status-keycard: dac854029a37eabf04a8ede091ddeee71ab049b9
+  react-native-status-keycard: efdf1a51fe36a8ca4741234c0c428ef25b73d162
   react-native-webview: 4e96d493f9f90ba4f03b28933f30b2964df07e39
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
   React-RCTAnimation: 1bde3ecc0c104c55df246eda516e0deb03c4e49b

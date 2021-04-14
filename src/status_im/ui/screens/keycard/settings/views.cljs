@@ -98,6 +98,11 @@
                              :title    (i18n/label :t/change-puk)
                              :accessibility-label "change-puk"
                              :on-press #(re-frame/dispatch [:keycard-settings.ui/change-credentials-pressed :puk])}]
+             [quo/list-item {:icon     :main-icons/password
+                             :size     :small
+                             :title    (i18n/label :t/change-pairing)
+                             :accessibility-label "change-pairing"
+                             :on-press #(re-frame/dispatch [:keycard-settings.ui/change-credentials-pressed :pairing])}]
              [quo/list-item {:icon     :main-icons/keycard
                              :size     :small
                              :title    (i18n/label :t/keycard-backup)

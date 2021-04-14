@@ -256,6 +256,24 @@
         [:keycard.callback/on-change-pin-error
          (error-object->map response)]))})))
 
+(defn change-pairing [args]
+  (log/debug "[keycard] change-pairing")
+  (keycard/change-pairing
+   card
+   (merge
+    args
+    {:on-success
+     (fn [response]
+       (log/debug "[keycard response succ] change-pairing")
+       (re-frame/dispatch
+        [:keycard.callback/on-change-pairing-success response]))
+     :on-failure
+     (fn [response]
+       (log/debug "[keycard response fail] change-pairing")
+       (re-frame/dispatch
+        [:keycard.callback/on-change-pin-error
+         (error-object->map response)]))})))
+
 (defn unpair [args]
   (log/debug "[keycard] unpair")
   (keycard/unpair

@@ -112,6 +112,10 @@
  card/change-puk)
 
 (re-frame/reg-fx
+ :keycard/change-pairing
+ card/change-pairing)
+
+(re-frame/reg-fx
  :keycard/unpair
  card/unpair)
 

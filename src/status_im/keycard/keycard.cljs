@@ -24,6 +24,7 @@
   (verify-pin [this args])
   (change-pin [this args])
   (change-puk [this args])
+  (change-pairing [this args])
   (unpair [this args])
   (delete [this args])
   (remove-key [this args])

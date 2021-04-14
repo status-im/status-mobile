@@ -33,6 +33,7 @@
             [status-im.ui.screens.fleet-settings.views :as fleet-settings]
             [status-im.ui.screens.profile.seed.views :as profile.seed]
             [status-im.ui.screens.keycard.pin.views :as keycard.pin]
+            [status-im.ui.screens.keycard.pairing.views :as keycard.pairing]
             [status-im.ui.screens.keycard.settings.views :as keycard.settings]
             [status-im.ui.components.tabbar.styles :as tabbar.styles]
             [status-im.ui.screens.routing.core :as navigation]
@@ -134,4 +135,6 @@
     {:name      :keycard-pin
      :component keycard.settings/reset-pin}
     {:name      :enter-pin-settings
-     :component keycard.pin/enter-pin}]])
+     :component keycard.pin/enter-pin}
+    {:name      :change-pairing-code
+     :component keycard.pairing/change-pairing-code}]])

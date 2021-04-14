@@ -5,6 +5,7 @@
             [status-im.utils.fx :as fx]
             [taoensso.timbre :as log]
             [status-im.keycard.common :as common]
+            [status-im.utils.security :as security]
             [status-im.keycard.login :as keycard.login]))
 
 (fx/defn change-credentials-pressed
@@ -26,8 +27,9 @@
                                                :status           nil
                                                :error-label      nil
                                                :on-verified      (case changing
-                                                                   :pin :keycard/proceed-to-change-pin
-                                                                   :puk :keycard/proceed-to-change-puk)})}
+                                                                   :pin     :keycard/proceed-to-change-pin
+                                                                   :puk     :keycard/proceed-to-change-puk
+                                                                   :pairing :keycard/proceed-to-change-pairing)})}
                 (common/navigate-to-enter-pin-screen)))))
 
 (fx/defn proceed-to-change-pin
@@ -47,6 +49,11 @@
                      (assoc-in [:keycard :pin :enter-step] :puk-original)
                      (assoc-in [:keycard :pin :status] nil))}
             (navigation/navigate-to-cofx :enter-pin-settings nil)))
+
+(fx/defn proceed-to-change-pairing
+  {:events [:keycard/proceed-to-change-pairing]}
+  [{:keys [db] :as cofx}]
+  (navigation/navigate-to-cofx cofx :change-pairing-code nil))
 
 (fx/defn discard-pin-change
   {:events [::on-cancel]}
@@ -103,6 +110,32 @@
           :keycard/change-puk {:puk puk
                                :pin pin}})))}))
 
+(fx/defn change-pairing
+  {:events [:keycard/change-pairing]}
+  [{:keys [db] :as cofx}]
+  (common/show-connection-sheet
+   cofx
+   {:sheet-options     {:on-cancel [::on-cancel]}
+    :on-card-connected :keycard/change-pairing
+    :handler
+    (fn [{:keys [db] :as cofx}]
+      (let [pairing (get-in db [:keycard :pin :pairing-code])
+            pin     (common/vector->string
+                     (get-in db [:keycard :pin :current]))]
+        (fx/merge
+         cofx
+         {:db                     (assoc-in db [:keycard :pin :status] :verifying)
+          :keycard/change-pairing {:pairing pairing
+                                   :pin     pin}})))}))
+
+(fx/defn change-pairing-code
+  {:events [:keycard/change-pairing-code]}
+  [{:keys [db] :as cofx} pairing]
+  (fx/merge
+   cofx
+   {:db (assoc-in db [:keycard :pin :pairing-code] (security/unmask pairing))}
+   (change-pairing)))
+
 (fx/defn on-change-pin-success
   {:events [:keycard.callback/on-change-pin-success]}
   [{:keys [db] :as cofx}]
@@ -132,6 +165,18 @@
                                                              :error-label      nil})
              :utils/show-popup {:title   ""
                                 :content (i18n/label :t/puk-changed)}}
+            (common/hide-connection-sheet)
+            (navigation/navigate-to-cofx :keycard-settings nil)))
+
+(fx/defn on-change-pairing-success
+  {:events [:keycard.callback/on-change-pairing-success]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db               (assoc-in db [:keycard :pin] {:status           nil
+                                                             :pairing-code     nil
+                                                             :error-label      nil})
+             :utils/show-popup {:title   ""
+                                :content (i18n/label :t/pairing-changed)}}
             (common/hide-connection-sheet)
             (navigation/navigate-to-cofx :keycard-settings nil)))
 
