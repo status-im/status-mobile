@@ -1,0 +1,43 @@
+/**
+ * This job runs daily and executes `pod repo update` on MacOS
+ * This is done to avoid issues with out of date repo causing errors like:
+ *
+ * Failed with exit code 1 (in target 'StatusImPR' from project 'StatusIm')
+ **/
+
+pipeline {
+  agent {
+    label params.HOST_LABEL
+  }
+
+  triggers {
+    /* Run daily at 2am */
+    cron('H 2 * * *')
+  }
+  options {
+    timestamps()
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 5, unit: 'MINUTES')
+    /* Limit builds retained */
+    buildDiscarder(logRotator(
+      numToKeepStr: '20',
+    ))
+  }
+
+  parameters {
+    string(
+      name: 'HOST_LABEL',
+      description: 'Label of host to run on',
+      /* Using startTimeInMillis to randomize which host gets the update. */
+      defaultValue: "macos-0${(currentBuild.startTimeInMillis % 3) + 1}",
+    )
+  }
+
+  stages {
+    stage('Update') {
+      steps {
+        sh 'pod repo update'
+      }
+    }
+  }
+}
