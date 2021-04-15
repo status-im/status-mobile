@@ -41,13 +41,13 @@ pipeline {
     stage('Build') {
       parallel {
         stage('iOS') { steps { script {
-          ios = jenkins.Build('status-react/combined/mobile-ios')
+          ios = jenkins.Build('status-react/platforms/ios')
         } } }
         stage('Android') { steps { script {
-          apk = jenkins.Build('status-react/combined/mobile-android')
+          apk = jenkins.Build('status-react/platforms/android')
         } } }
         stage('Android e2e') { steps { script {
-          apke2e = jenkins.Build('status-react/combined/mobile-android-e2e')
+          apke2e = jenkins.Build('status-react/platforms/android-e2e')
         } } }
       }
     }
