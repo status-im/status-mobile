@@ -109,28 +109,39 @@
 
 (fx/defn prepare-unconfirmed-transaction
   [{:keys [db now]} new-tx-hash {:keys [value gasPrice gas data to from hash]} symbol amount]
-  (log/debug "[signing] prepare-unconfirmed-transaction")
   (let [token (tokens/symbol->token (:wallet/all-tokens db) symbol)
         from  (eip55/address->checksum from)
         ;;if there is a hash in the tx object that means we resending transaction
-        old-tx-hash hash]
+        old-tx-hash hash
+        gas-price (money/to-fixed (money/bignumber gasPrice))
+        gas-limit (money/to-fixed (money/bignumber gas))
+        tx {:timestamp now
+            :to        to
+            :from      from
+            :type      :pending
+            :hash      new-tx-hash
+            :data      data
+            :token     token
+            :symbol    symbol
+            :value     (if token
+                         (money/to-fixed (money/unit->token amount (:decimals token)))
+                         (money/to-fixed (money/bignumber value)))
+            :gas-price gas-price
+            :gas-limit gas-limit}]
+    (log/info "[signing] prepare-unconfirmed-transaction" tx)
     {:db (-> db
              ;;remove old transaction, because we replace it with the new one
              (update-in [:wallet :accounts from :transactions] dissoc old-tx-hash)
-             (assoc-in [:wallet :accounts from :transactions new-tx-hash]
-                       {:timestamp (str now)
-                        :to        to
-                        :from      from
-                        :type      :pending
-                        :hash      new-tx-hash
-                        :data      data
-                        :token     token
-                        :symbol    symbol
-                        :value     (if token
-                                     (money/unit->token amount (:decimals token))
-                                     (money/to-fixed (money/bignumber value)))
-                        :gas-price (money/to-fixed (money/bignumber gasPrice))
-                        :gas-limit (money/to-fixed (money/bignumber gas))}))}))
+             (assoc-in [:wallet :accounts from :transactions new-tx-hash] tx))
+     ::json-rpc/call [{:method      "wallet_storePendingTransaction"
+                       :params      [(-> tx
+                                         (dissoc :gas-price :gas-limit)
+                                         (assoc :gasPrice
+                                                (money/to-fixed (money/bignumber gasPrice))
+                                                :gasLimit (money/to-fixed (money/bignumber gas)))
+                                         clj->js)]
+                       :on-success #(log/info "pending transfer is saved")
+                       :on-failure #(log/info "pending transfer was not saved" %)}]}))
 
 (defn get-method-type [data]
   (cond

@@ -148,6 +148,9 @@
    "wallet_getTransfersByAddress" {}
    "wallet_watchTransaction" {}
    "wallet_checkRecentHistory" {}
+   "wallet_storePendingTransaction" {}
+   "wallet_deletePendingTransaction" {}
+   "wallet_getPendingTransactions" {}
    "wallet_getTokensBalances" {}
    "wallet_getCustomTokens" {}
    "wallet_addCustomToken" {}

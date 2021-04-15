@@ -70,6 +70,16 @@
   (when bn
     (.toNumber bn)))
 
+(defn to-string
+  ([^js bn]
+   (to-string bn 10))
+  ([^js bn base]
+   (when bn
+     (.toString bn base))))
+
+(defn to-hex [^js bn]
+  (str "0x" (to-string bn 16)))
+
 (defn wei->str
   ([unit n display-unit]
    (str (to-fixed (wei-> unit n)) " " display-unit))

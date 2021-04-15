@@ -215,6 +215,19 @@
                      :all
                      :all-preloaded))}))
 
+(fx/defn delete-pending-transactions
+  [{:keys [db]} address transactions]
+  (let [all-transactions
+        (get-in db [:wallet :accounts (eip55/address->checksum address) :transactions])
+        pending-tx-hashes (keep (fn [{:keys [hash]}]
+                                  (let [{:keys [type] :as old-tx}
+                                        (get all-transactions hash)]
+                                    (when (and (get all-transactions hash)
+                                               (= type :pending))
+                                      hash)))
+                                transactions)]
+    {:wallet/delete-pending-transactions pending-tx-hashes}))
+
 (fx/defn handle-new-transfer
   [{:keys [db] :as cofx} transfers {:keys [address limit]}]
   (log/debug "[transfers] new-transfers"
@@ -228,7 +241,9 @@
                          (wallet/set-max-block-with-transfers checksum transfers)]
 
                   (seq transfers)
-                  (concat (mapv add-transfer transfers))
+                  (concat
+                   [(delete-pending-transactions address transfers)]
+                   (mapv add-transfer transfers))
 
                   (and max-known-block
                        (some #(> (:block %) max-known-block) transfers))

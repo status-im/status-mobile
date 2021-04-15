@@ -686,18 +686,23 @@
 
 (re-frame/reg-fx
  ::start-watching
- (fn [hash]
-   (log/info "[wallet] watch transaction" hash)
-   (json-rpc/call
-    {:method            "wallet_watchTransaction"
-     :params            [hash]
-     :on-success        #(re-frame.core/dispatch [::restart true])
-     :on-error          #(log/info "[wallet] watch transaction error" % "hash" hash)})))
+ (fn [hashes]
+   (log/info "[wallet] watch transactions" hashes)
+   (doseq [hash hashes]
+     (json-rpc/call
+      {:method     "wallet_watchTransaction"
+       :params     [hash]
+       :on-success #(re-frame.core/dispatch [::restart true])
+       :on-error   #(log/info "[wallet] watch transaction error" % "hash" hash)}))))
 
 (fx/defn watch-tx
   {:events [:watch-tx]}
   [{:keys [db] :as cofx} tx-id]
-  {::start-watching tx-id})
+  {::start-watching [tx-id]})
+
+(fx/defn watch-transsactions
+  [_ hashes]
+  {::start-watching hashes})
 
 (fx/defn clear-timeouts
   [{:keys [db]}]
@@ -849,3 +854,56 @@
       {:view    :share-account
        :address address})
      (keep-watching-history))))
+
+(re-frame/reg-fx
+ ::get-pending-transactions
+ (fn []
+   (json-rpc/call
+    {:method     "wallet_getPendingTransactions"
+     :params     []
+     :on-success #(re-frame/dispatch [:wallet/on-retreiving-pending-transactions %])})))
+
+(fx/defn get-pending-transactions
+  {:events [:wallet/get-pending-transactions]}
+  [_]
+  (log/info "[wallet] get pending transactions")
+  {::get-pending-transactions nil})
+
+(defn normalize-transaction
+  [db {:keys [symbol gasPrice gasLimit value from to] :as transaction}]
+  (let [symbol (keyword symbol)
+        token (tokens/symbol->token (:wallet/all-tokens db) symbol)]
+    (-> transaction
+        (select-keys [:timestamp :hash :data])
+        (assoc :from (eip55/address->checksum from)
+               :to (eip55/address->checksum to)
+               :type :pending
+               :symbol symbol
+               :token token
+               :value (money/bignumber value)
+               :gas-price (money/bignumber gasPrice)
+               :gas-limit (money/bignumber gasLimit)))))
+
+(fx/defn on-retriving-pending-transactions
+  {:events [:wallet/on-retreiving-pending-transactions]}
+  [{:keys [db]} raw-transactions]
+  (log/info "[wallet] pending transactions")
+  {:db
+   (reduce (fn [db {:keys [from hash] :as transaction}]
+             (let [path [:wallet :accounts from :transactions hash]]
+               (if-not (get-in db path)
+                 (assoc-in db path transaction)
+                 db)))
+           db
+           (map (partial normalize-transaction db) raw-transactions))
+   ::start-watching (map :hash raw-transactions)})
+
+(re-frame/reg-fx
+ :wallet/delete-pending-transactions
+ (fn [hashes]
+   (log/info "[wallet] delete pending transactions")
+   (doseq [hash hashes]
+     (json-rpc/call
+      {:method     "wallet_deletePendingTransaction"
+       :params     [hash]
+       :on-success #(log/info "[wallet] pending transaction deleted" hash)}))))
