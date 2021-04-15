@@ -6,11 +6,11 @@ This folder contains files defininf [Jenkins pipelines](https://jenkins.io/doc/b
 
 All `Jenkinsfile`s contain the following line:
 ```groovy
-library 'status-react-jenkins@master'
+library 'status-jenkins-lib@master'
 ```
 
 Which loads the used methods - like `nix.shell()` - from a separate private repo:
 
-https://github.com/status-im/status-react-jenkins
+https://github.com/status-im/status-jenkins-lib
 
 This is done to improve security of our CI setup.

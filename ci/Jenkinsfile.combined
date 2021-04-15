@@ -1,4 +1,4 @@
-library 'status-react-jenkins@v1.2.11'
+library 'status-jenkins-lib@v1.2.12'
 
 pipeline {
   agent { label 'linux' }
@@ -91,7 +91,7 @@ pipeline {
             build(job: 'misc/status.im', wait: false);
             break;
           case 'release':
-            github.publishReleaseMobile();
+            github.publishReleaseFiles(repo: 'status-react');
             break;
         }
       } }
